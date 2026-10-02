@@ -52,6 +52,9 @@ export async function alreadyMigrated(): Promise<boolean> {
   try {
     return (await AsyncStorage.getItem(DONE_KEY)) === '1';
   } catch {
+    // READ failed (wave 2, 2026-10-02, confirmed): "not yet" — the member is
+    // offered the carry-over again, which they can decline; the flag is only
+    // ever written '1' by markMigrated, so a failed read writes nothing over it.
     return false;
   }
 }

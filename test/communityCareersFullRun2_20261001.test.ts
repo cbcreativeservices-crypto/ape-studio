@@ -5,10 +5,24 @@
  * the old one restored, the test run, the fixed one put back).
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { registerHooks } from 'node:module';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { furtherEducation } from '../src/features/careerfinder/educationNote.ts';
+
+// celebrationSeen sits on the shared safe store since wave 2 (2026-10-02),
+// which imports its siblings without an extension, as Metro does.
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (specifier.startsWith('.') && !/\.[cm]?[jt]sx?$/.test(specifier)) {
+      const candidate = new URL(specifier + '.ts', context.parentURL);
+      if (existsSync(fileURLToPath(candidate))) return { url: candidate.href, shortCircuit: true };
+    }
+    return nextResolve(specifier, context);
+  },
+});
 
 const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
@@ -97,7 +111,10 @@ describe('C2: useCredentialCelebration writes nothing for the departing account'
   });
   it('the generation is bumped by the reset resetAllLocalStores already calls', () => {
     const seen = read('src/features/celebration/celebrationSeen.ts');
-    assert.match(body(seen, 'resetCelebrationsSeen'), /generation \+= 1;/);
+    // Wave 2 (2026-10-02): the record is on the shared safe store, whose
+    // reset() bumps the generation `celebrationGeneration` reports.
+    assert.match(body(seen, 'resetCelebrationsSeen'), /store\.reset\(\);/);
+    assert.match(seen, /export const celebrationGeneration = \(\): number => store\.generation\(\);/);
     assert.match(read('src/features/account/clearLocalAccountData.ts'), /resetCelebrationsSeen\(\);/);
   });
 });

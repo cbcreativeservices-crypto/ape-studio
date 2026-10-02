@@ -143,11 +143,17 @@ describe('Mixing kit: the import-time reads never land over a wipe or a newer ch
     assert.match(s, /if \(v != null && !focalTouched\) \{/);
     const reset = s.slice(s.indexOf('export function resetMixingCommitments'), s.indexOf('export function useFocalChoice'));
     assert.match(reset, /focalTouched = true;/);
-    assert.match(reset, /prioritiesTouched = true;/);
+    // Wave 2 (2026-10-02): the priorities' wipe is the shared store's new
+    // generation — a read or write in flight lands nowhere.
+    assert.match(reset, /prioritiesStore\.reset\(\);/);
     assert.match(s, /const set = useCallback\(\(id: string\) => \{\s*\n\s*focalTouched = true;/);
   });
   it('priorities', () => {
-    assert.match(s, /if \(v && !prioritiesTouched\) \{/);
-    assert.match(s, /prioritiesTouched = true;\s*\n\s*prioritiesCurrent = next;/);
+    // Wave 2 (2026-10-02): on the shared safe store — no import-time read of
+    // its own; a toggle is applied to the HYDRATED list (queued until the
+    // read lands), so neither a late read nor a wipe can land over it.
+    assert.doesNotMatch(s, /AsyncStorage\.getItem\(PRIORITIES_KEY\)/);
+    assert.match(s, /const prioritiesStore = createLocalStore<readonly string\[\]>\(\{\s*key: PRIORITIES_KEY,/);
+    assert.match(s, /void prioritiesStore\.mutate\(\(list\) => togglePriority\(list, id, add\)\);/);
   });
 });

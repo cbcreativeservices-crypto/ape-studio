@@ -5,10 +5,20 @@
  * server-side (tech-spec §7.2). Calibrated readings display
  * "dB SPL · field-calibrated (approximate)" — approximate ALWAYS.
  *
- * Same tiny external-store pattern as the sibling stores.
+ * On the shared safe store (pattern catalog 2026-10-02, closer A2; wave 2).
+ * A read that FAILED used to start the meter uncalibrated AND mark it
+ * hydrated, so the next CALIBRATE / CLEAR was the only thing on screen and a
+ * failed read was indistinguishable from "never calibrated". Now a read that
+ * throws leaves the store unreadable: nothing is written over the stored
+ * offset, and a CALIBRATE made meanwhile is held and written after the next
+ * read that succeeds. A blob that will not parse is set aside under
+ * `ape:splCalOffset:damaged` and the meter reads uncalibrated (as before).
+ *
+ * The key is on the wipe's KEEP list (hardware, governance R1). The store's
+ * registered reset only drops the in-memory copy on an account change; the
+ * next read brings the same device offset straight back.
  */
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore } from '../../storage/localStore';
 
 const KEY = 'ape:splCalOffset';
 
@@ -29,51 +39,37 @@ export function clampCalOffset(db: number): number {
   return Math.min(CAL_OFFSET_MAX_DB, Math.max(CAL_OFFSET_MIN_DB, db));
 }
 
-let cal: SplCalibration | null = null;
-let hydrated = false;
-let hydrating: Promise<void> | null = null;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-async function hydrate(): Promise<void> {
-  if (hydrated) return;
-  if (!hydrating) {
-    hydrating = (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(KEY);
-        const parsed: unknown = raw ? JSON.parse(raw) : null;
-        // In range too (toddler pass 2026-09-30): the stepper is clamped now,
-        // but an offset mashed below 0 BEFORE the clamp shipped is still on
-        // disk, and it pins every SPL reading to 0.0 dB for good — the device
-        // reads as uncalibrated instead until the user calibrates again.
-        if (
-          parsed != null &&
-          typeof (parsed as SplCalibration).offsetDb === 'number' &&
-          Number.isFinite((parsed as SplCalibration).offsetDb) &&
-          clampCalOffset((parsed as SplCalibration).offsetDb) === (parsed as SplCalibration).offsetDb
-        ) {
-          cal = parsed as SplCalibration;
-        }
-      } catch {
-        cal = null; // corrupt → uncalibrated, never crash
-      }
-      hydrated = true;
-      emit();
-    })();
-  }
-  return hydrating;
-}
+const store = createLocalStore<SplCalibration | null>({
+  key: KEY,
+  empty: () => null,
+  parse: (parsed) => {
+    // In range too (toddler pass 2026-09-30): the stepper is clamped now,
+    // but an offset mashed below 0 BEFORE the clamp shipped is still on
+    // disk, and it pins every SPL reading to 0.0 dB for good — the device
+    // reads as uncalibrated instead until the user calibrates again.
+    const c = parsed as SplCalibration | null;
+    if (
+      c != null &&
+      typeof c === 'object' &&
+      typeof c.offsetDb === 'number' &&
+      Number.isFinite(c.offsetDb) &&
+      clampCalOffset(c.offsetDb) === c.offsetDb
+    ) {
+      return { offsetDb: c.offsetDb, setAt: typeof c.setAt === 'string' ? c.setAt : '' };
+    }
+    return null;
+  },
+  // Uncalibrated = nothing saved: CLEAR removes the key.
+  serialize: (v) => (v == null ? null : JSON.stringify(v)),
+});
 
 export function getSplCalibration(): SplCalibration | null {
-  void hydrate();
-  return cal;
+  return store.get();
 }
 
-/** Set (or clear with null) the field-calibration offset. Hydrate-first so a
- *  cold-path write can't race the load (same discipline as measurementStore).
+/** Set (or clear with null) the field-calibration offset. Applied on top of
+ *  the hydrated value by the shared store, so a cold-path write can't race
+ *  the load.
  *
  *  RESOLVES FALSE IF THE WRITE DID NOT REACH DISK (full run 2, 2026-10-02).
  *  The write's failure used to be swallowed (`.catch(() => {})`): a full
@@ -81,31 +77,17 @@ export function getSplCalibration(): SplCalibration | null {
  *  reading "field-calibrated" for this session and uncalibrated on the next
  *  launch, with nothing said — the same silent loss saveMeasurement() stopped
  *  hiding on 2026-09-17. The in-memory value still applies for this session;
- *  the caller tells the user it will not survive a restart. Never rejects. */
+ *  the caller tells the user it will not survive a restart. Also false while
+ *  the stored copy is unreadable (the change is held, never written over it).
+ *  Never rejects. */
 export function setSplCalibration(offsetDb: number | null): Promise<boolean> {
-  return hydrate().then(async () => {
-    cal = offsetDb == null ? null : { offsetDb, setAt: new Date().toISOString() };
-    emit();
-    try {
-      if (cal == null) await AsyncStorage.removeItem(KEY);
-      else await AsyncStorage.setItem(KEY, JSON.stringify(cal));
-      return true;
-    } catch (e) {
-      console.warn('[calibration] write FAILED — the calibration on screen is not persisted:', e);
-      return false;
-    }
+  const next: SplCalibration | null = offsetDb == null ? null : { offsetDb, setAt: new Date().toISOString() };
+  return store.set(next).then((ok) => {
+    if (!ok) console.warn('[calibration] write FAILED — the calibration on screen is not persisted');
+    return ok;
   });
 }
 
 export function useSplCalibration(): SplCalibration | null {
-  const [, setTick] = useState(0);
-  useEffect(() => {
-    const l = () => setTick((t) => t + 1);
-    listeners.add(l);
-    void hydrate();
-    return () => {
-      listeners.delete(l);
-    };
-  }, []);
-  return cal;
+  return store.use();
 }

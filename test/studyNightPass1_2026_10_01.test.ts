@@ -36,10 +36,14 @@ describe('hydrating stores carry a generation fence', () => {
     });
   }
   it('paceStore.ts', () => {
+    // Moved onto the shared safe store in wave 2 (2026-10-02), one store per
+    // method: the fence is the store's generation (test/localStore.test.ts,
+    // "P3"); resetLocal resets every method's store, and no hand-rolled read
+    // is left (behaviour: test/localStoreWave2Study_20261002.test.ts).
     const s = read('src', 'features', 'study', 'paceStore.ts');
-    assert.match(s, /export function resetLocal\(\): void \{\s*generation\+\+;/);
-    const h = s.slice(s.indexOf('async function hydrate('), s.indexOf('export function usePaceSettings'));
-    assert.match(h, /if \(gen !== generation\) return;/);
+    assert.match(s, /createLocalStore</);
+    assert.match(s, /export function resetLocal\(\): void \{[\s\S]{0,200}for \(const s of stores\.values\(\)\) s\.reset\(\);/);
+    assert.doesNotMatch(s, /AsyncStorage\.getItem\(/);
   });
 });
 

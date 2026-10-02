@@ -775,12 +775,41 @@ export function DashboardScreen() {
         if (!v) return;
         try {
           const a = JSON.parse(v);
-          if (Array.isArray(a)) setIntroSeen(new Set(a as string[]));
+          // UNION, not replace (wave 2, 2026-10-02): an intro dismissed before
+          // this read landed stays seen.
+          if (Array.isArray(a)) setIntroSeen((prev) => new Set([...(a as string[]), ...prev]));
         } catch {
           /* corrupt value — intros simply replay, never an unhandled rejection */
         }
       })
       .catch(() => {});
+  }, []);
+  /**
+   * Record one intro as seen. The set only grows, so each write re-reads the
+   * stored set and writes the UNION (wave 2, 2026-10-02): it wrote the screen's
+   * in-memory set whole, and when the read above had FAILED (or not landed
+   * yet) that was a one-key set written over every intro already seen — they
+   * all replayed. A read that failed writes nothing; a corrupt value is
+   * replaced. One write at a time, so two dismissals cannot lose each other.
+   */
+  const introSeenWrites = useRef<Promise<void>>(Promise.resolve());
+  const persistIntroSeen = useCallback((key: string) => {
+    introSeenWrites.current = introSeenWrites.current.then(async () => {
+      let stored: string[] = [];
+      try {
+        const raw = await AsyncStorage.getItem('ape:learnIntrosSeen');
+        try {
+          const a: unknown = raw ? JSON.parse(raw) : [];
+          if (Array.isArray(a)) stored = a.filter((x): x is string => typeof x === 'string');
+        } catch {
+          stored = []; // corrupt — replaced, as the read above treats it
+        }
+      } catch {
+        return; // read failed — never write over a set we could not see
+      }
+      if (stored.includes(key)) return;
+      await AsyncStorage.setItem('ape:learnIntrosSeen', JSON.stringify([...stored, key])).catch(() => {});
+    });
   }, []);
 
   // The Dashboard must always open at the TOP (Booth 2026-07-11): a stale scroll
@@ -1456,15 +1485,12 @@ export function DashboardScreen() {
   const dismissIntro = useCallback(() => {
     setIntro((cur) => {
       if (cur) {
-        setIntroSeen((prev) => {
-          const next = new Set(prev).add(cur.key);
-          void AsyncStorage.setItem('ape:learnIntrosSeen', JSON.stringify([...next])).catch(() => {});
-          return next;
-        });
+        setIntroSeen((prev) => new Set(prev).add(cur.key));
+        persistIntroSeen(cur.key);
       }
       return null;
     });
-  }, []);
+  }, [persistIntroSeen]);
 
   // ── THE LAST HOOK, AND IT MUST STAY ABOVE THE EARLY RETURNS ───────────────
   //

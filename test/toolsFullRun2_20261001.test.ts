@@ -11,14 +11,21 @@
  * (RN screens cannot be imported under node).
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { registerHooks } from 'node:module';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 const AS_URL = 'ape-test-fr2:async-storage';
 registerHooks({
   resolve(specifier, context, next) {
     if (specifier === '@react-native-async-storage/async-storage') return { url: AS_URL, shortCircuit: true };
+    // The store is on the shared safe store (2026-10-02, wave 2), which Metro
+    // imports extensionless: resolve `./x` to `./x.ts` under node.
+    if (specifier.startsWith('.') && !/\.[cm]?[jt]sx?$/.test(specifier) && context.parentURL) {
+      const candidate = new URL(`${specifier}.ts`, context.parentURL);
+      if (existsSync(fileURLToPath(candidate))) return { url: candidate.href, shortCircuit: true };
+    }
     return next(specifier, context);
   },
   load(url, context, next) {

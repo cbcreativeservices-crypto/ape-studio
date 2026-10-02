@@ -11,6 +11,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ItemStates } from './api';
+import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 
 const PREFIX = 'ape:localMethod:'; // + `${achievementId}:${methodKey}`
 const keyFor = (achievementId: string, methodKey: string) => `${PREFIX}${achievementId}:${methodKey}`;
@@ -25,18 +26,64 @@ const keyFor = (achievementId: string, methodKey: string) => `${PREFIX}${achieve
  * BEFORE the wipe is queued ahead of the key listing and removed with the rest.
  */
 let clearsInFlight = 0;
+/**
+ * Bumped by every wipe (and by the account wipe's registry): a save that
+ * STARTED before the wipe and is still reading lands nowhere (wave 2,
+ * 2026-10-02 — the read-merge below widened the window the count alone fenced).
+ */
+let wipeGeneration = 0;
+registerLocalStoreReset(() => {
+  wipeGeneration++;
+});
+/** One save at a time per key, so two merges cannot lose each other's update. */
+const chains = new Map<string, Promise<boolean>>();
 
-export async function saveLocalMethodStates(
+/**
+ * Save a method's item states — MERGED with what is stored (wave 2,
+ * 2026-10-02). It replaced the row whole, so a screen whose resume read had
+ * FAILED (loadLocalMethodStates answered null, the screen started from the
+ * server row) wrote that thinner copy over the mirror, and Scenarios — which
+ * never reads the mirror at all — overwrote it with one session's answers
+ * every time. The merge is `mergeItemStates`, the same never-regress rule the
+ * Dashboard reads with, so a save can only add. A stored row that cannot be
+ * READ is not overwritten: the save writes nothing (the server mirror still
+ * applies, and the next save tries again). A damaged row (unparseable) is
+ * replaced, as before. Resolves true only when the device accepted the write.
+ */
+export function saveLocalMethodStates(
   achievementId: string,
   methodKey: string,
   states: ItemStates,
-): Promise<void> {
-  if (clearsInFlight > 0) return;
-  try {
-    await AsyncStorage.setItem(keyFor(achievementId, methodKey), JSON.stringify(states));
-  } catch {
-    /* device write failure is non-fatal — the server mirror still applies */
-  }
+): Promise<boolean> {
+  if (clearsInFlight > 0) return Promise.resolve(false);
+  const gen = wipeGeneration;
+  const k = keyFor(achievementId, methodKey);
+  const run = (chains.get(k) ?? Promise.resolve(true)).then(async (): Promise<boolean> => {
+    if (gen !== wipeGeneration || clearsInFlight > 0) return false;
+    let stored: ItemStates | null = null;
+    try {
+      const raw = await AsyncStorage.getItem(k);
+      try {
+        stored = raw ? (JSON.parse(raw) as ItemStates) : null;
+      } catch {
+        stored = null; // damaged: nothing usable to keep
+      }
+    } catch {
+      return false; // read failed — never write over a row we could not see
+    }
+    if (gen !== wipeGeneration || clearsInFlight > 0) return false;
+    try {
+      await AsyncStorage.setItem(k, JSON.stringify(stored ? mergeItemStates(stored, states) : states));
+      return true;
+    } catch {
+      return false; /* device write failure is non-fatal — the server mirror still applies */
+    }
+  });
+  chains.set(k, run);
+  void run.then(() => {
+    if (chains.get(k) === run) chains.delete(k);
+  });
+  return run;
 }
 
 /** Wipe every locally-mirrored method row. Called when the signed-in user
@@ -45,6 +92,7 @@ export async function saveLocalMethodStates(
  *  (owner 2026-08-11). Server rows remain the source of truth for real users. */
 export async function clearAllLocalMethodStates(): Promise<void> {
   clearsInFlight++;
+  wipeGeneration++;
   try {
     const keys = (await AsyncStorage.getAllKeys()).filter((k) => k.startsWith(PREFIX));
     if (keys.length > 0) await AsyncStorage.multiRemove(keys);

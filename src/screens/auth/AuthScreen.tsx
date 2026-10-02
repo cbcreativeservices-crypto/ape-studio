@@ -191,7 +191,14 @@ export function AuthScreen({ navigation }: Props) {
    * we take over (the other device signs out on its next foreground); on cancel
    * we sign back out and stay. Fails open (un-migrated backend → just proceed). */
   const claimAndProceed = async (proceed: () => void) => {
-    const [active, mine] = await Promise.all([getActiveDeviceId(), getDeviceId()]);
+    // A device id that could not be READ (getDeviceId rejects rather than mint
+    // a new one over the stored id — wave 2, 2026-10-02) is unknown: no
+    // takeover prompt and no claim under a guessed id; proceed, failing open.
+    const [active, mine] = await Promise.all([getActiveDeviceId(), getDeviceId().catch(() => null)]);
+    if (mine === null) {
+      proceed();
+      return;
+    }
     if (active && active !== mine) {
       setBusy(false);
       // 2026-09-11: was Alert.alert, which is a literal NO-OP on react-native-web
@@ -260,6 +267,10 @@ export function AuthScreen({ navigation }: Props) {
     // bug pass 3, 2026-10-01): signing an ACCOUNT out emits SIGNED_OUT, whose
     // identity sync sweeps every `ape:*` key — read after it, the record was
     // already gone, or not, depending on which got to storage first.
+    // A read that FAILED (throws) stops Guest Mode here, in the catch below,
+    // on purpose (wave 2, 2026-10-02): read as "no record", the total wipe
+    // would delete the Finder record it promised to keep. Nothing is wiped
+    // yet, and trying again reads again.
     const finderRecord = await AsyncStorage.getItem('ape:careerfinder:v1');
     markIntentionalSignOut();
     // scope 'local' (bug pass 2, 2026-09-30): leaving THIS device for Guest
@@ -361,7 +372,9 @@ export function AuthScreen({ navigation }: Props) {
         // 'anonymous', which stomped the stored tier on every web reload —
         // the browser-iterate workflow re-paywalled itself each boot. Same
         // web + devBypass gate as the auto-guest itself.
-        const kept = await AsyncStorage.getItem(DEV_ENTITLEMENT_KEY);
+        // A read failed → no tier to restore (dev-only preview tier; the
+        // auto-guest still runs instead of dying as an unhandled rejection).
+        const kept = await AsyncStorage.getItem(DEV_ENTITLEMENT_KEY).catch(() => null);
         await enterGuest();
         if (kept === 'free' || kept === 'academy' || kept === 'lapsed') setEntitlement(kept);
       })();

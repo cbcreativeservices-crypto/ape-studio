@@ -33,6 +33,9 @@ export function isFirstAppOpen(): Promise<boolean> {
   if (!cached) {
     cached = (async () => {
       try {
+        // READ failed → the catch below (wave 2, 2026-10-02, confirmed): the
+        // normal Glossary landing, nothing re-shown, and the flag is NOT
+        // written — the only write follows a read that answered "absent".
         const seen = await AsyncStorage.getItem(FIRST_OPEN_KEY);
         if (seen) return false;
         await AsyncStorage.setItem(FIRST_OPEN_KEY, '1').catch(() => {});

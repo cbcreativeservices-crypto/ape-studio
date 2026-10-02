@@ -28,6 +28,9 @@ test('cymatics gallery: a rename / notes / favourite the device refused is said,
 test('cymatics experiment ticks: a tick before the stored ticks LOAD never writes over them', () => {
   const src = read('src/screens/lab/cymatics/ExperimentWell.tsx');
   const body = src.slice(src.indexOf('const toggle = (i: number)'), src.indexOf('const index = EXPERIMENTS.findIndex'));
-  assert.match(body, /const toggle = \(i: number\) => \{\s*if \(loadedId !== experiment\.id\) return;/);
-  assert.match(body, /setDone\(t\);\s*setLoadedId\(experiment\.id\);/);
+  // Wave 2 (2026-10-02): the ticks are on the shared safe store; a tick still
+  // waits for the stored ticks to land (or for the read to have FAILED, when
+  // the tick is queued onto the stored series, never written over it).
+  assert.match(body, /const toggle = \(i: number\) => \{\s*if \(!ticksReady\) return;/);
+  assert.match(src, /const ticksReady = ticksStore\.useHydrated\(\) \|\| ticksStore\.isUnreadable\(\);/);
 });

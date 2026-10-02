@@ -68,7 +68,10 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
       const seen = await AsyncStorage.getItem(INTRO_STORAGE_PREFIX + key);
       if (alive && seen == null) setVisible(true);
       // A failed read shows nothing — an intro is never worth an unhandled
-      // rejection on every screen that hosts one (bug hunt 2026-09-30).
+      // rejection on every screen that hosts one (bug hunt 2026-09-30). That
+      // is also the safe side for a "seen" flag (wave 2, 2026-10-02,
+      // confirmed): read failed → no intro and no write; only `dismiss` ever
+      // writes the flag, so nothing is re-shown and nothing written over.
     })().catch(() => {});
     return () => {
       alive = false;

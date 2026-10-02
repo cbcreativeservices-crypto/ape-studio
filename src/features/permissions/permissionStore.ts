@@ -35,6 +35,11 @@ export async function getAskMode(cap: CapabilityKey): Promise<AskMode> {
     cache[cap] = mode;
     return mode;
   } catch {
+    // READ failed (wave 2, 2026-10-02, confirmed): answer 'ask' — the
+    // explainer shows, which is the consent-safe side — and cache NOTHING, so
+    // the next call reads again. Nothing is written here; the only writes are
+    // the user's own whole-value choice (setAskMode) and the Settings reset, so
+    // a failed read can never be saved over a stored "always"/"never".
     return 'ask';
   }
 }

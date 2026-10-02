@@ -10,15 +10,15 @@
  * ONLY the per-method settings — is the timer on, which pace, which mode — are
  * device-local, persisted under `ape:pace:<method>` in AsyncStorage.
  *
- * External-store pattern (module map + listeners + useSyncExternalStore), the
- * same shape as lib/footnote.ts, plus lazy AsyncStorage hydration on first use.
+ * The settings live on the shared safe store (features/storage/localStore.ts),
+ * one per method, hydrated lazily on first use.
  *
  * The timer NEVER blocks study: when disabled the store returns a shared
  * default object (zero overhead, no bar rendered).
  */
 import { useCallback } from 'react';
 import { useSyncExternalStore } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore, type LocalStore } from '../storage/localStore';
 
 /** The study methods that carry a pace timer. */
 export type PaceMethodKey =
@@ -71,58 +71,44 @@ export type PaceSettings = { enabled: boolean; preset: PacePreset };
 /** Shared default — stable reference so getSnapshot stays referentially quiet. */
 const DEFAULTS: PaceSettings = { enabled: false, preset: 'quiz' };
 
-const cache = new Map<PaceMethodKey, PaceSettings>();
-const listeners = new Map<PaceMethodKey, Set<() => void>>();
-const hydrated = new Set<PaceMethodKey>();
-// Methods written before their hydrate() read resolved — so the in-flight load
-// (which added to `hydrated` before its await) can't clobber a fresh value with
-// the stale stored one. Owner debug audit.
-const wrote = new Set<PaceMethodKey>();
+/**
+ * ⛔ ON THE SHARED SAFE STORE (wave 2, 2026-10-02 — pattern catalog P1/P2).
+ * One createLocalStore per method key. The hand-rolled store started from the
+ * DEFAULTS when its read THREW and marked itself hydrated, so the next toggle
+ * wrote `{ ...DEFAULTS, enabled }` over the stored record — a chosen pace
+ * (say 2× time) was silently reset to quiz pace by switching the timer on. A
+ * setter used before the read landed did the same, and made the read discard
+ * the stored record (`wrote`). Now a failed read writes nothing, a setter is
+ * applied to the HYDRATED record, and the store's generation is the wipe
+ * fence (it registers itself with the account wipe).
+ */
+const stores = new Map<PaceMethodKey, LocalStore<PaceSettings>>();
 
-const storageKey = (m: PaceMethodKey) => `ape:pace:${m}`;
-/** Bumped by resetLocal — see hydrate. */
-let generation = 0;
-
-function getSettings(m: PaceMethodKey): PaceSettings {
-  return cache.get(m) ?? DEFAULTS;
+function parsePace(parsed: unknown): PaceSettings {
+  if (!parsed || typeof parsed !== 'object') throw new Error('not a pace record');
+  const p = parsed as Partial<PaceSettings>;
+  const preset: PacePreset =
+    typeof p.preset === 'string' && p.preset in SEC_PER_Q ? (p.preset as PacePreset) : DEFAULTS.preset;
+  const enabled = !!p.enabled;
+  // The shared default object when nothing differs (zero overhead, stable).
+  return enabled === DEFAULTS.enabled && preset === DEFAULTS.preset ? DEFAULTS : { enabled, preset };
 }
 
-function emit(m: PaceMethodKey): void {
-  listeners.get(m)?.forEach((l) => l());
-}
-
-function writeSettings(m: PaceMethodKey, next: PaceSettings): void {
-  cache.set(m, next);
-  wrote.add(m);
-  emit(m);
-  void AsyncStorage.setItem(storageKey(m), JSON.stringify(next)).catch(() => {});
-}
-
-/** Lazily load persisted settings the first time a method is observed. */
-async function hydrate(m: PaceMethodKey): Promise<void> {
-  if (hydrated.has(m)) return;
-  hydrated.add(m);
-  const gen = generation;
-  try {
-    const raw = await AsyncStorage.getItem(storageKey(m));
-    if (wrote.has(m) || !raw) return; // a write landed during load — don't clobber
-    // An account wipe landed during load (bug pass 1, 2026-10-01): resetLocal
-    // clears `wrote`, so without this the previous user's settings came back.
-    if (gen !== generation) return;
-    const parsed = JSON.parse(raw) as Partial<PaceSettings>;
-    const preset: PacePreset =
-      typeof parsed.preset === 'string' && parsed.preset in SEC_PER_Q
-        ? (parsed.preset as PacePreset)
-        : DEFAULTS.preset;
-    const next: PaceSettings = { enabled: !!parsed.enabled, preset };
-    // Only publish if it actually differs from the default.
-    if (next.enabled !== DEFAULTS.enabled || next.preset !== DEFAULTS.preset) {
-      cache.set(m, next);
-      emit(m);
-    }
-  } catch {
-    /* corrupt value — fall back to defaults */
+function storeFor(m: PaceMethodKey): LocalStore<PaceSettings> {
+  let s = stores.get(m);
+  if (!s) {
+    s = createLocalStore<PaceSettings>({
+      key: `ape:pace:${m}`,
+      empty: () => DEFAULTS,
+      parse: parsePace,
+    });
+    stores.set(m, s);
   }
+  return s;
+}
+
+function writeSettings(m: PaceMethodKey, patch: Partial<PaceSettings>): void {
+  void storeFor(m).mutate((cur) => ({ ...cur, ...patch }));
 }
 
 /** Subscribe to a method's pace settings; returns settings + setters. */
@@ -131,31 +117,10 @@ export function usePaceSettings(method: PaceMethodKey): {
   setEnabled: (enabled: boolean) => void;
   setPreset: (preset: PacePreset) => void;
 } {
-  const settings = useSyncExternalStore(
-    (cb) => {
-      let set = listeners.get(method);
-      if (!set) {
-        set = new Set();
-        listeners.set(method, set);
-      }
-      set.add(cb);
-      void hydrate(method);
-      return () => {
-        set?.delete(cb);
-      };
-    },
-    () => getSettings(method),
-    () => getSettings(method),
-  );
+  const settings = storeFor(method).use();
 
-  const setEnabled = useCallback(
-    (enabled: boolean) => writeSettings(method, { ...getSettings(method), enabled }),
-    [method],
-  );
-  const setPreset = useCallback(
-    (preset: PacePreset) => writeSettings(method, { ...getSettings(method), preset }),
-    [method],
-  );
+  const setEnabled = useCallback((enabled: boolean) => writeSettings(method, { enabled }), [method]);
+  const setPreset = useCallback((preset: PacePreset) => writeSettings(method, { preset }), [method]);
 
   return { settings, setEnabled, setPreset };
 }
@@ -305,21 +270,18 @@ export function useAutoTrack(method: PaceMethodKey): boolean {
  * subscribers.
  */
 export function resetLocal(): void {
-  generation++;
+  // The persisted settings: each method's safe store (also reached through
+  // its own registration with the wipe — calling it twice is harmless).
+  for (const s of stores.values()) s.reset();
   const methods = new Set<PaceMethodKey>([
-    ...cache.keys(),
     ...runningCache.keys(),
     ...brainCache.keys(),
     ...autoTrackCache.keys(),
   ]);
-  cache.clear();
-  hydrated.clear();
-  wrote.clear();
   runningCache.clear();
   brainCache.clear();
   autoTrackCache.clear();
   for (const m of methods) {
-    emit(m); // settings subscribers
     runningListeners.get(m)?.forEach((l) => l());
     emitBrain(m);
     autoTrackListeners.get(m)?.forEach((l) => l());

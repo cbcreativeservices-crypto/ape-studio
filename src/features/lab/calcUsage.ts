@@ -64,9 +64,33 @@ const LOCAL_KEY = 'ape:calc:usageLocal';
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 type LocalState = { windowStart: number; used: number };
 
-async function readLocal(): Promise<LocalState | null> {
+/**
+ * The device window as last READ or WRITTEN in this app run (wave 2,
+ * 2026-10-02). A read that THREW used to answer "no window" — 0 used — and
+ * the next calculation wrote `{ used: 1 }` over the stored count: a fresh
+ * week of free calculations, and the real window gone. Now an unreadable
+ * device window is never written over: the count goes on in memory from
+ * what this run last knew (or from zero, for this run only), the stored copy
+ * stands, and the next read that succeeds takes over again. Calculators
+ * still never break (the fail-open test/calcUsage.test.ts pins), and a run
+ * whose storage cannot be read is still capped.
+ *
+ * No identity fence: the key is on the account wipe's KEEP list (a rate
+ * limit, not user memory — clearLocalAccountData), so it does not change
+ * hands with the account.
+ */
+let lastKnown: LocalState | null = null;
+
+/** The stored window; `'unreadable'` when the read itself threw. A missing
+ *  or damaged value is "no window" and may be written. */
+async function readLocal(): Promise<LocalState | null | 'unreadable'> {
+  let raw: string | null;
   try {
-    const raw = await AsyncStorage.getItem(LOCAL_KEY);
+    raw = await AsyncStorage.getItem(LOCAL_KEY);
+  } catch {
+    return 'unreadable';
+  }
+  try {
     if (!raw) return null;
     const p = JSON.parse(raw) as Partial<LocalState> | null;
     if (!p || typeof p.windowStart !== 'number' || typeof p.used !== 'number') return null;
@@ -80,42 +104,66 @@ async function writeLocal(s: LocalState): Promise<void> {
   try {
     await AsyncStorage.setItem(LOCAL_KEY, JSON.stringify(s));
   } catch {
-    /* best-effort: a device that cannot persist falls back to the old behaviour */
+    /* best-effort: the in-memory window (lastKnown) carries it for this run */
   }
+}
+
+/** Read-modify-write is serialized: two quick CALCULATE taps offline must
+ *  not both read 2 and both write 3. */
+let localChain: Promise<unknown> = Promise.resolve();
+function serial<T>(run: () => Promise<T>): Promise<T> {
+  const p = localChain.then(run);
+  localChain = p.catch(() => undefined);
+  return p;
 }
 
 /** Spend one credit against the DEVICE window, when the server cannot answer. */
-async function consumeLocal(): Promise<CalcUsage> {
-  const now = Date.now();
-  const cur = await readLocal();
-  // `unavailable` stays TRUE throughout: the UI should still say the count is
-  // provisional, because it is. What changes is that `allowed` can now be false.
-  if (!cur || now - cur.windowStart >= WEEK_MS) {
-    await writeLocal({ windowStart: now, used: 1 });
-    return { used: 1, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(now).toISOString(), allowed: true, unavailable: true };
-  }
-  if (cur.used >= CALC_WEEKLY_LIMIT) {
-    return { used: cur.used, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(cur.windowStart).toISOString(), allowed: false, unavailable: true };
-  }
-  const next = { windowStart: cur.windowStart, used: cur.used + 1 };
-  await writeLocal(next);
-  return { used: next.used, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(cur.windowStart).toISOString(), allowed: true, unavailable: true };
+function consumeLocal(): Promise<CalcUsage> {
+  return serial(async () => {
+    const now = Date.now();
+    const read = await readLocal();
+    const unreadable = read === 'unreadable';
+    // A failed read is NOT "0 used": go on from what this run last knew, and
+    // never write over the stored window.
+    const cur = unreadable ? lastKnown : read;
+    // `unavailable` stays TRUE throughout: the UI should still say the count is
+    // provisional, because it is. What changes is that `allowed` can now be false.
+    if (!cur || now - cur.windowStart >= WEEK_MS) {
+      const next = { windowStart: now, used: 1 };
+      lastKnown = next;
+      if (!unreadable) await writeLocal(next);
+      return { used: 1, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(now).toISOString(), allowed: true, unavailable: true };
+    }
+    if (cur.used >= CALC_WEEKLY_LIMIT) {
+      lastKnown = cur;
+      return { used: cur.used, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(cur.windowStart).toISOString(), allowed: false, unavailable: true };
+    }
+    const next = { windowStart: cur.windowStart, used: cur.used + 1 };
+    lastKnown = next;
+    if (!unreadable) await writeLocal(next);
+    return { used: next.used, limit: CALC_WEEKLY_LIMIT, windowStart: new Date(cur.windowStart).toISOString(), allowed: true, unavailable: true };
+  });
 }
 
-/** Read the device window without spending, when the server cannot answer. */
-async function statusLocal(): Promise<CalcUsage> {
-  const now = Date.now();
-  const cur = await readLocal();
-  if (!cur || now - cur.windowStart >= WEEK_MS) {
-    return { used: 0, limit: CALC_WEEKLY_LIMIT, windowStart: null, allowed: true, unavailable: true };
-  }
-  return {
-    used: cur.used,
-    limit: CALC_WEEKLY_LIMIT,
-    windowStart: new Date(cur.windowStart).toISOString(),
-    allowed: cur.used < CALC_WEEKLY_LIMIT,
-    unavailable: true,
-  };
+/** Read the device window without spending, when the server cannot answer.
+ *  An unreadable window shows what this run last knew, never a reset. */
+function statusLocal(): Promise<CalcUsage> {
+  return serial(async () => {
+    const now = Date.now();
+    const read = await readLocal();
+    if (read !== 'unreadable') lastKnown = read;
+    const cur = lastKnown;
+    if (!cur || now - cur.windowStart >= WEEK_MS) {
+      return { used: 0, limit: CALC_WEEKLY_LIMIT, windowStart: null, allowed: true, unavailable: true };
+    }
+    return {
+      used: cur.used,
+      limit: CALC_WEEKLY_LIMIT,
+      windowStart: new Date(cur.windowStart).toISOString(),
+      allowed: cur.used < CALC_WEEKLY_LIMIT,
+      unavailable: true,
+    };
+  });
 }
 
 /** Spend one credit for a newly revealed calculation. */

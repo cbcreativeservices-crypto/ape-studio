@@ -53,11 +53,11 @@ const EXEMPT: Record<string, string> = {
     'its module-level `chain` is the wipe queue itself (night bug pass 3, 2026-10-01) — a promise that orders the wipes, holding no user data; resetting it from inside a wipe would un-order them',
   'features/account/deviceIdentity.ts':
     'the install id is on the KEEP list by design — it identifies the DEVICE for single-device login, not the person',
-  'features/tools/measure/calibrationStore.ts':
-    'microphone calibration is device hardware (governance R1), not user data',
   'features/intro/onboardingFlow.ts':
     'first-use flags are device-level: a returning or guest user has already seen the tutorials (2026-08-13)',
   'features/lab/amplitudeOrientation.ts': 'same device-level first-use family as onboardingFlow',
+  'features/lab/calcUsage.ts':
+    'the offline calculator meter (ape:calc:usageLocal) is on the KEEP list — a rate limit, not user memory (night bug pass 1, 2026-10-01); its in-memory `lastKnown` window and write chain (wave 2, 2026-10-02) must SURVIVE an account switch for the same reason, or a sign-out would hand out a fresh offline week',
   'features/onboarding/attractStore.ts': 'same device-level first-use family as onboardingFlow',
   'features/review/reviewPrompt.ts':
     'the store-review cooldown is per install — resetting it would let a sign-out re-ask',

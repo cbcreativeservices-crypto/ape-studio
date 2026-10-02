@@ -37,7 +37,7 @@
  * below for the live example that did exactly that. After MAX_TRIES the head is
  * discarded, loudly, and the drain continues.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore } from '../storage/localStore';
 
 const KEY = 'ape:scenarioQueue';
 /**
@@ -81,65 +81,65 @@ export type ScenarioPending = (
   tries?: number;
 };
 
-async function read(): Promise<ScenarioPending[]> {
-  try {
-    const raw = await AsyncStorage.getItem(KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as ScenarioPending[]) : [];
-  } catch {
-    // A corrupt queue must not wedge scenarios forever.
-    return [];
-  }
-}
-
-async function write(items: ScenarioPending[]): Promise<void> {
-  try {
-    await AsyncStorage.setItem(KEY, JSON.stringify(items.slice(0, MAX_PENDING)));
-  } catch (e) {
-    console.warn('[scenario-queue] could not persist:', (e as Error).message);
-  }
-}
+/**
+ * ⛔ ON THE SHARED SAFE STORE (wave 2, 2026-10-02 — pattern catalog P1/P2/P3).
+ *
+ * The hand-rolled `read()` answered `[]` for a read that THREW, the same as an
+ * empty queue — so the next enqueue wrote `[thatOneCall]` over every call
+ * still waiting, and the drain's write-back wrote `[]` over all of them:
+ * graded work the learner was told "will be sent" was deleted from the
+ * device. On createLocalStore a failed read leaves the queue UNREADABLE:
+ * nothing is written, new calls are held in memory and appended to the stored
+ * queue once a read succeeds, and the drain sends nothing (a stored call may
+ * have to go first). A DAMAGED queue (not JSON, not an array) is set aside
+ * under `ape:scenarioQueue:damaged` and the queue starts empty, as before.
+ *
+ * The store's one write chain replaces the old `serial()` lost-update guard:
+ * every change is a mutation of the in-memory queue, applied in order, and
+ * written after it. Its generation is the account-wipe fence: a drain that
+ * started under the departing user stops sending and writes nothing back.
+ */
+const store = createLocalStore<ScenarioPending[]>({
+  key: KEY,
+  empty: () => [],
+  parse: (parsed) => {
+    if (!Array.isArray(parsed)) throw new Error('not a scenario queue');
+    return parsed as ScenarioPending[];
+  },
+  // An empty queue is "nothing saved": the key is removed, as the clear did.
+  serialize: (items) => (items.length > 0 ? JSON.stringify(items.slice(0, MAX_PENDING)) : null),
+});
 
 /**
- * ⛔ EVERY read-modify-write ON THIS KEY GOES THROUGH HERE.
- *
- * The queue is one AsyncStorage key, and `read() → modify → write()` across an
- * await is a lost-update race the moment two of them overlap. They do overlap:
- * `recordScenarioAnswer` is fired per answer without awaiting
- * (ScenariosScreen), and before it queues anything it waits on two network
- * round trips. Offline, those sit in the RPC timeout for SECONDS — long enough
- * for the next answer, or the 3 s auto-advance running into `finishRound`, to
- * arrive. Both would read the same array, both push, both write; last write
- * wins and one answer is gone from disk for good.
- *
- * That is precisely the failure this file was written to prevent, reintroduced
- * one level down: the round report congratulates the learner, the dashboard
- * LED is short by one, and the round can never complete because the server
- * never received that answer.
- *
- * The network send itself is deliberately NOT inside the chain — it is slow,
- * and serialising it would stall every queue write behind a timeout.
+ * How many calls are waiting, for the drain's answer and the "not saved yet"
+ * copy. While the stored queue cannot be read the true count is unknown, so
+ * it is never reported as 0 — "nothing pending" would let a new call jump
+ * ahead of a stored one, and tell the learner their work was sent.
  */
-let tail: Promise<unknown> = Promise.resolve();
-function serial<T>(fn: () => Promise<T>): Promise<T> {
-  const run = tail.then(fn, fn);
-  tail = run.catch(() => undefined);
-  return run;
+function pendingNow(): number {
+  const n = store.get().length;
+  return store.isUnreadable() ? Math.max(1, n) : n;
 }
 
-/** Park a call that did not reach the server. Never throws. */
-export async function queueScenarioCall(item: ScenarioPending): Promise<void> {
-  await serial(async () => {
-    const items = await read();
-    items.push(item);
-    await write(items);
-  });
+/** Park a call that did not reach the server. Never throws. Resolves true only
+ *  when the queue (with this call) is on the device. */
+export async function queueScenarioCall(item: ScenarioPending): Promise<boolean> {
+  const ok = await store.mutate((items) =>
+    // Above the cap the queue sheds the NEWEST (see MAX_PENDING).
+    items.length >= MAX_PENDING ? items : [...items, item],
+  );
+  if (!ok && store.isUnreadable()) {
+    console.warn('[scenario-queue] stored queue unreadable — call held in memory until it can be read');
+  } else if (!ok) {
+    console.warn('[scenario-queue] could not persist');
+  }
+  return ok;
 }
 
 /** How many scenario calls are still unsent — drives the "not saved yet" copy. */
 export async function pendingScenarioCount(): Promise<number> {
-  return (await read()).length;
+  await store.hydrate();
+  return pendingNow();
 }
 
 let draining: Promise<number> | null = null;
@@ -156,13 +156,22 @@ export function drainScenarioQueue(
 ): Promise<number> {
   if (draining) return draining;
   const run = (async () => {
-    const items = await read();
+    const gen = store.generation();
+    await store.hydrate();
+    if (gen !== store.generation()) return 0;
+    // Unreadable: send NOTHING. A call stored before this session may have to
+    // land first, and it cannot be seen.
+    if (!store.isHydrated()) return pendingNow();
+    const items = store.get();
     if (items.length === 0) return 0;
     /** Entries consumed from the head — sent successfully, or given up on. */
     let consumed = 0;
     /** True when we stopped on a failure that is still worth retrying. */
     let stalled = false;
     for (const item of items) {
+      // The account wipe moved on: these rows are the departing user's and
+      // must not be sent under the next session (they carry no user id).
+      if (gen !== store.generation()) return pendingNow();
       let ok = false;
       try {
         ok = await send(item);
@@ -194,16 +203,15 @@ export function drainScenarioQueue(
       );
       consumed++;
     }
+    if (gen !== store.generation()) return pendingNow();
     /**
-     * ⛔ RE-READ, DO NOT WRITE BACK THE STALE TAIL. `items` was read before a
-     *    loop of network calls that can take seconds; anything queued during
-     *    that loop is on disk but not in this array, and `write(items.slice())`
-     *    would erase it. Drop the first `sent` entries from what is CURRENTLY
-     *    stored instead — correct because the queue is only ever appended to
-     *    at the tail and drained from the head.
+     * ⛔ DROP FROM THE QUEUE AS IT IS NOW, NOT THE STALE COPY. Anything queued
+     *    during the loop of network calls is in the store but not in `items`;
+     *    dropping the first `consumed` entries of the CURRENT queue is correct
+     *    because the queue is only ever appended to at the tail and drained
+     *    from the head.
      */
-    return await serial(async () => {
-      const current = await read();
+    await store.mutate((current) => {
       const left = current.slice(consumed);
       /**
        * Persist the failed attempt on the new head, or `tries` never climbs and
@@ -213,9 +221,9 @@ export function drainScenarioQueue(
       if (stalled && left.length > 0) {
         left[0] = { ...left[0], tries: (left[0].tries ?? 0) + 1 };
       }
-      await write(left);
-      return left.length;
+      return left;
     });
+    return pendingNow();
   })().finally(() => {
     draining = null;
   });
@@ -230,16 +238,18 @@ export function drainScenarioQueue(
  * no user: replayed after a sign-out they would land on the NEXT user's
  * account as their scenario progress. The account-wipe registry test caught
  * this file the moment it was added, which is exactly what that guard is for.
+ *
+ * The reset drops the departing user's queue from memory (held calls
+ * included) and fences any drain in flight; the empty queue is then written,
+ * which removes the key once a read succeeds.
  */
 export async function clearScenarioQueue(): Promise<void> {
   draining = null;
-  // Serialised with the rest: a wipe that interleaves with an in-flight enqueue
-  // would leave the departing user's answer sitting in the next user's queue.
-  await serial(async () => {
-    try {
-      await AsyncStorage.removeItem(KEY);
-    } catch (e) {
-      console.warn('[scenario-queue] could not clear:', (e as Error).message);
-    }
-  });
+  store.reset();
+  await store.set([]);
+}
+
+/** The account wipe (also reached through the store's own registration). */
+export function resetLocal(): void {
+  store.reset();
 }

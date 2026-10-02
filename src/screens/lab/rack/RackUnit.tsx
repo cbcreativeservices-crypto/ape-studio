@@ -209,11 +209,17 @@ export function RackUnit({
     let alive = true;
     AsyncStorage.getItem(STAGE_COLLAPSED_KEY)
       .then((v) => {
+        // A toggle made while the read was out is newer than the stored
+        // copy: it wins (wave 2, 2026-10-02 — the read used to land over it,
+        // so the next module opened the way the learner had just undone).
+        if (stageCollapsedCache != null) return;
         stageCollapsedCache = v === '1';
         if (alive && stageCollapsedCache) setStageCollapsed(true);
       })
       .catch(() => {
-        /* a missing pref just means "expanded" */
+        // readFailed: the pref is unknown, not "expanded" — the cache stays
+        // empty so the next module reads again. Nothing is written from it:
+        // the one value is written only by the learner's own toggle.
       });
     return () => {
       alive = false;

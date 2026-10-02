@@ -34,71 +34,61 @@ const STILL_HAND_ROLLED: Record<string, string> = {
   // ── features/account ──────────────────────────────────────────────────
   'features/account/accountLocalSync.ts':
     'the ape:localUserId identity marker: read BEFORE the wipe, written AFTER; a failed read reads as "no marker" on purpose (a change of identity wipes); it is the wipe queue itself',
-  'features/account/deviceIdentity.ts':
-    'the install id (KEEP) — wave 2 HIGH: confirm a failed read cannot mint a NEW id over the stored one (single-device login would see a new device)',
-  // ── features/assess / quiz / study (graded work) ──────────────────────
-  'features/assess/attemptDraft.ts': 'the in-progress exam answer draft (ape:attemptDraft:<id>) — wave 2 HIGH: graded work',
-  'features/quiz/api.ts': 'quiz-side storage — wave 2 HIGH: graded work',
-  'features/study/localProgress.ts': 'the local progress mirror (ape:localMethod:*), wipe-fenced by a count — wave 2 HIGH: study credit',
-  'features/study/scenarioQueue.ts': 'the offline scenario queue — wave 2 HIGH: graded work that replays',
-  'features/study/paceStore.ts': 'per-method pace settings and session tallies, generation-fenced — wave 2 MEDIUM',
-  'features/study/lastStudyLocation.ts':
-    'one value replaced whole on every write (never merged): a failed read shows "nothing recorded" and the next write is a deliberate replacement, so there is no copy to write over — wave 2 LOW',
-  // ── features/audio (safety records) ───────────────────────────────────
-  'features/audio/exposureMonitor.ts': 'the hearing-exposure dose/sessions — wave 2 HIGH: a safety record',
-  'features/audio/soundSafetyAck.ts': 'the hearing-damage warning acceptance — wave 2 HIGH: a safety gate (failing closed = re-ask is the safe side)',
+  // (wave 2, 2026-10-02: deviceIdentity / attemptDraft / quiz api /
+  //  localProgress / scenarioQueue / paceStore / lastStudyLocation are done —
+  //  scenarioQueue, paceStore and lastStudyLocation moved onto the safe store,
+  //  the rest carry the failed-read rule in place; receipts in
+  //  localStoreWave2Study_20261002.)
+  // (wave 2, 2026-10-02: exposureMonitor and soundSafetyAck are done — the
+  //  exposure settings moved onto the safe store, the day record and the
+  //  acknowledgment carry the failed-read rule and a generation fence in
+  //  place; receipts in localStoreWave2Audio_20261002.)
   // ── features/lab / soundsystems (lab records) ─────────────────────────
-  'features/soundsystems/progress.ts': 'the Sound Systems Lab record (faults, capstones), epoch-fenced — wave 2 HIGH: lab progress',
-  'features/lab/calcUsage.ts': 'the offline calculator meter (KEEP) — wave 2 HIGH: a failed read must not read as "0 used" (free calculations)',
-  'features/lab/amplitudeOrientation.ts': 'a device-level first-use flag (kept by the wipe) — wave 2 LOW',
-  // ── features/celebration / curriculum / dashboard / directory ─────────
-  'features/celebration/celebrationSeen.ts': 'the already-celebrated set, generation-fenced — wave 2 MEDIUM',
-  'features/curriculum/academyStats.ts': 'a cache of academy-wide totals — reference data, wave 2 LOW',
-  'features/dashboard/api.ts': 'the dashboard cache — wave 2 LOW',
-  'features/directory/legacyMigration.ts': 'a one-time migration marker — wave 2 LOW',
-  // ── features/settings / permissions / profile / glossary / startHere (device preferences) ──
-  'features/settings/store.ts': 'the local settings record (haptics, mic release, reminders) — wave 2 MEDIUM: a failed read then a save writes defaults over it',
-  'features/settings/lowLight.ts': 'Low-Light Production Mode: a failed read defaulting to OFF is the product-safe direction (nothing is silenced by accident) — wave 2 LOW',
-  'features/permissions/permissionStore.ts': 'per-capability consent "ask mode": a failed read defaulting to ASK is the safe direction — wave 2 LOW',
-  'features/profile/bigPicturePref.ts': 'a display preference (KEEP) — wave 2 LOW',
-  'features/glossary/autoOfflinePref.ts': 'a device preference (KEEP) — wave 2 LOW',
-  'features/startHere/firstOpen.ts': 'the device first-open flag (KEEP) — wave 2 LOW',
-  'features/review/reviewPrompt.ts': 'the store-review cooldown, per install — wave 2 LOW',
-  'features/notifications/localSchedule.ts': 'the device notification schedule, rebuilt from server prefs on every change — wave 2 LOW',
-  'features/intro/ScreenIntroOverlay.tsx': 'intro "seen" flags (device-level, kept by the wipe) — wave 2 LOW',
-  'features/intro/TopicWelcomeSheet.tsx': 'intro "seen" flags (device-level, kept by the wipe) — wave 2 LOW',
-  'components/StudyFsOverlay.tsx': 'the fullscreen-guide "seen" flag (…FsGuide, kept by the wipe) — wave 2 LOW',
-  // ── features/tools (measurements, hardware) ───────────────────────────
-  'features/tools/measure/calibrationStore.ts': 'microphone calibration (KEEP, hardware) — wave 2 MEDIUM: a failed read then a save writes a default over the real calibration',
-  'features/tools/measure/deviceProfile.ts': 'the device profile — wave 2 MEDIUM',
-  'features/tools/measure/measurementsBackend.ts': 'the AsyncStorage→SQLite measurement migration — wave 2 MEDIUM',
+  // (wave 2, 2026-10-02: soundsystems/progress, the screens/lab step stores
+  //  (Cable / Foundations / Mic Selection), the Cymatics experiment ticks and
+  //  the Mixing priorities moved onto the safe store; calcUsage,
+  //  amplitudeOrientation, drumProgress, the Mixing focal point and RackUnit
+  //  carry the failed-read rule in place; receipts in
+  //  localStoreWave2Labs_20261002.)
+  // (wave 2, 2026-10-02: the celebration / curriculum / dashboard api /
+  //  directory / settings / lowLight / permissions / profile / glossary /
+  //  startHere / review / notifications / intro / StudyFsOverlay entries are
+  //  done — celebrationSeen moved onto the safe store, the rest carry the
+  //  failed-read rule in place; receipts in localStoreWave2Prefs_20261002.)
+  // (wave 2, 2026-10-02: calibrationStore and the crowdsource queue in
+  //  deviceProfile moved onto the safe store; deviceProfile's consent flag
+  //  and the web measurementsBackend carry the failed-read rule in place;
+  //  receipts in localStoreWave2Audio_20261002.)
   // ── lib ───────────────────────────────────────────────────────────────
   'lib/authStorage.native.ts': 'the Supabase auth session adapter: supabase-js owns its semantics; it must stay a plain adapter, never a store',
   // ── screens (lab progress kept in the screen) ─────────────────────────
-  'screens/lab/drumtuning/drumProgress.ts':
-    'hand-fixed in the Drum toddler passes under other wording ("from one failed read", a read that answers empty-vs-failed) — wave 2: migrate or add the idiom word',
-  'screens/lab/cable/CableLabScreen.tsx': 'lab progress kept in the screen — wave 2 HIGH (screens/lab folder)',
-  'screens/lab/cymatics/ExperimentWell.tsx': 'experiment ticks kept in the screen — wave 2 HIGH (screens/lab folder)',
-  'screens/lab/foundations/FoundationsCourseScreen.tsx': 'course step progress kept in the screen — wave 2 HIGH (screens/lab folder)',
-  'screens/lab/micselect/MicSelectLabScreen.tsx': 'lab progress kept in the screen — wave 2 HIGH (screens/lab folder)',
-  'screens/lab/mixing/kit.tsx': 'the Mixing labs commitments — wave 2 HIGH (screens/lab folder)',
-  'screens/lab/rack/RackUnit.tsx': 'the "hide the display" reading preference (KEEP) — wave 2 LOW',
-  'screens/study/FlashcardsScreen.tsx': 'study state kept in the screen — wave 2 MEDIUM',
-  'screens/awards/AwardsScreen.tsx': 'awards-screen storage — wave 2 MEDIUM',
-  'screens/dashboard/DashboardScreen.tsx': 'dashboard storage — wave 2 MEDIUM',
-  'screens/auth/AuthScreen.tsx': 'the web-preview auto-guest latch and sign-in flags — wave 2 LOW',
-  'screens/tools/CenterLockTuner.tsx': 'a tuner preference — wave 2 LOW',
+  // (wave 2, 2026-10-02: the Flashcards / Awards / Dashboard / Auth screen
+  //  entries are done — each carries the failed-read rule in place; receipts
+  //  in localStoreWave2Study_20261002.)
+  // (wave 2, 2026-10-02: CenterLockTuner's remembered presets moved onto the
+  //  safe store; receipts in localStoreWave2Audio_20261002.)
 };
 
 /** Files migrated onto the shared safe store on 2026-10-02 — a ratchet
  *  against a quiet return to a hand-rolled read. */
 const ON_SAFE_STORE = [
+  'features/celebration/celebrationSeen.ts',
   'features/dashboard/deckOrderStore.ts',
   'features/enrollment/enrolledBundlesStore.ts',
   'features/enrollment/enrollmentStore.ts',
   'features/flags/flaggedStore.ts',
+  'features/soundsystems/progress.ts',
+  'features/study/lastStudyLocation.ts',
+  'features/study/paceStore.ts',
   'features/study/scenarioExempt.ts',
+  'features/study/scenarioQueue.ts',
   'features/study/termsExempt.ts',
+  'features/tools/measure/calibrationStore.ts',
+  'screens/lab/cable/CableLabScreen.tsx',
+  'screens/lab/cymatics/ExperimentWell.tsx',
+  'screens/lab/foundations/FoundationsCourseScreen.tsx',
+  'screens/lab/micselect/MicSelectLabScreen.tsx',
+  'screens/tools/CenterLockTuner.tsx',
 ];
 
 function walk(dir: string, out: string[] = []): string[] {

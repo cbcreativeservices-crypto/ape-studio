@@ -25,6 +25,22 @@ export const LOW_LIGHT_EXPIRY_MS = 12 * 60 * 60 * 1000; // 12 hours
 let on = false;
 let touchedAt = 0;
 let hydrated = false;
+let hydrating: Promise<void> | null = null;
+/**
+ * The last storage read THREW (wave 2, 2026-10-02). A read that fails is not
+ * "the mode is off": the user may well have it on, in a dark room, mid-show.
+ * The hand-rolled hydrate swallowed the error, called the store hydrated with
+ * the mode OFF, and so let every auto-appearing overlay through. Now a failed
+ * read leaves the store UNHYDRATED (the next mount reads again), the mode keeps
+ * its last known value, and overlay suppression treats "could not be read" as
+ * suppressed (`isLowLightUnreadable`, `useLowLightSuppresses`). The dim wash is
+ * NOT painted on a guess — dimming an app nobody switched on would be its own
+ * surprise; only the auto-appearing overlays hold back.
+ */
+let readFailed = false;
+/** Bumped by `resetLowLight` (the account wipe): a read that was out when the
+ *  wipe ran lands nowhere, rather than restoring the departing user's mode. */
+let lowLightGen = 0;
 const listeners = new Set<() => void>();
 // Fires ONLY when the mode is switched ON by an explicit setLowLight(true) — the
 // user toggling it — NOT when async hydration restores a persisted-on state on
@@ -47,6 +63,11 @@ export function getLowLight(): boolean {
   return on;
 }
 
+/** The stored mode could not be read: overlays must hold back as if it were on. */
+export function isLowLightUnreadable(): boolean {
+  return readFailed;
+}
+
 /**
  * Forget the mode — the account-wipe entry point.
  *
@@ -57,32 +78,61 @@ export function getLowLight(): boolean {
  * (2026-09-17). Re-hydrates to the correct new-user default of OFF.
  */
 export function resetLowLight(): void {
+  lowLightGen += 1;
   on = false;
   touchedAt = 0;
   hydrated = false;
+  hydrating = null;
+  readFailed = false;
   gatePending = false;
   tapTimes = [];
   emit();
 }
 
-async function hydrate(): Promise<void> {
-  if (hydrated) return;
-  try {
-    const raw = await AsyncStorage.getItem(KEY);
+function hydrate(): Promise<void> {
+  if (hydrated) return Promise.resolve();
+  if (hydrating) return hydrating;
+  const gen = lowLightGen;
+  hydrating = (async () => {
+    let raw: string | null;
+    let atRaw: string | null;
+    try {
+      raw = await AsyncStorage.getItem(KEY);
+      atRaw = await AsyncStorage.getItem(KEY_AT);
+    } catch {
+      if (gen !== lowLightGen) return;
+      // READ failed: stay unhydrated (the next mount reads again), keep the
+      // last known mode, and tell the overlays to hold back.
+      readFailed = true;
+      hydrating = null;
+      emit();
+      return;
+    }
+    if (gen !== lowLightGen) return;
+    hydrating = null;
+    readFailed = false;
+    // The user switched the mode while the read was out: their choice is the
+    // value now (and was written) — the older stored copy must not undo it.
+    if (hydrated) return;
+    // absent/garbled → off
     on = raw === '1';
-    const atRaw = await AsyncStorage.getItem(KEY_AT);
     touchedAt = atRaw ? parseInt(atRaw, 10) || 0 : 0;
-  } catch {
-    // absent/corrupt → stays off
-  }
-  hydrated = true;
-  // Cold-launch expiry: if it was left on past the window, revert now.
-  checkLowLightExpiry();
-  emit();
+    hydrated = true;
+    // Cold-launch expiry: if it was left on past the window, revert now.
+    checkLowLightExpiry();
+    emit();
+  })();
+  return hydrating;
 }
 
 export function setLowLight(next: boolean): void {
-  if (on === next) return;
+  // An explicit choice is a KNOWN value, whatever the last read did.
+  readFailed = false;
+  hydrated = true;
+  if (on === next) {
+    emit();
+    return;
+  }
   on = next;
   touchedAt = next ? Date.now() : 0;
   void AsyncStorage.setItem(KEY, next ? '1' : '0').catch(() => {});
@@ -161,6 +211,24 @@ export function useLowLight(): boolean {
   const [snap, setSnap] = useState(on);
   useEffect(() => {
     const l = () => setSnap(on);
+    listeners.add(l);
+    void hydrate().then(l);
+    return () => {
+      listeners.delete(l);
+    };
+  }, []);
+  return snap;
+}
+
+/**
+ * Whether auto-appearing overlays must hold back for Low-Light: the mode is on,
+ * OR its stored value could not be read (the user may have it on). Read by
+ * `useOverlaysSuppressed`; the toggle row keeps `useLowLight`.
+ */
+export function useLowLightSuppresses(): boolean {
+  const [snap, setSnap] = useState(on || readFailed);
+  useEffect(() => {
+    const l = () => setSnap(on || readFailed);
     listeners.add(l);
     void hydrate().then(l);
     return () => {

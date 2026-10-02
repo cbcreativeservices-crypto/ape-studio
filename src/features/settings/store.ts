@@ -16,7 +16,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { hasSafeSession } from '../../lib/getSessionSafe';
-import { requestLocalNotifSync } from '../notifications/localSchedule';
+import { requestLocalNotifSync, setLocalSettingsUnreadable } from '../notifications/localSchedule';
 import { applyA11yFromSettings, resetA11y } from './a11y';
 import { MUTE_ON_LEAVE_DEFAULT, setMuteOnLeave } from '../audio/leaveAppMute';
 
@@ -213,25 +213,113 @@ let settingsGen = 0;
 /** What the latest save wrote (null after a reset = the defaults). */
 let lastWritten: LocalSettings | null = null;
 
-export async function loadLocalSettings(): Promise<LocalSettings> {
-  const gen = settingsGen;
+/**
+ * ⛔ A READ THAT THREW IS NOT "NOTHING SAVED" (wave 2, 2026-10-02).
+ *
+ * The load used to answer DEFAULT_LOCAL_SETTINGS for a read that failed, the
+ * same as for a fresh install. Two things then wrote those defaults over the
+ * real record: the first toggle in Settings (the screen saves the WHOLE object
+ * it was given — one tap put every other setting back to default), and the
+ * boot/tier-change reschedule in EntitlementProvider, which handed the
+ * defaults to the notification scheduler and cancelled every reminder the
+ * user had switched on.
+ *
+ * Now: the load answers the last settings it KNEW (defaults only when it has
+ * never known any) and remembers that the read failed. The scheduler is told
+ * to leave the device schedule alone until a read succeeds. A save made
+ * meanwhile reads again first: if the record is readable now, only the fields
+ * the user actually changed are laid over it; if it is still unreadable the
+ * choice applies for this session and nothing is written over the stored copy.
+ */
+let readFailed = false;
+/** The settings as last read or saved — what the screen was shown. */
+let lastKnown: LocalSettings | null = null;
+
+function parseStored(raw: string | null): LocalSettings {
+  // Absent = a fresh install. Garbled JSON = nothing usable: defaults, as before.
+  if (!raw) return DEFAULT_LOCAL_SETTINGS;
   try {
-    const raw = await AsyncStorage.getItem(KEY);
-    if (gen !== settingsGen) return lastWritten ?? DEFAULT_LOCAL_SETTINGS;
-    const merged = raw ? { ...DEFAULT_LOCAL_SETTINGS, ...JSON.parse(raw) } : DEFAULT_LOCAL_SETTINGS;
-    hapticsOn = merged.haptics;
-    micReleaseOnBg = merged.micReleaseOnBackground;
-    setMuteOnLeave(merged.muteAudioOnLeave);
-    applyA11yFromSettings(merged); // font size / contrast / colour / motion
-    return merged;
+    return { ...DEFAULT_LOCAL_SETTINGS, ...JSON.parse(raw) };
   } catch {
     return DEFAULT_LOCAL_SETTINGS;
   }
 }
 
+/** Lay over `stored` only what differs between `next` and what the screen was
+ *  `shown` — per entry for the two schedule maps. */
+function applyChanges(stored: LocalSettings, shown: LocalSettings, next: LocalSettings): LocalSettings {
+  const out: Record<string, unknown> = { ...stored };
+  const st = stored as unknown as Record<string, unknown>;
+  const sh = shown as unknown as Record<string, unknown>;
+  for (const [k, v] of Object.entries(next)) {
+    if (k === 'notifyFreq' || k === 'notifyTime') {
+      const map = { ...((st[k] as Record<string, string> | undefined) ?? {}) };
+      const was = (sh[k] as Record<string, string> | undefined) ?? {};
+      for (const [e, ev] of Object.entries(v as Record<string, string>)) if (was[e] !== ev) map[e] = ev;
+      out[k] = map;
+    } else if (JSON.stringify(sh[k]) !== JSON.stringify(v)) {
+      out[k] = v;
+    }
+  }
+  return out as LocalSettings;
+}
+
+export async function loadLocalSettings(): Promise<LocalSettings> {
+  const gen = settingsGen;
+  let raw: string | null;
+  try {
+    raw = await AsyncStorage.getItem(KEY);
+  } catch {
+    if (gen !== settingsGen) return lastWritten ?? DEFAULT_LOCAL_SETTINGS;
+    // READ failed — see `readFailed`. The mirrors keep what they hold.
+    readFailed = true;
+    setLocalSettingsUnreadable(true);
+    return lastKnown ?? DEFAULT_LOCAL_SETTINGS;
+  }
+  if (gen !== settingsGen) return lastWritten ?? DEFAULT_LOCAL_SETTINGS;
+  const merged = parseStored(raw);
+  readFailed = false;
+  setLocalSettingsUnreadable(false);
+  lastKnown = merged;
+  try {
+    hapticsOn = merged.haptics;
+    micReleaseOnBg = merged.micReleaseOnBackground;
+    setMuteOnLeave(merged.muteAudioOnLeave);
+    applyA11yFromSettings(merged); // font size / contrast / colour / motion
+  } catch {
+    // a mirror that throws must not turn a good read into a failed one
+  }
+  return merged;
+}
+
 export async function saveLocalSettings(s: LocalSettings): Promise<void> {
   settingsGen += 1;
   lastWritten = s;
+  const gen = settingsGen;
+  if (readFailed) {
+    const shown = lastKnown ?? DEFAULT_LOCAL_SETTINGS;
+    let raw: string | null;
+    try {
+      raw = await AsyncStorage.getItem(KEY);
+    } catch {
+      // Still unreadable: honour the choice for this session, write nothing
+      // over the stored record.
+      if (gen === settingsGen) {
+        hapticsOn = s.haptics;
+        micReleaseOnBg = s.micReleaseOnBackground;
+        setMuteOnLeave(s.muteAudioOnLeave);
+        applyA11yFromSettings(s);
+      }
+      return;
+    }
+    // A newer save (it carries this one's change too) or a reset overtook it.
+    if (gen !== settingsGen) return;
+    s = applyChanges(parseStored(raw), shown, s);
+    lastWritten = s;
+    readFailed = false;
+    setLocalSettingsUnreadable(false);
+  }
+  lastKnown = s;
   hapticsOn = s.haptics;
   micReleaseOnBg = s.micReleaseOnBackground;
   setMuteOnLeave(s.muteAudioOnLeave);
@@ -249,6 +337,9 @@ export async function saveLocalSettings(s: LocalSettings): Promise<void> {
 export function resetLocal(): void {
   settingsGen += 1;
   lastWritten = null;
+  lastKnown = null;
+  readFailed = false;
+  setLocalSettingsUnreadable(false);
   hapticsOn = DEFAULT_LOCAL_SETTINGS.haptics;
   micReleaseOnBg = DEFAULT_LOCAL_SETTINGS.micReleaseOnBackground;
   setMuteOnLeave(DEFAULT_LOCAL_SETTINGS.muteAudioOnLeave);

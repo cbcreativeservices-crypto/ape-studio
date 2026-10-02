@@ -33,6 +33,9 @@ export async function loadShowBigPicture(): Promise<boolean> {
     return (await AsyncStorage.getItem(KEY)) === '1';
   } catch {
     // A storage failure must not reveal the numbers the owner asked us to hide.
+    // READ failed (wave 2, 2026-10-02, confirmed): OFF is the safe side, and
+    // nothing is written from it — the one write is the learner's own toggle,
+    // a whole-value replacement, so no stored choice is ever written over.
     return false;
   }
 }

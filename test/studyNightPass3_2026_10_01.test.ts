@@ -41,8 +41,14 @@ describe('every plain Back is latched to one exit', () => {
 describe('the local progress mirror drops writes that race an account wipe', () => {
   const src = read('src', 'features', 'study', 'localProgress.ts');
   it('save is refused while a clear is running', () => {
-    const save = src.slice(src.indexOf('export async function saveLocalMethodStates('));
-    assert.ok(save.indexOf('if (clearsInFlight > 0) return;') < save.indexOf('AsyncStorage.setItem('));
+    // Shape updated in wave 2 (2026-10-02): the save now merges with the
+    // stored row and answers a boolean; the fence is still checked first, and
+    // again (with the wipe generation) right before the write.
+    const save = src.slice(src.indexOf('export function saveLocalMethodStates('));
+    assert.ok(save.length > 200, 'saveLocalMethodStates not found');
+    const fence = save.indexOf('if (clearsInFlight > 0) return Promise.resolve(false);');
+    assert.ok(fence > 0 && fence < save.indexOf('AsyncStorage.setItem('));
+    assert.match(save, /if \(gen !== wipeGeneration \|\| clearsInFlight > 0\) return false;\s*try \{\s*await AsyncStorage\.setItem\(/);
   });
   it('clear raises the fence before listing keys and always lowers it', () => {
     const clear = src.slice(src.indexOf('export async function clearAllLocalMethodStates('));

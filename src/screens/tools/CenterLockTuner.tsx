@@ -36,11 +36,11 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View, AccessibilityInfo } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../theme/tokens';
 import { hapticsEnabled } from '../../features/settings/store';
+import { createLocalStore } from '../../features/storage/localStore';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { optionalModule } from '../../features/tools/capture/optionalModule';
 import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
@@ -113,6 +113,27 @@ type KeepAwakeLib = { activateKeepAwakeAsync?: (tag?: string) => Promise<void>; 
 type Prefs = { recents: InstrumentKey[]; a4?: number; per?: Partial<Record<InstrumentKey, { tuning: string; capo: number }>> };
 
 const isKey = (k: unknown): k is InstrumentKey => typeof k === 'string' && (INSTRUMENT_KEYS as string[]).includes(k);
+
+/**
+ * Remembered: recents, A4, and tuning/capo per instrument — on the shared
+ * safe store (pattern catalog 2026-10-02, closer A2; wave 2). The screen used
+ * to read the key itself and swallow a failed read: the remembered set stayed
+ * `{ recents: [] }` and the next instrument or capo tap saved that over the
+ * stored recents, A4 and every instrument's tuning. Now a read that throws
+ * leaves the store unreadable and a tap is held and applied on top of the
+ * stored copy once a read succeeds; a tap before the read lands is applied on
+ * top too, never over it.
+ */
+const prefsStore = createLocalStore<Prefs>({
+  key: PREFS_KEY,
+  empty: () => ({ recents: [] }),
+  parse: (raw) => {
+    const parsed = (raw && typeof raw === 'object' ? raw : {}) as Partial<Prefs>;
+    const recents = (Array.isArray(parsed.recents) ? parsed.recents : []).filter(isKey).slice(0, RECENTS_MAX);
+    const per = parsed.per && typeof parsed.per === 'object' ? parsed.per : {};
+    return { recents, a4: typeof parsed.a4 === 'number' ? parsed.a4 : undefined, per };
+  },
+});
 const haptic = (kind: 'success' | 'light') => {
   if (Platform.OS === 'web' || !hapticsEnabled()) return;
   const p = kind === 'success' ? Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -134,79 +155,57 @@ export function CenterLockTuner() {
   const [stretch, setStretch] = useState<StretchKey>('typical');
   const [strobe, setStrobe] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [recents, setRecents] = useState<InstrumentKey[]>([]);
+  const recents = prefsStore.use().recents;
   const inst = INSTRUMENTS[instrument];
   const targets = useMemo(() => buildTargets(instrument, tuningKey, a4, capo, temperament), [instrument, tuningKey, a4, capo, temperament]);
   const transposeSemis = inst.piano ? 0 : TRANSPOSITIONS.find((t) => t.key === transpose)?.semis ?? 0;
   const stretchAmount = STRETCH_LEVELS.find((s) => s.key === stretch)?.amount ?? 1;
 
-  // Remembered: recents, A4, and tuning/capo per instrument. The stored
-  // values only apply while the user has not touched anything yet.
-  const prefs = useRef<Prefs>({ recents: [] });
+  // The stored values only apply while the user has not touched anything yet.
   const chosen = useRef(false);
-  const save = useCallback(() => {
-    AsyncStorage.setItem(PREFS_KEY, JSON.stringify(prefs.current)).catch(() => {});
-  }, []);
   useEffect(() => {
     let alive = true;
-    AsyncStorage.getItem(PREFS_KEY)
-      .then((raw) => {
-        if (!alive || !raw) return;
-        const parsed = JSON.parse(raw) as Partial<Prefs>;
-        const list = (Array.isArray(parsed.recents) ? parsed.recents : []).filter(isKey).slice(0, RECENTS_MAX);
-        const per = parsed.per && typeof parsed.per === 'object' ? parsed.per : {};
-        prefs.current = { recents: chosen.current ? prefs.current.recents : list, a4: parsed.a4, per: { ...per, ...prefs.current.per } };
-        if (chosen.current) return; // the user was faster than the disk
-        setRecents(list);
-        if (typeof parsed.a4 === 'number' && A4_CHOICES.includes(parsed.a4)) setA4(parsed.a4);
-        if (list[0]) {
-          setInstrument(list[0]);
-          const p = per[list[0]];
-          if (p) {
-            setTuningKey(p.tuning);
-            setCapo(p.capo);
-          }
+    void prefsStore.hydrate().then(() => {
+      // A read that failed applies nothing (the store says unreadable).
+      if (!alive || !prefsStore.isHydrated()) return;
+      if (chosen.current) return; // the user was faster than the disk
+      const stored = prefsStore.get();
+      if (typeof stored.a4 === 'number' && A4_CHOICES.includes(stored.a4)) setA4(stored.a4);
+      const first = stored.recents[0];
+      if (first) {
+        setInstrument(first);
+        const p = stored.per?.[first];
+        if (p) {
+          setTuningKey(p.tuning);
+          setCapo(p.capo);
         }
-      })
-      .catch(() => {});
+      }
+    });
     return () => {
       alive = false;
     };
   }, []);
-  const choose = useCallback(
-    (k: InstrumentKey) => {
-      chosen.current = true;
-      const p = prefs.current.per?.[k];
-      setInstrument(k);
-      setTuningKey(p?.tuning ?? 'standard');
-      setCapo(p?.capo ?? 0);
-      setManual(false);
-      setPickerOpen(false);
-      setRecents((r) => {
-        const next = [k, ...r.filter((x) => x !== k)].slice(0, RECENTS_MAX);
-        prefs.current.recents = next;
-        save();
-        return next;
-      });
-    },
-    [save],
-  );
+  const choose = useCallback((k: InstrumentKey) => {
+    chosen.current = true;
+    const p = prefsStore.get().per?.[k];
+    setInstrument(k);
+    setTuningKey(p?.tuning ?? 'standard');
+    setCapo(p?.capo ?? 0);
+    setManual(false);
+    setPickerOpen(false);
+    void prefsStore.mutate((prefs) => ({ ...prefs, recents: [k, ...prefs.recents.filter((x) => x !== k)].slice(0, RECENTS_MAX) }));
+  }, []);
   const rememberSetup = useCallback(
     (tuning: string, c: number) => {
       chosen.current = true;
-      prefs.current.per = { ...prefs.current.per, [instrument]: { tuning, capo: c } };
-      save();
+      void prefsStore.mutate((prefs) => ({ ...prefs, per: { ...prefs.per, [instrument]: { tuning, capo: c } } }));
     },
-    [instrument, save],
+    [instrument],
   );
-  const rememberA4 = useCallback(
-    (v: number) => {
-      chosen.current = true;
-      prefs.current.a4 = v;
-      save();
-    },
-    [save],
-  );
+  const rememberA4 = useCallback((v: number) => {
+    chosen.current = true;
+    void prefsStore.mutate((prefs) => ({ ...prefs, a4: v }));
+  }, []);
 
   // The per-frame machinery lives in <LiveReadout/> below, which subscribes to
   // the pitch store ITSELF — so this parent (preset chips, close key, foot)

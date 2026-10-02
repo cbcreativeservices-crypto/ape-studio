@@ -17,6 +17,7 @@
  * with the true p_submitted_at + p_submitted_offline=true (Code brief §6).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
@@ -151,10 +152,20 @@ function parseStartError(message: string): QuizStartError {
 }
 
 const intentKey = (achievementId: string) => `ape:quizIntent:${achievementId}`;
+/** Bumped by the account wipe (self-registered below): an intent write that
+ *  started under the departing identity lands nowhere. */
+let intentGeneration = 0;
+registerLocalStoreReset(() => {
+  intentGeneration++;
+});
 
 export class QuizStartFailure extends Error {
-  constructor(public code: QuizStartError) {
+  // A plain field, not a parameter property: node --test loads this module
+  // (test/localStoreWave2Study_20261002) and strip-only TypeScript has none.
+  code: QuizStartError;
+  constructor(code: QuizStartError) {
     super(code);
+    this.code = code;
   }
 }
 
@@ -170,18 +181,33 @@ export async function startQuizAttempt(achievementId: string): Promise<AttemptPa
   // over a write that only affects resuming. Storage failure on this app is
   // proven, not hypothetical (the SQLITE_FULL incident, 2026-09-11). Losing the
   // id costs resume; refusing to start costs the exam.
+  //
+  // ⛔ A READ THAT FAILED IS NOT "NO INTENT" (wave 2, 2026-10-02). It minted a
+  // fresh id and setItem'd it OVER the stored one, so the attempt in progress
+  // (and its answer draft) could never be rejoined again, on any later launch.
+  // The read is tried twice; if it still fails this start uses a fresh id for
+  // this run only and the stored one is left for the next launch to resume.
+  // Fenced by the account wipe: a start in flight across a sign-out must not
+  // write the departing user's intent into the next user's storage.
+  const gen = intentGeneration;
   let intentId: string | null = null;
-  try {
-    intentId = await AsyncStorage.getItem(intentKey(achievementId));
-  } catch {
-    intentId = null;
+  let readFailed = true;
+  for (let i = 0; i < 2 && readFailed; i++) {
+    try {
+      intentId = await AsyncStorage.getItem(intentKey(achievementId));
+      readFailed = false;
+    } catch {
+      intentId = null;
+    }
   }
   if (!intentId) {
     intentId = Crypto.randomUUID();
-    try {
-      await AsyncStorage.setItem(intentKey(achievementId), intentId);
-    } catch {
-      /* resume convenience only — the attempt still starts */
+    if (!readFailed && gen === intentGeneration) {
+      try {
+        await AsyncStorage.setItem(intentKey(achievementId), intentId);
+      } catch {
+        /* resume convenience only — the attempt still starts */
+      }
     }
   }
   /**

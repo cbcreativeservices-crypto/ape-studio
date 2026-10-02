@@ -126,10 +126,14 @@ test('enrolled bundles: a hydrate in flight across resetLocal does not restore o
 });
 
 test('last study location: resetLocal fences an in-flight hydrate', () => {
+  // Moved onto the shared safe store in wave 2 (2026-10-02): its hydrate is
+  // generation-fenced (test/localStore.test.ts, "P3"), resetLocal is the
+  // store's reset, and no hand-rolled read is left. Behaviour:
+  // test/localStoreWave2Study_20261002.test.ts.
   const src = read('features', 'study', 'lastStudyLocation.ts');
-  assert.match(src, /const gen = generation;/);
-  assert.match(src, /if \(gen !== generation\) return;/);
-  assert.match(src, /export function resetLocal\(\): void \{\s*generation\+\+;/);
+  assert.match(src, /createLocalStore</);
+  assert.match(src, /export function resetLocal\(\): void \{\s*store\.reset\(\);/);
+  assert.doesNotMatch(src, /AsyncStorage\.getItem\(/);
 });
 
 test('time trial: a credit call in flight during the wipe does not arm a retry for the next account', async () => {

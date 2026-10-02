@@ -43,7 +43,11 @@ test('Ear training: a guest\'s ladder is neither restored nor written (ape:ear:v
 test('Mixing: a guest\'s focal point and priorities are never written', () => {
   const s = read('src/screens/lab/mixing/kit.tsx');
   assert.match(s, /if \(!guestRef\.current\) void AsyncStorage\.setItem\(FOCAL_KEY/);
-  assert.match(s, /if \(!guestRef\.current\) void AsyncStorage\.setItem\(PRIORITIES_KEY/);
+  // Wave 2 (2026-10-02): the priorities are on the shared safe store; a
+  // guest's toggle edits the session list and RETURNS before the store write.
+  const toggle = s.slice(s.indexOf('const toggle = useCallback((id: string) => {'));
+  assert.match(toggle, /^const toggle = useCallback\(\(id: string\) => \{\s*if \(guestRef\.current\) \{[\s\S]*?prioritiesSession = togglePriority\([^\n]*\n[\s\S]*?return;\s*\}/);
+  assert.ok(toggle.indexOf('return;') < toggle.indexOf('prioritiesStore.mutate('), 'the store write must come after the guest return');
   assert.equal((s.match(/guestRef\.current = useLabEndGuest\(\);/g) ?? []).length, 2);
 });
 

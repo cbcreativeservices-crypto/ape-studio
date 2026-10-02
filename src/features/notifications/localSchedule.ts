@@ -49,11 +49,30 @@ const CHANNEL_ID = 'reminders';
 const K_PHONE_MASTER = 'ape:notif:phoneEnabled';
 
 export async function phoneNotificationsEnabled(): Promise<boolean> {
+  return (await readPhoneMaster()) ?? true;
+}
+
+/** The master switch, or null when the READ failed (wave 2, 2026-10-02): the
+ *  scheduler must not mistake "could not read" for "on" and re-book reminders
+ *  the user silenced. */
+async function readPhoneMaster(): Promise<boolean | null> {
   try {
     return (await AsyncStorage.getItem(K_PHONE_MASTER)) !== '0';
   } catch {
-    return true;
+    return null;
   }
+}
+
+/**
+ * The settings record could not be read (store.ts sets this; wave 2,
+ * 2026-10-02). The settings the scheduler would be handed are then a stand-in
+ * (the defaults, all reminders off), and a rebuild from them cancels every
+ * reminder the user switched on. While it is set, a sync leaves the device
+ * schedule exactly as it is.
+ */
+let settingsUnreadable = false;
+export function setLocalSettingsUnreadable(v: boolean): void {
+  settingsUnreadable = v;
 }
 
 /**
@@ -218,14 +237,17 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
   const N = getNotifications();
   if (!N) return;
   if (syncing) return; // a sync is a full rebuild — overlapping runs double-book
+  // Read failed upstream: the settings are a stand-in — touch nothing.
+  if (settingsUnreadable) return;
   syncing = true;
   try {
+    // The master switch gates EVERYTHING this device schedules. Off => the
+    // sweep below cancels what exists and nothing is re-booked. A READ that
+    // failed is neither: leave the schedule as it is and try again next sync.
+    const phoneOn = await readPhoneMaster();
+    if (phoneOn == null) return;
     lastSlice = notifSlice(s);
     lastFullSyncAt = Date.now();
-
-    // The master switch gates EVERYTHING this device schedules. Off => the
-    // sweep below cancels what exists and nothing is re-booked.
-    const phoneOn = await phoneNotificationsEnabled();
     // MEMBERS ONLY (owner 2026-09-01): a definite non-member books nothing —
     // the sweep above the gate cancels whatever exists. 'unknown' (cold boot
     // racing the entitlement fetch) leaves a member's books alone; the
@@ -325,14 +347,24 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
     if (s.notifyNewTerms) {
       const { hour, minute } = hhmm(s.notifyTime.notifyNewTerms, '09:00');
       let pending: { n: number; fireAt: number } | null = null;
+      // A READ that failed is not "nothing pending" (wave 2, 2026-10-02): it
+      // used to fall through to the removeItem below and delete the pending
+      // shot, or rewrite it with only this sync's rise. Unreadable = leave the
+      // record and the stored count alone; the next sync counts the rise.
+      let pendingReadFailed = false;
+      let pendingRaw: string | null = null;
       try {
-        const raw = await AsyncStorage.getItem(K_PENDING_NEW_TERMS);
-        if (raw) pending = JSON.parse(raw);
-        if (pending && pending.fireAt <= Date.now()) pending = null; // already fired
+        pendingRaw = await AsyncStorage.getItem(K_PENDING_NEW_TERMS);
       } catch {
-        pending = null;
+        pendingReadFailed = true;
       }
       try {
+        if (pendingRaw) pending = JSON.parse(pendingRaw);
+        if (pending && pending.fireAt <= Date.now()) pending = null; // already fired
+      } catch {
+        pending = null; // garbled: nothing usable to keep
+      }
+      if (!pendingReadFailed) try {
         const { data: cnt } = await supabase.rpc('get_glossary_term_count');
         const count = Number(cnt);
         if (Number.isFinite(count) && count > 0) {
@@ -346,7 +378,9 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
       } catch {
         /* offline — keep any pending as-is */
       }
-      if (pending) {
+      if (pendingReadFailed) {
+        // see above — nothing written, nothing deleted
+      } else if (pending) {
         await AsyncStorage.setItem(K_PENDING_NEW_TERMS, JSON.stringify(pending));
         add(
           `${ID_PREFIX}newTerms`,

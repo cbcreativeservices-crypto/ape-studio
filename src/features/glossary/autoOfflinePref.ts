@@ -25,6 +25,9 @@ export async function autoOfflineEnabled(): Promise<boolean> {
     // Anything other than an explicit '0' is on, so a corrupt value fails ON.
     return (await AsyncStorage.getItem(AUTO_OFFLINE_KEY)) !== '0';
   } catch {
+    // READ failed (wave 2, 2026-10-02, confirmed): ON, per the rule above, and
+    // nothing is written from it — the one write is the member's own switch,
+    // a whole-value replacement, so a stored '0' is never written over.
     return true;
   }
 }

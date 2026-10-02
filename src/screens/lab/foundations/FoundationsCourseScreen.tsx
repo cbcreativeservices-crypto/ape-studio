@@ -40,7 +40,6 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -60,6 +59,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
@@ -74,6 +74,17 @@ import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 
 const STEP_KEY = 'ape:fosStep';
+/** The resume point, on the shared safe store (pattern catalog 2026-10-02,
+ *  wave 2): a read that THREW restores nothing and nothing is written over
+ *  the stored place until a read succeeds (a step chosen meanwhile is written
+ *  then); a read in flight across the account wipe lands nowhere. Stored as
+ *  the bare number, as before. */
+const stepStore = createLocalStore<number | null>({
+  key: STEP_KEY,
+  empty: () => null,
+  parse: (p) => (typeof p === 'number' && Number.isInteger(p) && p >= 0 ? p : null),
+  serialize: (n) => (n == null ? null : String(n)),
+});
 const ACTIVITY_MS = 500;
 
 /** Slowed visual rate for a given audio frequency — the conceptual model's
@@ -2113,8 +2124,8 @@ export function FoundationsCourseScreen() {
   }, []);
 
   // Resume where the student left off (device-local; freely open, not graded).
-  // The restore is DROPPED if the student already navigated before AsyncStorage
-  // resolved — their tap wins over the stored position.
+  // The restore is DROPPED if the student already navigated before the stored
+  // step loaded — their tap wins over the stored position.
   const navigatedRef = useRef(false);
   // Wait for `resolved` before restoring (bug pass 3 2026-09-30, the PagedLab
   // rule): a read that landed while the tier was still unknown saw
@@ -2123,16 +2134,17 @@ export function FoundationsCourseScreen() {
   useEffect(() => {
     if (!resolved) return;
     let alive = true;
-    void AsyncStorage.getItem(STEP_KEY).then((v) => {
+    void stepStore.hydrate().then(() => {
       if (!alive) return;
       if (navigatedRef.current) return; // the user's own tap already won
       if (noAccountRef.current) return; // no account: always begin at the first step
-      const n = v == null ? NaN : Number(v);
-      if (Number.isInteger(n) && n > 0 && n < STEPS.length) {
+      if (!stepStore.isHydrated()) return; // the read failed: nothing to resume
+      const n = stepStore.get();
+      if (n != null && n > 0 && n < STEPS.length) {
         tone.stop(); // never carry a step-0 tone into the resumed step
         setStep(n);
       }
-    }).catch(() => {});
+    });
     return () => {
       alive = false;
     };
@@ -2153,7 +2165,7 @@ export function FoundationsCourseScreen() {
       setEnding(false);
       setStep(n);
       // Persist the place only for registered accounts — guests never resume.
-      if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n)).catch(() => {});
+      if (!noAccountRef.current) void stepStore.set(n);
     },
     [tone],
   );

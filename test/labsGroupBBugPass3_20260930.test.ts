@@ -60,9 +60,11 @@ test('Tuning, Sound Systems, Cable, Cable Install, Mic Selection restores wait f
   assert.match(ss, /\}, \[labId, pagesWithCheck\.length, resolved(, isGuest)?\]\);/);
 
   const cable = read('src/screens/lab/cable/CableLabScreen.tsx');
-  assert.match(cable, /if \(!resolved\) return;\n\s*void AsyncStorage\.getItem\(STEP_KEY\)/);
+  // Wave 2 (2026-10-02): the step is on the shared safe store; the restore
+  // still waits for the tier.
+  assert.match(cable, /if \(!resolved\) return;\n\s*void stepStore\.hydrate\(\)/);
   const mic = read('src/screens/lab/micselect/MicSelectLabScreen.tsx');
-  assert.match(mic, /if \(!resolved\) return;\n\s*void AsyncStorage\.getItem\(STEP_KEY\)/);
+  assert.match(mic, /if \(!resolved\) return;\n\s*void stepStore\.hydrate\(\)/);
   const ci = read('src/screens/lab/cableinstall/CableInstallLabScreen.tsx');
   assert.match(ci, /if \(!resolved \|\| noAccountRef\.current\) return;/);
 });
@@ -84,7 +86,8 @@ test('Amp and Ear training: progress is read only once the tier is known', () =>
 test('Mixing: a guest is never shown the stored focal point / priorities', () => {
   const s = read('src/screens/lab/mixing/kit.tsx');
   assert.match(s, /return \[guestRef\.current \? focalSession : focalCurrent, set\];/);
-  assert.match(s, /return \[guestRef\.current \? \(prioritiesSession \?\? \[\]\) : prioritiesCurrent, toggle\];/);
+  // Wave 2 (2026-10-02): the stored list is the shared safe store's value.
+  assert.match(s, /return \[guestRef\.current \? \(prioritiesSession \?\? \[\]\) : stored, toggle\];/);
   // an account wipe forgets the session copies too
   const reset = s.slice(s.indexOf('export function resetMixingCommitments'), s.indexOf('export function useFocalChoice'));
   assert.match(reset, /focalSession = null;/);

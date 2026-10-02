@@ -741,8 +741,11 @@ describe('roomDesignStore', () => {
 describe('Cymatics experiment tick-offs', () => {
   it('a guest’s ticks are held (guestOnly) and written back after the sign-in wipe', () => {
     const s = read('src/screens/lab/cymatics/ExperimentWell.tsx');
-    assert.match(s, /holdSessionWork<HeldTicks>\(CARRY_KEY, \(prev\) => withHeldTick\(prev, experiment\.id, i, !d\.includes\(i\)\), \{ guestOnly: true \}\);/);
-    assert.match(s, /registerSessionCarry<HeldTicks>\(CARRY_KEY, async \(held\) => \{\s*let raw: string \| null;\s*try \{\s*raw = await AsyncStorage\.getItem\(TICKS_KEY\);\s*\} catch \{\s*return false;/);
+    assert.match(s, /holdSessionWork<HeldTicks>\(CARRY_KEY, \(prev\) => withHeldTick\(prev, experiment\.id, i, on\), \{ guestOnly: true \}\);/);
+    // Wave 2 (2026-10-02): the writer merges into the shared safe store's
+    // HYDRATED series — never over ticks that could not be read (it answers
+    // false then, and the ledger tries again).
+    assert.match(s, /registerSessionCarry<HeldTicks>\(CARRY_KEY, \(held\) => ticksStore\.mutate\(\(all\) => mergeHeldTicks\(all, held\)\)\);/);
   });
 });
 

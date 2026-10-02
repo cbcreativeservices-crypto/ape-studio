@@ -69,9 +69,36 @@ export type SoundSafetyRecord = {
   userId: string | null;
 };
 
+
 /** In-memory mirror so a guard can read this synchronously, like the gate does. */
 let cached: SoundSafetyRecord | null = null;
 let loaded = false;
+let loading: Promise<SoundSafetyRecord | null> | null = null;
+/**
+ * THE LAST READ OF THE RECORD THREW (pattern catalog 2026-10-02, P1; wave 2).
+ *
+ * A read that failed is NOT "this person never accepted". The store stays
+ * unloaded (`loaded` false) so the next `loadSoundSafetyAck()` reads again;
+ * until a read succeeds, `isAcknowledged()` answers false.
+ *
+ * THE SAFE DIRECTION, CHOSEN ON PURPOSE: a failed read RE-ASKS. Showing the
+ * warning to someone who already accepted it costs one tap; skipping it for
+ * someone who never did costs their hearing and leaves no record. The one
+ * write this module makes is a whole new acceptance, made by the person
+ * holding the phone after reading the CURRENT text — writing it over a copy
+ * that could not be read loses nothing it does not supersede (a version bump
+ * replaces the record the same way). Nothing is ever written FROM the empty
+ * placeholder a failed read leaves behind.
+ */
+let readFailed = false;
+/**
+ * Bumped by `resetSoundSafetyAck()` (the account wipe). A read or a write
+ * that started under the departing person lands nowhere: a load in flight
+ * across the wipe used to put the previous person's acceptance back in
+ * `cached`, and the next person got sound with no warning and no record of
+ * their own — the unsafe direction.
+ */
+let generation = 0;
 
 /** The one place that decides whether the warning still needs showing. */
 export function isAcknowledged(): boolean {
@@ -83,36 +110,78 @@ export function acknowledgment(): SoundSafetyRecord | null {
   return cached;
 }
 
+/** True while the stored record could not be read (the warning is shown
+ *  again until it can — see `readFailed`). */
+export function isSoundSafetyAckUnreadable(): boolean {
+  return readFailed;
+}
+
+function isRecord(v: unknown): v is SoundSafetyRecord {
+  // A record without the fields that make it a record is not one.
+  const r = v as SoundSafetyRecord | null;
+  return r != null && typeof r === 'object' && typeof r.version === 'number' && typeof r.acceptedAt === 'string';
+}
+
 /**
  * Read the record once at app start. Corruption-safe in the house idiom
  * (patternStore / projectStore): a row that will not parse is MOVED to a
  * `:damaged` key rather than deleted, so nothing that might have been evidence
- * is destroyed by a parse error.
+ * is destroyed by a parse error. A read that THROWS is different: nothing is
+ * moved or written, and the next call reads again (see `readFailed`).
  */
-export async function loadSoundSafetyAck(): Promise<SoundSafetyRecord | null> {
-  if (loaded) return cached;
-  loaded = true;
-  try {
-    const raw = await AsyncStorage.getItem(KEY);
-    if (!raw) return null;
+export function loadSoundSafetyAck(): Promise<SoundSafetyRecord | null> {
+  if (loaded) return Promise.resolve(cached);
+  if (loading) return loading;
+  const gen = generation;
+  const p = (async (): Promise<SoundSafetyRecord | null> => {
+    let raw: string | null;
     try {
-      const parsed = JSON.parse(raw) as SoundSafetyRecord;
-      // A record without the fields that make it a record is not one.
-      if (typeof parsed?.version === 'number' && typeof parsed?.acceptedAt === 'string') {
-        cached = parsed;
-        return cached;
-      }
-      await AsyncStorage.setItem(DAMAGED_KEY, raw);
-      await AsyncStorage.removeItem(KEY);
+      raw = await AsyncStorage.getItem(KEY);
     } catch {
-      await AsyncStorage.setItem(DAMAGED_KEY, raw);
-      await AsyncStorage.removeItem(KEY);
+      if (gen !== generation) return null;
+      // READ failed: storage unavailable. Stay unloaded — the warning shows
+      // again (the safe direction) and the next load reads again.
+      readFailed = true;
+      loading = null;
+      return null;
     }
-  } catch {
-    // Storage unavailable. Returning null means the warning shows again, which
-    // is the safe direction to fail in.
-  }
-  return null;
+    if (gen !== generation) return null;
+    let record: SoundSafetyRecord | null = null;
+    if (raw) {
+      let parsed: unknown = null;
+      let ok = false;
+      try {
+        parsed = JSON.parse(raw);
+        ok = isRecord(parsed);
+      } catch {
+        ok = false;
+      }
+      if (ok) {
+        record = parsed as SoundSafetyRecord;
+      } else {
+        // Park it, then drop the original — only once it is parked, so a
+        // failed park never destroys the only copy.
+        try {
+          await AsyncStorage.setItem(DAMAGED_KEY, raw);
+          if (gen === generation) await AsyncStorage.removeItem(KEY);
+        } catch {
+          // best-effort: the original stays where it was
+        }
+      }
+    }
+    if (gen !== generation) return null;
+    readFailed = false;
+    loading = null;
+    // An acceptance recorded while this read was out is newer than anything
+    // the read found — never replace it with the older copy.
+    if (!loaded) {
+      cached = record;
+      loaded = true;
+    }
+    return cached;
+  })();
+  loading = p;
+  return p;
 }
 
 /**
@@ -121,7 +190,8 @@ export async function loadSoundSafetyAck(): Promise<SoundSafetyRecord | null> {
  * Returns false if it could not be persisted — and the CALLER MUST NOT enable
  * sound on a false. An acknowledgment that was not recorded did not happen, and
  * silently proceeding would leave sound enabled with no evidence anyone agreed
- * to anything.
+ * to anything. Also false when the account changed while it was being written:
+ * that acceptance was the departing person's, and the next one is asked.
  */
 export async function recordSoundSafetyAck(input: {
   text: string;
@@ -135,14 +205,24 @@ export async function recordSoundSafetyAck(input: {
     appVersion: input.appVersion,
     userId: input.userId,
   };
+  const gen = generation;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(record));
-    cached = record;
-    loaded = true;
-    return true;
   } catch {
     return false;
   }
+  if (gen !== generation) {
+    // The wipe ran while this was being written. Its sweep may already be
+    // past, so the departing person's acceptance would sit on disk for the
+    // next one — take it back (best-effort; at worst the next person is
+    // asked again, which is the safe direction).
+    await AsyncStorage.removeItem(KEY).catch(() => {});
+    return false;
+  }
+  cached = record;
+  loaded = true;
+  readFailed = false;
+  return true;
 }
 
 /**
@@ -159,10 +239,16 @@ export async function recordSoundSafetyAck(input: {
  * record of exactly what text a person accepted before sound was allowed, and
  * no record was written for B at all - so the one person who actually used the
  * app has no acceptance on file.
+ *
+ * It also bumps the generation (2026-10-02), so a read or write still in
+ * flight from A cannot land after it.
  */
 export function resetSoundSafetyAck(): void {
+  generation++;
   cached = null;
   loaded = false;
+  loading = null;
+  readFailed = false;
 }
 
 /** Test seam, kept as the name the existing tests import. */

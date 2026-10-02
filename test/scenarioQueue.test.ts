@@ -32,7 +32,7 @@ registerHooks({
 });
 (globalThis as Record<string, unknown>).__FAKE_ASYNC_STORAGE__ = store;
 
-const { queueScenarioCall, drainScenarioQueue, pendingScenarioCount, clearScenarioQueue } = await import(
+const { queueScenarioCall, drainScenarioQueue, pendingScenarioCount, clearScenarioQueue, resetLocal } = await import(
   '../src/features/study/scenarioQueue.ts'
 );
 
@@ -43,6 +43,9 @@ const complete = (round: number) => ({ kind: 'complete', achievementId: 'a1', ro
 describe('scenario queue', () => {
   beforeEach(async () => {
     store.clear();
+    // The queue is on the shared safe store (wave 2, 2026-10-02) and keeps the
+    // hydrated queue in memory: each test starts from a fresh read.
+    resetLocal();
   });
 
   it('keeps work that could not be sent', async () => {

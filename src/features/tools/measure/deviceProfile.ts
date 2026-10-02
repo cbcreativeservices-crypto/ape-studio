@@ -29,6 +29,7 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import Constants from 'expo-constants';
+import { createLocalStore } from '../../storage/localStore';
 import type { DspInfo } from '../../../../modules/ape-dsp';
 
 /** Bump when the record/contribution shape or capture semantics change — the
@@ -189,7 +190,9 @@ export function makeContribution(args: {
 // ── Consent (opt-in, default OFF) ──────────────────────────────────────────
 
 /** Whether the user has opted in to contribute anonymized calibration data.
- *  Default false. Checked again at upload time (a queued item is not consent). */
+ *  Default false. Checked again at upload time (a queued item is not consent).
+ *  A READ failed answers false — "not opted in" — which is the safe direction
+ *  for consent (nothing is queued or uploaded); nothing is written from it. */
 export async function hasCrowdsourceConsent(): Promise<boolean> {
   try {
     return (await AsyncStorage.getItem(CONSENT_KEY)) === '1';
@@ -222,54 +225,66 @@ export async function setCrowdsourceConsent(on: boolean): Promise<void> {
 
 // ── Local contribution queue (no network) ──────────────────────────────────
 
+/**
+ * The queue is on the shared safe store (pattern catalog 2026-10-02, closer
+ * A2; wave 2). Every writer here is read-modify-write, and the read used to
+ * answer `[]` for a read that FAILED: the next calibration then saved a
+ * one-row queue over every contribution waiting for upload, and a drain's
+ * removeQueuedContributions turned the empty copy into a removeItem of the
+ * whole queue. Now a read that throws leaves the queue unreadable: writes are
+ * held (never computed from the empty placeholder) and land on top of the
+ * stored queue after the next read that succeeds. A queue that will not
+ * parse is set aside under `ape:crowdsource:queue:damaged`. The account wipe
+ * reaches it through the store's registered reset (generation fence).
+ */
+function isContribution(c: unknown): c is CalibrationContribution {
+  const x = c as CalibrationContribution | null;
+  return x != null && typeof x === 'object' && typeof x.contributionId === 'string' && x.deviceKey != null && typeof x.deviceKey === 'object';
+}
+
+const queueStore = createLocalStore<CalibrationContribution[]>({
+  key: QUEUE_KEY,
+  empty: () => [],
+  parse: (parsed) => {
+    if (!Array.isArray(parsed)) throw new Error('crowdsource queue is not a list');
+    return parsed.filter(isContribution);
+  },
+  // An empty queue is "nothing queued": the key is removed, as before.
+  serialize: (q) => (q.length === 0 ? null : JSON.stringify(q)),
+});
+
 /** Queue a contribution locally. No-op unless the user has opted in — we never
- *  even STORE a contribution without consent. Returns whether it was queued. */
+ *  even STORE a contribution without consent. Returns whether it was queued
+ *  (true only when the device accepted the write). */
 export async function queueContribution(c: CalibrationContribution): Promise<boolean> {
   if (!(await hasCrowdsourceConsent())) return false;
-  try {
-    const q = await getQueuedContributions();
-    q.push(c);
+  return queueStore.mutate((q) => {
     // Keep only the most recent per device key (a fresh calibration supersedes
     // the user's earlier one — we contribute their CURRENT belief, not a history).
     const byKey = new Map<string, CalibrationContribution>();
-    for (const item of q) byKey.set(keyString(item.deviceKey), item);
-    await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify([...byKey.values()]));
-    return true;
-  } catch {
-    return false;
-  }
+    for (const item of [...q, c]) byKey.set(keyString(item.deviceKey), item);
+    return [...byKey.values()];
+  });
 }
 
+/** The queue as stored (with any held writes on top). Empty while the stored
+ *  queue cannot be read — nothing is uploaded, and nothing is written over it. */
 export async function getQueuedContributions(): Promise<CalibrationContribution[]> {
-  try {
-    const raw = await AsyncStorage.getItem(QUEUE_KEY);
-    const parsed: unknown = raw ? JSON.parse(raw) : null;
-    return Array.isArray(parsed) ? (parsed as CalibrationContribution[]) : [];
-  } catch {
-    return [];
-  }
+  await queueStore.hydrate();
+  return queueStore.isHydrated() ? queueStore.get() : [];
 }
 
 /** Remove only these contributions (the ones just uploaded or discarded) —
  *  anything queued WHILE the upload was in flight survives for the next drain. */
 export async function removeQueuedContributions(ids: readonly string[]): Promise<void> {
   if (ids.length === 0) return;
-  try {
-    const drop = new Set(ids);
-    const left = (await getQueuedContributions()).filter((c) => !drop.has(c.contributionId));
-    if (left.length === 0) await AsyncStorage.removeItem(QUEUE_KEY);
-    else await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(left));
-  } catch {
-    /* best-effort — a leftover row is deduped server-side on retry */
-  }
+  const drop = new Set(ids);
+  // best-effort — a leftover row is deduped server-side on retry
+  await queueStore.mutate((q) => (q.some((c) => drop.has(c.contributionId)) ? q.filter((c) => !drop.has(c.contributionId)) : q));
 }
 
 export async function clearContributionQueue(): Promise<void> {
-  try {
-    await AsyncStorage.removeItem(QUEUE_KEY);
-  } catch {
-    /* best-effort */
-  }
+  await queueStore.set([]);
 }
 
 /** Stable string form of a device key for de-duplication/bucketing. */

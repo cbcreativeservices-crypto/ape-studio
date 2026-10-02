@@ -51,13 +51,20 @@ export function StudyFsOverlay({
 
   useEffect(() => {
     guideLoaded.current = false;
+    guideCount.current = 0; // this key's count, not the previous key's
     // .catch: an AsyncStorage read CAN reject; unguarded it was an unhandled
-    // rejection. A failed read just leaves the count at 0 (guide shows again).
+    // rejection. READ failed (wave 2, 2026-10-02): the guide counts as
+    // RETIRED for this mount. It used to count from 0, show the guide, and
+    // write "1" over a stored "2" — so a storage hiccup brought a retired
+    // guide back, twice more, every time. Now nothing shows and nothing is
+    // written; the next mount reads again.
     AsyncStorage.getItem(guideKey)
       .then((v) => {
         if (v) guideCount.current = Number(v) || 0;
       })
-      .catch(() => {})
+      .catch(() => {
+        guideCount.current = 2;
+      })
       .finally(() => {
         guideLoaded.current = true;
       });

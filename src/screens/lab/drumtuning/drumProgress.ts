@@ -26,6 +26,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
+import { registerLocalStoreReset } from '../../../features/storage/localStoreRegistry';
 import { DRUM_CHAPTERS, type DrumChapterId, type TuningNote } from './drumContent';
 
 const KEY = 'ape:drumtuning:v1';
@@ -144,13 +145,24 @@ async function save(s: DrumProgressState, force = false): Promise<boolean> {
 /** Serialized read-modify-write: two writers in one tap never clobber each
  *  other through a stale copy. */
 let queue: Promise<unknown> = Promise.resolve();
+/** The identity generation (wave 2, 2026-10-02): bumped by the account wipe
+ *  (registered with it below). An update tapped under the departing account
+ *  that runs — or writes — after the wipe lands nowhere: it used to read the
+ *  departing account's copy before the sweep and save it back after it, or
+ *  apply the departing learner's tap to the next account's copy. */
+let generation = 0;
+registerLocalStoreReset(() => {
+  generation++;
+});
 function runUpdate(mutate: (s: DrumProgressState) => void): Promise<{ state: DrumProgressState; saved: boolean; blocked: boolean }> {
+  const gen = generation;
   const run = queue.then(async () => {
     const blocked = saveBlocked;
-    const { state: s, ok } = await readStore();
+    const { state: s, ok: readOk } = await readStore();
     mutate(s);
-    // Never write over a copy that could not be read (see readStore).
-    const saved = ok ? await save(s) : false;
+    // Never write over a copy that could not be read (see readStore), and
+    // never across the account wipe.
+    const saved = readOk && gen === generation ? await save(s) : false;
     // Blocked (a guest, or the tier not known yet): the same change lands on
     // the session copy the ledger holds for the sign-in hand-off.
     if (blocked) holdSessionWork<DrumProgressState>(CARRY_KEY, (prev) => {
@@ -237,9 +249,10 @@ export function mergeDrumProgress(stored: DrumProgressState, session: DrumProgre
 // the stored copy whatever the screen's save flag says (the ledger writes
 // only for a real account), and never over a copy that could not be read.
 registerSessionCarry<DrumProgressState>(CARRY_KEY, (session) => {
+  const gen = generation;
   const run = queue.then(async () => {
     const { state, ok } = await readStore(true);
-    if (!ok) return false;
+    if (!ok || gen !== generation) return false;
     return save(mergeDrumProgress(state, session), true);
   });
   queue = run.catch(() => undefined);

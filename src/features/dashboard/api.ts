@@ -113,6 +113,9 @@ export async function getLastTopic(courseId: string): Promise<{ id: string } | {
     const n = Number(v);
     return Number.isFinite(n) && n >= 0 ? { index: Math.floor(n) } : null;
   } catch {
+    // READ failed (wave 2, 2026-10-02, confirmed): "nothing saved" is right for
+    // a resume convenience — the next move REPLACES the one value whole, so
+    // there is no stored copy for a failed read to be written over.
     return null; // resume convenience only
   }
 }

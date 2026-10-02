@@ -88,6 +88,14 @@ export async function getActiveDeviceId(): Promise<string | null> {
 export async function isDisplaced(): Promise<boolean> {
   const active = await getActiveDeviceId();
   if (!active) return false; // no active device on record → don't act
-  const mine = await getDeviceId();
+  // An install id that could not be READ is unknown, not different (wave 2,
+  // 2026-10-02): getDeviceId rejects rather than mint a new id, and an
+  // unknown id must never sign this device out.
+  let mine: string;
+  try {
+    mine = await getDeviceId();
+  } catch {
+    return false;
+  }
   return active !== mine;
 }

@@ -35,6 +35,7 @@ import { frameIsLive } from '../tools/engine/useDspEngine';
 import { isAudioOutputEnabled, isMicActive } from './audioOutputStore';
 import { getSplCalibration } from '../tools/measure/calibrationStore';
 import { areOverlaysSuppressed } from '../dev/popupSuppressStore';
+import { createLocalStore } from '../storage/localStore';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -115,6 +116,10 @@ export type ExposureSnapshot = {
    *  it was the measured source (Phase 1 A1): the integrated dose spanned a gap,
    *  so it's an under-estimate — disclosed, never silently trusted. */
   hadGap: boolean;
+  /** Today's stored dose could not be read (storage failed). The figures
+   *  above are this run's listening only, held and ADDED to the stored day
+   *  once a read succeeds — never a reset to zero. */
+  doseUnreadable: boolean;
   settings: ExposureSettings;
 };
 
@@ -186,9 +191,50 @@ const DAY_KEY = (date: string) => `ape:exposure:v1:day:${date}`;
 const INDEX_KEY = 'ape:exposure:v1:days';
 const RETAIN_DAYS = 45;
 
-let settings: ExposureSettings = { ...DEFAULT_SETTINGS };
+/**
+ * The settings live on the shared safe store (pattern catalog 2026-10-02,
+ * closer A2; wave 2). A read that FAILED used to leave the defaults in place,
+ * and the next settings change saved defaults-plus-that-change over the
+ * user's standard, reference level and check-in choices. Now a failed read
+ * leaves the store unreadable: the monitor runs on the DEFAULTS meanwhile —
+ * tracking ON, every warning ON, the recommended standard, which is the safe
+ * direction for a hearing-safety tool — and a change made meanwhile is held
+ * and written on top of the stored settings once a read succeeds.
+ */
+const settingsStore = createLocalStore<ExposureSettings>({
+  key: SETTINGS_KEY,
+  empty: () => ({ ...DEFAULT_SETTINGS }),
+  parse: (raw) => {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('exposure settings are not an object');
+    return { ...DEFAULT_SETTINGS, ...(raw as Partial<ExposureSettings>) };
+  },
+});
+/** The settings as the monitor should apply them right now. */
+const cfg = (): ExposureSettings => settingsStore.get();
+
 let day: DayRecord | null = null;
 let hydrated = false;
+let hydrating: Promise<void> | null = null;
+/**
+ * ⛔ TODAY'S STORED DOSE COULD NOT BE READ (pattern catalog 2026-10-02, P1).
+ *
+ * A failed read used to start a FRESH day — dose 0 % — and the 15-second
+ * flush then wrote that fresh day over the stored one: a listener at 90 % of
+ * their daily dose was told they were at 0 %, and the record of the morning
+ * was gone for good. For a hearing-safety figure that is the worst direction
+ * there is (an under-report turns off the warnings that matter).
+ *
+ * Now a read that throws leaves the day UNREADABLE: this run's listening is
+ * still tracked (exposure is never ignored) in a held day, nothing is written
+ * over the stored copy, the flush reads again instead of writing, and the
+ * first read that succeeds ADDS the held listening to the stored day. The
+ * snapshot says so (`doseUnreadable`) so a screen can say "earlier listening
+ * could not be read" rather than show a confident low number.
+ */
+let dayReadFailed = false;
+/** Bumped by resetLocal (the account wipe). A read or write that started under
+ *  the departing listener lands nowhere (the generation fence, catalog P3). */
+let generation = 0;
 
 let sounding = false;
 let soundingStreak = 0; // consecutive active ticks (2 needed to open a session)
@@ -252,10 +298,13 @@ function freshDay(date: string): DayRecord {
  * resetAllLocalStores() alongside every other persisted store.
  */
 export function resetLocal(): void {
-  settings = { ...DEFAULT_SETTINGS };
+  generation++; // a read or write still in flight for the departing listener lands nowhere
+  settingsStore.reset(); // (the registry also reaches it; a second reset is harmless)
   day = null;
   session = null;
   hydrated = false; // hydrate() is latched — must clear or the re-seed no-ops
+  hydrating = null;
+  dayReadFailed = false;
   sounding = false;
   soundingStreak = 0;
   pendingSec = 0;
@@ -272,52 +321,136 @@ export function resetLocal(): void {
   void hydrate(); // re-seed a fresh day from the (now cleared) storage
 }
 
-async function hydrate(): Promise<void> {
-  if (hydrated) return;
-  hydrated = true;
-  try {
-    const [rawS, rawIdx] = await Promise.all([AsyncStorage.getItem(SETTINGS_KEY), AsyncStorage.getItem(INDEX_KEY)]);
-    if (rawS) settings = { ...DEFAULT_SETTINGS, ...(JSON.parse(rawS) as Partial<ExposureSettings>) };
+/** A stored day, with any missing field filled (records from older builds
+ *  lack 'environmental'). THROWS for a blob that is not a day at all. */
+function parseDay(raw: unknown, date: string): DayRecord {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('not a day record');
+  const r = raw as Partial<DayRecord>;
+  const base = freshDay(date);
+  return {
+    ...base,
+    ...r,
+    date,
+    routeSec: { ...base.routeSec, ...(r.routeSec && typeof r.routeSec === 'object' ? r.routeSec : {}) },
+    sessions: Array.isArray(r.sessions) ? r.sessions : [],
+  };
+}
+
+/** The stored day plus the listening held while it could not be read. Time,
+ *  dose and energy ADD (they are integrals over separate seconds); peaks take
+ *  the larger. */
+function mergeDays(stored: DayRecord, held: DayRecord): DayRecord {
+  const routeSec = { ...stored.routeSec };
+  for (const k of Object.keys(held.routeSec) as RouteKey[]) routeSec[k] = (routeSec[k] ?? 0) + (held.routeSec[k] ?? 0);
+  return {
+    date: stored.date,
+    activeSec: stored.activeSec + held.activeSec,
+    dose: stored.dose + held.dose,
+    maxDb: Math.max(stored.maxDb, held.maxDb),
+    energySum: stored.energySum + held.energySum,
+    routeSec,
+    checkins: stored.checkins + held.checkins,
+    warnings: stored.warnings + held.warnings,
+    sessions: [...stored.sessions, ...held.sessions].sort((a, b) => a.startMs - b.startMs).slice(-60),
+    longestSessionSec: Math.max(stored.longestSessionSec, held.longestSessionSec),
+  };
+}
+
+function hydrate(): Promise<void> {
+  if (hydrated) return Promise.resolve();
+  if (hydrating) return hydrating;
+  const gen = generation;
+  hydrating = (async () => {
+    await settingsStore.hydrate(); // its own failed-read rule (see settingsStore)
+    if (gen !== generation) return;
     const today = dateKeyOf(new Date());
-    const rawDay = await AsyncStorage.getItem(DAY_KEY(today));
-    day = rawDay ? (JSON.parse(rawDay) as DayRecord) : freshDay(today);
-    // prune old days beyond retention
-    if (rawIdx) {
-      const idx = JSON.parse(rawIdx) as string[];
-      const keep = idx.filter((d) => d >= dateKeyOf(new Date(Date.now() - RETAIN_DAYS * 86400000)));
-      const drop = idx.filter((d) => !keep.includes(d));
-      if (drop.length) {
-        await Promise.all(drop.map((d) => AsyncStorage.removeItem(DAY_KEY(d))));
-        await AsyncStorage.setItem(INDEX_KEY, JSON.stringify(keep));
+    let rawDay: string | null;
+    try {
+      rawDay = await AsyncStorage.getItem(DAY_KEY(today));
+    } catch {
+      if (gen !== generation) return;
+      // READ failed — NOT "no listening today". Track this run in a held day
+      // (a held day from before midnight cannot be merged into today and is
+      // dropped with its date), write nothing, read again on the next flush.
+      dayReadFailed = true;
+      if (!day || day.date !== today) day = freshDay(today);
+      hydrating = null;
+      emitState();
+      return;
+    }
+    if (gen !== generation) return;
+    let stored: DayRecord | null = null;
+    if (rawDay != null) {
+      try {
+        stored = parseDay(JSON.parse(rawDay), today);
+      } catch {
+        // Damaged, not unreadable: set aside, never silently discarded.
+        void AsyncStorage.setItem(`${DAY_KEY(today)}:damaged`, rawDay).catch(() => {});
       }
     }
+    // Listening held while the stored day could not be read is ADDED to it.
+    const held = day && day.date === today ? day : null;
+    day = stored && held ? mergeDays(stored, held) : stored ?? held ?? freshDay(today);
+    dayReadFailed = false;
+    hydrated = true;
+    hydrating = null;
+    emitState();
+    if (held) void persistDay(true);
+    void pruneOldDays(gen);
+  })();
+  return hydrating;
+}
+
+/** Drop days beyond retention. Best-effort; an index that cannot be read
+ *  writes nothing. */
+async function pruneOldDays(gen: number): Promise<void> {
+  try {
+    const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
+    if (gen !== generation || !rawIdx) return;
+    const idx = JSON.parse(rawIdx) as string[];
+    if (!Array.isArray(idx)) return;
+    const keep = idx.filter((d) => d >= dateKeyOf(new Date(Date.now() - RETAIN_DAYS * 86400000)));
+    const drop = idx.filter((d) => !keep.includes(d));
+    if (drop.length) {
+      await Promise.all(drop.map((d) => AsyncStorage.removeItem(DAY_KEY(d))));
+      if (gen !== generation) return;
+      await AsyncStorage.setItem(INDEX_KEY, JSON.stringify(keep));
+    }
   } catch {
-    day = day ?? freshDay(dateKeyOf(new Date()));
+    /* best-effort */
   }
-  emitState();
 }
 
 async function persistDay(force = false): Promise<void> {
-  if (!day || !settings.saveHistory) return;
+  if (!day || !cfg().saveHistory) return;
   const now = Date.now();
   if (!force && now - lastPersistMs < 15000) return; // batch writes
   lastPersistMs = now;
+  if (!hydrated) {
+    // The stored day was never read (or the read FAILED): writing now would
+    // put this run's listening OVER it. Read again instead — a successful
+    // read adds the held listening to the stored day and writes both.
+    void hydrate();
+    return;
+  }
+  const gen = generation;
+  const d = day;
   try {
-    await AsyncStorage.setItem(DAY_KEY(day.date), JSON.stringify(day));
+    await AsyncStorage.setItem(DAY_KEY(d.date), JSON.stringify(d));
+    if (gen !== generation) return;
+    // The index is read-modify-write too: a read that fails writes nothing.
     const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
-    const idx = rawIdx ? (JSON.parse(rawIdx) as string[]) : [];
-    if (!idx.includes(day.date)) {
-      idx.push(day.date);
+    if (gen !== generation) return;
+    const parsed: unknown = rawIdx ? JSON.parse(rawIdx) : [];
+    const idx = Array.isArray(parsed) ? (parsed as string[]) : [];
+    if (!idx.includes(d.date)) {
+      idx.push(d.date);
       idx.sort();
       await AsyncStorage.setItem(INDEX_KEY, JSON.stringify(idx));
     }
   } catch {
     /* persistence is best-effort; live monitoring continues */
   }
-}
-
-function persistSettings(): void {
-  void AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)).catch(() => {});
 }
 
 /** Close the open session into the day record. */
@@ -361,6 +494,7 @@ function rollDayIfNeeded(): void {
  *  field-calibrated). Max, never a sum: two simultaneous sources are one
  *  acoustic exposure, never two listening durations (§30). */
 function readSources(): { active: boolean; db: number | null; rt: RouteKey; measured: boolean; micGap: boolean } {
+  const settings = cfg();
   // ── Output (playback) ──
   let outDbfs = -Infinity;
   if (ApeDsp.isAvailable()) {
@@ -418,6 +552,7 @@ function readSources(): { active: boolean; db: number | null; rt: RouteKey; meas
 
 /** One 1 s tick of the monitor. */
 function tick(): void {
+  const settings = cfg();
   if (!settings.enabled || !day) return;
   rollDayIfNeeded();
   const now = Date.now();
@@ -556,7 +691,7 @@ function stopTimer(): void {
  *  store's emit fires on BOTH output-enable and mic-active changes, so the one
  *  subscribeAudioOutput hook re-evaluates for both. */
 function evaluateArm(): void {
-  if (settings.enabled && appActive && (isAudioOutputEnabled() || isMicActive())) startTimer();
+  if (cfg().enabled && appActive && (isAudioOutputEnabled() || isMicActive())) startTimer();
   else stopTimer();
 }
 
@@ -587,6 +722,7 @@ export function initExposureMonitor(subscribeOutput: (cb: () => void) => void): 
 // ── Public API ───────────────────────────────────────────────────────────────
 
 export function getExposureSnapshot(): ExposureSnapshot {
+  const settings = cfg();
   const d = day;
   const avg = d && d.activeSec > 0 ? Math.round(10 * Math.log10(d.energySum / d.activeSec) * 10) / 10 : null;
   let remaining: number | null = null;
@@ -627,6 +763,7 @@ export function getExposureSnapshot(): ExposureSnapshot {
     remainingSec: remaining,
     checkinsToday: d?.checkins ?? 0,
     hadGap: sessionHadGap,
+    doseUnreadable: dayReadFailed,
     settings,
   };
 }
@@ -645,11 +782,13 @@ export function onExposureCheckin(cb: (kind: CheckinKind, snap: ExposureSnapshot
   };
 }
 
-export function updateExposureSettings(patch: Partial<ExposureSettings>): void {
-  settings = { ...settings, ...patch };
-  persistSettings();
+/** Applied on top of the stored settings (held until they have been read).
+ *  Resolves true only when the device accepted the write. */
+export function updateExposureSettings(patch: Partial<ExposureSettings>): Promise<boolean> {
+  const written = settingsStore.mutate((s) => ({ ...s, ...patch }));
   evaluateArm();
   emitState();
+  return written;
 }
 
 export async function getExposureHistory(): Promise<DayRecord[]> {
@@ -673,7 +812,17 @@ export async function deleteExposureToday(): Promise<void> {
   session = null;
   approachingFiredToday = false;
   reachedFiredToday = false;
-  await AsyncStorage.removeItem(DAY_KEY(today)).catch(() => {});
+  const gen = generation;
+  const removed = await AsyncStorage.removeItem(DAY_KEY(today)).then(
+    () => true,
+    () => false,
+  );
+  // The user deleted today on purpose: once the stored copy is really gone,
+  // there is nothing left to read, so an unreadable day is settled.
+  if (removed && gen === generation && dayReadFailed && !hydrating) {
+    dayReadFailed = false;
+    hydrated = true;
+  }
   emitState();
 }
 
@@ -693,7 +842,7 @@ export async function deleteExposureHistory(): Promise<void> {
 export async function exportExposureHistory(): Promise<string> {
   const rows = await getExposureHistory();
   return JSON.stringify(
-    { exported: new Date().toISOString(), standard: settings.standard, note: 'Educational exposure estimates — not medical or compliance measurements.', days: rows },
+    { exported: new Date().toISOString(), standard: cfg().standard, note: 'Educational exposure estimates — not medical or compliance measurements.', days: rows },
     null,
     2,
   );

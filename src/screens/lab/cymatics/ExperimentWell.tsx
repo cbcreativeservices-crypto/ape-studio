@@ -18,65 +18,48 @@
  * Teaching order is unchanged: PREDICT first, steps as tick-off rows, LOOK FOR
  * only on reveal.
  */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { StackActions, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { colors, fonts } from '../../../theme/tokens';
 import { EXPERIMENTS, experimentRoute, type Experiment } from '../../../features/cymatics/presets';
 import type { RootStackParamList } from '../../../navigation/types';
 import { goToCymatics } from './goToCymatics';
 import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
+import { createLocalStore } from '../../../features/storage/localStore';
 
 /* ── tick-off persistence ───────────────────────────────────────────────────
-   One key for the whole series, `{ [experimentId]: number[] }`. Never throws:
-   a device that cannot persist simply behaves as it did before. Swept by
-   clearLocalAccountData's `ape:*` rule, so it does not follow an account
-   switch. */
+   One key for the whole series, `{ [experimentId]: number[] }`, on the shared
+   safe store (pattern catalog 2026-10-02, wave 2). A read that THREW is not
+   an empty series: nothing is written over it until a read succeeds — it
+   used to show no ticks, and the next tap saved `[i]` over that experiment's
+   stored ticks once a later read worked. A tick is applied to the HYDRATED
+   series (queued until the read lands); a read in flight across the account
+   wipe lands nowhere. A damaged blob is set aside and the series starts
+   empty. Swept by clearLocalAccountData's `ape:*` rule, so it does not follow
+   an account switch. */
 const TICKS_KEY = 'ape:cymatics:experimentTicks:v1';
+type HeldTicks = Record<string, number[]>;
+const NO_TICKS: readonly number[] = [];
 
-async function readAllTicks(): Promise<Record<string, number[]>> {
-  try {
-    const raw = await AsyncStorage.getItem(TICKS_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    return parsed && typeof parsed === 'object' ? (parsed as Record<string, number[]>) : {};
-  } catch {
-    return {};
-  }
-}
-
-async function loadTicks(id: string): Promise<number[]> {
-  const all = await readAllTicks();
-  const t = all[id];
-  return Array.isArray(t) ? t.filter((n) => typeof n === 'number') : [];
-}
-
-async function saveTicks(id: string, ticks: number[]): Promise<void> {
-  // A read that THREW is not an empty store (full-app run 1, 2026-10-01):
-  // readAllTicks answers {} for it, and writing `{ [id]: ticks }` back wiped
-  // every OTHER experiment's tick-offs. Only a damaged blob starts empty.
-  let raw: string | null;
-  try {
-    raw = await AsyncStorage.getItem(TICKS_KEY);
-  } catch {
-    return; // never written over ticks that could not be read
-  }
-  try {
-    let all: Record<string, number[]> = {};
-    try {
-      const parsed = raw ? (JSON.parse(raw) as unknown) : {};
-      if (parsed && typeof parsed === 'object') all = parsed as Record<string, number[]>;
-    } catch {
-      /* damaged → start empty, like a load */
+const ticksStore = createLocalStore<HeldTicks>({
+  key: TICKS_KEY,
+  empty: () => ({}),
+  parse: (parsed) => {
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('not a tick series');
+    const all: HeldTicks = {};
+    for (const [id, t] of Object.entries(parsed as Record<string, unknown>)) {
+      if (Array.isArray(t)) all[id] = t.filter((n): n is number => typeof n === 'number');
     }
-    all[id] = ticks;
-    await AsyncStorage.setItem(TICKS_KEY, JSON.stringify(all));
-  } catch {
-    /* best-effort */
-  }
+    return all;
+  },
+});
+
+/** Pure: experiment `id`'s ticks with step `i` ticked (`on`) or unticked. */
+function withTick(cur: readonly number[], i: number, on: boolean): number[] {
+  return on ? (cur.includes(i) ? [...cur] : [...cur, i]) : cur.filter((k) => k !== i);
 }
 
 /* ── the sign-in hand-off (owner ruling 2026-10-01) ─────────────────────────
@@ -85,41 +68,26 @@ async function saveTicks(id: string, ticks: number[]): Promise<void> {
    the shared ledger (features/lab/sessionCarry, `guestOnly`: an account's own
    ticks need no carrying) and written back after the sign-in's wipe. A tick
    taken off again in the session is let go of too. */
-type HeldTicks = Record<string, number[]>;
 const CARRY_KEY = 'cymatics:ticks';
 
 /** Pure: the held ticks after one tick (`on`) or untick of step `i`. */
 export function withHeldTick(prev: HeldTicks | undefined, id: string, i: number, on: boolean): HeldTicks {
-  const cur = prev?.[id] ?? [];
-  const next = on ? (cur.includes(i) ? cur : [...cur, i]) : cur.filter((k) => k !== i);
-  return { ...prev, [id]: next };
+  return { ...prev, [id]: withTick(prev?.[id] ?? [], i, on) };
 }
 
-registerSessionCarry<HeldTicks>(CARRY_KEY, async (held) => {
-  let raw: string | null;
-  try {
-    raw = await AsyncStorage.getItem(TICKS_KEY);
-  } catch {
-    return false; // never written over ticks that could not be read
+/** Pure: the stored series plus the held ticks — each experiment a union. */
+export function mergeHeldTicks(all: HeldTicks, held: HeldTicks): HeldTicks {
+  const out = { ...all };
+  for (const [id, ticks] of Object.entries(held)) {
+    const cur = Array.isArray(out[id]) ? out[id] : [];
+    out[id] = [...new Set([...cur, ...ticks])];
   }
-  try {
-    let all: Record<string, number[]> = {};
-    try {
-      const parsed = raw ? (JSON.parse(raw) as unknown) : {};
-      if (parsed && typeof parsed === 'object') all = parsed as Record<string, number[]>;
-    } catch {
-      /* damaged → start empty, like a load */
-    }
-    for (const [id, ticks] of Object.entries(held)) {
-      const cur = Array.isArray(all[id]) ? all[id] : [];
-      all[id] = [...new Set([...cur, ...ticks])];
-    }
-    await AsyncStorage.setItem(TICKS_KEY, JSON.stringify(all));
-    return true;
-  } catch {
-    return false;
-  }
-});
+  return out;
+}
+
+// Merged into the HYDRATED series — never over ticks that could not be read;
+// true only when the device took the write.
+registerSessionCarry<HeldTicks>(CARRY_KEY, (held) => ticksStore.mutate((all) => mergeHeldTicks(all, held)));
 
 export function ExperimentWell({ experiment }: { experiment: Experiment }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -132,38 +100,23 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
    * with no memory is not a course, it is a pile: the learner cannot answer
    * "where was I?", which is the question that decides whether they come back.
    */
-  const [done, setDone] = useState<number[]>([]);
+  const all = ticksStore.use();
+  const done = all[experiment.id] ?? NO_TICKS;
   const [revealed, setRevealed] = useState(false);
   /** Has the learner committed to a prediction? See the PREDICT card below. */
   const [committed, setCommitted] = useState(false);
   const [open, setOpen] = useState(true);
-  /** The experiment whose stored ticks have LANDED (full-app run 2,
-   *  2026-10-01): a tick tapped before the read landed wrote `[i]` over the
-   *  experiment's stored ticks, and the load then showed the old list while
-   *  the device kept only the one tick. Ticks wait for the read. */
-  const [loadedId, setLoadedId] = useState<string | null>(null);
+  /** The stored ticks have LANDED (full-app run 2, 2026-10-01): a tick decides
+   *  on or off from what the learner SEES, so it waits for the read — or for
+   *  the read to have FAILED, when the tick is applied to the stored series
+   *  once a read succeeds (never written over it; a lab never locks). */
+  const ticksReady = ticksStore.useHydrated() || ticksStore.isUnreadable();
   const toggle = (i: number) => {
-    if (loadedId !== experiment.id) return;
-    setDone((d) => {
-      const next = d.includes(i) ? d.filter((k) => k !== i) : [...d, i];
-      void saveTicks(experiment.id, next);
-      holdSessionWork<HeldTicks>(CARRY_KEY, (prev) => withHeldTick(prev, experiment.id, i, !d.includes(i)), { guestOnly: true });
-      return next;
-    });
+    if (!ticksReady) return;
+    const on = !done.includes(i);
+    void ticksStore.mutate((a) => ({ ...a, [experiment.id]: withTick(a[experiment.id] ?? [], i, on) }));
+    holdSessionWork<HeldTicks>(CARRY_KEY, (prev) => withHeldTick(prev, experiment.id, i, on), { guestOnly: true });
   };
-
-  // Load this experiment's ticks whenever the well switches experiment.
-  useEffect(() => {
-    let alive = true;
-    void loadTicks(experiment.id).then((t) => {
-      if (!alive) return;
-      setDone(t);
-      setLoadedId(experiment.id);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [experiment.id]);
 
   const index = EXPERIMENTS.findIndex((e) => e.id === experiment.id);
   const prev = index > 0 ? EXPERIMENTS[index - 1] : undefined;

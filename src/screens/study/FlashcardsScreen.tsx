@@ -405,6 +405,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const [reviewMode, setReviewMode] = useState(false);
   const [showFsGuide, setShowFsGuide] = useState(false);
   const fsGuideCount = useRef(0);
+  // The guide counter's read failed: the count is unknown, so it is not
+  // written (a 1 over a stored 2 would replay the guide). Wave 2, 2026-10-02.
+  const fsGuideReadFailed = useRef(false);
   const fsReviewed = useRef(0);
   // Long-press a filter chip → list all its terms (Booth 2026-07-11). Only the
   // list KEY is stored — rows are computed LIVE at render (2026-07-18 fix:
@@ -439,9 +442,17 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const coach = useCoachMark('ape:coach:flashcards', 5);
 
   const session = useRef<StudySession | null>(null);
+  /**
+   * The stored hidden list could not be READ this visit (wave 2, 2026-10-02).
+   * The screen then shows the server-seeded default, and a hide/unhide here
+   * must not write that guess over the learner's stored list — so the list is
+   * session-only until the next visit reads it.
+   */
+  const hiddenReadFailed = useRef(false);
 
   const persistHidden = useCallback(
     (next: Set<string>) => {
+      if (hiddenReadFailed.current) return;
       void AsyncStorage.setItem(hiddenKey(achievementId), JSON.stringify([...next])).catch(() => {});
     },
     [achievementId],
@@ -455,6 +466,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     let alive = true;
+    hiddenReadFailed.current = false;
     (async () => {
       try {
         // Custom List pseudo-topic (user request 2026-07-18): items = the ★
@@ -470,10 +482,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             : safeSession(supabase.auth.getSession(), 'Flashcards')
                 .then(({ data }) => (isRealAccount(data.session) ? loadLocalMethodStates(achievementId, 'flashcards') : null))
                 .catch(() => null),
-          AsyncStorage.getItem(hiddenKey(achievementId)),
-          AsyncStorage.getItem(SECTIONS_KEY),
-          AsyncStorage.getItem(SHOW_MEDIA_KEY),
-          AsyncStorage.getItem(SHOW_LINKS_KEY),
+          // Each device read is guarded ON ITS OWN (wave 2, 2026-10-02): one
+          // that threw rejected this whole Promise.all, and a storage hiccup
+          // on a display pref read as "could not load topic" — the topic had
+          // loaded fine. A failed pref read degrades to the default; a failed
+          // hidden-list read also turns its writes off (hiddenReadFailed).
+          AsyncStorage.getItem(hiddenKey(achievementId)).catch(() => {
+            if (alive) hiddenReadFailed.current = true;
+            return null;
+          }),
+          AsyncStorage.getItem(SECTIONS_KEY).catch(() => null),
+          AsyncStorage.getItem(SHOW_MEDIA_KEY).catch(() => null),
+          AsyncStorage.getItem(SHOW_LINKS_KEY).catch(() => null),
         ]);
         if (!alive) return;
         if (storedShowMedia != null) setShowMedia(storedShowMedia !== '0');
@@ -1268,7 +1288,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       .then((v) => {
         if (v) fsGuideCount.current = Number(v) || 0;
       })
-      .catch(() => {});
+      .catch(() => {
+        fsGuideReadFailed.current = true;
+      });
   }, []);
   useEffect(() => {
     if (fullscreen) fsReviewed.current = 0;
@@ -1283,7 +1305,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       setShowFsGuide(true);
       if (!alwaysIntro) {
         fsGuideCount.current += 1;
-        void AsyncStorage.setItem('ape:fcFsGuide', String(fsGuideCount.current)).catch(() => {});
+        if (!fsGuideReadFailed.current) {
+          void AsyncStorage.setItem('ape:fcFsGuide', String(fsGuideCount.current)).catch(() => {});
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

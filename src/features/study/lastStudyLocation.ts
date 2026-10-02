@@ -3,12 +3,10 @@
  * study stack, so the Enrollments "CONTINUE LEARNING" banner can resume the
  * exact spot (a study METHOD screen with its topic, or the Dashboard).
  *
- * External-store pattern (module var + listeners + useSyncExternalStore), the
- * same shape as the settings store in paceStore.ts, plus lazy AsyncStorage
- * hydration on first use. Persisted as one JSON record under `ape:lastStudyLoc`.
+ * On the shared safe store (features/storage/localStore.ts), hydrated lazily on
+ * first use. Persisted as one JSON record under `ape:lastStudyLoc`.
  */
-import { useSyncExternalStore } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore } from '../storage/localStore';
 
 /** The four study-method routes (route names EXACTLY as in StudyStackParamList). */
 export type StudyMethodRoute = 'Flashcards' | 'Matching' | 'FillInBlank' | 'Scenarios';
@@ -28,93 +26,61 @@ export type LastStudyLocation =
 
 const STORAGE_KEY = 'ape:lastStudyLoc';
 
-let current: LastStudyLocation = null;
-const listeners = new Set<() => void>();
-let hydrated = false;
-// True once a real write has happened — so an in-flight hydrate() (which set
-// `hydrated` before its await) never clobbers a fresh value with the stale
-// stored one. Owner debug audit.
-let wrote = false;
-let generation = 0;
-
-function emit(): void {
-  listeners.forEach((l) => l());
-}
-
-/** Record the last study location (persist + notify subscribers). */
-export function setLastStudyLocation(loc: LastStudyLocation): void {
-  current = loc;
-  wrote = true;
-  emit();
-  if (loc == null) {
-    void AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
-  } else {
-    void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(loc)).catch(() => {});
-  }
-}
-
-/** Current last study location (synchronous snapshot). */
-export function getLastStudyLocation(): LastStudyLocation {
-  return current;
-}
-
-/** Lazily load the persisted location the first time the store is observed. */
-async function hydrate(): Promise<void> {
-  if (hydrated) return;
-  hydrated = true;
-  const gen = generation;
-  try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (wrote || !raw) return; // a write landed during load — don't clobber it
-    // An account wipe landed during load (bug pass 2, 2026-09-30): resetLocal
-    // clears `wrote`, so without this the previous user's spot came back.
-    if (gen !== generation) return;
-    const parsed = JSON.parse(raw) as { kind?: unknown; route?: unknown; achievementId?: unknown; topicName?: unknown };
-    if (parsed?.kind === 'dashboard') {
-      current = { kind: 'dashboard' };
-      emit();
-    } else if (
+/**
+ * ON THE SHARED SAFE STORE (wave 2, 2026-10-02). The hand-rolled store marked
+ * itself hydrated BEFORE its read, so a read that threw left "nothing
+ * recorded" for the rest of the run (CONTINUE LEARNING gone until relaunch)
+ * with no second try. Now a failed read stays unhydrated and is retried on the
+ * next observation; a spot recorded meanwhile is shown at once and written
+ * once a read succeeds (it replaces the stored spot whole — the newest spot is
+ * the right one). The generation fence and the wipe registration are the
+ * store's.
+ */
+const store = createLocalStore<LastStudyLocation>({
+  key: STORAGE_KEY,
+  empty: () => null,
+  parse: (p) => {
+    const parsed = p as { kind?: unknown; route?: unknown; achievementId?: unknown; topicName?: unknown } | null;
+    if (parsed?.kind === 'dashboard') return { kind: 'dashboard' };
+    if (
       parsed?.kind === 'method' &&
       typeof parsed.route === 'string' &&
       METHOD_ROUTES.has(parsed.route) &&
       typeof parsed.achievementId === 'string' &&
       typeof parsed.topicName === 'string'
     ) {
-      current = {
+      return {
         kind: 'method',
         route: parsed.route as StudyMethodRoute,
         achievementId: parsed.achievementId,
         topicName: parsed.topicName,
       };
-      emit();
     }
-  } catch {
-    /* corrupt value — leave the default (null) */
-  }
+    return null; // an unknown shape reads as nothing recorded, as before
+  },
+  // null = nothing recorded: the key is removed, as before.
+  serialize: (loc) => (loc == null ? null : JSON.stringify(loc)),
+});
+
+/** Record the last study location (persist + notify subscribers). Nothing is
+ *  told "saved" here; the banner simply reads the store. */
+export function setLastStudyLocation(loc: LastStudyLocation): void {
+  void store.set(loc);
+}
+
+/** Current last study location (synchronous snapshot). */
+export function getLastStudyLocation(): LastStudyLocation {
+  return store.get();
 }
 
 /** Reset the IN-MEMORY cache (account wipe / user switch — clearLocalAccountData).
- *  Clears the current location + hydrated flag and emits so live hooks re-render
- *  null; the next read re-hydrates from the (cleared) storage. */
+ *  Drops the current location and emits so live hooks re-render null; the
+ *  next read re-hydrates from the (cleared) storage. */
 export function resetLocal(): void {
-  generation++;
-  current = null;
-  hydrated = false;
-  wrote = false;
-  emit();
+  store.reset();
 }
 
 /** Subscribe to the last study location; hydrates from storage on first use. */
 export function useLastStudyLocation(): LastStudyLocation {
-  return useSyncExternalStore(
-    (cb) => {
-      listeners.add(cb);
-      void hydrate();
-      return () => {
-        listeners.delete(cb);
-      };
-    },
-    getLastStudyLocation,
-    getLastStudyLocation,
-  );
+  return store.use();
 }

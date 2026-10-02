@@ -623,6 +623,12 @@ export function AwardsScreen({ navigation, route }: Props) {
     // and must not be overwritten by (then re-persisted as) the stored one;
     // `.catch`: a failed storage read is not an unhandled rejection
     // (overnight hunt 2026-09-30).
+    //
+    // A read failed? The pick stays UNSET, and that is safe (checked in
+    // wave 2, 2026-10-02): each key holds ONE name, written only from a pick
+    // (state that is null writes nothing — see the re-persist effect below),
+    // and a pick is the learner's own newer choice, replacing the old one
+    // whole. Nothing is computed from the unread copy, so nothing is lost.
     AsyncStorage.getItem(SPEC_CERT_KEY)
       .then((v) => {
         if (v) setSpecCert((cur) => cur ?? v);

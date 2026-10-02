@@ -25,6 +25,14 @@ const STORAGE_KEY = 'ape:intro:amplitudeOrientation';
 let done = false; // spec default: NOT completed
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
+/** The last read THREW (wave 2, 2026-10-02): the flag shows "not completed"
+ *  for now — the orientation is offered again, the side that never blocks a
+ *  lab — and the next call reads again. Nothing is written from it: the only
+ *  write is a deliberate "completed". */
+let readFailed = false;
+/** Bumped by a replay (resetAmplitudeOrientation): a read that started before
+ *  it lands nowhere, so it cannot put the old "completed" back. */
+let gen = 0;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -32,15 +40,27 @@ function emit() {
 }
 
 function hydrate(): Promise<void> {
-  if (hydrated) return Promise.resolve();
+  if (hydrated && !readFailed) return Promise.resolve();
   if (!hydrating) {
+    const g = gen;
     hydrating = (async () => {
+      let raw: string | null;
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
-        if (raw != null) done = raw === '1';
+        raw = await AsyncStorage.getItem(STORAGE_KEY);
       } catch {
-        // corrupt/absent → keep default (not completed)
+        if (g !== gen) return;
+        readFailed = true;
+        hydrating = null;
+        hydrated = true; // resolve the gate (null would render nothing): not completed, for now
+        emit();
+        return;
       }
+      if (g !== gen) return;
+      // A completion made while the read was out stands (it is newer than
+      // the copy read): the read can only ADD "completed", never undo it.
+      if (raw === '1') done = true;
+      readFailed = false;
+      hydrating = null;
       hydrated = true;
       emit();
     })();
@@ -67,6 +87,10 @@ export function markAmplitudeOrientationComplete(): void {
 
 /** Replay the orientation (Settings → "Reset onboarding hints"). */
 export function resetAmplitudeOrientation(): void {
+  gen++;
+  hydrating = null;
+  readFailed = false;
+  hydrated = true; // the replay IS the answer: not completed
   done = false;
   void AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
   emit();

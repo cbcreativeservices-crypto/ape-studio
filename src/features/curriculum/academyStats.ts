@@ -55,6 +55,10 @@ export function useAcademyStats(): AcademyStats {
           /* ignore corrupt cache */
         }
       })
+      // READ failed (wave 2, 2026-10-02, confirmed): no instant paint, the RPC
+      // below still fills the hero. The cache is only ever REPLACED WHOLE by a
+      // fresh server row, never merged into, so a failed read cannot lead to
+      // anything stored being written over with less.
       .catch(() => {});
     // 2) Background refresh from the daily precomputed row.
     void (async () => {

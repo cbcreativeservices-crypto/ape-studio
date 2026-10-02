@@ -38,28 +38,51 @@ type StoreReviewLib = {
 type ApplicationLib = { nativeApplicationVersion: string | null };
 
 let state: ReviewState | null = null;
-let loading: Promise<ReviewState> | null = null;
+let loading: Promise<ReviewState | null> | null = null;
 
-async function load(): Promise<ReviewState> {
+/**
+ * The counters, or NULL when the storage read FAILED (wave 2, 2026-10-02).
+ *
+ * The hand-rolled load answered a read that threw with EMPTY counters and
+ * cached them, so the next save wrote "never asked, zero sessions" over the
+ * real record — including the once-per-version "already asked" stamp, which
+ * is what stops the app asking again. A failed read now stays unread (the
+ * next call tries again) and every caller does nothing on it: a lost session
+ * count only delays a prompt, while a lost stamp re-asks. A garbled blob is
+ * still treated as empty — there is nothing usable in it to protect.
+ */
+async function load(): Promise<ReviewState | null> {
   if (state) return state;
   if (!loading) {
-    loading = AsyncStorage.getItem(KEY)
-      .then((raw) => (raw ? { ...EMPTY_REVIEW_STATE, ...(JSON.parse(raw) as Partial<ReviewState>) } : { ...EMPTY_REVIEW_STATE }))
-      .catch(() => ({ ...EMPTY_REVIEW_STATE }))
-      .then((s) => {
-        state = s;
-        return s;
-      });
+    loading = (async () => {
+      let raw: string | null;
+      try {
+        raw = await AsyncStorage.getItem(KEY);
+      } catch {
+        loading = null; // readFailed: unread, not empty — retry next time
+        return null;
+      }
+      let s: ReviewState;
+      try {
+        s = raw ? { ...EMPTY_REVIEW_STATE, ...(JSON.parse(raw) as Partial<ReviewState>) } : { ...EMPTY_REVIEW_STATE };
+      } catch {
+        s = { ...EMPTY_REVIEW_STATE };
+      }
+      state = s;
+      return s;
+    })();
   }
   return loading;
 }
 
-async function save(next: ReviewState): Promise<void> {
+async function save(next: ReviewState): Promise<boolean> {
   state = next;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(next));
+    return true;
   } catch {
     /* best effort — a lost counter only delays a prompt */
+    return false;
   }
 }
 
@@ -72,6 +95,7 @@ function appVersion(): string {
 /** Call once per app launch (App.tsx). Counts the session and the active day. */
 export async function recordAppSession(): Promise<void> {
   const s = await load();
+  if (!s) return; // read failed — never save over the stored counters
   await save(recordSession(s, new Date()));
 }
 
@@ -98,7 +122,9 @@ function currentBlockers(): ReviewBlocker[] {
  */
 export async function noteHighValueEvent(event: HighValueEvent): Promise<boolean> {
   try {
-    const s = recordHighValueEvent(await load());
+    const loaded = await load();
+    if (!loaded) return false; // read failed: the "already asked" stamp is unknown
+    const s = recordHighValueEvent(loaded);
     await save(s);
     const version = appVersion();
     const verdict = evaluateReviewEligibility({ state: s, version, nowMs: Date.now(), event, blockers: currentBlockers() });
@@ -107,7 +133,9 @@ export async function noteHighValueEvent(event: HighValueEvent): Promise<boolean
     if (!lib || !(await lib.isAvailableAsync().catch(() => false))) return false;
     // Record BEFORE asking: if the OS shows the sheet and the app is killed
     // mid-prompt, we must not ask again on the next success.
-    await save(recordRequested(s, version, Date.now()));
+    // …and only if the stamp actually landed: a prompt whose record failed to
+    // save would be asked again on the next success.
+    if (!(await save(recordRequested(s, version, Date.now())))) return false;
     await lib.requestReview();
     return true;
   } catch {

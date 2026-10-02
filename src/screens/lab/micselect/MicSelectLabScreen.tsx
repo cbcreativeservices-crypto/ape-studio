@@ -17,13 +17,13 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Canvas, Line as SkLine, Path as SkPath, Skia, vec } from '@shopify/react-native-skia';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { colors, fonts } from '../../../theme/tokens';
@@ -70,6 +70,17 @@ import {
 import { cardColumn } from '../../../theme/readingColumn';
 
 const STEP_KEY = 'ape:micSelStep';
+/** The resume point, on the shared safe store (pattern catalog 2026-10-02,
+ *  wave 2): a read that THREW restores nothing and nothing is written over
+ *  the stored place until a read succeeds (a step chosen meanwhile is written
+ *  then); a read in flight across the account wipe lands nowhere. Stored as
+ *  the bare number, as before. */
+const stepStore = createLocalStore<number | null>({
+  key: STEP_KEY,
+  empty: () => null,
+  parse: (p) => (typeof p === 'number' && Number.isInteger(p) && p >= 0 ? p : null),
+  serialize: (n) => (n == null ? null : String(n)),
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Small shared pieces
@@ -991,11 +1002,11 @@ export function MicSelectLabScreen() {
   // flips once, bounded — a signed-in learner is not held.
   useEffect(() => {
     if (!resolved) return;
-    void AsyncStorage.getItem(STEP_KEY).then((v) => {
-      if (navigatedRef.current || noAccountRef.current) return;
-      const n = v == null ? NaN : Number(v);
-      if (Number.isInteger(n) && n > 0 && n < STEPS.length) setStep(n);
-    }).catch(() => {});
+    void stepStore.hydrate().then(() => {
+      if (navigatedRef.current || noAccountRef.current || !stepStore.isHydrated()) return;
+      const n = stepStore.get();
+      if (n != null && n > 0 && n < STEPS.length) setStep(n);
+    });
   }, [resolved]);
 
   // Double taps (bug hunt 2026-09-29: a doubled NEXT on the second-to-last
@@ -1006,7 +1017,7 @@ export function MicSelectLabScreen() {
     setEnding(false);
     setStep(n);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
-    if (!noAccountRef.current) void AsyncStorage.setItem(STEP_KEY, String(n)).catch(() => {});
+    if (!noAccountRef.current) void stepStore.set(n);
   }, []);
 
   /**

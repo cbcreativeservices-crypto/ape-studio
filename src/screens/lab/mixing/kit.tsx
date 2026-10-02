@@ -43,6 +43,7 @@ import { SESSION_TRACKS, type TrackId } from './engine/mixModel.ts';
 /* ── the learner's focal-point decision (page 1 → reused later) ──────────── */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore } from '../../../features/storage/localStore';
 
 const FOCAL_KEY = 'ape:mixing:focal';
 let focalCurrent: string | null = null;
@@ -54,24 +55,36 @@ const focalListeners = new Set<() => void>();
  *  previous account's stored choice back over resetMixingCommitments(), or
  *  an older stored choice over one just made. */
 let focalTouched = false;
+/** The read THREW (wave 2, 2026-10-02): the stored choice is unknown, not
+ *  "none" — the next screen that shows it reads again. Nothing is written
+ *  from it: the focal point is ONE value, written only as the learner's own
+ *  new choice (a deliberate replacement), so a failed read has no copy to
+ *  write over. */
+let focalUnreadable = false;
 // A MODULE-LEVEL read: it runs at import time, so a rejection here has no
 // component to surface in and becomes a bare unhandled rejection at startup.
-// Failing it just leaves the default.
-void AsyncStorage.getItem(FOCAL_KEY)
-  .then((v) => {
-    if (v != null && !focalTouched) {
-      focalCurrent = v;
-      focalListeners.forEach((l) => l());
-    }
-  })
-  .catch(() => {});
+// Failing it just leaves the default (and the flag above).
+function readFocal(): void {
+  focalUnreadable = false;
+  void AsyncStorage.getItem(FOCAL_KEY)
+    .then((v) => {
+      if (v != null && !focalTouched) {
+        focalCurrent = v;
+        focalListeners.forEach((l) => l());
+      }
+    })
+    .catch(() => {
+      focalUnreadable = true;
+    });
+}
+readFocal();
 
 /** The song's declared focal point — a COMMITMENT, not a correct answer.
  *  Persisted so later pages (static-mix anchor) can honour it. */
 /**
  * Forget both Mixing-lab commitments — the account-wipe entry point.
  *
- * `focalCurrent` and `prioritiesCurrent` are the LEARNER'S OWN decisions: the
+ * `focalCurrent` and the priorities list are the LEARNER'S OWN decisions: the
  * focal point they chose on page 1 and the mix priorities they committed to on
  * page 2, both echoed back to them later in the lab as "what you said". They
  * are module-level, so the stored keys were swept on an account change and the
@@ -80,11 +93,13 @@ void AsyncStorage.getItem(FOCAL_KEY)
  */
 export function resetMixingCommitments(): void {
   focalTouched = true;
-  prioritiesTouched = true;
+  focalUnreadable = false;
   focalCurrent = null;
-  prioritiesCurrent = [];
   focalSession = null;
   prioritiesSession = null;
+  // A new generation: a read or write in flight for the departing account
+  // lands nowhere (the shared store also registers this with the wipe).
+  prioritiesStore.reset();
   focalListeners.forEach((l) => l());
   prioritiesListeners.forEach((l) => l());
 }
@@ -100,6 +115,7 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
   useEffect(() => {
     const l = () => force((n) => n + 1);
     focalListeners.add(l);
+    if (focalUnreadable && !focalTouched) readFocal(); // the boot read failed: try again
     return () => {
       focalListeners.delete(l);
     };
@@ -122,30 +138,36 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
 /* ── the AML mix-priorities commitment (page 2 → echoed at the final) ────── */
 
 const PRIORITIES_KEY = 'ape:mixing:priorities';
-let prioritiesCurrent: string[] = [];
+/** The stored list, on the shared safe store (pattern catalog 2026-10-02,
+ *  wave 2). A toggle is an EDIT of the list, so it must land on the stored
+ *  one: a read that THREW used to leave the list empty, and the next toggle
+ *  saved a one-item list over the three priorities on the device; a toggle
+ *  before the import-time read landed did the same. Now a failed read is
+ *  never written over, a toggle is applied to the HYDRATED list (queued
+ *  until the read lands), and a read or write in flight across the account
+ *  wipe lands nowhere. */
+const prioritiesStore = createLocalStore<readonly string[]>({
+  key: PRIORITIES_KEY,
+  empty: () => [],
+  parse: (p) => {
+    if (!Array.isArray(p)) throw new Error('not a priority list');
+    return p.filter((x): x is string => typeof x === 'string');
+  },
+});
 /** Committed in THIS app run (never read from storage) — what a guest sees. */
 let prioritiesSession: string[] | null = null;
 const prioritiesListeners = new Set<() => void>();
-/** As focalTouched: a commit or a wipe wins over the import-time read. */
-let prioritiesTouched = false;
-void AsyncStorage.getItem(PRIORITIES_KEY)
-  .then((v) => {
-    if (v && !prioritiesTouched) {
-      try {
-        prioritiesCurrent = JSON.parse(v) as string[];
-        prioritiesListeners.forEach((l) => l());
-      } catch {
-        /* corrupt value: start empty */
-      }
-    }
-  })
-  // The inner try/catch only covers a CORRUPT value; the READ itself can still
-  // reject, and this one runs at import time.
-  .catch(() => {});
+
+/** Pure: the list after toggling `id` — at most three. */
+function togglePriority(base: readonly string[], id: string, add: boolean): string[] {
+  if (!add) return base.filter((x) => x !== id);
+  return base.includes(id) || base.length >= 3 ? [...base] : [...base, id];
+}
 
 /** The learner's three declared mix priorities — a commitment, not an answer. */
 export function useMixPriorities(): [readonly string[], (id: string) => void] {
   const [, force] = useState(0);
+  const stored = prioritiesStore.use();
   // HOUSE GUEST RULE — see useFocalChoice.
   const guestRef = useRef(false);
   guestRef.current = useLabEndGuest();
@@ -157,21 +179,23 @@ export function useMixPriorities(): [readonly string[], (id: string) => void] {
     };
   }, []);
   const toggle = useCallback((id: string) => {
-    // A guest edits their OWN session list, never the restored one.
-    const base = guestRef.current ? (prioritiesSession ?? []) : prioritiesCurrent;
-    const next = base.includes(id)
-      ? base.filter((x) => x !== id)
-      : base.length >= 3
-        ? base
-        : [...base, id];
-    prioritiesTouched = true;
-    prioritiesCurrent = next;
-    prioritiesSession = next;
+    if (guestRef.current) {
+      // A guest edits their OWN session list, never the restored one, and
+      // nothing is written.
+      const base = prioritiesSession ?? [];
+      prioritiesSession = togglePriority(base, id, !base.includes(id));
+      prioritiesListeners.forEach((l) => l());
+      return;
+    }
+    // The intent comes from the list the learner SEES; the edit is applied to
+    // the HYDRATED list.
+    const add = !prioritiesStore.get().includes(id);
+    void prioritiesStore.mutate((list) => togglePriority(list, id, add));
+    prioritiesSession = [...prioritiesStore.get()];
     prioritiesListeners.forEach((l) => l());
-    if (!guestRef.current) void AsyncStorage.setItem(PRIORITIES_KEY, JSON.stringify(prioritiesCurrent)).catch(() => {});
   }, []);
   // Nothing restored for a guest (bug pass 3, 2026-09-30) — see useFocalChoice.
-  return [guestRef.current ? (prioritiesSession ?? []) : prioritiesCurrent, toggle];
+  return [guestRef.current ? (prioritiesSession ?? []) : stored, toggle];
 }
 
 /** The lab's central lesson (owner brief, verbatim) — repeated on purpose. */

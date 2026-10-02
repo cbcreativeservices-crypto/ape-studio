@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { registerHooks } from 'node:module';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import AsyncStorageForTests from '@react-native-async-storage/async-storage';
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -220,6 +221,7 @@ const {
   wasSeen,
   markSeen,
   hasLoaded,
+  loadCelebrationsSeen,
   __resetCelebrationsSeenForTests,
 } = await import('../src/features/celebration/celebrationSeen.ts');
 
@@ -233,8 +235,22 @@ describe('a celebration fires once, ever', () => {
     assert.equal(wasSeen('topic-1', 'flashcards-complete'), false);
   });
 
-  it('remembers per scope, so the same celebration can fire for another topic', () => {
-    __resetCelebrationsSeenForTests([]);
+  // The record lives on the shared safe store since wave 2 (2026-10-02): it is
+  // "loaded" only once a real read has landed, so these give it a storage.
+  // (Under node the package's default export has no methods of its own.)
+  const AS = AsyncStorageForTests as unknown as Record<string, unknown>;
+  const mem = new Map<string, string>();
+  async function freshLoaded(): Promise<void> {
+    mem.clear();
+    AS.getItem = async (k: string) => mem.get(k) ?? null;
+    AS.setItem = async (k: string, v: string) => void mem.set(k, v);
+    AS.removeItem = async (k: string) => void mem.delete(k);
+    __resetCelebrationsSeenForTests();
+    await loadCelebrationsSeen();
+  }
+
+  it('remembers per scope, so the same celebration can fire for another topic', async () => {
+    await freshLoaded();
     assert.equal(hasLoaded(), true);
     markSeen('topic-1', 'flashcards-complete');
     assert.equal(wasSeen('topic-1', 'flashcards-complete'), true);
@@ -242,8 +258,8 @@ describe('a celebration fires once, ever', () => {
     assert.equal(wasSeen('topic-1', 'matching-complete'), false, 'a different method still celebrates');
   });
 
-  it('marking twice is harmless', () => {
-    __resetCelebrationsSeenForTests([]);
+  it('marking twice is harmless', async () => {
+    await freshLoaded();
     markSeen('t', 'topic-complete');
     markSeen('t', 'topic-complete');
     assert.equal(wasSeen('t', 'topic-complete'), true);

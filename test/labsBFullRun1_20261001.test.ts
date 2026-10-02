@@ -73,9 +73,12 @@ test('cymatics pattern store: DELETE never wipes every artwork when the artwork 
 
 test('cymatics experiment ticks: a failed READ is never written back over every other experiment', () => {
   const src = read('src/screens/lab/cymatics/ExperimentWell.tsx');
-  const body = src.slice(src.indexOf('async function saveTicks'), src.indexOf('/* ── the sign-in hand-off'));
-  assert.ok(!/readAllTicks\(\)/.test(body), 'saveTicks must not read through readAllTicks (it answers {} on a throw)');
-  assert.match(body, /getItem\(TICKS_KEY\);\s*\} catch \{\s*return;/);
+  // Wave 2 (2026-10-02): the series is on the shared safe store, which never
+  // writes over a read that threw; a tick is applied to the HYDRATED series,
+  // touching only its own experiment (behaviour: localStoreWave2Labs_20261002).
+  assert.doesNotMatch(src, /AsyncStorage/);
+  assert.match(src, /const ticksStore = createLocalStore<HeldTicks>\(\{\s*key: TICKS_KEY,/);
+  assert.match(src, /void ticksStore\.mutate\(\(a\) => \(\{ \.\.\.a, \[experiment\.id\]: withTick\(a\[experiment\.id\] \?\? \[\], i, on\) \}\)\);/);
 });
 
 test('Signal Detective: a failed READ of the solved set is never cached as empty or written over', () => {

@@ -11,7 +11,7 @@
  */
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getLowLight, useLowLight } from '../settings/lowLight';
+import { getLowLight, isLowLightUnreadable, useLowLightSuppresses } from '../settings/lowLight';
 
 const STORAGE_KEY = 'ape:devSuppressPopups';
 
@@ -106,7 +106,9 @@ export function usePopupsSuppressed(): boolean {
 // toggle keeps reading `usePopupsSuppressed` so it shows its OWN state, while
 // every auto-overlay reads these combined helpers.
 export function areOverlaysSuppressed(): boolean {
-  return arePopupsSuppressed() || getLowLight();
+  // A Low-Light value that could not be READ holds overlays back too: the
+  // user may have it on (wave 2, 2026-10-02).
+  return arePopupsSuppressed() || getLowLight() || isLowLightUnreadable();
 }
 
 /** Live combined view — true when popups are dev-suppressed OR low-light
@@ -119,6 +121,6 @@ export function useOverlaysSuppressed(): boolean {
   // Hooks" — a white screen. Found 2026-08-31 by toggling "Suppress all
   // popups" in the dev Visual Index, which crashed the app instantly.
   const popupsSuppressed = usePopupsSuppressed();
-  const lowLight = useLowLight();
+  const lowLight = useLowLightSuppresses();
   return popupsSuppressed || lowLight;
 }

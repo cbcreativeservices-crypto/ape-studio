@@ -53,7 +53,7 @@ test('Start Here and the Foundations course restore only once the tier is known'
   // re-runs when the account state changes — still never before `resolved`.
   assert.match(sh, /setPage\(Math\.min\(p\.lastPage, PAGES\.length - 1\)\);\s*\n\s*\}\);\s*\n\s*return \(\) => \{\s*\n\s*alive = false;\s*\n\s*\};\s*\n\s*\}, \[resolved, noAccount\]\);/);
   const fc = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
-  assert.match(fc, /if \(!resolved\) return;\s*\n\s*let alive = true;\s*\n\s*void AsyncStorage\.getItem\(STEP_KEY\)/);
+  assert.match(fc, /if \(!resolved\) return;\s*\n\s*let alive = true;\s*\n\s*void stepStore\.hydrate\(\)/);
   assert.match(fc, /\}, \[resolved\]\);/);
 });
 

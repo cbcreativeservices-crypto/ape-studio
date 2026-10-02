@@ -14,59 +14,61 @@
  * topic id, a lab key, a credential id. The same celebration can therefore fire
  * for a different topic, which is the point, and cannot fire twice for the same
  * one.
+ *
+ * ON THE SHARED SAFE STORE (wave 2, 2026-10-02 — features/storage/localStore).
+ * The hand-rolled version turned a storage read that THREW into an EMPTY set
+ * and marked it loaded: every celebration the user had ever had fired again,
+ * and the first `markSeen` then wrote a one-item set OVER the stored history,
+ * so they all came back on every later launch too. Now a read that fails
+ * leaves the record UNREAD: `hasLoaded()` stays false, so (as every caller
+ * already requires) nothing is celebrated, and a mark made meanwhile is queued
+ * and written only on top of the real record once a later read lands. Failing
+ * toward "no congratulation this time" is the safe side; the next successful
+ * read gives every earned celebration its turn.
  */
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore } from '../storage/localStore';
 import type { CelebrationId } from './types';
 
 const KEY = 'ape:celebrationsSeen:v1';
 
-let seen: Set<string> | null = null;
-let loading: Promise<Set<string>> | null = null;
+const store = createLocalStore<ReadonlySet<string>>({
+  key: KEY,
+  empty: () => new Set<string>(),
+  parse: (parsed) => {
+    // Not a list = not a record we can trust: set aside as damaged.
+    if (!Array.isArray(parsed)) throw new Error('celebrationsSeen: not a list');
+    return new Set(parsed.filter((x): x is string => typeof x === 'string'));
+  },
+  serialize: (s) => JSON.stringify([...s]),
+});
+
 /**
- * Bumped by `resetCelebrationsSeen` on every account change (full-app run 2,
- * 2026-10-01). A load still out when the reset ran landed AFTER it and put
- * the departing user's set back in memory — so the next member's first
- * certificate or finished deck was "already celebrated", and the next
- * `markSeen` re-persisted that stranger's history under the new account.
- * `useCredentialCelebration` reads it too, to drop a check that straddles
- * the switch.
+ * Bumped by every account change (the store's reset, which the account wipe
+ * reaches through the registry and through `resetCelebrationsSeen`). A load
+ * still out when the reset ran lands nowhere (full-app run 2, 2026-10-01).
+ * `useCredentialCelebration` reads it too, to drop a check that straddles the
+ * switch.
  */
-let generation = 0;
-export const celebrationGeneration = (): number => generation;
+export const celebrationGeneration = (): number => store.generation();
 
 function keyFor(scope: string, id: CelebrationId): string {
   return `${scope}:${id}`;
 }
 
 /**
- * Load the record once.
- *
- * On any failure this resolves to an EMPTY set, which means celebrations fire
- * again. That is the right direction to fail: showing a congratulation twice is
- * a small annoyance, and silently swallowing every one because storage hiccuped
- * would look like the feature is broken.
+ * Load the record once. Resolves when it has been read — or when the read
+ * FAILED, in which case `hasLoaded()` is still false and the next call reads
+ * again.
  */
-export function loadCelebrationsSeen(): Promise<Set<string>> {
-  if (seen) return Promise.resolve(seen);
-  if (!loading) {
-    const g = generation;
-    loading = AsyncStorage.getItem(KEY)
-      .then((raw) => {
-        const parsed = raw ? (JSON.parse(raw) as unknown) : [];
-        return new Set(Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : []);
-      })
-      .catch(() => new Set<string>())
-      .then((s) => {
-        if (g === generation) seen = s; // an account change meanwhile: not this user's set
-        return s;
-      });
-  }
-  return loading;
+export async function loadCelebrationsSeen(): Promise<Set<string>> {
+  await store.hydrate();
+  return new Set(store.get());
 }
 
-/** Synchronous read. False until the load resolves — see `hasLoaded`. */
+/** Synchronous read. False until the load resolves — see `hasLoaded`. Marks
+ *  made this run count even before then. */
 export function wasSeen(scope: string, id: CelebrationId): boolean {
-  return seen?.has(keyFor(scope, id)) ?? false;
+  return store.get().has(keyFor(scope, id));
 }
 
 /**
@@ -75,42 +77,30 @@ export function wasSeen(scope: string, id: CelebrationId): boolean {
  * Callers MUST check this before deciding to celebrate. Before the load
  * resolves `wasSeen` returns false for everything, and acting on that would
  * re-congratulate a user for every topic they have ever finished, in one burst,
- * on every cold start.
+ * on every cold start. A read that failed is not loaded either.
  */
 export function hasLoaded(): boolean {
-  return seen != null;
+  return store.isHydrated();
 }
 
 /**
  * Mark it shown.
  *
- * The IN-MEMORY set is updated first and unconditionally, so the celebration
- * stops repeating within this run even when nothing can be written. The write
- * is then fire-and-forget.
- *
- * The try/catch is not defensive padding: `AsyncStorage.setItem` is not
- * guaranteed to exist — it is absent under `node --test`, and a rejected
- * promise is a different failure from a missing method. Without this the
- * synchronous throw propagated out of a render and took the Dashboard with it,
- * which a test found. A failed write costs a repeated congratulation; a throw
- * costs the screen.
+ * The in-memory view is updated at once (`wasSeen` answers true straight
+ * away), so the celebration stops repeating within this run even when nothing
+ * can be written. The write is applied to the HYDRATED record — queued until
+ * the read lands — and never throws into a render.
  */
 export function markSeen(scope: string, id: CelebrationId): void {
-  const s = seen ?? new Set<string>();
-  seen = s;
   const k = keyFor(scope, id);
-  if (s.has(k)) return;
-  s.add(k);
-  try {
-    void AsyncStorage.setItem(KEY, JSON.stringify([...s]))?.catch?.(() => {});
-  } catch {
-    // Storage unavailable — the in-memory set above still holds for this run.
-  }
+  if (store.get().has(k)) return;
+  void store.mutate((s) => (s.has(k) ? s : new Set([...s, k])));
 }
 
 /**
  * Drop the in-memory set. Called by `resetAllLocalStores()` on every account
- * change, and by the tests.
+ * change (the registry reaches the store too; a second reset is harmless), and
+ * by the tests.
  *
  * Without it the departing user's "already celebrated" set survived the wipe
  * and was then re-persisted under the NEW account on its next write - so the
@@ -118,13 +108,10 @@ export function markSeen(scope: string, id: CelebrationId): void {
  * because somebody else had already had it on this phone.
  */
 export function resetCelebrationsSeen(): void {
-  generation += 1;
-  seen = null;
-  loading = null;
+  store.reset();
 }
 
-/** Test seam, with the preload the tests use. */
-export function __resetCelebrationsSeenForTests(preload?: string[]): void {
-  seen = preload ? new Set(preload) : null;
-  loading = null;
+/** Test seam: forget everything in memory (the next read goes to storage). */
+export function __resetCelebrationsSeenForTests(): void {
+  store.reset();
 }

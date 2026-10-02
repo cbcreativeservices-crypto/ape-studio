@@ -96,7 +96,12 @@ export function TopicWelcomeSheet({ topicId, enabled = true }: { topicId: string
       try {
         seen = (await AsyncStorage.getItem(seenKey(uid, topicId))) != null;
       } catch {
-        seen = false;
+        // READ failed (wave 2, 2026-10-02): treat as SEEN. It used to read as
+        // "not seen", so a learner whose storage could not answer got the
+        // welcome on every visit to the topic. Nothing is written here (only
+        // an explicit dismiss writes), so a later good read still gives a
+        // learner who never saw it their welcome.
+        seen = true;
       }
       if (!alive || seen) return;
       const found = await fetchWelcome(topicId);
