@@ -305,6 +305,13 @@ type Store = ReturnType<typeof createClient>;
 async function markRefunded(admin: Store, storeRefs: string[], why: string): Promise<number> {
   const refs = storeRefs.filter(Boolean);
   if (refs.length === 0) return 0;
+  // Read the rows BEFORE the update: the update nulls member_since, and that is
+  // the start of the membership whose certificates the refund takes back.
+  const { data: before } = await admin
+    .from('entitlements')
+    .select('id, user_id, member_since, created_at')
+    .in('store_ref', refs)
+    .in('source', ['app_store', 'play_store']);
   const { data, error } = await admin
     .from('entitlements')
     .update({
@@ -333,7 +340,75 @@ async function markRefunded(admin: Store, storeRefs: string[], why: string): Pro
   }
   const n = (data ?? []).length;
   console.log(`[store-notifications] ${why}: ${n} entitlement row(s) marked refunded`);
+  if (n > 0) await revokeRefundedCertificates(admin, (before ?? []) as RefundedRow[], why);
   return n;
+}
+
+type RefundedRow = { id: string; user_id: string; member_since: string | null; created_at: string };
+
+/**
+ * A REFUND TAKES BACK THE CERTIFICATES IT PAID FOR (added 2026-10-02, ccode item 2).
+ *
+ * Every certificate this member earned on or after the start of the refunded
+ * membership is revoked (revoked_at = now, revoke_reason = 'refund'). Earlier
+ * certificates, from a previous paid run, are left alone.
+ *
+ * Skipped when the member still has academy access some other way (another
+ * active academy entitlement, or an institutional account): those certificates
+ * were not paid for only by the refunded purchase.
+ *
+ * Never throws. A failure here is logged and the refund itself still stands.
+ */
+async function revokeRefundedCertificates(admin: Store, rows: RefundedRow[], why: string): Promise<void> {
+  try {
+    const refundedIds = rows.map((r) => r.id);
+    const startByUser = new Map<string, string>();
+    for (const r of rows) {
+      const start = r.member_since ?? r.created_at;
+      if (!r.user_id || !start) continue;
+      const prev = startByUser.get(r.user_id);
+      if (!prev || start < prev) startByUser.set(r.user_id, start);
+    }
+    for (const [userId, start] of startByUser) {
+      const { data: u, error: uErr } = await admin.from('users').select('audience').eq('id', userId).maybeSingle();
+      if (uErr) {
+        console.error('[store-notifications] certificate revoke skipped, user lookup failed:', uErr.message, why);
+        continue;
+      }
+      if ((u as { audience?: string } | null)?.audience === 'institutional') {
+        console.log(`[store-notifications] ${why}: certificates kept (institutional account)`);
+        continue;
+      }
+      const nowIso = new Date().toISOString();
+      const { data: other } = await admin
+        .from('entitlements')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('product', 'academy')
+        .eq('status', 'active')
+        .not('id', 'in', `(${refundedIds.join(',')})`)
+        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+        .limit(1);
+      if ((other ?? []).length > 0) {
+        console.log(`[store-notifications] ${why}: certificates kept (other active academy access)`);
+        continue;
+      }
+      const { data: revoked, error } = await admin
+        .from('credential_awards')
+        .update({ revoked_at: nowIso, revoke_reason: 'refund' })
+        .eq('user_id', userId)
+        .is('revoked_at', null)
+        .gte('earned_at', start)
+        .select('id');
+      if (error) {
+        console.error('[store-notifications] certificate revoke failed:', error.message, why);
+        continue;
+      }
+      console.log(`[store-notifications] ${why}: ${(revoked ?? []).length} certificate(s) revoked`);
+    }
+  } catch (e) {
+    console.error('[store-notifications] certificate revoke error:', (e as Error).message, why);
+  }
 }
 
 /**
