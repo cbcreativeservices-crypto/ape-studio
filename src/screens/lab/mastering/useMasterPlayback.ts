@@ -28,7 +28,7 @@ import { useFrameCallback, useSharedValue, type SharedValue } from 'react-native
 import type { Stereo } from '../../../features/ear/earDsp.ts';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
-import { getSoundStopEpoch, isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
+import { armFence, startFenced } from '../../../features/audio/startFenced';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { LOOP_S, renderMix } from '../mixing/audio/mixAudio.ts';
@@ -230,13 +230,14 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
     renderSeqRef.current++;
     renderingSigRef.current = null;
     if (!again) return;
-    const armedEpoch = getSoundStopEpoch();
+    // The fence, armed now and asked when the timer fires (armFence): a mute,
+    // a leave, or a stop-all (left the app, another lab) inside the pause
+    // means nothing replays.
+    const blocked = armFence(() => aliveRef.current && focusedRef.current);
     const t = setTimeout(() => {
       replayTimerRef.current = null;
       replayIdRef.current = null;
-      if (!aliveRef.current || !focusedRef.current || !isAudioOutputEnabled()) return;
-      // Every sound was stopped meanwhile (left the app, another lab): stay quiet.
-      if (getSoundStopEpoch() !== armedEpoch) return;
+      if (blocked()) return;
       pendingRef.current = again;
       setPending(again);
       void renderAllRef.current();
@@ -299,7 +300,13 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
         };
       }
       const player = playerRef.current;
-      await player.load(clips);
+      // The fence (startFenced): a mute, a leave, or a stop-all during the
+      // load means the queued play never fires; the render still lands.
+      const fenced = await startFenced({
+        start: () => player.load(clips),
+        stop: () => {}, // loaded, not sounding: nothing to silence
+        isCurrent: current,
+      });
       if (!current()) {
         if (playerRef.current !== player) player.dispose();
         return;
@@ -311,7 +318,7 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
       const want = pendingRef.current;
       pendingRef.current = null;
       setPending(null);
-      if (want && focusedRef.current && isAudioOutputEnabled()) {
+      if (fenced.status === 'started' && want && focusedRef.current) {
         const i = idsRef.current.indexOf(want);
         if (i >= 0) {
           player.play(i);

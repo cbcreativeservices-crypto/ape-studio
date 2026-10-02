@@ -29,7 +29,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ApeDsp, GEN_MODES } from '../../../../../modules/ape-dsp';
 import { GlassButton } from '../../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
-import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../../../features/audio/audioOutputStore';
+import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
+import { startFenced } from '../../../../features/audio/startFenced';
 import { guardToneLevelForEngine } from '../../../../features/audio/speakerSafety';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { levelColor } from '../../../../features/tools/levelColor';
@@ -438,26 +439,15 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
           levelDb: guardToneLevelForEngine(LEVEL_DB, freqHz),
         });
         try {
-          // Every sound stopped while the native start was in flight (leaving the app
-          // with "Mute audio when I leave the app" OFF stops voices but leaves the
-          // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
-          const stopEpoch = getSoundStopEpoch();
-          await ApeDsp.genStart();
-          // A mute that landed while the native start was in flight wins — never
-          // leave a tone sounding into a closed gate (owner 2026-09-29).
-          if (!isAudioOutputEnabled()) {
-            void ApeDsp.genStop();
-            return;
-          }
-          if (gen !== genRef.current) {
-            if (!wantRef.current) void ApeDsp.genStop(); // stopped/quieted meanwhile
-            return;
-          }
-          // Every sound was stopped while the native start ran: stay quiet.
-          if (getSoundStopEpoch() !== stopEpoch) {
-            void ApeDsp.genStop();
-            return;
-          }
+          // The fence (startFenced): a mute, a stop/quiet, or a stop-all that
+          // lands while the native start is in flight wins — it never sounds on.
+          const fenced = await startFenced({
+            start: () => ApeDsp.genStart(),
+            // A newer ▶ owns the voice; a stop/quiet meanwhile silences it.
+            stop: (_s, why) => (why === 'superseded' && wantRef.current ? undefined : ApeDsp.genStop()),
+            isCurrent: () => gen === genRef.current,
+          });
+          if (fenced.status !== 'started') return;
           soundingRef.current = true;
           setPlaying(which);
           noteAudioActivity();

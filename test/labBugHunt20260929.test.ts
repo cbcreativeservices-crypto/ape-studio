@@ -20,7 +20,10 @@ test('mixing: plays on under other screens, stops on close; a queued play needs 
   assert.doesNotMatch(cleanup, /\.stop\(\)|setActive\(null\)/);
   assert.match(s, /useStopOnClose\(stopAll\);/);
   assert.match(s.slice(s.indexOf('const stopAll = useCallback(')), /pendingRef\.current = null;/);
-  assert.match(s, /if \(want && focusedRef\.current && isAudioOutputEnabled\(\)\)/);
+  // The open-gate check is the start fence's (startFenced, 2026-10-02): the
+  // load runs inside it and a queued play fires only when it reports started.
+  assert.match(s, /const fenced = await startFenced\(\{\s*\n\s*start: \(\) => player\.load\(out\.map\(\(o\) => o\.mix\.stereo\)\),/);
+  assert.match(s, /if \(fenced\.status === 'started' && want && focusedRef\.current\)/);
   assert.match(s, /useStopWhenSilenced\(active != null \|\| pending != null, stopAll\)/);
 });
 

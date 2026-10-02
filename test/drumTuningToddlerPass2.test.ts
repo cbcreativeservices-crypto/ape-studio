@@ -181,7 +181,7 @@ describe('drum toddler pass 2 — one sound at a time', () => {
   it('useDrumPlayback: only the newest press owns `pending`; ■ cancels a press at any stage', () => {
     const hook = strip(read(`${DIR}/useDrumPlayback.ts`));
     assert.match(hook, /const t = \+\+playTokRef\.current;\s*const current = \(\) => aliveRef\.current && t === playTokRef\.current;/);
-    assert.match(hook, /const ok = await load\(\);\s*if \(!current\(\)\) return(?: false)?;\s*setPending\(false\);/, 'a superseded press never clears pending');
+    assert.match(hook, /const fenced = await startFenced\(\{\s*start: load,\s*stop: \(\) => \{\},[^\n]*\s*isCurrent: current,\s*\}\);\s*if \(!current\(\)\) return(?: false)?;\s*setPending\(false\);/, 'a superseded press never clears pending');
     assert.match(hook, /const stop = useCallback\(\(\) => \{\s*seqRef\.current\+\+;\s*playTokRef\.current\+\+;/);
   });
 });

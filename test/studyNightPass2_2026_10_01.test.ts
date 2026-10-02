@@ -41,7 +41,8 @@ describe('the enrollment server sync is fenced across an account wipe', () => {
     assert.match(pull, /async function reconcileFromServer\(gen: number\)/);
     const readAt = pull.indexOf(".from('user_topic_enrollments')");
     const fenceAt = pull.indexOf('if (gen !== generation) return false;');
-    const adoptAt = pull.indexOf('list = rows');
+    // (the adopted rows go through the shared store's write, 2026-10-02)
+    const adoptAt = pull.indexOf('const adopted = rows');
     assert.ok(readAt > 0 && fenceAt > readAt && adoptAt > fenceAt);
     assert.match(pull, /if \(gen === generation\) reconciled = true;/);
     assert.match(sync, /reconcileFromServer\(gen\)/);

@@ -105,12 +105,21 @@ test('a tone start in flight when every sound is stopped (leave the app, mute-on
     'src/screens/lab/foundations/FoundationsPlaygroundScreen.tsx',
   ];
   for (const f of files) {
+    // Since the start fence (startFenced, 2026-10-02) the epoch capture and
+    // re-check are the helper's: every genStart is its `start`, its `stop`
+    // calls genStop, and no start is awaited bare.
     const src = read(f);
-    const starts = src.split('await ApeDsp.genStart();').length - 1;
+    const starts = src.split('ApeDsp.genStart(').length - 1;
     assert.ok(starts > 0, f);
-    const guarded = src.match(/const stopEpoch = getSoundStopEpoch\(\);\s*await ApeDsp\.genStart\(\);/g)?.length ?? 0;
-    assert.equal(guarded, starts, `${f}: every genStart captures the sound-stop epoch`);
-    const checks = src.match(/if \(getSoundStopEpoch\(\) !== stopEpoch\) \{\s*void ApeDsp\.genStop\(\);/g)?.length ?? 0;
-    assert.equal(checks, starts, `${f}: every start re-checks the epoch after the native start, and stops`);
+    const fenced = src.match(/startFenced\(\{\s*start: \(\) => ApeDsp\.genStart\(\),/g)?.length ?? 0;
+    assert.equal(fenced, starts, `${f}: every genStart is the fence's start`);
+    assert.doesNotMatch(src, /await ApeDsp\.genStart\(/, `${f}: a bare native start escapes the fence`);
+    let at = -1;
+    for (let n = 0; n < starts; n++) {
+      at = src.indexOf('startFenced({', at + 1);
+      const stop = src.slice(src.indexOf('stop:', at), src.indexOf('isCurrent:', at));
+      assert.match(stop, /ApeDsp\.genStop\(\)/, `${f}: the fence's stop silences the voice`);
+    }
+    assert.match(src, /import \{ startFenced \} from '(\.\.\/)+features\/audio\/startFenced';/, f);
   }
 });

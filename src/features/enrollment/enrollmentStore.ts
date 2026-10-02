@@ -8,8 +8,14 @@
  *   favorite — starred.
  *   active   — ACTIVE/INACTIVE toggle: inactive = temporarily set aside WITHOUT
  *              removing (stays in the list, drops out of the active study set).
- * Order is user-arrangeable (move up/down). Persisted to AsyncStorage — same
- * tiny external-store pattern as flaggedStore.
+ * Order is user-arrangeable (move up/down). Persisted to AsyncStorage through
+ * the shared safe store (pattern catalog 2026-10-02, closer A2): a read that
+ * FAILED is unreadable and never written over (it used to start empty, and
+ * the next edit saved — and pushed to the server master list — that empty
+ * copy); an edit before the stored list lands is applied on top of it
+ * (full-app run 2, 2026-10-01); a read in flight across the account wipe
+ * lands nowhere (bug pass 2, 2026-09-30); the wipe reaches the store without
+ * a hand entry.
  *
  * NOTE: this is the device-local source of truth. For a signed-in user it is
  * ALSO best-effort mirrored to the backend via the `sync_my_enrollments` RPC
@@ -17,11 +23,10 @@
  * the local list stays authoritative. Guests never sync. "Saved" in the account
  * sense is gated in the UI by entitlement (anonymous = warned it won't be saved).
  */
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
+import { createLocalStore } from '../storage/localStore';
 import { freshGs, studyFocusAction } from './enrollmentPlan';
 
 export type EnrollTopic = { gs: number; favorite: boolean; active: boolean };
@@ -48,18 +53,6 @@ export const FREE_ENROLL_GS: readonly number[] = [3060, 3970];
 const LEGACY_FREE_GS: readonly number[] = [0, 36, 150, 100, 1240];
 export function isFreeEnrollGs(gs: number): boolean {
   return FREE_ENROLL_GS.includes(gs);
-}
-
-let list: EnrollTopic[] = [];
-let hydrated = false;
-let hydrating: Promise<void> | null = null;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-function persist() {
-  void AsyncStorage.setItem(KEY, JSON.stringify(list)).catch(() => {});
 }
 
 // Mirror the enrollment list to the SERVER (owner 2026-08-06): user_topic_enrollments
@@ -90,6 +83,76 @@ const MAX_SYNC_RETRIES = 4;
  */
 let reconciled = false;
 
+// Bumped on every account wipe (bug pass 2, 2026-09-30) — the server-sync
+// fences below capture it before their first await. Mirrors the shared
+// store's own generation (bumped by the same reset, see onReset).
+let generation = 0;
+
+/** The one-time seed marker, on the same safe store: a marker that cannot be
+ *  READ is treated as unknown and seeding is skipped for this run (as the
+ *  best-effort read always did) — never as "not yet seeded". On disk it stays
+ *  the legacy '1'. */
+const seeded = createLocalStore<boolean>({
+  key: SEED_KEY,
+  empty: () => false,
+  parse: (p) => p === 1 || p === '1' || p === true,
+  serialize: (v) => (v ? '1' : null),
+});
+
+/** Set by the seed step; the re-keyed free topics are pushed to the server
+ *  once the store is hydrated (owner 2026-08-10 v3 re-key fix). */
+let migratedAtSeed = false;
+
+const store = createLocalStore<EnrollTopic[]>({
+  key: KEY,
+  empty: () => [],
+  parse: (parsed) => {
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((e) => e && typeof e.gs === 'number')
+      .map((e) => ({ gs: e.gs as number, favorite: !!e.favorite, active: e.active !== false }));
+  },
+  // One-time seed of the FREE topics so everyone is already enrolled in them
+  // (user request 2026-07-22). Idempotent via SEED_KEY. Runs before the store
+  // is hydrated, so the first list anyone reads is the seeded one.
+  prepare: async (loaded) => {
+    await seeded.hydrate();
+    if (!seeded.isHydrated() || seeded.get()) return loaded;
+    // Migrate: drop retired free/placeholder gs (LEGACY_FREE_GS) so testers
+    // don't keep stale unnamed rows — this is what clears the pre-v3
+    // gs100/gs1240 that rendered as "Topic gsN".
+    const before = loaded.length;
+    let next = loaded.filter((e) => !LEGACY_FREE_GS.includes(e.gs));
+    const have = new Set(next.map((e) => e.gs));
+    // Prepend so the free topics are the FIRST two shown (user request).
+    const freeAdd = FREE_ENROLL_GS.filter((gs) => !have.has(gs)).map((gs) => ({
+      gs,
+      favorite: false,
+      active: true,
+    }));
+    next = [...freeAdd, ...next];
+    migratedAtSeed = next.length !== before || freeAdd.length > 0;
+    await seeded.set(true); // the marker first, then the list (the store writes it)
+    return next;
+  },
+  onReset: () => {
+    // Cancel any armed server sync FIRST (fix 2026-08-28). The debounced callback
+    // reads the list at FIRE time and uses whatever session is current, and the
+    // failure backoff can keep it armed for up to 30 s. Sign-out → sign-in
+    // inside that window fired `sync_my_enrollments({ p_items: [] })` under the
+    // NEW user and wiped THEIR enrollment master list — which the backend gates
+    // v3 study/quiz on.
+    if (syncTimer) clearTimeout(syncTimer);
+    syncTimer = null;
+    syncRetries = 0;
+    // The next identity must reconcile against ITS OWN server list, not inherit
+    // the departing user's "already checked".
+    reconciled = false;
+    migratedAtSeed = false;
+    generation++;
+  },
+});
+
 /** Is the local list still the untouched new-device default? */
 function isPristineSeed(l: EnrollTopic[]): boolean {
   if (l.length === 0) return true;
@@ -117,7 +180,7 @@ async function reconcileFromServer(gen: number): Promise<boolean> {
       .select('gs, favorite, active, position')
       .order('position', { ascending: true });
     // Wiped while reading (night bug pass 2, 2026-10-01): these are the
-    // DEPARTING account's rows, and the reset's empty `list` reads as a
+    // DEPARTING account's rows, and the reset's empty list reads as a
     // pristine seed — adopting them would hand them to the next account.
     if (gen !== generation) return false;
     if (error) {
@@ -143,13 +206,12 @@ async function reconcileFromServer(gen: number): Promise<boolean> {
     // An empty result is therefore indistinguishable from a denial, and both are
     // treated as NOT CONFIRMED. Only rows we actually read count.
     if (rows.length === 0) return false;
-    if (!isPristineSeed(list)) return true; // the user has edited this device's list
+    if (!isPristineSeed(store.get())) return true; // the user has edited this device's list
 
-    list = rows
+    const adopted = rows
       .filter((r) => typeof r.gs === 'number')
       .map((r) => ({ gs: r.gs, favorite: !!r.favorite, active: r.active !== false }));
-    persist();
-    emit();
+    void store.set(adopted);
     return true;
   } catch (e) {
     console.warn('[enrollment] server list read threw:', (e as Error)?.message);
@@ -167,7 +229,7 @@ function scheduleServerSync(delayMs = 800) {
     // THE CALLBACK ALREADY RUNNING IS FENCED TOO (night bug pass 2,
     // 2026-10-01). resetLocal cancels an ARMED timer, but a callback already
     // past it kept going across the wipe: its push carried the reset's empty
-    // `list` under whatever session was current by then, and its failure
+    // list under whatever session was current by then, and its failure
     // branch re-armed the retry AFTER the reset — the 2026-08-28 hole (an
     // empty list pushed over the next account's master list) by a side door.
     const gen = generation;
@@ -223,7 +285,7 @@ function scheduleServerSync(delayMs = 800) {
         // no retry until the user next edited enrollment (backend gates v3
         // study/quiz on this list). Check error + re-arm a bounded backoff.
         const { error } = await supabase.rpc('sync_my_enrollments', {
-          p_items: list.map((e, i) => ({ gs: e.gs, favorite: e.favorite, active: e.active, position: i })),
+          p_items: store.get().map((e, i) => ({ gs: e.gs, favorite: e.favorite, active: e.active, position: i })),
         });
         if (gen !== generation) return; // wiped meanwhile — never re-arm for the next account
         if (error) {
@@ -252,110 +314,59 @@ function scheduleServerSync(delayMs = 800) {
   }, delayMs);
 }
 
-// Bumped by resetLocal (bug pass 2, 2026-09-30): a hydrate that was already
-// reading storage when the account was wiped must not write the previous
-// user's list back over the reset.
-let generation = 0;
-
+/** Load once (the shared store does the reading; see `prepare` for the seed).
+ *  After a seed that changed the list, push the re-keyed free topics to the
+ *  server so the corrected list is the one the backend gates on. */
 async function hydrate(): Promise<void> {
-  if (hydrated) return;
-  if (!hydrating) {
-    const gen = generation;
-    hydrating = (async () => {
-      let loaded: EnrollTopic[] = [];
-      try {
-        const raw = await AsyncStorage.getItem(KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw) as EnrollTopic[];
-          if (Array.isArray(parsed)) {
-            loaded = parsed
-              .filter((e) => e && typeof e.gs === 'number')
-              .map((e) => ({ gs: e.gs, favorite: !!e.favorite, active: e.active !== false }));
-          }
-        }
-      } catch {
-        // corrupt/absent → start empty
-      }
-      // One-time seed of the FREE topics so everyone is already enrolled in
-      // them (user request 2026-07-22). Idempotent via SEED_KEY.
-      let migrated = false;
-      try {
-        const seeded = await AsyncStorage.getItem(SEED_KEY);
-        if (seeded !== '1' && gen === generation) {
-          // Migrate: drop retired free/placeholder gs (LEGACY_FREE_GS) so testers
-          // don't keep stale unnamed rows — this is what clears the pre-v3
-          // gs100/gs1240 that rendered as "Topic gsN".
-          const before = loaded.length;
-          loaded = loaded.filter((e) => !LEGACY_FREE_GS.includes(e.gs));
-          const have = new Set(loaded.map((e) => e.gs));
-          // Prepend so the free topics are the FIRST two shown (user request).
-          const freeAdd = FREE_ENROLL_GS.filter((gs) => !have.has(gs)).map((gs) => ({
-            gs,
-            favorite: false,
-            active: true,
-          }));
-          loaded = [...freeAdd, ...loaded];
-          migrated = loaded.length !== before || freeAdd.length > 0;
-          if (gen === generation) {
-            await AsyncStorage.setItem(SEED_KEY, '1');
-            if (gen === generation) await AsyncStorage.setItem(KEY, JSON.stringify(loaded));
-          }
-        }
-      } catch {
-        // seeding is best-effort
-      }
-      if (gen !== generation) return; // wiped mid-read — resetLocal re-hydrates
-      list = loaded;
-      hydrated = true;
-      emit();
-      // Push the re-keyed free topics to the server so the corrected list is the
-      // one the backend gates on (owner 2026-08-10 v3 re-key fix).
-      if (migrated) scheduleServerSync();
-    })();
+  const gen = generation;
+  await store.hydrate();
+  if (gen === generation && store.isHydrated() && migratedAtSeed) {
+    migratedAtSeed = false;
+    scheduleServerSync();
   }
-  return hydrating;
-}
-
-function commit(next: EnrollTopic[]) {
-  list = next; // new identity so React snapshots update
-  persist();
-  scheduleServerSync();
-  emit();
 }
 
 /**
- * NO EDIT BEFORE THE STORED LIST HAS LANDED (full-app run 2, 2026-10-01).
+ * Apply an edit to the STORED list and mirror it to the server.
  *
- * Every mutator below computes `next` from `list` and `commit` PERSISTS it —
- * and pushes it to the server master list. Before `hydrate` lands, `list` is
- * the empty placeholder: an ENROLL tap on Awards or Explore (neither mounts
- * `useEnrollment`), or any tap in the moments after an account switch, wrote a
- * one-topic list over the learner's stored enrollment and synced it upstream,
- * where it gates study and quizzes. Returns true when the call was deferred;
- * the caller re-runs once the list is real (same identity only).
+ * NO EDIT BEFORE THE STORED LIST HAS LANDED (full-app run 2, 2026-10-01).
+ * Every mutator below computes its result from the list it is handed, and the
+ * shared store hands it the HYDRATED list — queued until the read lands, and
+ * dropped by an account wipe meanwhile. Before, an ENROLL tap on Awards or
+ * Explore (neither mounts `useEnrollment`), or any tap in the moments after an
+ * account switch, wrote a one-topic list over the learner's stored enrollment
+ * and synced it upstream, where it gates study and quizzes. `edit` returns
+ * null for "nothing to change".
+ *
+ * While the stored list cannot be READ, the edit stays queued (shown, not
+ * written) and lands on the list the next successful read brings back; the
+ * server mirror then follows on the next edit (the push is the whole list).
  */
-function deferUntilHydrated(run: () => void): boolean {
-  if (hydrated) return false;
+function commit(edit: (list: EnrollTopic[]) => EnrollTopic[] | null): void {
   const gen = generation;
-  void hydrate().then(() => {
-    if (gen === generation && hydrated) run();
-  });
-  return true;
+  let changed = false;
+  void store
+    .mutate((list) => {
+      const next = edit(list);
+      if (next == null) return list;
+      changed = true;
+      return next; // new identity so React snapshots update
+    })
+    .then(() => {
+      if (changed && gen === generation) scheduleServerSync();
+    });
 }
 
 export function getEnrollment(): EnrollTopic[] {
   void hydrate();
-  return list;
+  return store.get();
 }
 
 export function isEnrolled(gs: number): boolean {
-  return list.some((e) => e.gs === gs);
+  return store.get().some((e) => e.gs === gs);
 }
 
-/** Add topics (gs) not already present, appended in order, active + unfavorited.
- *  Returns how many were newly added. */
-export function addTopics(gsList: number[]): number {
-  if (deferUntilHydrated(() => addTopics(gsList))) return 0;
+function additionsFor(list: EnrollTopic[], gsList: number[]): EnrollTopic[] {
   const have = new Set(list.map((e) => e.gs));
   const seen = new Set<number>();
   const additions: EnrollTopic[] = [];
@@ -364,9 +375,18 @@ export function addTopics(gsList: number[]): number {
     seen.add(gs);
     additions.push({ gs, favorite: false, active: true });
   }
-  if (additions.length === 0) return 0;
-  commit([...list, ...additions]);
-  return additions.length;
+  return additions;
+}
+
+/** Add topics (gs) not already present, appended in order, active + unfavorited.
+ *  Returns how many were newly added (against the list as shown now). */
+export function addTopics(gsList: number[]): number {
+  const count = additionsFor(store.get(), gsList).length;
+  commit((list) => {
+    const additions = additionsFor(list, gsList);
+    return additions.length === 0 ? null : [...list, ...additions];
+  });
+  return count;
 }
 
 /** Bundle enrol (bug hunt 2026-09-29): add the NEW topics of a bundle
@@ -375,11 +395,12 @@ export function addTopics(gsList: number[]): number {
  *  setActiveMany(all, false) pair unloaded shared topics the user had loaded
  *  for another credential. Returns how many were newly added. */
 export function addTopicsUnloaded(gsList: number[]): number {
-  if (deferUntilHydrated(() => addTopicsUnloaded(gsList))) return 0;
-  const fresh = freshGs(list.map((e) => e.gs), gsList);
-  if (fresh.length === 0) return 0;
-  commit([...list, ...fresh.map((gs) => ({ gs, favorite: false, active: false }))]);
-  return fresh.length;
+  const count = freshGs(store.get().map((e) => e.gs), gsList).length;
+  commit((list) => {
+    const fresh = freshGs(list.map((e) => e.gs), gsList);
+    return fresh.length === 0 ? null : [...list, ...fresh.map((gs) => ({ gs, favorite: false, active: false }))];
+  });
+  return count;
 }
 
 export function addTopic(gs: number): void {
@@ -387,9 +408,7 @@ export function addTopic(gs: number): void {
 }
 
 export function removeTopic(gs: number): void {
-  if (deferUntilHydrated(() => removeTopic(gs))) return;
-  if (!list.some((e) => e.gs === gs)) return;
-  commit(list.filter((e) => e.gs !== gs));
+  commit((list) => (list.some((e) => e.gs === gs) ? list.filter((e) => e.gs !== gs) : null));
 }
 
 /** Self-heal (owner 2026-08-10): drop enrolled topics whose gs is NOT in `valid`
@@ -399,60 +418,59 @@ export function removeTopic(gs: number): void {
  *  would be "curriculum still loading", not "everything is invalid"). */
 export function pruneInvalidGs(valid: Set<number>): number {
   if (valid.size === 0) return 0;
-  if (deferUntilHydrated(() => pruneInvalidGs(valid))) return 0;
-  const next = list.filter((e) => valid.has(e.gs));
-  const removed = list.length - next.length;
-  if (removed > 0) commit(next);
+  const shown = store.get();
+  const removed = shown.length - shown.filter((e) => valid.has(e.gs)).length;
+  commit((list) => {
+    const next = list.filter((e) => valid.has(e.gs));
+    return next.length === list.length ? null : next;
+  });
   return removed;
 }
 
 /** Toggle membership — add if absent, remove if present (add-menu tap). */
 export function toggleTopic(gs: number): void {
-  if (deferUntilHydrated(() => toggleTopic(gs))) return;
-  if (list.some((e) => e.gs === gs)) removeTopic(gs);
-  else addTopic(gs);
+  commit((list) => (list.some((e) => e.gs === gs) ? list.filter((e) => e.gs !== gs) : [...list, { gs, favorite: false, active: true }]));
 }
 
 export function toggleFavorite(gs: number): void {
-  if (deferUntilHydrated(() => toggleFavorite(gs))) return;
-  commit(list.map((e) => (e.gs === gs ? { ...e, favorite: !e.favorite } : e)));
+  commit((list) => list.map((e) => (e.gs === gs ? { ...e, favorite: !e.favorite } : e)));
 }
 
 export function toggleActive(gs: number): void {
-  if (deferUntilHydrated(() => toggleActive(gs))) return;
-  commit(list.map((e) => (e.gs === gs ? { ...e, active: !e.active } : e)));
+  commit((list) => list.map((e) => (e.gs === gs ? { ...e, active: !e.active } : e)));
 }
 
 /** Bulk-set active on many topics (bundle LOAD/UNLOAD, user request 2026-07-22). */
 export function setActiveMany(gsList: number[], active: boolean): void {
-  if (deferUntilHydrated(() => setActiveMany(gsList, active))) return;
   const set = new Set(gsList);
-  let changed = false;
-  const next = list.map((e) => {
-    if (set.has(e.gs) && e.active !== active) {
-      changed = true;
-      return { ...e, active };
-    }
-    return e;
+  commit((list) => {
+    let changed = false;
+    const next = list.map((e) => {
+      if (set.has(e.gs) && e.active !== active) {
+        changed = true;
+        return { ...e, active };
+      }
+      return e;
+    });
+    return changed ? next : null;
   });
-  if (changed) commit(next);
 }
 
 /** STUDY NOW / any `focusGs` request: make sure `gs` is enrolled AND active so
  *  the Dashboard deck can receive it (see studyFocusAction). Waits for the
- *  stored list first — adding to an un-hydrated `list` would persist a
+ *  stored list first — adding to an un-hydrated list would persist a
  *  one-topic list over the learner's real enrollment. */
 export async function ensureStudyTopic(gs: number): Promise<void> {
   // …and the SAME identity's list (bug pass 1, 2026-10-01). An account wipe
   // (resetLocal) while this awaits makes the old hydrate return WITHOUT
-  // hydrating; `list` is then the reset's empty array, so the add below wrote
+  // hydrating; the list is then the reset's empty array, so the add below wrote
   // a one-topic list over the next account's stored enrollment (and pushed it
   // to their server master list). The armed focus re-asks on the next deck
   // change, so dropping this request loses nothing.
   const gen = generation;
   await hydrate();
-  if (gen !== generation || !hydrated) return;
-  const action = studyFocusAction(list, gs);
+  if (gen !== generation || !store.isHydrated()) return;
+  const action = studyFocusAction(store.get(), gs);
   if (action === 'enroll') addTopics([gs]);
   else if (action === 'activate') setActiveMany([gs], true);
 }
@@ -461,58 +479,32 @@ export async function ensureStudyTopic(gs: number): Promise<void> {
  *  User PROGRESS is stored separately and is NOT touched — cleared topics can be
  *  re-added from the browse/add lists (user request 2026-07-25). */
 export function resetEnrollment(): void {
-  if (deferUntilHydrated(resetEnrollment)) return;
-  commit(FREE_ENROLL_GS.map((gs) => ({ gs, favorite: false, active: true })));
+  commit(() => FREE_ENROLL_GS.map((gs) => ({ gs, favorite: false, active: true })));
 }
 
-/** Reset the IN-MEMORY cache (account wipe / user switch — clearLocalAccountData).
- *  Clears the list + hydrated flags and emits so live useEnrollment() hooks
- *  re-render empty; the next read re-hydrates from the (cleared) storage, which
- *  re-seeds the free topics = correct new-user default. */
+/** Reset the IN-MEMORY cache (account wipe / user switch). The shared store
+ *  registers this reset with the wipe itself (its `onReset` cancels the armed
+ *  server sync and re-opens the server reconcile for the next identity, and it
+ *  re-hydrates for mounted hooks so they pick up the fresh, re-seeded list);
+ *  kept exported for callers and tests. */
 export function resetLocal(): void {
-  // Cancel any armed server sync FIRST (fix 2026-08-28). The debounced callback
-  // reads module-level `list` at FIRE time and uses whatever session is current,
-  // and the failure backoff can keep it armed for up to 30 s. Sign-out →
-  // sign-in inside that window fired `sync_my_enrollments({ p_items: [] })`
-  // under the NEW user and wiped THEIR enrollment master list — which the
-  // backend gates v3 study/quiz on.
-  if (syncTimer) clearTimeout(syncTimer);
-  syncTimer = null;
-  syncRetries = 0;
-  // The next identity must reconcile against ITS OWN server list, not inherit
-  // the departing user's "already checked".
-  reconciled = false;
-  generation++;
-  list = [];
-  hydrated = false;
-  hydrating = null;
-  emit();
-  // Mounted useEnrollment() hooks only hydrate on mount — re-hydrate for them
-  // now so they pick up the fresh (re-seeded) list instead of staying empty.
-  if (listeners.size > 0) void hydrate(); // hydrate emits when it lands
+  store.reset();
+  seeded.reset();
 }
 
 /** Move an entry up (-1) or down (+1) in the user's order. */
 export function moveTopic(gs: number, dir: -1 | 1): void {
-  if (deferUntilHydrated(() => moveTopic(gs, dir))) return;
-  const i = list.findIndex((e) => e.gs === gs);
-  const j = i + dir;
-  if (i < 0 || j < 0 || j >= list.length) return;
-  const next = [...list];
-  [next[i], next[j]] = [next[j], next[i]];
-  commit(next);
+  commit((list) => {
+    const i = list.findIndex((e) => e.gs === gs);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return null;
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    return next;
+  });
 }
 
 /** Live view of the enrollment list (re-renders on any change, any screen). */
 export function useEnrollment(): EnrollTopic[] {
-  const [snap, setSnap] = useState<EnrollTopic[]>(list);
-  useEffect(() => {
-    const l = () => setSnap(list);
-    listeners.add(l);
-    void hydrate().then(l);
-    return () => {
-      listeners.delete(l);
-    };
-  }, []);
-  return snap;
+  return store.use();
 }

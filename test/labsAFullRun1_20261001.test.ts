@@ -50,17 +50,19 @@ describe('HarmonicsView: the LIVE tone never restarts behind the user', () => {
 describe('Mixing lab: the armed replay never plays after every sound was stopped', () => {
   const s = read('src/screens/lab/mixing/kit.tsx');
   it('the replay timer is fenced on the sound-stop epoch taken when it was armed', () => {
-    const arm = s.indexOf('const armedEpoch = getSoundStopEpoch();');
-    assert.ok(arm > 0, 'the epoch is captured when the replay is armed');
+    // armFence (2026-10-02) captures the epoch when armed and, when asked,
+    // reports the gate, the focus/alive check and the epoch together.
+    const arm = s.indexOf('const blocked = armFence(() => aliveRef.current && focusedRef.current);');
+    assert.ok(arm > 0, 'the fence is armed (epoch captured) when the replay is armed');
     const t = s.indexOf('const t = setTimeout(() => {', arm);
-    assert.ok(t > arm, 'captured BEFORE the timer is set');
+    assert.ok(t > arm, 'armed BEFORE the timer is set');
     const cb = s.slice(t, s.indexOf('}, REPLAY_MS);', t));
-    const fence = cb.indexOf('if (getSoundStopEpoch() !== armedEpoch) return;');
+    const fence = cb.indexOf('if (blocked()) return;');
     assert.ok(fence > 0, 'the timer drops the replay when the epoch moved');
     assert.ok(fence < cb.indexOf('void renderAllRef.current();'), 'before anything renders or plays');
   });
-  it('getSoundStopEpoch is imported from the output store', () => {
-    assert.match(s, /import \{[^}]*\bgetSoundStopEpoch\b[^}]*\} from '..\/..\/..\/features\/audio\/audioOutputStore';/);
+  it('armFence is imported from the start fence', () => {
+    assert.match(s, /import \{[^}]*\barmFence\b[^}]*\} from '..\/..\/..\/features\/audio\/startFenced';/);
   });
 });
 

@@ -40,7 +40,9 @@ test('T3 — MultiMeter prompts render inside the snapshot Modal; locked SAVE cl
 test('T5/T9 — Signal Generator start guards', () => {
   const src = read('screens/tools/SignalGenScreen.tsx');
   assert.match(src, /if \(!mountedRef\.current\) return; \/\/ warning dismissed after the screen closed/);
-  assert.match(src, /if \(!isAudioOutputEnabled\(\)\) \{\s*void ApeDsp\.genStop\(\);/);
+  // The gate re-check is the start fence's (startFenced, 2026-10-02); its stop
+  // silences the generator.
+  assert.match(src, /startFenced\(\{\s*start: \(\) => ApeDsp\.genStart\(\),\s*stop: \(_s, why\) => \{\s*void ApeDsp\.genStop\(\);/);
   assert.match(src, /else if \(!startPendingRef\.current\) \{\s*(\/\/.*\n\s*)*startPendingRef\.current = true;/);
   assert.match(src, /finally \{\s*startPendingRef\.current = false;/);
 });

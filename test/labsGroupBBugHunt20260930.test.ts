@@ -75,8 +75,11 @@ for (const f of ['OscillatorLabScreen', 'NoiseLabScreen', 'BinauralLabScreen', '
     assert.match(s, /const wantRef = useRef\(false\);/);
     assert.match(s, /\+\+genRef\.current;\n\s*wantRef\.current = true;/);
     assert.match(s, /genRef\.current\+\+;\n\s*wantRef\.current = false;/);
-    assert.match(s, /if \(!wantRef\.current\)/);
+    // The fence's stop (startFenced, 2026-10-02) declines only for a
+    // superseded start that something newer still wants.
+    assert.match(s, /why === 'superseded' && wantRef\.current(\) return;| \? undefined : ApeDsp\.(gen|bin|mod)Stop\(\))/);
     assert.doesNotMatch(s, /if \(gen !== genRef\.current \|\| !isAudioOutputEnabled\(\)\)/);
+    assert.doesNotMatch(s, /stop: \(\) => ApeDsp\.(gen|bin|mod)Stop\(\)/, 'a superseded start must not stop unconditionally');
   });
 }
 

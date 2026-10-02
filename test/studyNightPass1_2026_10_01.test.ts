@@ -15,7 +15,7 @@ describe('ensureStudyTopic survives an account wipe mid-hydrate', () => {
   it('captures the generation before awaiting and bails if it moved or never hydrated', () => {
     const genAt = body.indexOf('const gen = generation;');
     const hydrateAt = body.indexOf('await hydrate();');
-    const fenceAt = body.indexOf('if (gen !== generation || !hydrated) return;');
+    const fenceAt = body.indexOf('if (gen !== generation || !store.isHydrated()) return;');
     const addAt = body.indexOf('addTopics([gs])');
     assert.ok(genAt > 0 && hydrateAt > genAt && fenceAt > hydrateAt && addAt > fenceAt);
   });
@@ -24,11 +24,15 @@ describe('ensureStudyTopic survives an account wipe mid-hydrate', () => {
 describe('hydrating stores carry a generation fence', () => {
   for (const f of ['scenarioExempt.ts', 'termsExempt.ts']) {
     it(f, () => {
+      // The fence moved into the shared safe store (2026-10-02, closer A2):
+      // its hydrate captures the generation before the read and lands nothing
+      // — not the set, not `hydrated` — once reset() has moved it
+      // (test/localStore.test.ts, "P3: an account reset while the read is in
+      // flight"). The store must be on it and keep no hand-rolled read.
       const s = read('src', 'features', 'study', f);
-      assert.match(s, /let generation = 0;/);
-      assert.match(s, /export function resetLocal\(\): void \{\s*generation\+\+;/);
-      const h = s.slice(s.indexOf('function hydrate('), s.indexOf('export function is'));
-      assert.match(h, /if \(gen !== generation\) return;\s*hydrated = true;/);
+      assert.match(s, /createLocalStore</);
+      assert.match(s, /export function resetLocal\(\): void \{\s*store\.reset\(\);/);
+      assert.doesNotMatch(s, /AsyncStorage\.getItem\(/);
     });
   }
   it('paceStore.ts', () => {

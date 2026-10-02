@@ -83,11 +83,19 @@ test('enrollment: a hydrate in flight across resetLocal never restores the previ
 });
 
 test('enrollment: resetLocal re-hydrates for mounted hooks', () => {
+  // The reset is the shared safe store's (2026-10-02, closer A2): it bumps the
+  // generation and re-hydrates for mounted subscribers; the store's own
+  // onReset bumps the module mirror the server-sync fences read.
   const src = read('features', 'enrollment', 'enrollmentStore.ts');
   const at = src.indexOf('export function resetLocal()');
   const body = src.slice(at, src.indexOf('\n}\n', at));
-  assert.match(body, /generation\+\+;/);
-  assert.match(body, /if \(listeners\.size > 0\) void hydrate\(\);/);
+  assert.match(body, /store\.reset\(\);/);
+  const onReset = src.slice(src.indexOf('onReset: () => {'), src.indexOf('isPristineSeed'));
+  assert.match(onReset, /generation\+\+;/);
+  const helper = read('features', 'storage', 'localStore.ts');
+  const reset = helper.slice(helper.indexOf('function reset(): void {'), helper.indexOf('function subscribe('));
+  assert.match(reset, /generation\+\+;/);
+  assert.match(reset, /if \(listeners\.size > 0\) void hydrate\(\);/);
 });
 
 test('deck order: a module-load hydrate in flight across resetLocal does not restore the old deck', async () => {

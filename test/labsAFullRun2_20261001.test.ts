@@ -53,23 +53,23 @@ describe('Labs A: every native start re-checks the sound-stop epoch after it res
   ];
   for (const [f, kind] of files) {
     it(f, () => {
+      // Since the start fence (startFenced, 2026-10-02) the epoch capture, the
+      // gate re-check and the epoch re-check are the helper's: every native
+      // start is its `start`, its `stop` stops that voice, and no start is
+      // awaited bare.
       const src = read(f);
-      const startRe = new RegExp(`await ApeDsp\\.${kind}Start\\(\\);`, 'g');
-      const starts = src.match(startRe)?.length ?? 0;
+      const starts = src.match(new RegExp(`ApeDsp\\.${kind}Start\\(`, 'g'))?.length ?? 0;
       assert.ok(starts > 0, `${f}: has a native ${kind}Start`);
-      const guarded =
-        // (Bass keeps its pinned `modelGenRef.current = gen; try {` lead-in.)
-        src.match(new RegExp(`const stopEpoch = getSoundStopEpoch\\(\\);\\s*(modelGenRef\\.current = gen;\\s*)?(try \\{\\s*)?(const st = )?await ApeDsp\\.${kind}Start\\(\\);`, 'g'))
-          ?.length ?? 0;
-      assert.equal(guarded, starts, `${f}: every ${kind}Start captures the epoch first`);
-      const checks =
-        src.match(new RegExp(`if \\(getSoundStopEpoch\\(\\) !== stopEpoch\\) \\{\\s*void ApeDsp\\.${kind}Stop\\(\\);`, 'g'))?.length ?? 0;
-      assert.equal(checks, starts, `${f}: every start re-checks the epoch and stops`);
-      // The check sits after the existing gate check, which stays unchanged.
-      const at = src.indexOf('if (getSoundStopEpoch() !== stopEpoch)');
-      const gate = src.lastIndexOf('if (!isAudioOutputEnabled()) {', at);
-      assert.ok(gate > src.indexOf(`${kind}Start();`) && gate < at, `${f}: after the gate check`);
-      assert.match(src, /import \{[^}]*\bgetSoundStopEpoch\b[^}]*\} from '..\/..\/features\/audio\/audioOutputStore';/);
+      const fenced = src.match(new RegExp(`startFenced\\(\\{\\s*start: \\(\\) => ApeDsp\\.${kind}Start\\(\\),`, 'g'))?.length ?? 0;
+      assert.equal(fenced, starts, `${f}: every ${kind}Start is the fence's start`);
+      assert.doesNotMatch(src, new RegExp(`await ApeDsp\\.${kind}Start\\(`), `${f}: a bare native start escapes the fence`);
+      let at = -1;
+      for (let n = 0; n < starts; n++) {
+        at = src.indexOf('startFenced({', at + 1);
+        const stop = src.slice(src.indexOf('stop:', at), src.indexOf('isCurrent:', at));
+        assert.match(stop, new RegExp(`ApeDsp\\.${kind}Stop\\(\\)`), `${f}: the fence's stop silences the voice`);
+      }
+      assert.match(src, /import \{[^}]*\bstartFenced\b[^}]*\} from '..\/..\/features\/audio\/startFenced';/);
     });
   }
   it('no top-level lab file with a native start escapes the list', () => {

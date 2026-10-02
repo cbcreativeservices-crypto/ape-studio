@@ -272,7 +272,10 @@ describe('audio honours the gate', () => {
     assert.match(hook, /if \(!\(await requestAudioOutput\(\)\)\) return;/);
     assert.match(hook, /useStopWhenSilenced\(active != null \|\| pending != null, stopAll\)/);
     assert.match(hook, /useStopOnClose\(stopAll\)/);
-    assert.match(hook, /isAudioOutputEnabled\(\)/);
+    // The gate re-check is the start fence's (startFenced, 2026-10-02): the
+    // load runs inside it and a queued play fires only when it reports started.
+    assert.match(hook, /const fenced = await startFenced\(\{\s*start: \(\) => player\.load\(clips\),/);
+    assert.match(hook, /if \(fenced\.status === 'started' && want && focusedRef\.current\)/);
     assert.match(hook, /new EarClipPlayer\(\)/, 'the house offline-render player (applyCeiling inside)');
   });
   it('the LEARN pages never pay for the programme render at mount', () => {

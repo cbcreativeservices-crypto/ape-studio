@@ -159,16 +159,15 @@ test('2 — Signal Generator: stopAllSound during an in-flight genStart stops it
   const src = read('screens/tools/SignalGenScreen.tsx');
   const start = src.indexOf('const onStart = async');
   const body = src.slice(start, src.indexOf('const onStop = async', start));
-  const epochAt = body.indexOf('getSoundStopEpoch()');
-  const nativeStart = body.indexOf('await ApeDsp.genStart()');
-  assert.ok(epochAt > 0 && epochAt < nativeStart, 'the sound-stop epoch is read before the native start');
-  assert.match(
-    body,
-    /if \(getSoundStopEpoch\(\) !== stopEpoch\) \{\s*void ApeDsp\.genStop\(\);/,
-    'a stopAllSound() during the start stops the generator',
-  );
+  // Through the start fence (startFenced, 2026-10-02): it reads the sound-stop
+  // epoch before its `start` and stops through its `stop` when it moved.
+  const fenceAt = body.indexOf('startFenced({');
+  const nativeStart = body.indexOf('ApeDsp.genStart()');
+  assert.ok(fenceAt > 0 && fenceAt < nativeStart, 'the native start runs inside the fence (epoch read before it)');
+  assert.doesNotMatch(body, /await ApeDsp\.genStart\(/, 'no bare native start');
+  assert.match(body, /stop: \(_s, why\) => \{\s*void ApeDsp\.genStop\(\);/, 'a stopAllSound() during the start stops the generator');
   assert.ok(
-    body.indexOf('getSoundStopEpoch() !== stopEpoch') < body.indexOf('setRunning(true)'),
+    body.indexOf("if (fenced.status !== 'started') return;") < body.indexOf('setRunning(true)'),
     'checked before the transport reads RUNNING',
   );
 });

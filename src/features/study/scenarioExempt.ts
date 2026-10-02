@@ -17,107 +17,64 @@
  * failure or for a guest whose role can't read the scenarios. Only a non-null
  * homework with no questions is a real "this topic has no scenarios" signal.
  *
- * Device-local (frozen backend), same hydrate-once + listener idiom as
- * enrollmentStore / flaggedStore: a Set of achievement_ids in AsyncStorage,
- * hydrated on first subscribe, with a change bus so a live Dashboard updates the
- * moment a topic is confirmed empty.
+ * Device-local (frozen backend): a Set of achievement_ids under one `ape:` key
+ * on the shared safe store (pattern catalog 2026-10-02, closer A2) — a failed
+ * read is never written over, a mark before the read lands joins the stored
+ * set, a read in flight across the account wipe lands nowhere, and the wipe
+ * reaches the store without a hand entry. The change bus is the store's own:
+ * a live Dashboard updates the moment a topic is confirmed empty.
  */
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSyncExternalStore } from 'react';
+import { createLocalStore } from '../storage/localStore';
 
 const KEY = 'ape:scenariosExempt';
 
-const exempt = new Set<string>();
-let hydrated = false;
-let hydrating: Promise<void> | null = null;
-let version = 0;
-const listeners = new Set<() => void>();
-
-function emit() {
-  version++;
-  listeners.forEach((l) => {
-    try {
-      l();
-    } catch {
-      /* a listener throwing must not wedge callers */
-    }
-  });
-}
-
-// Bumped by resetLocal (bug pass 1, 2026-10-01) — the generation fence every
-// other hydrating store has: a read in flight across an account wipe must not
-// refill the set, or mark it hydrated, after the reset.
-let generation = 0;
-
-function hydrate(): Promise<void> {
-  if (hydrated) return Promise.resolve();
-  if (hydrating) return hydrating;
-  const gen = generation;
-  hydrating = (async () => {
-    try {
-      const raw = await AsyncStorage.getItem(KEY);
-      if (gen !== generation) return;
-      if (raw) for (const id of JSON.parse(raw) as string[]) exempt.add(id);
-    } catch {
-      /* best-effort — a fresh empty set is safe */
-    }
-    if (gen !== generation) return;
-    hydrated = true;
-    emit();
-  })();
-  return hydrating;
-}
+const store = createLocalStore<ReadonlySet<string>>({
+  key: KEY,
+  empty: () => new Set<string>(),
+  parse: (p) => new Set(Array.isArray(p) ? p.filter((x): x is string => typeof x === 'string') : []),
+  serialize: (s) => JSON.stringify([...s]),
+});
 
 /** True if the topic is CONFIRMED to have no scenario content. Reads the
  *  in-memory set; pair with useScenarioExempt() where a live re-render matters. */
 export function isScenariosExempt(achievementId: string): boolean {
-  return exempt.has(achievementId);
+  return store.get().has(achievementId);
 }
 
-/** Record that a topic is confirmed to have no scenario content (idempotent). */
+/** Record that a topic is confirmed to have no scenario content (idempotent).
+ *  Applied to the STORED set once it has loaded (the Scenarios screen can reach
+ *  this before anything mounted useScenarioExempt — deep link / resume — and a
+ *  write over an unloaded set would lose every prior exemption). */
 export async function markScenariosExempt(achievementId: string): Promise<void> {
-  // Hydrate FIRST (parity with enrollmentStore/measurementStore): the Scenarios
-  // screen can reach this before anything mounted useScenarioExempt (deep link /
-  // resume), so writing without loading the stored set first would overwrite it
-  // with just this one id and lose every prior exemption.
-  await hydrate();
-  if (exempt.has(achievementId)) return;
-  exempt.add(achievementId);
-  emit();
-  try {
-    await AsyncStorage.setItem(KEY, JSON.stringify([...exempt]));
-  } catch {
-    /* the in-memory set already unblocked the quiz for this session */
-  }
+  await store.mutate((s) => (s.has(achievementId) ? s : new Set([...s, achievementId])));
 }
 
 /**
- * Reset the in-memory cache on account switch (parity with the other device-local
- * mirrors — see clearLocalAccountData/resetAllLocalStores). The persisted
- * `ape:scenariosExempt` key is removed by clearLocalAccountData's `ape:*` sweep;
- * this drops the cache + flips `hydrated` so live hooks re-render empty and the
- * next read re-hydrates from the (now-cleared) storage.
+ * Reset the in-memory cache on account switch. The persisted key is removed by
+ * clearLocalAccountData's `ape:*` sweep and the shared store registers this
+ * reset with the wipe itself; kept exported for callers and tests.
  */
 export function resetLocal(): void {
-  generation++;
-  exempt.clear();
-  hydrated = false;
-  hydrating = null;
-  emit();
+  store.reset();
+}
+
+// A version that moves whenever the set does (hydrate, mark, reset), so a
+// screen re-renders and re-reads isScenariosExempt().
+let version = 0;
+let lastSeen: ReadonlySet<string> | null = null;
+function currentVersion(): number {
+  const s = store.get();
+  if (s !== lastSeen) {
+    lastSeen = s;
+    version++;
+  }
+  return version;
 }
 
 /** Subscribe a screen to exemption changes; returns a version that bumps on any
  *  change so callers re-render and re-read isScenariosExempt(). Hydrates on first
  *  use (lazy, same as enrollmentStore.useEnrollment). */
 export function useScenarioExempt(): number {
-  const [v, setV] = useState(version);
-  useEffect(() => {
-    const l = () => setV(version);
-    listeners.add(l);
-    void hydrate().then(l);
-    return () => {
-      listeners.delete(l);
-    };
-  }, []);
-  return v;
+  return useSyncExternalStore(store.subscribe, currentVersion, currentVersion);
 }

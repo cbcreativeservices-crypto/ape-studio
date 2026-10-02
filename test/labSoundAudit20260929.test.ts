@@ -70,16 +70,19 @@ test('every native generator start re-checks the output gate after the start res
     'src/screens/lab/foundations/FoundationsPlaygroundScreen.tsx',
   ]) {
     const s = read(f);
-    // The gate check may stand alone (2026-09-30: the double-tap ▶ fix split it
-    // from the stale-generation check, FmLab's shape) — it must still come first.
-    assert.match(s, /await ApeDsp\.(gen|bin|mod)Start\(\);\n(\s*\/\/[^\n]*\n)*\s*if \((\w+ !== \w+(\.current)? \|\| )?!isAudioOutputEnabled\(\)\) \{/, f);
+    // The gate re-check is the start fence's (startFenced, 2026-10-02): every
+    // native start runs inside it, and none is awaited bare.
+    assert.match(s, /startFenced\(\{\n\s*start: \(\) => ApeDsp\.(gen|bin|mod)Start\(\),/, f);
+    assert.doesNotMatch(s, /await ApeDsp\.(gen|bin|mod)Start\(/, `${f}: a bare native start escapes the fence`);
   }
   const course = read('src/screens/lab/foundations/FoundationsCourseScreen.tsx');
-  assert.equal((course.match(/if \(gen !== genRef\.current \|\| !isAudioOutputEnabled\(\)\) \{/g) ?? []).length, 3, 'sine, additive and stereo starts');
+  assert.equal((course.match(/start: \(\) => ApeDsp\.genStart\(\),/g) ?? []).length, 3, 'sine, additive and stereo starts');
+  assert.doesNotMatch(course, /await ApeDsp\.genStart\(/);
   const hv = read('src/screens/lab/HarmonicsView.tsx');
   const start = hv.slice(hv.indexOf('const startTone = useCallback('), hv.indexOf('const stopTone = useCallback('));
-  assert.ok(start.indexOf('if (!isAudioOutputEnabled()) {') > start.indexOf('await ApeDsp.genStart();'));
-  assert.ok(start.indexOf('if (!isAudioOutputEnabled()) {') < start.indexOf('setGenRunning(true);'));
+  assert.ok(start.indexOf('startFenced({') > 0 && start.indexOf('startFenced({') < start.indexOf('ApeDsp.genStart()'));
+  assert.ok(start.indexOf("if (fenced.status !== 'started') return false;") > start.indexOf('ApeDsp.genStart()'));
+  assert.ok(start.indexOf("if (fenced.status !== 'started') return false;") < start.indexOf('setGenRunning(true);'));
 });
 
 test('Cymatics drive tone follows a mute (useStopWhenSilenced), like every other lab tone', () => {
@@ -115,7 +118,7 @@ test('Autotune: the pass ringing out keeps ■; an AMOUNT/SPEED change replays i
   assert.match(s, /\}, \[amount, speedKey\]\);/);
   assert.match(s, /if \(armedRef\.current\) void playRef\.current\(\);/);
   // A superseded start only stops the generator when nothing newer wants it.
-  assert.match(s, /if \(!wantRef\.current\) void ApeDsp\.genStop\(\);/);
+  assert.match(s, /why === 'superseded' && wantRef\.current \? undefined : ApeDsp\.genStop\(\)/);
   // ■ cancels a replay that is already scheduled.
   assert.match(s, /armedRef\.current = false; \/\/ a replay already scheduled must not fire/);
 });
@@ -124,7 +127,7 @@ test('FM: armed PLUCK/BELL strike again when a control settles; a ■ cancels it
   const s = read('src/screens/lab/FmLabScreen.tsx');
   assert.match(s, /if \(env\.decaySec <= 0\) return;/);
   assert.match(s, /if \(wantRef\.current\) void strikeRef\.current\(\);/);
-  assert.match(s, /if \(!wantRef\.current\) void ApeDsp\.genStop\(\);/);
+  assert.match(s, /why === 'superseded' && wantRef\.current \? undefined : ApeDsp\.genStop\(\)/);
 });
 
 test('Harmonograph: an unclean ratio goes quiet but stays armed; ■ stays pressable', () => {
@@ -164,7 +167,10 @@ test('mixing: ■ stays lit after the clip ends; a console edit replays the same
   assert.match(s, /playerRef\.current\.onEnded = null;/);
   assert.match(s, /const again = activeRef\.current \?\? pendingRef\.current(?: \?\? replayIdRef\.current)?;/);
   const eff = s.slice(s.indexOf('const again = activeRef.current'), s.indexOf('}, [signature]);'));
-  assert.match(eff, /if \(!aliveRef\.current \|\| !focusedRef\.current \|\| !isAudioOutputEnabled\(\)\) return;/);
+  // Alive + in front + the open gate (and the sound-stop epoch) — the fence,
+  // armed when the replay is armed (armFence, 2026-10-02).
+  assert.match(eff, /const blocked = armFence\(\(\) => aliveRef\.current && focusedRef\.current\);/);
+  assert.match(eff, /if \(blocked\(\)\) return;/);
   assert.match(eff, /void renderAllRef\.current\(\);/);
   assert.match(eff, /return \(\) => (?:\{\s*)?clearTimeout\(t\);/);
 });

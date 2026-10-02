@@ -24,7 +24,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useFrameCallback, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
-import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
+import { startFenced } from '../../../features/audio/startFenced';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { envelopeDb, overview, sustainT60, toStereo, type Overview, type RenderResult } from './drumEngine';
@@ -210,14 +210,22 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
         return false;
       }
       setPending(true);
-      const ok = await load();
+      // The fence (startFenced): a mute, a ■, a fader moved mid-render, or a
+      // stop-all (leaving the app with "Mute audio when I leave the app" OFF —
+      // the gate stays ON, so a gate check alone missed it) during the load
+      // means nothing sounds.
+      const fenced = await startFenced({
+        start: load,
+        stop: () => {}, // loaded, not sounding: nothing to silence
+        isCurrent: current,
+      });
       // ▶ ▶ fast (toddler pass 2): the FIRST press's load is superseded and
       // used to clear `pending` here while the second press was still
       // rendering — the status flickered to "stopped" and the silence guard
       // saw nothing in flight. The newer press (or a ■) owns it.
       if (!current()) return false;
       setPending(false);
-      if (!ok || !focusedRef.current || !isAudioOutputEnabled() || !playerRef.current) return false;
+      if (fenced.status !== 'started' || !fenced.value || !focusedRef.current || !playerRef.current) return false;
       const r = renderedRef.current;
       clipSeconds.value = r ? r.result.seconds : 1;
       playerRef.current.play(0);

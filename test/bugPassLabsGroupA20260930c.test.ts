@@ -32,7 +32,10 @@ test('a superseded start stops the generator only while the last act was a stop'
   ]) {
     const src = read(p);
     assert.doesNotMatch(src, /stopGenRef\.current > gen/, p);
-    assert.match(src, /if \(stopGenRef\.current === genRef\.current \|\| !isAudioOutputEnabled\(\)\)/, p);
+    // The start fence (startFenced, 2026-10-02) owns the gate and epoch
+    // checks; the site's `stop` declines only for 'superseded' while a stop()
+    // is not the latest act.
+    assert.match(src, /why === 'superseded' && stopGenRef\.current !== genRef\.current(\) return;| \? undefined : ApeDsp\.genStop\(\))/, p);
     assert.match(src, /stopGenRef\.current = \+\+genRef\.current;/, p);
   }
 });

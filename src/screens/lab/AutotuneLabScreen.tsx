@@ -32,7 +32,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { startFenced, type FenceResult } from '../../features/audio/startFenced';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { CheckQuestion } from './foundations/bits';
 import { EngineGate } from '../tools/EngineGate';
@@ -182,31 +183,21 @@ export function AutotuneLabScreen() {
         ? { mode: GEN_MODES.additive, additive: voicePayload(startHz(0)), levelDb: GEN_LEVEL_DB }
         : { mode: GEN_MODES.sine, frequency: startHz(0), levelDb: GEN_LEVEL_DB },
     );
-    // Every sound stopped while the native start was in flight (leaving the
-    // app with "Mute audio when I leave the app" OFF stops voices but leaves
-    // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
-    const stopEpoch = getSoundStopEpoch();
+    // The fence (startFenced): a mute, a stop/hush, or a stop-all that lands
+    // while the native start is in flight wins — this start never sounds on.
+    let fenced: FenceResult<unknown>;
     try {
-      await ApeDsp.genStart();
+      fenced = await startFenced({
+        start: () => ApeDsp.genStart(),
+        // A newer ▶ owns the voice; a stop/hush meanwhile silences it.
+        stop: (_s, why) => (why === 'superseded' && wantRef.current ? undefined : ApeDsp.genStop()),
+        isCurrent: () => gen === genRef.current,
+      });
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
       return;
     }
-    // A mute that landed while the native start was in flight wins — never
-    // leave a tone sounding into a closed gate (owner 2026-09-29).
-    if (!isAudioOutputEnabled()) {
-      void ApeDsp.genStop();
-      return;
-    }
-    if (gen !== genRef.current) {
-      if (!wantRef.current) void ApeDsp.genStop(); // stopped/hushed meanwhile
-      return;
-    }
-    // Every sound was stopped while the native start ran: stay quiet.
-    if (getSoundStopEpoch() !== stopEpoch) {
-      void ApeDsp.genStop();
-      return;
-    }
+    if (fenced.status !== 'started') return;
     setPlaying(true);
     setActiveNote(0);
     noteAudioActivity();

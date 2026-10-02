@@ -19,6 +19,7 @@ import {
 } from '../ear/earDsp';
 import { ensureStereo, loopSlice, resample, toMono, trim } from './resample';
 import type { EarClipPlayer } from '../ear/earPlayer';
+import { startFenced } from './startFenced';
 
 /** A filter by description (built with earDsp.rbj) — or pass a ready Biquad. */
 export type RecordedEqSpec = {
@@ -138,8 +139,9 @@ export type RecordedPlayer = Pick<EarClipPlayer, 'load' | 'play' | 'stop'>;
 /**
  * Load rendered versions into a player and play one — behind the gate.
  * `requestAudioOutput` is the gate's ask (useAudioOutputGate); `isEnabled`
- * the last-moment check (audioOutputStore.isAudioOutputEnabled), because a
- * shake-to-mute can land during the load. Returns false when nothing played.
+ * the caller's own last-moment check. The load is fenced (startFenced): a
+ * shake-to-mute, a stop-all or a closed `isEnabled` during it plays nothing.
+ * Returns false when nothing played.
  */
 export async function playRendered(
   player: RecordedPlayer,
@@ -148,8 +150,12 @@ export async function playRendered(
   gate: { requestAudioOutput: () => Promise<boolean>; isEnabled: () => boolean },
 ): Promise<boolean> {
   if (!(await gate.requestAudioOutput())) return false;
-  await player.load(bufs);
-  if (!gate.isEnabled()) return false;
+  const fenced = await startFenced({
+    start: () => player.load(bufs),
+    stop: () => {}, // loaded, not sounding: nothing to silence
+    isCurrent: gate.isEnabled,
+  });
+  if (fenced.status !== 'started') return false;
   player.play(index);
   return true;
 }

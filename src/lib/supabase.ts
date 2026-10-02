@@ -15,6 +15,16 @@ import { AppState } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env';
 import { authStorage } from './authStorage';
+import { createBoundedFetch } from './boundedCall';
+
+/**
+ * Every request this client makes has a deadline (pattern hunt A4,
+ * 2026-10-02). React Native's fetch never times out on its own, so a stalled
+ * socket used to be a promise that never settled. `global.fetch` is the one
+ * door REST, auth, functions and storage all go through; see boundedCall.ts
+ * for the budgets and what it does NOT cover (the keychain token read).
+ */
+const boundedFetch = createBoundedFetch(undefined, 'supabase');
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
@@ -24,6 +34,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     // No deep-link/URL session detection in a native app.
     detectSessionInUrl: false,
   },
+  global: { fetch: boundedFetch },
 });
 
 // Only refresh the JWT while the app is foregrounded (Supabase RN guidance).

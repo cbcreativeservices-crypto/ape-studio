@@ -50,15 +50,19 @@ test('LP6 hidden rack: its open tray gives up Android back', () => {
 
 test('LP1 safety: a lab clip / tuning clip re-checks the gate right before it starts', () => {
   const p = read('src/features/lab/LabAudioPlayer.ts');
-  const gate = p.indexOf("if (!isAudioOutputEnabled()) return 'blocked';");
-  assert.ok(gate > 0, 'LabAudioPlayer re-checks the gate');
-  // Pooled players (owner 2026-09-29): the re-check sits after every await
-  // and before the pooled clip is started.
-  assert.ok(gate > p.lastIndexOf('await this.load('), 'after the last await');
+  // The gate re-check is the start fence's (startFenced, 2026-10-02): the
+  // awaits run inside it and the pooled clip starts only on 'started'.
+  const fence = p.indexOf('const fenced = await startFenced({');
+  assert.ok(fence > 0, 'LabAudioPlayer fences its start');
+  assert.ok(fence < p.lastIndexOf('this.load(labKey, assetKey)'), 'the load runs inside the fence');
+  const gate = p.indexOf("if (fenced.status !== 'started') return fenced.why === 'superseded' ? 'network' : 'blocked';");
+  assert.ok(gate > p.lastIndexOf('this.load(labKey, assetKey)'), 'after the last await');
   assert.ok(gate < p.indexOf('got.player.play();'), 'before play()');
   const t = read('src/features/tuning/tuningAudio.ts');
-  // Saved clips (owner 2026-09-29): the pooled voice or the one-slot `ear`.
-  assert.match(t, /await this\.ear\.load\(\[buf\]\);\n\s+if \(my !== this\.token \|\| !voice\) return;\n(\s+\/\/[^\n]*\n)+\s+if \(!isAudioOutputEnabled\(\)\) return;\n\s+this\.voice = voice;\n\s+voice\.play\(0\);/);
+  // Saved clips (owner 2026-09-29): the pooled voice or the one-slot `ear`,
+  // both loaded inside the fence; nothing plays unless it reports started.
+  assert.match(t, /const fenced = await startFenced\(\{\n\s+start: async \(\): Promise<EarClipPlayer \| null> => \{\n\s+if \(!key\) \{\n\s+await this\.ear\.load\(\[buf\]\);\n\s+return this\.ear;/);
+  assert.match(t, /isCurrent: \(\) => my === this\.token,\n\s+\}\);\n\s+if \(fenced\.status !== 'started' \|\| !fenced\.value\) return;\n\s+const voice = fenced\.value;\n\s+this\.voice = voice;\n\s+voice\.play\(0\);/);
 });
 
 test('LP5 Bass lab: ■ is never disabled, and the signed-URL fetch is bounded', () => {

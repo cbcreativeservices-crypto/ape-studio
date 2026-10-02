@@ -49,5 +49,5 @@ test('Dashboard: the term list is a centred fading card, and the deck keeps one 
   assert.match(dash, /removeFromDeck\(id, topics\.map\(\(t\) => t\.id\)\)/);
   const store = read('features', 'dashboard', 'deckOrderStore.ts');
   assert.match(store, /export function removeFromDeck\(id: string, deckIds\?: readonly string\[\]\): void/);
-  assert.match(store, /if \(left\.length === 0\) return;/);
+  assert.match(store, /if \(left\.length === 0\) return prefs;/);
 });

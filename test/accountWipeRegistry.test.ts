@@ -118,10 +118,16 @@ describe('the account wipe reaches every store that holds user state', () => {
     );
   });
 
+  /** A store on the shared safe store (features/storage/localStore.ts)
+   *  registers its reset with the wipe at creation — no import needed
+   *  (2026-10-02, closer A2 / guard G2). */
+  const onSafeStore = (rel: string) => /from '[^']*storage\/localStore'/.test(readFileSync(join(SRC, rel), 'utf8'));
+
   it('EVERY stateful store is registered or exempt with a reason', () => {
     const missing: string[] = [];
     for (const rel of stateful) {
       if (EXEMPT[rel]) continue;
+      if (onSafeStore(rel)) continue;
       const base = (rel.split('/').pop() ?? '').replace(/\.tsx?$/, '');
       if (!imported.has(base)) missing.push(rel);
     }
@@ -142,6 +148,123 @@ describe('the account wipe reaches every store that holds user state', () => {
         stateful.includes(rel),
         `${rel} is exempt but no longer matches the scan — remove the exemption or fix the path`,
       );
+    }
+  });
+});
+
+/**
+ * G2 (pattern catalog 2026-10-02): every exported `reset*` function in src/ is
+ * REACHED by the account wipe — called from resetAllLocalStores (directly or
+ * under an import alias), or a store on the shared safe store whose reset is
+ * registered at creation — or listed here with the reason it must not be.
+ *
+ * The 2026-10-02 count: 48 exported reset* functions, 33 calls in the wipe.
+ * The gap was not 7 unregistered stores: it was 18 named resets that are a
+ * learner's own PRACTICE reset, a Settings action on device-level flags, a
+ * session tally, or a cache — each with a verdict below — plus ONE real gap,
+ * `resetTaxonomyCache`, whose own header said "account switch" and which
+ * nothing called. It is registered now. This list may only shrink.
+ */
+const RESET_NOT_FOR_THE_WIPE: Record<string, string> = {
+  'features/amp/ampProgress.ts#resetAmpProgress':
+    "a learner's PRACTICE reset (keeps `done` and `bestFinal`, owner 2026-09-29); the module holds no user data in memory (see EXEMPT)",
+  'features/careerfinder/store.ts#resetCareerFinder':
+    "the learner's own retake (answers + results, saved families kept); the account switch goes through resetLocal, which the wipe calls",
+  'features/enrollment/enrollmentStore.ts#resetEnrollment':
+    "the learner's own 'back to the free topics' edit, a commit through the shared safe store; the account switch is the store's own registered reset",
+  'features/glossary/glossaryGateway.ts#resetGatewayProbe':
+    'the cached "is the gateway deployed" answer — a deployment fact, identical for every user; dropped by tests and after a schema change only',
+  'features/intro/onboardingFlow.ts#resetOnboarding':
+    'Settings → "Reset onboarding hints": device-level first-use flags that deliberately SURVIVE the wipe (isOnboardingFlag, 2026-08-13)',
+  'features/intro/screenIntros.ts#resetScreenIntros': 'same Settings action, same device-level ape:intro:* family',
+  'features/lab/amplitudeOrientation.ts#resetAmplitudeOrientation': 'same Settings action, same device-level first-use family',
+  'lib/coachMark.ts#resetCoachMarks': 'same Settings action, the ape:coach:* retire counters (kept by the wipe since 2026-08-28)',
+  'features/lab/pagedProgress.ts#resetPagedProgress':
+    "a learner's PRACTICE reset of one paged lab's page marks (credit lives elsewhere); the keys are ape:* and swept, and the module keeps no cache of them",
+  'features/permissions/permissionStore.ts#resetAskModes':
+    'Settings → "Reset permission prompts" (a user action); the wipe calls resetAskModeCache for the in-memory consent cache',
+  'features/settings/a11y.ts#resetA11y': "called by settings/store.ts resetLocal (resetSettingsMirrors), which the wipe calls — reached, one level down",
+  'features/soundsystems/progress.ts#resetSoundSystemsProgress':
+    "the learner's own hub RESET (practice); the account switch goes through resetLocal, which the wipe calls",
+  'features/soundsystems/progress.ts#resetSoundSystemsLists': "one mode's in-lab RESET (practice); same resetLocal for the account switch",
+  'features/study/paceStore.ts#resetBrainOutput':
+    "zeroes one method's session tally when its pace session restarts; the wipe's paceStore resetLocal clears the whole brainCache",
+  'features/tuning/tuningProgress.ts#resetTuningProgress':
+    "a learner's PRACTICE reset (removes the swept ape:* key); the module keeps no user data in memory (see EXEMPT)",
+  'screens/lab/drumtuning/drumProgress.ts#resetDrumPractice':
+    "a learner's PRACTICE reset (`done` and the notes are kept); a write-queue module with no user data in memory (see EXEMPT)",
+  'screens/lab/mastering/masteringProgress.ts#resetMasteringPractice':
+    "a learner's PRACTICE reset (`done` is kept); a write-queue module with no user data in memory (see EXEMPT)",
+  'features/auth/api.ts#resetPassword': 'not a store: an alias of requestPasswordReset (the account-recovery request)',
+  'features/onboarding/attractStore.ts#resetLocal':
+    'the Home attract cues are device-level first-use state the wipe deliberately keeps (owner ruling recorded in the file); the export stays for the day that ruling is reversed',
+  'screens/lab/calc/workflowStore.ts#resetLocal': 'exported again as resetCalcWorkflowStore in the same file, which the wipe calls',
+};
+
+describe('G2: every exported reset* is reached by the account wipe, or says why not', () => {
+  const registry = readFileSync(REGISTRY, 'utf8');
+  const wipeBody = registry.slice(registry.indexOf('export function resetAllLocalStores'));
+  const calledInWipe = new Set([...wipeBody.matchAll(/^\s*(?:void )?(\w+)\(/gm)].map((m) => m[1]));
+  /** module path (relative to src, no extension) → { exported name → local alias } */
+  const aliases = new Map<string, Map<string, string>>();
+  for (const m of registry.matchAll(/import \{([^}]+)\} from '([^']+)'/g)) {
+    const mod = join('features/account', m[2]).split(sep).join('/');
+    const map = aliases.get(mod) ?? new Map<string, string>();
+    for (const spec of m[1].split(',')) {
+      const [name, alias] = spec.trim().split(/\s+as\s+/);
+      if (name) map.set(name, alias ?? name);
+    }
+    aliases.set(mod, map);
+  }
+
+  const exported: { rel: string; name: string; body: string; safe: boolean }[] = [];
+  for (const p of walk(SRC)) {
+    const rel = relative(SRC, p).split(sep).join('/');
+    if (rel === 'features/account/clearLocalAccountData.ts') continue;
+    if (rel === 'features/storage/localStore.ts') continue; // the helper's doc comment shows a resetLocal example
+    const s = readFileSync(p, 'utf8');
+    const safe = /from '[^']*storage\/localStore'/.test(s);
+    for (const m of s.matchAll(/export (?:async )?(?:function|const) (reset\w+)/g)) {
+      const at = m.index ?? 0;
+      const end = s.indexOf('\n}', at);
+      exported.push({ rel, name: m[1], body: s.slice(at, end < 0 ? s.length : end), safe });
+    }
+  }
+
+  it('the scan found the resets and the wipe', () => {
+    assert.ok(exported.length > 40, `expected many reset* exports, got ${exported.length}`);
+    assert.ok(calledInWipe.size > 25, `expected the wipe's calls, got ${calledInWipe.size}`);
+    assert.ok(calledInWipe.has('resetRegisteredLocalStores'), 'the wipe must run the self-registered stores');
+  });
+
+  it('every reset* export is reached or listed with a reason', () => {
+    const unreached: string[] = [];
+    for (const { rel, name, body, safe } of exported) {
+      const id = `${rel}#${name}`;
+      if (RESET_NOT_FOR_THE_WIPE[id]) continue;
+      const mod = rel.replace(/\.tsx?$/, '');
+      const alias = aliases.get(mod)?.get(name);
+      if (alias && calledInWipe.has(alias)) continue;
+      if (safe && /\.reset\(\)/.test(body)) continue; // registered at creation
+      unreached.push(id);
+    }
+    assert.deepEqual(
+      unreached,
+      [],
+      'these reset* exports are never reached by resetAllLocalStores.\n' +
+        'Register the store (or put it on createLocalStore), or add it to RESET_NOT_FOR_THE_WIPE with a reason:\n  ' +
+        unreached.join('\n  '),
+    );
+  });
+
+  it('the list only shrinks: every entry still exists and still is not reached', () => {
+    for (const [id, why] of Object.entries(RESET_NOT_FOR_THE_WIPE)) {
+      assert.ok(why.length > 20, `${id} needs a real reason`);
+      const [rel, name] = id.split('#');
+      const hit = exported.find((e) => e.rel === rel && e.name === name);
+      assert.ok(hit, `${id} is listed but no longer exported — remove the entry`);
+      const alias = aliases.get(rel.replace(/\.tsx?$/, ''))?.get(name);
+      assert.ok(!(alias && calledInWipe.has(alias)), `${id} is now called by the wipe — remove the entry`);
     }
   });
 });

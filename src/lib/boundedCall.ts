@@ -101,3 +101,116 @@ export async function softDeadline<T>(
     if (timer) clearTimeout(timer);
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THE CLIENT BOUNDARY (pattern hunt A4, 2026-10-02)
+//
+// withDeadline/softDeadline bound the calls someone remembered to wrap. This
+// bounds EVERY request the Supabase client makes — `.rpc()`, `.from()`,
+// `auth.*` network calls (sign-in, refresh, sign-out), `functions.invoke()`
+// and storage — because it is handed to `createClient` as `global.fetch`, the
+// one door all four HTTP clients go through. React Native's fetch on Android
+// never times out by itself, so without this a stalled socket is a promise
+// that never settles, however careful the caller is.
+//
+// It is a BACKSTOP, not a replacement:
+//   · The budgets are deliberately LONGER than DEFAULT_DEADLINE_MS, so every
+//     per-call withDeadline/softDeadline still fires first with its own label
+//     and its own (friendlier) timing — `/redeem_access_code timeout/` and
+//     `/signOut timeout/` match on those labels. This only catches the sites
+//     nobody wrapped, and it also cancels the socket a per-call race left
+//     running.
+//   · The rejection is named `AbortError` and its message says "timeout":
+//       - postgrest-js turns a rejected fetch into `{ data: null, error }`
+//         (message "AbortError: … timeout after …") — an ERROR, never an empty
+//         success — and does not retry an AbortError, so a GET cannot triple
+//         the wait;
+//       - auth-js throws AuthRetryableFetchError (status 0) with the message;
+//       - functions-js returns `{ error: FunctionsFetchError }`;
+//     and every transient matcher in the app (/timeout|abort|fetch/) reads it
+//     as the offline case.
+//
+// ⚠️ NOT COVERED: the access-token read supabase-js does BEFORE calling fetch
+// (`auth.getSession()` → the keychain). A stalled secure-store read stalls
+// there, outside this window — that is what safeSession/withDeadline at the
+// call site are for. A refresh stalled on the NETWORK is covered (the refresh
+// request itself comes through here, so the auth lock is released).
+// Realtime is a WebSocket and does not use fetch; it is unaffected.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** REST, auth and anything else. Above DEFAULT_DEADLINE_MS on purpose (see above). */
+export const FETCH_DEADLINE_MS = 30000;
+/** Edge functions: cold starts, and validate-purchase is bounded at 30 s by its caller. */
+export const FUNCTIONS_FETCH_DEADLINE_MS = 45000;
+/** Storage: uploads and downloads move real bytes over a phone connection. */
+export const STORAGE_FETCH_DEADLINE_MS = 120000;
+
+type FetchLike = (input: any, init?: any) => Promise<any>;
+
+/** The budget for one request, by Supabase service path. */
+export function fetchDeadlineFor(url: string): number {
+  if (/\/storage\/v1\//.test(url)) return STORAGE_FETCH_DEADLINE_MS;
+  if (/\/functions\/v1\//.test(url)) return FUNCTIONS_FETCH_DEADLINE_MS;
+  return FETCH_DEADLINE_MS;
+}
+
+const urlOf = (input: unknown): string =>
+  typeof input === 'string' ? input : String((input as { url?: string } | null)?.url ?? input);
+
+/** Path only — no host, no query string (filters can carry user values). */
+const pathOf = (url: string): string => url.replace(/^[a-z][a-z0-9+.-]*:\/\/[^/]+/i, '').split('?')[0];
+
+/**
+ * Wrap a fetch so no request can outlive its budget.
+ *
+ * @param base        the real fetch, resolved at CALL time so a polyfill (or a
+ *                    test stub) installed after import is the one used
+ * @param label       named in the rejection, so a stall in the wild says where
+ * @param deadlineFor budget per URL
+ */
+export function createBoundedFetch(
+  base: FetchLike = (input, init) => fetch(input, init),
+  label = 'fetch',
+  deadlineFor: (url: string) => number = fetchDeadlineFor,
+): FetchLike {
+  return (input, init) => {
+    const url = urlOf(input);
+    const ms = deadlineFor(url);
+    const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+    // Keep the caller's own cancellation (postgrest `.abortSignal()`,
+    // functions-js `timeout`) working through our controller.
+    const outer: AbortSignal | undefined = init?.signal ?? undefined;
+    let relay: (() => void) | undefined;
+    if (ctl && outer) {
+      if (outer.aborted) ctl.abort();
+      else {
+        relay = () => ctl.abort();
+        outer.addEventListener('abort', relay, { once: true });
+      }
+    }
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<never>((_resolve, reject) => {
+      timer = setTimeout(() => {
+        // "timeout" is load-bearing (see withDeadline); the AbortError name
+        // stops postgrest-js retrying it. Reject FIRST so this error, not the
+        // platform's generic abort, is the one the caller sees.
+        const err = new Error(`${label} ${pathOf(url)} timeout after ${ms}ms`);
+        err.name = 'AbortError';
+        reject(err);
+        // Also cancel the socket. The race above already settled the caller,
+        // so a fetch that ignores the signal still cannot hold anyone up.
+        ctl?.abort();
+      }, ms);
+    });
+    let run: Promise<any>;
+    try {
+      run = base(input, ctl ? { ...(init ?? {}), signal: ctl.signal } : init);
+    } catch (e) {
+      run = Promise.reject(e);
+    }
+    return Promise.race([run, deadline]).finally(() => {
+      if (timer) clearTimeout(timer);
+      if (relay && outer) outer.removeEventListener('abort', relay);
+    });
+  };
+}

@@ -16,13 +16,10 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { resetLocal as resetEnrollmentStore } from '../enrollment/enrollmentStore';
-import { resetLocal as resetEnrolledBundlesStore } from '../enrollment/enrolledBundlesStore';
-import { resetLocal as resetFlaggedStore } from '../flags/flaggedStore';
+import { resetRegisteredLocalStores } from '../storage/localStoreRegistry';
+import { resetTaxonomyCache } from '../directory/api';
 import { resetLocal as resetPaceStore } from '../study/paceStore';
 import { resetLocal as resetLastStudyLocation } from '../study/lastStudyLocation';
-import { resetLocal as resetScenarioExempt } from '../study/scenarioExempt';
-import { resetLocal as resetTermsExempt } from '../study/termsExempt';
 import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
 import {
   clearStoredMeasurements,
@@ -35,7 +32,6 @@ import { resetLocal as resetDashboardCache } from '../dashboard/dashboardCache';
 import { clearQueuedBatches } from '../study/studyQueueStorage';
 import { clearScenarioQueue } from '../study/scenarioQueue';
 import { clearQueuedSubmissions } from '../quiz/submissionQueueStorage';
-import { resetLocal as resetDeckOrder } from '../dashboard/deckOrderStore';
 import { resetLocal as resetSettingsMirrors } from '../settings/store';
 import { resetLocal as resetPublicProfile } from '../profile/publicProfile';
 import { setChainValue } from '../../screens/lab/calc/chainStore';
@@ -247,13 +243,15 @@ async function sweepApeKeys(opts?: { total?: boolean }): Promise<void> {
  * topics = the correct new-user default. Safe to call even with no subscribers.
  */
 export function resetAllLocalStores(): void {
-  resetEnrollmentStore();
-  resetEnrolledBundlesStore();
-  resetFlaggedStore();
+  // EVERY store on the shared safe store (features/storage/localStore.ts)
+  // registered its reset at creation: enrollment, enrolled bundles, the term
+  // lists and bookmarks, the deck order, the exemption sets, and whatever is
+  // migrated next. Nothing below needs a line for them — the hand-kept list
+  // drifted every bug pass (2, then 9, then 3 missing), which is why the
+  // registry exists (pattern catalog 2026-10-02, closer A2 / guard G2).
+  resetRegisteredLocalStores();
   resetPaceStore();
   resetLastStudyLocation();
-  resetScenarioExempt();
-  resetTermsExempt();
   resetHomeCardsStore();
   resetMeasurementStore();
   resetLabCompletion();
@@ -263,7 +261,6 @@ export function resetAllLocalStores(): void {
   // (2026-08-28).
   resetExposureMonitor();
   resetDashboardCache();
-  resetDeckOrder();
   resetSettingsMirrors();
   // Registry 18+ attestation + name/listing sync markers — module-level, so
   // the next account inherited the departing user's attestation and skipped
@@ -344,4 +341,9 @@ export function resetAllLocalStores(): void {
   // the departing session loaded outlives it. The raw WAVs in the cache
   // directory stay (shared reference data, like the glossary catalog).
   resetLabClipMemory();
+  // The community directory taxonomy cache: reference data, but its own
+  // header says to drop it on an account switch "so a stale fetch from a
+  // signed-out session cannot linger with partial data" — and nothing called
+  // it (guard G2, 2026-10-02).
+  resetTaxonomyCache();
 }

@@ -51,7 +51,8 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { startFenced } from '../../features/audio/startFenced';
 import { GuidedLessonSheet, getLabLesson, SOURCE_LESSON, type LabId, type LessonContent } from '../../features/lab/guidedLessons';
 import { GrLadder, GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
@@ -428,31 +429,19 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     ApeDsp.genSet({ levelDb: GEN_LEVEL_DB, ...config.sources[sourceIdx].gen });
     pushAllParams(values);
     try {
-      // Every sound stopped while the native start was in flight (leaving the
-      // app with "Mute audio when I leave the app" OFF stops voices but leaves
-      // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
-      const stopEpoch = getSoundStopEpoch();
-      await ApeDsp.genStart();
-      // A mute that landed while the native start was in flight wins — never
-      // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (!isAudioOutputEnabled()) {
-        void ApeDsp.genStop();
-        ApeDsp.fxReset();
-        return;
-      }
-      if (gen !== genRef.current) {
-        if (!wantRef.current) {
-          void ApeDsp.genStop(); // stopped meanwhile
+      // The fence (startFenced): a mute, a stop, or a stop-all that lands
+      // while the native start is in flight wins — this start never sounds on.
+      const fenced = await startFenced({
+        start: () => ApeDsp.genStart(),
+        // A newer ▶ owns the voice and the effect; a stop meanwhile silences both.
+        stop: (_s, why) => {
+          if (why === 'superseded' && wantRef.current) return;
+          void ApeDsp.genStop();
           ApeDsp.fxReset();
-        }
-        return;
-      }
-      // Every sound was stopped while the native start ran: stay quiet.
-      if (getSoundStopEpoch() !== stopEpoch) {
-        void ApeDsp.genStop();
-        ApeDsp.fxReset();
-        return;
-      }
+        },
+        isCurrent: () => gen === genRef.current,
+      });
+      if (fenced.status !== 'started') return;
       // A source/fader moved while the start was in flight skipped its live
       // push (running was still false) — send the newest now, so the display
       // and the audio agree (bug hunt 2026-09-30 day; Oscillator's fix).

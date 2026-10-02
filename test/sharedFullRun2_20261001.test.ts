@@ -56,14 +56,18 @@ const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8').replace
 
 describe('LabAudioPlayer.play() honours a leave-the-app stop that lands during its awaits', () => {
   it('source: the stop epoch is read before the first await and checked with the gate', () => {
+    // Through the start fence (startFenced, 2026-10-02): it captures the
+    // epoch before its `start` runs and checks the gate, the token and the
+    // epoch after it resolves.
     const s = read('src/features/lab/LabAudioPlayer.ts');
-    assert.match(s, /import \{ getSoundStopEpoch, isAudioOutputEnabled \} from '\.\.\/audio\/audioOutputStore';/);
+    assert.match(s, /import \{ startFenced \} from '\.\.\/audio\/startFenced';/);
     const body = s.slice(s.indexOf('async play('), s.indexOf('  stop(): void'));
-    const at = body.indexOf('const stopEpoch = getSoundStopEpoch();');
-    assert.ok(at > 0, 'epoch captured');
-    assert.ok(at < body.indexOf('await '), 'captured BEFORE the first await');
-    assert.match(body, /if \(!isAudioOutputEnabled\(\)\) return 'blocked';\n\s*if \(getSoundStopEpoch\(\) !== stopEpoch\) return 'blocked';/);
-    assert.ok(body.indexOf("return 'blocked'") < body.indexOf('got.player.play()'), 'checked before play');
+    const at = body.indexOf('const fenced = await startFenced({');
+    assert.ok(at > 0, 'the start is fenced');
+    assert.equal(body.indexOf('await '), at + 'const fenced = '.length, 'armed BEFORE the first await (the fence is the first await)');
+    assert.ok(body.indexOf('this.load(labKey, assetKey)') > at, 'the fetch + load run inside the fence');
+    assert.match(body, /if \(fenced\.status !== 'started'\) return fenced\.why === 'superseded' \? 'network' : 'blocked';/);
+    assert.ok(body.indexOf("'blocked'") < body.indexOf('got.player.play()'), 'checked before play');
   });
 });
 

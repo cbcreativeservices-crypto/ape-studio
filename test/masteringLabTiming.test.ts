@@ -36,8 +36,10 @@ describe('useMasterPlayback timing', () => {
     assert.match(s, /replayTimerRef\.current = t;/);
     const play = s.slice(s.indexOf('const play = useCallback'), s.indexOf('const stop = useCallback'));
     assert.match(play, /cancelReplay\(\);\s*\n\s*void \(async/, 'cancelled synchronously, before the gate await');
-    assert.match(s, /const armedEpoch = getSoundStopEpoch\(\)/);
-    assert.match(s, /if \(getSoundStopEpoch\(\) !== armedEpoch\) return;/);
+    // armFence (2026-10-02): the epoch is captured when the replay is armed and
+    // asked, with the gate and the alive/focus check, when the timer fires.
+    assert.match(s, /const blocked = armFence\(\(\) => aliveRef\.current && focusedRef\.current\);/);
+    assert.match(s, /if \(blocked\(\)\) return;/);
   });
   it('a replay press re-zeroes the playhead', () => {
     const play = s.slice(s.indexOf('const play = useCallback'), s.indexOf('const stop = useCallback'));

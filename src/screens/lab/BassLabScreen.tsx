@@ -39,7 +39,8 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Circle, Defs, LinearGradient, Line, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenParams } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity, useAudioOutputEnabled } from '../../features/audio/audioOutputStore';
+import { noteAudioActivity, useAudioOutputEnabled } from '../../features/audio/audioOutputStore';
+import { startFenced } from '../../features/audio/startFenced';
 import { guardAdditiveForEngine, speakerGuardDb, SPEAKER_HPF_HZ } from '../../features/audio/speakerSafety';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { CheckQuestion } from './foundations/bits';
@@ -252,33 +253,21 @@ export function BassLabScreen() {
     if (!ok || gen !== genRef.current) return;
     setSource('model');
     ApeDsp.genSet(genParams());
-    // Every sound stopped while the native start was in flight (leaving the
-    // app with "Mute audio when I leave the app" OFF stops voices but leaves
-    // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
-    const stopEpoch = getSoundStopEpoch();
     modelGenRef.current = gen;
     try {
-      await ApeDsp.genStart();
-      // A mute that landed while the native start was in flight wins — never
-      // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (!isAudioOutputEnabled()) {
-        void ApeDsp.genStop();
-        return;
-      }
-      if (gen !== genRef.current) {
-        // Superseded. Stop the generator only if no NEWER start has started
+      // The fence (startFenced): a mute, a stop, or a stop-all that lands
+      // while the native start is in flight wins — this start never sounds on.
+      const fenced = await startFenced({
+        start: () => ApeDsp.genStart(),
+        // Superseded: stop the generator only if no NEWER start has started
         // it since (bug hunt 2026-09-30 day): a double tap on ▶ in the model
         // fallback used to have start #1 resolve late and stop start #2's
         // tone, leaving ■ lit over silence. A ■, a close or a recording that
         // took over still stop it — none of them start the generator.
-        if (modelGenRef.current === gen) void ApeDsp.genStop();
-        return;
-      }
-      // Every sound was stopped while the native start ran: stay quiet.
-      if (getSoundStopEpoch() !== stopEpoch) {
-        void ApeDsp.genStop();
-        return;
-      }
+        stop: (_s, why) => (why === 'superseded' && modelGenRef.current !== gen ? undefined : ApeDsp.genStop()),
+        isCurrent: () => gen === genRef.current,
+      });
+      if (fenced.status !== 'started') return;
       // Same for the model: a selection changed during the native start is
       // sent now (see the recording branch above).
       if (latestRef.current.genParams !== genParams) ApeDsp.genSet(latestRef.current.genParams());

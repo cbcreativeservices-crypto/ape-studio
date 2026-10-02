@@ -531,7 +531,10 @@ describe('audio honours the gate', () => {
     assert.match(hook, /const granted = await requestAudioOutput\(\);\s*if \(!current\(\)\) return(?: false)?;\s*if \(!granted \|\| !focusedRef\.current\) \{\s*setPending\(false\);\s*return(?: false)?;\s*\}/);
     assert.match(hook, /useStopWhenSilenced\(playing \|\| pending, stop\)/);
     assert.match(hook, /useStopOnClose\(stop\)/);
-    assert.match(hook, /isAudioOutputEnabled\(\)/);
+    // The load runs inside the start fence (startFenced, 2026-10-02): the gate,
+    // the press token and the sound-stop epoch are re-checked after it.
+    assert.match(hook, /const fenced = await startFenced\(\{\s*start: load,\s*stop: \(\) => \{\},[^\n]*\s*isCurrent: current,\s*\}\);/);
+    assert.match(hook, /if \(fenced\.status !== 'started' \|\| !fenced\.value \|\| !focusedRef\.current \|\| !playerRef\.current\) return false;/);
     assert.match(hook, /new EarClipPlayer\(\)/, 'the house offline-render player (applyCeiling inside)');
     assert.doesNotMatch(hook, /setTimeout\([^)]*play/, 'no auto-replay timer');
     assert.match(hook, /const host = useContext\(StepHostContext\);[\s\S]*?if \(stepSeen\.current === hostStep\) return;[\s\S]*?stop\(\);/, 'a step change stops the sound (the Mastering rule)');

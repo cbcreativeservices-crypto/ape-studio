@@ -14,6 +14,7 @@ import type { Mono } from '../ear/earDsp';
 import { EarClipPlayer } from '../ear/earPlayer';
 import { isAudioOutputEnabled } from '../audio/audioOutputStore';
 import { ByteLru } from '../audio/clipLru';
+import { startFenced } from '../audio/startFenced';
 import { clipSeconds } from './tuningRender';
 import { clipKeyOf, wavBytes } from './tuningClipCache';
 
@@ -136,20 +137,28 @@ export class TuningPlayer {
     // no WAV encode, no file write, no load. An uncached clip takes the old
     // one-slot path.
     const key = clipKeyOf(buf) ?? null;
-    let voice: EarClipPlayer | null = this.ear;
-    if (key) {
-      this.wantKey = key;
-      try {
-        voice = await this.loadClip(key, buf);
-      } finally {
-        if (this.wantKey === key) this.wantKey = null; // unpinned on a failed load too
-      }
-    } else await this.ear.load([buf]);
-    if (my !== this.token || !voice) return;
-    // ⛔ SAFETY (bug hunt 2026-09-29): the gate answered before the WAV
-    // encode/load above; shake-to-mute, the idle lock or backgrounding may
-    // have silenced the app since. Never start a clip into a closed gate.
-    if (!isAudioOutputEnabled()) return;
+    // ⛔ SAFETY — the fence (startFenced): the gate answered before the WAV
+    // encode/load; shake-to-mute, the idle lock, backgrounding, a stop-all or
+    // a newer request may land inside it. Never start a clip into a closed
+    // gate (bug hunt 2026-09-29).
+    const fenced = await startFenced({
+      start: async (): Promise<EarClipPlayer | null> => {
+        if (!key) {
+          await this.ear.load([buf]);
+          return this.ear;
+        }
+        this.wantKey = key;
+        try {
+          return await this.loadClip(key, buf);
+        } finally {
+          if (this.wantKey === key) this.wantKey = null; // unpinned on a failed load too
+        }
+      },
+      stop: () => {}, // loaded, not sounding: nothing to silence
+      isCurrent: () => my === this.token,
+    });
+    if (fenced.status !== 'started' || !fenced.value) return;
+    const voice = fenced.value;
     this.voice = voice;
     voice.play(0);
     this.set({ playing: true, label, rendering: null });

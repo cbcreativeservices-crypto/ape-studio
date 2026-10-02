@@ -117,7 +117,8 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Svg, { Defs, Line, LinearGradient, Path, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type EngineConfig, type GenParams, type WaveBucket } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { getSoundStopEpoch, isAudioOutputEnabled, isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
+import { isAudioOutputEnabled, isFeedbackAllowed, noteAudioActivity, useFeedbackAllowed } from '../../features/audio/audioOutputStore';
+import { startFenced } from '../../features/audio/startFenced';
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
 import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
@@ -1280,28 +1281,16 @@ export function HarmonicsView({
         ...params,
       });
       try {
-        // Every sound stopped while the native start was in flight (leaving the
-        // app with "Mute audio when I leave the app" OFF stops voices but leaves
-        // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
-        const stopEpoch = getSoundStopEpoch();
-        await ApeDsp.genStart();
-        if (gen !== toneGenRef.current) {
-          // A STOP path tore this down while starting (only stop paths can
-          // bump the counter mid-start now) — close the ordering hole too.
-          void ApeDsp.genStop();
-          return false;
-        }
-        // A mute that landed while the native start was in flight wins — never
-        // leave a tone sounding into a closed gate (owner 2026-09-29).
-        if (!isAudioOutputEnabled()) {
-          void ApeDsp.genStop();
-          return false;
-        }
-        // Every sound was stopped while the native start ran: stay quiet.
-        if (getSoundStopEpoch() !== stopEpoch) {
-          void ApeDsp.genStop();
-          return false;
-        }
+        // The fence (startFenced): a mute, a stop, or a stop-all that lands
+        // while the native start is in flight wins — this start never sounds on.
+        const fenced = await startFenced({
+          start: () => ApeDsp.genStart(),
+          // Only STOP paths can bump the counter mid-start, so a superseded
+          // start always stops — the ordering hole is closed too.
+          stop: () => ApeDsp.genStop(),
+          isCurrent: () => gen === toneGenRef.current,
+        });
+        if (fenced.status !== 'started') return false;
         // An F0 picked while the native start was in flight skipped its live
         // retune (genRunning was still false) — the plain fundamental kept
         // the OLD pitch under the new axis (bug hunt 2026-09-30 pass 2, the

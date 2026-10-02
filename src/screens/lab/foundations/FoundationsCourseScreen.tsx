@@ -48,7 +48,8 @@ import { ApeDsp, GEN_MODES } from '../../../../modules/ape-dsp';
 import { GlassButton } from '../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../../features/audio/audioOutputStore';
+import { noteAudioActivity } from '../../../features/audio/audioOutputStore';
+import { startFenced } from '../../../features/audio/startFenced';
 import { guardAdditiveForEngine, guardToneLevelForEngine } from '../../../features/audio/speakerSafety';
 import { playWithHearingWarning } from '../../../features/audio/levelHearingWarning';
 import { EngineGate } from '../../tools/EngineGate';
@@ -184,22 +185,16 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           levelDb: guardToneLevelForEngine(levelRef.current, freqRef.current),
         });
         try {
-          // Every sound stopped while the native start was in flight (leaving the app
-          // with "Mute audio when I leave the app" OFF stops voices but leaves the
-          // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
-          const stopEpoch = getSoundStopEpoch();
-          await ApeDsp.genStart();
-          // A mute that landed while the native start was in flight wins — never
-          // leave a tone sounding into a closed gate (owner 2026-09-29).
-          if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
-            return;
-          }
-          // Every sound was stopped while the native start ran: stay quiet.
-          if (getSoundStopEpoch() !== stopEpoch) {
-            void ApeDsp.genStop();
-            return;
-          }
+          // The fence (startFenced): a mute, a stop, or a stop-all that lands
+          // while the native start is in flight wins — it never sounds on.
+          const fenced = await startFenced({
+            start: () => ApeDsp.genStart(),
+            // Superseded: stop only while a stop() is still the latest act
+            // (stopGenRef) — a newer ▶ owns the generator.
+            stop: (_s, why) => (why === 'superseded' && stopGenRef.current !== genRef.current ? undefined : ApeDsp.genStop()),
+            isCurrent: () => gen === genRef.current,
+          });
+          if (fenced.status !== 'started') return;
           setPlaying(true);
           noteAudioActivity();
         } catch {
@@ -267,22 +262,16 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           levelDb: db,
         });
         try {
-          // Every sound stopped while the native start was in flight (leaving the app
-          // with "Mute audio when I leave the app" OFF stops voices but leaves the
-          // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
-          const stopEpoch = getSoundStopEpoch();
-          await ApeDsp.genStart();
-          // A mute that landed while the native start was in flight wins — never
-          // leave a tone sounding into a closed gate (owner 2026-09-29).
-          if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
-            return;
-          }
-          // Every sound was stopped while the native start ran: stay quiet.
-          if (getSoundStopEpoch() !== stopEpoch) {
-            void ApeDsp.genStop();
-            return;
-          }
+          // The fence (startFenced): a mute, a stop, or a stop-all that lands
+          // while the native start is in flight wins — it never sounds on.
+          const fenced = await startFenced({
+            start: () => ApeDsp.genStart(),
+            // Superseded: stop only while a stop() is still the latest act
+            // (stopGenRef) — a newer ▶ owns the generator.
+            stop: (_s, why) => (why === 'superseded' && stopGenRef.current !== genRef.current ? undefined : ApeDsp.genStop()),
+            isCurrent: () => gen === genRef.current,
+          });
+          if (fenced.status !== 'started') return;
           setPlaying(true);
           noteAudioActivity();
         } catch {
@@ -314,22 +303,16 @@ export function useCourseTone(engineReady: boolean): ToneApi {
         ApeDsp.genSet({ mode: GEN_MODES.sine, frequency: fL, levelDb: db, stereo: { on: true, fL, fR } });
         stereoRef.current = true;
         try {
-          // Every sound stopped while the native start was in flight (leaving the app
-          // with "Mute audio when I leave the app" OFF stops voices but leaves the
-          // gate ON — full-app run 1, 2026-10-01): this start must not sound on.
-          const stopEpoch = getSoundStopEpoch();
-          await ApeDsp.genStart();
-          // A mute that landed while the native start was in flight wins — never
-          // leave a tone sounding into a closed gate (owner 2026-09-29).
-          if (gen !== genRef.current || !isAudioOutputEnabled()) {
-            if (stopGenRef.current === genRef.current || !isAudioOutputEnabled()) void ApeDsp.genStop();
-            return;
-          }
-          // Every sound was stopped while the native start ran: stay quiet.
-          if (getSoundStopEpoch() !== stopEpoch) {
-            void ApeDsp.genStop();
-            return;
-          }
+          // The fence (startFenced): a mute, a stop, or a stop-all that lands
+          // while the native start is in flight wins — it never sounds on.
+          const fenced = await startFenced({
+            start: () => ApeDsp.genStart(),
+            // Superseded: stop only while a stop() is still the latest act
+            // (stopGenRef) — a newer ▶ owns the generator.
+            stop: (_s, why) => (why === 'superseded' && stopGenRef.current !== genRef.current ? undefined : ApeDsp.genStop()),
+            isCurrent: () => gen === genRef.current,
+          });
+          if (fenced.status !== 'started') return;
           setPlaying(true);
           noteAudioActivity();
         } catch {

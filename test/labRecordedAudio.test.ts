@@ -27,6 +27,7 @@ const { LabClipCache, LabClipError, clipKey, base64ToBytes, bytesToBase64 } = aw
   '../src/features/lab/labClipCache.ts'
 );
 const { renderRecorded, playRendered } = await import('../src/features/audio/renderRecorded.ts');
+const store = await import('../src/features/audio/audioOutputStore.ts');
 const { M2_EQ, M3_BAND, BANDS } = await import('../src/features/ear/modules/tone.ts');
 const { EAR_SOURCES, programFromClip, resolveEarSource, earSourceById } = await import(
   '../src/features/ear/earPrograms.ts'
@@ -581,12 +582,27 @@ describe('renderRecorded', () => {
       play: (i: number) => void calls.push(`play${i}`),
       stop: () => void calls.push('stop'),
     };
-    assert.equal(await playRendered(player, [], 0, { requestAudioOutput: async () => false, isEnabled: () => true }), false);
-    assert.deepEqual(calls, []);
-    assert.equal(await playRendered(player, [], 0, { requestAudioOutput: async () => true, isEnabled: () => false }), false);
-    assert.deepEqual(calls, ['load']);
-    assert.equal(await playRendered(player, [], 1, { requestAudioOutput: async () => true, isEnabled: () => true }), true);
-    assert.deepEqual(calls, ['load', 'load', 'play1']);
+    // The load is fenced on the REAL output store (startFenced, 2026-10-02):
+    // the app-wide gate must be open for anything to play.
+    store.enableAudioOutput();
+    try {
+      assert.equal(await playRendered(player, [], 0, { requestAudioOutput: async () => false, isEnabled: () => true }), false);
+      assert.deepEqual(calls, []);
+      assert.equal(await playRendered(player, [], 0, { requestAudioOutput: async () => true, isEnabled: () => false }), false);
+      assert.deepEqual(calls, ['load']);
+      // Every sound stopped during the load (leaving the app with mute-on-leave OFF).
+      const stopAllMidLoad = { load: async () => void (calls.push('load'), store.signalSoundStopped()), play: player.play, stop: player.stop };
+      assert.equal(await playRendered(stopAllMidLoad, [], 1, { requestAudioOutput: async () => true, isEnabled: () => true }), false);
+      assert.deepEqual(calls, ['load', 'load']);
+      assert.equal(await playRendered(player, [], 1, { requestAudioOutput: async () => true, isEnabled: () => true }), true);
+      assert.deepEqual(calls, ['load', 'load', 'load', 'play1']);
+      // The app-wide gate closing during the load (shake-to-mute) plays nothing either.
+      const muteMidLoad = { load: async () => void (calls.push('load'), store.disableAudioOutput()), play: player.play, stop: player.stop };
+      assert.equal(await playRendered(muteMidLoad, [], 1, { requestAudioOutput: async () => true, isEnabled: () => true }), false);
+      assert.deepEqual(calls, ['load', 'load', 'load', 'play1', 'load']);
+    } finally {
+      store.disableAudioOutput();
+    }
   });
 });
 

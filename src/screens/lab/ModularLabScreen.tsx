@@ -29,7 +29,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, MOD_PARAM } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
-import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { startFenced } from '../../features/audio/startFenced';
 import { GuidedLessonSheet, getLabLesson } from '../../features/lab/guidedLessons';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -245,26 +246,15 @@ export function ModularLabScreen() {
     setGenError('');
     pushPatch(patch);
     try {
-      // Every sound stopped while the native start was in flight (leaving the
-      // app with "Mute audio when I leave the app" OFF stops voices but leaves
-      // the gate ON — full-app run 2, 2026-10-01): this start must not sound on.
-      const stopEpoch = getSoundStopEpoch();
-      await ApeDsp.modStart();
-      // A mute that landed while the native start was in flight wins — never
-      // leave a tone sounding into a closed gate (owner 2026-09-29).
-      if (!isAudioOutputEnabled()) {
-        void ApeDsp.modStop();
-        return;
-      }
-      if (gen !== genRef.current) {
-        if (!wantRef.current) void ApeDsp.modStop(); // we left while the native start was in flight
-        return;
-      }
-      // Every sound was stopped while the native start ran: stay quiet.
-      if (getSoundStopEpoch() !== stopEpoch) {
-        void ApeDsp.modStop();
-        return;
-      }
+      // The fence (startFenced): a mute, a leave, or a stop-all that lands
+      // while the native start is in flight wins — this start never sounds on.
+      const fenced = await startFenced({
+        start: () => ApeDsp.modStart(),
+        // A newer ▶ owns the sequencer; a leave/stop meanwhile silences it.
+        stop: (_s, why) => (why === 'superseded' && wantRef.current ? undefined : ApeDsp.modStop()),
+        isCurrent: () => gen === genRef.current,
+      });
+      if (fenced.status !== 'started') return;
       setRunning(true);
       noteAudioActivity();
     } catch (e) {

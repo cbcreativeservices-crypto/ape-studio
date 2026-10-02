@@ -6,10 +6,16 @@
  * container plus its topics.
  *
  * `loaded` = whether the bundle's topics are currently loaded on the Dashboard
- * study swipe (LOAD/UNLOAD). Device-local, persisted; same store pattern.
+ * study swipe (LOAD/UNLOAD). Device-local, persisted.
+ *
+ * On the shared safe store (pattern catalog 2026-10-02, closer A2): a read
+ * that FAILS is unreadable and never written over (it used to start empty and
+ * save that over the stored bundles); an edit before the stored list lands is
+ * applied on top of it (full-app run 2, 2026-10-01); a read in flight across
+ * the account wipe lands nowhere (bug pass 2, 2026-09-30); the wipe reaches
+ * the store without a hand entry.
  */
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore } from '../storage/localStore';
 
 export type BundleKind = 'cert' | 'program' | 'subject';
 export type EnrolledBundle = { key: string; kind: BundleKind; name: string; topics: number[]; loaded: boolean };
@@ -20,142 +26,71 @@ export function bundleKey(kind: BundleKind, name: string): string {
   return `${kind}:${name}`;
 }
 
-let list: EnrolledBundle[] = [];
-let hydrated = false;
-let hydrating: Promise<void> | null = null;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-function persist() {
-  void AsyncStorage.setItem(KEY, JSON.stringify(list)).catch(() => {});
-}
-function commit(next: EnrolledBundle[]) {
-  list = next;
-  persist();
-  emit();
-}
-
-// Bumped by resetLocal (bug pass 2, 2026-09-30) — same race as enrollmentStore:
-// a read in flight across an account wipe must not restore the previous user's
-// bundles.
-let generation = 0;
-
-async function hydrate(): Promise<void> {
-  if (hydrated) return;
-  if (!hydrating) {
-    const gen = generation;
-    hydrating = (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(KEY);
-        if (gen !== generation) return;
-        if (raw) {
-          const p = JSON.parse(raw);
-          if (Array.isArray(p)) {
-            list = p
-              .filter((b) => b && typeof b.key === 'string' && Array.isArray(b.topics))
-              .map((b) => ({
-                key: b.key,
-                kind: b.kind === 'program' ? 'program' : b.kind === 'subject' ? 'subject' : 'cert',
-                name: b.name,
-                topics: b.topics,
-                loaded: !!b.loaded,
-              }));
-          }
-        }
-      } catch {
-        // start empty
-      }
-      if (gen !== generation) return;
-      hydrated = true;
-      emit();
-    })();
-  }
-  return hydrating;
-}
-
-/** NO EDIT BEFORE THE STORED LIST HAS LANDED (full-app run 2, 2026-10-01) —
- *  the enrollmentStore twin. Before `hydrate` lands, `list` is the empty
- *  placeholder: an ENROLL tap then persisted a one-bundle list over the stored
- *  bundles, and the hydrate landing afterwards dropped the new one from
- *  memory. Deferred calls re-run once the list is real (same identity only). */
-function deferUntilHydrated(run: () => void): boolean {
-  if (hydrated) return false;
-  const gen = generation;
-  void hydrate().then(() => {
-    if (gen === generation && hydrated) run();
-  });
-  return true;
-}
+const store = createLocalStore<EnrolledBundle[]>({
+  key: KEY,
+  empty: () => [],
+  parse: (p) => {
+    if (!Array.isArray(p)) return [];
+    return p
+      .filter((b) => b && typeof b.key === 'string' && Array.isArray(b.topics))
+      .map((b) => ({
+        key: b.key as string,
+        kind: b.kind === 'program' ? 'program' : b.kind === 'subject' ? 'subject' : 'cert',
+        name: b.name as string,
+        topics: b.topics as number[],
+        loaded: !!b.loaded,
+      }));
+  },
+});
 
 export function getBundles(): EnrolledBundle[] {
-  void hydrate();
-  return list;
+  return store.get();
 }
 export function isBundleEnrolled(key: string): boolean {
-  return list.some((b) => b.key === key);
+  return store.get().some((b) => b.key === key);
 }
 
 /** Add a cert/program bundle. NOT loaded by default (user request 2026-07-22:
  *  topics only join the Dashboard when the user explicitly taps LOAD). */
 export function addBundle(kind: BundleKind, name: string, topics: number[]): void {
-  if (deferUntilHydrated(() => addBundle(kind, name, topics))) return;
   const key = bundleKey(kind, name);
-  if (list.some((b) => b.key === key)) return;
-  commit([...list, { key, kind, name, topics, loaded: false }]);
+  void store.mutate((list) => (list.some((b) => b.key === key) ? list : [...list, { key, kind, name, topics, loaded: false }]));
 }
 
 export function removeBundle(key: string): void {
-  if (deferUntilHydrated(() => removeBundle(key))) return;
-  if (!list.some((b) => b.key === key)) return;
-  commit(list.filter((b) => b.key !== key));
+  void store.mutate((list) => (list.some((b) => b.key === key) ? list.filter((b) => b.key !== key) : list));
 }
 
 /** Reorder: shift a stored bundle one step up (dir −1) or down (dir +1) in the
  *  list — the drag-to-sort primitive, mirroring enrollmentStore.moveTopic. */
 export function moveBundle(key: string, dir: -1 | 1): void {
-  if (deferUntilHydrated(() => moveBundle(key, dir))) return;
-  const i = list.findIndex((b) => b.key === key);
-  if (i < 0) return;
-  const j = i + dir;
-  if (j < 0 || j >= list.length) return;
-  const next = [...list];
-  [next[i], next[j]] = [next[j], next[i]];
-  commit(next);
+  void store.mutate((list) => {
+    const i = list.findIndex((b) => b.key === key);
+    if (i < 0) return list;
+    const j = i + dir;
+    if (j < 0 || j >= list.length) return list;
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    return next;
+  });
 }
 
 /** LOAD (true) / UNLOAD (false) — toggles the bundle's topics on the Dashboard. */
 export function setBundleLoaded(key: string, loaded: boolean): void {
-  if (deferUntilHydrated(() => setBundleLoaded(key, loaded))) return;
-  commit(list.map((b) => (b.key === key ? { ...b, loaded } : b)));
+  void store.mutate((list) => list.map((b) => (b.key === key ? { ...b, loaded } : b)));
 }
 
 /** All gs from LOADED bundles — joins the Dashboard's active study swipe. */
 export function loadedBundleGs(): number[] {
-  return Array.from(new Set(list.filter((b) => b.loaded).flatMap((b) => b.topics)));
+  return Array.from(new Set(store.get().filter((b) => b.loaded).flatMap((b) => b.topics)));
 }
 
-/** Reset the IN-MEMORY cache (account wipe / user switch — clearLocalAccountData).
- *  Clears the list + hydrated flags and emits so live useBundles() hooks
- *  re-render empty; the next read re-hydrates from the (cleared) storage. */
+/** Reset the IN-MEMORY cache (account wipe / user switch). The shared store
+ *  registers this with the wipe itself; kept exported for callers and tests. */
 export function resetLocal(): void {
-  generation++;
-  list = [];
-  hydrated = false;
-  hydrating = null;
-  emit();
+  store.reset();
 }
 
 export function useBundles(): EnrolledBundle[] {
-  const [snap, setSnap] = useState<EnrolledBundle[]>(list);
-  useEffect(() => {
-    const l = () => setSnap(list);
-    listeners.add(l);
-    void hydrate().then(l);
-    return () => {
-      listeners.delete(l);
-    };
-  }, []);
-  return snap;
+  return store.use();
 }

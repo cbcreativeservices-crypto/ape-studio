@@ -60,8 +60,12 @@ describe('a confirmed-empty topic does not lock the chain', () => {
 
   test('the store refuses to be a general-purpose setter', () => {
     const store = strip(read('src', 'features', 'study', 'termsExempt.ts'));
-    // Hydrate-before-write, or a deep link overwrites every prior exemption.
-    assert.match(store, /await hydrate\(\);/, 'markTermsExempt no longer hydrates before writing');
+    // Hydrate-before-write, or a deep link overwrites every prior exemption:
+    // the mark is a mutation on the shared safe store, which applies it to the
+    // STORED set once the read has landed (2026-10-02, closer A2).
+    assert.match(store, /createLocalStore</, 'termsExempt left the shared safe store');
+    assert.match(store, /await store\.mutate\(/, 'markTermsExempt no longer writes through the store (hydrate-before-write)');
+    assert.doesNotMatch(store, /AsyncStorage\.(getItem|setItem)\(/, 'a direct storage read/write reappeared');
     assert.match(store, /export function isTermsExempt/, 'the reader is gone');
     assert.match(store, /export function resetLocal/, 'the account-switch reset is gone');
     // There must be no "unmark"/clear-one API: the only way out is a wipe.
@@ -72,7 +76,11 @@ describe('a confirmed-empty topic does not lock the chain', () => {
   });
 
   test('the exemption is cleared when the account changes', () => {
+    // The store registers its reset with the wipe at creation (every
+    // createLocalStore does — localStoreRegistry.ts); the wipe runs them all.
     const wipe = strip(read('src', 'features', 'account', 'clearLocalAccountData.ts'));
-    assert.match(wipe, /resetTermsExempt/, 'the terms exemption survives an account switch');
+    assert.match(wipe, /resetRegisteredLocalStores\(\);/, 'the terms exemption survives an account switch');
+    const store = strip(read('src', 'features', 'study', 'termsExempt.ts'));
+    assert.match(store, /createLocalStore</, 'termsExempt is no longer on the self-registering store');
   });
 });

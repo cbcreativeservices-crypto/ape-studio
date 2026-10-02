@@ -22,8 +22,8 @@
  * demo-signal / critical-listening one-at-a-time case.
  */
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
-import { getSoundStopEpoch, isAudioOutputEnabled } from '../audio/audioOutputStore';
 import { unregisterFilePlayer } from '../audio/filePlayers';
+import { startFenced } from '../audio/startFenced';
 import { applyCeiling } from '../audio/outputCeiling';
 import { fetchLabAudio, type LabAudioReason } from './labAudio';
 import { labProbe } from './labProbe';
@@ -253,27 +253,32 @@ export class LabAudioPlayer {
   async play(labKey: string, assetKey: string): Promise<LabAudioReason | 'blocked'> {
     if (this.disposed) return 'network';
     const token = ++this.playToken;
-    // Leaving the app with "Mute audio when I leave the app" OFF stops every
-    // sound but leaves the gate ON (signalSoundStopped) — so the gate check
-    // below cannot see it. A clip whose fetch was still running when the
-    // learner left must not start behind them (full run 2, 2026-10-01).
-    const stopEpoch = getSoundStopEpoch();
     const pooled = this.pool.has(keyOf(labKey, assetKey));
-    await this.settleMode();
-    if (this.disposed || token !== this.playToken) return 'network';
-    const got = await this.load(labKey, assetKey);
-    if (this.disposed || token !== this.playToken) return 'network';
+    // ⛔ SAFETY — the fence (startFenced): the gate was passed BEFORE the
+    // awaits below. Shake-to-mute, the idle lock, backgrounding, a newer
+    // play()/stop()/dispose(), or leaving the app with "Mute audio when I
+    // leave the app" OFF (every sound stops but the gate stays ON — only the
+    // sound-stop epoch shows it) can land during them; a clip whose fetch was
+    // still running must not start behind the learner (2026-09-29, 10-01).
+    const fenced = await startFenced({
+      start: async () => {
+        await this.settleMode();
+        if (this.disposed || token !== this.playToken) return null;
+        return this.load(labKey, assetKey);
+      },
+      // Loaded, not sounding: nothing to silence — the pooled player waits
+      // for the next tap, and a newer play() owns the transport.
+      stop: () => {},
+      isCurrent: () => !this.disposed && token === this.playToken,
+    });
+    if (fenced.status !== 'started') return fenced.why === 'superseded' ? 'network' : 'blocked';
+    const got = fenced.value;
+    if (got === null) return 'network';
     if (typeof got === 'string') {
       labProbe(`fetch ${got}`); // TEMP probe
       return got;
     }
     labProbe(pooled ? 'clip ready (preloaded)' : 'clip loaded'); // TEMP probe
-
-    // ⛔ SAFETY (bug hunt 2026-09-29): the gate was passed BEFORE the awaits
-    // above. Shake-to-mute, the idle lock or backgrounding can land during
-    // them, so ask again at the last moment; off means nothing plays.
-    if (!isAudioOutputEnabled()) return 'blocked';
-    if (getSoundStopEpoch() !== stopEpoch) return 'blocked';
 
     try {
       if (this.current && this.current !== got) this.current.player.pause();

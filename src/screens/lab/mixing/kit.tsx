@@ -21,7 +21,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
-import { getSoundStopEpoch, isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
+import { armFence, startFenced } from '../../../features/audio/startFenced';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
@@ -410,13 +410,13 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     // (full run 1, 2026-10-01; the Mastering lab's useMasterPlayback fix):
     // stopAllSound leaves the gate OPEN, and inside this pause `active` and
     // `pending` are both null, so useStopWhenSilenced did not cancel it — the
-    // replay rendered and played behind the user.
-    const armedEpoch = getSoundStopEpoch();
+    // replay rendered and played behind the user. The fence is armed now and
+    // asked when the timer fires (armFence).
+    const blocked = armFence(() => aliveRef.current && focusedRef.current);
     const t = setTimeout(() => {
       replayTimerRef.current = null;
       replayIdRef.current = null;
-      if (!aliveRef.current || !focusedRef.current || !isAudioOutputEnabled()) return;
-      if (getSoundStopEpoch() !== armedEpoch) return; // every sound was stopped meanwhile: stay quiet
+      if (blocked()) return; // muted, left, or every sound was stopped meanwhile: stay quiet
       pendingRef.current = again;
       setPending(again);
       void renderAllRef.current();
@@ -479,7 +479,13 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       // The superseded-render check sits BEFORE load() on purpose: load() is
       // what writes the temp WAVs, so a loser never creates files to strand.
       const player = playerRef.current;
-      await player.load(out.map((o) => o.mix.stereo));
+      // The fence (startFenced): a mute, a leave, or a stop-all during the
+      // load means the queued play never fires; the render still lands.
+      const fenced = await startFenced({
+        start: () => player.load(out.map((o) => o.mix.stereo)),
+        stop: () => {}, // loaded, not sounding: nothing to silence
+        isCurrent: current,
+      });
       if (!current()) {
         // UNMOUNTED DURING load() (perf audit 2026-09-11). load() is the slow
         // part — WAV encode + base64 + file write, ~0.5–2 s on device for up to
@@ -503,11 +509,11 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       pendingRef.current = null;
       setPending(null);
       // A queued play fires only onto a screen that is still in front AND an
-      // output gate that is still open. Shake-to-mute, the idle auto-mute or
-      // backgrounding can land inside the 0.5–2 s render; playing then would
-      // sound with the gate locked (bug hunt 2026-09-29). Either check failing
-      // drops the request — the learner presses ▶ again.
-      if (want && focusedRef.current && isAudioOutputEnabled()) {
+      // output gate that is still open (the fence above). Shake-to-mute, the
+      // idle auto-mute or backgrounding can land inside the 0.5–2 s render;
+      // playing then would sound with the gate locked (bug hunt 2026-09-29).
+      // Either check failing drops the request — the learner presses ▶ again.
+      if (fenced.status === 'started' && want && focusedRef.current) {
         const i = idsRef.current.indexOf(want);
         if (i >= 0) {
           playerRef.current.play(i);

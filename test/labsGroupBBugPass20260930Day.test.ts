@@ -70,8 +70,10 @@ test('Harmonograph viewer: SAVE / SHARE / PRINT are single-flight (no duplicate 
 
 test('Bass: a superseded model start stops the generator only if no newer start owns it', () => {
   const s = read('src/screens/lab/BassLabScreen.tsx');
-  assert.match(s, /modelGenRef\.current = gen;\n\s*try \{\n\s*await ApeDsp\.genStart\(\);/);
-  assert.match(s, /if \(modelGenRef\.current === gen\) void ApeDsp\.genStop\(\);/);
+  // The native start is the fence's `start` (startFenced, 2026-10-02); its
+  // `stop` declines only for a superseded start a newer start owns.
+  assert.match(s, /modelGenRef\.current = gen;\n\s*try \{\n(\s*\/\/[^\n]*\n)*\s*const fenced = await startFenced\(\{\n\s*start: \(\) => ApeDsp\.genStart\(\),/);
+  assert.match(s, /why === 'superseded' && modelGenRef\.current !== gen \? undefined : ApeDsp\.genStop\(\)/);
   assert.doesNotMatch(s, /if \(gen !== genRef\.current \|\| !isAudioOutputEnabled\(\)\)/);
 });
 
@@ -86,7 +88,8 @@ test('FM: a control changed during the native start is pushed once it resolves',
   assert.match(s, /pushRef\.current = pushParams;/);
   const strike = s.slice(s.indexOf('const strike = useCallback'), s.indexOf('const stop = useCallback'));
   assert.ok(strike.indexOf('if (pushRef.current !== pushParams) pushRef.current();') < strike.indexOf('setRunning(true);'));
-  assert.ok(strike.indexOf('if (pushRef.current !== pushParams) pushRef.current();') > strike.indexOf('if (gen !== genRef.current) {'));
+  assert.ok(strike.indexOf("if (fenced.status !== 'started') return;") > 0);
+  assert.ok(strike.indexOf('if (pushRef.current !== pushParams) pushRef.current();') > strike.indexOf("if (fenced.status !== 'started') return;"));
 });
 
 test('Lab display text ≥ 9 pt: Harmonics piano C labels, mic-select verdicts, amplitude spectrogram labels', () => {

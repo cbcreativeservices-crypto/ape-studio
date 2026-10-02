@@ -43,7 +43,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES, type GenModeName, type GenStatus } from '../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { playWithHearingWarning } from '../../features/audio/levelHearingWarning';
-import { getSoundStopEpoch, isAudioOutputEnabled, noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { noteAudioActivity } from '../../features/audio/audioOutputStore';
+import { startFenced } from '../../features/audio/startFenced';
 import { EngineGate } from './EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
@@ -538,34 +539,24 @@ export function SignalGenScreen({ navigation }: Props) {
       const ok = await requestAudioOutput();
       if (!ok || gen !== genRef.current || !mountedRef.current) return;
       setGenError('');
-      // stopAllSound() (leaving the app with "Mute audio when I leave the
-      // app" OFF) leaves the gate ON, so the gate check below cannot see it.
-      // Like the mute, it lands while `running` is still false and
-      // useStopWhenSilenced skips it — the tone then started behind the user
-      // (full run 1, 2026-10-01). Follow the store's sound-stop counter too.
-      const stopEpoch = getSoundStopEpoch();
       try {
-        const s = await ApeDsp.genStart();
-        if (gen !== genRef.current || !mountedRef.current) {
-          void ApeDsp.genStop(); // screen closed while the native start was in flight
-          return;
-        }
-        // Shake-to-mute (or the idle lock) closed the gate while the native
-        // start was in flight: useStopWhenSilenced only acts on a running
-        // screen, so it missed this edge and the transport read PLAYING with
-        // the gate shut (bug hunt 2026-09-29). Honour the mute.
-        if (!isAudioOutputEnabled()) {
-          void ApeDsp.genStop();
-          refreshStatus();
-          return;
-        }
-        // …and stopAllSound(), which leaves the gate on (see stopEpoch).
-        if (getSoundStopEpoch() !== stopEpoch) {
-          void ApeDsp.genStop();
-          refreshStatus();
-          return;
-        }
-        setStatus(s);
+        // The fence (startFenced): a mute, a stop, a close, or a stop-all
+        // (leaving the app with "Mute audio when I leave the app" OFF — the
+        // gate stays ON) that lands while the native start is in flight wins.
+        // useStopWhenSilenced only acts on a RUNNING screen, so without the
+        // fence the tone started behind the user (2026-09-29, 2026-10-01).
+        const fenced = await startFenced({
+          start: () => ApeDsp.genStart(),
+          stop: (_s, why) => {
+            void ApeDsp.genStop();
+            // Honour the mute on the transport too; a close / a stop that
+            // superseded this start already reads its own status.
+            if (why !== 'superseded') refreshStatus();
+          },
+          isCurrent: () => gen === genRef.current && mountedRef.current,
+        });
+        if (fenced.status !== 'started') return;
+        setStatus(fenced.value);
         setRunning(true);
         noteAudioActivity();
       } catch (e) {

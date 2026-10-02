@@ -128,8 +128,13 @@ test('Tuning: chapters get the memoised renderers; saved clips play from a poole
   const s = read('src/features/tuning/tuningAudio.ts');
   assert.match(s, /export \{ renderNotes, renderPartials, renderSequence, concatWithGap \} from '\.\/tuningClipCache';/);
   const play = s.slice(s.indexOf('async play(buf: Mono'), s.indexOf('async renderAndPlay('));
-  assert.ok(play.indexOf('if (!isAudioOutputEnabled()) return;') > play.indexOf('await this.loadClip(key, buf)'));
-  assert.ok(play.indexOf('if (!isAudioOutputEnabled()) return;') < play.indexOf('voice.play(0);'));
+  // The gate re-check is the start fence's (startFenced, 2026-10-02): the
+  // clip load runs inside it; nothing plays unless it reports started.
+  const fence = play.indexOf('const fenced = await startFenced({');
+  assert.ok(fence > 0 && fence < play.indexOf('await this.loadClip(key, buf)'), 'the clip load runs inside the fence');
+  const checked = play.indexOf("if (fenced.status !== 'started' || !fenced.value) return;");
+  assert.ok(checked > play.indexOf('await this.loadClip(key, buf)'));
+  assert.ok(checked < play.indexOf('voice.play(0);'));
   // Preload never plays, and only creates files/players once output is on.
   const pre = s.slice(s.indexOf('preload(makes'), s.indexOf('  stop(): void {'));
   assert.doesNotMatch(pre, /\.play\(/);

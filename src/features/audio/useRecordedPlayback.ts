@@ -27,6 +27,7 @@ import { EarClipPlayer } from '../ear/earPlayer';
 import type { Buf } from '../ear/earDsp';
 import { useAudioOutputGate } from './AudioOutputGate';
 import { isAudioOutputEnabled } from './audioOutputStore';
+import { startFenced } from './startFenced';
 import { useStopWhenSilenced } from './useStopWhenSilenced';
 import { useStopOnClose } from './useStopOnBlur';
 import { renderRecorded, type RecordedProcess, type RecordedSource } from './renderRecorded';
@@ -96,30 +97,37 @@ export function useRecordedPlayback(
       setStatus('rendering');
       setPending(want);
       try {
-        await breathe();
-        const bufs: Buf[] = [];
-        for (const v of variants) {
-          if (!current()) return;
-          bufs.push(renderRecorded(source, v.process));
-          await breathe(); // one render per tick — never a frozen screen
-        }
-        if (!current()) return;
-        if (!playerRef.current) {
-          const p = new EarClipPlayer();
-          p.onEnded = () => {
-            if (aliveRef.current) setActive(null);
-          };
-          playerRef.current = p;
-        }
-        await playerRef.current.load(bufs);
+        // The fence (startFenced): a mute, a stop, or a stop-all during the
+        // render + load means nothing starts; the renders stay ready.
+        const fenced = await startFenced({
+          start: async () => {
+            await breathe();
+            const bufs: Buf[] = [];
+            for (const v of variants) {
+              if (!current()) return;
+              bufs.push(renderRecorded(source, v.process));
+              await breathe(); // one render per tick — never a frozen screen
+            }
+            if (!current()) return;
+            if (!playerRef.current) {
+              const p = new EarClipPlayer();
+              p.onEnded = () => {
+                if (aliveRef.current) setActive(null);
+              };
+              playerRef.current = p;
+            }
+            await playerRef.current.load(bufs);
+          },
+          stop: () => {}, // loaded, not sounding: nothing to silence
+          isCurrent: current,
+        });
         if (!current()) return;
         idsRef.current = variants.map((v) => v.id);
         setStatus('ready');
         setPending(null);
         const i = idsRef.current.indexOf(want);
-        // Last-moment gate + focus check: a mute or a leave during the render
-        // means nothing starts.
-        if (i >= 0 && focusedRef.current && isAudioOutputEnabled()) {
+        // Last-moment focus check: a leave during the render means nothing starts.
+        if (fenced.status === 'started' && i >= 0 && focusedRef.current && playerRef.current) {
           playerRef.current.play(i);
           setActive(want);
         }

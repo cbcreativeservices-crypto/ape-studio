@@ -13,12 +13,16 @@
  *             from per-topic flashcard study progress (which stays server-
  *             credited via item_states) — this one never touches progress.
  *
- * Each list is a tiny hand-rolled external store (same pattern as
- * profile/api useAlbumTier): module-level Set + listeners, hydrated once,
- * persisted on every change. Term identity = glossary row id (uuid string).
+ * Each list is one key on the shared safe store (pattern catalog 2026-10-02,
+ * closer A2): a read that FAILED is never written over (a tap used to save a
+ * one-term list over the stored one), a tap before the read lands is applied
+ * to the stored list with the intent it had when tapped, a read in flight
+ * across the account wipe lands nowhere, and the wipe reaches every list —
+ * including the per-context bookmark lists created later — without a hand
+ * entry. Term identity = glossary row id (uuid string).
  */
-import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore, type LocalStore } from '../storage/localStore';
 
 // Storage key for the BOOKMARK list (renamed from "flagged" — user request
 // 2026-07-18); the VALUE is unchanged so existing saved terms carry over.
@@ -40,184 +44,117 @@ const STORAGE_KEYS: Record<TermListKind, string> = {
   known: 'ape:knownTermsGlobal',
 };
 
-type SetStore = {
-  ids: ReadonlySet<string>;
-  hydrated: boolean;
-  hydrating: Promise<void> | null;
-  listeners: Set<() => void>;
-};
+type IdSet = ReadonlySet<string>;
 
-const stores: Record<TermListKind, SetStore> = {
-  bookmark: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
-  heart: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
-  starred: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
-  known: { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() },
-};
-
-function emit(kind: TermListKind) {
-  stores[kind].listeners.forEach((l) => l());
+function idSetStore(key: string): LocalStore<IdSet> {
+  return createLocalStore<IdSet>({
+    key,
+    empty: () => new Set<string>(),
+    parse: (p) => new Set(Array.isArray(p) ? p.filter((x): x is string => typeof x === 'string') : []),
+    serialize: (s) => JSON.stringify([...s]),
+  });
 }
 
-async function hydrate(kind: TermListKind): Promise<void> {
-  const s = stores[kind];
-  if (s.hydrated) return;
-  if (!s.hydrating) {
-    s.hydrating = (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEYS[kind]);
-        if (raw) s.ids = new Set(JSON.parse(raw) as string[]);
-      } catch {
-        // corrupt/absent → start empty
-      }
-      s.hydrated = true;
-      emit(kind);
-    })();
+/** Pure set edits — a fresh Set only when something changes, so React
+ *  snapshots (and the store's write) move only on a real change. */
+function withId(s: IdSet, id: string, member: boolean): IdSet {
+  if (s.has(id) === member) return s;
+  const next = new Set(s);
+  if (member) next.add(id);
+  else next.delete(id);
+  return next;
+}
+function withoutIds(s: IdSet, ids: Iterable<string>): IdSet {
+  let next: Set<string> | null = null;
+  for (const id of ids) {
+    if (!s.has(id)) continue;
+    next ??= new Set(s);
+    next.delete(id);
   }
-  return s.hydrating;
+  return next ?? s;
 }
 
-function persist(kind: TermListKind) {
-  void AsyncStorage.setItem(STORAGE_KEYS[kind], JSON.stringify([...stores[kind].ids])).catch(() => {});
-}
+const stores: Record<TermListKind, LocalStore<IdSet>> = {
+  bookmark: idSetStore(STORAGE_KEYS.bookmark),
+  heart: idSetStore(STORAGE_KEYS.heart),
+  starred: idSetStore(STORAGE_KEYS.starred),
+  known: idSetStore(STORAGE_KEYS.known),
+};
 
 export function getTermList(kind: TermListKind): ReadonlySet<string> {
-  void hydrate(kind);
-  return stores[kind].ids;
+  return stores[kind].get();
 }
 
+/** Toggle membership. The intent (add / remove) is decided from what the
+ *  screen shows NOW and applied to the stored list once it has loaded —
+ *  replaying a toggle against a list that loaded meanwhile would undo it. */
 export function toggleTermList(kind: TermListKind, id: string): boolean {
-  const s = stores[kind];
-  const next = new Set(s.ids);
-  if (next.has(id)) next.delete(id);
-  else next.add(id);
-  s.ids = next; // new identity so React state updates propagate
-  persist(kind);
-  emit(kind);
-  return next.has(id);
+  const member = !stores[kind].get().has(id);
+  void stores[kind].mutate((s) => withId(s, id, member));
+  return member;
 }
 
 /** Force-set membership (e.g. the ✓/✗ known–unknown pair in term lists). */
 export function setInTermList(kind: TermListKind, id: string, member: boolean): void {
-  const s = stores[kind];
-  if (s.ids.has(id) === member) return;
-  const next = new Set(s.ids);
-  if (member) next.add(id);
-  else next.delete(id);
-  s.ids = next;
-  persist(kind);
-  emit(kind);
+  void stores[kind].mutate((s) => withId(s, id, member));
 }
 
 /** Remove many ids at once (e.g. a deck reset unflagging its own terms). */
 export function removeManyFromTermList(kind: TermListKind, ids: Iterable<string>): void {
-  const s = stores[kind];
-  let changed = false;
-  const next = new Set(s.ids);
-  for (const id of ids) {
-    if (next.delete(id)) changed = true;
-  }
-  if (!changed) return;
-  s.ids = next;
-  persist(kind);
-  emit(kind);
+  const list = [...ids];
+  void stores[kind].mutate((s) => withoutIds(s, list));
 }
 
 /** Live view of one list (re-renders on any change to it, any screen). */
 export function useTermList(kind: TermListKind): ReadonlySet<string> {
-  const [snap, setSnap] = useState<ReadonlySet<string>>(stores[kind].ids);
-  useEffect(() => {
-    const l = () => setSnap(stores[kind].ids);
-    stores[kind].listeners.add(l);
-    void hydrate(kind).then(l);
-    return () => {
-      stores[kind].listeners.delete(l);
-    };
-  }, [kind]);
-  return snap;
+  return stores[kind].use();
 }
 
 /* ---- PER-CONTEXT bookmark API (the 🔖 list) ----
  * Bookmarks are no longer one global list: each CONTEXT (the Glossary, or a
- * given topic) keeps its own bookmark set under `ape:bm:<ctx>`. Same
- * hand-rolled external-store pattern as the term lists above, but the stores
- * are created lazily per ctx and held in a Map. Fresh start — the old global
+ * given topic) keeps its own bookmark set under `ape:bm:<ctx>`. The stores
+ * are created lazily per ctx and held in a Map (never cleared: mounted
+ * useBookmarks() hooks subscribe to the captured store, and each store
+ * registers its own account-wipe reset). Fresh start — the old global
  * `ape:glossaryFavs` (BOOKMARK_KEY) is abandoned and never read. */
-const bookmarkStores = new Map<string, SetStore>();
+const bookmarkStores = new Map<string, LocalStore<IdSet>>();
 
 function bookmarkKey(ctx: string): string {
   return `ape:bm:${ctx}`;
 }
 
-function bookmarkStore(ctx: string): SetStore {
+function bookmarkStore(ctx: string): LocalStore<IdSet> {
   let s = bookmarkStores.get(ctx);
   if (!s) {
-    s = { ids: new Set(), hydrated: false, hydrating: null, listeners: new Set() };
+    s = idSetStore(bookmarkKey(ctx));
     bookmarkStores.set(ctx, s);
   }
   return s;
 }
 
-function emitBookmarks(s: SetStore) {
-  s.listeners.forEach((l) => l());
-}
-
-function hydrateBookmarks(ctx: string): Promise<void> {
-  const s = bookmarkStore(ctx);
-  if (s.hydrated) return Promise.resolve();
-  if (!s.hydrating) {
-    s.hydrating = (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(bookmarkKey(ctx));
-        if (raw) s.ids = new Set(JSON.parse(raw) as string[]);
-      } catch {
-        // corrupt/absent → start empty
-      }
-      s.hydrated = true;
-      emitBookmarks(s);
-    })();
-  }
-  return s.hydrating;
-}
-
-function persistBookmarks(ctx: string) {
-  void AsyncStorage.setItem(bookmarkKey(ctx), JSON.stringify([...bookmarkStore(ctx).ids])).catch(() => {});
-}
-
 export function getBookmarks(ctx: string): ReadonlySet<string> {
-  void hydrateBookmarks(ctx);
-  return bookmarkStore(ctx).ids;
+  return bookmarkStore(ctx).get();
 }
 
 export function isBookmarked(ctx: string, id: string): boolean {
-  return bookmarkStore(ctx).ids.has(id);
+  return bookmarkStore(ctx).get().has(id);
 }
 
 export function toggleBookmark(ctx: string, id: string): boolean {
   const s = bookmarkStore(ctx);
-  const next = new Set(s.ids);
-  if (next.has(id)) next.delete(id);
-  else next.add(id);
-  s.ids = next; // new identity so React state updates propagate
-  persistBookmarks(ctx);
-  emitBookmarks(s);
-  return next.has(id);
+  const member = !s.get().has(id);
+  void s.mutate((set) => withId(set, id, member));
+  return member;
 }
 
 export function removeBookmarks(ctx: string, ids: Iterable<string>): void {
-  const s = bookmarkStore(ctx);
-  let changed = false;
-  const next = new Set(s.ids);
-  for (const id of ids) {
-    if (next.delete(id)) changed = true;
-  }
-  if (!changed) return;
-  s.ids = next;
-  persistBookmarks(ctx);
-  emitBookmarks(s);
+  const list = [...ids];
+  void bookmarkStore(ctx).mutate((set) => withoutIds(set, list));
 }
 
 /** Every context that currently holds ≥1 bookmark — scanned from storage. Used
- *  by the Glossary's two-level bookmark filter (user request 2026-07-24). */
+ *  by the Glossary's two-level bookmark filter (user request 2026-07-24).
+ *  A read-only scan: a key it cannot read is skipped, nothing is written. */
 export async function listBookmarkContexts(): Promise<{ ctx: string; count: number }[]> {
   const keys = await AsyncStorage.getAllKeys();
   const out: { ctx: string; count: number }[] = [];
@@ -236,107 +173,42 @@ export async function listBookmarkContexts(): Promise<{ ctx: string; count: numb
 
 /** Live view of one context's bookmark set (re-renders on change, any screen). */
 export function useBookmarks(ctx: string): ReadonlySet<string> {
-  const [snap, setSnap] = useState<ReadonlySet<string>>(bookmarkStore(ctx).ids);
-  useEffect(() => {
-    const s = bookmarkStore(ctx);
-    const l = () => setSnap(bookmarkStore(ctx).ids);
-    s.listeners.add(l);
-    void hydrateBookmarks(ctx).then(l);
-    return () => {
-      s.listeners.delete(l);
-    };
-  }, [ctx]);
-  return snap;
+  return bookmarkStore(ctx).use();
 }
 
 /* ---- "Show my Custom List on the Dashboard" toggle ----
- * A device-local boolean (same hand-rolled external-store pattern as the term
- * lists above): module var + listeners + hydrate-once + persist. Controls
- * whether the user's Custom List appears as a synthetic current-topic on the
- * Dashboard. Default false. */
+ * A device-local boolean on the same store. Controls whether the user's
+ * Custom List appears as a synthetic current-topic on the Dashboard. Default
+ * false. Stored as the words 'true' / 'false' (unchanged on disk). */
 const CUSTOM_ON_DASHBOARD_KEY = 'ape:customOnDashboard';
 
-const customOnDashboard = {
-  value: false,
-  hydrated: false,
-  hydrating: null as Promise<void> | null,
-  listeners: new Set<() => void>(),
-};
-
-function emitCustomOnDashboard() {
-  customOnDashboard.listeners.forEach((l) => l());
-}
-
-async function hydrateCustomOnDashboard(): Promise<void> {
-  if (customOnDashboard.hydrated) return;
-  if (!customOnDashboard.hydrating) {
-    customOnDashboard.hydrating = (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(CUSTOM_ON_DASHBOARD_KEY);
-        if (raw != null) customOnDashboard.value = raw === 'true';
-      } catch {
-        // corrupt/absent → keep default false
-      }
-      customOnDashboard.hydrated = true;
-      emitCustomOnDashboard();
-    })();
-  }
-  return customOnDashboard.hydrating;
-}
+const customOnDashboard = createLocalStore<boolean>({
+  key: CUSTOM_ON_DASHBOARD_KEY,
+  empty: () => false,
+  parse: (p) => p === true || p === 'true',
+  serialize: (v) => (v ? 'true' : 'false'),
+});
 
 export function getCustomOnDashboard(): boolean {
-  void hydrateCustomOnDashboard();
-  return customOnDashboard.value;
+  return customOnDashboard.get();
 }
 
 export function setCustomOnDashboard(v: boolean): void {
-  if (customOnDashboard.value === v) return;
-  customOnDashboard.value = v;
-  void AsyncStorage.setItem(CUSTOM_ON_DASHBOARD_KEY, v ? 'true' : 'false').catch(() => {});
-  emitCustomOnDashboard();
+  void customOnDashboard.set(v);
 }
 
 /** Live view of the "show custom list on dashboard" flag (any screen). */
 export function useCustomOnDashboard(): boolean {
-  const [snap, setSnap] = useState<boolean>(customOnDashboard.value);
-  useEffect(() => {
-    const l = () => setSnap(customOnDashboard.value);
-    customOnDashboard.listeners.add(l);
-    void hydrateCustomOnDashboard().then(l);
-    return () => {
-      customOnDashboard.listeners.delete(l);
-    };
-  }, []);
-  return snap;
+  return customOnDashboard.use();
 }
 
 /* ---- Account-wipe reset (clearLocalAccountData / user switch) ---- */
 
 /** Reset ALL in-memory caches owned by this module — the four term lists, every
- *  per-context bookmark store, and the customOnDashboard flag — and emit to each
- *  so live hooks re-render empty. The next read of any list re-hydrates from the
- *  (already-cleared) storage. Safe with no subscribers. */
+ *  per-context bookmark store, and the customOnDashboard flag. Each store
+ *  registers its own reset with the wipe, so this is for callers and tests. */
 export function resetLocal(): void {
-  // Four fixed term lists.
-  (Object.keys(stores) as TermListKind[]).forEach((kind) => {
-    const s = stores[kind];
-    s.ids = new Set();
-    s.hydrated = false;
-    s.hydrating = null;
-    emit(kind);
-  });
-  // Per-context bookmark stores (lazily created Map). Reset IN PLACE — never
-  // clear the Map: mounted useBookmarks() hooks subscribe to the captured store
-  // object, so replacing it would orphan their listeners.
-  bookmarkStores.forEach((s) => {
-    s.ids = new Set();
-    s.hydrated = false;
-    s.hydrating = null;
-    emitBookmarks(s);
-  });
-  // "Show custom list on dashboard" flag → default.
-  customOnDashboard.value = false;
-  customOnDashboard.hydrated = false;
-  customOnDashboard.hydrating = null;
-  emitCustomOnDashboard();
+  for (const s of Object.values(stores)) s.reset();
+  for (const s of bookmarkStores.values()) s.reset();
+  customOnDashboard.reset();
 }

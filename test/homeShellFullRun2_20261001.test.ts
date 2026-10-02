@@ -94,7 +94,13 @@ test('Deck order: a FAILED read is never saved over the custom order by the next
   deck.restoreToDeck('x');
   deck.removeFromDeck('a');
   await settle();
-  assert.equal(store.get('ape:deckOrder'), saved);
+  // The shared safe store (2026-10-02, closer A2) reads AGAIN on the next
+  // action and applies the taps to the STORED deck: the custom order survives
+  // (never the default saved over it) and the ✕ on 'a' lands on it.
+  const after = JSON.parse(store.get('ape:deckOrder') ?? '{}') as { mode: string; order: string[]; removed: string[] };
+  assert.equal(after.mode, 'custom');
+  assert.deepEqual(after.order, ['b'], 'the custom order was replaced by the default');
+  assert.deepEqual(after.removed, ['c', 'a'], "the stored removals were lost or the tap didn't land");
   // …and after an account wipe (storage swept), saving works again.
   store.clear();
   deck.resetLocal();

@@ -6,10 +6,17 @@
  * the Topic-Deck list opened by the blue Study icon), where they can drag topics
  * into any order and remove topics from the deck. Switching back to alphabetical
  * keeps the custom order stored, so changing your mind restores it. Removed
- * topics can be restored. Same tiny external-store pattern as flaggedStore.
+ * topics can be restored.
+ *
+ * On the shared safe store (pattern catalog 2026-10-02, closer A2). The rules
+ * it used to carry by hand live there now: a read that FAILED is unreadable
+ * and the next reorder / ✕ / mode tap never saves the default over the
+ * learner's custom order (full run 2, 2026-10-01); a tap before the read
+ * lands is applied on top of the stored deck; a read in flight when the
+ * boot-time identity check wipes the store lands nowhere (bug pass 2,
+ * 2026-09-30); the wipe reaches the store without a hand entry.
  */
-import { useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLocalStore } from '../storage/localStore';
 
 export type DeckMode = 'alpha' | 'custom';
 export type DeckPrefs = { mode: DeckMode; order: string[]; removed: string[] };
@@ -17,82 +24,30 @@ export type DeckPrefs = { mode: DeckMode; order: string[]; removed: string[] };
 const KEY = 'ape:deckOrder';
 const DEFAULT: DeckPrefs = { mode: 'alpha', order: [], removed: [] };
 
-let prefs: DeckPrefs = { ...DEFAULT };
-let hydrated = false;
-let hydrating: Promise<void> | null = null;
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((l) => l());
-}
-
-// Bumped by resetLocal (bug pass 2, 2026-09-30): this store hydrates at module
-// load, which is exactly when the boot-time identity check may wipe it — a read
-// already in flight must not land the previous user's deck back in memory.
-let generation = 0;
-/** The last read of the saved deck FAILED — see hydrate(). */
-let readFailed = false;
-
-function hydrate(): Promise<void> {
-  if (hydrated) return Promise.resolve();
-  if (!hydrating) {
-    const gen = generation;
-    hydrating = (async () => {
-      let raw: string | null;
-      try {
-        raw = await AsyncStorage.getItem(KEY);
-      } catch {
-        // UNREADABLE is not "no deck yet" (full run 2, 2026-10-01): showing the
-        // default is fine, but the next reorder / ✕ / mode tap SAVED that
-        // default over the learner's custom order. Saves stay off until a read
-        // succeeds.
-        if (gen !== generation) return;
-        readFailed = true;
-        hydrated = true;
-        emit();
-        return;
-      }
-      try {
-        if (gen !== generation) return;
-        readFailed = false;
-        if (raw) {
-          const p = JSON.parse(raw) as Partial<DeckPrefs>;
-          const strs = (v: unknown): string[] =>
-            Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
-          prefs = { mode: p.mode === 'custom' ? 'custom' : 'alpha', order: strs(p.order), removed: strs(p.removed) };
-        }
-      } catch {
-        // corrupt/absent → keep default (alphabetical)
-      }
-      if (gen !== generation) return;
-      hydrated = true;
-      emit();
-    })();
-  }
-  return hydrating;
-}
-void hydrate();
-
-function commit(next: DeckPrefs) {
-  prefs = next;
-  if (!readFailed) void AsyncStorage.setItem(KEY, JSON.stringify(prefs)).catch(() => {});
-  emit();
-}
+const store = createLocalStore<DeckPrefs>({
+  key: KEY,
+  empty: () => ({ ...DEFAULT }),
+  parse: (raw) => {
+    const p = (raw && typeof raw === 'object' ? raw : {}) as Partial<DeckPrefs>;
+    const strs = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+    return { mode: p.mode === 'custom' ? 'custom' : 'alpha', order: strs(p.order), removed: strs(p.removed) };
+  },
+});
+// Warm at module load so the Dashboard reads the deck synchronously.
+void store.hydrate();
 
 export function getDeckPrefs(): DeckPrefs {
-  void hydrate();
-  return prefs;
+  return store.get();
 }
 
 /** Alphabetical (default) or the user's custom order. */
 export function setDeckMode(mode: DeckMode): void {
-  if (prefs.mode === mode) return;
-  commit({ ...prefs, mode });
+  void store.mutate((prefs) => (prefs.mode === mode ? prefs : { ...prefs, mode }));
 }
 
 /** Store the full custom order (list of topic IDs, left→right). */
 export function setDeckOrder(order: string[]): void {
-  commit({ ...prefs, order: [...order] });
+  void store.mutate((prefs) => ({ ...prefs, order: [...order] }));
 }
 
 /**
@@ -101,22 +56,23 @@ export function setDeckOrder(order: string[]): void {
  * `deckIds` = the topics currently on the deck. When given, the store refuses
  * to remove the LAST one (bug hunt 2026-09-29): the Dashboard's
  * `topics.length <= 1` guard reads a render-old list, so two quick ✕ taps both
- * passed it. The check here runs against the live `prefs.removed`, so the
+ * passed it. The check here runs against the store's live `removed`, so the
  * second tap sees the first.
  */
 export function removeFromDeck(id: string, deckIds?: readonly string[]): void {
-  if (prefs.removed.includes(id)) return;
-  if (deckIds) {
-    const left = deckIds.filter((x) => x !== id && !prefs.removed.includes(x));
-    if (left.length === 0) return;
-  }
-  commit({ ...prefs, removed: [...prefs.removed, id], order: prefs.order.filter((x) => x !== id) });
+  void store.mutate((prefs) => {
+    if (prefs.removed.includes(id)) return prefs;
+    if (deckIds) {
+      const left = deckIds.filter((x) => x !== id && !prefs.removed.includes(x));
+      if (left.length === 0) return prefs;
+    }
+    return { ...prefs, removed: [...prefs.removed, id], order: prefs.order.filter((x) => x !== id) };
+  });
 }
 
 /** Put a removed topic back on the deck. */
 export function restoreToDeck(id: string): void {
-  if (!prefs.removed.includes(id)) return;
-  commit({ ...prefs, removed: prefs.removed.filter((x) => x !== id) });
+  void store.mutate((prefs) => (prefs.removed.includes(id) ? { ...prefs, removed: prefs.removed.filter((x) => x !== id) } : prefs));
 }
 
 /**
@@ -142,29 +98,14 @@ export function orderDeckIds(all: { id: string; name: string }[], p: DeckPrefs, 
   return firstId && sorted.includes(firstId) ? [firstId, ...sorted.filter((id) => id !== firstId)] : sorted;
 }
 
-/** Reset the in-memory cache on account switch (parity with the other local
- *  stores — see clearLocalAccountData/resetAllLocalStores). The persisted key is
- *  removed by the `ape:*` sweep; this drops the cache so the next user doesn't
- *  briefly see the previous user's deck order until relaunch. */
+/** Reset the in-memory cache on account switch. The persisted key is removed
+ *  by the `ape:*` sweep and the shared store registers this reset with the
+ *  wipe itself; kept exported for callers and tests. */
 export function resetLocal(): void {
-  generation++;
-  readFailed = false;
-  prefs = { ...DEFAULT };
-  hydrated = false;
-  hydrating = null;
-  emit();
+  store.reset();
 }
 
 /** Live view of the deck prefs (any screen). */
 export function useDeckPrefs(): DeckPrefs {
-  const [snap, setSnap] = useState<DeckPrefs>(prefs);
-  useEffect(() => {
-    const l = () => setSnap(prefs);
-    listeners.add(l);
-    void hydrate().then(l);
-    return () => {
-      listeners.delete(l);
-    };
-  }, []);
-  return snap;
+  return store.use();
 }
