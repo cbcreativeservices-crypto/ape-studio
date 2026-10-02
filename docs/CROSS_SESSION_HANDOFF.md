@@ -276,6 +276,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 11:54 · ccode · 59e59876
+changed: Pattern hunt wave 4 (owner rulings): one decorative-motion gate (reduce motion + Low-Light), safeGoBack on all 123 back presses, SEE WHAT'S LEFT on 5 module-lab hubs, exposure unreadable note, career PE/DEGREE chip, write-gated 'Added', room number parse
+affects other side: client only
+needs: nothing new (iOS 33 / Android 16 submit still pending)
+
+
 ### 2026-10-02 11:38 · ccode · a55bb8e8
 changed: Pattern hunt wave 3: P5 modal hand-off + P9 latch, P8 tri-state tier + P6 write-gated 'Saved', P10/P11/P2/P12/P20 timers/effects/mic, P13 focus-scoped BACK, P16/P17 calc field classes + snapWhole, P14/P15 fitValue + P18 copy; each with a ratchet guard
 affects other side: client only. Calculator answers changed at exact boundaries (FIR taps 801->800, treatment panels 24->23) and some fields now refuse out-of-range input.
