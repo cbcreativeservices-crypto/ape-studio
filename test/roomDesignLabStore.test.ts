@@ -38,9 +38,11 @@ registerHooks({
           globalThis.__apeRoomDelay = (ms) => { delay = ms; };
           let failWrites = false;
           globalThis.__apeRoomFailWrites = (on) => { failWrites = on; };
+          let failReads = false;
+          globalThis.__apeRoomFailReads = (on) => { failReads = on; };
           const wait = () => new Promise((r) => setTimeout(r, delay));
           export default {
-            async getItem(k) { await wait(); return mem.has(k) ? mem.get(k) : null; },
+            async getItem(k) { await wait(); if (failReads) throw new Error('unreadable'); return mem.has(k) ? mem.get(k) : null; },
             async setItem(k, v) { if (failWrites) throw new Error('disk full'); mem.set(k, v); },
             async removeItem(k) { mem.delete(k); },
           };
@@ -169,5 +171,34 @@ describe('saved room designs — a failed write is reported (toddler pass 1, 202
     } finally {
       failWrites(false);
     }
+  });
+});
+
+describe('saved room designs — read/write failures never lose or fake designs (toddler pass 2, 2026-10-01)', () => {
+  const failWrites = (on: boolean) => (globalThis as { __apeRoomFailWrites?: (on: boolean) => void }).__apeRoomFailWrites!(on);
+  const failReads = (on: boolean) => (globalThis as { __apeRoomFailReads?: (on: boolean) => void }).__apeRoomFailReads!(on);
+  it('a failed write does not leave the design listed as saved', async () => {
+    await fresh();
+    failWrites(true);
+    try {
+      await store.saveRoomDesign({ ...defaultDesign('metric'), name: 'ghost' });
+    } finally {
+      failWrites(false);
+    }
+    assert.deepEqual(store.getRoomDesigns().map((x) => x.name), []);
+  });
+  it('an unreadable store is never overwritten by the next save', async () => {
+    await fresh();
+    assert.equal(await store.saveRoomDesign({ ...defaultDesign('metric'), name: 'keep me' }), true);
+    store.resetLocal(); // relaunch
+    failReads(true);
+    try {
+      assert.equal(await store.saveRoomDesign({ ...defaultDesign('metric'), name: 'new' }), false);
+    } finally {
+      failReads(false);
+    }
+    store.resetLocal();
+    await settled();
+    assert.deepEqual(store.getRoomDesigns().map((x) => x.name), ['keep me']);
   });
 });

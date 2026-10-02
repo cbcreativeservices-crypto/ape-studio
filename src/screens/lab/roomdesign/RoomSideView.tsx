@@ -13,8 +13,8 @@ import Svg, { Circle, G, Line, Path, Polyline, Rect, Text as SvgText } from 'rea
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
-import { pickHandle, sideTransform, touchToGlass, type PlanTransform } from './planGeom';
-import { bounds, ceilingHeightAt, fmtLen, type Analysis, type Pt, type RoomDesign } from './roomModel';
+import { fingerAt, fingerOffset, pickHandle, sideLabelRows, sideTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
+import { bounds, ceilingHeightAt, cloudHangZ, fmtLen, type Analysis, type Pt, type RoomDesign } from './roomModel';
 import { SURFACE_TINT, type PlanHandle } from './RoomPlanView';
 
 const WALL = '#8d919c';
@@ -84,7 +84,7 @@ export function RoomSideView({
   // Remembers the glass it began on — a rotation or re-fit mid-drag ends the
   // drag rather than mapping the old finger through the new box (toddler
   // pass 2026-10-01, the plan's rule).
-  const drag = useRef<{ id: string; gx: number; gy: number; s: number; gw: number; gh: number } | null>(null);
+  const drag = useRef<{ id: string; gx: number; gy: number; s: number; gw: number; gh: number; finger: Finger } | null>(null);
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (e) => {
@@ -92,19 +92,21 @@ export function RoomSideView({
         const g = touchToGlass(e.nativeEvent.locationX, e.nativeEvent.locationY, st.s);
         const hit = pickHandle(st.handles, g.x, g.y);
         if (!hit) return false;
-        drag.current = { id: hit.id, gx: g.x, gy: g.y, s: st.s, gw: st.gw, gh: st.gh };
+        drag.current = { id: hit.id, gx: g.x, gy: g.y, s: st.s, gw: st.gw, gh: st.gh, finger: fingerAt(e.nativeEvent) };
         st.onSelect?.(hit.id);
         return true;
       },
-      onPanResponderMove: (_e, gs) => {
+      onPanResponderMove: (e, gs) => {
         const st = ref.current;
         const d = drag.current;
         if (!d) return;
-        if (d.s !== st.s || d.gw !== st.gw || d.gh !== st.gh) {
+        // Its own finger only (toddler pass 2 — the plan's rule).
+        const off = fingerOffset(e.nativeEvent, d.finger, { dx: gs.dx, dy: gs.dy });
+        if (d.s !== st.s || d.gw !== st.gw || d.gh !== st.gh || off === 'lifted') {
           drag.current = null;
           return;
         }
-        const m = st.T.toM({ x: d.gx + gs.dx / st.s, y: d.gy + gs.dy / st.s });
+        const m = st.T.toM({ x: d.gx + off.dx / st.s, y: d.gy + off.dy / st.s });
         st.onDrag?.(d.id, { y: m.x + st.b.minY, z: m.y });
       },
       onPanResponderRelease: () => {
@@ -145,6 +147,7 @@ export function RoomSideView({
   // in their material's tint, the floor in the plan's floor tint.
   const wallTint = SURFACE_TINT[room.walls] ?? WALL;
   const ceilTint = SURFACE_TINT[room.ceilingMat] ?? WALL;
+  const rows = sideLabelRows(floorL.y, gh, fs);
   const floorTint = room.floor === 'carpet' ? '#7a6a58' : room.floor === 'hardwood' ? '#a8835a' : room.floor === 'tile' ? '#8e9a9c' : WALL;
 
   return (
@@ -167,7 +170,8 @@ export function RoomSideView({
         {design.treatment.map((t) => {
           const col = t.enabled ? TREAT : TREAT_OFF;
           if (t.kind === 'cloud' && t.y != null) {
-            const q = toSide({ y: t.y - t.height / 2, z: t.z + t.thickness / 2 });
+            // Hung under the ceiling that is there (cloudHangZ).
+            const q = toSide({ y: t.y - t.height / 2, z: cloudHangZ(room, t) + t.thickness / 2 });
             return (
               <G key={t.id}>
                 <Rect x={q.x} y={q.y} width={t.height * T.k} height={Math.max(3, t.thickness * T.k)} fill="rgba(201,162,74,0.35)" stroke={col} strokeWidth={1} />
@@ -264,11 +268,11 @@ export function RoomSideView({
         <SvgText x={frontTop.x + 4} y={floorL.y - 4} fill="#6d6f78" fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
           FRONT
         </SvgText>
-        <SvgText x={lisPx.x} y={floorL.y + fs + 3} fill={colors.green} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
+        <SvgText x={lisPx.x} y={rows.ears} fill={colors.green} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
           {`ears ${fmtLen(lis.earZ, units)}`}
         </SvgText>
         {Lsp ? (
-          <SvgText x={toSide(Lsp).x} y={floorL.y + 2 * fs + 6} fill={colors.amber} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
+          <SvgText x={toSide(Lsp).x} y={rows.tweeter} fill={colors.amber} fontSize={fs} fontFamily={fonts.mono} textAnchor="middle">
             {`tweeter ${fmtLen(Lsp.z, units)}`}
           </SvgText>
         ) : null}

@@ -14,14 +14,13 @@ import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignSto
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
-import { BADGE, type RoomLabCtx } from '../labCtx';
+import { BADGE, SAVE_FAILED, SAVE_NOT_YET, saveLine, type RoomLabCtx } from '../labCtx';
 import { RoomPlanView } from '../RoomPlanView';
 import {
   analyze,
   bounds,
   compareMeasured,
   diffLayouts,
-  evictedBySave,
   fmtDelta,
   fmtHz,
   fmtLen,
@@ -43,14 +42,15 @@ import { treatmentSummary } from './modTreatment';
  *  plan's own shape — the plan lays out in glass units, so every line and
  *  label zooms with the step and the explore badge rides along. */
 export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, analysis: a, units, guest, preview, saved, saveCurrent, loadSaved, deleteSaved } = ctx;
+  const { design, update, analysis: a, units, guest, preview, resolved, saved, evicts, saveCurrent, loadSaved, deleteSaved } = ctx;
   const room = design.room;
   const lay = design.layouts[design.active] ?? design.layouts[0];
   const b = a.bounds;
   const st = a.stereo;
   const conflicts = placementConflicts(design, a);
   const measured = compareMeasured(design, a);
-  const [savedMsg, setSavedMsg] = useState<string | null>(null);
+  const [savedMsg, setSavedMsg] = useState<{ text: string; ok: boolean; at: RoomDesign } | null>(null);
+  const savedLine = saveLine(savedMsg, design);
   const [compareId, setCompareId] = useState<string | null>(null);
   const planRect = planIsRectangular(room);
   // The mini plan's shape: the room's bounding box plus the plan's margin,
@@ -189,13 +189,21 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
               label="SAVE THIS DESIGN"
               tint="green"
               onPress={() => {
-                const gone = evictedBySave(saved, design, MAX_SAVED_DESIGNS);
+                // A failed device write was a bare "Not saved." (toddler
+                // pass 2). Guests never see this button.
+                const known = resolved;
+                const at = design;
+                const gone = evicts?.name ?? null;
                 void saveCurrent().then((ok) =>
-                  setSavedMsg(ok ? `Saved "${design.name}" on this device.${gone ? ` The library keeps ${MAX_SAVED_DESIGNS}: the oldest, "${gone.name}", was removed to make room.` : ''}` : 'Not saved.'),
+                  setSavedMsg({
+                    ok,
+                    at,
+                    text: ok ? `Saved "${at.name}" on this device.${gone ? ` The library keeps ${MAX_SAVED_DESIGNS}: the oldest, "${gone}", was removed to make room.` : ''}` : !known ? SAVE_NOT_YET : SAVE_FAILED,
+                  }),
                 );
               }}
             />
-            {savedMsg ? <Caption>{savedMsg}</Caption> : null}
+            {savedLine ? <Caption>{savedLine}</Caption> : null}
             {saved.length === 0 ? <Caption>No saved designs on this device yet.</Caption> : null}
             {saved.map((d) => {
               // The plan's width × length (toddler pass 2026-10-01): the far

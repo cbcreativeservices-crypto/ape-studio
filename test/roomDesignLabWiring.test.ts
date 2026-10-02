@@ -106,7 +106,8 @@ describe('rack + full screen', () => {
       assert.match(s, /const gw = w \/ s;\s*const gh = h \/ s;/, `${f} lays out in glass units`);
       assert.match(s, /viewBox=\{`0 0 \$\{gw\} \$\{gh\}`\}/, `${f} paints through the viewBox`);
       assert.match(s, /touchToGlass\(e\.nativeEvent\.locationX, e\.nativeEvent\.locationY, st\.s\)/, `${f} maps the touch start`);
-      assert.match(s, /gs\.dx \/ st\.s/, `${f} maps the drag delta`);
+      // (toddler pass 2: the delta is the drag's OWN finger, `off`, not the centroid `gs`)
+      assert.match(s, /off\.dx \/ st\.s/, `${f} maps the drag delta`);
       assert.match(s, /onPanResponderTerminationRequest: \(\) => false/, `${f} keeps the drag from the scrollers`);
     }
   });

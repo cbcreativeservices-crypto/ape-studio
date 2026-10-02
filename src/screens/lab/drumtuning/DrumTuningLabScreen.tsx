@@ -44,7 +44,7 @@ import { DRUM_CHAPTERS, drumChapterById, scenariosForChapter, type DrumChapterId
 import { deleteTuningNote, drumResumePoint, emptyDrumChapter, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, withNote, type DrumProgressState } from './drumProgress';
 import { DRUM_CHAPTER_COMPONENTS, DRUM_NEEDS_INTERACTIVE, DRUM_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
-import type { NoteSaveResult } from './modules/shared';
+import type { NoteDeleteResult, NoteSaveResult } from './modules/shared';
 import { TakeawayCard } from './kit';
 
 export const DRUM_LAB_TITLE = 'Drum Tuning Lab';
@@ -197,9 +197,22 @@ export function DrumTuningLabScreen() {
     }
     return 'failed';
   }, []);
-  const onDeleteNote = useCallback((id: string) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
-    void deleteTuningNote(id);
+  const onDeleteNote = useCallback(async (id: string): Promise<NoteDeleteResult> => {
+    // The row goes when the store says it went (toddler pass 2): the old
+    // optimistic filter + `void deleteTuningNote` hid a failed write — the
+    // row vanished, the note stayed on the device and was back next visit.
+    // The store's list is also the LAST word over a save still in flight
+    // (the queue runs in order), so a deleted row can never be put back by it.
+    const s = await deleteTuningNote(id);
+    if (s.saved) {
+      setNotes(s.notes);
+      return 'deleted';
+    }
+    if (s.blocked) {
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+      return 'session';
+    }
+    return 'failed';
   }, []);
 
   const scenarios = scenariosForChapter(mod.id);
@@ -327,7 +340,7 @@ export function DrumTuningLabScreen() {
       <LabNextButton />
     </ScrollView>
   );
-  const host: StepHost = { step: stepIdx, setStep, onSteps, head, tail, readWrap };
+  const host: StepHost = { step: stepIdx, setStep, onSteps, head, tail, readWrap, hidden: !!endState };
 
   let end: ReactNode = null;
   if (endState) {
@@ -340,7 +353,12 @@ export function DrumTuningLabScreen() {
         mode="progress"
         noun="chapter"
         onJump={(id) => openModule(id as DrumChapterId, 0)}
-        onPracticeAgain={() => openModule('sound', 0)}
+        // "From the start": Chapter 1 opens fresh even when it is the chapter
+        // kept mounted under this screen (the run counter remounts it).
+        onPracticeAgain={() => {
+          setRunId((r) => r + 1);
+          openModule('sound', 0);
+        }}
         onDone={() => navigation.goBack()}
         bottomInset
       />
@@ -356,13 +374,19 @@ export function DrumTuningLabScreen() {
           right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
         />
         <LabNavBar nav={nav} />
-        {end ?? (
-          <View style={styles.body}>
-            <StepHostContext.Provider value={host}>
-              <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
-            </StepHostContext.Provider>
-          </View>
-        )}
+        {end}
+        {/* The chapter stays MOUNTED under the what's-left screen (toddler
+            pass 2): FINISH ›, or "What's left" in CONTENTS from any step,
+            used to unmount it, so ‹ PREV came back to a fresh chapter — Chapter
+            7's cleared cases, Chapter 3's half-evened head, Chapter 6's faders
+            and Chapter 5's met goals all gone, the interactive's credit to be
+            earned again from zero. Hidden, it keeps its state; the host's
+            `hidden` flag stops its sound and its animation. */}
+        <View style={end ? styles.gone : styles.body} accessibilityElementsHidden={!!end} importantForAccessibility={end ? 'no-hide-descendants' : 'auto'}>
+          <StepHostContext.Provider value={host}>
+            <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
+          </StepHostContext.Provider>
+        </View>
       </View>
     </LabNavProvider>
   );
@@ -371,6 +395,7 @@ export function DrumTuningLabScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   body: { flex: 1 },
+  gone: { display: 'none' },
   scroll: { paddingHorizontal: 16, paddingTop: 8, gap: 10 },
   objectiveLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.6, lineHeight: 14 },
   requirement: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, textAlign: 'center', lineHeight: 16 },

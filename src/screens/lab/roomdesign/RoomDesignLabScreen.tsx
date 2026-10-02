@@ -22,7 +22,7 @@
  *
  * Low-Light: nothing here auto-appears; the TRACE pulse runs only on a tap.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,12 +33,12 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
-import { deleteRoomDesign, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
+import { deleteRoomDesign, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import type { RoomLabCtx } from './labCtx';
 import { ROOM_LAB_ID, ROOM_MODULES, type RoomModuleId } from './registry';
-import { analyze, defaultDesign, repairDesign, START_LAYOUT, type RoomDesign } from './roomModel';
+import { analyze, defaultDesign, evictedBySave, repairDesign, START_LAYOUT, type RoomDesign } from './roomModel';
 import { IntroModule } from './modules/modIntro';
 import { CreateModule } from './modules/modCreate';
 import { MonitoringModule } from './modules/modMonitoring';
@@ -60,11 +60,19 @@ export function RoomDesignLabScreen() {
   const visited = useLabVisits(ROOM_LAB_ID);
   // Repaired on the way in (toddler pass 2026-10-01): a damaged or
   // version-skewed record crashed analyze() on COMPARE or LOAD.
-  const rawSaved = useRoomDesigns();
+  // The hook hands back a fresh array on every render; held while its
+  // records are the same objects, so the repair runs when the library
+  // changes rather than on every drag frame (toddler pass 2).
+  const fresh = useRoomDesigns();
+  const rawRef = useRef(fresh);
+  if (rawRef.current.length !== fresh.length || fresh.some((d, i) => d !== rawRef.current[i])) rawRef.current = fresh;
+  const rawSaved = rawRef.current;
   const saved = useMemo(() => rawSaved.map(repairDesign).filter((x): x is RoomDesign => x != null), [rawSaved]);
 
   // The ONE design being edited, shared by every module.
   const [design, setDesign] = useState<RoomDesign>(() => defaultDesign());
+  // Judged on the store's own list, which is what the store trims.
+  const evicts = useMemo(() => evictedBySave(rawSaved, design, MAX_SAVED_DESIGNS), [rawSaved, design]);
   const update = useCallback((fn: (d: RoomDesign) => RoomDesign) => setDesign((d) => ({ ...fn(d), updatedAt: Date.now() })), []);
   const analysis = useMemo(() => analyze(design), [design]);
 
@@ -91,6 +99,7 @@ export function RoomDesignLabScreen() {
       preview,
       resolved,
       saved,
+      evicts,
       saveCurrent: (name?: string) => {
         // Nothing reaches the store while it is blocked (toddler pass
         // 2026-10-01): a save tapped before the tier was known, or by a
@@ -111,7 +120,7 @@ export function RoomDesignLabScreen() {
       },
       deleteSaved: (id: string) => deleteRoomDesign(id),
     }),
-    [design, update, analysis, guest, preview, resolved, saved],
+    [design, update, analysis, guest, preview, resolved, saved, evicts],
   );
 
   const go = useCallback((i: number) => {

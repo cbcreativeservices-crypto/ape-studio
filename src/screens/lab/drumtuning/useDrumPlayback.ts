@@ -84,6 +84,10 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
   keyRef.current = key;
   const aliveRef = useRef(true);
   const seqRef = useRef(0);
+  /** The newest ▶ press; ■ STOP bumps it too (toddler pass 2). An older press
+   *  still in flight never touches `pending` — the newer press or the stop
+   *  owns it — and a stop cancels a press at ANY stage, the gate included. */
+  const playTokRef = useRef(0);
 
   // The playhead.
   const progress = useSharedValue(0);
@@ -189,12 +193,24 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
   }, [renderNow]);
 
   const play = useCallback(() => {
+    const t = ++playTokRef.current;
+    const current = () => aliveRef.current && t === playTokRef.current;
     void (async () => {
-      if (!(await requestAudioOutput())) return;
-      if (!aliveRef.current || !focusedRef.current) return;
+      const granted = await requestAudioOutput();
+      if (!current()) return;
+      // A denied gate / a lab no longer in front: this press owns `pending`
+      // now (an older press may have left it on), so it clears it.
+      if (!granted || !focusedRef.current) {
+        setPending(false);
+        return;
+      }
       setPending(true);
       const ok = await load();
-      if (!aliveRef.current) return;
+      // ▶ ▶ fast (toddler pass 2): the FIRST press's load is superseded and
+      // used to clear `pending` here while the second press was still
+      // rendering — the status flickered to "stopped" and the silence guard
+      // saw nothing in flight. The newer press (or a ■) owns it.
+      if (!current()) return;
       setPending(false);
       if (!ok || !focusedRef.current || !isAudioOutputEnabled() || !playerRef.current) return;
       const r = renderedRef.current;
@@ -209,6 +225,7 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
 
   const stop = useCallback(() => {
     seqRef.current++;
+    playTokRef.current++;
     playerRef.current?.stop();
     setPending(false);
     setPlaying(false);
@@ -231,6 +248,13 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
     stepSeen.current = hostStep;
     stop();
   }, [hostStep, stop]);
+  // The what's-left screen covers the chapter (toddler pass 2): the chapter
+  // stays mounted underneath so ‹ PREV comes back to it exactly as it was,
+  // but nothing may keep sounding behind the end screen.
+  const hidden = host?.hidden === true;
+  useEffect(() => {
+    if (hidden) stop();
+  }, [hidden, stop]);
 
   return useMemo(() => ({ status, measure: renderNow, play, stop, playing, pending, rendered, progress }), [status, renderNow, play, stop, playing, pending, rendered, progress]);
 }

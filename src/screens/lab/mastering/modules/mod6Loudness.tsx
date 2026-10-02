@@ -85,6 +85,11 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
   // this one. The volume warning used to quote that stale step (e.g. 0 dB
   // measured at DRIVE 0, then DRIVE 14 and MATCH off: a ~10 dB jump).
   const fresh = pb.status === 'ready';
+  // The MEASURES (peak, LUFS, PLR) belong to the DRIVE they were rendered
+  // at; only the match gains change with MATCH. After a DRIVE move the bezel
+  // read the old drive's numbers beside the new fader, and after MATCH off
+  // the glass still said "played at −x dB · matched" (toddler pass 2).
+  const current = pb.current;
   const system = PLAYBACK_SYSTEMS.find((s) => s.id === systemId) ?? PLAYBACK_SYSTEMS[0];
   // The teaching signal's three numbers for the LEARN bezel — the same
   // simulations the meters draw, offset by GAIN, so PEAK, TRUE PK and LUFS
@@ -160,14 +165,14 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Quieter and louder, matched', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={CEILING} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={CEILING} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',
             badge: RENDER_BADGE,
             bezel: [
-              ...measureBezel(m, CEILING),
-              matchBezel(matched, l?.matchDb, 'LOUDER'),
+              ...measureBezel(current ? m : undefined, CEILING),
+              matchBezel(matched, fresh ? l?.matchDb : undefined, 'LOUDER'),
             ],
             params: [
               faderParam({ id: 'drive', label: 'DRIVE', value: drive, min: 0, max: 14, step: 0.5, format: (v) => `+${v.toFixed(1)} dB into the limiter`, formatShort: (v) => `+${v.toFixed(1)} dB`, onChange: setDrive, home: 0, level: true }),
@@ -183,7 +188,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
               <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ QUIETER or ▶ LOUDER" />
               <Body>DRIVE pushes the mix into a peak limiter whose ceiling is {CEILING} dBFS. QUIETER is the same limiter with no drive. With MATCH LEVEL on, both are played at the loudness of the quieter one: the louder render is attenuated by the difference between the two loudness estimates, in LU (1 LU = 1 dB), a BS.1770-style K-weighted estimate, so what remains is the dynamics. The gain-reduction strip shows where the limiter worked; TRUE PK shows what a sample-peak ceiling lets through between samples.</Body>
               <Card tone="warn">
-                <Point title="Before you switch MATCH off">{unmatchedWarning(fresh ? q?.lufs : undefined, fresh ? l?.lufs : undefined, 'LOUDER')} Unmatched, nothing replays by itself after a DRIVE change — you press ▶ each time.</Point>
+                <Point title="Before you switch MATCH off">{unmatchedWarning(current ? q?.lufs : undefined, current ? l?.lufs : undefined, 'LOUDER')} Unmatched, nothing replays by itself after a DRIVE change — you press ▶ each time.</Point>
               </Card>
               {fresh && q && l ? (
                 <Card tone="accent">

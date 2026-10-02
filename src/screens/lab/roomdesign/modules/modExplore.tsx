@@ -6,18 +6,34 @@
  * Modes of a rectangle are CALCULATED (idealized); reflections and levels
  * are ESTIMATED; a non-rectangular room's modes are ESTIMATED and say so.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { fieldLevelColor } from '../../../../features/tools/levelColor';
 import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignStore';
 import { flipFader } from '../../soundsystems/rackLayout';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
-import { BADGE, type RoomLabCtx } from '../labCtx';
+import { BADGE, SAVE_FAILED, saveLine, type RoomLabCtx } from '../labCtx';
 import { RoomRackLayout } from '../rackLayout';
 import { PLAN_LEGEND, RoomPlanView, type PlanLayers, type Trace } from '../RoomPlanView';
 import { Body, Caption, SAFETY_LEVEL_POINTER, TrayButton, TrayHeading } from '../bits';
-import { clampInside, diffLayouts, evictedBySave, fmtHz, fmtLen, modePressure, reflectionSurfaceName, START_LAYOUT, type Layout, type Pt, type RoomDesign } from '../roomModel';
+import {
+  analyze,
+  capLayoutHeights,
+  clampInside,
+  diffLayouts,
+  fmtHz,
+  fmtLen,
+  modePressure,
+  nextTraceKey,
+  planReflections,
+  reflectionKey,
+  reflectionSurfaceName,
+  START_LAYOUT,
+  type Layout,
+  type Pt,
+  type RoomDesign,
+} from '../roomModel';
 
 /** The slots: START is where the positions began; A and B are kept beside it. */
 const OPTION_NAMES = ['Option A', 'Option B', START_LAYOUT] as const;
@@ -42,9 +58,10 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   // First entry: the mode map and the triangle only; the reflection paths
   // come on with TRACE or LAYERS (cognitive review 19).
   const [layers, setLayers] = useState<PlanLayers>({ triangle: true, boundaries: false, reflections: false, modes: true, dims: false, treatment: true });
-  const [trace, setTrace] = useState<Trace>(null);
+  // The traced path is held by its KEY (speaker + surface), not its index:
+  // the list re-sorts by delay on every drag (toddler pass 2, 2026-10-01).
+  const [traceState, setTraceState] = useState<{ key: string; progress: number } | null>(null);
   const traceRaf = useRef<number | null>(null);
-  const traceIdx = useRef(-1);
   useEffect(() => () => {
     if (traceRaf.current != null) cancelAnimationFrame(traceRaf.current);
   }, []);
@@ -58,7 +75,8 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   const early = analysis.reflections.filter((r) => r.delayMs < 15);
   const first = analysis.reflections[0];
 
-  const setLayout = (fn: (l: Layout) => Layout) => update((d) => ({ ...d, layouts: d.layouts.map((l, i) => (i === d.active ? fn(l) : l)) }));
+  // Every position write ends under the local ceiling (capLayoutHeights).
+  const setLayout = (fn: (l: Layout) => Layout) => update((d) => ({ ...d, layouts: d.layouts.map((l, i) => (i === d.active ? capLayoutHeights(fn(l), d.room) : l)) }));
   const onDrag = (id: string, p: Pt) =>
     setLayout((l) => {
       if (id === 'listener') return { ...l, listener: { ...l.listener, ...clampInside(p, room, l.listener) } };
@@ -67,26 +85,32 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
 
   // TRACE: animate a pulse along the next reflection path (user-initiated;
   // nothing auto-appears). Cycles through the paths on each press.
+  // Cycles through the paths the plan DRAWS (in multichannel: L, R and the
+  // selected speaker's), so the pulse never rides a path that is not shown.
+  const shown = planReflections(analysis.reflections, lay.speakers, selected);
   const runTrace = () => {
-    if (analysis.reflections.length === 0) return;
+    const key = nextTraceKey(shown, traceState?.key ?? null);
+    if (key == null) return;
     setLayers((s) => (s.reflections ? s : { ...s, reflections: true }));
-    traceIdx.current = (traceIdx.current + 1) % analysis.reflections.length;
-    const index = traceIdx.current;
     if (traceRaf.current != null) cancelAnimationFrame(traceRaf.current);
     const t0 = Date.now();
     const step = () => {
       const p = (Date.now() - t0) / TRACE_MS;
       if (p >= 1) {
-        setTrace({ index, progress: 1 });
+        setTraceState({ key, progress: 1 });
         traceRaf.current = null;
         return;
       }
-      setTrace({ index, progress: p });
+      setTraceState({ key, progress: p });
       traceRaf.current = requestAnimationFrame(step);
     };
     step();
   };
-  const traced = trace ? analysis.reflections[trace.index] : undefined;
+  // Looked up afresh in THIS analysis; a path that no longer exists (or is
+  // no longer drawn) drops the "Traced" line rather than naming another.
+  const tracedIndex = traceState ? analysis.reflections.findIndex((r) => reflectionKey(r) === traceState.key) : -1;
+  const traced = tracedIndex >= 0 && shown.includes(analysis.reflections[tracedIndex]) ? analysis.reflections[tracedIndex] : undefined;
+  const trace: Trace = traced && traceState ? { index: tracedIndex, progress: traceState.progress } : null;
 
   const bezel: BezelItem[] = [
     { k: 'MODE', v: mode ? fmtHz(mode.f) : '—', flex: 1.1 },
@@ -169,7 +193,16 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
     <RoomPlanView w={w} h={h} design={design} analysis={analysis} layers={layers} modeIndex={safeModeIdx} edit="monitoring" selected={selected} onSelect={setSelected} onDrag={onDrag} trace={trace} />
   );
 
-  const diff = design.active > 0 ? diffLayouts(design, 0, design.active) : [];
+  // START's analysis only changes with the room, the treatment or START
+  // itself — not on a drag of the active option; the active one IS the
+  // host's analysis. One analysis per drag frame instead of three.
+  const startLayout = design.layouts[0];
+  const startAnalysis = useMemo(
+    () => (design.active > 0 ? analyze({ ...design, active: 0 }, 0) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [design.active > 0, design.room, design.treatment, startLayout],
+  );
+  const diff = design.active > 0 ? diffLayouts(design, 0, design.active, { from: startAnalysis ?? undefined, to: analysis }) : [];
 
   return (
     <RoomRackLayout
@@ -231,8 +264,9 @@ function modeBlurb(kind: 'axial' | 'tangential' | 'oblique'): string {
 }
 
 function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, guest, preview, resolved, saved: library, saveCurrent } = ctx;
-  const [saved, setSaved] = useState<string | null>(null);
+  const { design, update, guest, preview, resolved, evicts, saveCurrent } = ctx;
+  const [msg, setMsg] = useState<{ text: string; ok: boolean; at: RoomDesign } | null>(null);
+  const line = saveLine(msg, design);
   return (
     <View style={{ gap: 10 }}>
       <TrayHeading>KEEP THESE POSITIONS AS: OPTION A / OPTION B / START</TrayHeading>
@@ -254,21 +288,29 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
           // pass 3, 2026-10-01).
           const known = resolved;
           const asPreview = preview;
-          const gone = evictedBySave(library, design, MAX_SAVED_DESIGNS);
+          // A member whose device write failed is told THAT, not "you are
+          // not signed in" (toddler pass 2): the tier as it was at the tap.
+          const asGuest = guest;
+          const at = design;
+          const gone = evicts?.name ?? null;
           void saveCurrent().then((ok) =>
-            setSaved(
-              ok
-                ? `Saved on this device.${gone ? ` The library keeps ${MAX_SAVED_DESIGNS}: the oldest, "${gone.name}", was removed to make room.` : ''}`
+            setMsg({
+              ok,
+              at,
+              text: ok
+                ? `Saved on this device.${gone ? ` The library keeps ${MAX_SAVED_DESIGNS}: the oldest, "${gone}", was removed to make room.` : ''}`
                 : !known
                   ? 'Not saved yet — still checking your account. Tap SAVE again in a moment.'
                   : asPreview
                     ? 'Kept for this session only — this lab is part of membership, and designs made in a preview are not saved.'
-                    : 'Kept for this session only — you are not signed in, so designs are not saved.',
-            ),
+                    : asGuest
+                      ? 'Kept for this session only — you are not signed in, so designs are not saved.'
+                      : SAVE_FAILED,
+            }),
           );
         }}
       />
-      {saved ? <Caption>{saved}</Caption> : null}
+      {line ? <Caption>{line}</Caption> : null}
       <Caption>{guest ? (preview ? 'You can design freely; designs made in a preview are not saved.' : 'You can design freely; nothing is saved until you sign in.') : 'The REVIEW module lists saved designs and compares a saved "before" with the current setup.'}</Caption>
     </View>
   );

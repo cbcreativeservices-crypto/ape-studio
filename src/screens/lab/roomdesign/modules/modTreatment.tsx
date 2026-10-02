@@ -271,8 +271,10 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
     <RoomPlanView w={w} h={h} design={design} analysis={analysis} layers={{ reflections: true, treatment: true, dims: false }} edit="treatment" selected={sel ? `tr_${sel.id}` : null} onSelect={(id) => setSelId(id.replace(/^tr_/, ''))} onDrag={onDrag} highlight={flash} />
   );
 
-  const withoutSel = sel ? analyze({ ...design, treatment: design.treatment.map((t) => (t.id === sel.id ? { ...t, enabled: false } : t)) }) : null;
-  const withSel = sel ? analyze({ ...design, treatment: design.treatment.map((t) => (t.id === sel.id ? { ...t, enabled: true } : t)) }) : null;
+  // One of the two IS the design on screen — the host's analysis (toddler
+  // pass 2: three full analyses ran on every drag frame of a panel).
+  const withoutSel = sel ? (!sel.enabled ? analysis : analyze({ ...design, treatment: design.treatment.map((t) => (t.id === sel.id ? { ...t, enabled: false } : t)) })) : null;
+  const withSel = sel ? (sel.enabled ? analysis : analyze({ ...design, treatment: design.treatment.map((t) => (t.id === sel.id ? { ...t, enabled: true } : t)) })) : null;
 
   return (
     <RoomRackLayout

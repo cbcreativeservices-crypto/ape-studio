@@ -105,6 +105,11 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
   useEffect(() => {
     setRunning(false);
   }, [hostStep]);
+  // …and so does the what's-left screen covering the chapter (toddler pass 2).
+  const hidden = useContext(StepHostContext)?.hidden === true;
+  useEffect(() => {
+    if (hidden) setRunning(false);
+  }, [hidden]);
 
   const toggleRun = () => {
     if (!running && step >= order.length - 1) setStep(0);

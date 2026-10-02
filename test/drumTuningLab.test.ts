@@ -390,7 +390,9 @@ describe('guest rules, persistence and credit', () => {
     assert.match(host, /if \(!resolved\) return;\s*const reread = loaded && loadedBlockedRef\.current && !blocked;\s*if \(loaded && !reread\) return;/);
   });
   it('a blocked store neither reads nor writes; the key is inside the ape:* wipe', () => {
-    assert.match(store, /if \(saveBlocked\) return empty\(\);/);
+    // Toddler pass 2 moved the read into readStore (a failed read must not
+    // be written over); a blocked store still reads nothing.
+    assert.match(store, /if \(saveBlocked\) return \{ state: empty\(\), ok: true \};/);
     assert.match(store, /if \(saveBlocked\) return false;/);
     assert.match(store, /const KEY = 'ape:drumtuning:v1';/);
   });
@@ -521,7 +523,9 @@ describe('guest rules, persistence and credit', () => {
 describe('audio honours the gate', () => {
   const hook = strip(read(`${DIR}/useDrumPlayback.ts`));
   it('nothing sounds before requestAudioOutput; silence and close unwind the transport; nothing replays by itself', () => {
-    assert.match(hook, /if \(!\(await requestAudioOutput\(\)\)\) return;/);
+    // The gate is awaited before anything else; a denied gate returns before
+    // any load or play (toddler pass 2 reworded it to clear `pending`).
+    assert.match(hook, /const granted = await requestAudioOutput\(\);\s*if \(!current\(\)\) return;\s*if \(!granted \|\| !focusedRef\.current\) \{\s*setPending\(false\);\s*return;\s*\}/);
     assert.match(hook, /useStopWhenSilenced\(playing \|\| pending, stop\)/);
     assert.match(hook, /useStopOnClose\(stop\)/);
     assert.match(hook, /isAudioOutputEnabled\(\)/);

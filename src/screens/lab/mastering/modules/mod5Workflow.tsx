@@ -46,6 +46,10 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
   // this one. The volume warning used to quote the step measured for the
   // previous TILT after the fader had moved on.
   const fresh = pb.status === 'ready';
+  // The MEASURES belong to the TILT they were rendered at; only the match
+  // gains change with MATCH (toddler pass 2: the bezel read the old tilt's
+  // numbers beside the new fader; the glass said "matched" after MATCH off).
+  const current = pb.current;
   const cur = WORKFLOW_STEPS[step];
   const fmtTilt = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)} dB end to end (±${(Math.abs(v) / 2).toFixed(1)})`;
 
@@ -93,14 +97,14 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'A considered change, matched', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'eq' ? SAFETY_CEILING_DB : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'eq' ? SAFETY_CEILING_DB : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',
             badge: RENDER_BADGE,
             bezel: [
-              ...measureBezel(m),
-              matchBezel(matched, eq?.matchDb, 'WITH EQ'),
+              ...measureBezel(current ? m : undefined),
+              matchBezel(matched, fresh ? eq?.matchDb : undefined, 'WITH EQ'),
             ],
             params: [
               faderParam({ id: 'tilt', label: 'TILT', value: tilt, min: -4, max: 4, step: 0.5, format: fmtTilt, formatShort: (v) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`, onChange: setTilt, home: 0 }),
@@ -124,7 +128,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
                 </Card>
               ) : null}
               <Card tone="warn">
-                <Point title="Before you switch MATCH off">{unmatchedWarning(fresh ? mix?.lufs : undefined, fresh ? eq?.lufs : undefined, 'WITH EQ', '2–3')} Unmatched, nothing replays by itself after a change — you press ▶ each time.</Point>
+                <Point title="Before you switch MATCH off">{unmatchedWarning(current ? mix?.lufs : undefined, current ? eq?.lufs : undefined, 'WITH EQ', '2–3')} Unmatched, nothing replays by itself after a change — you press ▶ each time.</Point>
               </Card>
               <Card>
                 <Point title="The habit">Make the change for a reason you can name. Bypass. Match. Listen again. Keep it only if it serves the goal.</Point>

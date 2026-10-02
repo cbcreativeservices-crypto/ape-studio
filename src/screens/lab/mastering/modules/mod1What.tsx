@@ -36,6 +36,11 @@ export function Mod1What({ onAnswered }: ModuleProps) {
   const m = pb.measured[shown];
   const mix = pb.measured.mix;
   const loud = pb.measured.loud;
+  // The match gains are fresh only for a READY render: after MATCH is
+  // toggled the last render stays on the glass, and it said "played at −x dB
+  // · matched" with MATCH off, and "LOUDER is played at 0.0 dB" with it back
+  // on (toddler pass 2). The measures themselves do not change with MATCH.
+  const fresh = pb.status === 'ready';
 
   return (
     <ModuleSteps
@@ -94,14 +99,14 @@ export function Mod1What({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Louder is not better', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',
             badge: RENDER_BADGE,
             bezel: [
               ...measureBezel(m, CEILING),
-              matchBezel(matched, loud?.matchDb, 'LOUDER'),
+              matchBezel(matched, fresh ? loud?.matchDb : undefined, 'LOUDER'),
             ],
             params: [
               { kind: 'toggle', id: 'match', label: 'MATCH LEVEL', value: matched, onToggle: () => setMatched((v) => !v) },
@@ -125,7 +130,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
                 <Card tone="accent">
                   <Text style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 }}>
                     Measured: THE MIX <Text style={{ color: lufsTint(mix.lufs) }}>{mix.lufs.toFixed(1)} LUFS</Text>, PLR {mix.plr.toFixed(1)} dB · LOUDER <Text style={{ color: lufsTint(loud.lufs) }}>{loud.lufs.toFixed(1)} LUFS</Text>, PLR {loud.plr.toFixed(1)} dB, max gain reduction {loud.maxGrDb.toFixed(1)} dB.
-                    {matched ? ` LOUDER is played at ${loud.matchDb.toFixed(1)} dB so both sit at ${Math.min(mix.lufs, loud.lufs).toFixed(1)} LUFS.` : ' Unmatched: the louder version will read fuller and brighter simply because it is louder.'}
+                    {matched ? ` LOUDER is played at ${Math.min(0, Math.min(mix.lufs, loud.lufs) - loud.lufs).toFixed(1)} dB so both sit at ${Math.min(mix.lufs, loud.lufs).toFixed(1)} LUFS.` : ' Unmatched: the louder version will read fuller and brighter simply because it is louder.'}
                   </Text>
                   <Body>TRUE PK reads over 0 dBTP here on purpose: this is a sample-peak limiter with no look-ahead. A release limiter reads true peak (oversampled) and leaves margin for the encoder — Modules 6 and 7.</Body>
                 </Card>

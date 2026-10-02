@@ -29,6 +29,9 @@ export type StepHost = {
   head?: ReactNode;
   tail?: ReactNode;
   readWrap: (body: ReactNode) => ReactNode;
+  /** The what's-left screen is covering the chapter (it stays mounted, so
+   *  ‹ PREV returns to it exactly as it was): sound and animation stop. */
+  hidden?: boolean;
 };
 
 export const StepHostContext = createContext<StepHost | null>(null);

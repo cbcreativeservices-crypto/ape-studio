@@ -27,7 +27,7 @@
  * MODELLED ON amp/AmpModuleScreen.tsx (steps + racks), without the per-module
  * route: a module change is a state change on this one screen.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,10 +40,10 @@ import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { retainSessionStems } from '../mixing/audio/mixAudio';
 import { MASTERING_MODULES, PROJECT_QC, masteringModuleById, scenariosForModule, type MasteringModuleId } from './masteringContent';
-import { emptyMasteringModule, resetMasteringPractice, setMasteringSaveBlocked, updateMasteringProgress, type MasteringProgressState } from './masteringProgress';
+import { carryPreLoad, emptyMasteringModule, resetMasteringPractice, setMasteringSaveBlocked, updateMasteringProgress, type MasteringPreLoad, type MasteringProgressState } from './masteringProgress';
 import { MASTERING_CREDIT_STEP, MASTERING_MODULE_COMPONENTS, MASTERING_PROJECT_QC_STEP, MASTERING_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
-import { TakeawayCard } from './kit';
+import { RecordedAnswersContext, TakeawayCard } from './kit';
 import { releaseProgramme } from './useMasterPlayback';
 
 export const MASTERING_LAB_TITLE = 'Mastering Lab';
@@ -71,6 +71,7 @@ export function MasteringLabScreen() {
   // answers and resume point (night pass 2, 2026-10-01).
   const guest = useLabEndGuest();
   const { resolved } = useEntitlement();
+  const blocked = guest || !resolved;
   setMasteringSaveBlocked(guest || !resolved);
 
   const [modId, setModId] = useState<MasteringModuleId>('what');
@@ -94,15 +95,64 @@ export function MasteringLabScreen() {
   const movedRef = useRef(false);
   /** Module 8 ticks made before the first load landed (merged by the load). */
   const preProjectRef = useRef<{ checks: string[]; qc: string[] }>({ checks: [], qc: [] });
+  /** Answers given before the first load landed (module → scenario → first
+   *  answer): the store was blocked, so their writes were dropped. */
+  const preAnswersRef = useRef<MasteringPreLoad['answers']>({});
+  const stepRef = useRef(step);
+  stepRef.current = step;
+  /** The last load ran against a BLOCKED store (a guest, a preview, or a
+   *  member whose tier read failed and reads 'anonymous' for now). */
+  const loadedBlockedRef = useRef(false);
+  /** Bumped by every load that lands: Module 8 remounts on it (its key) to
+   *  read the lists the load produced. */
+  const [loadGen, setLoadGen] = useState(0);
 
   // ⛔ WAIT FOR `resolved` before the first read (the kit/PagedLab fix): the
-  // save-block flag reads false until the tier is known.
+  // save-block flag reads false until the tier is known. And READ AGAIN when
+  // the store unblocks (toddler pass 2, the Drum Tuning rule): a member whose
+  // tier read failed (it reads 'anonymous' until it lands) or a guest who
+  // signs in mid-lab kept the blank guest copy for the whole visit — none of
+  // their banked credit, answers or ticks shown. The re-read MERGES (credit
+  // only grows, the learner is not moved).
   useEffect(() => {
-    if (!resolved || loaded) return;
+    if (!resolved) return;
+    const reread = loaded && loadedBlockedRef.current && !blocked;
+    if (loaded && !reread) return;
     let alive = true;
-    void updateMasteringProgress(() => {}).then((s) => {
+    // Recorded when the read LANDS: set here, a re-read cancelled by a quick
+    // blocked → unblocked flip would have marked itself done and never run.
+    const wasBlocked = blocked;
+    // The FIRST load carries what was done before it (toddler pass 2): the
+    // answers, ticks and the place the learner moved to were held on screen
+    // but never written, so leaving lost them. Only into an unblocked store
+    // (a guest saves nothing), and never on a re-read (a guest's session is
+    // not carried into an account).
+    const pre: MasteringPreLoad | null = !loaded && !blocked
+      ? {
+          answers: preAnswersRef.current,
+          checks: preProjectRef.current.checks,
+          qc: preProjectRef.current.qc,
+          at: movedRef.current ? { module: modIdRef.current, step: stepRef.current } : undefined,
+        }
+      : null;
+    void updateMasteringProgress((s) => {
+      if (pre) carryPreLoad(s, pre);
+    }).then((s) => {
       if (!alive) return;
-      setDoneIds(new Set(MASTERING_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id)));
+      loadedBlockedRef.current = wasBlocked;
+      const stored = MASTERING_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id);
+      if (reread) {
+        setDoneIds((prev) => new Set([...prev, ...stored]));
+        const here = s.modules[modIdRef.current]?.answers ?? {};
+        setAnswers((prev) => ({ ...prev, ...here }));
+        const p = s.modules.project;
+        setProject({ checks: p?.checks ?? [], qc: p?.qc ?? [] });
+        setQcComplete((p?.qc?.length ?? 0) >= PROJECT_QC.length);
+        setLoadGen((g) => g + 1);
+        return;
+      }
+      preAnswersRef.current = {};
+      setDoneIds(new Set(stored));
       if (movedRef.current) {
         // The learner moved before the tier resolved (CONTENTS, PREV/NEXT):
         // stay where they are — the resume point used to yank them back
@@ -125,16 +175,28 @@ export function MasteringLabScreen() {
       const qc = [...new Set([...(p?.qc ?? []), ...pre.qc])];
       setProject({ checks, qc });
       setQcComplete(qc.length >= PROJECT_QC.length);
+      setLoadGen((g) => g + 1);
       setLoaded(true);
     });
     return () => {
       alive = false;
     };
-  }, [resolved, loaded]);
+  }, [resolved, loaded, blocked]);
 
   // Module answers follow the module; the resume point is written on move.
+  /** Bumped by every module open: only the LATEST open's read may land. */
+  const openSeqRef = useRef(0);
+  /** Bumped by every Module 8 tick: an open's read taken before a tick is
+   *  older than the ticks on screen. */
+  const projectRevRef = useRef(0);
+  /** Bumped by every move: a FINISH read that lands after the learner has
+   *  moved on must not pull them onto the what's-left screen. */
+  const navSeqRef = useRef(0);
   const openModule = useCallback((id: MasteringModuleId, atStep = 0) => {
     if (!loadedRef.current) movedRef.current = true;
+    const seq = ++openSeqRef.current;
+    const projectRev = projectRevRef.current;
+    navSeqRef.current++;
     setEndState(null);
     setModId(id);
     setStepRaw(atStep);
@@ -148,8 +210,17 @@ export function MasteringLabScreen() {
       s.lastModule = id;
       s.lastStep = atStep;
     }).then((s) => {
+      // A later open owns the screen now: this read belongs to a module that
+      // is no longer shown (toddler pass 2).
+      if (seq !== openSeqRef.current) return;
       const stored = s.modules[id]?.answers ?? {};
       setAnswers((prev) => ({ ...prev, ...stored })); // the stored (first) answer wins
+      // A Module 8 tick made while this read was queued is NEWER than the
+      // read: applying it set qcComplete back to false after the last QC
+      // line was ticked (the tick's own write was queued behind this one),
+      // so answering the track decisions afterwards never banked the module
+      // while every line showed ticked (toddler pass 2).
+      if (projectRev !== projectRevRef.current) return;
       const p = s.modules.project;
       setProject({ checks: p?.checks ?? [], qc: p?.qc ?? [] });
       setQcComplete((p?.qc?.length ?? 0) >= PROJECT_QC.length);
@@ -164,6 +235,12 @@ export function MasteringLabScreen() {
       // it used to overwrite the recorded first answer (bug pass 2026-10-01).
       // A practice reset clears `answers`, so a fresh run records anew.
       setAnswers((prev) => (scenarioId in prev ? prev : { ...prev, [scenarioId]: correct }));
+      // Before the first load the write below is dropped (the store is
+      // blocked until the tier is known): held for the load to carry.
+      if (!loadedRef.current) {
+        const held = preAnswersRef.current[modId] ?? {};
+        if (!(scenarioId in held)) preAnswersRef.current = { ...preAnswersRef.current, [modId]: { ...held, [scenarioId]: correct } };
+      }
       void updateMasteringProgress((s) => {
         const m = s.modules[modId] ?? emptyMasteringModule();
         if (scenarioId in m.answers) return;
@@ -175,6 +252,7 @@ export function MasteringLabScreen() {
 
   /** Module 8's ticks persist (guest rule inside the store). */
   const onProjectState = useCallback((checks: string[], qc: string[]) => {
+    projectRevRef.current++;
     setProject({ checks, qc });
     // Not before the first load: the lists here were built on an empty
     // pre-load copy, so writing them replaced the stored ticks. Held for the
@@ -212,6 +290,7 @@ export function MasteringLabScreen() {
   const setStep = useCallback(
     (i: number) => {
       if (!loadedRef.current) movedRef.current = true;
+      navSeqRef.current++;
       setStepRaw(i);
       void updateMasteringProgress((s) => {
         s.lastStep = i;
@@ -249,9 +328,18 @@ export function MasteringLabScreen() {
     openModule(prev.id, Math.max(0, MASTERING_STEP_COUNTS[prev.id] - 1));
   }, [idx, openModule]);
   const showEnd = useCallback(() => {
-    void updateMasteringProgress(() => {}).then(setEndState);
+    // FINISH › then a fast ‹ PREV (or a CONTENTS jump) before this read
+    // landed: the what's-left screen used to open over the page the learner
+    // had just moved to (toddler pass 2).
+    const seq = ++navSeqRef.current;
+    void updateMasteringProgress(() => {}).then((s) => {
+      if (seq === navSeqRef.current) setEndState(s);
+    });
   }, []);
-  const unEnd = useCallback(() => setEndState(null), []);
+  const unEnd = useCallback(() => {
+    navSeqRef.current++;
+    setEndState(null);
+  }, []);
   const beforeAdvance = useCallback(() => {
     if (complete && !done) bank();
   }, [complete, done, bank]);
@@ -362,7 +450,13 @@ export function MasteringLabScreen() {
         {end ?? (
           <View style={styles.body}>
             <StepHostContext.Provider value={host}>
-              <Component key={mod.id === 'project' && !loaded ? 'project:pre-load' : mod.id} onAnswered={onAnswered} onQcComplete={setQcComplete} savedChecks={project.checks} savedQc={project.qc} onProjectState={onProjectState} />
+              <RecordedAnswersContext.Provider value={answers}>
+                {/* Module 8 remounts on EVERY landed load (the unblock re-read
+                    too) to read the lists that load produced. */}
+                <Fragment key={mod.id === 'project' ? `reload:${loadGen}` : 'steady'}>
+                  <Component key={mod.id === 'project' && !loaded ? 'project:pre-load' : mod.id} onAnswered={onAnswered} onQcComplete={setQcComplete} savedChecks={project.checks} savedQc={project.qc} onProjectState={onProjectState} />
+                </Fragment>
+              </RecordedAnswersContext.Provider>
             </StepHostContext.Provider>
           </View>
         )}

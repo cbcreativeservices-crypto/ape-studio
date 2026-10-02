@@ -17,7 +17,7 @@ import { DRUM_KEY_TERMS, TROUBLE_SCENARIOS } from '../drumContent';
 import { DRUMS, SYMPTOMS, beatRateHz, lugTapHz, randomUnevenHead, spreadCents, strikePartials, symptomById, type HeadState, type StrikeParams, type SymptomId } from '../drumEngine';
 import { DrumTopStage, TOP_ASPECT } from '../stagesDrum';
 import { PART_ASPECT, PartialsStage, WAVE_ASPECT, WaveStage } from '../stagesSignal';
-import { MODEL_BADGE, RENDER_BADGE, fmtS, headAtHz, headHz, syncOf, useStrike, useTap, type ChapterProps } from './shared';
+import { MODEL_BADGE, RENDER_BADGE, fmtS, headAtHz, headHz, soloPair, syncOf, useStrike, useTap, type ChapterProps } from './shared';
 
 type Sim = {
   batter: HeadState;
@@ -111,11 +111,16 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
   // head, so the strike's own key changed and useDrumPlayback stopped it a
   // frame in: every strike on the drift case was cut off. The next strike
   // hears the drift; the drawing shows it as soon as this one finishes.
-  const strikeRef = useRef<{ id: SymptomId; n: number } | null>(null);
+  // `k` = strikes in this ring (toddler pass 2): ▶ STRIKE again while the
+  // drum still rings restarts the clip without `playing` ever going false, so
+  // a fast ▶ ▶ ▶ counted ONE strike and drifted ONE step — "every strike
+  // moves one rod" was not true. Each restart now counts, and the drift for
+  // all of them lands together when the ringing stops.
+  const strikeRef = useRef<{ id: SymptomId; n: number; k: number } | null>(null);
   useEffect(() => {
     if (pb.playing) {
       const id = caseId;
-      strikeRef.current = { id, n: sims[id].strikes + 1 };
+      strikeRef.current = { id, n: sims[id].strikes + 1, k: 1 };
       setSims((all) => ({ ...all, [id]: { ...all[id], strikes: all[id].strikes + 1 } }));
       return;
     }
@@ -126,16 +131,26 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
       const s = all[struckNow.id];
       // A case reset (or a hardware fix) since the strike: nothing drifts.
       if (!s.drift || s.strikes !== struckNow.n) return all;
-      return { ...all, [struckNow.id]: { ...s, batter: { ...s.batter, turns: s.batter.turns.map((t, i) => (i === 1 ? t - 0.12 : t)) } } };
+      return { ...all, [struckNow.id]: { ...s, batter: { ...s.batter, turns: s.batter.turns.map((t, i) => (i === 1 ? t - 0.12 * struckNow.k : t)) } } };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pb.playing]);
+  const solo = soloPair(pb, tap);
+  const strikeNow = () => {
+    const ring = strikeRef.current;
+    if (pb.playing && ring && ring.id === caseId) {
+      // A restart of the ringing strike: one more strike on this case.
+      strikeRef.current = { id: ring.id, n: ring.n + 1, k: ring.k + 1 };
+      setSims((all) => ({ ...all, [ring.id]: { ...all[ring.id], strikes: all[ring.id].strikes + 1 } }));
+    }
+    solo.strike();
+  };
   const tapNow = () => {
     setSims((all) => {
       const s = all[caseId];
       return s.tapped.includes(lug) ? all : { ...all, [caseId]: { ...s, tapped: [...s.tapped, lug] } };
     });
-    tap.play();
+    solo.tap();
   };
 
   useEffect(() => {
@@ -308,12 +323,12 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
             params: [
               optionsParam({ id: 'case', label: 'CASE', value: caseId, options: SYMPTOMS.map((s) => ({ key: s.id, label: `${s.title} · ${DRUMS[s.drum].name}`, short: s.id.toUpperCase(), blurb: s.symptom })), onChange: (id) => { setCaseId(id); setLastFix(null); setLug(0); setWhereNote(null); }, sticky: false }),
               faderParam({ id: 'lug', label: 'LUG', value: lug, min: 0, max: spec.lugs - 1, step: 1, format: (v) => `tap at lug ${Math.round(v) + 1} · ${lugTapHz(sim.batter, Math.round(v), spec.diameterIn, spec.sigmaBatter).toFixed(0)} Hz${sim.tapped.includes(Math.round(v)) ? ' · tapped' : ''}`, formatShort: (v) => `#${Math.round(v) + 1}`, onChange: (v) => setLug(Math.round(v)) }),
-              { kind: 'action', id: 'strike', label: caseId === 'snare' ? '▶ SOFTLY' : '▶ STRIKE', onPress: pb.play },
+              { kind: 'action', id: 'strike', label: caseId === 'snare' ? '▶ SOFTLY' : '▶ STRIKE', onPress: strikeNow },
               { kind: 'action', id: 'tap', label: '▶ TAP', onPress: tapNow },
               stageKey,
             ],
             initialParam: 'lug',
-            onTap: () => (pb.playing ? pb.stop() : pb.play()),
+            onTap: solo.toggle,
           },
           well: (
             <>

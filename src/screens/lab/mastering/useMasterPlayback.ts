@@ -64,6 +64,12 @@ export type MasterPlayback = {
   active: string | null;
   pending: string | null;
   measured: Record<string, MasterMeasured>;
+  /** `measured` belongs to the CURRENT versions (the faders as they are
+   *  now). A fader move keeps the last render on the glass until the next
+   *  ▶, so the numbers can be an earlier setting's; MATCH alone does not
+   *  change them (only the match gains, which are fresh only when
+   *  status === 'ready'). */
+  current: boolean;
   heard: readonly string[];
   /** 0..1 position of the sounding clip, per frame (a SharedValue — never
    *  React state), for the stage playhead. */
@@ -117,6 +123,8 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
     replayIdRef.current = null;
   }, []);
   const signature = useMemo(() => JSON.stringify({ variants, matched }), [variants, matched]);
+  const variantsKey = useMemo(() => JSON.stringify(variants), [variants]);
+  const [measuredKey, setMeasuredKey] = useState<string | null>(null);
 
   // The stage playhead: a SharedValue advanced per frame while a clip sounds.
   const progress = useSharedValue(0);
@@ -252,6 +260,7 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
         return;
       }
       idsRef.current = out.map((o) => o.id);
+      setMeasuredKey(JSON.stringify(variants));
       setMeasured(measuredNext);
       setStatus('ready');
       const want = pendingRef.current;
@@ -341,5 +350,5 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
 
   // ■ STOP is stopAll: a STOP pressed while a version is still rendering
   // must cancel that queued play too, not let it start a moment later.
-  return { status, play, stop: stopAll, active, pending, measured, heard, progress };
+  return { status, play, stop: stopAll, active, pending, measured, current: measuredKey === variantsKey, heard, progress };
 }

@@ -23,7 +23,7 @@ import { Body, Card, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, 
 import { CAUTION_TEXT, CAUTION_TITLE, DRUM_KEY_TERMS, METHOD_STEPS } from '../drumContent';
 import { DRUMS, evenness, lugCents, lugTapHz, meanTension, randomUnevenHead, spreadCents, turnWords, turnsForCents, type HeadState, type StrikeParams } from '../drumEngine';
 import { DrumTopStage, STAR_ORDER, TOP_ASPECT } from '../stagesDrum';
-import { MODEL_BADGE, fmtTurn, syncOf, useStrike, useTap, type ChapterProps } from './shared';
+import { MODEL_BADGE, fmtTurn, soloPair, syncOf, useStrike, useTap, type ChapterProps } from './shared';
 
 const DRUM = 'floor' as const;
 const SPEC = DRUMS[DRUM];
@@ -84,6 +84,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
   const tap = useTap(head, lug, DRUM, which);
   const strikeParams = useMemo<StrikeParams>(() => ({ drum: DRUM, batter, reso, resoPresent: true, damping: 0, strike: 0.8, strikeR: 0.3, strikeTheta: 0 }), [batter, reso]);
   const strike = useStrike(strikeParams, false);
+  const tuneSolo = soloPair(strike, tap);
 
   const hearCents = lugCents(hearHead);
   const hearHighest = hearCents.indexOf(Math.max(...hearCents));
@@ -257,11 +258,11 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
               faderParam({ id: 'turn', label: 'TURN', value: pass.moved[lug] ?? 0, min: -1, max: 1, step: 0.0625, format: (v) => `${fmtTurn(v)} on rod ${lug + 1} this run — ${v > 0.01 ? 'tighter than you found it' : v < -0.01 ? 'looser than you found it' : 'as you found it'}`, formatShort: (v) => fmtTurn(v), onChange: setTurn, home: 0 }),
               optionsParam({ id: 'lug', label: 'LUG', value: lug, options: Array.from({ length: SPEC.lugs }, (_, i) => ({ key: i, label: `Lug ${i + 1}`, short: `#${i + 1}` })), onChange: setLug }),
               { kind: 'toggle', id: 'which', label: which === 'batter' ? 'BATTER' : 'RESO', value: which === 'reso', onToggle: () => { setWhich((w) => (w === 'batter' ? 'reso' : 'batter')); setPrevSpread(undefined); setShown(null); } },
-              { kind: 'action', id: 'tap', label: '▶ TAP', onPress: tap.play },
-              { kind: 'action', id: 'strike', label: '▶ STRIKE', onPress: strike.play },
+              { kind: 'action', id: 'tap', label: '▶ TAP', onPress: tuneSolo.tap },
+              { kind: 'action', id: 'strike', label: '▶ STRIKE', onPress: tuneSolo.strike },
             ],
             initialParam: 'turn',
-            onTap: () => (strike.playing ? strike.stop() : strike.play()),
+            onTap: tuneSolo.toggle,
             tapLabel: 'Display: tap to strike the drum or stop',
           },
           well: (

@@ -110,6 +110,44 @@ export function updateMasteringProgress(mutate: (s: MasteringProgressState) => v
   return run;
 }
 
+/** What a learner did before the first store read landed (the tier was not
+ *  known yet, so every write was blocked and dropped). */
+export type MasteringPreLoad = {
+  /** module → scenario → first answer. */
+  answers: Partial<Record<MasteringModuleId, Record<string, boolean>>>;
+  checks: readonly string[];
+  qc: readonly string[];
+  /** Where the learner is now, if they moved. */
+  at?: { module: MasteringModuleId; step: number };
+};
+
+/**
+ * Carry the pre-load work INTO the stored copy (toddler pass 2): answers,
+ * Module 8 ticks and the resume point given before the tier resolved were
+ * held on screen but never written — a learner who answered two cards and
+ * left lost both, and the place they had moved to. The stored (first)
+ * answer wins; ticks are a union; `done` is never touched.
+ */
+export function carryPreLoad(s: MasteringProgressState, pre: MasteringPreLoad): void {
+  for (const [id, a] of Object.entries(pre.answers) as [MasteringModuleId, Record<string, boolean>][]) {
+    if (!a || !Object.keys(a).length) continue;
+    const m = s.modules[id] ?? emptyMasteringModule();
+    s.modules[id] = { ...m, answers: { ...a, ...m.answers } };
+  }
+  if (pre.checks.length || pre.qc.length) {
+    const p = s.modules.project ?? emptyMasteringModule();
+    s.modules.project = {
+      ...p,
+      checks: [...new Set([...(p.checks ?? []), ...pre.checks])],
+      qc: [...new Set([...(p.qc ?? []), ...pre.qc])],
+    };
+  }
+  if (pre.at) {
+    s.lastModule = pre.at.module;
+    s.lastStep = pre.at.step;
+  }
+}
+
 /** A PRACTICE reset: answers and the resume point clear; `done` is kept. */
 export function resetMasteringPractice(): Promise<MasteringProgressState> {
   return updateMasteringProgress((s) => {

@@ -149,7 +149,8 @@ describe('guest rules and persistence', () => {
     assert.match(host, /const guest = useLabEndGuest\(\);/);
     assert.match(host, /setMasteringSaveBlocked\(guest \|\| !resolved\)/);
     assert.match(host, /const \{ resolved \} = useEntitlement\(\);/);
-    assert.match(host, /if \(!resolved \|\| loaded\) return;/);
+    // Toddler pass 2: and once more when the store unblocks after a blocked load.
+    assert.match(host, /if \(!resolved\) return;\s*const reread = loaded && loadedBlockedRef\.current && !blocked;\s*if \(loaded && !reread\) return;/);
   });
   it('a blocked store neither reads nor writes; a practice reset keeps done', () => {
     assert.match(store, /if \(saveBlocked\) return \{ modules: \{\} \};/);

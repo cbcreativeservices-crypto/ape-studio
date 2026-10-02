@@ -81,6 +81,46 @@ export function sideTransform(length: number, height: number, gw: number, gh: nu
   };
 }
 
+/** The finger that started a drag: its touch identifier and where it went
+ *  down, page points. */
+export type Finger = { id: number | string | undefined; px: number; py: number };
+type TouchPoint = { identifier?: number | string; pageX: number; pageY: number };
+export type TouchLike = { identifier?: number | string; pageX?: number; pageY?: number; touches?: readonly TouchPoint[] };
+
+export function fingerAt(ne: TouchLike): Finger {
+  return { id: ne.identifier, px: ne.pageX ?? 0, py: ne.pageY ?? 0 };
+}
+
+/** The drag follows ITS OWN finger (toddler pass 2, 2026-10-01). The
+ *  PanResponder's dx / dy is the centroid of every finger that moved, and
+ *  the responder that holds the gesture receives EVERY touch's moves — so a
+ *  second finger riding the lane (which can never become the responder while
+ *  the plan holds it) or resting on the glass dragged the corner or the
+ *  speaker with it, half or all of its travel. Returns the starting finger's
+ *  offset since it went down; 'lifted' once that finger has left the glass
+ *  (the drag ends where the item is); the centroid `fallback` only when the
+ *  event carries no touch list. */
+export function fingerOffset(ne: TouchLike, f: Finger, fallback: { dx: number; dy: number }): { dx: number; dy: number } | 'lifted' {
+  const list = ne.touches;
+  if (f.id == null || !Array.isArray(list) || list.length === 0) return fallback;
+  const t = list.find((x) => x.identifier === f.id);
+  if (!t) return 'lifted';
+  return { dx: t.pageX - f.px, dy: t.pageY - f.py };
+}
+
+/** Baselines of the side view's two readouts under the floor line ("ears …"
+ *  over "tweeter …"). Under a tall ceiling the section is height-limited and
+ *  the floor sits only ~0.3 m × k + pad above the glass's bottom edge: with a
+ *  6 m ceiling the tweeter number's baseline fell 1–3 points past the glass
+ *  and its digits were cropped (toddler pass 2, 2026-10-01 — a cropped
+ *  readout never loses its number). Both lift together just enough. */
+export function sideLabelRows(floorY: number, gh: number, fs: number): { ears: number; tweeter: number } {
+  const ears = floorY + fs + 3;
+  const tweeter = floorY + 2 * fs + 6;
+  const lift = Math.max(0, tweeter - (gh - 3));
+  return { ears: ears - lift, tweeter: tweeter - lift };
+}
+
 /** The nearest handle within `radius` glass units, or null. */
 export function pickHandle<T extends { id: string; px: number; py: number; r?: number }>(handles: readonly T[], gx: number, gy: number, radius = 22): T | null {
   let best: T | null = null;

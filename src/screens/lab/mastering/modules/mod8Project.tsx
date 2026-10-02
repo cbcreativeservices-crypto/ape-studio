@@ -9,12 +9,12 @@
  * The ticked checks and QC lines are handed to the host (onProjectState) so
  * they persist under the guest rule and survive a remount.
  */
-import { useMemo, useRef, useState } from 'react';
+import { useContext, useMemo, useRef, useState } from 'react';
 import { Text } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { faderParam, optionsParam } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
-import { Body, Card, Checklist, FieldRows, KeyButton, KeyTerms, Point, ScenarioDeck, SectionTitle, levelTint, lufsTint } from '../kit';
+import { Body, Card, Checklist, FieldRows, KeyButton, KeyTerms, Point, RecordedAnswersContext, ScenarioDeck, SectionTitle, levelTint, lufsTint } from '../kit';
 import { KEY_TERMS, PROJECT_BRIEF, PROJECT_CHECKS, PROJECT_QC, PROJECT_SEQUENCES, PROJECT_TRACKS } from '../masteringContent';
 import { XF_OVERLAP_SEC, layoutSequence, maxLoudnessStep, type SeqTrack } from '../masteringEngine';
 import { SEQ_ASPECT, SequenceStage } from '../stages';
@@ -67,6 +67,9 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
     onProjectState?.([...checksRef.current], [...n]);
   };
   const checkScore = PROJECT_CHECKS.filter((c) => checks.has(c.id) === c.needed).length;
+  const recorded = useContext(RecordedAnswersContext);
+  const openDecisions = PROJECT_TRACKS.filter((t) => !(t.issue.id in recorded)).length;
+  const qcDone = qc.size === PROJECT_QC.length;
 
   return (
     <ModuleSteps
@@ -155,9 +158,17 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
             <>
               <Body>The exports are rendered. Work the checklist on the files themselves — every line ticked, with the four track decisions on step 2 answered, completes the module. Your ticks are kept.</Body>
               <Checklist items={PROJECT_QC} chosen={qc} onToggle={toggleQc} />
-              <Card tone={qc.size === PROJECT_QC.length ? 'accent' : 'plain'}>
-                <Point title={qc.size === PROJECT_QC.length ? 'Delivered' : `${qc.size} of ${PROJECT_QC.length}`}>
-                  {qc.size === PROJECT_QC.length ? 'Every file reopened, measured, named and documented. That is a mastering job finished.' : 'QC happens on the files you send, not on the session that made them.'}
+              {/* "Delivered — a mastering job finished" only when it IS: with
+                  every QC line ticked but a track decision still open, the
+                  card claimed the job done while the credit line below said
+                  otherwise (toddler pass 2; pass 1 fixed only the intro). */}
+              <Card tone={qcDone && openDecisions === 0 ? 'accent' : 'plain'}>
+                <Point title={!qcDone ? `${qc.size} of ${PROJECT_QC.length}` : openDecisions === 0 ? 'Delivered' : 'QC complete'}>
+                  {!qcDone
+                    ? 'QC happens on the files you send, not on the session that made them.'
+                    : openDecisions === 0
+                      ? 'Every file reopened, measured, named and documented. That is a mastering job finished.'
+                      : `Every file checked. ${openDecisions} of the ${PROJECT_TRACKS.length} track decisions on step 2 ${openDecisions === 1 ? 'is' : 'are'} still open — answer ${openDecisions === 1 ? 'it' : 'them'} to finish the module.`}
                 </Point>
               </Card>
               <KeyTerms terms={KEY_TERMS.project} />

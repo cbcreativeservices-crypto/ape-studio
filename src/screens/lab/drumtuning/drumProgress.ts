@@ -50,13 +50,29 @@ export function setDrumSaveBlocked(blocked: boolean): void {
 const empty = (): DrumProgressState => ({ modules: {}, notes: [] });
 
 export async function loadDrumProgress(): Promise<DrumProgressState> {
-  if (saveBlocked) return empty();
+  return (await readStore()).state;
+}
+
+/** The stored copy, and whether it could be READ. `ok: false` = the read
+ *  itself threw (an oversized row on Android, a storage error): the copy on
+ *  the disk is unknown, so nothing may be written over it (toddler pass 2 —
+ *  the read used to fall back to an EMPTY copy that the very next write saved
+ *  over the real one: every chapter's credit, the answers and the notes
+ *  gone, from one failed read). A missing or unparseable copy reads as empty
+ *  and may be written. */
+async function readStore(): Promise<{ state: DrumProgressState; ok: boolean }> {
+  if (saveBlocked) return { state: empty(), ok: true };
+  let raw: string | null;
   try {
-    const raw = await AsyncStorage.getItem(KEY);
-    if (!raw) return empty();
-    return sanitizeDrumProgress(JSON.parse(raw));
+    raw = await AsyncStorage.getItem(KEY);
   } catch {
-    return empty();
+    return { state: empty(), ok: false };
+  }
+  if (!raw) return { state: empty(), ok: true };
+  try {
+    return { state: sanitizeDrumProgress(JSON.parse(raw)), ok: true };
+  } catch {
+    return { state: empty(), ok: true };
   }
 }
 
@@ -122,9 +138,10 @@ let queue: Promise<unknown> = Promise.resolve();
 function runUpdate(mutate: (s: DrumProgressState) => void): Promise<{ state: DrumProgressState; saved: boolean; blocked: boolean }> {
   const run = queue.then(async () => {
     const blocked = saveBlocked;
-    const s = await loadDrumProgress();
+    const { state: s, ok } = await readStore();
     mutate(s);
-    const saved = await save(s);
+    // Never write over a copy that could not be read (see readStore).
+    const saved = ok ? await save(s) : false;
     return { state: s, saved, blocked };
   });
   queue = run.catch(() => undefined);
@@ -163,8 +180,11 @@ export function saveTuningNote(note: TuningNote): Promise<DrumProgressState & { 
   }).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
 }
 
-export function deleteTuningNote(id: string): Promise<DrumProgressState> {
-  return updateDrumProgress((s) => {
+/** Delete a tuning note. `saved` is true only when the shorter list reached
+ *  the disk (toddler pass 2: a failed write used to vanish the row "for good"
+ *  while the note stayed on the device and came back on the next visit). */
+export function deleteTuningNote(id: string): Promise<DrumProgressState & { saved: boolean; blocked: boolean }> {
+  return runUpdate((s) => {
     s.notes = s.notes.filter((n) => n.id !== id);
-  });
+  }).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
 }

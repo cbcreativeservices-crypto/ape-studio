@@ -20,7 +20,7 @@ import { DRUM_KEY_TERMS, SOUND_SCENARIOS } from '../drumContent';
 import { DRUMS, beatRateHz, bendCents, evenHead, evenness, fundamentalHz, lugTapHz, spreadCents, strikePartials, upperRatio, type HeadState, type StrikeParams } from '../drumEngine';
 import { ANAT_ASPECT, AnatomyStage, DrumTopStage, EDGES, EDGE_ASPECT, EdgeStage, PARTS, TOP_ASPECT, type DrumPart, type EdgeProfile } from '../stagesDrum';
 import { PART_ASPECT, PITCH_ASPECT, PartialsStage, PitchStage, VIB_ASPECT, VibrationStage, WAVE_ASPECT, WaveStage } from '../stagesSignal';
-import { MODEL_BADGE, RENDER_BADGE, VIB_BADGE, fmtCents, fmtS, fmtTurn, syncOf, tensionWord, useStrike, useTap, type ChapterProps } from './shared';
+import { MODEL_BADGE, RENDER_BADGE, VIB_BADGE, fmtCents, fmtS, fmtTurn, soloPair, syncOf, tensionWord, useStrike, useTap, type ChapterProps } from './shared';
 
 const DRUM = 'rack' as const;
 const SPEC = DRUMS[DRUM];
@@ -61,6 +61,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
   const rodParams = useMemo<StrikeParams>(() => ({ drum: DRUM, batter: head, reso: evenHead(RESO_T, SPEC.lugs), resoPresent: true, damping: 0, strike: 0.8, strikeR: 0.3, strikeTheta: 0 }), [head]);
   const rod = useStrike(rodParams);
   const tap = useTap(head, lug, DRUM);
+  const rodSolo = soloPair(rod, tap);
   const rodParts = useMemo(() => strikePartials(rodParams), [rodParams]);
   const rodF0 = fundamentalHz(SPEC.diameterIn, head.tension, SPEC.sigmaBatter);
   const spread = spreadCents(head);
@@ -222,7 +223,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
             aspect: viewKind === 'drum' ? TOP_ASPECT : viewKind === 'wave' ? WAVE_ASPECT : viewKind === 'pitch' ? PITCH_ASPECT : VIB_ASPECT,
             size: 'L',
             badge: viewKind === 'drum' ? MODEL_BADGE : viewKind === 'vib' ? VIB_BADGE : RENDER_BADGE,
-            onTap: () => (rod.playing ? rod.stop() : rod.play()),
+            onTap: rodSolo.toggle,
             tapLabel: 'Display: tap to strike or stop',
             bezel: [
               { k: 'ROD', v: `${lug + 1} / ${SPEC.lugs}` },
@@ -235,8 +236,8 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
               faderParam({ id: 'turn', label: 'TURN', value: head.turns[lug], min: -1, max: 1, step: 0.125, format: (v) => `${fmtTurn(v)} on rod ${lug + 1} — ${v > 0.01 ? 'tighter' : v < -0.01 ? 'looser' : 'as it was'}`, formatShort: (v) => fmtTurn(v), onChange: setTurn, home: 0 }),
               optionsParam({ id: 'lug', label: 'ROD', value: lug, options: Array.from({ length: SPEC.lugs }, (_, i) => ({ key: i, label: `Rod ${i + 1}`, short: `#${i + 1}` })), onChange: setLug }),
               flipFader({ id: 'view', label: 'VIEW', items: views, selectedId: view, onSelect: setView, name: (v) => v.label, short: (v) => v.short, blurb: (v) => v.blurb, title: 'THE SAME STRIKE, SEVERAL PICTURES', sticky: true }),
-              { kind: 'action', id: 'tap', label: '▶ TAP', onPress: tap.play },
-              { kind: 'action', id: 'strike', label: '▶ STRIKE', onPress: rod.play },
+              { kind: 'action', id: 'tap', label: '▶ TAP', onPress: rodSolo.tap },
+              { kind: 'action', id: 'strike', label: '▶ STRIKE', onPress: rodSolo.strike },
             ],
             initialParam: 'turn',
           },

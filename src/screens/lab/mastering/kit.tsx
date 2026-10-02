@@ -9,7 +9,7 @@
  * true-peak readout that is OVER its ceiling reads PEAK_RED. Nothing here
  * invents a second level language.
  */
-import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColorForDb } from '../../../features/tools/levelColor';
@@ -143,6 +143,11 @@ export function KeyTerms({ terms }: { terms: readonly { term: string; def: strin
 
 /* ── decisions ───────────────────────────────────────────────────────────── */
 
+/** The host's recorded first answers (scenario id → right first time) for
+ *  the module on screen — read by every PRACTICE deck, so a deck remounted
+ *  by a step change shows what is already recorded. */
+export const RecordedAnswersContext = createContext<Readonly<Record<string, boolean>>>({});
+
 /** Deterministic shuffle of option indices per scenario + mount. */
 function shuffled(n: number, seed: number): number[] {
   const a = Array.from({ length: n }, (_, i) => i);
@@ -165,12 +170,25 @@ function shuffled(n: number, seed: number): number[] {
  * before reading the answer. `compact` lays the options out as two-column
  * chips (the eight-option tool bank).
  */
-export function ScenarioCard({ s, onAnswered, keepOrder, compact }: { s: Scenario; onAnswered?: (correct: boolean) => void; keepOrder?: boolean; compact?: boolean }) {
+export function ScenarioCard({ s, onAnswered, keepOrder, compact, recorded }: {
+  s: Scenario;
+  onAnswered?: (correct: boolean) => void;
+  keepOrder?: boolean;
+  compact?: boolean;
+  /** The host's recorded FIRST answer (true = it was right), if any. */
+  recorded?: boolean;
+}) {
   const seed = useRef(Math.floor(Math.random() * 0x7fffffff)).current;
   const order = useMemo(() => (keepOrder ? s.options.map((_, i) => i) : shuffled(s.options.length, seed ^ s.id.length)), [s, seed, keepOrder]);
-  const [picked, setPicked] = useState<string | null>(null);
+  const [pickedHere, setPicked] = useState<string | null>(null);
   const [wrongPicks, setWrongPicks] = useState<string[]>([]);
   const reported = useRef(false);
+  // A card remounted after its answer was recorded (the PRACTICE step is
+  // unmounted when the learner pages away) shows that record: a right first
+  // answer stays answered; a wrong one says it is recorded and stays open
+  // for the retry (toddler pass 2 — every card used to come back blank
+  // while the credit line counted it answered).
+  const picked = pickedHere ?? (recorded === true ? s.correct : null);
   const correct = picked === s.correct;
   return (
     <Card tone="accent">
@@ -206,6 +224,9 @@ export function ScenarioCard({ s, onAnswered, keepOrder, compact }: { s: Scenari
           );
         })}
       </View>
+      {picked == null && recorded === false ? (
+        <Text style={[styles.explain, { color: colors.gold }]}>Your first answer here is recorded — it was not the best fit. Choose again; the full explanation appears with the option that is.</Text>
+      ) : null}
       {picked != null ? (
         <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>
           {correct
@@ -220,7 +241,9 @@ export function ScenarioCard({ s, onAnswered, keepOrder, compact }: { s: Scenari
 /**
  * A PRACTICE deck: one scenario at a time with "3 of 8", PREV / NEXT CARD
  * keys and the first-answer rule stated on the page. Every card stays
- * mounted (hidden, not unmounted) so a pick survives paging back.
+ * mounted (hidden, not unmounted) so a pick survives paging back. Coming
+ * back to the step (a remount) shows the RECORDED answers from the host
+ * (RecordedAnswersContext) and opens on the first unanswered card.
  */
 export function ScenarioDeck({ scenarios, onAnswered, keepOrder, compact, intro }: {
   scenarios: readonly Scenario[];
@@ -229,7 +252,8 @@ export function ScenarioDeck({ scenarios, onAnswered, keepOrder, compact, intro 
   compact?: boolean;
   intro?: string;
 }) {
-  const [cur, setCur] = useState(0);
+  const recorded = useContext(RecordedAnswersContext);
+  const [cur, setCur] = useState(() => Math.max(0, scenarios.findIndex((s) => !(s.id in recorded))));
   const n = scenarios.length;
   const i = Math.min(cur, Math.max(0, n - 1));
   return (
@@ -241,7 +265,7 @@ export function ScenarioDeck({ scenarios, onAnswered, keepOrder, compact, intro 
       </View>
       {scenarios.map((s, k) => (
         <View key={s.id} style={k === i ? null : styles.hidden} accessibilityElementsHidden={k !== i} importantForAccessibility={k === i ? 'auto' : 'no-hide-descendants'}>
-          <ScenarioCard s={s} keepOrder={keepOrder} compact={compact} onAnswered={(ok) => onAnswered(s.id, ok)} />
+          <ScenarioCard s={s} keepOrder={keepOrder} compact={compact} recorded={recorded[s.id]} onAnswered={(ok) => onAnswered(s.id, ok)} />
         </View>
       ))}
       <View style={styles.deckKeys}>

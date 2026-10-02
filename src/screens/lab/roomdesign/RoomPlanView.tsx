@@ -16,19 +16,20 @@
  * panels have thickness. Level and pressure are coloured on the amplitude
  * standard (features/tools/levelColor.ts): quiet blue → loud red.
  */
-import { useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { memo, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { fieldLevelColor, levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
-import { pickHandle, planTransform, touchToGlass, type PlanTransform } from './planGeom';
+import { fingerAt, fingerOffset, pickHandle, planTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
 import {
   bounds,
   distToEdge,
   edgePoint,
   fmtLen,
   modePressure,
+  planReflections,
   pointInPolygon,
   type Analysis,
   type Pt,
@@ -200,7 +201,7 @@ export function RoomPlanView({
   // re-fit mid-drag changes the box, the hold drops, and the anchored finger
   // (glass units of the OLD box) then mapped through the NEW transform —
   // the corner or speaker leapt across the room (toddler pass 2026-10-01).
-  const drag = useRef<{ id: string; gx: number; gy: number; s: number; gw: number; gh: number } | null>(null);
+  const drag = useRef<{ id: string; gx: number; gy: number; s: number; gw: number; gh: number; finger: Finger } | null>(null);
   const endDrag = () => {
     const d = drag.current;
     drag.current = null;
@@ -216,26 +217,30 @@ export function RoomPlanView({
         const g = touchToGlass(e.nativeEvent.locationX, e.nativeEvent.locationY, st.s);
         const hit = pickHandle(st.handles, g.x, g.y);
         if (!hit) return false;
-        drag.current = { id: hit.id, gx: g.x, gy: g.y, s: st.s, gw: st.gw, gh: st.gh };
+        drag.current = { id: hit.id, gx: g.x, gy: g.y, s: st.s, gw: st.gw, gh: st.gh, finger: fingerAt(e.nativeEvent) };
         dragging.current = true;
         frozenT.current = st.T;
         st.onSelect?.(hit.id);
         return true;
       },
-      onPanResponderMove: (_e, gs) => {
+      onPanResponderMove: (e, gs) => {
         const st = ref.current;
         const d = drag.current;
         if (!d) return;
-        if (d.s !== st.s || d.gw !== st.gw || d.gh !== st.gh) {
+        // Only the finger that grabbed the item moves it (a second finger on
+        // the lane or the glass used to drag it too); once that finger lifts,
+        // the drag ends where the item is.
+        const off = fingerOffset(e.nativeEvent, d.finger, { dx: gs.dx, dy: gs.dy });
+        if (d.s !== st.s || d.gw !== st.gw || d.gh !== st.gh || off === 'lifted') {
           // The glass changed under the finger: let go where the item is.
           endDrag();
           st.onDragEnd?.(d.id);
           return;
         }
-        // Anchored delta: base + gesture ÷ scale reproduces the finger in
-        // glass units without re-basing (the Binaural stage's rule).
-        const gx = d.gx + gs.dx / st.s;
-        const gy = d.gy + gs.dy / st.s;
+        // Anchored delta: base + finger offset ÷ scale reproduces the finger
+        // in glass units without re-basing (the Binaural stage's rule).
+        const gx = d.gx + off.dx / st.s;
+        const gy = d.gy + off.dy / st.s;
         st.onDrag?.(d.id, st.T.toM({ x: gx, y: gy }));
       },
       onPanResponderRelease: () => {
@@ -261,22 +266,27 @@ export function RoomPlanView({
   const centroid = useMemo(() => polyCentroid(v), [v]);
 
   // ── modal heat map at ear height (one mode) ───────────────────────────────
+  // Keyed on VALUES (toddler pass 2, 2026-10-01): every drag frame hands in a
+  // fresh analysis, so the old identity deps rebuilt up to ~1,850 cells (a
+  // 15 m room) per frame although a speaker or listener drag changes none of
+  // them; the cells are painted by a memoised layer below.
+  const mode = layers.modes ? analysis.modes[Math.max(0, Math.min(analysis.modes.length - 1, modeIndex))] : undefined;
+  const { L: mL, W: mW, H: mH } = analysis.modalDims;
+  const earZ = lay.listener.earZ;
   const heat = useMemo(() => {
-    if (!layers.modes) return null;
-    const mode = analysis.modes[Math.max(0, Math.min(analysis.modes.length - 1, modeIndex))];
     if (!mode) return null;
-    const { L, W, H } = analysis.modalDims;
     const cell = Math.max(0.12, Math.min(0.35, Math.max(b.width, b.length) / 22));
     const cells: { x: number; y: number; c: string }[] = [];
     for (let y = b.minY + cell / 2; y < b.maxY; y += cell) {
       for (let x = b.minX + cell / 2; x < b.maxX; x += cell) {
         if (!pointInPolygon({ x, y }, v)) continue;
-        const p = modePressure(L, W, H, mode, y - b.minY, x - b.minX, lay.listener.earZ);
+        const p = modePressure(mL, mW, mH, mode, y - b.minY, x - b.minX, earZ);
         cells.push({ x, y, c: fieldLevelColor(p) });
       }
     }
     return { mode, cell, cells };
-  }, [layers.modes, analysis.modes, analysis.modalDims, modeIndex, b, v, lay.listener.earZ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode?.nx, mode?.ny, mode?.nz, mode?.f, mL, mW, mH, b, v, earZ]);
 
   const floorTint = FLOOR_TINT[room.floor] ?? '#17181a';
   const spk = (role: string) => lay.speakers.find((x) => x.role === role);
@@ -286,7 +296,7 @@ export function RoomPlanView({
   // Multichannel: 26 paths over a heat map is a wall of lines. Draw the L
   // and R paths, plus the selected speaker's own (cognitive review 19).
   const multi = lay.speakers.filter((s) => s.role !== 'SUB').length > 2;
-  const shownReflections = multi ? analysis.reflections.filter((r) => r.speaker === 'L' || r.speaker === 'R' || r.speaker === selected) : analysis.reflections;
+  const shownReflections = planReflections(analysis.reflections, lay.speakers, selected);
   // Role letters go INSIDE the cabinet in multichannel, and are hidden when
   // the cabinet is almost touching the front wall (cognitive review 10).
   const frontEdgeDist = (p: Pt) => distToEdge(p, v, 0).dist;
@@ -305,12 +315,7 @@ export function RoomPlanView({
         <Path d={outlinePath} fill={floorTint} stroke="none" />
 
         {/* Modal pressure field — the amplitude colour standard: blue quiet → red loud */}
-        {heat
-          ? heat.cells.map((c, i) => {
-              const q = T.toPx({ x: c.x - heat.cell / 2, y: c.y - heat.cell / 2 });
-              return <Rect key={i} x={q.x} y={q.y} width={heat.cell * T.k + 0.3} height={heat.cell * T.k + 0.3} fill={c.c} opacity={0.55} />;
-            })
-          : null}
+        {heat ? <HeatLayer heat={heat} T={T} /> : null}
 
         {/* Rug (under everything else that stands in the room) */}
         {layers.treatment !== false
@@ -441,6 +446,20 @@ export function RoomPlanView({
     </View>
   );
 }
+
+/** The modal pressure field's cells. Memoised: during a speaker or listener
+ *  drag the cells and the held transform are the same objects, so React
+ *  skips the whole layer instead of re-diffing every rectangle each frame. */
+const HeatLayer = memo(function HeatLayer({ heat, T }: { heat: { cell: number; cells: { x: number; y: number; c: string }[] }; T: PlanTransform }) {
+  return (
+    <G>
+      {heat.cells.map((c, i) => {
+        const q = T.toPx({ x: c.x - heat.cell / 2, y: c.y - heat.cell / 2 });
+        return <Rect key={i} x={q.x} y={q.y} width={heat.cell * T.k + 0.3} height={heat.cell * T.k + 0.3} fill={c.c} opacity={0.55} />;
+      })}
+    </G>
+  );
+});
 
 /* ───────────────────────────────── helpers ──────────────────────────────── */
 

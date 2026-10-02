@@ -89,11 +89,12 @@ describe('LISTEN pages', () => {
     // next render; only a READY render belongs to the current setting.
     const m6 = strip(read(`${DIR}/modules/mod6Loudness.tsx`));
     assert.match(m6, /const fresh = pb\.status === 'ready';/);
-    assert.match(m6, /unmatchedWarning\(fresh \? q\?\.lufs : undefined, fresh \? l\?\.lufs : undefined, 'LOUDER'\)/);
+    // Pass 2: `current` (the measures belong to this DRIVE) — MATCH off keeps the real step.
+    assert.match(m6, /unmatchedWarning\(current \? q\?\.lufs : undefined, current \? l\?\.lufs : undefined, 'LOUDER'\)/);
     assert.match(m6, /\{fresh && q && l \? \(/);
     const m5 = strip(read(`${DIR}/modules/mod5Workflow.tsx`));
     assert.match(m5, /const fresh = pb\.status === 'ready';/);
-    assert.match(m5, /unmatchedWarning\(fresh \? mix\?\.lufs : undefined, fresh \? eq\?\.lufs : undefined, 'WITH EQ', '2–3'\)/);
+    assert.match(m5, /unmatchedWarning\(current \? mix\?\.lufs : undefined, current \? eq\?\.lufs : undefined, 'WITH EQ', '2–3'\)/);
     assert.match(m5, /\{fresh && mix && eq \? \(/);
     // The hook: a variant change drops status to idle; only a finished render sets ready.
     const hook = strip(read(`${DIR}/useMasterPlayback.ts`));

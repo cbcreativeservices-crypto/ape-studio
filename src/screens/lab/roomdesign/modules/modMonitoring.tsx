@@ -17,6 +17,7 @@ import { RoomSideView } from '../RoomSideView';
 import { Body, Caption, Chips, SAFETY_LEVEL_NOTE, TrayHeading } from '../bits';
 import {
   bounds,
+  capLayoutHeights,
   channelGeometry,
   clampInside,
   fmtDelta,
@@ -53,6 +54,8 @@ const TOES: { id: '0' | '15' | '30'; label: string }[] = [
   { id: '30', label: 'TOE-IN 30°' },
 ];
 type HeightTarget = 'tweeter' | 'ears' | 'sub';
+/** The lowest seated ear height any control may set, metres. */
+const EAR_MIN = 0.6;
 
 /** Rebuild the speaker list for a configuration, keeping L, R and the
  *  listener. The surrounds spawn on the ITU-R BS.775 circle (the L/R radius
@@ -91,7 +94,11 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   const multi = design.monitoring.config === 'multichannel';
   const channels = multi ? channelGeometry(lay).filter((c) => c.role !== 'L' && c.role !== 'R') : [];
 
-  const setLayout = (fn: (l: Layout) => Layout) => update((d) => ({ ...d, layouts: d.layouts.map((l, i) => (i === d.active ? fn(l) : l)) }));
+  // Every write — plan drag, FRONT / LISTENER lanes included — ends under the
+  // LOCAL ceiling where the speaker or the ears now stand (toddler pass 2:
+  // only the side drag and HEIGHT were capped, so a plan drag under a sloped
+  // ceiling left a tweeter above the drawn ceiling).
+  const setLayout = (fn: (l: Layout) => Layout) => update((d) => ({ ...d, layouts: d.layouts.map((l, i) => (i === d.active ? capLayoutHeights(fn(l), d.room) : l)) }));
   const L = lay.speakers.find((s) => s.role === 'L');
   const R = lay.speakers.find((s) => s.role === 'R');
   const SUB = lay.speakers.find((s) => s.role === 'SUB');
@@ -118,7 +125,7 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
     setLayout((l) => {
       if (id === 'listener') {
         const q = clampInside({ x: l.listener.x, y: p.y }, room, l.listener);
-        return { ...l, listener: { ...l.listener, ...q, earZ: Math.max(0.6, Math.min(zCapAt(room, q.y), p.z)) } };
+        return { ...l, listener: { ...l.listener, ...q, earZ: Math.max(EAR_MIN, Math.min(zCapAt(room, q.y), p.z)) } };
       }
       return {
         ...l,
@@ -144,7 +151,9 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   const heightVal = heightTarget === 'ears' ? lay.listener.earZ : heightTarget === 'sub' ? (SUB?.z ?? 0.25) : (L?.z ?? 1.2);
   const setHeight = (z: number) =>
     setLayout((l) => {
-      if (heightTarget === 'ears') return { ...l, listener: { ...l.listener, earZ: Math.min(z, zCapAt(room, l.listener.y)) } };
+      // Ears never under 0.6 m — the side drag's floor (toddler pass 2: the
+      // lane's bottom put seated ears 10 cm off the floor).
+      if (heightTarget === 'ears') return { ...l, listener: { ...l.listener, earZ: Math.max(EAR_MIN, Math.min(z, zCapAt(room, l.listener.y))) } };
       const roles: Speaker['role'][] = heightTarget === 'sub' ? ['SUB'] : ['L', 'R', 'C', 'LS', 'RS'];
       return { ...l, speakers: l.speakers.map((s) => (roles.includes(s.role) ? { ...s, z: Math.min(z, zCapAt(room, s.y)) } : s)) };
     });

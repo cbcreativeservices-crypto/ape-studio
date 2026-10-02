@@ -66,8 +66,17 @@ function hydrate(): Promise<void> {
     const gen = generation;
     hydrating = (async () => {
       let next: RoomDesign[] = [];
+      let raw: string | null;
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        raw = await AsyncStorage.getItem(STORAGE_KEY);
+      } catch {
+        // The device could not be READ (not a damaged blob): stay
+        // un-hydrated so no save writes a short list over the designs on
+        // disk; the next call reads again.
+        if (gen === generation) hydrating = null;
+        return;
+      }
+      try {
         if (raw != null) next = sanitize(JSON.parse(raw));
       } catch {
         next = []; // damaged → start empty; the next write repairs the key
@@ -120,21 +129,31 @@ export function saveRoomDesign(design: RoomDesign): Promise<boolean> {
   // wrote the previous account's design into the next account's empty key.
   const gen = generation;
   return hydrate().then(() => {
-    if (gen !== generation) return false;
+    if (gen !== generation || !hydrated) return false; // unreadable: never overwrite what is on disk
     const stamped = { ...design, updatedAt: Date.now() };
     const next = [...list.filter((d) => d.id !== stamped.id), stamped];
     next.sort((a, b) => a.updatedAt - b.updatedAt);
     while (next.length > MAX_SAVED_DESIGNS) next.shift();
+    const prev = list;
     list = next;
     emit();
-    return persist();
+    if (saveBlocked) return false; // a guest's copy lives in memory for the session
+    return persist().then((ok) => {
+      // A failed write leaves the list as it is ON DISK — not one that lists
+      // the design under SAVED DESIGNS until the next relaunch.
+      if (!ok && list === next) {
+        list = prev;
+        emit();
+      }
+      return ok;
+    });
   });
 }
 
 export function deleteRoomDesign(id: string): void {
   const gen = generation;
   void hydrate().then(() => {
-    if (gen !== generation) return; // wiped meanwhile — nothing of this account to delete
+    if (gen !== generation || !hydrated) return; // wiped meanwhile, or unreadable
     if (!list.some((d) => d.id === id)) return;
     list = list.filter((d) => d.id !== id);
     void persist();

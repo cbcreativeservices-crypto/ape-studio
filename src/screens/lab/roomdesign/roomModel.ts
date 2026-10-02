@@ -564,8 +564,18 @@ export function resizeDesign(d: RoomDesign, width: number, length: number): Room
   const b = bounds(d.room);
   const sx = b.width > 0 ? width / b.width : 1;
   const sy = b.length > 0 ? length / b.length : 1;
-  const sc = (p: Pt): Pt => ({ x: b.minX + (p.x - b.minX) * sx, y: b.minY + (p.y - b.minY) * sy });
-  const room = resizeRoom(d.room, width, length);
+  // The plan grows from its own corner — but never past ROOM_MAX_M (toddler
+  // pass 2, 2026-10-01): with the left or front wall dragged in, WIDTH or
+  // LENGTH at full scale put the far wall beyond 15 m. Every corner drag was
+  // then refused (polygonIsValidRoom), and a SAVE of that room vanished from
+  // SAVED DESIGNS (repairDesign drops a plan outside the range). The whole
+  // design slides back toward the origin just enough to fit.
+  const ox = Math.max(0, Math.min(b.minX, ROOM_MAX_M - width));
+  const oy = Math.max(0, Math.min(b.minY, ROOM_MAX_M - length));
+  const sc = (p: Pt): Pt => ({ x: ox + (p.x - b.minX) * sx, y: oy + (p.y - b.minY) * sy });
+  const scaled = resizeRoom(d.room, width, length);
+  const shift = (p: Pt): Pt => ({ x: p.x - b.minX + ox, y: p.y - b.minY + oy });
+  const room = ox === b.minX && oy === b.minY ? scaled : { ...scaled, vertices: scaled.vertices.map(shift), features: scaled.features.map((f) => ({ ...f, ...shift(f) })) };
   const layouts = d.layouts.map((l) => ({
     ...l,
     speakers: l.speakers.map((s) => ({ ...s, ...sc(s) })),
@@ -677,6 +687,38 @@ export function zCapAt(room: Room, y: number): number {
   return Math.max(0.2, ceilingHeightAt(room, y) - 0.1);
 }
 
+/** Every speaker and the ears of one layout under the LOCAL ceiling where
+ *  they now stand. Run after any write that moves them ALONG the room — a
+ *  plan drag, the FRONT and LISTENER lanes (toddler pass 2, 2026-10-01: pass
+ *  1 capped the side drag, the HEIGHT lane and room edits, but a plan drag
+ *  carried a 2.3 m tweeter from under a sloped ceiling's 2.5 m front to its
+ *  2.2 m rear — above the drawn ceiling, its ceiling bounce gone from the
+ *  model). A layout already under the ceiling comes back unchanged. */
+export function capLayoutHeights(l: Layout, room: Room): Layout {
+  let changed = false;
+  const speakers = l.speakers.map((s) => {
+    const cap = zCapAt(room, s.y);
+    if (s.z <= cap) return s;
+    changed = true;
+    return { ...s, z: cap };
+  });
+  const earCap = zCapAt(room, l.listener.y);
+  const listener = l.listener.earZ <= earCap ? l.listener : ((changed = true), { ...l.listener, earZ: earCap });
+  return changed ? { ...l, speakers, listener } : l;
+}
+
+/** The centre height a ceiling cloud is DRAWN at: its own z, but hung under
+ *  the LOCAL ceiling (toddler pass 2, 2026-10-01). A cloud is placed at the
+ *  high point less 25 cm and keeps that z when dragged or when the ceiling
+ *  changes, so under a sloped or vaulted ceiling — or after CEILING was
+ *  lowered — the side view drew it floating above the ceiling line with its
+ *  hangers running down to it. The model never reads a cloud's z (it covers
+ *  the ceiling bounce by its plan footprint), so only the picture moves. */
+export function cloudHangZ(room: Room, t: Pick<Treatment, 'y' | 'z' | 'thickness'>): number {
+  const top = ceilingHeightAt(room, t.y ?? 0);
+  return Math.max(0.2, Math.min(t.z, top - 0.1 - t.thickness / 2));
+}
+
 /** A TREATMENT drag to a point in metres: a wall panel slides along its
  *  wall, a bass trap snaps to the nearest corner, and a free-standing item
  *  (rug, cloud, gobo) stays inside the walls — it used to follow the finger
@@ -780,6 +822,20 @@ export function modeFrequency(c: number, L: number, W: number, H: number, nx: nu
  *  review 9 — a flat order-4 cap lost modes above ~140 Hz). `maxOrder`, when
  *  given, caps every axis as well (the calculator-parity test). */
 export function roomModes(c: number, L: number, W: number, H: number, maxOrder?: number, maxHz = 300): RoomMode[] {
+  // The last answer is kept (toddler pass 2, 2026-10-01): a drag of a speaker
+  // or the listener re-runs analyze() every frame with the room unchanged, and
+  // a 15 × 15 × 6 m room lists ~4,300 modes — about 6 ms a call in an
+  // interpreter (node --jitless), most of the analysis. Same inputs → the same
+  // (read-only) list, which also keeps the plan's heat-map memo warm.
+  const key = `${c}|${L}|${W}|${H}|${maxOrder}|${maxHz}`;
+  if (modeCache && modeCache.key === key) return modeCache.modes;
+  const modes = computeRoomModes(c, L, W, H, maxOrder, maxHz);
+  modeCache = { key, modes };
+  return modes;
+}
+let modeCache: { key: string; modes: RoomMode[] } | null = null;
+
+function computeRoomModes(c: number, L: number, W: number, H: number, maxOrder: number | undefined, maxHz: number): RoomMode[] {
   const out: RoomMode[] = [];
   if (!(L > 0) || !(W > 0) || !(H > 0) || !(c > 0)) return out;
   const nMax = (dim: number) => {
@@ -1072,6 +1128,32 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
 /** A reflection's surface in words: "wall 2", "floor", "ceiling", "desk". */
 export function reflectionSurfaceName(r: Pick<Reflection, 'surface'>): string {
   return r.surface.kind === 'wall' ? `wall ${r.surface.edge + 1}` : r.surface.kind;
+}
+
+/** A reflection's identity that survives a re-analysis: speaker + surface.
+ *  The list is sorted by delay, so an INDEX names a different path as soon
+ *  as a drag reorders it (toddler pass 2, 2026-10-01: EXPLORE's "Traced:"
+ *  line and the pulse described another speaker's bounce after a drag). */
+export function reflectionKey(r: Pick<Reflection, 'speaker' | 'surface'>): string {
+  const s = r.surface;
+  return `${r.speaker}:${s.kind === 'wall' ? `w${s.edge}` : s.kind === 'desk' ? `desk-${s.id}` : s.kind}`;
+}
+
+/** The reflection paths the plan DRAWS: every one in stereo; in multichannel
+ *  the L and R paths plus the selected speaker's own (cognitive review 19).
+ *  TRACE cycles through these only — it used to run a pulse along a
+ *  surround's path the plan was not drawing. */
+export function planReflections(reflections: Reflection[], speakers: Pick<Speaker, 'role'>[], selected?: string | null): Reflection[] {
+  const multi = speakers.filter((s) => s.role !== 'SUB').length > 2;
+  return multi ? reflections.filter((r) => r.speaker === 'L' || r.speaker === 'R' || r.speaker === selected) : reflections;
+}
+
+/** TRACE: the path after `current` (by key) in the drawn list, wrapping; the
+ *  first one when `current` is gone or null; null when nothing is drawn. */
+export function nextTraceKey(shown: Reflection[], current: string | null): string | null {
+  if (shown.length === 0) return null;
+  const i = current == null ? -1 : shown.findIndex((r) => reflectionKey(r) === current);
+  return reflectionKey(shown[(i + 1) % shown.length]);
 }
 
 /** The material at a point on a wall: an opening there overrides the wall. */
@@ -1618,7 +1700,7 @@ export function rtImbalance(rt60: Rt60Band[]): { low: number; high: number; rati
 export type LayoutDiffLine = { tier: Tier; text: string };
 
 /** What changed between two layouts of the same room, in plain words. */
-export function diffLayouts(d: RoomDesign, fromIdx: number, toIdx: number): LayoutDiffLine[] {
+export function diffLayouts(d: RoomDesign, fromIdx: number, toIdx: number, pre: { from?: Analysis; to?: Analysis } = {}): LayoutDiffLine[] {
   const from = d.layouts[fromIdx];
   const to = d.layouts[toIdx];
   const out: LayoutDiffLine[] = [];
@@ -1639,8 +1721,11 @@ export function diffLayouts(d: RoomDesign, fromIdx: number, toIdx: number): Layo
   const lm = moved(from.listener, to.listener);
   if (lm > 0.01) out.push({ tier: 'CALCULATED', text: `Listening position moved ${fmtLen(lm, u, { small: true })} (${fmtDelta(to.listener.x - from.listener.x, u)} across, ${fmtDelta(to.listener.y - from.listener.y, u)} along the room).` });
   if (Math.abs(to.listener.earZ - from.listener.earZ) > 0.01) out.push({ tier: 'CALCULATED', text: `Ear height ${fmtDelta(to.listener.earZ - from.listener.earZ, u)}.` });
-  const a = analyze(d, fromIdx);
-  const b = analyze(d, toIdx);
+  // A caller that already holds either analysis passes it in (EXPLORE: the
+  // host's analysis IS layout `toIdx`; START's is memoised across a drag) —
+  // two fresh analyses per render made three per drag frame (toddler pass 2).
+  const a = pre.from ?? analyze(d, fromIdx);
+  const b = pre.to ?? analyze(d, toIdx);
   if (a.stereo && b.stereo) {
     if (Math.abs(a.stereo.angleDeg - b.stereo.angleDeg) > 0.5) out.push({ tier: 'CALCULATED', text: `Listening angle ${a.stereo.angleDeg.toFixed(0)}° → ${b.stereo.angleDeg.toFixed(0)}°.` });
     if (Math.abs(a.stereo.pathDiff - b.stereo.pathDiff) > 0.005) out.push({ tier: 'CALCULATED', text: `Left/right path difference ${fmtLen(a.stereo.pathDiff, u, { small: true })} → ${fmtLen(b.stereo.pathDiff, u, { small: true })}.` });

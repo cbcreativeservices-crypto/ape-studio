@@ -11,6 +11,10 @@ import { useDrumPlayback, type DrumPlayback } from '../useDrumPlayback';
 /** What became of a SAVE: on the disk, kept for this session only (a guest
  *  or a preview), or a write that failed. */
 export type NoteSaveResult = 'saved' | 'session' | 'failed';
+/** What became of a DELETE (toddler pass 2): off the disk, off this
+ *  session's list (a guest), or a write that failed — the note is still on
+ *  the device. */
+export type NoteDeleteResult = 'deleted' | 'session' | 'failed';
 
 export type ChapterProps = {
   /** A scenario reached its right answer; `correct` = the FIRST pick was
@@ -24,7 +28,7 @@ export type ChapterProps = {
   /** Chapter 6 only: the tuning notes (host-owned, guest rule applied). */
   notes: readonly TuningNote[];
   onSaveNote: (note: TuningNote) => Promise<NoteSaveResult>;
-  onDeleteNote: (id: string) => void;
+  onDeleteNote: (id: string) => Promise<NoteDeleteResult>;
   /** A signed-out guest or a members-only preview: nothing is saved. */
   guest: boolean;
   preview: boolean;
@@ -49,6 +53,9 @@ export function useTap(head: HeadState, lug: number, drum: DrumKind, which: 'bat
   const key = useMemo(() => `tap:${drum}:${which}:${lug}:${JSON.stringify(head)}`, [head, lug, drum, which]);
   return useDrumPlayback(key, () => renderTap(head, lug, drum, which), false);
 }
+
+/** One sound at a time on a TAP + STRIKE page (toddler pass 2). */
+export { soloPair } from '../soloPair';
 
 /** A head at a wanted (0,1) pitch, even. */
 export function headAtHz(drum: DrumKind, hz: number, which: 'batter' | 'reso'): HeadState {

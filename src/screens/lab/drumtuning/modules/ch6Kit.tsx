@@ -14,6 +14,7 @@ import { faderParam } from '../DrumRack';
 import { ChapterSteps } from '../steps';
 import { Body, Card, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, YourRun, noteName } from '../kit';
 import { DRUM_KEY_TERMS, type TuningNote } from '../drumContent';
+import { MAX_TUNING_NOTES } from '../drumProgress';
 import { DRUMS, renderStrike, tomInterval, type RenderResult, type StrikeParams } from '../drumEngine';
 import { KIT_ASPECT, KitStage, type KitSounding } from '../stagesDrum';
 import { useDrumPlayback } from '../useDrumPlayback';
@@ -21,6 +22,13 @@ import { RENDER_BADGE, headAtHz, syncOf, type ChapterProps } from './shared';
 
 const RACK_FIRST_S = 1.2;
 const GAP_S = 0.35;
+/** How much of the floor tom has to sound before ▶ BOTH counts as heard. */
+const FLOOR_HEARD_MS = 400;
+/** Text limits (toddler pass 2): an unbounded paste went into the ONE
+ *  progress row with the credit — on Android a row over ~2 MB cannot be read
+ *  back at all. A name is a line; a note is a paragraph. */
+const NAME_MAX = 80;
+const NOTE_MAX = 600;
 
 /** Rack then floor, in one buffer: the two hits a fill would play. */
 function renderBoth(rack: StrikeParams, floor: StrikeParams): RenderResult {
@@ -50,7 +58,7 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
    *  the same pitches with nothing typed is the same note (toddler pass 1: a
    *  double tap filed a duplicate "Kit <date>" — the first tap had already
    *  cleared the name). */
-  const lastSaved = useRef<{ sig: string; name: string } | null>(null);
+  const lastSaved = useRef<{ sig: string; name: string; id: string } | null>(null);
   const saving = useRef(false);
 
   const rackP = useMemo<StrikeParams>(() => ({ drum: 'rack', batter: headAtHz('rack', rackHz, 'batter'), reso: headAtHz('rack', rackHz, 'reso'), resoPresent: true, damping: 0, strike: 0.85, strikeR: 0.3, strikeTheta: 0 }), [rackHz]);
@@ -63,8 +71,14 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
     setVerdictsSeen((s) => (s.has(verdict.kind) ? s : new Set([...s, verdict.kind])));
   }, [verdict.kind]);
 
+  // HEARD = the floor tom has sounded (toddler pass 2): ▶ BOTH then a tap on
+  // the display a split second later counted as "heard" — the credit's "hear
+  // ▶ BOTH" paid for a rack-tom click with the floor tom never played (the
+  // Chapter 4 HEARD_AFTER_MS rule). The floor enters at RACK_FIRST_S + GAP_S.
   useEffect(() => {
-    if (both.playing) setHeardBoth(true);
+    if (!both.playing) return;
+    const id = setTimeout(() => setHeardBoth(true), (RACK_FIRST_S + GAP_S) * 1000 + FLOOR_HEARD_MS);
+    return () => clearTimeout(id);
   }, [both.playing]);
   useEffect(() => {
     if (verdict.kind === 'distinct' && heardBoth && !reported.current) {
@@ -83,8 +97,12 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
   const save = () => {
     if (saving.current) return;
     const sig = `${rackHz}:${floorHz}`;
-    if (!name.trim() && !note.trim() && lastSaved.current?.sig === sig) {
-      setSavedFlash({ text: `This setup is already saved as "${lastSaved.current.name}". Move a tom or type a name to save another.`, ok: true });
+    // …and only while that note is still in the list (toddler pass 2): SAVE,
+    // DELETE it, SAVE again said "already saved as …" about a note that was
+    // gone, and nothing could save that setup again without typing a name.
+    const prior = lastSaved.current;
+    if (!name.trim() && !note.trim() && prior?.sig === sig && notes.some((x) => x.id === prior.id)) {
+      setSavedFlash({ text: `This setup is already saved as "${prior.name}". Move a tom or type a name to save another.`, ok: true });
       return;
     }
     const n: TuningNote = {
@@ -99,6 +117,10 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
       ],
     };
     if (note.trim()) n.drums[0].note = note.trim();
+    // THE CAP SAYS WHAT IT DROPS (toddler pass 2): the 25th note silently
+    // deleted the oldest one from the device under a plain "Saved".
+    const dropped = notes.length >= MAX_TUNING_NOTES ? [...notes].sort((a, b) => a.savedAt - b.savedAt)[0] : null;
+    const capLine = dropped ? ` The list keeps the newest ${MAX_TUNING_NOTES}, so the oldest — "${dropped.name}" — was removed.` : '';
     saving.current = true;
     // The flash reports what the store DID, after the write — never "saved"
     // ahead of it, never "saved" when it failed.
@@ -108,8 +130,8 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
         setSavedFlash({ text: 'Could not save on this device. The setup is still on the faders and your text is still here — try SAVE again.', ok: false });
         return;
       }
-      lastSaved.current = { sig, name: n.name };
-      setSavedFlash(r === 'session' ? { text: preview ? 'Kept for this session only — a preview saves nothing.' : 'Kept for this session only — sign in to keep tuning notes on this device.', ok: false } : { text: `Saved "${n.name}" on this device.`, ok: true });
+      lastSaved.current = { sig, name: n.name, id: n.id };
+      setSavedFlash(r === 'session' ? { text: preview ? 'Kept for this session only — a preview saves nothing.' + capLine : 'Kept for this session only — sign in to keep tuning notes on this device.' + capLine, ok: false } : { text: `Saved "${n.name}" on this device.${capLine}`, ok: true });
       setName('');
       setNote('');
     });
@@ -120,7 +142,14 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
     if (r) setRackHz(Math.round(r.batterHz));
     if (f) setFloorHz(Math.round(f.batterHz));
   };
-  const remove = (n: TuningNote) => confirmDialog('Delete this tuning note?', `"${n.name}" is removed from this device. The drums keep their current tuning.`, 'Delete', () => onDeleteNote(n.id), { destructive: true });
+  const remove = (n: TuningNote) =>
+    confirmDialog('Delete this tuning note?', `"${n.name}" is removed from this device. The drums keep their current tuning.`, 'Delete', () => {
+      // A failed delete is said out loud (toddler pass 2) — the row stays,
+      // because the note is still on the device.
+      void onDeleteNote(n.id).then((r) => {
+        if (r === 'failed') setSavedFlash({ text: `Could not delete "${n.name}" on this device — it is still saved. Try DELETE again.`, ok: false });
+      });
+    }, { destructive: true });
   const sorted = [...notes].sort((a, b) => b.savedAt - a.savedAt);
 
   return (
@@ -191,9 +220,9 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
               <Body>A setup you can reproduce: the rack and floor tom pitches from the previous step, a name, and a line about the heads or the room. Saved on this device; LOAD puts a note's pitches back on the faders.</Body>
               <Card tone="accent">
                 <Text style={styles.label}>NAME</Text>
-                <TextInput value={name} onChangeText={setName} placeholder="e.g. Club set, coated heads" placeholderTextColor={colors.textMuted} style={styles.input} accessibilityLabel="Name for this tuning note" />
+                <TextInput value={name} onChangeText={setName} placeholder="e.g. Club set, coated heads" placeholderTextColor={colors.textMuted} style={styles.input} maxLength={NAME_MAX} accessibilityLabel="Name for this tuning note" />
                 <Text style={styles.label}>NOTE</Text>
-                <TextInput value={note} onChangeText={setNote} placeholder="heads, room, what worked" placeholderTextColor={colors.textMuted} style={[styles.input, { minHeight: 60 }]} multiline accessibilityLabel="Free note" />
+                <TextInput value={note} onChangeText={setNote} placeholder="heads, room, what worked" placeholderTextColor={colors.textMuted} style={[styles.input, { minHeight: 60 }]} multiline maxLength={NOTE_MAX} accessibilityLabel="Free note" />
                 <Text style={styles.values}>{`rack tom ${rackHz} Hz (${noteName(rackHz)}) · floor tom ${floorHz} Hz (${noteName(floorHz)}) — batter pitches; the relationship is Chapter 4's choice`}</Text>
                 <KeyButton label="SAVE THIS SETUP" onPress={save} tint={colors.green} />
                 {savedFlash ? <Feedback tone={savedFlash.ok ? 'ok' : 'warn'}>{savedFlash.text}</Feedback> : null}

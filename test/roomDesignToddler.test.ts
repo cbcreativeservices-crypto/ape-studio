@@ -206,7 +206,8 @@ describe('the plan and the side view drop a drag when the glass changes size und
   it('rotation or a full-screen re-fit mid-drag ends the drag instead of mapping the old finger through the new transform', () => {
     for (const f of ['RoomPlanView', 'RoomSideView']) {
       const s = strip(read(`${LAB}${f}.tsx`));
-      assert.match(s, /if \(d\.s !== st\.s \|\| d\.gw !== st\.gw \|\| d\.gh !== st\.gh\)/, f);
+      // (pass 2 adds `|| off === 'lifted'` — the drag's own finger leaving)
+      assert.match(s, /if \(d\.s !== st\.s \|\| d\.gw !== st\.gw \|\| d\.gh !== st\.gh[ |)]/, f);
     }
   });
 });
@@ -259,10 +260,14 @@ describe('a save that pushes the oldest design out of a full library says so', (
     assert.equal(evictedBySave(lib, lib[0], 3), null, 're-saving a design already kept replaces it');
   });
   it('both SAVE buttons put it in their message', () => {
+    // Pass 2: the host judges it on the store's own list (ctx.evicts); both
+    // buttons name it.
+    const host = strip(read(`${LAB}RoomDesignLabScreen.tsx`));
+    assert.match(host, /evictedBySave\(rawSaved, design, MAX_SAVED_DESIGNS\)/);
     for (const m of ['modReview', 'modExplore']) {
       const s = strip(read(`${LAB}modules/${m}.tsx`));
-      assert.match(s, /evictedBySave\([a-z]+, design, MAX_SAVED_DESIGNS\)/, m);
-      assert.match(s, /was removed to make room/, m);
+      assert.match(s, /const gone = evicts\?\.name \?\? null;/, m);
+      assert.match(s, /\$\{gone \? ` The library keeps \$\{MAX_SAVED_DESIGNS\}: the oldest, "\$\{gone\}", was removed to make room\.` : ''\}/, m);
     }
   });
 });
