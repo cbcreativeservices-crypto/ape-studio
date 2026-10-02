@@ -58,6 +58,13 @@ const MESSAGES: Record<RedeemStatus, string> = {
   error: 'Couldn’t redeem the code right now. Please try again.',
 };
 
+/** A code was GRANTED but the device's tier read did not come back as a
+ *  member (final round A, 2026-10-02). Settings said "your Academy access is
+ *  active" while the app stayed locked. The second sentence is the Paywall's
+ *  owner-ratified restore wording for the same situation, reused verbatim. */
+export const REDEEM_GRANTED_NOT_REFRESHED =
+  'Your code was accepted and your membership is recorded. We couldn’t refresh your access on this device yet — it will unlock shortly, or restart the app.';
+
 const OK_STATUSES: ReadonlySet<RedeemStatus> = new Set<RedeemStatus>(['granted', 'already_active']);
 
 function result(status: RedeemStatus, extra?: { tier?: 'academy' | null; expiresAt?: string | null; message?: string }): RedeemResult {

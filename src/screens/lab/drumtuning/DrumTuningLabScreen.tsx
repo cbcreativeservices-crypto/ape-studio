@@ -42,7 +42,7 @@ import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { DRUM_CHAPTERS, drumChapterById, scenariosForChapter, type DrumChapterId, type TuningNote } from './drumContent';
-import { deleteTuningNote, drumResumePoint, emptyDrumChapter, keepSessionNotes, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, withNote, type DrumProgressState } from './drumProgress';
+import { deleteTuningNote, drumReadFailed, drumResumePoint,emptyDrumChapter, keepSessionNotes, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, withNote, type DrumProgressState } from './drumProgress';
 import { DRUM_CHAPTER_COMPONENTS, DRUM_NEEDS_INTERACTIVE, DRUM_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
 import type { NoteDeleteResult, NoteSaveResult } from './modules/shared';
@@ -109,6 +109,20 @@ export function DrumTuningLabScreen() {
   unsavedRef.current = unsaved;
   /** The store's list plus the notes it could not take. */
   const listed = useCallback((stored: readonly TuningNote[]): TuningNote[] => [...stored, ...unsavedRef.current.filter((u) => !stored.some((x) => x.id === u.id))], []);
+  /** A load whose READ FAILED (storage threw) is retried instead of landing
+   *  (the Mastering rule, final round B 2026-10-02): it landed an empty copy,
+   *  so the whole visit showed no credit, no answers and no notes. Bumped by
+   *  the retry timer; a few tries, then the empty copy lands as before. */
+  const [readRetry, setReadRetry] = useState(0);
+  const readRetriesRef = useRef(0);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (retryTimerRef.current != null) clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    },
+    [],
+  );
 
   // ⛔ WAIT FOR `resolved` before the first read. And READ AGAIN when the
   // store unblocks (toddler pass 1): a member whose tier settled after
@@ -126,9 +140,26 @@ export function DrumTuningLabScreen() {
     const reread = loaded && loadedBlockedRef.current && !blocked;
     if (loaded && !reread) return;
     let alive = true;
-    loadedBlockedRef.current = blocked;
+    // Recorded when the read LANDS (the Mastering rule): set here, a re-read
+    // cancelled by a quick blocked → unblocked flip, or a failed read being
+    // retried, would have marked itself done and never run.
+    const wasBlocked = blocked;
     void updateDrumProgress(() => {}).then(async (s) => {
       if (!alive) return;
+      // A FAILED read is not the learner's progress: try again shortly rather
+      // than land an empty copy for the whole visit. Nothing is marked done
+      // (not `loaded`, not the blocked flag), so the retry runs this same load.
+      if (!wasBlocked && drumReadFailed(s) && readRetriesRef.current < 3) {
+        readRetriesRef.current++;
+        if (retryTimerRef.current != null) clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = setTimeout(() => {
+          retryTimerRef.current = null;
+          setReadRetry((r) => r + 1);
+        }, 1200);
+        return;
+      }
+      readRetriesRef.current = 0;
+      loadedBlockedRef.current = wasBlocked;
       setDoneIds((prev) => new Set([...(reread ? prev : []), ...DRUM_CHAPTERS.filter((x) => s.modules[x.id]?.done).map((x) => x.id)]));
       setInteractive((prev) => new Set([...prev, ...DRUM_CHAPTERS.filter((x) => s.modules[x.id]?.interactive).map((x) => x.id)]));
       if (reread) {
@@ -163,23 +194,36 @@ export function DrumTuningLabScreen() {
     return () => {
       alive = false;
     };
-  }, [resolved, loaded, blocked]);
+  }, [resolved, loaded, blocked, readRetry]);
 
   /** Bumped by every move: a FINISH read that lands after the learner has
    *  moved on must not pull them onto the what's-left screen (the Mastering
    *  fence, evening pass 2, 2026-10-02). */
   const navSeqRef = useRef(0);
+  /** Bumped by every chapter open: only the LATEST open's read may land
+   *  (the Mastering rule). */
+  const openSeqRef = useRef(0);
   const openModule = useCallback((id: DrumChapterId, atStep = 0) => {
     if (!loadedRef.current) movedRef.current = true;
+    const seq = ++openSeqRef.current;
     navSeqRef.current++;
     setEndState(null);
     setModId(id);
     setStepRaw(atStep);
+    // Cleared NOW and merged when the store answers (the Mastering rule): a
+    // card answered before this read resolved was REPLACED by the stored copy
+    // (its own write is queued behind this one), so that decision never
+    // counted and the chapter's credit did not land.
+    setAnswers({});
     void updateDrumProgress((s) => {
       s.lastModule = id;
       s.lastStep = atStep;
     }).then((s) => {
-      setAnswers(s.modules[id]?.answers ?? {});
+      // A later open owns the screen now: this read belongs to a chapter
+      // that is no longer shown.
+      if (seq !== openSeqRef.current) return;
+      const stored = s.modules[id]?.answers ?? {};
+      setAnswers((prev) => ({ ...prev, ...stored })); // the stored (first) answer wins
       // No setNotes here (toddler pass 1): for a guest the blocked store
       // reads back EMPTY, so every chapter change wiped the notes the lab
       // had just promised to keep "for this session". Notes change only

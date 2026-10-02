@@ -710,14 +710,21 @@ export function MyProfileView() {
                   label={c.name}
                   on={on}
                   onPress={() => {
-                    const ids = on
-                      ? p.featuredCredentialIds.filter((x) => x !== c.id)
-                      : [...p.featuredCredentialIds, c.id];
-                    const prevIds = p.featuredCredentialIds;
+                    // From pRef, not the render closure's `p` (final round B,
+                    // 2026-10-02): two quick taps before a re-render both
+                    // built on the same old list, so the second dropped the first.
+                    const cur = pRef.current;
+                    const isOn = cur.featuredCredentialIds.includes(c.id);
+                    const ids = isOn
+                      ? cur.featuredCredentialIds.filter((x) => x !== c.id)
+                      : [...cur.featuredCredentialIds, c.id];
+                    const prevIds = cur.featuredCredentialIds;
                     // Nothing in flight on the first tap, so the list on screen
                     // is the server's.
                     if (featuredOk.current === null) featuredOk.current = prevIds;
-                    setP({ ...p, featuredCredentialIds: ids });
+                    const next = { ...cur, featuredCredentialIds: ids };
+                    pRef.current = next;
+                    setP(next);
                     // The result was dropped (bug hunt 2026-09-30): a refused or
                     // failed write left the chip lit, so the member believed a
                     // credential was on their public profile when it was not.
@@ -732,7 +739,9 @@ export function MyProfileView() {
                         if (r.ok) return setErr(null);
                         setErr(r.error);
                         const back = featuredOk.current ?? prevIds;
-                        setP((cur) => ({ ...cur, featuredCredentialIds: back }));
+                        const rolled = { ...pRef.current, featuredCredentialIds: back };
+                        pRef.current = rolled;
+                        setP(rolled);
                       });
                     featuredChain.current = run.catch(() => {});
                   }}

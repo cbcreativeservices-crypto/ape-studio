@@ -23,14 +23,14 @@ test('Home card eyebrows: plain labels for members', () => {
 
 test('every other surface branches its free / membership copy on membership', () => {
   const cases: [string, RegExp][] = [
-    ['src/screens/about/AboutHomeSheet.tsx', /!\(isMember && FREE_TIER_LINES\.has\(p\)\)/],
+    ['src/screens/about/AboutHomeSheet.tsx', /!\(!upsell && FREE_TIER_LINES\.has\(p\)\)/],
     ['src/screens/curriculum/CurriculumScreen.tsx', /isMember \? 'CAREER DISCOVERY LAB' : 'CAREER DISCOVERY LAB · FREE'/],
     ['src/screens/enrollment/EnrollmentScreen.tsx', /free && !isCore && !paid \? '  ·  Free'/],
     ['src/screens/lab/AudioLearningScreen.tsx', /locked \? INTRO : INTRO_MEMBER/],
     ['src/screens/lab/EarLabScreen.tsx', /isMember \? '' : sec\.note/],
     ['src/screens/startHere/NextSteps.tsx', /isMember \|\| !resolved \? '' : accessTag/],
-    ['src/screens/careerfinder/CareerFinderScreen.tsx', /isMember \? 'AUDIO CAREER FINDER' :/],
-    ['src/screens/careerfinder/CareerFamilyScreen.tsx', /\{isMember\s*\?/],
+    ['src/screens/careerfinder/CareerFinderScreen.tsx', /upsell \? 'AUDIO CAREER FINDER · FREE · NO ACCOUNT' : 'AUDIO CAREER FINDER'/],
+    ['src/screens/careerfinder/CareerFamilyScreen.tsx', /\{!upsell\s*\?/],
     ['src/screens/settings/SettingsScreen.tsx', /isMember \? 'Saves' : 'Academy members: saves'/],
   ];
   for (const [f, re] of cases) assert.match(src(f), re, f);

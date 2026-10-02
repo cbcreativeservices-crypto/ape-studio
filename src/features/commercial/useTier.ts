@@ -8,10 +8,18 @@
  */
 import { useEntitlement } from './EntitlementProvider';
 import { useLabPreview } from '../lab/labPreviewStore';
-import { tierOf, type Tier } from './tier';
+import { tierOf, upsellAllowed, type Tier } from './tier';
 
 export function useTier(): Tier {
   const { entitlement, resolved } = useEntitlement();
   const preview = useLabPreview().active;
   return tierOf(entitlement, resolved, preview);
+}
+
+/** May this screen show "free" / membership / upgrade copy? Only once a read
+ *  has actually produced the tier (`tierKnown`) — a member whose read failed
+ *  is never marketed to (final round A, 2026-10-02). See `upsellAllowed`. */
+export function useUpsellAllowed(): boolean {
+  const { tierKnown } = useEntitlement();
+  return upsellAllowed(useTier(), tierKnown);
 }

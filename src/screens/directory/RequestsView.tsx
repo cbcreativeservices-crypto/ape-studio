@@ -80,7 +80,8 @@ const IncomingCard = memo(function IncomingCard({
   onAct: (t: ContactThread, action: ThreadAction) => void;
   onOpen: (t: ContactThread) => void;
   onReload: () => Promise<void>;
-  onError: (e: string) => void;
+  /** null clears the banner (a Block / Report that went through). */
+  onError: (e: string | null) => void;
   /** An accept/decline/withdraw is in flight — see `act`. */
   acting: boolean;
 }) {
@@ -119,7 +120,8 @@ function ThreadModeration({
 }: {
   t: ContactThread;
   onReload: () => Promise<void>;
-  onError: (e: string) => void;
+  /** null clears the banner (a Block / Report that went through). */
+  onError: (e: string | null) => void;
 }) {
   return (
     <View style={st.row}>
@@ -137,10 +139,14 @@ function ThreadModeration({
             // simply not true for the one party who can message you
             // without publishing anything. The request id identifies the
             // counterparty for every kind of thread.
+            // Success clears the banner (final round B, 2026-10-02): an old
+            // ACCEPT / DECLINE error stayed up over a block that went through.
             () =>
-              void blockThread(t.id, true).then((r) =>
-                r.ok ? onReload() : onError(r.error),
-              ),
+              void blockThread(t.id, true).then((r) => {
+                if (!r.ok) return onError(r.error);
+                onError(null);
+                return onReload();
+              }),
           )
         }
         hitSlop={6}
@@ -168,7 +174,8 @@ const OutgoingCard = memo(function OutgoingCard({
   onAct: (t: ContactThread, action: ThreadAction) => void;
   onOpen: (t: ContactThread) => void;
   onReload: () => Promise<void>;
-  onError: (e: string) => void;
+  /** null clears the banner (a Block / Report that went through). */
+  onError: (e: string | null) => void;
   acting: boolean;
 }) {
   return (
@@ -389,7 +396,8 @@ function ReportLink({
 }: {
   thread: ContactThread;
   onDone: () => Promise<void>;
-  onError: (e: string) => void;
+  /** null clears the banner (a Block / Report that went through). */
+  onError: (e: string | null) => void;
 }) {
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
@@ -465,6 +473,9 @@ function ReportLink({
                 }).then(async (r) => {
                   setOpen(false);
                   if (!r.ok) return onError(r.error);
+                  // The report went through: an older error banner no longer
+                  // applies (a refused block below sets its own).
+                  onError(null);
                   setDetail('');
                   // Thread-scoped, so this works against an employer too.
                   // `blocked` is what the SERVER did (evening hunt 3,

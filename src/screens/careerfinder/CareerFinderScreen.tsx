@@ -15,10 +15,10 @@ import { colors, fonts } from '../../theme/tokens';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { FAMILY_COUNT, familyById } from '../../features/careerfinder/families';
 import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
-import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderHydrated } from '../../features/careerfinder/store';
+import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderHydrated, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
 import { confirmDialog } from '../../lib/confirm';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useUpsellAllowed } from '../../features/commercial/useTier';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -45,9 +45,14 @@ export function confirmReset(onConfirm: () => void, message = 'Clears your answe
 export function CareerFinderScreen() {
   const navigation = useNavigation();
   // Members never see "free" marketing (owner 2026-09-29).
-  const { isMember } = useEntitlement();
+  // On the shared tier (final round A, 2026-10-02): the plain copy until a
+  // read has actually produced the tier, so a member whose read failed is
+  // never marketed to.
+  const upsell = useUpsellAllowed();
   const rec = useCareerFinder();
   const hydrated = useCareerFinderHydrated();
+  // "saved on this phone" only when it is (final round A, 2026-10-02).
+  const saving = useCareerFinderSaving();
   const answered = answeredCount(rec);
   const inProgress = answered > 0 && !rec.completed;
   // The question CONTINUE actually opens — the quiz's own resume rule. The
@@ -65,7 +70,7 @@ export function CareerFinderScreen() {
   const changeAnswers = () => { setQuestionIndex(0); navigation.navigate('CareerFinderQuiz'); };
 
   return (
-    <FinderShell kicker={isMember ? 'AUDIO CAREER FINDER' : 'AUDIO CAREER FINDER · FREE · NO ACCOUNT'} title="Audio Career Finder" onBack={() => safeGoBack(navigation)} backLabel="Leave the Career Finder" headerRight={<BetaPill />}>
+    <FinderShell kicker={upsell ? 'AUDIO CAREER FINDER · FREE · NO ACCOUNT' : 'AUDIO CAREER FINDER'} title="Audio Career Finder" onBack={() => safeGoBack(navigation)} backLabel="Leave the Career Finder" headerRight={<BetaPill />}>
       <View style={styles.hero} accessible accessibilityRole="text" accessibilityLabel={`${fmt(CAREER_COUNT)} job titles, ${FAMILY_COUNT} career families, ${QUESTION_COUNT} questions, about five minutes`}>
         {[
           { v: fmt(CAREER_COUNT), l: 'TITLES', c: colors.amber },
@@ -91,12 +96,12 @@ export function CareerFinderScreen() {
       ) : inProgress ? (
         <View style={styles.actions}>
           <CtaButton label={`CONTINUE · QUESTION ${Math.min(QUESTION_COUNT, resumeAt + 1)} OF ${QUESTION_COUNT}`} tone="green" onPress={start} a11y={`Continue at question ${resumeAt + 1} of ${QUESTION_COUNT}`} />
-          <Text style={styles.note}>{answered} of {QUESTION_COUNT} answered · saved on this phone{allAnswered(rec) ? ' · all answered' : ''}</Text>
+          <Text style={styles.note}>{answered} of {QUESTION_COUNT} answered · {saving ? 'saved on this phone' : 'not saved on this phone'}{allAnswered(rec) ? ' · all answered' : ''}</Text>
         </View>
       ) : (
         <View style={styles.actions}>
           <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={`Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.`} />
-          <Text style={styles.note}>{isMember ? 'Your answers stay on this phone.' : FINDER_INTRO.trust}</Text>
+          <Text style={styles.note}>{upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.'}</Text>
         </View>
       )}
 

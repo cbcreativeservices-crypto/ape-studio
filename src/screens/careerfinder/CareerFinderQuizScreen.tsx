@@ -23,7 +23,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { hapticsEnabled } from '../../features/settings/store';
 import { ANSWERS, QUESTIONS, QUESTION_COUNT, type Response } from '../../features/careerfinder/questions';
-import { allAnswered, answerQuestion, completeCareerFinder, firstUnansweredIndex, setQuestionIndex, useCareerFinder, useCareerFinderHydrated } from '../../features/careerfinder/store';
+import { allAnswered, answerQuestion, completeCareerFinder, firstUnansweredIndex, setQuestionIndex, useCareerFinder, useCareerFinderHydrated, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { FinderShell, NavButton, ProgressBar } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
 
@@ -35,6 +35,9 @@ export function CareerFinderQuizScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const rec = useCareerFinder();
   const hydrated = useCareerFinderHydrated();
+  // The back label promises a save only when one happens (final round A,
+  // 2026-10-02): an unreadable record is never written over.
+  const saving = useCareerFinderSaving();
   const scrollRef = useRef<ScrollView>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fade = useRef(new Animated.Value(1)).current;
@@ -128,7 +131,7 @@ export function CareerFinderQuizScreen() {
       kicker="CAREER DISCOVERY LAB"
       title={`Question ${index + 1} of ${QUESTION_COUNT}`}
       onBack={() => safeGoBack(navigation)}
-      backLabel="Leave the questions. Your answers are saved."
+      backLabel={saving ? 'Leave the questions. Your answers are saved.' : 'Leave the questions. Your answers could not be saved on this phone.'}
       scrollRef={scrollRef}
       footer={
         <>

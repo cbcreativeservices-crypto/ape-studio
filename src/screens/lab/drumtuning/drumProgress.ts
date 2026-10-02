@@ -59,6 +59,15 @@ export function setDrumSaveBlocked(blocked: boolean): void {
 
 const empty = (): DrumProgressState => ({ modules: {}, notes: [] });
 
+/** States read while storage itself FAILED (the masteringProgress rule): an
+ *  empty fallback, never the learner's progress. */
+const unreadable = new WeakSet<DrumProgressState>();
+/** The read behind this state FAILED (storage threw): it is an empty
+ *  fallback, not the learner's progress (masteringReadFailed). */
+export function drumReadFailed(s: DrumProgressState): boolean {
+  return unreadable.has(s);
+}
+
 export async function loadDrumProgress(): Promise<DrumProgressState> {
   return (await readStore()).state;
 }
@@ -76,7 +85,9 @@ async function readStore(force = false): Promise<{ state: DrumProgressState; ok:
   try {
     raw = await AsyncStorage.getItem(KEY);
   } catch {
-    return { state: empty(), ok: false };
+    const s = empty();
+    unreadable.add(s);
+    return { state: s, ok: false };
   }
   if (!raw) return { state: empty(), ok: true };
   try {

@@ -182,7 +182,9 @@ function MembraneStudio() {
         setView(s.view as MembraneViewMode);
         setDriverId(s.driverId as DriverId);
         setReopened(p.name);
-      });
+      })
+      // An unreadable list now REJECTS (getPattern): nothing to reopen.
+      .catch(() => undefined);
     return () => {
       alive = false;
     };

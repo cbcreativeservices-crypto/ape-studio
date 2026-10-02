@@ -35,7 +35,7 @@ import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientati
 import { resetAskModes } from '../../features/permissions/permissionStore';
 import { hasCrowdsourceConsent, setCrowdsourceConsent } from '../../features/tools/measure/deviceProfile';
 import { sendFeedback } from '../../lib/feedback';
-import { redeemAccessCode } from '../../features/commercial/accessCode';
+import { REDEEM_GRANTED_NOT_REFRESHED, redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { supabase } from '../../lib/supabase';
 import { softDeadline, withDeadline } from '../../lib/boundedCall';
@@ -153,10 +153,14 @@ export function SettingsScreen({ navigation }: Props) {
     setRedeemBusy(true);
     try {
       const res = await redeemAccessCode(code);
-      if (res.ok) await refreshEntitlement();
+      // Ask for the TIER, as the Paywall does (final round A, 2026-10-02): a
+      // refresh that failed (false) or has not caught up still said "your
+      // Academy access is active" over a locked app.
+      const tier = res.ok ? await refreshEntitlement() : false;
       setRedeemOpen(false);
       setRedeemCode('');
-      notify(res.ok ? 'Code applied' : 'Code not applied', res.message);
+      const lagging = res.status === 'granted' && tier !== 'academy';
+      notify(res.ok ? 'Code applied' : 'Code not applied', lagging ? REDEEM_GRANTED_NOT_REFRESHED : res.message);
     } finally {
       redeemBusyRef.current = false;
       setRedeemBusy(false);

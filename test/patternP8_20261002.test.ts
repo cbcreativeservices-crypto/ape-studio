@@ -71,7 +71,9 @@ describe('the four questions', () => {
     assert.deepEqual(all.filter(isGuestTier), ['preview', 'guest']);
   });
   it('upsellAllowed: never to a member, never before the tier is known', () => {
-    assert.deepEqual(all.filter(upsellAllowed), ['preview', 'guest', 'free']);
+    assert.deepEqual(all.filter((t) => upsellAllowed(t, true)), ['preview', 'guest', 'free']);
+    // Final round A (2026-10-02): a read that never produced a tier allows none.
+    assert.deepEqual(all.filter((t) => upsellAllowed(t, false)), []);
   });
   it('every tier answers exactly one of persist / hold / drop', () => {
     for (const t of all) {

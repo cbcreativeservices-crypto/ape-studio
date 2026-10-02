@@ -1324,7 +1324,7 @@ export function CourseSelectionScreen() {
     requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: activeIdx, animated: false }));
   }, [windowW, activeIdx]);
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
-  const { commercialMode, entitlement, caps, resolved, isMember, setCommercialMode, setEntitlement } = useEntitlement();
+  const { commercialMode, entitlement, caps, resolved, isMember, setCommercialMode, setEntitlement, tierKnown } = useEntitlement();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   // Top-left "About" text button → the About popup (owner 2026-08-12).
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -2075,8 +2075,10 @@ export function CourseSelectionScreen() {
           overlay is currently commented out there, so "Our Commitment to You"
           is the first overlay anyone sees and carries its own greeting line. Paid (academy) users see it
           once ever; everyone else once per app session — resets each launch
-          (owner 2026-08-01). */}
-      <ScreenIntroOverlay introKey="commitment" delayMs={8000} sessionOnly={entitlement !== 'academy'} />
+          (owner 2026-08-01). HELD until the tier is known (final round A,
+          2026-10-02): `sessionOnly` read the boot 'anonymous', so a member who
+          had dismissed it for good saw it again at every sign-in. */}
+      <ScreenIntroOverlay introKey="commitment" delayMs={8000} sessionOnly={entitlement !== 'academy'} hold={!tierKnown} />
     </View>
   );
 }

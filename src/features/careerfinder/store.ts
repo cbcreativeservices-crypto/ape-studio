@@ -139,6 +139,22 @@ function act(fn: () => Promise<boolean> | void): Promise<boolean> {
   return hydrateCareerFinder().then(() => (g === generation && hydrated ? result(fn()) : false));
 }
 
+/**
+ * DAMAGED JSON IS SET ASIDE, NOT LOST (final round A, 2026-10-02 — the
+ * createLocalStore rule). JSON.parse threw inside the read's success handler,
+ * the .catch swallowed it with `readFailed` still false, and the next answer
+ * silently replaced the blob. Now the blob is copied to `<key>:damaged` and
+ * the store starts EMPTY (`clean(null)`) with writes allowed.
+ */
+function parseOrSetAside(raw: string): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    AsyncStorage.setItem(`${KEY}:damaged`, raw).catch(() => {});
+    return null;
+  }
+}
+
 /** Load once. Actions wait for it (see `act`). */
 export function hydrateCareerFinder(): Promise<void> {
   if (hydrated) return Promise.resolve();
@@ -153,8 +169,7 @@ export function hydrateCareerFinder(): Promise<void> {
     .then(
       (raw) => {
         if (g === generation) readFailed = false;
-        // Damaged JSON → EMPTY; the next write repairs it.
-        if (g === generation && !wrote && raw) state = clean(JSON.parse(raw));
+        if (g === generation && !wrote && raw) state = clean(parseOrSetAside(raw));
       },
       () => {
         if (g === generation) readFailed = true; // unreadable, not empty — see `readFailed`
@@ -171,6 +186,11 @@ export function hydrateCareerFinder(): Promise<void> {
 
 export const getCareerFinder = (): FinderRecord => state;
 export const isCareerFinderHydrated = (): boolean => hydrated;
+/** False while the stored record could not be READ — nothing this session
+ *  is written then (see `readFailed`), so "Your answers are saved" would be
+ *  untrue (final round A, 2026-10-02). True before the read lands: answers
+ *  then wait for it and are written on top of it (see `act`). */
+export const isCareerFinderSaving = (): boolean => !readFailed;
 
 export function useCareerFinder(): FinderRecord {
   return useSyncExternalStore(
@@ -184,6 +204,13 @@ export function useCareerFinderHydrated(): boolean {
     (l) => { listeners.add(l); void hydrateCareerFinder(); return () => { listeners.delete(l); }; },
     isCareerFinderHydrated,
     isCareerFinderHydrated,
+  );
+}
+export function useCareerFinderSaving(): boolean {
+  return useSyncExternalStore(
+    (l) => { listeners.add(l); void hydrateCareerFinder(); return () => { listeners.delete(l); }; },
+    isCareerFinderSaving,
+    isCareerFinderSaving,
   );
 }
 

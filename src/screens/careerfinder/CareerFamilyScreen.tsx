@@ -22,7 +22,7 @@ import { isFreeEnrollGs, toggleTopic, useEnrollment } from '../../features/enrol
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { notify } from '../../lib/confirm';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useUpsellAllowed } from '../../features/commercial/useTier';
 import { computeResult, explainFamily } from '../../features/careerfinder/scoring';
 import { CAREER_INDEX_VERSION, CENTRALITY, careersInFamily, centralitySplit, entryPoints, familyFieldOf, familyView, type Career } from '../../features/careerfinder/careerIndex';
 import { answeredCount, toggleSavedFamily, useCareerFinder } from '../../features/careerfinder/store';
@@ -38,7 +38,8 @@ const ROW_REPEAT_MS = 700;
 
 export function CareerFamilyScreen() {
   // Members never see "free" / membership marketing (owner 2026-09-29).
-  const { isMember } = useEntitlement();
+  // Free/member copy on the shared tier (final round A, 2026-10-02).
+  const upsell = useUpsellAllowed();
   const navigation = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, 'CareerFamily'>>();
   const fam = familyView(params.id);
@@ -193,8 +194,8 @@ export function CareerFamilyScreen() {
                 a line promising some. Adding to the study list IS free and does
                 work for everyone, which is what the sentence now says and all it
                 says. */}
-            <Body muted>{isMember
-              ? 'These Academy topics lead into this family. Tap one to add it to your study list.'
+            <Body muted>{!upsell
+              ?'These Academy topics lead into this family. Tap one to add it to your study list.'
               : 'These Academy topics lead into this family. Tap one to add it to your study list — adding is free, and studying a topic needs Academy membership unless it is marked free.'}</Body>
             <Text style={styles.startHere}>START HERE</Text>
             {topicsToShow.map((gs) => {

@@ -156,7 +156,18 @@ const KEEP: ReadonlySet<string> = new Set<string>([
  * Settings → "Reset onboarding hints" is the intended way to replay them.
  */
 function isOnboardingFlag(k: string): boolean {
-  return k.startsWith('ape:intro:') || k.startsWith('ape:coach:') || k.endsWith('FsGuide');
+  return (
+    k.startsWith('ape:intro:') ||
+    k.startsWith('ape:coach:') ||
+    k.endsWith('FsGuide') ||
+    // The same device-level first-use family (final round A, 2026-10-02):
+    // the onboarding flow's "complete" / "visited" flags and the Home
+    // attract cues (the Explore ring). accountWipeRegistry exempts both
+    // modules as device-level, but the sweep took their keys, so every
+    // returning learner got onboarding and the Explore ring again.
+    k.startsWith('ape:onboarding:') ||
+    k === 'ape:homeAttract2'
+  );
 }
 
 /**

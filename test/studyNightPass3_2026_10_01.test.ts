@@ -22,8 +22,13 @@ describe('every plain Back is latched to one exit', () => {
   for (const [name, p] of screens) {
     it(name, () => {
       const src = read(...p);
-      assert.match(src, /const leavingRef = useRef\(false\);/);
-      assert.match(src, /if \(leavingRef\.current\) return;\s*leavingRef\.current = true;/);
+      // The achievements screens rely on safeGoBack alone (final round B,
+      // 2026-10-02: a one-way latch on top left ‹ dead if a leave failed);
+      // see finalRoundB_20261002.test.ts.
+      if (!name.startsWith('achievements/')) {
+        assert.match(src, /const leavingRef = useRef\(false\);/);
+        assert.match(src, /if \(leavingRef\.current\) return;\s*leavingRef\.current = true;/);
+      }
       // No raw goBack left on a button: the only goBack is inside the latch.
       assert.doesNotMatch(src, /onPress=\{\(\) => (?:\(?navigation(?: as any\))?\)?\.goBack\(\)|safeGoBack\(navigation(?: as any)?\))\}/);
       assert.match(src, /onPress=\{leave\}/);

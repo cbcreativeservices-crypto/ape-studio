@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
 import { READING_MAX_W, readingColumn } from '../../theme/readingColumn';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useUpsellAllowed } from '../../features/commercial/useTier';
 
 /** Free-tier lines a MEMBER never sees (owner 2026-09-29: no membership
  *  marketing, and no pointing out what is free, to people who already pay). */
@@ -85,7 +85,9 @@ const PATHWAYS: string[] = [
 ];
 
 export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const { isMember } = useEntitlement();
+  // Free-tier lines on the shared tier (final round A, 2026-10-02): hidden
+  // until a read has actually produced the tier.
+  const upsell = useUpsellAllowed();
   const insets = useSafeAreaInsets();
   return (
     <Modal accessibilityViewIsModal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
@@ -120,7 +122,7 @@ export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose
             {SECTIONS.map((s) => (
               <View key={s.head} style={styles.section}>
                 <Text style={styles.eyebrow}>{s.head}</Text>
-                {s.paras.filter((p) => !(isMember && FREE_TIER_LINES.has(p))).map((p, i) => (
+                {s.paras.filter((p) => !(!upsell && FREE_TIER_LINES.has(p))).map((p, i) => (
                   <Text key={i} style={styles.body}>
                     {p}
                   </Text>

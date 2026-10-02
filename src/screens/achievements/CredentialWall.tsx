@@ -66,10 +66,10 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   const guest = resolved && entitlement === 'anonymous';
   // ONE EXIT for ‹ (night bug pass 3, 2026-10-01): a double tap's second
   // goBack() from the popped route bubbled up and switched to the Home tab.
-  const leavingRef = useRef(false);
+  // safeGoBack alone guards it (focus check + its time window); the old
+  // one-way latch on top left ‹ dead for good if a leave ever did not go
+  // through (final round B, 2026-10-02).
   const leave = useCallback(() => {
-    if (leavingRef.current) return;
-    leavingRef.current = true;
     safeGoBack(navigation);
   }, [navigation]);
   const [rows, setRows] = useState<EarnedCredentialRow[] | null>(null);

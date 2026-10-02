@@ -160,7 +160,17 @@ export function GalleryScreen() {
   const editLatest = (id: string, change: (row: SavedPattern) => SavedPattern | null) => {
     editChain.current = editChain.current
       .then(async () => {
-        const row = await patternStore().getPattern(id);
+        // UNREADABLE is said; MISSING stays silent (final round B,
+        // 2026-10-02): getPattern rejects when the list cannot be read, so a
+        // rename or notes edit is no longer dropped without a word. A missing
+        // row can legitimately mean it was deleted.
+        let row: SavedPattern | null;
+        try {
+          row = await patternStore().getPattern(id);
+        } catch {
+          notify('Not saved', 'The change could not be saved: your saved patterns could not be read on this device. Try again.');
+          return;
+        }
         const next = row ? change(row) : null;
         // A write the device refused is said, never silent (full-app run 2,
         // 2026-10-01): the name and notes fields are uncontrolled, so they

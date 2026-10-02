@@ -1011,6 +1011,9 @@ export function MultiMeterScreen({ navigation }: Props) {
   const confirmSnapshot = useCallback(() => {
     // Academy-only save (owner ruling 2026-09-01): a locked user gets the
     // membership route, never a ✓ for a record they cannot open.
+    // Tier still being checked (final round A, 2026-10-02): the button reads
+    // CHECKING… and the sheet stays open with the draft — no lock, no loss.
+    if (saveGate.checking) return;
     if (saveGate.locked) {
       // Close the sheet FIRST (bug hunt 2026-09-29): the membership dialog is
       // its own Modal, and opened over this sheet's Modal it renders behind it

@@ -17,6 +17,20 @@ const dbSum = (levels: number[]) =>
 const allowMin = (L: number, Lc: number, ER: number, TcH = 8) =>
   TcH * 60 * Math.pow(2, -(L - Lc) / ER);
 
+/** OSHA 29 CFR 1910.95 dose thresholds: the PEL dose (Table G-16 / G-16a)
+ *  counts only sound at 90 dBA or more; the hearing-conservation
+ *  action-level dose (Appendix A) counts sound at 80 dBA or more. */
+export const OSHA_PEL_THRESHOLD = 90;
+export const OSHA_ACTION_THRESHOLD = 80;
+/** OSHA daily dose in percent (90 dBA criterion, 5 dB exchange, 8 h), counting
+ *  only the paired intervals at or above `threshold` dBA. */
+export function oshaDose(levels: readonly number[], mins: readonly number[], threshold: number): number {
+  const m = Math.min(levels.length, mins.length);
+  let dose = 0;
+  for (let i = 0; i < m; i++) if (levels[i]! >= threshold) dose += (mins[i]! / allowMin(levels[i]!, 90, 5)) * 100;
+  return dose;
+}
+
 const V_REF_DBU = 0.775; // 0 dBu reference voltage (600 Ω / 1 mW legacy)
 
 // ---------------------------------------------------------------------------
@@ -522,21 +536,21 @@ const WS_DOSE: Workspace = {
     },
     {
       key: 'doseOsha',
-      name: 'Daily dose from intervals — OSHA-style (90 dBA, 5 dB exchange)',
+      name: 'Daily dose from intervals — OSHA (90 dBA PEL · 80 dBA action level, 5 dB exchange)',
       inputs: ['doseLevels', 'doseMins'],
-      formula: 'dose% = Σ (tᵢ / Tᵢ) × 100; Tᵢ = 480 / 2^((Lᵢ−90)/5)',
+      formula: 'dose% = Σ (tᵢ / Tᵢ) × 100 over Lᵢ ≥ threshold; Tᵢ = 480 / 2^((Lᵢ−90)/5); PEL threshold 90 dBA, action-level threshold 80 dBA',
       plainFormula:
-        'The daily dose in percent is the sum over intervals of each duration divided by its allowable time, times 100; each allowable time is 480 divided by two raised to the interval level minus 90, over five.',
+        'The daily dose in percent is the sum, over the intervals at or above the threshold, of each duration divided by its allowable time, times 100; each allowable time is 480 divided by two raised to the interval level minus 90, over five. The permissible-limit dose counts only intervals at 90 dBA or more; the action-level dose counts every interval at 80 dBA or more.',
       explain:
-        'The same day scored under the OSHA criterion (90 dBA, 5 dB exchange). Comparing it with the NIOSH result shows how much the criterion choice changes the answer — the same intervals can read safe under one and over-exposed under the other.',
+        'The same day scored under OSHA 29 CFR 1910.95 (90 dBA criterion, 5 dB exchange). OSHA scores it TWICE with different floors: the permissible exposure limit (PEL, Table G-16) counts only sound at 90 dBA or more, and the hearing-conservation action level (Appendix A) counts everything from 80 dBA up. 100% PEL dose is the legal limit; 50% action-level dose (an 85 dBA 8-hour average) is where a hearing conservation program is required. Comparing with the NIOSH result shows how much the criterion choice changes the answer.',
       keySymbols: ['Σ', '/', '×', 'x²', '−', 'x₁'],
-      note: 'Same intervals, different criterion — compare with the 85/3 result to see how much the criterion choice matters.',
+      note: 'Thresholds: the PEL dose leaves out intervals below 90 dBA; the action-level dose leaves out intervals below 80 dBA. 90 dBA for 8 h = 100% on both; 85 dBA for 8 h = 0% PEL, 50% action level.',
       compute: (v) => {
         const ls = arr(v.doseLevels);
         const ts = arr(v.doseMins);
         const m = Math.min(ls.length, ts.length);
-        let dose = 0;
-        for (let i = 0; i < m; i++) dose += (ts[i]! / allowMin(ls[i]!, 90, 5)) * 100;
+        const pel = oshaDose(ls, ts, OSHA_PEL_THRESHOLD);
+        const action = oshaDose(ls, ts, OSHA_ACTION_THRESHOLD);
         return [
           ...(ls.length !== ts.length
             ? [
@@ -546,13 +560,18 @@ const WS_DOSE: Workspace = {
                 },
               ]
             : []),
-          { label: 'DAILY DOSE (90 dBA / 5 dB)', value: dose, quantity: 'percent', chainable: false },
+          { label: 'PEL DOSE (≥ 90 dBA / 5 dB)', value: pel, quantity: 'percent', chainable: false },
+          { label: 'ACTION-LEVEL DOSE (≥ 80 dBA / 5 dB)', value: action, quantity: 'percent', chainable: false },
           {
             label: 'READING',
             text:
-              dose > 100
-                ? `${fmt(dose)}% — this day exceeds the full allowance under the 90 dBA / 5 dB criterion.`
-                : `${fmt(dose)}% of the daily allowance under the 90 dBA / 5 dB criterion is used.`,
+              (pel > 100
+                ? `PEL dose ${fmt(pel)}% — this day exceeds the OSHA permissible exposure limit (sound at 90 dBA or more counted).`
+                : `PEL dose ${fmt(pel)}% of the OSHA permissible exposure limit is used (sound at 90 dBA or more counted).`) +
+              ' ' +
+              (action >= 50
+                ? `Action-level dose ${fmt(action)}% — at or above 50%, the hearing-conservation action level (sound at 80 dBA or more counted).`
+                : `Action-level dose ${fmt(action)}% — below the 50% hearing-conservation action level (sound at 80 dBA or more counted).`),
           },
         ];
       },
@@ -561,15 +580,21 @@ const WS_DOSE: Workspace = {
         const ts = arr(v.doseMins);
         const m = Math.min(ls.length, ts.length);
         const parts: string[] = [];
-        let dose = 0;
         for (let i = 0; i < m; i++) {
           const T = allowMin(ls[i]!, 90, 5);
-          dose += (ts[i]! / T) * 100;
-          parts.push(`${fmt(ts[i]!)} min at ${fmt(ls[i]!)} dBA (allowed ${fmt(T)} min) → ${fmt((ts[i]! / T) * 100)}%`);
+          const share = (ts[i]! / T) * 100;
+          parts.push(
+            ls[i]! < OSHA_ACTION_THRESHOLD
+              ? `${fmt(ts[i]!)} min at ${fmt(ls[i]!)} dBA → below 80 dBA, not counted in either dose`
+              : ls[i]! < OSHA_PEL_THRESHOLD
+                ? `${fmt(ts[i]!)} min at ${fmt(ls[i]!)} dBA (allowed ${fmt(T)} min) → ${fmt(share)}% action level only (below 90 dBA, not counted in the PEL dose)`
+                : `${fmt(ts[i]!)} min at ${fmt(ls[i]!)} dBA (allowed ${fmt(T)} min) → ${fmt(share)}% in both doses`,
+          );
         }
         return [
           `Each interval spends a share of the allowance: ${parts.join('; ')}.`,
-          `Total dose = ${fmt(dose)}% under the 90 dBA criterion, 5 dB exchange, 8 h reference.`,
+          `PEL dose = ${fmt(oshaDose(ls, ts, OSHA_PEL_THRESHOLD))}% (intervals at 90 dBA or more), 90 dBA criterion, 5 dB exchange, 8 h reference.`,
+          `Action-level dose = ${fmt(oshaDose(ls, ts, OSHA_ACTION_THRESHOLD))}% (intervals at 80 dBA or more), same criterion.`,
         ];
       },
       table: (v) => {
@@ -579,11 +604,19 @@ const WS_DOSE: Workspace = {
         const rows: string[][] = [];
         for (let i = 0; i < m; i++) {
           const T = allowMin(ls[i]!, 90, 5);
-          rows.push([`#${i + 1}`, `${fmt(ls[i]!)} dBA`, `${fmt(ts[i]!)} min`, `${fmt(T)} min`, `${fmt((ts[i]! / T) * 100)}%`]);
+          const share = `${fmt((ts[i]! / T) * 100)}%`;
+          rows.push([
+            `#${i + 1}`,
+            `${fmt(ls[i]!)} dBA`,
+            `${fmt(ts[i]!)} min`,
+            `${fmt(T)} min`,
+            ls[i]! >= OSHA_PEL_THRESHOLD ? share : 'not counted',
+            ls[i]! >= OSHA_ACTION_THRESHOLD ? share : 'not counted',
+          ]);
         }
         return {
           title: 'Intervals under the 90 dBA / 5 dB criterion',
-          cols: ['Interval', 'Level', 'Duration', 'Allowable', 'Dose share'],
+          cols: ['Interval', 'Level', 'Duration', 'Allowable', 'PEL share (≥ 90)', 'Action share (≥ 80)'],
           rows,
         };
       },

@@ -146,7 +146,8 @@ describe('drum toddler pass 1 — the screen and the chapters', () => {
 
   it('a slow tier / a sign-in mid-lab re-reads the store once it unblocks, merging (credit only grows) and keeping the session notes', () => {
     const host = strip(read(`${DIR}/DrumTuningLabScreen.tsx`));
-    assert.match(host, /\}, \[resolved, loaded, blocked\]\);/);
+    // Final round B (2026-10-02): `readRetry` joins the deps (the Mastering failed-read retry).
+    assert.match(host, /\}, \[resolved, loaded, blocked, readRetry\]\);/);
     assert.match(host, /setDoneIds\(\(prev\) => new Set\(\[\.\.\.\(reread \? prev : \[\]\)/);
     // Pass 3 correction: the re-save goes through keepSessionNotes (a refused write is never listed as stored).
     assert.match(host, /const kept = await keepSessionNotes\(s\.notes, notesRef\.current\);/);

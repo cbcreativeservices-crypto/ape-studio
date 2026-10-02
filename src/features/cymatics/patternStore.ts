@@ -210,6 +210,9 @@ export function blankArtwork(patternId: string, N: number): Artwork {
 // ── the store ────────────────────────────────────────────────────────────────
 export type PatternStore = {
   loadPatterns(): Promise<SavedPattern[]>;
+  /** `null` = no such pattern (it may have been deleted). REJECTS when the
+   *  list cannot be read (final round B, 2026-10-02): the two used to read
+   *  the same, so an edit whose read failed was dropped without a word. */
   getPattern(id: string): Promise<SavedPattern | null>;
   /** Insert or replace by id. Returns false when the write failed. */
   upsertPattern(p: SavedPattern): Promise<boolean>;
@@ -300,7 +303,9 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
   return {
     loadPatterns: patterns,
     async getPattern(id) {
-      return (await patterns()).find((p) => p.id === id) ?? null;
+      const list = await patternsRW();
+      if (!list) throw new Error('patterns unreadable');
+      return list.find((p) => p.id === id) ?? null;
     },
     upsertPattern: (p) => serial(async () => {
       const list = await patternsRW();

@@ -202,7 +202,9 @@ function PlateStudio() {
         setSandSize(s.sandSize);
         setFriction(s.friction);
         setReopened(p.name);
-      });
+      })
+      // An unreadable list now REJECTS (getPattern): nothing to reopen.
+      .catch(() => undefined);
     return () => {
       alive = false;
     };

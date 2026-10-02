@@ -14,6 +14,7 @@
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { openMembershipGate } from '../../features/commercial/MembershipGate';
+import { tierOf } from '../../features/commercial/tier';
 import { colors, fonts } from '../../theme/tokens';
 
 export const MEMBERSHIP_REQUIRED = 'Academy membership required';
@@ -41,17 +42,37 @@ export function useToolsLocked(): boolean {
  *
  *  `label('SAVE LOG')` prefixes the lock when locked; `prompt()` opens the
  *  standard membership dialog; `locked` drives the greyed style. */
-export function useSaveGate(): { locked: boolean; label: (base: string) => string; prompt: () => void } {
-  const locked = useToolsLocked();
+export function useSaveGate(): { locked: boolean; checking: boolean; label: (base: string) => string; prompt: () => void } {
+  const { isMember, resolved, tierKnown, entitlement } = useEntitlement();
+  /**
+   * SAVE WAITS FOR THE TIER (final round A, 2026-10-02). This was
+   * useToolsLocked() — `resolved && !isMember` — which is UNLOCKED before the
+   * first read lands, so a free user's SAVE in that window wrote a record they
+   * can never open. And a member whose read FAILED (no remembered tier) read
+   * 'anonymous' and got the 🔒 and the membership gate.
+   *
+   * Known = a read produced the tier this session, or the provider restored
+   * this account's last server-confirmed tier. Until then a non-member's SAVE
+   * reads "CHECKING…" and does nothing (`locked` is true so every call site's
+   * existing `if (saveGate.locked)` branch stops the save; `prompt` is a no-op
+   * while checking). A remembered member saves straight away, as before.
+   */
+  const tier = tierOf(entitlement, resolved);
+  const known = tierKnown || tier === 'free' || tier === 'member';
+  const checking = !isMember && !known;
+  const locked = !isMember; // includes `checking`
   return {
     locked,
-    label: (base: string) => (locked ? `🔒 ${base}` : base),
+    checking,
+    label: (base: string) => (checking ? 'CHECKING…' : locked ? `🔒 ${base}` : base),
     // App-themed popup, not the native Alert (owner 2026-09-10) — one styled
     // MembershipGateHost at the App root serves every gate.
-    prompt: () =>
+    prompt: () => {
+      if (checking) return;
       openMembershipGate({
         body: 'Saved measurements live in your Academy library — membership keeps them, with their settings, calibration status and notes.',
-      }),
+      });
+    },
   };
 }
 

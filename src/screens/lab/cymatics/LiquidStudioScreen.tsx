@@ -251,7 +251,9 @@ function LiquidStudio() {
         setView(s.view as LiquidViewMode);
         setDualId(s.dualId);
         setReopened(p.name);
-      });
+      })
+      // An unreadable list now REJECTS (getPattern): nothing to reopen.
+      .catch(() => undefined);
     return () => {
       alive = false;
     };

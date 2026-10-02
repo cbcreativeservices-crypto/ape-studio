@@ -70,7 +70,15 @@ export function isGuestTier(tier: Tier): boolean {
 
 /** Membership / upgrade copy may be shown. Never to a member, and never
  *  before the tier is known (a member must not see upsell copy for a second
- *  at boot — owner rule, no marketing to members). */
-export function upsellAllowed(tier: Tier): boolean {
+ *  at boot — owner rule, no marketing to members).
+ *
+ *  `tierKnown` (the provider's "a read actually PRODUCED a tier"), not
+ *  `resolved` (final round A, 2026-10-02): `tierOf` is built on `resolved`,
+ *  so a signed-in member whose membership read FAILED reads 'guest' — right
+ *  for the labs' hold rule above, wrong for copy. Upsell copy waits until a
+ *  read has actually answered; while it has not, the plain member copy
+ *  shows. Use `useUpsellAllowed()` (./useTier.ts) in a screen. */
+export function upsellAllowed(tier: Tier, tierKnown: boolean): boolean {
+  if (!tierKnown) return false;
   return tier === 'guest' || tier === 'free' || tier === 'preview';
 }

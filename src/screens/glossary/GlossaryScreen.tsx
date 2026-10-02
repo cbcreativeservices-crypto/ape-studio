@@ -392,6 +392,24 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
   );
 }
 
+/** A term whose FULL definition could not be read for a share (final round B,
+ *  2026-10-02): never shared as a blank or a teaser. A multi-term resolve
+ *  rejects with it, and ShareTermSheet says the extra terms did not load. */
+type ShareDefinitionUnreadable = Error & { shareUnreadable: true; term: string; fault: string };
+function shareDefinitionUnreadable(term: string, fault: string): ShareDefinitionUnreadable {
+  return Object.assign(new Error(`definition unreadable: ${term}`), { shareUnreadable: true as const, term, fault });
+}
+const isShareDefinitionUnreadable = (x: unknown): x is ShareDefinitionUnreadable =>
+  !!x && typeof x === 'object' && (x as { shareUnreadable?: unknown }).shareUnreadable === true;
+function notifyShareUnreadable(err: ShareDefinitionUnreadable): void {
+  notify(
+    'Couldn’t share this term',
+    err.fault === 'limit-reached'
+      ? `This week’s definition lookups are used up, so the full definition of “${err.term}” can’t be loaded to share.`
+      : `The full definition of “${err.term}” couldn’t be loaded, so nothing was shared. Check your connection and try again.`,
+  );
+}
+
 /** Load the first image per term across the whole glossary_media table (paged).
  *  Sparse today (art not fully uploaded), so this is cheap; empty → no icons.
  *  Session-cached (owner 2026-08-10). */
@@ -2544,11 +2562,24 @@ ${COPY.glossaryFreeAllowance}`,
     async (id: string): Promise<GlossaryShareTerm | null> => {
       const e = entryByIdRef.current.get(id);
       if (!e) return null;
+      // THE FULL DEFINITION, never the row's copy (final round B, 2026-10-02):
+      // `e.definition` is '' for a term never drawn on screen and the
+      // 120-character teaser after a gateway fault, so the shared card
+      // silently dropped or cut the definition. Through the shared session
+      // cache (a term already read is not read again); one that cannot be
+      // read THROWS — the caller says so instead of sharing a short card.
+      const gen = readerGenRef.current;
+      const r = await readDefinitionOnce(id, isMemberRef.current);
+      if (gen !== readerGenRef.current) return null;
+      let definition: string | null = null;
+      if (r.state === 'ok') definition = r.row.definition?.trim() ? r.row.definition : null;
+      else if (r.fault === 'not-deployed') definition = e.definition.trim() ? e.definition : null; // legacy table: full text
+      if (definition == null) throw shareDefinitionUnreadable(e.term, r.state === 'fault' ? r.fault : 'error');
       const d = await getDetail(id);
       const purpose = [d?.purpose_function, d?.practical_application].filter(Boolean).join('\n\n') || null;
       return {
         term: e.term,
-        definition: e.definition,
+        definition,
         plainEnglish: d?.plain_english ?? e.plain_english ?? null,
         purpose,
         relatedTerms: d?.related_terms ?? [],
@@ -2588,7 +2619,13 @@ ${COPY.glossaryFreeAllowance}`,
       // opened ON TOP of the lock, offering the 120-character teaser as the
       // term's definition. openViaGateway answers false only for those two.
       if (serverMetersRef.current && !detailsRef.current[e.id] && !(await openViaGatewayRef.current(e.id))) return;
-      const primary = await buildShareTerm(e.id);
+      let primary: GlossaryShareTerm | null;
+      try {
+        primary = await buildShareTerm(e.id);
+      } catch (err) {
+        if (isShareDefinitionUnreadable(err)) notifyShareUnreadable(err);
+        return;
+      }
       if (!primary) return;
       const index = termIndexRef.current;
       const related: NamedTerm[] = index
