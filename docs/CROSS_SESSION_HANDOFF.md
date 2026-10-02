@@ -250,6 +250,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-01 17:10 · ccode · b41eea0d
+changed: Drum Tuning Lab: apply audio-expert (24) + cognitive (30) reviews — audible strike level, stroke-driven snare wires, honest head-relationship copy, caution card, listen-first Tune the head, listen→where→fix diagnosis, 9 pt, landing lines, visible tap/strike, ungameable credit, recall on review
+affects other side: nothing (client-only lab work)
+needs: nothing
+
+
+### 2026-10-01 17:10 · ccode · 454c0edb
+changed: Revert rack full-screen openStep / Room FIT opening: owner rule (2026-09-26) — full screen always opens at 1x, the whole drawing
+affects other side: nothing (client-only lab work)
+needs: nothing
+
+
 ### 2026-10-01 16:48 · ccode · 31ec5de5
 changed: Mastering + Room Design: standards pass (9 pt on short phones, tap-to-toggle, stop on step change, full screen on read figures, visible controls, end-screen jumps); rack full screen can open at FIT (Room plan)
 affects other side: nothing (client-only lab fixes)
