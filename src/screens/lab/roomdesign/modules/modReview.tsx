@@ -189,7 +189,7 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
           <Caption>
             {preview
               ? 'This lab is part of membership — designs made in a preview are not saved. You can keep working on this one.'
-              : 'You are not signed in, so designs are not saved. You can keep working on this one; sign in to save it.'}
+              : 'You are not signed in, so designs are not saved yet. Keep working on this one — a design you SAVE in EXPLORE is kept for this session, and signing in before you close the app saves it on this device.'}
           </Caption>
         ) : (
           <>

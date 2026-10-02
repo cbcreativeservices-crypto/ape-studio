@@ -62,7 +62,12 @@ export const SAVED_THEN_CHANGED = 'Saved earlier — the design has changed sinc
  *  "(this one)" row, and REVIEW still read "Saved … on this device." */
 export const SAVED_THEN_DELETED = 'That save was deleted from this device. The design is still on screen — SAVE again to keep it.';
 
-export type SaveResult = { ok: boolean; at: RoomDesign };
+/** `held`: a guest's save, kept for this app session and saved to the
+ *  account they sign in to before closing the app (owner ruling 2026-10-01). */
+export type SaveResult = { ok: boolean; at: RoomDesign; held?: boolean };
+
+/** A guest's SAVE that the session hand-off holds (owner ruling 2026-10-01). */
+export const SAVE_HELD = 'Kept for this session — you are not signed in yet. Sign in before you close the app and it is saved on this device.';
 
 /** The line to show for a kept save result, given the design on screen now
  *  and whether the library still holds it (`kept`). */

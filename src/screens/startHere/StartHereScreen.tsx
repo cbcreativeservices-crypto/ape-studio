@@ -33,7 +33,7 @@ import { AccuracyNote } from '../../components/AccuracyNote';
 import { colors, fonts } from '../../theme/tokens';
 import { readingColumn } from '../../theme/readingColumn';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
+import { heldPaged, holdPagedProgress, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { confirmDialog } from '../../lib/confirm';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -91,15 +91,32 @@ export function StartHereScreen() {
   // noAccountRef false, so a signed-out device restored the PREVIOUS
   // account's place and ticks. `resolved` flips once, bounded; ticks made
   // meanwhile are merged below.
+  // RE-READ WHEN THE ACCOUNT STATE CHANGES (owner ruling 2026-10-01). A
+  // guest who signs in now gets the stored copy plus what they did as a
+  // guest (held by the shared ledger, which also writes it); a learner who
+  // signs out starts empty, and the next person to sign in is never handed
+  // the ticks that were on screen (they are not held across a sign-out).
+  const noAccount = resolved && entitlement === 'anonymous';
   useEffect(() => {
     if (!resolved) return;
     let alive = true;
     void loadPagedProgress(START_HERE_ID).then((p) => {
       if (!alive) return;
+      const first = !loadedRef.current;
       loadedRef.current = true;
-      if (noAccountRef.current) return; // guests: nothing restored
-      // Merge anything done before the load landed (a fast first tap).
-      const completed = [...new Set([...p.completed, ...progressRef.current.completed])]
+      if (noAccountRef.current) {
+        // guests: nothing restored — and a signed-in copy on screen goes.
+        if (!first) {
+          const empty: PagedProgress = { completed: [], lastPage: 0, done: false };
+          progressRef.current = empty;
+          setProgress(empty);
+        }
+        return;
+      }
+      // Merge anything done before the load landed (a fast first tap) — or,
+      // on a re-read after signing in, what the guest session held.
+      const extra = first ? progressRef.current.completed : (heldPaged(START_HERE_ID)?.completed ?? []);
+      const completed = [...new Set([...p.completed, ...extra])]
         .filter((i) => i < PAGES.length)
         .sort((a, b) => a - b);
       const next = { ...p, completed, done: completed.length >= PAGES.length };
@@ -110,12 +127,21 @@ export function StartHereScreen() {
     return () => {
       alive = false;
     };
-  }, [resolved]);
+  }, [resolved, noAccount]);
 
   const persist = useCallback((next: PagedProgress) => {
+    const base = progressRef.current;
     progressRef.current = next;
     setProgress(next);
     if (!noAccountRef.current && loadedRef.current) void savePagedProgress(START_HERE_ID, next);
+    // A guest's ticks and place are HELD (as deltas) for the sign-in hand-off
+    // (owner ruling 2026-10-01; features/lab/sessionCarry): signing in later
+    // in this app session writes them to the account.
+    else if (noAccountRef.current) {
+      for (const i of next.completed) if (!base.completed.includes(i)) holdPagedProgress(START_HERE_ID, { done: i });
+      if (next.lastPage !== base.lastPage) holdPagedProgress(START_HERE_ID, { lastPage: next.lastPage });
+      if (next.done && !base.done) holdPagedProgress(START_HERE_ID, { labDone: true });
+    }
   }, []);
 
   // ── the one tone voice ───────────────────────────────────────────────────

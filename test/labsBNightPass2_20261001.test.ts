@@ -104,7 +104,9 @@ test('room design: save wording stays neutral until the tier is known', () => {
   assert.match(e, /const known = resolved;/);
   // Night pass 3 split the resolved branch into guest / preview wording.
   assert.match(e, /: !known\s*\? 'Not saved yet — still checking your account/);
-  assert.match(e, /'Kept for this session only — you are not signed in, so designs are not saved\.'/);
+  // Owner ruling 2026-10-01: a signed-out guest's SAVE is held for the
+  // sign-in hand-off (SAVE_HELD); when it could not be held, it says so.
+  assert.match(e, /\? held\s*\? SAVE_HELD\s*: 'Kept on screen only — you are not signed in, so this design is not saved\.'/);
 });
 
 test('room design: a duplicate ADD selects the item already there', () => {

@@ -27,6 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from '../study/sync';
 import { getLabPreview } from './labPreviewStore';
+import { holdSessionWork, registerSessionCarry } from './sessionCarry';
 import { WAVE_MODULES } from '../../screens/lab/wave/modules/registry';
 import { DIGITAL_MODULES } from '../../screens/lab/digital/modules/registry';
 import { METER_MODULES } from '../../screens/lab/meter/modules/registry';
@@ -306,7 +307,36 @@ export function markLabUnit(labKey: LabKey, unitId: string): void {
   // is a synchronous read and is only ever active for a non-member previewing
   // a locked lab, so members and free users in FREE labs are untouched.
   if (getLabPreview().active) return;
-  void hydrate().then(() => {
+  // A GUEST'S CREDIT REACHES THE ACCOUNT (owner ruling 2026-10-01). A guest's
+  // units are recorded here like anyone's, but signing in wipes this device's
+  // `ape:*` keys and this store's memory, so they were lost. The units marked
+  // in a guest session are held by the shared ledger and replayed into the
+  // first account signed into in the same session (after its wipe).
+  holdSessionWork<HeldUnits>(CARRY_KEY, (prev) => withHeldUnit(prev, labKey, unitId), { guestOnly: true });
+  void recordUnit(labKey, unitId);
+}
+
+type HeldUnits = Record<string, string[]>;
+const CARRY_KEY = 'labCompletion';
+
+/** Pure: `prev` plus one unit (a fresh object — the ledger keeps versions). */
+export function withHeldUnit(prev: HeldUnits | undefined, labKey: string, unitId: string): HeldUnits {
+  const list = prev?.[labKey] ?? [];
+  return list.includes(unitId) ? { ...prev } : { ...prev, [labKey]: [...list, unitId] };
+}
+
+// The ledger's writer: every held unit, recorded under the signed-in account
+// (the preview check is NOT re-applied — what was held was earned outside one,
+// and a preview open at hand-off time must not refuse it).
+registerSessionCarry<HeldUnits>(CARRY_KEY, async (held) => {
+  for (const [labKey, units] of Object.entries(held)) {
+    for (const u of units) await recordUnit(labKey, u);
+  }
+  return true;
+});
+
+function recordUnit(labKey: string, unitId: string): Promise<void> {
+  return hydrate().then(() => {
     const set = cleared[labKey] ?? new Set<string>();
     if (set.has(unitId)) return; // already recorded — no-op
     set.add(unitId);

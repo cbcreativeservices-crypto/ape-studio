@@ -35,7 +35,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { animationsAllowed } from '../../../features/settings/a11y';
-import { loadPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { holdPagedProgress, loadPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
@@ -141,6 +141,14 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
     // whose first tier read failed reads 'anonymous' until a retry lands, and
     // the empty copy then overwrote their completed pages — credit removed.
     if (!noSaveRef.current && !loadedNoSaveRef.current) void savePagedProgress(labId, next);
+    else {
+      // A guest's work is HELD for the sign-in hand-off as deltas (owner
+      // ruling 2026-10-01; features/lab/sessionCarry — a preview holds
+      // nothing, and nothing done after a sign-out is ever carried).
+      for (const i of next.completed) if (!base.completed.includes(i)) holdPagedProgress(labId, { done: i });
+      if (next.lastPage !== base.lastPage) holdPagedProgress(labId, { lastPage: next.lastPage });
+      if (next.done && !base.done) holdPagedProgress(labId, { labDone: true });
+    }
   }, [labId]);
   const markPageDone = useCallback((i: number) => {
     const base = progressRef.current;

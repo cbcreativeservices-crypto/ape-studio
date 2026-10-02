@@ -10,6 +10,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { EarModuleId } from './earTypes';
+import { holdSessionWork, registerSessionCarry, sessionCarryEpoch } from '../lab/sessionCarry';
 
 const KEY = 'ape:ear:v1';
 const WINDOW = 20;
@@ -73,11 +74,18 @@ export function setEarSaveBlocked(blocked: boolean): void {
  *  it back over every module's real ladder. The drill saves the SAME object
  *  it loaded (mutated in place), so membership follows it. */
 const blockedLoads = new WeakSet<EarProgressState>();
+/** A state handed out while BLOCKED (a guest's empty ladder) → the ledger
+ *  epoch it was started in. It holds only this session's training, so it is
+ *  HELD for the sign-in hand-off (owner ruling 2026-10-01) — but only while
+ *  the epoch is unchanged: after a sign-out the same on-screen ladder must
+ *  never be carried into whoever signs in next. */
+const guestLoads = new WeakMap<EarProgressState, number>();
 
 export async function loadEarProgress(): Promise<EarProgressState> {
   if (saveBlocked) {
     const s: EarProgressState = { ...EMPTY, modules: {} };
     blockedLoads.add(s);
+    guestLoads.set(s, sessionCarryEpoch());
     return s;
   }
   let raw: string | null;
@@ -102,6 +110,22 @@ export async function loadEarProgress(): Promise<EarProgressState> {
 }
 
 export async function saveEarProgress(s: EarProgressState): Promise<void> {
+  if (guestLoads.get(s) === sessionCarryEpoch()) {
+    // A guest's ladder: held (a copy) for the sign-in hand-off, never written here.
+    // Each drill screen starts its own empty ladder, so modules from other
+    // screens this session are kept; a module trained again keeps the higher
+    // mastered level and best streak.
+    const copy = JSON.parse(JSON.stringify(s)) as EarProgressState;
+    holdSessionWork<EarProgressState>(CARRY_KEY, (prev) => {
+      const out: EarProgressState = { modules: { ...(prev?.modules ?? {}) }, subBassOk: copy.subBassOk };
+      for (const [id, m] of Object.entries(copy.modules) as [EarModuleId, EarModuleProgress][]) {
+        if (!m || m.total <= 0) continue;
+        const was = out.modules[id];
+        out.modules[id] = was ? { ...m, mastered: Math.max(was.mastered, m.mastered), bestStreak: Math.max(was.bestStreak, m.bestStreak) } : m;
+      }
+      return out;
+    });
+  }
   if (saveBlocked || blockedLoads.has(s)) return;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
@@ -109,6 +133,63 @@ export async function saveEarProgress(s: EarProgressState): Promise<void> {
     // Best-effort local stat — losing it never blocks training.
   }
 }
+
+const CARRY_KEY = 'ear';
+
+/**
+ * Pure: the stored copy plus a guest session's ladder. A module the account
+ * has never trained takes the session's ladder whole. A module it HAS trained
+ * keeps its own ladder (two ladders cannot be spliced honestly), and what the
+ * session achieved only ever raises it: the mastered level and the best
+ * streak are the higher of the two. The sub-bass setting is the account's.
+ * `ownedBySession(id)`: the stored module was written by an earlier hand-off
+ * of this same session — it IS the session's ladder, so it is replaced.
+ */
+export function mergeEarProgress(stored: EarProgressState | null, session: EarProgressState, ownedBySession: (id: EarModuleId) => boolean = () => false): EarProgressState {
+  const out: EarProgressState = { modules: { ...(stored?.modules ?? {}) }, subBassOk: stored ? stored.subBassOk : session.subBassOk };
+  for (const [id, m] of Object.entries(session.modules) as [EarModuleId, EarModuleProgress][]) {
+    if (!m || m.total <= 0) continue;
+    const st = out.modules[id];
+    out.modules[id] = st && !ownedBySession(id)
+      ? { ...st, mastered: Math.max(st.mastered, m.mastered), bestStreak: Math.max(st.bestStreak, m.bestStreak) }
+      : m;
+  }
+  return out;
+}
+
+// The ledger's writer (it writes only for a real account): read the stored
+// copy whatever the screens' flag says; never write over one that could not
+// be read.
+/** Modules a hand-off wrote fresh, with the ledger epoch it happened in. */
+const writtenBySession = new Map<EarModuleId, number>();
+registerSessionCarry<EarProgressState>(CARRY_KEY, async (session) => {
+  const epoch = sessionCarryEpoch();
+  let raw: string | null;
+  try {
+    raw = await AsyncStorage.getItem(KEY);
+  } catch {
+    return false;
+  }
+  let stored: EarProgressState | null = null;
+  try {
+    if (raw) {
+      const p = JSON.parse(raw) as EarProgressState;
+      stored = { modules: p.modules ?? {}, subBassOk: p.subBassOk !== false };
+    }
+  } catch {
+    stored = null;
+  }
+  const owned = (id: EarModuleId) => writtenBySession.get(id) === epoch;
+  for (const id of Object.keys(session.modules) as EarModuleId[]) {
+    if (!stored?.modules[id] && (session.modules[id]?.total ?? 0) > 0) writtenBySession.set(id, epoch);
+  }
+  try {
+    await AsyncStorage.setItem(KEY, JSON.stringify(mergeEarProgress(stored, session, owned)));
+    return true;
+  } catch {
+    return false;
+  }
+});
 
 /** Pure: apply one scored trial; returns new progress + what changed. */
 export function applyTrial(

@@ -15,8 +15,17 @@
  * CREDIT IS NEVER REMOVED (owner 2026-09-29): a practice reset clears the
  * answers, the interactive flags and the resume point; it keeps `done` and
  * the tuning notes.
+ *
+ * SIGN-IN HAND-OFF (owner ruling 2026-10-01: "if in same session guest signs
+ * in then current session is saved and stored"): every change the blocked
+ * store refuses is applied to a SESSION COPY held by the shared ledger
+ * (features/lab/sessionCarry). It starts empty, so it holds only this
+ * session's work, and the ledger WRITES it into the account's copy
+ * (mergeDrumProgress) when the guest signs in — or when a signed-in
+ * learner's late membership read lands. A preview holds nothing.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
 import { DRUM_CHAPTERS, type DrumChapterId, type TuningNote } from './drumContent';
 
 const KEY = 'ape:drumtuning:v1';
@@ -60,8 +69,8 @@ export async function loadDrumProgress(): Promise<DrumProgressState> {
  *  over the real one: every chapter's credit, the answers and the notes
  *  gone, from one failed read). A missing or unparseable copy reads as empty
  *  and may be written. */
-async function readStore(): Promise<{ state: DrumProgressState; ok: boolean }> {
-  if (saveBlocked) return { state: empty(), ok: true };
+async function readStore(force = false): Promise<{ state: DrumProgressState; ok: boolean }> {
+  if (saveBlocked && !force) return { state: empty(), ok: true };
   let raw: string | null;
   try {
     raw = await AsyncStorage.getItem(KEY);
@@ -121,8 +130,8 @@ export function drumResumePoint(s: DrumProgressState): { id: DrumChapterId; step
 
 /** True when the copy reached the disk. A blocked store (guest / preview)
  *  and a failed write both answer false — never "saved". */
-async function save(s: DrumProgressState): Promise<boolean> {
-  if (saveBlocked) return false;
+async function save(s: DrumProgressState, force = false): Promise<boolean> {
+  if (saveBlocked && !force) return false;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
     return true;
@@ -142,6 +151,13 @@ function runUpdate(mutate: (s: DrumProgressState) => void): Promise<{ state: Dru
     mutate(s);
     // Never write over a copy that could not be read (see readStore).
     const saved = ok ? await save(s) : false;
+    // Blocked (a guest, or the tier not known yet): the same change lands on
+    // the session copy the ledger holds for the sign-in hand-off.
+    if (blocked) holdSessionWork<DrumProgressState>(CARRY_KEY, (prev) => {
+      const c = sanitizeDrumProgress(prev ?? empty());
+      mutate(c);
+      return c;
+    });
     return { state: s, saved, blocked };
   });
   queue = run.catch(() => undefined);
@@ -188,6 +204,47 @@ export function deleteTuningNote(id: string): Promise<DrumProgressState & { save
     s.notes = s.notes.filter((n) => n.id !== id);
   }).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
 }
+
+const CARRY_KEY = 'drumtuning';
+
+/**
+ * Pure: the stored copy plus a session copy. Credit is a union (`done`,
+ * `interactive`), the FIRST recorded answer wins (the stored one), the
+ * session's notes are added under the cap (insert or replace by id), and the
+ * place is where the learner is now.
+ */
+export function mergeDrumProgress(stored: DrumProgressState, session: DrumProgressState): DrumProgressState {
+  const out = sanitizeDrumProgress(stored);
+  for (const c of DRUM_CHAPTERS) {
+    const m = session.modules[c.id];
+    if (!m) continue;
+    const st = out.modules[c.id] ?? emptyDrumChapter();
+    out.modules[c.id] = {
+      done: st.done || m.done,
+      answers: { ...m.answers, ...st.answers },
+      ...(st.interactive || m.interactive ? { interactive: true } : {}),
+    };
+  }
+  if (session.lastModule) out.lastModule = session.lastModule;
+  if (session.lastStep != null) out.lastStep = session.lastStep;
+  let notes = out.notes;
+  for (const n of session.notes) if (!notes.some((x) => x.id === n.id && x.savedAt >= n.savedAt)) notes = withNote(notes, n);
+  out.notes = notes;
+  return out;
+}
+
+// The ledger's writer: through the same serialized queue, reading and saving
+// the stored copy whatever the screen's save flag says (the ledger writes
+// only for a real account), and never over a copy that could not be read.
+registerSessionCarry<DrumProgressState>(CARRY_KEY, (session) => {
+  const run = queue.then(async () => {
+    const { state, ok } = await readStore(true);
+    if (!ok) return false;
+    return save(mergeDrumProgress(state, session), true);
+  });
+  queue = run.catch(() => undefined);
+  return run;
+});
 
 /** SIGN-IN RE-READ (toddler pass 3): write each session note the store does
  *  not hold yet. `notes` = what the device HOLDS afterwards; `failed` = the

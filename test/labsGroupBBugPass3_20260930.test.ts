@@ -14,7 +14,9 @@ const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'u
 test('Ear: a ladder handed out while blocked is never saved, even once unblocked', () => {
   const s = read('src/features/ear/earProgress.ts');
   assert.match(s, /const blockedLoads = new WeakSet<EarProgressState>\(\);/);
-  assert.match(s, /if \(saveBlocked\) \{\n\s*const s: EarProgressState = \{ \.\.\.EMPTY, modules: \{\} \};\n\s*blockedLoads\.add\(s\);\n\s*return s;/);
+  // 2026-10-01: the blocked ladder is also tagged with the sign-in hand-off
+  // epoch (it is HELD for the account, never written here).
+  assert.match(s, /if \(saveBlocked\) \{\n\s*const s: EarProgressState = \{ \.\.\.EMPTY, modules: \{\} \};\n\s*blockedLoads\.add\(s\);\n\s*guestLoads\.set\(s, sessionCarryEpoch\(\)\);\n\s*return s;/);
   assert.match(s, /if \(saveBlocked \|\| blockedLoads\.has\(s\)\) return;/);
 });
 
@@ -45,7 +47,9 @@ test('Signal Chain + Fx labs: a late-failing superseded start leaves the newer c
 test('Tuning, Sound Systems, Cable, Cable Install, Mic Selection restores wait for `resolved`', () => {
   const tuning = read('src/screens/lab/tuning/TuningLabScreen.tsx');
   const tLoad = tuning.slice(tuning.indexOf('const navigatedRef = useRef(false);'), tuning.indexOf('const persist = useCallback'));
-  assert.match(tLoad, /if \(!resolved\) return;[\s\S]*loadTuningProgress\(\)[\s\S]*\}, \[resolved\]\);/);
+  // Owner ruling 2026-10-01: the restore also re-runs when the guest state
+  // changes (sign-in carries the guest session; sign-out drops the copy).
+  assert.match(tLoad, /if \(!resolved\) return;[\s\S]*loadTuningProgress\(\)[\s\S]*\}, \[resolved, guest\]\);/);
   assert.match(tLoad, /if \(!navigatedRef\.current\) setChapter\(/);
   assert.match(tuning, /player\.stop\(\); \/\/ leaving a chapter stops its audio\n\s*navigatedRef\.current = true;/);
 

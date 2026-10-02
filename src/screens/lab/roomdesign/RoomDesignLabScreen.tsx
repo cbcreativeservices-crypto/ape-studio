@@ -33,7 +33,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
-import { deleteRoomDesign, isRoomDesignStoreUnreadable, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
+import { deleteRoomDesign, holdRoomDesignForSession, isRoomDesignStoreUnreadable, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import type { RoomLabCtx } from './labCtx';
@@ -109,7 +109,11 @@ export function RoomDesignLabScreen() {
         // tier resolved as a member it sat under SAVED DESIGNS with LOAD and
         // DELETE as if it were on the device, and was gone after a relaunch.
         // The design on screen is the session copy either way.
-        if (!resolved || guest) return Promise.resolve({ ok: false, at: design });
+        if (!resolved) return Promise.resolve({ ok: false, at: design });
+        // A signed-out guest's SAVE is HELD for the sign-in hand-off (owner
+        // ruling 2026-10-01): signing in later in this app session adds it to
+        // that account's library. Never for a preview (the store refuses).
+        if (guest) return Promise.resolve({ ok: false, at: design, held: !preview && holdRoomDesignForSession(design) });
         // A name another saved design already uses is numbered on — "My
         // room 2" (toddler pass 3: every row of the library read "My room").
         // Judged on the store's own list, like the eviction.

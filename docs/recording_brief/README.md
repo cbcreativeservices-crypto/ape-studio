@@ -19,6 +19,14 @@ Rebuild (identical output verified 2026-10-01):
 cd C:\Users\profe\dev\ape-studio\docs\recording_brief; python rb2_build.py
 ```
 
+Add-on 1 — Drum Tuning Lab (drafted 2026-10-01, owner said yes to drafting; NOT yet sent):
+- `rb2_drum_addon.py` builds `Downloads\2026-10-01_APE_RECORDING_BRIEF_ADDON_DRUM_TUNING.html` (RB_OUT overrides). It reads
+  the CSS and page script out of `rb2_build.py` by regex so the two documents stay identical in look, and draws its own
+  figures with the `rb2_diagrams` primitives. New prefix `DRM-` (asserted unused in v2), new folder `drum_tuning/`,
+  Session 8. 10 items, 136 distinct recordings, 215 files; one rec per stroke or per lug tap, two files only when one
+  strike is heard by the close mic and the SEAT mic (drummer's ear) at once. Adds `tunings.csv` (per-lug device readings
+  per tuning state) and six sidecar columns. Check it with `rb2_check.py` as well.
+
 Rules learned building it:
 - Never use dark code blocks or dark figures. The owner hates black boxes. The page also sets
   `color-scheme: only light` so browsers don't auto-darken it.

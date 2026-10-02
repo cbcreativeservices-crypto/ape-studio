@@ -13,7 +13,9 @@
  *   • PREVIEW EARNS NOTHING (owner 2026-09-01) — a members-only preview
  *     records nothing, same guard as markLabUnit.
  *   • Guests (owner 2026-08-12) — the caller passes `persist: false`, so a
- *     guest's visits live for this app session only.
+ *     guest's visits are not written while they are a guest. They are held
+ *     by the shared ledger (sessionCarry) and written to the account the
+ *     guest signs in to in the same app session (owner ruling 2026-10-01).
  *   • Nothing is ever removed by a practice run; only the account wipe
  *     (resetLocal, registered in clearLocalAccountData) clears it.
  *
@@ -23,6 +25,7 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLabPreview } from './labPreviewStore';
+import { holdSessionWork, registerSessionCarry } from './sessionCarry';
 
 const STORAGE_KEY = 'ape:labVisits';
 
@@ -35,10 +38,14 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
-function persist() {
+function blobOf(): Record<string, string[]> {
   const blob: Record<string, string[]> = {};
   for (const [k, set] of Object.entries(visits)) if (set.size) blob[k] = [...set];
-  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blob)).catch(() => {});
+  return blob;
+}
+
+function persist() {
+  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blobOf())).catch(() => {});
 }
 
 function hydrate(): Promise<void> {
@@ -71,6 +78,10 @@ function hydrate(): Promise<void> {
  *  guest keeps it in memory for this session only. */
 export function markLabVisit(labId: string, unitId: string, opts: { persist?: boolean } = {}): void {
   if (getLabPreview().active) return;
+  // A guest's visit is held for the sign-in hand-off (written there, never
+  // here). Held before the in-memory check: a visit the store already shows
+  // (restored, or seen earlier) is still this session's work.
+  if (opts.persist === false) holdSessionWork<HeldVisits>(CARRY_KEY, (prev) => withHeldVisit(prev, labId, unitId));
   const set = visits[labId] ?? new Set<string>();
   if (set.has(unitId)) return;
   set.add(unitId);
@@ -78,6 +89,51 @@ export function markLabVisit(labId: string, unitId: string, opts: { persist?: bo
   emit();
   if (opts.persist !== false) void hydrate().then(persist);
 }
+
+type HeldVisits = Record<string, string[]>;
+const CARRY_KEY = 'labVisits';
+
+/** Pure: `prev` plus one visit (a fresh object). */
+export function withHeldVisit(prev: HeldVisits | undefined, labId: string, unitId: string): HeldVisits {
+  const list = prev?.[labId] ?? [];
+  return list.includes(unitId) ? { ...prev } : { ...prev, [labId]: [...list, unitId] };
+}
+
+// The ledger's writer: the held visits join the account's visits and are
+// written (the sign-in wipe cleared this store's memory, so they are added
+// back, then persisted).
+registerSessionCarry<HeldVisits>(CARRY_KEY, async (held) => {
+  await hydrate();
+  // What is on the device joins too (never written over a copy that could
+  // not be read).
+  let raw: string | null;
+  try {
+    raw = await AsyncStorage.getItem(STORAGE_KEY);
+  } catch {
+    return false;
+  }
+  try {
+    const disk = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+    for (const [k, arr] of Object.entries(disk)) {
+      if (!Array.isArray(arr)) continue;
+      const set = visits[k] ?? new Set<string>();
+      for (const v of arr) if (typeof v === 'string') set.add(v);
+      visits[k] = set;
+    }
+  } catch {
+    /* damaged → the memory copy stands */
+  }
+  for (const [labId, units] of Object.entries(held)) {
+    const set = visits[labId] ?? new Set<string>();
+    for (const u of units) set.add(u);
+    visits[labId] = set;
+  }
+  emit();
+  return AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blobOf())).then(
+    () => true,
+    () => false,
+  );
+});
 
 /** Reactive visited set for one lab (a fresh Set per change). */
 export function useLabVisits(labId: string): ReadonlySet<string> {

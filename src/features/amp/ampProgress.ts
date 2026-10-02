@@ -6,6 +6,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AmpModuleId } from './ampContent';
+import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
 
 const KEY = 'ape:amp:v1';
 
@@ -45,6 +46,13 @@ export function emptyAmpModule(): AmpModuleProgress {
  * using the lab normally — checks, COMPLETE & CONTINUE, the final — inside
  * each screen; only persistence stops (leave and return restores nothing).
  * No user data is held here, so an account change has nothing to reset.
+ *
+ * SIGN-IN HAND-OFF (owner ruling 2026-10-01): every change a blocked store
+ * refuses is applied to a SESSION COPY held by the shared ledger
+ * (features/lab/sessionCarry) — it starts empty, so it holds only this
+ * session's work — and the ledger merges it into the account's copy when the
+ * guest signs in (or when a signed-in learner's late tier lands). A preview
+ * holds nothing.
  */
 let saveBlocked = false;
 export function setAmpSaveBlocked(blocked: boolean): void {
@@ -97,14 +105,83 @@ export async function saveAmpProgress(s: AmpProgressState): Promise<void> {
 let writeQueue: Promise<unknown> = Promise.resolve();
 export function updateAmpProgress(mutate: (s: AmpProgressState) => void): Promise<AmpProgressState> {
   const run = writeQueue.then(async () => {
+    const blocked = saveBlocked;
     const s = await loadAmpProgress();
     mutate(s);
     await saveAmpProgress(s);
+    // Blocked (a guest): the same change lands on the session copy the
+    // ledger holds for the sign-in hand-off.
+    if (blocked) holdSessionWork<AmpProgressState>(CARRY_KEY, (prev) => {
+      const c = structuredCloneAmp(prev ?? { modules: {} });
+      mutate(c);
+      return c;
+    });
     return s;
   });
   writeQueue = run.catch(() => undefined);
   return run;
 }
+
+const CARRY_KEY = 'amp';
+const structuredCloneAmp = (s: AmpProgressState): AmpProgressState => JSON.parse(JSON.stringify(s)) as AmpProgressState;
+
+const better = (a: AmpFinalResult | undefined, b: AmpFinalResult | undefined): AmpFinalResult | undefined =>
+  !a ? b : !b ? a : b.scorePct > a.scorePct ? b : a;
+
+/**
+ * Pure: the stored copy plus a session copy. Credit only grows (`done`,
+ * `visited`), the FIRST recorded answer wins (the stored one), the best final
+ * is the better of the two, the latest final is the later one, and the place
+ * is where the learner is now.
+ */
+export function mergeAmpProgress(stored: AmpProgressState, session: AmpProgressState): AmpProgressState {
+  const out = structuredCloneAmp(stored);
+  for (const [id, m] of Object.entries(session.modules) as [AmpModuleId, AmpModuleProgress][]) {
+    if (!m) continue;
+    const st = out.modules[id] ?? emptyAmpModule();
+    out.modules[id] = {
+      visited: st.visited || m.visited,
+      done: st.done || m.done,
+      checks: { ...(m.checks ?? {}), ...(st.checks ?? {}) },
+    };
+  }
+  if (session.lastModule) out.lastModule = session.lastModule;
+  if (session.final && (!out.final || session.final.at > out.final.at)) out.final = session.final;
+  out.bestFinal = better(better(out.bestFinal, session.bestFinal), session.final);
+  if (!out.bestFinal) delete out.bestFinal;
+  return out;
+}
+
+// The ledger's writer: through the same serialized queue, reading the stored
+// copy whatever the screens' save flag says (it writes only for a real
+// account), and never over a copy that could not be read.
+registerSessionCarry<AmpProgressState>(CARRY_KEY, (session) => {
+  const run = writeQueue.then(async () => {
+    let raw: string | null;
+    try {
+      raw = await AsyncStorage.getItem(KEY);
+    } catch {
+      return false;
+    }
+    let stored: AmpProgressState = { modules: {} };
+    try {
+      if (raw) {
+        const p = JSON.parse(raw) as AmpProgressState;
+        stored = { modules: p.modules ?? {}, lastModule: p.lastModule, final: p.final, bestFinal: p.bestFinal };
+      }
+    } catch {
+      /* damaged → start from empty, like a load */
+    }
+    try {
+      await AsyncStorage.setItem(KEY, JSON.stringify(mergeAmpProgress(stored, session)));
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  writeQueue = run.catch(() => undefined);
+  return run;
+});
 
 /**
  * Reset affects ONLY this lab's key (spec: confirmation handled by the UI).

@@ -2,8 +2,16 @@
  * pagedProgress — persistence for the visual, paged labs (Sound Envelope,
  * Speech & Voice, Smart Processors). AsyncStorage `ape:<labId>:v1` keeps
  * only what reproduces the learner's place: completed pages, last page.
+ *
+ * GUESTS (owner ruling 2026-10-01): a host that does not save for a guest
+ * HOLDS the guest's work instead (holdPagedProgress — the pages finished and
+ * the page reached, as deltas). The shared ledger (sessionCarry) writes it to
+ * the account the guest signs in to in the same app session, and every later
+ * save of that lab merges it in, so a save from a copy read before the
+ * hand-off can never drop it.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { dropSessionWork, holdSessionWork, peekSessionWork, registerSessionCarry } from './sessionCarry';
 
 export type PagedProgress = { completed: number[]; lastPage: number; done: boolean };
 
@@ -20,9 +28,8 @@ function cleanCompleted(raw: unknown): number[] {
   return [...seen].sort((a, b) => a - b);
 }
 
-export async function loadPagedProgress(labId: string): Promise<PagedProgress> {
+function parsePaged(raw: string | null): PagedProgress {
   try {
-    const raw = await AsyncStorage.getItem(key(labId));
     if (!raw) return EMPTY();
     const p = JSON.parse(raw) as Partial<PagedProgress>;
     return {
@@ -35,13 +42,89 @@ export async function loadPagedProgress(labId: string): Promise<PagedProgress> {
   }
 }
 
+export async function loadPagedProgress(labId: string): Promise<PagedProgress> {
+  try {
+    return parsePaged(await AsyncStorage.getItem(key(labId)));
+  } catch {
+    return EMPTY();
+  }
+}
+
 export async function savePagedProgress(labId: string, p: PagedProgress): Promise<void> {
   try {
-    await AsyncStorage.setItem(key(labId), JSON.stringify(p));
+    await AsyncStorage.setItem(key(labId), JSON.stringify(withHeldPages(p, heldPaged(labId))));
   } catch {}
 }
 
+/** A guest's work in one paged lab this session (deltas only). */
+export type HeldPaged = { completed: number[]; lastPage?: number; done?: boolean };
+
+const carryKey = (labId: string) => `paged:${labId}`;
+const registered = new Set<string>();
+
+/** What is held for this lab in this session (undefined when nothing is). */
+export function heldPaged(labId: string): HeldPaged | undefined {
+  return peekSessionWork<HeldPaged>(carryKey(labId));
+}
+
+/**
+ * Hold a guest's work in a paged lab: a page finished (`done`), the page
+ * reached (`lastPage`), or the lab finished (`labDone`). Never a whole
+ * on-screen copy. The ledger refuses a preview and anything after a sign-out.
+ */
+export function holdPagedProgress(labId: string, d: { done?: number; lastPage?: number; labDone?: boolean }): void {
+  // The writer for this key — registered once per lab, BEFORE the first hold
+  // (a hold for a signed-in account writes straight away).
+  if (!registered.has(labId)) {
+    registered.add(labId);
+    registerSessionCarry<HeldPaged>(carryKey(labId), async (h) => {
+      let raw: string | null;
+      try {
+        raw = await AsyncStorage.getItem(key(labId));
+      } catch {
+        return false; // never written over a copy that could not be read
+      }
+      try {
+        await AsyncStorage.setItem(key(labId), JSON.stringify(withHeldPages(parsePaged(raw), h, true)));
+        return true;
+      } catch {
+        return false;
+      }
+    });
+  }
+  holdSessionWork<HeldPaged>(carryKey(labId), (prev) => {
+    const completed = prev?.completed ?? [];
+    return {
+      completed: d.done != null && !completed.includes(d.done) ? [...completed, d.done].sort((a, b) => a - b) : [...completed],
+      lastPage: d.lastPage ?? prev?.lastPage,
+      done: !!(prev?.done || d.labDone),
+    };
+  });
+}
+
+/**
+ * Pure: a copy plus the held work — pages are a union (credit only grows),
+ * `done` is never cleared. `takePlace` (the hand-off itself): the guest's
+ * page is where the learner now is.
+ */
+export function withHeldPages(p: PagedProgress, h: HeldPaged | undefined, takePlace = false): PagedProgress {
+  if (!h) return p;
+  const completed = [...new Set([...p.completed, ...h.completed])].sort((a, b) => a - b);
+  return {
+    completed,
+    lastPage: takePlace && h.lastPage != null ? h.lastPage : p.lastPage,
+    done: p.done || !!h.done,
+  };
+}
+
+/** A PRACTICE reset clears the page marks (credit lives elsewhere and is
+ *  never touched): the marks held for the sign-in hand-off go too. */
+export function forgetHeldPaged(labId: string): void {
+  dropSessionWork(carryKey(labId));
+}
+
 export async function resetPagedProgress(labId: string): Promise<void> {
+  forgetHeldPaged(labId);
   try {
     await AsyncStorage.removeItem(key(labId));
   } catch {}

@@ -109,6 +109,10 @@ export function DrumTuningLabScreen() {
   // their stored progress, credit or notes shown. The re-read MERGES (credit
   // only grows, the learner is not moved) and keeps the session's notes, as
   // the guest copy promised ("sign in to keep tuning notes on this device").
+  // Everything done while blocked — chapters banked, answers, interactives,
+  // notes, the place — is WRITTEN to the account by the store's sign-in
+  // hand-off (owner ruling 2026-10-01: drumProgress holds a session copy for
+  // the shared ledger, features/lab/sessionCarry); this re-read shows it.
   useEffect(() => {
     if (!resolved) return;
     const reread = loaded && loadedBlockedRef.current && !blocked;

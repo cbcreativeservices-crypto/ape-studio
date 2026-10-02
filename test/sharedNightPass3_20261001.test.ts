@@ -10,19 +10,18 @@ import { it } from 'node:test';
 const read = (p: string) => readFileSync(p, 'utf8');
 
 it('PagedLab: guest marks carry over only for the SAME identity (never across a sign-out / sign-in)', () => {
+  // Owner ruling 2026-10-01 ("if in same session guest signs in then current
+  // session is saved and stored"): the identity rule moved into the shared
+  // ledger (features/lab/sessionCarry — a sign-out drops what it held and
+  // nothing after a sign-out is held; behaviour pinned in
+  // test/sessionCarry.test.ts). PagedLab merges only what the LEDGER holds,
+  // never the pages that happen to be on screen.
   const src = read('src/screens/lab/kit/PagedLab.tsx');
-  assert.match(src, /supabase\.auth\.onAuthStateChange\(\(_event, session\) => \{/);
-  assert.match(src, /else if \(id !== carryIdentityRef\.current\) carryIdentityRef\.current = null;/);
-  assert.match(src, /return \(\) => data\.subscription\.unsubscribe\(\);/);
   const load = src.slice(src.indexOf('void loadPagedProgress(labId).then'), src.indexOf('const persist = useCallback'));
-  assert.match(
-    load,
-    /const sameIdentity = carryIdentityRef\.current != null && carryIdentityRef\.current === identityRef\.current;\s*const carried = loadedAsGuestRef\.current && !guestRef\.current && sameIdentity/,
-  );
-  // The guest load records who was signed in; set AFTER the carry is read.
-  const carriedAt = load.indexOf('const carried =');
-  const recordAt = load.indexOf('carryIdentityRef.current = guestRef.current ? identityRef.current : null;');
-  assert.ok(carriedAt > 0 && recordAt > carriedAt);
+  assert.match(load, /const carried = loadedAsGuestRef\.current && !guestRef\.current \? heldPaged\(labId\)\?\.completed \?\? \[\] : \[\];/);
+  assert.doesNotMatch(src, /progressRef\.current\?\.completed \?\? \[\]/, 'the on-screen copy is never carried');
+  // A guest's work is held as deltas instead of saved.
+  assert.match(src, /if \(!guestRef\.current && !loadedAsGuestRef\.current\) void savePagedProgress\(labId, next\);\s*else holdPaged\(base, next\);/);
 });
 
 it('AppDialog: a request during a hand-off hold queues, and a repeat of a queued one is dropped', () => {

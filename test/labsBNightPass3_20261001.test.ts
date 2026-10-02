@@ -34,7 +34,7 @@ test('room design: a signed-in PREVIEW is never told "you are not signed in"', (
     assert.match(s, /part of membership/, `${f} has the preview wording`);
   }
   // The guest wording is still there for a signed-out guest.
-  assert.match(read('src/screens/lab/roomdesign/modules/modReview.tsx'), /You are not signed in, so designs are not saved\./);
+  assert.match(read('src/screens/lab/roomdesign/modules/modReview.tsx'), /You are not signed in, so designs are not saved yet\./);
 });
 
 test('tuning progress: a failed storage READ is never written back over the chapters', () => {

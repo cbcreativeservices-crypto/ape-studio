@@ -170,7 +170,9 @@ describe('drum toddler pass 1 — the screen and the chapters', () => {
     assert.match(ch6, /void onSaveNote\(n\)\.then\(\(r\) => \{/);
     assert.match(ch6, /if \(r === 'failed'\) \{\s*setSavedFlash\(\{ text: 'Could not save on this device/);
     assert.doesNotMatch(ch6, /onSaveNote\(n\);\s*setSavedFlash/, 'never "saved" ahead of the write');
-    assert.match(ch6, /\{guest \? 'THIS SESSION ONLY — NOT SAVED' : 'SAVED ON THIS DEVICE'\}/);
+    // Owner ruling 2026-10-01: a guest's notes are kept for the session and
+    // saved if they sign in before closing the app — still never "SAVED".
+    assert.match(ch6, /\{guest \? \(preview \? 'THIS SESSION ONLY — NOT SAVED' : 'THIS SESSION — SIGN IN TO SAVE'\) : 'SAVED ON THIS DEVICE'\}/);
     // Pass 2 corrected this guard: the note must also still be in the list.
     assert.match(ch6, /if \(!name\.trim\(\) && !note\.trim\(\) && prior\?\.sig === sig && notes\.some\(\(x\) => x\.id === prior\.id\)\) \{/);
     assert.match(ch6, /if \(saving\.current\) return;/);

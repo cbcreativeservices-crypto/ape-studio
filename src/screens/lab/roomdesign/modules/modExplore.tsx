@@ -13,7 +13,7 @@ import { fieldLevelColor } from '../../../../features/tools/levelColor';
 import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignStore';
 import { flipFader } from '../../soundsystems/rackLayout';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
-import { BADGE, SAVE_FAILED, saveLine, type RoomLabCtx } from '../labCtx';
+import { BADGE, SAVE_FAILED, SAVE_HELD, saveLine, type RoomLabCtx } from '../labCtx';
 import { RoomRackLayout } from '../rackLayout';
 import { PLAN_LEGEND, RoomPlanView, type PlanLayers, type Trace } from '../RoomPlanView';
 import { Body, Caption, SAFETY_LEVEL_POINTER, TrayButton, TrayHeading } from '../bits';
@@ -279,7 +279,7 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
       <Caption>{`START is the baseline the diff reads from; OPTION A and B are the alternatives. Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
       <TrayHeading>SAVE THE WHOLE DESIGN</TrayHeading>
       <TrayButton
-        label={guest ? (preview ? 'SAVE (NOT KEPT — PREVIEW)' : 'SAVE (NOT KEPT — NOT SIGNED IN)') : 'SAVE DESIGN TO THIS DEVICE'}
+        label={guest ? (preview ? 'SAVE (NOT KEPT — PREVIEW)' : 'SAVE (SIGN IN TO KEEP IT)') : 'SAVE DESIGN TO THIS DEVICE'}
         tint={guest ? 'dim' : 'green'}
         onPress={() => {
           // Before the tier is known the store is save-blocked for everyone, so
@@ -295,7 +295,7 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
           const gone = evicts?.name ?? null;
           // `at` is the design as filed (a clashing name is numbered on —
           // toddler pass 3), which is the one on screen after the save.
-          void saveCurrent().then(({ ok, at }) =>
+          void saveCurrent().then(({ ok, at, held }) =>
             setMsg({
               ok,
               at,
@@ -306,14 +306,16 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
                   : asPreview
                     ? 'Kept for this session only — this lab is part of membership, and designs made in a preview are not saved.'
                     : asGuest
-                      ? 'Kept for this session only — you are not signed in, so designs are not saved.'
+                      ? held
+                        ? SAVE_HELD
+                        : 'Kept on screen only — you are not signed in, so this design is not saved.'
                       : SAVE_FAILED,
             }),
           );
         }}
       />
       {line ? <Caption>{line}</Caption> : null}
-      <Caption>{guest ? (preview ? 'You can design freely; designs made in a preview are not saved.' : 'You can design freely; nothing is saved until you sign in.') : 'The REVIEW module lists saved designs and compares a saved "before" with the current setup.'}</Caption>
+      <Caption>{guest ? (preview ? 'You can design freely; designs made in a preview are not saved.' : 'You can design freely. Nothing is saved until you sign in — sign in before you close the app and the designs you SAVE are kept on this device.') : 'The REVIEW module lists saved designs and compares a saved "before" with the current setup.'}</Caption>
     </View>
   );
 }

@@ -74,13 +74,16 @@ export function endTitle(w: WhatsLeft): "LAB COMPLETE" | "WHAT'S LEFT" {
  * The lead line under the title. `mode` says whether this lab banks CREDIT
  * (a certificate-bearing lab) or only records PROGRESS on this device; a
  * `guest` is never told anything is saved (house guest rule, owner
- * 2026-08-12: guests neither restore nor persist).
+ * 2026-08-12: guests neither restore nor persist) — but IS told the truth
+ * that signing in before the app is closed keeps this session's work (owner
+ * ruling 2026-10-01; features/lab/sessionCarry). A members-only `preview`
+ * earns nothing (owner 2026-09-01) and is never offered that.
  */
 export function endLead(
   w: WhatsLeft,
-  opts: { mode: 'credit' | 'progress'; noun: string; guest?: boolean },
+  opts: { mode: 'credit' | 'progress'; noun: string; guest?: boolean; preview?: boolean },
 ): string {
-  const { mode, noun, guest } = opts;
+  const { mode, noun, guest, preview } = opts;
   const plural = (n: number) => `${n} ${noun}${n === 1 ? '' : 's'}`;
   // A check row (final exam / understanding check) is not a module or page —
   // count it separately so "8 modules + the check" never reads "9 modules of 9".
@@ -90,10 +93,15 @@ export function endLead(
   const checkLeft = w.left.some((r) => r.kind === 'check');
   const what = `${plural(unitsLeft)} of ${unitsTotal}${checkLeft ? ' plus the check' : ''}`;
   const onlyCheck = unitsLeft === 0 && checkLeft;
+  if (guest && preview) {
+    return w.complete
+      ? `You have been through every ${noun}. This is a members-only preview, so none of this is saved or credited.`
+      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. This is a members-only preview, so nothing here is saved or credited.`;
+  }
   if (guest) {
     return w.complete
-      ? `You have been through every ${noun}. You are not signed in, so none of this is saved — sign in to keep your progress.`
-      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are not signed in, so nothing here is saved — sign in to keep your progress.`;
+      ? `You have been through every ${noun}. You are not signed in, so none of this is saved yet — sign in before you close the app to keep it.`
+      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress.`;
   }
   if (w.complete) {
     return mode === 'credit'

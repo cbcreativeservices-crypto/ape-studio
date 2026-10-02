@@ -2,8 +2,14 @@
  * tuningProgress — Tuning & Temperament Lab persistence (spec Stage 5 §3).
  * AsyncStorage `ape:tuning:v1`. Persists completed chapters, last chapter and
  * overall completion — never audio, animation or drag state.
+ *
+ * GUESTS (owner ruling 2026-10-01): the screen saves nothing for a guest; it
+ * HOLDS the chapters they finish and the place they reach
+ * (holdTuningProgress) and the shared ledger (features/lab/sessionCarry)
+ * writes them to the account they sign in to in the same app session.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { holdSessionWork, peekSessionWork, registerSessionCarry } from '../lab/sessionCarry';
 
 const KEY = 'ape:tuning:v1';
 
@@ -50,9 +56,71 @@ export async function loadTuningProgress(): Promise<TuningProgress> {
 export async function saveTuningProgress(p: TuningProgress): Promise<void> {
   if (storage.readFailed) return; // never write an unreadable read's empty copy back
   try {
-    await AsyncStorage.setItem(KEY, JSON.stringify(p));
+    // What a guest session held is never dropped by a save from an older copy.
+    await AsyncStorage.setItem(KEY, JSON.stringify(withHeldTuning(p, peekSessionWork<HeldTuning>(CARRY_KEY))));
   } catch {}
 }
+
+/** A guest's work this session (deltas only). */
+export type HeldTuning = { completed: number[]; lastChapter?: number; mathView?: boolean };
+const CARRY_KEY = 'tuning';
+
+/** Hold a chapter finished, the chapter reached, or the BASIC/MATH pick. */
+export function holdTuningProgress(d: { done?: number; lastChapter?: number; mathView?: boolean }): void {
+  holdSessionWork<HeldTuning>(CARRY_KEY, (prev) => {
+    const completed = prev?.completed ?? [];
+    return {
+      completed: d.done != null && !completed.includes(d.done) ? [...completed, d.done].sort((a, b) => a - b) : [...completed],
+      lastChapter: d.lastChapter ?? prev?.lastChapter,
+      mathView: d.mathView ?? prev?.mathView,
+    };
+  });
+}
+
+/** Pure: a copy plus held work — chapters a union (`done` recomputed from
+ *  the chapter count when given, never cleared). `takePlace`: the hand-off
+ *  itself puts the learner where the guest session left them. */
+export function withHeldTuning(p: TuningProgress, h: HeldTuning | undefined, takePlace = false, chapterCount?: number): TuningProgress {
+  if (!h) return p;
+  const completed = [...new Set([...p.completed, ...h.completed])].sort((a, b) => a - b);
+  return {
+    completed,
+    lastChapter: takePlace && h.lastChapter != null ? h.lastChapter : p.lastChapter,
+    done: p.done || (chapterCount != null && completed.length >= chapterCount),
+    mathView: takePlace && h.mathView != null ? h.mathView : p.mathView,
+  };
+}
+
+let chapterTotal: number | undefined;
+/** The lab's chapter count (the screen tells the store), so a hand-off that
+ *  completes the set marks the lab done. */
+export function setTuningChapterCount(n: number): void {
+  chapterTotal = n;
+}
+
+registerSessionCarry<HeldTuning>(CARRY_KEY, async (h) => {
+  let raw: string | null;
+  try {
+    raw = await AsyncStorage.getItem(KEY);
+  } catch {
+    return false; // never over a copy that could not be read
+  }
+  let stored: TuningProgress = { ...EMPTY, completed: [] };
+  try {
+    if (raw) {
+      const p = JSON.parse(raw) as Partial<TuningProgress>;
+      stored = { completed: Array.isArray(p.completed) ? p.completed : [], lastChapter: typeof p.lastChapter === 'number' ? p.lastChapter : 0, done: !!p.done, mathView: !!p.mathView };
+    }
+  } catch {
+    /* damaged → empty, like a load */
+  }
+  try {
+    await AsyncStorage.setItem(KEY, JSON.stringify(withHeldTuning(stored, h, true, chapterTotal)));
+    return true;
+  } catch {
+    return false;
+  }
+});
 
 export async function resetTuningProgress(): Promise<void> {
   try {

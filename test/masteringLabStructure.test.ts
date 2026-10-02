@@ -154,7 +154,9 @@ describe('guest rules and persistence', () => {
   });
   it('a blocked store neither reads nor writes; a practice reset keeps done', () => {
     // Toddler pass 3: the blocked read is a marked stand-in, never written.
-    assert.match(store, /if \(saveBlocked\) \{\s*const b: MasteringProgressState = \{ modules: \{\} \};\s*blockedRead\.add\(b\);\s*return b;/);
+    // Owner ruling 2026-10-01: only the sign-in hand-off (`force`, the shared
+    // sessionCarry ledger — it writes for a real account only) reads past it.
+    assert.match(store, /if \(saveBlocked && !force\) \{\s*const b: MasteringProgressState = \{ modules: \{\} \};\s*blockedRead\.add\(b\);\s*return b;/);
     assert.match(store, /if \(saveBlocked \|\| blockedRead\.has\(s\)\) return;/);
     assert.match(store, /done: !!s\.modules\[id\]\?\.done/);
     assert.match(store, /const KEY = 'ape:mastering:v1';/, 'inside the ape:* account wipe');

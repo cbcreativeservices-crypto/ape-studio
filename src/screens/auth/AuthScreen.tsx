@@ -37,6 +37,7 @@ import { colors, fonts, spacing } from '../../theme/tokens';
 import { POPUP_MAX_W } from '../../theme/readingColumn';
 import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
 import { runAfterAccountSync } from '../../features/account/accountLocalSync';
+import { restartGuestSession } from '../../features/lab/sessionCarry';
 import { getDeviceId } from '../../features/account/deviceIdentity';
 import { claimThisDevice, getActiveDeviceId } from '../../features/account/singleDevice';
 import {
@@ -316,6 +317,9 @@ export function AuthScreen({ navigation }: Props) {
     // the sync's sweep landing late deleted the record written back here.
     await runAfterAccountSync(async () => {
       await clearLocalAccountData({ total: true });
+      // A fresh guest session: no lab work held before this start is ever
+      // carried into an account signed into later (features/lab/sessionCarry).
+      restartGuestSession();
       // Written back BEFORE the store reset (bug pass 3, 2026-09-30): the reset
       // emits, a mounted Finder screen re-subscribes and re-hydrates at once, and
       // in the old order it read the just-wiped key — loaded EMPTY, marked itself

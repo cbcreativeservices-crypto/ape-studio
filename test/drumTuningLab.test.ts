@@ -393,8 +393,10 @@ describe('guest rules, persistence and credit', () => {
   it('a blocked store neither reads nor writes; the key is inside the ape:* wipe', () => {
     // Toddler pass 2 moved the read into readStore (a failed read must not
     // be written over); a blocked store still reads nothing.
-    assert.match(store, /if \(saveBlocked\) return \{ state: empty\(\), ok: true \};/);
-    assert.match(store, /if \(saveBlocked\) return false;/);
+    // Owner ruling 2026-10-01: only the sign-in hand-off (`force`, the shared
+    // sessionCarry ledger — it writes for a real account only) passes the flag.
+    assert.match(store, /if \(saveBlocked && !force\) return \{ state: empty\(\), ok: true \};/);
+    assert.match(store, /if \(saveBlocked && !force\) return false;/);
     assert.match(store, /const KEY = 'ape:drumtuning:v1';/);
   });
   it('credit banks ON COMPLETION, is never removed, and the end screen never blocks', () => {

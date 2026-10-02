@@ -5,10 +5,11 @@
  * reasoning beside each fix in the source.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { registerHooks } from 'node:module';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 // AsyncStorage is a native module: point it at a stub whose reads can fail.
 type Kv = { data: Map<string, string>; failReads: number };
@@ -22,6 +23,12 @@ const STUB = `export default {
 registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier === '@react-native-async-storage/async-storage') return { url: `data:text/javascript,${encodeURIComponent(STUB)}`, shortCircuit: true };
+    // The store now imports the shared sign-in hand-off ledger (2026-10-01),
+    // an extensionless relative import like the rest of src/.
+    if (specifier.startsWith('.') && !/\.[cm]?[jt]sx?$/.test(specifier) && context.parentURL) {
+      const candidate = new URL(specifier + '.ts', context.parentURL);
+      if (existsSync(fileURLToPath(candidate))) return { url: candidate.href, shortCircuit: true };
+    }
     return nextResolve(specifier, context);
   },
 });

@@ -42,11 +42,9 @@ import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { animationsAllowed } from '../../../features/settings/a11y';
-import { loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { forgetHeldPaged, heldPaged, holdPagedProgress, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { isRealAccount } from '../../../features/commercial/realAccount';
-import { supabase } from '../../../lib/supabase';
 
 export type PageCtx = {
   reduceMotion: boolean;
@@ -170,26 +168,16 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // write that empty copy over real progress — credit is never removed. So a
   // guest-loaded copy is never saved (bug pass 3, 2026-09-30).
   const loadedAsGuestRef = useRef(false);
-  // WHOSE "GUEST" COPY IS ON SCREEN (night pass 3, 2026-10-01). The carry-over
-  // below is for ONE person whose tier read failed and later landed. A real
-  // sign-out → sign-in (as anybody, the same person included) also reads as
-  // guest → signed-in, and carried what was done while signed OUT into the
-  // account — banking their p<n> credit through onPageDone. So the carry is
-  // allowed only while the signed-in identity seen at the guest load has not
-  // changed since. undefined = not known yet (no carry).
-  const identityRef = useRef<string | null | undefined>(undefined);
-  // `undefined` here = a guest load happened before the first auth answer; the
-  // first answer (INITIAL_SESSION, delivered to every new listener) fills it.
-  const carryIdentityRef = useRef<string | null | undefined>(null);
-  useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      const id = isRealAccount(session) ? (session?.user?.id ?? null) : null;
-      if (carryIdentityRef.current === undefined && identityRef.current === undefined) carryIdentityRef.current = id;
-      else if (id !== carryIdentityRef.current) carryIdentityRef.current = null;
-      identityRef.current = id;
-    });
-    return () => data.subscription.unsubscribe();
-  }, []);
+  // A GUEST'S PAGES REACH THE ACCOUNT (owner ruling 2026-10-01: "if in same
+  // session guest signs in then current session is saved and stored").
+  // Instead of saving, a guest's finished pages and place are HELD
+  // (holdPagedProgress) by the shared ledger, features/lab/sessionCarry,
+  // which writes them to the first account signed into in this app session
+  // — and to the same account when a signed-in learner's tier read failed
+  // and later lands. The ledger also owns WHOSE work it is: a sign-out drops
+  // it and nothing done after a sign-out is held, so a sign-out → sign-in
+  // (as anybody) carries nothing (the night pass 3 rule, 2026-10-01, now
+  // enforced in one place for every lab).
   const [page, setPage] = useState(0);
   // The what's-left end screen (owner 2026-09-29) — shown in place of the page.
   const [ending, setEnding] = useState(false);
@@ -239,19 +227,14 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     let alive = true;
     void loadPagedProgress(labId).then((loaded) => {
       if (!alive) return;
-      // GUEST → SIGNED-IN mid-visit (night pass 2, 2026-10-01): a signed-in
-      // learner whose boot tier read failed works as a "guest" until the real
-      // tier arrives. The pages they finished meanwhile were on screen; the
-      // re-load replaced them with the stored copy and they vanished. They are
-      // carried over like taps made before a load — ADDED to the real copy,
-      // which is then saved (nothing is removed, and the empty guest copy
-      // itself is still never written).
-      const sameIdentity = carryIdentityRef.current != null && carryIdentityRef.current === identityRef.current;
-      const carried = loadedAsGuestRef.current && !guestRef.current && sameIdentity ? progressRef.current?.completed ?? [] : [];
+      // GUEST → SIGNED-IN mid-visit (night pass 2, 2026-10-01; owner ruling
+      // 2026-10-01): the pages finished as a guest were on screen; the re-load
+      // replaced them with the stored copy and they vanished. What the ledger
+      // HOLDS for this lab is merged in like taps made before a load — the
+      // ledger's own hand-off may not have written it yet. It holds nothing
+      // across a sign-out, so a different person signing in carries nothing.
+      const carried = loadedAsGuestRef.current && !guestRef.current ? heldPaged(labId)?.completed ?? [] : [];
       loadedAsGuestRef.current = guestRef.current;
-      // A guest load remembers who (if anyone) was signed in; any later
-      // identity change clears it (the auth listener above).
-      carryIdentityRef.current = guestRef.current ? identityRef.current : null;
       const p: PagedProgress = guestRef.current ? { completed: [], lastPage: 0, done: false } : loaded;
       const pre = preloadRef.current;
       for (const i of carried) pre.done.add(i);
@@ -267,6 +250,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
           lastPage: pre.lastPage ?? p.lastPage,
         };
         if (!guestRef.current && !loadedAsGuestRef.current) void savePagedProgress(labId, next);
+        else holdPaged(p, next);
         // Same rule as markDone: the appended check page is not a lab page.
         for (const i of fresh) if (i < pages.length) onPageDoneRef.current?.(i);
       }
@@ -285,6 +269,13 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labId, pagesWithCheck.length, resolved, isGuest]);
 
+  /** A guest's work, held for the sign-in hand-off as DELTAS from `base`:
+   *  the pages newly finished, the page reached, the lab finished. */
+  const holdPaged = useCallback((base: PagedProgress, next: PagedProgress) => {
+    for (const i of next.completed) if (!base.completed.includes(i)) holdPagedProgress(labId, { done: i });
+    if (next.lastPage !== base.lastPage) holdPagedProgress(labId, { lastPage: next.lastPage });
+    if (next.done && !base.done) holdPagedProgress(labId, { labDone: true });
+  }, [labId]);
   const persist = useCallback((patch: Partial<PagedProgress>) => {
     const base = progressRef.current;
     if (!base) {
@@ -296,7 +287,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     progressRef.current = next;
     setProgress(next);
     if (!guestRef.current && !loadedAsGuestRef.current) void savePagedProgress(labId, next);
-  }, [labId]);
+    else holdPaged(base, next);
+  }, [labId, holdPaged]);
   const goTo = useCallback((i: number) => {
     const idx = Math.max(0, Math.min(pagesWithCheck.length - 1, Math.round(i)));
     navigatedRef.current = true;
@@ -333,6 +325,9 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   // so the learner stayed on the end screen at "page 1".
   const doReset = () => {
     const skipStore = guestRef.current || loadedAsGuestRef.current;
+    // A practice reset lets go of the guest's held page marks too (credit is
+    // banked elsewhere and is never touched).
+    if (skipStore) forgetHeldPaged(labId);
     void (skipStore ? Promise.resolve() : resetPagedProgress(labId)).then(() => {
       const fresh: PagedProgress = { completed: [], lastPage: 0, done: false };
       progressRef.current = fresh;

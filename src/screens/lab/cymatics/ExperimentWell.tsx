@@ -28,6 +28,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { EXPERIMENTS, experimentRoute, type Experiment } from '../../../features/cymatics/presets';
 import type { RootStackParamList } from '../../../navigation/types';
 import { goToCymatics } from './goToCymatics';
+import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
 
 /* ── tick-off persistence ───────────────────────────────────────────────────
    One key for the whole series, `{ [experimentId]: number[] }`. Never throws:
@@ -63,6 +64,48 @@ async function saveTicks(id: string, ticks: number[]): Promise<void> {
   }
 }
 
+/* ── the sign-in hand-off (owner ruling 2026-10-01) ─────────────────────────
+   The ticks are written for everyone, but signing in wipes this device's
+   `ape:*` keys — so the ticks a GUEST makes in this app session are held by
+   the shared ledger (features/lab/sessionCarry, `guestOnly`: an account's own
+   ticks need no carrying) and written back after the sign-in's wipe. A tick
+   taken off again in the session is let go of too. */
+type HeldTicks = Record<string, number[]>;
+const CARRY_KEY = 'cymatics:ticks';
+
+/** Pure: the held ticks after one tick (`on`) or untick of step `i`. */
+export function withHeldTick(prev: HeldTicks | undefined, id: string, i: number, on: boolean): HeldTicks {
+  const cur = prev?.[id] ?? [];
+  const next = on ? (cur.includes(i) ? cur : [...cur, i]) : cur.filter((k) => k !== i);
+  return { ...prev, [id]: next };
+}
+
+registerSessionCarry<HeldTicks>(CARRY_KEY, async (held) => {
+  let raw: string | null;
+  try {
+    raw = await AsyncStorage.getItem(TICKS_KEY);
+  } catch {
+    return false; // never written over ticks that could not be read
+  }
+  try {
+    let all: Record<string, number[]> = {};
+    try {
+      const parsed = raw ? (JSON.parse(raw) as unknown) : {};
+      if (parsed && typeof parsed === 'object') all = parsed as Record<string, number[]>;
+    } catch {
+      /* damaged → start empty, like a load */
+    }
+    for (const [id, ticks] of Object.entries(held)) {
+      const cur = Array.isArray(all[id]) ? all[id] : [];
+      all[id] = [...new Set([...cur, ...ticks])];
+    }
+    await AsyncStorage.setItem(TICKS_KEY, JSON.stringify(all));
+    return true;
+  } catch {
+    return false;
+  }
+});
+
 export function ExperimentWell({ experiment }: { experiment: Experiment }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   /**
@@ -83,6 +126,7 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
     setDone((d) => {
       const next = d.includes(i) ? d.filter((k) => k !== i) : [...d, i];
       void saveTicks(experiment.id, next);
+      holdSessionWork<HeldTicks>(CARRY_KEY, (prev) => withHeldTick(prev, experiment.id, i, !d.includes(i)), { guestOnly: true });
       return next;
     });
 

@@ -12,8 +12,17 @@
  *
  * CREDIT IS NEVER REMOVED (owner 2026-09-29): a practice reset clears the
  * answers and the resume point and keeps `done`.
+ *
+ * SIGN-IN HAND-OFF (owner ruling 2026-10-01: "if in same session guest signs
+ * in then current session is saved and stored"): every change the blocked
+ * store refuses is applied to a SESSION COPY held by the shared ledger
+ * (features/lab/sessionCarry). It starts empty, so it holds only this
+ * session's work, and the ledger WRITES it into the account's copy
+ * (mergeMasteringProgress) when the guest signs in — or when a signed-in
+ * learner's late membership read lands. A preview holds nothing.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
 import type { MasteringModuleId } from './masteringContent';
 
 const KEY = 'ape:mastering:v1';
@@ -79,8 +88,8 @@ function cleanModule(m: unknown): MasteringModuleProgress | undefined {
   return out;
 }
 
-export async function loadMasteringProgress(): Promise<MasteringProgressState> {
-  if (saveBlocked) {
+export async function loadMasteringProgress(force = false): Promise<MasteringProgressState> {
+  if (saveBlocked && !force) {
     const b: MasteringProgressState = { modules: {} };
     blockedRead.add(b);
     return b;
@@ -125,6 +134,13 @@ export function updateMasteringProgress(mutate: (s: MasteringProgressState) => v
     const s = await loadMasteringProgress();
     mutate(s);
     await save(s);
+    // A BLOCKED read (a guest, or the tier not known yet): the same change
+    // lands on the session copy the ledger holds for the sign-in hand-off.
+    if (blockedRead.has(s)) holdSessionWork<MasteringProgressState>(CARRY_KEY, (prev) => {
+      const c: MasteringProgressState = JSON.parse(JSON.stringify(prev ?? { modules: {} })) as MasteringProgressState;
+      mutate(c);
+      return c;
+    });
     return s;
   });
   queue = run.catch(() => undefined);
@@ -168,6 +184,51 @@ export function carryPreLoad(s: MasteringProgressState, pre: MasteringPreLoad): 
     s.lastStep = pre.at.step;
   }
 }
+
+const CARRY_KEY = 'mastering';
+
+/**
+ * Pure: the stored copy plus a session copy. Credit is a union (`done`), the
+ * FIRST recorded answer wins (the stored one), Module 8's ticks are a union,
+ * and the place is where the learner is now (carryPreLoad's rules).
+ */
+export function mergeMasteringProgress(stored: MasteringProgressState, session: MasteringProgressState): MasteringProgressState {
+  const out: MasteringProgressState = JSON.parse(JSON.stringify(stored)) as MasteringProgressState;
+  out.modules = out.modules ?? {};
+  const answers: MasteringPreLoad['answers'] = {};
+  for (const [id, m] of Object.entries(session.modules) as [MasteringModuleId, MasteringModuleProgress][]) {
+    const c = cleanModule(m);
+    if (!c) continue;
+    answers[id] = c.answers;
+    if (c.done) out.modules[id] = { ...(out.modules[id] ?? emptyMasteringModule()), done: true };
+  }
+  const p = cleanModule(session.modules.project);
+  carryPreLoad(out, {
+    answers,
+    checks: p?.checks ?? [],
+    qc: p?.qc ?? [],
+    at: session.lastModule ? { module: session.lastModule, step: session.lastStep ?? 0 } : undefined,
+  });
+  return out;
+}
+
+// The ledger's writer: through the same serialized queue, reading the stored
+// copy whatever the screen's save flag says (the ledger writes only for a
+// real account), and never over a copy that could not be read.
+registerSessionCarry<MasteringProgressState>(CARRY_KEY, (session) => {
+  const run = queue.then(async () => {
+    const stored = await loadMasteringProgress(true);
+    if (unreadable.has(stored)) return false;
+    try {
+      await AsyncStorage.setItem(KEY, JSON.stringify(mergeMasteringProgress(stored, session)));
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  queue = run.catch(() => undefined);
+  return run;
+});
 
 /** A PRACTICE reset: answers and the resume point clear; `done` is kept. */
 export function resetMasteringPractice(): Promise<MasteringProgressState> {

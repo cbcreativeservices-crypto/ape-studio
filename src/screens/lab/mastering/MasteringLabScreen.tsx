@@ -128,7 +128,10 @@ export function MasteringLabScreen() {
   // tier read failed (it reads 'anonymous' until it lands) or a guest who
   // signs in mid-lab kept the blank guest copy for the whole visit — none of
   // their banked credit, answers or ticks shown. The re-read MERGES (credit
-  // only grows, the learner is not moved).
+  // only grows, the learner is not moved). What was done while blocked is
+  // WRITTEN to the account by the store's sign-in hand-off (owner ruling
+  // 2026-10-01: masteringProgress holds a session copy for the shared
+  // ledger, features/lab/sessionCarry); this re-read only shows it.
   useEffect(() => {
     if (!resolved) return;
     const reread = loaded && loadedBlockedRef.current && !blocked;
@@ -140,8 +143,8 @@ export function MasteringLabScreen() {
     // The FIRST load carries what was done before it (toddler pass 2): the
     // answers, ticks and the place the learner moved to were held on screen
     // but never written, so leaving lost them. Only into an unblocked store
-    // (a guest saves nothing), and never on a re-read (a guest's session is
-    // not carried into an account).
+    // (a guest's work reaches the account through the store's session copy
+    // and the ledger's hand-off, not through this carry).
     const pre: MasteringPreLoad | null = !loaded && !blocked
       ? {
           answers: preAnswersRef.current,

@@ -18,6 +18,12 @@
  *     only, and the lab says so plainly. The host waits for the entitlement
  *     to resolve before it decides, so a signed-in member is never treated as
  *     a guest in the first paint — and a guest-loaded copy is never written.
+ *   • …UNTIL THEY SIGN IN (owner ruling 2026-10-01: "if in same session guest
+ *     signs in then current session is saved and stored"): a guest's SAVE is
+ *     held by the shared ledger (holdRoomDesignForSession →
+ *     features/lab/sessionCarry), which adds it to the library of the account
+ *     they sign in to in the same app session — under the cap, insert or
+ *     replace by id, the newer copy of a design winning.
  *   • PREVIEW EARNS NOTHING (owner 2026-09-01) — a preview records nothing.
  *   • A design is small (a few KB of plain JSON); the list is capped so it
  *     can never grow into the AsyncStorage ceiling the measurement library hit.
@@ -25,6 +31,7 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLabPreview } from '../lab/labPreviewStore';
+import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
 import type { RoomDesign } from '../../screens/lab/roomdesign/roomModel';
 
 const STORAGE_KEY = 'ape:roomdesign:v1';
@@ -160,6 +167,55 @@ export function saveRoomDesign(design: RoomDesign): Promise<boolean> {
     });
   });
 }
+
+const CARRY_KEY = 'roomdesign';
+
+/** Pure: a library plus designs — insert or replace by id (the newer
+ *  `updatedAt` wins), oldest-updated first, capped. */
+export function withDesigns(lib: readonly RoomDesign[], add: readonly RoomDesign[]): RoomDesign[] {
+  const next = [...lib];
+  for (const d of add) {
+    const at = next.findIndex((x) => x.id === d.id);
+    if (at < 0) next.push(d);
+    else if (d.updatedAt >= next[at].updatedAt) next[at] = d;
+  }
+  next.sort((a, b) => a.updatedAt - b.updatedAt);
+  while (next.length > MAX_SAVED_DESIGNS) next.shift();
+  return next;
+}
+
+/**
+ * A guest's SAVE: held for the sign-in hand-off (nothing is written now).
+ * Resolves the design as filed, and whether it was held — false for a
+ * preview (PREVIEW EARNS NOTHING) or after a sign-out, so the lab never
+ * promises that signing in keeps it.
+ */
+export function holdRoomDesignForSession(design: RoomDesign): boolean {
+  const stamped = { ...design, updatedAt: Date.now() };
+  return holdSessionWork<RoomDesign[]>(CARRY_KEY, (prev) => withDesigns(prev ?? [], [stamped]));
+}
+
+// The ledger's writer: the held designs join the signed-in account's library
+// and are written, whatever the screen's save flag says (the ledger writes
+// only for a real account). Never over a library that could not be read.
+registerSessionCarry<RoomDesign[]>(CARRY_KEY, async (designs) => {
+  const gen = generation;
+  await hydrate();
+  if (gen !== generation || !hydrated) return false;
+  const prev = list;
+  list = withDesigns(list, sanitize(designs));
+  emit();
+  try {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    return true;
+  } catch {
+    if (gen === generation) {
+      list = prev;
+      emit();
+    }
+    return false;
+  }
+});
 
 /** True while the saved designs could not be read from the device. */
 export function isRoomDesignStoreUnreadable(): boolean {

@@ -132,7 +132,7 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
         return;
       }
       lastSaved.current = { sig, name: n.name, id: n.id };
-      setSavedFlash(r === 'session' ? { text: preview ? 'Kept for this session only — a preview saves nothing.' + capLine : 'Kept for this session only — sign in to keep tuning notes on this device.' + capLine, ok: false } : { text: `Saved "${n.name}" on this device.${capLine}`, ok: true });
+      setSavedFlash(r === 'session' ? { text: preview ? 'Kept for this session only — a preview saves nothing.' + capLine : 'Kept for this session — sign in before you close the app and your tuning notes are saved on this device.' + capLine, ok: false } : { text: `Saved "${n.name}" on this device.${capLine}`, ok: true });
       setName('');
       setNote('');
     });
@@ -229,11 +229,11 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
                 <Text style={styles.values}>{`rack tom ${rackHz} Hz (${noteName(rackHz)}) · floor tom ${floorHz} Hz (${noteName(floorHz)}) — batter pitches; the relationship is Chapter 4's choice`}</Text>
                 <KeyButton label="SAVE THIS SETUP" onPress={save} tint={colors.green} />
                 {savedFlash ? <Feedback tone={savedFlash.ok ? 'ok' : 'warn'}>{savedFlash.text}</Feedback> : null}
-                {guest && !savedFlash ? <Body>{preview ? 'A members-only preview saves nothing; notes stay for this session.' : 'You are not signed in: notes stay for this session only.'}</Body> : null}
+                {guest && !savedFlash ? <Body>{preview ? 'A members-only preview saves nothing; notes stay for this session.' : 'You are not signed in: notes are kept for this session — sign in before you close the app to save them on this device.'}</Body> : null}
               </Card>
               {sorted.length ? (
                 <View style={{ gap: 6 }}>
-                  <SectionTitle>{guest ? 'THIS SESSION ONLY — NOT SAVED' : 'SAVED ON THIS DEVICE'} · {sorted.length - unsavedCount}</SectionTitle>
+                  <SectionTitle>{guest ? (preview ? 'THIS SESSION ONLY — NOT SAVED' : 'THIS SESSION — SIGN IN TO SAVE') : 'SAVED ON THIS DEVICE'} · {sorted.length - unsavedCount}</SectionTitle>
                   {unsavedCount ? <Feedback tone="warn">{`${unsavedCount} note${unsavedCount === 1 ? '' : 's'} from before you signed in could not be saved on this device and will be gone when you leave. LOAD one and SAVE THIS SETUP to try again.`}</Feedback> : null}
                   {sorted.map((n) => (
                     <View key={n.id} style={styles.noteRow}>

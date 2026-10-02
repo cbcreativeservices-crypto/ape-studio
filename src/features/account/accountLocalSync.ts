@@ -22,6 +22,7 @@ import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../commercial/realAccount';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
 import { softDeadline } from '../../lib/boundedCall';
+import { noteSessionIdentity, settleSessionCarry } from '../lab/sessionCarry';
 
 /** Marker holding the id of the user whose data currently lives on the device.
  *  Deliberately NOT on clearLocalAccountData's KEEP list — it is re-written
@@ -118,7 +119,15 @@ export function useAccountLocalSync(): void {
         // 7-day purge forces a new one. The dialog promises the opposite:
         // "none of your progress is stored with it".
         const identity = isRealAccount(session) ? (session?.user?.id ?? '') : '';
+        // GUEST WORK → THE ACCOUNT (owner ruling 2026-10-01: "if in same
+        // session guest signs in then current session is saved and stored").
+        // The lab ledger learns the identity NOW, in event order (a sign-out
+        // drops what it held at once), and writes a guest session's work to
+        // its first account only AFTER this sign-in's wipe has run — or the
+        // wipe would delete it.
+        noteSessionIdentity(identity);
         chain = chain.then(() => syncLocalToIdentity(identity)).catch(() => {});
+        chain = chain.then(() => settleSessionCarry()).catch(() => {});
       }
     });
     return () => {

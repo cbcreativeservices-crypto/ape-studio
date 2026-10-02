@@ -83,7 +83,8 @@ export type StartEnv = {
   viz: VizModule | null;
   meters: VizMetersModule | null;
   focused: boolean;
-  /** Signed-out guest: nothing is saved (house guest rule) — said up front. */
+  /** Signed-out guest: nothing is saved yet (house guest rule) — said up
+   *  front; signing in before the app closes keeps it (owner 2026-10-01). */
   guest: boolean;
   first: FirstSignal;
   openRoute: (route: string, params?: Record<string, unknown>) => void;
@@ -264,7 +265,7 @@ function WelcomePage({ ctx: _ctx }: { ctx: PageCtx }) {
     <DocPage page={page}>
       {env.guest ? (
         <Text style={styles.guestNote}>
-          You’re not signed in, so the app won’t remember your place if you leave. Sign in any time to keep it.
+          You’re not signed in, so the app won’t remember your place if you leave. Sign in before you close the app and what you do here is kept.
         </Text>
       ) : null}
       <Card tint="rgba(255,198,77,.35)">

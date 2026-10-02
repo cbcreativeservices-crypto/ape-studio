@@ -110,7 +110,7 @@ describe('every saved design was "My room": a SAVE numbers a clashing name', () 
     assert.match(save, /return saveRoomDesign\(d\)\.then\(\(ok\) => \(\{ ok, at: d \}\)\);/);
     for (const m of ['modReview', 'modExplore']) {
       const s = strip(read(`${LAB}modules/${m}.tsx`));
-      assert.match(s, /void saveCurrent\(\)\.then\(\(\{ ok, at \}\) =>/, m);
+      assert.match(s, /void saveCurrent\(\)\.then\(\(\{ ok, at(, held)? \}\) =>/, m);
       assert.match(s, /Saved "\$\{at\.name\}" on this device\./, m);
     }
   });

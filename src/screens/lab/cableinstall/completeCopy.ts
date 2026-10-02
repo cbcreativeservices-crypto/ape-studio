@@ -12,10 +12,12 @@
  * members-only lab (labCatalog `member: true`, wrapped by
  * withMembershipPreview). A free account opens it as a preview and banks
  * nothing, so a free account is NOT enough — membership is. A guest who
- * signs up or signs in cannot keep this run either: the first sign-in on a
- * device wipes every `ape:*` key (accountLocalSync → clearLocalAccountData),
- * and nothing carries guest work into an account. So the copy offers to save
- * the NEXT run, never this one.
+ * signs up or signs in cannot keep this run either. Since 2026-10-01 a
+ * guest's lab work in one app session IS written to the account they sign in
+ * to (features/lab/sessionCarry) — but a signed-out visit to this
+ * members-only lab is always a PREVIEW (withMembershipPreview), and a preview
+ * holds nothing (owner 2026-09-01). So the copy still offers to save the NEXT
+ * run, never this one, and that stays true.
  *
  * Pure and React-free so test/cableInstallComplete.test.ts reads it directly.
  */

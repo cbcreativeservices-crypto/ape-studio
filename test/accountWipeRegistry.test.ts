@@ -75,7 +75,9 @@ const EXEMPT: Record<string, string> = {
   'screens/lab/drumtuning/drumProgress.ts':
     'the same masteringProgress pattern (Drum Tuning Lab, 2026-10-01): a write-queue promise and the guest save-block FLAG only, re-set from the live entitlement on every render of the lab screen — no user data in memory; every read goes to storage (ape:drumtuning:v1, tuning notes included, is inside the ape:* wipe)',
   'features/ear/earProgress.ts':
-    'holds only the guest save-block FLAG (bug hunt 2026-09-30 pass 2), re-set from the live entitlement on every render of the lab’s screens — no user data; every read goes to storage',
+    'holds only the guest save-block FLAG (bug hunt 2026-09-30 pass 2), re-set from the live entitlement on every render of the lab’s screens, and (2026-10-01) the ids of modules the sign-in hand-off wrote, each tagged with the sessionCarry epoch — any identity change bumps the epoch, so the tags go stale by themselves — no user data; every read goes to storage',
+  'features/tuning/tuningProgress.ts':
+    'holds the lab’s chapter COUNT (content, set when the screen module loads) and a storage-read-failed flag — no user data; a guest’s session work lives in the sessionCarry ledger, which drops itself on every identity change (owner ruling 2026-10-01)',
   'screens/lab/calc/workflowStore.ts':
     'holds only the write-serialisation promise chain (bug hunt 2026-09-29), not user state — every read goes to storage',
   'features/study/localProgress.ts':

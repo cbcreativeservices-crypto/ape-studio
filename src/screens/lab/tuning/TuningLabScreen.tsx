@@ -21,7 +21,8 @@ import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced
 import { animationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
 import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuningAudio';
-import { loadTuningProgress, saveTuningProgress, type TuningProgress } from '../../../features/tuning/tuningProgress';
+import { holdTuningProgress, loadTuningProgress, saveTuningProgress, setTuningChapterCount, type TuningProgress } from '../../../features/tuning/tuningProgress';
+import { peekSessionWork } from '../../../features/lab/sessionCarry';
 import { CHAPTERS, CHAPTER_COUNT } from './chapters';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
@@ -31,6 +32,9 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
+
+// The store marks the lab done when a sign-in hand-off completes the set.
+setTuningChapterCount(CHAPTER_COUNT);
 
 export function TuningLabScreen() {
   const insets = useSafeAreaInsets();
@@ -111,13 +115,26 @@ export function TuningLabScreen() {
   // A chapter picked meanwhile is kept, not yanked back to the saved one.
   const { resolved } = useEntitlement();
   const navigatedRef = useRef(false);
+  // RE-READ WHEN THE ACCOUNT STATE CHANGES (owner ruling 2026-10-01, the
+  // kit/PagedLab rule): a guest who signs in gets the stored copy plus what
+  // the guest session held (the shared ledger also writes it); a learner who
+  // signs out drops to the empty guest copy, so the next person to sign in is
+  // never saved the previous one's chapters from the screen.
   useEffect(() => {
     if (!resolved) return;
     let alive = true;
+    const first = progressRef.current == null;
     void loadTuningProgress().then((stored) => {
       if (!alive) return;
+      const wasGuest = loadedAsGuestRef.current;
       loadedAsGuestRef.current = guestRef.current;
       let p: TuningProgress = guestRef.current ? { completed: [], lastChapter: 0, done: false, mathView: false } : stored;
+      if (!first && !guestRef.current && wasGuest) {
+        // The guest session's chapters (held for the hand-off) join the copy.
+        const held = peekSessionWork<{ completed: number[] }>('tuning')?.completed ?? [];
+        const completed = [...new Set([...p.completed, ...held])].sort((a, b) => a - b);
+        p = { ...p, completed, done: p.done || completed.length >= CHAPTER_COUNT };
+      }
       // BASIC/MATH tapped before the load landed is kept (bug pass
       // 2026-10-01): the stored flag used to yank the toggle straight back.
       if (mathPickedRef.current != null) p = { ...p, mathView: mathPickedRef.current };
@@ -127,6 +144,7 @@ export function TuningLabScreen() {
         const completed = [...p.completed, ...early].sort((a, b) => a - b);
         p = { ...p, completed, done: completed.length >= CHAPTER_COUNT };
         if (!guestRef.current) void saveTuningProgress(p);
+        else for (const c of early) holdTuningProgress({ done: c });
       }
       progressRef.current = p;
       setProgress(p);
@@ -137,7 +155,7 @@ export function TuningLabScreen() {
     return () => {
       alive = false;
     };
-  }, [resolved]);
+  }, [resolved, guest]);
 
   const persist = useCallback((patch: Partial<TuningProgress>) => {
     const base = progressRef.current;
@@ -146,6 +164,13 @@ export function TuningLabScreen() {
     progressRef.current = next;
     setProgress(next);
     if (!guestRef.current && !loadedAsGuestRef.current) void saveTuningProgress(next);
+    else {
+      // A guest's work is HELD for the sign-in hand-off, as deltas (owner
+      // ruling 2026-10-01; features/lab/sessionCarry).
+      for (const c of next.completed) if (!base.completed.includes(c)) holdTuningProgress({ done: c });
+      if (next.lastChapter !== base.lastChapter) holdTuningProgress({ lastChapter: next.lastChapter });
+      if (next.mathView !== base.mathView) holdTuningProgress({ mathView: next.mathView });
+    }
   }, []);
 
   const goTo = useCallback(

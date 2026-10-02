@@ -99,6 +99,9 @@ export function LabEndScreen({
   const insets = useSafeAreaInsets();
   const autoGuest = useLabEndGuest();
   const isGuest = guest ?? autoGuest;
+  // A members-only preview is told it earns nothing; a signed-out guest that
+  // signing in before closing the app keeps the work (owner 2026-10-01).
+  const inPreview = useLabPreview().active;
   const w = whatsLeft(units, cleared);
   const title = w.complete && completeTitle ? completeTitle : endTitle(w);
   const [showCredited, setShowCredited] = useState(false);
@@ -147,7 +150,7 @@ export function LabEndScreen({
       <Text style={[styles.title, w.complete && { color: colors.green }]} accessibilityRole="header">
         {title}
       </Text>
-      <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest })}</Text>
+      <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview })}</Text>
       {extra}
 
       {w.left.length > 0 ? (

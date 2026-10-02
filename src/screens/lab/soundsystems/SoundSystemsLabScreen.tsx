@@ -31,6 +31,7 @@ import { SS_LEARN_ID, SS_MODES, SS_PAGE_COUNTS, type SsModeId } from './units';
 import { GearGlyph, type GlyphKind } from './art/gearArt';
 import { clearPageMemory } from './pageMemory';
 import { useLabEndGuest } from '../kit/LabEndScreen';
+import { useLabPreview } from '../../../features/lab/labPreviewStore';
 
 const MODE_GLYPH: Record<SsModeId, GlyphKind> = {
   learn: 'console',
@@ -50,6 +51,7 @@ export function SoundSystemsLabScreen() {
   const navigation = useNavigation();
   const progress = useSoundSystemsProgress();
   const guest = useLabEndGuest();
+  const inPreview = useLabPreview().active;
   const learnUnits = useLabClearedUnits(SS_LEARN_ID);
   const [pages, setPages] = useState<Record<SsModeId, number>>({ learn: 0, build: 0, route: 0, operate: 0, troubleshoot: 0 });
 
@@ -161,9 +163,13 @@ export function SoundSystemsLabScreen() {
                 {/* HOUSE GUEST RULE (bug hunt 2026-09-30 pass 2): a signed-out
                     guest's modes write nothing (setSoundSystemsSaveBlocked), so
                     "everything you have done is saved" was false for them —
-                    kit/labEnd's guest wording instead. */}
+                    kit/labEnd's guest wording instead. A guest who signs in
+                    before closing the app keeps the session's work (owner
+                    ruling 2026-10-01); a members-only preview earns nothing. */}
                 {guest
-                  ? 'You are not signed in, so nothing here is saved — sign in to keep your progress. Move through the lab in any order — this list is what still counts toward credit.'
+                  ? inPreview
+                    ? 'This is a members-only preview, so nothing here is saved or credited. Move through the lab in any order — this list is what still counts toward credit.'
+                    : 'You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress. Move through the lab in any order — this list is what still counts toward credit.'
                   : 'Everything you have done is saved. Move through the lab in any order — this list is what still counts toward credit, and each row opens where you left off.'}
               </Text>
               {outstanding.map((r) => (

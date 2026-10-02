@@ -93,7 +93,7 @@ describe('CORRECTION (store resolves false on a failed write): the lab says so i
   it('EXPLORE: a signed-in member (resolved, not a guest) reaches SAVE_FAILED, not the signed-out line', () => {
     const s = strip(read(`${LAB}modules/modExplore.tsx`));
     assert.match(s, /const asGuest = guest;/);
-    assert.match(s, /: asGuest\s*\? 'Kept for this session only — you are not signed in, so designs are not saved\.'\s*: SAVE_FAILED,/);
+    assert.match(s, /: asGuest\s*\? held\s*\? SAVE_HELD\s*: 'Kept on screen only — you are not signed in, so this design is not saved\.'\s*: SAVE_FAILED,/);
   });
   it('REVIEW: a failed write says SAVE_FAILED (a pre-resolve tap says it is still checking)', () => {
     const s = strip(read(`${LAB}modules/modReview.tsx`));

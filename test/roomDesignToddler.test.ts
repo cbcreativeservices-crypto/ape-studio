@@ -187,7 +187,10 @@ describe('saving is honest before the tier is known and for a guest', () => {
     const host = strip(read(`${LAB}RoomDesignLabScreen.tsx`));
     const save = host.slice(host.indexOf('saveCurrent:'), host.indexOf('loadSaved:'));
     // (pass 3: saveCurrent resolves { ok, at } — the gate's answer is ok: false)
-    assert.match(save, /if \(!resolved \|\| guest\) return Promise\.resolve\(\{ ok: false, at: design \}\);/);
+    // Owner ruling 2026-10-01: a guest's SAVE never touches the store either —
+    // it is HELD by the sign-in hand-off ledger (never for a preview).
+    assert.match(save, /if \(!resolved\) return Promise\.resolve\(\{ ok: false, at: design \}\);/);
+    assert.match(save, /if \(guest\) return Promise\.resolve\(\{ ok: false, at: design, held: !preview && holdRoomDesignForSession\(design\) \}\);/);
     assert.ok(save.indexOf('return Promise.resolve({ ok: false') < save.indexOf('saveRoomDesign('), 'the gate comes before the store');
   });
 });
