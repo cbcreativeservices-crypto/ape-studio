@@ -158,7 +158,7 @@ export function WhyCard({ title = 'WHY · the physics', children }: { title?: st
   const [open, setOpen] = useState(false);
   return (
     <View style={styles.why}>
-      <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={title} style={styles.whyHead}>
+      <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={title} style={styles.whyHead} hitSlop={{ top: 8, bottom: 8 }}>
         <Text style={styles.whyTitle}>{title}</Text>
         <Text style={styles.whyChevron}>{open ? '▾' : '▸'}</Text>
       </Pressable>

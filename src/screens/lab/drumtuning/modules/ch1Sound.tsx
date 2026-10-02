@@ -177,7 +177,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
         {
           key: 'qualities', title: 'Pitch, overtones, sustain, pitch bend', kind: 'HEAR', layout: 'rack',
           rack: {
-            render: (w, h) => <WaveStage width={w} height={h} ov={qual.rendered?.overview ?? null} envDb={qual.rendered?.envDb} t60={qual.rendered?.t60} seconds={SPEC.seconds} label={`${SPEC.name} · strike ${Math.round(strike * 100)} %`} progress={qual.progress} playing={qual.playing} idle="rendering…" />,
+            render: (w, h) => <WaveStage width={w} height={h} ov={qual.rendered?.overview ?? null} envDb={qual.rendered?.envDb} t60={qual.rendered?.t60} seconds={SPEC.seconds} label={`${SPEC.name} · strike ${Math.round(strike * 100)} %`} progress={qual.progress} playing={qual.playing} idle="making the sound…" />,
             aspect: WAVE_ASPECT,
             size: 'L',
             badge: RENDER_BADGE,
@@ -213,7 +213,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
               viewKind === 'drum' ? (
                 <DrumTopStage width={w} height={h} drum={DRUM} head={head} selected={lug} tap={lug} tapSync={syncOf(tap)} strikeSync={syncOf(rod)} />
               ) : viewKind === 'wave' ? (
-                <WaveStage width={w} height={h} ov={rod.rendered?.overview ?? null} envDb={rod.rendered?.envDb} t60={rod.rendered?.t60} seconds={SPEC.seconds} label={`strike · rod ${lug + 1} at ${fmtTurn(head.turns[lug])}`} progress={rod.progress} playing={rod.playing} idle="rendering…" />
+                <WaveStage width={w} height={h} ov={rod.rendered?.overview ?? null} envDb={rod.rendered?.envDb} t60={rod.rendered?.t60} seconds={SPEC.seconds} label={`strike · rod ${lug + 1} at ${fmtTurn(head.turns[lug])}`} progress={rod.progress} playing={rod.playing} idle="making the sound…" />
               ) : viewKind === 'pitch' ? (
                 <PitchStage width={w} height={h} traces={rod.rendered?.result.pitchTraces ?? []} seconds={SPEC.seconds} resoCents={1200 * Math.log2(fundamentalHz(SPEC.diameterIn, RESO_T, SPEC.sigmaReso) / rodF0)} progress={rod.progress} playing={rod.playing} label="pitch trace" />
               ) : (

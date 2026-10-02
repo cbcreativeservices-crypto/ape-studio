@@ -27,7 +27,7 @@ import Animated, { useAnimatedStyle, useSharedValue, type SharedValue } from 're
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polygon, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { fieldLevelColor, levelColor } from '../../../features/tools/levelColor';
-import { DRUMS, lugAngle, lugCents, type DrumKind, type HeadState } from './drumEngine';
+import { DRUMS, lugAngle, lugCents, textBoost, tinyFit, type DrumKind, type HeadState } from './drumEngine';
 
 export { STAR_ORDER } from './drumEngine';
 
@@ -101,8 +101,9 @@ function arcPath(cx: number, cy: number, r0: number, r1: number, a0: number, a1:
  *  `lift` raises the hoop and rod heads off the shell (the SEAT step's
  *  exploded view: the head and hoop float above the edge, rods started by
  *  hand, nothing pulled down yet). */
-function Hardware({ cx, cy, R, lugs, selected, loose, dimRods, lift = 0 }: { cx: number; cy: number; R: number; lugs: number; selected?: number | null; loose?: number | null; dimRods?: boolean; lift?: number }) {
+function Hardware({ cx, cy, R, lugs, selected, loose, dimRods, lift = 0, bst = 1 }: { cx: number; cy: number; R: number; lugs: number; selected?: number | null; loose?: number | null; dimRods?: boolean; lift?: number; bst?: number }) {
   const items: ReactNode[] = [];
+  const fs = FONT * bst;
   for (let i = 0; i < lugs; i++) {
     const a = lugAngle(i, lugs);
     const deg = (a * 180) / Math.PI + 90;
@@ -117,14 +118,16 @@ function Hardware({ cx, cy, R, lugs, selected, loose, dimRods, lift = 0 }: { cx:
         {/* tension rod */}
         <Line x1={rodIn.x} y1={rodIn.y} x2={rodOut.x} y2={rodOut.y} stroke={dimRods ? ink.metalDark : ink.metal} strokeWidth={2.4} />
         {isLoose ? <Line x1={polar(cx, cy, R + 11, a).x} y1={polar(cx, cy, R + 11, a).y} x2={polar(cx, cy, R + 15, a).x} y2={polar(cx, cy, R + 15, a).y} stroke={ink.red} strokeWidth={3} /> : null}
-        {/* lug casing */}
+        {/* lug casing, numbered (the number stays upright; the selected lug's casing is lit) */}
         <G transform={`translate(${c.x},${c.y}) rotate(${deg})`}>
-          <Rect x={-7} y={-9} width={14} height={18} rx={4} fill="url(#lugGrad)" stroke={ink.metalDark} strokeWidth={0.8} />
-          <Circle cx={0} cy={0} r={1.6} fill={ink.metalDark} />
+          <Rect x={-7} y={-9} width={14} height={18} rx={4} fill={sel ? ink.amber : 'url(#lugGrad)'} stroke={sel ? '#8a6200' : ink.metalDark} strokeWidth={0.8} />
         </G>
-        {/* claw / rod head on the hoop */}
+        <SvgText x={c.x} y={c.y + 4} fontSize={fs} fill="#101013" textAnchor="middle" fontFamily={fonts.barlowSemiBold}>{i + 1}</SvgText>
+        {/* rod head on the hoop: a washer under a square key head with its slot */}
         <G transform={`translate(${head.x},${head.y}) rotate(${deg})`}>
+          <Circle cx={0} cy={0} r={5.2} fill={ink.metalDark} opacity={0.9} />
           <Rect x={-4} y={-3.5} width={8} height={7} rx={1} fill={sel ? ink.amber : ink.metalLight} stroke={ink.metalDark} strokeWidth={0.7} />
+          <Line x1={-2.4} y1={0} x2={2.4} y2={0} stroke={sel ? '#6a4a00' : ink.metalDark} strokeWidth={0.8} />
         </G>
       </G>,
     );
@@ -148,7 +151,8 @@ function Hardware({ cx, cy, R, lugs, selected, loose, dimRods, lift = 0 }: { cx:
           <Stop offset="1" stopColor="#aeb6c0" />
         </RadialGradient>
       </Defs>
-      {/* hoop: a triple-flanged ring */}
+      {/* hoop: a triple-flanged ring, its shadow on the shell's edge */}
+      <Circle cx={cx} cy={cy} r={R + 5 + lift} fill="none" stroke="rgba(0,0,0,.45)" strokeWidth={3} />
       <Circle cx={cx} cy={cy} r={R + 10 + lift} fill="none" stroke={ink.metal} strokeWidth={7} />
       <Circle cx={cx} cy={cy} r={R + 13 + lift} fill="none" stroke={ink.metalLight} strokeWidth={1} />
       <Circle cx={cx} cy={cy} r={R + 7 + lift} fill="none" stroke={ink.metalDark} strokeWidth={1} />
@@ -158,7 +162,8 @@ function Hardware({ cx, cy, R, lugs, selected, loose, dimRods, lift = 0 }: { cx:
 }
 
 /** A drum key seated on lug `i`, with a turn arrow when `turns` ≠ 0. */
-function DrumKey({ cx, cy, R, lugs, i, turns }: { cx: number; cy: number; R: number; lugs: number; i: number; turns: number }) {
+function DrumKey({ cx, cy, R, lugs, i, turns, bst = 1 }: { cx: number; cy: number; R: number; lugs: number; i: number; turns: number; bst?: number }) {
+  const f2 = F2 * bst;
   const a = lugAngle(i, lugs);
   const deg = (a * 180) / Math.PI + 90;
   const at = polar(cx, cy, R + 7, a);
@@ -169,7 +174,7 @@ function DrumKey({ cx, cy, R, lugs, i, turns }: { cx: number; cy: number; R: num
       <Rect x={-5.5} y={-5.5} width={11} height={11} rx={2} fill="none" stroke={ink.amber} strokeWidth={1.6} />
       <Rect x={-2} y={-24} width={4} height={19} fill={ink.metalLight} stroke={ink.metalDark} strokeWidth={0.6} />
       <Rect x={-12} y={-29} width={24} height={6} rx={3} fill={ink.metalLight} stroke={ink.metalDark} strokeWidth={0.6} />
-      {arrow ? <SvgText x={16} y={-14} fontSize={F2} fill={ink.amber} fontFamily={fonts.barlowMedium} transform="rotate(0)">{arrow}</SvgText> : null}
+      {arrow ? <SvgText x={16} y={-14} fontSize={f2} fill={ink.amber} fontFamily={fonts.barlowMedium} transform="rotate(0)">{arrow}</SvgText> : null}
     </G>
   );
 }
@@ -191,7 +196,7 @@ export type LookAt = 'head' | 'edge' | 'map' | number | null;
  * lug while a tap sounds; `strikeSync` brightens the head's centre and fades
  * it with the measured envelope while a strike sounds.
  */
-export function DrumTopStage({ width, height, drum, head, which = 'batter', selected = null, showMap = true, tap = null, tapAll = false, faults, title, order, orderStep, hitCentre, tapSync, strikeSync, look = null, scaleBySize = false, exploded = false, legend }: {
+export function DrumTopStage({ width, height, drum, head, which = 'batter', selected = null, showMap = true, tap = null, tapAll = false, faults, title, order, orderStep, hitCentre, tapSync, strikeSync, look = null, scaleBySize = false, exploded = false, legend, keyTurn }: {
   width: number;
   height: number;
   drum: DrumKind;
@@ -221,12 +226,25 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
   exploded?: boolean;
   /** Legend text under the map (defaults to the cents scale). */
   legend?: string;
+  /** The turn the key's arrow shows. Defaults to the head's own offset on
+   *  the selected rod; a practice page whose offsets are HIDDEN passes this
+   *  run's move instead, so the arrow never leaks the answer. */
+  keyTurn?: number;
 }) {
+  // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
+  const bst = textBoost(width);
+  const tiny = tinyFit(width);
+  const fs = FONT * bst;
+  const fsS = FONT_S * bst;
   const spec = DRUMS[drum];
   const lugs = spec.lugs;
   const cx = 180;
-  const cy = 125;
-  const R = scaleBySize ? Math.round(69 * Math.sqrt(spec.diameterIn / 16)) : 84;
+  // The drum sits a touch below centre so the drum key's T-handle on the top
+  // rod (cy − R − 36) clears the title line at the top-left, even with the
+  // short-phone font boost widening the title; the bottom lug casing
+  // (cy + R + 36) stays inside the 250-unit frame.
+  const cy = 131;
+  const R = scaleBySize ? Math.round(66 * Math.sqrt(spec.diameterIn / 16)) : 80;
   const lift = exploded ? 9 : 0;
   const cents = lugCents(head);
   const halfA = (Math.PI / lugs) * 0.72;
@@ -263,7 +281,7 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
     <View style={{ width, height }}>
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${TOP_H}`}>
       <Rect x={0} y={0} width={W} height={TOP_H} fill={ink.bg} />
-      <Hardware cx={cx} cy={cy} R={R} lugs={lugs} selected={selected} loose={faults?.loose ?? null} lift={lift} />
+      <Hardware cx={cx} cy={cy} R={R} lugs={lugs} selected={selected} loose={faults?.loose ?? null} lift={lift} bst={bst} />
       {/* the head on its bearing edge */}
       <Circle cx={cx} cy={cy} r={R + 3} fill={ink.shellDark} />
       <Circle cx={cx} cy={cy} r={R + (exploded ? 4 : 0)} fill={which === 'batter' ? 'url(#headGrad)' : 'url(#resoGrad)'} stroke="#b8b09a" strokeWidth={0.8} opacity={exploded ? 0.92 : 1} />
@@ -276,7 +294,7 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
           <Ellipse cx={cx - 10} cy={cy + 8} rx={26} ry={16} fill="rgba(90,80,60,.28)" />
           <Ellipse cx={cx + 18} cy={cy - 14} rx={12} ry={8} fill="rgba(90,80,60,.22)" />
           <Ellipse cx={cx - 4} cy={cy + 2} rx={7} ry={4.5} fill="rgba(40,30,20,.35)" />
-          <SvgText x={cx - 4} y={cy + 36} fontSize={FONT} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>scuffed coating · dent</SvgText>
+          <SvgText x={cx - 4} y={cy + 36} fontSize={fs} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>scuffed coating · dent</SvgText>
         </G>
       ) : null}
       {faults?.debris != null ? (
@@ -295,15 +313,6 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
             return <Path key={i} d={arcPath(cx, cy, R - 17, R - 4, a - halfA, a + halfA)} fill={showMap === 'hidden' ? MAP_HIDDEN : mapTint(c)} opacity={lit ? 1 : 0.82} stroke={lit ? colors.textPrimary : 'none'} strokeWidth={lit ? 1.2 : 0} />;
           })
         : null}
-      {/* lug numbers */}
-      {Array.from({ length: lugs }, (_, i) => {
-        const p = polar(cx, cy, R + 45, lugAngle(i, lugs));
-        return (
-          <SvgText key={i} x={p.x} y={p.y + 4} fontSize={FONT} fill={selected === i ? ink.amber : ink.dim} textAnchor="middle" fontFamily={fonts.mono}>
-            {i + 1}
-          </SvgText>
-        );
-      })}
       {/* star-pattern arrows */}
       {steps.length > 1
         ? steps.slice(1).map((lug, k) => {
@@ -318,7 +327,7 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
         return (
           <G key={k}>
             <Circle cx={p.x} cy={p.y} r={8} fill={cur ? ink.amber : '#1b1a12'} stroke={ink.amber} strokeWidth={1} />
-            <SvgText x={p.x} y={p.y + 4} fontSize={FONT} fill={cur ? '#000' : ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{k + 1}</SvgText>
+            <SvgText x={p.x} y={p.y + 4} fontSize={fs} fill={cur ? '#000' : ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{k + 1}</SvgText>
           </G>
         );
       })}
@@ -338,14 +347,14 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
           <Line x1={cx + 20} y1={cy - 16} x2={cx + 70} y2={cy - 66} stroke="#c9a06a" strokeWidth={4} strokeLinecap="round" />
         </G>
       ) : null}
-      {selected != null && !exploded ? <DrumKey cx={cx} cy={cy} R={R} lugs={lugs} i={selected} turns={head.turns[selected] ?? 0} /> : null}
+      {selected != null && !exploded ? <DrumKey cx={cx} cy={cy} R={R} lugs={lugs} i={selected} turns={keyTurn ?? head.turns[selected] ?? 0} bst={bst} /> : null}
       {/* LOOKING HERE: the inspection ring */}
       {look === 'head' ? <Circle cx={cx} cy={cy} r={R * 0.55} fill="none" stroke={ink.amber} strokeWidth={1.4} strokeDasharray="5,3" /> : null}
       {look === 'edge' ? <Circle cx={cx} cy={cy} r={R + 1} fill="none" stroke={ink.amber} strokeWidth={1.6} strokeDasharray="5,3" /> : null}
       {look === 'map' ? <Circle cx={cx} cy={cy} r={R - 10} fill="none" stroke={ink.amber} strokeWidth={1.4} strokeDasharray="5,3" /> : null}
       {lookPt ? <Circle cx={lookPt.x} cy={lookPt.y} r={16} fill="none" stroke={ink.amber} strokeWidth={1.6} strokeDasharray="5,3" /> : null}
       {/* legend */}
-      <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{(title ?? `${spec.name} · ${which === 'batter' ? 'BATTER' : 'RESONANT'} HEAD`).toUpperCase()}</SvgText>
+      {tiny ? null : <SvgText x={6} y={14} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>{(title ?? `${spec.name} · ${which === 'batter' ? 'BATTER' : 'RESONANT'} HEAD`).toUpperCase()}</SvgText>}
       {showMap === true ? (
         <G>
           <Rect x={6} y={TOP_H - 20} width={66} height={6} fill="url(#mapLegend)" />
@@ -358,12 +367,12 @@ export function DrumTopStage({ width, height, drum, head, which = 'batter', sele
               <Stop offset="1" stopColor={mapTint(MAP_RANGE_CENTS)} />
             </LinearGradient>
           </Defs>
-          <SvgText x={6} y={TOP_H - 4} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>{legend ?? `−${MAP_RANGE_CENTS} ¢ low · even · +${MAP_RANGE_CENTS} ¢ high`}</SvgText>
+          {tiny ? null : <SvgText x={6} y={TOP_H - 4} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowMedium}>{legend ?? `−${MAP_RANGE_CENTS} ¢ · even · +${MAP_RANGE_CENTS} ¢`}</SvgText>}
         </G>
-      ) : showMap === 'hidden' ? (
-        <SvgText x={6} y={TOP_H - 4} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.barlowMedium}>{legend ?? 'map hidden — listen first'}</SvgText>
+      ) : showMap === 'hidden' && !tiny ? (
+        <SvgText x={6} y={TOP_H - 4} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowMedium}>{legend ?? 'map hidden — listen first'}</SvgText>
       ) : null}
-      {tap != null || tapAll ? <SvgText x={W - 6} y={TOP_H - 4} fontSize={FONT_S} fill={ink.dim} textAnchor="end" fontFamily={fonts.barlowMedium}>● tap point, 1" in from the rim</SvgText> : null}
+      {(tap != null || tapAll) && !tiny ? <SvgText x={W - 6} y={TOP_H - 4} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.barlowMedium}>● tap point</SvgText> : null}
     </Svg>
     {/* the strike: the head's centre brightens and fades with the measured envelope */}
     <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: cx * s - glowR, top: cy * s - glowR, width: 2 * glowR, height: 2 * glowR, borderRadius: glowR, backgroundColor: '#fff8e6' }, glowStyle]} />
@@ -394,6 +403,11 @@ export const ANAT_ASPECT = W / ANAT_H;
 /** A tom in side cutaway: two heads, the shell with its plies, bearing edges,
  *  hoops, rods, lugs, and the air between — the highlighted part glows. */
 export function AnatomyStage({ width, height, part }: { width: number; height: number; part: DrumPart }) {
+  // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
+  const bst = textBoost(width);
+  const tiny = tinyFit(width);
+  const fs = FONT * bst;
+  const f2 = F2 * bst;
   const x0 = 92;
   const x1 = 292;
   const yT = 40;
@@ -417,7 +431,7 @@ export function AnatomyStage({ width, height, part }: { width: number; height: n
           {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((k) => (
             <Circle key={k} cx={x0 + 24 + (k % 6) * 36} cy={yT + 30 + Math.floor(k / 6) * 60 + (k % 2) * 14} r={1.6} fill={part === 'air' ? ink.cyan : '#2a3a4a'} />
           ))}
-          <SvgText x={(x0 + x1) / 2} y={(yT + yB) / 2 + 4} fontSize={FONT} fill={hi('air') ?? ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>enclosed air</SvgText>
+          <SvgText x={(x0 + x1) / 2} y={(yT + yB) / 2 + 4} fontSize={fs} fill={hi('air') ?? ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>enclosed air</SvgText>
         </G>
       ))}
       {/* shell walls with plies */}
@@ -486,14 +500,14 @@ export function AnatomyStage({ width, height, part }: { width: number; height: n
       <Line x1={x1 - 60} y1={yT - 40} x2={x1 - 20} y2={yT - 8} stroke="#c9a06a" strokeWidth={4} strokeLinecap="round" />
       <Circle cx={x1 - 18} cy={yT - 6} r={4} fill="#e9dcc0" />
       {/* labels */}
-      <SvgText x={x0 - 16} y={yT - 10} fontSize={FONT} fill={hi('batter') ?? ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>batter head</SvgText>
-      <SvgText x={x0 - 16} y={yB + 8} fontSize={FONT} fill={hi('reso') ?? ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>resonant head</SvgText>
-      <SvgText x={x1 + 18} y={(yT + yB) / 2 + 4} fontSize={FONT} fill={hi('lugs') ?? ink.text} fontFamily={fonts.barlowMedium}>lug</SvgText>
-      <SvgText x={x1 + 18} y={yT + 30} fontSize={FONT} fill={hi('rods') ?? ink.text} fontFamily={fonts.barlowMedium}>rod</SvgText>
-      <SvgText x={x1 + 18} y={yT - 2} fontSize={FONT} fill={hi('hoop') ?? ink.text} fontFamily={fonts.barlowMedium}>hoop</SvgText>
-      <SvgText x={x0 + 14} y={yT + 18} fontSize={FONT} fill={hi('edge') ?? ink.text} fontFamily={fonts.barlowMedium}>bearing edge</SvgText>
-      <SvgText x={x0 + 14} y={(yT + yB) / 2 - 30} fontSize={FONT} fill={hi('shell') ?? ink.text} fontFamily={fonts.barlowMedium}>shell</SvgText>
-      <SvgText x={W / 2} y={ANAT_H - 6} fontSize={F2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{PARTS.find((p) => p.id === part)?.label.toUpperCase()}</SvgText>
+      <SvgText x={x0 - 16} y={yT - 10} fontSize={fs} fill={hi('batter') ?? ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>batter head</SvgText>
+      <SvgText x={x0 - 16} y={yB + 8} fontSize={fs} fill={hi('reso') ?? ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>resonant head</SvgText>
+      <SvgText x={x1 + 18} y={(yT + yB) / 2 + 4} fontSize={fs} fill={hi('lugs') ?? ink.text} fontFamily={fonts.barlowMedium}>lug</SvgText>
+      <SvgText x={x1 + 18} y={yT + 30} fontSize={fs} fill={hi('rods') ?? ink.text} fontFamily={fonts.barlowMedium}>rod</SvgText>
+      <SvgText x={x1 + 18} y={yT - 2} fontSize={fs} fill={hi('hoop') ?? ink.text} fontFamily={fonts.barlowMedium}>hoop</SvgText>
+      <SvgText x={x0 + 14} y={yT + 18} fontSize={fs} fill={hi('edge') ?? ink.text} fontFamily={fonts.barlowMedium}>bearing edge</SvgText>
+      <SvgText x={x0 + 14} y={yB - 14} fontSize={fs} fill={hi('shell') ?? ink.text} fontFamily={fonts.barlowMedium}>shell</SvgText>
+      {tiny ? null : <SvgText x={W / 2} y={ANAT_H - 6} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{PARTS.find((p) => p.id === part)?.label.toUpperCase()}</SvgText>}
     </Svg>
   );
 }
@@ -513,6 +527,11 @@ export const EDGE_H = 180;
 export const EDGE_ASPECT = W / EDGE_H;
 
 export function EdgeStage({ width, height, profile }: { width: number; height: number; profile: EdgeProfile }) {
+  // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
+  const bst = textBoost(width);
+  const tiny = tinyFit(width);
+  const fs = FONT * bst;
+  const f2 = F2 * bst;
   const wallX = 150;
   const wallW = 70;
   const topY = 70;
@@ -563,14 +582,14 @@ export function EdgeStage({ width, height, profile }: { width: number; height: n
       <Rect x={wallX - 56} y={botY - 44} width={14} height={30} rx={4} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.6} />
       {/* contact zone */}
       <Line x1={peakX - contactW / 2} y1={topY + 4.5} x2={peakX + contactW / 2} y2={topY + 4.5} stroke={ink.amber} strokeWidth={2.5} />
-      <SvgText x={peakX} y={topY - 8} fontSize={FONT} fill={ink.amber} textAnchor="middle" fontFamily={fonts.barlowMedium}>contact</SvgText>
-      <SvgText x={wallX + wallW + 26} y={topY + 6} fontSize={FONT} fill={ink.text} fontFamily={fonts.barlowMedium}>head (inside)</SvgText>
-      <SvgText x={wallX + wallW + 26} y={topY + 60} fontSize={FONT} fill={ink.text} fontFamily={fonts.barlowMedium}>shell wall</SvgText>
-      <SvgText x={wallX - 60} y={botY - 50} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>rod</SvgText>
-      <SvgText x={wallX - 60} y={topY + 32} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>hoop</SvgText>
-      <SvgText x={wallX - 60} y={botY - 24} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>lug</SvgText>
-      <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>BEARING EDGE · CROSS-SECTION</SvgText>
-      <SvgText x={W / 2} y={EDGE_H - 2} fontSize={F2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{EDGES.find((e) => e.id === profile)?.label.toUpperCase()}</SvgText>
+      <SvgText x={peakX} y={topY - 8} fontSize={fs} fill={ink.amber} textAnchor="middle" fontFamily={fonts.barlowMedium}>contact</SvgText>
+      <SvgText x={wallX + wallW + 26} y={topY + 6} fontSize={fs} fill={ink.text} fontFamily={fonts.barlowMedium}>head (inside)</SvgText>
+      <SvgText x={wallX + wallW + 26} y={topY + 60} fontSize={fs} fill={ink.text} fontFamily={fonts.barlowMedium}>shell wall</SvgText>
+      <SvgText x={wallX - 60} y={botY - 50} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>rod</SvgText>
+      <SvgText x={wallX - 60} y={topY + 32} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>hoop</SvgText>
+      <SvgText x={wallX - 60} y={botY - 24} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>lug</SvgText>
+      {tiny ? null : <SvgText x={6} y={14} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>BEARING EDGE · CROSS-SECTION</SvgText>}
+      {tiny ? null : <SvgText x={W / 2} y={EDGE_H - 2} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{EDGES.find((e) => e.id === profile)?.label.toUpperCase()}</SvgText>}
     </Svg>
   );
 }
@@ -583,16 +602,17 @@ export const SNARE_ASPECT = W / SNARE_H;
 /** A small two-tick pitch ladder beside a shell: where the batter and the
  *  other head sit, so the BATTER and SNARE SIDE / front-head faders move
  *  something on the glass. Log scale over [lo, hi] Hz. */
-function PitchLadder({ x, top, bot, lo, hi, ticks }: { x: number; top: number; bot: number; lo: number; hi: number; ticks: { hz: number; label: string; color: string }[] }) {
+function PitchLadder({ x, top, bot, lo, hi, ticks, bst = 1 }: { x: number; top: number; bot: number; lo: number; hi: number; ticks: { hz: number; label: string; color: string }[]; bst?: number }) {
+  const fsS = FONT_S * bst;
   const yOf = (hz: number) => bot - (Math.log2(Math.max(lo, Math.min(hi, hz)) / lo) / Math.log2(hi / lo)) * (bot - top);
   return (
     <G>
       <Line x1={x} y1={top} x2={x} y2={bot} stroke={ink.stroke} strokeWidth={1} />
-      <SvgText x={x} y={top - 5} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>pitch</SvgText>
+      <SvgText x={x} y={top - 5} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>pitch</SvgText>
       {ticks.map((t) => (
         <G key={t.label}>
           <Line x1={x - 6} y1={yOf(t.hz)} x2={x + 6} y2={yOf(t.hz)} stroke={t.color} strokeWidth={2} />
-          <SvgText x={x + 9} y={yOf(t.hz) + 4} fontSize={FONT_S} fill={t.color} fontFamily={fonts.mono}>{t.label}</SvgText>
+          <SvgText x={x + 9} y={yOf(t.hz) + 4} fontSize={fsS} fill={t.color} fontFamily={fonts.mono}>{t.label}</SvgText>
         </G>
       ))}
     </G>
@@ -616,6 +636,11 @@ function HeadGlow({ x, y, w, h, sync, s }: { x: number; y: number; w: number; h:
  *  follows the STROKE; the ladder shows where the batter and the snare-side
  *  head sit; the batter glows with the hit. */
 export function SnareStage({ width, height, strainer, snareSideCents, playing, batterHz, strike = 0.7, sync }: { width: number; height: number; strainer: number; snareSideCents: number; playing?: boolean; batterHz?: number; strike?: number; sync?: SoundSync }) {
+  // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
+  const bst = textBoost(width);
+  const tiny = tinyFit(width);
+  const fs = FONT * bst;
+  const fsS = FONT_S * bst;
   const x0 = 60;
   const x1 = 300;
   const yT = 44;
@@ -648,7 +673,7 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing, b
         <Circle cx={-2} cy={0} r={4} fill="#e9dcc0" />
       </G>
       {/* the pitch ladder */}
-      {batterHz != null && snareHz != null ? <PitchLadder x={W - 22} top={yT + 6} bot={yB + 40} lo={120} hi={700} ticks={[{ hz: batterHz, label: 'B', color: ink.cyan }, { hz: snareHz, label: 'S', color: ink.green }]} /> : null}
+      {batterHz != null && snareHz != null ? <PitchLadder x={W - 22} top={yT + 6} bot={yB + 40} lo={120} hi={700} ticks={[{ hz: batterHz, label: 'B', color: ink.cyan }, { hz: snareHz, label: 'S', color: ink.green }]} bst={bst} /> : null}
       {/* hoops, rods, lugs */}
       {[x0 + 20, x0 + 80, x0 + 140, x0 + 200].map((x) => (
         <G key={x}>
@@ -671,14 +696,14 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing, b
       </G>
       <Rect x={x1 - 20} y={yB + 2} width={22} height={22} rx={3} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.7} />
       {/* labels */}
-      <SvgText x={x0 - 10} y={yT - 8} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>batter</SvgText>
-      <SvgText x={x1 - 24} y={yB + 50} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>snare-side head</SvgText>
-      <SvgText x={x0 + 100} y={yB + 26 + gap} fontSize={FONT} fill={ink.metalLight} fontFamily={fonts.barlowMedium}>wires</SvgText>
-      <SvgText x={x0 + 30} y={yB + 48} fontSize={FONT} fill={ink.amber} fontFamily={fonts.barlowMedium}>strainer · {s < 0.1 ? 'OFF' : s < 0.4 ? 'loose' : s < 0.7 ? 'medium' : 'tight (choke)'}</SvgText>
-      <SvgText x={x1 - 8} y={yB + 36} fontSize={FONT} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>butt plate</SvgText>
-      <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>14" SNARE · SIDE VIEW</SvgText>
-      <SvgText x={W - 6} y={14} fontSize={FONT} fill={ink.cyan} textAnchor="end" fontFamily={fonts.mono}>S {snareSideCents >= 0 ? '+' : ''}{snareSideCents.toFixed(0)} ¢ vs B</SvgText>
-      <SvgText x={W / 2 - 20} y={SNARE_H - 6} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>wires follow the snare-side head · stick height = stroke</SvgText>
+      <SvgText x={x0 - 10} y={yT - 8} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>batter</SvgText>
+      <SvgText x={x1 - 24} y={yB + 50} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>snare-side head</SvgText>
+      <SvgText x={x0 + 100} y={yB + 26 + gap} fontSize={fs} fill={ink.metalLight} fontFamily={fonts.barlowMedium}>wires</SvgText>
+      <SvgText x={x0 + 30} y={yB + 48} fontSize={fs} fill={ink.amber} fontFamily={fonts.barlowMedium}>strainer · {s < 0.1 ? 'OFF' : s < 0.4 ? 'loose' : s < 0.7 ? 'medium' : 'tight (choke)'}</SvgText>
+      <SvgText x={x1 - 8} y={yB + 36} fontSize={fs} fill={ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>butt plate</SvgText>
+      {tiny ? null : <SvgText x={6} y={14} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>14" SNARE · SIDE VIEW</SvgText>}
+      {tiny ? null : <SvgText x={W - 6} y={14} fontSize={fs} fill={ink.cyan} textAnchor="end" fontFamily={fonts.mono}>S {snareSideCents >= 0 ? '+' : ''}{snareSideCents.toFixed(0)} ¢ vs B</SvgText>}
+      {tiny ? null : <SvgText x={W / 2 - 20} y={SNARE_H - 6} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>wires follow the snare-side head · stick = stroke</SvgText>}
     </Svg>
     <HeadGlow x={x0 - 6} y={yT - 5} w={x1 - x0 + 12} h={7} sync={sync} s={sc} />
     </View>
@@ -695,10 +720,17 @@ export const KICK_ASPECT = W / KICK_H;
  *  the batter glows with the measured envelope; the ladder tick shows where
  *  BATTER sits. */
 export function KickStage({ width, height, front, damping, strike, batterHz, sync }: { width: number; height: number; front: 'open' | 'ported' | 'removed'; damping: number; strike: number; batterHz?: number; sync?: SoundSync }) {
+  // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
+  const bst = textBoost(width);
+  const tiny = tinyFit(width);
+  const fs = FONT * bst;
+  const fsS = FONT_S * bst;
   const x0 = 70; // front head (audience side)
   const x1 = 250; // batter side
   const yT = 28;
-  const yB = 168;
+  // The head labels sit at yB + 20 and the caption at KICK_H − 6: the shell
+  // ends here so the two never share a line.
+  const yB = 160;
   const d = Math.max(0, Math.min(1, damping));
   const pillowW = 30 + 70 * d;
   const beaterA = -20 - 30 * strike;
@@ -735,7 +767,7 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
       <Line x1={x1 - 20} y1={yB - 4} x2={x1 - 6} y2={yB + 16} stroke={ink.metal} strokeWidth={2.5} />
       {/* pillow inside, against the batter */}
       {d > 0.02 ? <Rect x={x1 - 8 - pillowW} y={yB - 46} width={pillowW} height={38} rx={10} fill="#d8d2c4" opacity={0.9} /> : null}
-      {d > 0.02 ? <SvgText x={x1 - 8 - pillowW / 2} y={yB - 24} fontSize={FONT} fill="#4a4538" textAnchor="middle" fontFamily={fonts.barlowMedium}>pillow</SvgText> : null}
+      {d > 0.02 ? <SvgText x={x1 - 8 - pillowW / 2} y={yB - 24} fontSize={fs} fill="#4a4538" textAnchor="middle" fontFamily={fonts.barlowMedium}>pillow</SvgText> : null}
       {/* batter head + hoop */}
       <Rect x={x1} y={yT - 4} width={4} height={yB - yT + 8} fill={ink.head} />
       {[yT - 2, (yT + yB) / 2, yB + 2].map((y) => (
@@ -747,7 +779,7 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
       {/* front head: open / ported / removed */}
       {front !== 'removed' ? <Rect x={x0 - 4} y={yT - 4} width={4} height={yB - yT + 8} fill="#1c1c1f" stroke="#444" strokeWidth={0.6} /> : null}
       {front === 'ported' ? <Ellipse cx={x0 - 2} cy={yB - 36} rx={3} ry={14} fill={ink.bg} stroke={ink.amber} strokeWidth={1} /> : null}
-      {front === 'ported' ? <SvgText x={x0 - 12} y={yB - 56} fontSize={FONT} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>port</SvgText> : null}
+      {front === 'ported' ? <SvgText x={x0 - 12} y={yB - 56} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>port</SvgText> : null}
       {[yT - 2, (yT + yB) / 2, yB + 2].map((y) => (front !== 'removed' ? (
         <G key={y}>
           <Rect x={x0 - 14} y={y - 4} width={10} height={8} rx={1} fill={ink.metal} stroke={ink.metalDark} strokeWidth={0.5} />
@@ -759,13 +791,13 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
       <Path d={`M${x1 + 30} ${yB + 10} L${x1 + 80} ${yB - 2}`} stroke={ink.metal} strokeWidth={3} />
       <Line x1={x1 + 30} y1={yB + 10} x2={x1 + 30} y2={yB - 70} stroke={ink.metal} strokeWidth={3} />
       {/* the pitch ladder on the batter side */}
-      {batterHz != null ? <PitchLadder x={W - 16} top={yT + 14} bot={yB - 30} lo={40} hi={110} ticks={[{ hz: batterHz, label: `${batterHz.toFixed(0)}`, color: ink.cyan }]} /> : null}
+      {batterHz != null ? <PitchLadder x={W - 30} top={yT + 14} bot={yB - 30} lo={40} hi={110} ticks={[{ hz: batterHz, label: `${batterHz.toFixed(0)}`, color: ink.cyan }]} bst={bst} /> : null}
       {/* labels */}
-      <SvgText x={x1 + 2} y={yB + 30} fontSize={FONT} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>batter</SvgText>
-      <SvgText x={x0 - 2} y={yB + 30} fontSize={FONT} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'removed' ? 'front head off' : 'front head'}</SvgText>
-      <SvgText x={x1 + 60} y={yB - 80} fontSize={FONT} fill={ink.text} fontFamily={fonts.barlowMedium}>beater</SvgText>
-      <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>22" BASS DRUM · SIDE VIEW</SvgText>
-      <SvgText x={W / 2} y={KICK_H - 6} fontSize={FONT_S} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'open' ? 'closed front head: full coupling, longest note' : front === 'ported' ? 'ported: less coupling, faster decay, a mic path' : 'no front head: the batter alone, shortest note'}</SvgText>
+      <SvgText x={x1 + 2} y={yB + 21} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>batter</SvgText>
+      <SvgText x={x0 - 2} y={yB + 21} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'removed' ? 'front head off' : 'front head'}</SvgText>
+      <SvgText x={x1 + 60} y={yB - 80} fontSize={fs} fill={ink.text} fontFamily={fonts.barlowMedium}>beater</SvgText>
+      {tiny ? null : <SvgText x={6} y={14} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>22" BASS DRUM · SIDE VIEW</SvgText>}
+      {tiny ? null : <SvgText x={W / 2} y={KICK_H - 6} fontSize={fsS} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>{front === 'open' ? 'closed front head: full coupling, longest note' : front === 'ported' ? 'ported: less coupling, faster decay, a mic path' : 'no front head: the batter alone, shortest note'}</SvgText>}
     </Svg>
     <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 0, top: 0, width, height }, swingStyle]}>
       <Svg width={width} height={height} viewBox={`0 0 ${W} ${KICK_H}`}>{beater}</Svg>
@@ -788,6 +820,12 @@ export type KitSounding = { which: 'rack' | 'floor' | 'both'; switchAt: number }
  *  band, its current fundamental, and the interval between them. The
  *  sounding tom's head glows with the hit. */
 export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sync }: { width: number; height: number; rackHz: number; floorHz: number; verdict: 'distinct' | 'close' | 'unbalanced'; sounding?: KitSounding; sync?: SoundSync }) {
+  // The 9 pt floor on a short phone (drumEngine.textBoost): 1 at or above 1 : 1.
+  const bst = textBoost(width);
+  const tiny = tinyFit(width);
+  const fs = FONT * bst;
+  const fsS = FONT_S * bst;
+  const f2 = F2 * bst;
   const lx = 232; // ladder x
   const top = 26;
   const bot = KIT_H - 26;
@@ -827,8 +865,8 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
           </G>
         ))}
         {legs ? [x + 6, x + w - 6].map((xx) => <Line key={xx} x1={xx} y1={y + h} x2={xx} y2={y + h + 22} stroke={ink.metal} strokeWidth={2.4} />) : null}
-        <SvgText x={x + w / 2} y={y - 10} fontSize={FONT} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{label}</SvgText>
-        <SvgText x={x + w / 2} y={y + h + (legs ? 34 : 16)} fontSize={F2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{hz.toFixed(0)} Hz</SvgText>
+        <SvgText x={x + w / 2} y={y - 10} fontSize={fs} fill={ink.text} textAnchor="middle" fontFamily={fonts.barlowMedium}>{label}</SvgText>
+        <SvgText x={x + w / 2} y={y + h + (legs ? 34 : 16)} fontSize={f2} fill={ink.amber} textAnchor="middle" fontFamily={fonts.mono}>{hz.toFixed(0)} Hz</SvgText>
       </G>
     );
   };
@@ -850,23 +888,23 @@ export function KitStage({ width, height, rackHz, floorHz, verdict, sounding, sy
       {[80, 100, 130, 160, 200, 250, 300].map((hz) => (
         <G key={hz}>
           <Line x1={lx - 4} y1={yOf(hz)} x2={lx + 4} y2={yOf(hz)} stroke={ink.dim} strokeWidth={1} />
-          <SvgText x={lx + 8} y={yOf(hz) + 4} fontSize={FONT_S} fill={ink.dim} fontFamily={fonts.mono}>{hz}</SvgText>
+          <SvgText x={lx + 8} y={yOf(hz) + 4} fontSize={fsS} fill={ink.dim} fontFamily={fonts.mono}>{hz}</SvgText>
         </G>
       ))}
       {/* useful bands */}
       <Rect x={lx - 18} y={yOf(DRUMS.rack.usefulHz[1])} width={10} height={yOf(DRUMS.rack.usefulHz[0]) - yOf(DRUMS.rack.usefulHz[1])} fill="rgba(91,176,255,.25)" />
       <Rect x={lx - 32} y={yOf(DRUMS.floor.usefulHz[1])} width={10} height={yOf(DRUMS.floor.usefulHz[0]) - yOf(DRUMS.floor.usefulHz[1])} fill="rgba(55,224,95,.22)" />
-      <SvgText x={lx - 13} y={yOf(DRUMS.rack.usefulHz[1]) - 4} fontSize={FONT_S} fill={ink.cyan} textAnchor="middle" fontFamily={fonts.barlowMedium}>rack</SvgText>
-      <SvgText x={lx - 27} y={yOf(DRUMS.floor.usefulHz[0]) + 12} fontSize={FONT_S} fill={ink.green} textAnchor="middle" fontFamily={fonts.barlowMedium}>floor</SvgText>
+      <SvgText x={lx - 13} y={yOf(DRUMS.rack.usefulHz[1]) - 4} fontSize={fsS} fill={ink.cyan} textAnchor="middle" fontFamily={fonts.barlowMedium}>rack</SvgText>
+      <SvgText x={lx - 27} y={yOf(DRUMS.floor.usefulHz[0]) + 12} fontSize={fsS} fill={ink.green} textAnchor="middle" fontFamily={fonts.barlowMedium}>floor</SvgText>
       {/* markers + interval bracket */}
       <Circle cx={lx} cy={yOf(rackHz)} r={4.5} fill={ink.cyan} />
       <Circle cx={lx} cy={yOf(floorHz)} r={4.5} fill={ink.green} />
       <Line x1={lx + 40} y1={yOf(rackHz)} x2={lx + 40} y2={yOf(floorHz)} stroke={tint} strokeWidth={2} />
       <Line x1={lx + 36} y1={yOf(rackHz)} x2={lx + 44} y2={yOf(rackHz)} stroke={tint} strokeWidth={2} />
       <Line x1={lx + 36} y1={yOf(floorHz)} x2={lx + 44} y2={yOf(floorHz)} stroke={tint} strokeWidth={2} />
-      <SvgText x={lx + 48} y={(yOf(rackHz) + yOf(floorHz)) / 2 + 4} fontSize={F2} fill={tint} fontFamily={fonts.mono}>{Math.abs(12 * Math.log2(rackHz / floorHz)).toFixed(1)} st</SvgText>
-      <SvgText x={6} y={14} fontSize={FONT} fill={ink.amber} fontFamily={fonts.oswaldMedium}>THE TOM RANGE · FUNDAMENTALS</SvgText>
-      <SvgText x={W - 6} y={KIT_H - 6} fontSize={FONT} fill={tint} textAnchor="end" fontFamily={fonts.oswaldMedium}>{verdict.toUpperCase()}</SvgText>
+      <SvgText x={lx + 48} y={(yOf(rackHz) + yOf(floorHz)) / 2 + 4} fontSize={f2} fill={tint} fontFamily={fonts.mono}>{Math.abs(12 * Math.log2(rackHz / floorHz)).toFixed(1)} st</SvgText>
+      {tiny ? null : <SvgText x={6} y={14} fontSize={fs} fill={ink.amber} fontFamily={fonts.oswaldMedium}>THE TOM RANGE · FUNDAMENTALS</SvgText>}
+      <SvgText x={W - 6} y={KIT_H - 6} fontSize={fs} fill={tint} textAnchor="end" fontFamily={fonts.oswaldMedium}>{verdict.toUpperCase()}</SvgText>
     </Svg>
     {/* the sounding tom's head glows with the hit (rack: x 22 w 64 h 44; floor: x 112 w 84 h 84; tops at 150 − h) */}
     <Animated.View pointerEvents="none" style={[{ position: 'absolute', left: 19 * sc, top: (150 - 44 - 4) * sc, width: 70 * sc, height: 6 * sc, borderRadius: 3 * sc, backgroundColor: '#fff3c4' }, rackGlow]} />

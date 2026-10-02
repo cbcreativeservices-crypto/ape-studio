@@ -18,7 +18,7 @@
  * the CURRENT settings; ▶ then plays exactly what is drawn. Nothing ever
  * replays by itself after a control change — a press is a press.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useFrameCallback, useSharedValue, type SharedValue } from 'react-native-reanimated';
@@ -28,6 +28,7 @@ import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { envelopeDb, overview, sustainT60, toStereo, type Overview, type RenderResult } from './drumEngine';
+import { StepHostContext } from './steps';
 
 export type DrumRendered = {
   key: string;
@@ -208,6 +209,19 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
 
   useStopWhenSilenced(playing || pending, stop);
   useStopOnClose(stop);
+  // LEAVING THE DISPLAY STOPS THE SOUND (the Mastering / Tuning chapter
+  // rule): a chapter stays mounted across its steps, so paging from a HEAR
+  // step to the reading or the PRACTICE deck would leave a strike sounding
+  // with no display on screen. The render survives; only the sound stops.
+  // No-op on the first mount (nothing is sounding yet).
+  const host = useContext(StepHostContext);
+  const hostStep = host?.step;
+  const stepSeen = useRef(hostStep);
+  useEffect(() => {
+    if (stepSeen.current === hostStep) return;
+    stepSeen.current = hostStep;
+    stop();
+  }, [hostStep, stop]);
 
   return useMemo(() => ({ status, play, stop, playing, pending, rendered, progress }), [status, play, stop, playing, pending, rendered, progress]);
 }

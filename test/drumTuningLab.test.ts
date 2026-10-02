@@ -106,7 +106,8 @@ describe('the spec is covered', () => {
   it('the cross-pattern is an animated order on 6, 8 and 10 lugs — every lug once, every move to the opposite rod or round the star', () => {
     const s = strip(read(`${DIR}/modules/ch2Prepare.tsx`));
     assert.match(s, /setInterval\(/, 'the pattern animates');
-    assert.match(s, /RUN PATTERN/);
+    assert.match(s, /'▶ RUN'/);
+    assert.match(s, /onTap: toggleRun/, 'tapping the display runs / pauses the pattern');
     const order = engine.STAR_ORDER as Record<number, readonly number[]>;
     for (const n of [6, 8, 10]) {
       const o = order[n];
@@ -254,6 +255,32 @@ describe('rack + full screen on every live page', () => {
       });
     }
     assert.deepEqual(problems, [], 'stage text under 9 pt on a phone');
+    // THE SHORT PHONE (375 × 667): the rack drops the glass a size, every
+    // drum-top drawing is height-limited under 1 : 1, and the stages grow
+    // their fonts by drumEngine.textBoost so the smallest label is 9 pt.
+    // Every stage applies it; no SVG font size is a bare constant.
+    for (const name of ['DrumTopStage', 'AnatomyStage', 'EdgeStage', 'SnareStage', 'KickStage', 'KitStage', 'WaveStage', 'PartialsStage', 'PitchStage', 'VibrationStage']) {
+      const fn = stages.slice(stages.indexOf(`export function ${name}(`));
+      assert.ok(fn.indexOf('const bst = textBoost(width);') < fn.indexOf('return'), `${name} applies the short-phone font boost`);
+    }
+    assert.doesNotMatch(stages, /fontSize=\{(FONT|FONT_S|F2)\}/, 'every SVG font size rides the boost (fs / fsS / f2)');
+    const short: string[] = [];
+    for (const f of MODULES) {
+      const s = strip(read(`${DIR}/modules/${f}`));
+      for (const b of s.split(/layout: 'rack'/).slice(1)) {
+        const body = b.slice(0, b.indexOf('well:') > 0 ? b.indexOf('well:') : undefined);
+        const names = [...(body.match(/aspect: ([^\n]+)/)?.[1] ?? '').matchAll(/(\w+_ASPECT)/g)].map((m) => m[1]);
+        const aspect = Math.min(...names.map((n) => aspectOf[n] ?? NaN));
+        const size = (body.match(/size: '([SML])'/)?.[1] ?? 'M') as 'S' | 'M' | 'L';
+        const title = body.match(/title: '([^']+)'/)?.[1] ?? 'rack';
+        const drawW = engine.drawnWidth(aspect, 375, engine.glassHeightFor(size, 667));
+        const pt = FONT_MIN * (drawW / DESIGN_W) * engine.textBoost(drawW);
+        if (pt < 9 - 1e-9) short.push(`${f} "${title}" at 375 × 667: ${pt.toFixed(2)} pt`);
+      }
+    }
+    assert.deepEqual(short, [], 'stage text under 9 pt on a short phone');
+    assert.equal(engine.textBoost(400), 1, 'no boost at or above 1 : 1 (a tall phone, FULL SCREEN)');
+    assert.ok(Math.abs(engine.textBoost(268) * 10.5 * (268 / 360) - 9) < 1e-9, 'the L → M drum top on an SE lands exactly on the floor');
     for (const f of ['kit.tsx', 'DrumTuningLabScreen.tsx', 'modules/ch6Kit.tsx']) {
       const rn = [...strip(read(`${DIR}/${f}`)).matchAll(/fontSize: ([\d.]+)/g)].map((m) => Number(m[1]));
       assert.deepEqual(rn.filter((n) => n < 9), [], `${f}: text under 9 pt`);
@@ -275,17 +302,32 @@ describe('rack + full screen on every live page', () => {
       const landings = (s.match(/<Landing looking=/g) ?? []).length;
       assert.equal(landings, racks, `${f}: a Landing line per rack page`);
       assert.doesNotMatch(s, /label: '■ STOP'/, `${f}: no STOP key on the dock`);
-      // Docks: at most six keys, and five where the page allows it.
+      // Docks: at most FIVE keys (rack/RackUnit: "≤ 5 keys reads best on a
+      // 375-wide phone"); a sixth control becomes a bezel tap-cell.
       for (const b of s.split(/params: \[/).slice(1)) {
         const list = b.slice(0, b.indexOf('initialParam:'));
         const keys = (list.match(/^\s{14}(faderParam|optionsParam|flipFader|\{ kind: '|stageKey)/gm) ?? []).length;
-        assert.ok(keys <= 6, `${f}: a dock with ${keys} keys`);
+        assert.ok(keys <= 5, `${f}: a dock with ${keys} keys`);
       }
     }
     const ch2 = strip(read(`${DIR}/modules/ch2Prepare.tsx`));
-    assert.match(ch2, /id: 'reveal', label: revealed \? '✓ KEY SHOWN' : '✓ REVEAL THE KEY'/, 'REVEAL THE KEY is a dock action');
+    assert.match(ch2, /id: 'reveal', label: revealed \? '✓ KEY SHOWN' : '✓ REVEAL KEY'/, 'REVEAL KEY is a dock action');
+    assert.match(ch2, /<ExpandableFigure[^\n]*controls=\{hardwareChips\}/, 'the inline figure docks its controls in full screen');
     const ch5 = strip(read(`${DIR}/modules/ch5Types.tsx`));
     assert.match(ch5, /id: 'check', label: '✓ CHECK'/, 'CHECK is a dock action');
+    assert.match(ch5, /k: 'GOAL'[^\n]*onPress: cycleGoal/, 'GOAL is a tap-to-cycle bezel cell, keeping the dock at five keys with CHECK on it');
+    // Dock key labels: a key has ~10 characters of room at Oswald 12 (rackTypes).
+    for (const f of MODULES) {
+      for (const b of strip(read(`${DIR}/modules/${f}`)).split(/params: \[/).slice(1)) {
+        const list = b.slice(0, b.indexOf('initialParam:'));
+        const keys = (list.match(/^\s{14}(faderParam|optionsParam|flipFader|\{ kind: '|stageKey)/gm) ?? []).length;
+        // Measured 2026-10-01 at 390 wide: "SNARE SIDE" (10) and "RACK TOM"
+        // (8, wide letters) ellipsized on a five-key dock; "STRAINER" (8)
+        // and "▶ STRIKE" (8) fit. Eight is the ceiling, and wide words less.
+        const cap = keys >= 5 ? 8 : 12;
+        for (const m of list.matchAll(/^\s{14}(?:faderParam|optionsParam|flipFader|\{ kind: '\w+')[^\n]*?label: (?:[^,\n]*? )?'([^']+)'/gm)) assert.ok(m[1].length <= cap, `${f}: dock label too long for ${keys} keys: "${m[1]}"`);
+      }
+    }
     assert.match(strip(read(`${DIR}/modules/ch7Trouble.tsx`)), /useState<StageView>\('drum'\)/, 'Chapter 7 lands on the drum');
   });
   it('dead controls are gone: TAP and STRIKE have a visible playing state; INSPECT reveals a fault only once looked at; the snare and kick faders draw', () => {
@@ -375,6 +417,7 @@ describe('guest rules, persistence and credit', () => {
     assert.match(ch3, /const compose = \(base: HeadState, moved: number\[\]\)/, 'the practice head = hidden offsets + this run\'s moves');
     assert.match(ch3, /value: pass\.moved\[lug\] \?\? 0/, 'the TURN fader shows only this run\'s move');
     assert.doesNotMatch(ch3, /value: head\.turns\[lug\]/, 'the absolute offset is never on a fader');
+    assert.match(ch3, /keyTurn=\{pass\.moved\[lug\] \?\? 0\}/, 'the key arrow shows this run of moves, never the hidden offset');
     assert.match(ch3, /showMap=\{mapShown \? true : 'hidden'\}/, 'the HEAR map is hidden until the learner has listened');
     assert.match(ch3, /if \(tapped\.size < SPEC\.lugs\)/, 'REVEAL MAP needs every lug tapped');
     assert.match(ch3, /which === 'batter' \? 'full' : 'brief'/, 'the resonant pass is independent');
@@ -392,7 +435,7 @@ describe('guest rules, persistence and credit', () => {
     const ch7 = strip(read(`${DIR}/modules/ch7Trouble.tsx`));
     assert.match(ch7, /const investigated = struck && tappedEnough;/, 'Chapter 7: strike (and tap) before a hypothesis');
     assert.match(ch7, /!investigated\s*\?[\s\S]*?: !hypothesised\s*\?[\s\S]*?optionsParam\(\{ id: 'where'/, 'then WHERE, then FIX');
-    assert.match(ch7, /label: !struck \? 'STRIKE 1ST'/, 'the FIX slot is locked until the drum has been struck');
+    assert.match(ch7, /label: !struck \? 'HIT 1ST'/, 'the FIX slot is locked until the drum has been struck');
     assert.match(ch7, /k: 'VIEW'[^\n]*onPress: cycleView/, 'VIEW is a tap-to-cycle bezel cell, keeping the dock at five keys');
     assert.match(ch7, /hypothesisRight/);
     assert.match(ch7, /evidence\(\)/, 'the reply quotes the evidence');
@@ -484,6 +527,7 @@ describe('audio honours the gate', () => {
     assert.match(hook, /isAudioOutputEnabled\(\)/);
     assert.match(hook, /new EarClipPlayer\(\)/, 'the house offline-render player (applyCeiling inside)');
     assert.doesNotMatch(hook, /setTimeout\([^)]*play/, 'no auto-replay timer');
+    assert.match(hook, /const host = useContext\(StepHostContext\);[\s\S]*?if \(stepSeen\.current === hostStep\) return;[\s\S]*?stop\(\);/, 'a step change stops the sound (the Mastering rule)');
   });
   it('the picture re-renders on a control change without the gate; every chapter plays through the hook', () => {
     assert.match(hook, /renderNow\(\);\s*\}, 120\)/);

@@ -47,7 +47,7 @@ export const DRUM_CHAPTERS: readonly DrumChapter[] = [
     goal: 'know the drum and the goal, inspect, seat a head, start from known',
     objective: 'Identify the drum and the goal, inspect the hardware, seat a new head with a consistent cross-pattern, and start from a known, even condition.',
     takeaway: 'Most "tuning problems" are preparation problems. Know the drum and the sound you want, check that nothing is loose, worn or dirty, seat the head evenly, and bring it up in small opposite steps from a known state.',
-    credit: 'Every fault found and nothing extra flagged, on any drum, then REVEAL THE KEY. ↺ NEW DRUM deals another.',
+    credit: 'Every fault found and nothing extra flagged, on any drum, then ✓ REVEAL KEY. ↺ NEW DRUM deals another.',
   },
   {
     id: 'method', num: 3, title: 'The basic tuning method', short: 'METHOD', interactive: 'Tune the head',

@@ -133,8 +133,8 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
               { k: 'VERDICT', v: verdict.kind.toUpperCase(), tint: verdict.kind === 'distinct' ? colors.green : verdict.kind === 'close' ? colors.amber : colors.red, flex: 1.4 },
             ],
             params: [
-              faderParam({ id: 'rack', label: 'RACK TOM', value: rackHz, min: 100, max: 300, step: 1, format: (v) => `12" rack tom's own pitch ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setRackHz, home: 200 }),
-              faderParam({ id: 'floor', label: 'FLOOR TOM', value: floorHz, min: 70, max: 220, step: 1, format: (v) => `16" floor tom's own pitch ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setFloorHz, home: 110 }),
+              faderParam({ id: 'rack', label: 'RACK', value: rackHz, min: 100, max: 300, step: 1, format: (v) => `12" rack tom ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setRackHz, home: 200 }),
+              faderParam({ id: 'floor', label: 'FLOOR', value: floorHz, min: 70, max: 220, step: 1, format: (v) => `16" floor tom ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setFloorHz, home: 110 }),
               { kind: 'action', id: 'r', label: '▶ RACK', onPress: () => { stopAll(); rack.play(); } },
               { kind: 'action', id: 'f', label: '▶ FLOOR', onPress: () => { stopAll(); floor.play(); } },
               { kind: 'action', id: 'b', label: '▶ BOTH', onPress: () => { stopAll(); both.play(); } },
@@ -151,8 +151,8 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
           },
           well: (
             <>
-              <Landing looking="the two toms and a ladder of their pitches; the kit starts upside down." prompt="Ride RACK TOM and FLOOR TOM until the bracket turns green, then ▶ BOTH." />
-              <DrumStatus playing={rack.playing || floor.playing || both.playing} pending={rack.pending || floor.pending || both.pending} rendering={rack.status === 'rendering' || floor.status === 'rendering' || both.status === 'rendering'} idle="stopped · ride RACK TOM and FLOOR TOM, then ▶ BOTH" label={both.playing || both.pending ? 'rack then floor' : rack.playing || rack.pending ? 'the rack tom' : 'the floor tom'} />
+              <Landing looking="the two toms and a ladder of their pitches; the kit starts upside down." prompt="Ride RACK and FLOOR until the bracket turns green, then ▶ BOTH." />
+              <DrumStatus playing={rack.playing || floor.playing || both.playing} pending={rack.pending || floor.pending || both.pending} rendering={rack.status === 'rendering' || floor.status === 'rendering' || both.status === 'rendering'} idle="stopped · ride RACK and FLOOR, then ▶ BOTH" label={both.playing || both.pending ? 'rack then floor' : rack.playing || rack.pending ? 'the rack tom' : 'the floor tom'} />
               <Feedback tone={verdict.kind === 'distinct' ? 'ok' : 'warn'}>{verdict.message}</Feedback>
               <Card>
                 <Point title="The verdicts">DISTINCT: about 2.5 to 9 semitones between neighbouring toms with both drums in their bands. TOO CLOSE: under that. UNBALANCED: a drum forced out of its band, the floor above the rack, or a gap so wide the pair stops reading as one kit. Teaching bands; your ears and your music set the real ones.</Point>

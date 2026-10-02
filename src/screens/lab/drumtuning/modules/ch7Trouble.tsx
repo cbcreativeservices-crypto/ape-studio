@@ -239,7 +239,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
   // labels: a dock key has ~10 characters of room.
   const tapsLeft = c.tapsNeeded - sim.tapped.length;
   const stageKey = !investigated
-    ? { kind: 'action' as const, id: 'locked', label: !struck ? 'STRIKE 1ST' : `TAP ${tapsLeft} MORE`, onPress: () => setWhereNote(!struck ? 'Strike first. Then say where the fault is, then fix it.' : `Tap round the lugs first — ${sim.tapped.length} of ${c.tapsNeeded} needed. Listen for the odd ones out.`), tint: colors.textMuted }
+    ? { kind: 'action' as const, id: 'locked', label: !struck ? 'HIT 1ST' : `${tapsLeft} TO TAP`, onPress: () => setWhereNote(!struck ? 'Strike first. Then say where the fault is, then fix it.' : `Tap round the lugs first — ${sim.tapped.length} of ${c.tapsNeeded} needed. Listen for the odd ones out.`), tint: colors.textMuted }
     : !hypothesised
       ? optionsParam({ id: 'where', label: 'WHERE?', value: '', options: c.areas.map((a) => ({ key: a, label: a, short: a.split(' ')[0].toUpperCase() })), onChange: nameArea, sticky: false })
       : optionsParam({ id: 'fix', label: 'FIX', value: lastFix ?? '', options: c.fixes.map((f) => ({ key: f.id, label: f.label, short: f.id.toUpperCase() })), onChange: applyFix, sticky: false });
@@ -272,7 +272,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
               view === 'drum' ? (
                 <DrumTopStage width={w} height={h} drum={c.drum} head={sim.batter} selected={lug} tap={lug} title={c.title} tapSync={syncOf(tap)} strikeSync={syncOf(pb)} />
               ) : view === 'wave' ? (
-                <WaveStage width={w} height={h} ov={pb.rendered?.overview ?? null} envDb={pb.rendered?.envDb} t60={pb.rendered?.t60} seconds={spec.seconds} label={`${c.title}`} progress={pb.progress} playing={pb.playing} idle="rendering…" />
+                <WaveStage width={w} height={h} ov={pb.rendered?.overview ?? null} envDb={pb.rendered?.envDb} t60={pb.rendered?.t60} seconds={spec.seconds} label={`${c.title}`} progress={pb.progress} playing={pb.playing} idle="making the sound…" />
               ) : (
                 <PartialsStage width={w} height={h} partials={parts} fb={headHz(c.drum, sim.batter, 'batter')} label={c.title} progress={pb.progress} playing={pb.playing} seconds={spec.seconds} />
               ),
@@ -287,13 +287,14 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
               { k: 'BEAT', v: beat < 0.05 ? 'none' : `${beat.toFixed(1)} Hz`, tint: beat < 0.05 ? colors.green : colors.amber },
               { k: 'SUSTAIN', v: fmtS(t60), tint: colors.green },
               // Short values on purpose: a bezel value is never ellipsized.
+              // Five cells: a sixth (CLEARED) cropped BEAT and SUSTAIN down to
+              // bare numbers on a 390-wide phone; the count lives in the well.
               { k: 'FAULT', v: present ? 'STILL' : 'GONE', tint: present ? colors.red : colors.green },
-              { k: 'CLEARED', v: `${cleared.size} / ${SYMPTOMS.length}` },
             ],
             params: [
               optionsParam({ id: 'case', label: 'CASE', value: caseId, options: SYMPTOMS.map((s) => ({ key: s.id, label: `${s.title} · ${DRUMS[s.drum].name}`, short: s.id.toUpperCase(), blurb: s.symptom })), onChange: (id) => { setCaseId(id); setLastFix(null); setLug(0); setWhereNote(null); }, sticky: false }),
               faderParam({ id: 'lug', label: 'LUG', value: lug, min: 0, max: spec.lugs - 1, step: 1, format: (v) => `tap at lug ${Math.round(v) + 1} · ${lugTapHz(sim.batter, Math.round(v), spec.diameterIn, spec.sigmaBatter).toFixed(0)} Hz${sim.tapped.includes(Math.round(v)) ? ' · tapped' : ''}`, formatShort: (v) => `#${Math.round(v) + 1}`, onChange: (v) => setLug(Math.round(v)) }),
-              { kind: 'action', id: 'strike', label: caseId === 'snare' ? '▶ SOFT STRIKE' : '▶ STRIKE', onPress: pb.play },
+              { kind: 'action', id: 'strike', label: caseId === 'snare' ? '▶ SOFTLY' : '▶ STRIKE', onPress: pb.play },
               { kind: 'action', id: 'tap', label: '▶ TAP', onPress: tapNow },
               stageKey,
             ],
@@ -304,7 +305,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
             <>
               <Landing looking={`a ${spec.name} with a fault; the readouts are your evidence (tap VIEW on the bezel for the waveform or the partials).`} prompt={!investigated ? `▶ STRIKE${c.tapsNeeded ? ' and ▶ TAP round the lugs' : ''} first, then say where the fault is.` : !hypothesised ? 'Now say WHERE the fault is — then the FIX tray opens.' : 'Pick a FIX, then strike again and read what changed.'} />
               <DrumStatus playing={pb.playing || tap.playing} pending={pb.pending || tap.pending} rendering={pb.status === 'rendering' || tap.status === 'rendering'} idle={`stopped · ${!struck ? 'press ▶ STRIKE to begin' : !tappedEnough ? `▶ TAP ${c.tapsNeeded - sim.tapped.length} more lug${c.tapsNeeded - sim.tapped.length === 1 ? '' : 's'}` : !hypothesised ? 'open WHERE? and name the area' : 'pick a FIX and strike again'}`} label={tap.playing || tap.pending ? `the tap at lug ${lug + 1}` : 'the strike'} />
-              <Feedback tone="warn">{`${c.title}: ${c.symptom}`}</Feedback>
+              <Feedback tone="warn">{`${c.title}: ${c.symptom} (cleared ${cleared.size} of ${SYMPTOMS.length})`}</Feedback>
               {whereNote && !fixInfo ? <Feedback tone={sim.hypothesisRight === false ? 'warn' : 'info'}>{whereNote}</Feedback> : null}
               {fixInfo ? <Feedback tone={present ? 'warn' : 'ok'}>{fixVerdict()}</Feedback> : null}
               <Card>
@@ -317,7 +318,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
                 </Point>
               </Card>
               <WhyCard title="CREDIT · and a fresh case">
-                <Body>Clear all five cases. The review counts how many you named right on the first hypothesis. ↺ RESET CASE deals the case again for practice; credit stays.</Body>
+                <Body>{`Clear all five cases — ${cleared.size} of ${SYMPTOMS.length} so far. The review counts how many you named right on the first hypothesis. ↺ RESET CASE deals the case again for practice; credit stays.`}</Body>
                 <KeyButton label="↺ RESET CASE" onPress={resetCase} />
               </WhyCard>
             </>

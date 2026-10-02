@@ -991,3 +991,50 @@ export const SYMPTOMS: readonly SymptomCase[] = [
 ];
 
 export const symptomById = (id: SymptomId): SymptomCase => SYMPTOMS.find((s) => s.id === id) ?? SYMPTOMS[0];
+
+/* ───────────────────────── the 9 pt floor on a short phone ─────────────── */
+
+/** The rack's glass heights (rack/rackTypes STAGE_HEIGHTS) and its short-
+ *  viewport rule, mirrored here so the legibility maths is node-testable:
+ *  under 700 pt tall an L glass becomes M and an M glass becomes S. */
+export const GLASS_HEIGHTS = { S: 160, M: 200, L: 250 } as const;
+export function glassHeightFor(size: 'S' | 'M' | 'L', winH: number): number {
+  const eff = winH < 700 ? (size === 'L' ? 'M' : 'S') : size;
+  return GLASS_HEIGHTS[eff];
+}
+
+/** The width a 360-unit drawing of `aspect` (w ÷ h) is drawn at inside a
+ *  glass of (winW × glassH): the rack's frame (10 + 1 each side), the
+ *  StageFit pad (6), then the widest box of the drawing's shape that fits. */
+export function drawnWidth(aspect: number, winW: number, glassH: number, pad = 6): number {
+  const w = winW - 22;
+  const h = glassH - 2;
+  return Math.max(40, Math.min(Math.max(40, w - pad * 2), Math.max(40, h - pad * 2) * aspect));
+}
+
+/** The smallest label in the drum drawings, design units (stagesDrum.FONT_S). */
+export const STAGE_FONT_MIN = 10.5;
+
+/**
+ * On a SHORT phone (iPhone SE, 375 × 667: the rack drops the glass a size)
+ * every drum-top drawing is height-limited and fitted under 1 : 1, so a
+ * 10.5-unit label renders at 7.8 pt — under the owner's 9 pt floor. The
+ * boost is the factor the drawing's fonts must grow by so the smallest label
+ * is exactly 9 pt; 1 wherever the drawing is at or above 1 : 1 (a tall
+ * phone, FULL SCREEN), so nothing changes there. The Mastering lab's
+ * fitFontBoost, for this lab's stages.
+ */
+export function textBoost(width: number, designW = 360, minUnits = STAGE_FONT_MIN, floorPt = 9): number {
+  const k = width / designW;
+  if (!(k > 0) || k >= 1) return 1;
+  // Capped: a sideways phone squeezes the inline glass to 100 pt and the
+  // drawing to a third of its size; past this cap the labels would swallow
+  // the picture. There the stages drop their captions (see `tinyFit`) and
+  // FULL SCREEN is the way to read them.
+  return Math.min(TEXT_BOOST_MAX, Math.max(1, floorPt / (minUnits * k)));
+}
+export const TEXT_BOOST_MAX = 1.4;
+/** A drawing fitted under this fraction of its design width (a sideways
+ *  phone's 100-pt glass) is too small for its captions: they are dropped,
+ *  the picture and the bezel numbers stay. */
+export const tinyFit = (width: number, designW = 360): boolean => width / designW < 0.6;

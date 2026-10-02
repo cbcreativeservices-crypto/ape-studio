@@ -97,6 +97,11 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
     return () => clearInterval(t);
   }, [running, order.length]);
 
+  const toggleRun = () => {
+    if (!running && step >= order.length - 1) setStep(0);
+    setRunning((r) => !r);
+  };
+
   const known = useMemo(() => knownSequence(approach, kStep, 8), [approach, kStep]);
   const knownSpread = spreadCents(known);
   const knownHz = fundamentalHz(16, meanTension(known), DRUMS.floor.sigmaBatter);
@@ -178,6 +183,15 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
     setInspected(new Set(['head']));
   };
   const walked = inspectPoints.filter((p) => inspected.has(p.id)).length;
+  // The hardware chips: the SAME elements inline and docked under the figure
+  // in FULL SCREEN (owner: full screen is a working surface, controls docked).
+  const hardwareChips = (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      {HARDWARE_CHIPS.map((c) => (
+        <KeyButton key={c.id} label={c.id === hw ? `▸ ${c.label}` : c.label} onPress={() => setHw(c.id)} tint={c.id === hw ? colors.amber : undefined} />
+      ))}
+    </View>
+  );
 
   return (
     <ChapterSteps
@@ -213,13 +227,9 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           key: 'inspect', title: 'Inspect the hardware', kind: 'LEARN', layout: 'read',
           body: (
             <>
-              <ExpandableFigure aspect={ANAT_ASPECT} badge={MODEL_BADGE} title="HARDWARE" render={(w, h) => <AnatomyStage width={w} height={h} part={hw} />} />
+              <ExpandableFigure aspect={ANAT_ASPECT} badge={MODEL_BADGE} title="HARDWARE" render={(w, h) => <AnatomyStage width={w} height={h} part={hw} />} controls={hardwareChips} />
               <SectionTitle>BEFORE TUNING, LOOK — TAP A PART</SectionTitle>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-                {HARDWARE_CHIPS.map((c) => (
-                  <KeyButton key={c.id} label={c.id === hw ? `▸ ${c.label}` : c.label} onPress={() => setHw(c.id)} tint={c.id === hw ? colors.amber : undefined} />
-                ))}
-              </View>
+              {hardwareChips}
               <Card tone="accent">
                 <Point title={HARDWARE_CHIPS.find((c) => c.id === hw)?.label ?? ''}>{HARDWARE_CHIPS.find((c) => c.id === hw)?.text ?? ''}</Point>
               </Card>
@@ -243,13 +253,17 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             params: [
               faderParam({ id: 'step', label: 'STEP', value: step, min: 0, max: order.length - 1, step: 1, format: (v) => `step ${Math.round(v) + 1} of ${order.length} — rod ${order[Math.round(v)] + 1}`, formatShort: (v) => `${Math.round(v) + 1}/${order.length}`, onChange: (v) => { setRunning(false); setStep(Math.round(v)); }, home: 0 }),
               optionsParam({ id: 'lugs', label: 'LUGS', value: lugs, options: LUG_OPTIONS, onChange: (v) => { setLugs(v); setStep(0); setRunning(false); } }),
-              { kind: 'action', id: 'run', label: running ? '■ PAUSE' : '▶ RUN PATTERN', onPress: () => { if (!running && step >= order.length - 1) setStep(0); setRunning((r) => !r); } },
+              { kind: 'action', id: 'run', label: running ? '■ PAUSE' : '▶ RUN', onPress: toggleRun },
             ],
             initialParam: 'step',
+            // Tapping the display runs / pauses the pattern (the house
+            // tap-to-toggle rule: this page's "play" is the animation).
+            onTap: toggleRun,
+            tapLabel: 'Display: tap to run or pause the pattern',
           },
           well: (
             <>
-              <Landing looking="the order to tighten the rods on a new head." prompt="Press ▶ RUN PATTERN, or ride STEP by hand; change LUGS for 6, 8 and 10." />
+              <Landing looking="the order to tighten the rods on a new head." prompt="Press ▶ RUN, or ride STEP by hand; change LUGS for 6, 8 and 10." />
               <Card>
                 <Point title="Seating, then small steps">Clean edge; head on; hoop on, centred; every rod started by hand so none is cross-threaded; finger-tight all round — the known condition. Then half a turn per rod in this opposing order, round and round. Some players press the centre of the head firmly between rounds to seat the collar; a few cracks from the film are normal.</Point>
                 <Point title="Why opposing">Tightening neighbours in a row pulls the hoop down on one side first: the head wrinkles there and the far side stays slack. Opposite pairs keep the hoop parallel to the edge. Some manufacturers describe exactly this opposing pattern as the way to apply tension evenly.</Point>
@@ -307,7 +321,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
             ],
             params: [
               flipFader({ id: 'inspect', label: 'INSPECT', items: inspectPoints, selectedId: inspect, onSelect: lookAt, name: (p) => p.label, short: (p) => p.short, blurb: (p) => p.blurb, title: 'WALK THE DRUM', sticky: true }),
-              { kind: 'action', id: 'reveal', label: revealed ? '✓ KEY SHOWN' : '✓ REVEAL THE KEY', onPress: reveal, tint: colors.amber },
+              { kind: 'action', id: 'reveal', label: revealed ? '✓ KEY SHOWN' : '✓ REVEAL KEY', onPress: reveal, tint: colors.amber },
               { kind: 'action', id: 'new', label: '↺ NEW DRUM', onPress: newDrum, tint: colors.green },
             ],
             initialParam: 'inspect',
@@ -315,7 +329,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="a snare with one to three things wrong; the dashed ring is where you are looking." prompt="Ride INSPECT round it, flag what you find in the list, then ✓ REVEAL THE KEY." />
+              <Landing looking="a snare with one to three things wrong; the dashed ring is where you are looking." prompt="Ride INSPECT round it, flag what you find in the list, then ✓ REVEAL KEY." />
               <Feedback tone="info">{seen}</Feedback>
               <Checklist items={checkItems} chosen={flags} onToggle={(id) => { if (revealed) return; setFlags((f) => { const n = new Set(f); if (n.has(id)) n.delete(id); else n.add(id); return n; }); }} reveal={revealed} />
               {revealed ? (

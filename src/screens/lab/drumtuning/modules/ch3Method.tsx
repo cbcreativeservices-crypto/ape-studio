@@ -242,7 +242,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
         {
           key: 'tune', title: 'Tune the head', kind: 'ADJUST', layout: 'rack',
           rack: {
-            render: (w, h) => <DrumTopStage width={w} height={h} drum={DRUM} head={head} which={which} selected={lug} tap={lug} title={`tune the ${which === 'batter' ? 'batter' : 'resonant'} head`} tapSync={syncOf(tap)} strikeSync={syncOf(strike)} />,
+            render: (w, h) => <DrumTopStage width={w} height={h} drum={DRUM} head={head} which={which} selected={lug} tap={lug} title={`tune the ${which === 'batter' ? 'batter' : 'resonant'} head`} tapSync={syncOf(tap)} strikeSync={syncOf(strike)} keyTurn={pass.moved[lug] ?? 0} />,
             aspect: TOP_ASPECT,
             size: 'L',
             badge: MODEL_BADGE,
@@ -256,7 +256,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
             params: [
               faderParam({ id: 'turn', label: 'TURN', value: pass.moved[lug] ?? 0, min: -1, max: 1, step: 0.0625, format: (v) => `${fmtTurn(v)} on rod ${lug + 1} this run — ${v > 0.01 ? 'tighter than you found it' : v < -0.01 ? 'looser than you found it' : 'as you found it'}`, formatShort: (v) => fmtTurn(v), onChange: setTurn, home: 0 }),
               optionsParam({ id: 'lug', label: 'LUG', value: lug, options: Array.from({ length: SPEC.lugs }, (_, i) => ({ key: i, label: `Lug ${i + 1}`, short: `#${i + 1}` })), onChange: setLug }),
-              { kind: 'toggle', id: 'which', label: which === 'batter' ? 'BATTER' : 'RESONANT', value: which === 'reso', onToggle: () => { setWhich((w) => (w === 'batter' ? 'reso' : 'batter')); setPrevSpread(undefined); setShown(null); } },
+              { kind: 'toggle', id: 'which', label: which === 'batter' ? 'BATTER' : 'RESO', value: which === 'reso', onToggle: () => { setWhich((w) => (w === 'batter' ? 'reso' : 'batter')); setPrevSpread(undefined); setShown(null); } },
               { kind: 'action', id: 'tap', label: '▶ TAP', onPress: tap.play },
               { kind: 'action', id: 'strike', label: '▶ STRIKE', onPress: strike.play },
             ],
@@ -274,7 +274,7 @@ export function Ch3Method({ onInteractive }: ChapterProps) {
               <Card>
                 <Point title={which === 'batter' ? 'The batter: guided, then on your own' : 'The resonant head: on your own'}>
                   {which === 'batter'
-                    ? 'The lab shows you the first two moves, then names the rod, the direction and the amount. Bring a high lug down and its opposite up by the same small amount: the mean — and the pitch — stays put. Then flip to RESONANT.'
+                    ? 'The lab shows you the first two moves, then names the rod, the direction and the amount. Bring a high lug down and its opposite up by the same small amount: the mean — and the pitch — stays put. Then flip to RESO.'
                     : 'No rods are named on this head: tap round it, find the highest and lowest, and move them toward each other a sixteenth at a time. ▶ STRIKE follows this head too — an uneven bottom head warbles the whole drum.'}
                 </Point>
               </Card>

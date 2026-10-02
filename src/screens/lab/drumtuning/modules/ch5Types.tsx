@@ -87,6 +87,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
     setGoal(gl);
     reseed(gl, gDrum);
   };
+  const cycleGoal = () => pickGoal(GOALS[(GOALS.findIndex((x) => x.id === goal) + 1) % GOALS.length].id);
   const pickDrum = (d: DrumKind) => {
     setGDrum(d);
     reseed(goal, d);
@@ -136,7 +137,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
             ],
             params: [
               faderParam({ id: 'strainer', label: 'STRAINER', value: strainer, min: 0, max: 1, step: 0.05, format: (v) => (v < 0.1 ? 'thrown off — no wires' : v < 0.4 ? `${Math.round(v * 100)} % · loose: sensitive, buzzy, long` : v < 0.7 ? `${Math.round(v * 100)} % · medium` : `${Math.round(v * 100)} % · tight: less sensitive, choked`), formatShort: (v) => `${Math.round(v * 100)} %`, onChange: setStrainer, home: 0.5 }),
-              faderParam({ id: 'side', label: 'SNARE SIDE', value: snSide, min: -200, max: 900, step: 25, format: (v) => `snare-side head ${v >= 0 ? '+' : ''}${v} ¢ vs the batter (S tick on the glass)`, formatShort: (v) => `${v >= 0 ? '+' : ''}${v} ¢`, onChange: setSnSide, home: 400 }),
+              faderParam({ id: 'side', label: 'BOTTOM', value: snSide, min: -200, max: 900, step: 25, format: (v) => `snare-side head ${v >= 0 ? '+' : ''}${v} ¢ vs the batter (S tick on the glass)`, formatShort: (v) => `${v >= 0 ? '+' : ''}${v} ¢`, onChange: setSnSide, home: 400 }),
               faderParam({ id: 'snb', label: 'BATTER', value: snBatter, min: DRUMS.snare.usefulHz[0], max: DRUMS.snare.usefulHz[1], step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)} (B tick on the glass)`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: setSnBatter, home: 230 }),
               faderParam({ id: 'snstrike', label: 'STROKE', value: snStrike, min: 0.2, max: 1, step: 0.05, format: (v) => `${Math.round(v * 100)} % — ${v < 0.4 ? 'a ghost note: quiet, may not wake the wires' : v < 0.75 ? 'a backbeat' : 'a rimshot-hard hit: loud, wires wide open'}`, formatShort: (v) => `${Math.round(v * 100)} %`, onChange: setSnStrike, home: 0.7, level: true }),
               { kind: 'action', id: 'play', label: '▶ STRIKE', onPress: sn.play },
@@ -147,10 +148,10 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="the snare side on; the wires hang under the bottom head; the stick's height is the stroke; B and S are the two heads' pitches." prompt="Ride STRAINER and strike softly, then hard." />
-              <DrumStatus playing={sn.playing} pending={sn.pending} rendering={sn.status === 'rendering'} idle="stopped · ride STRAINER or SNARE SIDE, then ▶ STRIKE; try a soft STROKE" label="the snare" />
+              <DrumStatus playing={sn.playing} pending={sn.pending} rendering={sn.status === 'rendering'} idle="stopped · ride STRAINER or BOTTOM, then ▶ STRIKE; try a soft STROKE" label="the snare" />
               <Card>
                 <Point title="Sensitivity">The wires only rattle while the snare-side head moves them past the strainer's threshold. A tight strainer loses the ghost notes and, wound hard, chokes the whole drum; a loose one buzzes at everything, including the toms.</Point>
-                <Point title="The snare-side head">It is 2–3 mil — a sixteenth of a turn moves it. Even it like any head, tight, commonly well above the batter, and let the snare beds do their job. Move SNARE SIDE and hear the wire response and the body change.</Point>
+                <Point title="The snare-side head">It is 2–3 mil — a sixteenth of a turn moves it. Even it like any head, tight, commonly well above the batter, and let the snare beds do their job. Move BOTTOM (the snare-side head) and hear the wire response and the body change.</Point>
               </Card>
               <WhyCard title="MORE · batter, and separating the sounds">
                 <Body>The batter sets stick feel, the pitch and how much the drum rings: higher is crisper and more articulate, lower is fatter with more body. Head overtones ring at pitch; wire buzz is noise, shaped by the snare-side head; hardware noise (a loose strainer, a rattling butt plate) is a repair, not a tuning. Throw the strainer off (STRAINER to 0) to hear the heads alone.</Body>
@@ -212,19 +213,24 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
         {
           key: 'goal', title: 'Tune a drum for a sound', kind: 'PRACTICE', layout: 'rack',
           rack: {
-            render: (w, h) => <WaveStage width={w} height={h} ov={g.rendered?.overview ?? null} envDb={g.rendered?.envDb} t60={g.rendered?.t60} seconds={gSpec.seconds} label={`${gSpec.name} · goal: ${goalInfo.label}`} progress={g.progress} playing={g.playing} idle="rendering…" target={target} />,
+            render: (w, h) => <WaveStage width={w} height={h} ov={g.rendered?.overview ?? null} envDb={g.rendered?.envDb} t60={g.rendered?.t60} seconds={gSpec.seconds} label={`${gSpec.name} · goal: ${goalInfo.label}`} progress={g.progress} playing={g.playing} idle="making the sound…" target={target} />,
             aspect: WAVE_ASPECT,
             size: 'L',
             badge: RENDER_BADGE,
             bezel: [
-              { k: 'GOAL', v: goalInfo.short, tint: colors.amber },
+              // GOAL is a tap-to-cycle bezel cell (the PK-HOLD tap-cell
+              // pattern, as Chapter 7's VIEW): SHORT → OPEN → LOW → BEND. It
+              // changes four times in the whole exercise, while BATTER, RESO
+              // and DAMPING are ridden all the time — so the dock keeps five
+              // keys with ✓ CHECK on it. The well's feedback line carries the
+              // goal's start and hint.
+              { k: 'GOAL', v: goalInfo.short, tint: colors.amber, onPress: cycleGoal, flex: 1.15 },
               { k: 'PITCH', v: `${gBatter} Hz`, tint: colors.cyan },
               { k: 'SUSTAIN', v: fmtS(g.rendered?.t60), tint: colors.green },
               { k: 'BEND', v: fmtCents(gBend), tint: colors.amber },
               { k: 'MET', v: `${met.size} / 4`, tint: met.size >= 2 ? colors.green : colors.textMuted },
             ],
             params: [
-              optionsParam({ id: 'goal', label: 'GOAL', value: goal, options: GOALS.map((x) => ({ key: x.id, label: x.label, short: x.short, blurb: `${x.start} ${x.hint}` })), onChange: pickGoal }),
               faderParam({ id: 'gb', label: 'BATTER', value: gBatter, min: Math.round(gSpec.usefulHz[0] * 0.85), max: Math.round(gSpec.usefulHz[1] * 1.15), step: 1, format: (v) => `batter's own pitch ${v.toFixed(0)} Hz · ${noteName(v)}`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: touch(setGBatter) }),
               faderParam({ id: 'gr', label: 'RESO', value: gReso, min: Math.round(gSpec.usefulHz[0] * 0.7), max: Math.round(gSpec.usefulHz[1] * 1.4), step: 1, format: (v) => `resonant head ${v.toFixed(0)} Hz · ${(12 * Math.log2(v / gBatter)).toFixed(1)} st vs batter`, formatShort: (v) => `${v.toFixed(0)} Hz`, onChange: touch(setGReso) }),
               faderParam({ id: 'gd', label: 'DAMPING', value: gDamp, min: 0, max: 1, step: 0.05, format: (v) => (v < 0.05 ? 'none' : v < 0.35 ? `${Math.round(v * 100)} % · gel` : v < 0.7 ? `${Math.round(v * 100)} % · felt` : `${Math.round(v * 100)} % · pillow`), formatShort: (v) => `${Math.round(v * 100)} %`, onChange: touch(setGDamp) }),
@@ -236,12 +242,12 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
           },
           well: (
             <>
-              <Landing looking="your hit against the goal; the shaded zone is where the green died-away mark has to land." prompt="Pick a GOAL, tune and damp, ▶ STRIKE, then ✓ CHECK." />
-              <DrumStatus playing={g.playing} pending={g.pending} rendering={g.status === 'rendering'} idle="stopped · pick a GOAL, tune and damp, ▶ STRIKE, then ✓ CHECK" label="the strike" />
+              <Landing looking="your hit against the goal; the shaded zone is where the green died-away mark has to land." prompt="Tap GOAL on the bezel to pick one, tune and damp, ▶ STRIKE, then ✓ CHECK." />
+              <DrumStatus playing={g.playing} pending={g.pending} rendering={g.status === 'rendering'} idle="stopped · tap GOAL on the bezel, tune and damp, ▶ STRIKE, then ✓ CHECK" label="the strike" />
               <Feedback tone="info">{`${goalInfo.label}. ${goalInfo.start} ${goalInfo.hint}`}</Feedback>
               {verdict ? <Feedback tone={verdict.met ? 'ok' : 'warn'}>{`${verdict.met ? 'Goal met. ' : 'Not yet. '}${verdict.lines.join(' ')}`}</Feedback> : null}
               <Card>
-                <Point title="Credit">Meet two of the four goals (MET on the bezel). Every goal starts from a drum that fails it; CHECK judges the render — sustain, pitch, bend and the share of overtones — and tells you which way to move.</Point>
+                <Point title="Credit">Meet two of the four goals (MET on the bezel; tap GOAL there to move to the next). Every goal starts from a drum that fails it; CHECK judges the render — sustain, pitch, bend and the share of overtones — and tells you which way to move.</Point>
                 <Point title="Practice drum">{`${gSpec.name}. Pick another below (the goal re-seeds for it):`}</Point>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                   {DRUM_LIST.map((d) => (

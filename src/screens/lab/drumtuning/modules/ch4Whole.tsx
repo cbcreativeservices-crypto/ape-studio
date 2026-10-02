@@ -122,7 +122,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
           rack: {
             render: (w, h) =>
               view === 'wave' ? (
-                <WaveStage width={w} height={h} ov={pb.rendered?.overview ?? null} envDb={pb.rendered?.envDb} t60={pb.rendered?.t60} seconds={SPEC.seconds} label={`${relInfo.short} · drum sounds ${modesLabel} Hz`} progress={pb.progress} playing={pb.playing} idle="rendering…" />
+                <WaveStage width={w} height={h} ov={pb.rendered?.overview ?? null} envDb={pb.rendered?.envDb} t60={pb.rendered?.t60} seconds={SPEC.seconds} label={`${relInfo.short} · drum sounds ${modesLabel} Hz`} progress={pb.progress} playing={pb.playing} idle="making the sound…" />
               ) : view === 'pitch' ? (
                 <PitchStage width={w} height={h} traces={traces} seconds={SPEC.seconds} resoCents={resoCents} progress={pb.progress} playing={pb.playing} label={`pitch trace · ${relInfo.short}`} />
               ) : (
