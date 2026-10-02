@@ -17,10 +17,11 @@ import { Body, Caption, TrayButton, TrayHeading } from '../bits';
 import {
   analyze,
   basstrapAt,
+  clampInside,
   depthLimitHz,
-  distToEdge,
   fmtHz,
   fmtLen,
+  moveTreatment,
   newId,
   reflectionSurfaceName,
   rt60Bands,
@@ -87,33 +88,11 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
   const treated = analysis.reflections.filter((r) => r.treatedBy).length;
   const total = analysis.reflections.length;
 
+  // Through the model's moveTreatment (toddler pass 2026-10-01): a rug,
+  // cloud or gobo followed the finger off the plan and out of reach.
   const onDrag = (id: string, p: Pt) => {
     const tid = id.replace(/^tr_/, '');
-    setItems((ts) =>
-      ts.map((t) => {
-        if (t.id !== tid) return t;
-        if (t.kind === 'absorber' || t.kind === 'diffuser') {
-          if (t.wall == null) return t;
-          // Slide along its wall: project the finger onto the edge.
-          const e = distToEdge(p, room.vertices, t.wall);
-          return { ...t, pos: Math.max(0.05, Math.min(0.95, e.t)) };
-        }
-        if (t.kind === 'basstrap') {
-          // Snap to the nearest corner.
-          let best = t.wall ?? 0;
-          let bd = Infinity;
-          room.vertices.forEach((v, i) => {
-            const d = Math.hypot(v.x - p.x, v.y - p.y);
-            if (d < bd) {
-              bd = d;
-              best = i;
-            }
-          });
-          return { ...t, wall: best };
-        }
-        return { ...t, x: p.x, y: p.y };
-      }),
-    );
+    setItems((ts) => ts.map((t) => (t.id === tid ? moveTreatment(t, p, room) : t)));
   };
 
   const next = nextReflectionToTreat(analysis.reflections);
@@ -168,7 +147,11 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
         }
       });
       t = { id: newId('tr'), kind, wall: rear, pos: 0.5, width: 1.2, height: 1.2, thickness: 0.15, z: 1.2, enabled: true };
-    } else if (kind === 'gobo') t = { id: newId('tr'), kind, x: L.x - 0.6, y: lis.y - 0.3, width: 1.2, height: 0.4, thickness: 0.1, z: 1.0, enabled: true };
+    } else if (kind === 'gobo') {
+      // Beside the left speaker — inside the walls even when L is near one.
+      const at = clampInside({ x: L.x - 0.6, y: lis.y - 0.3 }, room, { x: lis.x, y: lis.y });
+      t = { id: newId('tr'), kind, x: at.x, y: at.y, width: 1.2, height: 0.4, thickness: 0.1, z: 1.0, enabled: true };
+    }
     else t = { id: newId('tr'), kind: 'absorber', wall: 0, pos: 0.5, width: 0.6, height: 1.2, thickness: 0.1, z: 1.2, enabled: true };
     // A double tap made two items in the same place (bug pass 2026-10-01);
     // a second one goes in once the first has been dragged away.

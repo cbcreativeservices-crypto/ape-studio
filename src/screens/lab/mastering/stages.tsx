@@ -113,7 +113,7 @@ export const WAVE_ASPECT = 360 / 200;
  * gain-reduction trace above, the ceiling marked, the playhead riding the
  * sounding clip (a SharedValue — never React state per frame).
  */
-export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing, onTap }: {
+export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing, pending, onTap }: {
   width: number;
   height: number;
   ov: Overview | null;
@@ -124,6 +124,9 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
   matchDb?: number;
   progress: SharedValue<number>;
   playing: boolean;
+  /** A version is queued (rendering): a tap on the glass cancels it, the
+   *  same as the dock's STOP key; it used to queue the play again. */
+  pending?: boolean;
   /** TAP-TO-TOGGLE (house rule, the tools' displays): a tap on the glass
    *  plays the shown version or stops it — in FULL SCREEN too, where the
    *  same render is drawn. The dock keys stay the named transport. */
@@ -153,7 +156,7 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
       onPress={onTap}
       disabled={!onTap}
       accessibilityRole={onTap ? 'button' : undefined}
-      accessibilityLabel={onTap ? (playing ? `Stop ${label}` : `Play ${label}`) : undefined}
+      accessibilityLabel={onTap ? (playing || pending ? `Stop ${label}` : `Play ${label}`) : undefined}
     >
       <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {/* gain-reduction strip */}
@@ -523,7 +526,9 @@ export function ToolStage({ width, height, view, amount, ov }: { width: number; 
         <SvgText x={x1 - 4} y={bot - 6} fontSize={fs} fill={ink.amber} textAnchor="end" fontFamily={fonts.barlowMedium}>{`ratio ${ratio.toFixed(1)} : 1`}</SvgText>
         <SvgText x={x1 - 4} y={bot + 12} fontSize={fsS} fill={ink.dim} textAnchor="end" fontFamily={fonts.mono}>in dB →</SvgText>
         <SvgText x={x0 + 6} y={top + 26} fontSize={fsS} fill={ink.dim} fontFamily={fonts.mono}>↑ out dB</SvgText>
-        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>static curve — attack, release and knee not shown · past the threshold, peaks down</SvgText>
+        {/* ≤ 316 units at 11 (the old line ran to x 424 of 360 and was cut
+            off mid-word on every phone and in full screen). */}
+        <SvgText x={x0} y={H - 4} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>a static curve (no attack, release or knee) · peaks down past thr</SvgText>
       </Svg>
     );
   }
@@ -773,9 +778,16 @@ export function DeliverySheetStage({ width, height, title, brief, items, confirm
   // header count and the green frame already carry the state, and the well
   // keeps the instruction. Nothing is cropped; every item still wraps to two.
   const boosted = bst > 1.1;
-  const briefLines = wrapWords(brief, Math.floor(70 / bst)).slice(0, boosted ? 1 : 2);
+  // Measured against the font (toddler pass 1): one boosted brief line
+  // ended mid-sentence with nothing to say so — it now ends in an ellipsis
+  // (the well prints the brief in full); and at 56 / bst the vinyl item
+  // wrapped to THREE lines and lost "sibilance" to the slice. 58 / bst keeps
+  // every item to two lines, the longest ending at x 326 of 360.
+  const briefAll = wrapWords(brief, Math.floor(70 / bst));
+  const briefLines = boosted && briefAll.length > 1 ? [`${briefAll[0]} …`] : briefAll.slice(0, 2);
   const itemsTop = 46 + briefLines.length * 13 * bst + 8; // 80 on a tall phone
-  const wrapped = items.map((it) => wrapWords(it, Math.floor(56 / bst)).slice(0, 2));
+  const itemChars = bst > 1 ? 58 : 56;
+  const wrapped = items.map((it) => wrapWords(it, Math.floor(itemChars / bst)).slice(0, 2));
   const pitch = (items.length > 5 ? 25 : 28) * bst;
   return (
     <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
@@ -905,7 +917,9 @@ export function SequenceStage({ width, height, blocks, totalSec, maxStepLu, cros
           </G>
         );
       })}
-      <SvgText x={x0} y={H - 5} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>wedge = fade · dashed = gap · blue = crossfade · steps over 6 LU flagged</SvgText>
+      {/* Measured: the old "steps over 6 LU flagged" ended at x 373 of 360
+          with the short-phone boost (iPhone SE) and lost its last word. */}
+      <SvgText x={x0} y={H - 5} fontSize={fs} fill={ink.dim} fontFamily={fonts.barlowRegular}>wedge = fade · dashed = gap · blue = crossfade · steps &gt; 6 LU flagged</SvgText>
       <Circle cx={x1 - 4} cy={H - 9} r={2} fill={ink.green} />
     </Svg>
   );

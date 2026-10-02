@@ -337,6 +337,91 @@ export function defaultDesign(units: Units = 'metric'): RoomDesign {
   };
 }
 
+/** A saved design read back from the device, made safe to LOAD and COMPARE
+ *  (toddler pass 2026-10-01). The store keeps any record with a plan and a
+ *  layout list, but a damaged or version-skewed record (no openings, a
+ *  speaker list that is not a list, an unknown material) crashed analyze()
+ *  the moment it was compared or loaded. Missing parts take the defaults,
+ *  unusable entries are dropped, a record with no usable plan returns null.
+ *  A healthy design comes back equal. */
+export function repairDesign(raw: unknown): RoomDesign | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const d = raw as Record<string, unknown>;
+  const r = d.room as Record<string, unknown> | undefined;
+  if (typeof d.id !== 'string' || !r || typeof r !== 'object' || !Array.isArray(r.vertices)) return null;
+  const num = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
+  const obj = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object';
+  const oneOf = <T extends string>(x: unknown, opts: readonly T[], dflt: T): T => ((opts as readonly unknown[]).includes(x) ? (x as T) : dflt);
+  const vertices = (r.vertices as unknown[]).filter((p): p is Pt => obj(p) && num(p.x) && num(p.y)).map((p) => ({ x: p.x, y: p.y }));
+  if (vertices.length !== (r.vertices as unknown[]).length || !polygonIsValidRoom(vertices)) return null;
+  const base = defaultRoom();
+  const surfaces = Object.keys(SURFACES) as SurfaceKey[];
+  const height = num(r.height) ? Math.max(2, Math.min(6, r.height)) : base.height;
+  const room: Room = {
+    units: oneOf(r.units, ['metric', 'imperial'] as const, 'metric'),
+    shape: oneOf(r.shape, ['rect', 'angled', 'irregular', 'curved'] as const, 'irregular'),
+    vertices,
+    ...(num(r.curvedWall) ? { curvedWall: r.curvedWall } : {}),
+    height,
+    ceiling: oneOf(r.ceiling, ['flat', 'sloped', 'vaulted', 'mixed'] as const, 'flat'),
+    heightLow: num(r.heightLow) ? Math.max(Math.min(1.8, height - 0.1), Math.min(height - 0.1, r.heightLow)) : Math.min(base.heightLow, height - 0.1),
+    floor: oneOf(r.floor, surfaces, base.floor),
+    walls: oneOf(r.walls, surfaces, base.walls),
+    ceilingMat: oneOf(r.ceilingMat, surfaces, base.ceilingMat),
+    openings: (Array.isArray(r.openings) ? r.openings : []).filter(
+      (o): o is Opening => obj(o) && typeof o.id === 'string' && ['door', 'window', 'opening'].includes(o.kind as string) && num(o.wall) && num(o.pos) && num(o.width) && num(o.height) && num(o.sill),
+    ),
+    features: (Array.isArray(r.features) ? r.features : []).filter(
+      (f): f is Feature => obj(f) && typeof f.id === 'string' && ['desk', 'sofa', 'bookshelf', 'rack'].includes(f.kind as string) && num(f.x) && num(f.y) && num(f.w) && num(f.d) && num(f.h),
+    ),
+    tempC: num(r.tempC) ? r.tempC : base.tempC,
+  };
+  const roles = ['L', 'R', 'C', 'LS', 'RS', 'SUB'];
+  const layouts: Layout[] = (Array.isArray(d.layouts) ? d.layouts : [])
+    .filter((l): l is Record<string, unknown> => obj(l) && obj(l.listener) && num(l.listener.x) && num(l.listener.y) && num(l.listener.earZ))
+    .map((l) => ({
+      name: typeof l.name === 'string' ? l.name : START_LAYOUT,
+      speakers: (Array.isArray(l.speakers) ? l.speakers : []).filter(
+        (s): s is Speaker => obj(s) && roles.includes(s.role as string) && num(s.x) && num(s.y) && num(s.z) && num(s.toeDeg),
+      ),
+      listener: l.listener as Listener,
+    }));
+  if (layouts.length === 0) layouts.push(defaultLayout(room));
+  const mon = obj(d.monitoring) ? d.monitoring : {};
+  const meas = obj(d.measured) ? d.measured : {};
+  const kinds = ['absorber', 'basstrap', 'cloud', 'diffuser', 'rug', 'gobo'];
+  const treatment = (Array.isArray(d.treatment) ? d.treatment : []).filter(
+    (t): t is Treatment =>
+      obj(t) && typeof t.id === 'string' && kinds.includes(t.kind as string) && num(t.width) && num(t.height) && num(t.thickness) && num(t.z) && typeof t.enabled === 'boolean' && [t.wall, t.pos, t.x, t.y].every((k) => k == null || num(k)),
+  );
+  const repaired: RoomDesign = {
+    id: d.id,
+    name: typeof d.name === 'string' ? d.name : 'My room',
+    room,
+    monitoring: {
+      config: oneOf(mon.config, ['stereo', 'stereo_sub', 'multichannel'] as const, 'stereo'),
+      field: oneOf(mon.field, ['nearfield', 'midfield', 'other'] as const, 'nearfield'),
+      model: typeof mon.model === 'string' ? mon.model.slice(0, 40) : '',
+    },
+    layouts,
+    active: num(d.active) && Number.isInteger(d.active) && d.active >= 0 && d.active < layouts.length ? d.active : 0,
+    treatment,
+    measured: { ...(num(meas.rt60Mid) ? { rt60Mid: meas.rt60Mid } : {}), ...(num(meas.modeHz) ? { modeHz: meas.modeHz } : {}) },
+    createdAt: num(d.createdAt) ? d.createdAt : 0,
+    updatedAt: num(d.updatedAt) ? d.updatedAt : 0,
+  };
+  return keepDesignInside(repaired);
+}
+
+/** The saved design a SAVE will push out of a full library (the store keeps
+ *  `max` and drops the oldest-updated first), or null. A 25th save used to
+ *  remove the oldest design without a word while the lab said "Saved"
+ *  (toddler pass 2026-10-01) — the save message now names it. */
+export function evictedBySave(saved: readonly RoomDesign[], design: Pick<RoomDesign, 'id'>, max: number): RoomDesign | null {
+  if (saved.length < max || saved.some((d) => d.id === design.id)) return null;
+  return saved.reduce((o, d) => (d.updatedAt < o.updatedAt ? d : o), saved[0]);
+}
+
 /* ─────────────────────────────── geometry ───────────────────────────────── */
 
 export type Bounds = { minX: number; minY: number; maxX: number; maxY: number; width: number; length: number };
@@ -542,16 +627,81 @@ export function clampInside(p: Pt, room: Pick<Room, 'vertices'>, prev: Pt, margi
  *  the ceiling; free-standing treatment likewise. Run after a corner drag, a
  *  SHAPE preset, a resize, a lane write and a configuration change. */
 export function keepDesignInside(d: RoomDesign): RoomDesign {
-  const room = d.room;
-  const zMax = Math.max(0.2, Math.min(room.height, room.heightLow) - 0.1);
-  const fix = (p: Pt) => clampInside(p, room, p);
+  const room0 = d.room;
+  const n = room0.vertices.length;
+  const fix = (p: Pt) => clampInside(p, room0, p);
+  // Wall and corner indices back onto the plan (toddler pass 2026-10-01):
+  // SHAPE → RECTANGLE after IRREGULAR left a panel on "wall 6" of a
+  // four-wall plan — the glyph read v[5].x (a TypeError, a red screen in
+  // EXPLORE / TREATMENT / REVIEW) and an opening drawn on wall n % 4 was
+  // dropped from the absorption sum. Wrapped the way the plan already draws
+  // an opening, so the picture and the model agree.
+  const wrap = (w: number) => (n > 0 ? ((Math.round(w) % n) + n) % n : 0);
+  const openings = room0.openings.some((o) => o.wall !== wrap(o.wall)) ? room0.openings.map((o) => ({ ...o, wall: wrap(o.wall) })) : room0.openings;
+  // Furniture too (toddler pass): a desk dragged off the glass landed outside
+  // the walls, beyond the plan's frame, where no finger could reach it again.
+  const features = room0.features.map((f) => {
+    const q = fix(f);
+    return q.x === f.x && q.y === f.y ? f : { ...f, x: q.x, y: q.y };
+  });
+  const room = openings === room0.openings && features.every((f, i) => f === room0.features[i]) ? room0 : { ...room0, openings, features };
+  // Under the ceiling that is THERE (toddler pass): the old cap was
+  // min(height, heightLow) everywhere — under a FLAT 2.5 m ceiling a 2.3 m
+  // tweeter was pulled to 2.1 m by the unused low-point value, and a lane
+  // could leave a tweeter above a vaulted ceiling's low front.
   const layouts = d.layouts.map((l) => ({
     ...l,
-    speakers: l.speakers.map((s) => ({ ...s, ...fix(s), z: Math.min(s.z, zMax) })),
-    listener: { ...l.listener, ...fix(l.listener), earZ: Math.min(l.listener.earZ, zMax) },
+    speakers: l.speakers.map((s) => {
+      const q = fix(s);
+      return { ...s, ...q, z: Math.min(s.z, zCapAt(room, q.y)) };
+    }),
+    listener: (() => {
+      const q = fix(l.listener);
+      return { ...l.listener, ...q, earZ: Math.min(l.listener.earZ, zCapAt(room, q.y)) };
+    })(),
   }));
-  const treatment = d.treatment.map((t) => (t.x != null && t.y != null ? { ...t, ...fix({ x: t.x, y: t.y }) } : t));
-  return { ...d, layouts, treatment };
+  const treatment = d.treatment.map((t) => {
+    let u = t;
+    if (u.wall != null && u.wall !== wrap(u.wall)) u = { ...u, wall: wrap(u.wall) };
+    if (u.x != null && u.y != null) u = { ...u, ...fix({ x: u.x, y: u.y }) };
+    return u;
+  });
+  return { ...d, room, layouts, treatment };
+}
+
+/** The highest a speaker or the ears may go at a point along the room: the
+ *  LOCAL ceiling less 10 cm (a sloped / vaulted / mixed ceiling is low at one
+ *  end). Every height write — side-view drag, HEIGHT lane, a room edit —
+ *  goes through this one cap. */
+export function zCapAt(room: Room, y: number): number {
+  return Math.max(0.2, ceilingHeightAt(room, y) - 0.1);
+}
+
+/** A TREATMENT drag to a point in metres: a wall panel slides along its
+ *  wall, a bass trap snaps to the nearest corner, and a free-standing item
+ *  (rug, cloud, gobo) stays inside the walls — it used to follow the finger
+ *  off the plan and out of reach (toddler pass 2026-10-01). */
+export function moveTreatment(t: Treatment, p: Pt, room: Pick<Room, 'vertices'>): Treatment {
+  const v = room.vertices;
+  if (t.kind === 'absorber' || t.kind === 'diffuser') {
+    if (t.wall == null || v.length < 2) return t;
+    const e = distToEdge(p, v, ((t.wall % v.length) + v.length) % v.length);
+    return Number.isFinite(e.t) ? { ...t, pos: Math.max(0.05, Math.min(0.95, e.t)) } : t;
+  }
+  if (t.kind === 'basstrap') {
+    let best = t.wall ?? 0;
+    let bd = Infinity;
+    v.forEach((q, i) => {
+      const d = Math.hypot(q.x - p.x, q.y - p.y);
+      if (d < bd) {
+        bd = d;
+        best = i;
+      }
+    });
+    return { ...t, wall: best };
+  }
+  const q = clampInside(p, room, { x: t.x ?? p.x, y: t.y ?? p.y });
+  return { ...t, x: q.x, y: q.y };
 }
 
 /** The first free slot for a new opening: the preferred wall first, then
@@ -1193,15 +1343,19 @@ export function surfaceList(room: Room, treatment: Treatment[]): SurfaceLine[] {
   const treatAlpha = (t: Treatment) => BANDS.map((_, b) => treatmentAlpha(t, b));
   const live = treatment.filter((t) => t.enabled);
 
-  // Floor, minus rugs.
+  // Floor, minus rugs. Rugs (and clouds below) never count more area than
+  // the floor (ceiling) has (toddler pass 2026-10-01): SIZE 2.4 m in a small
+  // room summed a rug larger than the floor, and the RT60 came out short.
   const rugArea = live.filter((t) => t.kind === 'rug').reduce((s, t) => s + t.width * t.height, 0);
-  lines.push({ label: `Floor · ${SURFACES[room.floor].label}`, area: Math.max(0, area - rugArea), alpha: alphaOf(room.floor), tier: 'ESTIMATED' });
-  for (const t of live.filter((t) => t.kind === 'rug')) lines.push({ label: 'Thick rug with underlay', area: t.width * t.height, alpha: treatAlpha(t), tier: 'ESTIMATED' });
+  const rugScale = rugArea > area && rugArea > 0 ? area / rugArea : 1;
+  lines.push({ label: `Floor · ${SURFACES[room.floor].label}`, area: Math.max(0, area - rugArea * rugScale), alpha: alphaOf(room.floor), tier: 'ESTIMATED' });
+  for (const t of live.filter((t) => t.kind === 'rug')) lines.push({ label: 'Thick rug with underlay', area: t.width * t.height * rugScale, alpha: treatAlpha(t), tier: 'ESTIMATED' });
 
   // Ceiling, minus clouds.
   const cloudArea = live.filter((t) => t.kind === 'cloud').reduce((s, t) => s + t.width * t.height, 0);
-  lines.push({ label: `Ceiling · ${SURFACES[room.ceilingMat].label}`, area: Math.max(0, area - cloudArea), alpha: alphaOf(room.ceilingMat), tier: 'ESTIMATED' });
-  for (const t of live.filter((t) => t.kind === 'cloud')) lines.push({ label: 'Ceiling cloud', area: t.width * t.height, alpha: treatAlpha(t), tier: 'ESTIMATED' });
+  const cloudScale = cloudArea > area && cloudArea > 0 ? area / cloudArea : 1;
+  lines.push({ label: `Ceiling · ${SURFACES[room.ceilingMat].label}`, area: Math.max(0, area - cloudArea * cloudScale), alpha: alphaOf(room.ceilingMat), tier: 'ESTIMATED' });
+  for (const t of live.filter((t) => t.kind === 'cloud')) lines.push({ label: 'Ceiling cloud', area: t.width * t.height * cloudScale, alpha: treatAlpha(t), tier: 'ESTIMATED' });
 
   // Walls: each edge × the local mean height, minus its openings and panels.
   const Hmean = meanHeight(room);

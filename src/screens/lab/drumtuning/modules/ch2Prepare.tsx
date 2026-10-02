@@ -11,12 +11,12 @@
  * CAUTION card (over-tensioning, hoops, inserts, drum key only) sits on the
  * seating page.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { colors } from '../../../../theme/tokens';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { faderParam, flipFader, optionsParam } from '../DrumRack';
-import { ChapterSteps } from '../steps';
+import { ChapterSteps, StepHostContext } from '../steps';
 import { Body, Card, Checklist, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, YourRun, fmtHz } from '../kit';
 import { CAUTION_TEXT, CAUTION_TITLE, DRUM_KEY_TERMS, PREP_ITEMS, type PrepFault } from '../drumContent';
 import { DRUMS, DRUM_LIST, TURN_NPM, evenHead, fundamentalHz, lugAngle, meanTension, spreadCents, type DrumKind, type HeadState, type LugCount, type StrikeParams } from '../drumEngine';
@@ -96,6 +96,15 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
     }, 600);
     return () => clearInterval(t);
   }, [running, order.length]);
+
+  // LEAVING THE PAGE PAUSES THE PATTERN (toddler pass 1): the chapter stays
+  // mounted across its steps, so ▶ RUN left on and a page turned kept the
+  // 600 ms interval re-rendering the whole chapter behind the reading, and
+  // the learner came back to a pattern that had finished without them.
+  const hostStep = useContext(StepHostContext)?.step;
+  useEffect(() => {
+    setRunning(false);
+  }, [hostStep]);
 
   const toggleRun = () => {
     if (!running && step >= order.length - 1) setStep(0);

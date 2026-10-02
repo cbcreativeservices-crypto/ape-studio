@@ -17,7 +17,7 @@
  * the tuning notes.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { DrumChapterId, TuningNote } from './drumContent';
+import { DRUM_CHAPTERS, type DrumChapterId, type TuningNote } from './drumContent';
 
 const KEY = 'ape:drumtuning:v1';
 
@@ -54,39 +54,84 @@ export async function loadDrumProgress(): Promise<DrumProgressState> {
   try {
     const raw = await AsyncStorage.getItem(KEY);
     if (!raw) return empty();
-    const p = JSON.parse(raw) as Partial<DrumProgressState>;
-    return { modules: p.modules ?? {}, lastModule: p.lastModule, lastStep: p.lastStep, notes: Array.isArray(p.notes) ? p.notes.filter(validNote) : [] };
+    return sanitizeDrumProgress(JSON.parse(raw));
   } catch {
     return empty();
   }
 }
 
-function validNote(n: unknown): n is TuningNote {
-  const x = n as TuningNote;
-  return !!x && typeof x.id === 'string' && typeof x.name === 'string' && Array.isArray(x.drums);
+const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
+
+/** A damaged or older-shape copy (toddler pass 1, 2026-10-01): every field
+ *  the lab reads is re-checked, so `scenarioId in answers` (which THROWS on
+ *  a string) or `d.drum.split(...)` on a malformed note can never crash the
+ *  screen or wedge the write queue. What is valid is kept. */
+export function sanitizeDrumProgress(raw: unknown): DrumProgressState {
+  const p = isObj(raw) ? raw : {};
+  const modules: DrumProgressState['modules'] = {};
+  const mods = isObj(p.modules) ? p.modules : {};
+  for (const c of DRUM_CHAPTERS) {
+    const m = mods[c.id];
+    if (!isObj(m)) continue;
+    const answers: Record<string, boolean> = {};
+    if (isObj(m.answers)) for (const [k, v] of Object.entries(m.answers)) if (typeof v === 'boolean') answers[k] = v;
+    modules[c.id] = { done: m.done === true, answers, ...(m.interactive === true ? { interactive: true } : {}) };
+  }
+  const lastModule = DRUM_CHAPTERS.some((c) => c.id === p.lastModule) ? (p.lastModule as DrumChapterId) : undefined;
+  const lastStep = typeof p.lastStep === 'number' && Number.isInteger(p.lastStep) && p.lastStep >= 0 ? p.lastStep : undefined;
+  return { modules, lastModule, lastStep, notes: Array.isArray(p.notes) ? p.notes.filter(validNote) : [] };
 }
 
-async function save(s: DrumProgressState): Promise<void> {
-  if (saveBlocked) return;
+function validNote(n: unknown): n is TuningNote {
+  if (!isObj(n)) return false;
+  const x = n as unknown as TuningNote;
+  return (
+    typeof x.id === 'string' &&
+    typeof x.name === 'string' &&
+    typeof x.savedAt === 'number' &&
+    Number.isFinite(x.savedAt) &&
+    Array.isArray(x.drums) &&
+    x.drums.every((d) => isObj(d) && typeof d.drum === 'string' && typeof d.batterHz === 'number' && Number.isFinite(d.batterHz) && (d.note == null || typeof d.note === 'string'))
+  );
+}
+
+/** Where the lab resumes (toddler pass 1): a learner who never left
+ *  Chapter 1 has a stored `lastStep` (and answers) but no `lastModule` —
+ *  the resume point is Chapter 1 at that step, not step 0 of a blank run. */
+export function drumResumePoint(s: DrumProgressState): { id: DrumChapterId; step: number; answers: Record<string, boolean> } {
+  const id = s.lastModule ?? DRUM_CHAPTERS[0].id;
+  return { id, step: s.lastStep ?? 0, answers: s.modules[id]?.answers ?? {} };
+}
+
+/** True when the copy reached the disk. A blocked store (guest / preview)
+ *  and a failed write both answer false — never "saved". */
+async function save(s: DrumProgressState): Promise<boolean> {
+  if (saveBlocked) return false;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
+    return true;
   } catch {
     // Local convenience state — losing it never blocks learning.
+    return false;
   }
 }
 
 /** Serialized read-modify-write: two writers in one tap never clobber each
  *  other through a stale copy. */
 let queue: Promise<unknown> = Promise.resolve();
-export function updateDrumProgress(mutate: (s: DrumProgressState) => void): Promise<DrumProgressState> {
+function runUpdate(mutate: (s: DrumProgressState) => void): Promise<{ state: DrumProgressState; saved: boolean; blocked: boolean }> {
   const run = queue.then(async () => {
+    const blocked = saveBlocked;
     const s = await loadDrumProgress();
     mutate(s);
-    await save(s);
-    return s;
+    const saved = await save(s);
+    return { state: s, saved, blocked };
   });
   queue = run.catch(() => undefined);
   return run;
+}
+export function updateDrumProgress(mutate: (s: DrumProgressState) => void): Promise<DrumProgressState> {
+  return runUpdate(mutate).then((r) => r.state);
 }
 
 /** A PRACTICE reset: answers, interactive flags and the resume point clear;
@@ -101,14 +146,21 @@ export function resetDrumPractice(): Promise<DrumProgressState> {
   });
 }
 
-/** Save (insert or replace by id) a tuning note. */
-export function saveTuningNote(note: TuningNote): Promise<DrumProgressState> {
-  return updateDrumProgress((s) => {
-    const next = [...s.notes.filter((n) => n.id !== note.id), note];
-    next.sort((a, b) => a.savedAt - b.savedAt);
-    while (next.length > MAX_TUNING_NOTES) next.shift();
-    s.notes = next;
-  });
+/** Insert or replace by id, oldest first, capped. */
+export function withNote(notes: readonly TuningNote[], note: TuningNote): TuningNote[] {
+  const next = [...notes.filter((n) => n.id !== note.id), note];
+  next.sort((a, b) => a.savedAt - b.savedAt);
+  while (next.length > MAX_TUNING_NOTES) next.shift();
+  return next;
+}
+
+/** Save (insert or replace by id) a tuning note. `saved` is true only when
+ *  the write reached the disk (toddler pass 1: the screen said "Saved on this
+ *  device" before — and whether or not — the write landed). */
+export function saveTuningNote(note: TuningNote): Promise<DrumProgressState & { saved: boolean; blocked: boolean }> {
+  return runUpdate((st) => {
+    st.notes = withNote(st.notes, note);
+  }).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
 }
 
 export function deleteTuningNote(id: string): Promise<DrumProgressState> {

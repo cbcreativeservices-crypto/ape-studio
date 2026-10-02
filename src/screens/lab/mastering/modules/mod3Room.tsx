@@ -44,6 +44,9 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
   const advice = monitoringAdvice(level);
   const shift = perceivedBalanceShift(level);
   const placed = chain.includes(next);
+  // Five slots, six devices: with every slot filled, + CONNECT was a live
+  // green key that silently did nothing (`add` refuses a sixth). It says so.
+  const full = chain.length >= 5;
   const add = () =>
     setChain((c) => {
       if (c.length >= 5 || c.includes(next)) return c;
@@ -123,7 +126,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
             badge: 'DIAGRAM · real systems vary',
             bezel: [
               { k: 'STAGES', v: `${chain.length} / 5` },
-              { k: 'TO ADD', v: DEVICES.find((d) => d.key === next)?.short ?? '—', flex: 1.2, tint: placed ? colors.textMuted : colors.amber },
+              { k: 'TO ADD', v: DEVICES.find((d) => d.key === next)?.short ?? '—', flex: 1.2, tint: placed || full ? colors.textMuted : colors.amber },
               { k: 'PATH', v: verdict.grade === 'complete' ? 'COMPLETE' : verdict.grade === 'minimal' ? 'MINIMAL' : verdict.grade === 'fail' ? 'CHECK' : 'EMPTY', tint: verdict.grade === 'complete' ? colors.green : verdict.grade === 'empty' ? colors.textMuted : colors.amber, flex: 1.3 },
             ],
             params: [
@@ -132,7 +135,7 @@ export function Mod3Room({ onAnswered }: ModuleProps) {
                 options: DEVICES.map((d) => ({ id: d.key, label: chain.includes(d.key) ? `${d.label} ✓ placed` : d.label, blurb: d.blurb })), selectedId: next,
                 onSelect: (id) => setNext(id as PathDevice), sticky: false,
               },
-              { kind: 'action', id: 'add', label: placed ? '✓ PLACED' : '+ CONNECT', onPress: add, tint: placed ? colors.textMuted : colors.green },
+              { kind: 'action', id: 'add', label: placed ? '✓ PLACED' : full ? 'SLOTS FULL' : '+ CONNECT', onPress: add, tint: placed || full ? colors.textMuted : colors.green },
               { kind: 'action', id: 'undo', label: '‹ UNDO', onPress: () => setChain((c) => c.slice(0, -1)) },
               { kind: 'action', id: 'clear', label: 'CLEAR', onPress: () => { setChain([]); setNext('daw'); } },
             ],

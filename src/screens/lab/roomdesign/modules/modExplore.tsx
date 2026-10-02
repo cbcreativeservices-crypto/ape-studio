@@ -10,13 +10,14 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { fieldLevelColor } from '../../../../features/tools/levelColor';
+import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignStore';
 import { flipFader } from '../../soundsystems/rackLayout';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import { BADGE, type RoomLabCtx } from '../labCtx';
 import { RoomRackLayout } from '../rackLayout';
 import { PLAN_LEGEND, RoomPlanView, type PlanLayers, type Trace } from '../RoomPlanView';
 import { Body, Caption, SAFETY_LEVEL_POINTER, TrayButton, TrayHeading } from '../bits';
-import { clampInside, diffLayouts, fmtHz, fmtLen, modePressure, reflectionSurfaceName, START_LAYOUT, type Layout, type Pt, type RoomDesign } from '../roomModel';
+import { clampInside, diffLayouts, evictedBySave, fmtHz, fmtLen, modePressure, reflectionSurfaceName, START_LAYOUT, type Layout, type Pt, type RoomDesign } from '../roomModel';
 
 /** The slots: START is where the positions began; A and B are kept beside it. */
 const OPTION_NAMES = ['Option A', 'Option B', START_LAYOUT] as const;
@@ -230,7 +231,7 @@ function modeBlurb(kind: 'axial' | 'tangential' | 'oblique'): string {
 }
 
 function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, guest, preview, resolved, saveCurrent } = ctx;
+  const { design, update, guest, preview, resolved, saved: library, saveCurrent } = ctx;
   const [saved, setSaved] = useState<string | null>(null);
   return (
     <View style={{ gap: 10 }}>
@@ -253,10 +254,11 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
           // pass 3, 2026-10-01).
           const known = resolved;
           const asPreview = preview;
+          const gone = evictedBySave(library, design, MAX_SAVED_DESIGNS);
           void saveCurrent().then((ok) =>
             setSaved(
               ok
-                ? 'Saved on this device.'
+                ? `Saved on this device.${gone ? ` The library keeps ${MAX_SAVED_DESIGNS}: the oldest, "${gone.name}", was removed to make room.` : ''}`
                 : !known
                   ? 'Not saved yet — still checking your account. Tap SAVE again in a moment.'
                   : asPreview

@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { confirmDialog } from '../../../../lib/confirm';
+import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignStore';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
@@ -17,8 +18,10 @@ import { BADGE, type RoomLabCtx } from '../labCtx';
 import { RoomPlanView } from '../RoomPlanView';
 import {
   analyze,
+  bounds,
   compareMeasured,
   diffLayouts,
+  evictedBySave,
   fmtDelta,
   fmtHz,
   fmtLen,
@@ -186,23 +189,32 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
               label="SAVE THIS DESIGN"
               tint="green"
               onPress={() => {
-                void saveCurrent().then((ok) => setSavedMsg(ok ? `Saved "${design.name}" on this device.` : 'Not saved.'));
+                const gone = evictedBySave(saved, design, MAX_SAVED_DESIGNS);
+                void saveCurrent().then((ok) =>
+                  setSavedMsg(ok ? `Saved "${design.name}" on this device.${gone ? ` The library keeps ${MAX_SAVED_DESIGNS}: the oldest, "${gone.name}", was removed to make room.` : ''}` : 'Not saved.'),
+                );
               }}
             />
             {savedMsg ? <Caption>{savedMsg}</Caption> : null}
             {saved.length === 0 ? <Caption>No saved designs on this device yet.</Caption> : null}
-            {saved.map((d) => (
-              <View key={d.id} style={styles.savedRow}>
-                <Text style={styles.savedName}>{`${d.name}${d.id === design.id ? ' (this one)' : ''} · ${fmtLen(d.room.vertices.reduce((m, p) => Math.max(m, p.x), 0), d.room.units)} × ${fmtLen(d.room.vertices.reduce((m, p) => Math.max(m, p.y), 0), d.room.units)} · ${new Date(d.updatedAt).toLocaleDateString()}`}</Text>
-                <View style={styles.btnRow}>
-                  <TrayButton label={compareId === d.id ? 'COMPARING' : 'COMPARE AS "BEFORE"'} tint={compareId === d.id ? 'amber' : 'dim'} onPress={() => setCompareId(compareId === d.id ? null : d.id)} disabled={d.id === design.id} />
-                  <TrayButton label="LOAD" tint="dim" onPress={() => loadSaved(d.id)} />
-                  {/* One stray tap used to erase a saved design for good (bug pass
-                      2026-10-01) — the delete asks first, like NEW ROOM. */}
-                  <TrayButton label="DELETE" tint="dim" onPress={() => confirmDialog('Delete saved design?', `"${d.name}" is removed from this device. The design on screen is not touched.`, 'DELETE', () => deleteSaved(d.id), { destructive: true })} />
+            {saved.map((d) => {
+              // The plan's width × length (toddler pass 2026-10-01): the far
+              // corner's x / y read a room whose left or front wall had been
+              // dragged in at its old size.
+              const bb = bounds(d.room);
+              return (
+                <View key={d.id} style={styles.savedRow}>
+                  <Text style={styles.savedName}>{`${d.name}${d.id === design.id ? ' (this one)' : ''} · ${fmtLen(bb.width, d.room.units)} × ${fmtLen(bb.length, d.room.units)} · ${new Date(d.updatedAt).toLocaleDateString()}`}</Text>
+                  <View style={styles.btnRow}>
+                    <TrayButton label={compareId === d.id ? 'COMPARING' : 'COMPARE AS "BEFORE"'} tint={compareId === d.id ? 'amber' : 'dim'} onPress={() => setCompareId(compareId === d.id ? null : d.id)} disabled={d.id === design.id} />
+                    <TrayButton label="LOAD" tint="dim" onPress={() => loadSaved(d.id)} />
+                    {/* One stray tap used to erase a saved design for good (bug pass
+                        2026-10-01) — the delete asks first, like NEW ROOM. */}
+                    <TrayButton label="DELETE" tint="dim" onPress={() => confirmDialog('Delete saved design?', `"${d.name}" is removed from this device. The design on screen is not touched.`, 'DELETE', () => deleteSaved(d.id), { destructive: true })} />
+                  </View>
                 </View>
-              </View>
-            ))}
+              );
+            })}
           </>
         )}
         {beforeAfter ? (

@@ -41,9 +41,10 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { DRUM_CHAPTERS, drumChapterById, scenariosForChapter, type DrumChapterId, type TuningNote } from './drumContent';
-import { deleteTuningNote, emptyDrumChapter, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, type DrumProgressState } from './drumProgress';
+import { deleteTuningNote, drumResumePoint, emptyDrumChapter, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, withNote, type DrumProgressState } from './drumProgress';
 import { DRUM_CHAPTER_COMPONENTS, DRUM_NEEDS_INTERACTIVE, DRUM_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
+import type { NoteSaveResult } from './modules/shared';
 import { TakeawayCard } from './kit';
 
 export const DRUM_LAB_TITLE = 'Drum Tuning Lab';
@@ -60,7 +61,8 @@ export function DrumTuningLabScreen() {
   // blocked until the tier is `resolved` (the Mastering rule).
   const guest = useLabEndGuest();
   const { resolved, entitlement } = useEntitlement();
-  setDrumSaveBlocked(guest || !resolved);
+  const blocked = guest || !resolved;
+  setDrumSaveBlocked(blocked);
   const preview = resolved && guest && entitlement !== 'anonymous';
 
   const [modId, setModId] = useState<DrumChapterId>('sound');
@@ -72,6 +74,10 @@ export function DrumTuningLabScreen() {
   const [notes, setNotes] = useState<TuningNote[]>([]);
   const [endState, setEndState] = useState<DrumProgressState | null>(null);
   const [loaded, setLoaded] = useState(false);
+  /** Bumped by START OVER: the chapter remounts even when the run restarts
+   *  on the chapter already open (toddler pass 1 — Chapter 1's answered
+   *  cards stayed answered and locked for the fresh run). */
+  const [runId, setRunId] = useState(0);
 
   const mod = drumChapterById(modId);
   const idx = DRUM_CHAPTERS.findIndex((m) => m.id === modId);
@@ -82,30 +88,55 @@ export function DrumTuningLabScreen() {
   loadedRef.current = loaded;
   /** A move (chapter or step) made before the first load landed. */
   const movedRef = useRef(false);
+  /** The last load ran against a BLOCKED store (a guest, a preview, or a
+   *  member whose tier had not settled yet) — it read nothing. */
+  const loadedBlockedRef = useRef(false);
+  const notesRef = useRef(notes);
+  notesRef.current = notes;
 
-  // ⛔ WAIT FOR `resolved` before the first read.
+  // ⛔ WAIT FOR `resolved` before the first read. And READ AGAIN when the
+  // store unblocks (toddler pass 1): a member whose tier settled after
+  // `resolved` (a slow or failed first read), or a guest who signs in
+  // mid-lab, used to keep the blank guest copy for the whole visit — none of
+  // their stored progress, credit or notes shown. The re-read MERGES (credit
+  // only grows, the learner is not moved) and keeps the session's notes, as
+  // the guest copy promised ("sign in to keep tuning notes on this device").
   useEffect(() => {
-    if (!resolved || loaded) return;
+    if (!resolved) return;
+    const reread = loaded && loadedBlockedRef.current && !blocked;
+    if (loaded && !reread) return;
     let alive = true;
-    void updateDrumProgress(() => {}).then((s) => {
+    loadedBlockedRef.current = blocked;
+    void updateDrumProgress(() => {}).then(async (s) => {
       if (!alive) return;
-      setDoneIds(new Set(DRUM_CHAPTERS.filter((x) => s.modules[x.id]?.done).map((x) => x.id)));
+      setDoneIds((prev) => new Set([...(reread ? prev : []), ...DRUM_CHAPTERS.filter((x) => s.modules[x.id]?.done).map((x) => x.id)]));
       setInteractive((prev) => new Set([...prev, ...DRUM_CHAPTERS.filter((x) => s.modules[x.id]?.interactive).map((x) => x.id)]));
+      if (reread) {
+        const here = s.modules[modIdRef.current]?.answers ?? {};
+        setAnswers((prev) => ({ ...here, ...prev }));
+        let stored = s;
+        for (const n of notesRef.current) if (!stored.notes.some((x) => x.id === n.id)) stored = await saveTuningNote(n);
+        if (alive) setNotes(stored.notes);
+        return;
+      }
       setNotes(s.notes);
       if (movedRef.current) {
         const here = s.modules[modIdRef.current]?.answers ?? {};
         setAnswers((prev) => ({ ...prev, ...here }));
-      } else if (s.lastModule && DRUM_CHAPTERS.some((m) => m.id === s.lastModule)) {
-        setModId(s.lastModule);
-        setAnswers(s.modules[s.lastModule]?.answers ?? {});
-        setStepRaw(s.lastStep ?? 0);
+      } else {
+        // Chapter 1 resumes too: a learner who never left it has a stored
+        // step and answers but no `lastModule`.
+        const at = drumResumePoint(s);
+        setModId(at.id);
+        setAnswers(at.answers);
+        setStepRaw(at.step);
       }
       setLoaded(true);
     });
     return () => {
       alive = false;
     };
-  }, [resolved, loaded]);
+  }, [resolved, loaded, blocked]);
 
   const openModule = useCallback((id: DrumChapterId, atStep = 0) => {
     if (!loadedRef.current) movedRef.current = true;
@@ -117,7 +148,10 @@ export function DrumTuningLabScreen() {
       s.lastStep = atStep;
     }).then((s) => {
       setAnswers(s.modules[id]?.answers ?? {});
-      setNotes(s.notes);
+      // No setNotes here (toddler pass 1): for a guest the blocked store
+      // reads back EMPTY, so every chapter change wiped the notes the lab
+      // had just promised to keep "for this session". Notes change only
+      // through save / delete / the unblock re-read.
     });
   }, []);
 
@@ -146,13 +180,22 @@ export function DrumTuningLabScreen() {
     });
   }, []);
 
-  const onSaveNote = useCallback((note: TuningNote) => {
-    // In memory for this session (a guest keeps them until the lab closes);
-    // the store applies the guest rule to the disk copy.
-    setNotes((prev) => [...prev.filter((n) => n.id !== note.id), note]);
-    void saveTuningNote(note).then((s) => {
-      if (s.notes.length) setNotes((prev) => [...s.notes, ...prev.filter((p) => !s.notes.some((n) => n.id === p.id))]);
-    });
+  const onSaveNote = useCallback(async (note: TuningNote): Promise<NoteSaveResult> => {
+    // The list shows what the store HOLDS (toddler pass 1): the old merge
+    // put the note the 24-note cap had just dropped back on screen as
+    // "saved", and "Saved on this device" was shown before — and whether or
+    // not — the write landed. A guest's notes live in memory for this
+    // session only, capped the same way.
+    const s = await saveTuningNote(note);
+    if (s.saved) {
+      setNotes(s.notes);
+      return 'saved';
+    }
+    if (s.blocked) {
+      setNotes((prev) => withNote(prev, note));
+      return 'session';
+    }
+    return 'failed';
   }, []);
   const onDeleteNote = useCallback((id: string) => {
     setNotes((prev) => prev.filter((n) => n.id !== id));
@@ -231,6 +274,7 @@ export function DrumTuningLabScreen() {
       setDoneIds((prev) => new Set([...prev, ...DRUM_CHAPTERS.filter((x) => s.modules[x.id]?.done).map((x) => x.id)]));
       setInteractive(new Set());
       setAnswers({});
+      setRunId((r) => r + 1);
       openModule('sound', 0);
     });
   const confirmReset = () => {
@@ -315,7 +359,7 @@ export function DrumTuningLabScreen() {
         {end ?? (
           <View style={styles.body}>
             <StepHostContext.Provider value={host}>
-              <Component key={mod.id} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
+              <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
             </StepHostContext.Provider>
           </View>
         )}

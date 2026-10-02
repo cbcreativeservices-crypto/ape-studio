@@ -299,7 +299,7 @@ export function Checklist({ items, chosen, onToggle, reveal }: { items: readonly
 /** The LISTEN page's STATUS LINE (cognitive review 2026-10-01, finding 11):
  *  the dock keys are the only transport; the well reports what is sounding,
  *  at what gain, and whether it is matched. One sentence, live. */
-export function PlaybackStatus({ versions, active, pending, rendering, matched, matchDb, labels }: {
+export function PlaybackStatus({ versions, active, pending, rendering, matched, matchDb, labels, loud = 'LOUDER' }: {
   versions: readonly { id: string; label: string }[];
   active: string | null;
   pending: string | null;
@@ -309,12 +309,15 @@ export function PlaybackStatus({ versions, active, pending, rendering, matched, 
   matchDb?: number;
   /** The dock's play keys, for the idle hint ("▶ MIX or ▶ LOUDER"). */
   labels?: string;
+  /** The version that plays louder unmatched (Module 5 has no LOUDER: it
+   *  is WITH EQ — the stopped line used to name a version not on the page). */
+  loud?: string;
 }) {
   const name = (id: string | null) => versions.find((v) => v.id === id)?.label ?? '';
   let text: string;
   if (rendering) text = `rendering ${name(pending)} — real DSP on the whole programme, one moment…`;
   else if (active) text = `sounding ${name(active)} · ${matchDb ? `played at ${matchDb.toFixed(1)} dB · matched` : matched ? 'played as rendered · matched' : 'UNMATCHED — as rendered'}`;
-  else text = `stopped · press ${labels ?? 'a ▶ key'} in the dock${matched ? '' : ' — MATCH is OFF: unmatched, LOUDER plays at its full level'}`;
+  else text = `stopped · press ${labels ?? 'a ▶ key'} in the dock${matched ? '' : ` — MATCH is OFF: unmatched, ${loud} plays at its full level`}`;
   return (
     <Text style={[styles.status, !matched && !rendering ? { color: colors.gold } : null]} accessibilityLiveRegion="polite">
       {text.toUpperCase()}

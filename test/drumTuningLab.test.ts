@@ -386,12 +386,12 @@ describe('guest rules, persistence and credit', () => {
   const store = strip(read(`${DIR}/drumProgress.ts`));
   it('the save-block flag is set from useLabEndGuest every render; the first load waits for resolved', () => {
     assert.match(host, /const guest = useLabEndGuest\(\);/);
-    assert.match(host, /setDrumSaveBlocked\(guest \|\| !resolved\)/);
-    assert.match(host, /if \(!resolved \|\| loaded\) return;/);
+    assert.match(host, /const blocked = guest \|\| !resolved;\s*setDrumSaveBlocked\(blocked\);/);
+    assert.match(host, /if \(!resolved\) return;\s*const reread = loaded && loadedBlockedRef\.current && !blocked;\s*if \(loaded && !reread\) return;/);
   });
   it('a blocked store neither reads nor writes; the key is inside the ape:* wipe', () => {
     assert.match(store, /if \(saveBlocked\) return empty\(\);/);
-    assert.match(store, /if \(saveBlocked\) return;/);
+    assert.match(store, /if \(saveBlocked\) return false;/);
     assert.match(store, /const KEY = 'ape:drumtuning:v1';/);
   });
   it('credit banks ON COMPLETION, is never removed, and the end screen never blocks', () => {

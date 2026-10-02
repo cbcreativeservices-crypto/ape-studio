@@ -79,9 +79,12 @@ export function RoomSideView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [edit, lay, T, b.minY]);
 
-  const ref = useRef({ handles, T, s, b, onSelect, onDrag });
-  ref.current = { handles, T, s, b, onSelect, onDrag };
-  const drag = useRef<{ id: string; gx: number; gy: number } | null>(null);
+  const ref = useRef({ handles, T, s, gw, gh, b, onSelect, onDrag });
+  ref.current = { handles, T, s, gw, gh, b, onSelect, onDrag };
+  // Remembers the glass it began on — a rotation or re-fit mid-drag ends the
+  // drag rather than mapping the old finger through the new box (toddler
+  // pass 2026-10-01, the plan's rule).
+  const drag = useRef<{ id: string; gx: number; gy: number; s: number; gw: number; gh: number } | null>(null);
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (e) => {
@@ -89,7 +92,7 @@ export function RoomSideView({
         const g = touchToGlass(e.nativeEvent.locationX, e.nativeEvent.locationY, st.s);
         const hit = pickHandle(st.handles, g.x, g.y);
         if (!hit) return false;
-        drag.current = { id: hit.id, gx: g.x, gy: g.y };
+        drag.current = { id: hit.id, gx: g.x, gy: g.y, s: st.s, gw: st.gw, gh: st.gh };
         st.onSelect?.(hit.id);
         return true;
       },
@@ -97,6 +100,10 @@ export function RoomSideView({
         const st = ref.current;
         const d = drag.current;
         if (!d) return;
+        if (d.s !== st.s || d.gw !== st.gw || d.gh !== st.gh) {
+          drag.current = null;
+          return;
+        }
         const m = st.T.toM({ x: d.gx + gs.dx / st.s, y: d.gy + gs.dy / st.s });
         st.onDrag?.(d.id, { y: m.x + st.b.minY, z: m.y });
       },
@@ -104,6 +111,9 @@ export function RoomSideView({
         drag.current = null;
       },
       onPanResponderTerminate: () => {
+        drag.current = null;
+      },
+      onPanResponderReject: () => {
         drag.current = null;
       },
       onPanResponderTerminationRequest: () => false,
@@ -208,12 +218,19 @@ export function RoomSideView({
           const q = toSide(sp);
           const on = selected === sp.role;
           if (sp.role === 'SUB') {
+            // Drawn with its driver at the driver height (toddler pass
+            // 2026-10-01): pinned to the floor, HEIGHT → SUB and a drag
+            // moved the number and nothing on the picture. Lifted off the
+            // floor it stands on a riser.
             const sz = Math.max(16, 0.4 * T.k);
-            const qs = toSide({ y: sp.y, z: 0 });
+            const floorY = toSide({ y: sp.y, z: 0 }).y;
+            const cy = Math.min(q.y, floorY - sz / 2); // never sunk into the floor
+            const bottom = cy + sz / 2;
             return (
               <G key={sp.role}>
-                <Rect x={qs.x - sz / 2} y={qs.y - sz} width={sz} height={sz} rx={2} fill={SPK_LO} stroke={on ? colors.amber : SPK_HI} strokeWidth={1.2} />
-                <Circle cx={qs.x} cy={qs.y - sz / 2} r={sz * 0.3} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
+                {bottom < floorY - 1 ? <Rect x={q.x - sz * 0.3} y={bottom} width={sz * 0.6} height={floorY - bottom} fill="none" stroke={SPK_HI} strokeWidth={1} strokeDasharray="2 2" /> : null}
+                <Rect x={q.x - sz / 2} y={cy - sz / 2} width={sz} height={sz} rx={2} fill={SPK_LO} stroke={on ? colors.amber : SPK_HI} strokeWidth={1.2} />
+                <Circle cx={q.x} cy={cy} r={sz * 0.3} fill="#101116" stroke={SPK_HI} strokeWidth={0.8} />
               </G>
             );
           }

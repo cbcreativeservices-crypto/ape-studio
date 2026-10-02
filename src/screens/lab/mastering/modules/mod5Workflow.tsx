@@ -41,6 +41,11 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
   const m = pb.measured[shown];
   const mix = pb.measured.mix;
   const eq = pb.measured.eq;
+  // A fader change keeps the last render on the glass until the next one,
+  // so pb.measured can belong to an EARLIER setting; only a READY render is
+  // this one. The volume warning used to quote the step measured for the
+  // previous TILT after the fader had moved on.
+  const fresh = pb.status === 'ready';
   const cur = WORKFLOW_STEPS[step];
   const fmtTilt = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)} dB end to end (±${(Math.abs(v) / 2).toFixed(1)})`;
 
@@ -88,7 +93,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'A considered change, matched', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'eq' ? SAFETY_CEILING_DB : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} onTap={() => (pb.active ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'eq' ? SAFETY_CEILING_DB : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',
@@ -108,9 +113,9 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ BYPASS or ▶ WITH EQ" />
+              <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ BYPASS or ▶ WITH EQ" loud="WITH EQ" />
               <Body>Set a TILT (a broad brighten or warm; "+4 dB end to end" is ±2 dB at the extremes), then compare WITH EQ against BYPASS. WITH EQ also carries a +{EQ_TRIM_DB} dB output trim, the way a "better" setting usually sneaks in louder (peak-safe: the lab's ceiling at {SAFETY_CEILING_DB} dBFS holds it). A tilt changes the loudness estimate as well as the tone — up or down depending on where the programme's energy sits — so watch which way the LUFS cell moves; with MATCH LEVEL on, whichever version reads louder is turned down by the difference between the two loudness estimates, in LU (1 LU = 1 dB), and the tonal decision is the only thing you judge. A change you keep is one that still wins at matched level. With MATCH on, a moved fader re-renders and replays the sounding version.</Body>
-              {mix && eq ? (
+              {fresh && mix && eq ? (
                 <Card tone="accent">
                   <Text style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 }}>
                     Measured: BYPASS <Text style={{ color: lufsTint(mix.lufs) }}>{mix.lufs.toFixed(1)} LUFS</Text> · WITH EQ <Text style={{ color: lufsTint(eq.lufs) }}>{eq.lufs.toFixed(1)} LUFS</Text> ({eq.lufs - mix.lufs >= 0 ? '+' : ''}{(eq.lufs - mix.lufs).toFixed(1)} LU).
@@ -119,7 +124,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
                 </Card>
               ) : null}
               <Card tone="warn">
-                <Point title="Before you switch MATCH off">{unmatchedWarning(mix?.lufs, eq?.lufs, 'WITH EQ', '2–3')} Unmatched, nothing replays by itself after a change — you press ▶ each time.</Point>
+                <Point title="Before you switch MATCH off">{unmatchedWarning(fresh ? mix?.lufs : undefined, fresh ? eq?.lufs : undefined, 'WITH EQ', '2–3')} Unmatched, nothing replays by itself after a change — you press ▶ each time.</Point>
               </Card>
               <Card>
                 <Point title="The habit">Make the change for a reason you can name. Bypass. Match. Listen again. Keep it only if it serves the goal.</Point>

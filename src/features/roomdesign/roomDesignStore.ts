@@ -81,11 +81,17 @@ function hydrate(): Promise<void> {
   return hydrating;
 }
 
-function persist(): void {
-  if (saveBlocked) return; // a guest's designs live for this session only
-  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(list)).catch((e: unknown) => {
-    console.warn('[roomdesign] save FAILED — the designs on screen are not persisted:', e);
-  });
+/** Resolves true only when the write landed (toddler pass 1, 2026-10-01: a
+ *  failed write used to report "Saved on this device"). */
+function persist(): Promise<boolean> {
+  if (saveBlocked) return Promise.resolve(false); // a guest's designs live for this session only
+  return AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(list)).then(
+    () => true,
+    (e: unknown) => {
+      console.warn('[roomdesign] save FAILED — the designs on screen are not persisted:', e);
+      return false;
+    },
+  );
 }
 
 /** Set by the lab's host on every render: true for a signed-out guest or a
@@ -120,9 +126,8 @@ export function saveRoomDesign(design: RoomDesign): Promise<boolean> {
     next.sort((a, b) => a.updatedAt - b.updatedAt);
     while (next.length > MAX_SAVED_DESIGNS) next.shift();
     list = next;
-    persist();
     emit();
-    return !saveBlocked;
+    return persist();
   });
 }
 
@@ -132,7 +137,7 @@ export function deleteRoomDesign(id: string): void {
     if (gen !== generation) return; // wiped meanwhile — nothing of this account to delete
     if (!list.some((d) => d.id === id)) return;
     list = list.filter((d) => d.id !== id);
-    persist();
+    void persist();
     emit();
   });
 }

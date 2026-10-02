@@ -230,7 +230,7 @@ describe('safety rules (safety review 2026-10-01)', () => {
     const st = strip(read(`${DIR}/stages.tsx`));
     assert.match(st, /'TP MODEL'/);
     assert.match(st, /typically 0\.3–1 dB over on dense material/);
-    assert.match(st, /static curve — attack, release and knee not shown/);
+    assert.match(st, /a static curve \(no attack, release or knee\)/);
     assert.match(st, /side level half the mid/);
     assert.match(st, /50 Hz · ISO 226-style model, simplified/);
   });
@@ -334,7 +334,7 @@ describe('the display is a working surface (owner standards 2026-10-01)', () => 
   it('tapping a LISTEN display toggles play / stop (tap-to-toggle), on the glass and in full screen alike', () => {
     assert.match(strip(read(`${DIR}/stages.tsx`)), /<Pressable\s+style=\{\{ width, height \}\}\s+onPress=\{onTap\}/);
     for (const f of ['mod1What.tsx', 'mod5Workflow.tsx', 'mod6Loudness.tsx']) {
-      assert.match(strip(read(`${DIR}/modules/${f}`)), /<WaveOverviewStage[^\n]*onTap=\{\(\) => \(pb\.active \? pb\.stop\(\) : pb\.play\(shown\)\)\}/, f);
+      assert.match(strip(read(`${DIR}/modules/${f}`)), /<WaveOverviewStage[^\n]*onTap=\{\(\) => \(pb\.active \|\| pb\.pending \? pb\.stop\(\) : pb\.play\(shown\)\)\}/, f);
     }
   });
   it('leaving a display stops its sound: a step change stops the module playback', () => {

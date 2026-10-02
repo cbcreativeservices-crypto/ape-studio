@@ -34,6 +34,7 @@ import {
   type Pt,
   type RoomDesign,
   type Speaker,
+  zCapAt,
 } from '../roomModel';
 
 const CONFIGS: { id: MonitoringConfig; label: string }[] = [
@@ -109,11 +110,24 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
       return { ...l, speakers: l.speakers.map((s) => (s.role === id ? { ...s, ...clampInside(p, room, s) } : s)) };
     });
   };
+  // Heights stop at the LOCAL ceiling (toddler pass 2026-10-01): the cap was
+  // the high point, so under a sloped or vaulted ceiling a tweeter could be
+  // dragged through the drawn ceiling line, and its ceiling bounce silently
+  // left the model.
   const onSideDrag = (id: string, p: { y: number; z: number }) => {
-    const zMax = room.height - 0.1;
     setLayout((l) => {
-      if (id === 'listener') return { ...l, listener: { ...l.listener, ...clampInside({ x: l.listener.x, y: p.y }, room, l.listener), earZ: Math.max(0.6, Math.min(zMax, p.z)) } };
-      return { ...l, speakers: l.speakers.map((s) => (s.role === id ? { ...s, ...clampInside({ x: s.x, y: p.y }, room, s), z: Math.max(0.1, Math.min(zMax, p.z)) } : s)) };
+      if (id === 'listener') {
+        const q = clampInside({ x: l.listener.x, y: p.y }, room, l.listener);
+        return { ...l, listener: { ...l.listener, ...q, earZ: Math.max(0.6, Math.min(zCapAt(room, q.y), p.z)) } };
+      }
+      return {
+        ...l,
+        speakers: l.speakers.map((s) => {
+          if (s.role !== id) return s;
+          const q = clampInside({ x: s.x, y: p.y }, room, s);
+          return { ...s, ...q, z: Math.max(0.1, Math.min(zCapAt(room, q.y), p.z)) };
+        }),
+      };
     });
   };
 
@@ -130,9 +144,9 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   const heightVal = heightTarget === 'ears' ? lay.listener.earZ : heightTarget === 'sub' ? (SUB?.z ?? 0.25) : (L?.z ?? 1.2);
   const setHeight = (z: number) =>
     setLayout((l) => {
-      if (heightTarget === 'ears') return { ...l, listener: { ...l.listener, earZ: z } };
+      if (heightTarget === 'ears') return { ...l, listener: { ...l.listener, earZ: Math.min(z, zCapAt(room, l.listener.y)) } };
       const roles: Speaker['role'][] = heightTarget === 'sub' ? ['SUB'] : ['L', 'R', 'C', 'LS', 'RS'];
-      return { ...l, speakers: l.speakers.map((s) => (roles.includes(s.role) ? { ...s, z } : s)) };
+      return { ...l, speakers: l.speakers.map((s) => (roles.includes(s.role) ? { ...s, z: Math.min(z, zCapAt(room, s.y)) } : s)) };
     });
   const H_MAX = Math.max(1.2, room.height - 0.1);
 

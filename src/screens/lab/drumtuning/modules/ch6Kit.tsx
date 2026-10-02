@@ -44,8 +44,14 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
   const [verdictsSeen, setVerdictsSeen] = useState<Set<string>>(() => new Set(['unbalanced']));
   const [name, setName] = useState('');
   const [note, setNote] = useState('');
-  const [savedFlash, setSavedFlash] = useState<string | null>(null);
+  const [savedFlash, setSavedFlash] = useState<{ text: string; ok: boolean } | null>(null);
   const reported = useRef(false);
+  /** The setup the last SAVE filed, and a write in flight. A second SAVE on
+   *  the same pitches with nothing typed is the same note (toddler pass 1: a
+   *  double tap filed a duplicate "Kit <date>" — the first tap had already
+   *  cleared the name). */
+  const lastSaved = useRef<{ sig: string; name: string } | null>(null);
+  const saving = useRef(false);
 
   const rackP = useMemo<StrikeParams>(() => ({ drum: 'rack', batter: headAtHz('rack', rackHz, 'batter'), reso: headAtHz('rack', rackHz, 'reso'), resoPresent: true, damping: 0, strike: 0.85, strikeR: 0.3, strikeTheta: 0 }), [rackHz]);
   const floorP = useMemo<StrikeParams>(() => ({ drum: 'floor', batter: headAtHz('floor', floorHz, 'batter'), reso: headAtHz('floor', floorHz, 'reso'), resoPresent: true, damping: 0, strike: 0.85, strikeR: 0.3, strikeTheta: 0 }), [floorHz]);
@@ -75,6 +81,12 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
   const sounding: KitSounding = both.playing || both.pending ? { which: 'both', switchAt: (RACK_FIRST_S + GAP_S) / (both.rendered?.result.seconds ?? 3.95) } : rack.playing || rack.pending ? { which: 'rack', switchAt: 1 } : floor.playing || floor.pending ? { which: 'floor', switchAt: 0 } : null;
   const sync = both.playing ? syncOf(both) : rack.playing ? syncOf(rack) : syncOf(floor);
   const save = () => {
+    if (saving.current) return;
+    const sig = `${rackHz}:${floorHz}`;
+    if (!name.trim() && !note.trim() && lastSaved.current?.sig === sig) {
+      setSavedFlash({ text: `This setup is already saved as "${lastSaved.current.name}". Move a tom or type a name to save another.`, ok: true });
+      return;
+    }
     const n: TuningNote = {
       id: `n${Date.now().toString(36)}`,
       name: name.trim() || `Kit ${new Date().toLocaleDateString()}`,
@@ -87,10 +99,20 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
       ],
     };
     if (note.trim()) n.drums[0].note = note.trim();
-    onSaveNote(n);
-    setSavedFlash(guest ? (preview ? 'Kept for this session only — a preview saves nothing.' : 'Kept for this session only — sign in to keep tuning notes on this device.') : `Saved "${n.name}" on this device.`);
-    setName('');
-    setNote('');
+    saving.current = true;
+    // The flash reports what the store DID, after the write — never "saved"
+    // ahead of it, never "saved" when it failed.
+    void onSaveNote(n).then((r) => {
+      saving.current = false;
+      if (r === 'failed') {
+        setSavedFlash({ text: 'Could not save on this device. The setup is still on the faders and your text is still here — try SAVE again.', ok: false });
+        return;
+      }
+      lastSaved.current = { sig, name: n.name };
+      setSavedFlash(r === 'session' ? { text: preview ? 'Kept for this session only — a preview saves nothing.' : 'Kept for this session only — sign in to keep tuning notes on this device.', ok: false } : { text: `Saved "${n.name}" on this device.`, ok: true });
+      setName('');
+      setNote('');
+    });
   };
   const load = (n: TuningNote) => {
     const r = n.drums.find((d) => d.drum === DRUMS.rack.name);
@@ -174,12 +196,12 @@ export function Ch6Kit({ onInteractive, notes, onSaveNote, onDeleteNote, guest, 
                 <TextInput value={note} onChangeText={setNote} placeholder="heads, room, what worked" placeholderTextColor={colors.textMuted} style={[styles.input, { minHeight: 60 }]} multiline accessibilityLabel="Free note" />
                 <Text style={styles.values}>{`rack tom ${rackHz} Hz (${noteName(rackHz)}) · floor tom ${floorHz} Hz (${noteName(floorHz)}) — batter pitches; the relationship is Chapter 4's choice`}</Text>
                 <KeyButton label="SAVE THIS SETUP" onPress={save} tint={colors.green} />
-                {savedFlash ? <Feedback tone={guest ? 'warn' : 'ok'}>{savedFlash}</Feedback> : null}
+                {savedFlash ? <Feedback tone={savedFlash.ok ? 'ok' : 'warn'}>{savedFlash.text}</Feedback> : null}
                 {guest && !savedFlash ? <Body>{preview ? 'A members-only preview saves nothing; notes stay for this session.' : 'You are not signed in: notes stay for this session only.'}</Body> : null}
               </Card>
               {sorted.length ? (
                 <View style={{ gap: 6 }}>
-                  <SectionTitle>SAVED ON THIS DEVICE · {sorted.length}</SectionTitle>
+                  <SectionTitle>{guest ? 'THIS SESSION ONLY — NOT SAVED' : 'SAVED ON THIS DEVICE'} · {sorted.length}</SectionTitle>
                   {sorted.map((n) => (
                     <View key={n.id} style={styles.noteRow}>
                       <View style={{ flex: 1, gap: 2 }}>

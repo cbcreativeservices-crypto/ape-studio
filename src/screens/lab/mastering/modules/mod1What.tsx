@@ -94,7 +94,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Louder is not better', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} onTap={() => (pb.active ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={m?.matchDb} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',

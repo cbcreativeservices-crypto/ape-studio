@@ -98,13 +98,17 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
     setVerdict(null);
   };
   const check = () => {
-    if (!g.rendered) return;
     setChecks((n) => n + 1);
     if (!touched) {
       setVerdict({ met: false, lines: ['You have not changed anything yet. The goal has to be reached, not found — move BATTER, RESO or DAMPING toward it and strike.'] });
       return;
     }
-    const v = judgeGoal(goal, { t60: g.rendered.t60, f0: gBatter, bendCents: gBend, upper: gUpper ?? 0, drum: gDrum });
+    // Judge the CURRENT settings (toddler pass 1): the picture re-renders
+    // 120 ms after a fader settles, so a CHECK inside that window judged the
+    // PREVIOUS setting's sustain against the new pitch — a goal could be met
+    // or missed on a drum that no longer existed.
+    const r = g.measure();
+    const v = judgeGoal(goal, { t60: r.t60, f0: gBatter, bendCents: gBend, upper: upperRatio(r.result.partials, gBatter), drum: gDrum });
     setVerdict(v);
     if (v.met) setMet((m) => (m.has(goal) ? m : new Set([...m, goal])));
   };

@@ -138,11 +138,18 @@ export function MasteringLabScreen() {
     setEndState(null);
     setModId(id);
     setStepRaw(atStep);
+    // Cleared NOW and merged when the store answers: a what's-left row lands
+    // straight on the PRACTICE deck, and a card answered before this read
+    // resolved was REPLACED by the stored copy (its own write is queued
+    // behind this one) — the last decision then never counted and the
+    // module's credit did not land (toddler pass 1, 2026-10-01).
+    setAnswers({});
     void updateMasteringProgress((s) => {
       s.lastModule = id;
       s.lastStep = atStep;
     }).then((s) => {
-      setAnswers(s.modules[id]?.answers ?? {});
+      const stored = s.modules[id]?.answers ?? {};
+      setAnswers((prev) => ({ ...prev, ...stored })); // the stored (first) answer wins
       const p = s.modules.project;
       setProject({ checks: p?.checks ?? [], qc: p?.qc ?? [] });
       setQcComplete((p?.qc?.length ?? 0) >= PROJECT_QC.length);

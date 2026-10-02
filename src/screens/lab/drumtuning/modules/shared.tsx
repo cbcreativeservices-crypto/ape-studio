@@ -8,6 +8,10 @@ import { DRUMS, fundamentalHz, meanTension, renderStrike, renderTap, tensionForH
 import type { SoundSync } from '../stagesDrum';
 import { useDrumPlayback, type DrumPlayback } from '../useDrumPlayback';
 
+/** What became of a SAVE: on the disk, kept for this session only (a guest
+ *  or a preview), or a write that failed. */
+export type NoteSaveResult = 'saved' | 'session' | 'failed';
+
 export type ChapterProps = {
   /** A scenario reached its right answer; `correct` = the FIRST pick was
    *  right — the host records it. */
@@ -19,7 +23,7 @@ export type ChapterProps = {
   onInteractive: () => void;
   /** Chapter 6 only: the tuning notes (host-owned, guest rule applied). */
   notes: readonly TuningNote[];
-  onSaveNote: (note: TuningNote) => void;
+  onSaveNote: (note: TuningNote) => Promise<NoteSaveResult>;
   onDeleteNote: (id: string) => void;
   /** A signed-out guest or a members-only preview: nothing is saved. */
   guest: boolean;

@@ -153,7 +153,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
           key: 'qc', title: 'Final QC checklist', kind: 'PRACTICE', layout: 'read',
           body: (
             <>
-              <Body>The exports are rendered. Work the checklist on the files themselves — every line ticked completes the module. Your ticks are kept.</Body>
+              <Body>The exports are rendered. Work the checklist on the files themselves — every line ticked, with the four track decisions on step 2 answered, completes the module. Your ticks are kept.</Body>
               <Checklist items={PROJECT_QC} chosen={qc} onToggle={toggleQc} />
               <Card tone={qc.size === PROJECT_QC.length ? 'accent' : 'plain'}>
                 <Point title={qc.size === PROJECT_QC.length ? 'Delivered' : `${qc.size} of ${PROJECT_QC.length}`}>

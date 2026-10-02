@@ -42,6 +42,10 @@ export type DrumRendered = {
 
 export type DrumPlayback = {
   status: 'idle' | 'rendering' | 'ready';
+  /** Render (or reuse) the CURRENT settings now and return the measurement —
+   *  for a judgement that must not read the picture's debounced, possibly
+   *  stale render. */
+  measure: () => DrumRendered;
   /** Play the current key (rendering first if the picture is stale). */
   play: () => void;
   stop: () => void;
@@ -138,6 +142,11 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
   // a short settle (a drag fires many keys — only the last one pays).
   useEffect(() => {
     if (loadedKeyRef.current !== key) {
+      // A ▶ still rendering / loading the OLD settings must not sound when it
+      // lands (toddler pass 1): EarClipPlayer.load spans many ticks, a fader
+      // moved inside them, and the stale clip then played — after the control
+      // change, with the playhead timed from the newer render.
+      seqRef.current++;
       playerRef.current?.stop();
       setPlaying(false);
       setPending(false);
@@ -223,5 +232,5 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
     stop();
   }, [hostStep, stop]);
 
-  return useMemo(() => ({ status, play, stop, playing, pending, rendered, progress }), [status, play, stop, playing, pending, rendered, progress]);
+  return useMemo(() => ({ status, measure: renderNow, play, stop, playing, pending, rendered, progress }), [status, renderNow, play, stop, playing, pending, rendered, progress]);
 }

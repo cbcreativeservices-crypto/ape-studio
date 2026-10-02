@@ -75,11 +75,15 @@ export const FIELD_RANGE_M: Record<string, [number, number] | null> = {
   midfield: [1.8, 4.2],
   other: null,
 };
-const FLOOR_TINT: Record<string, string> = {
-  carpet: '#1a1714',
-  hardwood: '#241a10',
-  concrete: '#17181a',
-  tile: '#161a1c',
+/** The floor fill by material. Still dark (the heat map and the paths read
+ *  over it) but each a distinct hue: the old four near-blacks differed by 2–4
+ *  levels a channel, so a FLOOR pick changed nothing a learner could see
+ *  (toddler pass 2026-10-01). */
+export const FLOOR_TINT: Record<string, string> = {
+  carpet: '#2b2018',
+  hardwood: '#3b2913',
+  concrete: '#25272b',
+  tile: '#16303a',
 };
 const HEAD_LINE = '#d9dbe0';
 const HEAD_PLATE = '#15161a';
@@ -190,9 +194,13 @@ export function RoomPlanView({
     return out;
   }, [edit, v, room, lay, design.treatment, T]);
 
-  const ref = useRef({ handles, T, s, onSelect, onDrag, onDragEnd });
-  ref.current = { handles, T, s, onSelect, onDrag, onDragEnd };
-  const drag = useRef<{ id: string; gx: number; gy: number } | null>(null);
+  const ref = useRef({ handles, T, s, gw, gh, onSelect, onDrag, onDragEnd });
+  ref.current = { handles, T, s, gw, gh, onSelect, onDrag, onDragEnd };
+  // The drag remembers the glass it began on: a rotation or a full-screen
+  // re-fit mid-drag changes the box, the hold drops, and the anchored finger
+  // (glass units of the OLD box) then mapped through the NEW transform —
+  // the corner or speaker leapt across the room (toddler pass 2026-10-01).
+  const drag = useRef<{ id: string; gx: number; gy: number; s: number; gw: number; gh: number } | null>(null);
   const endDrag = () => {
     const d = drag.current;
     drag.current = null;
@@ -208,7 +216,7 @@ export function RoomPlanView({
         const g = touchToGlass(e.nativeEvent.locationX, e.nativeEvent.locationY, st.s);
         const hit = pickHandle(st.handles, g.x, g.y);
         if (!hit) return false;
-        drag.current = { id: hit.id, gx: g.x, gy: g.y };
+        drag.current = { id: hit.id, gx: g.x, gy: g.y, s: st.s, gw: st.gw, gh: st.gh };
         dragging.current = true;
         frozenT.current = st.T;
         st.onSelect?.(hit.id);
@@ -218,6 +226,12 @@ export function RoomPlanView({
         const st = ref.current;
         const d = drag.current;
         if (!d) return;
+        if (d.s !== st.s || d.gw !== st.gw || d.gh !== st.gh) {
+          // The glass changed under the finger: let go where the item is.
+          endDrag();
+          st.onDragEnd?.(d.id);
+          return;
+        }
         // Anchored delta: base + gesture ÷ scale reproduces the finger in
         // glass units without re-basing (the Binaural stage's rule).
         const gx = d.gx + gs.dx / st.s;
@@ -276,6 +290,12 @@ export function RoomPlanView({
   // Role letters go INSIDE the cabinet in multichannel, and are hidden when
   // the cabinet is almost touching the front wall (cognitive review 10).
   const frontEdgeDist = (p: Pt) => distToEdge(p, v, 0).dist;
+  // The angle and the NEARFIELD / MIDFIELD line sit under the head; with the
+  // listener near the rear wall on a short glass they ran off the bottom and
+  // the number was cropped (toddler pass 2026-10-01) — then both go above.
+  const below = lisPx.y + 24 + fs + 3 + 4 <= gh;
+  const angleY = below ? lisPx.y + 24 : lisPx.y - 22 - (fs + 3);
+  const fieldY = below ? lisPx.y + 24 + fs + 3 : lisPx.y - 22;
   const labelMode = (sp: Speaker): 'inside' | 'above' | 'none' => (multi ? 'inside' : frontEdgeDist(sp) * T.k < 22 ? 'none' : 'above');
 
   return (
@@ -344,7 +364,7 @@ export function RoomPlanView({
               opacity={0.8}
             />
             {analysis.stereo ? (
-              <SvgText x={lisPx.x} y={lisPx.y + 24} fill={CYAN} fontSize={fs + 1} fontFamily={fonts.mono} textAnchor="middle">
+              <SvgText x={lisPx.x} y={angleY} fill={CYAN} fontSize={fs + 1} fontFamily={fonts.mono} textAnchor="middle">
                 {`${analysis.stereo.angleDeg.toFixed(0)}°`}
               </SvgText>
             ) : null}
@@ -357,7 +377,7 @@ export function RoomPlanView({
                   const range = FIELD_RANGE_M[design.monitoring.field];
                   const fits = !range || (d >= range[0] && d <= range[1]);
                   return (
-                    <SvgText x={lisPx.x} y={lisPx.y + 24 + fs + 3} fill={fits ? CYAN : AMBER} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
+                    <SvgText x={lisPx.x} y={fieldY} fill={fits ? CYAN : AMBER} fontSize={fs} fontFamily={fonts.oswaldSemiBold} textAnchor="middle">
                       {`${design.monitoring.field.toUpperCase()} · ${fmtLen(d, units)}${fits ? '' : ' ?'}`}
                     </SvgText>
                   );

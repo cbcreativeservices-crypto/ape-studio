@@ -178,7 +178,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
       id: 'surface',
       label: 'FINISH',
       valueLabel: SURFACES[room.floor].short,
-      render: () => <SurfaceTray room={room} setRoom={setRoom} />,
+      render: () => <SurfaceTray room={room} setRoom={setRoom} onCeilingMat={() => view === 'plan' && setView('side')} />,
     },
   ];
 
@@ -349,7 +349,7 @@ function clampLen(m: number): number {
   return Math.max(LEN_MIN, Math.min(LEN_MAX, m));
 }
 
-function SurfaceTray({ room, setRoom }: { room: Room; setRoom: (fn: (r: Room) => Room) => void }) {
+function SurfaceTray({ room, setRoom, onCeilingMat }: { room: Room; setRoom: (fn: (r: Room) => Room) => void; onCeilingMat: () => void }) {
   const opts = (keys: SurfaceKey[]) => keys.map((k) => ({ id: k, label: SURFACES[k].label.toUpperCase() }));
   const alphaLine = (k: SurfaceKey) => `α 125 Hz ${SURFACES[k].alpha[0].toFixed(2)} · 500 Hz ${SURFACES[k].alpha[2].toFixed(2)} · 2 kHz ${SURFACES[k].alpha[4].toFixed(2)}`;
   const area = polygonArea(room.vertices);
@@ -362,7 +362,17 @@ function SurfaceTray({ room, setRoom }: { room: Room; setRoom: (fn: (r: Room) =>
       <Chips items={opts(WALL_OPTIONS)} value={room.walls} onPick={(id) => setRoom((r) => ({ ...r, walls: id }))} />
       <Caption>{`${SURFACES[room.walls].blurb} ${alphaLine(room.walls)}`}</Caption>
       <TrayHeading>CEILING</TrayHeading>
-      <Chips items={opts(CEILING_OPTIONS)} value={room.ceilingMat} onPick={(id) => setRoom((r) => ({ ...r, ceilingMat: id }))} />
+      {/* The ceiling's colour shows only in the SIDE view — a pick on the plan
+          changed nothing on the picture (toddler pass 2026-10-01); it opens
+          the side view, the rule CEILING shape and height already follow. */}
+      <Chips
+        items={opts(CEILING_OPTIONS)}
+        value={room.ceilingMat}
+        onPick={(id) => {
+          setRoom((r) => ({ ...r, ceilingMat: id }));
+          onCeilingMat();
+        }}
+      />
       <Caption>{`${SURFACES[room.ceilingMat].blurb} ${alphaLine(room.ceilingMat)}`}</Caption>
       <Caption>{`ESTIMATED: textbook teaching coefficients, not ISO 354 product data. Floor and ceiling ${area.toFixed(1)} m² each; volume ${roomVolume(room).toFixed(1)} m³.`}</Caption>
     </View>

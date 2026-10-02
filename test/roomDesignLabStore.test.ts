@@ -36,10 +36,12 @@ registerHooks({
           globalThis.__apeRoomStorage = mem;
           let delay = 0;
           globalThis.__apeRoomDelay = (ms) => { delay = ms; };
+          let failWrites = false;
+          globalThis.__apeRoomFailWrites = (on) => { failWrites = on; };
           const wait = () => new Promise((r) => setTimeout(r, delay));
           export default {
             async getItem(k) { await wait(); return mem.has(k) ? mem.get(k) : null; },
-            async setItem(k, v) { mem.set(k, v); },
+            async setItem(k, v) { if (failWrites) throw new Error('disk full'); mem.set(k, v); },
             async removeItem(k) { mem.delete(k); },
           };
         `,
@@ -153,6 +155,19 @@ describe('saved room designs — the guest rule and preview', () => {
       assert.equal(mem().has(KEY), false);
     } finally {
       preview.endLabPreview();
+    }
+  });
+});
+
+describe('saved room designs — a failed write is reported (toddler pass 1, 2026-10-01)', () => {
+  it('resolves false when the device write fails, so the lab never says "Saved on this device"', async () => {
+    await fresh();
+    const failWrites = (globalThis as { __apeRoomFailWrites?: (on: boolean) => void }).__apeRoomFailWrites!;
+    failWrites(true);
+    try {
+      assert.equal(await store.saveRoomDesign({ ...defaultDesign('metric'), name: 'lost' }), false);
+    } finally {
+      failWrites(false);
     }
   });
 });

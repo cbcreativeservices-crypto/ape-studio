@@ -44,7 +44,11 @@ export function Mod2Roles({ onAnswered }: ModuleProps) {
             aspect: CONTROL_ASPECT,
             badge: MODEL_BADGE,
             bezel: [
-              { k: 'REQUEST', v: item.label, flex: 2.2 },
+              // The SHORT name (≤ 9 characters): the full label (up to 31,
+              // "Track spacing and running order") ellipsized at 375 AND 390
+              // wide — the cell holds ~23 characters. The well card and the
+              // tray carry the full request.
+              { k: 'REQUEST', v: item.short, flex: 2.2 },
               // One word: "MASTERING ENGINEER" (18 characters) would crop to
               // an ellipsis at 375 wide; the drawing's verdict strip says it
               // in full.

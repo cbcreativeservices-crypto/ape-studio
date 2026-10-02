@@ -105,14 +105,28 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
   const investigated = struck && tappedEnough;
   const hypothesised = sim.hypothesis != null;
 
-  // Every strike counts as evidence; on the drift case it also backs lug 2 out
-  // a little until the hardware is fixed.
+  // Every strike counts as evidence (on the press); on the drift case the
+  // strike also backs lug 2 out a little until the hardware is fixed — when
+  // the strike ENDS (toddler pass 1). Moving the rod at the START changed the
+  // head, so the strike's own key changed and useDrumPlayback stopped it a
+  // frame in: every strike on the drift case was cut off. The next strike
+  // hears the drift; the drawing shows it as soon as this one finishes.
+  const strikeRef = useRef<{ id: SymptomId; n: number } | null>(null);
   useEffect(() => {
-    if (!pb.playing) return;
+    if (pb.playing) {
+      const id = caseId;
+      strikeRef.current = { id, n: sims[id].strikes + 1 };
+      setSims((all) => ({ ...all, [id]: { ...all[id], strikes: all[id].strikes + 1 } }));
+      return;
+    }
+    const struckNow = strikeRef.current;
+    strikeRef.current = null;
+    if (!struckNow) return;
     setSims((all) => {
-      const s = all[caseId];
-      const turns = s.drift ? s.batter.turns.map((t, i) => (i === 1 ? t - 0.12 : t)) : s.batter.turns;
-      return { ...all, [caseId]: { ...s, batter: { ...s.batter, turns }, strikes: s.strikes + 1 } };
+      const s = all[struckNow.id];
+      // A case reset (or a hardware fix) since the strike: nothing drifts.
+      if (!s.drift || s.strikes !== struckNow.n) return all;
+      return { ...all, [struckNow.id]: { ...s, batter: { ...s.batter, turns: s.batter.turns.map((t, i) => (i === 1 ? t - 0.12 : t)) } } };
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pb.playing]);

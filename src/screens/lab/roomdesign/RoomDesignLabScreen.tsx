@@ -38,7 +38,7 @@ import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import type { RoomLabCtx } from './labCtx';
 import { ROOM_LAB_ID, ROOM_MODULES, type RoomModuleId } from './registry';
-import { analyze, defaultDesign, START_LAYOUT, type RoomDesign } from './roomModel';
+import { analyze, defaultDesign, repairDesign, START_LAYOUT, type RoomDesign } from './roomModel';
 import { IntroModule } from './modules/modIntro';
 import { CreateModule } from './modules/modCreate';
 import { MonitoringModule } from './modules/modMonitoring';
@@ -58,7 +58,10 @@ export function RoomDesignLabScreen() {
   // A guest who IS signed in is a members-only preview, not a signed-out guest.
   const preview = resolved && guest && entitlement !== 'anonymous';
   const visited = useLabVisits(ROOM_LAB_ID);
-  const saved = useRoomDesigns();
+  // Repaired on the way in (toddler pass 2026-10-01): a damaged or
+  // version-skewed record crashed analyze() on COMPARE or LOAD.
+  const rawSaved = useRoomDesigns();
+  const saved = useMemo(() => rawSaved.map(repairDesign).filter((x): x is RoomDesign => x != null), [rawSaved]);
 
   // The ONE design being edited, shared by every module.
   const [design, setDesign] = useState<RoomDesign>(() => defaultDesign());
@@ -89,6 +92,13 @@ export function RoomDesignLabScreen() {
       resolved,
       saved,
       saveCurrent: (name?: string) => {
+        // Nothing reaches the store while it is blocked (toddler pass
+        // 2026-10-01): a save tapped before the tier was known, or by a
+        // guest, went into the store's in-memory list unwritten — once the
+        // tier resolved as a member it sat under SAVED DESIGNS with LOAD and
+        // DELETE as if it were on the device, and was gone after a relaunch.
+        // The design on screen is the session copy either way.
+        if (!resolved || guest) return Promise.resolve(false);
         const d = name ? { ...design, name } : design;
         if (name) setDesign(d);
         return saveRoomDesign(d);
