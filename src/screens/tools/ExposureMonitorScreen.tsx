@@ -39,6 +39,7 @@ import {
 import { markToolMount } from '../../features/tools/devTiming';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { readingText } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 function Row({
   label,
@@ -134,7 +135,7 @@ export function ExposureMonitorScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
@@ -249,6 +250,15 @@ export function ExposureMonitorScreen() {
             <Text style={styles.note}>
               The microphone stream dropped samples during this session, so measured time may be undercounted — treat
               this dose as a conservative estimate and restart monitoring for an uninterrupted reading.
+            </Text>
+          ) : null}
+          {/* Today's saved dose could not be read (exposureMonitor
+              `doseUnreadable`, 2026-10-02): the figure above counts only what
+              this run has heard. Inline, never a popup (Low-Light rule). */}
+          {snap.doseUnreadable ? (
+            <Text style={styles.note}>
+              Earlier listening from today could not be read on this device, so the dose shown may be lower than it
+              really is.
             </Text>
           ) : null}
           <Text style={styles.note}>

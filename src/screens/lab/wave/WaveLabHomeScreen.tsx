@@ -16,9 +16,11 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { WAVE_MODULES } from './modules/registry';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 export function WaveLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -29,11 +31,34 @@ export function WaveLabHomeScreen() {
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<string | null>(null);
   const clearedUnits = useLabClearedUnits('af_wave_physics');
+  /**
+   * WHAT'S LEFT (owner 2026-10-02, "favor consistency"): the Meter hub's
+   * SEE WHAT'S LEFT link, the same way — it swaps LabEndScreen in for the
+   * list (modules not yet credited, a jump to each, PRACTISE AGAIN from
+   * Module 1, which clears nothing, and DONE).
+   */
+  const [ending, setEnding] = useState(false);
+  const open = (id: (typeof WAVE_MODULES)[number]['id']) => {
+    setEnding(false);
+    navigation.navigate('WaveModule', { id });
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
       <LabHeader title="WAVE PHYSICS LABORATORY" subtitle="One room engine · fifteen experiments" right={<AccuracyNote compact />} />
+      {ending ? (
+        <LabEndScreen
+          labTitle="Wave Physics Laboratory"
+          units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          cleared={clearedUnits}
+          mode="credit"
+          onJump={(id) => open(WAVE_MODULES.find((m) => m.id === id)?.id ?? WAVE_MODULES[0].id)}
+          onPracticeAgain={() => open(WAVE_MODULES[0].id)}
+          onDone={() => safeGoBack(navigation)}
+          bottomInset
+        />
+      ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         {/* Guided Lessons at the very top, before the module list (owner 2026-08-05). */}
         <Pressable
@@ -76,7 +101,9 @@ export function WaveLabHomeScreen() {
             />
           </>
         )}
+        <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
       </ScrollView>
+      )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('wave')} onClose={() => setLessonOpen(false)} />
     </View>
   );

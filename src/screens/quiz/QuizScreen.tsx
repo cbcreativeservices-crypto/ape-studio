@@ -57,6 +57,7 @@ import type { StudyStackParamList } from '../../navigation/types';
 import { parseSubmitError } from '../../features/finalExam/api';
 import { QUIZ_SUBMIT_ERROR_COPY } from '../../features/quiz/api';
 import { readingColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Quiz'>;
 
@@ -111,7 +112,7 @@ export function QuizScreen({ navigation, route }: Props) {
   const leave = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
-    navigation.goBack();
+    safeGoBack(navigation);
   }, [navigation]);
 
   /* ---- attempt start (online-only; idempotent resume) ---- */
@@ -257,7 +258,7 @@ export function QuizScreen({ navigation, route }: Props) {
               Platform.OS === 'web'
                 ? 'Offline — please reconnect to submit. Keep this tab open until you reconnect; your finished attempt is held in this browser session only.'
                 : 'Offline — please reconnect to submit.',
-              () => navigation.goBack(),
+              () => safeGoBack(navigation),
             );
           } else {
             // The queue write failed, so "reconnect to submit" would be a lie.
@@ -289,7 +290,7 @@ export function QuizScreen({ navigation, route }: Props) {
             // route that no longer exists; it bubbles up and pops the Results
             // the learner is reading. Same defect as the Leave-quiz confirm.
             () => {
-              if (mountedRef.current) navigation.goBack();
+              if (mountedRef.current) safeGoBack(navigation);
             },
           );
         }
@@ -528,7 +529,7 @@ export function QuizScreen({ navigation, route }: Props) {
         //    soften this decision. Fixed in the Final Exam twin first; this
         //    one was the same defect, unreported, in the same shape.
         if (payload) void clearAttemptDraft(payload.attempt_id);
-        navigation.goBack();
+        safeGoBack(navigation);
       },
       { cancelText: 'Keep going', destructive: true },
     );

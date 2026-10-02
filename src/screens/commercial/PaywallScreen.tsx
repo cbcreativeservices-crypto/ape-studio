@@ -31,6 +31,7 @@ import {
 import type { PlanId } from '../../features/commercial/iapProducts';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Paywall'>;
 
@@ -87,7 +88,7 @@ export function PaywallScreen({ navigation }: Props) {
       // is honoured however the notice is closed.
       notify('Welcome to Academy', 'Your Academy access is active. Enjoy!', () => {
         const pending = consumePendingLink();
-        if (!(pending && navigateToPath(pending))) navigation.goBack();
+        if (!(pending && navigateToPath(pending))) safeGoBack(navigation);
       });
     };
     // Reflect a server-verified purchase in the local entitlement. The MONEY
@@ -133,7 +134,7 @@ export function PaywallScreen({ navigation }: Props) {
             },
             // Leaving is safe: the entitlement is on the server and the next
             // boot read / auth event picks it up.
-            { cancelText: 'Later', onCancel: () => navigation.goBack() }, // Ratified by the owner 2026-09-14
+            { cancelText: 'Later', onCancel: () => safeGoBack(navigation) }, // Ratified by the owner 2026-09-14
           );
         });
     };
@@ -299,7 +300,7 @@ export function PaywallScreen({ navigation }: Props) {
                 : // Ratified by the owner 2026-09-14
                   'Your previous purchase was verified and your membership is recorded. We couldn’t refresh your access on this device yet — it will unlock shortly, or restart the app.',
               () => {
-                if (mounted.current) navigation.goBack();
+                if (mounted.current) safeGoBack(navigation);
               },
             );
             return;
@@ -382,7 +383,7 @@ export function PaywallScreen({ navigation }: Props) {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
         <Pressable
-          onPress={() => navigation.goBack()}
+          onPress={() => safeGoBack(navigation)}
           hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel="Close"
@@ -425,7 +426,7 @@ export function PaywallScreen({ navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <Pressable
-        onPress={() => navigation.goBack()}
+        onPress={() => safeGoBack(navigation)}
         hitSlop={12}
         accessibilityRole="button"
         accessibilityLabel="Close"

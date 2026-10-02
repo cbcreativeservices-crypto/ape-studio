@@ -45,6 +45,7 @@ import { MASTERING_CREDIT_STEP, MASTERING_MODULE_COMPONENTS, MASTERING_PROJECT_Q
 import { StepHostContext, type StepHost } from './steps';
 import { RecordedAnswersContext, TakeawayCard } from './kit';
 import { releaseProgramme } from './useMasterPlayback';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 export const MASTERING_LAB_TITLE = 'Mastering Lab';
 const SUBTITLE = 'From Final Mix to Release';
@@ -483,7 +484,7 @@ export function MasteringLabScreen() {
         mode="progress"
         onJump={(id) => openModule(id as MasteringModuleId, jumpStep(id as MasteringModuleId))}
         onPracticeAgain={() => openModule('what', 0)}
-        onDone={() => navigation.goBack()}
+        onDone={() => safeGoBack(navigation)}
         bottomInset
       />
     );

@@ -17,9 +17,11 @@ import { useState } from 'react';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const PATH = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'PROCESSING', 'RECONSTRUCTION', 'SOUND'];
 
@@ -41,7 +43,17 @@ export function DigitalLabHomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lessonOpen, setLessonOpen] = useState(false);
-  const open = (id: DigitalModuleId) => navigation.navigate('DigitalModule', { id });
+  /**
+   * WHAT'S LEFT (owner 2026-10-02, "favor consistency"): the Meter hub's
+   * SEE WHAT'S LEFT link, the same way — it swaps LabEndScreen in for the
+   * list (modules not yet credited, a jump to each, PRACTISE AGAIN from
+   * Module 1, which clears nothing, and DONE).
+   */
+  const [ending, setEnding] = useState(false);
+  const open = (id: DigitalModuleId) => {
+    setEnding(false);
+    navigation.navigate('DigitalModule', { id });
+  };
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<DigitalModuleId | null>(null);
   const clearedUnits = useLabClearedUnits('af_digital_audio');
@@ -54,6 +66,18 @@ export function DigitalLabHomeScreen() {
         subtitle="Explore how analog sound becomes digital data — and how digital data becomes sound again."
         right={<AccuracyNote compact />}
       />
+      {ending ? (
+        <LabEndScreen
+          labTitle="Digital Audio Sampling & Conversion Lab"
+          units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          cleared={clearedUnits}
+          mode="credit"
+          onJump={(id) => open(DIGITAL_MODULES.find((m) => m.id === id)?.id ?? DIGITAL_MODULES[0].id)}
+          onPracticeAgain={() => open(DIGITAL_MODULES[0].id)}
+          onDone={() => safeGoBack(navigation)}
+          bottomInset
+        />
+      ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <SignalPathBanner />
         <Text style={styles.body}>
@@ -74,6 +98,7 @@ export function DigitalLabHomeScreen() {
             onOpen={() => open(m.id)}
           />
         ))}
+        <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
         <Text style={styles.sectionTitle}>SECONDARY TOOLS</Text>
         <View style={styles.toolWrap}>
           <ToolChip label="DATA-RATE CALCULATOR" onPress={() => navigation.navigate('CalcWorkspace', { id: 'filesize' })} />
@@ -96,6 +121,7 @@ export function DigitalLabHomeScreen() {
           the heart of this lab — digital audio is NOT made of stair steps.
         </Text>
       </ScrollView>
+      )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('digital')} onClose={() => setLessonOpen(false)} />
     </View>
   );

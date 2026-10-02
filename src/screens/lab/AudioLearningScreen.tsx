@@ -24,6 +24,7 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 // Card background art (owner 2026-08-22). Bundled PNGs; each ImageBackground
 // carries a LinearGradient scrim so the frame's text and CTA stay legible over
@@ -77,7 +78,7 @@ export function AudioLearningScreen({ navigation }: Props) {
       <CompactBrandBar />
 
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

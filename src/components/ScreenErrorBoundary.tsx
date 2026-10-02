@@ -40,12 +40,14 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { captureError } from '../features/telemetry/telemetry';
+import { safeGoBack } from '../lib/safeGoBack';
 
 /**
  * The slice of the screen's navigation object this needs. Structural on purpose:
  * the same component is handed a native-stack navigation and a bottom-tabs one.
  */
 export type ScreenBoundaryNavigation = {
+  isFocused: () => boolean;
   canGoBack: () => boolean;
   goBack: () => void;
   addListener: (type: 'blur', callback: () => void) => () => void;
@@ -117,7 +119,7 @@ export class ScreenErrorBoundary extends Component<Props, State> {
     // screen on the way out would just throw again mid-transition. The screen
     // unmounts with the pop; if it is a tab scene that survives, the blur
     // listener above resets it.
-    if (navigation.canGoBack()) navigation.goBack();
+    safeGoBack(navigation); // focused + canGoBack + one leave per window
   };
 
   render(): ReactNode {

@@ -67,6 +67,7 @@ import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientati
 import type { RootStackParamList } from '../../navigation/types';
 import { consumePendingLink } from '../../navigation/pendingLink';
 import { navigateToPath } from '../../navigation/linking';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
 
@@ -643,7 +644,7 @@ export function AuthScreen({ navigation }: Props) {
       {navigation.canGoBack() && mode !== 'recovery' && !busy ? (
         <Pressable
           style={[styles.returnBtn, { top: insets.top + 8 }]}
-          onPress={() => navigation.goBack()}
+          onPress={() => safeGoBack(navigation)}
           hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel="Return without signing in"

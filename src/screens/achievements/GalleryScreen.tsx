@@ -15,6 +15,7 @@ import { gridColumns } from '../../theme/tablet';
 import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
 import { fetchGalleryV3, type GalleryEntry } from '../../features/achievements/api';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 // A row item is either a trophy entry or the odd-row-padding spacer sentinel.
 type GalleryRow = GalleryEntry | '__spacer__';
@@ -57,7 +58,7 @@ export function GalleryScreen() {
   const leave = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
-    (navigation as any).goBack();
+    safeGoBack(navigation as any);
   }, [navigation]);
 
   const load = useCallback(() => {

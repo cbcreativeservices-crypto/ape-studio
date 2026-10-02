@@ -39,9 +39,11 @@ describe('back controls are big enough to hit', () => {
     const offenders: string[] = [];
     for (const file of walk(SRC)) {
       const code = readFileSync(file, 'utf8');
-      if (!code.includes('goBack()')) continue;
+      // P9b (2026-10-02): a back press is now `safeGoBack(navigation)`.
+      const isBack = (l: string) => l.includes('goBack()') || l.includes('safeGoBack(');
+      if (!isBack(code)) continue;
       code.split('\n').forEach((line, i) => {
-        if (!line.includes('goBack()')) return;
+        if (!isBack(line)) return;
         // A bare number is the cramped form; the shared constant is the fix.
         const m = /hitSlop=\{(\d+)\}/.exec(line);
         if (m && Number(m[1]) < 20) {

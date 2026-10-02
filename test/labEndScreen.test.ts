@@ -118,7 +118,7 @@ describe('every listed lab wires the shared end screen', () => {
       const el = s.slice(at, s.indexOf('/>', at));
       assert.match(el, /onJump=/);
       assert.match(el, /onPracticeAgain=/);
-      assert.match(el, /onDone=\{\(\) => navigation\.goBack\(\)\}/);
+      assert.match(el, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
     });
     it(`${name}: practising again clears nothing`, () => {
       const s = src(path);

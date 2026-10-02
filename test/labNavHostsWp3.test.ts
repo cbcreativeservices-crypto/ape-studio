@@ -38,7 +38,7 @@ describe('WP3 hosts use the shared lab navigation', () => {
       assert.match(src, /<LabNavProvider value=\{nav\}>/);
       // The host's own ‹ is gone with its header styles.
       assert.doesNotMatch(src, /accessibilityLabel="Back"/);
-      assert.doesNotMatch(src, /navigation\.goBack\(\)\} hitSlop/);
+      assert.doesNotMatch(src, /(?:navigation\.goBack\(\)|safeGoBack\(navigation\))\} hitSlop/);
     });
     test(`${name}: one unit per section with done from ${record}; go / finish / unEnd wired to the host's state`, () => {
       assert.match(src, new RegExp(`units: SECTIONS\\.map\\(\\(sec\\) => \\(\\{ id: sec\\.key, title: sec\\.title, done: ${record}\\.has\\(sec\\.key\\) \\}\\)\\)`));
@@ -55,7 +55,7 @@ describe('WP3 hosts use the shared lab navigation', () => {
       const el = src.slice(at, src.indexOf('/>', at));
       assert.match(el, /onJump=\{\(id\) => openSection\(/);
       assert.match(el, /onPracticeAgain=\{\(\) => openSection\(0\)\}/);
-      assert.match(el, /onDone=\{\(\) => navigation\.goBack\(\)\}/);
+      assert.match(el, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
     });
   }
 

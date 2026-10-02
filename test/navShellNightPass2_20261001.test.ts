@@ -11,7 +11,7 @@ const read = (p: string) => readFileSync(p, 'utf8');
 it('LabHeader ‹ and LabEndScreen DONE share ONE leave window (‹ + DONE popped two screens)', () => {
   const bar = read('src/screens/lab/kit/LabNavBar.tsx');
   assert.match(bar, /let lastLeaveAt = 0;\s*export function claimLabLeave\(\): boolean \{/);
-  assert.match(bar, /const leave = \(\) => \{\s*if \(!claimLabLeave\(\)\) return;\s*navigation\.goBack\(\);/);
+  assert.match(bar, /const leave = \(\) => \{\s*if \(!claimLabLeave\(\)\) return;\s*safeGoBack\(navigation\);/);
   const end = read('src/screens/lab/kit/LabEndScreen.tsx');
   assert.match(end, /import \{ LabNextButton, claimLabLeave \} from '\.\/LabNavBar';/);
   assert.match(end, /if \(!claimLabLeave\(\)\) return;\s*onDone\(\);/);

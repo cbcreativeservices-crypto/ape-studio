@@ -167,7 +167,7 @@ describe('shared navigation strip', () => {
     assert.match(host, /<LabEndScreen\b/);
     assert.match(host, /<LabNextButton \/>/);
     assert.match(host, /reset: \{ label: 'START OVER \(PRACTICE\)'/);
-    assert.match(host, /onDone=\{\(\) => navigation\.goBack\(\)\}/);
+    assert.match(host, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
   });
   it('none of the retired words, no raw Alert; confirmDialog for the reset', () => {
     for (const w of ['‹ BACK', 'CONTINUE ›', '⏮ START', 'SKIP AHEAD', 'styles.topNav', 'Alert.alert']) assert.ok(!host.includes(w), `host carries "${w}"`);

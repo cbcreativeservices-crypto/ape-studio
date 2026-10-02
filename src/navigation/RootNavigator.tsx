@@ -311,7 +311,7 @@ const MemberGated = {
   // Mixing category; one route, so the predicate sees it directly.
   MasteringLab: withMembershipPreview(MasteringLabScreen),
   // Drum Tuning Lab (2026-10-01): members-only via its catalog leaf in the
-  // Instruments & Recording category; one route.
+  // Pitch & Tuning category; one route.
   DrumTuningLab: withMembershipPreview(DrumTuningLabScreen),
   BinauralLab: withMembershipPreview(Gated.BinauralLab),
   CableLab: withMembershipPreview(Gated.CableLab),

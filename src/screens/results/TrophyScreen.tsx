@@ -33,6 +33,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { hapticsEnabled } from '../../features/settings/store';
 import { popupCard } from '../../theme/readingColumn';
 import type { RootStackParamList } from '../../navigation/types';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Trophy'>;
 
@@ -54,7 +55,7 @@ export function TrophyScreen({ navigation, route }: Props) {
     if (leavingRef.current) return;
     leavingRef.current = true;
     if (navigation.canGoBack()) {
-      navigation.goBack();
+      safeGoBack(navigation);
       return;
     }
     // Reached with no history — a deep link, or restored navigation state.

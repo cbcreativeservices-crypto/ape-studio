@@ -54,6 +54,7 @@ import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTria
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 import { orderByCredit, remainingCount } from '../../features/study/deckOrder';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'FillInBlank'>;
 
@@ -378,7 +379,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   const leave = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
-    navigation.goBack();
+    safeGoBack(navigation);
   }, [navigation]);
 
   if (error) {

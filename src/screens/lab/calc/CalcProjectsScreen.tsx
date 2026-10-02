@@ -24,6 +24,7 @@ import { workflowGeneration, workflowStore } from './workflowStore';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -265,7 +266,7 @@ export function CalcProjectsScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
         <Pressable
-          onPress={() => (editing ? closeEditor() : navigation.goBack())}
+          onPress={() => (editing ? closeEditor() : safeGoBack(navigation))}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel="Back"

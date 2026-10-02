@@ -47,6 +47,7 @@ import { AccessibilityInfo, Image, Platform, Pressable, StyleSheet, Text, useWin
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 import { useAnimationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { optionalModule } from '../../features/tools/capture/optionalModule';
 import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
 import { closeVuTuner, useTunerFrame } from '../../features/tools/tuner/tunerFrameStore';
@@ -438,7 +439,7 @@ function Chev({ phase, index, flat, glyph }: { phase: SharedValue<number>; index
 }
 
 export function TuneChevrons({ cents, dim, tuneColor }: { cents: number | null; dim: boolean; tuneColor?: string | null }) {
-  const allowed = useAnimationsAllowed(); // subscribed — pattern hunt P10, 2026-10-02
+  const allowed = useDecorativeMotion(); // subscribed; + Low-Light — tuner chevrons are decorative (owner 2026-10-02)
   const active = cents != null && Math.abs(cents) >= 1;
   const flat = (cents ?? 0) < 0;
   const phase = useSharedValue(0.999);

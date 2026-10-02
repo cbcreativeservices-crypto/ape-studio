@@ -25,6 +25,7 @@ import { resetOnboarding } from '../../features/intro/onboardingFlow';
 import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import { HELP_CATEGORIES, filterHelp, type HelpEntry } from '../../features/help/helpContent';
 import { readingColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 export function HelpScreen() {
   const insets = useSafeAreaInsets();
@@ -75,7 +76,7 @@ export function HelpScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

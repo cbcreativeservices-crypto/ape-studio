@@ -47,6 +47,7 @@ import { DRUM_CHAPTER_COMPONENTS, DRUM_NEEDS_INTERACTIVE, DRUM_STEP_COUNTS } fro
 import { StepHostContext, type StepHost } from './steps';
 import type { NoteDeleteResult, NoteSaveResult } from './modules/shared';
 import { TakeawayCard } from './kit';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 export const DRUM_LAB_TITLE = 'Drum Tuning Lab';
 const SUBTITLE = 'Prepare, tune, listen, troubleshoot';
@@ -394,7 +395,7 @@ export function DrumTuningLabScreen() {
           setRunId((r) => r + 1);
           openModule('sound', 0);
         }}
-        onDone={() => navigation.goBack()}
+        onDone={() => safeGoBack(navigation)}
         bottomInset
       />
     );

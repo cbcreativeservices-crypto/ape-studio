@@ -74,6 +74,14 @@ const FOOTER_SEED = 49;
 /** A second tick inside this window is a double tap, not a choice. */
 const ACK_REPEAT_MS = 700;
 
+/** The write-state map without one topic (its add was written, or superseded). */
+function withoutGs<V>(m: Record<number, V>, gs: number): Record<number, V> {
+  if (!(gs in m)) return m;
+  const next = { ...m };
+  delete next[gs];
+  return next;
+}
+
 export function TopicDetailModal({
   topic,
   prev,
@@ -92,8 +100,10 @@ export function TopicDetailModal({
   onClose: () => void;
   /** Enrol THIS topic (owner 2026-09-15). When provided, the footer shows an
    *  acknowledgement checkbox + Enroll button to the left of Close. Enroll only
-   *  fires once acknowledged; it does NOT navigate or close — the user closes. */
-  onEnrollTopic?: (gs: number) => void;
+   *  fires once acknowledged; it does NOT navigate or close — the user closes.
+   *  An ADD answers the enrollment store's write result (P6 / G7): "Added"
+   *  shows only once the device accepted the list. */
+  onEnrollTopic?: (gs: number) => void | Promise<boolean>;
   /** Whether a gs is already enrolled (parent-owned, reactive). */
   isTopicEnrolled?: (gs: number) => boolean;
 }) {
@@ -130,6 +140,33 @@ export function TopicDetailModal({
   // the live enrolled state and toggles it.
   const canEnroll = !!onEnrollTopic && topic != null;
   const enrolled = !!topic && !!isTopicEnrolled?.(topic.gs);
+  // THE CLAIM COMES FROM THE WRITE (G7, owner 2026-10-02): the box ticks from
+  // the live list, which shows a tap even when the device refused to save it.
+  // Per topic: 'pending' while the add is being written, 'failed' when the
+  // store answered false. A topic enrolled before this popup opened has no
+  // entry and reads as the stored list says. A later tap supersedes an
+  // earlier one's answer (writeTap).
+  const [writeState, setWriteState] = useState<Record<number, 'pending' | 'failed'>>({});
+  const writeTap = useRef(0);
+  const enrollTapped = (gs: number) => {
+    const r = onEnrollTopic?.(gs);
+    const my = ++writeTap.current;
+    if (!r || typeof (r as Promise<boolean>).then !== 'function') {
+      setWriteState((m) => withoutGs(m, gs));
+      return;
+    }
+    setWriteState((m) => ({ ...m, [gs]: 'pending' }));
+    void (r as Promise<boolean>).then(
+      (ok) => {
+        if (my !== writeTap.current) return;
+        setWriteState((m) => (ok ? withoutGs(m, gs) : { ...m, [gs]: 'failed' }));
+      },
+      () => {
+        if (my === writeTap.current) setWriteState((m) => ({ ...m, [gs]: 'failed' }));
+      },
+    );
+  };
+  const topicWrite = topic ? writeState[topic.gs] : undefined;
 
   // One topic's content = the art head + the spec-sheet body, in its own
   // vertical ScrollView (nested inside the horizontal pager on Android).
@@ -237,7 +274,7 @@ export function TopicDetailModal({
                       const now = Date.now();
                       if (now - lastAckAt.current < ACK_REPEAT_MS) return;
                       lastAckAt.current = now;
-                      if (topic) onEnrollTopic?.(topic.gs);
+                      if (topic) enrollTapped(topic.gs);
                     }}
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: enrolled }}
@@ -252,7 +289,11 @@ export function TopicDetailModal({
                         Home gate and on the Enrollments screen. Say the
                         condition here, at the moment the box is ticked. */}
                     <Text style={styles.ackText}>
-                      {enrolled
+                      {enrolled && topicWrite === 'pending'
+                        ? 'Adding to My Enrollments…'
+                        : enrolled && topicWrite === 'failed'
+                        ? 'In your list for now, but this device could not save it yet.'
+                        : enrolled
                         ? // Pro Audio Safety + DAW are free for everyone (FREE_ENROLL_GS):
                           // telling a free user they need membership to study them
                           // was false (bug pass 2026-09-30).

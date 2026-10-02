@@ -53,18 +53,18 @@ describe('the graded screens leave once on a double tap of Back', () => {
   it('FinalExam routes every plain back button through one latch', () => {
     const s = read('src', 'screens', 'exam', 'FinalExamScreen.tsx');
     assert.match(s, /const leavingRef = useRef\(false\);/);
-    assert.match(s, /if \(leavingRef\.current\) return;\s*leavingRef\.current = true;\s*navigation\.goBack\(\);/);
+    assert.match(s, /if \(leavingRef\.current\) return;\s*leavingRef\.current = true;\s*safeGoBack\(navigation\);/);
     assert.match(s, /<ExamBriefing[\s\S]*?onBack=\{leave\}/);
     assert.match(s, /<ExamHold submitting=\{submitting\} onBack=\{leave\} \/>/);
-    assert.doesNotMatch(s, /label="Back"[^\n]*navigation\.goBack\(\)/);
+    assert.doesNotMatch(s, /label="Back"[^\n]*(?:navigation\.goBack\(\)|safeGoBack)/);
     // the latch is a hook, so it must sit above the first early return
     assert.ok(s.indexOf('const leave = useCallback(') < s.indexOf('if (!begun) {'));
   });
 
   it('Quiz routes its error-state Back buttons through one latch', () => {
     const s = read('src', 'screens', 'quiz', 'QuizScreen.tsx');
-    assert.match(s, /if \(leavingRef\.current\) return;\s*leavingRef\.current = true;\s*navigation\.goBack\(\);/);
-    assert.doesNotMatch(s, /label="Back"[^\n]*navigation\.goBack\(\)/);
+    assert.match(s, /if \(leavingRef\.current\) return;\s*leavingRef\.current = true;\s*safeGoBack\(navigation\);/);
+    assert.doesNotMatch(s, /label="Back"[^\n]*(?:navigation\.goBack\(\)|safeGoBack)/);
     assert.ok(s.indexOf('const leave = useCallback(') < s.indexOf('if (startError) {'));
   });
 });

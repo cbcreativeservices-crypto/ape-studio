@@ -14,7 +14,7 @@
 import { useEffect } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
-import { useAnimationsAllowed } from '../settings/a11y';
+import { useDecorativeMotion } from '../settings/decorativeMotion';
 
 export const ATTENTION_PULSE_MS = 4000; // owner 2026-09-05: was 5 s, sped up to 4 s
 
@@ -29,7 +29,7 @@ export function useAttentionPulse(run: boolean = true, period: number = ATTENTIO
   // Settings is a modal — a per-render read only noticed a change when
   // something else re-rendered this host, so the pulse kept breathing at a
   // user who had just turned animations off.
-  const allowed = useAnimationsAllowed();
+  const allowed = useDecorativeMotion(); // + Low-Light (P10b, 2026-10-02): an attention pulse
   useEffect(() => {
     cancelAnimation(t);
     if (!run || !allowed) {

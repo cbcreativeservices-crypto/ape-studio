@@ -37,6 +37,7 @@ import {
 import { cardColumn } from '../../theme/readingColumn';
 import { useIsTablet } from '../../theme/useIsTablet';
 import { GlassPanel, GlassTile } from '../tools/GlassTile';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
 
@@ -166,7 +167,7 @@ export function EarLabScreen({ navigation, route }: Props) {
           Training), so HOME would skip the screen the user actually came
           from and there would be no way back to the other section. */}
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1 }}>

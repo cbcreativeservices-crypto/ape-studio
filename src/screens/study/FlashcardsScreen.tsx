@@ -94,6 +94,7 @@ import {
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 /**
  * The user's own "Flagged" pseudo-topic (Booth 2026-07-18): the Dashboard's
@@ -1353,7 +1354,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const leave = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
-    navigation.goBack();
+    safeGoBack(navigation);
   }, [navigation]);
 
   if (error) {

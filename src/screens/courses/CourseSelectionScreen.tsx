@@ -59,6 +59,7 @@ import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enr
 import { BookIcon } from '../../components/BookIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
 import { isFirstAppOpen } from '../../features/startHere/firstOpen';
 import { StudyAreaExplore } from './StudyAreaExplore';
@@ -556,7 +557,11 @@ function CardShimmer({ active, dims }: { active: boolean; dims: CardDims }) {
   // lighting up every 37 s in Low-Light Production Mode, where nothing may
   // draw attention to itself unbidden (AttractCue / LoadPill / LabScopeSweep).
   const suppressed = useOverlaysSuppressed();
-  const off = reduceMotion || suppressed;
+  // ⛔ THE APP'S OWN SWITCH (P10b 2026-10-02): `reduceMotion` above is only
+  // the PHONE's flag, so Settings → Reduce animations never stopped this
+  // sweep. The shared decorative gate carries the app toggle (subscribed).
+  const decorative = useDecorativeMotion();
+  const off = reduceMotion || suppressed || !decorative;
 
   const angle = useSharedValue(0); // sweep rotation, 0..2π
   const glow = useSharedValue(0); // stroke opacity envelope

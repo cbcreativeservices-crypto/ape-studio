@@ -34,7 +34,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { readingColumn } from '../../theme/readingColumn';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { heldPaged, holdPagedProgress, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
-import { animationsAllowed } from '../../features/settings/a11y';
+import { useAnimationsAllowed } from '../../features/settings/a11y';
 import { confirmDialog } from '../../lib/confirm';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { useCourseTone } from '../lab/foundations/FoundationsCourseScreen';
@@ -59,6 +59,7 @@ import {
 import { PAGE_COMPONENTS, StartEnvCtx, type StartEnv } from './pages';
 import { TermSheetHost } from './bits';
 import { NextSteps } from './NextSteps';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 /** Pro Audio Safety (v3 gs 3060) — the free topic beside this card. */
 const SAFETY_GS = 3060;
@@ -181,7 +182,8 @@ export function StartHereScreen() {
       sub?.remove?.();
     };
   }, []);
-  const reduceMotion = osReduce || !animationsAllowed();
+  const motionAllowed = useAnimationsAllowed(); // subscribed (P10b 2026-10-02)
+  const reduceMotion = osReduce || !motionAllowed;
 
   const scrollRef = useRef<ScrollView>(null);
   const [dragLocked, setDragLocked] = useState(false);
@@ -215,7 +217,7 @@ export function StartHereScreen() {
 
   const leave = useCallback(() => {
     tone.stop();
-    navigation.goBack();
+    safeGoBack(navigation);
   }, [navigation, tone]);
 
   // ── outward links (always stop the tone first) ──────────────────────────

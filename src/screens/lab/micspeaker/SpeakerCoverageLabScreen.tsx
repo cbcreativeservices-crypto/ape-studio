@@ -40,6 +40,7 @@ import { RackUnit } from '../rack/RackUnit';
 import type { DockParam, RackStage } from '../rack/rackTypes';
 import { GlassShape, useGlassSize } from '../glassShape';
 import { requireMsViz } from './skiaGate';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 // Dispersion presets the screen owns (no Skia dependency for the labels).
 const DISPERSIONS: { key: string; label: string; hDeg: number; vDeg: number; blurb: string }[] = [
@@ -618,7 +619,7 @@ export function SpeakerCoverageLabScreen() {
           noun="section"
           onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
           onPracticeAgain={() => openSection(0)}
-          onDone={() => navigation.goBack()}
+          onDone={() => safeGoBack(navigation)}
           bottomInset
         />
       ) : rack ? (

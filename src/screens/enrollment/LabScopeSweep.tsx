@@ -68,7 +68,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import Svg, { G, Path } from 'react-native-svg';
-import { animationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 
 const TRACE_W = 40;
@@ -206,9 +206,12 @@ export function LabScopeSweep({
   const turn = useRef(0);
   const at = useRef({ top: 0, bottom: 0 });
   const suppressed = useOverlaysSuppressed();
+  // SUBSCRIBED (P10b 2026-10-02): read inside the effect, a toggle in the
+  // Settings modal never re-ran it, so the sweep kept looping.
+  const decorative = useDecorativeMotion();
 
   useEffect(() => {
-    if (w <= 0 || !live || suppressed || !animationsAllowed()) return;
+    if (w <= 0 || !live || suppressed || !decorative) return;
     let alive = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -255,7 +258,7 @@ export function LabScopeSweep({
       // as a visible static waveform.
       x.setValue(0);
     };
-  }, [w, windowW, live, suppressed, x]);
+  }, [w, windowW, live, suppressed, decorative, x]);
 
   const onLayout = (e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width));
 

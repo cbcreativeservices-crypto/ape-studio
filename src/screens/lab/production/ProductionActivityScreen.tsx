@@ -27,6 +27,7 @@ import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject } from '../../../features/production/types';
 import { PATHWAY_LABEL } from '../../../features/production/types';
 import { stageForActivity } from '../../../features/production/labs';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionActivity'>;
@@ -128,7 +129,7 @@ export function ProductionActivityScreen() {
   if (!activity || !stage) {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-        <Header onBack={() => navigation.goBack()} title="Exercise" />
+        <Header onBack={() => safeGoBack(navigation)} title="Exercise" />
         <View style={styles.empty}>
           <Text style={styles.emptyText}>This exercise is not available.</Text>
         </View>
@@ -140,7 +141,7 @@ export function ProductionActivityScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
-      <Header onBack={() => navigation.goBack()} title={activity.title} kicker={`STAGE ${stage.num} · EXERCISE`} />
+      <Header onBack={() => safeGoBack(navigation)} title={activity.title} kicker={`STAGE ${stage.num} · EXERCISE`} />
 
       <ScrollView
         contentContainerStyle={[styles.body, { paddingBottom: insets.bottom + 34 }]}

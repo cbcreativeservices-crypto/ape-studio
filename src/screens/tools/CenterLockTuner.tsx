@@ -42,7 +42,7 @@ import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, wi
 import { colors, fonts } from '../../theme/tokens';
 import { hapticsEnabled } from '../../features/settings/store';
 import { createLocalStore } from '../../features/storage/localStore';
-import { useAnimationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { optionalModule } from '../../features/tools/capture/optionalModule';
 import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
 import { closeCenterLock, readTunerFrame, useTunerFrame, type TunerFrame } from '../../features/tools/tuner/tunerFrameStore';
@@ -1185,7 +1185,7 @@ function TuneArrows({ dir, tint, compact }: { dir: -1 | 1; tint: string; compact
   // Subscribed (useAnimationsAllowed), not read per render: Settings is a modal,
   // so a per-render read missed "Reduce animations" until something else
   // re-rendered this host (pattern hunt P10, 2026-10-02).
-  const allowed = useAnimationsAllowed();
+  const allowed = useDecorativeMotion(); // + Low-Light: tuner chevrons are decorative (owner 2026-10-02)
   useEffect(() => {
     if (!allowed) {
       progress.value = 0;

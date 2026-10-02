@@ -148,7 +148,7 @@ test('Trophy Gallery + Topics: a failed refetch keeps the trophies on screen', (
 test('Quiz: a stale "Submit failed" OK does not pop the Results that replaced it', () => {
   const src = read('screens', 'quiz', 'QuizScreen.tsx');
   const at = src.indexOf("'Submit failed',");
-  const guard = src.indexOf('if (mountedRef.current) navigation.goBack();', at);
+  const guard = src.indexOf('if (mountedRef.current) safeGoBack(navigation);', at);
   assert.ok(at > 0 && guard > at && guard - at < 1200);
 });
 

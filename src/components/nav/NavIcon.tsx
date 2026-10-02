@@ -16,7 +16,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
-import { useAnimationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 
 export type NavIconName = 'Home' | 'Study' | 'Achievements' | 'Profile';
 
@@ -101,7 +101,7 @@ function ProgressFadersLit() {
   // only the OS flag, so the faders drifted on forever for anyone who turned
   // "Reduce animations" on in the app — the phone-level switch was the only
   // one that reached them.
-  const motionOk = useAnimationsAllowed();
+  const motionOk = useDecorativeMotion(); // + Low-Light (P10b, 2026-10-02)
   const [osReduceMotion, setReduceMotion] = useState(false);
   const reduceMotion = osReduceMotion || !motionOk;
   useEffect(() => {

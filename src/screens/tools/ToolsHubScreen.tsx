@@ -56,6 +56,7 @@ import { HUB_LIGHT, STRIP_ASPECT, TILE_GAP, TILE_STRIP_PAD, TILE_TITLE_H, tileLa
 import { useHubPreviewEngine } from './hubPreviewEngine';
 import { HUB_LIVE_MINIS, HUB_SKIN_MINIS } from './hubPreviewsLive';
 import { animationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { HUB_SIM_MINIS } from './hubPreviewsSim';
 import {
   fmtClock,
@@ -314,6 +315,10 @@ function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: 
   // Always-on skinned display (SPL): its own photoreal face replaces the static
   // artwork in every state (needle rests when there's no live signal).
   const Skin = HUB_SKIN_MINIS[tool];
+  // ⛔ The SIMULATED previews are decorative loops (P10b 2026-10-02): they ran
+  // under "Reduce animations" and in Low-Light with no gate at all. Inactive,
+  // each sim rests on its static frame — the same state as leaving the hub.
+  const decorative = useDecorativeMotion();
   // POWER-ON (owner 2026-09-01): the deferred-ready mount becomes the rack
   // sequencing up — see POWER_PERSONA above. `lit` is the backlight; `bloom`
   // the strike/overshoot flash. One-shot (ran guard survives HMR re-renders);
@@ -394,7 +399,7 @@ function ToolStrip({ tool, live, active, ready, index }: { tool: ToolKey; live: 
                 accessibilityRole="image"
                 accessibilityLabel={`${STRIP_LABEL[tool]} (animated demonstration)`}
               >
-                <Sim active={active} />
+                <Sim active={active && decorative} />
               </View>
             ) : (
               <>

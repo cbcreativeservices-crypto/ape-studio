@@ -39,6 +39,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { READING_MAX_W } from '../../../theme/readingColumn';
 import { NAV, nextButtonLabel } from './labNav';
 import type { LabNav } from './useLabNav';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 export { useLabNav } from './useLabNav';
 export type { LabNav, LabNavOptions, LabNavSub, LabNavUnit } from './useLabNav';
@@ -94,7 +95,7 @@ export function LabHeader({
   const navigation = useNavigation();
   const leave = () => {
     if (!claimLabLeave()) return;
-    navigation.goBack();
+    safeGoBack(navigation);
   };
   return (
     <View style={styles.header} ref={headerRef} onTouchStart={onTouchStart}>

@@ -11,8 +11,10 @@ const src = (p: string) => readFileSync(p, 'utf8');
 test('LabScopeSweep stops off screen and never freezes mid-card', () => {
   const s = src('src/screens/enrollment/LabScopeSweep.tsx');
   assert.match(s, /live = true,/);
-  assert.match(s, /if \(w <= 0 \|\| !live \|\| suppressed \|\| !animationsAllowed\(\)\) return;/);
-  assert.match(s, /\}, \[w, windowW, live, suppressed, x\]\);/);
+  // P10b (2026-10-02): the motion half is the shared SUBSCRIBED decorative
+  // gate, and it is a dep so the effect re-runs on the toggle.
+  assert.match(s, /if \(w <= 0 \|\| !live \|\| suppressed \|\| !decorative\) return;/);
+  assert.match(s, /\}, \[w, windowW, live, suppressed, decorative, x\]\);/);
   // Cleanup parks the trace where its opacity ramp is 0.
   assert.match(s, /x\.stopAnimation\(\);\s*\/\/[^\n]*\n(?:\s*\/\/[^\n]*\n)*\s*x\.setValue\(0\);/);
 

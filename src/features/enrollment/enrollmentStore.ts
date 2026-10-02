@@ -341,19 +341,23 @@ async function hydrate(): Promise<void> {
  * While the stored list cannot be READ, the edit stays queued (shown, not
  * written) and lands on the list the next successful read brings back; the
  * server mirror then follows on the next edit (the push is the whole list).
+ *
+ * Answers the shared store's write result (P6 / G7, 2026-10-02): true only
+ * when the device accepted the list, so a screen's "Added" can come from it.
  */
-function commit(edit: (list: EnrollTopic[]) => EnrollTopic[] | null): void {
+function commit(edit: (list: EnrollTopic[]) => EnrollTopic[] | null): Promise<boolean> {
   const gen = generation;
   let changed = false;
-  void store
+  return store
     .mutate((list) => {
       const next = edit(list);
       if (next == null) return list;
       changed = true;
       return next; // new identity so React snapshots update
     })
-    .then(() => {
+    .then((ok) => {
       if (changed && gen === generation) scheduleServerSync();
+      return ok;
     });
 }
 
@@ -403,8 +407,13 @@ export function addTopicsUnloaded(gsList: number[]): number {
   return count;
 }
 
-export function addTopic(gs: number): void {
-  addTopics([gs]);
+/** One topic. Answers the write result (see `commit`) — TopicDetailModal's
+ *  "Added to My Enrollments" is gated on it. */
+export function addTopic(gs: number): Promise<boolean> {
+  return commit((list) => {
+    const additions = additionsFor(list, [gs]);
+    return additions.length === 0 ? null : [...list, ...additions];
+  });
 }
 
 export function removeTopic(gs: number): void {

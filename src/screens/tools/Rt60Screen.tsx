@@ -49,6 +49,7 @@ import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/gu
 import type { RootStackParamList } from '../../navigation/types';
 import { levelColor } from '../../features/tools/levelColor';
 import { readingColumn, readingText } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Rt60Live'>;
 
@@ -503,7 +504,7 @@ export function Rt60Screen({ navigation }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>

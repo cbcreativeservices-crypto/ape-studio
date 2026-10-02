@@ -1,8 +1,8 @@
 /**
- * Smart Processors Lab — the family hub (owner brief 2026-09-02). V1 opens
- * with the De-Esser & Sibilance Control lab; the other members are listed
- * as planned rows with the catalog's DEV_NOTE (owner changed that note to
- * "Coming Soon" on 2026-09-17 — see labCatalog).
+ * Smart Processors Lab — the family hub (owner brief 2026-09-02). It opens
+ * the De-Esser & Sibilance Control lab, its only member today; the planned
+ * rows were removed on 2026-09-17 (no placeholder rows — see the note above
+ * FAMILY below).
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
@@ -13,6 +13,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { DEV_NOTE } from '../labCatalog';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -45,7 +46,7 @@ export function SmartProcessorsLabScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

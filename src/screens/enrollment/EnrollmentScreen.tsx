@@ -18,6 +18,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { ActivityIndicator, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
@@ -125,7 +126,10 @@ function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: bool
    * The static resting opacity below is already the correct fallback.
    */
   const suppressed = useOverlaysSuppressed();
-  const animate = !on && !suppressed && animationsAllowed();
+  // The motion half is the SUBSCRIBED shared gate (P10b 2026-10-02): the
+  // per-render read missed a toggle made in the Settings modal.
+  const decorative = useDecorativeMotion();
+  const animate = !on && !suppressed && decorative;
   useEffect(() => {
     if (!animate) return;
     const anim = Animated.loop(

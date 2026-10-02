@@ -43,6 +43,7 @@ import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
 import { requireTubeViz, type TubeVizModule } from './skiaGate';
 import { TUBE_INK } from './tubeInks';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 // ── Screen-owned data (no Skia dependency) ──────────────────────────────────
 
@@ -931,7 +932,7 @@ export function VacuumTubeLabScreen() {
             noun="section"
             onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
             onPracticeAgain={() => openSection(0)}
-            onDone={() => navigation.goBack()}
+            onDone={() => safeGoBack(navigation)}
             bottomInset
           />
         ) : (

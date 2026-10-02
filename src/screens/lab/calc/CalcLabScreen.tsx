@@ -24,6 +24,7 @@ import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import type { CalcSectionId } from './calcTypes';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.webp');
 
@@ -97,7 +98,7 @@ export function CalcLabScreen() {
       // wide landscape iPad in the preview. The prop works on every platform.
       resizeMode="cover">
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         {/* Lab glyph: the purple Σ that brands the Audio Calculator Lab (matches

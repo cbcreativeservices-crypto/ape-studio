@@ -29,6 +29,7 @@ import {
   type TermGroupId,
 } from '../../features/startHere/startHereContent';
 import { TermSheetHost, useOpenTerm } from './bits';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Mode = 'words' | 'flip' | 'quiz';
 
@@ -44,7 +45,7 @@ export function StartHereTermsScreen() {
     <TermSheetHost>
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
         <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()} style={styles.backBtn} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to Start Here">
+          <Pressable onPress={() => safeGoBack(navigation)} style={styles.backBtn} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to Start Here">
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <View style={{ flex: 1 }}>

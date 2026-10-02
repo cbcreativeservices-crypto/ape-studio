@@ -77,12 +77,12 @@ test('Cable lab: a doubled NEXT stays on lesson 12 (the kit lock); only the head
   assert.match(s, /from '\.\.\/kit\/LabNavBar'/);
   assert.match(s, /useLabNav\(\{/);
   assert.match(s, /const ending = step === last;/);
-  assert.doesNotMatch(s, /lastNavAtRef|leavingRef|navigation\.goBack|useNavigation/);
+  assert.doesNotMatch(s, /lastNavAtRef|leavingRef|navigation\.goBack|safeGoBack|useNavigation/);
 });
 
 test('Cable Install: a doubled RETURN TO TRAINING leaves once', () => {
   const s = read('src/screens/lab/cableinstall/CableInstallLabScreen.tsx');
-  assert.match(s, /onReturn=\{\(\) => \{\n\s*if \(leavingRef\.current\) return;\n\s*leavingRef\.current = true;\n\s*navigation\.goBack\(\);/);
+  assert.match(s, /onReturn=\{\(\) => \{\n\s*if \(leavingRef\.current\) return;\n\s*leavingRef\.current = true;\n\s*safeGoBack\(navigation\);/);
 });
 
 test('Sound Systems mode: NEXT → FINISH double tap stays; FINISH opens the end screen; DONE leaves once', () => {
@@ -94,8 +94,8 @@ test('Sound Systems mode: NEXT → FINISH double tap stays; FINISH opens the end
   assert.match(s, /from '\.\.\/kit\/LabNavBar'/);
   assert.doesNotMatch(s, /lastNavAtRef|leavingRef/);
   assert.match(s, /const finish = useCallback\(\(\) => setEnding\(true\), \[\]\);/);
-  assert.match(s, /onDone=\{\(\) => navigation\.goBack\(\)\}/);
-  assert.equal((s.match(/navigation\.goBack\(\)/g) ?? []).length, 1);
+  assert.match(s, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+  assert.equal((s.match(/safeGoBack\(navigation\)/g) ?? []).length, 1);
 });
 
 // ── display and audio agree: a control moved during the native start ───────

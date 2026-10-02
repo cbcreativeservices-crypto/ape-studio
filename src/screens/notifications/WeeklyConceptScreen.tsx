@@ -14,6 +14,7 @@ import {
 } from '../../features/notifications/weeklyConcept';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'WeeklyConcept'>;
 
@@ -56,7 +57,7 @@ export function WeeklyConceptScreen({ navigation, route }: Props) {
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <View style={styles.headerBar}>
         <Text accessibilityRole="header" style={styles.headerTitle}>WEEKLY CONCEPT</Text>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Close">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Close">
           <Text style={styles.close}>✕</Text>
         </Pressable>
       </View>

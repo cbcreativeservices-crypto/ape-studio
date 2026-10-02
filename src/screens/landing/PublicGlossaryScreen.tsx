@@ -14,6 +14,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GlossaryScreen } from '../glossary/GlossaryScreen';
 import type { RootStackParamList } from '../../navigation/types';
 import { slugToQuery } from '../../navigation/linkPaths';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PublicGlossary'>;
 
@@ -31,7 +32,7 @@ export function PublicGlossaryScreen({ navigation, route: rootRoute }: Props) {
               if (name === 'Dashboard') {
                 // [36] (2026-09-07): if PublicGlossary is the entry route (no back
                 // history), goBack() is a no-op — fall back to a concrete route.
-                if (t.canGoBack()) t.goBack();
+                if (t.canGoBack()) safeGoBack(t);
                 else (t as unknown as { navigate: (n: string) => void }).navigate('Main');
                 return;
               }

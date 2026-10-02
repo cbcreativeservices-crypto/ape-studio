@@ -120,7 +120,7 @@ describe('the paged hosts mark only inside beforeAdvance, under the shared strip
     it(`${name}: FINISH opens LabEndScreen in place; DONE goes back; PRACTISE AGAIN clears nothing; a practice reset rides CONTENTS`, () => {
       assert.match(code, /const finish = useCallback\(\(\) => setEnding\(true\), \[\]\);/);
       assert.match(code, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/);
-      assert.match(code, /<LabEndScreen[\s\S]*?onPracticeAgain=\{\(\) => goTo\(0\)\}[\s\S]*?onDone=\{\(\) => navigation\.goBack\(\)\}/);
+      assert.match(code, /<LabEndScreen[\s\S]*?onPracticeAgain=\{\(\) => goTo\(0\)\}[\s\S]*?onDone=\{\(\) => safeGoBack\(navigation\)\}/);
       assert.match(code, /reset: \{ label: 'START OVER \(PRACTICE\)', run: confirmReset \}/);
     });
     it(`${name}: go() leaves the end screen and records the navigation`, () => {

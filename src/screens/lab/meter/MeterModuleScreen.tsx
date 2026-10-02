@@ -22,6 +22,7 @@ import { PhaseModule, StereoModule, ScopeModule, DetectiveModule } from './modul
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 export type MeterModuleProps = {
   width: number;
@@ -127,7 +128,7 @@ export function MeterModuleScreen() {
       mode="credit"
       onJump={(id) => goToModule(METER_MODULES.findIndex((m) => m.id === id))}
       onPracticeAgain={() => goToModule(0)}
-      onDone={() => navigation.goBack()}
+      onDone={() => safeGoBack(navigation)}
       bottomInset
     />
   ) : null;

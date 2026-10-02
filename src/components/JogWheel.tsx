@@ -55,7 +55,7 @@ import Reanimated, {
 import Svg, { Circle, Defs, Ellipse, RadialGradient, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
-import { animationsAllowed } from '../features/settings/a11y';
+import { useAnimationsAllowed } from '../features/settings/a11y';
 import { JogSkiaStack } from './jogwheel/JogSkia';
 import { getJogRasters, prewarmJogRasters } from './jogwheel/jogRaster';
 
@@ -409,9 +409,13 @@ export function JogOverlay({
   const activeRef = useRef(active);
   activeRef.current = active;
   // Read on EVERY render (the PanResponder is memoised with []): the reduce-
-  // motion setting and the OS flag hydrate after first paint.
+  // motion setting and the OS flag hydrate after first paint. SUBSCRIBED
+  // (P10b 2026-10-02): the Settings modal's toggle re-renders the wheel, so the
+  // ref is current even if nothing else re-renders it. Gesture-driven spin and
+  // settle, not a loop — Low-Light does not apply.
+  const motionAllowed = useAnimationsAllowed();
   const allowedRef = useRef(true);
-  allowedRef.current = animationsAllowed();
+  allowedRef.current = motionAllowed;
   // Motion state (2026-09-05).
   const grantAt = useRef(0);
   const springLive = useRef(false);

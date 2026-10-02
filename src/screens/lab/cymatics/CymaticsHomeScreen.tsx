@@ -19,9 +19,12 @@ import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField } fro
 import { CYMATICS_MODULES, PLANNED_AREAS, type CymaticsModuleId } from './modules/registry';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
 import { goToCymatics } from './goToCymatics';
+import { useLabVisits } from '../../../features/lab/labVisits';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const HERO_N = 48;
 
@@ -93,7 +96,19 @@ export function CymaticsHomeScreen() {
     lastOpenAt.current = now;
     goToCymatics(navigation, name, params);
   };
-  const open = (id: CymaticsModuleId) => go('CymaticsModule', { id });
+  /**
+   * WHAT'S LEFT (owner 2026-10-02, "favor consistency"): the Meter hub's
+   * SEE WHAT'S LEFT link, the same way — it swaps LabEndScreen in for the
+   * home. Same source as CymaticsModuleScreen's FINISH: modules VISITED,
+   * shown in "progress" mode (this lab banks no per-module credit). The
+   * hero plate unmounts while the end screen shows.
+   */
+  const [ending, setEnding] = useState(false);
+  const visited = useLabVisits('cymatics');
+  const open = (id: CymaticsModuleId) => {
+    setEnding(false);
+    go('CymaticsModule', { id });
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -103,6 +118,18 @@ export function CymaticsHomeScreen() {
         subtitle="Chladni plates, liquids, membranes, resonance, frequency and harmonic relationships."
         right={<AccuracyNote compact />}
       />
+      {ending ? (
+        <LabEndScreen
+          labTitle="Cymatics Lab: Sound Made Visible"
+          units={CYMATICS_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          cleared={visited}
+          mode="progress"
+          onJump={(id) => open(CYMATICS_MODULES.find((m) => m.id === id)?.id ?? CYMATICS_MODULES[0].id)}
+          onPracticeAgain={() => open(CYMATICS_MODULES[0].id)}
+          onDone={() => safeGoBack(navigation)}
+          bottomInset
+        />
+      ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.hero} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {width > 0 ? <HeroPlate width={width} /> : null}
@@ -153,6 +180,7 @@ export function CymaticsHomeScreen() {
         {CYMATICS_MODULES.map((m, i) => (
           <ModuleAccordionRow key={m.id} num={i + 1} name={m.title} blurb={m.blurb} expanded={openId === m.id} onToggle={() => setOpenId(openId === m.id ? null : m.id)} onOpen={() => open(m.id)} />
         ))}
+        <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
 
         {PLANNED_AREAS.length > 0 ? <Text style={styles.sectionTitle}>PLANNED AREAS</Text> : null}
         {PLANNED_AREAS.map((p) => (
@@ -167,6 +195,7 @@ export function CymaticsHomeScreen() {
           <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — the lab in one read</Text>
         </Pressable>
       </ScrollView>
+      )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('cymatics')} onClose={() => setLessonOpen(false)} />
     </View>
   );

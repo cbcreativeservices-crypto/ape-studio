@@ -39,6 +39,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../commercial/EntitlementProvider';
 import { isMemberOnlyLabRoute, labRouteName } from '../../screens/lab/labCatalog';
 import { endLabPreview, getLabPreview, startLabPreview, useLabPreview } from './labPreviewStore';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 /**
  * The hold shown before the lab may mount.
@@ -147,7 +148,7 @@ export function withMembershipPreview<P extends object>(
     // member). Non-member: hold until the scrim is actually up, so the lab
     // mounts behind it, never in front of it.
     const goBack = () => {
-      if (navigation.canGoBack()) navigation.goBack();
+      safeGoBack(navigation); // canGoBack, focused, one leave per tap burst
     };
     if (memberOnly && !resolved) return <GateHold onBack={goBack} />;
     // Unarmed AND focused means the arm has not landed yet — hold. Unarmed

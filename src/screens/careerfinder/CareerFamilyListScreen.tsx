@@ -12,6 +12,7 @@ import { CAREER_COUNT, familyFieldOf, familyMetaOf } from '../../features/career
 import { computeResult } from '../../features/careerfinder/scoring';
 import { answeredCount, useCareerFinder } from '../../features/careerfinder/store';
 import { Body, FinderShell, SectionLabel } from './kit';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
@@ -34,7 +35,7 @@ export function CareerFamilyListScreen() {
   }, []);
 
   return (
-    <FinderShell kicker={`AUDIO CAREER FINDER · ${FAMILIES.length} FAMILIES`} title="Every kind of paid audio work" onBack={() => navigation.goBack()}>
+    <FinderShell kicker={`AUDIO CAREER FINDER · ${FAMILIES.length} FAMILIES`} title="Every kind of paid audio work" onBack={() => safeGoBack(navigation)}>
       <Body>{fmt(CAREER_COUNT)} titles, grouped into {FAMILIES.length} families, each listed under the Academy field that leads into it.{hasResults ? ' Your rank from the Career Finder is shown beside each one.' : ''}</Body>
       {groups.map(([field, fams]) => (
         <View key={field} style={{ gap: 6 }}>

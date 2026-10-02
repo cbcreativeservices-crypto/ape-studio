@@ -31,6 +31,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, type StyleProp, type ViewStyle } from 'react-native';
 import { useAnimationsAllowed } from '../../../features/settings/a11y';
+import { useDecorativeMotion } from '../../../features/settings/decorativeMotion';
 import { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
 import Animated, {
   Easing,
@@ -120,6 +121,10 @@ export function useCiMotion() {
   //    per-render read missed the toggle until something else re-rendered.
   const allowed = useAnimationsAllowed();
   const reduceMotion = reduce || !allowed;
+  // Ambient LOOPS are decorative (owner 2026-10-02, P10b): Low-Light stops
+  // them as well. Entrances/durations above stay a reduced-motion matter only.
+  const decorative = useDecorativeMotion();
+  const loops = !reduceMotion && decorative;
   return useMemo(
     () => ({
       reduce: reduceMotion,
@@ -128,9 +133,9 @@ export function useCiMotion() {
       /** Stagger delay for index i. */
       stagger: (i: number, step = CI_MOTION.stepDelay) => (reduceMotion ? 0 : i * step),
       /** Should ambient loops (flow, pulse, breathing) run at all? */
-      loops: !reduceMotion,
+      loops,
     }),
-    [reduceMotion],
+    [reduceMotion, loops],
   );
 }
 

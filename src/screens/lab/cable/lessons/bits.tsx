@@ -6,7 +6,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
-import { animationsAllowed } from '../../../../features/settings/a11y';
+import { useAnimationsAllowed } from '../../../../features/settings/a11y';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { CableLessonId } from '../cableTypes';
 import { CORE_PRINCIPLE } from '../data/lessons';
@@ -61,8 +61,10 @@ export function useReduceMotion(): boolean {
   //    user who turned motion off IN THE APP was still getting every fade,
   //    draw and ambient loop in this lab. Subscribed OS flag OR our setting —
   //    the same shape PagedLab uses, and the subscription is what re-renders
-  //    when the phone setting flips mid-session.
-  return rm || !animationsAllowed();
+  //    when the phone setting flips mid-session. The app switch is SUBSCRIBED
+  //    too (P10b 2026-10-02) — a per-render read missed the Settings modal.
+  const allowed = useAnimationsAllowed();
+  return rm || !allowed;
 }
 
 /** Soft entrance (fade + small rise) on mount — native-driver transforms only;

@@ -24,6 +24,7 @@ import { DacModule, ErrorsModule } from './modules/modDac';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 export type DigitalModuleProps = {
   width: number;
@@ -124,7 +125,7 @@ export function DigitalModuleScreen() {
       mode="credit"
       onJump={(id) => goToModule(DIGITAL_MODULES.findIndex((m) => m.id === id))}
       onPracticeAgain={() => goToModule(0)}
-      onDone={() => navigation.goBack()}
+      onDone={() => safeGoBack(navigation)}
       bottomInset
     />
   ) : null;

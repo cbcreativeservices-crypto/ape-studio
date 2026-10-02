@@ -41,7 +41,7 @@ import { colors, fonts } from '../../../theme/tokens';
 // running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { animationsAllowed } from '../../../features/settings/a11y';
+import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { forgetHeldPaged, heldPaged, holdPagedProgress, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -89,6 +89,7 @@ import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/unde
 import { markLabUnit, registerLabUnits, useLabClearedUnits, type LabKey } from '../../../features/lab/labCompletion';
 import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from './LabNavBar';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey }: {
   labId: string;
@@ -197,7 +198,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   useEffect(() => setDragLocked(false), [page, ending]);
   const scrollRef = useRef<ScrollView>(null);
   const osReduceMotion = useOsReduceMotion();
-  const reduceMotion = osReduceMotion || !animationsAllowed();
+  const motionAllowed = useAnimationsAllowed(); // subscribed: the app toggle reaches a mounted lab (P10b 2026-10-02)
+  const reduceMotion = osReduceMotion || !motionAllowed;
 
   /**
    * Taps that land BEFORE saved progress has loaded (bug hunt 2026-09-29).
@@ -417,7 +419,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
             noun="page"
             onJump={(id) => goTo(Number(id))}
             onPracticeAgain={() => goTo(0)}
-            onDone={() => navigation.goBack()}
+            onDone={() => safeGoBack(navigation)}
             bottomInset
           />
         ) : (

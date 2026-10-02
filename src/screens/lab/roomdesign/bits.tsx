@@ -7,6 +7,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { type Suggestion, type Tier, TIER_NOTE } from './roomModel';
+import { parseRoomNumber } from './roomParse';
 
 export const TIER_COLOR: Record<Tier, string> = {
   CALCULATED: colors.cyanBright,
@@ -99,8 +100,10 @@ export function NumField({
   }, [shown, editing]);
   const commit = () => {
     setEditing(false);
-    const v = Number(text.replace(',', '.'));
-    if (Number.isFinite(v) && v > 0) onCommit(v);
+    // The calculators' number rules (parseRoomNumber → parseQuantity): "1,234"
+    // is no longer silently 1.234; a lone decimal comma still works.
+    const v = parseRoomNumber(text);
+    if (v !== null && Number.isFinite(v) && v > 0) onCommit(v);
     else setText(shown);
   };
   return (

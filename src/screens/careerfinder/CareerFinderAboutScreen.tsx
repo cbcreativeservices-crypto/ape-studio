@@ -17,6 +17,7 @@ import { CLARITY_RULES, FAMILY_WEIGHTS } from '../../features/careerfinder/scori
 import { CAREER_COUNT, CAREER_INDEX_VERSION, CENTRALITY } from '../../features/careerfinder/careerIndex';
 import { ASSESSMENT_VERSION } from '../../features/careerfinder/store';
 import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel } from './kit';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
@@ -24,7 +25,7 @@ export function CareerFinderAboutScreen() {
   const navigation = useNavigation();
   const report = () => sendFeedback('correction', 'Audio Career Finder', { Screen: 'How this works', 'Assessment version': ASSESSMENT_VERSION, 'Index version': CAREER_INDEX_VERSION });
   return (
-    <FinderShell kicker="AUDIO CAREER FINDER · HOW THIS WORKS" title="What it measures, and what it doesn’t" onBack={() => navigation.goBack()} headerRight={<BetaPill />}>
+    <FinderShell kicker="AUDIO CAREER FINDER · HOW THIS WORKS" title="What it measures, and what it doesn’t" onBack={() => safeGoBack(navigation)} headerRight={<BetaPill />}>
       <Lead>The Career Finder is a career-exploration tool. It helps you discover paid work involving audio and identify promising directions to investigate. It does not tell you what you should become.</Lead>
 
       <Card>

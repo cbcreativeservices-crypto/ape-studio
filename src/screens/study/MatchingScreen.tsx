@@ -49,9 +49,10 @@ import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
-import { animationsAllowed } from '../../features/settings/a11y';
+import { useAnimationsAllowed } from '../../features/settings/a11y';
 import { orderByCredit } from '../../features/study/deckOrder';
 import { readingColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Matching'>;
 
@@ -129,7 +130,9 @@ export function MatchingScreen({ navigation, route }: Props) {
   const running = useRunning('matching');
   // REDUCE MOTION (2026-09-05): the matched-pair collapse ran unconditionally.
   // Read every render — the OS flag hydrates after first paint.
-  const motionOk = animationsAllowed();
+  // SUBSCRIBED (P10b 2026-10-02) so the Settings modal's toggle reaches a
+  // mounted board. One-shot transitions, not a loop: Low-Light leaves them.
+  const motionOk = useAnimationsAllowed();
   // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
   const trial = useTimeTrial('matching', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
@@ -449,7 +452,7 @@ export function MatchingScreen({ navigation, route }: Props) {
   const leave = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
-    navigation.goBack();
+    safeGoBack(navigation);
   }, [navigation]);
 
   if (error) {

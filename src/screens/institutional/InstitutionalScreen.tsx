@@ -10,6 +10,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 /** The parked institutional modules (user list, 2026-07-17). */
 const PARKED_MODULES: { title: string; blurb: string }[] = [
@@ -29,7 +30,7 @@ export function InstitutionalScreen() {
       <View style={styles.headerRow}>
         <Text style={styles.title}>INSTITUTIONAL MODE</Text>
         <Pressable
-          onPress={() => navigation.goBack()}
+          onPress={() => safeGoBack(navigation)}
           hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel="Close"

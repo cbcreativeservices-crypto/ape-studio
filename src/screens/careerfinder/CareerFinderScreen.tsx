@@ -19,6 +19,7 @@ import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, se
 import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
 import { confirmDialog } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
@@ -64,7 +65,7 @@ export function CareerFinderScreen() {
   const changeAnswers = () => { setQuestionIndex(0); navigation.navigate('CareerFinderQuiz'); };
 
   return (
-    <FinderShell kicker={isMember ? 'AUDIO CAREER FINDER' : 'AUDIO CAREER FINDER · FREE · NO ACCOUNT'} title="Audio Career Finder" onBack={() => navigation.goBack()} backLabel="Leave the Career Finder" headerRight={<BetaPill />}>
+    <FinderShell kicker={isMember ? 'AUDIO CAREER FINDER' : 'AUDIO CAREER FINDER · FREE · NO ACCOUNT'} title="Audio Career Finder" onBack={() => safeGoBack(navigation)} backLabel="Leave the Career Finder" headerRight={<BetaPill />}>
       <View style={styles.hero} accessible accessibilityRole="text" accessibilityLabel={`${fmt(CAREER_COUNT)} job titles, ${FAMILY_COUNT} career families, ${QUESTION_COUNT} questions, about five minutes`}>
         {[
           { v: fmt(CAREER_COUNT), l: 'TITLES', c: colors.amber },

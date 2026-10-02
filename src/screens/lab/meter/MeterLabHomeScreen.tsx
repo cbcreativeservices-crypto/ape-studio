@@ -20,6 +20,7 @@ import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 export function MeterLabHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -58,7 +59,7 @@ export function MeterLabHomeScreen() {
           mode="credit"
           onJump={(id) => open(METER_MODULES.find((m) => m.id === id)?.id ?? METER_MODULES[0].id)}
           onPracticeAgain={() => open(METER_MODULES[0].id)}
-          onDone={() => navigation.goBack()}
+          onDone={() => safeGoBack(navigation)}
           bottomInset
         />
       ) : (

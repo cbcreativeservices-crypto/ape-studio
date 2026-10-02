@@ -18,6 +18,7 @@ import { fetchTopicAchievements, type FieldGroup, type TopicAchievement } from '
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type FlatSubject = { field: string; subject: string; topics: TopicAchievement[]; earnedCount: number; totalCount: number };
 
@@ -62,7 +63,7 @@ export function TopicsScreen() {
   const leave = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
-    navigation.goBack();
+    safeGoBack(navigation);
   }, [navigation]);
 
   // Only the NEWEST focus load may land (pattern hunt P2, 2026-10-02): a

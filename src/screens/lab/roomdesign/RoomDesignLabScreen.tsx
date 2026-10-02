@@ -46,6 +46,7 @@ import { MonitoringModule } from './modules/modMonitoring';
 import { ExploreModule } from './modules/modExplore';
 import { TreatmentModule } from './modules/modTreatment';
 import { ReviewModule } from './modules/modReview';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const TITLE = 'ROOM DESIGN & MONITORING LAB';
 
@@ -185,7 +186,7 @@ export function RoomDesignLabScreen() {
             noun="module"
             onJump={(id) => go(ROOM_MODULES.findIndex((m) => m.id === id))}
             onPracticeAgain={() => go(0)}
-            onDone={() => navigation.goBack()}
+            onDone={() => safeGoBack(navigation)}
           />
         ) : mod.rack ? (
           // The rack takes the rest of the height; its well scrolls and ends

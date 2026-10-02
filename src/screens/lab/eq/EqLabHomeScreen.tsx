@@ -16,9 +16,12 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EQ_MODULES, EQ_SECTION_META, type EqModuleId } from './modules/registry';
+import { useLabVisits } from '../../../features/lab/labVisits';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
 const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
@@ -26,7 +29,18 @@ const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
 export function EqLabHomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const open = (id: EqModuleId) => navigation.navigate('EqModule', { id });
+  /**
+   * WHAT'S LEFT (owner 2026-10-02, "favor consistency"): the Meter hub's
+   * SEE WHAT'S LEFT link, the same way — it swaps LabEndScreen in for the
+   * list. Same source as EqModuleScreen's FINISH: modules VISITED, shown in
+   * "progress" mode (this lab banks no per-module credit).
+   */
+  const [ending, setEnding] = useState(false);
+  const visited = useLabVisits('eq');
+  const open = (id: EqModuleId) => {
+    setEnding(false);
+    navigation.navigate('EqModule', { id });
+  };
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<EqModuleId | null>(null);
 
@@ -38,6 +52,18 @@ export function EqLabHomeScreen() {
         subtitle="See, hear, manipulate, and diagnose frequency content."
         right={<AccuracyNote compact detail="This lab can use your phone’s UNCALIBRATED microphone — read the analysis as relative, for learning. For accurate levels use a calibrated SPL meter or measurement mic." />}
       />
+      {ending ? (
+        <LabEndScreen
+          labTitle="EQ Lab"
+          units={EQ_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          cleared={visited}
+          mode="progress"
+          onJump={(id) => open(EQ_MODULES.find((m) => m.id === id)?.id ?? EQ_MODULES[0].id)}
+          onPracticeAgain={() => open(EQ_MODULES[0].id)}
+          onDone={() => safeGoBack(navigation)}
+          bottomInset
+        />
+      ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.pathRow}>
           {PATH.map((p, i) => (
@@ -73,6 +99,7 @@ export function EqLabHomeScreen() {
             </View>
           );
         })}
+        <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
 
         <Text style={styles.sectionTitle}>RELATED TOOLS</Text>
         <View style={styles.toolWrap}>
@@ -85,6 +112,7 @@ export function EqLabHomeScreen() {
           live alongside this lab — everything here links back to the glossary.
         </Text>
       </ScrollView>
+      )}
     </View>
   );
 }

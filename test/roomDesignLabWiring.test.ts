@@ -69,7 +69,7 @@ describe('the shared lab navigation and the end screen', () => {
     assert.match(src, /<LabEndScreen/);
     assert.match(src, /mode="progress"/);
     assert.match(src, /onPracticeAgain=\{\(\) => go\(0\)\}/);
-    assert.match(src, /onDone=\{\(\) => navigation\.goBack\(\)\}/);
+    assert.match(src, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
     assert.doesNotMatch(src, /markLabUnit|labCompletion/, 'banks no certificate credit');
   });
   it('the guest rule waits for the entitlement to resolve and blocks the store', () => {

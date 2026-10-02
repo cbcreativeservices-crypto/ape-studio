@@ -38,6 +38,7 @@ import type { CelebrationActionKind } from '../../features/celebration/types';
 import { colors } from '../../theme/tokens';
 import { supabase } from '../../lib/supabase';
 import type { RootStackParamList } from '../../navigation/types';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Celebration'>;
 
@@ -71,7 +72,7 @@ export function CelebrationScreen({ navigation, route }: Props) {
 
   const toStudy = useCallback(() => {
     if (navigation.canGoBack()) {
-      navigation.goBack();
+      safeGoBack(navigation);
       return;
     }
     navigation.reset({

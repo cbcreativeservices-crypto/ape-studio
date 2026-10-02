@@ -53,6 +53,7 @@ import { GlassButton } from '../../../components/GlassButton';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { readingText } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 /** Full-scale red — top of the canonical ramp (kept SSoT, never hardcoded). */
 const LOUD_RED = LOUDNESS_STOPS[0].color;
@@ -996,7 +997,7 @@ export function AmplitudeLabScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.gateHeader}>
         <Pressable
-          onPress={() => navigation.goBack()}
+          onPress={() => safeGoBack(navigation)}
           hitSlop={10}
           style={styles.gateBackBtn}
           accessibilityRole="button"
@@ -1036,7 +1037,7 @@ export function AmplitudeOrientationGatePage() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.gateHeader}>
         <Pressable
-          onPress={() => navigation.goBack()}
+          onPress={() => safeGoBack(navigation)}
           hitSlop={10}
           style={styles.gateBackBtn}
           accessibilityRole="button"

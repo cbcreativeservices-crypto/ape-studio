@@ -55,6 +55,7 @@ import { requireMsViz, skiaAvailable, type MsVizModule } from './skiaGate';
 import { MicCutaway } from './MicCutaway';
 import { MIC_ASPECT } from './micCutawayAsset';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 // ── Pure models the SCREEN owns (no Skia dependency — readouts must work
 //    even on pre-Skia clients showing the honest card). ─────────────────────
@@ -1649,7 +1650,7 @@ export function MicPrinciplesLabScreen() {
             noun="section"
             onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
             onPracticeAgain={() => openSection(0)}
-            onDone={() => navigation.goBack()}
+            onDone={() => safeGoBack(navigation)}
             bottomInset
           />
         ) : (

@@ -134,7 +134,9 @@ describe('help and onboarding', () => {
     const text = between(src, 'export function AttractText(', 'const styles');
     assert.match(text, /const suppressed = useOverlaysSuppressed\(\);/);
     // Pattern hunt P10 (2026-10-02): motion is the SUBSCRIBED read now.
-    assert.match(text, /const allowed = useAnimationsAllowed\(\);[^\n]*\n\s*const motion = active && !suppressed && allowed;/);
+    // P10b (2026-10-02): the shared decorative gate (subscribed reduced
+    // motion AND Low-Light); the overlay gate above is unchanged.
+    assert.match(text, /const allowed = useDecorativeMotion\(\);[^\n]*\n\s*const motion = active && !suppressed && allowed;/);
   });
 
   test('C13: the intro seen-read cannot reject unhandled', () => {

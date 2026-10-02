@@ -83,8 +83,11 @@ test('Topic popup: a double tap on the enrol box does not enrol-then-remove', ()
   const s = src('src/screens/curriculum/TopicDetailModal.tsx');
   assert.match(s, /const ACK_REPEAT_MS = \d+;/);
   const i = s.indexOf('lastAckAt.current = now;');
-  const j = s.indexOf('if (topic) onEnrollTopic?.(topic.gs);');
+  // Wave 4 (2026-10-02): the tap goes through enrollTapped, which calls
+  // onEnrollTopic and keeps its write result (G7) — still after the guard.
+  const j = s.indexOf('if (topic) enrollTapped(topic.gs);');
   assert.ok(i > 0 && j > i, 'onEnrollTopic must run after the repeat guard');
+  assert.match(s, /const enrollTapped = \(gs: number\) => \{\s*const r = onEnrollTopic\?\.\(gs\);/);
 });
 
 test('Enrollments browse: a double tap on a topic row does not add-then-remove', () => {

@@ -28,6 +28,7 @@ import { colors, fonts } from '../../theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 import { isReleased } from '../../features/finalExam/api';
 import { readingColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FinalExamResult'>;
 
@@ -179,7 +180,7 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
               onPress={leaveOnce(() => (navigation as any).popTo('Main', { screen: 'Profile' }))}
             />
           )}
-          <StudioButton label="Done" variant="secondary" onPress={leaveOnce(() => navigation.goBack())} />
+          <StudioButton label="Done" variant="secondary" onPress={leaveOnce(() => safeGoBack(navigation))} />
         </View>
       </ScrollView>
     </View>

@@ -61,7 +61,8 @@ import { PermissionPrompt, usePermissionFlow } from '../../features/permissions/
 import type { RootStackParamList } from '../../navigation/types';
 import { levelColorForDb } from '../../features/tools/levelColor';
 import { readingText } from '../../theme/readingColumn';
-import { restingOrientation } from '../../navigation/navOrientation'; // tablets rest free — owner 2026-09-29 (Android large-screen pass)
+import { restingOrientation } from '../../navigation/navOrientation';
+import { safeGoBack } from '../../lib/safeGoBack'; // tablets rest free — owner 2026-09-29 (Android large-screen pass)
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FrequencyCounter'>;
 
@@ -1343,7 +1344,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   // Paywall for the membership they already own.
   const isMember = !useToolsLocked();
 
-  const goBack = () => (mode ? setMode(null) : navigation.goBack());
+  const goBack = () => (mode ? setMode(null) : safeGoBack(navigation));
   const modeMeta = MODES.find((m) => m.key === mode) ?? null;
   // Saved Measurements is Academy-only — non-members route to the Paywall.
   const openLibrary = () =>

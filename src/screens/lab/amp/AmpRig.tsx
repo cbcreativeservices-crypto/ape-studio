@@ -28,7 +28,7 @@ import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, Line, LinearGradient, Polyline, Rect, Stop } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { WAVE_LEVEL_STOPS, levelColor } from '../../../features/tools/levelColor';
-import { animationsAllowed } from '../../../features/settings/a11y';
+import { useDecorativeMotion } from '../../../features/settings/decorativeMotion';
 import { cycleRms } from '../../../features/amp/ampModel';
 import { useStageTextScale } from '../rack/stageAspect';
 import type { BezelItem } from '../rack/rackTypes';
@@ -242,7 +242,9 @@ export type RigPlayhead = {
 /** One Animated loop for the page's stack (native driver, transforms only).
  *  Reduced motion: no loop; `step` moves the playhead a quarter cycle. */
 export function useRigPlayhead(): RigPlayhead {
-  const motion = animationsAllowed();
+  // Subscribed, and Low-Light holds it too (P10b 2026-10-02): an auto-started
+  // ambient playhead with a designed still fallback (`step`) — decorative.
+  const motion = useDecorativeMotion();
   const [running, setRunning] = useState(true);
   const [slow, setSlow] = useState(false);
   const [stepPhase, setStepPhase] = useState(0); // reduced-motion playhead ⅛s

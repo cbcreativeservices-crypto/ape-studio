@@ -41,6 +41,7 @@ import {
   type ReportMessage,
   type ReportRow,
 } from '../../features/moderation/api';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 /** Suspension lengths offered. A free-text date picker invites typos. */
 const SUSPEND_DAYS = [7, 30] as const;
@@ -188,7 +189,7 @@ export function ReportsAdminScreen() {
   return (
     <View style={[s.root, { paddingTop: insets.top + 8 }]}>
       <View style={s.head}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={s.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

@@ -41,6 +41,7 @@ import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePage, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -394,7 +395,7 @@ export function TubeCardScreen() {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
         <View style={styles.lockHeader}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <Text style={styles.barTitle}>TUBE REFERENCE</Text>
@@ -417,7 +418,7 @@ export function TubeCardScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       {/* FIXED nav bar — ABOVE the image, its own space (owner 2026-08-10). */}
       <View style={styles.navBar}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the tube list">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back to the tube list">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

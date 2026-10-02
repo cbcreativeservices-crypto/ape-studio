@@ -19,7 +19,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useAnimationsAllowed } from '../features/settings/a11y';
+import { useDecorativeMotion } from '../features/settings/decorativeMotion';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../features/settings/store';
@@ -108,8 +108,9 @@ export function SwitchButton({
   // Idle filament drift — a slow, barely-perceptible brightness wander (mains
   // hum / filament wobble) that makes the light read analog, not LED-steady.
   const flicker = useRef(new Animated.Value(0)).current;
-  // Reactive, so closing Settings actually stops these — see useAnimationsAllowed.
-  const motionOk = useAnimationsAllowed();
+  // Reactive, so closing Settings actually stops these; Low-Light stops the
+  // flicker too (shared decorative gate, P10b 2026-10-02).
+  const motionOk = useDecorativeMotion();
 
   useEffect(() => {
     // ── DECORATIVE, SO IT HONOURS "Reduce animations" (2026-09-18) ───────────

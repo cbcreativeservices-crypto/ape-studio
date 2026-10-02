@@ -37,6 +37,7 @@ import { CompareCanvas, CompareTable, type CompareItem } from './GalleryCompare'
 import { PatternFigure } from './PatternFigure';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import { goToCymatics } from './goToCymatics';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Mode = 'browse' | 'open' | 'art' | 'compare';
 type Filter = 'all' | StudioId | 'fav';
@@ -131,7 +132,7 @@ export function GalleryScreen() {
   const back = () => {
     if (mode === 'art') setMode('open');
     else if (mode === 'open' || mode === 'compare') setMode('browse');
-    else navigation.goBack();
+    else safeGoBack(navigation);
   };
   // Android hardware BACK walks the modes the same way (an open dock tray
   // registers later and closes itself first). Only while this screen is on

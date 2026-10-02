@@ -17,7 +17,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
-import { navigationRef } from '../../navigation/navigationRef';
+import { navigationRef, rootBack } from '../../navigation/navigationRef';
+import { safeGoBack } from '../../lib/safeGoBack';
 import { FirstRunSampler, type FlowPhase } from './FirstRunSampler';
 import { SAMPLER_STOPS, getStop, type StopId } from './samplerStops';
 import { markChoiceVisited, setOnboardingComplete, useOnboardingFlow } from './onboardingFlow';
@@ -141,7 +142,7 @@ function FirstRunFlow() {
   };
 
   const backToGuide = () => {
-    if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
+    if (navigationRef.isReady() && navigationRef.canGoBack()) safeGoBack(rootBack);
     else (navigationRef.navigate as (name: string) => void)('Main');
   };
 

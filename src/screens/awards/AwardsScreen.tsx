@@ -49,8 +49,9 @@ import { CredentialDetailModal, type CredentialDetail } from './CredentialDetail
 import type { RootStackParamList } from '../../navigation/types';
 import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
 import { readingColumn } from '../../theme/readingColumn';
-import { animationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 const SPEC_CERT_KEY = 'ape:specCert'; // chosen Specialization Certificate name (Level 1)
 const PROGRAM_PATH_KEY = 'ape:programPath'; // chosen program path name (Level 2)
@@ -284,8 +285,11 @@ function BackSweep({ label, tint }: { label: string; tint: string }) {
   // AND in Low-Light Production Mode, where nothing may draw attention to
   // itself unbidden — the same gates AttractCue and LabScopeSweep keep.
   const suppressed = useOverlaysSuppressed();
+  // The motion half is SUBSCRIBED now (P10b 2026-10-02): read inside the
+  // effect, a toggle in the Settings modal never re-ran it.
+  const decorative = useDecorativeMotion();
   useEffect(() => {
-    if (w <= 0 || suppressed || !animationsAllowed()) {
+    if (w <= 0 || suppressed || !decorative) {
       x.value = 0; // parked off the left edge (hidden), never frozen mid-sweep
       return;
     }
@@ -294,7 +298,7 @@ function BackSweep({ label, tint }: { label: string; tint: string }) {
     const first = setTimeout(run, 1200);
     const iv = setInterval(run, SWEEP_EVERY_MS);
     return () => { alive = false; clearTimeout(first); clearInterval(iv); cancelAnimation(x); };
-  }, [w, x, suppressed]);
+  }, [w, x, suppressed, decorative]);
   const winStyle = useAnimatedStyle(() => ({ transform: [{ translateX: -SWEEP_BAND + x.value * (w + SWEEP_BAND) }] }));
   const innerStyle = useAnimatedStyle(() => ({ transform: [{ translateX: SWEEP_BAND - x.value * (w + SWEEP_BAND) }] }));
   return (
@@ -861,7 +865,7 @@ export function AwardsScreen({ navigation, route }: Props) {
           return action (user request 2026-07-18). */}
       <Pressable
         style={styles.header}
-        onPress={() => navigation.goBack()}
+        onPress={() => safeGoBack(navigation)}
         accessibilityRole="button"
         accessibilityLabel="Return"
       >

@@ -54,6 +54,7 @@ import {
 } from '../../features/finalExam/api';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 /**
  * The waiting state for the exam — with a way out once it stops being brief.
@@ -179,7 +180,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
   const leave = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
-    navigation.goBack();
+    safeGoBack(navigation);
   }, [navigation]);
 
   /* ---- attempt start (online-only; idempotent resume) ---- */
@@ -294,7 +295,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
             notify(
               'Offline',
               'Your exam is saved and will be submitted automatically when you reconnect. Your finish time is preserved.',
-              () => navigation.goBack(),
+              () => safeGoBack(navigation),
             );
           } else {
             // THE QUEUE WRITE FAILED. Storage is full, or the queue could not be
@@ -352,7 +353,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
           // OK then dispatched goBack from a route that no longer exists; it
           // bubbles up and pops the result / award the learner is reading.
           notify('Submit failed', EXAM_SUBMIT_ERROR_COPY[parseSubmitError((e as Error).message ?? '')], () => {
-            if (mountedRef.current) navigation.goBack();
+            if (mountedRef.current) safeGoBack(navigation);
           });
         }
       } finally {
@@ -583,7 +584,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
         // destroy. The draft only exists to survive a crash, never to soften
         // this decision.
         if (payload) void clearAttemptDraft(payload.attempt_id);
-        navigation.goBack();
+        safeGoBack(navigation);
       },
       { cancelText: 'Keep going', destructive: true },
     );

@@ -41,7 +41,8 @@ const code = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])
 const FILES = srcFiles().map((f) => ({ f, s: code(read(f)) }));
 
 /** A SUBSCRIBED motion gate (re-renders when the app toggle or the OS flips). */
-const REACTIVE_GATE = /\buseAnimationsAllowed\(|\buseCiMotion\(|\buseLabLoops\(/;
+// P10b (2026-10-02): the shared decorative gate is subscribed too.
+const REACTIVE_GATE = /\buseAnimationsAllowed\(|\buseDecorativeMotion\(|\buseCiMotion\(|\buseLabLoops\(/;
 
 /** withRepeat hosts whose loop IS the display (not decoration), with the gate
  *  they do have. Owner call pending on whether reduce-motion should still them. */
@@ -81,7 +82,8 @@ test('no loop host reads the motion setting with the plain per-render animations
 
 test('the SPL gauge gold sweep and sparkle hold still under reduced motion', () => {
   const s = code(read('src/screens/tools/Spl3dGauge.tsx'));
-  assert.match(s, /const motionOk = useAnimationsAllowed\(\);/);
+  // P10b (2026-10-02): through the shared decorative gate (+ Low-Light).
+  assert.match(s, /const motionOk = useDecorativeMotion\(\);/);
   assert.match(s, /if \(goldActive && motionOk\) \{\s*sweep\.value = withRepeat/);
   assert.match(s, /if \(sparkleOn && motionOk\) \{\s*twinkle\.value = withRepeat/);
 });

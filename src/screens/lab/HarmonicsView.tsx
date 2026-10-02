@@ -155,7 +155,7 @@ import {
 } from './harmonicModel';
 import { HarmonicCard } from './HarmonicCard';
 import { HarmonicStems } from './HarmonicStems';
-import { animationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnBlur } from '../../features/audio/useStopOnBlur';
 
@@ -650,7 +650,9 @@ function HarmonicStage({
   //    parks at a fixed position so the diagram still reads, exactly as AmpRig
   //    does with its stepPhase fallback.
   const isFocused = useIsFocused();
-  const motion = animationsAllowed();
+  // Subscribed + Low-Light (P10b 2026-10-02): it starts on its own and parks
+  // with the diagram still readable, so it is decorative pacing.
+  const motion = useDecorativeMotion();
   const sweep = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (view !== 'model' || !isFocused) return;

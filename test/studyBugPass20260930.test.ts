@@ -28,7 +28,7 @@ test('Quiz + Final Exam: a Leave & wipe answered after the submit does nothing',
     const src = read(...file);
     const at = src.indexOf("'Leave & wipe',");
     const guard = src.indexOf('if (submitted.current) return;', at);
-    const back = src.indexOf('navigation.goBack();', at);
+    const back = src.indexOf('safeGoBack(navigation);', at);
     assert.ok(at > 0 && guard > at && guard < back, `${file.at(-1)}: the stale confirm must bail before goBack`);
   }
 });

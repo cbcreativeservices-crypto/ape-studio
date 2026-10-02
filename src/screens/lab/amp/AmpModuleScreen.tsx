@@ -34,6 +34,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const LAB_TITLE = 'Amplifier Principles Lab';
 
@@ -283,7 +284,7 @@ export function AmpModuleScreen() {
         mode="progress"
         onJump={(id) => navigation.replace('AmpModule', { id: id === 'final' ? 'apply' : (id as typeof mod.id) })}
         onPracticeAgain={() => navigation.replace('AmpModule', { id: built[0]?.id ?? mod.id })}
-        onDone={() => navigation.goBack()}
+        onDone={() => safeGoBack(navigation)}
         bottomInset
       />
     );

@@ -65,7 +65,7 @@ describe('one exit per screen', () => {
     const s = read('src', 'screens', 'exam', 'FinalExamResultScreen.tsx');
     assert.match(s, /onPress=\{leaveOnce\(\(\) => \(navigation as any\)\.replace\('FinalExam'/);
     assert.match(s, /onPress=\{leaveOnce\(\(\) => \(navigation as any\)\.popTo\('Main'/);
-    assert.match(s, /onPress=\{leaveOnce\(\(\) => navigation\.goBack\(\)\)\}/);
+    assert.match(s, /onPress=\{leaveOnce\(\(\) => safeGoBack\(navigation\)\)\}/);
   });
 });
 
@@ -74,7 +74,7 @@ describe('FinalExam "Submit failed" OK never fires goBack from a replaced screen
     const s = read('src', 'screens', 'exam', 'FinalExamScreen.tsx');
     const at = s.indexOf("notify('Submit failed'");
     assert.ok(at > 0);
-    assert.match(s.slice(at, at + 260), /if \(mountedRef\.current\) navigation\.goBack\(\);/);
+    assert.match(s.slice(at, at + 260), /if \(mountedRef\.current\) safeGoBack\(navigation\);/);
   });
 });
 

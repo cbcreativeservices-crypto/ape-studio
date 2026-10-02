@@ -23,7 +23,9 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { computeResult, explainFamily } from '../../features/careerfinder/scoring';
 import { CAREER_INDEX_VERSION, CENTRALITY, careersInFamily, centralitySplit, entryPoints, familyFieldOf, familyView, type Career } from '../../features/careerfinder/careerIndex';
 import { answeredCount, toggleSavedFamily, useCareerFinder } from '../../features/careerfinder/store';
+import { educationChip } from '../../features/careerfinder/educationNote';
 import { Body, Card, CentralityChip, CtaButton, DimChip, FinderShell, Lead, LinkRow, SaveStar, SectionLabel, TextLink } from './kit';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 const PAGE = 12;
 const START_HERE = 3;
@@ -60,7 +62,7 @@ export function CareerFamilyScreen() {
 
   if (!fam) {
     return (
-      <FinderShell kicker="AUDIO CAREER FINDER" title="Career family" onBack={() => navigation.goBack()}>
+      <FinderShell kicker="AUDIO CAREER FINDER" title="Career family" onBack={() => safeGoBack(navigation)}>
         <Body>This family is not in the current index. Go back and choose another.</Body>
       </FinderShell>
     );
@@ -104,7 +106,7 @@ export function CareerFamilyScreen() {
     <FinderShell
       kicker={`CAREER FAMILY · ${fam.count} TITLES`}
       title={fam.name}
-      onBack={() => navigation.goBack()}
+      onBack={() => safeGoBack(navigation)}
       backLabel={params.from === 'results' ? 'Back to results' : params.from === 'browse' ? 'Back to all families' : 'Back'}
       headerRight={<SaveStar saved={saved} onPress={() => toggleSavedFamily(fam.id)} name={fam.name} />}
     >
@@ -238,9 +240,9 @@ export function CareerFamilyScreen() {
             plain goBack; from elsewhere a jump to results (if any) or the
             Finder. */}
         {params.from === 'results' ? (
-          <CtaButton label="BACK TO RESULTS" tone="green" onPress={() => navigation.goBack()} />
+          <CtaButton label="BACK TO RESULTS" tone="green" onPress={() => safeGoBack(navigation)} />
         ) : params.from === 'browse' ? (
-          <CtaButton label="BACK TO ALL FAMILIES" tone="green" onPress={() => navigation.goBack()} />
+          <CtaButton label="BACK TO ALL FAMILIES" tone="green" onPress={() => safeGoBack(navigation)} />
         ) : hasResults ? (
           <CtaButton label="SEE MY RESULTS" tone="green" onPress={() => navigation.navigate('CareerFinderResults')} />
         ) : (
@@ -256,13 +258,17 @@ export function CareerFamilyScreen() {
 }
 
 function CareerRow({ c, open, onToggle }: { c: Career; open: boolean; onToggle: () => void }) {
+  // Disclosed on the COLLAPSED row too (owner 2026-10-02): a PE licence or a
+  // graduate degree was invisible until the row was expanded.
+  const edu = educationChip(c);
   return (
     <View style={styles.careerCard}>
-      <Pressable onPress={onToggle} style={styles.careerRow} accessibilityRole="button" accessibilityState={{ expanded: open }} aria-expanded={open} accessibilityLabel={`${c.title}, ${CENTRALITY[c.centrality].label}${c.regulated ? ', licensed or credentialed occupation' : ''}`}>
+      <Pressable onPress={onToggle} style={styles.careerRow} accessibilityRole="button" accessibilityState={{ expanded: open }} aria-expanded={open} accessibilityLabel={`${c.title}, ${CENTRALITY[c.centrality].label}${c.regulated ? ', licensed or credentialed occupation' : ''}${edu === 'PE LICENSE' ? ', Professional Engineer licence commonly required' : edu ? ', degree required' : ''}`}>
         <Text style={styles.careerChevron}>{open ? '▾' : '▸'}</Text>
         <Text style={styles.careerTitle} numberOfLines={2}>{c.title}</Text>
         <View style={styles.tags}>
           {c.regulated ? <View style={styles.lic}><Text style={styles.licText}>LICENSED</Text></View> : null}
+          {edu ? <View style={styles.lic}><Text style={styles.licText}>{edu}</Text></View> : null}
           <CentralityChip value={c.centrality} />
         </View>
       </Pressable>

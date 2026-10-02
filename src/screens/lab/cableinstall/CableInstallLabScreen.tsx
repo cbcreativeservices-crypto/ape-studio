@@ -64,6 +64,7 @@ import { MODULE_BODIES } from './scenes';
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
 import { ScrollLockProvider } from '../scrollLock';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const STEP_KEY = 'ape:ciStep';
 const STATE_KEY = 'ape:ciState';
@@ -424,7 +425,7 @@ export function CableInstallLabScreen() {
                 onReturn={() => {
                   if (leavingRef.current) return;
                   leavingRef.current = true;
-                  navigation.goBack();
+                  safeGoBack(navigation);
                 }}
               />
             )

@@ -42,6 +42,7 @@ import {
 import type { RootStackParamList } from '../../navigation/types';
 import { CERTIFICATE_REQUIRES_EXAM } from '../../features/finalExam/tenure';
 import { readingColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AwardProgress'>;
 
@@ -143,7 +144,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
   // failed the user still needs the ‹ control, not a bare spinner.
   const headerBar = (
     <View style={styles.headerBar}>
-      <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+      <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
         <Text style={styles.back}>‹</Text>
       </Pressable>
       <Text style={styles.headerKicker}>
@@ -216,7 +217,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
                 onPress={() => void onRefresh()}
               />
             )}
-            <StudioButton label="Back" variant="secondary" small onPress={() => navigation.goBack()} />
+            <StudioButton label="Back" variant="secondary" small onPress={() => safeGoBack(navigation)} />
           </View>
         </View>
       </View>

@@ -29,7 +29,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { AccessibilityInfo, Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { fitValue } from '../../theme/legibility';
-import { animationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { CoachMark } from '../../components/CoachMark';
 import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
@@ -81,6 +81,7 @@ import { useToolHelp, HelpHead, DisplayGuideButton } from '../../features/lab/gu
 import type { RootStackParamList } from '../../navigation/types';
 import { CARD_MAX_W, readingText } from '../../theme/readingColumn';
 import { isTabletWindow } from '../../theme/tablet';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SplMeter'>;
 
@@ -398,7 +399,9 @@ function LiveWarnings({ flags, memory }: { flags: WarningFlag[]; memory: { curre
   // the animation a motion-sensitive user must be able to turn off. The ⚠ and
   // its text carry the whole message, so holding at full opacity loses nothing.
   const flashing0 = flashing.size > 0;
-  const motionOk = animationsAllowed();
+  // Subscribed, and Low-Light holds the strobe too (P10b 2026-10-02): an
+  // attention pulse; the steady text still carries the warning.
+  const motionOk = useDecorativeMotion();
   useEffect(() => {
     if (!flashing0 || !motionOk) {
       flash.setValue(1);
@@ -1810,7 +1813,7 @@ export function SplMeterScreen({ navigation }: Props) {
             {/* Back button (owner 2026-08-19): the SPL Meter HOME is the meter's
                 landing view — without this the user was stuck with no way out.
                 Exits the tool (back to the tool intro). */}
-            <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.vuModalBack}>
+            <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.vuModalBack}>
               <Text style={styles.back}>‹</Text>
             </Pressable>
             <Text style={styles.vuModalTitle}>SPL METER HOME</Text>

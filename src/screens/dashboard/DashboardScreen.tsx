@@ -47,7 +47,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
 import { slugify } from '../../navigation/linkPaths';
 import { navigationRef } from '../../navigation/navigationRef';
-import { animationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
 import { AppHeader } from '../../components/AppHeader';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
@@ -1127,7 +1127,8 @@ export function DashboardScreen() {
   // REDUCE MOTION (2026-09-05): this is the app's most visible looping
   // animation and it ignored the setting. Read on every render, not once at
   // mount — the OS flag hydrates after first paint (the attentionPulse lesson).
-  const motionOk = animationsAllowed();
+  // Decorative (P10b, 2026-10-02): SUBSCRIBED, and Low-Light stops it too.
+  const motionOk = useDecorativeMotion();
   useEffect(() => {
     if (!motionOk) {
       pulse.setValue(1); // hold at full glow; the block still reads as active

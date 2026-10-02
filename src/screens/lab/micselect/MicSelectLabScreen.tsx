@@ -68,6 +68,7 @@ import {
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const STEP_KEY = 'ape:micSelStep';
 /** The resume point, on the shared safe store (pattern catalog 2026-10-02,
@@ -1079,7 +1080,7 @@ export function MicSelectLabScreen() {
           noun="lesson"
           onJump={(id) => goTo(Math.max(0, STEPS.findIndex((st) => st.key === id)))}
           onPracticeAgain={() => goTo(0)}
-          onDone={() => navigation.goBack()}
+          onDone={() => safeGoBack(navigation)}
           bottomInset
         />
       ) : (

@@ -21,6 +21,7 @@ import { startLabPreview } from '../../features/lab/labPreviewStore';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LabCategory'>;
 
@@ -36,7 +37,7 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   if (!cat || cat.kind !== 'list') {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-        <Header title="AUDIO FUNDAMENTALS & ADVANCED TRAINING LABS" subtitle="" onBack={() => navigation.goBack()} />
+        <Header title="AUDIO FUNDAMENTALS & ADVANCED TRAINING LABS" subtitle="" onBack={() => safeGoBack(navigation)} />
         <Text style={styles.empty}>This category is not available.</Text>
       </View>
     );
@@ -61,7 +62,7 @@ export function LabCategoryScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <Header title={cat.name.toUpperCase()} subtitle={categoryCountLabel(cat)} onBack={() => navigation.goBack()} />
+      <Header title={cat.name.toUpperCase()} subtitle={categoryCountLabel(cat)} onBack={() => safeGoBack(navigation)} />
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.intro}>{cat.description}</Text>
 

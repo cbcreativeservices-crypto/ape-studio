@@ -30,6 +30,7 @@ import {
   type ReportReason,
 } from '../../features/directory/api';
 import { cardColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 type Tab = 'explore' | 'profile' | 'requests';
 const TABS: { key: Tab; label: string }[] = [
@@ -52,7 +53,7 @@ export function AudioCommunityDirectoryScreen() {
     <View style={[st.root, { paddingTop: insets.top }]}>
       <View style={st.header}>
         <Pressable
-          onPress={() => navigation.goBack()}
+          onPress={() => safeGoBack(navigation)}
           hitSlop={10}
           style={st.back}
           accessibilityRole="button"

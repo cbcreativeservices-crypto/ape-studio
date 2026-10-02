@@ -8,12 +8,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../theme/tokens';
+import { safeGoBack } from '../lib/safeGoBack';
 
 export function ReturnButton({ onPress }: { onPress?: () => void }) {
   const navigation = useNavigation();
   return (
     <Pressable
-      onPress={onPress ?? (() => navigation.goBack())}
+      onPress={onPress ?? (() => safeGoBack(navigation))}
       hitSlop={8}
       accessibilityRole="button"
       accessibilityLabel="Return"

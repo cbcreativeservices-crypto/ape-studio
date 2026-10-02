@@ -23,6 +23,7 @@ import type { ProductionProject, FieldValue } from '../../../features/production
 import { valueKey } from '../../../features/production/types';
 import { authoredStage, labDef } from '../../../features/production/labs';
 import { FieldRow, STATE_TINT } from './FieldRow';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionStage'>;
@@ -175,7 +176,7 @@ export function ProductionStageScreen() {
       keyboardVerticalOffset={0}
     >
       <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

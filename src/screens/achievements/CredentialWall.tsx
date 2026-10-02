@@ -29,6 +29,7 @@ import type { EarnedCredentialRow } from '../../features/credentials/api';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 /** Slugs whose art 404s (not every credential has a file uploaded yet). Held
  *  per-mount so a failed load falls back to the badge instead of an empty
@@ -69,7 +70,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   const leave = useCallback(() => {
     if (leavingRef.current) return;
     leavingRef.current = true;
-    navigation.goBack();
+    safeGoBack(navigation);
   }, [navigation]);
   const [rows, setRows] = useState<EarnedCredentialRow[] | null>(null);
   const [nearest, setNearest] = useState<NearestCredentialResult | null>(null);

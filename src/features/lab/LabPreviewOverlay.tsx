@@ -10,7 +10,8 @@
  * interactive members-only lab.
  */
 import { UpgradeSheet } from '../commercial/UpgradeSheet';
-import { navigationRef } from '../../navigation/navigationRef';
+import { navigationRef, rootBack } from '../../navigation/navigationRef';
+import { safeGoBack } from '../../lib/safeGoBack';
 import { beginLabPreviewLeave, endLabPreview, useLabPreview } from './labPreviewStore';
 
 export function LabPreviewOverlay() {
@@ -27,10 +28,9 @@ export function LabPreviewOverlay() {
     //    to, dropping the scrim 350 ms later would leave a free user sitting on
     //    a live, fully interactive members-only lab. Leaving the scrim up keeps
     //    the gate closed; the sheet is still there to exit by.
-    if (navigationRef.isReady() && navigationRef.canGoBack()) {
-      navigationRef.goBack();
-      setTimeout(endLabPreview, 350);
-    }
+    // ONE pop per tap burst (P9b, 2026-10-02): the sheet stays up through the
+    // pop, so a double tap on Close popped the lab AND the list under it.
+    if (safeGoBack(rootBack)) setTimeout(endLabPreview, 350);
   };
 
   return (
@@ -47,7 +47,7 @@ export function LabPreviewOverlay() {
         //    the length of the transition. beginLabPreviewLeave() stands the
         //    safety net down so the scrim can cover both moves.
         beginLabPreviewLeave();
-        if (navigationRef.isReady() && navigationRef.canGoBack()) navigationRef.goBack();
+        safeGoBack(rootBack);
         if (navigationRef.isReady()) navigationRef.navigate('Paywall');
         setTimeout(endLabPreview, 350);
       }}

@@ -34,7 +34,7 @@ import { colors, fonts } from '../../../theme/tokens';
 // running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { animationsAllowed } from '../../../features/settings/a11y';
+import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { heldPaged, holdPagedProgress, loadPagedProgress, savePagedProgress, withHeldPages, type PagedProgress } from '../../../features/lab/pagedProgress';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
@@ -48,6 +48,7 @@ import { PageMemoryKey, clearPageMemory } from './pageMemory';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { getLabPreview } from '../../../features/lab/labPreviewStore';
 import { setSoundSystemsSaveBlocked } from '../../../features/soundsystems/progress';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 function useOsReduceMotion(): boolean {
   const [rm, setRm] = useState(false);
@@ -111,7 +112,8 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const [dragLocked, setDragLocked] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const osReduceMotion = useOsReduceMotion();
-  const reduceMotion = osReduceMotion || !animationsAllowed();
+  const motionAllowed = useAnimationsAllowed(); // subscribed (P10b 2026-10-02)
+  const reduceMotion = osReduceMotion || !motionAllowed;
 
   // Guest rule (owner 2026-08-12, the cable labs' rule) and PREVIEW EARNS
   // NOTHING (2026-09-01): a signed-out guest or a members-only preview
@@ -302,7 +304,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
             noun="page"
             onJump={(id) => goTo(Number(id))}
             onPracticeAgain={() => goTo(0)}
-            onDone={() => navigation.goBack()}
+            onDone={() => safeGoBack(navigation)}
             doneLabel="DONE · BACK TO SOUND SYSTEMS"
             bottomInset
           />

@@ -78,4 +78,42 @@ describe('shared lab navigation law', () => {
     const end = strip(readFileSync(join(KIT, 'LabEndScreen.tsx'), 'utf8'));
     assert.match(end, /return <LabNextButton onPress=\{onPress\} label=\{label\} \/>;/, 'LabEndLink is built on LabNextButton');
   });
+
+  /**
+   * SEE WHAT'S LEFT on every module-lab hub (owner 2026-10-02, "favor
+   * consistency"). A module-lab is a folder whose *ModuleScreen.tsx renders
+   * <LabEndScreen>; its hub (*HomeScreen.tsx) must carry the Meter hub's link,
+   * the same component and wording, and swap LabEndScreen in itself. Hubs not
+   * yet on it are listed with why; this list may only SHRINK.
+   */
+  const HUB_LINK_EXEMPT: Record<string, string> = {
+    'src/screens/lab/amp/AmpLabHomeScreen.tsx':
+      'hub already reads progress ("N of M modules complete" + RESUME); its end screen needs the async ape:amp:v1 read + the final-assessment unit',
+  };
+  it('every module-lab hub has the SEE WHAT’S LEFT link to its own end screen', () => {
+    const offenders: string[] = [];
+    const hubs: string[] = [];
+    for (const dir of readdirSync(LAB)) {
+      const d = join(LAB, dir);
+      if (!statSync(d).isDirectory() || d === KIT) continue;
+      const files = readdirSync(d);
+      const mod = files.find((f) => /ModuleScreen\.tsx$/.test(f));
+      if (!mod || !strip(readFileSync(join(d, mod), 'utf8')).includes('<LabEndScreen')) continue;
+      const hub = files.find((f) => /HomeScreen\.tsx$/.test(f));
+      if (!hub) continue;
+      const path = rel(join(d, hub));
+      hubs.push(path);
+      if (path in HUB_LINK_EXEMPT) continue;
+      const code = strip(readFileSync(join(d, hub), 'utf8'));
+      if (!code.includes('<LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />'))
+        offenders.push(`${path} has no SEE WHAT’S LEFT link`);
+      if (!/\{ending \? \(\s*<LabEndScreen/.test(code)) offenders.push(`${path} does not swap LabEndScreen in`);
+      if (!/onPracticeAgain=\{\(\) => open\(/.test(code)) offenders.push(`${path}: PRACTISE AGAIN must reopen a module (clears nothing)`);
+    }
+    assert.deepEqual(offenders, [], offenders.join('\n'));
+    // The detector must still see the six known hubs (Meter + the five added 2026-10-02).
+    for (const n of ['meter/MeterLabHomeScreen', 'cymatics/CymaticsHomeScreen', 'digital/DigitalLabHomeScreen', 'eq/EqLabHomeScreen', 'gain/GainLabHomeScreen', 'wave/WaveLabHomeScreen'])
+      assert.ok(hubs.includes(`src/screens/lab/${n}.tsx`), `detector lost ${n}`);
+    for (const k of Object.keys(HUB_LINK_EXEMPT)) assert.ok(hubs.includes(k), `stale exemption: ${k}`);
+  });
 });

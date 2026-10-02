@@ -25,6 +25,7 @@ import { hapticsEnabled } from '../../features/settings/store';
 import { ANSWERS, QUESTIONS, QUESTION_COUNT, type Response } from '../../features/careerfinder/questions';
 import { allAnswered, answerQuestion, completeCareerFinder, firstUnansweredIndex, setQuestionIndex, useCareerFinder, useCareerFinderHydrated } from '../../features/careerfinder/store';
 import { FinderShell, NavButton, ProgressBar } from './kit';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 const ADVANCE_MS = 450;
 const STEM = 'How would you feel about ';
@@ -126,7 +127,7 @@ export function CareerFinderQuizScreen() {
     <FinderShell
       kicker="CAREER DISCOVERY LAB"
       title={`Question ${index + 1} of ${QUESTION_COUNT}`}
-      onBack={() => navigation.goBack()}
+      onBack={() => safeGoBack(navigation)}
       backLabel="Leave the questions. Your answers are saved."
       scrollRef={scrollRef}
       footer={

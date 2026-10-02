@@ -130,7 +130,7 @@ describe('Visual Audio Analysis Lab — PREV / NEXT between modules', () => {
     const el = s.slice(at, s.indexOf('/>', at));
     assert.match(el, /cleared=\{banked\}/);
     assert.match(el, /onPracticeAgain=\{\(\) => goToModule\(0\)\}/);
-    assert.match(el, /onDone=\{\(\) => navigation\.goBack\(\)\}/);
+    assert.match(el, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
   });
   it('the module still marks itself viewed for lab credit', () => {
     assert.match(s, /markLabUnit\('af_visual_analysis', meta\.id\)/);

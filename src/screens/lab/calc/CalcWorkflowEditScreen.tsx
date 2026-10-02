@@ -22,6 +22,7 @@ import { listCalculators, resolveStep, type CatalogEntry } from './workflowCatal
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -192,11 +193,11 @@ export function CalcWorkflowEditScreen() {
       return;
     }
     leavingRef.current = true; // saved — nothing to discard on the way out
-    navigation.goBack();
+    safeGoBack(navigation);
   };
 
   // The beforeRemove guard above asks "Discard changes?" when dirty.
-  const onBack = () => navigation.goBack();
+  const onBack = () => safeGoBack(navigation);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>

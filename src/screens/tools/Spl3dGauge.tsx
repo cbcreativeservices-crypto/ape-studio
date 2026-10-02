@@ -14,7 +14,7 @@ import { View } from 'react-native';
 import Svg, { ClipPath, Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { fonts } from '../../theme/tokens';
-import { useAnimationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 const AnimatedG = Animated.createAnimatedComponent(G);
@@ -435,7 +435,7 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   // Decorative loops honour "Reduce animations" + the OS flag (pattern hunt
   // P10, 2026-10-02): the gold tiles still light; only the sweep and the
   // sparkle's twinkle/breathing hold still.
-  const motionOk = useAnimationsAllowed();
+  const motionOk = useDecorativeMotion(); // + Low-Light (owner 2026-10-02, P10b)
   useEffect(() => {
     cancelAnimation(sweep);
     sweep.value = 0;

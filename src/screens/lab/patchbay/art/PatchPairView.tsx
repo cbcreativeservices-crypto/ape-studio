@@ -33,6 +33,7 @@ import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-
 import { colors, fonts } from '../../../../theme/tokens';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { resolvePair, type PairState } from '../engine/patchbay';
+import { useDecorativeMotion } from '../../../../features/settings/decorativeMotion';
 
 /* Animated SVG parts — module level, or every render makes a new component
  * type and remounts (kills the loop). Same rule as tuning/primitives. */
@@ -97,13 +98,16 @@ export function FlowPath({ d, flowing, phase, reduceMotion, color = PB.flow, wid
 /** The shared marching phase — one loop per component tree. */
 export function useFlowPhase(active: boolean, reduceMotion: boolean): Animated.Value {
   const phase = useRef(new Animated.Value(0)).current;
+  // Ambient marching (P10b 2026-10-02): decorative — the path and its colour
+  // carry the routing, so Low-Light holds the dashes still as well.
+  const decorative = useDecorativeMotion();
   useEffect(() => {
-    if (reduceMotion || !active) return;
+    if (reduceMotion || !active || !decorative) return;
     const loop = Animated.loop(Animated.timing(phase, { toValue: 1, duration: 700, easing: Easing.linear, useNativeDriver: false }));
     phase.setValue(0);
     loop.start();
     return () => loop.stop();
-  }, [reduceMotion, active, phase]);
+  }, [reduceMotion, active, phase, decorative]);
   return phase;
 }
 
@@ -222,8 +226,10 @@ export function PatchPairView({
   // jack after its first toggle; never runs under reduce-motion or when inert.
   const touchedRef = useRef({ top: false, bottom: false });
   const pulse = useRef(new Animated.Value(0.3)).current;
+  // An attention pulse: Low-Light holds it too (shared gate, P10b 2026-10-02).
+  const pulseOk = useDecorativeMotion();
   useEffect(() => {
-    if (reduceMotion || !onToggleJack) return;
+    if (reduceMotion || !onToggleJack || !pulseOk) return;
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, { toValue: 0.9, duration: 2000, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
@@ -232,7 +238,7 @@ export function PatchPairView({
     );
     loop.start();
     return () => loop.stop();
-  }, [reduceMotion, onToggleJack, pulse]);
+  }, [reduceMotion, onToggleJack, pulse, pulseOk]);
   const toggle = (jack: 'top' | 'bottom') => {
     touchedRef.current[jack] = true;
     onToggleJack?.(jack);

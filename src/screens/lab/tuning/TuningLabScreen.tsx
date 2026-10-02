@@ -18,7 +18,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
-import { animationsAllowed } from '../../../features/settings/a11y';
+import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
 import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuningAudio';
 import { holdTuningProgress, loadTuningProgress, saveTuningProgress, setTuningChapterCount, type TuningProgress } from '../../../features/tuning/tuningProgress';
@@ -32,6 +32,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
 import { readingColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 // The store marks the lab done when a sign-in hand-off completes the set.
 setTuningChapterCount(CHAPTER_COUNT);
@@ -97,7 +98,7 @@ export function TuningLabScreen() {
   // The what's-left end screen (owner 2026-09-29), shown in place of the chapter.
   const [ending, setEnding] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
-  const reduceMotion = !animationsAllowed();
+  const reduceMotion = !useAnimationsAllowed(); // subscribed (P10b 2026-10-02)
 
   useEffect(() => {
     const unsub = player.subscribe(setStatus);
@@ -287,7 +288,7 @@ export function TuningLabScreen() {
           noun="chapter"
           onJump={(id) => goTo(Number(id))}
           onPracticeAgain={() => goTo(CHAPTERS[0].index)}
-          onDone={() => navigation.goBack()}
+          onDone={() => safeGoBack(navigation)}
         />
       ) : rack ? (
         // The rack takes the rest of the height; the chapter's own well scrolls

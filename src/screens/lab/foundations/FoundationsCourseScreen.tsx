@@ -72,6 +72,7 @@ import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const STEP_KEY = 'ape:fosStep';
 /** The resume point, on the shared safe store (pattern catalog 2026-10-02,
@@ -2324,7 +2325,7 @@ export function FoundationsCourseScreen() {
           mode="credit"
           onJump={(id) => goTo(Number(id))}
           onPracticeAgain={() => goTo(0)}
-          onDone={() => navigation.goBack()}
+          onDone={() => safeGoBack(navigation)}
           bottomInset
         />
       ) : (

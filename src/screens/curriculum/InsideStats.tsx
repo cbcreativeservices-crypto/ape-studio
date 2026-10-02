@@ -33,7 +33,8 @@ import Animated, { cancelAnimation, useAnimatedProps, useAnimatedStyle, useShare
 import Svg, { Circle, Line, Polyline, RadialGradient, Defs, Stop, Path } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../theme/tokens';
-import { animationsAllowed, useAnimationsAllowed } from '../../features/settings/a11y';
+import { animationsAllowed } from '../../features/settings/a11y';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 
 export type InsideStat = {
@@ -248,7 +249,7 @@ export function InsideStats({
   // unbidden — the rule AttractCue, LoadPill and LabScopeSweep already keep.
   // The static (anim = false) rendering below is the existing fallback.
   const suppressed = useOverlaysSuppressed();
-  const allowed = useAnimationsAllowed(); // subscribed — pattern hunt P10, 2026-10-02
+  const allowed = useDecorativeMotion(); // subscribed; reduced motion OR Low-Light — P10b, 2026-10-02
   const anim = allowed && !suppressed;
 
   const cx = w / 2;

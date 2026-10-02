@@ -132,7 +132,7 @@ describe('cable fundamentals', () => {
     assert.match(shell, /<LabNavBar nav=\{nav\} \/>/);
     assert.match(shell, /<LabNextButton nav=\{nav\} \/>/);
     assert.match(shell, /const ending = step === last;/);
-    assert.doesNotMatch(shell, /DONE ✓|lastNavAtRef|leavingRef|navigation\.goBack/);
+    assert.doesNotMatch(shell, /DONE ✓|lastNavAtRef|leavingRef|navigation\.goBack|safeGoBack/);
   });
   it('the shell holds bench / challenge progress across lesson changes', () => {
     assert.match(shell, /<CableShellStateCtx\.Provider value=\{lessonState\}>/);

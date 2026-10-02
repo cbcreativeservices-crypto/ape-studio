@@ -74,6 +74,7 @@ import {
   type CapMode,
 } from '../../features/glossary/glossaryCap';
 import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
+import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { GlossaryLockView } from '../../features/glossary/GlossaryLockView';
 import { GlossaryDeviceKeyView } from '../../features/glossary/GlossaryDeviceKeyView';
 import {
@@ -107,6 +108,7 @@ import {
 import { getLabLesson } from '../../features/lab/guidedLessons';
 import type { StudyStackParamList } from '../../navigation/types';
 import { readingColumn, cardColumn } from '../../theme/readingColumn';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.webp');
 
@@ -1102,11 +1104,15 @@ function Chip({
 /** Animated "…" — cycles 1→3 dots so a loading state never looks frozen. */
 function useDots(intervalMs = 400): string {
   const [n, setN] = useState(1);
+  // A decorative loop (P10b 2026-10-02): under reduced motion or Low-Light it
+  // holds a steady "…" — the label beside it still says it is loading.
+  const motion = useDecorativeMotion();
   useEffect(() => {
+    if (!motion) return;
     const id = setInterval(() => setN((x) => (x % 3) + 1), intervalMs);
     return () => clearInterval(id);
-  }, [intervalMs]);
-  return '.'.repeat(n);
+  }, [intervalMs, motion]);
+  return '.'.repeat(motion ? n : 3);
 }
 
 /** Full-width "loading the corpus" panel (owner 2026-08-05) — shown in the term
@@ -2894,7 +2900,7 @@ ${COPY.glossaryFreeAllowance}`,
   // Opened from the Dashboard → goBack(), as before.
   const exitGlossary = useCallback(() => {
     if (openedFrom) (navigation as any).navigate('Home');
-    else navigation.goBack();
+    else safeGoBack(navigation);
   }, [navigation, openedFrom]);
 
   // Android hardware back takes the same way out. Only claimed when `from` is

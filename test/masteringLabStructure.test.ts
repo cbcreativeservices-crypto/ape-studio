@@ -164,7 +164,7 @@ describe('guest rules and persistence', () => {
   it('credit is banked by the way forward, never removed, and the end screen never blocks', () => {
     assert.match(host, /if \(complete && !done\) bank\(\);/);
     assert.doesNotMatch(host, /disabled=\{!complete\}/);
-    assert.match(host, /onDone=\{\(\) => navigation\.goBack\(\)\}/);
+    assert.match(host, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
   });
   it('credit banks ON COMPLETION — the last answer or QC line, before any navigation (cognitive review finding 2)', () => {
     assert.match(host, /useEffect\(\(\) => \{\s*if \(loaded && complete && !done\) bank\(\);\s*\}, \[loaded, complete, done, bank\]\);/);

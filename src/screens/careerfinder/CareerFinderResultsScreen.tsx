@@ -25,6 +25,7 @@ import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension'
 import { getCareerFinder, resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, type FeedbackAnswer } from '../../features/careerfinder/store';
 import { confirmReset } from './CareerFinderScreen';
 import { BetaPill, Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, RankBadge, SectionLabel, TextLink } from './kit';
+import { safeGoBack } from '../../lib/safeGoBack';
 
 export const RESULTS_LEAD = 'Five audio career families lean on what you said you would enjoy. Start with the top one.';
 export const RESULTS_NOTE = 'These are possibilities to explore — not limits on what you can pursue. Interests change with experience, and these will too.';
@@ -151,7 +152,7 @@ export function CareerFinderResultsScreen() {
   const rest = result.top.filter((t) => t.rank > 2);
 
   return (
-    <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => navigation.goBack()} backLabel="Back" headerRight={<BetaPill />}>
+    <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back" headerRight={<BetaPill />}>
       <Lead>{weak ? 'Nothing stood out strongly yet, so these are the families nearest to your answers — not matches. Exploring one will teach you more than the questions did.' : RESULTS_LEAD}</Lead>
 
       <SectionLabel tone="green">{weak ? 'CLOSEST TO YOUR ANSWERS' : 'STRONGEST MATCHES'}</SectionLabel>

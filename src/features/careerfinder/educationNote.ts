@@ -31,3 +31,18 @@ export function furtherEducation(c: EducationFacts): string | null {
   if (GRADUATE.test(c.preparation)) return `Typical preparation: ${c.preparation.replace(/\/ /g, '/')}.`;
   return null;
 }
+
+/**
+ * The collapsed-row chip for the same requirement (owner 2026-10-02: "always
+ * disclose the education a career requires"). A LICENSED title already wears
+ * its own chip, so this returns null for it; otherwise "PE LICENSE" for the
+ * Professional Engineer licence, "DEGREE REQ." for a graduate-degree
+ * preparation (every such preparation needs at least a degree, so the short
+ * word stays true even for "Bachelor's to doctorate").
+ */
+export function educationChip(c: EducationFacts): 'PE LICENSE' | 'DEGREE REQ.' | null {
+  if (c.regulated) return null;
+  if (c.professionalEngineer) return 'PE LICENSE';
+  if (GRADUATE.test(c.preparation)) return 'DEGREE REQ.';
+  return null;
+}

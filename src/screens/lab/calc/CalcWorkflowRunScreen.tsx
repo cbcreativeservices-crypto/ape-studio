@@ -48,6 +48,7 @@ import * as shareImage from './shareImage';
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
 import { useLatchedPress } from '../../../lib/latch';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -129,7 +130,7 @@ export function CalcWorkflowRunScreen() {
       if (!found) {
         // notify: Alert.alert is a no-op on RN-web — the OK→goBack exit never
         // appeared and the screen sat on "Loading workflow…" (B-013/B-063).
-        if (alive) notify('Workflow unavailable', 'This workflow could not be loaded.', () => navigation.goBack());
+        if (alive) notify('Workflow unavailable', 'This workflow could not be loaded.', () => safeGoBack(navigation));
         return;
       }
       const { workflow: valid, dropped } = validateWorkflow(found);
@@ -508,7 +509,7 @@ export function CalcWorkflowRunScreen() {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <View style={{ flex: 1 }}>
@@ -528,7 +529,7 @@ export function CalcWorkflowRunScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
         <View style={{ flex: 1 }}>

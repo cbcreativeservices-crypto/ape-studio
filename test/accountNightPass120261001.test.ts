@@ -54,7 +54,7 @@ test('restore and finishTransaction cannot hold the paywall spinner forever', ()
 test('a restore that finishes after the paywall closed does not pop another screen', () => {
   assert.match(paywall, /const mounted = useRef\(true\);/);
   const restored = body(paywall, "case 'restored':", "case 'none':");
-  assert.match(restored, /if \(mounted\.current\) navigation\.goBack\(\);/);
+  assert.match(restored, /if \(mounted\.current\) safeGoBack\(navigation\);/);
 });
 
 test('GET MEMBERSHIP from the un-hosted card also waits for its own Modal to close', () => {

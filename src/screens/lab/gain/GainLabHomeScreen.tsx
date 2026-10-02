@@ -16,16 +16,28 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { GAIN_MODULES, GAIN_SECTION_META, type GainModuleId } from './modules/registry';
+import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { safeGoBack } from '../../../lib/safeGoBack';
 
 const PATH = ['SOURCE', 'PREAMP', 'PROCESSING', 'FADER', 'OUTPUT'];
 
 export function GainLabHomeScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const open = (id: GainModuleId) => navigation.navigate('GainModule', { id });
+  /**
+   * WHAT'S LEFT (owner 2026-10-02, "favor consistency"): the Meter hub's
+   * SEE WHAT'S LEFT link, the same way — it swaps LabEndScreen in for the
+   * list (modules not yet credited, a jump to each, PRACTISE AGAIN from
+   * Module 1, which clears nothing, and DONE).
+   */
+  const [ending, setEnding] = useState(false);
+  const open = (id: GainModuleId) => {
+    setEnding(false);
+    navigation.navigate('GainModule', { id });
+  };
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<GainModuleId | null>(null);
   const clearedUnits = useLabClearedUnits('af_gain_staging');
@@ -34,6 +46,18 @@ export function GainLabHomeScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The shared lab header (kit/LabNavBar): ‹ LEAVES THE LAB, the same in every lab. */}
       <LabHeader title="GAIN STAGING LAB" subtitle="Keep the signal healthy at every stage of the chain." right={<AccuracyNote compact />} />
+      {ending ? (
+        <LabEndScreen
+          labTitle="Gain Staging Lab"
+          units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          cleared={clearedUnits}
+          mode="credit"
+          onJump={(id) => open(GAIN_MODULES.find((m) => m.id === id)?.id ?? GAIN_MODULES[0].id)}
+          onPracticeAgain={() => open(GAIN_MODULES[0].id)}
+          onDone={() => safeGoBack(navigation)}
+          bottomInset
+        />
+      ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <View style={styles.pathRow}>
           {PATH.map((p, i) => (
@@ -71,6 +95,7 @@ export function GainLabHomeScreen() {
             </View>
           );
         })}
+        <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
 
         <Text style={styles.sectionTitle}>RELATED</Text>
         <View style={styles.toolWrap}>
@@ -84,6 +109,7 @@ export function GainLabHomeScreen() {
           principle first: healthy level, adequate headroom, at every stage.
         </Text>
       </ScrollView>
+      )}
     </View>
   );
 }
