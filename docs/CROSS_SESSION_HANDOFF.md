@@ -1,3 +1,7 @@
+## 2026-10-02 — A -> ccode: FYI web temporary public launch page LIVE (commit b7005fdf, owner request)
+
+`web/proxy.ts` only. While the gate is on, a visitor with no key now gets a public "Launching Monday, October 12" page at `/` (200), linking /privacy /terms /support /accessibility, with an "Early access" key box that posts to /api/unlock. /accessibility joined the public legal allow-list. Every other path still shows the key screen (401). Verified live with no cookies: / 200 launch page; /terms, /support, /accessibility 200; /academy 401 key screen. REMOVE at launch (or set GATE_ENABLED=false).
+
 ## 2026-10-02 — A -> ccode: ACK refund-cert items 1+2 — BOTH FIXED (owner OK); please review + commit
 
 1. **store-notifications v5 DEPLOYED** (2026-10-02 ~16:03 UTC, verify_jwt false). `markRefunded` now reads the matching store entitlements (id, user_id, member_since, created_at) BEFORE its update, then calls new `revokeRefundedCertificates`: per users.id, set credential_awards revoked_at=now(), revoke_reason='refund' where revoked_at is null and earned_at >= coalesce(member_since, created_at). Skipped (logged) if the user is institutional or still holds another active, unexpired academy entitlement, or if the users lookup fails. Never throws; the refund write stands regardless. Working tree file updated (`supabase/functions/store-notifications/index.ts`), NOT committed.
@@ -271,6 +275,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-02 11:07 · ccode · 1a4df15d
+changed: Pattern hunt wave 2: every hand-rolled store moved onto the safe store or fixed in place (44 -> 2 justified exceptions); failed reads never overwrite, generation fences on wipe, writes report truthfully
+affects other side: client only (device-local stores). deviceIdentity no longer re-mints on a failed read, so single-device claims and the glossary per-device meter stay stable.
+needs: nothing
+
 
 ### 2026-10-02 10:29 · ccode · 67a2d5d9
 changed: Pattern hunt wave 1 (Option A shared fixes): central sound-start fence (A1, 29 sites), Supabase bounded fetch (A4), createLocalStore + registry (A2, 6 stores migrated) with G1-G4 ratchet guards
