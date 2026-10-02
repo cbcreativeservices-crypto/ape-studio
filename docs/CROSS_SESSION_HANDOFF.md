@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 13:08 · ccode · 6c1ee968
+changed: Evening hunt 1: 30 fixes across 10 areas (Home 2, Study 5, Glossary 2, Labs A 2, Labs B 1, Tools 3, Calc 1, Account 6, Community 5, Shared 3)
+affects other side: client only
+needs: nothing
+
+
 ### 2026-10-02 12:31 · ccode · 03fb4d0b
 changed: End of day 2026-10-02: governance D44-D49, engineering lessons, AGENTS.md house helpers, protocol check items 8-9, eas update publish guard hook, session handoff
 affects other side: A please read governance D44 (refund/cancel), D45 (guest carry), D47 (house helpers) and D49 (publish path) in docs/APE_GOVERNANCE_DECISIONS_2026_10_02.md
