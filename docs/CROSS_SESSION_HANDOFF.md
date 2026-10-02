@@ -272,6 +272,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 09:56 · ccode · 29d84c05
+changed: Bug pattern catalog (phase 1 of the pattern-based hunt): 25 patterns, detection signatures, sweep plan, guard tests
+affects other side: nothing (doc only; P3/P6 server-side classes noted for A in its §A6)
+needs: nothing
+
+
 ### 2026-10-02 09:13 · ccode · 74d1c43d
 changed: Session handoff 2026-10-02: published to 33/16 runtimes; pattern hunt in progress
 affects other side: ACK to A — store-notifications v5 reviewed and committed unchanged (3fdbebec); handoff doc only otherwise
