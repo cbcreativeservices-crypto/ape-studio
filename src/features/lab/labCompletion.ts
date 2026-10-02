@@ -127,6 +127,10 @@ let sent = new Set<string>(); // labs whose mark_lab_complete already succeeded
 let afComplete = false; // last server-reported audio_fundamentals_complete
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
+/** Bumped by resetLocal (the account wipe): a device read or a
+ *  mark_lab_complete answer that was out when the wipe ran belongs to the
+ *  departing account and lands nowhere (evening pass 1, 2026-10-02). */
+let completionGen = 0;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -149,11 +153,14 @@ function persist() {
 function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (!hydrating) {
+    const gen = completionGen;
     hydrating = (async () => {
       let raw: string | null;
       try {
         raw = await AsyncStorage.getItem(STORAGE_KEY);
+        if (gen !== completionGen) return;
       } catch {
+        if (gen !== completionGen) return;
         // The READ failed (not "nothing stored"): stay unhydrated — persist()
         // writes nothing — and read again on the next call (full run 2,
         // 2026-10-01). Units recorded meanwhile live in memory and are merged
@@ -297,8 +304,13 @@ export function useAudioFundamentalsComplete(): boolean {
 
 async function fireComplete(labKey: string): Promise<void> {
   if (sent.has(labKey)) return;
+  const gen = completionGen;
   try {
     const { data, error } = await supabase.rpc('mark_lab_complete', { p_lab_key: labKey });
+    // The account changed while the call was out: that answer was about the
+    // departing account. Marking it sent here would put it in the NEXT
+    // account's record, whose own completion would then never be sent.
+    if (gen !== completionGen) return;
     if (error) {
       // user_not_found (not signed in) or lab_not_found (seed missing/typo):
       // leave UNSENT so it retries on the next markUnit / next app boot / login.
@@ -390,6 +402,9 @@ export function markLabReviewed(labKey: LabKey): void {
 /** Reset in-memory caches on account switch (called by resetAllLocalStores();
  *  the persisted `ape:labProgress` key is removed by clearLocalAccountData). */
 export function resetLocal(): void {
+  completionGen++;
+  // A read that was out lands nowhere; the next caller reads the swept key.
+  hydrating = null;
   cleared = {};
   sent = new Set<string>();
   afComplete = false;

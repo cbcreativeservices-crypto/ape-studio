@@ -127,15 +127,24 @@ async function appUserId(): Promise<string | null> {
  * chose for it — filtering to active here would throw that away and reset the
  * category to the default the next time it is switched on).
  */
-export async function fetchWeeklySubscriptions(): Promise<WeeklySubscription[]> {
+/**
+ * NULL WHEN THE ROWS COULD NOT BE READ, never `[]` (evening hunt 1,
+ * 2026-10-02). `[]` means "no category was ever configured", and Settings
+ * turns that into the seven staggered defaults — so a failed read showed a
+ * subscribed member "0 of 7 categories", and the next switch tap wrote those
+ * defaults over every day and time they had chosen (`saveAllCategorySchedules`
+ * upserts all seven rows). No session is a failed read too: getSession reads
+ * null when it stalls, and the table is member-only anyway.
+ */
+export async function fetchWeeklySubscriptions(): Promise<WeeklySubscription[] | null> {
   // The table is member-only; a signed-out read is a guaranteed 401.
-  if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchWeeklySubscriptions'))) return [];
+  if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchWeeklySubscriptions'))) return null;
   const { data, error } = await supabase
     .from('notification_concept_subscriptions')
     .select('category, day_of_week, send_time, timezone, active');
   if (error) {
     console.warn('[weekly-concept] subs fetch failed:', error.message);
-    return [];
+    return null;
   }
   return (data ?? []) as WeeklySubscription[];
 }

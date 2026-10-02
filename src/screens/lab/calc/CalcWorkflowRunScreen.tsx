@@ -33,6 +33,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useTier } from '../../../features/commercial/useTier';
 import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
 import { chainFits, fmt, fmtCarried, parseQuantity, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
@@ -82,7 +83,18 @@ export function CalcWorkflowRunScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkflowRun'>>();
-  const { entitlement, resolved } = useEntitlement();
+  const { entitlement, resolved, commercialMode } = useEntitlement();
+  // ⛔ WORKFLOWS ARE ACADEMY-ONLY — RE-CHECKED HERE (evening hunt 1,
+  // 2026-10-02). The lab's gate lets a tap through while the tier is still
+  // unknown (`!resolved` counts as allowed, so a member is never sold what they
+  // hold), and nothing re-checked once the read landed: a free account that
+  // tapped a workflow in the first seconds after launch kept a runner that
+  // shows every answer, with no weekly cap, for as long as it stayed open.
+  // Once the tier is KNOWN and is not a member, the answers are withheld.
+  const tier = useTier();
+  const workflowBlocked = commercialMode && tier !== 'unknown' && tier !== 'member';
+  const workflowBlockedRef = useRef(workflowBlocked);
+  workflowBlockedRef.current = workflowBlocked;
   // PIN THE INPUTS ON FOCUS (owner 2026-08-07) — see CalcWorkspaceScreen: the
   // keyboard would otherwise cover the fields being typed into, and the shared
   // KeyboardAwareScrollView degrades to a plain ScrollView on builds without
@@ -160,7 +172,8 @@ export function CalcWorkflowRunScreen() {
         draft != null &&
         draft.steps.length === valid.steps.length &&
         !(Date.parse(draft.startedAt) < Date.parse(valid.updatedAt));
-      if (draft && limits.canResume && draftFits) {
+      // No resume question over the members-only notice below.
+      if (draft && limits.canResume && draftFits && !workflowBlockedRef.current) {
         // confirmDialog: Alert.alert is a no-op on RN-web, so `run` was never
         // set and the screen stayed on "Loading workflow…" with no exit
         // (B-013/B-063). The cancel path ALWAYS sets a run — no dismissal
@@ -502,6 +515,29 @@ export function CalcWorkflowRunScreen() {
   };
 
   // ---- Render ---------------------------------------------------------------
+  if (workflowBlocked) {
+    // Same words as the lab's own gate (CalcLabScreen). Back always works.
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        <View style={styles.header}>
+          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.title}>{(workflow?.name ?? '').toUpperCase()}</Text>
+          </View>
+          <AccuracyNote compact variant="calc" />
+        </View>
+        <View style={styles.scroll}>
+          <Text style={styles.sectionTitle}>WORKFLOWS ARE AN ACADEMY FEATURE</Text>
+          <Text style={styles.caption}>
+            Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open to browse, with 5 free calculations a week; membership removes that limit.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   if (!workflow || !run) {
     // The loading state carries the same header / ‹ Back as the loaded state —
     // gestureEnabled is false app-wide, so without it a screen waiting on the

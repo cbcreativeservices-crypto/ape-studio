@@ -12,7 +12,7 @@
  */
 import { supabase } from '../../lib/supabase';
 
-import { myUserId } from '../account/myUserRow';
+import { myUserRowOrThrow } from '../account/myUserRow';
 export type EarnedCredentialRow = {
   /** credential_awards.credential_id — the certificate/program uuid. */
   id: string;
@@ -30,12 +30,21 @@ export type EarnedCredentialRow = {
 
 /**
  * Every non-revoked credential the signed-in user holds, newest first.
- * Returns [] for a guest, an unlinked account, or any error — the caller
- * renders an honest empty state rather than an implied failure.
+ * Returns [] for a guest or an unlinked account; a read that FAILED throws
+ * (the identity read included), so a failure is never shown as "earned
+ * nothing".
  */
 export async function fetchMyCredentials(): Promise<EarnedCredentialRow[]> {
   try {
-    const userId = await myUserId();
+    // STRICT identity read (evening hunt 2026-10-02). The lenient myUserId()
+    // answers null for a users-row read that FAILED (offline, a stalled
+    // getUser) exactly as for a guest, so a dropped read came back as "earned
+    // nothing" — and useCredentialCelebration's first run then recorded that
+    // empty list as the baseline and later congratulated every credential
+    // already held as new. null now means genuinely no account / no row; a
+    // failed read throws to the caller's catch.
+    const row = await myUserRowOrThrow<{ id: string }>('id');
+    const userId = row?.id ?? null;
     if (!userId) return [];
 
     const { data: awards, error } = await supabase

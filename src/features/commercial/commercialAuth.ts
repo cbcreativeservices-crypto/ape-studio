@@ -21,7 +21,15 @@ export type FavoritesMigration = { favorites: string[]; recent: string[] };
 
 /** Collect the anonymous device-local glossary state to migrate on signup. */
 export async function collectFavoritesMigration(): Promise<FavoritesMigration> {
-  const [f, r] = await Promise.all([AsyncStorage.getItem(FAVS_KEY), AsyncStorage.getItem(RECENT_KEY)]);
+  // A storage READ that throws must not block signup either (evening hunt 1,
+  // 2026-10-02): it rejected straight through registerCommercialUser AFTER the
+  // auth account was made, so the users row was never created and every retry
+  // failed the same way. Unreadable = nothing to migrate (read-only: nothing
+  // is written from it).
+  const [f, r] = await Promise.all([
+    AsyncStorage.getItem(FAVS_KEY).catch(() => null),
+    AsyncStorage.getItem(RECENT_KEY).catch(() => null),
+  ]);
   // Defensive parse: a corrupt anonymous glossary blob must NEVER throw here —
   // this runs on the signup path and would otherwise block account creation.
   const safeList = (v: string | null): string[] => {

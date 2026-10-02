@@ -111,6 +111,17 @@ export function ToolInfoScreen({ navigation, route }: Props) {
   // 🔒 LEARN / DEMO buttons and the "membership required" note at a member,
   // because the provider boots at 'anonymous' until the server read lands.
   const isMember = !useToolsLocked();
+  // ONE open per navigation (toddler evening 2026-10-02), the hub's openOnce
+  // rule: OPEN TOOL, LEARN and DEMO are three different routes, so two
+  // fingers (or a tap landing inside the push) stacked two screens — the
+  // live tool AND its LEARN page on top of each other.
+  const lastOpenRef = useRef(0);
+  const openOnce = (go: () => void) => {
+    const now = Date.now();
+    if (now - lastOpenRef.current < 700) return;
+    lastOpenRef.current = now;
+    go();
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -142,7 +153,7 @@ export function ToolInfoScreen({ navigation, route }: Props) {
               // [57] (2026-09-07): keep the route name type-checked
               // (keyof RootStackParamList) instead of casting navigation to any.
               const r = OPEN_TOOL_ROUTE[tool.key];
-              if (r) (navigation.navigate as (name: string) => void)(r);
+              if (r) openOnce(() => (navigation.navigate as (name: string) => void)(r));
             }}
           />
         )}
@@ -158,7 +169,7 @@ export function ToolInfoScreen({ navigation, route }: Props) {
                   tint="blue"
                   height={46}
                   fontSize={14}
-                  onPress={() => navigation.navigate('ToolLearn', { toolKey: tool.key })}
+                  onPress={() => openOnce(() => navigation.navigate('ToolLearn', { toolKey: tool.key }))}
                 />
               </View>
               <View style={{ flex: 1 }}>
@@ -167,14 +178,14 @@ export function ToolInfoScreen({ navigation, route }: Props) {
                   tint="purple"
                   height={46}
                   fontSize={14}
-                  onPress={() => navigation.navigate('ToolDemo', { toolKey: tool.key })}
+                  onPress={() => openOnce(() => navigation.navigate('ToolDemo', { toolKey: tool.key }))}
                 />
               </View>
             </>
           ) : (
             <>
-              <LockedButton label="LEARN" height={46} onPress={() => navigation.navigate('Paywall')} />
-              <LockedButton label="DEMO" height={46} onPress={() => navigation.navigate('Paywall')} />
+              <LockedButton label="LEARN" height={46} onPress={() => openOnce(() => navigation.navigate('Paywall'))} />
+              <LockedButton label="DEMO" height={46} onPress={() => openOnce(() => navigation.navigate('Paywall'))} />
             </>
           )}
         </View>

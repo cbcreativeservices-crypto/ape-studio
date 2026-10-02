@@ -41,6 +41,9 @@ function emit(): void {
   listeners.forEach((l) => l());
 }
 function persist(): void {
+  // Never before a read has answered: the record on disk was not seen, so
+  // writing `state` would replace it (see the failed-read note in hydrate).
+  if (!hydrated) return;
   void AsyncStorage.setItem(KEY, JSON.stringify(state)).catch(() => {});
 }
 
@@ -48,8 +51,21 @@ async function hydrate(): Promise<void> {
   if (hydrated) return;
   if (!hydrating) {
     hydrating = (async () => {
+      let raw: string | null;
       try {
-        const raw = await AsyncStorage.getItem(KEY);
+        raw = await AsyncStorage.getItem(KEY);
+      } catch {
+        // READ failed (evening pass 1, 2026-10-02): UNREADABLE, not "fresh".
+        // It used to fall through to the defaults with `hydrated = true`, and
+        // noteHomeSeen() — called on every Home view — then SAVED those
+        // all-false defaults over the stored record: a returning learner's
+        // Explore ring breathed again, About re-armed a new week and the
+        // green Enrollments chip went dark, for good. Stay unhydrated (every
+        // cue stays quiet, the marks write nothing) and read again next time.
+        hydrating = null;
+        return;
+      }
+      try {
         if (raw) {
           const p = JSON.parse(raw) as Partial<AttractState>;
           state = {

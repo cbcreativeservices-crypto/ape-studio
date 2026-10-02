@@ -123,5 +123,7 @@ test('3 — Exposure Monitor: only the newest history request may land; Delete a
   assert.match(src, /const req = \+\+historyReq\.current;\s*void getExposureHistory\(\)\.then\(\(h\) => \{\s*if \(req === historyReq\.current\) setHistory\(h\);/);
   assert.doesNotMatch(src, /getExposureHistory\(\)\.then\(setHistory\)/);
   const del = src.slice(src.indexOf("'Delete all',"), src.indexOf('<Text style={styles.chipText}>Delete all</Text>'));
-  assert.match(del, /const req = \+\+historyReq\.current;[^\n]*\n\s*void deleteExposureHistory\(\)\.then\(\(\) => \{\s*if \(req === historyReq\.current\) setHistory\(\[\]\);/);
+  // (Evening 1, 2026-10-02: the delete now resolves a boolean and only an
+  // accomplished delete empties the list — the fence is unchanged.)
+  assert.match(del, /const req = \+\+historyReq\.current;[^\n]*\n\s*void deleteExposureHistory\(\)\.then\(\(deleted\) => \{\s*if \(deleted\) \{\s*if \(req === historyReq\.current\) setHistory\(\[\]\);/);
 });

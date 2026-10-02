@@ -14,7 +14,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import {
-  fetchV3Curriculum,
+  fetchV3CurriculumStrict,
   fetchV3CertsStrict,
   fetchV3ProgramsStrict,
   V3_CURRICULUM_VERSION_ID,
@@ -23,7 +23,7 @@ import { fetchMyCredentials, type EarnedCredentialRow } from '../credentials/api
 import { fetchAwardProgress } from '../awards/api';
 import { topicImagePath } from '../../data/topicImages';
 
-import { myUserId } from '../account/myUserRow';
+import { myUserRowOrThrow } from '../account/myUserRow';
 export type TopicStatus = 'complete' | 'passed_incomplete' | 'unlocked' | 'locked';
 
 export type TopicAchievement = {
@@ -59,12 +59,18 @@ export type TopicAchievementData = {
   recentEarned: TopicAchievement[];
 };
 
+/**
+ * The caller's users.id: null ONLY when there is genuinely no session or no
+ * row (a guest). A failed or stalled read THROWS (evening hunt 2026-10-02).
+ * The lenient `myUserId()` this used answers null for a dropped read too, so a
+ * signed-in member on a bad connection took the GUEST branch below: every
+ * topic `locked`, "0 / 166" and an empty gallery, stated as fact — and, on a
+ * refocus, written over the trophies already on screen, because the screens
+ * keep what they show only when the load REJECTS.
+ */
 async function internalUserId(): Promise<string | null> {
-  try {
-    return await myUserId();
-  } catch {
-    return null;
-  }
+  const row = await myUserRowOrThrow<{ id: string }>('id');
+  return row?.id ?? null;
 }
 
 /**
@@ -73,7 +79,10 @@ async function internalUserId(): Promise<string | null> {
  * structure with every topic `locked` (an honest "nothing earned yet" grid).
  */
 export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
-  const [fieldsRaw, userId] = await Promise.all([fetchV3Curriculum(), internalUserId()]);
+  // STRICT curriculum (evening hunt 2026-10-02): the lenient read resolves `[]`
+  // on failure, which drew an empty Trophy Case — "0 / 0", no subjects — as a
+  // fact instead of reaching the screens' error + Retry.
+  const [fieldsRaw, userId] = await Promise.all([fetchV3CurriculumStrict(), internalUserId()]);
 
   const statusById = new Map<string, { status: TopicStatus; dateEarned: string | null }>();
   if (userId) {

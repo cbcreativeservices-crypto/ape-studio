@@ -227,11 +227,12 @@ describe('Start Here — wiring', () => {
   it('guests are never written to storage (house guest rule)', () => {
     const host = src('src/screens/startHere/StartHereScreen.tsx');
     assert.match(host, /resolved && entitlement === 'anonymous'/);
-    assert.match(host, /if \(!noAccountRef\.current && loadedRef\.current\) void savePagedProgress/);
+    assert.match(host, /if \(!noAccountRef\.current && loadedRef\.current && !loadedAsGuestRef\.current\) void savePagedProgress/);
     // Owner ruling 2026-10-01: a guest's work is HELD for the sign-in hand-off
     // (features/lab/sessionCarry), never written while they are a guest.
-    assert.match(host, /if \(noAccountRef\.current\) \{\s*if \(!first\) \{[\s\S]*?\}\s*return;\s*\}/, 'guests: nothing restored');
-    assert.match(host, /else if \(noAccountRef\.current\) \{[\s\S]*?holdPagedProgress\(START_HERE_ID/);
+    assert.match(host, /if \(noAccountRef\.current\) \{[\s\S]*?if \(!first\) \{[\s\S]*?\}\s*return;\s*\}/, 'guests: nothing restored');
+    assert.match(host, /else if \(noAccountRef\.current \|\| loadedAsGuestRef\.current\) holdDeltas\(base, next\);/);
+    assert.match(host, /function holdDeltas\([\s\S]*?holdPagedProgress\(START_HERE_ID, \{ done: i \}\)/);
   });
 
   it('sounds go through the course voice (gate, guard, stop on close) and stop on page change', () => {

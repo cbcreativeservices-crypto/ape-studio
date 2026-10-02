@@ -168,15 +168,38 @@ export function GalleryScreen() {
       })
       .catch(() => undefined);
   };
-  const rename = (name: string) => {
-    if (!current) return;
-    const n = name.trim();
-    editLatest(current.id, (row) => (n && n !== row.name ? { ...row, name: n } : null));
+  // TYPED TEXT IS KEPT WHEN THE FIELD GOES AWAY (evening pass 1, 2026-10-02).
+  // The two fields are uncontrolled and wrote only on onEndEditing, which a
+  // field never delivers once it has unmounted: typing notes (multiline — no
+  // return key closes it) and then tapping ‹ (outside the ScrollView, so the
+  // keyboard stays up), "Colour ›" or "Duplicate" left OPEN mode with the
+  // field still focused, and the text was dropped without a word. Every
+  // keystroke is held here and written when the field leaves the screen.
+  const drafts = useRef<{ id: string; name?: string; notes?: string } | null>(null);
+  const draft = (id: string, field: 'name' | 'notes', text: string) => {
+    if (drafts.current?.id !== id) drafts.current = { id };
+    drafts.current[field] = text;
   };
-  const setNotes = (notes: string) => {
-    if (!current) return;
-    editLatest(current.id, (row) => (notes !== row.notes ? { ...row, notes } : null));
+  const flushDrafts = () => {
+    const d = drafts.current;
+    drafts.current = null;
+    if (!d) return;
+    if (d.name != null) {
+      const n = d.name.trim();
+      editLatest(d.id, (row) => (n && n !== row.name ? { ...row, name: n } : null));
+    }
+    if (d.notes != null) {
+      const notes = d.notes;
+      editLatest(d.id, (row) => (notes !== row.notes ? { ...row, notes } : null));
+    }
   };
+  const flushRef = useRef(flushDrafts);
+  flushRef.current = flushDrafts;
+  // Leaving OPEN mode, switching pattern, or leaving the screen.
+  useEffect(() => {
+    if (mode !== 'open' || !currentId) return;
+    return () => flushRef.current();
+  }, [mode, currentId]);
   const toggleFav = (p: SavedPattern) => editLatest(p.id, (row) => ({ ...row, favourite: !row.favourite }));
   // One copy per press: a same-frame double tap used to make two
   // (bug hunt 2026-09-29).
@@ -375,9 +398,9 @@ export function GalleryScreen() {
               </View>
               <View style={styles.block}>
                 <Text style={styles.label}>NAME</Text>
-                <TextInput key={`n${current.id}`} defaultValue={current.name} onEndEditing={(e) => rename(e.nativeEvent.text)} style={styles.input} placeholder="Name this pattern" placeholderTextColor={colors.textMuted} maxLength={80} returnKeyType="done" />
+                <TextInput key={`n${current.id}`} defaultValue={current.name} onChangeText={(t) => draft(current.id, 'name', t)} onEndEditing={(e) => { draft(current.id, 'name', e.nativeEvent.text); flushDrafts(); }} style={styles.input} placeholder="Name this pattern" placeholderTextColor={colors.textMuted} maxLength={80} returnKeyType="done" />
                 <Text style={styles.label}>NOTES</Text>
-                <TextInput key={`t${current.id}`} defaultValue={current.notes} onEndEditing={(e) => setNotes(e.nativeEvent.text)} onBlur={() => undefined} style={[styles.input, styles.inputMulti]} placeholder="What you were testing, what you saw…" placeholderTextColor={colors.textMuted} multiline maxLength={600} />
+                <TextInput key={`t${current.id}`} defaultValue={current.notes} onChangeText={(t) => draft(current.id, 'notes', t)} onEndEditing={(e) => { draft(current.id, 'notes', e.nativeEvent.text); flushDrafts(); }} onBlur={() => undefined} style={[styles.input, styles.inputMulti]} placeholder="What you were testing, what you saw…" placeholderTextColor={colors.textMuted} multiline maxLength={600} />
               </View>
               <Readout pattern={current} />
               <ExportPanel subject={{ kind: 'pattern', pattern: current, geometry: currentGeom, artwork: currentArt }} onHelp={help} />

@@ -99,6 +99,16 @@ export function CareerFamilyScreen() {
    */
   const goToFinder = () =>
     (navigation as unknown as { popTo: (name: string) => void }).popTo('CareerFinder');
+  /**
+   * popTo for the curriculum too (evening hunt 2026-10-02) — the same RN7 rule
+   * as goToFinder. The Finder is reached from the Explore page OF the Awards
+   * pager, so `navigate('Awards')` from here pushed a SECOND pager over
+   * Awards -> CareerFinder -> CareerFamily, and its back led into the Finder
+   * again. popTo returns to that pager (still on Explore, where the Finder was
+   * opened) and adds one when there is none (opened from Home).
+   */
+  const openCurriculum = () =>
+    (navigation as unknown as { popTo: (name: string, params?: object) => void }).popTo('Awards', { category: 'curriculum' });
 
   const correction = () => sendFeedback('correction', fam.name, { Screen: 'Career family', 'Family id': fam.id, 'Index version': CAREER_INDEX_VERSION });
 
@@ -168,12 +178,12 @@ export function CareerFamilyScreen() {
             {addedHere.length ? (
               <CtaButton label={`STUDY ${addedHere.length} TOPIC${addedHere.length === 1 ? '' : 'S'} NOW ›`} tone="green" onPress={studyNow} hint="Opens your study dashboard at the first topic you added" />
             ) : null}
-            <TextLink label="Open the full curriculum" onPress={() => navigation.navigate('Awards', { category: 'curriculum' })} />
+            <TextLink label="Open the full curriculum" onPress={openCurriculum} />
           </>
         ) : (
           <>
             <Body muted>The subject above is the place to begin; its topics are listed on the Explore page.</Body>
-            <CtaButton label="OPEN THE CURRICULUM" onPress={() => navigation.navigate('Awards', { category: 'curriculum' })} hint="Opens the Explore page with every subject" />
+            <CtaButton label="OPEN THE CURRICULUM" onPress={openCurriculum} hint="Opens the Explore page with every subject" />
           </>
         )}
       </Card>

@@ -28,6 +28,7 @@ import { supabase } from '../../lib/supabase';
 import { safeUser } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
 import { clearAttemptDraft } from '../assess/attemptDraft';
+import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 
 export type AwardType = 'certificate' | 'program';
 
@@ -216,12 +217,22 @@ function parseStartError(message: string): ExamStartError {
 }
 
 export class ExamStartFailure extends Error {
-  constructor(public code: ExamStartError) {
+  // A plain field, not a parameter property (the quiz twin's reason): node
+  // --test loads this module and strip-only TypeScript has none.
+  code: ExamStartError;
+  constructor(code: ExamStartError) {
     super(code);
+    this.code = code;
   }
 }
 
 const intentKey = (awardType: AwardType, awardId: string) => `ape:finalExamIntent:${awardType}:${awardId}`;
+/** Bumped by the account wipe (self-registered below): an intent write that
+ *  started under the departing identity lands nowhere (the quiz twin's fence). */
+let intentGeneration = 0;
+registerLocalStoreReset(() => {
+  intentGeneration++;
+});
 
 /** Start (or resume) a Final Exam attempt. Online-only. */
 export async function startFinalExam(awardType: AwardType, awardId: string): Promise<ExamPayload> {
@@ -233,18 +244,32 @@ export async function startFinalExam(awardType: AwardType, awardId: string): Pro
   // over a write that only affects resuming. Storage failure on this app is
   // proven, not hypothetical (the SQLITE_FULL incident, 2026-09-11). Losing the
   // id costs resume; refusing to start costs the exam.
+  //
+  // ⛔ A READ THAT FAILED IS NOT "NO INTENT" — the quiz twin's wave-2 fix
+  // (2026-10-02), which this twin never received (evening hunt 2026-10-02).
+  // It minted a fresh id and wrote it OVER the stored one, so the sitting in
+  // progress lost its resume id for good; and a start in flight across a
+  // sign-out wrote the departing user's intent into the next user's storage.
+  // Tried twice; a read that still fails uses a fresh id for this run only.
+  const gen = intentGeneration;
   let intentId: string | null = null;
-  try {
-    intentId = await AsyncStorage.getItem(key);
-  } catch {
-    intentId = null;
+  let readFailed = true;
+  for (let i = 0; i < 2 && readFailed; i++) {
+    try {
+      intentId = await AsyncStorage.getItem(key);
+      readFailed = false;
+    } catch {
+      intentId = null;
+    }
   }
   if (!intentId) {
     intentId = Crypto.randomUUID();
-    try {
-      await AsyncStorage.setItem(key, intentId);
-    } catch {
-      /* resume convenience only — the attempt still starts */
+    if (!readFailed && gen === intentGeneration) {
+      try {
+        await AsyncStorage.setItem(key, intentId);
+      } catch {
+        /* resume convenience only — the attempt still starts */
+      }
     }
   }
   const { data, error } = await supabase.rpc('start_final_exam', {

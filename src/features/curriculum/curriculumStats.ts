@@ -121,7 +121,14 @@ export function useCurriculumStats(gsList: number[]): CurriculumStats {
               // (overnight hunt 2026-09-23)
               .order('achievement_id')
               .range(from, from + PAGE - 1);
-            if (error || !data || data.length === 0) break;
+            // A page that FAILED leaves the tally partial — every count it
+            // touched would be shown short, as fact. Unknown, not wrong
+            // (evening hunt 2026-10-02): drop the partial tally (dashes).
+            if (error || !data) {
+              termsByGs.clear();
+              break;
+            }
+            if (data.length === 0) break;
             for (const r of data as { achievement_id: string }[]) {
               const gs = gsById.get(r.achievement_id);
               if (gs != null) termsByGs.set(gs, (termsByGs.get(gs) ?? 0) + 1);

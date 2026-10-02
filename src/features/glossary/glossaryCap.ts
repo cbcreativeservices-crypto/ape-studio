@@ -181,10 +181,27 @@ const LOCAL_KEY = 'ape:glossaryUsageLocal';
 const WEEK_MS = GLOSSARY_WEEK_MS;
 type LocalState = { windowStart: number; used: number };
 
-async function readLocal(): Promise<LocalState | null> {
+/**
+ * ⛔ A READ THAT FAILED IS NOT "NO WINDOW YET" (evening hunt 1, 2026-10-02).
+ * This used to answer null for both, and consumeLocal then wrote a fresh
+ * `{ used: 1 }` over the stored count — a storage hiccup handed a guest a new
+ * week of fourteen, and the header's promise ("device storage is unreadable →
+ * `unavailable: true`") was not what the code did. An unreadable count now
+ * fails OPEN without writing, exactly as the server backend does on an error.
+ * A DAMAGED value (unparseable) still reads as no window: nothing usable to
+ * keep.
+ */
+const READ_FAILED = 'readFailed' as const;
+
+async function readLocal(): Promise<LocalState | null | typeof READ_FAILED> {
+  let raw: string | null;
   try {
-    const raw = await AsyncStorage.getItem(LOCAL_KEY);
-    if (!raw) return null;
+    raw = await AsyncStorage.getItem(LOCAL_KEY);
+  } catch {
+    return READ_FAILED;
+  }
+  if (!raw) return null;
+  try {
     const s = JSON.parse(raw) as LocalState;
     if (s && typeof s.windowStart === 'number' && typeof s.used === 'number') return s;
     return null;
@@ -204,6 +221,7 @@ async function writeLocal(s: LocalState): Promise<void> {
 async function consumeLocal(): Promise<GlossaryUsage> {
   const now = Date.now();
   const cur = await readLocal();
+  if (cur === READ_FAILED) return OPEN;
   // No window yet, or the rolling week elapsed -> (re)start the count at 1.
   if (!cur || now - cur.windowStart >= WEEK_MS) {
     await writeLocal({ windowStart: now, used: 1 });
@@ -221,6 +239,7 @@ async function consumeLocal(): Promise<GlossaryUsage> {
 async function statusLocal(): Promise<GlossaryUsage> {
   const now = Date.now();
   const cur = await readLocal();
+  if (cur === READ_FAILED) return OPEN;
   if (!cur || now - cur.windowStart >= WEEK_MS) {
     return { used: 0, limit: GLOSSARY_WEEKLY_LIMIT, allowed: true, windowStart: null, unavailable: false };
   }

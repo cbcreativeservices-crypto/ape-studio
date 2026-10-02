@@ -826,16 +826,25 @@ export async function deleteExposureToday(): Promise<void> {
   emitState();
 }
 
-export async function deleteExposureHistory(): Promise<void> {
+/**
+ * Resolves FALSE when the stored days could not all be removed (toddler
+ * evening 2026-10-02). The failure used to be swallowed as "best-effort" and
+ * the screen emptied its history list anyway: someone who deleted their
+ * listening record was shown it gone while every stored day was still on the
+ * device, back on screen at the next visit.
+ */
+export async function deleteExposureHistory(): Promise<boolean> {
+  let ok = true;
   try {
     const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
     const idx = rawIdx ? (JSON.parse(rawIdx) as string[]) : [];
     await Promise.all(idx.map((d) => AsyncStorage.removeItem(DAY_KEY(d))));
     await AsyncStorage.removeItem(INDEX_KEY);
   } catch {
-    /* best-effort */
+    ok = false;
   }
   await deleteExposureToday();
+  return ok;
 }
 
 /** Serialized history for the user's own export (privacy §22). */

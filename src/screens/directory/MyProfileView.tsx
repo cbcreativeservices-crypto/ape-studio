@@ -391,6 +391,12 @@ export function MyProfileView() {
     // of any field sent that older copy back, erasing it on the server too.
     // Wait for queued saves; if anything is still unsent or a newer save
     // started meanwhile, take only the switch state the server owns.
+    // Only ever called after a write that SUCCEEDED (publish / the two
+    // switches): an error left over from an earlier refused attempt must not
+    // sit above the switch that now shows it worked (evening hunt 2026-10-02).
+    // Cleared BEFORE the wait, so a save still out that fails meanwhile keeps
+    // its own message.
+    setErr(null);
     await saveChain.current;
     const seq = saveSeq.current;
     const mine = await fetchMyCommunityProfile();

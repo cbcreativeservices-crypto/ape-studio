@@ -861,7 +861,27 @@ export function EnrollmentView({
   // Whole FIELD — enroll its topics (owner 2026-08-18). Fields do NOT create a
   // bundle card (unlike subjects); toggle state derives from enrollment.
   const addWholeField = (topics: number[]) => { addTopicsUnloaded(topics); };
-  const removeWholeField = (topics: number[]) => { topics.forEach((gs) => { if (!isFreeEnrollGs(gs)) removeTopic(gs); }); };
+  // A required co-requisite under 100% — the same lock the topic row applies
+  // ("Required co-requisites stay in your list until you complete them").
+  const coreLockedNow = (gs: number) => COREQ_TOPIC_GS.includes(gs) && pctFor(gs) < 100;
+  // Field REMOVE ALL keeps what the bundle REMOVE ALL keeps (evening hunt
+  // 2026-10-02): it stripped every topic of the field — the topics an enrolled
+  // certificate / program / subject still lists (the bundle stayed, its topics
+  // were gone, and the server master list then refused their study) and an
+  // incomplete required co-requisite the row itself refuses to remove.
+  const removeWholeField = (topics: number[]) => {
+    const keep = (gs: number) => isFreeEnrollGs(gs) || coreLockedNow(gs);
+    const removable = removableOnBundleDrop(topics, bundles.map((b) => b.topics), keep);
+    removable.forEach((gs) => removeTopic(gs));
+    // Said, not silent: when every topic is kept, REMOVE ALL would otherwise
+    // do nothing visible at all.
+    if (topics.some((gs) => enrolledGs.has(gs) && !isFreeEnrollGs(gs) && !removable.includes(gs))) {
+      notify(
+        'Some topics stay',
+        'Topics a certificate, program or subject in your list still uses, and required co-requisites you have not completed, stay in your list.',
+      );
+    }
+  };
   // REMOVE ALL — drop a cert/program/subject bundle AND its topics from the
   // enrollment list (user request 2026-07-22). The two mandatory free topics are
   // kept (they can never be un-enrolled).
@@ -873,12 +893,17 @@ export function EnrollmentView({
     // 2026-09-29) — removing a program used to strip the shared topics out of
     // the certificate that also lists them.
     const others = bundles.filter((b) => b.key !== key).map((b) => b.topics);
-    removableOnBundleDrop(topics, others, isFreeEnrollGs).forEach((gs) => removeTopic(gs));
+    const stillCredentialed = bundles.some((b) => b.key !== key && (b.kind === 'cert' || b.kind === 'program'));
+    // While another certificate / program remains, an incomplete required
+    // co-requisite this bundle happens to list stays (evening hunt
+    // 2026-10-02): it was removed here although the topic row refuses to.
+    removableOnBundleDrop(topics, others, (gs) => isFreeEnrollGs(gs) || (stillCredentialed && coreLockedNow(gs))).forEach((gs) =>
+      removeTopic(gs),
+    );
     // The core co-requisites were auto-enrolled (and locked) FOR a certificate
     // or program. Once no cert/program bundle remains, they are no longer
     // required — drop them too, or they sit as permanently un-removable
     // "Required 🔒" rows (Bug+Hater night C1-03). The mandatory free topics stay.
-    const stillCredentialed = bundles.some((b) => b.key !== key && (b.kind === 'cert' || b.kind === 'program'));
     if (!stillCredentialed) {
       // …unless a remaining subject bundle lists one (bug hunt 2026-09-29).
       removableOnBundleDrop(COREQ_TOPIC_GS, others, isFreeEnrollGs).forEach((gs) => removeTopic(gs));

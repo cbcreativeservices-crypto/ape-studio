@@ -116,7 +116,26 @@ async function appUserId(): Promise<string | null> {
   return (data as { id: string } | null)?.id ?? null;
 }
 
+/**
+ * NEVER REJECTS (evening hunt 1, 2026-10-02). The channel, permission and
+ * permission-request calls above the token's own try can throw (Android
+ * rejects a permission request with no foreground activity — the app was
+ * backgrounded while the system dialog was coming up). Settings' master
+ * Weekly switch awaits this AFTER showing itself ON: a throw skipped the row
+ * and pref writes and the revert alike, so the switch read ON with nothing
+ * saved behind it; the Phone-notifications switch's `void` call became an
+ * unhandled rejection. A throw is "no token", which both callers handle.
+ */
 export async function registerAndSavePushToken(): Promise<string | null> {
+  try {
+    return await registerAndSavePushTokenOnce();
+  } catch (e) {
+    console.warn('[push] registration failed:', e);
+    return null;
+  }
+}
+
+async function registerAndSavePushTokenOnce(): Promise<string | null> {
   const Notifications = getNotifications();
   if (!Notifications) return null;
 

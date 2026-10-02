@@ -94,6 +94,7 @@ export function CableInstallLabScreen() {
   // guest; the real guest rule applies the moment the tier is known.
   const noAccountRef = useRef(resolved && entitlement === 'anonymous');
   noAccountRef.current = resolved && entitlement === 'anonymous';
+  const noAccount = noAccountRef.current;
 
   const [step, setStep] = useState(INTRO_STEP);
   const [dims, setDims] = useState<CiDimScores>({});
@@ -138,41 +139,100 @@ export function CableInstallLabScreen() {
   // run on mount, the read saw noAccountRef false before the tier was known,
   // so a signed-out device restored the previous account's stage, scores and
   // run. `resolved` flips once, bounded — a signed-in learner is not held.
+  //
+  // ⛔ NOTHING IS WRITTEN UNTIL THIS READ HAS LANDED (evening hunt 1,
+  // 2026-10-02; pattern P1/P2 — the multiGet slipped past the G1 guard, which
+  // looks for getItem). A read that THREW restored nothing, and the next tap
+  // wrote the empty scores, myths and Repeat run over the stored ones; a tap
+  // before the read landed did the same, and the read then refused to restore
+  // anything because the learner had "navigated". Now `persist` holds off
+  // until the read succeeds (a failed read never succeeds on this mount), and
+  // a read that lands after the learner moved keeps their place and MERGES
+  // the stored scores and myths with what they did meanwhile. Re-read when
+  // the account state changes, so a guest who signs in here gets the same.
+  const readRef = useRef<'pending' | 'ok' | 'failed'>('pending');
+  const latestRef = useRef<{ step: number; dims: CiDimScores; myths: string[] }>({ step: INTRO_STEP, dims: {}, myths: [] });
+  latestRef.current = { step, dims, myths: shownMyths };
+  // A read that follows a signed-out stretch on this mount (the guest offer's
+  // SIGN IN, then back): that run was a guest's — a members-only preview,
+  // which carries nothing ("This run cannot be carried over") — so the stored
+  // scores and myths are restored as they are, never merged with it.
+  const wasGuestRef = useRef(false);
   useEffect(() => {
+    readRef.current = 'pending';
+    if (resolved && noAccountRef.current) wasGuestRef.current = true;
     if (!resolved || noAccountRef.current) return;
     let alive = true;
     void (async () => {
+      let rawStep: string | null;
+      let rawState: string | null;
       try {
-        const [[, rawStep], [, rawState]] = await AsyncStorage.multiGet([STEP_KEY, STATE_KEY]);
-        if (!alive || navigatedRef.current) return;
-        // Step FIRST (bug hunt 2026-09-29): a corrupt or "null" ape:ciState
-        // threw on `st.dims` before the step was restored, so a damaged
-        // score blob also lost the learner's place.
-        if (rawStep != null) {
-          const n = Number(rawStep);
-          if (Number.isFinite(n) && n >= 0 && n <= COMPLETE_STEP) setStep(n);
-        }
-        if (rawState) {
-          const st = JSON.parse(rawState) as CiPersisted | null;
-          setDims(st?.dims ?? {});
-          setShownMyths(Array.isArray(st?.myths) ? st.myths : []);
-          if (Array.isArray(st?.run)) {
-            repeatedRef.current = true;
-            runUnitsRef.current = new Set(st.run);
-            forceTick((t) => t + 1);
-          }
-        }
+        [[, rawStep], [, rawState]] = await AsyncStorage.multiGet([STEP_KEY, STATE_KEY]);
       } catch {
-        /* resume is best-effort */
+        if (alive) readRef.current = 'failed';
+        return;
       }
+      if (!alive) return;
+      readRef.current = 'ok';
+      if (!navigatedRef.current) {
+        try {
+          // Step FIRST (bug hunt 2026-09-29): a corrupt or "null" ape:ciState
+          // threw on `st.dims` before the step was restored, so a damaged
+          // score blob also lost the learner's place.
+          if (rawStep != null) {
+            const n = Number(rawStep);
+            if (Number.isFinite(n) && n >= 0 && n <= COMPLETE_STEP) setStep(n);
+          }
+          if (rawState) {
+            const st = JSON.parse(rawState) as CiPersisted | null;
+            setDims(st?.dims ?? {});
+            setShownMyths(Array.isArray(st?.myths) ? st.myths : []);
+            if (Array.isArray(st?.run)) {
+              repeatedRef.current = true;
+              runUnitsRef.current = new Set(st.run);
+              forceTick((t) => t + 1);
+            }
+          }
+        } catch {
+          /* resume is best-effort */
+        }
+        return;
+      }
+      // The learner moved before the read landed: keep their place and
+      // MERGE the stored scores and myths with what they did meanwhile — or,
+      // after a guest stretch, restore the stored ones as they are.
+      let stored: CiPersisted | null = null;
+      try {
+        stored = rawState ? (JSON.parse(rawState) as CiPersisted | null) : null;
+      } catch {
+        /* damaged → nothing to merge */
+      }
+      const cur = latestRef.current;
+      const carry = !wasGuestRef.current;
+      wasGuestRef.current = false;
+      const mergedDims: CiDimScores = { ...(stored?.dims ?? {}), ...(carry ? cur.dims : {}) };
+      const mergedMyths = [...new Set([...(Array.isArray(stored?.myths) ? stored.myths : []), ...(carry ? cur.myths : [])])];
+      if (!repeatedRef.current && Array.isArray(stored?.run)) {
+        repeatedRef.current = true;
+        runUnitsRef.current = new Set(stored.run);
+      }
+      setDims(mergedDims);
+      setShownMyths(mergedMyths);
+      persist(cur.step, mergedDims, mergedMyths);
+      forceTick((t) => t + 1);
     })();
     return () => {
       alive = false;
     };
-  }, [resolved]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolved, noAccount]);
 
   const persist = useCallback((nextStep: number, nextDims: CiDimScores, nextMyths: string[]) => {
     if (noAccountRef.current) return;
+    // Never before the stored copy has been read (see the restore above): a
+    // pending read merges and writes when it lands; a failed one keeps the
+    // stored scores, myths and run untouched.
+    if (readRef.current !== 'ok') return;
     const run = repeatedRef.current ? [...runUnitsRef.current] : undefined;
     void AsyncStorage.multiSet([
       [STEP_KEY, String(nextStep)],

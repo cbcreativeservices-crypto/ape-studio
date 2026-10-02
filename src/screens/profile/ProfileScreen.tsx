@@ -39,8 +39,10 @@ import { fetchProfile, type ProfileData } from '../../features/profile/api';
 import {
   EMPTY_PUBLIC_PROFILE,
   INTEREST_TOPICS,
-  loadPublicProfile,
+  loadPublicProfileChecked,
   savePublicProfile,
+  unreadBaseline,
+  type UnreadBaseline,
   isAdultConfirmed,
   isRegistryStateKnown,
   setRegistryVisible,
@@ -354,8 +356,15 @@ export function ProfileScreen() {
     // user starts typing before it resolves, applying it would overwrite their
     // keystrokes — so a profile the user has already touched keeps what they
     // typed (design review 2026-08-30).
-    void loadPublicProfile().then((loaded) => {
-      if (!dirtyRef.current) setPub(loaded);
+    // The screen's copy is the stored record only once a load that READ the
+    // device copy has been applied; until then a save lays only the changed
+    // fields over the stored record (evening hunt 1, 2026-10-02 — see
+    // UnreadBaseline in publicProfile.ts).
+    void loadPublicProfileChecked().then(({ profile: loaded, deviceReadFailed }) => {
+      if (!dirtyRef.current) {
+        setPub(loaded);
+        unreadRef.current = deviceReadFailed ? unreadBaseline(loaded) : null;
+      }
       setRegistryVerified(isRegistryStateKnown());
       setHydrated(true);
     });
@@ -486,9 +495,12 @@ export function ProfileScreen() {
    * updater now only computes; a single effect persists whatever it settles on.
    */
   const dirtyRef = useRef(false);
+  /** Non-null while `pub` is not the stored record (before the load is
+   *  applied, or after it could not read the device copy). */
+  const unreadRef = useRef<UnreadBaseline | null>(unreadBaseline());
   useEffect(() => {
     if (!dirtyRef.current) return; // never write back the value we just loaded
-    void savePublicProfile(pub);
+    void savePublicProfile(pub, unreadRef.current);
   }, [pub]);
 
   const setPubKey = useCallback(<K extends keyof PublicProfile>(key: K, value: PublicProfile[K]) => {

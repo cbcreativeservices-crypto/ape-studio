@@ -181,9 +181,6 @@ export function SettingsScreen({ navigation }: Props) {
     void reloadPrefs();
     // [50] (2026-09-07): guard these against unhandled rejection (offline / RLS).
     void hasCrowdsourceConsent().then(setContribute, () => {});
-    void fetchWeeklySubscriptions()
-      .then((subs) => setCatSched(scheduleMapFrom(subs)))
-      .catch(() => {});
     // ape_student_id via the my_identity() RPC (schema isolation, 2026-09-04)
     // rather than a direct users read.
     supabase
@@ -239,6 +236,34 @@ export function SettingsScreen({ navigation }: Props) {
     Object.fromEntries(WEEKLY_CONCEPT_CATEGORIES.map((c) => [c, defaultScheduleFor(c)])),
   );
   const activeCatCount = WEEKLY_CONCEPT_CATEGORIES.filter((c) => catSched[c]?.active).length;
+  /**
+   * The category rows were actually READ (evening hunt 1, 2026-10-02). Until
+   * then `catSched` is the seven staggered defaults — a stand-in, not the
+   * member's schedule — and nothing may be written from it: a category save
+   * upserts its whole row, and switching the master on upserts all seven. A
+   * failed read used to leave the defaults in place, and the next tap wrote
+   * them over every day and time the member had chosen. The ref is the write
+   * gate; the state shows the error + RETRY in place of the rows.
+   */
+  const catSchedKnown = useRef(false);
+  const [catSchedLoaded, setCatSchedLoaded] = useState(false);
+  const [catSchedFailed, setCatSchedFailed] = useState(false);
+  const loadCatSched = useCallback(async (): Promise<Record<string, CategorySchedule> | null> => {
+    const subs = await fetchWeeklySubscriptions().catch(() => null);
+    if (!subs) {
+      if (!catSchedKnown.current) setCatSchedFailed(true);
+      return null;
+    }
+    const map = scheduleMapFrom(subs);
+    catSchedKnown.current = true;
+    setCatSchedLoaded(true);
+    setCatSchedFailed(false);
+    setCatSched(map);
+    return map;
+  }, []);
+  useEffect(() => {
+    void loadCatSched();
+  }, [loadCatSched]);
 
   // In flight while the queue flush below runs (bug hunt 2026-09-29): every tap
   // in that window started its own flush and raised its own "Log out?", and
@@ -395,6 +420,10 @@ ${LOCAL_LOSS}`
 
   /** Change ONE category (its own day, time, or on/off) and persist just it. */
   const setCategory = useCallback((category: string, patch: Partial<CategorySchedule>) => {
+    // A stand-in schedule is never saved over the member's (see catSchedKnown).
+    // The rows and their picker only render once it is known; this is the
+    // write-side backstop.
+    if (!catSchedKnown.current) return;
     setCatSched((prev) => {
       const next = { ...prev[category], ...patch };
       catSaveChain.current = catSaveChain.current
@@ -458,12 +487,30 @@ ${LOCAL_LOSS}`
         // branch was unreachable — the Weekly toggle is disabled whenever push is
         // off (groupLocked), so setWeeklyOn never runs with push_enabled false.
         // Removed. (If push is ever allowed off here, re-add the persist.)
+        // The rows below are written from the member's REAL schedule only. A
+        // read that failed is tried once more; if it still fails, nothing is
+        // written — the seven defaults would replace every day and time they
+        // chose (evening hunt 1, 2026-10-02).
+        let base = catSched;
+        if (!catSchedKnown.current) {
+          const loaded = await loadCatSched();
+          if (!loaded) {
+            setPrefs((p) => (p ? { ...p, notify_weekly_concept: false } : p));
+            notify(
+              'Notifications',
+              'Your weekly concept schedule could not be loaded, so the switch has been left off. Nothing was changed on your account — check your connection and try again.',
+            );
+            return;
+          }
+          base = loaded;
+        }
+
         const token = await registerAndSavePushToken();
 
         // Make sure every category has a row carrying its own schedule. If the
         // user has never picked any, start ONE on so the switch does something
         // — silently subscribing to all seven would be presumptuous.
-        const seeded = { ...catSched };
+        const seeded = { ...base };
         if (!WEEKLY_CONCEPT_CATEGORIES.some((c) => seeded[c]?.active)) {
           const first = WEEKLY_CONCEPT_CATEGORIES[0];
           seeded[first] = { ...seeded[first], active: true };
@@ -531,6 +578,7 @@ ${LOCAL_LOSS}`
         setWeeklyBusy(false);
       }
     },
+    // loadCatSched is stable (useCallback with no deps), so it is not listed.
     [prefs, catSched],
   );
 
@@ -656,7 +704,7 @@ ${LOCAL_LOSS}`
             <View style={{ flex: 1, paddingRight: 10 }}>
               <Text style={styles.rowLabel}>Weekly concept</Text>
               <Text style={styles.rowHint}>
-                {prefs?.notify_weekly_concept
+                {prefs?.notify_weekly_concept && catSchedLoaded
                   ? `${activeCatCount} of ${WEEKLY_CONCEPT_CATEGORIES.length} categories · each on its own day and time`
                   : 'One misunderstood concept a week from each category you choose — each on its own day and time.'}
               </Text>
@@ -671,7 +719,23 @@ ${LOCAL_LOSS}`
           {/* PER-CATEGORY schedules (owner 2026-08-30): every category carries
               its OWN day and time, so one row each — name, its schedule pill,
               and its own switch. Defaults are staggered across the week. */}
-          {prefs?.notify_weekly_concept
+          {prefs?.notify_weekly_concept && catSchedFailed ? (
+            // The stand-in defaults are not this member's schedule — say the
+            // read failed instead of showing "0 of 7" (evening hunt 1).
+            <View style={styles.prefsErrorRow}>
+              <Text style={styles.dependencyNote}>
+                Couldn’t load your weekly concept categories — check your connection.
+              </Text>
+              <Pressable
+                onPress={() => void loadCatSched()}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel="Retry loading weekly concept categories"
+              >
+                <Text style={styles.prefsRetry}>RETRY</Text>
+              </Pressable>
+            </View>
+          ) : prefs?.notify_weekly_concept && catSchedLoaded
             ? WEEKLY_CONCEPT_CATEGORIES.map((cat, i) => {
                 const s = catSched[cat] ?? defaultScheduleFor(cat);
                 return (

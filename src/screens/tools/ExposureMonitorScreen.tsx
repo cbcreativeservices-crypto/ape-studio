@@ -503,8 +503,20 @@ export function ExposureMonitorScreen() {
                   'Delete all',
                   () => {
                     const req = ++historyReq.current; // drops any read already in flight
-                    void deleteExposureHistory().then(() => {
-                      if (req === historyReq.current) setHistory([]);
+                    void deleteExposureHistory().then((deleted) => {
+                      if (deleted) {
+                        if (req === historyReq.current) setHistory([]);
+                        return;
+                      }
+                      // Said, never shown as gone (toddler evening
+                      // 2026-10-02): re-read what is really still stored.
+                      void getExposureHistory().then((h) => {
+                        if (req === historyReq.current) setHistory(h);
+                      });
+                      notify(
+                        'History not deleted',
+                        'This device could not remove the stored exposure history, so some or all of it is still saved. Try Delete all again.',
+                      );
                     });
                   },
                   { destructive: true },

@@ -10,7 +10,7 @@
  * build): camera → ape-optical, location → expo-location, photo →
  * expo-image-picker. All are behind optional-require gates upstream.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -71,7 +71,16 @@ export type FlowResult = 'granted' | 'denied' | 'blocked' | 'cancelled';
 export function usePermissionFlow(cap: CapabilityKey, osRequest: () => Promise<'granted' | 'denied' | 'blocked'>) {
   const [visible, setVisible] = useState(false);
   const [always, setAlways] = useState(false);
-  const [pending, setPending] = useState<((r: FlowResult) => void) | null>(null);
+  /**
+   * The open request's resolver, in a REF (evening hunt 1, 2026-10-02). It was
+   * state, so two taps on ALLOW in one frame both read the same resolver and
+   * ran the OS request twice — on Android the second request queues behind
+   * the first, so a person who declined the system dialog was shown it a
+   * second time, and declining twice is what Android 11+ counts as "never ask
+   * again". Claimed synchronously: the first tap takes it, the second finds
+   * nothing.
+   */
+  const pendingRef = useRef<((r: FlowResult) => void) | null>(null);
 
   const runOs = useCallback(
     async (resolve: (r: FlowResult) => void) => {
@@ -97,24 +106,31 @@ export function usePermissionFlow(cap: CapabilityKey, osRequest: () => Promise<'
         return;
       }
       setAlways(false);
-      setPending(() => resolve);
+      // A request still open (the feature tapped twice) is answered, never
+      // left hanging for a caller that awaits it.
+      pendingRef.current?.('cancelled');
+      pendingRef.current = resolve;
       setVisible(true);
     });
   }, [cap, runOs]);
 
   const onAllow = useCallback(async () => {
+    const resolve = pendingRef.current;
+    pendingRef.current = null;
     setVisible(false);
+    if (!resolve) return; // already answered (a second tap)
     if (always) await setAskMode(cap, 'always');
-    if (pending) void runOs(pending);
-    setPending(null);
-  }, [always, cap, pending, runOs]);
+    void runOs(resolve);
+  }, [always, cap, runOs]);
 
   const onDecline = useCallback(async () => {
+    const resolve = pendingRef.current;
+    pendingRef.current = null;
     setVisible(false);
+    if (!resolve) return; // already answered (a second tap)
     if (always) await setAskMode(cap, 'never'); // "don't ask again" while declining
-    pending?.('cancelled');
-    setPending(null);
-  }, [always, cap, pending]);
+    resolve('cancelled');
+  }, [always, cap]);
 
   const promptProps = useMemo(
     () => ({ cap, visible, always, onToggleAlways: () => setAlways((a) => !a), onAllow, onDecline }),

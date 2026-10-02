@@ -74,6 +74,7 @@ import {
   type CapMode,
 } from '../../features/glossary/glossaryCap';
 import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
+import { recordRecentTerm, useRecentTerms } from '../../features/glossary/recentTerms';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { GlossaryLockView } from '../../features/glossary/GlossaryLockView';
 import { GlossaryDeviceKeyView } from '../../features/glossary/GlossaryDeviceKeyView';
@@ -784,8 +785,7 @@ type Filter = 'all' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
 
 // Flagged-terms key now lives in features/flags/flaggedStore (FLAGGED_KEY) —
 // same 'ape:glossaryFavs' storage, shared app-wide (Booth 2026-07-18).
-const RECENT_KEY = 'ape:glossaryRecent';
-const RECENT_CAP = 30;
+// The Recent list lives on the shared safe store: features/glossary/recentTerms.
 // Set when a locked user taps "Get membership" from the lock view; read once
 // after they return as a member, to reopen the term they were last on, then
 // cleared (owner 2026-09-10).
@@ -1649,7 +1649,7 @@ ${COPY.glossaryFreeAllowance}`,
   // Self-retiring hint: "click term to expand" — hides after 2 expands, for
   // the first 5 glossary opens app-wide (lib/coachMark.ts).
   const coach = useCoachMark('ape:coach:glossary', 2);
-  const [recent, setRecent] = useState<string[]>([]);
+  const recent = useRecentTerms();
   // Held filter chip → internal list of just that set's terms, like Flashcards
   // (user request 2026-07-22). kind picks which set the rows come from.
   const [termListModal, setTermListModal] = useState<{ title: string; kind: 'bookmark' | 'starred' | 'recent'; bookmarkCtx?: string } | null>(null);
@@ -1679,12 +1679,11 @@ ${COPY.glossaryFreeAllowance}`,
   // handler (shareTerm) lives further down, once entryById and termIndex are in scope.
   const [sharePayload, setSharePayload] = useState<ShareTermPayload | null>(null);
 
+  // On the shared safe store (evening hunt 1, 2026-10-02): an open before the
+  // list has loaded, or after a read that failed, no longer writes a one-term
+  // list over the stored history. See recentTerms.ts.
   const recordRecent = useCallback((id: string) => {
-    setRecent((prev) => {
-      const next = [id, ...prev.filter((r) => r !== id)].slice(0, RECENT_CAP);
-      void AsyncStorage.setItem(RECENT_KEY, JSON.stringify(next)).catch(() => {});
-      return next;
-    });
+    void recordRecentTerm(id);
   }, []);
 
   /**
@@ -1985,19 +1984,8 @@ ${COPY.glossaryFreeAllowance}`,
   useFocusEffect(
     useCallback(() => {
       let alive = true;
-      // Recently-viewed (device-side; no backend table). Flagged terms hydrate
-      // via flaggedStore (shared with Flashcards — Booth 2026-07-18).
-      AsyncStorage.getItem(RECENT_KEY)
-        .then((v) => {
-          if (!alive || !v) return;
-          try {
-            const a = JSON.parse(v);
-            if (Array.isArray(a)) setRecent(a as string[]);
-          } catch {
-            /* corrupt value — recently-viewed just stays empty */
-          }
-        })
-        .catch(() => {});
+      // Recently-viewed hydrates via recentTerms (the shared safe store) and
+      // flagged terms via flaggedStore (shared with Flashcards — Booth 2026-07-18).
       AsyncStorage.getItem(TTS_MODE_KEY)
         .then((v) => {
           if (alive && v != null) setTtsBeg(v === '1');

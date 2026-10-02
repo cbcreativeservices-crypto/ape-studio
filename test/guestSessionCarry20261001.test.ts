@@ -344,7 +344,8 @@ describe('pagedProgress — a guest’s pages', () => {
     const sp = read('src/screens/lab/soundsystems/SsPagedLab.tsx');
     assert.match(sp, /if \(!noSaveRef\.current && !loadedNoSaveRef\.current\) void savePagedProgress\(labId, next\);\s*else \{[\s\S]*?holdPagedProgress\(labId, \{ done: i \}\)/);
     const sh = read('src/screens/startHere/StartHereScreen.tsx');
-    assert.match(sh, /else if \(noAccountRef\.current\) \{[\s\S]*?holdPagedProgress\(START_HERE_ID, \{ done: i \}\)/);
+    assert.match(sh, /else if \(noAccountRef\.current \|\| loadedAsGuestRef\.current\) holdDeltas\(base, next\);/);
+    assert.match(sh, /function holdDeltas\([\s\S]*?holdPagedProgress\(START_HERE_ID, \{ done: i \}\)/);
     assert.match(sh, /\}, \[resolved, noAccount\]\);/, 'Start Here re-reads when the account state changes');
   });
 });

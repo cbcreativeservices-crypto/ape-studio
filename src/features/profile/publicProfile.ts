@@ -78,12 +78,70 @@ export const EMPTY_PUBLIC_PROFILE: PublicProfile = {
 
 const KEY = 'ape:publicProfile';
 
-export async function loadPublicProfile(): Promise<PublicProfile> {
-  let local: PublicProfile = EMPTY_PUBLIC_PROFILE;
+/**
+ * ⛔ A DEVICE READ THAT THREW IS NOT AN EMPTY PROFILE (evening hunt 1,
+ * 2026-10-02). The load answered EMPTY_PUBLIC_PROFILE for a read that failed,
+ * the same as for a fresh install, and ProfileScreen saves the WHOLE object on
+ * the first keystroke — so one character typed wrote blanks over the stored
+ * user name, contact email (device-only by owner ruling: there is no other
+ * copy), interests and bio. The class the shared safe store closes (P1); this
+ * file escaped the ratchet because its comments happen to say "read failed".
+ *
+ * The same write happened to a profile typed into BEFORE the load landed (it
+ * waits on two network reads): the screen keeps what was typed and drops the
+ * load, then saved the empty-based object whole.
+ *
+ * Now the screen holds an `UnreadBaseline` — what it SHOWED — whenever its
+ * copy is not the stored record (the load failed, or has not been applied).
+ * A save with a baseline reads the device copy first: still unreadable → the
+ * device copy is left alone (the edit lives for this session, the server
+ * syncs still run); readable → only the fields the user actually changed are
+ * laid over the stored record. Per screen, not module state: another screen's
+ * successful load must not switch this screen's guard off.
+ */
+export type UnreadBaseline = {
+  /** What the screen showed when its copy stopped tracking the stored one. */
+  shown: PublicProfile;
+  /** The stored record, once read back (filled in by the first save). */
+  stored: PublicProfile | null;
+};
+
+/** The baseline for a screen whose copy is not the stored record yet. */
+export function unreadBaseline(shown: PublicProfile = EMPTY_PUBLIC_PROFILE): UnreadBaseline {
+  return { shown, stored: null };
+}
+
+function parseLocal(raw: string | null): PublicProfile {
+  if (!raw) return EMPTY_PUBLIC_PROFILE;
   try {
-    const raw = await AsyncStorage.getItem(KEY);
-    if (raw) local = { ...EMPTY_PUBLIC_PROFILE, ...JSON.parse(raw) };
+    return { ...EMPTY_PUBLIC_PROFILE, ...JSON.parse(raw) };
   } catch {
+    return EMPTY_PUBLIC_PROFILE; // damaged: nothing usable to keep
+  }
+}
+
+/** Lay over `stored` only the fields that differ between `next` and `shown`. */
+function changedOnto(stored: PublicProfile, shown: PublicProfile, next: PublicProfile): PublicProfile {
+  const out: Record<string, unknown> = { ...stored };
+  const sh = shown as unknown as Record<string, unknown>;
+  for (const [k, v] of Object.entries(next)) {
+    if (JSON.stringify(sh[k]) !== JSON.stringify(v)) out[k] = v;
+  }
+  return out as PublicProfile;
+}
+
+export async function loadPublicProfile(): Promise<PublicProfile> {
+  return (await loadPublicProfileChecked()).profile;
+}
+
+/** The load, saying whether the DEVICE copy was actually read. */
+export async function loadPublicProfileChecked(): Promise<{ profile: PublicProfile; deviceReadFailed: boolean }> {
+  let local: PublicProfile = EMPTY_PUBLIC_PROFILE;
+  let readFailed = false;
+  try {
+    local = parseLocal(await AsyncStorage.getItem(KEY));
+  } catch {
+    readFailed = true;
     local = EMPTY_PUBLIC_PROFILE;
   }
   // registryName is the ONE field that is server-backed (2026-08-29): the
@@ -126,7 +184,7 @@ export async function loadPublicProfile(): Promise<PublicProfile> {
   // the same failure class as the boot entitlement downgrade. The draft is
   // harmless: publishing needs a session, so an on-looking switch on a guest
   // device has never published anything.
-  return local;
+  return { profile: local, deviceReadFailed: readFailed };
 }
 
 /** Whether this account has already attested 18+, so the prompt is asked once. */
@@ -251,16 +309,31 @@ export function resetLocal(): void {
   }
 }
 
-export async function savePublicProfile(p: PublicProfile): Promise<void> {
+export async function savePublicProfile(p: PublicProfile, unread?: UnreadBaseline | null): Promise<void> {
   // ProfileScreen calls this on EVERY keystroke as `void savePublicProfile(pub)`,
   // so a rejecting write (storage full, a locked DB on Android) became an
   // unhandled rejection per character typed. The device write is best-effort:
   // swallow it here and still run the server syncs below, which is what the
   // durable copy depends on anyway.
-  try {
-    await AsyncStorage.setItem(KEY, JSON.stringify(p));
-  } catch {
-    // keep going — the in-memory profile is still the UI's source of truth
+  // A screen copy that is not the stored record is never written whole (see
+  // UnreadBaseline).
+  let toStore: PublicProfile | null = p;
+  if (unread) {
+    if (!unread.stored) {
+      try {
+        unread.stored = parseLocal(await AsyncStorage.getItem(KEY));
+      } catch {
+        toStore = null; // still unreadable: leave the stored copy alone
+      }
+    }
+    if (unread.stored) toStore = changedOnto(unread.stored, unread.shown, p);
+  }
+  if (toStore) {
+    try {
+      await AsyncStorage.setItem(KEY, JSON.stringify(toStore));
+    } catch {
+      // keep going — the in-memory profile is still the UI's source of truth
+    }
   }
   // A LISTED profile's bio/interests are published content, so edits have to
   // reach the public page — debounced the same way, and only while listed.

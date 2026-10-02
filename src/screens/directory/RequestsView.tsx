@@ -619,7 +619,12 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
               purpose + opening message stay pinned above as the list header,
               exactly where the ScrollView put them. */}
           <FlatList
-            style={{ flex: 1 }}
+            // ⛔ flexShrink, NEVER flex: 1 (evening hunt 2026-10-02) — the
+            // TestFlight-32 PreviewSheet trap in MyProfileView, same shape:
+            // this sheet has only a maxHeight, so a flex-basis-0 list adds
+            // nothing to its height and the conversation laid out ZERO tall
+            // between the header and the reply box.
+            style={{ flexShrink: 1 }}
             // Drag the conversation to put the keyboard away — the second
             // escape route, since a multiline Return cannot dismiss it.
             keyboardDismissMode="interactive"

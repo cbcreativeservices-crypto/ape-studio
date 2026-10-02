@@ -133,7 +133,9 @@ describe('useLabNav ⏮ does what it is drawn as', () => {
   it('source: start() returns when the view draws ⏮ dimmed (sub-step mode, module 1, step 2+)', () => {
     const s = read('src/screens/lab/kit/useLabNav.ts');
     const body = s.slice(s.indexOf('const start = useCallback'), s.indexOf('const prev = useCallback'));
-    assert.match(body, /if \(!view\.startOn\) return;\n\s*leaveEnd\(\);\n\s*go\(0\);/);
+    // Evening pass 1 (2026-10-02): the dimmed check now comes BEFORE the tap
+    // lock, so a dimmed ⏮ also claims no lock — it still does nothing.
+    assert.match(body, /if \(!view\.startOn\) return;\n\s*if \(lock\(\)\) return;\n\s*setContentsOpen\(false\);\n\s*leaveEnd\(\);\n\s*go\(0\);/);
     assert.doesNotMatch(body, /sub\.index <= 0/);
   });
 });

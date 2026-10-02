@@ -151,6 +151,11 @@ export class LabAudioPlayer {
     if (this.current === e) this.current = null;
   }
 
+  private isPooled(e: PoolEntry): boolean {
+    for (const v of this.pool.values()) if (v === e) return true;
+    return false;
+  }
+
   /** A loaded player for this note — pooled if fresh, else fetched + created. */
   private load(labKey: string, assetKey: string): Promise<PoolEntry | LabAudioReason> {
     const k = keyOf(labKey, assetKey);
@@ -281,7 +286,14 @@ export class LabAudioPlayer {
     labProbe(pooled ? 'clip ready (preloaded)' : 'clip loaded'); // TEMP probe
 
     try {
-      if (this.current && this.current !== got) this.current.player.pause();
+      if (this.current && this.current !== got) {
+        const prev = this.current;
+        prev.player.pause();
+        // A player the pool already replaced (its URL went stale while it was
+        // current) belongs to nobody once it stops being current: release it,
+        // or it stays loaded until the process dies (evening pass 1, 2026-10-02).
+        if (!this.isPooled(prev)) this.release('', prev);
+      }
       this.current = got;
       got.lastUsed = Date.now();
       this.probeSeen = 0; // TEMP probe
@@ -314,6 +326,8 @@ export class LabAudioPlayer {
     this.disposed = true;
     this.playToken++;
     for (const [k, e] of [...this.pool]) this.release(k, e);
+    // The playing player is not pooled when a refresh replaced it meanwhile.
+    if (this.current) this.release('', this.current);
     this.current = null;
     this.activeKey = null;
     this.urlCache.clear();

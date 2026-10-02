@@ -196,6 +196,15 @@ let syncTimer: ReturnType<typeof setTimeout> | null = null;
 let lastSlice = '';
 let lastFullSyncAt = 0;
 let syncing = false;
+/**
+ * Settings handed to a sync that arrived while another was running (evening
+ * hunt 1, 2026-10-02). They used to be DROPPED by the `syncing` early return:
+ * opening Settings starts a forced full sync (it reads the term count and the
+ * glossary batch over the network), and a reminder switched OFF while that ran
+ * was never cancelled — it kept firing until a foreground sync at least five
+ * minutes later. The newest wins; it runs as soon as the current sync ends.
+ */
+let rerunWith: LocalSettings | null = null;
 
 /** The settings that affect scheduling — used to skip no-op resyncs. */
 function notifSlice(s: LocalSettings): string {
@@ -236,7 +245,12 @@ export async function syncLocalNotificationsThrottled(s: LocalSettings): Promise
 export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
   const N = getNotifications();
   if (!N) return;
-  if (syncing) return; // a sync is a full rebuild — overlapping runs double-book
+  if (syncing) {
+    // A sync is a full rebuild — overlapping runs double-book. Run this one
+    // after it instead of losing it (see rerunWith).
+    rerunWith = s;
+    return;
+  }
   // Read failed upstream: the settings are a stand-in — touch nothing.
   if (settingsUnreadable) return;
   syncing = true;
@@ -534,5 +548,11 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
     console.log(`[notif] scheduled: ${scheduled.join(', ') || '(none)'}`);
   } finally {
     syncing = false;
+    const next = rerunWith;
+    rerunWith = null;
+    if (next) {
+      lastSlice = ''; // a rebuild, through the change-gate
+      void syncLocalNotifications(next).catch(() => {});
+    }
   }
 }

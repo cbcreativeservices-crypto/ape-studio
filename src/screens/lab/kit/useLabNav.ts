@@ -103,17 +103,21 @@ export function useLabNav(o: LabNavOptions): LabNav {
   }, [ending, unEnd]);
 
   const start = useCallback(() => {
-    if (lock()) return;
-    setContentsOpen(false);
     // ⏮ does exactly what it is drawn as (full run 2, 2026-10-01): in
     // sub-step mode on module 1, step 2+, it is drawn DIMMED (navView:
-    // startOn = i > 0) but the tap still ran go(0).
+    // startOn = i > 0) but the tap still ran go(0). A dimmed tap does nothing
+    // — and claims nothing: it used to take the 400 ms lock and swallow the
+    // NEXT tapped right after it (evening pass 1, 2026-10-02).
     if (!view.startOn) return;
+    if (lock()) return;
+    setContentsOpen(false);
     leaveEnd();
     go(0);
   }, [lock, view.startOn, leaveEnd, go]);
 
   const prev = useCallback(() => {
+    // Dimmed ‹ PREV (first module, no intro): nothing to do, no lock claimed.
+    if (!view.prevOn) return;
     if (lock()) return;
     setContentsOpen(false);
     if (ending) {
@@ -131,7 +135,7 @@ export function useLabNav(o: LabNavOptions): LabNav {
     }
     if (intro && index === 0) go(-1);
     // index 0 without an intro: PREV is dimmed; nothing to do.
-  }, [lock, ending, sub, index, intro, unEnd, go]);
+  }, [lock, view.prevOn, ending, sub, index, intro, unEnd, go]);
 
   const next = useCallback(() => {
     if (lock()) return;

@@ -14,6 +14,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
 import { TrophyModal } from '../../components/TrophyModal';
+import { StudioButton } from '../../components/StudioButton';
 import { fetchTopicAchievements, type FieldGroup, type TopicAchievement } from '../../features/achievements/api';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -70,8 +71,10 @@ export function TopicsScreen() {
   // quick leave-and-return overlaps two fetches, and the older one landing
   // last put back the earlier trophy counts.
   const loadSeq = useRef(0);
-  useFocusEffect(
-    useCallback(() => {
+  // A callback, so the error state's RETRY can run it too (evening hunt
+  // 2026-10-02): that state told the reader to "retry" and offered nothing to
+  // tap — the only way was to leave the screen and come back.
+  const load = useCallback(() => {
       const my = ++loadSeq.current;
       setLoadError(false);
       fetchTopicAchievements()
@@ -90,8 +93,8 @@ export function TopicsScreen() {
           setFields([]);
           setLoadError(true);
         });
-    }, []),
-  );
+  }, []);
+  useFocusEffect(useCallback(() => load(), [load]));
 
   const subjects = useMemo(() => (fields ? flatten(fields) : []), [fields]);
 
@@ -128,6 +131,11 @@ export function TopicsScreen() {
               ? 'Couldn’t load this right now. Nothing you’ve earned is affected — check your connection and retry, and email info@proaudiotrainingacademy.com if it keeps failing.'
               : 'No topics available yet.'}
           </Text>
+        ) : null}
+        {fields !== null && subjects.length === 0 && loadError ? (
+          <View style={{ width: 180, marginTop: 10 }}>
+            <StudioButton label="Retry" variant="secondary" small onPress={load} />
+          </View>
         ) : null}
 
         <View style={styles.tree}>

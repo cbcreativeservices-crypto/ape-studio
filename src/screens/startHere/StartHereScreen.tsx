@@ -64,6 +64,14 @@ import { safeGoBack } from '../../lib/safeGoBack';
 /** Pro Audio Safety (v3 gs 3060) — the free topic beside this card. */
 const SAFETY_GS = 3060;
 
+/** A guest's work, held for the sign-in hand-off as DELTAS from `base`: the
+ *  pages newly ticked, the page reached, Start Here finished. */
+function holdDeltas(base: PagedProgress, next: PagedProgress): void {
+  for (const i of next.completed) if (!base.completed.includes(i)) holdPagedProgress(START_HERE_ID, { done: i });
+  if (next.lastPage !== base.lastPage) holdPagedProgress(START_HERE_ID, { lastPage: next.lastPage });
+  if (next.done && !base.done) holdPagedProgress(START_HERE_ID, { labDone: true });
+}
+
 export function StartHereScreen() {
   const insets = useSafeAreaInsets();
   // Untyped on purpose: this screen reaches the root stack, a nested tab
@@ -83,6 +91,8 @@ export function StartHereScreen() {
   const [progress, setProgress] = useState<PagedProgress>({ completed: [], lastPage: 0, done: false });
   const progressRef = useRef(progress);
   const loadedRef = useRef(false);
+  /** The copy on screen came from a load made AS A GUEST — see persist(). */
+  const loadedAsGuestRef = useRef(false);
   const navigatedRef = useRef(false);
   const [ending, setEnding] = useState(false);
   const [listOpen, setListOpen] = useState(false);
@@ -105,8 +115,13 @@ export function StartHereScreen() {
       if (!alive) return;
       const first = !loadedRef.current;
       loadedRef.current = true;
+      loadedAsGuestRef.current = noAccountRef.current;
       if (noAccountRef.current) {
         // guests: nothing restored — and a signed-in copy on screen goes.
+        // Ticks made before the tier was known are a guest's work too: HELD
+        // for the sign-in hand-off like every later one (evening pass 1,
+        // 2026-10-02; the PagedLab rule — persist() held nothing then).
+        if (first) holdDeltas({ completed: [], lastPage: 0, done: false }, progressRef.current);
         if (!first) {
           const empty: PagedProgress = { completed: [], lastPage: 0, done: false };
           progressRef.current = empty;
@@ -139,15 +154,18 @@ export function StartHereScreen() {
     const base = progressRef.current;
     progressRef.current = next;
     setProgress(next);
-    if (!noAccountRef.current && loadedRef.current) void savePagedProgress(START_HERE_ID, next);
+    // ⛔ A COPY LOADED AS A GUEST IS NEVER SAVED (evening pass 1, 2026-10-02;
+    // the PagedLab rule, bug pass 3 2026-09-30). A signed-in learner whose
+    // tier read failed loads as a guest — the EMPTY copy. When the tier lands,
+    // noAccountRef flips at once but the re-read is still out, and a CONTINUE
+    // in that gap SAVED the guest copy whole over their stored ticks
+    // (savePagedProgress replaces). Until the re-read lands, hold the deltas
+    // instead: the ledger writes a signed-in hold to the account at once.
+    if (!noAccountRef.current && loadedRef.current && !loadedAsGuestRef.current) void savePagedProgress(START_HERE_ID, next);
     // A guest's ticks and place are HELD (as deltas) for the sign-in hand-off
     // (owner ruling 2026-10-01; features/lab/sessionCarry): signing in later
     // in this app session writes them to the account.
-    else if (noAccountRef.current) {
-      for (const i of next.completed) if (!base.completed.includes(i)) holdPagedProgress(START_HERE_ID, { done: i });
-      if (next.lastPage !== base.lastPage) holdPagedProgress(START_HERE_ID, { lastPage: next.lastPage });
-      if (next.done && !base.done) holdPagedProgress(START_HERE_ID, { labDone: true });
-    }
+    else if (noAccountRef.current || loadedAsGuestRef.current) holdDeltas(base, next);
   }, []);
 
   // ── the one tone voice ───────────────────────────────────────────────────

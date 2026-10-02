@@ -475,7 +475,7 @@ function PageChecks({ ctx }: { ctx: PageCtx }) {
       <Lead>Six checks — one per idea in this lab. A wrong pick explains itself and lets you try again.</Lead>{/* NEW COPY */}
       <Card tone={complete ? 'ok' : 'plain'}>
         <Eyebrow>{n} OF {CHECKS.length} CORRECT</Eyebrow>
-        <Body>{complete ? (ctx.isDone && n < CHECKS.length ? 'This page is already complete — answer again for practice.' : 'All six — the lab is complete. FINISH below records it.') : 'FINISH unlocks when all six are answered correctly.'}</Body>{/* NEW COPY */}
+        <Body>{complete ? (ctx.isDone && n < CHECKS.length ? 'This page is already complete — answer again for practice.' : 'All six — this page is complete.') : 'This page completes when all six are answered correctly.'}</Body>{/* NEW COPY — evening hunt 1 (2026-10-02): FINISH is never locked and records nothing (kit/PagedLab: the what's-left screen lists this page until it is done); the old lines said FINISH "unlocks" and "records it", and called the LAB complete when only this page was. */}
       </Card>
       {CHECKS.map((c, i) => <UnderstandingCheck key={i} question={c.q} options={c.options} correct={c.correct} explain={c.explain} onCorrect={onCorrect(i)} />)}
     </View>

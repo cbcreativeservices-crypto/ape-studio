@@ -436,17 +436,46 @@ export function pruneInvalidGs(valid: Set<number>): number {
   return removed;
 }
 
-/** Toggle membership — add if absent, remove if present (add-menu tap). */
+/** Toggle membership — add if absent, remove if present (add-menu tap).
+ *
+ *  THE INTENT IS DECIDED FROM WHAT THE SCREEN SHOWED (evening hunt
+ *  2026-10-02; the rule in localStore.ts's header). A tap before the stored
+ *  list landed saw "+" and was queued as a toggle — replayed against the
+ *  hydrated list it REMOVED the topic the learner had just asked to add (and
+ *  past the Enrollments row's "this topic stays" lock, which reads the shown
+ *  list). The mutation now carries the intent, so it can only add or only
+ *  remove. */
 export function toggleTopic(gs: number): void {
-  commit((list) => (list.some((e) => e.gs === gs) ? list.filter((e) => e.gs !== gs) : [...list, { gs, favorite: false, active: true }]));
+  const add = !store.get().some((e) => e.gs === gs);
+  commit((list) => {
+    const has = list.some((e) => e.gs === gs);
+    if (add) return has ? null : [...list, { gs, favorite: false, active: true }];
+    return has ? list.filter((e) => e.gs !== gs) : null;
+  });
+}
+
+/** Set one flag of one enrolled topic to the value the tap asked for (the
+ *  opposite of what was SHOWN — see toggleTopic). */
+function setFlag(gs: number, flag: 'favorite' | 'active'): void {
+  const shown = store.get().find((e) => e.gs === gs);
+  if (!shown) {
+    // Not on screen (the stored list has not been read yet): no shown intent
+    // to keep, so it flips whatever the stored row holds, as it always did.
+    commit((list) => list.map((e) => (e.gs === gs ? { ...e, [flag]: !e[flag] } : e)));
+    return;
+  }
+  const want = !shown[flag];
+  commit((list) =>
+    list.some((e) => e.gs === gs && e[flag] !== want) ? list.map((e) => (e.gs === gs ? { ...e, [flag]: want } : e)) : null,
+  );
 }
 
 export function toggleFavorite(gs: number): void {
-  commit((list) => list.map((e) => (e.gs === gs ? { ...e, favorite: !e.favorite } : e)));
+  setFlag(gs, 'favorite');
 }
 
 export function toggleActive(gs: number): void {
-  commit((list) => list.map((e) => (e.gs === gs ? { ...e, active: !e.active } : e)));
+  setFlag(gs, 'active');
 }
 
 /** Bulk-set active on many topics (bundle LOAD/UNLOAD, user request 2026-07-22). */

@@ -54,6 +54,20 @@ const AUDIO_ROUTES = new Set<string>([
   'TubeReference', 'TubeCard', 'DigitalLab', 'DigitalModule', 'WaveLab',
   'WaveModule', 'MeterLab', 'MeterModule', 'EqLabHome', 'EqModule',
   'GainLabHome', 'GainModule', 'FoundationsCourse', 'FoundationsPlayground',
+  // Every lab added after this list was written (toddler evening 2026-10-02):
+  // without them the routine and ELEVATED-level check-ins never appeared in
+  // the labs that play the longest — Mastering, Drum Tuning, the Mixing labs,
+  // Tuning, Ear Training, Cymatics — while the monitor went on counting.
+  // test/toolsEvening1_20261002 fails when a new *Lab route is left out.
+  'AdvancedMixingLab', 'BeginningMixingLab', 'MasteringLab', 'DrumTuningLab',
+  'TuningLab', 'EarTrainingLab', 'EarModule', 'AmpLab', 'AmpModule',
+  'DeEsserLab', 'EnvelopeLab', 'SpeechLab', 'SmartProcessorsLab',
+  'CymaticsLab', 'CymaticsModule', 'CymaticsGallery', 'CymaticsPlateStudio',
+  'CymaticsMembraneStudio', 'CymaticsLiquidStudio', 'SoundSystemsLab',
+  'SoundSystemsLearn', 'SoundSystemsBuild', 'SoundSystemsRoute',
+  'SoundSystemsOperate', 'SoundSystemsTroubleshoot', 'RoomDesignLab',
+  'PatchbayLab', 'ConnectorSelectLab', 'CableInstallLab', 'ProductionLab',
+  'ProductionStage', 'ProductionActivity', 'PreProdLab', 'PostProdLab',
 ]);
 
 function onAudioScreen(): boolean {
