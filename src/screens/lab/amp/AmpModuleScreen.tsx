@@ -24,6 +24,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AMP_MODULES, ampModuleById, checksForModule } from '../../../features/amp/ampContent';
 import { emptyAmpModule, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
+import { ampEndModel } from '../../../features/amp/ampEnd';
 import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
 import { AmpStepHostContext, type AmpStepHost } from './steps';
@@ -265,21 +266,12 @@ export function AmpModuleScreen() {
 
   let end: ReactNode = null;
   if (endState) {
-    const final = endState.bestFinal ?? endState.final;
-    const cleared = new Set<string>(built.filter((x) => endState.modules[x.id]?.done).map((x) => x.id));
-    if (endState.bestFinal?.passed || endState.final?.passed) cleared.add('final');
+    // The same builder as the hub's SEE WHAT'S LEFT (features/amp/ampEnd).
+    const { units: endUnits, cleared } = ampEndModel(endState, built);
     end = (
       <LabEndScreen
         labTitle={LAB_TITLE}
-        units={[
-          ...built.map((x) => ({ id: x.id, label: x.title })),
-          {
-            id: 'final',
-            label: 'Final assessment',
-            kind: 'check' as const,
-            detail: final ? `Best so far: ${Math.round(final.scorePct)}%${final.passed ? ' — passed' : ''}` : 'In Module 8 — not yet submitted',
-          },
-        ]}
+        units={endUnits}
         cleared={cleared}
         mode="progress"
         onJump={(id) => navigation.replace('AmpModule', { id: id === 'final' ? 'apply' : (id as typeof mod.id) })}

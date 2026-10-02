@@ -91,6 +91,63 @@ test('1 · each new hub end screen reads the same progress its module host FINIS
   }
 });
 
+/* ───────────────────────── 1b. the Amp hub (the seventh) ───────────────────────── */
+
+const ampEnd = await import('../src/features/amp/ampEnd.ts');
+const AMP_BUILT = [
+  { id: 'devices' as const, title: 'One' },
+  { id: 'bias' as const, title: 'Two' },
+  { id: 'apply' as const, title: 'Eight' },
+];
+
+test('1b · ampEndModel: modules + the final as a check; the BEST final keeps its credit', () => {
+  const none = ampEnd.ampEndModel({ modules: {} }, AMP_BUILT);
+  assert.deepEqual(none.units.map((u) => u.id), ['devices', 'bias', 'apply', 'final']);
+  assert.equal(none.units[3].kind, 'check');
+  assert.equal(none.units[3].detail, 'In Module 8 — not yet submitted');
+  assert.equal(none.cleared.size, 0);
+
+  // A weaker latest retake never un-passes the final (credit is never removed).
+  const s = ampEnd.ampEndModel(
+    {
+      modules: { devices: { visited: true, done: true, checks: {} }, bias: { visited: true, done: false, checks: {} } },
+      final: { scorePct: 40, passed: false, at: 2 },
+      bestFinal: { scorePct: 86.4, passed: true, at: 1 },
+    },
+    AMP_BUILT,
+  );
+  assert.deepEqual([...s.cleared].sort(), ['devices', 'final']);
+  assert.equal(s.units[3].detail, 'Best so far: 86% — passed');
+});
+
+test('1b · Amp hub: SEE WHAT’S LEFT shows the FINISH list — same read, same builder, same mode, fenced', () => {
+  const h = code('screens/lab/amp/AmpLabHomeScreen.tsx');
+  const m = code('screens/lab/amp/AmpModuleScreen.tsx');
+  // Same builder and source on both sides.
+  assert.match(m, /const \{ units: endUnits, cleared \} = ampEndModel\(endState, built\);/);
+  assert.match(m, /void updateAmpProgress\(\(\) => \{\}\)\.then\(\(s\) => \{\s*if \(my === endReq\.current\) setEndState\(s\);/);
+  assert.match(h, /const endModel = ampEndModel\(progress \?\? \{ modules: \{\} \}, built\);/);
+  assert.match(h, /units=\{endModel\.units\}\s*cleared=\{endModel\.cleared\}/);
+  const mode = (s: string) => /<LabEndScreen[\s\S]*?mode="(credit|progress)"/.exec(s)?.[1];
+  assert.equal(mode(h), 'progress');
+  assert.equal(mode(h), mode(m));
+  // The link: the same component + words as every other hub.
+  assert.match(h, /<LabEndLink label="SEE WHAT’S LEFT ›" onPress=\{\(\) => setEnding\(true\)\} \/>/);
+  // Async safety: the end screen appears only after the queued read lands,
+  // fenced by a generation counter and an unmount flag; waits for the tier.
+  const fn = h.slice(h.indexOf('const setEnding = useCallback('), h.indexOf('const open = '));
+  assert.ok(fn.indexOf('if (!resolved) return;') > 0 && fn.indexOf('if (!resolved) return;') < fn.indexOf('updateAmpProgress'));
+  assert.match(fn, /void updateAmpProgress\(\(\) => \{\}\)\.then\(\(s\) => \{\s*if \(!mounted\.current \|\| my !== endReq\.current\) return;\s*setProgress\(s\);\s*setEndingRaw\(true\);/);
+  assert.match(h, /return \(\) => \{\s*mounted\.current = false;\s*endReq\.current\+\+;\s*\};/);
+  // Leaving the end screen (a jump / PRACTISE AGAIN) bumps the fence first.
+  assert.match(h, /const open = \(id: AmpModuleId\) => \{\s*setEnding\(false\);\s*navigation\.navigate\('AmpModule', \{ id \}\);/);
+  // PRACTISE AGAIN reopens Module 1 and clears nothing; DONE leaves through safeGoBack.
+  assert.match(h, /onPracticeAgain=\{\(\) => open\(built\[0\]\?\.id \?\? AMP_MODULES\[0\]\.id\)\}/);
+  assert.match(h, /onJump=\{\(id\) => open\(id === 'final' \? 'apply' : \(id as AmpModuleId\)\)\}/);
+  assert.match(h, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
+  assert.doesNotMatch(h, /navigation\.goBack\(/);
+});
+
 /* ───────────────────────── 2. exposure monitor ───────────────────────── */
 
 test('2 · the exposure screen says an unreadable earlier dose inline, in the notice style', () => {

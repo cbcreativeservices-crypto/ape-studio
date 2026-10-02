@@ -86,10 +86,9 @@ describe('shared lab navigation law', () => {
    * the same component and wording, and swap LabEndScreen in itself. Hubs not
    * yet on it are listed with why; this list may only SHRINK.
    */
-  const HUB_LINK_EXEMPT: Record<string, string> = {
-    'src/screens/lab/amp/AmpLabHomeScreen.tsx':
-      'hub already reads progress ("N of M modules complete" + RESUME); its end screen needs the async ape:amp:v1 read + the final-assessment unit',
-  };
+  // Empty since 2026-10-02: the Amp hub was the last one (its end screen reads
+  // ape:amp:v1 through features/amp/ampEnd, the same builder as its FINISH).
+  const HUB_LINK_EXEMPT: Record<string, string> = {};
   it('every module-lab hub has the SEE WHAT’S LEFT link to its own end screen', () => {
     const offenders: string[] = [];
     const hubs: string[] = [];
@@ -111,8 +110,8 @@ describe('shared lab navigation law', () => {
       if (!/onPracticeAgain=\{\(\) => open\(/.test(code)) offenders.push(`${path}: PRACTISE AGAIN must reopen a module (clears nothing)`);
     }
     assert.deepEqual(offenders, [], offenders.join('\n'));
-    // The detector must still see the six known hubs (Meter + the five added 2026-10-02).
-    for (const n of ['meter/MeterLabHomeScreen', 'cymatics/CymaticsHomeScreen', 'digital/DigitalLabHomeScreen', 'eq/EqLabHomeScreen', 'gain/GainLabHomeScreen', 'wave/WaveLabHomeScreen'])
+    // The detector must still see the seven known hubs (Meter + the five added 2026-10-02 + Amp).
+    for (const n of ['meter/MeterLabHomeScreen', 'amp/AmpLabHomeScreen','cymatics/CymaticsHomeScreen', 'digital/DigitalLabHomeScreen', 'eq/EqLabHomeScreen', 'gain/GainLabHomeScreen', 'wave/WaveLabHomeScreen'])
       assert.ok(hubs.includes(`src/screens/lab/${n}.tsx`), `detector lost ${n}`);
     for (const k of Object.keys(HUB_LINK_EXEMPT)) assert.ok(hubs.includes(k), `stale exemption: ${k}`);
   });
