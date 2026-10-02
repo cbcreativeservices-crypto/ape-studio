@@ -189,7 +189,11 @@ describe('lab stores: a read that failed is not "nothing stored"', () => {
     kv.failGet = false;
     await paged.savePagedProgress('labX', { completed: [5], lastPage: 5, done: false });
     assert.deepEqual(JSON.parse(kv.map.get('ape:labX:v1')!), { completed: [0, 1, 2, 5], lastPage: 5, done: true });
-    // A normal load/save is unchanged.
+    // A normal load/save is unchanged (a load that succeeds hands the screen
+    // the whole copy, so its saves replace again — evening pass 3 corrected
+    // this case: it used to save WITHOUT that load, which pinned the loss of
+    // the stored pages on the screen's second save).
+    await paged.loadPagedProgress('labX');
     await paged.savePagedProgress('labX', { completed: [1], lastPage: 1, done: false });
     assert.deepEqual(JSON.parse(kv.map.get('ape:labX:v1')!), { completed: [1], lastPage: 1, done: false });
   });

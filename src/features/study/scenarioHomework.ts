@@ -15,6 +15,7 @@
  */
 import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from './sync';
+import { isOfflineError } from './sessionRetry';
 import {
   drainScenarioQueue,
   pendingScenarioCount,
@@ -178,8 +179,10 @@ export async function fetchScenarioHomework(achievementId: string): Promise<Scen
   }
 }
 
-/** The raw RPCs, with no queueing — used by the drain and by the wrappers. */
-async function sendAnswer(achievementId: string, questionId: string, round: number, correct: boolean): Promise<boolean> {
+/** The raw RPCs, with no queueing — used by the drain and by the wrappers.
+ *  'offline' = the call never reached the server (evening hunt 3,
+ *  2026-10-02): the queue must not count it toward giving the call up. */
+async function sendAnswer(achievementId: string, questionId: string, round: number, correct: boolean): Promise<boolean | 'offline'> {
   try {
     // supabase-js RESOLVES with { error } rather than throwing, so the catch
     // below never sees an RPC error — check `error` explicitly or a failed
@@ -192,22 +195,22 @@ async function sendAnswer(achievementId: string, questionId: string, round: numb
     });
     if (error) {
       console.warn('[scenario] record_scenario_answer failed:', error.message);
-      return false;
+      return isOfflineError(error) ? 'offline' : false;
     }
     return true;
   } catch (e) {
     console.warn('[scenario] record_scenario_answer threw:', (e as Error).message);
-    return false;
+    return isOfflineError(e) ? 'offline' : false;
   }
 }
 
-async function sendComplete(achievementId: string, round: number): Promise<number | null> {
+async function sendComplete(achievementId: string, round: number): Promise<number | null | 'offline'> {
   try {
     const { data, error } = await supabase.rpc('complete_scenario_round', {
       p_achievement_id: achievementId,
       p_round: round,
     });
-    if (error) return null;
+    if (error) return isOfflineError(error) ? 'offline' : null;
     /**
      * ⛔ 0 IS "NOTHING WAS WRITTEN", NOT SUCCESS (bug pass 2026-09-30).
      *
@@ -222,16 +225,17 @@ async function sendComplete(achievementId: string, round: number): Promise<numbe
     if (!Number.isFinite(n) || n <= 0) return null;
     emitStudyProgress(); // refresh any live Dashboard LED
     return n;
-  } catch {
-    return null;
+  } catch (e) {
+    return isOfflineError(e) ? 'offline' : null;
   }
 }
 
 /** Send one queued scenario call. Shape-dispatched by the drain. */
-async function sendPending(item: ScenarioPending): Promise<boolean> {
-  return item.kind === 'answer'
-    ? sendAnswer(item.achievementId, item.questionId, item.round, item.correct)
-    : (await sendComplete(item.achievementId, item.round)) !== null;
+async function sendPending(item: ScenarioPending): Promise<boolean | 'offline'> {
+  if (item.kind === 'answer') return sendAnswer(item.achievementId, item.questionId, item.round, item.correct);
+  const n = await sendComplete(item.achievementId, item.round);
+  if (n === 'offline') return 'offline';
+  return n !== null;
 }
 
 /**
@@ -270,7 +274,7 @@ export async function recordScenarioAnswer(
   // Anything already waiting goes first, so order is preserved.
   const stillPending = await flushScenarioQueue();
   if (gen !== scenarioQueueGeneration()) return false;
-  if (stillPending === 0 && (await sendAnswer(achievementId, questionId, round, correct))) return true;
+  if (stillPending === 0 && (await sendAnswer(achievementId, questionId, round, correct)) === true) return true;
   if (gen !== scenarioQueueGeneration()) return false;
   // True only when the device accepted the queue write — a `false` here means
   // the answer is held in memory until the queue can be read, and is lost
@@ -302,7 +306,7 @@ export async function completeScenarioRound(
   if (gen !== scenarioQueueGeneration()) return { roundsCompleted: round, saved: false, queued: false };
   if (stillPending === 0) {
     const n = await sendComplete(achievementId, round);
-    if (n !== null) return { roundsCompleted: n, saved: true };
+    if (typeof n === 'number') return { roundsCompleted: n, saved: true };
     if (gen !== scenarioQueueGeneration()) return { roundsCompleted: round, saved: false, queued: false };
   }
   // `queued` (wave 3): did the device KEEP the round for the retry? False

@@ -38,6 +38,7 @@ import { PatternFigure } from './PatternFigure';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import { goToCymatics } from './goToCymatics';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { useLatchedPress } from '../../../lib/latch';
 
 type Mode = 'browse' | 'open' | 'art' | 'compare';
 type Filter = 'all' | StudioId | 'fav';
@@ -217,12 +218,46 @@ export function GalleryScreen() {
     void editChain.current
       .then(() => duplicate(id))
       .then((copy) => {
+        // A copy the device refused is said (evening pass 3, 2026-10-02):
+        // DUPLICATE used to do nothing at all, without a word.
         if (copy) open(copy.id);
+        else notify('Not copied', 'The copy could not be saved on this device. Try again.');
       })
       .finally(() => {
         duplicating.current = false;
       });
   };
+  // COLOUR › opens the board on what the device HOLDS (evening pass 3,
+  // 2026-10-02). The board starts from the gallery's artwork map, which was
+  // read once on arrival: tapped before that read landed (or after it failed)
+  // the board opened BLANK, and ‹ then COLOUR › fast reopened it on the
+  // colouring from before the leave-flush wrote — either way the first stroke
+  // saved over the pattern's real colouring. The pattern's artwork is read
+  // fresh, after any save still writing; an unreadable one is said and the
+  // board stays shut.
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+  const currentIdRef = useRef(currentId);
+  currentIdRef.current = currentId;
+  const openArt = useLatchedPress(async () => {
+    if (!current) return;
+    const id = current.id;
+    let a: Artwork | null;
+    try {
+      a = await patternStore().loadArtwork(id);
+    } catch {
+      notify('Artwork not read', `The colouring saved for “${current.name}” could not be read on this device, so the art board did not open. Try again.`);
+      return;
+    }
+    if (modeRef.current !== 'open' || currentIdRef.current !== id) return;
+    setArtworks((m) => {
+      const n = { ...m };
+      if (a) n[id] = a;
+      else delete n[id];
+      return n;
+    });
+    setMode('art');
+  });
   const doDelete = () => {
     if (!current) return;
     confirmDialog(
@@ -399,7 +434,7 @@ export function GalleryScreen() {
               </View>
               <View style={styles.chips}>
                 <LabChip label="Open in studio ›" selected={false} onPress={openInStudio} onLongPress={() => help('save_pattern')} />
-                <LabChip label="Colour ›" selected={false} onPress={() => setMode('art')} onLongPress={() => help('art_fill')} />
+                <LabChip label="Colour ›" selected={false} onPress={openArt} onLongPress={() => help('art_fill')} />
                 <LabChip label="Duplicate" selected={false} onPress={doDuplicate} />
                 <LabChip label={current.favourite ? '★ Favourited' : '★ Favourite'} selected={current.favourite} onPress={() => toggleFav(current)} />
                 <LabChip label="Delete" selected={false} onPress={doDelete} />

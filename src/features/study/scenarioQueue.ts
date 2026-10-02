@@ -160,7 +160,7 @@ let draining: Promise<number> | null = null;
  * on the write-back.
  */
 export function drainScenarioQueue(
-  send: (item: ScenarioPending) => Promise<boolean>,
+  send: (item: ScenarioPending) => Promise<boolean | 'offline'>,
 ): Promise<number> {
   if (draining) return draining;
   const run = (async () => {
@@ -176,19 +176,33 @@ export function drainScenarioQueue(
     let consumed = 0;
     /** True when we stopped on a failure that is still worth retrying. */
     let stalled = false;
+    /**
+     * True when that failure never reached the server (evening hunt 3,
+     * 2026-10-02). It costs the head NO try: the drain runs before every new
+     * answer, so an offline round burned one try per answer and, six answers
+     * in, discarded the oldest queued answer as "permanently failing" — then
+     * the next — work the screen had told the learner was kept. MAX_TRIES is
+     * for a call the SERVER refuses; offline is no evidence of that.
+     */
+    let offline = false;
     for (const item of items) {
       // The account wipe moved on: these rows are the departing user's and
       // must not be sent under the next session (they carry no user id).
       if (gen !== store.generation()) return pendingNow();
-      let ok = false;
+      let ok: boolean | 'offline' = false;
       try {
         ok = await send(item);
       } catch {
         ok = false;
       }
-      if (ok) {
+      if (ok === true) {
         consumed++;
         continue;
+      }
+      if (ok === 'offline') {
+        stalled = true;
+        offline = true;
+        break;
       }
       // ⛔ Ordering still wins for a TRANSIENT failure: stop, do not skip,
       //    because later calls depend on this one landing first.
@@ -226,7 +240,7 @@ export function drainScenarioQueue(
        * a permanently-dead call is retried forever — which is the bug this
        * whole branch exists to end.
        */
-      if (stalled && left.length > 0) {
+      if (stalled && !offline && left.length > 0) {
         left[0] = { ...left[0], tries: (left[0].tries ?? 0) + 1 };
       }
       return left;

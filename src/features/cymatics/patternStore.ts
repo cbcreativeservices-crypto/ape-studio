@@ -216,6 +216,7 @@ export type PatternStore = {
   deletePattern(id: string): Promise<boolean>;
   /** A copy with a new id, "(copy)" name, no artwork. */
   duplicatePattern(id: string): Promise<SavedPattern | null>;
+  /** Rejects when the artwork list cannot be read. */
   loadArtwork(patternId: string): Promise<Artwork | null>;
   /** Every artwork (the gallery's thumbnails read them in one go). */
   loadArtworks(): Promise<Artwork[]>;
@@ -328,9 +329,17 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       const ok = await saveList(kv, PATTERN_KEYS.patterns, list);
       return ok ? copy : null;
     }),
-    async loadArtwork(patternId) {
-      return (await artworks()).find((a) => a.patternId === patternId) ?? null;
-    },
+    // On the write chain, and it THROWS when the list cannot be read (evening
+    // pass 3, 2026-10-02): the art board opens from this read, so it must see
+    // a save still writing (‹ then COLOUR › fast reopened the pre-edit
+    // colouring, and the next stroke wrote it back over the newer one), and an
+    // unreadable list must not open a BLANK board whose first stroke replaces
+    // the pattern's stored colouring. `null` = no artwork yet.
+    loadArtwork: (patternId) => serial(async () => {
+      const list = await artworksRW();
+      if (!list) throw new Error('artwork unreadable');
+      return list.find((a) => a.patternId === patternId) ?? null;
+    }),
     loadArtworks: artworks,
     saveArtwork: (a) => serial(async () => {
       const list = await artworksRW();

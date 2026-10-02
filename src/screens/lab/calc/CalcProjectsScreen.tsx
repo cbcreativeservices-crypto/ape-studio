@@ -163,7 +163,14 @@ export function CalcProjectsScreen() {
       'Delete project?',
       `“${p.name}” and its saved values will be removed.`,
       'Delete',
-      () => void workflowStore.deleteProject(p.id).then(reload),
+      // A failed delete says so (evening hunt 3, 2026-10-02), as Saved Results
+      // and My Workflows already do — it used to close the dialog and leave the
+      // project in the list with nothing said.
+      () =>
+        void workflowStore.deleteProject(p.id).then((ok) => {
+          if (!ok) return notify('Not deleted', 'That could not be removed from this device. Nothing was changed — try again.');
+          reload();
+        }),
       { destructive: true },
     );
   };

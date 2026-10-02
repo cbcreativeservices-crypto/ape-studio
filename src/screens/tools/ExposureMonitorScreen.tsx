@@ -105,6 +105,27 @@ export function ExposureMonitorScreen() {
   const [history, setHistory] = useState<DayRecord[]>([]);
   const [range, setRange] = useState<7 | 30>(7);
   const exportingRef = useRef(false);
+  /**
+   * A setting change the device did not store is SAID (toddler evening
+   * 2026-10-02, pass 3). updateExposureSettings has answered whether the write
+   * landed since the wave-2 store move, and every row here dropped the answer:
+   * "Save exposure history" turned OFF showed OFF, and the next launch quietly
+   * recorded again. One notice at a time — mashing a chip raises one.
+   */
+  const settingNoticeRef = useRef(false);
+  const changeSetting = (patch: Parameters<typeof updateExposureSettings>[0]) => {
+    void updateExposureSettings(patch).then((stored) => {
+      if (stored || settingNoticeRef.current) return;
+      settingNoticeRef.current = true;
+      notify(
+        'Setting not saved',
+        'This device could not store that change. It applies for now, but the previous setting may be back the next time you open the app. Try again.',
+        () => {
+          settingNoticeRef.current = false;
+        },
+      );
+    });
+  };
 
   useEffect(() => subscribeExposure(() => setSnap(getExposureSnapshot())), []);
   // Dev-only tap→mount timing (owner report 2026-09-05: a second open took 10 s+).
@@ -351,13 +372,13 @@ export function ExposureMonitorScreen() {
         </Section>
 
         <Section title="SETTINGS · TRACKING & CHECK-INS">
-          <Toggle label="Listening Exposure Monitor" value={s.enabled} onChange={(v) => updateExposureSettings({ enabled: v })} />
+          <Toggle label="Listening Exposure Monitor" value={s.enabled} onChange={(v) => changeSetting({ enabled: v })} />
           <Text style={styles.rowLabel}>Routine check-in interval (active minutes)</Text>
           <View style={styles.chipRow}>
             {INTERVALS.map((iv) => (
               <Pressable
                 key={iv.label}
-                onPress={() => updateExposureSettings({ checkinMinutes: iv.v })}
+                onPress={() => changeSetting({ checkinMinutes: iv.v })}
                 hitSlop={10}
                 accessibilityRole="button"
                 accessibilityState={{ selected: s.checkinMinutes === iv.v }}
@@ -371,10 +392,10 @@ export function ExposureMonitorScreen() {
           <Toggle
             label="Critical dose warnings (separate from routine)"
             value={s.criticalWarnings}
-            onChange={(v) => updateExposureSettings({ criticalWarnings: v })}
+            onChange={(v) => changeSetting({ criticalWarnings: v })}
           />
-          <Toggle label="Elevated-level advisories" value={s.advisoryWarnings} onChange={(v) => updateExposureSettings({ advisoryWarnings: v })} />
-          <Toggle label="Gentle haptic on check-in" value={s.haptics} onChange={(v) => updateExposureSettings({ haptics: v })} />
+          <Toggle label="Elevated-level advisories" value={s.advisoryWarnings} onChange={(v) => changeSetting({ advisoryWarnings: v })} />
+          <Toggle label="Gentle haptic on check-in" value={s.haptics} onChange={(v) => changeSetting({ haptics: v })} />
         </Section>
 
         <Section title="SETTINGS · MEASUREMENT">
@@ -383,7 +404,7 @@ export function ExposureMonitorScreen() {
             <Pressable
               key={st}
               style={styles.row}
-              onPress={() => updateExposureSettings({ standard: st })}
+              onPress={() => changeSetting({ standard: st })}
               accessibilityRole="radio"
               // A radio announces "checked", not "selected" (2026-09-05) — the
               // selected state was silently dropped by screen readers.
@@ -403,7 +424,7 @@ export function ExposureMonitorScreen() {
               <Pressable
                 key={d}
                 onPress={() =>
-                  updateExposureSettings({
+                  changeSetting({
                     refSplAt0Dbfs: Math.max(70, Math.min(115, s.refSplAt0Dbfs + d)),
                     refCalibrated: true,
                   })
@@ -418,7 +439,7 @@ export function ExposureMonitorScreen() {
               </Pressable>
             ))}
             <Pressable
-              onPress={() => updateExposureSettings({ refSplAt0Dbfs: DEFAULT_SETTINGS.refSplAt0Dbfs, refCalibrated: false })}
+              onPress={() => changeSetting({ refSplAt0Dbfs: DEFAULT_SETTINGS.refSplAt0Dbfs, refCalibrated: false })}
               hitSlop={10}
               accessibilityRole="button"
               style={styles.chip}
@@ -441,7 +462,7 @@ export function ExposureMonitorScreen() {
             Exposure history is personal usage data, stored only on this device. It is never shared with instructors,
             institutions or profiles.
           </Text>
-          <Toggle label="Save exposure history" value={s.saveHistory} onChange={(v) => updateExposureSettings({ saveHistory: v })} />
+          <Toggle label="Save exposure history" value={s.saveHistory} onChange={(v) => changeSetting({ saveHistory: v })} />
           <View style={styles.chipRow}>
             <Pressable
               style={styles.chip}

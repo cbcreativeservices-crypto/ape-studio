@@ -467,16 +467,22 @@ function ReportLink({
                   if (!r.ok) return onError(r.error);
                   setDetail('');
                   // Thread-scoped, so this works against an employer too.
+                  // `blocked` is what the SERVER did (evening hunt 3,
+                  // 2026-10-02): a refused block set the banner and then the
+                  // notice still said "You will not hear from this member
+                  // again" — a block claimed that never happened.
+                  let blocked = false;
                   if (alsoBlock) {
                     const b2 = await blockThread(thread.id, true);
                     if (!b2.ok) onError(b2.error);
+                    blocked = b2.ok;
                   }
                   // Acknowledge it. A report that vanishes silently reads as
                   // one that was not received, and the person is left
                   // wondering whether to report again.
                   notify(
                     'Report received',
-                    alsoBlock
+                    blocked
                       ? 'We review reports and act on them. You will not hear from this member again, and they are not told that you reported them.'
                       : 'We review reports and act on them. The other member is not told that you reported them.',
                   );

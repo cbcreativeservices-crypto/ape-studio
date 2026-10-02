@@ -69,7 +69,11 @@ export async function savePagedProgress(labId: string, p: PagedProgress): Promis
     } catch {
       return;
     }
-    unreadable.delete(labId);
+    // STAYS flagged until a load succeeds (evening pass 3, 2026-10-02): the
+    // screen still holds the empty copy it was handed, so its NEXT save (one
+    // more page) would have replaced the stored pages merged in here. Every
+    // save until then joins what is stored; a practice reset removes the key,
+    // so it is not undone by this.
     const stored = parsePaged(raw);
     p = { completed: [...new Set([...stored.completed, ...p.completed])].sort((a, b) => a - b), lastPage: p.lastPage, done: stored.done || p.done };
   }

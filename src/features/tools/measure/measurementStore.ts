@@ -28,7 +28,6 @@ import {
   deleteRows,
   putRow,
   readAllRows,
-  replaceAllRows,
   type MeasurementRow,
 } from './measurementsBackend';
 import { WARNING_INFO, type SavedMeasurement } from './types';
@@ -133,7 +132,12 @@ async function migrateLegacyKey(): Promise<SavedMeasurement[]> {
   let safeToDrop = true;
   if (carried.length > 0) {
     try {
-      await replaceAllRows(carried.map(rowOf));
+      // ADDED, never "replace the table" (toddler evening 2026-10-02, pass 3).
+      // When the removal below fails the old key is read again on the next
+      // hydrate — the next launch, or the retry after a failed read — and a
+      // replace then DELETED every measurement saved since the first move.
+      // Re-adding the same ids is harmless.
+      for (const r of carried.map(rowOf)) await putRow(r);
     } catch (e) {
       safeToDrop = false;
       console.warn('[measurements] could not re-home the legacy library; keeping the old key:', e);

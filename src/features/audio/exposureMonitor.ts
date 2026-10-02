@@ -791,17 +791,34 @@ export function updateExposureSettings(patch: Partial<ExposureSettings>): Promis
   return written;
 }
 
-export async function getExposureHistory(): Promise<DayRecord[]> {
+/**
+ * Every stored day plus today. With `strict` it REJECTS when the stored days
+ * could not be read (toddler evening 2026-10-02, pass 3): the export used to
+ * share whatever this read fell back to — today alone — as "your exposure
+ * history", over the days still on the device. One damaged day is skipped on
+ * its own; it no longer collapses the whole history to today.
+ */
+export async function getExposureHistory(strict = false): Promise<DayRecord[]> {
   try {
     const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
-    const idx = rawIdx ? (JSON.parse(rawIdx) as string[]) : [];
+    const parsedIdx: unknown = rawIdx ? JSON.parse(rawIdx) : [];
+    const idx = Array.isArray(parsedIdx) ? (parsedIdx as string[]) : [];
     const today = dateKeyOf(new Date());
     const keys = idx.filter((d) => d !== today);
     const rows = await Promise.all(keys.map((k) => AsyncStorage.getItem(DAY_KEY(k))));
-    const out = rows.filter((r): r is string => r != null).map((r) => JSON.parse(r) as DayRecord);
+    const out: DayRecord[] = [];
+    rows.forEach((r, i) => {
+      if (r == null) return;
+      try {
+        out.push(parseDay(JSON.parse(r), keys[i]));
+      } catch {
+        // damaged day — the others still show
+      }
+    });
     if (day) out.push(day);
     return out.sort((a, b) => (a.date < b.date ? 1 : -1));
-  } catch {
+  } catch (e) {
+    if (strict) throw e;
     return day ? [day] : [];
   }
 }
@@ -866,7 +883,9 @@ export async function deleteExposureHistory(): Promise<boolean> {
 
 /** Serialized history for the user's own export (privacy §22). */
 export async function exportExposureHistory(): Promise<string> {
-  const rows = await getExposureHistory();
+  // REJECTS when the stored days could not be read — the screen then says the
+  // export did not complete, rather than sharing today as the whole history.
+  const rows = await getExposureHistory(true);
   return JSON.stringify(
     { exported: new Date().toISOString(), standard: cfg().standard, note: 'Educational exposure estimates — not medical or compliance measurements.', days: rows },
     null,

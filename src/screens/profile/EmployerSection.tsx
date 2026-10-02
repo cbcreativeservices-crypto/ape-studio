@@ -66,6 +66,15 @@ export function EmployerSection() {
   const [loaded, setLoaded] = useState(false);
   const [tax, setTax] = useState<Taxonomy | null>(null);
   const [picked, setPicked] = useState<Record<string, string[]>>({});
+  /**
+   * The employer's OWN choices could not be read (evening hunt 3, 2026-10-02).
+   * `picked` then stays empty, and each save writes a kind's WHOLE list — so
+   * one chip tapped over a failed read replaced every stored choice of that
+   * kind with that one chip. The taxonomy is cached for the run, so this was
+   * the ordinary offline / flaky case: chips drawn, all unlit, all live. The
+   * chips are not offered until the choices they would overwrite are known.
+   */
+  const [interestsFailed, setInterestsFailed] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   /**
    * SAVES RUN ONE AT A TIME, FROM THE LATEST PICKS (bug hunt 2026-09-29). Each
@@ -95,6 +104,7 @@ export function EmployerSection() {
       const [t, mine] = await Promise.all([fetchTaxonomy(), fetchMyEmployerInterests()]);
       setTax(t);
       if (mine) setPicked(mine);
+      else setInterestsFailed(true);
     }
   }, []);
 
@@ -191,7 +201,13 @@ export function EmployerSection() {
 
       {note ? <Text style={styles.warn}>{note}</Text> : null}
 
-      {verified && tax ? (
+      {verified && tax && interestsFailed ? (
+        <Text style={styles.warn}>
+          Couldn’t load what you have already chosen. Check your connection and reopen this screen.
+        </Text>
+      ) : null}
+
+      {verified && tax && !interestsFailed ? (
         <>
           <Row kind="area" title="AREAS YOU HIRE IN" items={tax.areas} />
           <Row kind="role" title="ROLES YOU ARE LOOKING FOR" items={tax.roles} />
