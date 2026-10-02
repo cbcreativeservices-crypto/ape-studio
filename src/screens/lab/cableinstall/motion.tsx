@@ -30,7 +30,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, type StyleProp, type ViewStyle } from 'react-native';
-import { animationsAllowed } from '../../../features/settings/a11y';
+import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
 import Animated, {
   Easing,
@@ -116,7 +116,10 @@ export function useCiMotion() {
   //    draw and ambient loop in this lab. Subscribed OS flag OR our setting —
   //    the same shape PagedLab uses, and the subscription is what re-renders
   //    when the phone setting flips mid-session.
-  const reduceMotion = reduce || !animationsAllowed();
+  //    The app switch is SUBSCRIBED too (pattern hunt P10, 2026-10-02): a
+  //    per-render read missed the toggle until something else re-rendered.
+  const allowed = useAnimationsAllowed();
+  const reduceMotion = reduce || !allowed;
   return useMemo(
     () => ({
       reduce: reduceMotion,

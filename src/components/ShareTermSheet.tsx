@@ -22,6 +22,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from './modalOrientations';
 import { notify } from '../lib/confirm';
+import { useInFlightLatch } from '../lib/latch';
 import { GlassButton } from './GlassButton';
 import { StudioButton } from './StudioButton';
 import { ShareIcon } from './ShareIcon';
@@ -105,6 +106,8 @@ export function ShareTermSheet({
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const captureRef = useRef<View>(null);
+  /** One system share sheet at a time — text or image (pattern P9). */
+  const shareLatch = useInFlightLatch();
 
   // Reset internal state whenever a new share is opened.
   useEffect(() => {
@@ -194,58 +197,64 @@ export function ShareTermSheet({
       // surface as an unhandled rejection; onClose still runs. `busy` greys the
       // share buttons meanwhile, so a double tap cannot stack a second system
       // share sheet (bug hunt 2026-09-30, pass 1) — the image path already did.
-      setBusy(true);
-      void Share.share({ message })
-        .catch(() => {})
-        .finally(() => {
-          setBusy(false);
-          onClose();
-        });
+      // …but `busy` is state: a SAME-FRAME double tap saw it false twice. The
+      // ref latch (pattern P9, 2026-10-02) is claimed inside the tap.
+      void shareLatch.run(() => {
+        setBusy(true);
+        return Share.share({ message })
+          .catch(() => {})
+          .finally(() => {
+            setBusy(false);
+            onClose();
+          });
+      });
     });
 
   const doShareImage = () =>
     confirmLargeThen(() => {
-      setBusy(true);
-      void shareImage
-        .captureAndShare(captureRef.current, multi ? 'Glossary terms' : 'Glossary term')
-        .then((ok) => {
-          if (!ok) {
-            /**
-             * ⛔ DO THE FALLBACK, DO NOT HANG IT OFF A DIALOG'S OK HANDLER.
-             *
-             * The text share used to ride on this notify's OK — so on Android,
-             * where the dialog renders behind the open sheet, the image path
-             * ended in exactly the silence the comment here says it was
-             * written to prevent: no image, no text, no message. (It was fixed
-             * for RN-web's no-op Alert and then re-broken by the Android
-             * window rule.)
-             *
-             * Share first, then say what happened. The notice is now purely
-             * informational, and it is raised AFTER onClose, so nothing is
-             * waiting on a dialog nobody can see.
-             */
-            void Share.share({ message })
-              .catch(() => {})
-              .finally(() => {
-                onClose();
-                notify(
-                  'Shared as text',
-                  'Sharing as an image isn’t available on this device, so this went out as text instead.',
-                );
-              });
-          } else {
+      void shareLatch.run(() => {
+        setBusy(true);
+        return shareImage
+          .captureAndShare(captureRef.current, multi ? 'Glossary terms' : 'Glossary term')
+          .then((ok) => {
+            if (!ok) {
+              /**
+               * ⛔ DO THE FALLBACK, DO NOT HANG IT OFF A DIALOG'S OK HANDLER.
+               *
+               * The text share used to ride on this notify's OK — so on Android,
+               * where the dialog renders behind the open sheet, the image path
+               * ended in exactly the silence the comment here says it was
+               * written to prevent: no image, no text, no message. (It was fixed
+               * for RN-web's no-op Alert and then re-broken by the Android
+               * window rule.)
+               *
+               * Share first, then say what happened. The notice is now purely
+               * informational, and it is raised AFTER onClose, so nothing is
+               * waiting on a dialog nobody can see.
+               */
+              void Share.share({ message })
+                .catch(() => {})
+                .finally(() => {
+                  onClose();
+                  notify(
+                    'Shared as text',
+                    'Sharing as an image isn’t available on this device, so this went out as text instead.',
+                  );
+                });
+            } else {
+              onClose();
+            }
+          })
+          // Without this a rejected capture was an unhandled rejection AND left
+          // the sheet open with no explanation.
+          // Close first: a notice raised over this open sheet is invisible on
+          // Android, and there is nothing left to do inside the sheet anyway.
+          .catch(() => {
             onClose();
-          }
-        })
-        // Without this a rejected capture was an unhandled rejection AND left
-        // the sheet open with no explanation.
-        // Close first: a notice raised over this open sheet is invisible on
-        // Android, and there is nothing left to do inside the sheet anyway.
-        .catch(() => {
-          onClose();
-          notify('Share failed', 'The image could not be prepared. Try sharing as text.');
-        })
-        .finally(() => setBusy(false));
+            notify('Share failed', 'The image could not be prepared. Try sharing as text.');
+          })
+          .finally(() => setBusy(false));
+      });
     });
 
   const doCopy = () =>

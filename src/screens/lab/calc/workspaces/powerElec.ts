@@ -7,7 +7,7 @@
  * QuantityKind for either); the compute() converts to base H/F.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtInt } from '../calcUnits';
+import { fmt, fmtInt, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -231,7 +231,7 @@ const VDROP: Workspace = {
     'are not modelled. AWG area from the standard geometric definition.',
   glossary: ['Voltage', 'Resistance', 'Current', 'AWG', 'Power'],
   fields: [
-    { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
+    { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
     { key: 'len', name: 'RUN LENGTH (one way)', quantity: 'length', placeholder: '30', help: 'One-way cable length; the calc doubles it for the return path.', warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
     { key: 'current', name: 'CURRENT', quantity: 'current', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
     { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
@@ -265,7 +265,7 @@ const VDROP: Workspace = {
         const R = (RHO_CU * 2 * n(v.len)) / A;
         const vd = n(v.current) * R;
         return [
-          `${fmt(n(v.awg))} AWG ≈ ${fmt(A * 1e6)} mm²; round trip = 2 × ${fmt(n(v.len))} m.`,
+          `${fmtInt(n(v.awg))} AWG ≈ ${fmt(A * 1e6)} mm²; round trip = 2 × ${fmt(n(v.len))} m.`,
           `R = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(A)} = ${fmt(R)} Ω.`,
           `Vdrop = ${fmt(n(v.current))} A × ${fmt(R)} Ω = ${fmt(vd)} V (${fmt((vd / n(v.vsrc)) * 100)}% of ${fmt(n(v.vsrc))} V); ${fmt(n(v.current) * n(v.current) * R)} W is lost as heat.`,
         ];
@@ -301,7 +301,7 @@ const VDROP: Workspace = {
           //    derived ONLY from the drop budget: 5 m / 20 A / 120 V / 3% returns 17 AWG,
           //    which on a 20 A branch circuit is a fire. The ampacity check is the
           //    caller's, from the code table — see `note` above.
-          { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: Math.floor(awgReal), quantity: 'number', chainable: false },
+          { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: Math.floor(snapWhole(awgReal)), quantity: 'number', chainable: false },
           { label: 'MAX ALLOWABLE DROP', value: vdMax, quantity: 'voltage', chainable: false },
         ];
       },
@@ -313,7 +313,7 @@ const VDROP: Workspace = {
         return [
           `Allowable drop = ${fmt(n(v.pct))}% × ${fmt(n(v.vsrc))} V = ${fmt(vdMax)} V, so max resistance = ${fmt(Rmax)} Ω.`,
           `Required area = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(Rmax)} = ${fmt(A * 1e6)} mm².`,
-          `That is about ${fmt(awgReal)} AWG — so on DROP ALONE, ${fmtInt(Math.floor(awgReal))} AWG or thicker (a LOWER gauge number).`,
+          `That is about ${fmt(awgReal)} AWG — so on DROP ALONE, ${fmtInt(Math.floor(snapWhole(awgReal)))} AWG or thicker (a LOWER gauge number).`,
           'Now check ampacity against the applicable code table for this circuit and its derating, and use whichever conductor is LARGER. Drop sizing alone can return a conductor that cannot legally or safely carry the current.',
         ];
       },

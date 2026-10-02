@@ -18,6 +18,7 @@
  */
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../theme/legibility';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { ResetIcon } from '../../components/ResetIcon';
 import { TimerIcon } from '../../components/TimerIcon';
@@ -396,7 +397,7 @@ export function PaceReadout({
                 ≥1 step out. Large number + smaller x/faster (user 2026-07-25). */}
             {showTrackPace && tag ? (
               <View style={styles.trackLabelWrap} pointerEvents="none">
-                <Text style={styles.trackPaceLabel} numberOfLines={1}>
+                <Text style={styles.trackPaceLabel} {...fitValue(10)}>
                   <Text style={styles.trackPaceNum}>{tag.num}</Text>
                   {tag.suffix}
                 </Text>
@@ -570,10 +571,10 @@ function TrialHud({
         </View>
         <View style={styles.metricsCol}>
           <Text style={styles.metricsLabel}>AVG PACE · TARGET {trial.targetPace.toFixed(1)}</Text>
-          <Text style={styles.metricLine} numberOfLines={1}>
+          <Text style={styles.metricLine} {...fitValue(12)}>
             <Text style={[styles.metricNum, { color: tint }]}>{trial.averagePace.toFixed(1)}</Text> / {trial.targetPace.toFixed(1)} Q/min
           </Text>
-          <Text style={styles.metricMeta} numberOfLines={1}>
+          <Text style={styles.metricMeta} {...fitValue(11)}>
             PROJECTED: <Text style={{ color: projColor }}>{projStr}</Text> · {trial.needed} to clear
           </Text>
         </View>

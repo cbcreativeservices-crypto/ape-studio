@@ -23,6 +23,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
+import { registerLocalStoreReset } from '../../../features/storage/localStoreRegistry';
 import type { MasteringModuleId } from './masteringContent';
 
 const KEY = 'ape:mastering:v1';
@@ -129,10 +130,27 @@ async function save(s: MasteringProgressState): Promise<void> {
 /** Serialized read-modify-write (the ampProgress queue): two writers in one
  *  tap never clobber each other through a stale copy. */
 let queue: Promise<unknown> = Promise.resolve();
+/** The identity generation (pattern hunt wave 3, 2026-10-02 — the fence
+ *  drumProgress got in wave 2): bumped by the account wipe (registered with
+ *  it below). An update tapped under the departing account that runs — or
+ *  writes — after the wipe lands nowhere: it used to read the departing
+ *  account's copy before the sweep and save it back after it, or apply the
+ *  departing learner's tap to the next account's copy. */
+let generation = 0;
+registerLocalStoreReset(() => {
+  generation++;
+});
 export function updateMasteringProgress(mutate: (s: MasteringProgressState) => void): Promise<MasteringProgressState> {
+  const gen = generation;
   const run = queue.then(async () => {
     const s = await loadMasteringProgress();
     mutate(s);
+    // Never across the account wipe: neither written nor held — and marked
+    // as not-from-the-store, so a host still mounted does not show it.
+    if (gen !== generation) {
+      blockedRead.add(s);
+      return s;
+    }
     await save(s);
     // A BLOCKED read (a guest, or the tier not known yet): the same change
     // lands on the session copy the ledger holds for the sign-in hand-off.
@@ -216,9 +234,10 @@ export function mergeMasteringProgress(stored: MasteringProgressState, session: 
 // copy whatever the screen's save flag says (the ledger writes only for a
 // real account), and never over a copy that could not be read.
 registerSessionCarry<MasteringProgressState>(CARRY_KEY, (session) => {
+  const gen = generation;
   const run = queue.then(async () => {
     const stored = await loadMasteringProgress(true);
-    if (unreadable.has(stored)) return false;
+    if (unreadable.has(stored) || gen !== generation) return false;
     try {
       await AsyncStorage.setItem(KEY, JSON.stringify(mergeMasteringProgress(stored, session)));
       return true;

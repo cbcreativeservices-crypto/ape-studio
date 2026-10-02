@@ -155,5 +155,6 @@ test('Quiz: a stale "Submit failed" OK does not pop the Results that replaced it
 test("Scenarios: only the latest round's save reply sets the saved flag", () => {
   const src = read('screens', 'study', 'ScenariosScreen.tsx');
   assert.match(src, /const token = \+\+roundSaveTokenRef\.current;/);
-  assert.match(src, /if \(token === roundSaveTokenRef\.current\) setRoundSaved\(saved\);/);
+  // Wave 3 (2026-10-02): the same token also gates the "kept on this device" flag.
+  assert.match(src, /if \(token === roundSaveTokenRef\.current\) \{\s*setRoundSaved\(saved\);/);
 });

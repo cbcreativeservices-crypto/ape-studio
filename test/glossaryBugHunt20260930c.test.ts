@@ -23,14 +23,15 @@ test('the glossary popups are DimModal hosts, with no hand-mounted wash', () => 
   const rnImport = screen.match(/import \{([^}]*)\} from 'react-native';/);
   assert.ok(rnImport, 'react-native import not found');
   assert.ok(!/\bModal\b/.test(rnImport[1]), 'Modal is imported from react-native again');
-  assert.match(screen, /import \{ HOST_DISMISS_MS, Modal \} from '\.\.\/\.\.\/components\/DimModal';/);
+  assert.match(screen, /import \{ Modal \} from '\.\.\/\.\.\/components\/DimModal';/);
   assert.ok(!/<LowLightDim \/>/.test(screen), 'a hand-mounted LowLightDim is back inside a Modal');
   assert.equal((screen.match(/<Modal /g) ?? []).length, 3);
 });
 
 test('EXPLORE MEMBERSHIP on the topic gate waits out the prompt fade', () => {
   const gate = screen.slice(screen.indexOf('visible={topicGate}'));
-  assert.match(gate.slice(0, 900), /setTopicGate\(false\);\s*setTimeout\(\(\) => \(navigation as any\)\.navigate\('Paywall'\), HOST_DISMISS_MS\);/);
+  // Through the shared hand-off (pattern P5, 2026-10-02): waits HOST_DISMISS_MS.
+  assert.match(gate.slice(0, 900), /setTopicGate\(false\);\s*paywallHandoff\(\(\) => \(navigation as any\)\.navigate\('Paywall'\)\);/);
 });
 
 test('ALLOW on the NOT NOW card holds the consent dialog back while it mints', () => {

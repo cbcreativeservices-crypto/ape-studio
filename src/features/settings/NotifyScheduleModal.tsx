@@ -9,6 +9,7 @@
  * All edits write immediately (no Save), matching Settings elsewhere.
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../theme/legibility';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { NOTIFY_DAYS, formatClock, shortDay, type NotifyFreqMode } from './store';
@@ -54,7 +55,7 @@ function Stepper({ onDown, onUp, value, label }: { onDown: () => void; onUp: () 
         >
           <Text style={styles.stepGlyph}>−</Text>
         </Pressable>
-        <Text style={styles.stepValue} numberOfLines={1}>{value}</Text>
+        <Text style={styles.stepValue} {...fitValue(20)}>{value}</Text>
         <Pressable
           style={styles.stepBtn}
           onPress={onUp}

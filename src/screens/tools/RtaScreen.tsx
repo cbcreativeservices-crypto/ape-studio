@@ -1083,10 +1083,14 @@ export function RtaScreen({ navigation }: Props) {
         smoothing: String(alpha),
         averaging: 'exponential',
       },
+    }).then((ok) => {
+      // SAVED ✓ only from a true write (pattern hunt wave 3, 2026-10-02): a
+      // save refused during an account switch answered false in silence.
+      if (!ok) return;
+      setJustSaved(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-    setJustSaved(true);
-    if (savedTimer.current) clearTimeout(savedTimer.current);
-    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
   }, [state, frames, fraction, alpha, saveGate, saveLatch]);
 
   const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];

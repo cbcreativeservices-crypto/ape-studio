@@ -38,7 +38,6 @@ import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 // (session expiry, the single-device notice) was refused on iOS and drawn
 // behind it on Android. It also brings the Low-Light wash.
 import { Modal } from '../../components/DimModal';
-import { HOST_DISMISS_MS } from '../../components/DimModal';
 import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -97,7 +96,7 @@ import { customListLocked as customListLockedFn, studyMethodLocked } from '../..
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
-import { confirmDialog, notify } from '../../lib/confirm';
+import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { LOCK_TITLE, lockReason, type LockedPanel, type MethodGates } from '../../features/study/lockReason';
 import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
 import { fetchGlossaryItemsByIds, fetchTopicItems } from '../../features/study/api';
@@ -647,22 +646,10 @@ export function DashboardScreen() {
    * a locked Custom List closed the term list and opened the study-access sheet
    * in the same tap. iOS refuses a presentation while a Modal is still
    * animating away, so both did nothing. Same hand-off as GlossaryScreen: wait
-   * HOST_DISMISS_MS. One pending hand-off at a time — a double tap is one.
+   * HOST_DISMISS_MS. One pending hand-off at a time — a double tap is one —
+   * dropped on unmount: the shared useModalHandoff (pattern P5, 2026-10-02).
    */
-  const handoffTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const afterPopupCloses = useCallback((next: () => void) => {
-    if (handoffTimerRef.current) return;
-    handoffTimerRef.current = setTimeout(() => {
-      handoffTimerRef.current = null;
-      if (mountedRef.current) next();
-    }, HOST_DISMISS_MS);
-  }, []);
-  useEffect(
-    () => () => {
-      if (handoffTimerRef.current) clearTimeout(handoffTimerRef.current);
-    },
-    [],
-  );
+  const afterPopupCloses = useModalHandoff();
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   /** No Supabase session at all (Guest Mode). Drives the red "progress isn't

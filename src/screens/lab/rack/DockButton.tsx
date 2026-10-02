@@ -13,6 +13,7 @@
  */
 import { useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
@@ -129,7 +130,7 @@ export function DockButton({
             {glyph ? <Text style={[styles.glyph, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]}> {glyph}</Text> : null}
           </Text>
           {value ? (
-            <Text style={[styles.value, selected && frameTint ? { color: frameTint } : null]} numberOfLines={1}>
+            <Text style={[styles.value, selected && frameTint ? { color: frameTint } : null]} {...fitValue(14)}>
               {value}
             </Text>
           ) : null}

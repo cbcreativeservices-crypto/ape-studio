@@ -61,7 +61,9 @@ test('an offline recovery-code check does not blame the code', () => {
 test('the form is held through the post-redeem claim, and cannot be left mid-request', () => {
   assert.match(auth, /hold\(\);\s*void claimAndProceed\(toHome\)\.finally\(end\);/);
   assert.match(auth, /navigation\.canGoBack\(\) && mode !== 'recovery' && !busy \? \(/);
-  assert.match(auth, /if \(!busy\) return;\s*const sub = BackHandler\.addEventListener\('hardwareBackPress', \(\) => true\);/);
+  // Focus-scoped hook since pattern hunt P13 (2026-10-02); still: BACK is held while busy.
+  assert.match(auth, /useBackWhileFocused\(busy, swallowBack\);/);
+  assert.match(auth, /const swallowBack = \(\) => true;/);
 });
 
 test('Log out: the queue flush and the sign-out are both bounded', () => {

@@ -106,7 +106,7 @@ export function CalcWorkspaceScreen() {
   const values: CalcValues | null = useMemo(() => buildValues(fields, raw, unitIdx), [fields, raw, unitIdx]);
 
   // Compute once per (function, values) — NOT on every keystroke's re-render.
-  const { outputs, steps, table, computeError, negativeField } = useMemo(() => runCompute(fn, values, fields), [fn, values, fields]);
+  const { outputs, steps, table, computeError, negativeField, inputError } = useMemo(() => runCompute(fn, values, fields), [fn, values, fields]);
 
   // ---- Capped-calc gate (owner 2026-08-13): FREE/LAPSED accounts get 5
   // calculation OUTPUTS per rolling week (server-enforced via calc_consume;
@@ -351,7 +351,9 @@ export function CalcWorkspaceScreen() {
               <Text style={styles.warnText}>
                 {negativeField
                   ? `⚠ ${negativeField} can’t be negative — enter a positive value.`
-                  : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
+                  : inputError
+                    ? `⚠ ${inputError}`
+                    : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
               </Text>
             ) : tierPending ? (
               <Text style={styles.resultPlaceholder}>Checking your account…</Text>
@@ -670,7 +672,7 @@ const styles = StyleSheet.create({
   bezel: { flexDirection: 'row', gap: 1, borderRadius: 8, overflow: 'hidden' },
   bcell: { flex: 1, backgroundColor: '#191a1f', paddingVertical: 5, paddingHorizontal: 8 },
   bcellWide: { flex: 1.7 },
-  bcellK: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: '#74767d' },
+  bcellK: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, color: '#74767d' },
   bcellV: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.4, color: colors.amberLabel, marginTop: 1 },
   bcellVKey: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.purple, marginTop: 1 },
   eyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.amber, marginTop: 6 },

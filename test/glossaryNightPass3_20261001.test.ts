@@ -16,7 +16,8 @@ const read = (p: string) => readFileSync(p, 'utf8');
 
 test('NOT NOW raises the device-key card only after the dialog has closed', () => {
   const src = read('src/screens/glossary/GlossaryScreen.tsx');
-  assert.match(src, /import \{ afterDialogCloses, confirmDialog, notify \} from '\.\.\/\.\.\/lib\/confirm';/);
+  // (+ useModalHandoff since pattern P5, 2026-10-02)
+  assert.match(src, /import \{ afterDialogCloses, confirmDialog, notify(?:, useModalHandoff)? \} from '\.\.\/\.\.\/lib\/confirm';/);
   const i = src.indexOf('cancelText: COPY.glossaryDeviceKeyNotNow,');
   assert.ok(i > 0);
   const handler = src.slice(i, i + 1200);

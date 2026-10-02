@@ -107,8 +107,15 @@ export function CalcProjectsScreen() {
     return unsub;
   }, [navigation, editing, closeEditor]);
 
+  // Only the NEWEST list may land (pattern hunt P2, 2026-10-02): the mount
+  // load and a save's reload overlap; the older list landing last hid the
+  // project just saved.
+  const reloadSeq = useRef(0);
   const reload = useCallback(() => {
-    void workflowStore.listProjects().then(setProjects);
+    const my = ++reloadSeq.current;
+    void workflowStore.listProjects().then((list) => {
+      if (my === reloadSeq.current) setProjects(list);
+    });
   }, []);
   useEffect(reload, [reload]);
 

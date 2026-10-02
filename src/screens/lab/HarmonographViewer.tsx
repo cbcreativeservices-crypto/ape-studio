@@ -19,8 +19,9 @@
  * screen renders the shared ColorWheel glyph and
  * picker content in-tree instead).
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { Modal } from '../../components/DimModal';
 import Svg, { Path } from 'react-native-svg';
 import { ColorWheel } from '../../components/ColorWheelButton';
@@ -117,15 +118,13 @@ export function HarmonographViewer(props: {
       setSpectrumOn(false);
     } else onClose();
   };
-  useEffect(() => {
-    if (!visible) return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      closeLayered();
-      return true;
-    });
-    return () => sub.remove();
+  // Focus-scoped (pattern hunt P13, 2026-10-02).
+  const onViewerBack = useCallback(() => {
+    closeLayered();
+    return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, pickerOpen]);
+  useBackWhileFocused(visible, onViewerBack);
 
   // The figure path — deterministic from the true settings.
   const d = useMemo(() => (visible ? drawingPath(cfg, PATH_SIZE) : ''), [visible, cfg]);

@@ -48,7 +48,7 @@ import { SUPABASE_URL } from '../../lib/env';
 import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
 import { dotRowFit, cardDimsFor, isCompactHeader, type CardDims } from './cardDims';
 import { setLastCourse } from '../../features/dashboard/api';
-import { confirmDialog, notify } from '../../lib/confirm';
+import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
@@ -58,7 +58,6 @@ import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledB
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
-import { HOST_DISMISS_MS } from '../../components/DimModal';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
 import { isFirstAppOpen } from '../../features/startHere/firstOpen';
@@ -1676,14 +1675,10 @@ export function CourseSelectionScreen() {
   // RENEW → Paywall waits out the dialog's own Modal (bug pass 3 2026-09-30):
   // the Paywall is a modal presentation, and iOS refuses one while the
   // confirm dialog is still fading out, so RENEW did nothing. Same hand-off
-  // as GlossaryScreen; one at a time, and dropped if Home unmounts first.
-  const renewHandoff = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(
-    () => () => {
-      if (renewHandoff.current) clearTimeout(renewHandoff.current);
-    },
-    [],
-  );
+  // as GlossaryScreen; one at a time, and dropped if Home unmounts first —
+  // the shared useModalHandoff (pattern P5, 2026-10-02), which also holds the
+  // dialog queue so a queued dialog cannot block the Paywall.
+  const renewHandoff = useModalHandoff();
   const membershipExpired = useCallback(() => {
     // Alert.alert is a no-op on RN-web — a lapsed user's tap did nothing at all
     // on the web preview (QA night 2026-09-01).
@@ -1691,16 +1686,10 @@ export function CourseSelectionScreen() {
       'Membership Expired',
       'Your membership has expired. Renew to open your saved Home cards and continue studying.',
       'Renew',
-      () => {
-        if (renewHandoff.current) return;
-        renewHandoff.current = setTimeout(() => {
-          renewHandoff.current = null;
-          (navigation as any).navigate('Paywall');
-        }, HOST_DISMISS_MS);
-      },
+      () => renewHandoff(() => (navigation as any).navigate('Paywall')),
       { cancelText: 'Not now' },
     );
-  }, [navigation]);
+  }, [navigation, renewHandoff]);
 
   // A user-placed Home topic card → the study area (best-effort; per-topic
   // deep-link is a follow-up). user request 2026-07-22.

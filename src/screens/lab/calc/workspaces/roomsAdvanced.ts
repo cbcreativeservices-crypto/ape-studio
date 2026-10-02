@@ -166,10 +166,10 @@ const DIFFUSER: Workspace = {
     'effects; treat depths as a starting point.',
   glossary: ['Diffusion', 'Reflection', 'Wavelength', 'Comb Filtering', 'Standing wave'],
   fields: [
-    { key: 'N', name: 'PRIME N (well count)', quantity: 'number', placeholder: '7', help: 'Number of wells per period — MUST be prime (7, 11, 13, 17, 23…).', warn: { test: (x) => !isPrime(x), msg: 'N must be a prime number for a quadratic-residue diffuser — QRDs use small primes (7…199).' } },
+    { key: 'N', name: 'PRIME N (well count)', quantity: 'number', nonNegative: true, integer: true, placeholder: '7', help: 'Number of wells per period — MUST be prime (7, 11, 13, 17, 23…).', warn: { test: (x) => !isPrime(x), msg: 'N must be a prime number for a quadratic-residue diffuser — QRDs use small primes (7…199).' } },
     { key: 'f0', name: 'DESIGN (LOW) FREQUENCY', quantity: 'frequency', placeholder: '500', help: 'Lowest frequency you want diffused — sets the deepest well.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'w', name: 'WELL WIDTH', quantity: 'length', defaultUnit: 'cm', placeholder: '5', help: 'Width of each well — sets the high-frequency diffusion limit.', warn: { test: (x) => x <= 0, msg: 'Well width must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
   ],
   functions: [
     {
@@ -257,7 +257,7 @@ const ABSORBER: Workspace = {
     { key: 'depth', name: 'CAVITY DEPTH', quantity: 'length', defaultUnit: 'cm', placeholder: '10', help: 'Depth of the air cavity behind the perforated panel.', warn: { test: (x) => x <= 0, msg: 'Depth must be greater than zero.' } },
     { key: 'thick', name: 'PANEL THICKNESS', quantity: 'length', defaultUnit: 'mm', placeholder: '12', help: 'Thickness of the perforated panel.', warn: { test: (x) => x <= 0, msg: 'Thickness must be greater than zero.' } },
     { key: 'hole', name: 'HOLE DIAMETER', quantity: 'length', defaultUnit: 'mm', placeholder: '8', help: 'Diameter of each perforation.', warn: { test: (x) => x <= 0, msg: 'Hole diameter must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound (Helmholtz).' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound (Helmholtz).' },
   ],
   functions: [
     {

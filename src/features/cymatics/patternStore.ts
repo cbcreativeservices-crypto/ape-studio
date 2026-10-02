@@ -17,7 +17,7 @@
  * The storage adapter is injectable so node:test round-trips the real
  * serialiser without AsyncStorage (see test/cymaticsGallery.test.ts).
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { DEFAULT_LIQUID, type LiquidSpec } from './faraday';
 import { DEFAULT_MEMBRANE, type MembraneSpec } from './membrane';
 import { DEFAULT_PLATE, type PlateSpec } from './plateModes';
@@ -385,13 +385,24 @@ export function patternStore(): PatternStore {
 /** Gallery hook: the list, a reload, and write-through actions. */
 export function usePatterns() {
   const [patterns, setPatterns] = useState<SavedPattern[] | null>(null);
+  // Only the NEWEST read may land (pattern hunt P2, 2026-10-02): the mount
+  // load and a save's reload overlap, and the older list landing last showed a
+  // gallery without the pattern just saved. `alive` keeps an unmounted gallery
+  // from being written to (P11).
+  const seqRef = useRef(0);
+  const aliveRef = useRef(true);
   const reload = useCallback(async () => {
+    const my = ++seqRef.current;
     const list = await patternStore().loadPatterns();
-    setPatterns(list);
+    if (aliveRef.current && my === seqRef.current) setPatterns(list);
     return list;
   }, []);
   useEffect(() => {
+    aliveRef.current = true;
     void reload();
+    return () => {
+      aliveRef.current = false;
+    };
   }, [reload]);
   const upsert = useCallback(
     async (p: SavedPattern) => {

@@ -91,6 +91,7 @@ test('LP4 shell: the entry audio prompt stays away under Low-Light / suppressed 
 test('LP7 ear training: per-play token on the clear-timer, and the chip follows a mute', () => {
   const s = read('src/screens/lab/eartraining/EarModuleScreen.tsx');
   assert.match(s, /const my = \+\+playTokenRef\.current;/);
-  assert.match(s, /if \(my === playTokenRef\.current\) setPlaying\(\(cur\) => \(cur === i \? null : cur\)\);/);
+  // Pattern hunt P10 (2026-10-02): + aliveRef, so a left screen takes no update.
+  assert.match(s, /if \(aliveRef\.current && my === playTokenRef\.current\) setPlaying\(\(cur\) => \(cur === i \? null : cur\)\);/);
   assert.match(s, /useStopWhenSilenced\(playing != null, \(\) => \{/);
 });

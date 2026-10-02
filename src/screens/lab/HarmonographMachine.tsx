@@ -36,6 +36,7 @@
  */
 import { memo, useContext, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { StageAspectReport, StageInFullScreen } from './rack/stageAspect';
 import Svg, {
   Circle,
@@ -444,8 +445,13 @@ export const HarmonographMachine = memo(function HarmonographMachine({
      sheet; an unfreeze resumes the same drawing. */
   const progress = useSharedValue(0);
   const runKeyRef = useRef<unknown[]>([]);
+  // PAUSED OFF SCREEN (pattern hunt P10, 2026-10-02): the endless redraw ran
+  // on the UI thread behind any pushed screen. Blur holds it in place like
+  // FREEZE (same run key → it resumes where it left off) but reports nothing.
+  const focused = useIsFocused();
   useEffect(() => {
     cancelAnimation(progress);
+    if (!focused) return;
     if (frozen) {
       // Report the exact frozen fraction so the viewer can render THIS art.
       onFreezeFraction?.(Math.min(1, Math.max(0, progress.value)));
@@ -470,7 +476,7 @@ export const HarmonographMachine = memo(function HarmonographMachine({
       ),
     );
     return () => cancelAnimation(progress);
-  }, [ink, dDrawMs, progress, frozen, epoch, onFreezeFraction]);
+  }, [ink, dDrawMs, progress, frozen, epoch, onFreezeFraction, focused]);
 
   const M = useDerivedValue(() => motion(progress.value * thetaMax, mode));
 

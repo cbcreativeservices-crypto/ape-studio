@@ -31,7 +31,8 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { BackHandler, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { lockLandscape, lockPortrait } from '../../lib/screenOrientationSafe';
@@ -156,21 +157,21 @@ export function WaveformScreen({ navigation }: Props) {
     const t = setTimeout(() => { setWaveFsOpen(false); setWaveFsClosing(false); }, 700);
     return () => clearTimeout(t);
   }, [waveFsClosing, fsPortrait]);
-  useEffect(() => {
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (wavePopup != null) {
-        setWavePopup(null);
-        return true;
-      }
-      // While closing too — a second BACK mid rotate-out popped the tool.
-      if (waveFsOpen) {
-        if (!waveFsClosing) setWaveFsClosing(true);
-        return true;
-      }
-      return false;
-    });
-    return () => sub.remove();
+  // Focus-scoped (pattern hunt P13, 2026-10-02): VIEW SAVED MEASUREMENTS (or
+  // the Paywall) pushed over an open popup got its BACK eaten here.
+  const onWaveBack = useCallback(() => {
+    if (wavePopup != null) {
+      setWavePopup(null);
+      return true;
+    }
+    // While closing too — a second BACK mid rotate-out popped the tool.
+    if (waveFsOpen) {
+      if (!waveFsClosing) setWaveFsClosing(true);
+      return true;
+    }
+    return false;
   }, [wavePopup, waveFsOpen, waveFsClosing]);
+  useBackWhileFocused(true, onWaveBack);
   // FREEZE: non-null = the FULL engine history held on screen (so the window
   // control still slices real data while frozen). Capture continues (spec §11
   // freeze control) — only the drawing stops updating.
@@ -378,10 +379,14 @@ export function WaveformScreen({ navigation }: Props) {
         clippedRuns: frozen ? displayBuckets.filter((b, i) => b.clipped && !displayBuckets[i - 1]?.clipped).length : clipShown,
         channels: 1,
       },
+    }).then((ok) => {
+      // SAVED ✓ only from a true write (pattern hunt wave 3, 2026-10-02): a
+      // save refused during an account switch answered false in silence.
+      if (!ok) return;
+      setJustSaved(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-    setJustSaved(true);
-    if (savedTimer.current) clearTimeout(savedTimer.current);
-    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
   }, [meter, displayBuckets, shownSec, zoom, windowSec, flags, bucketSec, frozen, clipShown, saveGate, saveLatch]);
 
   // ---- Scope geometry (pure display math over REAL buckets) ----------------

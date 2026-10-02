@@ -25,6 +25,7 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
@@ -325,7 +326,7 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
                 </View>
               )}
               {c.readout ? (
-                <Text style={[s.colReadout, { color: stageTint(c.node) }]} numberOfLines={1}>
+                <Text style={[s.colReadout, { color: stageTint(c.node) }]} {...fitValue(10)}>
                   {c.readout}
                 </Text>
               ) : c.fixed ? (

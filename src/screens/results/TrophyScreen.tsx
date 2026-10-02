@@ -67,6 +67,9 @@ export function TrophyScreen({ navigation, route }: Props) {
   };
 
   useEffect(() => {
+    // Only the CURRENT trophy's icon may land (pattern hunt P2/P11,
+    // 2026-10-02): new params or an unmount retire this read.
+    let alive = true;
     supabase
       .from('achievements')
       .select('icon_url')
@@ -74,11 +77,14 @@ export function TrophyScreen({ navigation, route }: Props) {
       .single()
       .then(
         ({ data }) => {
-          setIconUrl(data?.icon_url ?? null);
+          if (alive) setIconUrl(data?.icon_url ?? null);
         },
         // [47] (2026-09-07): guard the rejection — leave the fallback icon.
         () => {},
       );
+    return () => {
+      alive = false;
+    };
   }, [achievementId]);
 
   useEffect(() => {

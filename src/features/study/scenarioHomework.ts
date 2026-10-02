@@ -19,6 +19,7 @@ import {
   drainScenarioQueue,
   pendingScenarioCount,
   queueScenarioCall,
+  scenarioQueueGeneration,
   type ScenarioPending,
 } from './scenarioQueue';
 
@@ -259,12 +260,22 @@ export async function recordScenarioAnswer(
   questionId: string,
   round: number,
   correct: boolean,
-): Promise<void> {
+): Promise<boolean> {
+  // THE ACCOUNT THIS ANSWER BELONGS TO (pattern hunt wave 3, 2026-10-02): the
+  // two awaits below are network calls, and a sign-out that lands while they
+  // are out used to queue the departing learner's answer under the NEXT
+  // account — the queue is durable and the drain sends it as that account.
+  // Capture the queue's generation first; a moved generation drops it.
+  const gen = scenarioQueueGeneration();
   // Anything already waiting goes first, so order is preserved.
   const stillPending = await flushScenarioQueue();
-  if (stillPending > 0 || !(await sendAnswer(achievementId, questionId, round, correct))) {
-    await queueScenarioCall({ kind: 'answer', achievementId, questionId, round, correct, at: Date.now() });
-  }
+  if (gen !== scenarioQueueGeneration()) return false;
+  if (stillPending === 0 && (await sendAnswer(achievementId, questionId, round, correct))) return true;
+  if (gen !== scenarioQueueGeneration()) return false;
+  // True only when the device accepted the queue write — a `false` here means
+  // the answer is held in memory until the queue can be read, and is lost
+  // if the app closes first (the screen says so).
+  return queueScenarioCall({ kind: 'answer', achievementId, questionId, round, correct, at: Date.now() });
 }
 
 /**
@@ -284,14 +295,21 @@ export async function recordScenarioAnswer(
 export async function completeScenarioRound(
   achievementId: string,
   round: number,
-): Promise<{ roundsCompleted: number; saved: boolean }> {
+): Promise<{ roundsCompleted: number; saved: boolean; queued?: boolean }> {
+  // Same generation fence as recordScenarioAnswer (wave 3, 2026-10-02).
+  const gen = scenarioQueueGeneration();
   const stillPending = await flushScenarioQueue();
+  if (gen !== scenarioQueueGeneration()) return { roundsCompleted: round, saved: false, queued: false };
   if (stillPending === 0) {
     const n = await sendComplete(achievementId, round);
     if (n !== null) return { roundsCompleted: n, saved: true };
+    if (gen !== scenarioQueueGeneration()) return { roundsCompleted: round, saved: false, queued: false };
   }
-  await queueScenarioCall({ kind: 'complete', achievementId, round, at: Date.now() });
-  return { roundsCompleted: round, saved: false };
+  // `queued` (wave 3): did the device KEEP the round for the retry? False
+  // means it is held in memory only until the queue can be read — the
+  // report must not say "saved on this device".
+  const queued = await queueScenarioCall({ kind: 'complete', achievementId, round, at: Date.now() });
+  return { roundsCompleted: round, saved: false, queued };
 }
 
 /** Re-shuffle a fresh 3-round cycle after all 3 are done. Returns the new plan. */

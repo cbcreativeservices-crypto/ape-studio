@@ -289,7 +289,9 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
     setMicPaused(true);
     stop();
   }, [stop]);
-  useToolAutoStart(state, onStart);
+  // `stop` opts into the tools' background release + resume (pattern hunt
+  // P20, 2026-10-02): without it Home left the mic open behind the app.
+  useToolAutoStart(state, onStart, stop);
 
   const bands = frames.bands;
   const anyUnresolvable = bands != null && bands.resolvable.some((r) => !r);

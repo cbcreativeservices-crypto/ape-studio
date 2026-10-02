@@ -58,16 +58,22 @@ export function StudyFsOverlay({
     // write "1" over a stored "2" — so a storage hiccup brought a retired
     // guide back, twice more, every time. Now nothing shows and nothing is
     // written; the next mount reads again.
+    // `alive` (pattern hunt P2, 2026-10-02): a read for the PREVIOUS key that
+    // lands after the key changed must not set this key's count.
+    let alive = true;
     AsyncStorage.getItem(guideKey)
       .then((v) => {
-        if (v) guideCount.current = Number(v) || 0;
+        if (alive && v) guideCount.current = Number(v) || 0;
       })
       .catch(() => {
-        guideCount.current = 2;
+        if (alive) guideCount.current = 2;
       })
       .finally(() => {
-        guideLoaded.current = true;
+        if (alive) guideLoaded.current = true;
       });
+    return () => {
+      alive = false;
+    };
   }, [guideKey]);
 
   useEffect(() => {

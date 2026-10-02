@@ -41,6 +41,12 @@ export function CareerFinderResultsScreen() {
   // first, so the note someone had just written was gone next visit.
   const noteRef = useRef(note);
   noteRef.current = note;
+  // The LAST feedback write refused by the device (pattern hunt wave 3,
+  // 2026-10-02, class P6): the note under the form said "Saved on this
+  // device" whatever happened to the write.
+  const [fbUnsaved, setFbUnsaved] = useState(false);
+  const keepFeedback = (answer: FeedbackAnswer, text: string) =>
+    setCareerFinderFeedback(answer, text).then((ok) => setFbUnsaved(!ok), () => setFbUnsaved(true));
   useEffect(
     () => () => {
       const fb = getCareerFinder().feedback;
@@ -66,7 +72,7 @@ export function CareerFinderResultsScreen() {
   const changeAnswers = () => { setQuestionIndex(0); navigation.replace('CareerFinderQuiz'); };
   const retake = () => confirmReset(() => { resetCareerFinder(); setQuestionIndex(0); navigation.replace('CareerFinderQuiz'); });
 
-  const feedback = (answer: FeedbackAnswer) => setCareerFinderFeedback(answer, note);
+  const feedback = (answer: FeedbackAnswer) => void keepFeedback(answer, note);
   const mailFeedback = () => {
     sendFeedback('suggestion', 'Audio Career Finder (Beta)', {
       Screen: 'Career Finder results',
@@ -244,14 +250,14 @@ export function CareerFinderResultsScreen() {
             <TextInput
               value={note}
               onChangeText={setNote}
-              onBlur={() => setCareerFinderFeedback(rec.feedback!.answer, note)}
+              onBlur={() => void keepFeedback(rec.feedback!.answer, note)}
               placeholder="Anything it got wrong, missed, or named badly."
               placeholderTextColor="#5f6068"
               multiline
               style={styles.fbInput}
               accessibilityLabel="What did the Career Finder misunderstand"
             />
-            <Body muted>Saved on this device. To send it to the Academy, use the button — it opens your mail app with the answer filled in, and you decide whether to send.</Body>
+            <Body muted>{fbUnsaved ? 'This device could not save your feedback — it is on screen for now and will be gone when you close the app. You can still send it to the Academy with the button.' : 'Saved on this device. To send it to the Academy, use the button — it opens your mail app with the answer filled in, and you decide whether to send.'}</Body>
             <CtaButton label="SEND TO THE ACADEMY" onPress={mailFeedback} hint="Opens your mail app. Nothing is sent until you send it." />
           </>
         ) : null}

@@ -14,7 +14,7 @@
 import { useEffect } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
-import { animationsAllowed } from '../settings/a11y';
+import { useAnimationsAllowed } from '../settings/a11y';
 
 export const ATTENTION_PULSE_MS = 4000; // owner 2026-09-05: was 5 s, sped up to 4 s
 
@@ -24,9 +24,12 @@ export const PULSE_OPACITY: [number, number] = [0.42, 1];
 /** 0 (dim) → 1 (bright) → 0, forever. */
 export function useAttentionPulse(run: boolean = true, period: number = ATTENTION_PULSE_MS) {
   const t = useSharedValue(1);
-  // Read on every render (not once at mount): the reduce-motion setting and
-  // the OS flag hydrate after first paint, and a stale read froze the pulse.
-  const allowed = animationsAllowed();
+  // SUBSCRIBED, not read per render (pattern hunt P10, 2026-10-02): the
+  // reduce-motion setting and the OS flag hydrate after first paint, and
+  // Settings is a modal — a per-render read only noticed a change when
+  // something else re-rendered this host, so the pulse kept breathing at a
+  // user who had just turned animations off.
+  const allowed = useAnimationsAllowed();
   useEffect(() => {
     cancelAnimation(t);
     if (!run || !allowed) {

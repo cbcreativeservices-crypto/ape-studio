@@ -48,7 +48,10 @@ test('Mixing: a guest\'s focal point and priorities are never written', () => {
   const toggle = s.slice(s.indexOf('const toggle = useCallback((id: string) => {'));
   assert.match(toggle, /^const toggle = useCallback\(\(id: string\) => \{\s*if \(guestRef\.current\) \{[\s\S]*?prioritiesSession = togglePriority\([^\n]*\n[\s\S]*?return;\s*\}/);
   assert.ok(toggle.indexOf('return;') < toggle.indexOf('prioritiesStore.mutate('), 'the store write must come after the guest return');
-  assert.equal((s.match(/guestRef\.current = useLabEndGuest\(\);/g) ?? []).length, 2);
+  // Wave 3 (2026-10-02, closer A5): the reading is the TRI-STATE tier, so the
+  // window before the first entitlement read lands is "session only" too —
+  // useLabEndGuest() read false there and a tap wrote a guest's choice.
+  assert.equal((s.match(/guestRef\.current = !persistAllowed\(useTier\(\)\);/g) ?? []).length, 2);
 });
 
 test('Mic Selection: a cold-start guest\'s first lesson is not persisted before the tier lands', () => {

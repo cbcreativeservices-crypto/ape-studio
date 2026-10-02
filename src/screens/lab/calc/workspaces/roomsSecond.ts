@@ -216,7 +216,7 @@ const BOUNDARY: Workspace = {
   glossary: ['Comb Filtering', 'Reflection', 'Interference', 'Phase', 'Standing wave', 'Wavelength'],
   fields: [
     { key: 'd', name: 'DISTANCE TO BOUNDARY', quantity: 'length', defaultUnit: 'm', placeholder: '0.6', help: 'Driver-to-surface distance (wall, floor, or console).', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'fNull', name: 'TARGET NULL FREQUENCY', quantity: 'frequency', placeholder: '150', help: 'A cancellation frequency you want to place (or avoid).', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [
@@ -309,7 +309,7 @@ const REFLECTION: Workspace = {
   fields: [
     { key: 'dDirect', name: 'DIRECT PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.3', help: 'Straight-line distance from source to listener/mic.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'dReflected', name: 'REFLECTED PATH', quantity: 'length', defaultUnit: 'm', placeholder: '0.75', help: 'Total distance the reflection travels: source → surface → listener.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'fNull', name: 'TARGET FIRST-NULL FREQUENCY', quantity: 'frequency', placeholder: '400', help: 'A first-notch frequency you want the geometry to produce.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
   ],
   functions: [

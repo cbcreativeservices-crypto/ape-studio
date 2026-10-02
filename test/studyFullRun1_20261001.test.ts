@@ -99,7 +99,8 @@ describe('Time Trial: a pass is not reported as cleared until the server has it'
 describe('Credential share: SHARE QR never sends a card with no QR', () => {
   it('the QR share refuses (and reloads) while the token has not arrived', () => {
     const src = read('features', 'credentials', 'CredentialShareRow.tsx');
-    const at = src.indexOf('const qr = useCallback(');
+    // `qrNow`: the body the latched `qr` press runs (pattern P9, 2026-10-02).
+    const at = src.indexOf('const qrNow = useCallback(');
     assert.ok(at > 0);
     const guard = src.indexOf('if (!token)', at);
     const capture = src.indexOf('captureAndShare(', at);

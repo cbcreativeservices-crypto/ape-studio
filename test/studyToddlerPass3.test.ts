@@ -13,11 +13,10 @@ const read = (...p: string[]) => readFileSync(join(process.cwd(), 'src', ...p), 
 
 test('Dashboard: UNLOCK waits for the study-access sheet to go before presenting the Paywall', () => {
   const src = read('screens', 'dashboard', 'DashboardScreen.tsx');
-  assert.match(src, /import \{ HOST_DISMISS_MS \} from '\.\.\/\.\.\/components\/DimModal';/);
-  // One pending hand-off at a time, cleared on unmount.
-  assert.match(src, /if \(handoffTimerRef\.current\) return;\s*handoffTimerRef\.current = setTimeout\(/);
-  assert.match(src, /if \(mountedRef\.current\) next\(\);\s*\}, HOST_DISMISS_MS\);/);
-  assert.match(src, /if \(handoffTimerRef\.current\) clearTimeout\(handoffTimerRef\.current\);/);
+  // One pending hand-off at a time, waiting HOST_DISMISS_MS, cleared on
+  // unmount — the shared useModalHandoff since pattern P5 (2026-10-02); its
+  // behaviour is proven in test/patternP5_20261002.
+  assert.match(src, /const afterPopupCloses = useModalHandoff\(\);/);
   // The Paywall is never navigated to in the same tap that closes the sheet.
   assert.match(src, /setUpgradeOpen\(false\);\s*\/\/[^\n]*\n\s*afterPopupCloses\(\(\) => \(navigation as any\)\.navigate\('Paywall'\)\);/);
   assert.ok(!/setUpgradeOpen\(false\);\s*\(navigation as any\)\.navigate\('Paywall'\)/.test(src));

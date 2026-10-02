@@ -38,6 +38,18 @@ export type FieldDef = {
    *  a list of impedances or durations. A negative entry is an ERROR exactly
    *  like a negative frequency (see calcUnits NON_NEGATIVE_KINDS). */
   nonNegative?: boolean;
+  /** P16 SIGN CLASS (pattern hunt 2026-10-02): on a signed kind, a negative is
+   *  a real value HERE — a level, a gain, a phase, a transposition, a loss
+   *  budget read through |x|. Every field must resolve to a class (its kind,
+   *  `nonNegative`, or this) — test/patternP16_20261002 fails one that does not. */
+  signed?: boolean;
+  /** P16 — a whole-number COUNT (channels, taps, frames, buffer size, a MIDI
+   *  note, a wire gauge). A fractional entry is an ERROR, never a confident
+   *  answer for 2.5 speakers (see calcUnits `domainError`). */
+  integer?: boolean;
+  /** P16 — inclusive bounds of a RANGED value, in BASE units (MIDI 0–127, a
+   *  0/1 flag, AWG −3…40 where −1 is 2/0). Outside the range is an ERROR. */
+  range?: readonly [number, number];
 };
 
 export type OutputVal =

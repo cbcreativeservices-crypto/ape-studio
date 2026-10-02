@@ -39,6 +39,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../theme/legibility';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
@@ -492,10 +493,14 @@ export function SpectrogramScreen({ navigation }: Props) {
         dynamicRangeDb: dynRange,
         fftPreset: FFT_PRESET,
       },
+    }).then((ok) => {
+      // SAVED ✓ only from a true write (pattern hunt wave 3, 2026-10-02): a
+      // save refused during an account switch answered false in silence.
+      if (!ok) return;
+      setJustSaved(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-    setJustSaved(true);
-    if (savedTimer.current) clearTimeout(savedTimer.current);
-    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
   }, [state, history, frames, dynRange, saveGate, saveLatch]);
 
   // ---- FULL SCREEN (owner 2026-09-29) — the audio tools' landscape full
@@ -893,7 +898,7 @@ export function SpectrogramScreen({ navigation }: Props) {
         ]}
         renderDisplay={renderFsSpectro}
         footer={
-          <Text style={styles.fsBadge} numberOfLines={1}>
+          <Text style={styles.fsBadge} {...fitValue(12)}>
             relative dB · uncalibrated approximate · time → · ~{((HISTORY_COLS / speed) * SPECTRO_POLL_MS / 1000).toFixed(0)} s visible
           </Text>
         }

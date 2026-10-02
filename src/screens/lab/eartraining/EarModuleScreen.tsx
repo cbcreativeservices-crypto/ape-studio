@@ -363,7 +363,8 @@ export function EarModuleScreen() {
       const buf = trial.clips[i].buf;
       const ms = (isStereo(buf) ? buf.l.length : buf.length) / 48;
       setTimeout(() => {
-        if (my === playTokenRef.current) setPlaying((cur) => (cur === i ? null : cur));
+        // A screen left mid-clip takes no update (pattern hunt P10, 2026-10-02).
+        if (aliveRef.current && my === playTokenRef.current) setPlaying((cur) => (cur === i ? null : cur));
       }, ms + 60);
     },
     [trial, phase, plays, playing, replayCap, requestAudioOutput],

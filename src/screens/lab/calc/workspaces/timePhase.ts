@@ -4,7 +4,7 @@
  * Authored to the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtInt, speedOfSoundAir } from '../calcUnits';
+import { fmt, fmtCount, fmtInt, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 /** An angle folded into [0, 360) — −90 → 270, 450 → 90 (NaN stays NaN). */
@@ -13,10 +13,7 @@ const wrap360 = (deg: number) => ((deg % 360) + 360) % 360;
  *  (full-app run 2, 2026-10-01): 9 ms × 48 kHz = 431.99999999999994, so
  *  ROUNDED DOWN read 431 samples for an exact 432; 11 ms at 1 kHz read
  *  "10 full cycles + 360°" for exactly 11 cycles. Same 1e-9 rule as wholeCount. */
-const denoise = (x: number) => {
-  const r = Math.round(x);
-  return Math.abs(x - r) <= 1e-9 * Math.max(1, Math.abs(x)) ? r : x;
-};
+const denoise = snapWhole; // the shared P17 helper (calcUnits), pattern hunt 2026-10-02
 
 /* ------------------------------------------------------------------ */
 /* 1 · Distance · Delay · Samples                                      */
@@ -65,6 +62,7 @@ const WS_DISTDELAY: Workspace = {
       key: 'temp',
       name: 'AIR TEMPERATURE',
       quantity: 'temperature',
+      signed: true,
       placeholder: '20',
       help: 'Sets the speed of sound in the classroom dry-air model.',
     },
@@ -187,7 +185,7 @@ const WS_DISTDELAY: Workspace = {
         const t = N / sr;
         const c = speedOfSoundAir(n(v.temp));
         return [
-          `t = ${fmt(N)} samples ÷ ${fmt(sr)} Hz = ${fmt(t)} s = ${fmt(t * 1000)} ms.`,
+          `t = ${fmtCount(N)} samples ÷ ${fmt(sr)} Hz = ${fmt(t)} s = ${fmt(t * 1000)} ms.`,
           `In air at ${fmt(n(v.temp))} °C that is ${fmt(t * c)} m — the mic-move that would cause the same offset.`,
         ];
       },
@@ -214,7 +212,7 @@ const WS_DISTDELAY: Workspace = {
         const sr = n(v.sr);
         const N = denoise(t * sr);
         return [
-          `N = ${fmt(t * 1000)} ms × ${fmt(sr)} Hz = ${fmt(N)} samples.`,
+          `N = ${fmt(t * 1000)} ms × ${fmt(sr)} Hz = ${fmtCount(N)} samples.`,
           `A sample-only DSP must pick a whole number: nearest is ${fmtInt(N)}, leaving ${fmt(Math.abs(Math.round(N) - N) / sr * 1e6)} µs of residual — usually negligible, but it is why fractional-delay processing exists.`,
         ];
       },
@@ -293,6 +291,7 @@ const WS_PHASE: Workspace = {
       key: 'phi',
       name: 'PHASE ANGLE',
       quantity: 'angle',
+      signed: true,
       placeholder: '90',
       help: 'Phase offset in degrees at the chosen frequency.',
     },
@@ -307,6 +306,7 @@ const WS_PHASE: Workspace = {
       key: 'temp',
       name: 'AIR TEMPERATURE',
       quantity: 'temperature',
+      signed: true,
       placeholder: '20',
       help: 'Sets the speed of sound for converting path difference to time.',
     },
@@ -323,7 +323,7 @@ const WS_PHASE: Workspace = {
       keySymbols: ['φ', '·', 'f', 'Δ'],
       compute: (v) => {
         const total = 360 * denoise(n(v.f) * n(v.dt));
-        const cycles = Math.floor(total / 360);
+        const cycles = Math.floor(snapWhole(total / 360));
         return [
           { label: 'PHASE (WRAPPED 0–360°)', value: ((total % 360) + 360) % 360, quantity: 'angle' },
           { label: 'FULL CYCLES LATE', value: cycles, quantity: 'number', chainable: false },
@@ -336,7 +336,7 @@ const WS_PHASE: Workspace = {
         const total = 360 * denoise(f * dt);
         return [
           `One cycle at ${fmt(f)} Hz lasts ${fmt(1000 / f)} ms; ${fmt(dt * 1000)} ms is ${fmt(f * dt)} of those cycles.`,
-          `φ = 360° × ${fmt(f)} × ${fmt(dt)} s = ${fmt(total)}° total = ${fmtInt(Math.floor(total / 360))} full cycle(s) plus ${fmt(((total % 360) + 360) % 360)}°.`,
+          `φ = 360° × ${fmt(f)} × ${fmt(dt)} s = ${fmt(total)}° total = ${fmtInt(Math.floor(snapWhole(total / 360)))} full cycle(s) plus ${fmt(((total % 360) + 360) % 360)}°.`,
         ];
       },
     },
@@ -492,6 +492,7 @@ const WS_COMB: Workspace = {
       key: 'temp',
       name: 'AIR TEMPERATURE',
       quantity: 'temperature',
+      signed: true,
       placeholder: '20',
       help: 'Sets the speed of sound for converting the path difference to a delay.',
     },
@@ -623,6 +624,7 @@ const WS_LATENCY: Workspace = {
       key: 'buf',
       name: 'BUFFER SIZE',
       quantity: 'samples',
+      integer: true,
       placeholder: '128',
       help: 'Samples per processing block (32, 64, 128, 256, 512…).',
       warn: { test: (x) => x > 4096, msg: 'Unusually large buffer — typical audio settings are 32–2048 samples.' },
@@ -640,6 +642,7 @@ const WS_LATENCY: Workspace = {
       key: 'inBuf',
       name: 'INPUT BUFFER',
       quantity: 'samples',
+      integer: true,
       placeholder: '128',
       help: 'Buffer on the way IN (capture side).',
     },
@@ -647,6 +650,7 @@ const WS_LATENCY: Workspace = {
       key: 'outBuf',
       name: 'OUTPUT BUFFER',
       quantity: 'samples',
+      integer: true,
       placeholder: '128',
       help: 'Buffer on the way OUT (playback side) — often equal to the input buffer.',
     },
@@ -695,7 +699,7 @@ const WS_LATENCY: Workspace = {
         const N = n(v.buf);
         const sr = n(v.sr);
         return [
-          `t = ${fmt(N)} samples ÷ ${fmt(sr)} Hz = ${fmt((N / sr) * 1000)} ms per buffer.`,
+          `t = ${fmtCount(N)} samples ÷ ${fmt(sr)} Hz = ${fmt((N / sr) * 1000)} ms per buffer.`,
           `The computer fills ${fmt(sr / N)} of these buffers every second — smaller buffers mean less delay but more frequent (and riskier) processing deadlines.`,
         ];
       },
@@ -728,8 +732,8 @@ const WS_LATENCY: Workspace = {
         const tout = n(v.outBuf) / sr;
         const rt = tin + tout + n(v.proc);
         return [
-          `Input buffer: ${fmt(n(v.inBuf))} ÷ ${fmt(sr)} = ${fmt(tin * 1000)} ms. Output buffer: ${fmt(n(v.outBuf))} ÷ ${fmt(sr)} = ${fmt(tout * 1000)} ms.`,
-          `Round trip = ${fmt(tin * 1000)} + ${fmt(tout * 1000)} + ${fmt(n(v.proc) * 1000)} ms processing = ${fmt(rt * 1000)} ms (${fmt(rt * sr)} samples).`,
+          `Input buffer: ${fmtCount(n(v.inBuf))} ÷ ${fmt(sr)} = ${fmt(tin * 1000)} ms. Output buffer: ${fmtCount(n(v.outBuf))} ÷ ${fmt(sr)} = ${fmt(tout * 1000)} ms.`,
+          `Round trip = ${fmt(tin * 1000)} + ${fmt(tout * 1000)} + ${fmt(n(v.proc) * 1000)} ms processing = ${fmt(rt * 1000)} ms (${fmtCount(rt * sr)} samples).`,
           `This is what a performer monitoring through the DAW actually feels — roughly like standing ${fmt(rt * 343)} m from their own voice.`,
         ];
       },
@@ -813,6 +817,7 @@ const WS_FFT: Workspace = {
       key: 'N',
       name: 'FFT SIZE',
       quantity: 'samples',
+      integer: true,
       placeholder: '4096',
       help: 'Points in the transform — usually a power of two (1024, 4096, 16384…).',
       warn: {
@@ -872,8 +877,8 @@ const WS_FFT: Workspace = {
         const sr = n(v.sr);
         const f = n(v.fInterest);
         return [
-          `Bin spacing Δf = ${fmt(sr)} Hz ÷ ${fmt(N)} points = ${fmt(sr / N)} Hz between bins.`,
-          `The transform looks at ${fmt(N)} ÷ ${fmt(sr)} = ${fmt((N / sr) * 1000)} ms of signal at a time.`,
+          `Bin spacing Δf = ${fmt(sr)} Hz ÷ ${fmtCount(N)} points = ${fmt(sr / N)} Hz between bins.`,
+          `The transform looks at ${fmtCount(N)} ÷ ${fmt(sr)} = ${fmt((N / sr) * 1000)} ms of signal at a time.`,
           `${fmt(f)} Hz completes ${fmt((f * N) / sr)} cycles inside that window — the FFT needs at least about one full cycle in the window before it can place a component at all.`,
         ];
       },
@@ -894,7 +899,7 @@ const WS_FFT: Workspace = {
         // read "— points" beside a confident "ACTUAL RESOLUTION 0 Hz".
         if (!(df > 0) || !(sr > 0)) throw new Error('resolution and sample rate must be greater than zero');
         const N = sr / df;
-        const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, N))));
+        const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, snapWhole(N)))));
         return [
           { label: 'MINIMUM FFT SIZE', value: N, quantity: 'samples', chainable: false },
           { label: 'NEXT POWER OF TWO', text: `${fmtInt(pow2)} points` },
@@ -906,9 +911,9 @@ const WS_FFT: Workspace = {
         const sr = n(v.sr);
         const df = n(v.df);
         const N = sr / df;
-        const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, N))));
+        const pow2 = Math.pow(2, Math.ceil(Math.log2(Math.max(1, snapWhole(N)))));
         return [
-          `N = ${fmt(sr)} Hz ÷ ${fmt(df)} Hz = ${fmt(N)} points minimum.`,
+          `N = ${fmt(sr)} Hz ÷ ${fmt(df)} Hz = ${fmtCount(N)} points minimum.`,
           `FFTs want powers of two, so round UP to ${fmtInt(pow2)}: actual spacing = ${fmt(sr)} ÷ ${fmtInt(pow2)} = ${fmt(sr / pow2)} Hz, with a ${fmt((pow2 / sr) * 1000)} ms window.`,
           `Rounding up buys finer bins at the cost of a longer window — check that the sound you are analyzing lasts at least that long.`,
         ];
@@ -938,7 +943,7 @@ const WS_FFT: Workspace = {
           {
             label: 'THE TRADE',
             text:
-              `With ${fmt(N)} points at ${fmt(sr)} Hz you resolve frequencies ${fmt(df)} Hz apart but ` +
+              `With ${fmtCount(N)} points at ${fmt(sr)} Hz you resolve frequencies ${fmt(df)} Hz apart but ` +
               `average ${fmt(T * 1000)} ms of time per frame — double N for ${fmt(df / 2)} Hz bins and you ` +
               `smear ${fmt(T * 2000)} ms; halve it for ${fmt(T * 500)} ms frames and bins widen to ${fmt(df * 2)} Hz.`,
           },
@@ -948,7 +953,7 @@ const WS_FFT: Workspace = {
         const N = n(v.N);
         const sr = n(v.sr);
         return [
-          `Δf = ${fmt(sr)} ÷ ${fmt(N)} = ${fmt(sr / N)} Hz; T = ${fmt(N)} ÷ ${fmt(sr)} = ${fmt((N / sr) * 1000)} ms.`,
+          `Δf = ${fmt(sr)} ÷ ${fmtCount(N)} = ${fmt(sr / N)} Hz; T = ${fmtCount(N)} ÷ ${fmt(sr)} = ${fmt((N / sr) * 1000)} ms.`,
           `Δf × T = ${fmt((sr / N) * (N / sr))} — always exactly 1. Frequency detail is bought with time, and time detail with frequency; the FFT size only chooses WHERE on that line you sit.`,
         ];
       },

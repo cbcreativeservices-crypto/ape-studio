@@ -4,7 +4,7 @@
  * Consolidates spec calculators 1, 2, 3, 4 and 12 (owner inventory 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, speedOfSoundAir } from '../calcUnits';
+import { fmt, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -39,7 +39,7 @@ export const WS_WAVE: Workspace = {
   fields: [
     { key: 'f', name: 'FREQUENCY', quantity: 'frequency', placeholder: '100', help: 'Cycles per second of the tone or band of interest.' },
     { key: 't', name: 'PERIOD', quantity: 'time', defaultUnit: 'ms', placeholder: '10', help: 'Time for ONE complete cycle.' },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
     { key: 'dist', name: 'DISTANCE', quantity: 'length', placeholder: '3.43', help: 'A physical distance — boundary gap, driver spacing, room dimension.' },
     {
       key: 'fKnown',
@@ -202,7 +202,9 @@ export const WS_WAVE: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const lam = c / n(v.fKnown);
         const cycles = n(v.dist) / lam;
-        const frac = cycles - Math.floor(cycles);
+        // Whole up to float noise is whole (P17): 2.9999999999999996 cycles is a
+        // 0° residual, not 360°.
+        const frac = snapWhole(cycles) - Math.floor(snapWhole(cycles));
         return [
           { label: 'CYCLES IN THE DISTANCE', value: cycles, quantity: 'number', chainable: false },
           { label: 'TOTAL PHASE ROTATION', value: cycles * 360, quantity: 'angle', chainable: false },
@@ -216,7 +218,7 @@ export const WS_WAVE: Workspace = {
         const cycles = n(v.dist) / lam;
         return [
           `λ = ${fmt(c)} ÷ ${fmt(f)} = ${fmt(lam)} m.`,
-          `${fmt(n(v.dist))} m ÷ ${fmt(lam)} m = ${fmt(cycles)} cycles; the fraction left over (${fmt((cycles % 1) * 360)}°) is the phase offset a second arrival from this path difference carries at ${fmt(f)} Hz.`,
+          `${fmt(n(v.dist))} m ÷ ${fmt(lam)} m = ${fmt(cycles)} cycles; the fraction left over (${fmt((snapWhole(cycles) - Math.floor(snapWhole(cycles))) * 360)}°) is the phase offset a second arrival from this path difference carries at ${fmt(f)} Hz.`,
         ];
       },
     },

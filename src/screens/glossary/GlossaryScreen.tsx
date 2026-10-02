@@ -27,7 +27,7 @@ import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
  * appeared, and the app's dialog queue stuck behind it. DimModal carries the
  * wash itself, so the hand-mounted ones are gone.
  */
-import { HOST_DISMISS_MS, Modal } from '../../components/DimModal';
+import { Modal } from '../../components/DimModal';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -53,7 +53,7 @@ import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { COPY } from '../../lib/copy';
 import { useCoachMark } from '../../lib/coachMark';
 import { sendFeedback } from '../../lib/feedback';
-import { afterDialogCloses, confirmDialog, notify } from '../../lib/confirm';
+import { afterDialogCloses, confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { fetchCorpusTerms, fetchDefinitionsFor, yieldToUi } from '../../features/glossary/corpusFetch';
 import { cancelGlossaryPrefetch } from '../../features/glossary/offlinePrefetch';
 import {
@@ -1514,6 +1514,10 @@ ${COPY.glossaryFreeAllowance}`,
   // The lock stands aside while GET ACADEMY MEMBERSHIP hands over to the
   // Paywall (see lockOverlay); re-armed every time the Glossary regains focus.
   const [lockHandoff, setLockHandoff] = useState(false);
+  // Every popup → Paywall hand-off here (the lock, the topic gate) goes through
+  // the shared useModalHandoff (pattern P5, 2026-10-02): it waits out the
+  // popup's fade, holds the dialog queue, runs once and is dropped on unmount.
+  const paywallHandoff = useModalHandoff();
   const isFocused = useIsFocused();
   useFocusEffect(
     useCallback(() => {
@@ -3018,10 +3022,7 @@ ${COPY.glossaryFreeAllowance}`,
         // Close the lock FIRST and present the Paywall once its dismissal has
         // finished — iOS refuses a presentation while a Modal animates away.
         setLockHandoff(true);
-        setTimeout(
-          () => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall'),
-          HOST_DISMISS_MS,
-        );
+        paywallHandoff(() => (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall'));
       }}
       onExpired={() => {
         // Window elapsed while sitting on the lock → re-check; if the user now
@@ -4053,7 +4054,7 @@ ${COPY.glossaryFreeAllowance}`,
           // modal presentation, and iOS refuses one while this prompt's own
           // Modal is still fading out — EXPLORE MEMBERSHIP did nothing.
           setTopicGate(false);
-          setTimeout(() => (navigation as any).navigate('Paywall'), HOST_DISMISS_MS);
+          paywallHandoff(() => (navigation as any).navigate('Paywall'));
         }}
       />
 

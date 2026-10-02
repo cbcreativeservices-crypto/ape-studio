@@ -27,6 +27,7 @@
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import {
   AlphaType,
   Canvas,
@@ -753,7 +754,7 @@ export function LiquidView(p: LiquidViewProps) {
               the LEFT rim instead (it used to run off the right edge). */}
           <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + rig.dishHalfW + 6, maxWidth: width - (rig.cx + rig.dishHalfW + 12), top: rig.dishRimY - 2 }]}>DISH</Text>
           <Text
-            numberOfLines={1}
+            {...fitValue(12)}
             style={[
               styles.lblR,
               { right: width - (rig.cx - rig.dishHalfW) + 6, maxWidth: rig.cx - rig.dishHalfW - 10, top: rig.dishRimY + rig.dishDepthPx - rig.liquidPx - 8 },
@@ -762,7 +763,7 @@ export function LiquidView(p: LiquidViewProps) {
             LIQUID · {spec.depthMm} mm
           </Text>
           <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + 84, maxWidth: width - (rig.cx + 90), top: rig.platformY - 6 }]}>PLATFORM</Text>
-          <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + 40, maxWidth: width - (rig.cx + 46), top: rig.groundY - 30 }]}>SHAKER · {p.driveHz.toFixed(0)} Hz</Text>
+          <Text {...fitValue(12)} style={[styles.lbl, { left: rig.cx + 40, maxWidth: width - (rig.cx + 46), top: rig.groundY - 30 }]}>SHAKER · {p.driveHz.toFixed(0)} Hz</Text>
           <Text numberOfLines={1} style={[styles.lbl, { left: rig.cx + 26, maxWidth: width - (rig.cx + 32), top: rig.lampY - 1 }]}>LAMP</Text>
           <Text style={[styles.lbl, { left: 12, top: rig.groundY - 30, color: colors.textSub }]}>{p.accelG.toFixed(2)} g · {p.displacementUm < 1000 ? `${p.displacementUm.toFixed(0)} µm` : `${(p.displacementUm / 1000).toFixed(2)} mm`} travel</Text>
         </View>

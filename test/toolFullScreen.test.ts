@@ -44,6 +44,7 @@ test('the shared full screen is a root overlay that rotates and restores', () =>
   assert.match(code, /lockPortrait\(\)/, 'restores portrait on close');
   // Phones rest 'portrait'; restingOrientation() frees a tablet (Android large-screen pass 2026-09-29).
   assert.match(code, /orientation:\s*active \? 'landscape' : restingOrientation\('portrait'\)/, 'declarative route orientation');
-  assert.match(code, /hardwareBackPress/, 'Android back closes it');
+  assert.match(code, /useBackWhileFocused\(true, onFsBack\)/, 'Android back closes it (focus-scoped hook, P13 2026-10-02)');
+  assert.match(code, /if \(open\) \{\s*if \(!closing\) setClosing\(true\);\s*return true;/, 'BACK starts the close');
   assert.match(code, /accessibilityLabel="Close fullscreen"/, 'the same close key as the Waveform');
 });

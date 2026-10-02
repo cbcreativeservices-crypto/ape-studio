@@ -12,11 +12,10 @@
  * server wiring for the code + real session persistence lands later; the mock
  * entitlement setter is __DEV__-guarded (release builds defer to the server).
  */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   ActivityIndicator,
-  BackHandler,
   Platform,
   Pressable,
   StyleSheet,
@@ -33,6 +32,7 @@ import { BrandLogo } from '../../components/BrandLogo';
 import { StudioButton } from '../../components/StudioButton';
 import { TextField } from '../../components/TextField';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import { POPUP_MAX_W } from '../../theme/readingColumn';
 import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
@@ -69,6 +69,9 @@ import { consumePendingLink } from '../../navigation/pendingLink';
 import { navigateToPath } from '../../navigation/linking';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Auth'>;
+
+/** Android BACK while a request is in flight: hold it (see the busy hook below). */
+const swallowBack = () => true;
 
 /** Web-preview auto-guest has run in this app load (see the effect below). */
 let autoGuestDoneThisLoad = false;
@@ -605,28 +608,23 @@ export function AuthScreen({ navigation }: Props) {
   // hidden in recovery (see [27] below) so only Cancel leaves the flow, but the
   // hardware back button still popped the screen — or exited the app from the
   // root sign-in entry — abandoning a reset whose code was already emailed.
-  useEffect(() => {
-    if (mode !== 'recovery') return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      // Not mid-request (bug pass 2): BACK while the code was being verified
-      // "cancelled" the panel, then the in-flight verify + update finished
-      // and signed the person in anyway. The visible Cancel is hidden while
-      // busy for the same reason; BACK waits too.
-      if (inFlight.current) return true;
-      cancelRecovery();
-      return true;
-    });
-    return () => sub.remove();
+  // Focus-scoped (pattern hunt P13, 2026-10-02): a screen pushed over sign-in
+  // (the public glossary) gets its own BACK.
+  const onRecoveryBack = useCallback(() => {
+    // Not mid-request (bug pass 2): BACK while the code was being verified
+    // "cancelled" the panel, then the in-flight verify + update finished
+    // and signed the person in anyway. The visible Cancel is hidden while
+    // busy for the same reason; BACK waits too.
+    if (inFlight.current) return true;
+    cancelRecovery();
+    return true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
+  useBackWhileFocused(mode === 'recovery', onRecoveryBack);
 
   // ANDROID BACK while a request is in flight = wait (night bug pass 2) — the
   // twin of hiding RETURN above.
-  useEffect(() => {
-    if (!busy) return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => true);
-    return () => sub.remove();
-  }, [busy]);
+  useBackWhileFocused(busy, swallowBack);
 
   return (
     <View style={styles.root}>

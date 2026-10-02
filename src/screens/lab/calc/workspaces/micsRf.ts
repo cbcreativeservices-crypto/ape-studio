@@ -41,8 +41,8 @@ const STEREOMIC: Workspace = {
   glossary: ['Stereo', 'Comb Filtering', 'Microphone (Mic)', 'Phase', 'Polar Pattern'],
   fields: [
     { key: 'spacing', name: 'MIC SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '40', help: 'Distance between the two microphone capsules.', warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
-    { key: 'angle', name: 'SOURCE ANGLE', quantity: 'angle', placeholder: '30', help: 'Angle of the source off the array’s centre line.', warn: { test: (x) => x < 0 || x > 90, msg: 'Use 0–90° off centre.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'angle', name: 'SOURCE ANGLE', quantity: 'angle', signed: true, placeholder: '30', help: 'Angle of the source off the array’s centre line.', warn: { test: (x) => x < 0 || x > 90, msg: 'Use 0–90° off centre.' } },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'micDist', name: 'MIC-TO-SOURCE DISTANCE', quantity: 'length', placeholder: '0.3', help: 'Distance from a spot mic to its source, for the 3:1 rule.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
   functions: [
@@ -131,8 +131,8 @@ const MICSENS: Workspace = {
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone (Mic)', 'dBu'],
   fields: [
     { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '15', help: 'Output in millivolts for a 1 Pa (94 dB SPL) input.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
-    { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
-    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'SPL cannot be negative.' } },
+    { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', signed: true, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
+    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', signed: true, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'SPL cannot be negative.' } },
   ],
   functions: [
     {
@@ -233,10 +233,10 @@ const RFLINK: Workspace = {
   fields: [
     { key: 'dist', name: 'LINK DISTANCE', quantity: 'length', placeholder: '50', help: 'Transmitter-to-receiver distance.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'freqMHz', name: 'FREQUENCY (MHz)', quantity: 'number', nonNegative: true, placeholder: '550', help: 'RF carrier frequency in megahertz.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
-    { key: 'ptx', name: 'TRANSMIT POWER (dBm)', quantity: 'number', placeholder: '10', help: 'Transmitter output power in dBm (10 dBm = 10 mW).' },
-    { key: 'gtx', name: 'TX ANTENNA GAIN', quantity: 'db', placeholder: '2', help: 'Transmit antenna gain (dBi), minus any cable loss.' },
-    { key: 'grx', name: 'RX ANTENNA GAIN', quantity: 'db', placeholder: '2', help: 'Receive antenna gain (dBi), minus any cable loss.' },
-    { key: 'rxsens', name: 'RECEIVER SENSITIVITY (dBm)', quantity: 'number', placeholder: '-95', help: 'The weakest signal the receiver works with, in dBm.' },
+    { key: 'ptx', name: 'TRANSMIT POWER (dBm)', quantity: 'number', signed: true, placeholder: '10', help: 'Transmitter output power in dBm (10 dBm = 10 mW).' },
+    { key: 'gtx', name: 'TX ANTENNA GAIN', quantity: 'db', signed: true, placeholder: '2', help: 'Transmit antenna gain (dBi), minus any cable loss.' },
+    { key: 'grx', name: 'RX ANTENNA GAIN', quantity: 'db', signed: true, placeholder: '2', help: 'Receive antenna gain (dBi), minus any cable loss.' },
+    { key: 'rxsens', name: 'RECEIVER SENSITIVITY (dBm)', quantity: 'number', signed: true, placeholder: '-95', help: 'The weakest signal the receiver works with, in dBm.' },
   ],
   functions: [
     {

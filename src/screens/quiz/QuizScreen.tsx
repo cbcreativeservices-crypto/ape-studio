@@ -22,7 +22,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   AppState,
-  BackHandler,
   Image,
   Platform,
   Pressable,
@@ -39,6 +38,7 @@ import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import {
   clearQuizIntent,
   enqueueSubmission,
@@ -52,7 +52,7 @@ import {
   type QuizStartError,
   type ServedQuestion,
 } from '../../features/quiz/api';
-import { clearAttemptDraft, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
+import { clearAttemptDraft, isAttemptDraftUnreadable, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
 import type { StudyStackParamList } from '../../navigation/types';
 import { parseSubmitError } from '../../features/finalExam/api';
 import { QUIZ_SUBMIT_ERROR_COPY } from '../../features/quiz/api';
@@ -162,6 +162,15 @@ export function QuizScreen({ navigation, route }: Props) {
       if (!payload || submitted.current) return;
       submitted.current = true;
       setSubmitting(true);
+      // A DRAFT THAT COULD NOT BE READ AT THE START (pattern hunt wave 3,
+      // 2026-10-02): the attempt opened from question one, but earlier
+      // answers may still be on the device. One more read before the paper
+      // goes: a draft that comes back now fills in the slots this sitting
+      // did not answer — this sitting's answers always win.
+      if (isAttemptDraftUnreadable(payload.attempt_id)) {
+        const stored = await loadAttemptDraft(payload.attempt_id);
+        if (stored) answers.current = { ...(stored.answers as Record<string, AnswerValue>), ...answers.current };
+      }
       const submittedAt = new Date(submittedAtMs ?? Date.now()).toISOString();
       const args = {
         attemptId: payload.attempt_id,
@@ -383,21 +392,20 @@ export function QuizScreen({ navigation, route }: Props) {
   /* ---- Android hardware-back routes through the exit confirm (M2, 2026-09-07).
      Without this, gestureEnabled:false only blocks the iOS swipe and hardware-
      back drops the learner out of a live timed attempt with no confirm. ---- */
-  useEffect(() => {
-    if (!payload) return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      // WHILE SUBMITTING, SWALLOW IT (bug hunt 2026-09-29). This effect used to
-      // bail out when `submitting`, leaving Android's system back live: it
-      // popped the screen mid-submit and the result had nowhere to land. The
-      // submit is bounded (api.ts), so holding here always resolves.
-      if (submitting) return true;
-      if (submitted.current) return false;
-      confirmExit();
-      return true; // we handled it
-    });
-    return () => sub.remove();
+  // Focus-scoped (pattern hunt P13, 2026-10-02): a screen pushed over the
+  // attempt gets its own BACK instead of the exit confirm.
+  const onQuizBack = useCallback(() => {
+    // WHILE SUBMITTING, SWALLOW IT (bug hunt 2026-09-29). This effect used to
+    // bail out when `submitting`, leaving Android's system back live: it
+    // popped the screen mid-submit and the result had nowhere to land. The
+    // submit is bounded (api.ts), so holding here always resolves.
+    if (submitting) return true;
+    if (submitted.current) return false;
+    confirmExit();
+    return true; // we handled it
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [payload, submitting]);
+  useBackWhileFocused(!!payload, onQuizBack);
 
   // A11Y (2026-09-06): the last minute was a colour change on the timer only.
   const minuteWarnedRef = useRef(false);

@@ -196,7 +196,7 @@ export function AwardProgressScreen({ navigation, route }: Props) {
           </Text>
           <Text style={styles.muted}>
             {noSession
-              ? 'Sign in with a free account to track your progress toward this and to sit the Final Exam. It is free, and your progress is kept.'
+              ? 'Sign in with a free account to track your progress toward this. It is free, and your progress is kept. Sitting the Final Exam also needs Academy membership.'
               : "Could not load this award's requirements right now — check your connection and try again."}
           </Text>
           <View style={{ width: 240, gap: 10 }}>

@@ -103,12 +103,19 @@ function emit() { for (const l of listeners) l(); }
  *  saved family. This session's changes stay in memory; a reset retries. */
 let readFailed = false;
 
-function persist(next: FinderRecord) {
+/** Resolves true only when the device accepted the write (pattern hunt wave
+ *  3, 2026-10-02, class P6): the results screen said "Saved on this device"
+ *  under the beta feedback whatever happened to the write. A record read
+ *  while storage FAILED is never written over (see `readFailed`) — false. */
+function persist(next: FinderRecord): Promise<boolean> {
   state = next;
   wrote = true;
   emit();
-  if (readFailed) return;
-  void AsyncStorage.setItem(KEY, JSON.stringify(next)).catch(() => {});
+  if (readFailed) return Promise.resolve(false);
+  return AsyncStorage.setItem(KEY, JSON.stringify(next)).then(
+    () => true,
+    () => false,
+  );
 }
 
 /**
@@ -122,15 +129,14 @@ function persist(next: FinderRecord) {
  * waits for the read and applies on top of it (enrollmentStore's pattern);
  * an account switch meanwhile drops it.
  */
-function act(fn: () => void): void {
-  if (hydrated) {
-    fn();
-    return;
-  }
+function act(fn: () => Promise<boolean> | void): Promise<boolean> {
+  // The write result (wave 3, 2026-10-02): the action's own persist() answer;
+  // true for an action with nothing to write; false for one dropped by an
+  // account switch while the read was out.
+  const result = (r: Promise<boolean> | void): Promise<boolean> => (r === undefined ? Promise.resolve(true) : r);
+  if (hydrated) return result(fn());
   const g = generation;
-  void hydrateCareerFinder().then(() => {
-    if (g === generation && hydrated) fn();
-  });
+  return hydrateCareerFinder().then(() => (g === generation && hydrated ? result(fn()) : false));
 }
 
 /** Load once. Actions wait for it (see `act`). */
@@ -247,8 +253,9 @@ export function toggleSavedFamily(id: string): void {
   });
 }
 
-export function setCareerFinderFeedback(answer: FeedbackAnswer, note = ''): void {
-  act(() => persist({ ...state, feedback: { answer, note, at: new Date().toISOString() } }));
+/** Resolves true only when the feedback reached the device (see persist). */
+export function setCareerFinderFeedback(answer: FeedbackAnswer, note = ''): Promise<boolean> {
+  return act(() => persist({ ...state, feedback: { answer, note, at: new Date().toISOString() } }));
 }
 
 /** In-memory reset for an account switch (clearLocalAccountData registry). */

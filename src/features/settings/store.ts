@@ -292,10 +292,16 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
   return merged;
 }
 
-export async function saveLocalSettings(s: LocalSettings): Promise<void> {
+/** Resolves to the settings AS WRITTEN when a recovered read laid only the
+ *  changed fields over the stored record — the screen must show that copy,
+ *  not the defaults it had for the untouched fields (pattern hunt wave 3,
+ *  2026-10-02). Null when what was asked for is what was written, or when
+ *  nothing was written (still unreadable, or overtaken by a newer save). */
+export async function saveLocalSettings(s: LocalSettings): Promise<LocalSettings | null> {
   settingsGen += 1;
   lastWritten = s;
   const gen = settingsGen;
+  let recovered = false;
   if (readFailed) {
     const shown = lastKnown ?? DEFAULT_LOCAL_SETTINGS;
     let raw: string | null;
@@ -310,11 +316,12 @@ export async function saveLocalSettings(s: LocalSettings): Promise<void> {
         setMuteOnLeave(s.muteAudioOnLeave);
         applyA11yFromSettings(s);
       }
-      return;
+      return null;
     }
     // A newer save (it carries this one's change too) or a reset overtook it.
-    if (gen !== settingsGen) return;
+    if (gen !== settingsGen) return null;
     s = applyChanges(parseStored(raw), shown, s);
+    recovered = true;
     lastWritten = s;
     readFailed = false;
     setLocalSettingsUnreadable(false);
@@ -328,6 +335,7 @@ export async function saveLocalSettings(s: LocalSettings): Promise<void> {
   // Reschedule the local reminders whenever their settings change (debounced
   // and change-gated inside — a haptics toggle costs nothing here).
   requestLocalNotifSync(s);
+  return recovered ? s : null;
 }
 
 /** Reset the synchronous mirrors to defaults on account switch — low-level code

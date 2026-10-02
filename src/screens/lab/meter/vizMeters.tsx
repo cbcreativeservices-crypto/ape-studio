@@ -3514,7 +3514,7 @@ export function VuGlyph({ size = 40 }: { size?: number }) {
           width: w,
           textAlign: 'center',
           fontFamily: fonts.oswaldSemiBold,
-          fontSize: Math.max(6, size * 0.14),
+          fontSize: Math.max(9, size * 0.14),
           letterSpacing: 1,
           color: '#2b2417',
         }}

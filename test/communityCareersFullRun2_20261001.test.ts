@@ -67,14 +67,19 @@ describe('S1: Career Finder store — no write lands on an unread record', () =>
   }
 
   it('act runs only once hydrated, and drops an action an account switch overtook', () => {
-    assert.match(src, /function act\(fn: \(\) => void\): void \{\s*if \(hydrated\) \{\s*fn\(\);\s*return;\s*\}\s*const g = generation;\s*void hydrateCareerFinder\(\)\.then\(\(\) => \{\s*if \(g === generation && hydrated\) fn\(\);/);
+    // Wave 3 (2026-10-02, class P6): act answers the write result, and still
+    // runs at once when hydrated, else after the read and only if no account
+    // switch overtook it.
+    assert.match(src, /function act\(fn: \(\) => Promise<boolean> \| void\): Promise<boolean> \{[\s\S]*?if \(hydrated\) return result\(fn\(\)\);\s*const g = generation;\s*return hydrateCareerFinder\(\)\.then\(\(\) => \(g === generation && hydrated \? result\(fn\(\)\) : false\)\);/);
   });
 
   it('a storage read that THREW blocks the write-back of the empty copy', () => {
     assert.match(src, /if \(g === generation\) readFailed = true;/);
     assert.match(body(src, 'resetLocal'), /readFailed = false;/);
     const persist = src.slice(src.indexOf('function persist('), src.indexOf('function act('));
-    assert.match(persist, /if \(readFailed\) return;\s*void AsyncStorage\.setItem/);
+    // Wave 3 (2026-10-02, class P6): persist answers whether the write landed,
+    // and still writes nothing over a record that could not be read.
+    assert.match(persist, /if \(readFailed\) return Promise\.resolve\(false\);\s*return AsyncStorage\.setItem/);
   });
 });
 

@@ -86,6 +86,13 @@ export function ScenariosScreen({ route }: Props) {
   /** Did the server actually record the round this report is for?
    *  `null` = still asking. Drives the honest line on the report card. */
   const [roundSaved, setRoundSaved] = useState<boolean | null>(null);
+  /** When the round did NOT reach the server: did the device at least KEEP
+   *  it (the answers and the round, in the durable retry queue)? False =
+   *  held in memory only — gone if the app closes first — and the report
+   *  must not say "saved on this device" (pattern hunt wave 3, 2026-10-02). */
+  const [roundKept, setRoundKept] = useState(true);
+  /** An answer of the round in play that the device could not queue. */
+  const answerUnkeptRef = useRef(false);
   /** Which finishRound the pending save belongs to — see finishRound. */
   const roundSaveTokenRef = useRef(0);
   // Why the nocontent view is showing: 'empty' = topic genuinely has no
@@ -222,7 +229,11 @@ export function ScenariosScreen({ route }: Props) {
       // 2026-08-13). Inert in production (scenarios % reads server completion_pct).
       scenarioStatesRef.current._done = { correct: 1 };
       void saveLocalMethodStates(achievementId, 'scenarios', scenarioStatesRef.current);
-      void completeScenarioRound(achievementId, r).then(({ roundsCompleted, saved }) => {
+      // The answers of THIS round that the device refused to queue, read once
+      // for the report and cleared for the next round.
+      const answersKept = !answerUnkeptRef.current;
+      answerUnkeptRef.current = false;
+      void completeScenarioRound(achievementId, r).then(({ roundsCompleted, saved, queued }) => {
         // Only advance the local rounds count when the SERVER took it. Bumping
         // it on a queued-but-unsent round is what made the Dashboard LED and
         // the report disagree with the database.
@@ -231,7 +242,11 @@ export function ScenariosScreen({ route }: Props) {
             prev ? { ...prev, roundsCompleted: Math.max(prev.roundsCompleted, roundsCompleted) } : prev,
           );
         }
-        if (token === roundSaveTokenRef.current) setRoundSaved(saved);
+        if (token === roundSaveTokenRef.current) {
+          setRoundSaved(saved);
+          // "Saved on this device" only when the device KEPT it (wave 3).
+          setRoundKept(saved || (queued !== false && answersKept));
+        }
       });
     },
     [achievementId],
@@ -354,7 +369,11 @@ export function ScenariosScreen({ route }: Props) {
     (correct: boolean) => {
       if (!item) return;
       answersRef.current[item.id] = { round: activeRound, correct };
-      void recordScenarioAnswer(achievementId, item.id, activeRound, correct);
+      // False = neither sent nor kept in the durable queue (held in memory
+      // only): the round report must not claim "saved on this device".
+      void recordScenarioAnswer(achievementId, item.id, activeRound, correct).then((kept) => {
+        if (!kept) answerUnkeptRef.current = true;
+      });
       // Mirror engagement locally so the Dashboard reflects scenarios progress
       // right away (and dev fast-complete can reach the quiz).
       scenarioStatesRef.current[item.id] = {
@@ -511,7 +530,14 @@ export function ScenariosScreen({ route }: Props) {
           {/* Tell the truth when the round did not reach the server. It used to
            *  say COMPLETE either way — a learner was congratulated for a round
            *  the database had no record of. */}
-          {roundSaved === false ? (
+          {roundSaved === false && !roundKept ? (
+            <Text style={styles.reportUnsaved}>
+              Your answers haven’t reached your account, and this device could not keep them for a
+              retry — they are held in memory for now and will be lost if you close the app before
+              you’re back online. This round won’t count towards the quiz until it reaches your
+              account.
+            </Text>
+          ) : roundSaved === false ? (
             <Text style={styles.reportUnsaved}>
               Your answers are saved on this device but haven’t reached your account yet. They’ll
               sync automatically next time you’re online — this round won’t count towards the quiz

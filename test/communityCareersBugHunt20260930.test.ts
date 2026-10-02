@@ -133,7 +133,8 @@ describe('help and onboarding', () => {
     const src = code('src/features/onboarding/AttractCue.tsx');
     const text = between(src, 'export function AttractText(', 'const styles');
     assert.match(text, /const suppressed = useOverlaysSuppressed\(\);/);
-    assert.match(text, /active && !suppressed && animationsAllowed\(\)/);
+    // Pattern hunt P10 (2026-10-02): motion is the SUBSCRIBED read now.
+    assert.match(text, /const allowed = useAnimationsAllowed\(\);[^\n]*\n\s*const motion = active && !suppressed && allowed;/);
   });
 
   test('C13: the intro seen-read cannot reject unhandled', () => {

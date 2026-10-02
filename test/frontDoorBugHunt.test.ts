@@ -42,8 +42,10 @@ describe('auth (F1, F2, F12, F15)', () => {
     assert.match(
       auth,
       // (bug pass 2, 2026-09-30: …except mid-request, when BACK is swallowed.)
-      /if \(mode !== 'recovery'\) return;\s*\n\s*const sub = BackHandler\.addEventListener\('hardwareBackPress', \(\) => \{[\s\S]{0,400}?if \(inFlight\.current\) return true;\s*\n\s*cancelRecovery\(\);\s*\n\s*return true;/,
+      // (pattern hunt P13, 2026-10-02: through the focus-scoped hook, registered only in recovery.)
+      /const onRecoveryBack = useCallback\(\(\) => \{[\s\S]{0,400}?if \(inFlight\.current\) return true;\s*\n\s*cancelRecovery\(\);\s*\n\s*return true;/,
     );
+    assert.match(auth, /useBackWhileFocused\(mode === 'recovery', onRecoveryBack\);/);
   });
 });
 

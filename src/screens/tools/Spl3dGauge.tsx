@@ -14,6 +14,7 @@ import { View } from 'react-native';
 import Svg, { ClipPath, Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import Animated, { cancelAnimation, Easing, useAnimatedProps, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { fonts } from '../../theme/tokens';
+import { useAnimationsAllowed } from '../../features/settings/a11y';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 const AnimatedG = Animated.createAnimatedComponent(G);
@@ -431,14 +432,18 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
   // loops 0→1 only while the gold target is active; cancelled otherwise so a
   // steady level costs nothing.
   const sweep = useSharedValue(0);
+  // Decorative loops honour "Reduce animations" + the OS flag (pattern hunt
+  // P10, 2026-10-02): the gold tiles still light; only the sweep and the
+  // sparkle's twinkle/breathing hold still.
+  const motionOk = useAnimationsAllowed();
   useEffect(() => {
     cancelAnimation(sweep);
     sweep.value = 0;
-    if (goldActive) {
+    if (goldActive && motionOk) {
       sweep.value = withRepeat(withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }), -1, false);
     }
     return () => cancelAnimation(sweep);
-  }, [goldActive, sweep]);
+  }, [goldActive, motionOk, sweep]);
   const sweepProps = useAnimatedProps(() => ({
     x: gxmin - BAND_W + sweep.value * (gxmax - gxmin + BAND_W * 2),
   }));
@@ -471,7 +476,7 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
     cancelAnimation(density);
     twinkle.value = 0;
     density.value = 0;
-    if (sparkleOn) {
+    if (sparkleOn && motionOk) {
       twinkle.value = withRepeat(withTiming(1, { duration: 800, easing: Easing.linear }), -1, false);
       density.value = withRepeat(withTiming(1, { duration: 6500, easing: Easing.inOut(Easing.ease) }), -1, true);
     }
@@ -479,7 +484,7 @@ export const Spl3dGauge = memo(({ width, mode, level, calibrated, centerText, ce
       cancelAnimation(twinkle);
       cancelAnimation(density);
     };
-  }, [sparkleOn, twinkle, density]);
+  }, [sparkleOn, motionOk, twinkle, density]);
   // tier 0 always on; tiers 1 & 2 gate on the density ramp (fade windows). The
   // twinkle expression is inlined — a worklet can't call a plain JS helper.
   const sparkle0 = useAnimatedProps(() => ({

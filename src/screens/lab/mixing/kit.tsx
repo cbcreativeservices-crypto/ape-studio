@@ -27,7 +27,9 @@ import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
 import { GearButton, GearFader, GearKnob, ScribbleStrip, StripFrame } from '../kit/gear';
 import type { PageCtx } from '../kit/PagedLab';
-import { useLabEndGuest } from '../kit/LabEndScreen';
+import { persistAllowed } from '../../../features/commercial/tier';
+import { useTier } from '../../../features/commercial/useTier';
+import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
 import {
   FLAT,
   matchGainDb,
@@ -46,6 +48,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createLocalStore } from '../../../features/storage/localStore';
 
 const FOCAL_KEY = 'ape:mixing:focal';
+/** The ledger keys for the two commitments (features/lab/sessionCarry). */
+const FOCAL_CARRY = 'mixing:focal';
+const PRIORITIES_CARRY = 'mixing:priorities';
 let focalCurrent: string | null = null;
 /** Chosen in THIS app run (never read from storage) — what a guest sees. */
 let focalSession: string | null = null;
@@ -110,8 +115,17 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
   // page progress for a signed-out guest (its end screen: "nothing here is
   // saved"), but this commitment was written and came back on the next open.
   // A guest's choice now lives in memory for the session only.
+  //
+  // TRI-STATE (pattern hunt wave 3, 2026-10-02; closer A5): `guestRef` means
+  // SESSION ONLY — a known guest, a members-only preview, or the tier NOT
+  // KNOWN YET. The two-state guest reading (useLabEndGuest) was false in that
+  // window, so a tap before the first entitlement read landed wrote a guest's choice to
+  // the device (and a toggle below edited the stored priorities). A choice
+  // made while blocked is HELD by the shared ledger instead, and written to
+  // the account it turns out to belong to — the signed-in learner whose read
+  // was slow straight away, a guest at sign-in. A preview holds nothing.
   const guestRef = useRef(false);
-  guestRef.current = useLabEndGuest();
+  guestRef.current = !persistAllowed(useTier());
   useEffect(() => {
     const l = () => force((n) => n + 1);
     focalListeners.add(l);
@@ -126,12 +140,15 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
     focalSession = id;
     focalListeners.forEach((l) => l());
     if (!guestRef.current) void AsyncStorage.setItem(FOCAL_KEY, id).catch(() => {});
+    else holdSessionWork<string>(FOCAL_CARRY, () => id);
   }, []);
   // ...and nothing is RESTORED for a guest either (bug pass 3, 2026-09-30):
   // the import-time read above restored the stored choice for everyone, so a
   // signed-out device showed the previous account's focal point as "what you
-  // said". A guest sees only what they chose this session. useLabEndGuest
-  // waits for `resolved`, so a signed-in learner is never hidden their own.
+  // said". A guest sees only what they chose this session. The tier reads
+  // 'unknown' until `resolved`, so a signed-in learner sees their stored
+  // choice as soon as the read lands, and a choice made meanwhile is theirs
+  // on screen and held for them by the ledger.
   return [guestRef.current ? focalSession : focalCurrent, set];
 }
 
@@ -168,9 +185,10 @@ function togglePriority(base: readonly string[], id: string, add: boolean): stri
 export function useMixPriorities(): [readonly string[], (id: string) => void] {
   const [, force] = useState(0);
   const stored = prioritiesStore.use();
-  // HOUSE GUEST RULE — see useFocalChoice.
+  // HOUSE GUEST RULE — see useFocalChoice (session only while the tier is
+  // a guest, a preview, or not known yet).
   const guestRef = useRef(false);
-  guestRef.current = useLabEndGuest();
+  guestRef.current = !persistAllowed(useTier());
   useEffect(() => {
     const l = () => force((n) => n + 1);
     prioritiesListeners.add(l);
@@ -185,6 +203,9 @@ export function useMixPriorities(): [readonly string[], (id: string) => void] {
       const base = prioritiesSession ?? [];
       prioritiesSession = togglePriority(base, id, !base.includes(id));
       prioritiesListeners.forEach((l) => l());
+      // Held for the account this session turns out to belong to (a whole
+      // session copy that started empty — only this session's toggles).
+      holdSessionWork<readonly string[]>(PRIORITIES_CARRY, () => prioritiesSession ?? []);
       return;
     }
     // The intent comes from the list the learner SEES; the edit is applied to
@@ -197,6 +218,37 @@ export function useMixPriorities(): [readonly string[], (id: string) => void] {
   // Nothing restored for a guest (bug pass 3, 2026-09-30) — see useFocalChoice.
   return [guestRef.current ? (prioritiesSession ?? []) : stored, toggle];
 }
+
+/** Pure: the stored priorities plus a session's, stored first, at most three. */
+export function mergeMixPriorities(stored: readonly string[], session: readonly string[]): string[] {
+  const out = [...stored];
+  for (const id of session) if (!out.includes(id) && out.length < 3) out.push(id);
+  return out;
+}
+
+// The ledger's writers (wave 3, 2026-10-02): what was held while the tier
+// was a guest or unknown is written to the account the ledger names — after
+// its wipe, which emptied this module's memory, so the memory is refilled too.
+registerSessionCarry<string>(FOCAL_CARRY, async (id) => {
+  try {
+    await AsyncStorage.setItem(FOCAL_KEY, id);
+  } catch {
+    return false;
+  }
+  focalTouched = true;
+  focalCurrent = id;
+  focalSession = id;
+  focalListeners.forEach((l) => l());
+  return true;
+});
+registerSessionCarry<readonly string[]>(PRIORITIES_CARRY, async (session) => {
+  const ok = await prioritiesStore.mutate((list) => mergeMixPriorities(list, session));
+  if (ok) {
+    prioritiesSession = [...prioritiesStore.get()];
+    prioritiesListeners.forEach((l) => l());
+  }
+  return ok;
+});
 
 /** The lab's central lesson (owner brief, verbatim) — repeated on purpose. */
 export const MIX_MANTRA =

@@ -19,7 +19,7 @@ import { officialTopicName } from '../../data/officialTopicNames';
 import { ActivityIndicator, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
-import { HOST_DISMISS_MS, Modal } from '../../components/DimModal';
+import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -77,7 +77,7 @@ import { FLAGGED_TOPIC_ID, setCustomOnDashboard, useCustomOnDashboard, useTermLi
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
-import { confirmDialog, notify } from '../../lib/confirm';
+import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { CERT_BLUE, EnrollmentSelection, PROGRAM_PURPLE, type CarouselCard } from './EnrollmentSelection';
 import { chipForKind, firstIndexOfKind, stepDeck } from './deckNav';
 import { RowTint, LAB_TINT, COREQ_TINT } from './RowTint';
@@ -405,14 +405,9 @@ export function EnrollmentView({
   const [payPrompt, setPayPrompt] = useState(false);
   // The pending EXPLORE MEMBERSHIP → Paywall hand-off (see the prompt below).
   // Cleared on unmount: leaving the screen mid-hand-off must not throw the
-  // Paywall up over wherever the user went.
-  const payHandoff = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(
-    () => () => {
-      if (payHandoff.current) clearTimeout(payHandoff.current);
-    },
-    [],
-  );
+  // Paywall up over wherever the user went. The shared useModalHandoff
+  // (pattern P5, 2026-10-02).
+  const payHandoff = useModalHandoff();
   const [homeSetupOpen, setHomeSetupOpen] = useState(false);
   const [homeFull, setHomeFull] = useState(false);
   // Clear-list confirm popup (owner 2026-08-01): the bottom red ✕ is now a fixed
@@ -2636,12 +2631,8 @@ export function EnrollmentView({
           // this prompt's own Modal is still fading out — EXPLORE MEMBERSHIP
           // did nothing (bug pass 3 2026-09-30; GlossaryScreen's hand-off).
           // One hand-off at a time: a double tap must not queue two Paywalls.
-          if (payHandoff.current) return;
           setPayPrompt(false);
-          payHandoff.current = setTimeout(() => {
-            payHandoff.current = null;
-            navigation.navigate('Paywall');
-          }, HOST_DISMISS_MS);
+          payHandoff(() => navigation.navigate('Paywall'));
         }}
         dismissLabel="RETURN"
       />
@@ -2795,7 +2786,7 @@ const styles = StyleSheet.create({
   recordCount: { fontFamily: fonts.mono, fontSize: 12.5, color: colors.textSub },
   recordBody: { borderTopWidth: 1, borderTopColor: '#242424' },
   recordRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8, paddingHorizontal: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#1e1e1e' },
-  recordKind: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 0.6, borderWidth: 1, borderRadius: 4, paddingVertical: 1.5, paddingHorizontal: 5, overflow: 'hidden' },
+  recordKind: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.6, borderWidth: 1, borderRadius: 4, paddingVertical: 1.5, paddingHorizontal: 5, overflow: 'hidden' },
   recordRowText: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textSecondary },
   recordCheck: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: '#37e05f' },
   // BROWSE & ADD header (scrolls normally — no longer a sticky header, whose

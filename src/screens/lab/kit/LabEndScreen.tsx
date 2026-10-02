@@ -34,7 +34,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { GlassButton } from '../../../components/GlassButton';
-import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { isGuestTier } from '../../../features/commercial/tier';
+import { useTier } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 import { endLead, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
@@ -45,13 +46,13 @@ export type { LabEndUnit } from './labEnd';
 /**
  * Should the end screen talk as if nothing is saved? A signed-out guest (house
  * guest rule, owner 2026-08-12) or a members-only preview (PREVIEW EARNS
- * NOTHING, 2026-09-01). `resolved` is required — the entitlement provider
- * boots at 'anonymous', and a signed-in learner must not be told otherwise.
+ * NOTHING, 2026-09-01). The tier is a TRI-STATE (features/commercial/tier,
+ * closer A5 of the 2026-10-02 pattern catalog): the entitlement provider
+ * boots at 'anonymous', and `isGuestTier` is false while the answer is still
+ * unknown, so a signed-in learner is never told otherwise.
  */
 export function useLabEndGuest(): boolean {
-  const { entitlement, resolved } = useEntitlement();
-  const preview = useLabPreview();
-  return preview.active || (resolved && entitlement === 'anonymous');
+  return isGuestTier(useTier());
 }
 
 export function LabEndScreen({

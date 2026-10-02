@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar pattern (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtInt, speedOfSoundAir } from '../calcUnits';
+import { fmt, fmtCount, fmtInt, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]): number[] => (typeof v === 'number' ? [v] : v);
@@ -281,6 +281,9 @@ const WS_PITCH: Workspace = {
       key: 'midi',
       name: 'MIDI NOTE NUMBER',
       quantity: 'number',
+      nonNegative: true,
+      integer: true,
+      range: [0, 127],
       placeholder: '69',
       help: 'MIDI numbering: 69 = A4, 60 = middle C (C4); one step = one semitone.',
       warn: { test: (x) => x < 0 || x > 127, msg: 'MIDI note numbers run 0–127.' },
@@ -289,6 +292,7 @@ const WS_PITCH: Workspace = {
       key: 'cents',
       name: 'EXTRA CENTS',
       quantity: 'cents',
+      signed: true,
       placeholder: '0',
       help: 'Fine-tune offset added to the semitone shift (100 cents = 1 semitone). Enter 0 for none.',
     },
@@ -311,6 +315,7 @@ const WS_PITCH: Workspace = {
       key: 'semi',
       name: 'SEMITONES',
       quantity: 'number',
+      signed: true,
       placeholder: '3',
       help: 'Transposition in semitones — positive = up, negative = down.',
     },
@@ -524,6 +529,7 @@ const WS_FILESIZE: Workspace = {
       key: 'bits',
       name: 'BIT DEPTH',
       quantity: 'bitdepth',
+      integer: true,
       placeholder: '24',
       help: '16/24/32',
       warn: { test: (x) => ![8, 16, 24, 32, 64].includes(x), msg: 'Unusual bit depth — common PCM depths are 16, 24, and 32 bit.' },
@@ -532,6 +538,7 @@ const WS_FILESIZE: Workspace = {
       key: 'ch',
       name: 'CHANNELS',
       quantity: 'number',
+      integer: true,
       nonNegative: true,
       placeholder: '2',
       help: 'Channels in the file: 1 = mono, 2 = stereo.',
@@ -556,6 +563,7 @@ const WS_FILESIZE: Workspace = {
       key: 'tracks',
       name: 'TRACK COUNT',
       quantity: 'number',
+      integer: true,
       nonNegative: true,
       placeholder: '24',
       help: 'Simultaneously recording tracks in the session (each at the channel count above).',
@@ -587,7 +595,7 @@ const WS_FILESIZE: Workspace = {
         const ch = n(v.ch);
         const rate = pcmBytesPerSec(sr, bits, ch);
         return [
-          `Each second stores ${fmt(sr)} samples × ${fmt(bits)} bits ÷ 8 bits-per-byte × ${fmt(ch)} channel(s) = ${fmt(rate)} bytes/s.`,
+          `Each second stores ${fmt(sr)} samples × ${fmtCount(bits)} bits ÷ 8 bits-per-byte × ${fmtCount(ch)} channel(s) = ${fmt(rate)} bytes/s.`,
           `Over ${fmt(n(v.dur) / 60)} min: ${fmt(rate)} × ${fmt(n(v.dur))} s = ${fmt((rate * n(v.dur)) / 1e6)} MB.`,
           `Handy rate: ${fmt((rate * 60) / 1e6)} MB per minute, ${fmt((rate * 3600) / 1e9)} GB per hour.`,
         ];
@@ -642,13 +650,13 @@ const WS_FILESIZE: Workspace = {
         const rate = per * n(v.tracks);
         return [
           `One track at this format writes ${fmt(per)} bytes/s.`,
-          `${fmt(n(v.tracks))} tracks write ${fmt(rate)} bytes/s = ${fmt((rate * 60) / 1e6)} MB per minute of rolling tape.`,
+          `${fmtCount(n(v.tracks))} tracks write ${fmt(rate)} bytes/s = ${fmt((rate * 60) / 1e6)} MB per minute of rolling tape.`,
         ];
       },
       table: (v) => {
         const rate = pcmBytesPerSec(n(v.sr), n(v.bits), n(v.ch)) * n(v.tracks);
         return {
-          title: `${fmt(n(v.tracks))}-track session at this format`,
+          title: `${fmtCount(n(v.tracks))}-track session at this format`,
           cols: ['Session length', 'Size'],
           rows: [30, 60, 120].map((min) => {
             const bytes = rate * min * 60;
@@ -695,7 +703,7 @@ const WS_ROOMMODES: Workspace = {
     { key: 'len', name: 'ROOM LENGTH', quantity: 'length', placeholder: '5', help: 'Longest floor dimension, wall to wall.' },
     { key: 'wid', name: 'ROOM WIDTH', quantity: 'length', placeholder: '4', help: 'Shorter floor dimension, wall to wall.' },
     { key: 'hei', name: 'CEILING HEIGHT', quantity: 'length', placeholder: '2.5', help: 'Floor to ceiling.' },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound in the classroom dry-air model.' },
     {
       key: 'dist',
       name: 'SURFACE-TO-SURFACE DISTANCE',
@@ -1080,7 +1088,7 @@ const WS_TREATMENT: Workspace = {
         const aTgt = (SABINE_K * V) / n(v.rtTgt);
         const dA = aTgt - aCur;
         const perPanel = n(v.panelArea) * n(v.alpha);
-        const panels = Math.max(0, Math.ceil(dA / perPanel));
+        const panels = Math.max(0, Math.ceil(snapWhole(dA / perPanel)));
         const predicted = (SABINE_K * V) / (aCur + panels * perPanel);
         return [
           { label: 'ABSORPTION TO ADD ΔA', value: dA, quantity: 'area' },
@@ -1096,7 +1104,7 @@ const WS_TREATMENT: Workspace = {
         const aTgt = (SABINE_K * V) / rtT;
         const dA = aTgt - aCur;
         const perPanel = n(v.panelArea) * n(v.alpha);
-        const panels = Math.max(0, Math.ceil(dA / perPanel));
+        const panels = Math.max(0, Math.ceil(snapWhole(dA / perPanel)));
         return [
           `Absorption the room has now: A = 0.161 × ${fmt(V)} ÷ ${fmt(rtC)} = ${fmt(aCur)} m².`,
           `Absorption the target needs: A = 0.161 × ${fmt(V)} ÷ ${fmt(rtT)} = ${fmt(aTgt)} m².`,

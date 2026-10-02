@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtInt } from '../calcUnits';
+import { fmt, fmtInt, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (typeof v === 'number' ? [v] : v);
@@ -64,6 +64,7 @@ const WS_SPEAKERPOWER: Workspace = {
       key: 'sens',
       name: 'SENSITIVITY',
       quantity: 'sensitivity',
+      signed: true,
       placeholder: '97',
       help: 'SPL the speaker produces at 1 m from 1 W input (per its spec sheet).',
       warn: { test: (x) => x < 80 || x > 115, msg: 'That is outside the usual 80–115 dB (1W/1m) span for passive boxes — check the spec sheet.' },
@@ -87,6 +88,7 @@ const WS_SPEAKERPOWER: Workspace = {
       key: 'target',
       name: 'TARGET SPL',
       quantity: 'spl',
+      signed: true,
       placeholder: '105',
       help: 'The continuous level you need AT the listener, before headroom.',
     },
@@ -104,6 +106,7 @@ const WS_SPEAKERPOWER: Workspace = {
       key: 'nspk',
       name: 'NUMBER OF SPEAKERS',
       quantity: 'number',
+      integer: true,
       nonNegative: true,
       placeholder: '1',
       help: 'Identical boxes covering the same listener. Bonus assumes UNCORRELATED sources.',
@@ -128,7 +131,7 @@ const WS_SPEAKERPOWER: Workspace = {
         const p = n(v.power);
         const d = n(v.dist);
         const hr = n(v.headroom);
-        const N = Math.max(1, Math.floor(n(v.nspk)));
+        const N = Math.max(1, Math.floor(snapWhole(n(v.nspk))));
         const one = sens + 10 * Math.log10(p) - 20 * Math.log10(d) - hr;
         const out = [
           { label: 'PREDICTED SPL (one speaker, after headroom)', value: one, quantity: 'spl' as const },
@@ -148,7 +151,7 @@ const WS_SPEAKERPOWER: Workspace = {
         const p = n(v.power);
         const d = n(v.dist);
         const hr = n(v.headroom);
-        const N = Math.max(1, Math.floor(n(v.nspk)));
+        const N = Math.max(1, Math.floor(snapWhole(n(v.nspk))));
         const gain = 10 * Math.log10(p);
         const loss = 20 * Math.log10(d);
         const one = sens + gain - loss - hr;
@@ -181,7 +184,7 @@ const WS_SPEAKERPOWER: Workspace = {
         const t = n(v.target);
         const d = n(v.dist);
         const hr = n(v.headroom);
-        const N = Math.max(1, Math.floor(n(v.nspk)));
+        const N = Math.max(1, Math.floor(snapWhole(n(v.nspk))));
         const dBover = t + 20 * Math.log10(d) - sens + hr;
         const p = Math.pow(10, dBover / 10);
         const out = [
@@ -202,7 +205,7 @@ const WS_SPEAKERPOWER: Workspace = {
         const t = n(v.target);
         const d = n(v.dist);
         const hr = n(v.headroom);
-        const N = Math.max(1, Math.floor(n(v.nspk)));
+        const N = Math.max(1, Math.floor(snapWhole(n(v.nspk))));
         const loss = 20 * Math.log10(d);
         const dBover = t + loss - sens + hr;
         const p = Math.pow(10, dBover / 10);
@@ -510,6 +513,7 @@ const WS_CABLE: Workspace = {
       key: 'awg',
       name: 'WIRE GAUGE',
       quantity: 'number',
+      nonNegative: true,
       placeholder: '16',
       help: '10–18 AWG typical. Smaller number = thicker wire. A fraction is rounded to the nearest whole gauge.',
       warn: { test: (x) => !(x >= -0.5 && x < 40.5), msg: 'Enter a wire gauge from 0 to 40 AWG.' },
@@ -532,6 +536,7 @@ const WS_CABLE: Workspace = {
       key: 'maxloss',
       name: 'MAX ACCEPTABLE LOSS',
       quantity: 'db',
+      signed: true,
       placeholder: '0.5',
       help: 'Your loss budget — 0.5 dB is the common install target.',
     },
@@ -850,7 +855,7 @@ const WS_CV70: Workspace = {
         // Infinity and the answer read "— more speakers at 0 W taps fit".
         if (!(tapw > 0)) throw new Error('tap wattage must be greater than zero');
         const usable = prated / Math.pow(10, hr / 10);
-        const more = Math.max(0, Math.floor((usable - load) / tapw));
+        const more = Math.max(0, Math.floor(snapWhole((usable - load) / tapw)));
         return [
           {
             label: 'MORE SPEAKERS THAT FIT',
@@ -873,7 +878,7 @@ const WS_CV70: Workspace = {
         return [
           `Usable budget = ${fmt(prated)} W ÷ 10^(${fmt(hr)}/10) = ${fmt(usable)} W after reserving headroom.`,
           `Room left = ${fmt(usable)} − ${fmt(load)} = ${fmt(usable - load)} W.`,
-          `At ${fmt(tapw)} W per speaker: floor(${fmt(usable - load)} ÷ ${fmt(tapw)}) = ${fmtInt(Math.max(0, Math.floor((usable - load) / tapw)))} more speakers.`,
+          `At ${fmt(tapw)} W per speaker: floor(${fmt(usable - load)} ÷ ${fmt(tapw)}) = ${fmtInt(Math.max(0, Math.floor(snapWhole((usable - load) / tapw))))} more speakers.`,
         ];
       },
     },

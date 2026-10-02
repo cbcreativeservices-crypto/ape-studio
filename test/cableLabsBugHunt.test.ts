@@ -118,7 +118,8 @@ describe('cable install — same-frame double taps', () => {
   });
   it('SourceSheet: Android back closes the sheet', () => {
     const s = src(resolve(CI, 'bits.tsx'));
-    assert.match(s, /BackHandler\.addEventListener\('hardwareBackPress'/);
+    // Focus-scoped hook since pattern hunt P13 (2026-10-02): registered while open, closes the sheet.
+    assert.match(s, /onClose\(\);\s*return true;\s*\}, \[onClose\]\);\s*useBackWhileFocused\(open, onSheetBack\);/);
   });
 });
 

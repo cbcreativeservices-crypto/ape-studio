@@ -10,26 +10,25 @@ const src = (p: string) => readFileSync(p, 'utf8');
 
 test('Enrollments: EXPLORE MEMBERSHIP waits out the prompt Modal before the Paywall, once', () => {
   const s = src('src/screens/enrollment/EnrollmentScreen.tsx');
-  assert.match(s, /import \{ HOST_DISMISS_MS, Modal \} from '..\/..\/components\/DimModal';/);
+  // Pattern P5 (2026-10-02): the wait, the once-only and the drop-on-unmount
+  // now live in the shared useModalHandoff (behaviour: test/patternP5_20261002).
+  assert.match(s, /const payHandoff = useModalHandoff\(\);/);
   const at = s.indexOf('primaryLabel="EXPLORE MEMBERSHIP?"');
   assert.ok(at > 0);
   const block = s.slice(at, at + 900);
-  assert.match(block, /if \(payHandoff\.current\) return;/);
-  assert.match(block, /payHandoff\.current = setTimeout\(\(\) => \{\s*\n\s*payHandoff\.current = null;\s*\n\s*navigation\.navigate\('Paywall'\);\s*\n\s*\}, HOST_DISMISS_MS\);/);
+  assert.match(block, /setPayPrompt\(false\);\s*\n\s*payHandoff\(\(\) => navigation\.navigate\('Paywall'\)\);/);
   assert.doesNotMatch(block, /setPayPrompt\(false\);\s*\n\s*navigation\.navigate\('Paywall'\);/);
-  // …and the pending hand-off is dropped if the screen unmounts.
-  assert.match(s, /if \(payHandoff\.current\) clearTimeout\(payHandoff\.current\);/);
 });
 
 test('Home: RENEW on the expired-membership dialog waits out the dialog Modal, once', () => {
   const s = src('src/screens/courses/CourseSelectionScreen.tsx');
-  assert.match(s, /import \{ HOST_DISMISS_MS \} from '..\/..\/components\/DimModal';/);
+  // Pattern P5 (2026-10-02): through the shared useModalHandoff (waits
+  // HOST_DISMISS_MS, once, dropped on unmount — test/patternP5_20261002).
+  assert.match(s, /const renewHandoff = useModalHandoff\(\);/);
   const at = s.indexOf("'Membership Expired'");
   const block = s.slice(at, at + 700);
-  assert.match(block, /if \(renewHandoff\.current\) return;/);
-  assert.match(block, /\}, HOST_DISMISS_MS\);/);
+  assert.match(block, /\(\) => renewHandoff\(\(\) => \(navigation as any\)\.navigate\('Paywall'\)\),/);
   assert.doesNotMatch(block, /\(\) => \(navigation as any\)\.navigate\('Paywall'\),/);
-  assert.match(s, /if \(renewHandoff\.current\) clearTimeout\(renewHandoff\.current\);/);
 });
 
 test('Enrollments: CLEAR LIST also drops every certificate / program / subject', () => {
@@ -48,7 +47,9 @@ test('Low-Light / reduced motion: the Home shimmer, the chooser BACK sweep and t
   assert.match(awards, /\}, \[w, x, suppressed\]\);/);
 
   const glance = src('src/screens/curriculum/InsideStats.tsx');
-  assert.match(glance, /const anim = animationsAllowed\(\) && !suppressed;/);
+  // Pattern hunt P10 (2026-10-02): the motion read is now the SUBSCRIBED hook,
+  // so the toggle reaches a mounted hub; the Low-Light half is unchanged.
+  assert.match(glance, /const allowed = useAnimationsAllowed\(\);[^\n]*\n\s*const anim = allowed && !suppressed;/);
   for (const [f, s] of [['CourseSelectionScreen', home], ['AwardsScreen', awards], ['InsideStats', glance]] as const) {
     assert.match(s, /import \{ useOverlaysSuppressed \} from '..\/..\/features\/dev\/popupSuppressStore';/, f);
   }

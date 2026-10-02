@@ -240,8 +240,15 @@ export function useLabDone(labKey: string): boolean {
   useEffect(() => {
     const l = () => setV(isLabDone(labKey));
     listeners.add(l);
-    void hydrate().then(l);
+    // `live`: a hydrate that lands after this effect was replaced (a new key)
+    // or unmounted must not write the OLD key's value (pattern hunt P2/P11,
+    // 2026-10-02 — newest wins).
+    let live = true;
+    void hydrate().then(() => {
+      if (live) l();
+    });
     return () => {
+      live = false;
       listeners.delete(l);
     };
   }, [labKey]);
@@ -258,8 +265,15 @@ export function useLabClearedUnits(labKey: string): ReadonlySet<string> {
   useEffect(() => {
     const l = () => setV(read());
     listeners.add(l);
-    void hydrate().then(l);
+    // `live`: a hydrate that lands after this effect was replaced (a new key)
+    // or unmounted must not write the OLD key's value (pattern hunt P2/P11,
+    // 2026-10-02 — newest wins).
+    let live = true;
+    void hydrate().then(() => {
+      if (live) l();
+    });
     return () => {
+      live = false;
       listeners.delete(l);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -392,8 +406,14 @@ export function useLabCompletion(labKey: LabKey): { complete: boolean; cleared: 
   useEffect(() => {
     const l = () => setSnap(read());
     listeners.add(l);
-    void hydrate().then(l);
+    // `live`: the same newest-wins rule as useLabDone (pattern hunt P2/P11,
+    // 2026-10-02).
+    let live = true;
+    void hydrate().then(() => {
+      if (live) l();
+    });
     return () => {
+      live = false;
       listeners.delete(l);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

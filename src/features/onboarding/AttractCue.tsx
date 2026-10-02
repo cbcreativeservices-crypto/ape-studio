@@ -21,7 +21,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { animationsAllowed } from '../settings/a11y';
+import { useAnimationsAllowed } from '../settings/a11y';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 
 const HALF = 1600; // ms per half-cycle → ~3.2 s full breathe (calm, not gimmicky)
@@ -77,7 +77,8 @@ export function AttractRing({
    * fallback, so the cue survives without the movement.
    */
   const suppressed = useOverlaysSuppressed();
-  const motion = active && !suppressed && animationsAllowed();
+  const allowed = useAnimationsAllowed(); // subscribed — pattern hunt P10, 2026-10-02
+  const motion = active && !suppressed && allowed;
   const t = useBreathe(active, motion, 0.43); // 0.43 → ~0.6 static opacity
   const aStyle = useAnimatedStyle(() => ({ opacity: 0.3 + t.value * 0.7 }));
   void persistent; // documentation for the caller; the ring itself is stateless
@@ -115,7 +116,8 @@ export function AttractText({
   // was corrected and the About text beside it kept breathing in Low-Light
   // Production Mode, where nothing may draw attention to itself unbidden.
   const suppressed = useOverlaysSuppressed();
-  const motion = active && !suppressed && animationsAllowed();
+  const allowed = useAnimationsAllowed(); // subscribed — pattern hunt P10, 2026-10-02
+  const motion = active && !suppressed && allowed;
   const t = useBreathe(active, motion, 1);
   const aStyle = useAnimatedStyle(() => ({ opacity: 0.6 + t.value * 0.4 }));
   return (

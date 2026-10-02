@@ -23,6 +23,7 @@
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import {
   AlphaType,
   Canvas,
@@ -591,7 +592,7 @@ export function MembraneView(p: MembraneViewProps) {
         <View pointerEvents="none" style={glassOverlay}>
           <Text numberOfLines={1} style={[styles.lbl, { left: 10, top: 6 }]}>CUTAWAY · {p.cone.driver.label.toUpperCase()}</Text>
           <Text numberOfLines={1} style={[styles.lbl, { left: spk.fx - spk.fR - 10, top: 6, width: spk.fR * 2 + 20, textAlign: 'center' }]}>CONE FROM THE FRONT</Text>
-          <Text numberOfLines={1} style={[styles.lbl, { left: 10, top: height - 18, color: colors.textSub }]}>
+          <Text {...fitValue(12)} style={[styles.lbl, { left: 10, top: height - 18, color: colors.textSub }]}>
             excursion {Math.round(p.cone.read.excursion * 100)} % of resonance · ka {p.cone.read.ka.toFixed(2)}
             {p.cone.read.beamDeg != null ? ` · beam ≈ ${p.cone.read.beamDeg}°` : ' · omnidirectional'}
           </Text>
@@ -599,7 +600,7 @@ export function MembraneView(p: MembraneViewProps) {
       ) : null}
       {!isSpeaker ? (
         <View pointerEvents="none" style={glassOverlay}>
-          <Text numberOfLines={1} style={[styles.lbl, { left: 10, top: height - 18, color: colors.textSub }]}>
+          <Text {...fitValue(12)} style={[styles.lbl, { left: 10, top: height - 18, color: colors.textSub }]}>
             {head.label.toUpperCase()} · Ø {spec.diameterMm} mm · {(spec.tensionNpm / 1000).toFixed(1)} kN/m{spec.kettle ? ' · KETTLE' : ''}
           </Text>
         </View>

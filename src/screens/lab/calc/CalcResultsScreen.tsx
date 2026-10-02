@@ -24,6 +24,7 @@ import { ReportCard } from './ReportCard';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useLatchedPress } from '../../../lib/latch';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -49,13 +50,17 @@ export function CalcResultsScreen() {
   // Only one card expands at a time, so one capture ref serves them all.
   const shareRef = useRef<View | null>(null);
 
-  const shareAsImage = async () => {
+  // One share sheet at a time (pattern P9, 2026-10-02): a double tap opened
+  // a second sheet, iOS refused it ("another share request is being
+  // processed"), captureAndShare answered false and the learner was told
+  // image sharing isn't available on this device.
+  const shareAsImage = useLatchedPress(async () => {
     const ok = await shareImage.captureAndShare(shareRef.current, 'Workflow results');
     if (!ok) {
       // notify, not Alert.alert: RN-web's Alert is a no-op (B-018/B-062).
       notify('Image sharing unavailable', 'Sharing as an image isn’t available on this device. SHARE AS TEXT works now.');
     }
-  };
+  });
 
   const reload = useCallback(() => {
     void workflowStore.listResults().then(setResults);

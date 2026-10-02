@@ -689,7 +689,7 @@ export function SignalGenDemo() {
                     <Line x1={0} y1={CREST_H / 2 + crestAmp} x2={svgW} y2={CREST_H / 2 + crestAmp} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 4" />
                     <Line x1={0} y1={CREST_H / 2} x2={svgW} y2={CREST_H / 2} stroke={ZERO_C} strokeWidth={1} />
                     <Path d={crestMusicD} stroke="url(#crestAmpA)" strokeWidth={1.4} fill="none" />
-                    <SvgText x={4} y={11} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={8.5} letterSpacing={1} fill={CALL_STEEL}>
+                    <SvgText x={4} y={11} textAnchor="start" fontFamily={fonts.oswaldSemiBold} fontSize={9} letterSpacing={1} fill={CALL_STEEL}>
                       SAME PEAK
                     </SvgText>
                   </Svg>

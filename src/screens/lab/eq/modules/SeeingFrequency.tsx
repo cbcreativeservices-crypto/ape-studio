@@ -310,7 +310,9 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
     stop();
   }, [stop]);
   // Straight into the live tool on open (owner 2026-08-01 auto-start rule).
-  useToolAutoStart(state, onStart);
+  // `stop` opts into the tools' background release + resume (pattern hunt
+  // P20, 2026-10-02): without it Home left the mic open behind the app.
+  useToolAutoStart(state, onStart, stop);
 
   const bands = frames.bands;
   const anyUnresolvable = bands != null && bands.resolvable.some((r) => !r);

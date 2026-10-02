@@ -123,6 +123,14 @@ function pendingNow(): number {
 
 /** Park a call that did not reach the server. Never throws. Resolves true only
  *  when the queue (with this call) is on the device. */
+/** The queue's identity generation (the account wipe bumps it). A caller
+ *  whose network call is still out when the wipe lands captures this before
+ *  the call and queues nothing when it has moved — the answer belonged to
+ *  the departing account (pattern hunt wave 3, 2026-10-02). */
+export function scenarioQueueGeneration(): number {
+  return store.generation();
+}
+
 export async function queueScenarioCall(item: ScenarioPending): Promise<boolean> {
   const ok = await store.mutate((items) =>
     // Above the cap the queue sheds the NEWEST (see MAX_PENDING).

@@ -39,10 +39,10 @@ const LOUDNORM: Workspace = {
     'this assumes you already measured it correctly.',
   glossary: ['LUFS', 'True Peak', 'Loudness', 'Dynamic Range', 'Gain Staging'],
   fields: [
-    { key: 'measured', name: 'MEASURED LOUDNESS (LUFS)', quantity: 'number', placeholder: '-9', help: 'Your program’s integrated loudness, in LUFS.' },
-    { key: 'target', name: 'TARGET LOUDNESS (LUFS)', quantity: 'number', placeholder: '-14', help: 'The platform’s loudness target, in LUFS.' },
-    { key: 'truePeak', name: 'CURRENT TRUE PEAK (dBTP)', quantity: 'number', placeholder: '-0.5', help: 'Your master’s measured true-peak level, in dBTP.' },
-    { key: 'ceiling', name: 'TRUE-PEAK CEILING (dBTP)', quantity: 'number', placeholder: '-1', help: 'The maximum true peak you’ll allow, in dBTP.' },
+    { key: 'measured', name: 'MEASURED LOUDNESS (LUFS)', quantity: 'number', signed: true, placeholder: '-9', help: 'Your program’s integrated loudness, in LUFS.' },
+    { key: 'target', name: 'TARGET LOUDNESS (LUFS)', quantity: 'number', signed: true, placeholder: '-14', help: 'The platform’s loudness target, in LUFS.' },
+    { key: 'truePeak', name: 'CURRENT TRUE PEAK (dBTP)', quantity: 'number', signed: true, placeholder: '-0.5', help: 'Your master’s measured true-peak level, in dBTP.' },
+    { key: 'ceiling', name: 'TRUE-PEAK CEILING (dBTP)', quantity: 'number', signed: true, placeholder: '-1', help: 'The maximum true peak you’ll allow, in dBTP.' },
   ],
   functions: [
     {
@@ -120,10 +120,10 @@ const LOUDTP: Workspace = {
   glossary: ['LUFS', 'True Peak', 'K-weighting', 'Loudness', 'Gating'],
   fields: [
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate, to size the measurement windows.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'lufsA', name: 'LOUDNESS A (LUFS)', quantity: 'number', placeholder: '-14', help: 'First loudness value to compare, in LUFS.' },
-    { key: 'lufsB', name: 'LOUDNESS B (LUFS)', quantity: 'number', placeholder: '-20', help: 'Second loudness value to compare, in LUFS.' },
-    { key: 'samplePeak', name: 'SAMPLE PEAK (dBFS)', quantity: 'number', placeholder: '-0.1', help: 'The peak read by a sample-based meter, in dBFS.' },
-    { key: 'lossy', name: 'LOSSY DELIVERY?', quantity: 'number', placeholder: '0', help: 'Enter 1 if the target is a lossy codec (MP3/AAC), 0 if lossless.' },
+    { key: 'lufsA', name: 'LOUDNESS A (LUFS)', quantity: 'number', signed: true, placeholder: '-14', help: 'First loudness value to compare, in LUFS.' },
+    { key: 'lufsB', name: 'LOUDNESS B (LUFS)', quantity: 'number', signed: true, placeholder: '-20', help: 'Second loudness value to compare, in LUFS.' },
+    { key: 'samplePeak', name: 'SAMPLE PEAK (dBFS)', quantity: 'number', signed: true, placeholder: '-0.1', help: 'The peak read by a sample-based meter, in dBFS.' },
+    { key: 'lossy', name: 'LOSSY DELIVERY?', quantity: 'number', nonNegative: true, integer: true, range: [0, 1], placeholder: '0', help: 'Enter 1 if the target is a lossy codec (MP3/AAC), 0 if lossless.' },
   ],
   functions: [
     {

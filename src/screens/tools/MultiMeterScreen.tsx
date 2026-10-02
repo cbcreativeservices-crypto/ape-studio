@@ -52,7 +52,8 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { AppState, BackHandler, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { AppState, Image, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { Modal } from '../../components/DimModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
@@ -93,6 +94,7 @@ import {
 } from './multiMeterDetect';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingText } from '../../theme/readingColumn';
+import { useLatchedPress } from '../../lib/latch';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MultiMeter'>;
 
@@ -620,15 +622,13 @@ export function MultiMeterScreen({ navigation }: Props) {
   const [unitMode, setUnitMode] = useState<UnitMode>('C');
   const [unitPopup, setUnitPopup] = useState(false);
   // The READOUT MODE popup is an in-screen overlay, not a Modal, so Android
-  // BACK went past it and left the tool. BACK closes the popup first.
-  useEffect(() => {
-    if (!unitPopup) return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      setUnitPopup(false);
-      return true;
-    });
-    return () => sub.remove();
-  }, [unitPopup]);
+  // BACK went past it and left the tool. BACK closes the popup first — only
+  // while the meter is focused (pattern hunt P13, 2026-10-02).
+  const closeUnitPopupOnBack = useCallback(() => {
+    setUnitPopup(false);
+    return true;
+  }, []);
+  useBackWhileFocused(unitPopup, closeUnitPopupOnBack);
   const cal = useSplCalibration();
   const splOffset = cal?.offsetDb ?? NOMINAL_OFFSET;
   const calibrated = cal?.offsetDb != null;
@@ -900,7 +900,7 @@ export function MultiMeterScreen({ navigation }: Props) {
   const [photoBlocked, setPhotoBlocked] = useState(false);
   const [locationBlocked, setLocationBlocked] = useState(false);
 
-  const onAddPhoto = useCallback(async () => {
+  const addPhotoNow = useCallback(async () => {
     const r = await photoFlow.request();
     if (r === 'granted') {
       setPhotoBlocked(false);
@@ -911,7 +911,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     }
   }, [photoFlow]);
 
-  const onTagLocation = useCallback(async () => {
+  const tagLocationNow = useCallback(async () => {
     const r = await locationFlow.request();
     if (r === 'granted') {
       setLocationBlocked(false);
@@ -921,6 +921,11 @@ export function MultiMeterScreen({ navigation }: Props) {
       setLocationBlocked(true);
     }
   }, [locationFlow]);
+  // One camera / one location fix per tap (pattern P9, 2026-10-02): a double
+  // tap on ADD PHOTO launched the system camera twice — the second launch is
+  // refused mid-presentation — and ran the permission explainer twice.
+  const onAddPhoto = useLatchedPress(addPhotoNow);
+  const onTagLocation = useLatchedPress(tagLocationNow);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
@@ -1052,11 +1057,16 @@ export function MultiMeterScreen({ navigation }: Props) {
       quality_state: evaluateQuality(draft.flags),
       warning_flags: draft.flags,
       data_payload: payload,
+    }).then((ok) => {
+      // SNAPSHOT SAVED ✓ only from a true write (pattern hunt wave 3,
+      // 2026-10-02): a save refused during an account switch answered false
+      // in silence.
+      if (!ok) return;
+      setJustSaved(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
     setDraft(null);
-    setJustSaved(true);
-    if (savedTimer.current) clearTimeout(savedTimer.current);
-    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     // saveGate / calibrated / splOffset were missing (bug hunt 2026-09-29): a
     // stale closure saved the pre-calibration status and offset, and kept a
     // stale lock verdict after the entitlement resolved.

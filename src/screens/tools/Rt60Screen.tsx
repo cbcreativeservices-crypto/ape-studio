@@ -462,10 +462,14 @@ export function Rt60Screen({ navigation }: Props) {
         decayDb,
         decayStepSec: rt60.curveStepSec * stride,
       },
+    }).then((ok) => {
+      // SAVED ✓ only from a true write (pattern hunt wave 3, 2026-10-02): a
+      // save refused during an account switch answered false in silence.
+      if (!ok) return;
+      setJustSaved(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-    setJustSaved(true);
-    if (savedTimer.current) clearTimeout(savedTimer.current);
-    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
   };
 
   /** Input-level bar geometry (armed/recording panel): the SAME zFastDb value

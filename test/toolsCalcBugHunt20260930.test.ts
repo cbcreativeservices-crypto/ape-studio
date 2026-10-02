@@ -82,7 +82,8 @@ test('MultiMeter: no snapshot off a dead mic; START from pause keeps the panels;
   const src = read('screens/tools/MultiMeterScreen.tsx');
   assert.match(src, /m == null \|\| !frameIsLive\(m\) \|\|/);
   assert.doesNotMatch(src, /const onStart = useCallback\(\(\) => \{\s*setMicPaused\(false\);/);
-  assert.match(src, /if \(!unitPopup\) return;\s*const sub = BackHandler\.addEventListener/);
+  // Focus-scoped hook since pattern hunt P13 (2026-10-02): registered only while the popup is open.
+  assert.match(src, /setUnitPopup\(false\);\s*return true;\s*\}, \[\]\);\s*useBackWhileFocused\(unitPopup, closeUnitPopupOnBack\);/);
 });
 
 test('RT60: STOP / leaving disarms the native capture; re-arm needs a live mic; dead-capture flags latch', () => {

@@ -153,8 +153,15 @@ export function useLabVisits(labId: string): ReadonlySet<string> {
   useEffect(() => {
     const l = () => setV(read());
     listeners.add(l);
-    void hydrate().then(l);
+    // `live`: a hydrate that lands after this effect was replaced (a new key)
+    // or unmounted must not write the OLD key's value (pattern hunt P2/P11,
+    // 2026-10-02 — newest wins).
+    let live = true;
+    void hydrate().then(() => {
+      if (live) l();
+    });
     return () => {
+      live = false;
       listeners.delete(l);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

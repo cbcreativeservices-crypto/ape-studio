@@ -41,6 +41,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import Animated from 'react-native-reanimated';
 import Svg, { Circle, Line } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
@@ -462,7 +463,7 @@ export function GearKnob({
           One row rather than two keeps the strip's height unchanged. */}
       <View style={s.knobHead} pointerEvents="none">
         <Text style={s.legend}>{legend}</Text>
-        <Text style={s.knobValue} numberOfLines={1}>
+        <Text style={s.knobValue} {...fitValue(10.5)}>
           {fmt(value)}
         </Text>
       </View>

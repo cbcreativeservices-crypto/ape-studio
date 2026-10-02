@@ -21,6 +21,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { captureAndShare, isAvailable as canShareImage } from '../../screens/lab/calc/shareImage';
+import { useInFlightLatch, useLatchedPress } from '../../lib/latch';
 import { colors, fonts } from '../../theme/tokens';
 import { CARD_W, CredentialShareCard } from './CredentialShareCard';
 import {
@@ -80,14 +81,14 @@ export function CredentialShareRow({
     };
   }, [loadNonce]);
 
-  const copy = useCallback(async () => {
+  const copyNow = useCallback(async () => {
     setBusy('copy');
     const res = await copyRegistryLink();
     setBusy(null);
     onMessage(res.ok ? 'Link copied.' : shareOutcomeMessage(res, 'link'));
   }, [onMessage]);
 
-  const link = useCallback(async () => {
+  const linkNow = useCallback(async () => {
     setBusy('link');
     const res = await shareRegistryLink(credentialName ?? undefined);
     setBusy(null);
@@ -95,7 +96,7 @@ export function CredentialShareRow({
     onMessage(res.ok ? null : shareOutcomeMessage(res, 'link'));
   }, [credentialName, onMessage]);
 
-  const qr = useCallback(async () => {
+  const qrNow = useCallback(async () => {
     /**
      * NO TOKEN, NO CARD (full-app run 1, 2026-10-01). Tapped before the reads
      * above landed — or after a read that came back empty — the card was
@@ -128,6 +129,16 @@ export function CredentialShareRow({
     // is true either way rather than guessing.
     onMessage(ok ? null : 'Could not share the QR image. You can copy the link instead.');
   }, [token, nameFailed, url, onMessage]);
+
+  // ONE share at a time across all three buttons (pattern P9, 2026-10-02).
+  // `busy` is state, so a same-frame double tap — or SHARE LINK then SHARE QR —
+  // started a second share while the first sheet was opening; iOS refused it
+  // and the row reported "Could not share the QR image" for a share that was
+  // in fact on screen. The latch is a ref, claimed inside the tap.
+  const shareLatch = useInFlightLatch();
+  const copy = useLatchedPress(copyNow, shareLatch);
+  const link = useLatchedPress(linkNow, shareLatch);
+  const qr = useLatchedPress(qrNow, shareLatch);
 
   const imageAvailable = canShareImage();
 

@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt } from '../calcUnits';
+import { fmt, fmtCount, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
@@ -52,11 +52,11 @@ const WS_SPL_DIST: Workspace = {
     'never as a venue prediction.',
   glossary: ['Sound Pressure Level', 'Decibel', 'Inverse Square Law', 'Free field', 'Critical distance'],
   fields: [
-    { key: 'l1', name: 'KNOWN LEVEL L₁', quantity: 'spl', placeholder: '100', help: 'The measured or specified level at the reference distance.' },
+    { key: 'l1', name: 'KNOWN LEVEL L₁', quantity: 'spl', signed: true, placeholder: '100', help: 'The measured or specified level at the reference distance.' },
     { key: 'd1', name: 'REFERENCE DISTANCE d₁', quantity: 'length', placeholder: '1', help: 'The distance at which L₁ was measured (often 1 m on spec sheets).', warn: { test: (x) => x <= 0, msg: 'Reference distance must be greater than zero.' } },
     { key: 'd2', name: 'NEW DISTANCE d₂', quantity: 'length', placeholder: '8', help: 'The distance where you want to know (or set) the level.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'rate', name: 'FALLOFF PER DOUBLING', quantity: 'db', nonNegative: true, placeholder: '4.5', help: 'dB lost each time distance doubles: 6 = point source, 3 = ideal line source, real arrays land between.' },
-    { key: 'lTarget', name: 'TARGET LEVEL AT d₂', quantity: 'spl', placeholder: '96', help: 'The level you want the listener at d₂ to receive.' },
+    { key: 'lTarget', name: 'TARGET LEVEL AT d₂', quantity: 'spl', signed: true, placeholder: '96', help: 'The level you want the listener at d₂ to receive.' },
   ],
   functions: [
     {
@@ -203,12 +203,12 @@ const WS_SPL_ADD: Workspace = {
     'not. Real multi-speaker systems live between the two models and vary by position.',
   glossary: ['Sound Pressure Level', 'Decibel', 'Summation', 'Phase', 'Correlation'],
   fields: [
-    { key: 'levels', name: 'SOURCE LEVELS', quantity: 'list', placeholder: '95, 92, 88', help: 'The individual levels in dB SPL, comma-separated — one per source.' },
-    { key: 'lvl', name: 'LEVEL OF ONE SOURCE', quantity: 'spl', placeholder: '95', help: 'The level a single one of the identical sources produces at the listening position.' },
-    { key: 'count', name: 'NUMBER OF SOURCES', quantity: 'number', nonNegative: true, placeholder: '4', help: 'How many identical, uncorrelated sources are running.', warn: { test: (x) => x < 1, msg: 'Need at least one source.' } },
-    { key: 'delta', name: 'TARGET INCREASE', quantity: 'db', placeholder: '6', help: 'How many dB louder than ONE source you want the combined total to be.' },
-    { key: 'la', name: 'LOUDER SOURCE', quantity: 'spl', placeholder: '95', help: 'Level of the first source at the listening position.' },
-    { key: 'lb', name: 'QUIETER SOURCE', quantity: 'spl', placeholder: '84', help: 'Level of the second source at the listening position.' },
+    { key: 'levels', name: 'SOURCE LEVELS', quantity: 'list', signed: true, placeholder: '95, 92, 88', help: 'The individual levels in dB SPL, comma-separated — one per source.' },
+    { key: 'lvl', name: 'LEVEL OF ONE SOURCE', quantity: 'spl', signed: true, placeholder: '95', help: 'The level a single one of the identical sources produces at the listening position.' },
+    { key: 'count', name: 'NUMBER OF SOURCES', quantity: 'number', nonNegative: true, integer: true, placeholder: '4', help: 'How many identical, uncorrelated sources are running.', warn: { test: (x) => x < 1, msg: 'Need at least one source.' } },
+    { key: 'delta', name: 'TARGET INCREASE', quantity: 'db', nonNegative: true, placeholder: '6', help: 'How many dB louder than ONE source you want the combined total to be.' },
+    { key: 'la', name: 'LOUDER SOURCE', quantity: 'spl', signed: true, placeholder: '95', help: 'Level of the first source at the listening position.' },
+    { key: 'lb', name: 'QUIETER SOURCE', quantity: 'spl', signed: true, placeholder: '84', help: 'Level of the second source at the listening position.' },
   ],
   functions: [
     {
@@ -277,8 +277,8 @@ const WS_SPL_ADD: Workspace = {
       steps: (v) => {
         const N = n(v.count);
         return [
-          `${fmt(N)} equal energies add to ${fmt(N)}× the energy of one source.`,
-          `10 × log10(${fmt(N)}) = ${fmt(10 * Math.log10(N))} dB of gain.`,
+          `${fmtCount(N)} equal energies add to ${fmtCount(N)}× the energy of one source.`,
+          `10 × log10(${fmtCount(N)}) = ${fmt(10 * Math.log10(N))} dB of gain.`,
           `Ltot = ${fmt(n(v.lvl))} + ${fmt(10 * Math.log10(N))} = ${fmt(n(v.lvl) + 10 * Math.log10(N))} dB SPL.`,
         ];
       },
@@ -299,7 +299,7 @@ const WS_SPL_ADD: Workspace = {
           { label: 'EXACT SOURCE MULTIPLE', value: N, quantity: 'number', chainable: false },
           {
             label: 'PRACTICAL ANSWER',
-            text: `You need ${fmt(Math.ceil(N), 6)} sources (next whole number above ${fmt(N)}×) to gain at least ${fmt(n(v.delta))} dB over one source.`,
+            text: `You need ${fmtCount(Math.ceil(snapWhole(N)))} sources (next whole number above ${fmt(N)}×) to gain at least ${fmt(n(v.delta))} dB over one source.`,
           },
         ];
       },
@@ -308,7 +308,7 @@ const WS_SPL_ADD: Workspace = {
         const N = Math.pow(10, d / 10);
         return [
           `A ${fmt(d)} dB increase is an energy ratio of 10^(${fmt(d)}/10) = ${fmt(N)}×.`,
-          `Uncorrelated sources contribute equal energy, so you need ${fmt(N)}× the sources — round up to ${fmt(Math.ceil(N), 6)} in practice.`,
+          `Uncorrelated sources contribute equal energy, so you need ${fmt(N)}× the sources — round up to ${fmtCount(Math.ceil(snapWhole(N)))} in practice.`,
         ];
       },
     },
@@ -385,8 +385,8 @@ const WS_DOSE: Workspace = {
     'conservation programs — talk to a qualified professional for anything real.',
   glossary: ['Sound Pressure Level', 'Decibel', 'A weighting', 'Leq', 'Exposure', 'Exchange rate'],
   fields: [
-    { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
-    { key: 'doseLevels', name: 'INTERVAL LEVELS', quantity: 'list', placeholder: '85, 94, 100', help: 'A-weighted level (dBA) of each interval, comma-separated — paired by position with the durations below.' },
+    { key: 'lex', name: 'EXPOSURE LEVEL', quantity: 'spl', signed: true, placeholder: '94', help: 'The A-weighted level (dBA) the person is exposed to.' },
+    { key: 'doseLevels', name: 'INTERVAL LEVELS', quantity: 'list', signed: true, placeholder: '85, 94, 100', help: 'A-weighted level (dBA) of each interval, comma-separated — paired by position with the durations below.' },
     { key: 'doseMins', name: 'INTERVAL DURATIONS', quantity: 'list', nonNegative: true, placeholder: '240, 90, 30', help: 'Duration of each interval in MINUTES, comma-separated — same order as the levels.' },
   ],
   functions: [
@@ -673,12 +673,12 @@ const WS_MIC_GAIN: Workspace = {
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
     { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity & Output.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
-    { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
-    { key: 'target', name: 'TARGET LEVEL', quantity: 'db', placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
+    { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', signed: true, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
+    { key: 'target', name: 'TARGET LEVEL', quantity: 'db', signed: true, placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     // nonNegative (full-app run 2, 2026-10-01): a −12 dB "headroom" ADDED 12 dB
     // to the recommended gain — peaks then clipped 12 dB past the target.
     { key: 'headroom', name: 'HEADROOM', quantity: 'db', nonNegative: true, placeholder: '12', help: 'Safety margin left below the target for peaks — subtracted from the required gain.' },
-    { key: 'maxIn', name: 'PREAMP MAX INPUT', quantity: 'db', placeholder: '10', help: 'The preamp input clip point in dBu (from its spec sheet).' },
+    { key: 'maxIn', name: 'PREAMP MAX INPUT', quantity: 'db', signed: true, placeholder: '10', help: 'The preamp input clip point in dBu (from its spec sheet).' },
   ],
   functions: [
     {

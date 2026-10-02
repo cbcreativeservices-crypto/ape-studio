@@ -108,7 +108,8 @@ describe('P5 — haptics OFF and unhandled rejections', () => {
 describe('P6 — the study full-screen guide never counts before it has read', () => {
   test('guideLoaded gates the showing', () => {
     const src = code('src/components/StudyFsOverlay.tsx');
-    assert.match(src, /\.finally\(\(\) => \{\s*guideLoaded\.current = true;\s*\}\)/);
+    // Pattern hunt P2 (2026-10-02): + `alive` (a previous key's read cannot land).
+    assert.match(src, /\.finally\(\(\) => \{\s*if \(alive\) guideLoaded\.current = true;\s*\}\)/);
     assert.match(src, /visible && !wasVisible\.current && guideLoaded\.current && guideCount\.current < 2/);
   });
 });

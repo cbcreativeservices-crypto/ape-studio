@@ -248,9 +248,23 @@ export function saveMeasurement(m: SavedMeasurement): Promise<boolean> {
   // let it continue afterwards and write the PREVIOUS account's record into
   // the freshly wiped store — the next account's library then opened on it.
   const gen = generation;
-  if (wipesRunning > 0) return Promise.resolve(false); // see clearStoredMeasurements
+  // A save the account switch refused is SAID too (pattern hunt wave 3,
+  // 2026-10-02, class P6): both fences below answered false in silence while
+  // the tool flashed "SAVED ✓" on the next line.
+  const refusedBySwitch = () =>
+    reportSaveFailure?.(
+      'Measurement not saved',
+      'The account on this device changed while this measurement was being saved, so it was not written. Take it again.',
+    );
+  if (wipesRunning > 0) {
+    refusedBySwitch(); // see clearStoredMeasurements
+    return Promise.resolve(false);
+  }
   return hydrate().then(async () => {
-    if (gen !== generation) return false;
+    if (gen !== generation) {
+      refusedBySwitch();
+      return false;
+    }
     const next = [...list, m];
     // Enforce the cap oldest-first (by created_at).
     let dropped: SavedMeasurement[] = [];

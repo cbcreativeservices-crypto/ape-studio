@@ -76,7 +76,11 @@ export function CalcWorkflowEditScreen() {
   // Load the workflow being edited (new = blank).
   useEffect(() => {
     if (!editingId) return;
+    // Only the CURRENT workflow's load may fill the form (pattern hunt P2/P11,
+    // 2026-10-02): new params or an unmount retire this read.
+    let alive = true;
     void workflowStore.listWorkflows().then((list) => {
+      if (!alive) return;
       const w = list.find((x) => x.id === editingId);
       if (!w) return;
       setName(w.name);
@@ -84,6 +88,9 @@ export function CalcWorkflowEditScreen() {
       setSteps(w.steps);
       setCreatedAt(w.createdAt);
     });
+    return () => {
+      alive = false;
+    };
   }, [editingId]);
 
   const catalog = useMemo(listCalculators, []);

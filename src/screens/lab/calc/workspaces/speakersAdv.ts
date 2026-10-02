@@ -135,8 +135,8 @@ const LINEARRAY: Workspace = {
   fields: [
     { key: 'arrayLen', name: 'ARRAY LENGTH', quantity: 'length', placeholder: '2', help: 'Top-to-bottom acoustic length of the array.', warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
     { key: 'spacing', name: 'ELEMENT SPACING', quantity: 'length', defaultUnit: 'cm', placeholder: '25', help: 'Centre-to-centre distance between array elements.', warn: { test: (x) => x <= 0, msg: 'Spacing must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound.' },
-    { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', placeholder: '100', help: 'Measured SPL at the reference distance.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'splRef', name: 'SPL AT REFERENCE', quantity: 'spl', signed: true, placeholder: '100', help: 'Measured SPL at the reference distance.' },
     { key: 'refDist', name: 'REFERENCE DISTANCE', quantity: 'length', placeholder: '4', help: 'Distance where the reference SPL was measured.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
     { key: 'farDist', name: 'LISTENER DISTANCE', quantity: 'length', placeholder: '16', help: 'Distance to evaluate the SPL at.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
   ],
@@ -264,7 +264,7 @@ const DRIVER: Workspace = {
     { key: 'vb', name: 'BOX VOLUME (Vb)', quantity: 'volume', defaultUnit: 'l', placeholder: '30', help: 'Internal net volume of the enclosure.', warn: { test: (x) => x <= 0, msg: 'Box volume must be greater than zero.' } },
     { key: 'av', name: 'PORT AREA', quantity: 'area', defaultUnit: 'm2', placeholder: '0.005', help: 'Cross-sectional area of the vent.', warn: { test: (x) => x <= 0, msg: 'Port area must be greater than zero.' } },
     { key: 'lv', name: 'PORT LENGTH', quantity: 'length', defaultUnit: 'cm', placeholder: '15', help: 'Physical length of the vent tube.', warn: { test: (x) => x <= 0, msg: 'Port length must be greater than zero.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound (vented tuning).' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound (vented tuning).' },
     { key: 'fbTarget', name: 'TARGET BOX TUNING (fb)', quantity: 'frequency', placeholder: '35', help: 'The vented tuning frequency you want.', warn: { test: (x) => x <= 0, msg: 'fb must be greater than zero.' } },
   ],
   functions: [

@@ -16,7 +16,7 @@ import { memo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { CalcFunction, CalcTable, CalcValues, FieldDef, OutputVal } from './calcTypes';
-import { NEGATIVE_MSG, fmt, isNonNegativeField, negativeInput, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
+import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, negativeInput, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
 
 
 export function defaultUnitIdx(f: FieldDef): number {
@@ -62,6 +62,9 @@ export type ComputeResult = {
   computeError: boolean;
   /** Name of the input that made computeError by being negative (else null). */
   negativeField?: string | null;
+  /** P16: the sentence for an input its field's declared domain refuses — a
+   *  fraction in a whole-number count, or a value outside a ranged field. */
+  inputError?: string | null;
 };
 
 /** Compute once, guarded — a throwing formula (or one whose every number is
@@ -71,6 +74,10 @@ export function runCompute(fn: CalcFunction | null, values: CalcValues | null, f
   // An impossible negative is an ERROR, never a wrong-signed answer.
   const neg = fields ? negativeInput(fn, values, fields) : null;
   if (neg) return { outputs: [], steps: [], table: null, computeError: true, negativeField: neg.name };
+  // A fractional count / out-of-range value is an ERROR too (P16, 2026-10-02):
+  // 2.5 speakers was silently floored to 2, a MIDI note of 200 answered.
+  const domain = fields ? domainError(fn, values, fields) : null;
+  if (domain) return { outputs: [], steps: [], table: null, computeError: true, inputError: domain };
   try {
     const outputs = fn.compute(values);
     // A result with numbers in it where EVERY number is NaN/∞ is not an answer
@@ -157,11 +164,14 @@ export const FieldRow = memo(
     const baseVal = isList || typed === null ? NaN : unit.toBase(typed);
     const negative =
       isNonNegativeField(field) && (isList ? parseList(raw).some((x) => x < 0) : Number.isFinite(baseVal) && baseVal < 0);
+    const domain = isList || !Number.isFinite(baseVal) ? null : domainMsg(field, baseVal);
     const warn = negative
       ? NEGATIVE_MSG
-      : field.warn && Number.isFinite(baseVal) && field.warn.test(baseVal)
-        ? field.warn.msg
-        : null;
+      : domain
+        ? domain
+        : field.warn && Number.isFinite(baseVal) && field.warn.test(baseVal)
+          ? field.warn.msg
+          : null;
     // Say WHY nothing is being calculated. The strict parser is deliberately
     // silent about input it cannot read, and silence on its own reads as a
     // broken calculator to someone who has just filled the field in.

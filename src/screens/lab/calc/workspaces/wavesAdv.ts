@@ -4,7 +4,7 @@
  * Section 'waves'. Same pattern as wave.ts.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, speedOfSoundAir } from '../calcUnits';
+import { fmt, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -38,7 +38,7 @@ const ALIGN: Workspace = {
   glossary: ['Phase', 'Delay', 'Comb Filtering', 'Crossover', 'Wavelength'],
   fields: [
     { key: 'offset', name: 'PATH OFFSET', quantity: 'length', placeholder: '1.2', help: 'How much farther one source is than the other.', warn: { test: (x) => x < 0, msg: 'Offset cannot be negative.' } },
-    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', placeholder: '20', help: 'Sets the speed of sound.' },
+    { key: 'temp', name: 'AIR TEMPERATURE', quantity: 'temperature', signed: true, placeholder: '20', help: 'Sets the speed of sound.' },
     { key: 'freq', name: 'FREQUENCY', quantity: 'frequency', placeholder: '80', help: 'Frequency to evaluate the phase relationship at (e.g. the crossover).', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'For the delay expressed in samples.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'delay', name: 'DELAY', quantity: 'time', defaultUnit: 'ms', placeholder: '3.5', help: 'A delay time to convert back into a path distance.', warn: { test: (x) => x < 0, msg: 'Delay cannot be negative.' } },
@@ -83,7 +83,7 @@ const ALIGN: Workspace = {
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const wl = c / n(v.freq);
-        const phase = ((360 * n(v.offset)) / wl) % 360;
+        const phase = snapWhole((360 * n(v.offset)) / wl) % 360;
         return [
           { label: 'PHASE OFFSET', value: phase, quantity: 'angle' },
           { label: 'OFFSET IN WAVELENGTHS', value: n(v.offset) / wl, quantity: 'number', chainable: false },
@@ -92,7 +92,7 @@ const ALIGN: Workspace = {
       steps: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const wl = c / n(v.freq);
-        const phase = ((360 * n(v.offset)) / wl) % 360;
+        const phase = snapWhole((360 * n(v.offset)) / wl) % 360;
         const near = Math.min(phase, 360 - phase);
         return [
           `Wavelength at ${fmt(n(v.freq))} Hz = ${fmt(c)} ÷ ${fmt(n(v.freq))} = ${fmt(wl)} m.`,

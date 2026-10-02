@@ -65,16 +65,23 @@ export function TopicsScreen() {
     navigation.goBack();
   }, [navigation]);
 
+  // Only the NEWEST focus load may land (pattern hunt P2, 2026-10-02): a
+  // quick leave-and-return overlaps two fetches, and the older one landing
+  // last put back the earlier trophy counts.
+  const loadSeq = useRef(0);
   useFocusEffect(
     useCallback(() => {
+      const my = ++loadSeq.current;
       setLoadError(false);
       fetchTopicAchievements()
         .then(({ fields, earnedTotal, totalCount }) => {
+          if (my !== loadSeq.current) return;
           setFields(fields);
           setEarnedTotal(earnedTotal);
           setTotal(totalCount);
         })
         .catch(() => {
+          if (my !== loadSeq.current) return;
           // Keep what is on screen (bug pass 1, 2026-09-30): this refetches on
           // every focus, so one offline return wiped the earned-trophy list to
           // an error. The error is for the empty state only (AchievementsHome).

@@ -34,7 +34,8 @@
  * its inline drawing while this is up so only one copy ever draws.
  */
 import { Children, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { BackHandler, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { lockLandscape, lockPortrait } from '../../lib/screenOrientationSafe';
 import { useLandscapeGrace } from '../../components/LandscapeRequiredNotice';
@@ -103,19 +104,20 @@ export function useToolFullScreen(navigation: OrientationNav, interceptBack?: ()
 
   const interceptRef = useRef(interceptBack);
   interceptRef.current = interceptBack;
-  useEffect(() => {
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (interceptRef.current?.()) return true;
-      // While closing too: a second BACK inside the ≤700 ms rotate-out used to
-      // fall through and pop the whole tool.
-      if (open) {
-        if (!closing) setClosing(true);
-        return true;
-      }
-      return false;
-    });
-    return () => sub.remove();
+  // Focus-scoped (pattern hunt P13, 2026-10-02): with a tray open in the tool
+  // and Help / the library / the Paywall pushed on top, BACK closed the hidden
+  // tray and the screen on top stayed.
+  const onFsBack = useCallback(() => {
+    if (interceptRef.current?.()) return true;
+    // While closing too: a second BACK inside the ≤700 ms rotate-out used to
+    // fall through and pop the whole tool.
+    if (open) {
+      if (!closing) setClosing(true);
+      return true;
+    }
+    return false;
   }, [open, closing]);
+  useBackWhileFocused(true, onFsBack);
 
   const openFs = useCallback(() => {
     setClosing(false);

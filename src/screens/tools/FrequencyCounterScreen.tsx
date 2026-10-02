@@ -646,10 +646,14 @@ function LivePitchMode({
         minFreq: s.minFreq,
         maxFreq: s.maxFreq,
       },
+    }).then((ok) => {
+      // SAVED ✓ only from a true write (pattern hunt wave 3, 2026-10-02): a
+      // save refused during an account switch answered false in silence.
+      if (!ok) return;
+      setJustSaved(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-    setJustSaved(true);
-    if (savedTimer.current) clearTimeout(savedTimer.current);
-    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
   }, [state, frames.pitch, frames.meter, saveGate, saveLatch]);
 
   if (state === 'absent' || state === 'spike' || state === 'denied' || state === 'error') {
@@ -1183,10 +1187,13 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
         minFreq: stats.minFreq,
         maxFreq: stats.maxFreq,
       },
+    }).then((ok) => {
+      // SAVED ✓ only from a true write (pattern hunt wave 3, 2026-10-02).
+      if (!ok) return;
+      setJustSaved(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-    setJustSaved(true);
-    if (savedTimer.current) clearTimeout(savedTimer.current);
-    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
   }, [stats, flags, saveGate, saveLatch]);
 
   return (

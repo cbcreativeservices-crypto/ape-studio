@@ -76,7 +76,9 @@ test('a tier change drops cached detail bodies and the charged set', () => {
 test('the weekly lock stands aside for the Paywall', () => {
   assert.match(screen, /visible=\{locked && isFocused && !lockHandoff\}/);
   const hand = screen.slice(screen.indexOf('onMembership={() => {'));
-  assert.match(hand.slice(0, 900), /setLockHandoff\(true\);[\s\S]*HOST_DISMISS_MS/);
+  // Waits out the lock's fade through the shared hand-off (pattern P5, 2026-10-02).
+  assert.match(hand.slice(0, 900), /setLockHandoff\(true\);\s*paywallHandoff\(\(\) => [^\n]*\.navigate\('Paywall'\)\);/);
+  assert.match(screen, /const paywallHandoff = useModalHandoff\(\);/);
 });
 
 test('the lock expiry re-check fires once per tick', () => {

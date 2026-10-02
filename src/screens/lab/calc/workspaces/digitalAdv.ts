@@ -4,7 +4,7 @@
  * Convolution Resources. Section 'digital'. Same pattern as wave.ts.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt } from '../calcUnits';
+import { fmt, fmtCount, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -124,9 +124,9 @@ const NETAUDIO: Workspace = {
     'and switch; treat the wire figure as an estimate.',
   glossary: ['Sample Rate', 'Bit Depth', 'Bandwidth', 'Latency', 'Packet'],
   fields: [
-    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, placeholder: '64', help: 'Number of audio channels in one direction.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
+    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '64', help: 'Number of audio channels in one direction.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of each channel.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'bitdepth', name: 'BIT DEPTH', quantity: 'bitdepth', placeholder: '24', help: 'Bits per sample carried on the wire.', warn: { test: (x) => x <= 0, msg: 'Bit depth must be greater than zero.' } },
+    { key: 'bitdepth', name: 'BIT DEPTH', quantity: 'bitdepth', integer: true, placeholder: '24', help: 'Bits per sample carried on the wire.', warn: { test: (x) => x <= 0, msg: 'Bit depth must be greater than zero.' } },
     { key: 'packetms', name: 'PACKET TIME', quantity: 'time', defaultUnit: 'ms', placeholder: '1', help: 'Audio time carried per packet — smaller = lower latency, more overhead.', warn: { test: (x) => x <= 0, msg: 'Packet time must be greater than zero.' } },
   ],
   functions: [
@@ -150,7 +150,7 @@ const NETAUDIO: Workspace = {
       steps: (v) => {
         const raw = n(v.channels) * n(v.sr) * n(v.bitdepth);
         return [
-          `Raw = ${fmt(n(v.channels))} ch × ${fmt(n(v.sr))} Hz × ${fmt(n(v.bitdepth))} bit = ${fmt(raw / 1e6)} Mbit/s.`,
+          `Raw = ${fmtCount(n(v.channels))} ch × ${fmt(n(v.sr))} Hz × ${fmtCount(n(v.bitdepth))} bit = ${fmt(raw / 1e6)} Mbit/s.`,
           `That is one direction; a full-duplex flow needs it both ways.`,
         ];
       },
@@ -185,7 +185,7 @@ const NETAUDIO: Workspace = {
         const wireBps = pps * (payload + 78) * 8;
         return [
           `${fmt(n(v.packetms) * 1000)} ms/packet → ${fmt(spp)} samples/packet, ${fmt(pps)} packets/s.`,
-          `Payload = ${fmt(spp)} × ${fmt(n(v.channels))} ch × ${fmt(n(v.bitdepth) / 8)} B = ${fmt(payload)} B; + ~78 B header.`,
+          `Payload = ${fmt(spp)} × ${fmtCount(n(v.channels))} ch × ${fmt(n(v.bitdepth) / 8)} B = ${fmt(payload)} B; + ~78 B header.`,
           `Wire rate ≈ ${fmt(pps)} × ${fmt(payload + 78)} B × 8 = ${fmt(wireBps / 1e6)} Mbit/s.`,
         ];
       },
@@ -220,7 +220,7 @@ const TIMECODE: Workspace = {
     'factor. Drop-frame label mechanics are described, not renumbered here.',
   glossary: ['Timecode', 'Frame Rate', 'Synchronization', 'Sample Rate'],
   fields: [
-    { key: 'frames', name: 'FRAME COUNT', quantity: 'number', nonNegative: true, placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
+    { key: 'frames', name: 'FRAME COUNT', quantity: 'number', nonNegative: true, integer: true, placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
     { key: 'fps', name: 'FRAME RATE (fps)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Frames per second: 24, 25, 29.97, or 30.', warn: { test: (x) => x <= 0, msg: 'Frame rate must be greater than zero.' } },
     { key: 'hours', name: 'HOURS', quantity: 'number', nonNegative: true, placeholder: '0', help: 'Hours component of the timecode.' },
     { key: 'mins', name: 'MINUTES', quantity: 'number', nonNegative: true, placeholder: '6', help: 'Minutes component of the timecode.' },
@@ -241,7 +241,7 @@ const TIMECODE: Workspace = {
         const totS = n(v.frames) / n(v.fps);
         return [
           { label: 'TOTAL TIME', value: totS, quantity: 'time', unit: 's' },
-          { label: 'WHOLE SECONDS', value: Math.floor(totS), quantity: 'time', unit: 's', chainable: false },
+          { label: 'WHOLE SECONDS', value: Math.floor(snapWhole(totS)), quantity: 'time', unit: 's', chainable: false },
         ];
       },
       table: (v) => {
@@ -362,7 +362,7 @@ const FIRLEN: Workspace = {
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'trans', name: 'TRANSITION WIDTH', quantity: 'frequency', placeholder: '100', help: 'Hz between passband edge and stopband edge.', warn: { test: (x) => x <= 0, msg: 'Transition width must be greater than zero.' } },
     { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
-    { key: 'taps', name: 'TAP COUNT', quantity: 'number', nonNegative: true, placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
+    { key: 'taps', name: 'TAP COUNT', quantity: 'number', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for the reverse latency calc.', warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
   ],
   functions: [
     {
@@ -376,7 +376,7 @@ const FIRLEN: Workspace = {
         'A linear-phase FIR filter’s sharpness comes from its length: a narrower transition band and a deeper stopband both need more taps, and every tap adds latency. This sizes the tap count and the delay it costs — the trade behind linear-phase EQ, oversampling, and steep crossovers.',
       keySymbols: ['≈', 'fs', '/', 'Δ', '·', '−'],
       compute: (v) => {
-        const N = Math.ceil((n(v.sr) / n(v.trans)) * (n(v.atten) / 22));
+        const N = Math.ceil(snapWhole((n(v.sr) / n(v.trans)) * (n(v.atten) / 22)));
         const latS = (N - 1) / 2;
         return [
           { label: 'FILTER TAPS (N)', value: N, quantity: 'number' },
@@ -385,10 +385,10 @@ const FIRLEN: Workspace = {
         ];
       },
       steps: (v) => {
-        const N = Math.ceil((n(v.sr) / n(v.trans)) * (n(v.atten) / 22));
+        const N = Math.ceil(snapWhole((n(v.sr) / n(v.trans)) * (n(v.atten) / 22)));
         const latS = (N - 1) / 2;
         return [
-          `N ≈ (${fmt(n(v.sr))} ÷ ${fmt(n(v.trans))}) × (${fmt(n(v.atten))} ÷ 22) = ${fmt(N)} taps.`,
+          `N ≈ (${fmt(n(v.sr))} ÷ ${fmt(n(v.trans))}) × (${fmt(n(v.atten))} ÷ 22) = ${fmtCount(N)} taps.`,
           `Linear-phase latency = (N−1)/2 = ${fmt(latS)} samples = ${fmt((latS / n(v.sr)) * 1000)} ms.`,
         ];
       },
@@ -412,7 +412,7 @@ const FIRLEN: Workspace = {
       steps: (v) => {
         const latS = (n(v.taps) - 1) / 2;
         return [
-          `Latency = (${fmt(n(v.taps))} − 1) ÷ 2 = ${fmt(latS)} samples.`,
+          `Latency = (${fmtCount(n(v.taps))} − 1) ÷ 2 = ${fmt(latS)} samples.`,
           `At ${fmt(n(v.sr))} Hz that is ${fmt((latS / n(v.sr)) * 1000)} ms of delay.`,
         ];
       },
@@ -451,8 +451,8 @@ const CONVOLUTION: Workspace = {
   fields: [
     { key: 'irSec', name: 'IR LENGTH', quantity: 'time', defaultUnit: 's', placeholder: '2', help: 'Duration of the impulse response.', warn: { test: (x) => x <= 0, msg: 'IR length must be greater than zero.' } },
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
-    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Number of channels processed.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
-    { key: 'block', name: 'BLOCK SIZE', quantity: 'samples', placeholder: '512', help: 'Processing block / FFT partition size, for the latency figure.', warn: { test: (x) => x <= 0, msg: 'Block size must be greater than zero.' } },
+    { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '2', help: 'Number of channels processed.', warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
+    { key: 'block', name: 'BLOCK SIZE', quantity: 'samples', integer: true, placeholder: '512', help: 'Processing block / FFT partition size, for the latency figure.', warn: { test: (x) => x <= 0, msg: 'Block size must be greater than zero.' } },
   ],
   functions: [
     {
@@ -478,9 +478,9 @@ const CONVOLUTION: Workspace = {
         const taps = n(v.irSec) * n(v.sr);
         const macs = taps * n(v.sr) * n(v.channels);
         return [
-          `Taps = ${fmt(n(v.irSec))} s × ${fmt(n(v.sr))} Hz = ${fmt(taps)} per channel.`,
-          `Direct MAC/s = ${fmt(taps)} × ${fmt(n(v.sr))} × ${fmt(n(v.channels))} ch = ${fmt(macs / 1e9)} GMAC/s.`,
-          `Memory = ${fmt(taps)} × 4 B × ${fmt(n(v.channels))} = ${fmt((taps * 4 * n(v.channels)) / 1e6)} MB — and this is why real plug-ins partition with FFTs.`,
+          `Taps = ${fmt(n(v.irSec))} s × ${fmt(n(v.sr))} Hz = ${fmtCount(taps)} per channel.`,
+          `Direct MAC/s = ${fmtCount(taps)} × ${fmt(n(v.sr))} × ${fmtCount(n(v.channels))} ch = ${fmt(macs / 1e9)} GMAC/s.`,
+          `Memory = ${fmtCount(taps)} × 4 B × ${fmtCount(n(v.channels))} = ${fmt((taps * 4 * n(v.channels)) / 1e6)} MB — and this is why real plug-ins partition with FFTs.`,
         ];
       },
     },
@@ -501,7 +501,7 @@ const CONVOLUTION: Workspace = {
       },
       steps: (v) => {
         return [
-          `Block latency = ${fmt(n(v.block))} samples ÷ ${fmt(n(v.sr))} Hz = ${fmt((n(v.block) / n(v.sr)) * 1000)} ms.`,
+          `Block latency = ${fmtCount(n(v.block))} samples ÷ ${fmt(n(v.sr))} Hz = ${fmt((n(v.block) / n(v.sr)) * 1000)} ms.`,
           `Uniform-block convolution adds one block in and one out; partitioned schemes keep the FIRST block small to cut this.`,
         ];
       },
@@ -588,7 +588,7 @@ const BITDEPTH: Workspace = {
       compute: (v) => {
         const dr = n(v.dr);
         const exact = dr / 6.02;
-        const need = Math.ceil(exact - 1e-9);
+        const need = Math.ceil(snapWhole(exact));
         return [
           { label: 'BITS NEEDED (rounded up)', value: need, quantity: 'number' },
           { label: 'EXACT (unrounded)', value: exact, quantity: 'number', chainable: false },
@@ -598,7 +598,7 @@ const BITDEPTH: Workspace = {
       steps: (v) => {
         const dr = n(v.dr);
         const exact = dr / 6.02;
-        const need = Math.ceil(exact - 1e-9);
+        const need = Math.ceil(snapWhole(exact));
         return [
           `Each bit adds ≈ 6.02 dB, so bits = range ÷ 6.02 = ${fmt(dr)} ÷ 6.02 = ${fmt(exact)}.`,
           `Bits come in whole numbers, so round UP to ${fmt(need)} bits — which delivers 6.02 × ${fmt(need)} = ${fmt(6.02 * need)} dB of range.`,

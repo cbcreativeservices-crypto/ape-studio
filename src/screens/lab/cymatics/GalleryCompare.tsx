@@ -6,6 +6,7 @@
  */
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import { colors, fonts } from '../../../theme/tokens';
 import { formatHz } from '../../../features/cymatics/music';
 import { patternReadout, type PatternGeometry } from '../../../features/cymatics/patternField';
@@ -45,7 +46,7 @@ export function CompareCanvas({ items, width }: { items: CompareItem[]; width: n
                 <Text style={styles.capName} numberOfLines={1}>
                   {it.pattern.name}
                 </Text>
-                <Text style={styles.capSub} numberOfLines={1}>
+                <Text style={styles.capSub} {...fitValue(12)}>
                   {ro.studioLabel} · {formatHz(it.pattern.state.hz)} · {ro.note.label}
                 </Text>
               </View>

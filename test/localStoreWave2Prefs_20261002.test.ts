@@ -345,7 +345,8 @@ describe('seen-flags in components fail toward NOT re-showing', () => {
   });
   it('[R2] StudyFsOverlay: a failed read retires the guide for the mount (no "1" written over a "2")', () => {
     const s = read('src/components/StudyFsOverlay.tsx');
-    assert.match(s, /\.catch\(\(\) => \{\s*guideCount\.current = 2;\s*\}\)/);
+    // Pattern hunt P2 (2026-10-02): + `alive`, so a previous key's read cannot land.
+    assert.match(s, /\.catch\(\(\) => \{\s*if \(alive\) guideCount\.current = 2;\s*\}\)/);
   });
   it('[confirm] ScreenIntroOverlay: a failed read shows nothing and only dismiss writes the flag', () => {
     const s = read('src/features/intro/ScreenIntroOverlay.tsx');

@@ -242,15 +242,23 @@ export function useDspEngine(config: EngineConfig, poll: {
   // mic must not stay hot behind another screen (spec §18 + privacy copy).
   // State returns to 'idle' so refocus shows the explicit-START affordance
   // (never auto-restarts — integrity rule).
+  //
+  // ⛔ []-DEPS, NOT [stopPolling] (pattern hunt P12, 2026-10-02). A cleanup-only
+  // effect re-runs its cleanup whenever a dep changes identity — the dead Bass ▶
+  // shape (b2660894): the render a start causes would tear that start down and
+  // release the mic. `stopPolling` is []-stable today, so this never fired, but
+  // one added dep on it would have brought the bug back here silently. The
+  // teardown only touches refs and the setter, so it needs no deps at all.
   useFocusEffect(
     useCallback(
       () => () => {
         genRef.current++;
-        stopPolling();
+        if (timer.current) clearInterval(timer.current);
+        timer.current = null;
         releaseMic(); // debounced handoff — the next tools screen keeps it warm
         setState((s) => (s === 'running' || s === 'starting' ? 'idle' : s));
       },
-      [stopPolling],
+      [],
     ),
   );
 
@@ -258,10 +266,11 @@ export function useDspEngine(config: EngineConfig, poll: {
   useEffect(
     () => () => {
       genRef.current++;
-      stopPolling();
+      if (timer.current) clearInterval(timer.current);
+      timer.current = null;
       releaseMic();
     },
-    [stopPolling],
+    [],
   );
 
   return { state, frames, start, stop, lastError, resetPeakHold: ApeDsp.resetPeakHold, resetLeq: () => ApeDsp.resetLeq() };
@@ -446,6 +455,39 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
     });
     return () => sub.remove();
   }, [stop]);
+}
+
+/**
+ * Background mic release for a MANUAL-start capture (pattern hunt P20,
+ * 2026-10-02) — the same promise useToolAutoStart's handler keeps for the
+ * tools, for hosts that do not auto-start (HarmonicsView's LIVE mode).
+ *
+ * Without it the setting "Release microphone in the background" did nothing
+ * there: Home does not blur the screen, so useDspEngine's blur teardown never
+ * ran and the OS mic indicator stayed lit with the app out of sight.
+ *
+ * Releases from 'running' AND 'starting' (micReleasedOnBackground guard), skips
+ * the Android permission dialog, reads the setting at event time, and never
+ * resumes on return: a manual-start screen waits for the user's START
+ * (integrity rule — the mic only opens when the user started it).
+ */
+export function useReleaseMicOnBackground(state: EngineState, stop: () => void): void {
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const stopRef = useRef(stop);
+  stopRef.current = stop;
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s !== 'background') return;
+      if (!micReleaseOnBackgroundEnabled()) return; // OFF → keep the warm session
+      if (micPermissionPromptOpen) return; // the permission dialog, not the user leaving
+      if (stateRef.current === 'running' || stateRef.current === 'starting') {
+        stopRef.current(); // state → idle + debounced release
+        releaseMicNow(); // hard stop now — no hot mic lingering in the background
+      }
+    });
+    return () => sub.remove();
+  }, []);
 }
 
 /**

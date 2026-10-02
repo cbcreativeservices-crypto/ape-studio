@@ -197,7 +197,13 @@ export function SettingsScreen({ navigation }: Props) {
   const setLocalKey = useCallback(<K extends keyof LocalSettings>(key: K, value: LocalSettings[K]) => {
     setLocal((prev) => {
       const next = { ...prev, [key]: value };
-      void saveLocalSettings(next); // immediate write, no Save (locked)
+      // Immediate write, no Save (locked). A save that RECOVERED from a failed
+      // read lays only this change over the stored record and answers that
+      // copy: show it, so the untouched rows stop showing defaults (pattern
+      // hunt wave 3, 2026-10-02).
+      void saveLocalSettings(next).then((written) => {
+        if (written) setLocal(written);
+      });
       return next;
     });
   }, []);
@@ -206,7 +212,9 @@ export function SettingsScreen({ navigation }: Props) {
   const setFreq = useCallback((key: string, value: string) => {
     setLocal((prev) => {
       const next = { ...prev, notifyFreq: { ...prev.notifyFreq, [key]: value } };
-      void saveLocalSettings(next);
+      void saveLocalSettings(next).then((written) => {
+        if (written) setLocal(written); // a recovered read: show what was written
+      });
       return next;
     });
   }, []);
@@ -214,7 +222,9 @@ export function SettingsScreen({ navigation }: Props) {
   const setTime = useCallback((key: string, value: string) => {
     setLocal((prev) => {
       const next = { ...prev, notifyTime: { ...prev.notifyTime, [key]: value } };
-      void saveLocalSettings(next);
+      void saveLocalSettings(next).then((written) => {
+        if (written) setLocal(written); // a recovered read: show what was written
+      });
       return next;
     });
   }, []);

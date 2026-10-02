@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   schemeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.8, color: colors.textSecondary, paddingBottom: 2 },
-  defaultTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 8.5, letterSpacing: 1, color: colors.textMuted },
+  defaultTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, color: colors.textMuted },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9, justifyContent: 'flex-start' },
   swatch: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, borderColor: '#33333c', alignItems: 'center', justifyContent: 'center' },
   chipSel: { borderColor: '#ffffff', borderWidth: 3 },

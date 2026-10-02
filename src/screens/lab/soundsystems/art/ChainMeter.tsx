@@ -16,6 +16,7 @@
  */
 import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../../../theme/legibility';
 import Animated, { useAnimatedProps, useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import Svg, { Circle, Defs, Line, LinearGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -150,7 +151,7 @@ function LabelRow({ chain, settings, onChange, highlight, ts = 1 }: { chain: Gai
                 <Text style={styles.fixed}>—</Text>
               )
             ) : step > 0 ? (
-              <Text style={[styles.val, grow && { fontSize: 11 * ts }, v !== spec.unity && { color: colors.amber }]} numberOfLines={1}>
+              <Text style={[styles.val, grow && { fontSize: 11 * ts }, v !== spec.unity && { color: colors.amber }]} {...fitValue(grow ? 11 * ts : 11)}>
                 {v > 0 ? '+' : ''}
                 {v}
               </Text>

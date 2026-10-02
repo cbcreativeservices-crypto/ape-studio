@@ -136,7 +136,7 @@ const tagStyles = StyleSheet.create({
   },
   text: {
     fontFamily: fonts.mono,
-    fontSize: 6.5,
+    fontSize: 9,
     letterSpacing: 1,
     color: 'rgba(174,185,203,0.85)',
   },

@@ -6,7 +6,8 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { BackHandler, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -65,15 +66,14 @@ export function CalcLabScreen() {
   const [openSec, setOpenSec] = useState<CalcSectionId | null>(null);
   const openMeta = openSec ? SECTION_META.find((m) => m.id === openSec) ?? null : null;
   const openItems = openSec ? WORKSPACES.filter((w) => w.section === openSec) : [];
-  // Android BACK closes the popup before it leaves the lab.
-  useEffect(() => {
-    if (!openSec) return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      setOpenSec(null);
-      return true;
-    });
-    return () => sub.remove();
-  }, [openSec]);
+  // Android BACK closes the popup before it leaves the lab — only while this
+  // screen is focused (pattern hunt P13, 2026-10-02): the Paywall or a
+  // workspace pushed over an open popup gets its own BACK.
+  const closeSecOnBack = useCallback(() => {
+    setOpenSec(null);
+    return true;
+  }, []);
+  useBackWhileFocused(!!openSec, closeSecOnBack);
 
   // Most-recent saved workflow (owner spec 2026-08-06) — quick jump on the home.
   const [recent, setRecent] = useState<Workflow | null>(null);

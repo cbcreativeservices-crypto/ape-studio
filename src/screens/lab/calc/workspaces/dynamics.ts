@@ -52,10 +52,10 @@ const WS_COMPRESSOR: Workspace = {
     'the moment-to-moment gain reduction during a transient.',
   glossary: ['Compression', 'Threshold', 'Ratio', 'Gain Reduction', 'Makeup Gain', 'Dynamic Range'],
   fields: [
-    { key: 'thr', name: 'THRESHOLD', quantity: 'db', placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
+    { key: 'thr', name: 'THRESHOLD', quantity: 'db', signed: true, placeholder: '-20', help: 'The level (dBFS) above which compression begins. Below it, the signal is untouched.' },
     { key: 'ratio', name: 'RATIO (n:1)', quantity: 'number', nonNegative: true, placeholder: '4', help: 'How many dB must go IN above threshold for 1 dB to come OUT above it. 4 means 4:1.', warn: { test: (x) => x < 1, msg: 'Ratio must be at least 1:1 (1:1 is no compression).' } },
-    { key: 'inLvl', name: 'INPUT LEVEL', quantity: 'db', placeholder: '-8', help: 'The incoming signal level (dBFS) whose compressed output you want.' },
-    { key: 'targetOut', name: 'TARGET OUTPUT', quantity: 'db', placeholder: '-17', help: 'The output level (dBFS) you want a given input to land on.' },
+    { key: 'inLvl', name: 'INPUT LEVEL', quantity: 'db', signed: true, placeholder: '-8', help: 'The incoming signal level (dBFS) whose compressed output you want.' },
+    { key: 'targetOut', name: 'TARGET OUTPUT', quantity: 'db', signed: true, placeholder: '-17', help: 'The output level (dBFS) you want a given input to land on.' },
     { key: 'targetGr', name: 'TARGET GAIN REDUCTION', quantity: 'db', nonNegative: true, placeholder: '3', help: 'How many dB of gain reduction you want on a given input.', warn: { test: (x) => x < 0, msg: 'Gain reduction is a positive number of dB.' } },
   ],
   functions: [

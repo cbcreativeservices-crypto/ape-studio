@@ -26,9 +26,11 @@
  * above wearing a different hat. So: host mounted ⇒ themed; otherwise fall back
  * to the platform dialog, which is ugly but WORKS.
  */
+import { useCallback, useEffect, useRef } from 'react';
 import { Alert, Platform } from 'react-native';
 import { holdAppDialogQueue, isAppDialogHostMounted, showAppDialog } from '../components/AppDialog';
 import { HOST_DISMISS_MS } from '../components/DimModal';
+import { createModalHandoff, type ModalHandoff } from './modalHandoff';
 
 /** For a dialog handler that opens a `presentation: 'modal'` screen (Paywall,
  *  Settings, Help…): iOS refuses to present while the dialog's own Modal is
@@ -44,6 +46,31 @@ export function afterDialogCloses(fn: () => void): () => void {
   };
 }
 
+/**
+ * The same hand-off for a SCREEN's own popups (pattern P5, closer A3,
+ * 2026-10-02): PrePaywallPrompt, StudyAccessSheet, the glossary lock — any
+ * DimModal whose button closes it and then opens a `presentation: 'modal'`
+ * screen. Waits HOST_DISMISS_MS, holds the dialog queue like
+ * afterDialogCloses, runs ONE hand-off at a time (a double tap is one
+ * Paywall) and drops a pending one when the screen unmounts.
+ *
+ *   const handoff = useModalHandoff();
+ *   onPrimary={() => { setPrompt(false); handoff(() => navigation.navigate('Paywall')); }}
+ *
+ * Opt-in, never the default for every dialog button: ~155 buttons would
+ * change timing (decided 2026-09-30). test/patternP5_20261002 holds every
+ * modal-screen navigate to it.
+ */
+export function useModalHandoff(): (next: () => void) => void {
+  const ref = useRef<ModalHandoff | null>(null);
+  if (ref.current == null) ref.current = createModalHandoff({ waitMs: HOST_DISMISS_MS, hold: holdAppDialogQueue });
+  useEffect(() => {
+    const h = ref.current;
+    return () => h?.cancel();
+  }, []);
+  return useCallback((next: () => void) => ref.current?.run(next), []);
+}
+
 /** Two-button confirm. `onCancel` (optional) runs on explicit cancel too —
  *  needed by flows where "Cancel" has a side effect (e.g. sign-out). It also
  *  runs on the scrim and on Android BACK, which are declines, not no-ops. */
@@ -51,9 +78,18 @@ export function confirmDialog(
   title: string,
   body: string,
   yesText: string,
-  onYes: () => void,
-  opts?: { cancelText?: string; destructive?: boolean; onCancel?: () => void },
+  yes: () => void,
+  opts?: {
+    cancelText?: string;
+    destructive?: boolean;
+    onCancel?: () => void;
+    /** The YES handler opens a `presentation: 'modal'` screen (Paywall,
+     *  Settings, Help…): run it after this dialog has faded — afterDialogCloses.
+     *  Opt-in (pattern P5, 2026-10-02). */
+    opensModalScreen?: boolean;
+  },
 ): void {
+  const onYes = opts?.opensModalScreen ? afterDialogCloses(yes) : yes;
   if (isAppDialogHostMounted()) {
     showAppDialog({
       title,
@@ -80,7 +116,15 @@ export function confirmDialog(
 
 /** One-button notice; `onDone` runs after dismissal — including dismissal by
  *  scrim or BACK, since acknowledging a notice is the only thing it offers. */
-export function notify(title: string, body: string, onDone?: () => void): void {
+export function notify(
+  title: string,
+  body: string,
+  done?: () => void,
+  /** `opensModalScreen`: `done` opens a `presentation: 'modal'` screen — run
+   *  it after this notice has faded (afterDialogCloses). Opt-in (P5). */
+  opts?: { opensModalScreen?: boolean },
+): void {
+  const onDone = done && opts?.opensModalScreen ? afterDialogCloses(done) : done;
   if (isAppDialogHostMounted()) {
     // No confirmText ⇒ the host renders the one-button NOTICE shape, and routes
     // every dismissal (OK, scrim, BACK) through onCancel.

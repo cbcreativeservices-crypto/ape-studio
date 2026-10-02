@@ -20,7 +20,6 @@ import {
   AccessibilityInfo,
   ActivityIndicator,
   AppState,
-  BackHandler,
   Image,
   Platform,
   Pressable,
@@ -34,9 +33,10 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
 import { colors, fonts } from '../../theme/tokens';
-import { clearAttemptDraft, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
+import { clearAttemptDraft, isAttemptDraftUnreadable, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
 import { ExamBriefing } from './ExamBriefing';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import {
   clearExamIntent,
   enqueueExamSubmission,
@@ -243,6 +243,15 @@ export function FinalExamScreen({ navigation, route }: Props) {
       if (!payload || submitted.current) return;
       submitted.current = true;
       setSubmitting(true);
+      // A DRAFT THAT COULD NOT BE READ AT THE START (pattern hunt wave 3,
+      // 2026-10-02): the exam opened from question one, but earlier answers
+      // may still be on the device. One more read before the paper goes: a
+      // draft that comes back now fills in the slots this sitting did not
+      // answer — this sitting's answers always win.
+      if (isAttemptDraftUnreadable(payload.attempt_id)) {
+        const stored = await loadAttemptDraft(payload.attempt_id);
+        if (stored) answers.current = { ...(stored.answers as Record<string, AnswerValue>), ...answers.current };
+      }
       const submittedAt = new Date(submittedAtMs ?? Date.now()).toISOString();
       const args = {
         attemptId: payload.attempt_id,
@@ -609,21 +618,20 @@ export function FinalExamScreen({ navigation, route }: Props) {
      blocks the iOS swipe, so a hardware BACK during the timed capstone pops the
      screen instantly — abandoning the sitting with no "answers will be wiped"
      confirm. ---- */
-  useEffect(() => {
-    if (!payload) return;
-    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
-      // WHILE SUBMITTING, SWALLOW IT (bug hunt 2026-09-29). This effect used to
-      // bail out when `submitting`, leaving Android's system back live: it
-      // popped the screen mid-submit and the result had nowhere to land. The
-      // submit is bounded (api.ts), so holding here always resolves.
-      if (submitting) return true;
-      if (submitted.current) return false;
-      confirmExit();
-      return true; // handled
-    });
-    return () => sub.remove();
+  // Focus-scoped (pattern hunt P13, 2026-10-02): a screen pushed over the
+  // sitting (Paywall) gets its own BACK instead of the exit confirm.
+  const onExamBack = useCallback(() => {
+    // WHILE SUBMITTING, SWALLOW IT (bug hunt 2026-09-29). This effect used to
+    // bail out when `submitting`, leaving Android's system back live: it
+    // popped the screen mid-submit and the result had nowhere to land. The
+    // submit is bounded (api.ts), so holding here always resolves.
+    if (submitting) return true;
+    if (submitted.current) return false;
+    confirmExit();
+    return true; // handled
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [payload, submitting]);
+  useBackWhileFocused(!!payload, onExamBack);
 
   /* ---- states ---- */
   // BEFORE ANYTHING ELSE. Above the error and loading states on purpose: those

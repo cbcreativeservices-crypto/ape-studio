@@ -121,7 +121,7 @@ import { isAudioOutputEnabled, isFeedbackAllowed, noteAudioActivity, useFeedback
 import { startFenced } from '../../features/audio/startFenced';
 import { FeedbackAllowRow } from '../../features/audio/FeedbackAllowRow';
 import { guardToneLevelForEngine, LOW_FREQ_ADVISORY } from '../../features/audio/speakerSafety';
-import { meterWarningFlags, useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { meterWarningFlags, useDspEngine, useReleaseMicOnBackground } from '../../features/tools/engine/useDspEngine';
 import { heatColor, levelColor, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { WARNING_INFO } from '../../features/tools/measure/types';
 import { EngineGate } from '../tools/EngineGate';
@@ -1007,6 +1007,9 @@ export function HarmonicsView({
   // blur/unmount, explicit START only, permission handling inside).
   const cfg = useRef<EngineConfig>({ fftSize: 4096, spectrumEnabled: true, waveformEnabled: true }).current;
   const { state, frames, start, stop, lastError } = useDspEngine(cfg, { meter: true, waveform: true });
+  // "Release microphone in the background" for LIVE mode (pattern hunt P20,
+  // 2026-10-02): Home never blurs this screen, so nothing else closes the mic.
+  useReleaseMicOnBackground(state, stop);
   const engineReady = state !== 'absent' && state !== 'spike';
   const running = state === 'running';
   // Mic↔︎speaker feedback override (owner request 2026-07-26). LIVE mode needs

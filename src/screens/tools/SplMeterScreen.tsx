@@ -28,6 +28,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { AccessibilityInfo, Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { fitValue } from '../../theme/legibility';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { CoachMark } from '../../components/CoachMark';
 import { HelpKey } from '../../components/HelpKey';
@@ -1473,10 +1474,14 @@ export function SplMeterScreen({ navigation }: Props) {
       quality_state: evaluateQuality(saveFlags),
       warning_flags: saveFlags,
       data_payload: payload,
+    }).then((ok) => {
+      // SAVED ✓ only from a true write (pattern hunt wave 3, 2026-10-02): a
+      // save refused during an account switch answered false in silence.
+      if (!ok) return;
+      setJustSaved(true);
+      if (savedTimer.current) clearTimeout(savedTimer.current);
+      savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-    setJustSaved(true);
-    if (savedTimer.current) clearTimeout(savedTimer.current);
-    savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, weighting, response, offset, cal, saveGate, saveLatch]);
 
@@ -1912,7 +1917,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       accessibilityLabel={`${b.label}: ${b.value}. Tap to change.`}
                     >
                       <Text style={styles.ctrlBarLabel}>{b.label}</Text>
-                      <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
+                      <Text style={styles.ctrlBarValue} {...fitValue(14)}>{b.value}</Text>
                     </Pressable>
                   ))}
                   {/* LED colour customization (MEMBER, owner 2026-08-21) — discreet
@@ -2248,7 +2253,7 @@ export function SplMeterScreen({ navigation }: Props) {
                             accessibilityLabel={`${b.label}: ${b.value}. Tap to change.`}
                           >
                             <Text style={styles.ctrlBarLabel}>{b.label}</Text>
-                            <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
+                            <Text style={styles.ctrlBarValue} {...fitValue(14)}>{b.value}</Text>
                           </Pressable>
                         ))}
                       </View>
@@ -2294,7 +2299,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           accessibilityLabel={`${b.label}: ${b.value}. Tap to change.`}
                         >
                           <Text style={styles.ctrlBarLabel}>{b.label}</Text>
-                          <Text style={styles.ctrlBarValue} numberOfLines={1}>{b.value}</Text>
+                          <Text style={styles.ctrlBarValue} {...fitValue(14)}>{b.value}</Text>
                         </Pressable>
                       ))}
                     </View>
@@ -2519,7 +2524,7 @@ export function SplMeterScreen({ navigation }: Props) {
               accessibilityLabel={running ? 'Tap to stop the meter' : 'Tap to start the meter'}
             >
               <Text style={styles.fsIdentity}>{readoutIdentity}</Text>
-              <Text style={[styles.fsValue, { fontSize: fsNumSize }]} numberOfLines={1}>
+              <Text style={[styles.fsValue, { fontSize: fsNumSize }]} {...fitValue(fsNumSize)}>
                 {bigText}
               </Text>
               <Text style={styles.fsHonesty}>{readoutHonesty}</Text>

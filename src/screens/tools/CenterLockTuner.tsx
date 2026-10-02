@@ -35,13 +35,14 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View, AccessibilityInfo } from 'react-native';
+import { fitValue } from '../../theme/legibility';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import Animated, { cancelAnimation, Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../theme/tokens';
 import { hapticsEnabled } from '../../features/settings/store';
 import { createLocalStore } from '../../features/storage/localStore';
-import { animationsAllowed } from '../../features/settings/a11y';
+import { useAnimationsAllowed } from '../../features/settings/a11y';
 import { optionalModule } from '../../features/tools/capture/optionalModule';
 import { lockPortrait, unlockOrientation } from '../../lib/screenOrientationSafe';
 import { closeCenterLock, readTunerFrame, useTunerFrame, type TunerFrame } from '../../features/tools/tuner/tunerFrameStore';
@@ -897,7 +898,7 @@ const LiveReadout = memo(function LiveReadout({
             accessibilityLabel={`${g[0].label} ${g.map((t) => displayNote(t.note)).join(' and ')}${done ? ', in tune' : ''}${locked ? ', locked' : ''}`}
             accessibilityHint={locked ? 'Tap to release' : 'Tap to lock this string'}
           >
-            <Text style={[styles.stringNote, pair && styles.stringNotePair, pair && keyW < 48 && styles.stringNotePairNarrow, current && { color: locked ? colors.amber : currentBorder }]} numberOfLines={1}>
+            <Text style={[styles.stringNote, pair && styles.stringNotePair, pair && keyW < 48 && styles.stringNotePairNarrow, current && { color: locked ? colors.amber : currentBorder }]} {...fitValue(pair ? (keyW < 48 ? 12 : 14) : 18)}>
               {pair ? `${displayNote(g[0].note)}·${displayNote(g[1].note)}` : displayNote(g[0].note)}
             </Text>
             <Text style={[styles.stringLabel, locked && { color: colors.amber }]} numberOfLines={1}>{locked ? 'LOCKED' : g[0].label}</Text>
@@ -932,7 +933,7 @@ const LiveReadout = memo(function LiveReadout({
   const noteBlock = (
     <View style={[styles.noteBlock, landscape ? { width: NOTE_COL_W } : { maxWidth: width - 16 }]} accessible accessibilityRole="text" accessibilityLabel={`${displayNote(target.note)}, ${direction}, ${fmtCents(cents)}`}>
       <View style={styles.identityRow}>
-        <Text style={[styles.identity, { color: tint }]} numberOfLines={1}>{identity}</Text>
+        <Text style={[styles.identity, { color: tint }]} {...fitValue(16)}>{identity}</Text>
         {!chromatic && manual ? (
           <View style={[styles.modeTag, { borderColor: colors.amber }]}>
             <Text style={[styles.modeText, { color: colors.amber }]}>LOCKED</Text>
@@ -1181,7 +1182,10 @@ const ARROW_SIZE = 24;
 const ARROW_TRAVEL = 14;
 function TuneArrows({ dir, tint, compact }: { dir: -1 | 1; tint: string; compact?: boolean }) {
   const progress = useSharedValue(0);
-  const allowed = animationsAllowed();
+  // Subscribed (useAnimationsAllowed), not read per render: Settings is a modal,
+  // so a per-render read missed "Reduce animations" until something else
+  // re-rendered this host (pattern hunt P10, 2026-10-02).
+  const allowed = useAnimationsAllowed();
   useEffect(() => {
     if (!allowed) {
       progress.value = 0;

@@ -191,6 +191,28 @@ export function fmtCarried(x: number, quantity: string): string {
   return whole !== null ? String(whole) : fmt(x, 6);
 }
 
+/** P17 — a value that is a whole number up to float noise IS that whole number;
+ *  anything else comes back unchanged. Same 1e-9 RELATIVE rule as wholeCount
+ *  (floor 1 so values near 0 snap too). Call it before Math.ceil / Math.floor /
+ *  % on a COMPUTED count: (48000 ÷ 330) × (121 ÷ 22) is 800.0000000000001 in
+ *  binary, and Math.ceil made it 801 FIR taps for an exact 800 (pattern hunt
+ *  2026-10-02); 16.1 m² ÷ 0.7 m² ordered 24 panels for an exact 23. */
+export function snapWhole(x: number): number {
+  if (!Number.isFinite(x)) return x;
+  const r = Math.round(x);
+  return Math.abs(x - r) <= 1e-9 * Math.max(1, Math.abs(x)) ? (r === 0 ? 0 : r) : x;
+}
+
+/** P17 — a COUNT for text/steps: exact when whole (up to float noise), else
+ *  `fmt` at `sig`. `fmt(65536)` is "65540" at 4 figures — a 65536-point FFT
+ *  was quoted back in THE TRADE and the steps as "65540 points" while the
+ *  answer above it said 65536 samples. Above 1e7 fmt's exponent form applies. */
+export function fmtCount(x: number, sig = 4): string {
+  if (!Number.isFinite(x)) return '—';
+  const s = snapWhole(x);
+  return Number.isInteger(s) && Math.abs(s) < 1e7 ? String(s) : fmt(x, sig);
+}
+
 /** Format a whole-number count for interpolation into text/steps/labels —
  *  '—' for a non-finite value, same convention as fmt(). Use this instead of
  *  `${Math.round(x)}` / `${x}` so a zero input never prints NaN/Infinity. */
@@ -388,6 +410,51 @@ export function negativeInput(
     const v = values[key];
     if (!f || !isNonNegativeField(f)) continue;
     if (typeof v === 'number' ? v < 0 : Array.isArray(v) && v.some((x) => x < 0)) return f;
+  }
+  return null;
+}
+
+/** P16 sign class of a field: by its kind, by `nonNegative`, or by `signed`.
+ *  null = UNCLASSIFIED — test/patternP16_20261002 fails any such field, so a
+ *  new field must say whether a negative is a real value before it ships. */
+export type SignClass = 'nonNegative' | 'signed';
+export function signClass(f: Pick<FieldDef, 'quantity' | 'nonNegative' | 'signed'>): SignClass | null {
+  if (isNonNegativeField(f)) return 'nonNegative';
+  if (f.signed === true) return 'signed';
+  return null;
+}
+
+export const WHOLE_MSG = 'Must be a whole number.';
+/** The live field message for an out-of-range entry. */
+export function rangeMsg(range: readonly [number, number]): string {
+  return `Must be from ${fmt(range[0], 6)} to ${fmt(range[1], 6)}.`;
+}
+/** A value is whole up to float noise (a carried 1023.9999999999999 is 1024). */
+const isWholeish = (x: number) => Number.isFinite(x) && Number.isInteger(snapWhole(x));
+
+type DomainField = Pick<FieldDef, 'key' | 'name' | 'quantity' | 'nonNegative' | 'integer' | 'range'>;
+/** The live warning one typed BASE value earns from its field's `integer` /
+ *  `range` declaration, or null. (Negatives keep NEGATIVE_MSG — see FieldRow.) */
+export function domainMsg(f: Pick<FieldDef, 'integer' | 'range'>, x: number): string | null {
+  if (!Number.isFinite(x)) return null;
+  if (f.integer && !isWholeish(x)) return WHOLE_MSG;
+  if (f.range && (x < f.range[0] || x > f.range[1])) return rangeMsg(f.range);
+  return null;
+}
+/**
+ * P16 — the first input of `fn` that its field's declared domain refuses: a
+ * fraction in a whole-number COUNT, or a value outside a RANGED field. Returns
+ * the screen sentence ("CHANNELS must be a whole number."), or null. Run AFTER
+ * negativeInput (a negative keeps its own, pinned message). Lists are not
+ * domain-checked here (their elements are measurements, not counts).
+ */
+export function domainError(fn: Pick<CalcFunction, 'inputs'>, values: CalcValues, fields: DomainField[]): string | null {
+  for (const key of fn.inputs) {
+    const f = fields.find((x) => x.key === key);
+    const v = values[key];
+    if (!f || typeof v !== 'number') continue;
+    if (f.integer && !isWholeish(v)) return `${f.name} must be a whole number.`;
+    if (f.range && (v < f.range[0] || v > f.range[1])) return `${f.name} must be from ${fmt(f.range[0], 6)} to ${fmt(f.range[1], 6)}.`;
   }
   return null;
 }

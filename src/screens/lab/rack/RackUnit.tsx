@@ -21,6 +21,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -469,7 +470,7 @@ export function RackUnit({
           />
           {laneActive && bound && !stage.hideDragTag ? (
             <View style={styles.dragTag} pointerEvents="none">
-              <Text style={styles.dragTagText} numberOfLines={1}>
+              <Text style={styles.dragTagText} {...fitValue(13)}>
                 {bound.label}  {bound.format(bound.value)}
               </Text>
             </View>

@@ -35,6 +35,7 @@
  */
 import { useRef } from 'react';
 import { AccessibilityInfo, PanResponder, StyleSheet, Text, View } from 'react-native';
+import { fitValue } from '../../../theme/legibility';
 import Animated from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
@@ -227,7 +228,7 @@ export function ParamLane({
       <Text pointerEvents="none" style={[styles.laneLabel, styles.textBacked]} numberOfLines={1}>
         {label}
       </Text>
-      <Text pointerEvents="none" style={[styles.laneValue, styles.textBacked, { color: c }]} numberOfLines={1}>
+      <Text pointerEvents="none" style={[styles.laneValue, styles.textBacked, { color: c }]} {...fitValue(12.5)}>
         {readout}
       </Text>
     </View>
