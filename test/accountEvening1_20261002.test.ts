@@ -199,5 +199,6 @@ test('push registration never rejects (the Weekly switch awaits it after showing
   const s = read('src/features/notifications/push.ts');
   const fn = s.slice(s.indexOf('export async function registerAndSavePushToken'), s.indexOf('async function registerAndSavePushTokenOnce'));
   assert.match(fn, /try \{\s*return await registerAndSavePushTokenOnce\(\);\s*\} catch/);
-  assert.match(fn, /return null;/);
+  // Pass 2: the never-rejecting body now lives in registerAndSavePushTokenChecked.
+  assert.match(fn, /return \{ token: null, saved: false \};/);
 });

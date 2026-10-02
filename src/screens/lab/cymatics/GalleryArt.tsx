@@ -27,6 +27,7 @@ import { analyse, applyFill, domainPoint, fitFrame, regionAtPx, FIG_PAD } from '
 import type { PatternGeometry } from '../../../features/cymatics/patternField';
 import { patternStore, type Artwork, type FillStyle, type SavedPattern } from '../../../features/cymatics/patternStore';
 import { LabChip } from '../LabShell';
+import { notify } from '../../../lib/confirm';
 import { RackUnit } from '../rack/RackUnit';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ExportPanel } from './ExportPanel';
@@ -99,6 +100,9 @@ export function GalleryArt({
       void patternStore()
         .saveArtwork(art)
         .then((ok) => {
+          // The gallery's thumbnail shows what the device holds (evening
+          // pass 2): a refused save no longer reaches its cache.
+          if (ok) onArtwork(art);
           // An edit made while this save was writing is still unsaved: an
           // older save landing must not clear `dirty` (the unmount flush
           // then skipped it — the edit was lost on leaving) or read SAVED
@@ -107,7 +111,6 @@ export function GalleryArt({
           setSaveState(ok ? 'saved' : 'failed');
           dirty.current = !ok;
         });
-      onArtwork(art);
     }, 500);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,8 +120,18 @@ export function GalleryArt({
       // The gallery's cache hears the flush too, or its thumbnails show the
       // pre-edit artwork until the next reload (bug hunt 2026-09-29).
       if (dirty.current) {
-        void patternStore().saveArtwork(latest.current);
-        onArtwork(latest.current);
+        // A flush the device refused is said (evening pass 2, 2026-10-02):
+        // the board is gone, so its "Save failed — retry" chip can no longer
+        // tell the learner, and the colouring was lost without a word — while
+        // the gallery's thumbnail showed it as kept. The cache hears only a
+        // flush that landed.
+        const a = latest.current;
+        void patternStore()
+          .saveArtwork(a)
+          .then((ok) => {
+            if (ok) onArtwork(a);
+            else notify('Artwork not saved', 'The last colouring changes could not be saved on this device. Open COLOUR to redo them.');
+          });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

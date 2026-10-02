@@ -197,3 +197,69 @@ export async function fetchDefinitionViaGateway(id: string): Promise<DefinitionR
     return { state: 'fault', fault: fault ?? 'error' };
   }
 }
+
+// ── One charge per term per app session ───────────────────────────────────
+
+/**
+ * ⛔ A TERM ALREADY READ THIS SESSION IS FREE — ACROSS EVERY SURFACE (evening
+ * hunt 2, 2026-10-02).
+ *
+ * The server charges EVERY `get_glossary_definition` call; it does not dedupe.
+ * The term popup (labs, calculators) kept a once-per-session cache of its own,
+ * but the Glossary screen's only memory of what it had read was per MOUNT —
+ * and the Glossary is a pushed stack screen, so every visit started empty. A
+ * free reader who opened "Headroom", went back, and opened the Glossary again
+ * paid a second of their fourteen for the same term; a term read in a
+ * calculator popup was paid again in the Glossary, and the reverse. That is
+ * the owner's rule broken ("a term you already looked up this session doesn't
+ * cost again", glossaryCap.ts).
+ *
+ * So both surfaces read through this one cache, keyed to the signed-in uid (a
+ * sign-out, a new account or a re-minted guest key starts empty). Faults are
+ * never kept. `member` (the screen passes the reader's standing) refuses a row
+ * read under the OTHER standing — a free read masks Common Mistakes and a
+ * member read does not — so joining or lapsing re-reads (a member's read is
+ * never metered; a lapsed reader's is, as it should be). Callers that show no
+ * member-only field (the popup) pass nothing.
+ */
+const READ_OK = new Map<string, GatewayDefinition>();
+const READ_PENDING = new Map<string, Promise<DefinitionResult>>();
+let readsUid: string | null | undefined;
+let readsGen = 0;
+supabase.auth.onAuthStateChange((_e, session) => {
+  const uid = session?.user?.id ?? null;
+  if (uid !== readsUid) {
+    READ_OK.clear();
+    READ_PENDING.clear();
+    readsGen += 1;
+    readsUid = uid;
+  }
+});
+
+/** A definition this session has already paid for, or null. A row read
+ *  under the other standing (see above) does not count. */
+export function sessionDefinition(id: string, member?: boolean): GatewayDefinition | null {
+  const row = READ_OK.get(id);
+  if (!row) return null;
+  // A metered (free) read carries the week's count; a member's carries none.
+  if (member !== undefined && (row.lim == null) !== member) return null;
+  return row;
+}
+
+/** The metered read, at most once per term per session (per uid). */
+export function readDefinitionOnce(id: string, member?: boolean): Promise<DefinitionResult> {
+  const row = sessionDefinition(id, member);
+  if (row) return Promise.resolve({ state: 'ok', row });
+  const pending = READ_PENDING.get(id);
+  if (pending) return pending;
+  const gen = readsGen;
+  const p = fetchDefinitionViaGateway(id).then((r) => {
+    if (READ_PENDING.get(id) === p) READ_PENDING.delete(id);
+    // Only for the identity that asked: an answer that lands after a sign-out
+    // is the last reader's, and must not be served free to the next one.
+    if (r.state === 'ok' && gen === readsGen) READ_OK.set(id, r.row);
+    return r;
+  });
+  READ_PENDING.set(id, p);
+  return p;
+}

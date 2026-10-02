@@ -31,8 +31,8 @@ import { supabase } from '../../lib/supabase';
 import {
   classifyGatewayError,
   corpusTable,
-  fetchDefinitionViaGateway,
   probeGateway,
+  readDefinitionOnce,
   type DefinitionResult,
 } from './glossaryGateway';
 import { popupCard } from '../../theme/readingColumn';
@@ -54,25 +54,11 @@ const LOOKUP_DEADLINE_MS = 8000;
  *
  * Keyed to the signed-in uid, so another identity on the phone (a sign-out, a
  * new guest key) never inherits the last one's full text. Faults are not kept.
+ * The cache is SHARED with the Glossary screen (evening hunt 2, 2026-10-02 —
+ * see readDefinitionOnce): a term paid for here is free there, and back.
  */
-const READS = new Map<string, Promise<DefinitionResult>>();
-let readsUid: string | null | undefined;
-supabase.auth.onAuthStateChange((_e, session) => {
-  const uid = session?.user?.id ?? null;
-  if (uid !== readsUid) {
-    READS.clear();
-    readsUid = uid;
-  }
-});
 function readOnce(id: string): Promise<DefinitionResult> {
-  const hit = READS.get(id);
-  if (hit) return hit;
-  const p = fetchDefinitionViaGateway(id).then((r) => {
-    if (r.state !== 'ok' && READS.get(id) === p) READS.delete(id);
-    return r;
-  });
-  READS.set(id, p);
-  return p;
+  return readDefinitionOnce(id);
 }
 
 export function GlossaryTermPopup({

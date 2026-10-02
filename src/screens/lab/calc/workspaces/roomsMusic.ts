@@ -876,6 +876,9 @@ const WS_SABINE: Workspace = {
       nonNegative: true,
       placeholder: '0.05, 0.3, 0.9',
       help: 'One α (0–1) per surface, in the SAME ORDER as the areas list.',
+      // Same rule as the single PANEL ABSORPTION α field (evening hunt 2):
+      // checked per entry by FieldRow.
+      warn: { test: (x) => x > 1.2, msg: 'α should be 0–1 in practice; lab values slightly above 1.0 should be treated as ≈1.' },
     },
     {
       key: 'targetRt',

@@ -87,9 +87,10 @@ import {
 } from '../../features/glossary/deviceKey';
 import {
   corpusTable,
-  fetchDefinitionViaGateway,
   probeGateway,
+  readDefinitionOnce,
   resetGatewayProbe,
+  sessionDefinition,
   type GatewayProbe,
 } from '../../features/glossary/glossaryGateway';
 import { isHazardTerm } from '../../lib/hazard';
@@ -1698,7 +1699,12 @@ ${COPY.glossaryFreeAllowance}`,
   const readViaGateway = useCallback(
     async (id: string): Promise<boolean> => {
       const gen = readerGenRef.current;
-      const r = await fetchDefinitionViaGateway(id);
+      // Through the SESSION cache (evening hunt 2, 2026-10-02): this screen's
+      // own memory is per visit, so a term read on an earlier visit — or in a
+      // lab/calculator popup — used to be charged again. A cached answer is
+      // not a new charge, so it does not repeat the allowance heads-up.
+      const fresh = !sessionDefinition(id, isMember);
+      const r = await readDefinitionOnce(id, isMember);
       // The reader changed while this was out: it was the last reader's read.
       if (gen !== readerGenRef.current) return false;
       if (r.state === 'ok') {
@@ -1717,7 +1723,7 @@ ${COPY.glossaryFreeAllowance}`,
           return next;
         });
         lastViewedTermRef.current = id;
-        if (typeof used === 'number' && typeof lim === 'number') warnUsage(used, lim);
+        if (fresh && typeof used === 'number' && typeof lim === 'number') warnUsage(used, lim);
         return true;
       }
       if (r.fault === 'limit-reached') {
@@ -1736,7 +1742,7 @@ ${COPY.glossaryFreeAllowance}`,
       // 'not-deployed' / 'denied' / 'error' → let the legacy detail fetch try.
       return true;
     },
-    [putDetail],
+    [putDetail, isMember],
   );
   // In-flight metered reads, keyed by term (bug hunt 2026-09-29). Every gateway
   // call CHARGES a weekly lookup, and `detailsRef` only fills once the first

@@ -806,9 +806,20 @@ export async function getExposureHistory(): Promise<DayRecord[]> {
   }
 }
 
-export async function deleteExposureToday(): Promise<void> {
+/**
+ * Resolves FALSE when the stored day could not be removed (toddler evening
+ * 2026-10-02, pass 2). The failure was swallowed: today read 0 on screen
+ * while the stored day stayed on disk and came back at the next launch. Now
+ * the cleared day is put back (with any listening since added to it) and the
+ * caller says so.
+ */
+export async function deleteExposureToday(): Promise<boolean> {
   const today = dateKeyOf(new Date());
+  const prev = day && day.date === today ? day : null;
+  const prevApproaching = approachingFiredToday;
+  const prevReached = reachedFiredToday;
   day = freshDay(today);
+  const cleared = day;
   session = null;
   approachingFiredToday = false;
   reachedFiredToday = false;
@@ -823,7 +834,13 @@ export async function deleteExposureToday(): Promise<void> {
     dayReadFailed = false;
     hydrated = true;
   }
+  if (!removed && gen === generation && prev && day === cleared) {
+    day = mergeDays(prev, cleared);
+    approachingFiredToday = approachingFiredToday || prevApproaching;
+    reachedFiredToday = reachedFiredToday || prevReached;
+  }
   emitState();
+  return removed;
 }
 
 /**
@@ -843,7 +860,7 @@ export async function deleteExposureHistory(): Promise<boolean> {
   } catch {
     ok = false;
   }
-  await deleteExposureToday();
+  if (!(await deleteExposureToday())) ok = false;
   return ok;
 }
 

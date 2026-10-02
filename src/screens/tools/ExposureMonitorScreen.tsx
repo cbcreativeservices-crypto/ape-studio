@@ -485,7 +485,16 @@ export function ExposureMonitorScreen() {
                   'Delete today’s exposure?',
                   'Today’s tracked time and dose will be cleared.',
                   'Delete',
-                  () => void deleteExposureToday(),
+                  () =>
+                    void deleteExposureToday().then((deleted) => {
+                      // Said, never shown as gone (toddler evening 2026-10-02, pass 2).
+                      if (!deleted) {
+                        notify(
+                          'Today not deleted',
+                          'This device could not remove today’s stored exposure, so it is still saved. Try Delete today again.',
+                        );
+                      }
+                    }),
                   { destructive: true },
                 )
               }

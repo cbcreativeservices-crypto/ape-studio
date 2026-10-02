@@ -279,6 +279,13 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
    *  has written the row, and its late 'free' replaced the 'academy' the
    *  Paywall's refresh had just applied. */
   const refreshApplied = useRef(0);
+  /** The effect's `armExpiryRecheck`, for `refreshEntitlement` (evening hunt
+   *  2, 2026-10-02): the recheck is armed "from each applied server answer",
+   *  and the refresh after a purchase / restore / code redeem applied one
+   *  without arming it — a member made by a time-limited code, or whose boot
+   *  read had failed, kept every paid route past `expires_at` while the app
+   *  stayed open. No-op until the effect has run. */
+  const armExpiryRef = useRef<(endsAt: number | null) => void>(() => {});
 
   // Server-driven entitlement (owner 2026-08-06): a no-account guest is
   // 'anonymous'; a signed-in account reads its real tier from the `entitlements`
@@ -314,6 +321,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         void deriveWithRetry(true);
       }, delay);
     };
+    armExpiryRef.current = armExpiryRecheck;
     /**
      * @returns true when a DEFINITIVE tier was obtained (or the read was moot).
      *
@@ -654,7 +662,8 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         console.warn('[entitlement] refresh read failed, keeping current tier:', error.message);
         return false;
       }
-      const tier = academyTierFromRows((data ?? []) as EntRow[]);
+      const rows = (data ?? []) as EntRow[];
+      const tier = academyTierFromRows(rows);
       if (!(await stillSameUser())) {
         console.warn('[entitlement] refresh answer belongs to a previous session, discarded');
         return false;
@@ -663,6 +672,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         serverTierApplied.current = true;
         refreshApplied.current += 1;
         setEntitlementState(tier);
+        armExpiryRef.current(tier === 'academy' ? accessEndsAt(rows) : null);
         // A tier the server just answered IS known (2026-09-30). Without this,
         // a member whose boot read failed and whose retries ran out stayed
         // `tierKnown: false` after a successful purchase / restore / redeem —

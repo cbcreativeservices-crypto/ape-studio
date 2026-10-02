@@ -38,7 +38,7 @@ import { MeasurementPreview, hasPreview } from '../../features/tools/measure/pre
 import { MeasurementShareCard, SHARE_CARD_W } from '../../features/tools/measure/previews/MeasurementShareCard';
 import { PREVIEW_FULL_MIN_H } from '../../features/tools/measure/previews/previewKit';
 import * as shareImage from '../lab/calc/shareImage';
-import { deleteMeasurement, useMeasurements } from '../../features/tools/measure/measurementStore';
+import { deleteMeasurement, measurementsUnreadable, useMeasurements } from '../../features/tools/measure/measurementStore';
 import { QUALITY_COLOR, QUALITY_LABEL } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SavedMeasurement } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
@@ -572,7 +572,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
       `Delete ${selected.length} selected measurement${selected.length === 1 ? '' : 's'}? This cannot be undone.`,
       'Delete',
       () => {
-        selected.forEach((id) => deleteMeasurement(id));
+        deleteMeasurement(selected); // one storage call, one popup if it fails
         setSelected([]);
       },
       { destructive: true },
@@ -760,6 +760,17 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
           </>
         }
         ListEmptyComponent={
+          measurementsUnreadable() ? (
+            // A failed READ is not an empty library (toddler evening
+            // 2026-10-02, pass 2): nothing was deleted, and coming back reads again.
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyTitle}>SAVED MEASUREMENTS COULD NOT BE READ</Text>
+              <Text style={styles.emptyBody}>
+                This device could not read your measurement library just now. Nothing has been
+                deleted. Leave this screen and come back to try again.
+              </Text>
+            </View>
+          ) : (
           <View style={styles.emptyCard}>
             <Text style={styles.emptyTitle}>NO SAVED MEASUREMENTS YET</Text>
             <Text style={styles.emptyBody}>
@@ -768,6 +779,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
               its measurement here.
             </Text>
           </View>
+          )
         }
       />
 

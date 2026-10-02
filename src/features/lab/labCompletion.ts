@@ -131,6 +131,9 @@ let hydrating: Promise<void> | null = null;
  *  mark_lab_complete answer that was out when the wipe ran belongs to the
  *  departing account and lands nowhere (evening pass 1, 2026-10-02). */
 let completionGen = 0;
+/** A unit (or a `sent`) was recorded while the read had failed, so persist()
+ *  wrote nothing: the next successful read writes it (evening pass 2). */
+let unsaved = false;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -143,7 +146,11 @@ function persist() {
   // ⛔ NEVER OVER A COPY THAT COULD NOT BE READ (full run 2, 2026-10-01): a
   // failed device read used to leave this store "hydrated" and empty, and the
   // next unit's write replaced every unit banked before it.
-  if (!hydrated) return;
+  if (!hydrated) {
+    unsaved = true;
+    return;
+  }
+  unsaved = false;
   const units: Record<string, string[]> = {};
   for (const [k, set] of Object.entries(cleared)) if (set.size) units[k] = [...set];
   const blob: PersistShape = { units, sent: [...sent], af: afComplete };
@@ -182,6 +189,10 @@ function hydrate(): Promise<void> {
         // corrupt → keep defaults (nothing cleared)
       }
       hydrated = true;
+      // Units (and a server `sent`) shown while the read had failed were never
+      // written; they are now, merged with what was stored — or a unit the
+      // screen showed as cleared was gone on the next launch.
+      if (unsaved) persist();
       emit();
       // Flush any lab completed while signed-out or offline last run.
       void retryUnsent();
@@ -405,6 +416,7 @@ export function resetLocal(): void {
   completionGen++;
   // A read that was out lands nowhere; the next caller reads the swept key.
   hydrating = null;
+  unsaved = false;
   cleared = {};
   sent = new Set<string>();
   afComplete = false;

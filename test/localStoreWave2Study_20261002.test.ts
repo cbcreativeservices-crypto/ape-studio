@@ -169,6 +169,11 @@ test('exam draft: a read that THREW is never saved over, and later saves MERGE o
   g.__W2S_FAIL_READS__ = false;
   assert.equal(await draft.saveAttemptDraft('att-1', { answers: { '0': 'z', '1': 'y' }, qIdx: 2 }), true);
   assert.deepEqual(json(k), { answers: { '0': 'z', '1': 'y', '2': 'c' }, qIdx: 3 });
+  // Corrected (evening hunt 2, 2026-10-02): the merged save does NOT clear the
+  // screen's "started blind" flag — its in-memory answers still lack slot 2,
+  // so the submit's re-read must still run. A load that succeeds clears it.
+  assert.equal(draftUnreadable('att-1'), true);
+  assert.deepEqual(await draft.loadAttemptDraft('att-1'), { answers: { '0': 'z', '1': 'y', '2': 'c' }, qIdx: 3 });
   assert.equal(draftUnreadable('att-1'), false);
 });
 

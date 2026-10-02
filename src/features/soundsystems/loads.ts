@@ -125,7 +125,10 @@ export function ampMatchCopy(v: MatchVerdict, ampW: number, contW: number, progW
 export type AmpRating = { at8: number; at4: number; at2?: number; bridged8?: number; minOhms: number; minOhmsBridged?: number };
 
 export function wattsIntoLoad(rating: AmpRating, ohms: number, bridged = false): number | null {
-  if (bridged) return rating.bridged8 != null && ohms >= (rating.minOhmsBridged ?? 8) ? rating.bridged8 : null;
+  // Bridged above 8 Ω is voltage-limited exactly like a single channel
+  // (evening hunt 2, 2026-10-02): one 16 Ω cabinet bridged read the full
+  // 8 Ω bridged rating — twice the power the amplifier can put into it.
+  if (bridged) return rating.bridged8 != null && ohms >= (rating.minOhmsBridged ?? 8) ? (ohms > 8 ? Math.round(rating.bridged8 * (8 / ohms)) : rating.bridged8) : null;
   if (!Number.isFinite(ohms)) return null;
   // Above 8 Ω the amplifier is voltage-limited: power falls in proportion.
   if (ohms >= 8) return Math.round(rating.at8 * (8 / ohms));

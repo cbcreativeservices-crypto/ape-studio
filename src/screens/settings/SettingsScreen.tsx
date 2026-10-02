@@ -63,7 +63,7 @@ import {
 } from '../../features/settings/store';
 import { NotifyScheduleModal } from '../../features/settings/NotifyScheduleModal';
 import { DeleteAccountButton } from '../../features/settings/DeleteAccountButton';
-import { registerAndSavePushToken } from '../../features/notifications/push';
+import { registerAndSavePushToken, registerAndSavePushTokenChecked } from '../../features/notifications/push';
 import { setPhoneNotificationsEnabled } from '../../features/notifications/localSchedule';
 import {
   WEEKLY_CONCEPT_CATEGORIES,
@@ -425,10 +425,24 @@ ${LOCAL_LOSS}`
     // write-side backstop.
     if (!catSchedKnown.current) return;
     setCatSched((prev) => {
-      const next = { ...prev[category], ...patch };
+      const before = prev[category];
+      const next = { ...before, ...patch };
       catSaveChain.current = catSaveChain.current
         .then(() => saveCategorySchedule(category, next))
-        .catch(() => {});
+        .catch(() => false)
+        .then((ok) => {
+          // A FAILED SAVE IS NOT SHOWN AS SAVED (evening hunt 2, 2026-10-02).
+          // Its result was discarded: a category switched on (or moved to a
+          // new day/time) offline read that way while the server kept the
+          // old row — the member waited for a concept that was never booked.
+          // Put the row back unless a later edit has replaced it, and say so.
+          if (ok) return;
+          setCatSched((p) => (p[category] === next ? { ...p, [category]: before } : p));
+          notify(
+            'Notifications',
+            'That weekly concept change could not be saved — check your connection and try again.',
+          );
+        });
       return { ...prev, [category]: next };
     });
   }, []);
@@ -505,7 +519,7 @@ ${LOCAL_LOSS}`
           base = loaded;
         }
 
-        const token = await registerAndSavePushToken();
+        const { token, saved: tokenSaved } = await registerAndSavePushTokenChecked();
 
         // Make sure every category has a row carrying its own schedule. If the
         // user has never picked any, start ONE on so the switch does something
@@ -549,6 +563,13 @@ ${LOCAL_LOSS}`
           notify(
             'Notifications',
             'Weekly concepts are saved. To receive them you need to allow notifications for this app on a phone — they cannot be delivered to this preview.',
+          );
+        } else if (!tokenSaved) {
+          // The token is this phone's address and it did not reach the account
+          // (evening hunt 2, 2026-10-02): say so, never a silent "on".
+          notify(
+            'Notifications',
+            'Weekly concepts are saved, but this phone could not be registered to receive them. Check your connection, then switch Weekly concept off and on again.',
           );
         }
       } else {

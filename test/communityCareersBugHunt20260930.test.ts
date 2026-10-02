@@ -141,6 +141,8 @@ describe('help and onboarding', () => {
 
   test('C13: the intro seen-read cannot reject unhandled', () => {
     const src = code('src/features/intro/ScreenIntroOverlay.tsx');
-    assert.match(src, /INTRO_STORAGE_PREFIX \+ key\);\s*if \(alive && seen == null\) setVisible\(true\);\s*\}\)\(\)\.catch\(\(\) => \{\}\);/);
+    // Evening pass 2 (2026-10-02): the stored flag decides both ways, and a
+    // failed read hides it — still caught, never an unhandled rejection.
+    assert.match(src, /INTRO_STORAGE_PREFIX \+ key\);\s*if \(alive && !dismissedRef\.current\) setVisible\(seen == null\);[\s\S]*?\}\)\(\)\.catch\(\(\) => \{\s*if \(alive\) setVisible\(false\);\s*\}\);/);
   });
 });

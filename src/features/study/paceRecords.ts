@@ -39,13 +39,17 @@ export async function recordPaceSession(
   }
 }
 
-/** Fetch all pace records keyed by method. Empty object on any error. */
-export async function getPaceRecords(): Promise<Partial<Record<PaceMethodKey, PaceRecord>>> {
+/** Fetch all pace records keyed by method; `{}` when there are none.
+ *  NULL when the read FAILED (evening hunt 2, 2026-10-02): it answered `{}`
+ *  for an error too, and the popup then told a learner with a logged best
+ *  time "No timed runs yet" — a failed read shown as fact. */
+export async function getPaceRecords(): Promise<Partial<Record<PaceMethodKey, PaceRecord>> | null> {
   try {
     const { data, error } = await supabase.rpc('get_pace_records');
-    if (error || !data) return {};
+    if (error) return null;
+    if (!data) return {};
     return data as Partial<Record<PaceMethodKey, PaceRecord>>;
   } catch {
-    return {};
+    return null;
   }
 }

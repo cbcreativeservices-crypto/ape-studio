@@ -59,7 +59,7 @@ test('4 — Frequency Counter: BACK leaves a mode before leaving the tool', () =
 test('5 — workflow runner re-opens a finished run when a step is revisited', () => {
   const src = read('screens/lab/calc/CalcWorkflowRunScreen.tsx');
   const goTo = src.slice(src.indexOf('const goTo = (next: number) => {'), src.indexOf('const onFinish = () => {'));
-  assert.match(goTo, /completedAt: next < n \? undefined : r\.completedAt/);
+  assert.match(goTo, /completedAt: next < n \? undefined : r0?\.completedAt/); // r0: evening hunt 2 (runRef before persist)
   assert.match(goTo, /if \(next < n\) setResultSaved\(false\);/);
 });
 

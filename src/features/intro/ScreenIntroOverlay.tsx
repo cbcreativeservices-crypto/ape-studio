@@ -8,7 +8,7 @@
  * Deliberately minimal: a dimmed sheet + title/body + PLACEHOLDER tag, so real
  * tutorial designs can replace the content without touching the wiring.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useIsFocused } from '@react-navigation/native';
@@ -32,6 +32,7 @@ const sessionShownIntros = new Set<IntroKey>();
  */
 export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false) {
   const [visible, setVisible] = useState(false);
+  const dismissedRef = useRef(false);
   // Suppression: NOTHING shows when the dev kill-switch is on OR Low-Light
   // Production Mode is engaged — this wins even over DEV_BYPASS.alwaysShowIntros.
   // The first-run sampler loop (§2.1) also hushes screen intros while sampling,
@@ -64,21 +65,32 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
       }
       return;
     }
+    // The STORED flag decides, both ways (evening pass 2, 2026-10-02). This
+    // only ever set `true`, so a run on the session-only branch above left the
+    // intro up after `sessionOnly` flipped: Home passes
+    // `sessionOnly={entitlement !== 'academy'}`, and right after a sign-in the
+    // tier is still 'anonymous' — a member who had dismissed "Our Commitment"
+    // for good got it again on every sign-in, and the re-run that read their
+    // stored "1" left it on screen.
     (async () => {
       const seen = await AsyncStorage.getItem(INTRO_STORAGE_PREFIX + key);
-      if (alive && seen == null) setVisible(true);
+      if (alive && !dismissedRef.current) setVisible(seen == null);
       // A failed read shows nothing — an intro is never worth an unhandled
       // rejection on every screen that hosts one (bug hunt 2026-09-30). That
       // is also the safe side for a "seen" flag (wave 2, 2026-10-02,
       // confirmed): read failed → no intro and no write; only `dismiss` ever
       // writes the flag, so nothing is re-shown and nothing written over.
-    })().catch(() => {});
+    })().catch(() => {
+      if (alive) setVisible(false);
+    });
     return () => {
       alive = false;
     };
   }, [key, sessionOnly]);
 
   const dismiss = useCallback(() => {
+    // A read still in flight must not put it back up (see the stored-flag note).
+    dismissedRef.current = true;
     setVisible(false);
     // Dev bypass never persists; sessionOnly is tracked in memory only (above),
     // so it also never persists — either way it returns on the next app launch.

@@ -127,17 +127,31 @@ async function appUserId(): Promise<string | null> {
  * unhandled rejection. A throw is "no token", which both callers handle.
  */
 export async function registerAndSavePushToken(): Promise<string | null> {
+  return (await registerAndSavePushTokenChecked()).token;
+}
+
+/**
+ * The same, saying whether the token was actually STORED on the account
+ * (evening hunt 2, 2026-10-02). A token is the device's address; the weekly
+ * sender reads it from notification_preferences. A failed or no-match save
+ * only logged, and Settings switched Weekly concepts on with no word — a
+ * member whose token had never been stored was told it was saved and simply
+ * never received one. `saved` is true only from an update that matched the
+ * caller's row. Never rejects.
+ */
+export async function registerAndSavePushTokenChecked(): Promise<{ token: string | null; saved: boolean }> {
   try {
     return await registerAndSavePushTokenOnce();
   } catch (e) {
     console.warn('[push] registration failed:', e);
-    return null;
+    return { token: null, saved: false };
   }
 }
 
-async function registerAndSavePushTokenOnce(): Promise<string | null> {
+async function registerAndSavePushTokenOnce(): Promise<{ token: string | null; saved: boolean }> {
+  const none = { token: null, saved: false };
   const Notifications = getNotifications();
-  if (!Notifications) return null;
+  if (!Notifications) return none;
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
@@ -154,13 +168,13 @@ async function registerAndSavePushTokenOnce(): Promise<string | null> {
     const asked = await Notifications.requestPermissionsAsync();
     status = asked.status;
   }
-  if (status !== 'granted') return null;
+  if (status !== 'granted') return none;
 
   const projectId =
     Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
   if (!projectId) {
     console.warn('[push] missing eas.projectId');
-    return null;
+    return none;
   }
 
   let token: string;
@@ -168,11 +182,11 @@ async function registerAndSavePushTokenOnce(): Promise<string | null> {
     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
   } catch (e) {
     console.warn('[push] getExpoPushTokenAsync failed:', e);
-    return null;
+    return none;
   }
 
   const uid = await appUserId(); // app id — NOT the auth uid (see appUserId)
-  if (!uid) return token;
+  if (!uid) return { token, saved: false };
 
   const { data, error } = await supabase
     .from('notification_preferences')
@@ -190,7 +204,7 @@ async function registerAndSavePushTokenOnce(): Promise<string | null> {
   // is not stripped in release builds, so this line would write the account's
   // user UUID to logcat/os_log. The message alone is enough to diagnose.
   else if (!data?.length) console.warn('[push] token save matched no prefs row for the current user');
-  return token;
+  return { token, saved: !error && !!data?.length };
 }
 
 function payloadFromResponse(

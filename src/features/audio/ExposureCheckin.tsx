@@ -68,6 +68,9 @@ const AUDIO_ROUTES = new Set<string>([
   'SoundSystemsOperate', 'SoundSystemsTroubleshoot', 'RoomDesignLab',
   'PatchbayLab', 'ConnectorSelectLab', 'CableInstallLab', 'ProductionLab',
   'ProductionStage', 'ProductionActivity', 'PreProdLab', 'PostProdLab',
+  // Start Here plays the Foundations course tones (useCourseTone) but its
+  // route is not named *Lab, so pass 1's sweep missed it (evening pass 2).
+  'StartHere',
 ]);
 
 function onAudioScreen(): boolean {

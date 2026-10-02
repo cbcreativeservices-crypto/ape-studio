@@ -86,13 +86,24 @@ export function PaceTimerModal({
     onClose();
   };
   const [record, setRecord] = useState<PaceRecord | undefined>(undefined);
+  // What the read said (evening hunt 2, 2026-10-02): until it answers, and when
+  // it FAILED, the popup must not claim "No timed runs yet" — that is a claim
+  // about the learner's record, and we do not know it.
+  const [recordRead, setRecordRead] = useState<'loading' | 'failed' | 'ok'>('loading');
 
   // Pull fresh records whenever the modal opens (cheap; encouraging copy only).
   useEffect(() => {
     if (!visible) return;
     let alive = true;
+    setRecordRead('loading');
     void getPaceRecords().then((all) => {
-      if (alive) setRecord(all[method]);
+      if (!alive) return;
+      if (all == null) {
+        setRecordRead('failed');
+        return;
+      }
+      setRecord(all[method]);
+      setRecordRead('ok');
     });
     return () => {
       alive = false;
@@ -143,8 +154,14 @@ export function PaceTimerModal({
           {settings.preset === 'stopwatch' ? (
             <View style={styles.records}>
               <Text style={styles.recordsHead}>YOUR TIMES</Text>
-              <Text style={styles.recordsBody}>{encouragingRecord(record)}</Text>
-              {record?.sessions ? (
+              <Text style={styles.recordsBody}>
+                {recordRead === 'ok'
+                  ? encouragingRecord(record)
+                  : recordRead === 'failed'
+                    ? 'Your times could not be loaded right now.'
+                    : 'Loading your times…'}
+              </Text>
+              {recordRead === 'ok' && record?.sessions ? (
                 <Text style={styles.recordsMeta}>
                   {record.sessions} timed {record.sessions === 1 ? 'run' : 'runs'} logged
                 </Text>

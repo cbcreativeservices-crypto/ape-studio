@@ -332,6 +332,11 @@ export function MyProfileView() {
   const sendPublish = (on: boolean, adult?: boolean) => {
     if (publishing.current) return;
     publishing.current = true;
+    // A NEW attempt clears the last attempt's error (evening hunt 2, 2026-10-02
+    // — moved here from refresh()): cleared in refresh, AFTER the chain, it
+    // also wiped the refusal of the unsent edit saved just below, so a
+    // refused About reverted with no word and the publish read as clean.
+    setErr(null);
     // An edit never SENT goes first (bug hunt 2026-09-30, pass 2). The switch
     // and the guide's button are taps the ScrollView hands straight to them
     // (keyboardShouldPersistTaps), so a name typed and not yet blurred had no
@@ -391,12 +396,10 @@ export function MyProfileView() {
     // of any field sent that older copy back, erasing it on the server too.
     // Wait for queued saves; if anything is still unsent or a newer save
     // started meanwhile, take only the switch state the server owns.
-    // Only ever called after a write that SUCCEEDED (publish / the two
-    // switches): an error left over from an earlier refused attempt must not
-    // sit above the switch that now shows it worked (evening hunt 2026-10-02).
-    // Cleared BEFORE the wait, so a save still out that fails meanwhile keeps
-    // its own message.
-    setErr(null);
+    // The stale error of an earlier refused attempt is cleared when the NEW
+    // attempt starts (sendPublish / the two switches), never here: by now a
+    // save refused during this attempt has set its own message, and clearing
+    // it hid the refusal (evening hunt 2, 2026-10-02; pass 1 cleared it here).
     await saveChain.current;
     const seq = saveSeq.current;
     const mine = await fetchMyCommunityProfile();
@@ -761,7 +764,7 @@ export function MyProfileView() {
           on={p.discoverable}
           disabled={!p.published}
           label="Include me in the Audio Community Directory"
-          onChange={(v) => void setDiscoverable(v).then((r) => (r.ok ? refresh() : setErr(r.error)))}
+          onChange={(v) => { setErr(null); void setDiscoverable(v).then((r) => (r.ok ? refresh() : setErr(r.error))); }}
         />
       </View>
       <Helper>
@@ -775,7 +778,7 @@ export function MyProfileView() {
           on={p.contactEnabled}
           disabled={!p.published}
           label="Let members contact me"
-          onChange={(v) => void setContactEnabled(v).then((r) => (r.ok ? refresh() : setErr(r.error)))}
+          onChange={(v) => { setErr(null); void setContactEnabled(v).then((r) => (r.ok ? refresh() : setErr(r.error))); }}
         />
       </View>
       <Helper>

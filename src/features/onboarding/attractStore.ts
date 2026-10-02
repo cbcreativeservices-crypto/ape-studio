@@ -80,6 +80,7 @@ async function hydrate(): Promise<void> {
         // start fresh
       }
       hydrated = true;
+      applyPendingMarks();
       emit();
     })();
   }
@@ -97,51 +98,60 @@ export function noteHomeSeen(): void {
   });
 }
 
+/**
+ * A cue retired by the learner (Explore / About opened, first enrolment, the
+ * pager stepped) is recorded as PENDING and applied once the stored record has
+ * been read (evening pass 2, 2026-10-02). Pass 1 made a failed read write
+ * nothing — right — but a mark made in that state was simply dropped: the
+ * learner opened Explore, and once storage answered its ring breathed at them
+ * again. The mark now waits and is laid ON TOP of the stored record.
+ */
+type Mark = 'exploreDone' | 'aboutDone' | 'enrolledOnce' | 'deckNextDone';
+const pendingMarks = new Set<Mark>();
+
+function applyPendingMarks(): void {
+  if (!hydrated || pendingMarks.size === 0) return;
+  const next = { ...state };
+  let changed = false;
+  for (const k of pendingMarks) {
+    if (!next[k]) {
+      next[k] = true;
+      changed = true;
+    }
+  }
+  pendingMarks.clear();
+  if (!changed) return;
+  state = next;
+  persist();
+  emit();
+}
+
+function mark(k: Mark): void {
+  pendingMarks.add(k);
+  void hydrate().then(applyPendingMarks);
+}
+
 /** The user opened Explore — retire its cue permanently. */
 export function markExploreOpened(): void {
-  void hydrate().then(() => {
-    if (!state.exploreDone) {
-      state = { ...state, exploreDone: true };
-      persist();
-      emit();
-    }
-  });
+  mark('exploreDone');
 }
 
 /** The user opened About — retire its cue permanently. */
 export function markAboutOpened(): void {
-  void hydrate().then(() => {
-    if (!state.aboutDone) {
-      state = { ...state, aboutDone: true };
-      persist();
-      emit();
-    }
-  });
+  mark('aboutDone');
 }
 
 /** The user added their first topic/bundle to My Enrollment — retire the
  *  Enrollments cue permanently (owner 2026-09-14). */
 export function markEnrolled(): void {
-  void hydrate().then(() => {
-    if (!state.enrolledOnce) {
-      state = { ...state, enrolledOnce: true };
-      persist();
-      emit();
-    }
-  });
+  mark('enrolledOnce');
 }
 
 /** The user stepped the Manage My Learning pager — retire its cue for good
  *  (owner 2026-09-20). Either arrow counts: they have found the control, and
  *  saying so again is just clutter over a button they already use. */
 export function markDeckStepped(): void {
-  void hydrate().then(() => {
-    if (!state.deckNextDone) {
-      state = { ...state, deckNextDone: true };
-      persist();
-      emit();
-    }
-  });
+  mark('deckNextDone');
 }
 
 export type AttractFlags = {
@@ -229,5 +239,6 @@ export function resetLocal(): void {
   state = { exploreDone: false, aboutDone: false, enrolledOnce: false, deckNextDone: false, firstSeenAt: null };
   hydrated = false;
   hydrating = null;
+  pendingMarks.clear();
   emit();
 }

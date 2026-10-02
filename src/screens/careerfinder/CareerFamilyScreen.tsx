@@ -9,7 +9,7 @@
  * carry a plain statement that Academy study is not a route to any licence,
  * above the learning card, before anyone taps a topic.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../../navigation/types';
@@ -18,7 +18,10 @@ import { sendFeedback } from '../../lib/feedback';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { furtherEducationForTitle, isRegulatedTitle } from '../../features/careerfinder/careerIndex';
 import { fetchV3Curriculum, flattenV3 } from '../../data/v3Curriculum';
-import { toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { isFreeEnrollGs, toggleTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
+import { COREQ_TOPIC_GS } from '../awards/awardsData';
+import { notify } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { computeResult, explainFamily } from '../../features/careerfinder/scoring';
 import { CAREER_INDEX_VERSION, CENTRALITY, careersInFamily, centralitySplit, entryPoints, familyFieldOf, familyView, type Career } from '../../features/careerfinder/careerIndex';
@@ -29,6 +32,9 @@ import { safeGoBack } from '../../lib/safeGoBack';
 
 const PAGE = 12;
 const START_HERE = 3;
+/** A repeat tap on the SAME topic row inside this window is ignored — the
+ *  Enrollments row's BULK_REPEAT_MS, for the same reason (the row toggles). */
+const ROW_REPEAT_MS = 700;
 
 export function CareerFamilyScreen() {
   // Members never see "free" / membership marketing (owner 2026-09-29).
@@ -59,6 +65,35 @@ export function CareerFamilyScreen() {
   }, []);
   const enrolled = useEnrollment();
   const enrolledGs = useMemo(() => new Set(enrolled.map((e) => e.gs)), [enrolled]);
+  /**
+   * THE ENROLLMENTS LOCK, MIRRORED (evening hunt 2, 2026-10-02). These rows
+   * toggle, and nothing here knew which topics may not leave the list: a tap
+   * on DAW Fundamentals (gs3970, a free topic, in the DAWs family) or on a
+   * required co-requisite still under 100% (gs4370, in four families' START
+   * HERE three) REMOVED it — the Enrollments row refuses exactly that with
+   * "This topic stays". Same rule, same words: free topics always stay; a
+   * core stays until complete (an unread progress map reads 0%, so it stays).
+   * And a double tap no longer adds then removes (Enrollments' repeat guard).
+   */
+  const coreGsHere = useMemo(() => (familyView(params.id)?.topicGs ?? []).filter((gs) => COREQ_TOPIC_GS.includes(gs)), [params.id]);
+  const coreProg = useEnrollmentProgress(coreGsHere);
+  const lastRowTap = useRef<{ gs: number; at: number }>({ gs: -1, at: 0 });
+  const tapTopic = (gs: number) => {
+    const coreLocked = COREQ_TOPIC_GS.includes(gs) && (coreProg.get(gs)?.pct ?? 0) < 100;
+    if (enrolledGs.has(gs) && (coreLocked || isFreeEnrollGs(gs))) {
+      notify(
+        'This topic stays',
+        coreLocked
+          ? 'Required co-requisites stay in your list until you complete them.'
+          : 'This topic is always part of your list.',
+      );
+      return;
+    }
+    const now = Date.now();
+    if (lastRowTap.current.gs === gs && now - lastRowTap.current.at < ROW_REPEAT_MS) return;
+    lastRowTap.current = { gs, at: now };
+    toggleTopic(gs);
+  };
 
   if (!fam) {
     return (
@@ -166,7 +201,7 @@ export function CareerFamilyScreen() {
               const on = enrolledGs.has(gs);
               const name = officialTopicName(gs, names.get(gs));
               return (
-                <Pressable key={gs} hitSlop={8} style={styles.topicRow} onPress={() => toggleTopic(gs)} accessibilityRole="button" accessibilityState={{ selected: on }} aria-pressed={on} accessibilityLabel={on ? `Remove ${name} from your study list` : `Add ${name} to your study list`}>
+                <Pressable key={gs} hitSlop={8} style={styles.topicRow} onPress={() => tapTopic(gs)} accessibilityRole="button" accessibilityState={{ selected: on }} aria-pressed={on} accessibilityLabel={on ? `Remove ${name} from your study list` : `Add ${name} to your study list`}>
                   <Text style={[styles.topicCheck, on && { color: colors.green }]}>{on ? '✓' : '+'}</Text>
                   <Text style={[styles.topicText, on && { color: '#7dffa1' }]}>{name}</Text>
                 </Pressable>

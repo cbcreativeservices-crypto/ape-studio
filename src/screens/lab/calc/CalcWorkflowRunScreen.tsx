@@ -208,12 +208,14 @@ export function CalcWorkflowRunScreen() {
 
   // Persist the draft whenever the screen loses focus (drafts survive closing
   // the app; the explicit SAVE PROGRESS button also calls this).
-  const persist = useCallback(async (): Promise<boolean> => {
+  const persist = useCallback(async (): Promise<boolean | 'blank'> => {
     const r = runRef.current;
     if (!r || !limits.canResume) return false;
     // Nothing entered yet: saving the blank run made every later open of this
     // workflow ask "Resume previous progress?" about a run that has no progress.
-    if (r.stepIndex === 0 && !r.completedAt && r.steps.every((st) => Object.keys(st.inputs).length === 0)) return true;
+    // 'blank', not true (evening hunt 2): nothing was written, so SAVE must not
+    // answer "Progress saved." for it.
+    if (r.stepIndex === 0 && !r.completedAt && r.steps.every((st) => Object.keys(st.inputs).length === 0)) return 'blank';
     const ok = await workflowStore.saveRun(r, storeGenRef.current);
     // "Start over" was chosen: the old draft is retired now that the new run
     // has real progress saved in its place (see the resume prompt).
@@ -416,14 +418,28 @@ export function CalcWorkflowRunScreen() {
     // 2026-09-30). `completedAt` used to survive the step back, so edits made
     // after FINISH were saved on a run marked complete — which the resume
     // search skips — and were lost on the next visit. FINISH stamps it again.
-    setRun((r) => (r ? { ...r, stepIndex: next, completedAt: next < n ? undefined : r.completedAt } : r));
+    // runRef takes the NEW run before persist() reads it (evening hunt 2,
+    // 2026-10-02): setRun lands on the next render, so persist() used to save
+    // the run as it was BEFORE this tap — FINISH stored an unfinished draft,
+    // and START AGAIN inside the 1 s autosave window (which cancels that
+    // timer) left it that way: the finished run came back as "Resume
+    // previous progress?".
+    const r0 = runRef.current;
+    if (!r0) return;
+    const nextRun = { ...r0, stepIndex: next, completedAt: next < n ? undefined : r0.completedAt };
+    runRef.current = nextRun;
+    setRun(nextRun);
     // Same reason for the SAVED ✓: the saved summary may no longer match.
     if (next < n) setResultSaved(false);
     void persist();
   };
 
   const onFinish = () => {
-    setRun((r) => (r ? { ...r, stepIndex: n, completedAt: new Date().toISOString() } : r));
+    const r0 = runRef.current;
+    if (!r0) return;
+    const nextRun = { ...r0, stepIndex: n, completedAt: new Date().toISOString() };
+    runRef.current = nextRun; // see goTo — persist() must save the FINISHED run
+    setRun(nextRun);
     void persist();
   };
 
@@ -823,7 +839,22 @@ export function CalcWorkflowRunScreen() {
       {idx < n ? (
         <View style={[styles.navBar, { paddingBottom: insets.bottom + 10 }]}>
           <NavBtn label="‹ PREVIOUS" disabled={idx === 0} onPress={() => goTo(idx - 1)} />
-          {limits.canResume ? <NavBtn label="SAVE" onPress={() => void persist().then((ok) => ok && setRecalcNote('Progress saved.'))} /> : null}
+          {/* Each answer says what happened (evening hunt 2): a blank run writes
+              nothing, and a failed write used to show nothing at all. A save
+              fenced by an account wipe stays silent — it is the next person's
+              screen. */}
+          {limits.canResume ? (
+            <NavBtn
+              label="SAVE"
+              onPress={() =>
+                void persist().then((ok) => {
+                  if (ok === 'blank') setRecalcNote('Nothing to save yet — enter a value first.');
+                  else if (ok) setRecalcNote('Progress saved.');
+                  else if (storeGenRef.current === workflowGeneration()) notify('Save failed', 'Your progress could not be saved. Try again.');
+                })
+              }
+            />
+          ) : null}
           {idx < n - 1 ? (
             <NavBtn label="CONTINUE ›" primary onPress={() => goTo(idx + 1)} />
           ) : (

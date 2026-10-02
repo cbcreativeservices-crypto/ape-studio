@@ -62,6 +62,15 @@ export type AttemptDraft = {
  * clearLocalAccountData), so they need no generation fence.
  */
 const unreadable = new Set<string>();
+/**
+ * Attempts whose screen STARTED BLIND (the opening read failed) and has not
+ * read the draft back since (evening hunt 2, 2026-10-02). Kept apart from
+ * `unreadable`: a later save that reads and merges the stored draft clears the
+ * SAVE gate, but the screen's in-memory answers still lack the earlier ones —
+ * the submit's re-read (isAttemptDraftUnreadable) must still run, or the graded
+ * paper goes without them. Cleared only by a load that succeeds, or the clear.
+ */
+const startedBlind = new Set<string>();
 /** One write at a time per attempt, so a merge cannot land after a newer save. */
 const chains = new Map<string, Promise<void>>();
 
@@ -89,19 +98,22 @@ export async function loadAttemptDraft(attemptId: string): Promise<AttemptDraft 
     try {
       const raw = await AsyncStorage.getItem(key(attemptId));
       unreadable.delete(attemptId);
+      startedBlind.delete(attemptId);
       return parseDraft(raw);
     } catch {
       /* read failed — try once more, then mark the attempt unreadable */
     }
   }
   unreadable.add(attemptId);
+  startedBlind.add(attemptId);
   return null;
 }
 
-/** True when the last read of this attempt's draft FAILED: the screen is
- *  showing a fresh start, but earlier answers may still be on the device. */
+/** True when the last LOAD of this attempt's draft FAILED: the screen is
+ *  showing a fresh start, but earlier answers may still be on the device —
+ *  even after a save has since merged onto them (see `startedBlind`). */
 export function isAttemptDraftUnreadable(attemptId: string): boolean {
-  return unreadable.has(attemptId);
+  return startedBlind.has(attemptId);
 }
 
 /**
@@ -153,6 +165,7 @@ export async function clearAttemptDraft(attemptId: string): Promise<void> {
   // re-create the draft after the submit cleared it.
   await (chains.get(attemptId) ?? Promise.resolve());
   unreadable.delete(attemptId);
+  startedBlind.delete(attemptId);
   try {
     await AsyncStorage.removeItem(key(attemptId));
   } catch {

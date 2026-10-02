@@ -32,6 +32,13 @@ const STORAGE_KEY = 'ape:labVisits';
 let visits: Record<string, Set<string>> = {};
 let hydrated = false;
 let hydrating: Promise<void> | null = null;
+/** Bumped by resetLocal (the account wipe): a device read that was out when
+ *  the wipe ran belongs to the departing account and lands nowhere — the same
+ *  fence labCompletion has (evening pass 2, 2026-10-02). */
+let visitsGen = 0;
+/** A visit was recorded while the read had failed, so persist() wrote
+ *  nothing: the next successful read writes it (evening pass 2). */
+let unsaved = false;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -46,18 +53,25 @@ function blobOf(): Record<string, string[]> {
 
 function persist() {
   // Never over a copy that could not be read (full run 2, 2026-10-01).
-  if (!hydrated) return;
+  if (!hydrated) {
+    unsaved = true;
+    return;
+  }
+  unsaved = false;
   void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blobOf())).catch(() => {});
 }
 
 function hydrate(): Promise<void> {
   if (hydrated) return Promise.resolve();
   if (!hydrating) {
+    const gen = visitsGen;
     hydrating = (async () => {
       let raw: string | null;
       try {
         raw = await AsyncStorage.getItem(STORAGE_KEY);
+        if (gen !== visitsGen) return;
       } catch {
+        if (gen !== visitsGen) return;
         // The READ failed (not "nothing visited"): stay unhydrated so
         // persist() cannot write this session's visits over the stored ones;
         // the next call reads again and merges (full run 2, 2026-10-01).
@@ -79,6 +93,9 @@ function hydrate(): Promise<void> {
         // corrupt/absent → nothing visited
       }
       hydrated = true;
+      // A visit shown while the read had failed was never written; it is now,
+      // merged with what was stored — or it was gone on the next launch.
+      if (unsaved) persist();
       emit();
     })();
   }
@@ -172,6 +189,10 @@ export function useLabVisits(labId: string): ReadonlySet<string> {
 /** Account switch: drop the in-memory cache (the key itself is removed by
  *  clearLocalAccountData's `ape:*` sweep). */
 export function resetLocal(): void {
+  visitsGen++;
+  // A read that was out lands nowhere; the next caller reads the swept key.
+  hydrating = null;
+  unsaved = false;
   visits = {};
   emit();
 }

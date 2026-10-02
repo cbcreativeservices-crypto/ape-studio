@@ -6,7 +6,7 @@
  * OPEN, and each user's collapsed choices are remembered across launches (one
  * shared preference across all calculators).
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type CalcSection = 'why' | 'example' | 'mistakes';
@@ -23,6 +23,11 @@ export function useCalcSectionOpen(): {
   toggle: (k: CalcSection) => void;
 } {
   const [open, setOpen] = useState<Record<CalcSection, boolean>>({ why: true, example: true, mistakes: true });
+  // Sections the user tapped before the stored read landed (evening hunt 2,
+  // 2026-10-02): the late read used to flip them back to the OLD stored state
+  // while the tap's own write had already stored the new one — the screen and
+  // the next launch disagreed. A tapped section keeps what the tap set.
+  const touchedRef = useRef<Set<CalcSection>>(new Set());
 
   useEffect(() => {
     let alive = true;
@@ -31,11 +36,12 @@ export function useCalcSectionOpen(): {
         const rows = await AsyncStorage.multiGet([KEYS.why, KEYS.example, KEYS.mistakes]);
         if (!alive) return;
         const map = Object.fromEntries(rows) as Record<string, string | null>;
-        setOpen({
-          why: map[KEYS.why] !== '0',
-          example: map[KEYS.example] !== '0',
-          mistakes: map[KEYS.mistakes] !== '0',
-        });
+        const t = touchedRef.current;
+        setOpen((o) => ({
+          why: t.has('why') ? o.why : map[KEYS.why] !== '0',
+          example: t.has('example') ? o.example : map[KEYS.example] !== '0',
+          mistakes: t.has('mistakes') ? o.mistakes : map[KEYS.mistakes] !== '0',
+        }));
       } catch {
         // storage unavailable (e.g. web/offline) — keep the open-by-default state
       }
@@ -46,6 +52,7 @@ export function useCalcSectionOpen(): {
   }, []);
 
   const toggle = useCallback((k: CalcSection) => {
+    touchedRef.current.add(k);
     setOpen((o) => {
       const next = { ...o, [k]: !o[k] };
       void AsyncStorage.setItem(KEYS[k], next[k] ? '1' : '0').catch(() => {});

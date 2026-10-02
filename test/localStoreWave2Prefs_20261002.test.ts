@@ -350,7 +350,8 @@ describe('seen-flags in components fail toward NOT re-showing', () => {
   });
   it('[confirm] ScreenIntroOverlay: a failed read shows nothing and only dismiss writes the flag', () => {
     const s = read('src/features/intro/ScreenIntroOverlay.tsx');
-    assert.match(s, /INTRO_STORAGE_PREFIX \+ key\);\s*if \(alive && seen == null\) setVisible\(true\);[\s\S]*?\}\)\(\)\.catch\(\(\) => \{\}\);/);
+    // Evening pass 2 (2026-10-02): the stored flag decides both ways; a failed read hides it.
+    assert.match(s, /INTRO_STORAGE_PREFIX \+ key\);\s*if \(alive && !dismissedRef\.current\) setVisible\(seen == null\);[\s\S]*?\}\)\(\)\.catch\(\(\) => \{\s*if \(alive\) setVisible\(false\);\s*\}\);/);
     assert.equal((s.match(/AsyncStorage\.setItem\(/g) ?? []).length, 1, 'one write, in dismiss');
   });
   it('[confirm] firstOpen: the flag is written only after a read that answered "absent"', () => {

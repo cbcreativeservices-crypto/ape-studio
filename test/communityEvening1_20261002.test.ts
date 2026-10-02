@@ -49,13 +49,10 @@ describe('evening pass 1 — community / careers / awards', () => {
     assert.match(sheet, /st\.sheet, \{ maxHeight: '88%'/);
   });
 
-  test('E2 refresh() clears a stale error before it waits on the save chain', () => {
+  test('E2 a stale error is cleared when a NEW attempt starts (pass 2 moved it out of refresh — see communityEvening2 F2)', () => {
     const v = code('src/screens/directory/MyProfileView.tsx');
     const fn = between(v, 'const refresh = useCallback(async () => {', '}, []);');
-    const clear = fn.indexOf('setErr(null);');
-    const wait = fn.indexOf('await saveChain.current;');
-    assert.ok(clear >= 0, 'refresh no longer clears the old error');
-    assert.ok(clear < wait, 'clear BEFORE the wait, so a save failing meanwhile keeps its message');
+    assert.doesNotMatch(fn.slice(0, fn.indexOf('await saveChain.current;')), /setErr\(null\)/, 'refresh must not clear: it would hide a refusal from this attempt');
     // refresh is only reached from a successful write.
     for (const m of v.matchAll(/refresh\(\)/g)) {
       const at = m.index ?? 0;

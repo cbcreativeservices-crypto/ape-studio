@@ -331,7 +331,17 @@ export async function saveLocalSettings(s: LocalSettings): Promise<LocalSettings
   micReleaseOnBg = s.micReleaseOnBackground;
   setMuteOnLeave(s.muteAudioOnLeave);
   applyA11yFromSettings(s); // live — the UI restyles as the chip is tapped
-  await AsyncStorage.setItem(KEY, JSON.stringify(s));
+  // NEVER REJECTS (evening hunt 2, 2026-10-02). Every Settings caller is a
+  // `void saveLocalSettings(next).then(...)` with no catch, so a write that
+  // threw (storage full, a locked DB on Android) was an unhandled rejection
+  // per tap — and it skipped the reschedule below, so a reminder switched OFF
+  // kept firing while the switch read off. The choice applies for this
+  // session either way (the mirrors above are already set).
+  try {
+    await AsyncStorage.setItem(KEY, JSON.stringify(s));
+  } catch (e) {
+    console.warn('[settings] device write failed — applies for this session only:', (e as Error)?.message);
+  }
   // Reschedule the local reminders whenever their settings change (debounced
   // and change-gated inside — a haptics toggle costs nothing here).
   requestLocalNotifSync(s);

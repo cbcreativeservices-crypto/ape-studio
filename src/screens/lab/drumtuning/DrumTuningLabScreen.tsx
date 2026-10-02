@@ -165,8 +165,13 @@ export function DrumTuningLabScreen() {
     };
   }, [resolved, loaded, blocked]);
 
+  /** Bumped by every move: a FINISH read that lands after the learner has
+   *  moved on must not pull them onto the what's-left screen (the Mastering
+   *  fence, evening pass 2, 2026-10-02). */
+  const navSeqRef = useRef(0);
   const openModule = useCallback((id: DrumChapterId, atStep = 0) => {
     if (!loadedRef.current) movedRef.current = true;
+    navSeqRef.current++;
     setEndState(null);
     setModId(id);
     setStepRaw(atStep);
@@ -273,6 +278,7 @@ export function DrumTuningLabScreen() {
 
   const setStep = useCallback((i: number) => {
     if (!loadedRef.current) movedRef.current = true;
+    navSeqRef.current++;
     setStepRaw(i);
     void updateDrumProgress((s) => {
       s.lastStep = i;
@@ -304,9 +310,18 @@ export function DrumTuningLabScreen() {
     openModule(prev.id, Math.max(0, DRUM_STEP_COUNTS[prev.id] - 1));
   }, [idx, openModule]);
   const showEnd = useCallback(() => {
-    void updateDrumProgress(() => {}).then(setEndState);
+    // FINISH › then a fast ‹ PREV (or a CONTENTS jump) before this read
+    // landed — it queues behind every pending write: the what's-left screen
+    // opened over the page the learner had just moved to (evening pass 2).
+    const seq = ++navSeqRef.current;
+    void updateDrumProgress(() => {}).then((s) => {
+      if (seq === navSeqRef.current) setEndState(s);
+    });
   }, []);
-  const unEnd = useCallback(() => setEndState(null), []);
+  const unEnd = useCallback(() => {
+    navSeqRef.current++;
+    setEndState(null);
+  }, []);
   const beforeAdvance = useCallback(() => {
     if (complete && !done) bank();
   }, [complete, done, bank]);

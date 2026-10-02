@@ -171,7 +171,12 @@ export const FieldRow = memo(
         ? domain
         : field.warn && Number.isFinite(baseVal) && field.warn.test(baseVal)
           ? field.warn.msg
-          : null;
+          // A LIST checks every entry against the same rule (evening hunt 2,
+          // 2026-10-02): α of "0.05, 0.3, 9" (a slipped 0.9) gave a confident
+          // RT60 with nothing said, where the single α field warns.
+          : field.warn && isList && parseList(raw).some((x) => Number.isFinite(x) && field.warn!.test(x))
+            ? field.warn.msg
+            : null;
     // Say WHY nothing is being calculated. The strict parser is deliberately
     // silent about input it cannot read, and silence on its own reads as a
     // broken calculator to someone who has just filled the field in.

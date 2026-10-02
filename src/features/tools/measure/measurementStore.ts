@@ -163,6 +163,17 @@ async function migrateLegacyKey(): Promise<SavedMeasurement[]> {
 let generation = 0;
 /** Account wipes (clearStoredMeasurements) still clearing the table. */
 let wipesRunning = 0;
+/** The last library read FAILED (toddler evening 2026-10-02, pass 2). A failed
+ *  read used to be latched as an EMPTY library (`hydrated = true`) for the
+ *  rest of the session: "NO SAVED MEASUREMENTS YET" over a library that was
+ *  still on disk, until the app was killed. Now nothing is latched — the next
+ *  mount or save reads again — and the library screen says it could not read. */
+let readFailed = false;
+
+/** True while the saved library could not be read (see readFailed). */
+export function measurementsUnreadable(): boolean {
+  return readFailed;
+}
 
 async function hydrate(): Promise<void> {
   if (hydrated) return;
@@ -184,12 +195,22 @@ async function hydrate(): Promise<void> {
                 }
               }),
             );
-      } catch {
-        next = []; // corrupt store — start clean rather than crash
+      } catch (e) {
+        // A READ that failed is not an empty library (corrupt rows are already
+        // dropped one by one above). Not latched: the next use reads again.
+        if (gen !== generation) return;
+        console.warn('[measurements] the saved library could not be read:', e);
+        hydrating = null;
+        if (!readFailed) {
+          readFailed = true;
+          emit();
+        }
+        return;
       }
       if (gen !== generation) return; // wiped mid-read — the next hydrate reads the cleared store
       list = next;
       hydrated = true;
+      readFailed = false;
       emit();
     })();
   }
@@ -198,7 +219,9 @@ async function hydrate(): Promise<void> {
 
 /** Newest-first list, optionally filtered to one tool. */
 export function getMeasurements(toolKey?: ToolKey): SavedMeasurement[] {
-  void hydrate();
+  // Not on every render after a failed read (the failure emits, the render
+  // would read again, fail, emit…): mounts and saves retry it instead.
+  if (!readFailed) void hydrate();
   const l = toolKey ? list.filter((m) => m.tool_type === toolKey) : list;
   return [...l].sort((x, y) => (x.created_at < y.created_at ? 1 : -1));
 }
@@ -297,12 +320,33 @@ export function saveMeasurement(m: SavedMeasurement): Promise<boolean> {
   });
 }
 
-export function deleteMeasurement(id: string): void {
+/** One id, or a bulk selection — a bulk delete is ONE storage call and, if it
+ *  fails, one popup. */
+export function deleteMeasurement(idOrIds: string | string[]): void {
+  const ids = new Set(Array.isArray(idOrIds) ? idOrIds : [idOrIds]);
   void hydrate().then(() => {
-    if (!list.some((m) => m.id === id)) return;
-    list = list.filter((m) => m.id !== id);
-    guard('delete', deleteRows([id]));
+    const gone = list.filter((m) => ids.has(m.id));
+    if (gone.length === 0) return;
+    const gen = generation;
+    list = list.filter((m) => !ids.has(m.id));
     emit();
+    // A delete that did not reach disk is SAID and the rows come back
+    // (toddler evening 2026-10-02, pass 2): they used to vanish from the
+    // library with only a console.warn, then reappear on the next launch.
+    deleteRows(gone.map((m) => m.id)).catch((e: unknown) => {
+      console.warn('[measurements] delete FAILED — the records are still stored:', e);
+      if (gen !== generation) return;
+      const back = gone.filter((g) => !list.some((m) => m.id === g.id));
+      if (back.length === 0) return;
+      list = [...list, ...back];
+      emit();
+      reportSaveFailure?.(
+        back.length === 1 ? 'Measurement not deleted' : 'Measurements not deleted',
+        back.length === 1
+          ? 'This device could not remove the measurement from storage, so it is still saved. Try deleting it again.'
+          : `This device could not remove ${back.length} measurements from storage, so they are still saved. Try deleting them again.`,
+      );
+    });
   });
 }
 
@@ -352,6 +396,7 @@ export function resetLocal(): void {
   list = [];
   hydrated = false;
   hydrating = null;
+  readFailed = false;
   emit();
 }
 

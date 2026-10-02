@@ -132,7 +132,7 @@ test('calculator: stage body capped; runner converts project units, refuses stal
   // (a scrim tap / Android BACK on the prompt also runs onCancel).
   assert.match(run, /abandonedDraftRef\.current = draft\.id;/);
   assert.match(run, /void workflowStore\.deleteRun\(old(, storeGenRef\.current)?\);/);
-  assert.match(run, /r\.steps\.every\(\(st\) => Object\.keys\(st\.inputs\)\.length === 0\)\) return true;/);
+  assert.match(run, /r\.steps\.every\(\(st\) => Object\.keys\(st\.inputs\)\.length === 0\)\) return (true|'blank');/); // 'blank': evening hunt 2
   assert.match(run, /o\.quantity === f\.quantity && Number\.isFinite\(o\.value\)\) \{/);
   assert.match(read('screens/lab/calc/calcReport.ts'), /const key = `\$\{i\.label\.toLowerCase\(\)\}\|\$\{i\.value\}\|\$\{i\.unit \?\? ''\}`;/);
   assert.match(read('screens/lab/calc/CalcProjectsScreen.tsx'), /skipped \+= 1; \/\/ labels stay unique/);

@@ -27,8 +27,10 @@ const body = (src: string, start: string, len = 2500) => {
 
 test('every async read is fenced by the reader generation', () => {
   assert.match(screen, /const readerGenRef = useRef\(0\);/);
-  const gw = body(screen, 'const readViaGateway = useCallback(', 600);
-  assert.match(gw, /const gen = readerGenRef\.current;\s*const r = await fetchDefinitionViaGateway\(id\);\s*\/\/[^\n]*\n\s*if \(gen !== readerGenRef\.current\) return false;/);
+  const gw = body(screen, 'const readViaGateway = useCallback(', 1000);
+  // (evening hunt 2, 2026-10-02: the read goes through the shared session
+  // cache, readDefinitionOnce; the fence right after it is what this pins.)
+  assert.match(gw, /const gen = readerGenRef\.current;[\s\S]{0,500}?const r = await readDefinitionOnce\(id, isMember\);\s*\/\/[^\n]*\n\s*if \(gen !== readerGenRef\.current\) return false;/);
   const fd = body(screen, 'const fetchDetails = useCallback(', 3000);
   assert.match(fd, /const gen = readerGenRef\.current;/);
   assert.ok(

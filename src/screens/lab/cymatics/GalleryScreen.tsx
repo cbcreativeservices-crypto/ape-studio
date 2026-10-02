@@ -207,7 +207,15 @@ export function GalleryScreen() {
   const doDuplicate = () => {
     if (!current || duplicating.current) return;
     duplicating.current = true;
-    void duplicate(current.id)
+    // The copy carries what is TYPED (evening pass 2, 2026-10-02): the chip
+    // keeps the keyboard up, so a name or note still being typed was only
+    // flushed when the copy opened — onto the ORIGINAL — and the copy on
+    // screen showed the old text, as if what was typed had gone. Written
+    // first, and the copy waits for the edit chain.
+    const id = current.id;
+    flushDrafts();
+    void editChain.current
+      .then(() => duplicate(id))
       .then((copy) => {
         if (copy) open(copy.id);
       })
