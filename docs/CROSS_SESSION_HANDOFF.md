@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-02 14:01 · ccode · 8f6f01fe
+changed: Evening hunt 3 (final): 10 new fixes + 1 correction (Glossary 0, Home 0, Labs A 0, Shared 1+1, Community 1, Study 1, Account 1, Calc 1, Tools 3, Labs B 2). Trend 30 -> 22 -> 10
+affects other side: client only
+needs: nothing
+
+
 ### 2026-10-02 13:39 · ccode · dcc9057d
 changed: Evening hunt 2: 22 new fixes + 4 corrections (Home 1+1, Study 2, Glossary 1, Labs A 1, Labs B 2+1, Tools 3+1, Calc 4, Account 4, Community 1+1, Shared 3)
 affects other side: client only
