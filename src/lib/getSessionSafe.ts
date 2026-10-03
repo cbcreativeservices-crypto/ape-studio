@@ -53,17 +53,38 @@ type AnySession = { data: { session: unknown } };
  *                  stalled on instead of appearing anonymously in the log
  */
 export async function safeSession<T extends AnySession>(p: Promise<T>, whereFrom: string): Promise<T> {
+  return (await safeSessionResult(p, whereFrom)).result;
+}
+
+/**
+ * `safeSession`, but it also says whether the read actually came back
+ * (final round D, 2026-10-03). `safeSession` resolves a stalled read as "no
+ * session", which is right for gating — but a caller that turns "no session"
+ * into "sign in first" then tells a signed-in member they are signed out.
+ * Such a caller checks `timedOut` and says "couldn't reach your account"
+ * instead.
+ *
+ * `timedOut` is true when the read STALLED past the bound or REJECTED — in
+ * both cases we do not know who the user is, which is the thing that matters.
+ */
+export async function safeSessionResult<T extends AnySession>(
+  p: Promise<T>,
+  whereFrom: string,
+): Promise<{ result: T; timedOut: boolean }> {
   const none = { data: { session: null } } as unknown as T;
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([
-      p.catch(() => none),
-      new Promise<T>((resolve) => {
+      p.then(
+        (result) => ({ result, timedOut: false }),
+        () => ({ result: none, timedOut: true }),
+      ),
+      new Promise<{ result: T; timedOut: boolean }>((resolve) => {
         timer = setTimeout(() => {
           // Worth a warning: a stall is a real device fault, not an ordinary
           // signed-out state, and it is otherwise completely silent.
           console.warn(`[auth] getSession stalled >${SESSION_TIMEOUT_MS}ms in ${whereFrom} — continuing as signed out`);
-          resolve(none);
+          resolve({ result: none, timedOut: true });
         }, SESSION_TIMEOUT_MS);
       }),
     ]);

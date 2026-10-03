@@ -85,6 +85,16 @@ export function getTermList(kind: TermListKind): ReadonlySet<string> {
   return stores[kind].get();
 }
 
+/** One list AFTER its stored copy has been read (final round C, 2026-10-03).
+ *  `getTermList` before the read lands is the empty placeholder — a cold-start
+ *  "My Custom List" deck read it once and showed nothing. Rejects when the
+ *  read FAILED, so a screen says "could not load", never "empty". */
+export async function readTermList(kind: TermListKind): Promise<ReadonlySet<string>> {
+  await stores[kind].hydrate();
+  if (!stores[kind].isHydrated()) throw new Error(`term list "${kind}" could not be read`);
+  return stores[kind].get();
+}
+
 /** Toggle membership. The intent (add / remove) is decided from what the
  *  screen shows NOW and applied to the stored list once it has loaded —
  *  replaying a toggle against a list that loaded meanwhile would undo it. */

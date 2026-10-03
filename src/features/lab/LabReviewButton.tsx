@@ -10,15 +10,25 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { markLabReviewed, useLabCompletion, type LabKey } from './labCompletion';
+import { useGuestWording } from '../commercial/useTier';
+import { useLabPreview } from './labPreviewStore';
+import { sessionCarryOpen } from './sessionCarry';
+import { reviewCreditLine } from '../../screens/lab/kit/labEnd';
 
 export function LabReviewButton({ labKey }: { labKey: LabKey }) {
   const { complete } = useLabCompletion(labKey);
+  // A guest's mark is held for this session only (final round C, 2026-10-03):
+  // "counts toward your credit" is said only where it is true — the labs'
+  // end-screen wording otherwise (kit/labEnd reviewCreditLine).
+  const wording = useGuestWording();
+  const preview = useLabPreview().active;
+  const credit = reviewCreditLine({ guest: wording.guest, preview, carry: sessionCarryOpen(), account: wording.account });
 
   if (complete) {
     return (
       <View style={[styles.card, styles.cardDone]}>
         <Text style={styles.doneText}>✓ REVIEWED</Text>
-        <Text style={styles.sub}>This lab counts toward your Audio Fundamentals credit.</Text>
+        <Text style={styles.sub}>{credit ?? 'This lab counts toward your Audio Fundamentals credit.'}</Text>
       </View>
     );
   }
@@ -32,8 +42,8 @@ export function LabReviewButton({ labKey }: { labKey: LabKey }) {
     >
       <Text style={styles.btnText}>MARK AS REVIEWED</Text>
       <Text style={styles.sub}>
-        This lab is an open workspace — mark it once you’ve worked through it. It counts toward your
-        Audio Fundamentals credit.
+        This lab is an open workspace — mark it once you’ve worked through it.{' '}
+        {credit ?? 'It counts toward your Audio Fundamentals credit.'}
       </Text>
     </Pressable>
   );

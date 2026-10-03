@@ -252,6 +252,17 @@ const READ_PENDING = new Map<string, Promise<DefinitionResult>>();
  * and by any identity change, like READ_OK.
  */
 const READ_UNANSWERED = new Set<string>();
+/**
+ * Terms the FALLBACK meter (glossary_consume / the device-local count, used
+ * only when the gateway is absent) has already charged this APP SESSION, for
+ * this reader (final round D, 2026-10-03). It lived in a per-mount ref on the
+ * Glossary screen, so every visit started empty and a term opened on an
+ * earlier visit was charged again — against the owner ruling "once opened,
+ * free for the session". Module level, keyed to the reader like READ_OK:
+ * cleared on any identity change below (the screen also clears it when the
+ * reader's standing changes).
+ */
+export const SESSION_FALLBACK_CHARGED = new Set<string>();
 let readsUid: string | null | undefined;
 let readsGen = 0;
 supabase.auth.onAuthStateChange((_e, session) => {
@@ -260,6 +271,7 @@ supabase.auth.onAuthStateChange((_e, session) => {
     READ_OK.clear();
     READ_PENDING.clear();
     READ_UNANSWERED.clear();
+    SESSION_FALLBACK_CHARGED.clear();
     readsGen += 1;
     readsUid = uid;
   }

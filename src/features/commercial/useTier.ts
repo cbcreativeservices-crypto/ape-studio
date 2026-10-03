@@ -8,7 +8,7 @@
  */
 import { useEntitlement } from './EntitlementProvider';
 import { useLabPreview } from '../lab/labPreviewStore';
-import { guestWordingAllowed, isGuestTier, memberGateOf, tierOf, upsellAllowed, type MemberGate, type Tier } from './tier';
+import { guestWordingOf, memberGateOf, tierOf, upsellAllowed, type MemberGate, type Tier } from './tier';
 
 export function useTier(): Tier {
   const { entitlement, resolved } = useEntitlement();
@@ -40,8 +40,6 @@ export function useMemberGate(): MemberGate {
  *  `isGuestTier(useTier())` (useLabEndGuest), unchanged. */
 export function useGuestWording(): { guest: boolean; account?: 'checking' | 'unconfirmed' } {
   const { tierKnown, tierReadFailed } = useEntitlement();
-  const tier = useTier();
-  const guest = guestWordingAllowed(tier, tierKnown);
-  if (guest || !isGuestTier(tier)) return { guest };
-  return { guest: false, account: tierReadFailed ? 'unconfirmed' : 'checking' };
+  // 'unknown' (before the first read) reads 'checking' — never "saved".
+  return guestWordingOf(useTier(), tierKnown, tierReadFailed);
 }

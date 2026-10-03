@@ -22,7 +22,7 @@
  */
 import { SUPABASE_URL } from '../../../lib/env';
 import { supabase } from '../../../lib/supabase';
-import { safeSession } from '../../../lib/getSessionSafe';
+import { safeSessionResult } from '../../../lib/getSessionSafe';
 import { isRealAccount } from '../../../features/commercial/realAccount';
 
 export type TubeFamily = 'preamp' | 'power' | 'dht' | 'rectifier';
@@ -175,7 +175,12 @@ export async function fetchTubePage(
   stem: string,
   page: 1 | 2,
 ): Promise<{ url: string | null; reason: 'ok' | 'auth' | 'network' | 'missing' }> {
-  const { data: sess } = await safeSession(supabase.auth.getSession(), 'lab/tubeRefs');
+  // A STALLED or failed session read is not "no Academy sign-in" (final round
+  // D, 2026-10-03): the card told a signed-in member to sign in. It is a
+  // connection problem, and RETRY is the right advice.
+  const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'lab/tubeRefs');
+  if (timedOut) return { url: null, reason: 'network' };
+  const sess = got.data;
   // An anonymous device key would pass a bare session check and then collect a
   // 4xx from the member-gated function; short-circuit it as what it is.
   if (!isRealAccount(sess?.session)) return { url: null, reason: 'auth' };

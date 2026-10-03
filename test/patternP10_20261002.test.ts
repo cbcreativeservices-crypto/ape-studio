@@ -116,7 +116,6 @@ const TIMEOUT_NO_CLEAR: Record<string, string> = {
   'src/features/glossary/corpusFetch.ts': 'yieldToUi() — a 0 ms yield promise',
   'src/features/glossary/offlineCorpus.native.ts': '0 ms yield between write batches',
   'src/features/glossary/offlinePrefetch.ts': 'settle/back-off waits inside a run that re-checks cancelled() after each',
-  'src/features/lab/LabPreviewOverlay.tsx': 'module-level endLabPreview after the back animation — no component state',
   'src/lib/confirm.ts': 'the dialog hand-off (afterDialogCloses) — runs the caller\'s action after the fade by design',
   'src/navigation/pendingLink.ts': 'module-level URL correction ticks; idempotent',
   'src/screens/lab/calc/CalcWorkspaceScreen.tsx': 'scrollRef.current?.scrollTo after the keyboard — ref-only, null after unmount',

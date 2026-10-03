@@ -13,6 +13,7 @@
  */
 import { useEffect, type ReactNode } from 'react';
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import Animated, {
   Easing,
   cancelAnimation,
@@ -78,7 +79,10 @@ export function AttractRing({
    */
   const suppressed = useOverlaysSuppressed();
   const allowed = useDecorativeMotion(); // subscribed; reduced motion OR Low-Light — P10b, 2026-10-02
-  const motion = active && !suppressed && allowed;
+  // A covered screen does not breathe (final round C, 2026-10-03): Home stays
+  // mounted under every pushed screen, and the loop ran there unseen.
+  const focused = useIsFocused();
+  const motion = active && !suppressed && allowed && focused;
   const t = useBreathe(active, motion, 0.43); // 0.43 → ~0.6 static opacity
   const aStyle = useAnimatedStyle(() => ({ opacity: 0.3 + t.value * 0.7 }));
   void persistent; // documentation for the caller; the ring itself is stateless
@@ -117,7 +121,8 @@ export function AttractText({
   // Production Mode, where nothing may draw attention to itself unbidden.
   const suppressed = useOverlaysSuppressed();
   const allowed = useDecorativeMotion(); // subscribed; reduced motion OR Low-Light — P10b, 2026-10-02
-  const motion = active && !suppressed && allowed;
+  const focused = useIsFocused(); // covered → still, as the ring above
+  const motion = active && !suppressed && allowed && focused;
   const t = useBreathe(active, motion, 1);
   const aStyle = useAnimatedStyle(() => ({ opacity: 0.6 + t.value * 0.4 }));
   return (

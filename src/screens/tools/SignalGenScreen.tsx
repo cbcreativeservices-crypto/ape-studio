@@ -36,7 +36,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, Line, LinearGradient, Path, Stop } from 'react-native-svg';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -516,6 +516,9 @@ export function SignalGenScreen({ navigation }: Props) {
           'I understand — unlock',
           () => {
             capPromptOpen.current = false;
+            // Confirmed after the screen closed (final round C): the engine
+            // is torn down — never unlock the cap behind it. Safety first.
+            if (!mountedRef.current) return;
             ApeDsp.genUnlockCap();
             markGenCapUnlockedThisSession(); // remembered for this session (owner 2026-08-05)
             applyLevel(next);

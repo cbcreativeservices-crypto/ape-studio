@@ -61,7 +61,7 @@ import { fetchCommunityProfile, type CommunityProfile } from '../../features/too
 import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
 import { frameIsLive, healthWarningFlags, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
-import { clampCalOffset, setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
+import { clampCalOffset, isSplCalibrationUnreadable, setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { afterDialogCloses, notify } from '../../lib/confirm';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
@@ -790,9 +790,16 @@ export function SplMeterScreen({ navigation }: Props) {
         offerContribution();
         return;
       }
+      // Two different truths (final round C, 2026-10-03): an UNREADABLE store
+      // holds the change and writes it after the next good read; a failed
+      // WRITE leaves the old copy on disk. Either way a restart shows the
+      // calibration it had before (none, if it had none) — never "uncalibrated"
+      // as a promise.
       notify(
         'Calibration not saved',
-        'This device could not write the calibration to storage — it applies for now, but the meter will read uncalibrated when you close the app. Free up some space and calibrate again.',
+        isSplCalibrationUnreadable()
+          ? 'This device could not read its saved calibration just now. The new one applies for now and is saved as soon as storage can be read — if the app closes first, the meter goes back to its previous calibration (or none).'
+          : 'This device could not write the calibration to storage — it applies for now, but when you close the app the meter goes back to its previous calibration (or none). Free up some space and calibrate again.',
         afterDialogCloses(offerContribution),
       );
     });

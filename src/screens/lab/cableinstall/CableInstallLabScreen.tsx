@@ -20,7 +20,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { armSaveFailureReport } from '../../../features/storage/saveFailureNotice';
+import { armSaveFailureReport, reportUnhandledSaveFailure } from '../../../features/storage/saveFailureNotice';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton } from '../../../components/GlassButton';
@@ -163,7 +163,10 @@ export function CableInstallLabScreen() {
   // which carries nothing ("This run cannot be carried over") — so the stored
   // scores and myths are restored as they are, never merged with it.
   const wasGuestRef = useRef(false);
+  // Said ONCE per failed read (final round C, 2026-10-03) — see persist.
+  const unreadToldRef = useRef(false);
   useEffect(() => {
+    unreadToldRef.current = false; // a new read: a new failure is said again
     readRef.current = 'pending';
     if (resolved && noAccountRef.current) wasGuestRef.current = true;
     if (!resolved || noAccountRef.current) return;
@@ -237,6 +240,19 @@ export function CableInstallLabScreen() {
     // Never before the stored copy has been read (see the restore above): a
     // pending read merges and writes when it lands; a failed one keeps the
     // stored scores, myths and run untouched.
+    // …but a change dropped because the READ failed is SAID, once (final
+    // round C, 2026-10-03 — hunt 6's drum/mastering rule): every later step,
+    // score and myth was dropped without a word. A write that changes
+    // nothing (still the intro, no scores, no myths, no Repeat run) says
+    // nothing. Credit (markLabUnit) has its own store and is untouched.
+    if (readRef.current === 'failed') {
+      const changed = nextStep !== INTRO_STEP || Object.keys(nextDims).length > 0 || nextMyths.length > 0 || repeatedRef.current;
+      if (changed && !unreadToldRef.current) {
+        unreadToldRef.current = true;
+        reportUnhandledSaveFailure();
+      }
+      return;
+    }
     if (readRef.current !== 'ok') return;
     const run = repeatedRef.current ? [...runUnitsRef.current] : undefined;
     // Progress the device refused is told to the learner (owner 2026-10-03).

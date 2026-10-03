@@ -27,6 +27,20 @@ export function accountWhy(account: AccountWording): string {
   return account === 'unconfirmed' ? MEMBERSHIP_NOT_CONFIRMED : 'Still checking your account.';
 }
 
+/** The credit line under MARK AS REVIEWED / ✓ REVIEWED (LabReviewButton,
+ *  final round C 2026-10-03), in the end screen's words. null = the plain
+ *  member line ("counts toward your Audio Fundamentals credit") is true. A
+ *  guest's mark is held for this session and carried into the account they
+ *  sign in to before closing the app (owner ruling 2026-10-01). */
+export function reviewCreditLine(opts: { guest: boolean; preview?: boolean; carry?: boolean; account?: AccountWording }): string | null {
+  const { guest, preview, carry = true, account } = opts;
+  if (preview) return 'This is a members-only preview, so nothing here is saved or credited.';
+  if (guest && !carry) return 'You are not signed in, so nothing here is saved.';
+  if (guest) return 'You are not signed in, so this is kept for this session only — sign in before you close the app to keep it toward your Audio Fundamentals credit.';
+  if (account) return accountWhy(account);
+  return null;
+}
+
 /** One thing a lab asks the learner to do, in lab order. */
 export type LabEndUnit = {
   /** Stable id — the lab's own unit id (module id, `p3`, section key…). */

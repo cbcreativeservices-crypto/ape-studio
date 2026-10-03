@@ -39,8 +39,9 @@ export function WeeklyConceptScreen({ navigation, route }: Props) {
     void fetchConceptById(route.params.concept_id)
       .then((row) => {
         if (cancelled) return;
+        // null = the row is gone (final round D): the "no longer available"
+        // state, not a RETRY that can never work. A failed read throws below.
         setCard(row);
-        if (!row) setLoadError(true);
       })
       .catch(() => {
         if (!cancelled) setLoadError(true);
@@ -84,7 +85,7 @@ export function WeeklyConceptScreen({ navigation, route }: Props) {
         // [37] (2026-09-07): a fetched row with an empty concept is unavailable,
         // not a blank title.
         <View style={styles.center}>
-          <Text style={styles.empty}>This concept is not available.</Text>
+          <Text style={styles.empty}>This concept is no longer available.</Text>
         </View>
       ) : (
         <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 28 }]}>

@@ -288,6 +288,7 @@ export function ProfileScreen() {
   const known = useTermList('known');
   // Earned credentials (runbook item 3, 2026-08-29). Read-only, RLS-scoped.
   const [credentials, setCredentials] = useState<EarnedCredentialRow[]>([]);
+  const [credsFailed, setCredsFailed] = useState(false);
   const [exportingId, setExportingId] = useState<string | null>(null);
   const [credMessage, setCredMessage] = useState<string | null>(null);
 
@@ -323,7 +324,15 @@ export function ProfileScreen() {
       // Refetched on focus so a credential earned during this session appears
       // when the user comes back to Profile, without a manual reload.
       // [38] (2026-09-07): guard the rejection like fetchProfile beside it.
-      fetchMyCredentials().then(setCredentials, () => {});
+      // Final round D (2026-10-03): a failed read is remembered, so the publish
+      // manifest no longer states "0 certificates you have earned" as fact.
+      fetchMyCredentials().then(
+        (rows) => {
+          setCredentials(rows);
+          setCredsFailed(false);
+        },
+        () => setCredsFailed(true),
+      );
     }, [loadProfile, resolved]),
   );
 
@@ -1407,8 +1416,9 @@ export function ProfileScreen() {
                 · {pub.registryName || pub.name || 'Your name'}
               </Text>
               <Text style={styles.manifestOn}>
-                · {credentials.length} certificate{credentials.length === 1 ? '' : 's'} you have
-                earned
+                {credsFailed
+                  ? '· The certificates you have earned (couldn’t be loaded just now)'
+                  : `· ${credentials.length} certificate${credentials.length === 1 ? '' : 's'} you have earned`}
               </Text>
               <Text style={styles.manifestOn}>
                 ·{' '}

@@ -10,7 +10,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

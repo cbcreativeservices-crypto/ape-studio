@@ -20,7 +20,7 @@
  * 'discount' kind from access_codes.
  */
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
 import { isRealAccount } from './realAccount';
 
@@ -65,6 +65,11 @@ const MESSAGES: Record<RedeemStatus, string> = {
 export const REDEEM_GRANTED_NOT_REFRESHED =
   'Your code was accepted and your membership is recorded. We couldn’t refresh your access on this device yet — it will unlock shortly, or restart the app.';
 
+/** The session read stalled or failed, so we do not know who is signed in —
+ *  never "sign in first" to someone who may well be (final round D). */
+export const SESSION_UNREACHED_MESSAGE =
+  'We couldn’t reach your account just now — check your connection and try again.';
+
 const OK_STATUSES: ReadonlySet<RedeemStatus> = new Set<RedeemStatus>(['granted', 'already_active']);
 
 function result(status: RedeemStatus, extra?: { tier?: 'academy' | null; expiresAt?: string | null; message?: string }): RedeemResult {
@@ -90,7 +95,12 @@ export async function redeemAccessCode(code: string): Promise<RedeemResult> {
   // ⚠️ An anonymous device key is a session but not an account. Redeeming
   // against it would write the entitlement to a uid the nightly purge deletes
   // in seven days — the user would redeem and then silently lose it.
-  const { data: sess } = await safeSession(supabase.auth.getSession(), 'accessCode');
+  // A STALLED or failed session read is not "signed out" (final round D,
+  // 2026-10-03): a signed-in member was told to sign in. Nothing was sent, so
+  // the code is untouched — say what happened and let them retry.
+  const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'accessCode');
+  if (timedOut) return result('error', { message: SESSION_UNREACHED_MESSAGE });
+  const sess = got.data;
   if (!isRealAccount(sess.session)) return result('not_authenticated');
 
   try {

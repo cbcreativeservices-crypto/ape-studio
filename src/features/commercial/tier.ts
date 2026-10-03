@@ -131,3 +131,18 @@ export function memberGateOf(tier: Tier, tierKnown: boolean, tierReadFailed: boo
 export function guestWordingAllowed(tier: Tier, tierKnown: boolean): boolean {
   return isGuestTier(tier) && (tier === 'preview' || tierKnown);
 }
+
+/** useGuestWording's answer, pure (final round C, 2026-10-03). 'unknown' —
+ *  before the first read lands — is 'checking' too: an end screen reached in
+ *  that window must not say "Everything you have done is saved". */
+export function guestWordingOf(
+  tier: Tier,
+  tierKnown: boolean,
+  tierReadFailed: boolean,
+): { guest: boolean; account?: 'checking' | 'unconfirmed' } {
+  const guest = guestWordingAllowed(tier, tierKnown);
+  if (guest) return { guest };
+  if (tier === 'unknown') return { guest: false, account: 'checking' };
+  if (!isGuestTier(tier)) return { guest };
+  return { guest: false, account: tierReadFailed ? 'unconfirmed' : 'checking' };
+}

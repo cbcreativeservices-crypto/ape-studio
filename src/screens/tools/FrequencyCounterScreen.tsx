@@ -1359,11 +1359,13 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   // is lock COPY (false only for a KNOWN non-member), so a failed membership
   // read let anyone pick the Academy-only Light Pulse mode. LEARN/DEMO and
   // the library are gated at their destinations; Light Pulse has none, so it
-  // is gated here: 'checking' waits silently (like SAVE), 'unconfirmed' says why.
+  // is gated here: 'checking' says "one moment" (final round C — a tap that
+  // does nothing and says nothing reads as broken), 'unconfirmed' says why.
   const memberGate = useMemberGate();
   const pickMode = (m: Mode) => {
     if (m === 'light' && memberGate !== 'open' && memberGate !== 'locked') {
       if (memberGate === 'unconfirmed') notify('Membership not confirmed', MEMBERSHIP_NOT_CONFIRMED);
+      else notify('One moment', 'Still checking your account. Try again in a moment.');
       return;
     }
     setMode(m);

@@ -78,6 +78,6 @@ test('2. Frequency Counter: Light Pulse opens only for a confirmed member', () =
   assert.doesNotMatch(s, /onPick=\{setMode\}/);
   assert.match(
     s,
-    /const pickMode = \(m: Mode\) => \{\s*if \(m === 'light' && memberGate !== 'open' && memberGate !== 'locked'\) \{\s*if \(memberGate === 'unconfirmed'\) notify\('Membership not confirmed', MEMBERSHIP_NOT_CONFIRMED\);\s*return;\s*\}\s*setMode\(m\);/,
+    /const pickMode = \(m: Mode\) => \{\s*if \(m === 'light' && memberGate !== 'open' && memberGate !== 'locked'\) \{\s*if \(memberGate === 'unconfirmed'\) notify\('Membership not confirmed', MEMBERSHIP_NOT_CONFIRMED\);\s*(?:else notify\('One moment', [^;]+\);\s*)?return;\s*\}\s*setMode\(m\);/, // 'checking' notice: final round C
   );
 });

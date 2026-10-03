@@ -93,6 +93,7 @@ import {
   probeGateway,
   readDefinitionOnce,
   resetGatewayProbe,
+  SESSION_FALLBACK_CHARGED,
   sessionChargeUnanswered,
   sessionDefinition,
   type GatewayProbe,
@@ -1563,8 +1564,10 @@ ${COPY.glossaryFreeAllowance}`,
   // the world before the gateway exists.
   const capMode: CapMode = entitlement === 'anonymous' && !serverMeters ? 'local' : 'server';
   // Terms already charged this SESSION — re-opening one is free (owner: a term
-  // you already looked up this session doesn't cost again).
-  const consumedRef = useRef<Set<string>>(new Set());
+  // you already looked up this session doesn't cost again). Module level, per
+  // reader (final round D, 2026-10-03): a per-mount ref forgot every term on
+  // the next visit and charged it again. See SESSION_FALLBACK_CHARGED.
+  const consumed = SESSION_FALLBACK_CHARGED;
   // Blocks a same-tick double-consume (two taps racing the async RPC).
   const gateOpeningRef = useRef(false);
   // HARD LOCK (owner 2026-09-10): once a capped user is out of weekly lookups the
@@ -1600,7 +1603,7 @@ ${COPY.glossaryFreeAllowance}`,
       // open instead of revealing an empty row and then locking.
       if (serverMeters) return openViaGatewayRef.current(id);
       if (!capped) return true;
-      if (consumedRef.current.has(id)) return true; // already looked up this session
+      if (consumed.has(id)) return true; // already looked up this session
       /**
        * ⛔ 'absent' MAY ONLY HAVE BEEN A SLOW PROBE (hunt 6, 2026-10-03). The
        * probe answers 'absent' for a transient fault too (a stall past its 8 s,
@@ -1632,7 +1635,7 @@ ${COPY.glossaryFreeAllowance}`,
       if (u.unavailable) {
         // Server/store unreachable or SQL not yet deployed → fail open: allow,
         // and don't re-hit it for this term again this session.
-        consumedRef.current.add(id);
+        consumed.add(id);
         lastViewedTermRef.current = id;
         return true;
       }
@@ -1642,7 +1645,7 @@ ${COPY.glossaryFreeAllowance}`,
         setLocked(true);
         return false;
       }
-      consumedRef.current.add(id);
+      consumed.add(id);
       lastViewedTermRef.current = id; // where they were last located (for post-upgrade return)
       warnUsage(u.used, u.limit);
       return true;
@@ -1800,10 +1803,15 @@ ${COPY.glossaryFreeAllowance}`,
         // Not while the membership is unconfirmed (owner 2026-10-03 #1): no
         // "limit reached" lock and no upsell to a learner who may have paid.
         // The term still does not open — say so honestly instead.
+        // Only 'checking' is "still being checked" (final round D, 2026-10-03):
+        // an 'open' gate the server refuses (a refund the client has not seen
+        // yet) said "still being checked" here while the popup said
+        // MEMBERSHIP_NOT_CONFIRMED. Both now say the same honest thing.
         if (!meterKnown) {
+          const checking = memberGate === 'checking';
           notify(
-            tierReadFailed ? 'Membership not confirmed' : 'Checking your account…',
-            tierReadFailed ? MEMBERSHIP_NOT_CONFIRMED : 'Your account is still being checked. Try this term again in a moment.',
+            checking ? 'Checking your account…' : 'Membership not confirmed',
+            checking ? 'Your account is still being checked. Try this term again in a moment.' : MEMBERSHIP_NOT_CONFIRMED,
           );
           return false;
         }
@@ -1822,7 +1830,7 @@ ${COPY.glossaryFreeAllowance}`,
       // 'not-deployed' / 'denied' / 'error' → let the legacy detail fetch try.
       return true;
     },
-    [putDetail, isMember, meterKnown, tierReadFailed],
+    [putDetail, isMember, meterKnown, memberGate],
   );
   // In-flight metered reads, keyed by term (bug hunt 2026-09-29). Every gateway
   // call CHARGES a weekly lookup, and `detailsRef` only fills once the first
@@ -2549,7 +2557,7 @@ ${COPY.glossaryFreeAllowance}`,
        */
       detailsRef.current = {};
       setDetails({});
-      consumedRef.current = new Set();
+      SESSION_FALLBACK_CHARGED.clear();
       // Reads still out for the last reader must not land after this blank
       // (see readerGenRef), and a new reader's tap must not share one.
       readerGenRef.current += 1;

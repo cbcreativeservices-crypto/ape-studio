@@ -66,6 +66,13 @@ export function getHomeGs(): number[] {
   return listStore.get();
 }
 
+/** Whether the stored Home list has been READ (not the empty placeholder).
+ *  The Home Setup sheet captures this when it builds its draft: a draft built
+ *  from an unread list must not be saved even if the list lands meanwhile. */
+export function isHomeListHydrated(): boolean {
+  return listStore.isHydrated();
+}
+
 /** Commit a new ordered list (deduped, capped). Used by the Home Setup sheet's
  *  Save action. Answers whether the device accepted BOTH writes (owner ruling
  *  2026-10-03: "if it fails the user needs to know") — the sheet says so. */

@@ -9,13 +9,33 @@
  * Exits pop the lab off the stack so a free user never lands back on a live,
  * interactive members-only lab.
  */
+import { useEffect, useRef } from 'react';
 import { UpgradeSheet } from '../commercial/UpgradeSheet';
 import { navigationRef, rootBack } from '../../navigation/navigationRef';
 import { safeGoBack } from '../../lib/safeGoBack';
-import { beginLabPreviewLeave, endLabPreview, useLabPreview } from './labPreviewStore';
+import { beginLabPreviewLeave, endLabPreview, getLabPreview, useLabPreview } from './labPreviewStore';
 
 export function LabPreviewOverlay() {
   const { active } = useLabPreview();
+
+  // ONE pending clear (final round C, 2026-10-03): an uncancelled 350 ms
+  // endLabPreview from a previous leave could land on — and end — a NEWER
+  // preview opened inside that window. Re-arming clears the old one; so does
+  // unmount.
+  const endTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const armEnd = () => {
+    if (endTimer.current) clearTimeout(endTimer.current);
+    endTimer.current = setTimeout(() => {
+      endTimer.current = null;
+      // Only the preview being LEFT: a newer one (startLabPreview resets
+      // `leaving`) opened inside the window keeps its scrim.
+      if (getLabPreview().leaving) endLabPreview();
+    }, 350);
+  };
+  useEffect(() => () => {
+    if (endTimer.current) clearTimeout(endTimer.current);
+    endTimer.current = null;
+  }, []);
 
   // Leave the previewed lab back to the list. The scrim must stay up THROUGH the
   // stack-pop animation: clearing it at/before goBack() reveals the live
@@ -30,7 +50,7 @@ export function LabPreviewOverlay() {
     //    the gate closed; the sheet is still there to exit by.
     // ONE pop per tap burst (P9b, 2026-10-02): the sheet stays up through the
     // pop, so a double tap on Close popped the lab AND the list under it.
-    if (safeGoBack(rootBack)) setTimeout(endLabPreview, 350);
+    if (safeGoBack(rootBack)) armEnd();
   };
 
   return (
@@ -49,7 +69,7 @@ export function LabPreviewOverlay() {
         beginLabPreviewLeave();
         safeGoBack(rootBack);
         if (navigationRef.isReady()) navigationRef.navigate('Paywall');
-        setTimeout(endLabPreview, 350);
+        armEnd();
       }}
     />
   );

@@ -300,10 +300,15 @@ export async function fetchConceptById(id: number): Promise<WeeklyConceptPayload
     )
     .eq('id', id)
     .maybeSingle();
-  if (error || !data) {
-    if (error) console.warn('[weekly-concept] concept fetch failed:', error.message);
-    return null;
+  // A FAILED READ IS NOT A MISSING ROW (final round D, 2026-10-03). Both used
+  // to return null, so a deleted concept showed "check your connection" with a
+  // RETRY that could never work. An error THROWS (the screen offers RETRY);
+  // null now means only "no such row" (the screen says it is gone).
+  if (error) {
+    console.warn('[weekly-concept] concept fetch failed:', error.message);
+    throw new Error(`concept fetch failed: ${error.message}`);
   }
+  if (!data) return null;
   const row = data as {
     id: number;
     category: string;

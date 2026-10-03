@@ -180,7 +180,9 @@ export function SoundSystemsLabScreen() {
                     : !wording.guest
                       ? `${accountWhy(wording.account ?? 'checking')} Move through the lab in any order — this list is what still counts toward credit.`
                       : sessionCarryOpen() ? 'You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress. Move through the lab in any order — this list is what still counts toward credit.' : 'You are not signed in, so nothing here is saved. Move through the lab in any order — this list is what still counts toward credit.'
-                  : 'Everything you have done is saved. Move through the lab in any order — this list is what still counts toward credit, and each row opens where you left off.'}
+                  : wording.account // tier not read yet (final round C): never "saved" before it is known
+                    ? `${accountWhy(wording.account)} Move through the lab in any order — this list is what still counts toward credit.`
+                    : 'Everything you have done is saved. Move through the lab in any order — this list is what still counts toward credit, and each row opens where you left off.'}
               </Text>
               {outstanding.map((r) => (
                 <Pressable key={r.id} onPress={() => go(SS_MODES.find((m) => m.id === r.id)!.route)} style={styles.leftRow} accessibilityRole="button" accessibilityLabel={`${r.label}: ${r.done} of ${r.total}. ${r.hint}`}>

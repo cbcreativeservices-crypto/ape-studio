@@ -259,7 +259,8 @@ export function attachWeeklyConceptPush(
   void Notifications.getLastNotificationResponseAsync()
     .then((response) => {
       if (!route(response)) return;
-      void Notifications.clearLastNotificationResponseAsync();
+      // Final round D: the clear can reject too — never an unhandled rejection.
+      void Notifications.clearLastNotificationResponseAsync().catch(() => {});
     })
     .catch(() => {
       /* no cold-start payload available — nothing to route */

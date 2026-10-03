@@ -136,7 +136,8 @@ describe('help and onboarding', () => {
     // Pattern hunt P10 (2026-10-02): motion is the SUBSCRIBED read now.
     // P10b (2026-10-02): the shared decorative gate (subscribed reduced
     // motion AND Low-Light); the overlay gate above is unchanged.
-    assert.match(text, /const allowed = useDecorativeMotion\(\);[^\n]*\n\s*const motion = active && !suppressed && allowed;/);
+    // Final round C (2026-10-03): and still while the screen is covered.
+    assert.match(text, /const allowed = useDecorativeMotion\(\);[^\n]*\n\s*const focused = useIsFocused\(\);[^\n]*\n\s*const motion = active && !suppressed && allowed && focused;/);
   });
 
   test('C13: the intro seen-read cannot reject unhandled', () => {

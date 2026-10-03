@@ -58,7 +58,7 @@ import {
 import { studyLoadMessage, studyLoadReason } from '../../features/study/sessionRetry';
 import {
   FLAGGED_TOPIC_ID,
-  getTermList,
+  readTermList,
   setInTermList,
   toggleBookmark,
   removeBookmarks,
@@ -489,8 +489,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       try {
         // Custom List pseudo-topic (user request 2026-07-18): items = the ★
         // starred list; no server method row exists, so method-state is skipped.
+        // The list AFTER its read lands (final round C, 2026-10-03): a cold-start
+        // tap read the empty placeholder and showed an empty deck.
         const [fetched, methodState, localStates, storedHidden, storedSections, storedShowMedia, storedShowLinks] = await Promise.all([
-          flaggedMode ? fetchGlossaryItemsByIds([...getTermList('starred')]) : fetchTopicItems(achievementId),
+          flaggedMode ? readTermList('starred').then((ids) => fetchGlossaryItemsByIds([...ids])) : fetchTopicItems(achievementId),
           flaggedMode ? Promise.resolve(null) : fetchMethodState(achievementId, 'flashcards'),
           // Device-mirror for the resume merge — SIGNED-IN only (owner ruling
           // 2026-08-17): an account keeps its progress; a no-account guest is

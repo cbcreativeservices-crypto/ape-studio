@@ -69,7 +69,8 @@ test('a tier change drops cached detail bodies and the charged set', () => {
   const body = eff.slice(0, 1800);
   assert.match(body, /detailsRef\.current = \{\};/);
   assert.match(body, /setDetails\(\{\}\);/);
-  assert.match(body, /consumedRef\.current = new Set\(\);/);
+  // The charged set is module level per reader since final round D (2026-10-03).
+  assert.match(body, /SESSION_FALLBACK_CHARGED\.clear\(\);/);
   assert.match(body, /void fetchDetails\(id\)/);
 });
 

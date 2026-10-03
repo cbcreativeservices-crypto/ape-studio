@@ -218,8 +218,9 @@ describe('3 · Home Setup SAVE: a refused write is said', async () => {
   it('the sheet notifies on a false result, after closing', () => {
     const s = strip(read('src/screens/enrollment/HomeSetupSheet.tsx'));
     const save = between(s, 'const save = () =>', 'const holdTimer');
-    assert.match(save, /const list = setHomeGs\(/);
-    assert.match(save, /const def = setDefaultHomeGs\(defaultDraft\);/);
+    // Final round C: a draft from an unread list resolves false without writing.
+    assert.match(save, /const list = fromRead \? setHomeGs\(/);
+    assert.match(save, /const def = fromRead \? setDefaultHomeGs\(defaultDraft\) : Promise\.resolve\(false\);/);
     assert.match(save, /onClose\(\);\s*void Promise\.all\(\[list, def\]\)\.then\(\(\[a, b\]\) => \{\s*if \(!\(a && b\)\) \{\s*notify\('Home not saved'/);
   });
 });

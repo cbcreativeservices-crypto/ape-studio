@@ -382,6 +382,11 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
       } catch {
         pending = null; // garbled: nothing usable to keep
       }
+      // The seen-count is advanced only AFTER the pending record is persisted
+      // (final round D, 2026-10-03). Advanced here, a refused pending write
+      // below lost the rise for good: the count already said "seen".
+      let seenCount: number | null = null;
+      let countReadFailed = false;
       if (!pendingReadFailed) try {
         const { data: cnt } = await supabase.rpc('get_glossary_term_count');
         const count = Number(cnt);
@@ -391,21 +396,35 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
             const n = (pending?.n ?? 0) + (count - stored);
             pending = { n, fireAt: nextFirstOfMonth(hour, minute).getTime() };
           }
-          await AsyncStorage.setItem(K_TERM_COUNT, String(count));
+          seenCount = count;
         }
       } catch {
-        /* offline — keep any pending as-is */
+        /* offline — keep any pending as-is, and the stored count with it */
+        countReadFailed = true;
       }
       // The record is written AFTER every reminder is booked (hunt 6,
       // 2026-10-03): written here, a refused write threw out of the run with
       // the sweep above already done — term of the day, the curated terms and
       // both weekly reminders were cancelled and never re-booked, and the
       // change-gate then skipped every retry with the same settings.
+      // A refused count write stays a cache miss, as before: the next sync
+      // counts the rise again.
+      const advanceSeenCount = async () => {
+        if (seenCount === null || countReadFailed) return;
+        try {
+          await AsyncStorage.setItem(K_TERM_COUNT, String(seenCount));
+        } catch {
+          /* cache only — recounted next sync */
+        }
+      };
       if (pendingReadFailed) {
         // see above — nothing written, nothing deleted
       } else if (pending) {
         const record = JSON.stringify(pending);
-        afterBooking = () => AsyncStorage.setItem(K_PENDING_NEW_TERMS, record);
+        afterBooking = async () => {
+          await AsyncStorage.setItem(K_PENDING_NEW_TERMS, record);
+          await advanceSeenCount();
+        };
         add(
           `${ID_PREFIX}newTerms`,
           {
@@ -416,7 +435,10 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
           { type: T.DATE, date: new Date(pending.fireAt), channelId: CHANNEL_ID },
         );
       } else {
-        afterBooking = () => AsyncStorage.removeItem(K_PENDING_NEW_TERMS);
+        afterBooking = async () => {
+          await AsyncStorage.removeItem(K_PENDING_NEW_TERMS);
+          await advanceSeenCount();
+        };
       }
     }
 

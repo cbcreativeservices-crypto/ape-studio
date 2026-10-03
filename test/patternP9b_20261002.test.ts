@@ -251,7 +251,7 @@ describe('the house back controls use it', () => {
     assert.match(read('src/components/ReturnButton.tsx'), /onPress=\{onPress \?\? \(\(\) => safeGoBack\(navigation\)\)\}/);
   });
   it('the root overlays use the stable rootBack handle', () => {
-    assert.match(read('src/features/lab/LabPreviewOverlay.tsx'), /if \(safeGoBack\(rootBack\)\) setTimeout\(endLabPreview, 350\);/);
+    assert.match(read('src/features/lab/LabPreviewOverlay.tsx'), /if \(safeGoBack\(rootBack\)\) armEnd\(\);/); // armEnd: the cancellable 350 ms clear (final round C)
     assert.match(read('src/navigation/navigationRef.ts'), /export const rootBack: GoBackNav = \{/);
   });
 });

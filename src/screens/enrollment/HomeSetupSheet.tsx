@@ -35,7 +35,7 @@ import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
-import { getDefaultHomeGs, getHomeGs, HOME_MAX, setDefaultHomeGs, setHomeGs, useHomeBundles } from '../../features/home/homeCardsStore';
+import { getDefaultHomeGs, getHomeGs, HOME_MAX, isHomeListHydrated, setDefaultHomeGs, setHomeGs, useHomeBundles } from '../../features/home/homeCardsStore';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -59,6 +59,8 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   const [defaultDraft, setDefaultDraft] = useState<number | null>(null);
   const [warn, setWarn] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
+  const draftFromReadList = useRef(false); // captured when the draft is built — see save
+
   // Membership-upsell timing (owner 2026-08-05): for non-members the prompt
   // appears as soon as they tap ANYWHERE in this popup — but not on their very
   // first tap (a free look); the SECOND tap raises it. A root-level onTouchStart
@@ -129,6 +131,8 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
     setLiftedGs(null);
     liftAnim.setValue(0);
     dragY.setValue(0);
+    // Was the list READ when this draft was built? (final round C, 2026-10-03)
+    draftFromReadList.current = isHomeListHydrated();
     const home = getHomeGs();
     const onHome = home.filter((g) => enrolledNonCore.includes(g)); // home order first
     const off = enrolledNonCore.filter((g) => !home.includes(g)); // then the rest, enrollment order
@@ -176,8 +180,13 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
       // user needs to know"). Both results used to be dropped: the sheet
       // closed on SAVE and the new Home lasted only until the next launch.
       // The sheet closes first, so the notice is not drawn under it.
-      const list = setHomeGs([...cores, ...editableOn]);
-      const def = setDefaultHomeGs(defaultDraft);
+      // ⛔ A DRAFT BUILT FROM AN UNREAD LIST IS NEVER SAVED (final round C,
+      // 2026-10-03). setHomeGs refuses while the list is unread, but if the
+      // list landed while the sheet was open the draft still lacks every
+      // stored card — refuse it the same way; the next open shows the real list.
+      const fromRead = draftFromReadList.current;
+      const list = fromRead ? setHomeGs([...cores, ...editableOn]) : Promise.resolve(false);
+      const def = fromRead ? setDefaultHomeGs(defaultDraft) : Promise.resolve(false);
       onClose();
       void Promise.all([list, def]).then(([a, b]) => {
         if (!(a && b)) {

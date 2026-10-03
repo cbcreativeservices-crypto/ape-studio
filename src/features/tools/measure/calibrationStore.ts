@@ -89,6 +89,13 @@ export function setSplCalibration(offsetDb: number | null): Promise<boolean> {
   });
 }
 
+/** The stored offset could not be READ (not "nothing saved"). A change made
+ *  now is held and written after the next read that succeeds — the SPL
+ *  meter's notice says that, not "write failed" (final round C, 2026-10-03). */
+export function isSplCalibrationUnreadable(): boolean {
+  return store.isUnreadable();
+}
+
 export function useSplCalibration(): SplCalibration | null {
   return store.use();
 }
