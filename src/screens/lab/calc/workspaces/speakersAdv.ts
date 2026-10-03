@@ -7,7 +7,7 @@
  * LABELS carry the unit; compute converts from base F/H.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, speedOfSoundAir } from '../calcUnits';
+import { P_REF_PA, fmt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const TWO_PI = 2 * Math.PI;
@@ -280,7 +280,7 @@ const DRIVER: Workspace = {
       keySymbols: ['·', 'π', '/', '√', 'x²', 'f', 'µ', 'log₁₀', 'Sd'],
       compute: (v) => {
         const p = (1.2 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
-        const spl = 20 * Math.log10(p / 2e-5);
+        const spl = 20 * Math.log10(p / P_REF_PA);
         return [
           { label: 'MAX SPL AT DISTANCE', value: spl, quantity: 'spl' },
           { label: 'PEAK VOLUME DISPLACEMENT (Vd) — cm³', value: n(v.sd) * n(v.xmax) * 1e6, quantity: 'number', chainable: false },
@@ -288,9 +288,9 @@ const DRIVER: Workspace = {
       },
       steps: (v) => {
         const p = (1.2 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
-        const spl = 20 * Math.log10(p / 2e-5);
+        const spl = 20 * Math.log10(p / P_REF_PA);
         return [
-          `Peak RMS pressure p = 1.2·2π·${fmt(n(v.f))}²·${fmt(n(v.sd))}·(${fmt(n(v.xmax))}/√2) ÷ ${fmt(n(v.dist))} = ${fmt(p)} Pa.`,
+          `RMS pressure at full excursion (Xmax), p = 1.2·2π·${fmt(n(v.f))}²·${fmt(n(v.sd))}·(${fmt(n(v.xmax))}/√2) ÷ ${fmt(n(v.dist))} = ${fmt(p)} Pa.`,
           `SPL = 20·log₁₀(${fmt(p)} / 20µPa) = ${fmt(spl)} dB SPL (half-space, small signal).`,
           `Dropping an octave needs 4× the excursion for the same SPL — the physics behind big subs.`,
         ];

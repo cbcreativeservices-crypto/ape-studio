@@ -17,6 +17,10 @@ import { fmt } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
+/** The honest answer for a ratio below 1:1 — no downward compressor is set there. */
+const ratioBelowOne = (r: number) =>
+  `A ratio of ${fmt(r)}:1 is not compression. A compressor’s ratio starts at 1:1 (no change) and goes up — at 4:1, 4 dB in above the threshold gives 1 dB out. Below 1:1 the output would rise faster than the input, which is an expander, not a compressor. Enter a ratio of 1 or more.`;
+
 const WS_COMPRESSOR: Workspace = {
   id: 'compressor',
   name: 'Compressor Math',
@@ -74,6 +78,13 @@ const WS_COMPRESSOR: Workspace = {
         const thr = n(v.thr);
         const r = n(v.ratio);
         const inp = n(v.inLvl);
+        // Below 1:1 is not compression (calc check A, 2026-10-03): a 0:1 ratio
+        // divided the overshoot by zero and showed "—" for the output and the
+        // gain reduction beside a confident INPUT ABOVE THRESHOLD; 0.5:1 raised
+        // the output ABOVE the input. Say so, as thrForGr already does.
+        if (!(r >= 1)) {
+          return [{ label: 'NOT A COMPRESSOR RATIO', text: ratioBelowOne(r) }];
+        }
         const above = inp - thr;
         const out = above > 0 ? thr + above / r : inp;
         const gr = inp - out;
@@ -87,6 +98,7 @@ const WS_COMPRESSOR: Workspace = {
         const thr = n(v.thr);
         const r = n(v.ratio);
         const inp = n(v.inLvl);
+        if (!(r >= 1)) return [ratioBelowOne(r)];
         const above = inp - thr;
         if (above <= 0) {
           return [

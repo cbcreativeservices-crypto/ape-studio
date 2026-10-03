@@ -16,7 +16,7 @@ import { memo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { CalcFunction, CalcTable, CalcValues, FieldDef, OutputVal } from './calcTypes';
-import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, negativeInput, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
+import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
 
 
 export function defaultUnitIdx(f: FieldDef): number {
@@ -181,6 +181,10 @@ export const FieldRow = memo(
     // silent about input it cannot read, and silence on its own reads as a
     // broken calculator to someone who has just filled the field in.
     const unreadable = !isList && raw.trim() !== '' && typed === null;
+    // A LIST names its unreadable token too (calc follow-up, 2026-10-03): it
+    // was excluded above, so "8, 4x, 4" or "1,000, 4,700" computed nothing and
+    // said nothing.
+    const listUnreadable = isList ? listProblem(raw) : null;
     return (
       <View style={styles.fieldRow}>
         <View style={styles.fieldHead}>
@@ -226,6 +230,7 @@ export const FieldRow = memo(
             selector).
           </Text>
         ) : null}
+        {listUnreadable ? <Text style={styles.warnText}>⚠ {listUnreadable}</Text> : null}
         {warn ? <Text style={styles.warnText}>⚠ {warn}</Text> : null}
       </View>
     );

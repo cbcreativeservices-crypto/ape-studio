@@ -824,6 +824,14 @@ const WS_ROOMMODES: Workspace = {
 
 const SABINE_K = 0.161; // metric Sabine constant (s/m)
 
+/** The room already holds MORE absorption than the target needs (beyond float
+ *  noise) — the shortfall is negative and there is nothing to add. */
+const alreadyEnough = (needed: number, cur: number) => cur - needed > 1e-9 * Math.max(1, Math.abs(needed));
+/** The plain words for that case, shared by Sabine and the Treatment Planner. */
+const surplusText = (V: number, needed: number, cur: number, rtTarget: number) =>
+  `The room already has ${fmt(cur)} m² of absorption, ${fmt(cur - needed)} m² more than the ${fmt(needed)} m² a ${fmt(rtTarget)} s RT60 needs, so add none. ` +
+  `As it is, the room decays in about ${fmt((SABINE_K * V) / cur)} s — already shorter than the target. To lengthen the decay, take absorption away instead.`;
+
 const WS_SABINE: Workspace = {
   id: 'sabine',
   name: 'Reverberation Time (Sabine)',
@@ -867,7 +875,7 @@ const WS_SABINE: Workspace = {
       quantity: 'list',
       nonNegative: true,
       placeholder: '20, 20, 12.5',
-      help: 'Comma-separated areas in m², one per surface (walls, floor, ceiling, panels…).',
+      help: 'Comma-separated areas in m², one per surface (walls, floor, ceiling, panels…). Leave out thousands commas: write 1200, not 1,200.',
     },
     {
       key: 'coeffs',
@@ -980,7 +988,13 @@ const WS_SABINE: Workspace = {
           { label: 'ABSORPTION NEEDED', value: needed, quantity: 'area' },
         ];
         if (Number.isFinite(cur)) {
-          out.push({ label: 'ABSORPTION TO ADD', value: needed - cur, quantity: 'area' });
+          // More than enough already (calc check A, 2026-10-03): the shortfall
+          // printed as a NEGATIVE "ABSORPTION TO ADD" with no words — the
+          // placeholder room itself read −0.3333 m². Nothing to add is 0, and
+          // the row below says why.
+          const surplus = alreadyEnough(needed, cur);
+          out.push({ label: 'ABSORPTION TO ADD', value: surplus ? 0 : needed - cur, quantity: 'area' });
+          if (surplus) out.push({ label: 'ALREADY ENOUGH ABSORPTION', text: surplusText(n(v.vol), needed, cur, n(v.targetRt)) });
         }
         return out;
       },
@@ -993,7 +1007,11 @@ const WS_SABINE: Workspace = {
           `Rearranged Sabine: A = 0.161 × V ÷ RT = 0.161 × ${fmt(V)} ÷ ${fmt(rt)} = ${fmt(needed)} m².`,
         ];
         if (Number.isFinite(cur)) {
-          s.push(`The room already has ${fmt(cur)} m², so ΔA = ${fmt(needed)} − ${fmt(cur)} = ${fmt(needed - cur)} m² of absorption to add.`);
+          s.push(
+            alreadyEnough(needed, cur)
+              ? `The room already has ${fmt(cur)} m² — more than the ${fmt(needed)} m² needed — so there is nothing to add: ${surplusText(V, needed, cur, rt)}`
+              : `The room already has ${fmt(cur)} m², so ΔA = ${fmt(needed)} − ${fmt(cur)} = ${fmt(needed - cur)} m² of absorption to add.`,
+          );
         }
         return s;
       },
@@ -1091,10 +1109,18 @@ const WS_TREATMENT: Workspace = {
         const aTgt = (SABINE_K * V) / n(v.rtTgt);
         const dA = aTgt - aCur;
         const perPanel = n(v.panelArea) * n(v.alpha);
+        // A panel that absorbs nothing (0 m² or α 0) cannot be counted (calc
+        // check A, 2026-10-03): ÷0 printed "PANELS NEEDED —" under a label
+        // reading "PREDICTED RT60 WITH — PANELS". → the "check for zeros" state.
+        if (!(perPanel > 0)) throw new Error('panel area and α must be greater than zero');
         const panels = Math.max(0, Math.ceil(snapWhole(dA / perPanel)));
         const predicted = (SABINE_K * V) / (aCur + panels * perPanel);
+        // A target LONGER than the current decay needs no panels: ΔA used to
+        // print negative with no words (calc check A, 2026-10-03).
+        const surplus = alreadyEnough(aTgt, aCur);
         return [
-          { label: 'ABSORPTION TO ADD ΔA', value: dA, quantity: 'area' },
+          { label: 'ABSORPTION TO ADD ΔA', value: surplus ? 0 : dA, quantity: 'area' },
+          ...(surplus ? [{ label: 'ALREADY ENOUGH ABSORPTION', text: surplusText(V, aTgt, aCur, n(v.rtTgt)) }] : []),
           { label: 'PANELS NEEDED', value: panels, quantity: 'number', chainable: false },
           { label: `PREDICTED RT60 WITH ${fmtInt(panels)} PANELS`, value: predicted, quantity: 'time', unit: 's' },
         ];
@@ -1108,6 +1134,13 @@ const WS_TREATMENT: Workspace = {
         const dA = aTgt - aCur;
         const perPanel = n(v.panelArea) * n(v.alpha);
         const panels = Math.max(0, Math.ceil(snapWhole(dA / perPanel)));
+        if (alreadyEnough(aTgt, aCur)) {
+          return [
+            `Absorption the room has now: A = 0.161 × ${fmt(V)} ÷ ${fmt(rtC)} = ${fmt(aCur)} m².`,
+            `Absorption the target needs: A = 0.161 × ${fmt(V)} ÷ ${fmt(rtT)} = ${fmt(aTgt)} m².`,
+            `There is no shortfall — ${surplusText(V, aTgt, aCur, rtT)}`,
+          ];
+        }
         return [
           `Absorption the room has now: A = 0.161 × ${fmt(V)} ÷ ${fmt(rtC)} = ${fmt(aCur)} m².`,
           `Absorption the target needs: A = 0.161 × ${fmt(V)} ÷ ${fmt(rtT)} = ${fmt(aTgt)} m².`,

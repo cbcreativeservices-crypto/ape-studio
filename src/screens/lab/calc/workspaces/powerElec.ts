@@ -25,6 +25,13 @@ const awgFromAreaM2 = (aM2: number) => {
  *  number, −1…−3 as 2/0…4/0 (the scale's own convention, as the gauge input's
  *  range), and null past 4/0 — the AWG scale ends there (kcmil / mm² beyond). */
 const awgName = (w: number): string | null => (w >= 0 ? `${w} AWG` : w >= -3 ? `${1 - w}/0 AWG` : null);
+/** Voltage drop when I·R reaches the supply: no load voltage is left, so the
+ *  stated current cannot flow over this cable from this supply. */
+const dropBreaksDown = (I: number, R: number, Vs: number): string =>
+  `The model breaks down here: ${fmt(I)} A through ${fmt(R)} Ω of cable would drop I·R = ${fmt(I * R)} V — ` +
+  `${I * R > Vs ? 'more than' : 'all of'} the ${fmt(Vs)} V supply, leaving nothing for the load. ` +
+  `This supply cannot deliver ${fmt(I)} A over this cable; even with the far end shorted, at most ${fmt(Vs / R)} A could flow. ` +
+  'Use a thicker gauge, a shorter run, or a higher supply voltage.';
 
 const TRANSFORMER: Workspace = {
   id: 'transformer',
@@ -256,6 +263,16 @@ const VDROP: Workspace = {
         const A = awgAreaM2(n(v.awg));
         const R = (RHO_CU * 2 * n(v.len)) / A;
         const vd = n(v.current) * R;
+        // I·R at or past the supply (calc check A, 2026-10-03): VOLTAGE AT LOAD
+        // went NEGATIVE (−12 V from a 48 V supply), the drop read over 100% and
+        // the cable "lost" more power than the supply gives. Ohm's law says this
+        // current cannot flow — the model breaks down, so say that instead.
+        if (vd > 0 && vd >= n(v.vsrc)) {
+          return [
+            { label: 'ROUND-TRIP RESISTANCE', value: R, quantity: 'impedance' },
+            { label: 'MODEL BREAKS DOWN', text: dropBreaksDown(n(v.current), R, n(v.vsrc)) },
+          ];
+        }
         return [
           { label: 'ROUND-TRIP RESISTANCE', value: R, quantity: 'impedance' },
           { label: 'VOLTAGE DROP', value: vd, quantity: 'voltage' },
@@ -269,9 +286,13 @@ const VDROP: Workspace = {
         const R = (RHO_CU * 2 * n(v.len)) / A;
         const vd = n(v.current) * R;
         return [
-          `${fmtInt(n(v.awg))} AWG ≈ ${fmt(A * 1e6)} mm²; round trip = 2 × ${fmt(n(v.len))} m.`,
+          // Written as the trade writes it (calc check A, 2026-10-03): −1 AWG
+          // printed "-1 AWG" here — the hunt-6 "-7 AWG" class; it is 2/0.
+          `${awgName(Math.round(n(v.awg))) ?? `${fmtInt(n(v.awg))} AWG`} ≈ ${fmt(A * 1e6)} mm²; round trip = 2 × ${fmt(n(v.len))} m.`,
           `R = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(A)} = ${fmt(R)} Ω.`,
-          `Vdrop = ${fmt(n(v.current))} A × ${fmt(R)} Ω = ${fmt(vd)} V (${fmt((vd / n(v.vsrc)) * 100)}% of ${fmt(n(v.vsrc))} V); ${fmt(n(v.current) * n(v.current) * R)} W is lost as heat.`,
+          vd > 0 && vd >= n(v.vsrc)
+            ? dropBreaksDown(n(v.current), R, n(v.vsrc))
+            : `Vdrop = ${fmt(n(v.current))} A × ${fmt(R)} Ω = ${fmt(vd)} V (${fmt((vd / n(v.vsrc)) * 100)}% of ${fmt(n(v.vsrc))} V); ${fmt(n(v.current) * n(v.current) * R)} W is lost as heat.`,
         ];
       },
     },

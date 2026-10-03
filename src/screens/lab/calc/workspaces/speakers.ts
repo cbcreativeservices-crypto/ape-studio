@@ -720,17 +720,18 @@ const WS_CV70: Workspace = {
     'one speaker.',
   example:
     '12 ceiling speakers tapped at 10 W each on a 250 W / 70 V amplifier: load = 120 W. With a ' +
-    '2 dB headroom factor the recommended amp is ≥ 120 × 10^(2/10) ≈ 190 W — the 250 W amp ' +
-    'passes with 130 W (52%) to spare, line current ≈ 120/70.7 ≈ 1.7 A, and 3 more 10 W ' +
-    'speakers fit while still holding the 2 dB reserve (13 would fill the amplifier to 100% ' +
+    '1 dB headroom factor the recommended amp is ≥ 120 × 10^(1/10) ≈ 151 W — the 250 W amp ' +
+    'passes with 130 W (52%) to spare, line current ≈ 120/70.7 ≈ 1.7 A, and 7 more 10 W ' +
+    'speakers fit while still holding the 1 dB reserve (13 would fill the amplifier to 100% ' +
     'with no headroom at all).',
   mistakes: [
-    'Loading an amplifier to 100% of its rating — distributed amps want ~20–25% held in reserve for transformer losses, line loss, and program peaks.',
+    'Loading an amplifier to 100% of its rating — distributed amps want about 20% of the rating held in reserve (load to ≈ 80% — the 1 dB default here) for transformer losses, line loss, and program peaks.',
     'Summing speaker RATINGS instead of TAP settings — a "32 W" ceiling speaker tapped at 5 W puts 5 W on the line, not 32.',
     'Running long 8 Ω low-impedance lines where a 70 V system belongs — the cable loss math (see Speaker Cable Loss) turns brutal past ~20–30 m.',
   ],
   warnings:
-    'Keep roughly 20–25% headroom on distributed lines. Transformer insertion loss (~0.5–1 dB ' +
+    'Keep roughly 20% of the amplifier’s rating in reserve on distributed lines (load it to about ' +
+    '80% — ≈ 1 dB of headroom; standard 70 V design practice). Transformer insertion loss (~0.5–1 dB ' +
     'per speaker) is NOT modeled here — it makes real levels slightly lower than the tap math. ' +
     'Low-frequency content below a step-down transformer’s rated band can saturate it: ' +
     'high-pass distributed lines around 70–100 Hz unless the transformers are rated lower.',
@@ -771,8 +772,13 @@ const WS_CV70: Workspace = {
       // the "usable budget" 158% of the amp, so MORE SPEAKERS THAT FIT filled
       // past the rating, and a load above the rating lost its OVERLOADED flag.
       nonNegative: true,
-      placeholder: '2',
-      help: 'Reserve factor: recommended amp = load × 10^(headroom/10). 1 dB ≈ 26% reserve, 2 dB ≈ 58%.',
+      // 1 dB, not 2 (calc follow-up 2026-10-03): the text said "keep 20–25% in
+      // reserve" while the 2 dB default kept 1 − 10^(−0.2) = 36.9 % of the amp
+      // idle. Standard constant-voltage design practice loads the amplifier to
+      // about 80 % of its rating: 10·log10(1/0.8) = 0.97 dB ≈ 1 dB, which keeps
+      // 1 − 10^(−0.1) = 20.6 % in reserve.
+      placeholder: '1',
+      help: 'Reserve factor: recommended amp = load × 10^(headroom/10). 1 dB keeps ≈ 21% of the amp’s rating in reserve (load ≈ 79%); 2 dB keeps ≈ 37%.',
     },
     {
       key: 'tapw',
@@ -791,7 +797,7 @@ const WS_CV70: Workspace = {
       plainFormula:
         'The line load equals the sum of the tap settings; the recommended amplifier is at least that sum times ten raised to the headroom over ten; the line current is the load divided by the line voltage.',
       explain:
-        'Budgeting a constant-voltage (70 V / 100 V) distributed line is simple addition: sum every speaker’s tap wattage. The amplifier’s rating is a hard ceiling — keep 20–25% in reserve. High line voltage means low current, which is exactly why these lines can run thin cable to dozens of speakers.',
+        'Budgeting a constant-voltage (70 V / 100 V) distributed line is simple addition: sum every speaker’s tap wattage. The amplifier’s rating is a hard ceiling — keep about 20% of it in reserve (≈ 1 dB). High line voltage means low current, which is exactly why these lines can run thin cable to dozens of speakers.',
       keySymbols: ['Σ', '≥', '×', 'x²', '/'],
       compute: (v) => {
         const taps = arr(v.taps).filter((t) => t > 0);
@@ -805,7 +811,12 @@ const WS_CV70: Workspace = {
         return [
           { label: `SYSTEM LOAD (${taps.length} speakers)`, value: load, quantity: 'power' },
           { label: `RECOMMENDED AMP ≥ (with ${fmt(hr)} dB headroom)`, value: recommended, quantity: 'power', chainable: false },
-          { label: 'REMAINING AMP CAPACITY', value: remaining, quantity: 'power', chainable: false },
+          // An overloaded amp has no capacity left, not a NEGATIVE capacity
+          // (calc check A, 2026-10-03): 330 W of taps on a 250 W amp read
+          // "REMAINING AMP CAPACITY −80 W". Name the overload as what it is.
+          remaining >= 0
+            ? { label: 'REMAINING AMP CAPACITY', value: remaining, quantity: 'power', chainable: false }
+            : { label: 'OVER THE AMP RATING BY', value: -remaining, quantity: 'power', chainable: false },
           { label: 'AMP USED', value: (load / prated) * 100, quantity: 'percent', chainable: false },
           { label: 'LINE CURRENT', value: load / vline, quantity: 'current' },
           ...(prated < recommended

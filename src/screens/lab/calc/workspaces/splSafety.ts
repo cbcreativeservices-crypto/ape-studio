@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtCount, snapWhole } from '../calcUnits';
+import { DBU_REF_V, P_REF_PA, SPL_OF_1_PA, fmt, fmtCount, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
@@ -61,7 +61,49 @@ export function oshaEdgeWarnings(levels: readonly number[], mins: readonly numbe
   return out;
 }
 
-const V_REF_DBU = 0.775; // 0 dBu reference voltage (600 Ω / 1 mW legacy)
+/**
+ * NIOSH Recommended Exposure Limit — DHHS (NIOSH) Publication No. 98-126
+ * (1998), "Criteria for a Recommended Standard: Occupational Noise Exposure":
+ * 85 dBA criterion, 3 dB exchange rate, 8 h, and the dose INTEGRATES ALL SOUND
+ * FROM 80 TO 140 dBA. Until calc follow-up 2026-10-03 the NIOSH dose counted
+ * intervals below 80 dBA too (40 dBA for 8 h added 0.1 %); the OSHA dose was
+ * already exact to its thresholds (owner-approved 2026-10-02), so for
+ * consistency the NIOSH dose now leaves out intervals below 80 dBA.
+ */
+export const NIOSH_THRESHOLD = 80;
+/** NIOSH 98-126 permits no exposure above 140 dBA; its integration stops there. */
+export const NIOSH_CEILING_DBA = 140;
+/** NIOSH daily dose in percent, counting only the paired intervals ≥ 80 dBA. */
+export function nioshDose(levels: readonly number[], mins: readonly number[]): number {
+  const m = Math.min(levels.length, mins.length);
+  let dose = 0;
+  for (let i = 0; i < m; i++) if (levels[i]! >= NIOSH_THRESHOLD) dose += (mins[i]! / allowMin(levels[i]!, 85, 3)) * 100;
+  return dose;
+}
+/** The OSHA >115/>130 honesty rule (owner 2026-10-03, "honesty is
+ *  preferred") applied to NIOSH: above 140 dBA the interval is still COUNTED
+ *  by extending the 3 dB rule, and the result says where the standard stops. */
+export function nioshEdgeWarnings(levels: readonly number[], mins: readonly number[]): { label: string; text: string }[] {
+  const m = Math.min(levels.length, mins.length);
+  return levels.slice(0, m).some((L) => L > NIOSH_CEILING_DBA)
+    ? [
+        {
+          label: 'ABOVE 140 dBA',
+          text: 'A level here is above 140 dBA. NIOSH recommends no exposure above 140 dBA at all, and its dose counts sound only from 80 to 140 dBA — levels above 140 dBA are counted here by extending the same 3 dB rule, so the result is the formula’s answer, not an allowed exposure.',
+        },
+      ]
+    : [];
+}
+
+// 0 dBu reference voltage — the ONE shared √0.6 V (calc follow-up 2026-10-03:
+// this was 0.775 here and 0.7746 in Mic Sensitivity).
+const V_REF_DBU = DBU_REF_V;
+/** Sound pressure in Pa from SPL — exact 20 µPa reference, never "94 dB = 1 Pa". */
+const paFromSpl = (spl: number) => P_REF_PA * Math.pow(10, spl / 20);
+
+/** Leq when every paired duration is 0 min — an average over no time. */
+const LEQ_NO_TIME =
+  'The durations add up to 0 minutes, so there is no time to average the levels over and no Leq to give. Enter how long each level lasted — at least one interval longer than 0 minutes.';
 
 // ---------------------------------------------------------------------------
 // 1 · SPL & Distance
@@ -343,7 +385,9 @@ const WS_SPL_ADD: Workspace = {
           { label: 'EXACT SOURCE MULTIPLE', value: N, quantity: 'number', chainable: false },
           {
             label: 'PRACTICAL ANSWER',
-            text: `You need ${fmtCount(Math.ceil(snapWhole(N)))} sources (next whole number above ${fmt(N)}×) to gain at least ${fmt(n(v.delta))} dB over one source.`,
+            // "1 sources (next whole number above 1×)" at 0 dB, and "above 4×" for an
+            // exact 4 (calc check A, 2026-10-03) — a whole multiple is not rounded up.
+            text: `You need ${fmtCount(Math.ceil(snapWhole(N)))} source${Math.ceil(snapWhole(N)) === 1 ? '' : 's'} (${fmt(N)}× rounded up to a whole number) to gain at least ${fmt(n(v.delta))} dB over one source.`,
           },
         ];
       },
@@ -448,6 +492,8 @@ const WS_DOSE: Workspace = {
       compute: (v) => {
         const T = allowMin(n(v.lex), 85, 3);
         return [
+          // Where NIOSH stops, said as OSHA's edges are (calc follow-up 2026-10-03).
+          ...nioshEdgeWarnings([n(v.lex)], [1]),
           { label: 'ALLOWABLE TIME (85 dBA / 3 dB / 8 h)', value: T * 60, quantity: 'time', unit: 'min' },
           {
             label: 'CRITERION',
@@ -500,19 +546,18 @@ const WS_DOSE: Workspace = {
       key: 'doseNiosh',
       name: 'Daily dose from intervals — NIOSH-style (85 dBA, 3 dB exchange)',
       inputs: ['doseLevels', 'doseMins'],
-      formula: 'dose% = Σ (tᵢ / Tᵢ) × 100; Tᵢ = 480 / 2^((Lᵢ−85)/3)',
+      formula: 'dose% = Σ (tᵢ / Tᵢ) × 100 over Lᵢ ≥ 80 dBA; Tᵢ = 480 / 2^((Lᵢ−85)/3)',
       plainFormula:
-        'The daily dose in percent is the sum over intervals of each duration divided by its allowable time, times 100; each allowable time is 480 divided by two raised to the interval level minus 85, over three.',
+        'The daily dose in percent is the sum, over the intervals at 80 dBA or more, of each duration divided by its allowable time, times 100; each allowable time is 480 divided by two raised to the interval level minus 85, over three.',
       explain:
-        'Adds a day of mixed levels into a single dose under the NIOSH criterion. Each interval spends a share of the daily allowance — its duration over the time allowed at that level — and 100% is the full day’s allowance. Loud intervals dominate.',
+        'Adds a day of mixed levels into a single dose under the NIOSH criterion (DHHS/NIOSH 98-126). Each interval spends a share of the daily allowance — its duration over the time allowed at that level — and 100% is the full day’s allowance. NIOSH counts sound from 80 to 140 dBA, so intervals below 80 dBA add nothing. Loud intervals dominate.',
       keySymbols: ['Σ', '/', '×', 'x²', '−', 'x₁'],
-      note: 'Intervals pair by position: first level with first duration. 100% = the full daily allowance under this criterion.',
+      note: 'Intervals pair by position: first level with first duration. Intervals below 80 dBA are not counted (NIOSH integrates 80–140 dBA). 100% = the full daily allowance under this criterion.',
       compute: (v) => {
         const ls = arr(v.doseLevels);
         const ts = arr(v.doseMins);
         const m = Math.min(ls.length, ts.length);
-        let dose = 0;
-        for (let i = 0; i < m; i++) dose += (ts[i]! / allowMin(ls[i]!, 85, 3)) * 100;
+        const dose = nioshDose(ls, ts);
         return [
           // Mismatched lists used to truncate SILENTLY (QA night 2026-09-01)
           // — safety-adjacent, so the drop is now announced. Copy flagged.
@@ -524,6 +569,7 @@ const WS_DOSE: Workspace = {
                 },
               ]
             : []),
+          ...nioshEdgeWarnings(ls, ts),
           { label: 'DAILY DOSE (85 dBA / 3 dB)', value: dose, quantity: 'percent', chainable: false },
           {
             label: 'READING',
@@ -539,15 +585,17 @@ const WS_DOSE: Workspace = {
         const ts = arr(v.doseMins);
         const m = Math.min(ls.length, ts.length);
         const parts: string[] = [];
-        let dose = 0;
         for (let i = 0; i < m; i++) {
           const T = allowMin(ls[i]!, 85, 3);
-          dose += (ts[i]! / T) * 100;
-          parts.push(`${fmt(ts[i]!)} min at ${fmt(ls[i]!)} dBA (allowed ${fmt(T)} min) → ${fmt((ts[i]! / T) * 100)}%`);
+          parts.push(
+            ls[i]! < NIOSH_THRESHOLD
+              ? `${fmt(ts[i]!)} min at ${fmt(ls[i]!)} dBA → below 80 dBA, not counted`
+              : `${fmt(ts[i]!)} min at ${fmt(ls[i]!)} dBA (allowed ${fmt(T)} min) → ${fmt((ts[i]! / T) * 100)}%`,
+          );
         }
         return [
           `Each interval spends a share of the allowance: ${parts.join('; ')}.`,
-          `Total dose = ${fmt(dose)}% under the 85 dBA criterion, 3 dB exchange, 8 h reference.`,
+          `Total dose = ${fmt(nioshDose(ls, ts))}% (intervals at 80 dBA or more) under the 85 dBA criterion, 3 dB exchange, 8 h reference.`,
         ];
       },
       table: (v) => {
@@ -557,11 +605,17 @@ const WS_DOSE: Workspace = {
         const rows: string[][] = [];
         for (let i = 0; i < m; i++) {
           const T = allowMin(ls[i]!, 85, 3);
-          rows.push([`#${i + 1}`, `${fmt(ls[i]!)} dBA`, `${fmt(ts[i]!)} min`, `${fmt(T)} min`, `${fmt((ts[i]! / T) * 100)}%`]);
+          rows.push([
+            `#${i + 1}`,
+            `${fmt(ls[i]!)} dBA`,
+            `${fmt(ts[i]!)} min`,
+            `${fmt(T)} min`,
+            ls[i]! >= NIOSH_THRESHOLD ? `${fmt((ts[i]! / T) * 100)}%` : 'not counted',
+          ]);
         }
         return {
           title: 'Intervals under the 85 dBA / 3 dB criterion',
-          cols: ['Interval', 'Level', 'Duration', 'Allowable', 'Dose share'],
+          cols: ['Interval', 'Level', 'Duration', 'Allowable', 'Dose share (≥ 80)'],
           rows,
         };
       },
@@ -675,15 +729,20 @@ const WS_DOSE: Workspace = {
           e += ts[i]! * Math.pow(10, ls[i]! / 10);
           tt += ts[i]!;
         }
-        return [
-          ...(ls.length !== ts.length
+        // No time, no average (calc check A, 2026-10-03): durations that add to
+        // 0 min made Leq 0 ÷ 0, shown as a bare "—" beside "TOTAL DURATION 0 min".
+        const check =
+          ls.length !== ts.length
             ? [
                 {
                   label: 'CHECK INPUTS',
                   text: `You entered ${ls.length} levels but ${ts.length} durations — only the first ${m} pairs are counted.`,
                 },
               ]
-            : []),
+            : [];
+        if (!(tt > 0)) return [...check, { label: 'NO TIME TO AVERAGE', text: LEQ_NO_TIME }];
+        return [
+          ...check,
           { label: 'Leq OVER THE INTERVALS', value: 10 * Math.log10(e / tt), quantity: 'spl' },
           { label: 'TOTAL DURATION', value: tt * 60, quantity: 'time', unit: 'min', chainable: false },
         ];
@@ -698,6 +757,7 @@ const WS_DOSE: Workspace = {
           e += ts[i]! * Math.pow(10, ls[i]! / 10);
           tt += ts[i]!;
         }
+        if (!(tt > 0)) return [LEQ_NO_TIME];
         return [
           `Weight each interval’s energy by its time: Σ tᵢ·10^(Lᵢ/10) = ${fmt(e)} over ${fmt(tt)} min total.`,
           `Leq = 10 × log10(${fmt(e)} ÷ ${fmt(tt)}) = ${fmt(10 * Math.log10(e / tt))} dB — note how the loudest intervals dominate the average.`,
@@ -724,8 +784,8 @@ const WS_MIC_GAIN: Workspace = {
     'condenser on a drum needs 10. Knowing the mic’s actual output voltage tells you how much ' +
     'gain to expect, when a pad is needed, and when a preamp will clip before the converter does.',
   example:
-    'A 2 mV/Pa dynamic mic on a 94 dB SPL source: 94 dB SPL is exactly 1 Pa, so it outputs ' +
-    '2 mV = 20·log10(0.002/0.775) ≈ −51.8 dBu. Reaching +4 dBu line level needs ≈ 56 dB of ' +
+    'A 2 mV/Pa dynamic mic on a 94 dB SPL source: 94 dB SPL is ≈ 1 Pa (1.0024 Pa), so it outputs ' +
+    '≈ 2.005 mV = 20·log10(0.002005/0.7746) ≈ −51.7 dBu. Reaching +4 dBu line level needs ≈ 56 dB of ' +
     'gain — right in the range where quality preamps earn their keep.',
   mistakes: [
     'Comparing condenser and dynamic "gain needs" without sensitivity — a 20 mV/Pa condenser starts 20 dB hotter than a 2 mV/Pa dynamic on the same source.',
@@ -735,10 +795,10 @@ const WS_MIC_GAIN: Workspace = {
   warnings:
     'IEC 60268-4 governs formal microphone measurement; published sensitivity varies with the ' +
     'measurement method (open-circuit vs loaded, tolerance ±dB) and real output depends on the ' +
-    'load impedance. This workspace models the spec-sheet number at 94 dB SPL = 1 Pa exactly.',
+    'load impedance. This workspace models the spec-sheet number at 1 Pa (≈ 94 dB SPL; exactly 93.98 dB SPL).',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Gain Staging', 'Headroom', 'Preamplifier'],
   fields: [
-    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity & Output.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'sens', name: 'MIC SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '2', help: 'Millivolts out per pascal (1 Pa ≈ 94 dB SPL). Dynamics ≈ 1–3 mV/Pa; condensers ≈ 8–40 mV/Pa. If your spec sheet gives dBV/Pa instead, convert it first in Mic Sensitivity & Output.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'spl', name: 'SOURCE SPL AT THE MIC', quantity: 'spl', signed: true, placeholder: '94', help: 'The sound pressure level arriving at the capsule.' },
     { key: 'target', name: 'TARGET LEVEL', quantity: 'db', signed: true, placeholder: '4', help: 'The output level you want after the preamp, in dBu (+4 dBu = pro line level).' },
     // nonNegative (full-app run 2, 2026-10-01): a −12 dB "headroom" ADDED 12 dB
@@ -751,15 +811,15 @@ const WS_MIC_GAIN: Workspace = {
       key: 'micout',
       name: 'Mic output voltage from SPL',
       inputs: ['sens', 'spl'],
-      formula: 'p = 10^((SPL−94)/20) Pa; V = sens/1000 × p',
+      formula: 'p = 20µPa · 10^(SPL/20); V = sens/1000 × p',
       plainFormula:
-        'The pressure equals ten raised to the SPL minus 94, over twenty, in pascals; the voltage equals the sensitivity over 1000 times that pressure.',
+        'The pressure equals 20 micropascals times ten raised to the SPL over twenty, in pascals; the voltage equals the sensitivity over 1000 times that pressure.',
       explain:
-        'From sound pressure at the capsule to volts on the wire. 94 dB SPL is exactly 1 pascal — the anchor every sensitivity spec hangs on — so the SPL sets the pressure, and the mic’s millivolts-per-pascal sets the output voltage, also shown in dBV and dBu.',
-      keySymbols: ['x²', '−', '/', '×'],
-      note: '94 dB SPL is exactly 1 pascal — the anchor every sensitivity spec hangs on.',
+        'From sound pressure at the capsule to volts on the wire. Sensitivity is quoted at 1 pascal — about 94 dB SPL — so the SPL sets the pressure (against the 20 µPa reference), and the mic’s millivolts-per-pascal sets the output voltage, also shown in dBV and dBu.',
+      keySymbols: ['x²', 'µ', '/', '×'],
+      note: '1 pascal is ≈ 94 dB SPL (93.98 dB exactly; 94 dB SPL is 1.0024 Pa) — the anchor every sensitivity spec hangs on.',
       compute: (v) => {
-        const p = Math.pow(10, (n(v.spl) - 94) / 20);
+        const p = paFromSpl(n(v.spl));
         const volts = (n(v.sens) / 1000) * p;
         return [
           { label: 'OUTPUT VOLTAGE', value: volts, quantity: 'voltage', unit: 'mv' },
@@ -768,12 +828,12 @@ const WS_MIC_GAIN: Workspace = {
         ];
       },
       steps: (v) => {
-        const p = Math.pow(10, (n(v.spl) - 94) / 20);
+        const p = paFromSpl(n(v.spl));
         const volts = (n(v.sens) / 1000) * p;
         return [
-          `Pressure: ${fmt(n(v.spl))} dB SPL is ${fmt(n(v.spl))} − 94 = ${fmt(n(v.spl) - 94)} dB from 1 Pa → p = 10^(${fmt(n(v.spl) - 94)}/20) = ${fmt(p)} Pa.`,
+          `Pressure: p = 20 µPa × 10^(${fmt(n(v.spl))}/20) = ${fmt(p)} Pa.`,
           `Voltage: ${fmt(n(v.sens))} mV/Pa × ${fmt(p)} Pa = ${fmt(volts * 1000)} mV.`,
-          `As levels: dBV = 20 × log10(${fmt(volts)}) = ${fmt(20 * Math.log10(volts))}; dBu = 20 × log10(${fmt(volts)}/0.775) = ${fmt(20 * Math.log10(volts / V_REF_DBU))}.`,
+          `As levels: dBV = 20 × log10(${fmt(volts)}) = ${fmt(20 * Math.log10(volts))}; dBu = 20 × log10(${fmt(volts)}/0.7746) = ${fmt(20 * Math.log10(volts / V_REF_DBU))}.`,
         ];
       },
     },
@@ -788,7 +848,7 @@ const WS_MIC_GAIN: Workspace = {
       keySymbols: ['−'],
       note: 'The recommended setting subtracts your headroom so peaks above the entered SPL have somewhere to go.',
       compute: (v) => {
-        const p = Math.pow(10, (n(v.spl) - 94) / 20);
+        const p = paFromSpl(n(v.spl));
         const micDbu = 20 * Math.log10(((n(v.sens) / 1000) * p) / V_REF_DBU);
         const required = n(v.target) - micDbu;
         return [
@@ -801,7 +861,7 @@ const WS_MIC_GAIN: Workspace = {
         ];
       },
       steps: (v) => {
-        const p = Math.pow(10, (n(v.spl) - 94) / 20);
+        const p = paFromSpl(n(v.spl));
         const micDbu = 20 * Math.log10(((n(v.sens) / 1000) * p) / V_REF_DBU);
         const required = n(v.target) - micDbu;
         return [
@@ -815,25 +875,27 @@ const WS_MIC_GAIN: Workspace = {
       key: 'maxspl',
       name: 'Max SPL before the preamp input clips (reverse)',
       inputs: ['sens', 'maxIn'],
-      formula: 'SPLmax = 94 + maxIn dBu − mic dBu@94',
+      formula: 'SPLmax = 93.98 + maxIn dBu − mic dBu@1 Pa',
       plainFormula:
-        'The maximum SPL equals 94 plus the preamp’s input clip level in dBu, minus the mic’s output level at 94 dB SPL.',
+        'The maximum SPL equals 93.98 (the SPL of exactly 1 pascal) plus the preamp’s input clip level in dBu, minus the mic’s output level at 1 pascal.',
       explain:
         'Where the mic’s own output reaches the preamp’s input clip point — the SPL at which you should engage a pad. Because the output tracks SPL dB-for-dB, a hotter mic clips the preamp at a lower SPL. The mic also has its own max-SPL limit to respect.',
       keySymbols: ['−'],
       note: 'Where the MIC OUTPUT alone hits the preamp’s input clip point — engage a pad before this, and remember the mic has its own max-SPL limit too.',
       compute: (v) => {
+        // The sensitivity is the output at 1 Pa, which is 93.98 dB SPL — not
+        // 94 (calc follow-up 2026-10-03: the 0.02 dB was dropped).
         const sensDbu = 20 * Math.log10(n(v.sens) / 1000 / V_REF_DBU);
         return [
-          { label: 'SPL AT PREAMP INPUT CLIP', value: 94 + n(v.maxIn) - sensDbu, quantity: 'spl' },
-          { label: 'MIC LEVEL AT 94 dB SPL', value: sensDbu, quantity: 'db', chainable: false },
+          { label: 'SPL AT PREAMP INPUT CLIP', value: SPL_OF_1_PA + n(v.maxIn) - sensDbu, quantity: 'spl' },
+          { label: 'MIC LEVEL AT 1 Pa (≈ 94 dB SPL)', value: sensDbu, quantity: 'db', chainable: false },
         ];
       },
       steps: (v) => {
         const sensDbu = 20 * Math.log10(n(v.sens) / 1000 / V_REF_DBU);
         return [
-          `At 94 dB SPL this mic outputs ${fmt(n(v.sens))} mV = ${fmt(sensDbu)} dBu.`,
-          `Mic output tracks SPL dB-for-dB, so it reaches the ${fmt(n(v.maxIn))} dBu clip point at 94 + ${fmt(n(v.maxIn))} − (${fmt(sensDbu)}) = ${fmt(94 + n(v.maxIn) - sensDbu)} dB SPL.`,
+          `At 1 Pa (${fmt(SPL_OF_1_PA)} dB SPL) this mic outputs ${fmt(n(v.sens))} mV = ${fmt(sensDbu)} dBu.`,
+          `Mic output tracks SPL dB-for-dB, so it reaches the ${fmt(n(v.maxIn))} dBu clip point at ${fmt(SPL_OF_1_PA)} + ${fmt(n(v.maxIn))} − (${fmt(sensDbu)}) = ${fmt(SPL_OF_1_PA + n(v.maxIn) - sensDbu)} dB SPL.`,
         ];
       },
     },
@@ -908,7 +970,7 @@ const WS_LIMITER: Workspace = {
         return [
           `P = V²/Z rearranges to V = √(P × Z).`,
           `V = √(${fmt(n(v.pwr))} W × ${fmt(n(v.z))} Ω) = ${fmt(volts)} V RMS — the continuous voltage that dissipates the rated power in the nominal impedance.`,
-          `As a level: 20 × log10(${fmt(volts)}/0.775) = ${fmt(20 * Math.log10(volts / V_REF_DBU))} dBu at the speaker terminals.`,
+          `As a level: 20 × log10(${fmt(volts)}/0.7746) =${fmt(20 * Math.log10(volts / V_REF_DBU))} dBu at the speaker terminals.`,
         ];
       },
     },
@@ -916,9 +978,9 @@ const WS_LIMITER: Workspace = {
       key: 'threshold',
       name: 'Processor limiter threshold',
       inputs: ['pwr', 'z', 'ampGain', 'margin'],
-      formula: 'thr dBu = 20·log10(√(P·Z)/0.775) − ampGain − margin',
+      formula: 'thr dBu = 20·log10(√(P·Z)/0.7746) − ampGain − margin',
       plainFormula:
-        'The threshold in dBu equals twenty times the base-ten log of the max speaker voltage (root of power times impedance) over 0.775, minus the amplifier gain, minus the safety margin.',
+        'The threshold in dBu equals twenty times the base-ten log of the max speaker voltage (root of power times impedance) over 0.7746, minus the amplifier gain, minus the safety margin.',
       explain:
         'Turns a speaker’s voltage limit into a processor threshold by removing the amplifier’s voltage gain and a safety margin. The same threshold means a different speaker voltage on every amp, because the amp’s gain sits between them — an RMS/average protection starting point, not a tuned limiter.',
       keySymbols: ['·', 'log₁₀', '√', '/', '−', 'Z'],

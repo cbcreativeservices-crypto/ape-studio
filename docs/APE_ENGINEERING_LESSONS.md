@@ -772,3 +772,50 @@ process is running.
 - **Another ccode session may be active in the same repo** (2026-10-02: a web launch page).
   Check `git log origin/...` before pushing, fill only your own sync stubs, and leave its files
   alone.
+
+## 2026-10-03 — hunts 4–6, the tier sweep, and the calculator checks
+
+- **A failed membership read is a FOURTH state, not "free".** After a failed read with nothing
+  remembered, the provider says `resolved` = true and `entitlement` = 'anonymous'. Any screen that
+  judges on `resolved` alone then calls a paying member a guest, shows a 🔒, or sells them membership.
+  The fix is one shared gate, `memberGateOf` / `useMemberGate()` in tier.ts / useTier.ts, with four
+  states: open | locked | checking | unconfirmed. The rules:
+  - Locks and upsell appear only on 'locked' (a KNOWN non-member: a known guest, or a remembered 'free').
+  - Members-only content opens only on 'open'.
+  - 'checking' is neutral and says "Checking your account…", never a blank body.
+  - 'unconfirmed' says MEMBERSHIP_NOT_CONFIRMED.
+  - Guest WORDING goes through `useGuestWording()` ('unknown' counts as checking); guest BEHAVIOUR (save holds, session carry) stays on the strict rule.
+- **"Don't show a lock to a maybe-member" must never become "unlock for a maybe-free-user".**
+  Hunt 4 changed `useToolsLocked` to favour members. Four members-only screens used that same boolean
+  to decide whether to SHOW their content, so a free account offline got the tutorials and the
+  library. Lock WORDING and content GATING are two decisions; use the 4-state gate for gating.
+- **A wide sweep produces its own next-hunt findings.** The tier sweep touched about 20 screens in one
+  commit. Hunt 5 then found 14 bugs plus 4 corrections, most of them gaps the sweep left. After any
+  app-wide change, budget a hunt that re-audits the sweep itself before reading the count as a trend.
+- **Bug counts by hunt:** 30 → 22 → 10 (2026-10-02 evening), then 9 → 14 (+4) → 15 (+1)
+  (2026-10-03). Hunt 6 went deeper rather than finding sweep leftovers: calculator accuracy, a
+  Settings write-before-load, and a Production-lab rename that wiped answers. The count is a measure
+  of how deep the hunt went as much as of how clean the app is.
+- **Every async boot step needs a deadline.** One unbounded `AsyncStorage.getItem` (loadLastTier)
+  in the entitlement boot chain could hold `resolved` false forever and strand every members-only
+  lab on "checking". Every read in the boot path gets `softDeadline`.
+- **A screen that saves the WHOLE object must not save before it has loaded.** Settings started from
+  defaults, so one quick tap wrote the defaults over every stored reminder. Either pass the shown
+  copy and merge onto a fresh read, or refuse until loaded. The same class appeared in Home Setup
+  (an unread list became an empty draft) and in the Production lab's rename (it wrote the whole
+  stale project).
+- **Unreadable must never render as empty.** This was found again in the Cymatics gallery (both of
+  its modes), the calc lists, and the runner drafts. Mark the failed-read stand-in (a WeakSet tag) and
+  give every list screen three faces: loading / unreadable / truly empty.
+- **The server decides what is charged; the client can only avoid asking.** The glossary RPC charges
+  every call and has no per-term ledger, so "free for the session" was enforced on the client by not
+  re-sending a term whose read went unanswered. Exception: a CODED PostgREST error means the
+  transaction rolled back, nothing was charged, and a re-send is fine. The real fix is a server-side
+  24 h ledger (migration 2026100301, sent to Comp A).
+- **Calculator accuracy holds up; its edges do not.** An independent recomputation of all 55
+  workspaces, plus about 80k fuzzed inputs, found 0 wrong formulas but about 15 impossible outputs:
+  negative port length, "-7 AWG", negative voltage at the load, negative absorption to add, ln(0)
+  Eyring. Fuzz every calc function with boundary values and assert physical bounds, not just the
+  placeholder answer.
+- **Keep one constant per physical reference.** 0 dBu was 0.775 in three workspaces and 0.7746 in two;
+  94 dB SPL was "1 Pa" in one and exact in another. Shared constants stop that drift.

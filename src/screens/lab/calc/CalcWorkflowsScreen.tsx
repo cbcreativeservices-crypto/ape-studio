@@ -52,8 +52,15 @@ export function CalcWorkflowsScreen() {
   // The stored list could not be READ (hunt 5, 2026-10-03): not "Nothing saved yet".
   const [mineUnreadable, setMineUnreadable] = useState(false);
 
+  // Only the NEWEST load may land (pattern P2; calc check B, 2026-10-03): the
+  // mount load, every focus and every delete/duplicate each start one, and an
+  // older list landing last put back a workflow just deleted — and its repair
+  // pass could write that stale copy back over a newer edit.
+  const loadTicket = useRef(0);
   const reload = useCallback(() => {
+    const ticket = ++loadTicket.current;
     void workflowStore.listWorkflows().then((list) => {
+      if (ticket !== loadTicket.current) return;
       setMineUnreadable(workflowListUnreadable(list));
       // Repair pass (spec): unresolvable steps are dropped and DISCLOSED.
       let droppedTotal = 0;
@@ -70,7 +77,9 @@ export function CalcWorkflowsScreen() {
           : null,
       );
     });
-    void workflowStore.getFavorites().then(setFavorites);
+    void workflowStore.getFavorites().then((ids) => {
+      if (ticket === loadTicket.current) setFavorites(ids);
+    });
   }, []);
   useEffect(() => {
     const unsub = navigation.addListener('focus', reload);
@@ -192,6 +201,13 @@ export function CalcWorkflowsScreen() {
   const toggleFav = (id: string) => {
     void workflowStore.toggleFavorite(id).then((list) => {
       if (list) setFavorites(list);
+      // null = the stored favourites could not be READ, so nothing was written
+      // (calc follow-up 2026-10-03): the ★ just did not move, with no word.
+      else
+        notify(
+          'Favorite not changed',
+          'Your saved favorites could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.',
+        );
     });
   };
 

@@ -226,6 +226,23 @@ export function speedOfSoundAir(tempC: number): number {
 }
 
 /**
+ * The 0 dBu reference voltage: √0.6 V = 0.774597 V RMS (1 mW into 600 Ω), per
+ * AES/IEC. ONE constant for every workspace (calc follow-up, 2026-10-03): Mic
+ * Sensitivity used 0.7746 while the Level Converter, Mic Gain and Limiter used
+ * the rounded 0.775 — two workspaces disagreed about the same voltage.
+ */
+export const DBU_REF_V = Math.sqrt(0.6);
+/**
+ * The 0 dB SPL reference pressure: 20 µPa. 94 dB SPL is 20 µPa·10^(94/20) =
+ * 1.0024 Pa — "about 1 Pa", not exactly; 1 Pa itself is 93.98 dB SPL. Every
+ * SPL ↔ pascal conversion uses this one constant (calc follow-up, 2026-10-03:
+ * Mic Gain treated 94 dB SPL as exactly 1 Pa, Mic Sensitivity did not).
+ */
+export const P_REF_PA = 2e-5;
+/** The SPL of exactly 1 Pa: 20·log10(1 Pa / 20 µPa) = 93.979 dB SPL. */
+export const SPL_OF_1_PA = 20 * Math.log10(1 / P_REF_PA);
+
+/**
  * Parse ONE typed quantity, strictly. Returns null for anything it cannot read
  * with certainty — the caller then shows no result at all.
  *
@@ -308,6 +325,7 @@ export function parseQuantity(raw: string): number | null {
  * says nothing.
  */
 export function parseList(raw: string): number[] {
+  if (listProblem(raw) !== null) return [];
   const tokens = raw.split(/[,;\s]+/).filter((t) => t !== '');
   const out: number[] = [];
   for (const t of tokens) {
@@ -316,6 +334,31 @@ export function parseList(raw: string): number[] {
     out.push(n);
   }
   return out;
+}
+
+/**
+ * A digit, a comma, then EXACTLY three digits — "1,000". In a list the comma is
+ * a separator, so "1,000, 4,700" was read as [1, 0, 4, 700] with nothing said
+ * (calc follow-up, 2026-10-03). It could be one thousand or the two values 1
+ * and 0, so it is refused rather than guessed.
+ */
+const LIST_THOUSANDS_GROUP = /\d+,\d{3}(?!\d)/;
+export const LIST_THOUSANDS_MSG = 'Leave out thousands commas: write 1000, 4700 — in a list, a comma separates the values.';
+
+/**
+ * WHY a list field cannot be read, or null when it can (an empty field is not
+ * a problem — it is just not filled in yet). The field row shows this sentence,
+ * naming the token, so a refused list is never a silent one.
+ */
+export function listProblem(raw: string): string | null {
+  const grouped = raw.match(LIST_THOUSANDS_GROUP);
+  if (grouped) return `“${grouped[0]}” — ${LIST_THOUSANDS_MSG}`;
+  for (const t of raw.split(/[,;\s]+/)) {
+    if (t !== '' && parseQuantity(t) === null) {
+      return `Check “${t}” — enter numbers only, separated by commas.`;
+    }
+  }
+  return null;
 }
 
 /**

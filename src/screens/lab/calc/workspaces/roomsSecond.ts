@@ -280,6 +280,16 @@ const BOUNDARY: Workspace = {
   ],
 };
 
+/** A reflection travels source → surface → listener, so its path can never be
+ *  shorter than the straight line (triangle inequality). Words, or null. */
+function reflectionShorter(direct: number, reflected: number): string | null {
+  return reflected < direct
+    ? `The reflected path (${fmt(reflected)} m) is shorter than the direct path (${fmt(direct)} m). A reflection goes source → surface → listener, so it can never arrive by a shorter route than the straight line — check which distance is which.`
+    : null;
+}
+const NO_PATH_DIFFERENCE =
+  'No path difference → no comb-filter nulls: the reflection arrives in step with the direct sound and simply adds to it.';
+
 const REFLECTION: Workspace = {
   id: 'reflection',
   name: 'Reflection Path',
@@ -325,8 +335,20 @@ const REFLECTION: Workspace = {
       keySymbols: ['Δ', '−', '/', 'c', 'x₁'],
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
-        const dd = Math.abs(n(v.dReflected) - n(v.dDirect));
+        // No |…| (calc follow-up 2026-10-03): a reflected path SHORTER than the
+        // direct one is impossible, and the absolute value answered it anyway.
+        const shorter = reflectionShorter(n(v.dDirect), n(v.dReflected));
+        if (shorter) return [{ label: 'NOT A REFLECTION', text: shorter }];
+        const dd = n(v.dReflected) - n(v.dDirect);
         const dt = dd / c;
+        // Equal paths: the copy arrives in step — no comb, not a "—" null.
+        if (dd === 0) {
+          return [
+            { label: 'PATH DIFFERENCE', value: 0, quantity: 'length' },
+            { label: 'ARRIVAL DELAY', value: 0, quantity: 'time', unit: 'ms' },
+            { label: 'COMB FILTERING', text: NO_PATH_DIFFERENCE },
+          ];
+        }
         return [
           { label: 'PATH DIFFERENCE', value: dd, quantity: 'length' },
           { label: 'ARRIVAL DELAY', value: dt, quantity: 'time', unit: 'ms' },
@@ -336,10 +358,13 @@ const REFLECTION: Workspace = {
       },
       steps: (v) => {
         const c = speedOfSoundAir(n(v.temp));
-        const dd = Math.abs(n(v.dReflected) - n(v.dDirect));
+        const shorter = reflectionShorter(n(v.dDirect), n(v.dReflected));
+        if (shorter) return [shorter];
+        const dd = n(v.dReflected) - n(v.dDirect);
         const dt = dd / c;
+        if (dd === 0) return [`Path difference Δd = ${fmt(n(v.dReflected))} − ${fmt(n(v.dDirect))} = 0 m.`, NO_PATH_DIFFERENCE];
         return [
-          `Path difference Δd = |${fmt(n(v.dReflected))} − ${fmt(n(v.dDirect))}| = ${fmt(dd)} m.`,
+          `Path difference Δd = ${fmt(n(v.dReflected))} − ${fmt(n(v.dDirect))} = ${fmt(dd)} m.`,
           `Delay Δt = ${fmt(dd)} ÷ ${fmt(c)} = ${fmt(dt * 1000)} ms.`,
           `Comb teeth every c/Δd = ${fmt(c / dd)} Hz; the FIRST null sits at half that, ${fmt(c / (2 * dd))} Hz.`,
         ];

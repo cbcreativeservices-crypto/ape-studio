@@ -377,6 +377,9 @@ const FIRLEN: Workspace = {
       keySymbols: ['≈', 'fs', '/', 'Δ', '·', '−'],
       compute: (v) => {
         const N = Math.ceil(snapWhole((n(v.sr) / n(v.trans)) * (n(v.atten) / 22)));
+        // A filter has at least one tap (calc check A, 2026-10-03): 0 dB of
+        // stopband gave N = 0 taps and a NEGATIVE latency of −0.5 samples.
+        if (!(N >= 1)) throw new Error('a filter needs at least one tap');
         const latS = (N - 1) / 2;
         return [
           { label: 'FILTER TAPS (N)', value: N, quantity: 'number' },
@@ -403,6 +406,9 @@ const FIRLEN: Workspace = {
         'A linear-phase FIR delays the signal by half its length. This converts a known tap count into that fixed latency in samples and milliseconds — the delay you must budget for when a brickwall filter looks great on paper.',
       keySymbols: ['−', '/'],
       compute: (v) => {
+        // 0 taps is no filter (calc check A, 2026-10-03): it printed a NEGATIVE
+        // latency (−0.5 samples, −0.0104 ms at 48 kHz).
+        if (!(n(v.taps) >= 1)) throw new Error('a filter needs at least one tap');
         const latS = (n(v.taps) - 1) / 2;
         return [
           { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', unit: 'ms' },

@@ -5,7 +5,7 @@
  * numbers — no symbolic algebra, no hidden unit tricks.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt } from '../calcUnits';
+import { DBU_REF_V, fmt } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
@@ -13,8 +13,8 @@ const arr = (v: number | number[]) => (Array.isArray(v) ? v : [v]);
 const log10 = Math.log10;
 const log2 = Math.log2;
 
-/** dBu ↔︎ dBV offset: 20·log10(0.775) ≈ −2.2185 dB (dBu reads HIGHER). */
-const DBU_DBV_OFFSET = 20 * log10(Math.sqrt(0.6)); // 0.774597 V — the EXACT dBu reference (ratified copy says −2.218)
+/** dBu ↔︎ dBV offset: 20·log10(0.7746) ≈ −2.2185 dB (dBu reads HIGHER). */
+const DBU_DBV_OFFSET = 20 * log10(DBU_REF_V); // √0.6 = 0.774597 V — the EXACT dBu reference (ratified copy says −2.218)
 
 // ---------------------------------------------------------------------------
 // 1 · Audio Level Converter
@@ -36,13 +36,13 @@ const WS_LEVEL: Workspace = {
     'input clips, and what a "+6 dB" fader move actually does to the signal (doubles voltage, ' +
     'quadruples power). Every patchbay, DI box, and interface spec sheet speaks this language.',
   example:
-    'A console outputs +4 dBu: V = 0.775 × 10^(4/20) ≈ 1.228 V. A consumer device expects ' +
+    'A console outputs +4 dBu: V = 0.7746 × 10^(4/20) ≈ 1.228 V. A consumer device expects ' +
     '−10 dBV ≈ 0.316 V. The real level gap is 20·log10(1.228/0.316) ≈ 11.8 dB — the famous ' +
     '"about 12 dB" difference between pro and consumer line level, and why plugging one into ' +
     'the other without matching sounds too hot or too weak.',
   mistakes: [
     'Using 10·log10 on a voltage ratio (or 20·log10 on a power ratio) — amplitude quantities use 20, power quantities use 10. Same dB result describes both only because power goes as voltage squared.',
-    'Treating dBu and dBV as interchangeable — they differ by a fixed 2.22 dB (dBu reads higher for the same voltage) because their references differ: 0.775 V vs 1 V.',
+    'Treating dBu and dBV as interchangeable — they differ by a fixed 2.22 dB (dBu reads higher for the same voltage) because their references differ: 0.7746 V vs 1 V.',
     'Reading "−10 dBV" as "−10 dBu" on a spec sheet — the pro/consumer gap is ≈ 11.8 dB, not 14 dB.',
     'Expecting +3 dB to sound twice as loud — it is double the POWER, but roughly a just-noticeable step; perceived doubling of loudness needs about +10 dB.',
     'Converting a DAW meter reading (dBFS) to volts with this tool — impossible without knowing the converter’s alignment level.',
@@ -56,7 +56,7 @@ const WS_LEVEL: Workspace = {
     'Tier-2 "Analog Alignment" workspace.',
   glossary: ['Decibel', 'dBu', 'dBV', 'dBFS', 'Gain', 'Voltage'],
   fields: [
-    { key: 'dbu', name: 'LEVEL (dBu)', quantity: 'db', signed: true, placeholder: '4', help: 'Level referenced to 0.775 V RMS — the professional line-level scale.' },
+    { key: 'dbu', name: 'LEVEL (dBu)', quantity: 'db', signed: true, placeholder: '4', help: 'Level referenced to 0.7746 V RMS (√0.6 V, often rounded to 0.775 V) — the professional line-level scale.' },
     { key: 'vFromDbu', name: 'VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '1.228', help: 'RMS signal voltage to express on the dBu scale.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
     { key: 'dbv', name: 'LEVEL (dBV)', quantity: 'db', signed: true, placeholder: '-10', help: 'Level referenced to 1 V RMS — the consumer line-level scale.' },
     { key: 'vFromDbv', name: 'VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '0.316', help: 'RMS signal voltage to express on the dBV scale.', warn: { test: (x) => x <= 0, msg: 'Voltage must be positive — dB scales have no level for 0 V or negative RMS values.' } },
@@ -72,13 +72,13 @@ const WS_LEVEL: Workspace = {
       key: 'dbuToV',
       name: 'Voltage from dBu',
       inputs: ['dbu'],
-      formula: 'V = 0.775 · 10^(dBu/20)',
-      plainFormula: 'The voltage equals 0.775 volts times ten raised to the dBu level over twenty.',
+      formula: 'V = 0.7746 · 10^(dBu/20)',
+      plainFormula: 'The voltage equals 0.7746 volts times ten raised to the dBu level over twenty.',
       explain:
-        'dBu is referenced to 0.775 V RMS, the professional line-level scale. This undoes the twenty-times-log to recover the actual RMS voltage, and shows the same level in dBV. The 20 (not 10) is because voltage is an amplitude quantity.',
+        'dBu is referenced to 0.7746 V RMS (√0.6 V, often rounded to 0.775 V), the professional line-level scale. This undoes the twenty-times-log to recover the actual RMS voltage, and shows the same level in dBV. The 20 (not 10) is because voltage is an amplitude quantity.',
       keySymbols: ['·', 'x²'],
       compute: (v) => {
-        const volts = 0.775 * Math.pow(10, n(v.dbu) / 20);
+        const volts = DBU_REF_V * Math.pow(10, n(v.dbu) / 20);
         return [
           { label: 'VOLTAGE (RMS)', value: volts, quantity: 'voltage' },
           { label: 'SAME LEVEL IN dBV', value: n(v.dbu) + DBU_DBV_OFFSET, quantity: 'db', chainable: false },
@@ -86,10 +86,10 @@ const WS_LEVEL: Workspace = {
       },
       steps: (v) => {
         const d = n(v.dbu);
-        const volts = 0.775 * Math.pow(10, d / 20);
+        const volts = DBU_REF_V * Math.pow(10, d / 20);
         return [
-          `dBu is referenced to 0.775 V RMS, so undo the 20·log with a power of ten.`,
-          `V = 0.775 × 10^(${fmt(d)}/20) = 0.775 × ${fmt(Math.pow(10, d / 20))} = ${fmt(volts)} V RMS.`,
+          `dBu is referenced to 0.7746 V RMS, so undo the 20·log with a power of ten.`,
+          `V = 0.7746 × 10^(${fmt(d)}/20) = 0.7746 × ${fmt(Math.pow(10, d / 20))} = ${fmt(volts)} V RMS.`,
         ];
       },
     },
@@ -97,17 +97,17 @@ const WS_LEVEL: Workspace = {
       key: 'vToDbu',
       name: 'dBu from voltage',
       inputs: ['vFromDbu'],
-      formula: 'dBu = 20 · log10(V / 0.775)',
-      plainFormula: 'The dBu level equals twenty times the base-ten log of the voltage divided by 0.775.',
+      formula: 'dBu = 20 · log10(V / 0.7746)',
+      plainFormula: 'The dBu level equals twenty times the base-ten log of the voltage divided by 0.7746.',
       explain:
-        'Expresses an RMS voltage on the professional dBu scale (referenced to 0.775 V). Voltage is an amplitude, so the multiplier is 20 — doubling the voltage is +6 dB.',
+        'Expresses an RMS voltage on the professional dBu scale (referenced to 0.7746 V). Voltage is an amplitude, so the multiplier is 20 — doubling the voltage is +6 dB.',
       keySymbols: ['·', 'log₁₀', '/'],
-      compute: (v) => [{ label: 'LEVEL (dBu)', value: 20 * log10(n(v.vFromDbu) / 0.775), quantity: 'db' }],
+      compute: (v) => [{ label: 'LEVEL (dBu)', value: 20 * log10(n(v.vFromDbu) / DBU_REF_V), quantity: 'db' }],
       steps: (v) => {
         const volts = n(v.vFromDbu);
         return [
-          `Compare the voltage to the 0.775 V reference, then take 20·log (voltage is an AMPLITUDE, so the multiplier is 20).`,
-          `dBu = 20 × log10(${fmt(volts)} ÷ 0.775) = 20 × log10(${fmt(volts / 0.775)}) = ${fmt(20 * log10(volts / 0.775))} dBu.`,
+          `Compare the voltage to the 0.7746 V reference, then take 20·log (voltage is an AMPLITUDE, so the multiplier is 20).`,
+          `dBu = 20 × log10(${fmt(volts)} ÷ 0.7746) = 20 × log10(${fmt(volts / DBU_REF_V)}) = ${fmt(20 * log10(volts / DBU_REF_V))} dBu.`,
         ];
       },
     },
@@ -161,9 +161,9 @@ const WS_LEVEL: Workspace = {
       plainFormula:
         'A dBV reading equals the dBu reading minus 2.218; a dBu reading equals the dBV reading plus 2.218.',
       explain:
-        'The two scales measure the same voltage against different references — dBu against 0.775 V, dBV against 1 V — so they differ by a fixed 2.218 dB (dBu always reads higher). Converting between them is a single addition.',
+        'The two scales measure the same voltage against different references — dBu against 0.7746 V, dBV against 1 V — so they differ by a fixed 2.218 dB (dBu always reads higher). Converting between them is a single addition.',
       keySymbols: ['−', '·'],
-      note: 'The offset is exact: 20·log10(0.775 V ÷ 1 V) ≈ −2.218 dB. The same voltage always reads 2.218 dB HIGHER in dBu.',
+      note: 'The offset is exact: 20·log10(0.7746 V ÷ 1 V) ≈ −2.218 dB. The same voltage always reads 2.218 dB HIGHER in dBu.',
       compute: (v) => {
         const x = n(v.dbx);
         return [
@@ -174,8 +174,8 @@ const WS_LEVEL: Workspace = {
       steps: (v) => {
         const x = n(v.dbx);
         return [
-          `The two scales measure the same voltage against different references: dBu against 0.775 V, dBV against 1 V.`,
-          `Offset = 20 × log10(0.775 ÷ 1) = ${fmt(DBU_DBV_OFFSET)} dB — a constant, so converting is one addition.`,
+          `The two scales measure the same voltage against different references: dBu against 0.7746 V, dBV against 1 V.`,
+          `Offset = 20 × log10(0.7746 ÷ 1) = ${fmt(DBU_DBV_OFFSET)} dB — a constant, so converting is one addition.`,
           `${fmt(x)} dBu = ${fmt(x)} + (${fmt(DBU_DBV_OFFSET)}) = ${fmt(x + DBU_DBV_OFFSET)} dBV; ${fmt(x)} dBV = ${fmt(x)} − (${fmt(DBU_DBV_OFFSET)}) = ${fmt(x - DBU_DBV_OFFSET)} dBu.`,
         ];
       },
@@ -564,7 +564,7 @@ const WS_ELECTRONICS: Workspace = {
     'output. Fine for audio design intuition; not a substitute for a circuit simulator.',
   glossary: ['Resistance', 'Impedance', 'Capacitor', 'Inductor', 'Voltage divider', 'Cutoff frequency', 'Reactance'],
   fields: [
-    { key: 'rlist', name: 'RESISTORS (Ω, comma-separated)', quantity: 'list', nonNegative: true, placeholder: '8, 8, 16', help: 'The resistor (or speaker) values to combine, in ohms, separated by commas.' },
+    { key: 'rlist', name: 'RESISTORS (Ω, comma-separated)', quantity: 'list', nonNegative: true, placeholder: '8, 8, 16', help: 'The resistor (or speaker) values to combine, in ohms, separated by commas. Leave out thousands commas: write 1000, 4700.' },
     { key: 'vin', name: 'INPUT VOLTAGE', quantity: 'voltage', signed: true, placeholder: '1', help: 'Voltage across the whole divider (top of R1 to bottom of R2).' },
     { key: 'r1', name: 'R1 (SERIES / TOP)', quantity: 'impedance', placeholder: '10000', help: 'The series resistor between input and output.', warn: { test: (x) => x < 0, msg: 'Resistance cannot be negative.' } },
     { key: 'r2', name: 'R2 (SHUNT / BOTTOM)', quantity: 'impedance', placeholder: '10000', help: 'The resistor from output to ground — the output is taken across it.', warn: { test: (x) => x <= 0, msg: 'R2 must be positive — 0 Ω shorts the output to ground.' } },
@@ -988,11 +988,16 @@ const WS_QBW: Workspace = {
           { label: 'WIDTH IN OCTAVES', value: log2(f2 / f1), quantity: 'number', chainable: false },
           {
             label: 'AUDIBLE REACH',
+            // 0 dB of gain changes nothing (calc check A, 2026-10-03): it read "a 0 dB
+            // boost is still audibly shifting energy beyond …" — words the maths denies.
             text:
-              `The band edges mark the −3 dB points of the shape, but a ${fmt(Math.abs(g))} dB ` +
-              `${g >= 0 ? 'boost' : 'cut'} is still audibly shifting energy beyond ${fmt(f1)}–${fmt(f2)} Hz — ` +
-              `the skirts of the bell only approach flat gradually, and the higher the gain, the further past ` +
-              `the −3 dB points the audible influence extends.`,
+              g === 0
+                ? `At 0 dB of gain the bell is flat — it changes nothing, inside or beyond ${fmt(f1)}–${fmt(f2)} Hz. ` +
+                  `The edges show where a boost or cut at this Q would centre its −3 dB width.`
+                : `The band edges mark the −3 dB points of the shape, but a ${fmt(Math.abs(g))} dB ` +
+                  `${g >= 0 ? 'boost' : 'cut'} is still audibly shifting energy beyond ${fmt(f1)}–${fmt(f2)} Hz — ` +
+                  `the skirts of the bell only approach flat gradually, and the higher the gain, the further past ` +
+                  `the −3 dB points the audible influence extends.`,
           },
         ];
       },
@@ -1003,7 +1008,9 @@ const WS_QBW: Workspace = {
         const { f1, f2 } = bandEdges(fc, q);
         return [
           `Edges from fc and Q: f₁ = ${fmt(f1)} Hz, f₂ = ${fmt(f2)} Hz (${fmt(log2(f2 / f1))} octaves wide, f₁·f₂ = fc²).`,
-          `At ${fmt(g)} dB of ${g >= 0 ? 'boost' : 'cut'}, expect the move to be audible somewhat beyond that range — when sweeping for a problem frequency, listen past the calculated edges before deciding the filter is "missing".`,
+          g === 0
+            ? `At 0 dB of gain the bell does nothing — set a boost or cut before listening for its reach.`
+            : `At ${fmt(g)} dB of ${g >= 0 ? 'boost' : 'cut'}, expect the move to be audible somewhat beyond that range — when sweeping for a problem frequency, listen past the calculated edges before deciding the filter is "missing".`,
         ];
       },
     },

@@ -287,6 +287,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 13:18 · ccode · 8be3c78e
+changed: Final rounds C + D: owner recommendations after hunt 6 (19 items)
+affects other side: nothing — app-only. Note safeSessionResult() now reports a stalled session read (timedOut) separately from signed-out.
+needs: nothing.
+
+
 ### 2026-10-03 13:03 · ccode · 78f3638d
 changed: Hunt 6: 15 fixes + 1 correction (full-app toddler pass, 10 areas)
 affects other side: nothing — app-only (incl. two calculator accuracy fixes: port length, vdrop gauge beyond 4/0). No backend change. NOT published yet.

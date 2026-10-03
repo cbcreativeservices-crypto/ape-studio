@@ -11,7 +11,6 @@
  * `:damaged` key (so nothing is silently destroyed) and the collection loads
  * as empty — the UI can offer repair/replacement.
  */
-import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { reportUnhandledSaveFailure } from '../../../features/storage/saveFailureNotice';
 import type { Project, SavedRunSummary, Workflow, WorkflowRun } from './workflowModel';
@@ -242,6 +241,23 @@ export const workflowStore = {
   listRuns: () => loadList(KEYS.runs, isRun),
   saveRun: (r: WorkflowRun, gen = generation) => upsert(KEYS.runs, isRun, r, false, gen),
   deleteRun: (id: string, gen = generation) => removeById(KEYS.runs, isRun, id, gen),
+  /** FINISH (calc check B, 2026-10-03): a completed run is never read again —
+   *  the runner's resume search is the only reader and it skips completed runs
+   *  (Saved Results keep their own copy) — yet every FINISH stored one, so the
+   *  one `ape:calcwf:runs` blob only grew, toward Android's ~2 MB row limit,
+   *  past which the drafts could not be read at all. The finished run is
+   *  removed instead, with any completed run older versions left behind.
+   *  Drafts are untouched; nothing is written when nothing is removed. */
+  finishRun(id: string, gen = generation): Promise<boolean> {
+    return serialWrite(async () => {
+      if (gen !== generation) return false;
+      const list = await readList(KEYS.runs, isRun);
+      if (list === null) return false; // could not read it — never overwrite it
+      const next = list.filter((r) => r.id !== id && !r.completedAt);
+      if (next.length === list.length) return true;
+      return saveList(KEYS.runs, next, gen);
+    });
+  },
 
   listProjects: () => loadList(KEYS.projects, isProject),
   saveProject: (p: Project, gen = generation) => upsert(KEYS.projects, isProject, p, false, gen),
@@ -286,14 +302,3 @@ export function resetLocal(): void {
 }
 /** The name resetAllLocalStores imports this store's reset under. */
 export const resetCalcWorkflowStore = resetLocal;
-
-/** Hook: a collection that reloads on focus-count bump. Minimal by design —
- *  screens call `reload()` after their own mutations. */
-export function useWorkflowList() {
-  const [workflows, setWorkflows] = useState<Workflow[]>([]);
-  const reload = useCallback(() => {
-    void workflowStore.listWorkflows().then(setWorkflows);
-  }, []);
-  useEffect(reload, [reload]);
-  return { workflows, reload };
-}

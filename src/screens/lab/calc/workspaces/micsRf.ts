@@ -7,7 +7,7 @@
  * compute) rather than adding MHz to the audio frequency picker.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, speedOfSoundAir } from '../calcUnits';
+import { DBU_REF_V, P_REF_PA, fmt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const DEG = Math.PI / 180;
@@ -118,11 +118,11 @@ const MICSENS: Workspace = {
     'need. Two mics on the same source can differ by 30–40 dB of output; sensitivity is the number ' +
     'that tells you before you plug in.',
   example:
-    'A 15 mV/Pa condenser = 20·log₁₀(0.015) ≈ −36.5 dBV/Pa. At 94 dB SPL (1 Pa) it puts out 15 mV ' +
-    '(≈ −34.3 dBu); at 114 dB SPL (10 Pa) it swings to 150 mV.',
+    'A 15 mV/Pa condenser = 20·log₁₀(0.015) ≈ −36.5 dBV/Pa. At 94 dB SPL (≈ 1 Pa — 1.0024 Pa) it puts out ' +
+    '≈ 15 mV (≈ −34.2 dBu); at 114 dB SPL (≈ 10 Pa) it swings to ≈ 150 mV.',
   mistakes: [
     'Comparing a dBV/Pa number to a mV/Pa number directly — they’re the same quantity in different clothes; convert first.',
-    'Forgetting the reference SPL — 94 dB SPL is exactly 1 Pa, the anchor sensitivity is quoted at.',
+    'Forgetting the reference SPL — sensitivity is quoted at 1 Pa, which is ≈ 94 dB SPL (93.98 dB SPL exactly; 94 dB SPL is 1.0024 Pa).',
     'Assuming a "more sensitive" mic is always better — high output can overload a preamp on loud sources; it’s a matching question, not a quality one.',
   ],
   warnings:
@@ -130,7 +130,7 @@ const MICSENS: Workspace = {
     'sensitivity(V/Pa)·p. dBu referenced to 0.7746 V, dBV to 1 V. Ideal, pre-loading figures.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Decibel', 'Microphone (Mic)', 'dBu'],
   fields: [
-    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '15', help: 'Output in millivolts for a 1 Pa (94 dB SPL) input.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
+    { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', signed: true, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
     { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', signed: true, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'SPL cannot be negative.' } },
   ],
@@ -181,22 +181,22 @@ const MICSENS: Workspace = {
       keySymbols: ['·', '÷', 'µ', 'x²'],
       compute: (v) => {
         const sens = n(v.mvpa) / 1000; // V/Pa
-        const p = 2e-5 * Math.pow(10, n(v.spl) / 20); // Pa
+        const p = P_REF_PA * Math.pow(10, n(v.spl) / 20); // Pa
         const vout = sens * p;
         return [
           { label: 'OUTPUT VOLTAGE', value: vout, quantity: 'voltage', unit: 'mv' },
-          { label: 'OUTPUT LEVEL (dBu)', value: 20 * Math.log10(vout / 0.7746), quantity: 'number', chainable: false },
+          { label: 'OUTPUT LEVEL (dBu)', value: 20 * Math.log10(vout / DBU_REF_V), quantity: 'number', chainable: false },
           { label: 'OUTPUT LEVEL (dBV)', value: 20 * Math.log10(vout), quantity: 'number', chainable: false },
         ];
       },
       steps: (v) => {
         const sens = n(v.mvpa) / 1000;
-        const p = 2e-5 * Math.pow(10, n(v.spl) / 20);
+        const p = P_REF_PA * Math.pow(10, n(v.spl) / 20);
         const vout = sens * p;
         return [
           `${fmt(n(v.spl))} dB SPL → pressure p = 20µPa·10^(${fmt(n(v.spl))}/20) = ${fmt(p)} Pa.`,
           `V = ${fmt(sens)} V/Pa × ${fmt(p)} Pa = ${fmt(vout * 1000)} mV.`,
-          `That is ${fmt(20 * Math.log10(vout / 0.7746))} dBu (${fmt(20 * Math.log10(vout))} dBV).`,
+          `That is ${fmt(20 * Math.log10(vout / DBU_REF_V))} dBu (${fmt(20 * Math.log10(vout))} dBV).`,
         ];
       },
     },

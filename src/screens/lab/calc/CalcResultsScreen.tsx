@@ -63,8 +63,15 @@ export function CalcResultsScreen() {
     }
   });
 
+  // Only the NEWEST load may land (pattern P2; calc check B, 2026-10-03): the
+  // mount load and each delete's reload overlap, and an older list landing
+  // last put a result just deleted back on screen.
+  const loadTicket = useRef(0);
   const reload = useCallback(() => {
-    void workflowStore.listResults().then(setResults);
+    const ticket = ++loadTicket.current;
+    void workflowStore.listResults().then((list) => {
+      if (ticket === loadTicket.current) setResults(list);
+    });
   }, []);
   useEffect(reload, [reload]);
 

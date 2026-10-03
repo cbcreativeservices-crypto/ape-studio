@@ -77,6 +77,11 @@ const EYRING: Workspace = {
         const V = n(v.vol);
         const S = n(v.surf);
         const a = n(v.aBar);
+        // ā is a fraction strictly between 0 and 1 (calc check A, 2026-10-03):
+        // ā ≥ 1 took the log of zero or of a negative — RT60 (EYRING) and the
+        // over-estimate read "—" beside a confident Sabine figure, and ā = 1
+        // printed an Eyring RT60 of 0 s. → the "check your inputs" state.
+        if (!(a > 0 && a < 1)) throw new Error('average absorption must be between 0 and 1');
         const sabine = (0.161 * V) / (S * a);
         const eyring = (0.161 * V) / (-S * Math.log(1 - a));
         return [

@@ -232,7 +232,13 @@ export function CalcWorkflowRunScreen() {
     // 'blank', not true (evening hunt 2): nothing was written, so SAVE must not
     // answer "Progress saved." for it.
     if (r.stepIndex === 0 && !r.completedAt && r.steps.every((st) => Object.keys(st.inputs).length === 0)) return 'blank';
-    const ok = await workflowStore.saveRun(r, storeGenRef.current);
+    // A FINISHED run is removed, not stored (calc check B, 2026-10-03): nothing
+    // ever resumes a completed run, and keeping each one grew the runs blob
+    // toward Android's 2 MB row limit. Stepping back into the steps clears
+    // completedAt (goTo), so that run is saved as a draft again.
+    const ok = r.completedAt
+      ? await workflowStore.finishRun(r.id, storeGenRef.current)
+      : await workflowStore.saveRun(r, storeGenRef.current);
     // "Start over" was chosen: the old draft is retired now that the new run
     // has real progress saved in its place (see the resume prompt).
     const old = abandonedDraftRef.current;
