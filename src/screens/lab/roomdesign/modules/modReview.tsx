@@ -14,7 +14,7 @@ import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignSto
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
-import { BADGE, DELETE_FAILED, SAVE_FAILED, SAVE_NOT_YET, saveLine, STORE_UNREADABLE, type RoomLabCtx } from '../labCtx';
+import { accountDesignsLine, BADGE, DELETE_FAILED, SAVE_FAILED, SAVE_NOT_YET, saveLine, STORE_UNREADABLE, type RoomLabCtx } from '../labCtx';
 import { RoomPlanView } from '../RoomPlanView';
 import {
   analyze,
@@ -42,7 +42,7 @@ import { treatmentSummary } from './modTreatment';
  *  plan's own shape — the plan lays out in glass units, so every line and
  *  label zooms with the step and the explore badge rides along. */
 export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, analysis: a, units, guest, preview, resolved, saved, evicts, saveCurrent, loadSaved, deleteSaved: removeFromStore, unreadable } = ctx;
+  const { design, update, analysis: a, units, guest, preview, account, resolved, saved, evicts, saveCurrent, loadSaved, deleteSaved: removeFromStore, unreadable } = ctx;
   const room = design.room;
   const lay = design.layouts[design.active] ?? design.layouts[0];
   const b = a.bounds;
@@ -189,6 +189,8 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
           <Caption>
             {preview
               ? 'This lab is part of membership — designs made in a preview are not saved. You can keep working on this one.'
+              : account
+              ? accountDesignsLine(account)
               : 'You are not signed in, so designs are not saved yet. Keep working on this one — a design you SAVE in EXPLORE is kept for this session, and signing in before you close the app saves it on this device.'}
           </Caption>
         ) : (

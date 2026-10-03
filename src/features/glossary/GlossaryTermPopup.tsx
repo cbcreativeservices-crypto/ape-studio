@@ -23,7 +23,9 @@
  * behaviour change worth knowing about rather than discovering.
  * See docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useMemberGate } from '../commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../commercial/tier';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -33,6 +35,7 @@ import {
   corpusTable,
   probeGateway,
   readDefinitionOnce,
+  sessionChargeUnanswered,
   type DefinitionResult,
 } from './glossaryGateway';
 import { popupCard } from '../../theme/readingColumn';
@@ -100,7 +103,16 @@ export function GlossaryTermPopup({
    * definition that stopped mid-sentence, with no lock card, no "out of
    * lookups" and no upgrade path; the popup's only control is DONE.
    */
-  const [partial, setPartial] = useState<null | 'limit-reached' | 'other'>(null);
+  const [partial, setPartial] = useState<null | 'limit-reached' | 'unconfirmed' | 'unanswered' | 'other'>(null);
+  /**
+   * "You've used this week's free definitions" + upgrade options only to a
+   * KNOWN non-member (owner 2026-10-03 #1). A learner whose membership read
+   * failed gets the honest not-confirmed words instead. A ref: the read below
+   * lands after the effect that started it.
+   */
+  const memberGate = useMemberGate();
+  const meterKnownRef = useRef(memberGate === 'locked');
+  meterKnownRef.current = memberGate === 'locked';
   /**
    * ⛔ A GUEST WITH NO DEVICE KEY IS NOT OFFLINE (bug hunt 2026-09-30).
    *
@@ -187,7 +199,11 @@ export function GlossaryTermPopup({
         // Say which kind of short it is. `sign-in-required` and `not-deployed`
         // both mean the caller's own fallback is in play, so they are not
         // labelled here — only a refusal that genuinely leaves a teaser up.
-        if (full.fault === 'limit-reached') setPartial('limit-reached');
+        if (full.fault === 'limit-reached') setPartial(meterKnownRef.current ? 'limit-reached' : 'unconfirmed');
+        // Its open was sent and never answered (owner 2026-10-03 #2): it is not
+        // read again this session, so "try again" would be a promise that
+        // either fails or charges twice.
+        else if (full.fault === 'error' && sessionChargeUnanswered(hit.id)) setPartial('unanswered');
         else if (full.fault === 'denied' || full.fault === 'error') setPartial('other');
         return;
       }
@@ -257,6 +273,10 @@ export function GlossaryTermPopup({
               <Text style={styles.partial}>
                 {partial === 'limit-reached'
                   ? 'This is the opening of the entry — you’ve used this week’s free definitions. Open the Glossary for the full text and your upgrade options.'
+                  : partial === 'unconfirmed'
+                  ? `This is the opening of the entry. ${MEMBERSHIP_NOT_CONFIRMED}`
+                  : partial === 'unanswered'
+                  ? 'This is the opening of the entry — the full definition didn’t arrive when this term was opened. So you’re never charged twice, it isn’t fetched again until you next open the app.'
                   : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Open the Glossary to try again.'}
               </Text>
             ) : null}

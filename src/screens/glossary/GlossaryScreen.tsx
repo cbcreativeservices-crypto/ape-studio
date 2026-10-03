@@ -47,7 +47,7 @@ import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { StudioButton } from '../../components/StudioButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useUpsellAllowed } from '../../features/commercial/useTier';
+import { useMemberGate, useUpsellAllowed } from '../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 import { HelpDot, useScreenHelp } from '../../features/help/ScreenHelpSheet';
 import { getBookmarks, listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
@@ -1324,6 +1324,17 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // membership. A failed read gets the honest words; nothing unlocks.
   const upsell = useUpsellAllowed();
   const tierUnconfirmedCopy = tierReadFailed ? MEMBERSHIP_NOT_CONFIRMED : 'Checking your account…';
+  /**
+   * ⛔ THE CLIENT METERS ONLY A KNOWN NON-MEMBER (owner 2026-10-03 #1).
+   * 'locked' = a read produced a non-member tier (or this account's last
+   * confirmed 'free' was restored). 'checking' / 'unconfirmed' — a signed-in
+   * learner whose membership read failed — is NOT capped here: no client lock,
+   * no "limit reached", no upsell. The SERVER still decides the charge itself
+   * (get_glossary_definition exempts members through has_academy_access), so
+   * a real member is never charged whatever this phone thinks.
+   */
+  const memberGate = useMemberGate();
+  const meterKnown = memberGate === 'locked';
   // Real membership: gate the mistakes veil + topic-filter links on true
   // standing (provider isMember), never on caps (dev-bypassed) — that regression
   // hid both selling points. See the isMember doc in EntitlementProvider.
@@ -1531,7 +1542,10 @@ ${COPY.glossaryFreeAllowance}`,
   // mistakes veil above. Signed-in free/lapsed count on the SERVER
   // (glossary_consume); anonymous guests count DEVICE-LOCAL. Waits for the first
   // entitlement read (`resolved`) so we never charge a member on first paint.
-  const capped = commercialMode && resolved && !isMember;
+  // `meterKnown`, not `resolved && !isMember` (owner 2026-10-03 #1): that also
+  // matched a paying member whose membership read FAILED, who was then capped,
+  // clamped and locked like a free reader. See `memberGate` above.
+  const capped = commercialMode && meterKnown;
   // …and once the gateway meters, even a guest is counted on the SERVER: they
   // hold a device key, so there is a uid to count against. 'local' is only for
   // the world before the gateway exists.
@@ -1755,6 +1769,16 @@ ${COPY.glossaryFreeAllowance}`,
         return true;
       }
       if (r.fault === 'limit-reached') {
+        // Not while the membership is unconfirmed (owner 2026-10-03 #1): no
+        // "limit reached" lock and no upsell to a learner who may have paid.
+        // The term still does not open — say so honestly instead.
+        if (!meterKnown) {
+          notify(
+            tierReadFailed ? 'Membership not confirmed' : 'Checking your account…',
+            tierReadFailed ? MEMBERSHIP_NOT_CONFIRMED : 'Your account is still being checked. Try this term again in a moment.',
+          );
+          return false;
+        }
         // Same lock as the device-local meter, driven by the server's count.
         const st = await getGlossaryStatus('server');
         setResetAt(!st.unavailable && st.windowStart != null ? st.windowStart + GLOSSARY_WEEK_MS : null);
@@ -1770,7 +1794,7 @@ ${COPY.glossaryFreeAllowance}`,
       // 'not-deployed' / 'denied' / 'error' → let the legacy detail fetch try.
       return true;
     },
-    [putDetail, isMember],
+    [putDetail, isMember, meterKnown, tierReadFailed],
   );
   // In-flight metered reads, keyed by term (bug hunt 2026-09-29). Every gateway
   // call CHARGES a weekly lookup, and `detailsRef` only fills once the first

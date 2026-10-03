@@ -38,6 +38,7 @@ import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useGuestWording } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
@@ -72,6 +73,9 @@ export function DrumTuningLabScreen() {
   // preview" and promised "sign in before you close the app" would keep work
   // that is never carried.
   const preview = useLabPreview().active;
+  // WORDING only (tier sweep 2026-10-03): `guest` / `blocked` above stay the
+  // hold rule; Chapter 6 says "not signed in" to a KNOWN guest only.
+  const wording = useGuestWording();
 
   const [modId, setModId] = useState<DrumChapterId>('sound');
   const [step, setStepRaw] = useState(0);
@@ -479,7 +483,7 @@ export function DrumTuningLabScreen() {
             `hidden` flag stops its sound and its animation. */}
         <View style={end ? styles.gone : styles.body} accessibilityElementsHidden={!!end} importantForAccessibility={end ? 'no-hide-descendants' : 'auto'}>
           <StepHostContext.Provider value={host}>
-            <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} unsavedIds={unsavedIds} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} />
+            <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} unsavedIds={unsavedIds} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} account={wording.account} />
           </StepHostContext.Provider>
         </View>
       </View>

@@ -4,6 +4,7 @@
  */
 import { useMemo } from 'react';
 import type { TuningNote } from '../drumContent';
+import type { AccountWording } from '../../kit/labEnd';
 import { DRUMS, fundamentalHz, meanTension, renderStrike, renderTap, tensionForHz, type DrumKind, type HeadState, type StrikeParams } from '../drumEngine';
 import type { SoundSync } from '../stagesDrum';
 import { useDrumPlayback, type DrumPlayback } from '../useDrumPlayback';
@@ -35,6 +36,10 @@ export type ChapterProps = {
   /** A signed-out guest or a members-only preview: nothing is saved. */
   guest: boolean;
   preview: boolean;
+  /** WORDING only (tier sweep 2026-10-03, useGuestWording): `guest` is set
+   *  but no read confirmed the learner is signed out — the notes are still
+   *  held, and the copy never says "not signed in". */
+  account?: AccountWording;
 };
 
 /** Stages that draw a MODEL (a diagram, the drum, the partial list). */

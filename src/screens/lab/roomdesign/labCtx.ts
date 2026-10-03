@@ -4,6 +4,7 @@
  * keep their own copy of the room — a change in CREATE is what EXPLORE sees.
  */
 import type { Analysis, RoomDesign, Units } from './roomModel';
+import { accountWhy, type AccountWording } from '../kit/labEnd.ts';
 
 export type RoomLabCtx = {
   design: RoomDesign;
@@ -18,6 +19,10 @@ export type RoomLabCtx = {
    *  `guest` covers both, and the preview user — who IS signed in — was told
    *  "you are not signed in". The cable lab's PREVIEW wording (completeCopy). */
   preview: boolean;
+  /** WORDING only (tier sweep 2026-10-03, useGuestWording): `guest` is set —
+   *  the lab still holds and blocks — but no read confirmed the learner is
+   *  signed out (a failed membership read). Never "you are not signed in". */
+  account?: AccountWording;
   /** The entitlement tier is known. Before it is, `guest` reads false and a
    *  save stays in memory — say neither "saved" nor "not signed in". */
   resolved: boolean;
@@ -68,6 +73,17 @@ export type SaveResult = { ok: boolean; at: RoomDesign; held?: boolean };
 
 /** A guest's SAVE that the session hand-off holds (owner ruling 2026-10-01). */
 export const SAVE_HELD = 'Kept for this session — you are not signed in yet. Sign in before you close the app and it is saved on this device.';
+
+/** The not-saved line for `ctx.account` (tier sweep 2026-10-03): the honest
+ *  state, never "you are not signed in". */
+export function accountDesignsLine(account: AccountWording): string {
+  return `${accountWhy(account)} Until it is confirmed, designs are not saved on this device — design freely.`;
+}
+
+/** …and the SAVE result for it: `held` = kept for this app session. */
+export function accountSaveLine(account: AccountWording, held?: boolean): string {
+  return `${held ? 'Kept for this session' : 'Kept on screen only'} — not saved on this device. ${accountWhy(account)}`;
+}
 
 /** The line to show for a kept save result, given the design on screen now
  *  and whether the library still holds it (`kept`). */

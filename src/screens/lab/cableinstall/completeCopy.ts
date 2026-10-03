@@ -21,12 +21,16 @@
  *
  * Pure and React-free so test/cableInstallComplete.test.ts reads it directly.
  */
+import { accountWhy, type AccountWording } from '../kit/labEnd.ts';
 
 /** 'saved' = signed in with a save path (members, and anyone whose tier is
  *  not yet known — the lab's own rule: unknown ⇒ not a guest).
  *  'guest' = resolved and signed out. 'preview' = a signed-in non-member
- *  previewing this members-only lab. */
-export type CiSaveState = 'saved' | 'guest' | 'preview';
+ *  previewing this members-only lab. 'checking' / 'unconfirmed' (tier sweep
+ *  2026-10-03) = WORDING for a 'guest' whom no read confirmed is signed out
+ *  (a failed membership read): the run is still not kept, but the copy never
+ *  says "not signed in" and never sells membership. See ciSaveWording. */
+export type CiSaveState = 'saved' | 'guest' | 'preview' | AccountWording;
 
 /**
  * `endGuest` = the shared lab rule, useLabEndGuest() (preview active, or
@@ -37,6 +41,16 @@ export type CiSaveState = 'saved' | 'guest' | 'preview';
 export function ciSaveState(o: { endGuest: boolean; noAccount: boolean; isMember: boolean }): CiSaveState {
   if (o.isMember || !o.endGuest) return 'saved';
   return o.noAccount ? 'guest' : 'preview';
+}
+
+/**
+ * WORDING only (tier sweep 2026-10-03): `ciSaveState` (the lab's rule —
+ * nothing is kept) is unchanged; a 'guest' that useGuestWording() does not
+ * confirm (`account` set) is told the honest state instead of "You are not
+ * signed in" + BECOME A MEMBER.
+ */
+export function ciSaveWording(state: CiSaveState, account?: AccountWording): CiSaveState {
+  return state === 'guest' && account ? account : state;
 }
 
 /** The lead line when stages are still outstanding (the WHAT IS LEFT state). */
@@ -55,8 +69,9 @@ export function ciLeftLead(state: CiSaveState, o: { unbanked: number; replayOnly
 export type CiSaveNotice = {
   title: string;
   body: string;
-  /** Opens the membership screen (Paywall). */
-  join: string;
+  /** Opens the membership screen (Paywall). Absent for an unconfirmed
+   *  account — never an offer to someone who may already be a member. */
+  join?: string;
   /** Guest only: an existing member signs in (Auth). */
   signIn?: string;
 };
@@ -78,6 +93,13 @@ export function ciSaveNotice(state: CiSaveState): CiSaveNotice | null {
       body:
         'This lab is part of membership, and a preview earns nothing: no stage you finish here is credited, and none of it counts toward the lab. Members keep their progress and their credit. This run cannot be carried over — join now and your next run is saved.',
       join: 'SEE MEMBERSHIP',
+    };
+  }
+  if (state === 'checking' || state === 'unconfirmed') {
+    // No offer: this may well be a member (no marketing to members).
+    return {
+      title: state === 'unconfirmed' ? 'MEMBERSHIP NOT CONFIRMED' : 'CHECKING YOUR ACCOUNT',
+      body: `${accountWhy(state)} Until it is confirmed, this run is not saved — your place, your scores and the stages you finished are not kept when you leave the lab or close the app.`,
     };
   }
   return null;

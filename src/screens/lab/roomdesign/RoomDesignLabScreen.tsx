@@ -32,6 +32,7 @@ import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useGuestWording } from '../../../features/commercial/useTier';
 import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { deleteRoomDesign, holdRoomDesignForSession, isRoomDesignStoreUnreadable, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
@@ -64,6 +65,9 @@ export function RoomDesignLabScreen() {
   // preview" and promised "sign in before you close the app" would keep
   // designs that are never carried.
   const preview = useLabPreview().active;
+  // WORDING only (tier sweep 2026-10-03): `guest` stays the hold / block
+  // rule; the modules say "not signed in" to a KNOWN guest only.
+  const wording = useGuestWording();
   const visited = useLabVisits(ROOM_LAB_ID);
   // Repaired on the way in (toddler pass 2026-10-01): a damaged or
   // version-skewed record crashed analyze() on COMPARE or LOAD.
@@ -107,6 +111,7 @@ export function RoomDesignLabScreen() {
       guest: !resolved ? false : guest,
       preview,
       resolved,
+      account: !resolved || !guest ? undefined : wording.account,
       saved,
       evicts,
       saveCurrent: (name?: string) => {
@@ -138,7 +143,7 @@ export function RoomDesignLabScreen() {
       deleteSaved: (id: string) => deleteRoomDesign(id),
       unreadable,
     }),
-    [design, update, analysis, guest, preview, resolved, saved, rawSaved, evicts, unreadable],
+    [design, update, analysis, guest, preview, resolved, wording.account, saved, rawSaved, evicts, unreadable],
   );
 
   const go = useCallback((i: number) => {

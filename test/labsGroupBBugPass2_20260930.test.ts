@@ -64,7 +64,9 @@ test('Sound Systems hub never tells a guest that their work is saved', () => {
   assert.match(s, /const guest = useLabEndGuest\(\);/);
   // Owner ruling 2026-10-01: a members-only preview is told it earns
   // nothing; a signed-out guest that signing in before closing keeps it.
-  assert.match(s, /\{guest\n\s*\? inPreview\n\s*\? 'This is a members-only preview, so nothing here is saved or credited\.[^']*'\n\s*: (?:sessionCarryOpen\(\) \? )?'You are not signed in, so nothing here is saved yet/);
+  assert.match(s, /\{guest\n\s*\? inPreview\n\s*\? 'This is a members-only preview, so nothing here is saved or credited\.[^']*'\n\s*: (?:!wording\.guest\n\s*\? `[^`]*`\n\s*: )?(?:sessionCarryOpen\(\) \? )?'You are not signed in, so nothing here is saved yet/);
+  // ↑ tier sweep 2026-10-03 (test/labGuestWording_20261003): a failed
+  // membership read hears the honest account line, never "not signed in".
 });
 
 // ── double taps: a second tap never leaves the lab or pops a second screen ──

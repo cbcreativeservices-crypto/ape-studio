@@ -19,6 +19,7 @@ import { DRUMS, renderStrike, tomInterval, type RenderResult, type StrikeParams 
 import { KIT_ASPECT, KitStage, type KitSounding } from '../stagesDrum';
 import { useDrumPlayback } from '../useDrumPlayback';
 import { RENDER_BADGE, headAtHz, syncOf, type ChapterProps } from './shared';
+import { accountWhy, type AccountWording } from '../../kit/labEnd';
 
 const RACK_FIRST_S = 1.2;
 const GAP_S = 0.35;
@@ -43,7 +44,13 @@ function renderBoth(rack: StrikeParams, floor: StrikeParams): RenderResult {
   return { mono: out, partials: [...a.partials, ...b.partials], seconds: n / 48000, pitchTraces: [] };
 }
 
-export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteNote, guest, preview }: ChapterProps) {
+/** The held-notes line for a learner the lab holds as a guest but no read
+ *  confirmed is signed out (tier sweep 2026-10-03): never "not signed in". */
+function accountNotesLine(account: AccountWording): string {
+  return `${accountWhy(account)} Until it is confirmed, notes are kept for this session only — not saved on this device.`;
+}
+
+export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteNote, guest, preview, account }: ChapterProps) {
   // Starts UPSIDE DOWN on purpose (floor above rack): both faders have to be
   // reasoned about, and the three verdicts are all met on the way.
   const [rackHz, setRackHz] = useState(140);
@@ -132,7 +139,10 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
         return;
       }
       lastSaved.current = { sig, name: n.name, id: n.id };
-      setSavedFlash(r === 'session' ? { text: preview ? 'Kept for this session only — a preview saves nothing.' + capLine : 'Kept for this session — sign in before you close the app and your tuning notes are saved on this device.' + capLine, ok: false } : { text: `Saved "${n.name}" on this device.${capLine}`, ok: true });
+      // "Sign in before you close the app" is said to a KNOWN guest only (tier
+      // sweep 2026-10-03): a 'session' result also comes back while the tier
+      // is unknown, or for a signed-in learner whose membership read failed.
+      setSavedFlash(r === 'session' ? { text: preview ? 'Kept for this session only — a preview saves nothing.' + capLine : guest && !account ? 'Kept for this session — sign in before you close the app and your tuning notes are saved on this device.' + capLine : `Kept for this session only — not saved on this device. ${accountWhy(account ?? 'checking')}` + capLine, ok: false } : { text: `Saved "${n.name}" on this device.${capLine}`, ok: true });
       setName('');
       setNote('');
     });
@@ -229,11 +239,11 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
                 <Text style={styles.values}>{`rack tom ${rackHz} Hz (${noteName(rackHz)}) · floor tom ${floorHz} Hz (${noteName(floorHz)}) — batter pitches; the relationship is Chapter 4's choice`}</Text>
                 <KeyButton label="SAVE THIS SETUP" onPress={save} tint={colors.green} />
                 {savedFlash ? <Feedback tone={savedFlash.ok ? 'ok' : 'warn'}>{savedFlash.text}</Feedback> : null}
-                {guest && !savedFlash ? <Body>{preview ? 'A members-only preview saves nothing; notes stay for this session.' : 'You are not signed in: notes are kept for this session — sign in before you close the app to save them on this device.'}</Body> : null}
+                {guest && !savedFlash ? <Body>{preview ? 'A members-only preview saves nothing; notes stay for this session.' : account ? accountNotesLine(account) : 'You are not signed in: notes are kept for this session — sign in before you close the app to save them on this device.'}</Body> : null}
               </Card>
               {sorted.length ? (
                 <View style={{ gap: 6 }}>
-                  <SectionTitle>{guest ? (preview ? 'THIS SESSION ONLY — NOT SAVED' : 'THIS SESSION — SIGN IN TO SAVE') : 'SAVED ON THIS DEVICE'} · {sorted.length - unsavedCount}</SectionTitle>
+                  <SectionTitle>{account ? 'THIS SESSION ONLY — NOT SAVED' : guest ? (preview ? 'THIS SESSION ONLY — NOT SAVED' : 'THIS SESSION — SIGN IN TO SAVE') : 'SAVED ON THIS DEVICE'} · {sorted.length - unsavedCount}</SectionTitle>
                   {unsavedCount ? <Feedback tone="warn">{`${unsavedCount} note${unsavedCount === 1 ? '' : 's'} from before you signed in could not be saved on this device and will be gone when you leave. LOAD one and SAVE THIS SETUP to try again.`}</Feedback> : null}
                   {sorted.map((n) => (
                     <View key={n.id} style={styles.noteRow}>

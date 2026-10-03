@@ -34,6 +34,7 @@ import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useTier } from '../../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
 import { chainFits, fmt, fmtCarried, parseQuantity, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
@@ -517,6 +518,15 @@ export function CalcWorkflowRunScreen() {
     // (0 results) or a free account at its 10 could save past the limit.
     if (!resolved) {
       notify('One moment', 'Still checking your account. Tap SAVE RESULT again in a moment.');
+      return;
+    }
+    // Signed in, but the membership read FAILED (tier sweep 2026-10-03):
+    // "Sign in" to a signed-in learner is untrue — the CalcProjects words.
+    if (limits.savedResults === 0 && tierUnconfirmed) {
+      notify(
+        tierReadFailed ? 'Membership not confirmed' : 'One moment',
+        tierReadFailed ? MEMBERSHIP_NOT_CONFIRMED : 'Still checking your account. Try again in a moment.',
+      );
       return;
     }
     if (limits.savedResults === 0) {

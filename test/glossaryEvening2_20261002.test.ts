@@ -83,10 +83,13 @@ describe('glossary definitions: one charge per term per session (evening 2)', ()
     assert.deepEqual(rpc(), ['t2']);
   });
 
-  it('a fault is never kept — the next tap asks again', async () => {
+  it('a REFUSAL is never kept — the next tap asks again', async () => {
     signIn('free-3');
     rpc().length = 0;
-    g.__GE2_FAULT__ = 'gateway timeout';
+    // Updated for owner ruling 2026-10-03 #2: a TIMED-OUT read (maybe charged)
+    // is no longer re-sent by a re-open — see glossaryMemberMeter_20261003.
+    // A refusal charged nothing, so the next tap still asks.
+    g.__GE2_FAULT__ = 'weekly_limit_reached';
     const r = await gw.readDefinitionOnce('t3', false);
     assert.equal(r.state, 'fault');
     g.__GE2_FAULT__ = null;

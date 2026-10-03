@@ -30,7 +30,8 @@ import { markLabUnit, registerLabUnits, useLabCompletion } from '../../../featur
 import { colors, fonts } from '../../../theme/tokens';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { useLabEndGuest } from '../kit/LabEndScreen';
-import { ciLeftLead, ciSaveNotice, ciSaveState, type CiSaveState } from './completeCopy';
+import { ciLeftLead, ciSaveNotice, ciSaveState, ciSaveWording, type CiSaveState } from './completeCopy';
+import { useGuestWording } from '../../../features/commercial/useTier';
 import { RuleOrMythCard, SourceSheet } from './bits';
 import { IntroSceneArt } from './introSceneArt';
 import {
@@ -88,6 +89,9 @@ export function CableInstallLabScreen() {
   // rule (useLabEndGuest) + this lab's own guest reading below. Members are
   // always 'saved' and never see an offer.
   const endGuest = useLabEndGuest();
+  // WORDING only (tier sweep 2026-10-03): the save state above is unchanged;
+  // "You are not signed in" + the membership offer need a KNOWN guest.
+  const wording = useGuestWording();
   // `resolved` REQUIRED (entitlement roll-out 2026-09-11): the provider boots
   // at 'anonymous', and the restore effect below runs on MOUNT — so without it
   // a signed-in user reopening this lab was treated as a guest and dumped back
@@ -476,7 +480,7 @@ export function CableInstallLabScreen() {
                   goTo(idx + 1);
                 }}
                 onRepeat={repeatLab}
-                saveState={ciSaveState({ endGuest, noAccount: noAccountRef.current, isMember })}
+                saveState={ciSaveWording(ciSaveState({ endGuest, noAccount: noAccountRef.current, isMember }), wording.account)}
                 // In-flow buttons, not a popup — so a straight navigate (no
                 // afterDialogCloses wait). Paywall is a modal over the lab:
                 // the lab stays underneath and is never blocked. Paywall
@@ -731,7 +735,7 @@ function CompleteStage({
             {notice.title}
           </Text>
           <Text style={styles.saveNoticeBody}>{notice.body}</Text>
-          <GlassButton label={notice.join} tint="gold" height={46} fontSize={13} onPress={onJoin} />
+          {notice.join ? <GlassButton label={notice.join} tint="gold" height={46} fontSize={13} onPress={onJoin} /> : null}
           {notice.signIn ? (
             <GlassButton label={notice.signIn} tint="teal" height={44} fontSize={12} onPress={onSignIn} />
           ) : null}

@@ -14,6 +14,18 @@
  * ids it has already banked. Nothing here ever REMOVES a unit from that set:
  * a practice run is a fresh pass over the lab, never a credit wipe.
  */
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier.ts';
+
+/** useGuestWording()'s honest middle state (tier sweep 2026-10-03): the lab
+ *  holds / blocks as for a guest, but no read confirmed the learner is signed
+ *  out, so the wording never says "not signed in". */
+export type AccountWording = 'checking' | 'unconfirmed';
+
+/** The one sentence for that state — the end screen's `account` line, reused
+ *  by the labs' own in-lab save wording (test/labGuestWording_20261003). */
+export function accountWhy(account: AccountWording): string {
+  return account === 'unconfirmed' ? MEMBERSHIP_NOT_CONFIRMED : 'Still checking your account.';
+}
 
 /** One thing a lab asks the learner to do, in lab order. */
 export type LabEndUnit = {
@@ -91,7 +103,7 @@ export function endLead(
      *  not produced a tier ('checking') or gave up ('unconfirmed'). Neither
      *  "you are not signed in" (false) nor "everything is saved" (unknown):
      *  the honest state. Ignored when `guest` is set. */
-    account?: 'checking' | 'unconfirmed';
+    account?: AccountWording;
   },
 ): string {
   // `carry` (full run 2, 2026-10-01): false when signing in now would carry
@@ -123,10 +135,7 @@ export function endLead(
       : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress.`;
   }
   if (account) {
-    const why =
-      account === 'unconfirmed'
-        ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
-        : 'Still checking your account.';
+    const why = accountWhy(account);
     return w.complete
       ? `You have been through every ${noun}. ${why}`
       : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. ${why}`;

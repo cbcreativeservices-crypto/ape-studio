@@ -229,10 +229,17 @@ const READ_PENDING = new Map<string, Promise<DefinitionResult>>();
  * a term costs 1 lookup; once opened it is free for the session; sharing is
  * never an extra charge). A read that went out and came back as a plain
  * 'error' fault — the 12 s deadline, a dropped connection — may already have
- * been COUNTED by the server: it counts the call, not the answer. The open
- * path still retries (a fault is never kept, so a re-open asks again — that
- * is the reader asking for the definition), but SHARE must not be the thing
- * that spends a second lookup on a term the reader already paid to open.
+ * been COUNTED by the server: it counts the call, not the answer. SHARE must
+ * not be the thing that spends a second lookup on a term the reader already
+ * paid to open — and neither may a RE-OPEN (owner ruling 2026-10-03 #2: a
+ * re-open after a timed-out read is free for the session, like Share). The
+ * server has no per-term ledger (2026092502_glossary_meter_per_device.sql:
+ * get_glossary_definition charges glossary_consume on every call), so the
+ * only free re-open is one that does not call: `readDefinitionOnce` answers
+ * such a term with the same 'error' fault, unsent, and the caller shows what
+ * it already shows after a timeout (the browse teaser + the free study-view
+ * detail). A confirmed member (`member === true`) still re-reads: the server
+ * never meters them.
  * Refusals ('limit-reached', 'sign-in-required', 'denied', 'not-deployed')
  * are not charges and are not recorded. Cleared by a good read of the term
  * and by any identity change, like READ_OK.
@@ -275,6 +282,12 @@ export function readDefinitionOnce(id: string, member?: boolean): Promise<Defini
   if (row) return Promise.resolve({ state: 'ok', row });
   const pending = READ_PENDING.get(id);
   if (pending) return pending;
+  // Sent once, maybe charged, never answered: not sent again this session
+  // unless the reader is a CONFIRMED member (see READ_UNANSWERED). `member`
+  // undefined (the term popup) is treated as "not confirmed".
+  if (member !== true && sessionChargeUnanswered(id)) {
+    return Promise.resolve({ state: 'fault', fault: 'error' });
+  }
   const gen = readsGen;
   const p = fetchDefinitionViaGateway(id).then((r) => {
     if (READ_PENDING.get(id) === p) READ_PENDING.delete(id);

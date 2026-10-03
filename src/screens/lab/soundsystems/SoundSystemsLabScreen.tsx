@@ -31,6 +31,8 @@ import { SS_LEARN_ID, SS_MODES, SS_PAGE_COUNTS, type SsModeId } from './units';
 import { GearGlyph, type GlyphKind } from './art/gearArt';
 import { clearPageMemory } from './pageMemory';
 import { useLabEndGuest } from '../kit/LabEndScreen';
+import { accountWhy } from '../kit/labEnd';
+import { useGuestWording } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -53,6 +55,10 @@ export function SoundSystemsLabScreen() {
   const navigation = useNavigation();
   const progress = useSoundSystemsProgress();
   const guest = useLabEndGuest();
+  // WORDING only (tier sweep 2026-10-03): `guest` above still decides that
+  // nothing is saved; "You are not signed in" needs a KNOWN guest. A
+  // signed-in learner whose membership read failed hears the honest state.
+  const wording = useGuestWording();
   const inPreview = useLabPreview().active;
   const learnUnits = useLabClearedUnits(SS_LEARN_ID);
   const [pages, setPages] = useState<Record<SsModeId, number>>({ learn: 0, build: 0, route: 0, operate: 0, troubleshoot: 0 });
@@ -171,7 +177,9 @@ export function SoundSystemsLabScreen() {
                 {guest
                   ? inPreview
                     ? 'This is a members-only preview, so nothing here is saved or credited. Move through the lab in any order — this list is what still counts toward credit.'
-                    : sessionCarryOpen() ? 'You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress. Move through the lab in any order — this list is what still counts toward credit.' : 'You are not signed in, so nothing here is saved. Move through the lab in any order — this list is what still counts toward credit.'
+                    : !wording.guest
+                      ? `${accountWhy(wording.account ?? 'checking')} Move through the lab in any order — this list is what still counts toward credit.`
+                      : sessionCarryOpen() ? 'You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress. Move through the lab in any order — this list is what still counts toward credit.' : 'You are not signed in, so nothing here is saved. Move through the lab in any order — this list is what still counts toward credit.'
                   : 'Everything you have done is saved. Move through the lab in any order — this list is what still counts toward credit, and each row opens where you left off.'}
               </Text>
               {outstanding.map((r) => (

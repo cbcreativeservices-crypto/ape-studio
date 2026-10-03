@@ -13,7 +13,7 @@ import { fieldLevelColor } from '../../../../features/tools/levelColor';
 import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignStore';
 import { flipFader } from '../../soundsystems/rackLayout';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
-import { BADGE, SAVE_FAILED, SAVE_HELD, saveLine, type RoomLabCtx } from '../labCtx';
+import { accountDesignsLine, accountSaveLine, BADGE, SAVE_FAILED, SAVE_HELD, saveLine, type RoomLabCtx } from '../labCtx';
 import { RoomRackLayout } from '../rackLayout';
 import { PLAN_LEGEND, RoomPlanView, type PlanLayers, type Trace } from '../RoomPlanView';
 import { Body, Caption, SAFETY_LEVEL_POINTER, TrayButton, TrayHeading } from '../bits';
@@ -264,7 +264,7 @@ function modeBlurb(kind: 'axial' | 'tangential' | 'oblique'): string {
 }
 
 function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
-  const { design, update, guest, preview, resolved, saved, evicts, saveCurrent } = ctx;
+  const { design, update, guest, preview, account, resolved, saved, evicts, saveCurrent } = ctx;
   const [msg, setMsg] = useState<{ text: string; ok: boolean; at: RoomDesign } | null>(null);
   // A "Saved" line ends when that save is deleted (toddler pass 3).
   const line = saveLine(msg, design, saved.some((d) => d.id === design.id));
@@ -279,7 +279,7 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
       <Caption>{`START is the baseline the diff reads from; OPTION A and B are the alternatives. Flip between them with the LAYOUT key. ${design.layouts.length} position${design.layouts.length === 1 ? '' : 's'} kept in this design.`}</Caption>
       <TrayHeading>SAVE THE WHOLE DESIGN</TrayHeading>
       <TrayButton
-        label={guest ? (preview ? 'SAVE (NOT KEPT — PREVIEW)' : 'SAVE (SIGN IN TO KEEP IT)') : 'SAVE DESIGN TO THIS DEVICE'}
+        label={guest ? (preview ? 'SAVE (NOT KEPT — PREVIEW)' : account ? 'SAVE (NOT KEPT YET)' : 'SAVE (SIGN IN TO KEEP IT)') : 'SAVE DESIGN TO THIS DEVICE'}
         tint={guest ? 'dim' : 'green'}
         onPress={() => {
           // Before the tier is known the store is save-blocked for everyone, so
@@ -292,6 +292,9 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
           // A member whose device write failed is told THAT, not "you are
           // not signed in" (toddler pass 2): the tier as it was at the tap.
           const asGuest = guest;
+          // …and "not signed in" only to a KNOWN guest (tier sweep
+          // 2026-10-03): a failed membership read gets the honest state.
+          const asAccount = account;
           const gone = evicts?.name ?? null;
           // `at` is the design as filed (a clashing name is numbered on —
           // toddler pass 3), which is the one on screen after the save.
@@ -305,7 +308,9 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
                   ? 'Not saved yet — still checking your account. Tap SAVE again in a moment.'
                   : asPreview
                     ? 'Kept for this session only — this lab is part of membership, and designs made in a preview are not saved.'
-                    : asGuest
+                    : asGuest && asAccount
+                      ? accountSaveLine(asAccount, held)
+                      : asGuest
                       ? held
                         ? SAVE_HELD
                         : 'Kept on screen only — you are not signed in, so this design is not saved.'
@@ -315,7 +320,7 @@ function SaveTray({ ctx }: { ctx: RoomLabCtx }) {
         }}
       />
       {line ? <Caption>{line}</Caption> : null}
-      <Caption>{guest ? (preview ? 'You can design freely; designs made in a preview are not saved.' : 'You can design freely. Nothing is saved until you sign in — sign in before you close the app and the designs you SAVE are kept on this device.') : 'The REVIEW module lists saved designs and compares a saved "before" with the current setup.'}</Caption>
+      <Caption>{guest ? (preview ? 'You can design freely; designs made in a preview are not saved.' : account ? accountDesignsLine(account) : 'You can design freely. Nothing is saved until you sign in — sign in before you close the app and the designs you SAVE are kept on this device.') : 'The REVIEW module lists saved designs and compares a saved "before" with the current setup.'}</Caption>
     </View>
   );
 }
