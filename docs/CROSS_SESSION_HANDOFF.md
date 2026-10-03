@@ -287,6 +287,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 13:58 · ccode · OTA publish (production + preview)
+changed: PUBLISHED, owner's explicit go ("then publish"). Built from cce28e83 (code = 00e3869b + docs). Runtimes iOS e8e3455b (build 33) and Android 22976b0e (build 16), on both production and preview. The production update IDs are iOS 01a10377-96e6-7575-858a-9ffe9310140f and Android 01a10377-96e6-72a4-b695-89a1e98d4616. u.expo.dev serves both on channel production (curl-verified).
+affects other side: testers on iOS 32 / Android 15 get NONE of this until they install 33 / 16 (iOS 33 submitted 10-03, fee8903b; Android 16 is in Play internal testing).
+needs: A to apply migration 2026100301 (entry below), whenever convenient.
+
+### 2026-10-03 13:40 · ccode · 00e3869b
+changed: Calculator checks A + B + follow-up (0 wrong formulas in 163 functions; ~20 edge/wording fixes; one exact 0 dBu / 94 dB SPL reference; NIOSH 80–140 dBA); engineering lessons for 2026-10-03; governance D50–D54.
+affects other side: nothing backend. Note for anyone answering calculator questions: the NIOSH dose now excludes intervals <80 dBA.
+needs: nothing new.
+
 ### 2026-10-03 13:18 · ccode · 8be3c78e
 changed: Final rounds C + D: owner recommendations after hunt 6 (19 items)
 affects other side: nothing — app-only. Note safeSessionResult() now reports a stalled session read (timedOut) separately from signed-out.

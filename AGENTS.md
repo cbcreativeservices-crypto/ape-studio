@@ -13,6 +13,11 @@ Each one closes a bug class app-wide, and a ratchet test fails if you bypass it.
 - Leaving a screen → `safeGoBack(navigation)` (src/lib/safeGoBack.ts). Android BACK → `useBackWhileFocused`.
 - Modal screen from a dialog/popup → `useModalHandoff` or `opensModalScreen` (src/lib/confirm.ts). Async button → `useLatchedPress` (src/lib/latch.ts).
 - Membership decisions → `useTier()` (src/features/commercial/tier.ts). "Saved"/✓ only from a write result.
+  - Gating members-only content → `useMemberGate()`: open | locked | checking | unconfirmed. Content opens only on 'open'; a 🔒 or upsell shows only on 'locked'; 'checking' reads "Checking your account…"; 'unconfirmed' reads `MEMBERSHIP_NOT_CONFIRMED` (D52).
+  - Upsell copy → `useUpsellAllowed()`. Guest WORDING ("not signed in") → `useGuestWording()`. Never decide either from `resolved` alone.
+  - Session reads that must tell "stalled" from "signed out" → `safeSessionResult()` (src/lib/getSessionSafe.ts).
+- A list screen has three faces: loading / UNREADABLE / truly empty. A failed read is never shown as "nothing saved". A screen that saves a whole object never saves before it has loaded.
+- Calc physical references come from one shared constant (calcUnits.ts: `DBU_REF_V`, `P_REF_PA`). An impossible result (negative length, a gauge past 4/0, …) is refused or explained in words, never printed as a number (D53).
 - Decorative animation → `useDecorativeMotion()`. Value text → `fitValue()` (≥ 9 pt). Calc fields → a sign/range class; counts → `snapWhole`.
 - Supabase calls are bounded at the client (src/lib/supabase.ts). Do not create another client.
 Run the tests with `node --test --test-timeout=120000 "test/**/*.test.ts"`. Never edit package.json scripts (fingerprint risk). Catalog: docs/bughunt/PATTERN_CATALOG_2026_10_02.md.
