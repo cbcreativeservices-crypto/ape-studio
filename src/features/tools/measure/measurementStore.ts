@@ -181,6 +181,13 @@ export function measurementsUnreadable(): boolean {
   return readFailed;
 }
 
+/** True once the saved library has been read (hunt 7, 2026-10-03): until then
+ *  the library screen shows its LOADING face, never "no saved measurements"
+ *  (the three list faces — loading / unreadable / truly empty). */
+export function measurementsLoaded(): boolean {
+  return hydrated;
+}
+
 async function hydrate(): Promise<void> {
   if (hydrated) return;
   if (!hydrating) {

@@ -12,6 +12,10 @@ import { DBU_REF_V, P_REF_PA, fmt, speedOfSoundAir } from '../calcUnits';
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const DEG = Math.PI / 180;
 
+/** Both mics hear the source at the same instant — the mono sum has no comb. */
+const NO_ARRIVAL_DIFFERENCE =
+  'No path difference → no comb-filter nulls: the source reaches both mics at the same instant (dead centre, or no spacing), so summing them to mono simply adds the two in step.';
+
 const STEREOMIC: Workspace = {
   id: 'stereomic',
   name: 'Stereo-Mic Geometry',
@@ -62,6 +66,16 @@ const STEREOMIC: Workspace = {
         // A source at −30° (the other side) printed a −20 cm path, a negative
         // delay and a "−858 Hz" comb null.
         const path = Math.abs(n(v.spacing) * Math.sin(n(v.angle) * DEG));
+        // No path difference, no comb (hunt 7, 2026-10-03 — the Reflection Path
+        // equal-paths rule of calc follow-up F4): a source dead centre (0°) or
+        // zero spacing printed FIRST MONO COMB NULL "—" and "c/(2·path) = — Hz".
+        if (path === 0) {
+          return [
+            { label: 'PATH DIFFERENCE', value: 0, quantity: 'length', unit: 'cm' },
+            { label: 'ARRIVAL DELAY Δt', value: 0, quantity: 'time', unit: 'ms' },
+            { label: 'MONO COMB FILTERING', text: NO_ARRIVAL_DIFFERENCE },
+          ];
+        }
         return [
           { label: 'PATH DIFFERENCE', value: path, quantity: 'length', unit: 'cm' },
           { label: 'ARRIVAL DELAY Δt', value: path / c, quantity: 'time', unit: 'ms' },
@@ -71,6 +85,9 @@ const STEREOMIC: Workspace = {
       steps: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const path = Math.abs(n(v.spacing) * Math.sin(n(v.angle) * DEG));
+        if (path === 0) {
+          return [`c = ${fmt(c)} m/s. Path difference = |${fmt(n(v.spacing))}·sin(${fmt(n(v.angle))}°)| = 0 m.`, NO_ARRIVAL_DIFFERENCE];
+        }
         return [
           `c = ${fmt(c)} m/s. Path difference = |${fmt(n(v.spacing))}·sin(${fmt(n(v.angle))}°)| = ${fmt(path)} m.`,
           `Δt = ${fmt(path)} ÷ ${fmt(c)} = ${fmt((path / c) * 1000)} ms.`,

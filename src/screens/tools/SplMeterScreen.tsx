@@ -804,12 +804,18 @@ export function SplMeterScreen({ navigation }: Props) {
       );
     });
   }, []);
+  // The same two truths as SET above (hunt 7, 2026-10-03 — round C fixed SET
+  // and left CLEAR saying "could not update storage … free up some space" for
+  // a store that could not be READ, where the clear is held and written after
+  // the next good read).
   const clearCalibration = useCallback(() => {
     void setSplCalibration(null).then((stored) => {
       if (stored) return;
       notify(
         'Calibration not cleared',
-        'This device could not update storage — the meter reads uncalibrated for now, but the old calibration will come back when you reopen the app. Free up some space and clear it again.',
+        isSplCalibrationUnreadable()
+          ? 'This device could not read its saved calibration just now. The meter reads uncalibrated for now and the clear is saved as soon as storage can be read — if the app closes first, the old calibration comes back.'
+          : 'This device could not update storage — the meter reads uncalibrated for now, but the old calibration will come back when you reopen the app. Free up some space and clear it again.',
       );
     });
   }, []);

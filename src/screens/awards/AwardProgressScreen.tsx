@@ -18,7 +18,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import {
   ActivityIndicator,
@@ -79,10 +79,14 @@ export function AwardProgressScreen({ navigation, route }: Props) {
     if (p == null) {
       // No account is the COMMON null here (guests 401 on the student read) --
       // blaming "your connection" was misleading (QA night 2026-08-31).
-      const { data } = await safeSession(supabase.auth.getSession(), 'awards/progress');
+      // A STALLED or failed session read is not "signed out" (hunt 7,
+      // 2026-10-03; the final-round-D rule): it told a signed-in member to
+      // "Create a free account" and dropped a loaded checklist or EARNED box.
+      // Unknown identity takes the connection path — keep / retry.
+      const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'awards/progress');
       // A guest holding the glossary's temporary device key still has no
       // account — so they get the "no account" message, not "your connection".
-      const signedOut = !isRealAccount(data?.session);
+      const signedOut = !timedOut && !isRealAccount(got.data?.session);
       if (!signedOut && haveProgress.current) return; // a dropped reload: keep it
       haveProgress.current = false;
       setNoSession(signedOut);

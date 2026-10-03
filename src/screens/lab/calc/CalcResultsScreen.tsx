@@ -67,10 +67,15 @@ export function CalcResultsScreen() {
   // mount load and each delete's reload overlap, and an older list landing
   // last put a result just deleted back on screen.
   const loadTicket = useRef(0);
+  // The LOADING face (hunt 7, 2026-10-03 — the three list faces): until the
+  // first read lands the list is the initial [], which said "Nothing saved
+  // yet" over every saved result for as long as the read took.
+  const [loaded, setLoaded] = useState(false);
   const reload = useCallback(() => {
     const ticket = ++loadTicket.current;
     void workflowStore.listResults().then((list) => {
       if (ticket === loadTicket.current) setResults(list);
+      if (ticket === loadTicket.current) setLoaded(true);
     });
   }, []);
   useEffect(reload, [reload]);
@@ -103,7 +108,9 @@ export function CalcResultsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
-        {workflowListUnreadable(results) ? (
+        {!loaded ? (
+          <Text style={styles.caption}>Loading saved results…</Text>
+        ) : workflowListUnreadable(results) ? (
           // A failed READ is not an empty list (hunt 5, 2026-10-03): it said
           // "Nothing saved yet" over every saved result. Writes refuse on it.
           <Text style={styles.caption}>

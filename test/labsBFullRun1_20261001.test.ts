@@ -87,7 +87,9 @@ test('Signal Detective: a failed READ of the solved set is never cached as empty
   assert.ok(!/catch \{\s*solvedCache = new Set\(\);/.test(block), 'a throw must not cache an empty set');
   assert.match(block, /if \(!stored\) return new Set\(\);/);
   // persist unions with what is stored, and skips an unreadable store / a wipe.
-  assert.match(block, /if \(!stored \|\| gen !== solvedGen\) return;/);
+  // (hunt 7: the unreadable skip now also SAYS the solve was not kept.)
+  assert.match(block, /if \(gen !== solvedGen\) return;/);
+  assert.match(block, /if \(!stored\) \{\s*reportUnhandledSaveFailure\(\);\s*return;\s*\}/);
   assert.match(block, /new Set\(\[\.\.\.stored, \.\.\.s\]\)/);
   assert.match(src, /export function resetLocal\(\): void \{\s*solvedCache = null;\s*solvedGen\+\+;/);
 });

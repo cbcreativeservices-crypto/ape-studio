@@ -197,7 +197,9 @@ describe('F5 — the 70 V headroom default matches its own words', () => {
 describe('F6 — a list refuses thousands commas instead of splitting them', () => {
   it('"1,000, 4,700" is refused, with the reason', () => {
     assert.deepEqual(U.parseList('1,000, 4,700'), []);
-    assert.match(U.listProblem('1,000, 4,700'), /“1,000” — Leave out thousands commas: write 1000, 4700/);
+    // Wording updated in hunt 7 (calcHunt7_20261003 H7-1): the refusal stands,
+    // the message now names both readings and how to write the list.
+    assert.match(U.listProblem('1,000, 4,700'), /“1,000” could be one number \(1000\) or two \(1 and 0\)\..*leave out thousands commas \(write 1000, 4700\)/);
   });
   it('the same values without the commas still read', () => {
     assert.deepEqual(U.parseList('1000, 4700'), [1000, 4700]);

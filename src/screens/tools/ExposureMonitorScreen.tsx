@@ -25,8 +25,8 @@ import {
   exportExposureHistory,
   fmtDuration,
   fmtRemaining,
-  getExposureHistory,
   getExposureSnapshot,
+  readExposureHistory,
   ROUTE_LABELS,
   STANDARD_LABELS,
   subscribeExposure,
@@ -136,11 +136,20 @@ export function ExposureMonitorScreen() {
   // "Delete all" could resolve after it and put the deleted days back on
   // screen. Only the NEWEST request may land; Delete all bumps it first.
   const historyReq = useRef(0);
+  // THREE FACES (hunt 7, 2026-10-03; D51): loading / could not be read / truly
+  // empty. A failed read showed "No history yet." over the stored days.
+  const [historyFace, setHistoryFace] = useState<'loading' | 'unreadable' | 'read'>('loading');
+  const loadHistory = (req: number) => {
+    void readExposureHistory().then(({ days, unreadable }) => {
+      if (req !== historyReq.current) return;
+      setHistory(days);
+      setHistoryFace(unreadable ? 'unreadable' : 'read');
+    });
+  };
   useEffect(() => {
     const req = ++historyReq.current;
-    void getExposureHistory().then((h) => {
-      if (req === historyReq.current) setHistory(h);
-    });
+    loadHistory(req);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snap.todayActiveSec === 0]); // refresh after deletes; live today rides the snapshot
 
   const s = snap.settings;
@@ -341,8 +350,18 @@ export function ExposureMonitorScreen() {
               </Pressable>
             ))}
           </View>
+          {historyFace === 'unreadable' ? (
+            <Text style={styles.note}>
+              Earlier days could not be read on this device just now — nothing has been deleted. Leave this screen and
+              come back to try again.
+            </Text>
+          ) : null}
           {shownHistory.length === 0 ? (
-            <Text style={styles.body}>No history yet.</Text>
+            historyFace === 'loading' ? (
+              <Text style={styles.body}>Loading history…</Text>
+            ) : historyFace === 'unreadable' ? null : (
+              <Text style={styles.body}>No history yet.</Text>
+            )
           ) : (
             shownHistory.map((d) => (
               <Row
@@ -536,13 +555,12 @@ export function ExposureMonitorScreen() {
                     void deleteExposureHistory().then((deleted) => {
                       if (deleted) {
                         if (req === historyReq.current) setHistory([]);
+                        if (req === historyReq.current) setHistoryFace('read'); // nothing left to be unreadable
                         return;
                       }
                       // Said, never shown as gone (toddler evening
                       // 2026-10-02): re-read what is really still stored.
-                      void getExposureHistory().then((h) => {
-                        if (req === historyReq.current) setHistory(h);
-                      });
+                      loadHistory(req);
                       notify(
                         'History not deleted',
                         'This device could not remove the stored exposure history, so some or all of it is still saved. Try Delete all again.',

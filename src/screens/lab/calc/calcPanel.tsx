@@ -88,10 +88,13 @@ export function runCompute(fn: CalcFunction | null, values: CalcValues | null, f
     if (nums.length > 0 && nums.every((o) => !Number.isFinite(o.value))) {
       return { outputs: [], steps: [], table: null, computeError: true };
     }
+    // A table with no rows is no table (hunt 7, 2026-10-03): a comb with no
+    // path difference has no nulls to list — never a bare header row.
+    const table = fn.table ? fn.table(values) : null;
     return {
       outputs,
       steps: fn.steps ? fn.steps(values) : [],
-      table: fn.table ? fn.table(values) : null,
+      table: table && table.rows.length > 0 ? table : null,
       computeError: false,
     };
   } catch {

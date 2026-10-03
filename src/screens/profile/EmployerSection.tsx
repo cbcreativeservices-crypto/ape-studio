@@ -63,6 +63,9 @@ type Kind = 'area' | 'role' | 'open_to';
 export function EmployerSection() {
   const [app, setApp] = useState<EmployerApplication | null>(null);
   const [verified, setVerified] = useState(false);
+  /** The verified-employer check itself FAILED — the status is unknown, so
+   *  the section must not say the account is no longer active. */
+  const [verifyFailed, setVerifyFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [tax, setTax] = useState<Taxonomy | null>(null);
   const [picked, setPicked] = useState<Record<string, string[]>>({});
@@ -94,7 +97,9 @@ export function EmployerSection() {
       fetchMyEmployerApplication(),
       amIVerifiedEmployer(),
     ]);
-    setVerified(isVerified);
+    setVerified(isVerified === true);
+    // A FAILED verified-check is not "not verified" (hunt 7, 2026-10-03).
+    setVerifyFailed(isVerified === null);
     // An ERROR is not "no application". Rendering the empty state to somebody
     // whose application is in the queue is what makes people apply twice.
     if (state.state === 'have') setApp(state.application);
@@ -195,6 +200,10 @@ export function EmployerSection() {
           <Text style={styles.body}>This application was not approved.</Text>
           {app.reviewNote ? <Text style={styles.reason}>{app.reviewNote}</Text> : null}
         </>
+      ) : verifyFailed ? (
+        <Text style={styles.warn}>
+          Couldn’t check your employer account just now. Check your connection and reopen this screen.
+        </Text>
       ) : (
         <Text style={styles.body}>This application is no longer active.</Text>
       )}

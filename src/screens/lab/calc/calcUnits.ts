@@ -341,9 +341,17 @@ export function parseList(raw: string): number[] {
  * a separator, so "1,000, 4,700" was read as [1, 0, 4, 700] with nothing said
  * (calc follow-up, 2026-10-03). It could be one thousand or the two values 1
  * and 0, so it is refused rather than guessed.
+ *
+ * Hunt 7 (2026-10-03): the refusal also caught plain lists typed without
+ * spaces — "85,94,100" (dose levels) or "240,120,60" (minutes) — and told the
+ * learner to "leave out thousands commas" they never typed, so the remedy did
+ * not apply. The message now names both readings and says how to write the
+ * list. And a group right after a DECIMAL point ("20.5,100") is no thousands
+ * group (grouping comes before the point), so it is read as two values.
  */
-const LIST_THOUSANDS_GROUP = /\d+,\d{3}(?!\d)/;
-export const LIST_THOUSANDS_MSG = 'Leave out thousands commas: write 1000, 4700 — in a list, a comma separates the values.';
+const LIST_THOUSANDS_GROUP = /(?:^|[^\d.])(\d+,\d{3})(?!\d)/;
+export const LIST_THOUSANDS_MSG =
+  'In a list a comma separates the values, so put a space after each one (85, 94, 100) and leave out thousands commas (write 1000, 4700).';
 
 /**
  * WHY a list field cannot be read, or null when it can (an empty field is not
@@ -352,7 +360,11 @@ export const LIST_THOUSANDS_MSG = 'Leave out thousands commas: write 1000, 4700 
  */
 export function listProblem(raw: string): string | null {
   const grouped = raw.match(LIST_THOUSANDS_GROUP);
-  if (grouped) return `“${grouped[0]}” — ${LIST_THOUSANDS_MSG}`;
+  if (grouped) {
+    const g = grouped[1]!;
+    const [a, b] = g.split(',');
+    return `“${g}” could be one number (${a}${b}) or two (${a} and ${parseQuantity(b ?? '') ?? b}). ${LIST_THOUSANDS_MSG}`;
+  }
   for (const t of raw.split(/[,;\s]+/)) {
     if (t !== '' && parseQuantity(t) === null) {
       return `Check “${t}” — enter numbers only, separated by commas.`;

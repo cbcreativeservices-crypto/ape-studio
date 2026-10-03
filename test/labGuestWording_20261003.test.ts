@@ -125,7 +125,10 @@ describe('Cable Install — the completion notice', () => {
     }
     // preview and saved states keep their meaning
     assert.equal(call(cc, 'ciSaveWording', 'preview', 'unconfirmed'), 'preview');
-    assert.equal(call(cc, 'ciSaveWording', 'saved', 'unconfirmed'), 'saved');
+    assert.equal(call(cc, 'ciSaveWording', 'saved', undefined), 'saved');
+    // 'saved' + an account word is the unknown window (hunt 7, 2026-10-03;
+    // test/labsAHunt7_20261003): never "saved" before the tier is known.
+    assert.equal(call(cc, 'ciSaveWording', 'saved', 'checking'), 'checking');
   });
   it('the screen wraps the unchanged rule and hides an absent offer', () => {
     const s = read('src/screens/lab/cableinstall/CableInstallLabScreen.tsx');

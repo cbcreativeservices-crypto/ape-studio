@@ -10,7 +10,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { holdSessionWork, peekSessionWork, registerSessionCarry } from '../lab/sessionCarry';
-import { armSaveFailureReport } from '../storage/saveFailureNotice';
+import { armSaveFailureReport, reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:tuning:v1';
 
@@ -55,6 +55,11 @@ export async function loadTuningProgress(): Promise<TuningProgress> {
 }
 
 export async function saveTuningProgress(p: TuningProgress): Promise<void> {
+  // The change an unreadable read drops is SAID (hunt 7, 2026-10-03; hunt 6's
+  // drum/mastering rule): a chapter's ✓ showed complete and was gone next
+  // visit, without a word. The screen saves only after a change (a chapter
+  // done, a move, BASIC/MATH).
+  if (storage.readFailed) reportUnhandledSaveFailure();
   if (storage.readFailed) return; // never write an unreadable read's empty copy back
   const reportRefused = armSaveFailureReport();
   try {

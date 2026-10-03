@@ -440,6 +440,10 @@ const WS_PHASE: Workspace = {
 /* 3 · Comb Filter                                                     */
 /* ------------------------------------------------------------------ */
 
+/** Zero extra path: the second arrival is in step with the first. */
+const NO_COMB_SAME_PATH =
+  'No path difference → no comb-filter nulls: the second arrival lands in step with the first and simply adds to it.';
+
 const WS_COMB: Workspace = {
   id: 'comb',
   name: 'Comb Filter',
@@ -550,6 +554,16 @@ const WS_COMB: Workspace = {
       compute: (v) => {
         const c = speedOfSoundAir(n(v.temp));
         const dt = n(v.pathDiff) / c;
+        // No extra path, no comb (hunt 7, 2026-10-03 — calc follow-up F4's
+        // Reflection Path rule): 0 m printed FIRST NULL and NULL/NULL SPACING
+        // as "—" beside a confident 0 ms delay, and a table of "— kHz" rows.
+        if (n(v.pathDiff) === 0) {
+          return [
+            { label: 'EQUIVALENT DELAY', value: 0, quantity: 'time', unit: 'ms' },
+            { label: 'PATH DIFFERENCE', value: 0, quantity: 'length', chainable: false },
+            { label: 'COMB FILTERING', text: NO_COMB_SAME_PATH },
+          ];
+        }
         return [
           { label: 'EQUIVALENT DELAY', value: dt, quantity: 'time', unit: 'ms' },
           { label: 'PATH DIFFERENCE', value: n(v.pathDiff), quantity: 'length', chainable: false },
@@ -561,6 +575,7 @@ const WS_COMB: Workspace = {
         const c = speedOfSoundAir(n(v.temp));
         const d = n(v.pathDiff);
         const dt = d / c;
+        if (d === 0) return [NO_COMB_SAME_PATH];
         return [
           `The reflected path is ${fmt(d)} m longer; at ${fmt(c)} m/s that is Δt = ${fmt(dt * 1000)} ms.`,
           `First null = 1 ÷ (2 × ${fmt(dt)}) = ${fmt(1 / (2 * dt))} Hz; the comb repeats every ${fmt(1 / dt)} Hz above it.`,
@@ -570,7 +585,8 @@ const WS_COMB: Workspace = {
       table: (v) => {
         const dt = n(v.pathDiff) / speedOfSoundAir(n(v.temp));
         const rows: string[][] = [];
-        for (let k = 0; k < 8; k++) {
+        // No comb at 0 m: no rows, never eight rows of "— kHz".
+        for (let k = 0; k < (n(v.pathDiff) === 0 ? 0 : 8); k++) {
           rows.push([
             `${k + 1}`,
             `${fmt(((2 * k + 1) / (2 * dt)) / 1000)} kHz`,

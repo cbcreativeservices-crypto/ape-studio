@@ -120,7 +120,10 @@ test('2 — Light Pulse: the priorClose chain is capped', () => {
 test('3 — Exposure Monitor: only the newest history request may land; Delete all fences first', () => {
   const src = read('screens/tools/ExposureMonitorScreen.tsx');
   assert.match(src, /const historyReq = useRef\(0\);/);
-  assert.match(src, /const req = \+\+historyReq\.current;\s*void getExposureHistory\(\)\.then\(\(h\) => \{\s*if \(req === historyReq\.current\) setHistory\(h\);/);
+  // (Hunt 7, 2026-10-03: the read moved into loadHistory(req), which also says
+  // an unreadable history — the newest-request fence is unchanged.)
+  assert.match(src, /void readExposureHistory\(\)\.then\(\(\{ days, unreadable \}\) => \{\s*if \(req !== historyReq\.current\) return;\s*setHistory\(days\);/);
+  assert.match(src, /const req = \+\+historyReq\.current;\s*loadHistory\(req\);/);
   assert.doesNotMatch(src, /getExposureHistory\(\)\.then\(setHistory\)/);
   const del = src.slice(src.indexOf("'Delete all',"), src.indexOf('<Text style={styles.chipText}>Delete all</Text>'));
   // (Evening 1, 2026-10-02: the delete now resolves a boolean and only an

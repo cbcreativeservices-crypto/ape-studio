@@ -62,12 +62,12 @@ describe('fetchEnrollmentDashboard does not swallow errors as empty progress', (
     // anonymous device key) must keep the empty-progress path.
     assert.match(
       body,
-      /safeSession\(supabase\.auth\.getSession\(\)/,
+      /safeSession(?:Result)?\(supabase\.auth\.getSession\(\)/,
       'the missing-row branch no longer asks getSession() whether this is a signed-in member',
     );
     assert.match(body, /isRealAccount\(/, 'a session is no longer checked with isRealAccount — an anonymous device key would throw');
     assert.ok(
-      (body.match(/myUserRow</g) ?? []).length >= 2,
+      (body.match(/myUserRow(?:OrThrow)?</g) ?? []).length >= 2,
       'the users row is no longer retried once after getSession() — the cold-start race fails the first read',
     );
     assert.match(

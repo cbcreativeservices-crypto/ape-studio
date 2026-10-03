@@ -44,6 +44,13 @@ export const SESSION_TIMEOUT_MS = 5000;
 
 type AnySession = { data: { session: unknown } };
 
+/** auth-js's AuthRetryableFetchError (network failure, bounded-fetch timeout,
+ *  5xx), matched by NAME — this module imports nothing (see above). */
+function refreshUnreached(result: unknown): boolean {
+  const err = (result as { error?: { name?: unknown } | null } | null)?.error;
+  return !!err && err.name === 'AuthRetryableFetchError';
+}
+
 /**
  * Bound a `getSession()` call so a stalled secure-store read cannot hang the
  * caller forever.
@@ -76,7 +83,13 @@ export async function safeSessionResult<T extends AnySession>(
   try {
     return await Promise.race([
       p.then(
-        (result) => ({ result, timedOut: false }),
+        // A read that came back WITHOUT a session because the token refresh
+        // could not reach the server (hunt 7, 2026-10-03) is the same unknown:
+        // auth-js does not reject there — an expired access token plus a dead
+        // connection resolves `{ session: null, error: AuthRetryableFetchError }`
+        // and the session stays stored. Only that retryable error counts; a
+        // dead refresh token (session removed) is a real sign-out.
+        (result) => ({ result, timedOut: !result?.data?.session && refreshUnreached(result) }),
         () => ({ result: none, timedOut: true }),
       ),
       new Promise<{ result: T; timedOut: boolean }>((resolve) => {

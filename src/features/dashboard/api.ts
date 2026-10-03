@@ -17,8 +17,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 
-import { myUserRow } from '../account/myUserRow';
-import { safeSession } from '../../lib/getSessionSafe';
+import { myUserRow, myUserRowOrThrow } from '../account/myUserRow';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 export type TopicStatus = 'locked' | 'unlocked' | 'passed_incomplete' | 'complete';
 
@@ -337,9 +337,21 @@ export async function fetchEnrollmentDashboard(
     // Guest or race? Only a real account session can be a race. The
     // getSession() read is also the house cold-start fix: by the time it
     // settles the client has its token, so the retry goes out authenticated.
-    const { data: sess } = await safeSession(supabase.auth.getSession(), 'dashboard/enrollment');
+    const {
+      result: { data: sess },
+      timedOut: sessionUnknown,
+    } = await safeSessionResult(supabase.auth.getSession(), 'dashboard/enrollment');
+    // A read that did not answer is not "a guest" (hunt 7): throw, so the
+    // callers keep what they show instead of painting zero progress.
+    if (sessionUnknown) throw new Error('session_unreadable');
     if (isRealAccount(sess.session)) {
-      user = await myUserRow<Row>('id, nickname');
+      // The retry THROWS on a failed read (hunt 7, 2026-10-03). `myUserRow`
+      // answers null on any failure, so a one-off blip became user_not_found
+      // and the Dashboard's stranded-session self-heal reloaded the member
+      // as a guest at zero progress ("setup isn't finished … sign out") —
+      // over good data on a silent refresh too. Only a read that ANSWERED
+      // "no row" is user_not_found; a failure keeps the screen's data.
+      user = await myUserRowOrThrow<Row>('id, nickname');
       if (!user && !opts?.allowMissingUser) throw new Error('user_not_found');
     }
   }

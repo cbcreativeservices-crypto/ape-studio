@@ -23,6 +23,7 @@
  * the local list stays authoritative. Guests never sync. "Saved" in the account
  * sense is gated in the UI by entitlement (anonymous = warned it won't be saved).
  */
+import { useSyncExternalStore } from 'react';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
@@ -240,6 +241,17 @@ function scheduleServerSync(delayMs = 800) {
         // Guests (incl. an anonymous device key) keep enrollment device-local:
         // syncing would write a master list for a uid deleted within the week.
         if (!isRealAccount(data.session)) return;
+        // ⛔ NEVER PUSH (OR RECONCILE) AN UNREAD LIST (hunt 7, 2026-10-03).
+        // A tap while the stored list could not be READ still armed this
+        // sync: `commit` saw its edit run on the placeholder (the store shows
+        // queued taps on the empty value), so `store.get()` here was that
+        // tap alone — and `sync_my_enrollments` replaced the server master
+        // list with it (every other topic then raised `not_enrolled`), while
+        // the pull below took the empty placeholder for an untouched seed.
+        // Read again first; still unreadable → the retry backoff below.
+        await store.hydrate();
+        if (gen !== generation) return;
+        if (!store.isHydrated()) throw new Error('enrollment list could not be read');
         // PULL FIRST, THEN PUSH REGARDLESS.
         //
         // ── WHY THERE IS NO "REFUSE TO PUSH" GUARD HERE ───────────────────
@@ -545,4 +557,14 @@ export function moveTopic(gs: number, dir: -1 | 1): void {
 /** Live view of the enrollment list (re-renders on any change, any screen). */
 export function useEnrollment(): EnrollTopic[] {
   return store.use();
+}
+
+/** Has the stored list been READ? `useEnrollment()` is `[]` while the read is
+ *  out AND after it FAILED — neither is "no topics yet" (D51, hunt 7). */
+export type EnrollmentReadState = 'loading' | 'unreadable' | 'read';
+function enrollmentReadState(): EnrollmentReadState {
+  return store.isHydrated() ? 'read' : store.isUnreadable() ? 'unreadable' : 'loading';
+}
+export function useEnrollmentReadState(): EnrollmentReadState {
+  return useSyncExternalStore(store.subscribe, enrollmentReadState, enrollmentReadState);
 }

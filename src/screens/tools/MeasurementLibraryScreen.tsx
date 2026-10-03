@@ -38,7 +38,7 @@ import { MeasurementPreview, hasPreview } from '../../features/tools/measure/pre
 import { MeasurementShareCard, SHARE_CARD_W } from '../../features/tools/measure/previews/MeasurementShareCard';
 import { PREVIEW_FULL_MIN_H } from '../../features/tools/measure/previews/previewKit';
 import * as shareImage from '../lab/calc/shareImage';
-import { deleteMeasurement, measurementsUnreadable, useMeasurements } from '../../features/tools/measure/measurementStore';
+import { deleteMeasurement, measurementsLoaded, measurementsUnreadable, useMeasurements } from '../../features/tools/measure/measurementStore';
 import { QUALITY_COLOR, QUALITY_LABEL } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SavedMeasurement } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
@@ -791,6 +791,13 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
                 This device could not read your measurement library just now. Nothing has been
                 deleted. Leave this screen and come back to try again.
               </Text>
+            </View>
+          ) : !measurementsLoaded() ? (
+            // Still reading (hunt 7, 2026-10-03): the library used to open on
+            // the empty card below until the SQLite read landed — the
+            // loading face of the three (house rule: loading / unreadable / empty).
+            <View style={styles.emptyCard}>
+              <Text style={styles.emptyBody}>Loading saved measurements…</Text>
             </View>
           ) : (
           <View style={styles.emptyCard}>

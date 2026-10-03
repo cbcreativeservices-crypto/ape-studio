@@ -408,6 +408,7 @@ function StationCard({ id, text, title }: { id: StationId; text: string; title?:
 }
 
 function L2Path({ ctx: _ctx }: { ctx: PageCtx }) {
+  const { focused } = useEnv();
   const page = pageDef('l2-path');
   const [at, setAt] = useState<StationId>('voice');
   const s = stationById(at);
@@ -437,7 +438,11 @@ function L2Path({ ctx: _ctx }: { ctx: PageCtx }) {
       ]}
       stage={(w, h) => (
         <StageFit w={w} h={h} aspect={PATH_ASPECT}>
-          <SignalPathArt highlight={at} reached={at} activeForm={at === 'voice' ? 'soundIn' : s.form === 'signal' ? 'signal' : 'soundOut'} />
+          {/* running={focused} (hunt 7, 2026-10-03): Start Here stays mounted
+              under WORDS and every lab it opens — the cable pulses ran there
+              unseen, the AttractCue class. Every other display here already
+              takes env.focused. */}
+          <SignalPathArt running={focused} highlight={at} reached={at} activeForm={at === 'voice' ? 'soundIn' : s.form === 'signal' ? 'signal' : 'soundOut'} />
         </StageFit>
       )}
       wellTop={<StationCard id={at} text={s.follow} />}
@@ -595,6 +600,7 @@ function L3Measured({ ctx }: { ctx: PageCtx }) {
 // LESSON 4 — tap each part
 
 function L4Parts({ ctx: _ctx }: { ctx: PageCtx }) {
+  const { focused } = useEnv();
   const page = pageDef('l4-parts');
   const [sel, setSel] = useState<StationId>('mic');
   const [io, setIo] = useState(false);
@@ -627,6 +633,7 @@ function L4Parts({ ctx: _ctx }: { ctx: PageCtx }) {
       stage={(w, h) => (
         <StageFit w={w} h={h} aspect={PATH_ASPECT}>
           <SignalPathArt
+            running={focused}
             highlight={sel}
             showIO={io}
             onTap={(t) => {
@@ -973,7 +980,7 @@ function FsCapture({ ctx: _ctx }: { ctx: PageCtx }) {
 }
 
 function FsFollow({ ctx: _ctx }: { ctx: PageCtx }) {
-  const { first } = useEnv();
+  const { first, focused } = useEnv();
   const page = pageDef('fs-follow');
   const u = UNPLUG_OPTIONS.find((o) => o.id === first.unplug) ?? UNPLUG_OPTIONS[0];
   const yes = (id: StationId) => (stationLive(id, first.unplug) ? 'SIGNAL' : 'NONE');
@@ -1004,7 +1011,7 @@ function FsFollow({ ctx: _ctx }: { ctx: PageCtx }) {
       ]}
       stage={(w, h) => (
         <StageFit w={w} h={h} aspect={PATH_ASPECT}>
-          <SignalPathArt unplug={first.unplug} highlight={first.unplug === 'none' ? null : first.unplug} />
+          <SignalPathArt running={focused} unplug={first.unplug} highlight={first.unplug === 'none' ? null : first.unplug} />
         </StageFit>
       )}
       wellTop={

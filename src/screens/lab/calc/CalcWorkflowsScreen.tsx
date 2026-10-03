@@ -51,6 +51,10 @@ export function CalcWorkflowsScreen() {
   const [dropNote, setDropNote] = useState<string | null>(null);
   // The stored list could not be READ (hunt 5, 2026-10-03): not "Nothing saved yet".
   const [mineUnreadable, setMineUnreadable] = useState(false);
+  // The LOADING face (hunt 7, 2026-10-03 — the three list faces): before the
+  // first read lands `mine` is the initial [], which told a member "Nothing
+  // saved yet" over every saved workflow for as long as the read took.
+  const [mineLoaded, setMineLoaded] = useState(false);
 
   // Only the NEWEST load may land (pattern P2; calc check B, 2026-10-03): the
   // mount load, every focus and every delete/duplicate each start one, and an
@@ -62,6 +66,7 @@ export function CalcWorkflowsScreen() {
     void workflowStore.listWorkflows().then((list) => {
       if (ticket !== loadTicket.current) return;
       setMineUnreadable(workflowListUnreadable(list));
+      setMineLoaded(true);
       // Repair pass (spec): unresolvable steps are dropped and DISCLOSED.
       let droppedTotal = 0;
       const repaired = list.map((w) => {
@@ -299,6 +304,8 @@ export function CalcWorkflowsScreen() {
           <Text style={styles.caption}>
             {mineUnreadable
               ? 'Your saved workflows could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.'
+              : !mineLoaded
+              ? 'Loading your workflows…'
               : tierUnconfirmed
               ? tierReadFailed
                 ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'

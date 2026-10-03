@@ -51,6 +51,7 @@ import {
   toggleActive,
   toggleTopic,
   useEnrollment,
+  useEnrollmentReadState,
   type EnrollTopic,
 } from '../../features/enrollment/enrollmentStore';
 import { removableOnBundleDrop } from '../../features/enrollment/enrollmentPlan';
@@ -349,6 +350,8 @@ export function EnrollmentView({
   const paid = useMemberGate() !== 'locked';
 
   const enrolled = useEnrollment();
+  // An unread list is not "No topics yet" (D51, hunt 7 2026-10-03).
+  const enrollRead = useEnrollmentReadState();
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired bundled v2 matrix.
   /** LAB REQUIREMENTS sheet (owner 2026-09-20). */
   const [labReqOpen, setLabReqOpen] = useState(false);
@@ -2386,7 +2389,11 @@ export function EnrollmentView({
         {centredBundle ? null : displayed.length === 0 && displayedBundles.length === 0 ? (
           <Text style={styles.empty}>
             {enrolled.length === 0 && bundles.length === 0
-              ? 'No topics yet — open BROWSE & ADD below to enroll in your first one.'
+              ? enrollRead === 'unreadable'
+                ? 'Your enrolled topics could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.'
+                : enrollRead === 'loading'
+                  ? 'Loading your topics…'
+                  : 'No topics yet — open BROWSE & ADD below to enroll in your first one.'
               : 'Nothing matches those filters.'}
           </Text>
         ) : (

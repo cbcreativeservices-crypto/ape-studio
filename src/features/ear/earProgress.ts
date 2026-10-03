@@ -11,7 +11,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { EarModuleId } from './earTypes';
 import { holdSessionWork, registerSessionCarry, sessionCarryEpoch } from '../lab/sessionCarry';
-import { armSaveFailureReport } from '../storage/saveFailureNotice';
+import { armSaveFailureReport, reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:ear:v1';
 const WINDOW = 20;
@@ -81,6 +81,10 @@ const blockedLoads = new WeakSet<EarProgressState>();
  *  the epoch is unchanged: after a sign-out the same on-screen ladder must
  *  never be carried into whoever signs in next. */
 const guestLoads = new WeakMap<EarProgressState, number>();
+/** A state handed out because storage could not be READ (a subset of
+ *  blockedLoads): never written — but a trial saved onto it is SAID (hunt 7,
+ *  2026-10-03; hunt 6's drum/mastering rule). */
+const unreadLoads = new WeakSet<EarProgressState>();
 
 export async function loadEarProgress(): Promise<EarProgressState> {
   if (saveBlocked) {
@@ -98,6 +102,7 @@ export async function loadEarProgress(): Promise<EarProgressState> {
     // and the drill saves it on the first answer — over every module's real
     // ladder and mastered level. Never written back, like a blocked load.
     const s: EarProgressState = { ...EMPTY, modules: {} };
+    unreadLoads.add(s);
     blockedLoads.add(s);
     return s;
   }
@@ -127,6 +132,11 @@ export async function saveEarProgress(s: EarProgressState): Promise<void> {
       return out;
     });
   }
+  // A trial (or the sub-bass pick) on a ladder whose stored copy could not be
+  // READ is never written (below) — but it is SAID (hunt 7, 2026-10-03): every
+  // answer, level-up and mastered level was dropped without a word and gone
+  // next visit. Every caller saves only after a change. A guest stays quiet.
+  if (!saveBlocked && unreadLoads.has(s)) reportUnhandledSaveFailure();
   if (saveBlocked || blockedLoads.has(s)) return;
   const reportRefused = armSaveFailureReport();
   try {

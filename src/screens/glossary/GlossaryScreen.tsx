@@ -1839,7 +1839,16 @@ ${COPY.glossaryFreeAllowance}`,
   const gatewayInFlightRef = useRef<Map<string, Promise<boolean>>>(new Map());
   const openViaGateway = useCallback(
     (id: string): Promise<boolean> => {
-      if (detailsRef.current[id]) return Promise.resolve(true); // already read this session — free
+      /**
+       * Already read THROUGH THE GATEWAY this session — free. ⛔ Not merely "has
+       * a detail" (hunt 7, 2026-10-03): a cross-link hop (free, unmetered)
+       * fills the detail from glossary_study_v, which carries no definition —
+       * the row still holds the browse view's 120-character teaser. A free
+       * reader who hopped to a term and later opened it was then never sent
+       * the metered read: the teaser showed as the whole definition, silently,
+       * for the rest of the visit. A member's browse text is already whole.
+       */
+      if (detailsRef.current[id] && (isMember || sessionDefinition(id, isMember))) return Promise.resolve(true);
       const pending = gatewayInFlightRef.current.get(id);
       if (pending) return pending;
       const p: Promise<boolean> = readViaGateway(id).finally(() => {
@@ -1850,7 +1859,7 @@ ${COPY.glossaryFreeAllowance}`,
       gatewayInFlightRef.current.set(id, p);
       return p;
     },
-    [readViaGateway],
+    [readViaGateway, isMember],
   );
   openViaGatewayRef.current = openViaGateway;
 

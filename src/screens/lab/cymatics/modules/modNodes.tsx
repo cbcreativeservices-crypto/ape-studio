@@ -172,6 +172,8 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
       <Text style={P.caption}>
         {tone.engineReady ? 'PLAY drives the plate with the tone you hear; SILENT drives it without sound.' : 'Sound needs the native engine — SILENT still drives the plate.'} Nothing moves without a drive.
       </Text>
+      {/* A start that failed is SAID (hunt 7): PLAY just stayed off, no word. */}
+      {tone.error ? <Text style={[P.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
     </CymaticsRackLayout>
   );
 }

@@ -105,8 +105,12 @@ export function HarmonicsModule({ width, help }: CymaticsModuleProps) {
       ))}
       <View style={[P.card, { borderColor: 'rgba(255,198,77,.5)' }]}>
         <Text style={P.strong}>
-          {sel ? `Playing ${formatHz(hz)} — ${ladders.find((l) => l.id === sel.ladder)?.name}, ratio ${sel.ratio.toFixed(2)}` : 'Tap any rung to hear it.'}
+          {/* "Playing" only while the tone really runs (hunt 7, 2026-10-03):
+              a declined output gate, a failed start or ■ STOP left the card
+              saying "Playing …" over silence. */}
+          {sel ? `${tone.running ? 'Playing ' : ''}${formatHz(hz)} — ${ladders.find((l) => l.id === sel.ladder)?.name}, ratio ${sel.ratio.toFixed(2)}` : 'Tap any rung to hear it.'}
         </Text>
+        {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
         {tone.running ? (
           <Pressable onPress={tone.stop} style={styles.stop} accessibilityRole="button" accessibilityLabel="Stop">
             <Text style={styles.stopText}>■ STOP</Text>
@@ -132,4 +136,5 @@ const styles = StyleSheet.create({
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, borderWidth: 1, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
   stop: { alignSelf: 'flex-start', borderRadius: 8, borderWidth: 1, borderColor: '#3a3a44', paddingHorizontal: 12, paddingVertical: 7 },
   stopText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
+  err: { fontFamily: fonts.barlowRegular, fontSize: 13, color: '#ff6b5e' },
 });

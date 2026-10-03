@@ -687,7 +687,14 @@ function persistSolved(s: Set<string>): void {
   const gen = solvedGen;
   void readSolved()
     .then((stored) => {
-      if (!stored || gen !== solvedGen) return; // unreadable, or the account was wiped meanwhile
+      if (gen !== solvedGen) return; // the account was wiped meanwhile
+      // Unreadable: never written over — but SAID (hunt 7, 2026-10-03, the
+      // drum/mastering rule of hunt 6): the SOLVED count went up on the bezel
+      // while nothing was written, and the solve was gone next launch.
+      if (!stored) {
+        reportUnhandledSaveFailure();
+        return;
+      }
       const all = new Set([...stored, ...s]);
       solvedCache = all; // a remount sees what is stored too
       return AsyncStorage.setItem(SOLVED_KEY, JSON.stringify([...all]));

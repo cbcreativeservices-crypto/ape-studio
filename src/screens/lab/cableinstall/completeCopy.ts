@@ -48,9 +48,16 @@ export function ciSaveState(o: { endGuest: boolean; noAccount: boolean; isMember
  * nothing is kept) is unchanged; a 'guest' that useGuestWording() does not
  * confirm (`account` set) is told the honest state instead of "You are not
  * signed in" + BECOME A MEMBER.
+ *
+ * …and a 'saved' with `account` set is the 'unknown' window before the first
+ * tier read lands (hunt 7, 2026-10-03; final round C's guestWordingOf rule,
+ * which fixed Sound Systems): `ciSaveState` reads "not a guest ⇒ saved" there,
+ * so this screen still said "Everything you have done so far is saved" before
+ * anyone knew. It reads 'checking' instead. A known free/member tier carries
+ * no `account`, so 'saved' stays 'saved' for them.
  */
 export function ciSaveWording(state: CiSaveState, account?: AccountWording): CiSaveState {
-  return state === 'guest' && account ? account : state;
+  return (state === 'guest' || state === 'saved') && account ? account : state;
 }
 
 /** The lead line when stages are still outstanding (the WHAT IS LEFT state). */

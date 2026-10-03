@@ -16,6 +16,12 @@ const log2 = Math.log2;
 /** dBu ↔︎ dBV offset: 20·log10(0.7746) ≈ −2.2185 dB (dBu reads HIGHER). */
 const DBU_DBV_OFFSET = 20 * log10(DBU_REF_V); // √0.6 = 0.774597 V — the EXACT dBu reference (ratified copy says −2.218)
 
+/** A percent change of −100% or less has no dB level (see pctToDb). */
+const pctNoLevel = (p: number) =>
+  p === -100
+    ? 'A −100% change leaves no amplitude at all — silence — and silence has no finite dB level (it is −∞ dB).'
+    : `An amplitude cannot drop by more than 100%: ${fmt(p)}% would leave a negative amplitude, which does not exist. Check the sign and the value — −50% means half the voltage.`;
+
 // ---------------------------------------------------------------------------
 // 1 · Audio Level Converter
 // ---------------------------------------------------------------------------
@@ -283,6 +289,10 @@ const WS_LEVEL: Workspace = {
       note: 'For AMPLITUDE quantities (voltage, pressure). A percent change in POWER would use 10·log10 instead.',
       compute: (v) => {
         const p = n(v.pct);
+        // At or below −100% (hunt 7, 2026-10-03; D53): −150% printed a
+        // RESULTING AMPLITUDE RATIO of −0.5× — an amplitude that cannot exist —
+        // beside LEVEL CHANGE "—". Said in words instead.
+        if (!(p > -100)) return [{ label: 'NO dB LEVEL', text: pctNoLevel(p) }];
         return [
           { label: 'LEVEL CHANGE', value: 20 * log10(1 + p / 100), quantity: 'db' },
           { label: 'RESULTING AMPLITUDE RATIO', value: 1 + p / 100, quantity: 'ratio', chainable: false },
@@ -291,6 +301,7 @@ const WS_LEVEL: Workspace = {
       steps: (v) => {
         const p = n(v.pct);
         const r = 1 + p / 100;
+        if (!(p > -100)) return [pctNoLevel(p)];
         return [
           `A ${fmt(p)}% change means the amplitude becomes ${fmt(r)}× the original (1 + ${fmt(p)}/100).`,
           `dB = 20 × log10(${fmt(r)}) = ${fmt(20 * log10(r))} dB.`,
@@ -638,7 +649,10 @@ const WS_ELECTRONICS: Workspace = {
         const vout = (vin * r2) / (r1 + r2);
         return [
           { label: 'OUTPUT VOLTAGE', value: vout, quantity: 'voltage' },
-          { label: 'ATTENUATION', value: 20 * log10(vout / vin), quantity: 'db', chainable: false },
+          // From the resistors, not Vout ÷ Vin (hunt 7, 2026-10-03): the divider's
+          // attenuation does not depend on the input, but 0 V in made it 0 ÷ 0 —
+          // "ATTENUATION —" beside a real ratio. Identical for any other Vin.
+          { label: 'ATTENUATION', value: 20 * log10(r2 / (r1 + r2)), quantity: 'db', chainable: false },
         ];
       },
       steps: (v) => {
@@ -649,7 +663,7 @@ const WS_ELECTRONICS: Workspace = {
         return [
           `The input voltage splits across R1 and R2 in proportion to their resistances; the output is R2’s share.`,
           `Vout = ${fmt(vin)} × ${fmt(r2)} ÷ (${fmt(r1)} + ${fmt(r2)}) = ${fmt(vin)} × ${fmt(r2 / (r1 + r2))} = ${fmt(vout)} V.`,
-          `That is ${fmt(20 * log10(vout / vin))} dB of attenuation — this circuit is every passive pad and volume pot.`,
+          `That is ${fmt(20 * log10(r2 / (r1 + r2)))} dB of attenuation — this circuit is every passive pad and volume pot.`,
         ];
       },
     },

@@ -7,7 +7,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AmpModuleId } from './ampContent';
 import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
-import { armSaveFailureReport } from '../storage/saveFailureNotice';
+import { armSaveFailureReport, reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:amp:v1';
 
@@ -113,6 +113,13 @@ export function updateAmpProgress(mutate: (s: AmpProgressState) => void): Promis
     const s = await loadAmpProgress();
     mutate(s);
     await saveAmpProgress(s);
+    // A change dropped because the READ failed is SAID (hunt 7, 2026-10-03;
+    // hunt 6's drum/mastering rule): saveAmpProgress never writes an
+    // unreadable read's copy, so a check, a module's MARK COMPLETE or the
+    // final tapped then was neither written nor queued while the screen
+    // showed it banked — gone next visit, without a word. A pure re-read
+    // (the home's focus read, FINISH) changes nothing and says nothing.
+    if (!saveBlocked && unreadable.has(s) && JSON.stringify(s) !== JSON.stringify({ modules: {} })) reportUnhandledSaveFailure();
     // Blocked (a guest): the same change lands on the session copy the
     // ledger holds for the sign-in hand-off.
     if (blocked) holdSessionWork<AmpProgressState>(CARRY_KEY, (prev) => {

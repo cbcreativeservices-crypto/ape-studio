@@ -825,6 +825,22 @@ export async function getExposureHistory(strict = false): Promise<DayRecord[]> {
 }
 
 /**
+ * The history LIST for the Exposure screen (hunt 7, 2026-10-03; D51 "a failed
+ * read is told, never shown as empty"). The screen used the non-strict read,
+ * whose failure fallback is today alone — so a history that could not be read
+ * showed as "No history yet." (or as today only) over every day still stored.
+ * `unreadable` lets the screen say so; `days` is today's in-memory record then,
+ * so today's sessions and source breakdown still show.
+ */
+export async function readExposureHistory(): Promise<{ days: DayRecord[]; unreadable: boolean }> {
+  try {
+    return { days: await getExposureHistory(true), unreadable: false };
+  } catch {
+    return { days: day ? [day] : [], unreadable: true };
+  }
+}
+
+/**
  * Resolves FALSE when the stored day could not be removed (toddler evening
  * 2026-10-02, pass 2). The failure was swallowed: today read 0 on screen
  * while the stored day stayed on disk and came back at the next launch. Now

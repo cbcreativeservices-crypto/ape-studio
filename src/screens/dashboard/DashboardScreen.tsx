@@ -94,7 +94,7 @@ import { useMethodCelebration } from '../../features/celebration/useMethodCelebr
 import { useCredentialCelebration } from '../../features/celebration/useCredentialCelebration';
 import { customListLocked as customListLockedFn, studyMethodLocked } from '../../features/commercial/studyGate';
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { LOCK_TITLE, lockReason, type LockedPanel, type MethodGates } from '../../features/study/lockReason';
@@ -944,7 +944,17 @@ export function DashboardScreen() {
       // queries; content — achievements/glossary — is anon-readable). Progress = the
       // device-local mirror merged below. Keyed on the real session, NOT entitlement,
       // since returning authed users also default to the mock 'anonymous' state.
-      const { data: sessData } = await safeSession(supabase.auth.getSession(), 'Dashboard');
+      // ⛔ A STALL IS NOT A GUEST (hunt 7, 2026-10-03 — the EntitlementProvider
+      // rule). safeSession answers a stalled (or unreachable-refresh) read as
+      // "no session", and this load then painted a MEMBER as a guest: zero
+      // progress, the red "progress isn't saved — create one" notice, cached —
+      // over their good dashboard on a silent refresh. Unknown identity is a
+      // failed load: the data on screen stays, a cold screen offers Retry.
+      const { result: { data: sessData }, timedOut: sessionUnknown } = await safeSessionResult(
+        supabase.auth.getSession(),
+        'Dashboard',
+      );
+      if (sessionUnknown) throw new Error('session_unreadable');
       // An anonymous device key is NOT an account, and this flag drives the
       // "your progress isn't saved" notice — the people holding one are exactly
       // the people who must still see it.

@@ -189,7 +189,17 @@ export function GlossaryTermPopup({
       }
       setRow(hit);
       setLoading(false);
-      if (probe !== 'deployed') return;
+      /**
+       * ⛔ 'absent' MAY ONLY HAVE BEEN A SLOW PROBE (hunt 7, 2026-10-03; the
+       * screen's twin of this was hunt 6). probeGateway answers 'absent' for a
+       * transient fault (a stall past 8 s, a dropped link) without caching it,
+       * and the row above came from the browse view — the 120-character teaser
+       * for anyone who is not a member. Returning here showed that teaser as
+       * the whole definition, with no note. Ask once more: a real 'absent' is
+       * cached and costs nothing; a gateway that is there fetches the text.
+       */
+      const live = probe === 'deployed' || (await probeGateway()) === 'deployed';
+      if (cancelled || !live) return;
       // The row above is a teaser for anyone who is not a member. Ask the
       // gateway for the real text; a refusal (out of lookups, or no device key)
       // simply leaves the teaser on screen with the caller's "OPEN THE

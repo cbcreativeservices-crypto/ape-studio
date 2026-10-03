@@ -352,7 +352,11 @@ const VDROP: Workspace = {
         return [
           `Allowable drop = ${fmt(n(v.pct))}% × ${fmt(n(v.vsrc))} V = ${fmt(vdMax)} V, so max resistance = ${fmt(Rmax)} Ω.`,
           `Required area = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(Rmax)} = ${fmt(A * 1e6)} mm².`,
-          name
+          // Never "about −1.3 AWG" (hunt 7, 2026-10-03 — the hunt-6 "-7 AWG"
+          // class, left in the steps): past 0 AWG there is no such number.
+          name && awg < 0
+            ? `That is thicker than 0 AWG — so on DROP ALONE, ${name} or thicker.`
+            : name
             ? `That is about ${fmt(awgReal)} AWG — so on DROP ALONE, ${name} or thicker (a LOWER gauge number).`
             : `That is thicker than 4/0 AWG, past the end of the AWG scale — so on DROP ALONE, a conductor of at least ${fmt(A * 1e6)} mm² (kcmil sizes).`,
           'Now check ampacity against the applicable code table for this circuit and its derating, and use whichever conductor is LARGER. Drop sizing alone can return a conductor that cannot legally or safely carry the current.',

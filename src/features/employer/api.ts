@@ -100,13 +100,19 @@ export async function fetchMyEmployerApplication(): Promise<EmployerState> {
  * `directory_me()`. The client cannot get the id space wrong because it is no
  * longer asked to.
  */
-export async function amIVerifiedEmployer(): Promise<boolean> {
+export async function amIVerifiedEmployer(): Promise<boolean | null> {
+  // NULL = THE READ FAILED (hunt 7, 2026-10-03). It answered `false` for that
+  // too, and the Profile section turned "could not ask" into a fact: a verified
+  // employer whose check dropped, beside an application read that landed, was
+  // told "This application is no longer active." Never grants anything — only
+  // `true` opens the chips, and the RPCs are refused server-side regardless.
   try {
     if (!(await hasSafeSession(supabase.auth.getSession(), 'amIVerifiedEmployer'))) return false;
     const { data, error } = await supabase.rpc('am_i_verified_employer');
-    return !error && data === true;
+    if (error) return null;
+    return data === true;
   } catch {
-    return false;
+    return null;
   }
 }
 
