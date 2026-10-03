@@ -115,7 +115,7 @@ export function SettingsScreen({ navigation }: Props) {
   // the members-only upsell, replaced Log out with "Sign in / create account"
   // and hid DELETE ACCOUNT entirely — the one control a store reviewer looks
   // for. `resolved` still governs the first-paint neutral beat.
-  const { entitlement, refreshEntitlement, resolved, tierKnown } = useEntitlement();
+  const { entitlement, refreshEntitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   const [redeemOpen, setRedeemOpen] = useState(false);
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemBusy, setRedeemBusy] = useState(false);
@@ -634,7 +634,8 @@ ${LOCAL_LOSS}`
             // just `resolved`, which flips after a FAILED read too: a member
             // offline with no cached tier was told "members" and sold their own
             // membership below. A cached/known member shows their switches.
-            if (!tierKnown && !isMember) return '…';
+            // The check gave up (owner ruling 2026-10-03): say so, not '…'.
+            if (!tierKnown && !isMember) return tierReadFailed ? 'not confirmed' : '…';
             if (!isMember) return 'members';
             // Count NOTIFICATION STREAMS only (owner 2026-09-01): the master
             // "Phone notifications" and Email switches are TRANSPORTS — with
@@ -650,9 +651,15 @@ ${LOCAL_LOSS}`
             /* Pre-resolve: assert NEITHER direction. Showing the 🔒 upsell would
                sell a member their own membership; showing the live switches would
                flash member UI at a guest. A neutral line costs one beat and lies
-               to nobody (entitlement audit 2026-09-11). */
+               to nobody (entitlement audit 2026-09-11). Once the provider has
+               given up (owner ruling 2026-10-03) the line says so instead of
+               "checking" forever — still no upsell. */
             <View style={{ paddingVertical: 10 }}>
-              <Text style={styles.rowHint}>Checking your membership…</Text>
+              <Text style={styles.rowHint}>
+                {tierReadFailed
+                  ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                  : 'Checking your membership…'}
+              </Text>
             </View>
           ) : !isMember ? (
             /* Notifications are MEMBERS ONLY (owner 2026-09-01). Non-members
@@ -1031,13 +1038,15 @@ ${LOCAL_LOSS}`
             "GUEST — NO ACCOUNT" on every launch. */}
         <SettingsSection
           title="MEMBERSHIP"
-          summary={!tierKnown ? '…' : isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST' : 'FREE'}
+          summary={!tierKnown ? (tierReadFailed ? 'NOT CONFIRMED' : '…') : isMember ? 'ACADEMY' : entitlement === 'lapsed' ? 'LAPSED' : isGuest ? 'GUEST' : 'FREE'}
         >
           <View style={[styles.row, styles.rowBorder]}>
             <Text style={styles.rowLabel}>Status</Text>
             <Text style={[styles.mono, { color: isMember ? colors.green : colors.textSubAlt }]}>
               {!tierKnown
-                ? 'CHECKING…'
+                ? tierReadFailed
+                  ? 'NOT CONFIRMED' // the check gave up (owner ruling 2026-10-03)
+                  : 'CHECKING…'
                 : isMember
                   ? 'ACADEMY — ACTIVE'
                   : entitlement === 'lapsed'

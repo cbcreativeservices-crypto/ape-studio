@@ -219,6 +219,20 @@ type EntitlementContextValue = {
    * Anything that must not assert an identity should gate on THIS.
    */
   tierKnown: boolean;
+  /**
+   * THE READ GAVE UP (owner ruling 2026-10-03: "once it fails — it should know
+   * and stop checking. don't waste energy doing a useless loop").
+   *
+   * True once every bounded retry for the CURRENT identity has failed and no
+   * tier was produced. Cleared by the next read that does produce one
+   * (`markKnown`, or a successful `refreshEntitlement`) and by an identity
+   * change. Only meaningful while `tierKnown` is false: a screen that would
+   * show "CHECKING…" until `tierKnown` shows an honest end state instead
+   * ("NOT CONFIRMED") — never an upsell, never a 🔒 that tells a member they
+   * are free. Nothing polls: the provider re-reads only on a sign-in/out, a
+   * return to the app, a paid cycle's end, or a user-driven refresh.
+   */
+  tierReadFailed: boolean;
 };
 
 const EntitlementContext = createContext<EntitlementContextValue | null>(null);
@@ -245,6 +259,8 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
    *  gates on THIS, not on `resolved`. Internal to the provider on purpose —
    *  the UI wants `resolved` so it never hangs. */
   const [tierKnown, setTierKnown] = useState(false);
+  /** Every retry for this identity failed (see the context doc). */
+  const [tierReadFailed, setTierReadFailed] = useState(false);
   // Once the owner force-picks a tier via the dev toggle, stop auto-deriving
   // from the session for the rest of this app run (so the toggle isn't clobbered
   // by a token refresh while they inspect a tier).
@@ -399,7 +415,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     const deriveWithRetry = async (hasSession: boolean): Promise<void> => {
       const mine = ++generation;
       const markKnown = () => {
-        if (alive && generation === mine) setTierKnown(true);
+        if (alive && generation === mine) {
+          setTierKnown(true);
+          setTierReadFailed(false);
+        }
       };
       if (await deriveAndApply(hasSession, mine)) {
         markKnown();
@@ -417,6 +436,12 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
           }
         }
         console.warn('[entitlement] read still failing after retries; tier left unchanged');
+        // ⛔ STOP AND SAY SO (owner ruling 2026-10-03). The retries are spent
+        // for this generation; screens that were holding "CHECKING…" show
+        // their honest end state instead of waiting on a read that will not
+        // come. Only for the generation that gave up — a newer sign-in/out or
+        // re-read owns the state now.
+        if (alive && generation === mine && !devOverrode.current) setTierReadFailed(true);
       })();
     };
     // Wipe the device's local study-progress mirror whenever the signed-in user
@@ -570,6 +595,8 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         const identity = identityOf(session);
         if (uidSeeded.current && identity !== lastUid.current) {
           setTierKnown(false);
+          // A new person's read has not failed yet (owner ruling 2026-10-03).
+          setTierReadFailed(false);
           serverTierApplied.current = false;
           if (lastUid.current !== null && !devOverrode.current) setEntitlementState('anonymous');
         }
@@ -679,6 +706,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         // Settings read CHECKING… for the rest of the run and memberStanding
         // never armed their notifications.
         setTierKnown(true);
+        setTierReadFailed(false);
         // And remember it, exactly as the boot read does. Otherwise the cache
         // still holds the PRE-purchase tier ('free'), and the next offline cold
         // start showed a member who had just paid the non-member app.
@@ -753,6 +781,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       setEntitlement,
       refreshEntitlement,
       tierKnown,
+      tierReadFailed,
     }),
     // `tierKnown` MUST be here (2026-09-17). It was added to the value and not to
     // the deps, so `setTierKnown(true)` re-rendered but handed consumers the
@@ -760,7 +789,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // `entitlement` flips in the same batch — and NOT masked on the
     // getSession()-rejects path this file documents, where it stuck false for the
     // whole run and Settings showed CHECKING… forever.
-    [commercialMode, entitlement, resolved, tierKnown, setCommercialMode, setEntitlement, refreshEntitlement],
+    [commercialMode, entitlement, resolved, tierKnown, tierReadFailed, setCommercialMode, setEntitlement, refreshEntitlement],
   );
 
   return <EntitlementContext.Provider value={value}>{children}</EntitlementContext.Provider>;

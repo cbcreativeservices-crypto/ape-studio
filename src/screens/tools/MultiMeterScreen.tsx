@@ -1014,6 +1014,12 @@ export function MultiMeterScreen({ navigation }: Props) {
     // Tier still being checked (final round A, 2026-10-02): the button reads
     // CHECKING… and the sheet stays open with the draft — no lock, no loss.
     if (saveGate.checking) return;
+    // The check gave up (owner ruling 2026-10-03): say so, and keep the sheet
+    // and its draft — this is not a lock, and a reopen may confirm them.
+    if (saveGate.unconfirmed) {
+      saveGate.prompt();
+      return;
+    }
     if (saveGate.locked) {
       // Close the sheet FIRST (bug hunt 2026-09-29): the membership dialog is
       // its own Modal, and opened over this sheet's Modal it renders behind it

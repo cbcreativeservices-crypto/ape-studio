@@ -67,11 +67,13 @@ export function getHomeGs(): number[] {
 }
 
 /** Commit a new ordered list (deduped, capped). Used by the Home Setup sheet's
- *  Save action. */
-export function setHomeGs(gs: number[]): void {
+ *  Save action. Answers whether the device accepted BOTH writes (owner ruling
+ *  2026-10-03: "if it fails the user needs to know") — the sheet says so. */
+export function setHomeGs(gs: number[]): Promise<boolean> {
   const next = [...new Set(gs)].slice(0, HOME_MAX);
-  void listStore.set(next);
-  void defaultStore.mutate(clearDefaultIf((d) => !next.includes(d)));
+  const list = listStore.set(next);
+  const def = defaultStore.mutate(clearDefaultIf((d) => !next.includes(d)));
+  return Promise.all([list, def]).then(([a, b]) => a && b);
 }
 
 export function isOnHome(gs: number): boolean {
@@ -166,8 +168,8 @@ export function getDefaultHomeGs(): number | null {
 
 /** Set (or clear, with null) the default landing card. A gs that isn't a current
  *  Home topic is ignored (stored as null). */
-export function setDefaultHomeGs(gs: number | null): void {
-  void defaultStore.set(validDefault(gs, listStore.get()));
+export function setDefaultHomeGs(gs: number | null): Promise<boolean> {
+  return defaultStore.set(validDefault(gs, listStore.get()));
 }
 
 /** Live view of the default landing topic gs (null = none). */

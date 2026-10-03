@@ -48,7 +48,7 @@ const PLANS: Plan[] = [
 
 export function PaywallScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { refreshEntitlement, isMember, resolved, tierKnown, entitlement } = useEntitlement();
+  const { refreshEntitlement, isMember, resolved, tierKnown, tierReadFailed, entitlement } = useEntitlement();
   const [selected, setSelected] = useState<Plan['id']>('annual');
   const [busy, setBusy] = useState(false);
   // Whether in-app purchasing is usable in THIS build (native module present +
@@ -205,6 +205,15 @@ export function PaywallScreen({ navigation }: Props) {
     //    to buy and no way to Restore. SettingsScreen was converted to
     //    `tierKnown` for this exact bug; this screen was missed.
     if (!tierKnown) {
+      // The check gave up (owner ruling 2026-10-03): "give it a few seconds"
+      // would be untrue — nothing is checking any more.
+      if (tierReadFailed) {
+        notify(
+          'Membership not confirmed',
+          'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.',
+        );
+        return;
+      }
       notify(
         'One moment',
         'We’re still checking your membership on this device. Give it a few seconds and try again — if it keeps failing, your connection is the likeliest cause.',

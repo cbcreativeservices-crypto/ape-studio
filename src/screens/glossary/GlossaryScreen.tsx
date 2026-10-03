@@ -2618,7 +2618,20 @@ ${COPY.glossaryFreeAllowance}`,
       // key needs renewing) must not open the share sheet anyway (pass 2): it
       // opened ON TOP of the lock, offering the 120-character teaser as the
       // term's definition. openViaGateway answers false only for those two.
-      if (serverMetersRef.current && !detailsRef.current[e.id] && !(await openViaGatewayRef.current(e.id))) return;
+      if (serverMetersRef.current && !detailsRef.current[e.id]) {
+        if (!(await openViaGatewayRef.current(e.id))) return;
+        // ⛔ ONE LOOKUP PER SHARE (owner ruling 2026-10-03: sharing "counts as
+        // 1 use … not extra to share — just that they opened that term's
+        // definition"). The read above is that one use. When it FAILED it
+        // still answers true (a term open fails open to the legacy detail),
+        // and buildShareTerm would then read the gateway AGAIN — a second
+        // charge for one share whenever the first read timed out after the
+        // server had already counted it. A failed read is said, not retried.
+        if (!detailsRef.current[e.id] && !sessionDefinition(e.id, isMemberRef.current)) {
+          notifyShareUnreadable(shareDefinitionUnreadable(e.term, 'error'));
+          return;
+        }
+      }
       let primary: GlossaryShareTerm | null;
       try {
         primary = await buildShareTerm(e.id);

@@ -15,6 +15,7 @@ import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } fro
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { openMembershipGate } from '../../features/commercial/MembershipGate';
 import { tierOf } from '../../features/commercial/tier';
+import { notify } from '../../lib/confirm';
 import { colors, fonts } from '../../theme/tokens';
 
 export const MEMBERSHIP_REQUIRED = 'Academy membership required';
@@ -42,8 +43,14 @@ export function useToolsLocked(): boolean {
  *
  *  `label('SAVE LOG')` prefixes the lock when locked; `prompt()` opens the
  *  standard membership dialog; `locked` drives the greyed style. */
-export function useSaveGate(): { locked: boolean; checking: boolean; label: (base: string) => string; prompt: () => void } {
-  const { isMember, resolved, tierKnown, entitlement } = useEntitlement();
+export function useSaveGate(): {
+  locked: boolean;
+  checking: boolean;
+  unconfirmed: boolean;
+  label: (base: string) => string;
+  prompt: () => void;
+} {
+  const { isMember, resolved, tierKnown, tierReadFailed, entitlement } = useEntitlement();
   /**
    * SAVE WAITS FOR THE TIER (final round A, 2026-10-02). This was
    * useToolsLocked() — `resolved && !isMember` — which is UNLOCKED before the
@@ -59,16 +66,32 @@ export function useSaveGate(): { locked: boolean; checking: boolean; label: (bas
    */
   const tier = tierOf(entitlement, resolved);
   const known = tierKnown || tier === 'free' || tier === 'member';
-  const checking = !isMember && !known;
-  const locked = !isMember; // includes `checking`
+  /**
+   * THE CHECK GAVE UP (owner ruling 2026-10-03: "once it fails — it should
+   * know and stop checking"). The provider spent its retries without a tier,
+   * so this is no longer "CHECKING…" — that label would wait forever. SAVE
+   * reads plainly (no 🔒: that would tell a member they are free), still does
+   * not save (`locked`), and a tap says why.
+   */
+  const unconfirmed = !isMember && !known && tierReadFailed;
+  const checking = !isMember && !known && !tierReadFailed;
+  const locked = !isMember; // includes `checking` and `unconfirmed`
   return {
     locked,
     checking,
-    label: (base: string) => (checking ? 'CHECKING…' : locked ? `🔒 ${base}` : base),
+    unconfirmed,
+    label: (base: string) => (checking ? 'CHECKING…' : unconfirmed ? base : locked ? `🔒 ${base}` : base),
     // App-themed popup, not the native Alert (owner 2026-09-10) — one styled
     // MembershipGateHost at the App root serves every gate.
     prompt: () => {
       if (checking) return;
+      if (unconfirmed) {
+        notify(
+          'Membership not confirmed',
+          'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.',
+        );
+        return;
+      }
       openMembershipGate({
         body: 'Saved measurements live in your Academy library — membership keeps them, with their settings, calibration status and notes.',
       });

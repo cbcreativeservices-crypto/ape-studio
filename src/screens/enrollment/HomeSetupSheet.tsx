@@ -22,6 +22,7 @@ import { officialTopicName } from '../../data/officialTopicNames';
 import { Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { Modal } from '../../components/DimModal';
+import { notify } from '../../lib/confirm';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
 import { cardColumn } from '../../theme/readingColumn';
@@ -171,9 +172,18 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
     guard(() => {
       const cores = getHomeGs().filter((g) => COREQ_TOPIC_GS.includes(g)); // preserve reserved cores
       const editableOn = order.filter((g) => onSet.has(g)); // user's picks, in list order
-      setHomeGs([...cores, ...editableOn]);
-      setDefaultHomeGs(defaultDraft);
+      // ⛔ A REFUSED WRITE IS SAID (owner ruling 2026-10-03: "if it fails the
+      // user needs to know"). Both results used to be dropped: the sheet
+      // closed on SAVE and the new Home lasted only until the next launch.
+      // The sheet closes first, so the notice is not drawn under it.
+      const list = setHomeGs([...cores, ...editableOn]);
+      const def = setDefaultHomeGs(defaultDraft);
       onClose();
+      void Promise.all([list, def]).then(([a, b]) => {
+        if (!(a && b)) {
+          notify('Home not saved', 'Your Home cards couldn’t be saved on this phone, so they may go back to how they were the next time the app opens. Try SAVE again.');
+        }
+      });
     });
 
   // ── Long-press-hold-then-drag reorder (owner 2026-08-01) ──────────────────

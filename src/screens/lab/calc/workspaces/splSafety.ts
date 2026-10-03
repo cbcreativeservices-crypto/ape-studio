@@ -31,6 +31,36 @@ export function oshaDose(levels: readonly number[], mins: readonly number[], thr
   return dose;
 }
 
+/** OSHA's continuous-noise ceiling: no exposure above 115 dBA is permitted. */
+export const OSHA_CEILING_DBA = 115;
+/** Where OSHA's Table G-16a ends. */
+export const OSHA_TABLE_END_DBA = 130;
+/**
+ * HONEST ABOUT THE TABLE'S EDGES (owner ruling 2026-10-03: "yes, honesty is
+ * preferred"). Intervals above 130 dBA are still COUNTED — by extending the
+ * same 5 dB rule, which is what the formula does — but the result now says
+ * so, and says that OSHA permits no continuous exposure above 115 dBA at all.
+ * Only the paired intervals (the ones the dose counts) are looked at.
+ */
+export function oshaEdgeWarnings(levels: readonly number[], mins: readonly number[]): { label: string; text: string }[] {
+  const m = Math.min(levels.length, mins.length);
+  const paired = levels.slice(0, m);
+  const out: { label: string; text: string }[] = [];
+  if (paired.some((L) => L > OSHA_CEILING_DBA)) {
+    out.push({
+      label: 'ABOVE 115 dBA',
+      text: 'A level here is above 115 dBA. OSHA allows no continuous exposure above 115 dBA, for any length of time — the result below is the formula’s answer, not a permitted exposure.',
+    });
+  }
+  if (paired.some((L) => L > OSHA_TABLE_END_DBA)) {
+    out.push({
+      label: 'ABOVE 130 dBA',
+      text: 'OSHA’s Table G-16a stops at 130 dBA. Levels above 130 dBA are counted here by extending the same 5 dB rule — OSHA publishes no figure for them.',
+    });
+  }
+  return out;
+}
+
 const V_REF_DBU = 0.775; // 0 dBu reference voltage (600 Ω / 1 mW legacy)
 
 // ---------------------------------------------------------------------------
@@ -448,6 +478,8 @@ const WS_DOSE: Workspace = {
       compute: (v) => {
         const T = allowMin(n(v.lex), 90, 5);
         return [
+          // The same honesty as the dose (owner ruling 2026-10-03): one level.
+          ...oshaEdgeWarnings([n(v.lex)], [1]),
           { label: 'ALLOWABLE TIME (90 dBA / 5 dB / 8 h)', value: T * 60, quantity: 'time', unit: 'min' },
           {
             label: 'CRITERION',
@@ -560,6 +592,7 @@ const WS_DOSE: Workspace = {
                 },
               ]
             : []),
+          ...oshaEdgeWarnings(ls, ts),
           { label: 'PEL DOSE (≥ 90 dBA / 5 dB)', value: pel, quantity: 'percent', chainable: false },
           { label: 'ACTION-LEVEL DOSE (≥ 80 dBA / 5 dB)', value: action, quantity: 'percent', chainable: false },
           {

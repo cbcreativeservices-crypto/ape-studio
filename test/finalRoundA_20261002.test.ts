@@ -165,16 +165,17 @@ describe('7. tool SAVE waits for the tier', () => {
   const gate = s.slice(s.indexOf('export function useSaveGate()'), s.indexOf('export function useFullScreenGate()'));
   it('known = a read produced it, or a remembered server tier (free/member); checking otherwise', () => {
     assert.match(gate, /const tier = tierOf\(entitlement, resolved\);\s*const known = tierKnown \|\| tier === 'free' \|\| tier === 'member';/);
-    assert.match(gate, /const checking = !isMember && !known;/);
+    // Owner ruling 2026-10-03: once the provider gives up it is `unconfirmed`, not checking.
+    assert.match(gate, /const checking = !isMember && !known && !tierReadFailed;/);
     assert.match(gate, /const locked = !isMember;/);
     assert.doesNotMatch(gate, /const locked = useToolsLocked\(\);/,'not the resolved-only lock, which is OPEN before the read');
   });
   it('the label reads CHECKING… and the tap does nothing while checking', () => {
-    assert.match(gate, /label: \(base: string\) => \(checking \? 'CHECKING…' : locked \? `🔒 \$\{base\}` : base\)/);
+    assert.match(gate, /label: \(base: string\) => \(checking \? 'CHECKING…' : unconfirmed \? base : locked \? `🔒 \$\{base\}` : base\)/);
     assert.match(gate, /prompt: \(\) => \{\s*if \(checking\) return;/);
   });
   it('the Multimeter sheet keeps its draft while checking', () => {
     const mm = read('src/screens/tools/MultiMeterScreen.tsx');
-    assert.match(mm, /if \(saveGate\.checking\) return;\s*if \(saveGate\.locked\) \{\s*\/\/ Close the sheet FIRST/);
+    assert.match(mm, /if \(saveGate\.checking\) return;[\s\S]{0,260}?if \(saveGate\.unconfirmed\) \{\s*saveGate\.prompt\(\);\s*return;\s*\}\s*if \(saveGate\.locked\) \{\s*\/\/ Close the sheet FIRST/);
   });
 });

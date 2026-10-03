@@ -278,7 +278,7 @@ export function ProfileScreen() {
   // CM7 (Booth 2026-07-11): commercial variant — nickname · Album · trophies ·
   // completion records; HIDE the student-ID card (QR, AP&E ID) + MIC/PA/REC/MIX
   // certs. Institutional users keep Screen 10 exactly.
-  const { commercialMode, caps, entitlement, resolved, tierKnown } = useEntitlement();
+  const { commercialMode, caps, entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // Public / networking profile (device-local for now — backend frozen).
   const [pub, setPub] = useState<PublicProfile>(EMPTY_PUBLIC_PROFILE);
   // "Terms learned" — the self-assessed KNOWN list (client-side; no server metric
@@ -707,8 +707,12 @@ export function ProfileScreen() {
     // on 2026-09-17 because `resolved` flips even when the read FAILED; here
     // that still told an offline member "REFERENCE MODE" and sold them
     // UPGRADE TO ACADEMY.
+    // Once the provider has given up (owner ruling 2026-10-03) it is NOT
+    // CONFIRMED — honest, and still no upsell.
     const statusLabel = !tierKnown
-      ? 'CHECKING…'
+      ? tierReadFailed
+        ? 'NOT CONFIRMED'
+        : 'CHECKING…'
       : academy
         ? 'ACADEMY MEMBER'
         : entitlement === 'lapsed'

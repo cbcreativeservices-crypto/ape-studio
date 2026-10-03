@@ -48,7 +48,8 @@ test('cancelling recovery after a verified code signs that recovery session out'
 });
 
 test('Settings NOTIFICATIONS never upsells a member whose tier is not known yet', () => {
-  assert.match(settings, /if \(!tierKnown && !isMember\) return '…';\s*if \(!isMember\) return 'members';/);
+  // Owner ruling 2026-10-03: once the check gives up it reads 'not confirmed' — still never 'members'.
+  assert.match(settings, /if \(!tierKnown && !isMember\) return tierReadFailed \? 'not confirmed' : '…';\s*if \(!isMember\) return 'members';/);
   assert.match(settings, /\{!tierKnown && !isMember \? \(\s*\/\* Pre-resolve/);
   assert.doesNotMatch(settings, /if \(!resolved\) return '…';/);
 });
