@@ -287,6 +287,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 13:03 · ccode · 78f3638d
+changed: Hunt 6: 15 fixes + 1 correction (full-app toddler pass, 10 areas)
+affects other side: nothing — app-only (incl. two calculator accuracy fixes: port length, vdrop gauge beyond 4/0). No backend change. NOT published yet.
+needs: nothing.
+
+
 ### 2026-10-03 12:44 · ccode · 401bb4bf
 changed: Tidy after hunt 5: 9 failed-check wording/button items
 affects other side: nothing — app-only wording/buttons for a failed membership check. NOT published yet.
