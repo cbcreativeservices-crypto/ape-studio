@@ -287,6 +287,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 12:44 · ccode · 401bb4bf
+changed: Tidy after hunt 5: 9 failed-check wording/button items
+affects other side: nothing — app-only wording/buttons for a failed membership check. NOT published yet.
+needs: nothing.
+
+
 ### 2026-10-03 12:05 · ccode · 38dc0a4a
 changed: Hunt 5: 14 fixes + 4 corrections (full-app toddler pass, 10 areas)
 affects other side: nothing — app-only (tier gate gaps, glossary popup/charge wording, calc list races, P2 load tickets). No backend change. The glossary 24h migration request above still stands. NOT published.
