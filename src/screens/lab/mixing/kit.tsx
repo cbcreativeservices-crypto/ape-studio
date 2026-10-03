@@ -46,6 +46,7 @@ import { SESSION_TRACKS, type TrackId } from './engine/mixModel.ts';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createLocalStore } from '../../../features/storage/localStore';
+import { armSaveFailureReport } from '../../../features/storage/saveFailureNotice';
 
 const FOCAL_KEY = 'ape:mixing:focal';
 /** The ledger keys for the two commitments (features/lab/sessionCarry). */
@@ -139,7 +140,8 @@ export function useFocalChoice(): [string | null, (id: string) => void] {
     focalCurrent = id;
     focalSession = id;
     focalListeners.forEach((l) => l());
-    if (!guestRef.current) void AsyncStorage.setItem(FOCAL_KEY, id).catch(() => {});
+    // The learner's pick, refused by the device: told (owner 2026-10-03).
+    if (!guestRef.current) void AsyncStorage.setItem(FOCAL_KEY, id).catch(armSaveFailureReport());
     else holdSessionWork<string>(FOCAL_CARRY, () => id);
   }, []);
   // ...and nothing is RESTORED for a guest either (bug pass 3, 2026-09-30):
@@ -230,9 +232,11 @@ export function mergeMixPriorities(stored: readonly string[], session: readonly 
 // was a guest or unknown is written to the account the ledger names — after
 // its wipe, which emptied this module's memory, so the memory is refilled too.
 registerSessionCarry<string>(FOCAL_CARRY, async (id) => {
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.setItem(FOCAL_KEY, id);
   } catch {
+    reportRefused(); // the guest's carried pick
     return false;
   }
   focalTouched = true;

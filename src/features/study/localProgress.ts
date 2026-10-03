@@ -10,6 +10,7 @@
  * only — gates (completion/time/accuracy) still read server truth.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 import type { ItemStates } from './api';
 import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 
@@ -76,7 +77,11 @@ export function saveLocalMethodStates(
       await AsyncStorage.setItem(k, JSON.stringify(stored ? mergeItemStates(stored, states) : states));
       return true;
     } catch {
-      return false; /* device write failure is non-fatal — the server mirror still applies */
+      // Non-fatal — the server mirror still applies for an account — but every
+      // caller drops this answer, and for a guest this copy is the only one:
+      // the learner is told (owner 2026-10-03), never across the wipe.
+      if (gen === wipeGeneration && clearsInFlight === 0) reportUnhandledSaveFailure();
+      return false;
     }
   });
   chains.set(k, run);

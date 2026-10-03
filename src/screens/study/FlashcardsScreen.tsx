@@ -29,6 +29,7 @@ import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { confirmDialog } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
 import { TopicWelcomeSheet } from '../../features/intro/TopicWelcomeSheet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -454,7 +455,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const persistHidden = useCallback(
     (next: Set<string>) => {
       if (hiddenReadFailed.current) return;
-      void AsyncStorage.setItem(hiddenKey(achievementId), JSON.stringify([...next])).catch(() => {});
+      // The learner's hide / unhide: a refusal is told (owner 2026-10-03).
+      const reportRefused = armSaveFailureReport();
+      void AsyncStorage.setItem(hiddenKey(achievementId), JSON.stringify([...next])).catch(() => reportRefused());
     },
     [achievementId],
   );
@@ -692,6 +695,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       setTutorial((cur) => (cur ? cur : { key, onDone }));
       if (key === 'flashcardsPower') t3Done.current = true;
       else t2Done.current = true;
+      // Silent on purpose: the app's tutorial seen-flag — a lost flag offers it once more.
       if (!devBypass('alwaysShowIntros')) void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1').catch(() => {});
     },
     [],
@@ -875,7 +879,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const updateSections = useCallback((next: Set<number>) => {
     const safe = next.size ? new Set(next) : new Set(ALL_LEVELS);
     setSections(safe);
-    void AsyncStorage.setItem(SECTIONS_KEY, JSON.stringify([...safe])).catch(() => {});
+    const reportRefused = armSaveFailureReport(); // the learner's switch: a refusal is told
+    void AsyncStorage.setItem(SECTIONS_KEY, JSON.stringify([...safe])).catch(() => reportRefused());
     setLevel((cur) => (cur !== 0 && !safe.has(cur) ? ALL_LEVELS.filter((l) => safe.has(l))[0] : cur));
   }, []);
 
@@ -893,7 +898,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const toggleShowMedia = useCallback(() => {
     setShowMedia((cur) => {
       const next = !cur;
-      void AsyncStorage.setItem(SHOW_MEDIA_KEY, next ? '1' : '0').catch(() => {});
+      const reportRefused = armSaveFailureReport(); // the learner's switch: a refusal is told
+      void AsyncStorage.setItem(SHOW_MEDIA_KEY, next ? '1' : '0').catch(() => reportRefused());
       return next;
     });
   }, []);
@@ -903,7 +909,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const toggleLinks = useCallback(() => {
     setShowLinks((cur) => {
       const next = !cur;
-      void AsyncStorage.setItem(SHOW_LINKS_KEY, next ? '1' : '0').catch(() => {});
+      const reportRefused = armSaveFailureReport(); // the learner's switch: a refusal is told
+      void AsyncStorage.setItem(SHOW_LINKS_KEY, next ? '1' : '0').catch(() => reportRefused());
       return next;
     });
   }, []);
@@ -1306,6 +1313,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       setShowFsGuide(true);
       if (!alwaysIntro) {
         fsGuideCount.current += 1;
+        // Silent on purpose: the app's full-screen guide counter — a lost count shows the guide once more.
         if (!fsGuideReadFailed.current) {
           void AsyncStorage.setItem('ape:fcFsGuide', String(fsGuideCount.current)).catch(() => {});
         }

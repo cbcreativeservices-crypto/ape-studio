@@ -118,7 +118,7 @@ describe('career finder', () => {
 
   test('C10: the feedback note is saved on the way out', () => {
     const src = code('src/screens/careerfinder/CareerFinderResultsScreen.tsx');
-    assert.match(src, /const fb = getCareerFinder\(\)\.feedback;\s*if \(fb && fb\.note !== noteRef\.current\) setCareerFinderFeedback\(fb\.answer, noteRef\.current\)/);
+    assert.match(src, /const fb = getCareerFinder\(\)\.feedback;\s*if \(fb && fb\.note !== noteRef\.current\) setCareerFinderFeedback\(fb\.answer, noteRef\.current(, true)?\)/);
   });
 });
 

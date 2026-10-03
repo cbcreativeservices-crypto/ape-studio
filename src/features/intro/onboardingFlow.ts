@@ -87,6 +87,7 @@ function hydrate(): Promise<void> {
       const merged = [...new Set([...stored, ...visited])];
       visited = merged;
       if (merged.length !== stored.length) {
+        // Silent on purpose: the app's first-run sampler marks — a lost mark re-offers a sample.
         void AsyncStorage.setItem(VISITED_KEY, JSON.stringify(merged)).catch(() => {});
       }
       hydrated = true;
@@ -114,6 +115,7 @@ export function isOnboardingComplete(): boolean {
 export function setOnboardingComplete(): void {
   if (complete) return;
   complete = true;
+  // Silent on purpose: the app's first-run sampler flag — a lost flag offers the sampler again.
   void AsyncStorage.setItem(COMPLETE_KEY, '1').catch(() => {});
   emit();
 }
@@ -135,6 +137,7 @@ export function markChoiceVisited(choice: OnboardingChoice): void {
     void hydrate();
     return;
   }
+  // Silent on purpose: the app's first-run sampler marks — a lost mark re-offers a sample.
   void AsyncStorage.setItem(VISITED_KEY, JSON.stringify(visited)).catch(() => {});
   emit();
 }

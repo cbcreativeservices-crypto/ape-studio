@@ -57,6 +57,7 @@
  * final — it lasts the visit, and the screen offers the ask again.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
@@ -82,10 +83,12 @@ export async function readConsent(): Promise<ConsentRecord> {
 
 export async function writeConsent(at = Date.now()): Promise<ConsentRecord> {
   const rec: ConsentRecord = { granted: true, at };
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.setItem(CONSENT_KEY, JSON.stringify(rec));
   } catch {
-    /* best-effort — a failed write just means we ask again next launch */
+    // We ask again next launch — and the user is told why (owner 2026-10-03).
+    reportRefused();
   }
   return rec;
 }

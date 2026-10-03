@@ -27,6 +27,7 @@
  */
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../../storage/saveFailureNotice';
 import * as Crypto from 'expo-crypto';
 import Constants from 'expo-constants';
 import { createLocalStore } from '../../storage/localStore';
@@ -215,11 +216,19 @@ export async function crowdsourceDeclined(): Promise<boolean> {
 /** Set the opt-in flag. Revoking (false) also clears any queued contributions —
  *  nothing already collected should survive a withdrawal of consent. */
 export async function setCrowdsourceConsent(on: boolean): Promise<void> {
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.setItem(CONSENT_KEY, on ? '1' : '0');
+  } catch {
+    // Never thrown from a consent write — but the user's answer not being
+    // kept is told (owner 2026-10-03).
+    reportRefused();
+    return;
+  }
+  try {
     if (!on) await clearContributionQueue();
   } catch {
-    /* best-effort — never throw from a consent write */
+    /* best-effort */
   }
 }
 

@@ -103,6 +103,7 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
       // Dev bypass: never advance the retire counter (real counts stay clean).
       if (!devBypass('alwaysShowIntros')) {
         // count this open
+        // Silent on purpose: the app's coach-mark retire counter — a lost count shows the hint once more.
         void AsyncStorage.setItem(storageKey, String(opens.current + 1)).catch(() => {});
       }
     }
@@ -125,6 +126,7 @@ export function useCoachMark(storageKey: string, dismissAfter: number) {
     qualified.current = true;
     setVisible(false);
     if (devBypass('alwaysShowIntros')) return; // dev: never dirty the real counter
+    // Silent on purpose: the app's coach-mark retire counter — a lost count shows the hint once more.
     void AsyncStorage.setItem(storageKey, String(MAX_OPENS)).catch(() => {});
   }, [storageKey]);
 

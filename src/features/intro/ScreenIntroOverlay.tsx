@@ -95,6 +95,7 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
     // Dev bypass never persists; sessionOnly is tracked in memory only (above),
     // so it also never persists — either way it returns on the next app launch.
     if (!devBypass('alwaysShowIntros') && !sessionOnly) {
+      // Silent on purpose: the app's seen-flag — a lost flag shows the intro once more.
       void AsyncStorage.setItem(INTRO_STORAGE_PREFIX + key, '1').catch(() => {});
     }
   }, [key, sessionOnly]);

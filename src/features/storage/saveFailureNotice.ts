@@ -29,6 +29,8 @@
  * the real dialog (notify → AppDialog) once, at module scope.
  */
 
+import { localStoreWipeCount } from './localStoreRegistry';
+
 export const SAVE_FAILURE_TITLE = "Some changes couldn't be saved";
 export const SAVE_FAILURE_BODY =
   "This phone couldn't save your latest changes, so they may be gone the next time the app opens. Free up some storage space, then try again.";
@@ -78,6 +80,28 @@ export function reportUnhandledSaveFailure(): boolean {
   if (pending) return false;
   present();
   return true;
+}
+
+/**
+ * For a HAND-ROLLED device write (one not on createLocalStore) that is the
+ * user's own change: call this BEFORE the write and call the answer in the
+ * write's failure path —
+ *
+ *   const reportRefused = armSaveFailureReport();
+ *   void write(KEY, v).catch(() => reportRefused());
+ *
+ * or, armed at the moment of the write, `.catch(armSaveFailureReport())`.
+ *
+ * It raises the shared notice unless the account wipe ran meanwhile (the
+ * write was the departing account's; never reported). A store with its own
+ * wipe generation may compare that instead and call
+ * reportUnhandledSaveFailure() directly.
+ */
+export function armSaveFailureReport(): () => void {
+  const at = localStoreWipeCount();
+  return () => {
+    if (localStoreWipeCount() === at) reportUnhandledSaveFailure();
+  };
 }
 
 /** Wired once by App (notify). A failure that came first is shown now. */

@@ -17,6 +17,7 @@
  * big-picture toggle — see docs/APE_ENGINEERING_LESSONS.md (2026-09-22).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 export const AUTO_OFFLINE_KEY = 'ape:glossary:autoOffline';
 
@@ -33,9 +34,12 @@ export async function autoOfflineEnabled(): Promise<boolean> {
 }
 
 export async function setAutoOffline(on: boolean): Promise<void> {
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.setItem(AUTO_OFFLINE_KEY, on ? '1' : '0');
   } catch {
-    // Non-fatal — the switch still reflects the choice for this session.
+    // Non-fatal — the switch still reflects the choice for this session — but
+    // the member is told it will not be remembered (owner 2026-10-03).
+    reportRefused();
   }
 }

@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 /** Curated palette shown in the picker (first is the app default teal). */
 export const WAVE_COLOR_SWATCHES = [
@@ -54,8 +55,9 @@ export function useToolColorPref(key: string): [string | null, (c: string | null
     (c: string | null) => {
       touched.current = true;
       setColor(c);
-      if (c) void AsyncStorage.setItem(key, c).catch(() => {});
-      else void AsyncStorage.removeItem(key).catch(() => {});
+      const reportRefused = armSaveFailureReport(); // the user's pick: a refusal is told
+      if (c) void AsyncStorage.setItem(key, c).catch(() => reportRefused());
+      else void AsyncStorage.removeItem(key).catch(() => reportRefused());
     },
     [key],
   );

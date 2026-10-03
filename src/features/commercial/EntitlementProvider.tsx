@@ -722,6 +722,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   const setCommercialMode = useCallback((on: boolean) => {
     if (!__DEV__) return;
     setCommercialModeState(on);
+    // Silent on purpose: a dev-only override (__DEV__).
     void AsyncStorage.setItem(DEV_COMMERCIAL_FLAG_KEY, on ? '1' : '0').catch(() => {});
   }, []);
 
@@ -756,6 +757,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     if (!__DEV__) return;
     devOverrode.current = true; // dev is now driving; don't let the session re-derive
     setEntitlementState(state);
+    // Silent on purpose: a dev-only override (__DEV__).
     void AsyncStorage.setItem(DEV_ENTITLEMENT_KEY, state).catch(() => {});
   }, []);
 

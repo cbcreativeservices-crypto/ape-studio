@@ -27,6 +27,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
 import { registerLocalStoreReset } from '../../../features/storage/localStoreRegistry';
+import { reportUnhandledSaveFailure } from '../../../features/storage/saveFailureNotice';
 import { DRUM_CHAPTERS, type DrumChapterId, type TuningNote } from './drumContent';
 
 const KEY = 'ape:drumtuning:v1';
@@ -141,14 +142,19 @@ export function drumResumePoint(s: DrumProgressState): { id: DrumChapterId; step
 }
 
 /** True when the copy reached the disk. A blocked store (guest / preview)
- *  and a failed write both answer false — never "saved". */
-async function save(s: DrumProgressState, force = false): Promise<boolean> {
+ *  and a failed write both answer false — never "saved". A refused write
+ *  raises the shared notice (owner 2026-10-03) unless `report` is false: the
+ *  tuning-note caller says "not saved" on screen itself. */
+async function save(s: DrumProgressState, force = false, report = true): Promise<boolean> {
   if (saveBlocked && !force) return false;
+  const gen = generation;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
     return true;
   } catch {
-    // Local convenience state — losing it never blocks learning.
+    // Losing it never blocks learning — but the learner is told, never for
+    // the departing account's write.
+    if (report && gen === generation) reportUnhandledSaveFailure();
     return false;
   }
 }
@@ -165,7 +171,7 @@ let generation = 0;
 registerLocalStoreReset(() => {
   generation++;
 });
-function runUpdate(mutate: (s: DrumProgressState) => void): Promise<{ state: DrumProgressState; saved: boolean; blocked: boolean }> {
+function runUpdate(mutate: (s: DrumProgressState) => void, report = true): Promise<{ state: DrumProgressState; saved: boolean; blocked: boolean }> {
   const gen = generation;
   const run = queue.then(async () => {
     const blocked = saveBlocked;
@@ -173,7 +179,7 @@ function runUpdate(mutate: (s: DrumProgressState) => void): Promise<{ state: Dru
     mutate(s);
     // Never write over a copy that could not be read (see readStore), and
     // never across the account wipe.
-    const saved = readOk && gen === generation ? await save(s) : false;
+    const saved = readOk && gen === generation ? await save(s, false, report) : false;
     // Blocked (a guest, or the tier not known yet): the same change lands on
     // the session copy the ledger holds for the sign-in hand-off.
     if (blocked) holdSessionWork<DrumProgressState>(CARRY_KEY, (prev) => {
@@ -214,9 +220,10 @@ export function withNote(notes: readonly TuningNote[], note: TuningNote): Tuning
  *  the write reached the disk (toddler pass 1: the screen said "Saved on this
  *  device" before — and whether or not — the write landed). */
 export function saveTuningNote(note: TuningNote): Promise<DrumProgressState & { saved: boolean; blocked: boolean }> {
+  // The screen says "not saved" itself — one message, never two.
   return runUpdate((st) => {
     st.notes = withNote(st.notes, note);
-  }).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
+  }, false).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
 }
 
 /** Delete a tuning note. `saved` is true only when the shorter list reached
@@ -225,7 +232,7 @@ export function saveTuningNote(note: TuningNote): Promise<DrumProgressState & { 
 export function deleteTuningNote(id: string): Promise<DrumProgressState & { saved: boolean; blocked: boolean }> {
   return runUpdate((s) => {
     s.notes = s.notes.filter((n) => n.id !== id);
-  }).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
+  }, false).then((r) => ({ ...r.state, saved: r.saved, blocked: r.blocked }));
 }
 
 const CARRY_KEY = 'drumtuning';

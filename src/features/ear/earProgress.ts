@@ -11,6 +11,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { EarModuleId } from './earTypes';
 import { holdSessionWork, registerSessionCarry, sessionCarryEpoch } from '../lab/sessionCarry';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:ear:v1';
 const WINDOW = 20;
@@ -127,10 +128,13 @@ export async function saveEarProgress(s: EarProgressState): Promise<void> {
     });
   }
   if (saveBlocked || blockedLoads.has(s)) return;
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
   } catch {
-    // Best-effort local stat — losing it never blocks training.
+    // Losing it never blocks training — but the learner is told it was not
+    // kept (owner 2026-10-03: "if it fails the user needs to know").
+    reportRefused();
   }
 }
 
@@ -164,6 +168,7 @@ export function mergeEarProgress(stored: EarProgressState | null, session: EarPr
 const writtenBySession = new Map<EarModuleId, number>();
 registerSessionCarry<EarProgressState>(CARRY_KEY, async (session) => {
   const epoch = sessionCarryEpoch();
+  const reportRefused = armSaveFailureReport();
   let raw: string | null;
   try {
     raw = await AsyncStorage.getItem(KEY);
@@ -187,6 +192,7 @@ registerSessionCarry<EarProgressState>(CARRY_KEY, async (session) => {
     await AsyncStorage.setItem(KEY, JSON.stringify(mergeEarProgress(stored, session, owned)));
     return true;
   } catch {
+    reportRefused(); // the guest's carried ladder was refused by the device
     return false;
   }
 });

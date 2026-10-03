@@ -24,6 +24,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { reportUnhandledSaveFailure } from '../../../../features/storage/saveFailureNotice';
 import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
 import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
@@ -691,7 +692,11 @@ function persistSolved(s: Set<string>): void {
       solvedCache = all; // a remount sees what is stored too
       return AsyncStorage.setItem(SOLVED_KEY, JSON.stringify([...all]));
     })
-    .catch(() => {});
+    .catch(() => {
+      // A solve the device refused is told to the learner (owner 2026-10-03),
+      // never the departing account's write.
+      if (gen === solvedGen) reportUnhandledSaveFailure();
+    });
 }
 /** Reset the in-memory solved set on account switch / guest entry (called by
  *  resetAllLocalStores — B-154). Without this the next person's SOLVED count

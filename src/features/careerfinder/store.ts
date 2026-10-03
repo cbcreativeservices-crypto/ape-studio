@@ -13,6 +13,7 @@
  */
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 import type { QuestionId, Response } from './questions';
 import { QUESTIONS, QUESTION_COUNT } from './questions';
 import { computeResult, type Responses } from './scoring';
@@ -107,14 +108,21 @@ let readFailed = false;
  *  3, 2026-10-02, class P6): the results screen said "Saved on this device"
  *  under the beta feedback whatever happened to the write. A record read
  *  while storage FAILED is never written over (see `readFailed`) — false. */
-function persist(next: FinderRecord): Promise<boolean> {
+function persist(next: FinderRecord, report = true): Promise<boolean> {
   state = next;
   wrote = true;
   emit();
+  const g = generation;
   if (readFailed) return Promise.resolve(false);
   return AsyncStorage.setItem(KEY, JSON.stringify(next)).then(
     () => true,
-    () => false,
+    () => {
+      // An answer, a ★, a reset the device refused: the learner is told
+      // (owner 2026-10-03), unless the caller says so itself (`report` false)
+      // or the account wipe ran meanwhile.
+      if (report && g === generation) reportUnhandledSaveFailure();
+      return false;
+    },
   );
 }
 
@@ -150,6 +158,7 @@ function parseOrSetAside(raw: string): unknown {
   try {
     return JSON.parse(raw);
   } catch {
+    // Silent on purpose: setting a damaged blob aside is the app's housekeeping.
     AsyncStorage.setItem(`${KEY}:damaged`, raw).catch(() => {});
     return null;
   }
@@ -280,9 +289,12 @@ export function toggleSavedFamily(id: string): void {
   });
 }
 
-/** Resolves true only when the feedback reached the device (see persist). */
-export function setCareerFinderFeedback(answer: FeedbackAnswer, note = ''): Promise<boolean> {
-  return act(() => persist({ ...state, feedback: { answer, note, at: new Date().toISOString() } }));
+/** Resolves true only when the feedback reached the device (see persist).
+ *  The Results form says "not saved" itself, so a refusal raises the shared
+ *  notice only when `report` (the save on the way out, with no form left to
+ *  say it). */
+export function setCareerFinderFeedback(answer: FeedbackAnswer, note = '', report = false): Promise<boolean> {
+  return act(() => persist({ ...state, feedback: { answer, note, at: new Date().toISOString() } }, report));
 }
 
 /** In-memory reset for an account switch (clearLocalAccountData registry). */

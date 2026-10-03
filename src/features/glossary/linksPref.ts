@@ -9,6 +9,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:glossary:showLinks';
 
@@ -37,7 +38,8 @@ export function useGlossaryLinksPref(): [boolean, (v: boolean) => void] {
   const set = useCallback((v: boolean) => {
     touchedRef.current = true;
     setOn(v);
-    void AsyncStorage.setItem(KEY, v ? '1' : '0').catch(() => {});
+    const reportRefused = armSaveFailureReport(); // the user's toggle: a refusal is told
+    void AsyncStorage.setItem(KEY, v ? '1' : '0').catch(() => reportRefused());
   }, []);
   return [on, set];
 }

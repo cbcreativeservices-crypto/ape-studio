@@ -24,6 +24,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
 import { registerLocalStoreReset } from '../../../features/storage/localStoreRegistry';
+import { reportUnhandledSaveFailure } from '../../../features/storage/saveFailureNotice';
 import type { MasteringModuleId } from './masteringContent';
 
 const KEY = 'ape:mastering:v1';
@@ -120,10 +121,13 @@ export async function loadMasteringProgress(force = false): Promise<MasteringPro
 async function save(s: MasteringProgressState): Promise<void> {
   if (saveBlocked || blockedRead.has(s)) return;
   if (unreadable.has(s)) return; // never write an unreadable read's empty copy back
+  const gen = generation;
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
   } catch {
-    // Local convenience state — losing it never blocks learning.
+    // Losing it never blocks learning — but the learner is told it was not
+    // kept (owner 2026-10-03), never for the departing account's write.
+    if (gen === generation) reportUnhandledSaveFailure();
   }
 }
 
@@ -242,6 +246,7 @@ registerSessionCarry<MasteringProgressState>(CARRY_KEY, (session) => {
       await AsyncStorage.setItem(KEY, JSON.stringify(mergeMasteringProgress(stored, session)));
       return true;
     } catch {
+      if (gen === generation) reportUnhandledSaveFailure(); // the guest's carried work
       return false;
     }
   });

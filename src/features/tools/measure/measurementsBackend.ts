@@ -46,6 +46,7 @@ async function readRaw(): Promise<MeasurementRow[]> {
     parsed = undefined;
   }
   if (!Array.isArray(parsed)) {
+    // Silent on purpose: setting a damaged blob aside is the app's housekeeping.
     await AsyncStorage.setItem(`${KEY}:damaged`, raw).catch(() => {});
     return [];
   }

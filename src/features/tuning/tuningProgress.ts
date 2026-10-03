@@ -10,6 +10,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { holdSessionWork, peekSessionWork, registerSessionCarry } from '../lab/sessionCarry';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:tuning:v1';
 
@@ -55,10 +56,14 @@ export async function loadTuningProgress(): Promise<TuningProgress> {
 
 export async function saveTuningProgress(p: TuningProgress): Promise<void> {
   if (storage.readFailed) return; // never write an unreadable read's empty copy back
+  const reportRefused = armSaveFailureReport();
   try {
     // What a guest session held is never dropped by a save from an older copy.
     await AsyncStorage.setItem(KEY, JSON.stringify(withHeldTuning(p, peekSessionWork<HeldTuning>(CARRY_KEY))));
-  } catch {}
+  } catch {
+    // A chapter the device refused is told to the learner (owner 2026-10-03).
+    reportRefused();
+  }
 }
 
 /** A guest's work this session (deltas only). */
@@ -99,6 +104,7 @@ export function setTuningChapterCount(n: number): void {
 }
 
 registerSessionCarry<HeldTuning>(CARRY_KEY, async (h) => {
+  const reportRefused = armSaveFailureReport();
   let raw: string | null;
   try {
     raw = await AsyncStorage.getItem(KEY);
@@ -118,12 +124,17 @@ registerSessionCarry<HeldTuning>(CARRY_KEY, async (h) => {
     await AsyncStorage.setItem(KEY, JSON.stringify(withHeldTuning(stored, h, true, chapterTotal)));
     return true;
   } catch {
+    reportRefused(); // the guest's carried chapters
     return false;
   }
 });
 
 export async function resetTuningProgress(): Promise<void> {
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.removeItem(KEY);
-  } catch {}
+  } catch {
+    // The learner's practice reset did not stick: told, not silent.
+    reportRefused();
+  }
 }

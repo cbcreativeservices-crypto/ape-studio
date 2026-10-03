@@ -44,6 +44,7 @@ function persist(): void {
   // Never before a read has answered: the record on disk was not seen, so
   // writing `state` would replace it (see the failed-read note in hydrate).
   if (!hydrated) return;
+  // Silent on purpose: the app's own attention cues — a lost mark only lets a cue breathe again.
   void AsyncStorage.setItem(KEY, JSON.stringify(state)).catch(() => {});
 }
 

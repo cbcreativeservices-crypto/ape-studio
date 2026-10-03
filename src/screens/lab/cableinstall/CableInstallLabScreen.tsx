@@ -20,6 +20,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../../../features/storage/saveFailureNotice';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlassButton } from '../../../components/GlassButton';
@@ -234,10 +235,12 @@ export function CableInstallLabScreen() {
     // stored scores, myths and run untouched.
     if (readRef.current !== 'ok') return;
     const run = repeatedRef.current ? [...runUnitsRef.current] : undefined;
+    // Progress the device refused is told to the learner (owner 2026-10-03).
+    const reportRefused = armSaveFailureReport();
     void AsyncStorage.multiSet([
       [STEP_KEY, String(nextStep)],
       [STATE_KEY, JSON.stringify({ dims: nextDims, myths: nextMyths, run } satisfies CiPersisted)],
-    ]).catch(() => {});
+    ]).catch(() => reportRefused());
   }, []);
 
   // `nextDims` lets a caller that has just reset the scores persist THOSE —

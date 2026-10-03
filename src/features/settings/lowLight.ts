@@ -10,6 +10,7 @@
  */
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:lowLight';
 const KEY_AT = 'ape:lowLightAt';
@@ -135,8 +136,14 @@ export function setLowLight(next: boolean): void {
   }
   on = next;
   touchedAt = next ? Date.now() : 0;
-  void AsyncStorage.setItem(KEY, next ? '1' : '0').catch(() => {});
-  void AsyncStorage.setItem(KEY_AT, String(touchedAt)).catch(() => {});
+  // The user's switch, refused by the device: told (owner 2026-10-03) — the
+  // notice is shared and shows once for the pair. Never across the wipe.
+  const gen = lowLightGen;
+  const reportRefused = () => {
+    if (gen === lowLightGen) reportUnhandledSaveFailure();
+  };
+  void AsyncStorage.setItem(KEY, next ? '1' : '0').catch(() => reportRefused());
+  void AsyncStorage.setItem(KEY_AT, String(touchedAt)).catch(() => reportRefused());
   emit();
   // Explicit activation (user turned it ON) → notify the on-enable popup. Async
   // hydration restores `on` directly (not via this function), so a persisted-on
@@ -153,6 +160,7 @@ export function touchLowLight(): void {
   const now = Date.now();
   if (now - touchedAt < 60_000) return;
   touchedAt = now;
+  // Silent on purpose: the app's own "last touched" clock, not the user's change.
   void AsyncStorage.setItem(KEY_AT, String(touchedAt)).catch(() => {});
 }
 

@@ -33,6 +33,10 @@ registerHooks({
         shortCircuit: true,
       };
     }
+    // The shared failed-save notice (2026-10-03): not what this test drives.
+    if (specifier === '../storage/saveFailureNotice' && /pagedProgress\.ts/.test(context.parentURL ?? '')) {
+      return { url: mod(`export function armSaveFailureReport() { return () => {}; }`), shortCircuit: true };
+    }
     return nextResolve(specifier, context);
   },
 });

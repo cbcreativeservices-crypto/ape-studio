@@ -16,6 +16,7 @@
  * interests, primary interest), never to the email.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 import {
   fetchMyRegistryListing,
   fetchMyRegistryName,
@@ -329,10 +330,14 @@ export async function savePublicProfile(p: PublicProfile, unread?: UnreadBaselin
     if (unread.stored) toStore = changedOnto(unread.stored, unread.shown, p);
   }
   if (toStore) {
+    const reportRefused = armSaveFailureReport();
     try {
       await AsyncStorage.setItem(KEY, JSON.stringify(toStore));
     } catch {
-      // keep going — the in-memory profile is still the UI's source of truth
+      // keep going — the in-memory profile is still the UI's source of truth —
+      // but the edit not being kept on the device is told (owner 2026-10-03;
+      // the shared notice is rate-limited, never one per keystroke).
+      reportRefused();
     }
   }
   // A LISTED profile's bio/interests are published content, so edits have to

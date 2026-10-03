@@ -1154,11 +1154,16 @@ ${LOCAL_LOSS}`
               // Also replays the amplitude color-language orientation (its key is
               // in the ape:intro:* family; the explicit call resets the LIVE flag
               // so the gate re-arms without a relaunch).
-              Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation(), resetOnboarding()]).then(() =>
-                notify(
-                  'Hints reset',
-                  'Onboarding hints and the welcome greeting will show again on next open.',
-                ),
+              Promise.all([resetCoachMarks(), resetScreenIntros(), resetAmplitudeOrientation(), resetOnboarding()]).then(
+                () =>
+                  notify(
+                    'Hints reset',
+                    'Onboarding hints and the welcome greeting will show again on next open.',
+                  ),
+                // A refused reset was an unhandled rejection and a tap that did
+                // nothing (owner 2026-10-03: "if it fails the user needs to
+                // know") — the Help screen's own words for the same action.
+                () => notify('Couldn’t reset hints', 'Something went wrong on this device. Try again.'),
               )
             }
           >
@@ -1168,11 +1173,14 @@ ${LOCAL_LOSS}`
           <Pressable accessibilityRole="button"
             style={styles.row}
             onPress={() =>
-              resetAskModes().then(() =>
-                notify(
-                  'Permission prompts reset',
-                  'The camera, location, and photo explainer popups will ask again next time — including if you had chosen “always allow.” This does not change what you’ve allowed in your device Settings.',
-                ),
+              resetAskModes().then(
+                () =>
+                  notify(
+                    'Permission prompts reset',
+                    'The camera, location, and photo explainer popups will ask again next time — including if you had chosen “always allow.” This does not change what you’ve allowed in your device Settings.',
+                  ),
+                // A choice the device would not let go of (owner 2026-10-03).
+                () => notify('Couldn’t reset permission prompts', 'Something went wrong on this device. Try again.'),
               )
             }
           >

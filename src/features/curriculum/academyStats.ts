@@ -69,6 +69,7 @@ export function useAcademyStats(): AcademyStats {
         const fresh = coerce(row as Record<string, unknown>);
         if (fresh) {
           setStats(fresh);
+          // Silent on purpose: an instant-paint cache of a server row, refetched every open.
           void AsyncStorage.setItem(CACHE_KEY, JSON.stringify(fresh)).catch(() => {});
         }
       } catch {

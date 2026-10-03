@@ -30,6 +30,7 @@ import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { Modal } from '../../components/DimModal';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
@@ -2128,6 +2129,7 @@ ${COPY.glossaryFreeAllowance}`,
     AsyncStorage.getItem(RETURN_TERM_KEY)
       .then((id) => {
         if (!alive || !id) return;
+        // Silent on purpose: removing a one-shot hand-off the app set itself.
         void AsyncStorage.removeItem(RETURN_TERM_KEY).catch(() => {});
         void openPopupRoot(id);
       })
@@ -3067,6 +3069,7 @@ ${COPY.glossaryFreeAllowance}`,
       onMembership={() => {
         if (lockHandoff) return; // a second tap during the hand-off
         if (lastViewedTermRef.current) {
+          // Silent on purpose: a one-shot return-to-term hand-off the app sets itself, not the user's change.
           void AsyncStorage.setItem(RETURN_TERM_KEY, lastViewedTermRef.current).catch(() => {});
         }
         // Close the lock FIRST and present the Paywall once its dismissal has
@@ -3161,7 +3164,9 @@ ${COPY.glossaryFreeAllowance}`,
           onPress={() => {
             const next = !ttsBeg;
             setTtsBeg(next);
-            void AsyncStorage.setItem(TTS_MODE_KEY, next ? '1' : '0').catch(() => {});
+            // The user's switch: a refusal is told (owner 2026-10-03).
+            const reportRefused = armSaveFailureReport();
+            void AsyncStorage.setItem(TTS_MODE_KEY, next ? '1' : '0').catch(() => reportRefused());
             // Swapping BEG/ADV changes the open definition's length, which used
             // to shove it off-screen (owner 2026-08-05). Re-anchor the focused
             // term to the top so the definition just swaps in place.
@@ -3442,6 +3447,7 @@ ${COPY.glossaryFreeAllowance}`,
                     <Pressable
                       onPress={() => {
                         if (lastViewedTermRef.current) {
+                          // Silent on purpose: a one-shot return-to-term hand-off the app sets itself, not the user's change.
                           void AsyncStorage.setItem(RETURN_TERM_KEY, lastViewedTermRef.current).catch(() => {});
                         }
                         (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');

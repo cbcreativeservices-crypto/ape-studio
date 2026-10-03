@@ -7,6 +7,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AmpModuleId } from './ampContent';
 import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:amp:v1';
 
@@ -87,10 +88,13 @@ export async function loadAmpProgress(): Promise<AmpProgressState> {
 export async function saveAmpProgress(s: AmpProgressState): Promise<void> {
   if (saveBlocked) return;
   if (unreadable.has(s)) return; // never write an unreadable read's empty copy back
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
   } catch {
-    // Local convenience state — losing it never blocks learning.
+    // Losing it never blocks learning — but the learner is told it was not
+    // kept (owner 2026-10-03: "if it fails the user needs to know").
+    reportRefused();
   }
 }
 
@@ -156,6 +160,7 @@ export function mergeAmpProgress(stored: AmpProgressState, session: AmpProgressS
 // copy whatever the screens' save flag says (it writes only for a real
 // account), and never over a copy that could not be read.
 registerSessionCarry<AmpProgressState>(CARRY_KEY, (session) => {
+  const reportRefused = armSaveFailureReport();
   const run = writeQueue.then(async () => {
     let raw: string | null;
     try {
@@ -176,6 +181,7 @@ registerSessionCarry<AmpProgressState>(CARRY_KEY, (session) => {
       await AsyncStorage.setItem(KEY, JSON.stringify(mergeAmpProgress(stored, session)));
       return true;
     } catch {
+      reportRefused(); // the guest's carried work was refused by the device
       return false;
     }
   });

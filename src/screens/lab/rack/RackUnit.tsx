@@ -23,6 +23,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../../../features/storage/saveFailureNotice';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -230,9 +231,10 @@ export function RackUnit({
     setStageCollapsed((prev) => {
       const next = !prev;
       stageCollapsedCache = next;
-      AsyncStorage.setItem(STAGE_COLLAPSED_KEY, next ? '1' : '0').catch(() => {
-        /* the in-memory cache already carries it for this session */
-      });
+      // The in-memory cache carries it for this session; a refusal is still
+      // told, so the learner knows it will not be remembered (owner 2026-10-03).
+      const reportRefused = armSaveFailureReport();
+      AsyncStorage.setItem(STAGE_COLLAPSED_KEY, next ? '1' : '0').catch(() => reportRefused());
       return next;
     });
   }, []);

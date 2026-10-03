@@ -228,8 +228,10 @@ describe('the live tools: SAVED ✓ only from a true saveMeasurement result', ()
 describe('Career Finder beta feedback: "Saved on this device" only when it was', () => {
   it('the store answers the write (false while the record could not be read, false for a refused write)', () => {
     const s = read('features/careerfinder/store.ts');
-    assert.match(s, /function persist\(next: FinderRecord\): Promise<boolean> \{[\s\S]*?if \(readFailed\) return Promise\.resolve\(false\);\s*return AsyncStorage\.setItem\(KEY, JSON\.stringify\(next\)\)\.then\(\s*\(\) => true,\s*\(\) => false,?\s*\);/);
-    assert.match(s, /export function setCareerFinderFeedback\(answer: FeedbackAnswer, note = ''\): Promise<boolean> \{\s*return act\(/);
+    // 2026-10-03: a refused write also raises the shared failed-save notice
+    // (unless the caller says it itself) — the answer is unchanged.
+    assert.match(s, /function persist\(next: FinderRecord, report = true\): Promise<boolean> \{[\s\S]*?if \(readFailed\) return Promise\.resolve\(false\);\s*return AsyncStorage\.setItem\(KEY, JSON\.stringify\(next\)\)\.then\(\s*\(\) => true,\s*\(\) => \{[\s\S]*?return false;\s*\},?\s*\);/);
+    assert.match(s, /export function setCareerFinderFeedback\(answer: FeedbackAnswer, note = '', report = false\): Promise<boolean> \{\s*return act\(/);
     assert.match(s, /function act\(fn: \(\) => Promise<boolean> \| void\): Promise<boolean>/);
   });
   it('the screen words the result', () => {

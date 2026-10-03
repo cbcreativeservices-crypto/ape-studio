@@ -30,6 +30,7 @@
  */
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 import { getLabPreview } from '../lab/labPreviewStore';
 import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
 import type { RoomDesign } from '../../screens/lab/roomdesign/roomModel';
@@ -212,6 +213,8 @@ registerSessionCarry<RoomDesign[]>(CARRY_KEY, async (designs) => {
     if (gen === generation) {
       list = prev;
       emit();
+      // The guest's carried designs: no screen is saving them (owner 2026-10-03).
+      reportUnhandledSaveFailure();
     }
     return false;
   }

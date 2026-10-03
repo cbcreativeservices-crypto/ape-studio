@@ -81,6 +81,7 @@ export function hasCompletedAmplitudeOrientation(): boolean {
 export function markAmplitudeOrientationComplete(): void {
   if (done) return;
   done = true;
+  // Silent on purpose: the app's first-use flag — a lost flag offers the orientation once more.
   void AsyncStorage.setItem(STORAGE_KEY, '1').catch(() => {});
   emit();
 }
@@ -92,6 +93,7 @@ export function resetAmplitudeOrientation(): void {
   readFailed = false;
   hydrated = true; // the replay IS the answer: not completed
   done = false;
+  // Silent on purpose: the replay already happens in memory now; the wipe calls this too.
   void AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
   emit();
 }

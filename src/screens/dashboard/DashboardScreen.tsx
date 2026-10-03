@@ -795,6 +795,7 @@ export function DashboardScreen() {
         return; // read failed — never write over a set we could not see
       }
       if (stored.includes(key)) return;
+      // Silent on purpose: the app's seen-flag set — a lost flag shows the intro once more.
       await AsyncStorage.setItem('ape:learnIntrosSeen', JSON.stringify([...stored, key])).catch(() => {});
     });
   }, []);

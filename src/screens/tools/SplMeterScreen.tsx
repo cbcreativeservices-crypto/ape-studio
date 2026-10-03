@@ -39,6 +39,7 @@ import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
  *  can never disagree about what "clipping" means (2026-09-05). */
 const isClipping = (db: number | null | undefined) => db != null && Number.isFinite(db) && db >= -0.1;
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -714,7 +715,9 @@ export function SplMeterScreen({ navigation }: Props) {
     setFsBright(p);
     const red = p <= FS_RED_AT ? true : p >= FS_RED_EXIT ? false : fsRedLatchedRef.current;
     setFsRedLatched(red);
-    void AsyncStorage.multiSet([[FS_BRIGHT_KEY, String(p)], [FS_RED_KEY, red ? '1' : '0']]).catch(() => {});
+    // The user's dimmer setting: a refusal is told (owner 2026-10-03).
+    const reportRefused = armSaveFailureReport();
+    void AsyncStorage.multiSet([[FS_BRIGHT_KEY, String(p)], [FS_RED_KEY, red ? '1' : '0']]).catch(() => reportRefused());
   }, []);
   // Auto-hide the slider after 13 s of no screen interaction (owner 2026-08-17).
   const dimmerHideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

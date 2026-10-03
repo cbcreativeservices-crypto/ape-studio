@@ -13,6 +13,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { reportUnhandledSaveFailure } from '../../../features/storage/saveFailureNotice';
 import type { Project, SavedRunSummary, Workflow, WorkflowRun } from './workflowModel';
 
 const KEYS = {
@@ -74,6 +75,7 @@ async function readList<T>(key: CollectionKey, validate: (x: unknown) => x is T)
     // Not after a wipe: these rows were read from the departing account.
     if (good.length !== parsed.length && gen === generation) {
       const bad = parsed.filter((x) => !validate(x));
+      // Silent on purpose: quarantining damaged rows is the app's housekeeping.
       void AsyncStorage.setItem(`${key}:damaged`, JSON.stringify(bad)).catch(() => {});
       void AsyncStorage.setItem(key, JSON.stringify(good)).catch(() => {});
     }
@@ -109,13 +111,17 @@ async function readIds(key: CollectionKey): Promise<string[] | null> {
   }
 }
 
-async function saveList<T>(key: CollectionKey, list: T[], gen: number): Promise<boolean> {
+/** `report`: the caller shows nothing for a refusal (a ▲▼ reorder or a ★
+ *  that just does not move), so the shared notice says it (owner 2026-10-03).
+ *  Default false: the save / delete callers surface "failed save" themselves. */
+async function saveList<T>(key: CollectionKey, list: T[], gen: number, report = false): Promise<boolean> {
   // Wiped since this write was asked for — nothing of that account is written.
   if (gen !== generation) return false;
   try {
     await AsyncStorage.setItem(key, JSON.stringify(list));
     return true;
   } catch {
+    if (report && gen === generation) reportUnhandledSaveFailure();
     return false; // caller surfaces "failed save" honestly
   }
 }
@@ -204,7 +210,7 @@ export const workflowStore = {
       const next = [...list];
       [next[i], next[j]] = [next[j], next[i]];
       // A failed write returns the stored order, not a swap that was never saved.
-      return (await saveList(KEYS.workflows, next, gen)) ? next : list;
+      return (await saveList(KEYS.workflows, next, gen, true)) ? next : list;
     });
   },
 
@@ -230,7 +236,7 @@ export const workflowStore = {
       const cur = await readIds(KEYS.favorites);
       if (cur === null) return null;
       const next = cur.includes(id) ? cur.filter((s) => s !== id) : [id, ...cur];
-      return (await saveList(KEYS.favorites, next, gen)) ? next : cur;
+      return (await saveList(KEYS.favorites, next, gen, true)) ? next : cur;
     });
   },
 

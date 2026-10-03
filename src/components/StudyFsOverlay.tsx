@@ -82,6 +82,7 @@ export function StudyFsOverlay({
     if (visible && !wasVisible.current && guideLoaded.current && guideCount.current < 2 && !suppressed) {
       setShowGuide(true);
       guideCount.current += 1;
+      // Silent on purpose: the app's own guide counter, not the user's change — a lost count shows the guide once more.
       void AsyncStorage.setItem(guideKey, String(guideCount.current)).catch(() => {});
     }
     if (!visible) setShowGuide(false);

@@ -24,6 +24,7 @@
  * which is the safe direction.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 const KEY = 'ape:profile:showBigPicture';
 
@@ -41,9 +42,12 @@ export async function loadShowBigPicture(): Promise<boolean> {
 }
 
 export async function saveShowBigPicture(on: boolean): Promise<void> {
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.setItem(KEY, on ? '1' : '0');
   } catch {
-    // Non-fatal: the toggle still works for this session.
+    // Non-fatal: the toggle still works for this session — but the learner
+    // is told it will not be remembered (owner 2026-10-03).
+    reportRefused();
   }
 }

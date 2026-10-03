@@ -26,6 +26,7 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLabPreview } from './labPreviewStore';
 import { holdSessionWork, registerSessionCarry } from './sessionCarry';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 const STORAGE_KEY = 'ape:labVisits';
 
@@ -58,7 +59,12 @@ function persist() {
     return;
   }
   unsaved = false;
-  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blobOf())).catch(() => {});
+  // A visit mark the device refused is told to the learner (owner
+  // 2026-10-03) — never the departing account's write.
+  const gen = visitsGen;
+  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blobOf())).catch(() => {
+    if (gen === visitsGen) reportUnhandledSaveFailure();
+  });
 }
 
 function hydrate(): Promise<void> {
@@ -131,6 +137,7 @@ export function withHeldVisit(prev: HeldVisits | undefined, labId: string, unitI
 // written (the sign-in wipe cleared this store's memory, so they are added
 // back, then persisted).
 registerSessionCarry<HeldVisits>(CARRY_KEY, async (held) => {
+  const gen = visitsGen;
   await hydrate();
   // What is on the device joins too (never written over a copy that could
   // not be read).
@@ -159,7 +166,10 @@ registerSessionCarry<HeldVisits>(CARRY_KEY, async (held) => {
   emit();
   return AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blobOf())).then(
     () => true,
-    () => false,
+    () => {
+      if (gen === visitsGen) reportUnhandledSaveFailure(); // the guest's carried visits
+      return false;
+    },
   );
 });
 

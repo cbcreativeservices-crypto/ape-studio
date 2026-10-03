@@ -19,6 +19,7 @@
  * change, see docs/audit/night_2026_09_13/mic_engine_rename.md).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 export type CapabilityKey = 'camera' | 'location' | 'photo' | 'mic';
 export type AskMode = 'ask' | 'always' | 'never';
@@ -46,10 +47,13 @@ export async function getAskMode(cap: CapabilityKey): Promise<AskMode> {
 
 export async function setAskMode(cap: CapabilityKey, mode: AskMode): Promise<void> {
   cache[cap] = mode;
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.setItem(KEY(cap), mode);
   } catch {
-    /* best-effort */
+    // The user's "always" / "never" holds for this session; a refusal is
+    // told, so they know it will not be remembered (owner 2026-10-03).
+    reportRefused();
   }
 }
 
@@ -67,14 +71,19 @@ export function resetAskModeCache(): void {
 }
 
 /** Settings "Reset permission prompts" — clears every remembered choice so the
- *  explainer shows again (the OS grant itself is untouched). */
+ *  explainer shows again (the OS grant itself is untouched). REJECTS when a
+ *  stored choice could not be removed (owner 2026-10-03: "if it fails the user
+ *  needs to know"): Settings said "reset" while a stored "never" came back on
+ *  the next launch. The rest are still cleared. */
 export async function resetAskModes(): Promise<void> {
+  let refused = false;
   for (const c of ['camera', 'location', 'photo', 'mic'] as CapabilityKey[]) {
     delete cache[c];
     try {
       await AsyncStorage.removeItem(KEY(c));
     } catch {
-      /* best-effort */
+      refused = true; // Settings says so (one message, its own)
     }
   }
+  if (refused) throw new Error('a remembered permission choice could not be removed');
 }

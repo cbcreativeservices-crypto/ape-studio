@@ -8,6 +8,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../../../features/storage/saveFailureNotice';
 
 export type CalcSection = 'why' | 'example' | 'mistakes';
 
@@ -55,7 +56,8 @@ export function useCalcSectionOpen(): {
     touchedRef.current.add(k);
     setOpen((o) => {
       const next = { ...o, [k]: !o[k] };
-      void AsyncStorage.setItem(KEYS[k], next[k] ? '1' : '0').catch(() => {});
+      const reportRefused = armSaveFailureReport(); // the user's tap: a refusal is told
+      void AsyncStorage.setItem(KEYS[k], next[k] ? '1' : '0').catch(() => reportRefused());
       return next;
     });
   }, []);

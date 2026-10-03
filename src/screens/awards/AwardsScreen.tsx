@@ -20,6 +20,7 @@ import { HelpKey } from '../../components/HelpKey';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewToken } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
@@ -657,6 +658,8 @@ export function AwardsScreen({ navigation, route }: Props) {
   // stored is a no-op, so the common case re-writes what is already there.
   useEffect(() => {
     if (!hasAccount) return;
+    // Silent on purpose: a RE-write, usually of the value already stored (it
+    // runs on every open); the pick's own write below tells a refusal.
     if (specCert) void AsyncStorage.setItem(SPEC_CERT_KEY, specCert).catch(() => {});
     if (programPath) void AsyncStorage.setItem(PROGRAM_PATH_KEY, programPath).catch(() => {});
   }, [hasAccount, specCert, programPath]);
@@ -665,12 +668,18 @@ export function AwardsScreen({ navigation, route }: Props) {
   // selection for its level (same persistence the inline cards had).
   const openCert = (c: (typeof specCertsAZ)[number]) => {
     setSpecCert(c.name);
-    if (hasAccount) void AsyncStorage.setItem(SPEC_CERT_KEY, c.name).catch(() => {});
+    if (hasAccount) {
+      const reportRefused = armSaveFailureReport();
+      void AsyncStorage.setItem(SPEC_CERT_KEY, c.name).catch(() => reportRefused());
+    }
     setDetail({ kind: 'certificate', id: c.id, slug: c.slug, name: c.name, topics: c.specializationTopics, electives: [] });
   };
   const openProg = (p: (typeof programPathsAZ)[number]) => {
     setProgramPath(p.name);
-    if (hasAccount) void AsyncStorage.setItem(PROGRAM_PATH_KEY, p.name).catch(() => {});
+    if (hasAccount) {
+      const reportRefused = armSaveFailureReport();
+      void AsyncStorage.setItem(PROGRAM_PATH_KEY, p.name).catch(() => reportRefused());
+    }
     setDetail({ kind: 'program', id: p.id, slug: p.slug, name: p.name, topics: p.requiredTopics, electives: p.electiveChooseOne });
   };
   // Swipe pager (2026-09-15): the open credential's neighbours in the A–Z list

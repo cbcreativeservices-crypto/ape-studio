@@ -43,6 +43,7 @@
  * purpose and needs to outlive the device.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 /**
  * Bump this WHENEVER THE WARNING'S MEANING CHANGES and every user is shown it
@@ -209,6 +210,9 @@ export async function recordSoundSafetyAck(input: {
   try {
     await AsyncStorage.setItem(KEY, JSON.stringify(record));
   } catch {
+    // The gate then closes with audio off and says nothing of why: the
+    // learner pressed ACCEPT, so the refusal is told (owner 2026-10-03).
+    if (gen === generation) reportUnhandledSaveFailure();
     return false;
   }
   if (gen !== generation) {

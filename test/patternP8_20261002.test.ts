@@ -106,7 +106,8 @@ describe('Mixing: a choice made before the tier is known is session-only and HEL
     assert.doesNotMatch(s, /useLabEndGuest\(\)/, 'no call to the two-state guest reading');
   });
   it('the focal point: written for a real account, otherwise held for the ledger', () => {
-    assert.match(s, /if \(!guestRef\.current\) void AsyncStorage\.setItem\(FOCAL_KEY, id\)\.catch\(\(\) => \{\}\);\s*else holdSessionWork<string>\(FOCAL_CARRY, \(\) => id\);/);
+    // 2026-10-03: a refusal now raises the shared failed-save notice.
+    assert.match(s, /if \(!guestRef\.current\) void AsyncStorage\.setItem\(FOCAL_KEY, id\)\.catch\(armSaveFailureReport\(\)\);\s*else holdSessionWork<string>\(FOCAL_CARRY, \(\) => id\);/);
   });
   it('the priorities: the session list is held as a whole session copy that started empty', () => {
     const toggle = s.slice(s.indexOf('const toggle = useCallback((id: string) => {'));

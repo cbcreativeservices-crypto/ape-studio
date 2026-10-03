@@ -119,6 +119,7 @@ export function TopicWelcomeSheet({ topicId, enabled = true }: { topicId: string
     const uid = uidRef.current;
     // Written ONLY here: a learner who never actually saw it (suppressed, or
     // the app died first) still gets it next time.
+    // Silent on purpose: the app's seen-flag — a lost flag shows the welcome once more.
     if (uid) void AsyncStorage.setItem(seenKey(uid, topicId), new Date().toISOString()).catch(() => {});
   }, [topicId]);
 

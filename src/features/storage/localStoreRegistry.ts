@@ -11,6 +11,14 @@
  */
 
 const resets = new Set<() => void>();
+/** How many account wipes have run this app session (the hand-rolled
+ *  writers' fence for the failed-save notice — saveFailureNotice.ts). */
+let wipes = 0;
+
+/** Bumped by every account wipe; capture before a write, compare after. */
+export function localStoreWipeCount(): number {
+  return wipes;
+}
 
 /** Called once per store, at creation. */
 export function registerLocalStoreReset(reset: () => void): void {
@@ -20,6 +28,7 @@ export function registerLocalStoreReset(reset: () => void): void {
 /** The account wipe: bump every registered store's generation and drop its
  *  memory. A reset that throws must not stop the others. */
 export function resetRegisteredLocalStores(): void {
+  wipes++;
   for (const reset of [...resets]) {
     try {
       reset();

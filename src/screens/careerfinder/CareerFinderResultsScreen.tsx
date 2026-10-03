@@ -51,7 +51,8 @@ export function CareerFinderResultsScreen() {
   useEffect(
     () => () => {
       const fb = getCareerFinder().feedback;
-      if (fb && fb.note !== noteRef.current) setCareerFinderFeedback(fb.answer, noteRef.current);
+      // Leaving: no form left to say "not saved", so the shared notice does.
+      if (fb && fb.note !== noteRef.current) setCareerFinderFeedback(fb.answer, noteRef.current, true);
     },
     [],
   );

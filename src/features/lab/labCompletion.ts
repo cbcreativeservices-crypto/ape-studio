@@ -28,6 +28,7 @@ import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from '../study/sync';
 import { getLabPreview } from './labPreviewStore';
 import { holdSessionWork, registerSessionCarry } from './sessionCarry';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 import { WAVE_MODULES } from '../../screens/lab/wave/modules/registry';
 import { DIGITAL_MODULES } from '../../screens/lab/digital/modules/registry';
 import { METER_MODULES } from '../../screens/lab/meter/modules/registry';
@@ -154,7 +155,12 @@ function persist() {
   const units: Record<string, string[]> = {};
   for (const [k, set] of Object.entries(cleared)) if (set.size) units[k] = [...set];
   const blob: PersistShape = { units, sent: [...sent], af: afComplete };
-  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blob)).catch(() => {});
+  // A unit the device refused is told to the learner (owner 2026-10-03: "if
+  // it fails the user needs to know") — never the departing account's write.
+  const gen = completionGen;
+  void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(blob)).catch(() => {
+    if (gen === completionGen) reportUnhandledSaveFailure();
+  });
 }
 
 function hydrate(): Promise<void> {

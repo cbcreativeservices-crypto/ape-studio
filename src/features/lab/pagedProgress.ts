@@ -12,6 +12,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { dropSessionWork, holdSessionWork, peekSessionWork, registerSessionCarry } from './sessionCarry';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 export type PagedProgress = { completed: number[]; lastPage: number; done: boolean };
 
@@ -60,6 +61,7 @@ export async function loadPagedProgress(labId: string): Promise<PagedProgress> {
 }
 
 export async function savePagedProgress(labId: string, p: PagedProgress): Promise<void> {
+  const reportRefused = armSaveFailureReport();
   if (unreadable.has(labId)) {
     // Read again first; still unreadable → write nothing. Read → what is
     // stored joins (pages are a union, `done` never clears).
@@ -79,7 +81,10 @@ export async function savePagedProgress(labId: string, p: PagedProgress): Promis
   }
   try {
     await AsyncStorage.setItem(key(labId), JSON.stringify(withHeldPages(p, heldPaged(labId))));
-  } catch {}
+  } catch {
+    // A page the device refused is told to the learner (owner 2026-10-03).
+    reportRefused();
+  }
 }
 
 /** A guest's work in one paged lab this session (deltas only). */
@@ -104,6 +109,7 @@ export function holdPagedProgress(labId: string, d: { done?: number; lastPage?: 
   if (!registered.has(labId)) {
     registered.add(labId);
     registerSessionCarry<HeldPaged>(carryKey(labId), async (h) => {
+      const reportRefused = armSaveFailureReport();
       let raw: string | null;
       try {
         raw = await AsyncStorage.getItem(key(labId));
@@ -114,6 +120,7 @@ export function holdPagedProgress(labId: string, d: { done?: number; lastPage?: 
         await AsyncStorage.setItem(key(labId), JSON.stringify(withHeldPages(parsePaged(raw), h, true)));
         return true;
       } catch {
+        reportRefused(); // the guest's carried pages
         return false;
       }
     });
@@ -151,7 +158,11 @@ export function forgetHeldPaged(labId: string): void {
 
 export async function resetPagedProgress(labId: string): Promise<void> {
   forgetHeldPaged(labId);
+  const reportRefused = armSaveFailureReport();
   try {
     await AsyncStorage.removeItem(key(labId));
-  } catch {}
+  } catch {
+    // The learner's practice reset did not stick: told, not silent.
+    reportRefused();
+  }
 }
