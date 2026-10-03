@@ -42,7 +42,7 @@ import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { DetailPager } from '../../components/detailSwipe';
 import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { isFreeEnrollGs } from '../../features/enrollment/enrollmentStore';
 import { colors, fonts } from '../../theme/tokens';
 import { REQUIRES_LABEL, type Career } from '../../data/careerRequirement';
@@ -116,7 +116,6 @@ export function TopicDetailModal({
   // Card budget = 86% of the window, but never more than the scrim ACTUALLY on
   // screen (the modal's content area can be shorter than the window).
   // A ticked box must not claim more than the entitlement allows (S2).
-  const { entitlement, resolved } = useEntitlement();
   /**
    * ⛔ HOLD THE MEMBER-FAVOURING STATE UNTIL `resolved`. The provider boots at
    * 'anonymous', so gating on `entitlement` alone told a PAYING member that the
@@ -128,7 +127,10 @@ export function TopicDetailModal({
    * all hold. It is text only — no access is withheld either way — but telling a
    * member they have not paid is not a small thing. (overnight hunt 2026-09-23)
    */
-  const needsMembership = resolved && entitlement !== 'academy';
+  // …and `resolved` alone did NOT hold it: it also flips on a FAILED read, the
+  // very case named above (hunt 5, 2026-10-03). Only a KNOWN non-member
+  // (useMemberGate 'locked') is told the topic needs membership.
+  const needsMembership = useMemberGate() === 'locked';
   const [scrimH, setScrimH] = useState(0);
   const [footerH, setFooterH] = useState(FOOTER_SEED);
   const lastAckAt = useRef(0);

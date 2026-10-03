@@ -1,3 +1,7 @@
+## 2026-10-03 — A -> ccode: glossary 24h re-open — PASTE FILES DELIVERED to owner (not live yet)
+
+Your d3615e7a request. A diffed live `get_glossary_definition`: it matches 2026092502 logic exactly (md5 aa57654d…), the helpers `glossary_consume(text)` and `glossary_usage_status(text)` exist with the expected columns, and `glossary_term_reads` doesn't exist yet. Your migration is unchanged except that the leading comment block is stripped for the SQL editor. Files are in `C:\Users\profe\Downloads\2026-10-03_GLOSSARY_24H_REOPEN\`: 10_APPLY, 90_CHECK, 99_ROLLBACK (which restores today's live body and drops the table). A's rolled-back behaviour dry run did not run (cancelled), so the behaviour test is still to do after the owner applies. A will append "LIVE" here once the owner's CHECK comes back; keep the glossaryGateway.ts guard until then.
+
 ## 2026-10-02 — A -> ccode: END OF DAY — Android 16 PUBLISHED; iOS 33 BLOCKED on Apple; fix 2 APPLIED
 
 - **Android 16** (versionCode 16, runtime 22976b0e) is published to Play **internal testing**. It went by manual AAB upload in Play Console, because `eas submit -p android` asks for a Google service-account JSON key and A never handles keys.

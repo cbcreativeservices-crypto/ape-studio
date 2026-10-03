@@ -2157,7 +2157,12 @@ ${COPY.glossaryFreeAllowance}`,
     // entitlement read lands, so on a cold open a reader who left the lock for
     // the paywall and never bought had the key consumed and the term opened in
     // that window — past the lock, before the meter knew who they were.
-    if (!resolved || capped) return;
+    // …and not while the membership is still 'checking' / 'unconfirmed' (hunt
+    // 5, 2026-10-03): since `capped` became "a KNOWN non-member" it is false
+    // there too, so a reader whose standing no read had confirmed (a guest who
+    // left the lock and then signed in, mid-read) had the key consumed and the
+    // term opened — a lookup spent that they never tapped for.
+    if (!resolved || capped || memberGate === 'checking' || memberGate === 'unconfirmed') return;
     let alive = true;
     AsyncStorage.getItem(RETURN_TERM_KEY)
       .then((id) => {
@@ -2170,7 +2175,7 @@ ${COPY.glossaryFreeAllowance}`,
     return () => {
       alive = false;
     };
-  }, [resolved, capped, openPopupRoot]);
+  }, [resolved, capped, memberGate, openPopupRoot]);
 
   // Retry for the offline empty-state card. loadAllEntries() does NOT cache a
   // rejection, so re-running it after reconnecting genuinely re-fetches.

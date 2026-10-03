@@ -93,14 +93,33 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   // failed NEXT UP read left the slot on "Finding your next…" for good.
   const [nearestFailed, setNearestFailed] = useState(false);
 
+  // NEWEST LOAD WINS (hunt 5, 2026-10-03; pattern P2). This runs on every
+  // focus and on every Retry / "Tap to try again", and each read can take up
+  // to the client's deadline — so an OLDER load's late rejection landed after
+  // a newer one had succeeded and put the "Couldn't load" card over a wall
+  // that had just loaded (and an older answer could replace a newer one).
+  const loadTicket = useRef(0);
   const load = useCallback(() => {
+    const ticket = ++loadTicket.current;
+    const current = () => ticket === loadTicket.current;
     setFailed(false);
     setNearestFailed(false);
-    fetchEarnedCredentialsByType(kind).then(setRows).catch(() => setFailed(true));
-    fetchNearestCredential(kind).then(setNearest).catch(() => {
-      setFailed(true);
-      setNearestFailed(true);
-    });
+    fetchEarnedCredentialsByType(kind)
+      .then((r) => {
+        if (current()) setRows(r);
+      })
+      .catch(() => {
+        if (current()) setFailed(true);
+      });
+    fetchNearestCredential(kind)
+      .then((n) => {
+        if (current()) setNearest(n);
+      })
+      .catch(() => {
+        if (!current()) return;
+        setFailed(true);
+        setNearestFailed(true);
+      });
   }, [kind]);
 
   useFocusEffect(useCallback(() => load(), [load]));

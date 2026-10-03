@@ -125,6 +125,7 @@ import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { useTermsExempt } from '../../features/study/termsExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { cardColumn, popupCard } from '../../theme/readingColumn';
 
 // Rack density (owner 2026-08-11): ONE knob scales every rack slot's height
@@ -683,7 +684,16 @@ export function DashboardScreen() {
   const jogCoach = useCoachMark(COACH_KEYS.dashboardJog, 2);
   // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
   // from the seed) through this same screen; institutional path unchanged.
-  const { commercialMode, caps, entitlement, resolved, tierKnown } = useEntitlement();
+  const { commercialMode, caps, entitlement, resolved } = useEntitlement();
+  // The study gates' "tier is known" (hunt 5, 2026-10-03): the central rule,
+  // `memberGateOf` — a read that produced a tier, OR this account's remembered
+  // 'free'. `tierKnown` alone left a known free learner whose membership read
+  // failed (offline, provider gave up, cached tier 'free') with every members
+  // topic's study switches reading START and opening, no 🔒 MEMBERS TOPIC, no
+  // popup — while Flashcards itself (useMemberGate) still called them a
+  // non-member. 'checking' / 'unconfirmed' keep the member-favouring state.
+  const memberGate = useMemberGate();
+  const tierKnown = memberGate === 'open' || memberGate === 'locked';
   // Membership gate (user request 2026-08-12): a free user may LOAD a locked/paid
   // topic into the Dashboard, but studying it raises the Academy upgrade sheet.
   const [upgradeOpen, setUpgradeOpen] = useState(false);

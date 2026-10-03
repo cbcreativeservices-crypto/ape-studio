@@ -102,6 +102,14 @@ function GateHold({ onBack }: { onBack?: () => void }) {
  * on a failed read), and there is no spinner — nothing is checking any more.
  */
 function GateUnconfirmed({ onBack }: { onBack?: () => void }) {
+  // W16's rule, for the state that replaces the hold IN PLACE (shared hunt 5,
+  // 2026-10-03): `accessibilityLiveRegion` is Android-only, so on iOS a
+  // VoiceOver user who last heard "Still checking your membership" was never
+  // told the check had given up. Said once, when it does.
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    AccessibilityInfo.announceForAccessibility(MEMBERSHIP_NOT_CONFIRMED);
+  }, []);
   return (
     <View style={styles.hold}>
       <Text style={styles.holdText} accessibilityLiveRegion="polite">

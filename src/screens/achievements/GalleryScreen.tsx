@@ -61,11 +61,21 @@ export function GalleryScreen() {
     safeGoBack(navigation as any);
   }, [navigation]);
 
+  // NEWEST LOAD WINS (hunt 5, 2026-10-03; pattern P2). This runs on every
+  // focus (a tab switch away and back keeps this screen mounted) and on Retry;
+  // an OLDER load's late rejection landed after a newer one had loaded an
+  // empty gallery and swapped it for the error card, and an older answer
+  // could replace a newer one.
+  const loadTicket = useRef(0);
   const load = useCallback(() => {
+    const ticket = ++loadTicket.current;
     setLoadError(false);
     fetchGalleryV3()
-      .then(setEntries)
+      .then((e) => {
+        if (ticket === loadTicket.current) setEntries(e);
+      })
       .catch(() => {
+        if (ticket !== loadTicket.current) return;
         // KEEP WHAT IS ON SCREEN (bug pass 1, 2026-09-30). This runs on every
         // focus — including the way BACK from a trophy opened here — so one
         // offline refetch replaced a gallery of earned trophies with an error

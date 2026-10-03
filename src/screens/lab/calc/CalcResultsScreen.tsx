@@ -17,7 +17,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import type { SavedRunSummary } from './workflowModel';
-import { workflowStore } from './workflowStore';
+import { workflowListUnreadable, workflowStore } from './workflowStore';
 import * as shareImage from './shareImage';
 import { buildReportFromSummary, reportToText } from './calcReport';
 import { ReportCard } from './ReportCard';
@@ -96,7 +96,13 @@ export function CalcResultsScreen() {
       </View>
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
-        {results.length === 0 ? (
+        {workflowListUnreadable(results) ? (
+          // A failed READ is not an empty list (hunt 5, 2026-10-03): it said
+          // "Nothing saved yet" over every saved result. Writes refuse on it.
+          <Text style={styles.caption}>
+            Your saved results could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.
+          </Text>
+        ) : results.length === 0 ? (
           <Text style={styles.caption}>
             Nothing saved yet — finish a workflow run and tap SAVE RESULT on its summary.
           </Text>

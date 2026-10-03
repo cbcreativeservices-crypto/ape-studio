@@ -23,7 +23,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { useTier } from '../../../features/commercial/useTier';
 import type { Workflow } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
-import { workflowStore } from './workflowStore';
+import { workflowListUnreadable, workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -49,9 +49,12 @@ export function CalcWorkflowsScreen() {
   const [mine, setMine] = useState<Workflow[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [dropNote, setDropNote] = useState<string | null>(null);
+  // The stored list could not be READ (hunt 5, 2026-10-03): not "Nothing saved yet".
+  const [mineUnreadable, setMineUnreadable] = useState(false);
 
   const reload = useCallback(() => {
     void workflowStore.listWorkflows().then((list) => {
+      setMineUnreadable(workflowListUnreadable(list));
       // Repair pass (spec): unresolvable steps are dropped and DISCLOSED.
       let droppedTotal = 0;
       const repaired = list.map((w) => {
@@ -278,7 +281,9 @@ export function CalcWorkflowsScreen() {
         </Text>
         {mine.length === 0 ? (
           <Text style={styles.caption}>
-            {tierUnconfirmed
+            {mineUnreadable
+              ? 'Your saved workflows could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.'
+              : tierUnconfirmed
               ? tierReadFailed
                 ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
                 : 'Checking your account…'

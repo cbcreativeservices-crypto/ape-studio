@@ -36,6 +36,7 @@ import {
   COREQ_TOPIC_GS,
 } from '../awards/awardsData';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import {
   addTopics,
@@ -335,8 +336,13 @@ export function EnrollmentView({
   // — the pay sheet, for a membership they already hold. Unknown ⇒ read as
   // paid. `paidResolved` below is the STRICT value, kept for the one place
   // where guessing "member" would hand out access rather than withhold a lock.
-  const { isMember: paidResolved, resolved: entResolved } = useEntitlement();
-  const paid = !entResolved || paidResolved;
+  // KNOWN non-member only (hunt 5, 2026-10-03): `resolved` also flips on a
+  // FAILED membership read, so a member with no remembered tier saw every row
+  // locked, "· Free" marketing and the pay sheet on any write. Checking /
+  // unconfirmed read as paid here (a lock withheld, never access handed out:
+  // the strict `paidResolved` still guards the Dashboard bypass below).
+  const { isMember: paidResolved } = useEntitlement();
+  const paid = useMemberGate() !== 'locked';
 
   const enrolled = useEnrollment();
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired bundled v2 matrix.

@@ -73,7 +73,9 @@ describe('the four questions', () => {
   it('upsellAllowed: never to a member, never before the tier is known', () => {
     assert.deepEqual(all.filter((t) => upsellAllowed(t, true)), ['preview', 'guest', 'free']);
     // Final round A (2026-10-02): a read that never produced a tier allows none.
-    assert.deepEqual(all.filter((t) => upsellAllowed(t, false)), []);
+    // Hunt 5 (2026-10-03): except a REMEMBERED 'free' — the last tier the
+    // server confirmed for this account, the same `known` rule as memberGateOf.
+    assert.deepEqual(all.filter((t) => upsellAllowed(t, false)), ['free']);
   });
   it('every tier answers exactly one of persist / hold / drop', () => {
     for (const t of all) {

@@ -47,8 +47,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { Entitlement } from './EntitlementProvider';
+import { softDeadline } from '../../lib/boundedCall';
 
 const KEY = 'ape:ent:lastTier';
+/** A local storage read; anything near this is a stall, not a slow answer. */
+export const LAST_TIER_READ_MS = 3000;
 
 type Cached = { uid: string; tier: Entitlement; at: number };
 
@@ -74,7 +77,12 @@ export async function saveLastTier(uid: string | null, tier: Entitlement): Promi
 export async function loadLastTier(uid: string | null): Promise<Entitlement | null> {
   if (!uid) return null;
   try {
-    const raw = await AsyncStorage.getItem(KEY);
+    // ⛔ BOUNDED (hunt 5, 2026-10-03). The provider's boot chain awaits this
+    // BEFORE its `.finally()` flips `resolved` — the one setter — so a storage
+    // read that never settled left every tier 'unknown' for the whole run:
+    // members-only labs on GateHold, Home on its first-paint hold, even after
+    // INITIAL_SESSION had produced the tier. A stall reads as "no cache".
+    const raw = await softDeadline(() => AsyncStorage.getItem(KEY), null, 'lastTier read', LAST_TIER_READ_MS);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<Cached> | null;
     if (!parsed || parsed.uid !== uid) return null;

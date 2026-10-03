@@ -13,7 +13,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useToolsLocked } from './ToolLockUi';
+import { ToolGatePending } from './ToolLockUi';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { CONCEPT_MODULES, TOOL_LEARN } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { ToolAcademyLock } from './ToolAcademyLock';
@@ -30,7 +31,11 @@ export function ToolLearnScreen({ navigation, route }: Props) {
   // Gate on REAL standing, not caps (house rule, ToolLockUi header) — caps are
   // forced to academy by the dev bypass, so this destination used to unlock
   // while its entry points stayed locked. Aligned 2026-08-28.
-  const locked = useToolsLocked();
+  // CONTENT ONLY FOR 'open' (hunt 5, 2026-10-03): useToolsLocked is false
+  // while the tier is unknown, so a failed membership read opened the
+  // tutorial to a non-member. The 🔒 stays for a KNOWN non-member only.
+  const gate = useMemberGate();
+  const locked = gate === 'locked';
   const content = TOOL_LEARN[tool.key];
   const related = content
     ? CONCEPT_MODULES.filter((m) => content.relatedConcepts.includes(m.key))
@@ -54,6 +59,8 @@ export function ToolLearnScreen({ navigation, route }: Props) {
             what={`The ${tool.name} tutorial`}
             onUpgrade={() => navigation.navigate('Paywall')}
           />
+        ) : gate !== 'open' ? (
+          <ToolGatePending gate={gate} />
         ) : !content ? (
           // Honest authoring state — no placeholder teaching text.
           <View style={styles.authoringCard}>

@@ -155,7 +155,8 @@ describe('#1 · the client meters only a KNOWN non-member', () => {
   it('the term popup sells upgrade options only to a known non-member', () => {
     const p = read('src/features/glossary/GlossaryTermPopup.tsx');
     assert.match(p, /const memberGate = useMemberGate\(\);/);
-    assert.match(p, /setPartial\(meterKnownRef\.current \? 'limit-reached' : 'unconfirmed'\)/);
+    // Hunt 5 (2026-10-03): the gate itself is kept, so 'checking' gets its own words.
+    assert.match(p, /setPartial\(gate === 'locked' \? 'limit-reached' : gate === 'checking' \? 'checking' : 'unconfirmed'\)/);
     assert.match(p, /partial === 'unconfirmed'\s*\?\s*`[^`]*\$\{MEMBERSHIP_NOT_CONFIRMED\}`/);
   });
 

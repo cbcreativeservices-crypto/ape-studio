@@ -9,7 +9,7 @@
  * latter passes `from: 'profile'` so a back-to-Profile chevron shows (owner
  * 2026-08-07).
  */
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
@@ -75,11 +75,23 @@ export function AchievementsHomeScreen() {
   // with no error and no retry (launch audit 2026-09-09).
   const [error, setError] = useState(false);
 
+  // NEWEST LOAD WINS (hunt 5, 2026-10-03; pattern P2). This is a tab root: it
+  // stays mounted and reloads on every focus, and the hub fans out into
+  // several reads that can each take up to the client's deadline. An OLDER
+  // load landing after a newer one put the earlier counts back (a trophy
+  // earned in between disappeared until the next visit).
+  const loadTicket = useRef(0);
   const load = useCallback(() => {
+    const ticket = ++loadTicket.current;
     setError(false);
     fetchAchievementsHub()
-      .then(setHub)
-      .catch(() => setError(true)); // keep any hub already on screen; surface the error only when there's none
+      .then((h) => {
+        if (ticket === loadTicket.current) setHub(h);
+      })
+      .catch(() => {
+        // keep any hub already on screen; surface the error only when there's none
+        if (ticket === loadTicket.current) setError(true);
+      });
   }, []);
 
   useFocusEffect(useCallback(() => load(), [load]));

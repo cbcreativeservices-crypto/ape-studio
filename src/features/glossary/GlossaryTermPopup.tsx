@@ -103,16 +103,17 @@ export function GlossaryTermPopup({
    * definition that stopped mid-sentence, with no lock card, no "out of
    * lookups" and no upgrade path; the popup's only control is DONE.
    */
-  const [partial, setPartial] = useState<null | 'limit-reached' | 'unconfirmed' | 'unanswered' | 'other'>(null);
+  const [partial, setPartial] = useState<null | 'limit-reached' | 'unconfirmed' | 'checking' | 'unanswered' | 'other'>(null);
   /**
    * "You've used this week's free definitions" + upgrade options only to a
    * KNOWN non-member (owner 2026-10-03 #1). A learner whose membership read
-   * failed gets the honest not-confirmed words instead. A ref: the read below
-   * lands after the effect that started it.
+   * failed gets the honest not-confirmed words instead — and only once it has
+   * failed: while the retries still run it is "still being checked" (hunt 5).
+   * A ref: the read below lands after the effect that started it.
    */
   const memberGate = useMemberGate();
-  const meterKnownRef = useRef(memberGate === 'locked');
-  meterKnownRef.current = memberGate === 'locked';
+  const gateRef = useRef(memberGate);
+  gateRef.current = memberGate;
   /**
    * ⛔ A GUEST WITH NO DEVICE KEY IS NOT OFFLINE (bug hunt 2026-09-30).
    *
@@ -199,7 +200,17 @@ export function GlossaryTermPopup({
         // Say which kind of short it is. `sign-in-required` and `not-deployed`
         // both mean the caller's own fallback is in play, so they are not
         // labelled here — only a refusal that genuinely leaves a teaser up.
-        if (full.fault === 'limit-reached') setPartial(meterKnownRef.current ? 'limit-reached' : 'unconfirmed');
+        const gate = gateRef.current;
+        if (full.fault === 'limit-reached') {
+          setPartial(gate === 'locked' ? 'limit-reached' : gate === 'checking' ? 'checking' : 'unconfirmed');
+          return;
+        }
+        // ⛔ A MEMBER'S ROW IS NEVER A TEASER (hunt 5, 2026-10-03; same rule as
+        // the screen's SHARE, hunt 4): the browse view hands a member the whole
+        // definition, so a failed gateway read left nothing short — and the
+        // note told a paying member their full entry was "the opening" that
+        // "isn't fetched again… so you're never charged twice".
+        if (gate === 'open') return;
         // Its open was sent and never answered (owner 2026-10-03 #2): it is not
         // read again this session, so "try again" would be a promise that
         // either fails or charges twice.
@@ -275,6 +286,8 @@ export function GlossaryTermPopup({
                   ? 'This is the opening of the entry — you’ve used this week’s free definitions. Open the Glossary for the full text and your upgrade options.'
                   : partial === 'unconfirmed'
                   ? `This is the opening of the entry. ${MEMBERSHIP_NOT_CONFIRMED}`
+                  : partial === 'checking'
+                  ? 'This is the opening of the entry. Your account is still being checked — try this term again in a moment.'
                   : partial === 'unanswered'
                   ? 'This is the opening of the entry — the full definition didn’t arrive when this term was opened. So you’re never charged twice, it isn’t fetched again until you next open the app.'
                   : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Open the Glossary to try again.'}

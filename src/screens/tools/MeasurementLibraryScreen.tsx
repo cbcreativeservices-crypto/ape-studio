@@ -42,7 +42,8 @@ import { deleteMeasurement, measurementsUnreadable, useMeasurements } from '../.
 import { QUALITY_COLOR, QUALITY_LABEL } from '../../features/tools/measure/quality';
 import { WARNING_INFO, type SavedMeasurement } from '../../features/tools/measure/types';
 import { colors, fonts } from '../../theme/tokens';
-import { LockedButton, MembershipRequiredNote, useToolsLocked } from './ToolLockUi';
+import { LockedButton, MembershipRequiredNote, ToolGatePending } from './ToolLockUi';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { toolByKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
 import { AccuracyNote } from '../../components/AccuracyNote';
@@ -450,7 +451,11 @@ const Row = memo(function Row({
 
 export function MeasurementLibraryScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
-  const locked = useToolsLocked();
+  // RECORDS ONLY FOR 'open' (hunt 5, 2026-10-03): useToolsLocked is false
+  // while the tier is unknown, so a failed membership read opened the library
+  // (a lapsed member's old records, share and delete) — see ToolGatePending.
+  const gate = useMemberGate();
+  const locked = gate === 'locked';
   const toolKey = route.params?.toolKey;
   const all = useMeasurements(toolKey);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -599,6 +604,23 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
         <View style={{ padding: 16, gap: 12 }}>
           <MembershipRequiredNote what="open the saved measurement library" />
           <LockedButton label="SEE MEMBERSHIP" onPress={() => navigation.navigate('Paywall')} height={48} />
+        </View>
+      </View>
+    );
+  }
+  if (gate !== 'open') {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+        <View style={styles.header}>
+          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <View style={{ flexShrink: 1 }}>
+            <Text style={styles.title}>SAVED MEASUREMENTS</Text>
+          </View>
+        </View>
+        <View style={{ padding: 16, gap: 12 }}>
+          <ToolGatePending gate={gate} />
         </View>
       </View>
     );

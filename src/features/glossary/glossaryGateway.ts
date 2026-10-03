@@ -137,7 +137,14 @@ export type GatewayDefinition = {
   window_start?: string | null;
 };
 
-export type DefinitionResult = { state: 'ok'; row: GatewayDefinition } | { state: 'fault'; fault: GatewayFault };
+export type DefinitionResult =
+  | { state: 'ok'; row: GatewayDefinition }
+  /** `rolledBack`: the SERVER answered with a coded error (a SQLSTATE or a
+   *  PGRSTxxx — PGRST000/003 pool exhaustion, a JWT reject, a statement
+   *  timeout). PostgREST runs the RPC in one transaction, so glossary_consume's
+   *  increment was rolled back with it (or never ran): NOT a charge. A timeout
+   *  or a transport failure carries no code — that one may have been counted. */
+  | { state: 'fault'; fault: GatewayFault; rolledBack?: boolean };
 
 /** One metered definition. The SERVER counts it — the client must not also
  *  charge `glossary_consume()` for the same open, or a free week is seven. */
@@ -188,7 +195,7 @@ export async function fetchDefinitionViaGateway(id: string): Promise<DefinitionR
       DEFINITION_DEADLINE_MS,
     );
     const fault = classifyGatewayError(error);
-    if (fault) return { state: 'fault', fault };
+    if (fault) return fault === 'error' && error?.code ? { state: 'fault', fault, rolledBack: true } : { state: 'fault', fault };
     const row = (data as GatewayDefinition[] | null)?.[0];
     if (!row) return { state: 'fault', fault: 'error' };
     return { state: 'ok', row };
@@ -297,7 +304,10 @@ export function readDefinitionOnce(id: string, member?: boolean): Promise<Defini
       if (r.state === 'ok') {
         READ_OK.set(id, r.row);
         READ_UNANSWERED.delete(id);
-      } else if (r.fault === 'error') {
+      } else if (r.fault === 'error' && !r.rolledBack) {
+        // Only a read that may have been COUNTED (hunt 5, 2026-10-03): a coded
+        // server error rolled the charge back, so the reader's next open asks
+        // again instead of losing this term's definition for the session.
         READ_UNANSWERED.add(id);
       }
     }

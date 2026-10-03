@@ -13,7 +13,8 @@ import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TOOL_DEMOS } from '../../components/tooldemos';
-import { useToolsLocked } from './ToolLockUi';
+import { ToolGatePending } from './ToolLockUi';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { colors, fonts } from '../../theme/tokens';
 import { ToolAcademyLock } from './ToolAcademyLock';
 import { toolByKey } from './toolsData';
@@ -27,7 +28,9 @@ export function ToolDemoScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const tool = toolByKey(route.params.toolKey);
   // Gate on REAL standing, not caps (house rule, ToolLockUi header). Aligned 2026-08-28.
-  const locked = useToolsLocked();
+  // CONTENT ONLY FOR 'open' (hunt 5, 2026-10-03) — see ToolGatePending.
+  const gate = useMemberGate();
+  const locked = gate === 'locked';
   const Demo = TOOL_DEMOS[tool.key];
 
   return (
@@ -48,6 +51,8 @@ export function ToolDemoScreen({ navigation, route }: Props) {
             what={`The ${tool.name} demo`}
             onUpgrade={() => navigation.navigate('Paywall')}
           />
+        ) : gate !== 'open' ? (
+          <ToolGatePending gate={gate} />
         ) : (
           <>
             {/* Required integrity label (spec §5) — permanent, above any demo. */}

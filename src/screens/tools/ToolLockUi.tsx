@@ -14,7 +14,7 @@
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { openMembershipGate } from '../../features/commercial/MembershipGate';
-import { tierOf } from '../../features/commercial/tier';
+import { MEMBERSHIP_NOT_CONFIRMED, tierOf } from '../../features/commercial/tier';
 import { notify } from '../../lib/confirm';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -156,6 +156,25 @@ export function LockedButton({
   );
 }
 
+/** The members-only DESTINATIONS (LEARN, DEMO, concept modules, the Saved
+ *  Measurements library) while the gate is neither 'open' nor 'locked' (hunt 5,
+ *  2026-10-03). useToolsLocked above is LOCK-COPY only: it is false while the
+ *  tier is unknown, so the destinations that gated their CONTENT on it opened
+ *  the members-only training to anyone whose membership read failed — a free
+ *  account offline with no remembered tier read every tutorial. Nothing
+ *  unlocks on a failed read (tier sweep 2026-10-03): 'checking' is neutral
+ *  (blank, never a 🔒), 'unconfirmed' says so plainly — TubeCardScreen's
+ *  four states. Callers render the content only for gate === 'open'. */
+export function ToolGatePending({ gate }: { gate: 'checking' | 'unconfirmed' }) {
+  if (gate === 'checking') return null;
+  return (
+    <View style={styles.pendingCard}>
+      <Text style={styles.pendingEyebrow}>MEMBERSHIP NOT CONFIRMED</Text>
+      <Text style={styles.note}>{MEMBERSHIP_NOT_CONFIRMED}</Text>
+    </View>
+  );
+}
+
 /** One-line "🔒 Academy membership required…" caption under a locked control. */
 export function MembershipRequiredNote({ what, style }: { what?: string; style?: StyleProp<ViewStyle> }) {
   return (
@@ -184,4 +203,13 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     color: colors.textMuted,
   },
+  pendingCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#3a3a3a',
+    backgroundColor: '#141414',
+    padding: 16,
+    gap: 8,
+  },
+  pendingEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 2.2, color: colors.textSub },
 });

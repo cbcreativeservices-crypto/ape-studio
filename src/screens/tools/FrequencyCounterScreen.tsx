@@ -62,6 +62,9 @@ import type { RootStackParamList } from '../../navigation/types';
 import { levelColorForDb } from '../../features/tools/levelColor';
 import { readingText } from '../../theme/readingColumn';
 import { restingOrientation } from '../../navigation/navOrientation';
+import { notify } from '../../lib/confirm';
+import { useMemberGate } from '../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 import { safeGoBack } from '../../lib/safeGoBack'; // tablets rest free — owner 2026-09-29 (Android large-screen pass)
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FrequencyCounter'>;
@@ -1343,6 +1346,19 @@ export function FrequencyCounterScreen({ navigation }: Props) {
   // member — and a Saved-Measurements tap in that window dumped them on the
   // Paywall for the membership they already own.
   const isMember = !useToolsLocked();
+  // LIGHT PULSE OPENS ONLY FOR 'open' (hunt 5, 2026-10-03). `isMember` above
+  // is lock COPY (false only for a KNOWN non-member), so a failed membership
+  // read let anyone pick the Academy-only Light Pulse mode. LEARN/DEMO and
+  // the library are gated at their destinations; Light Pulse has none, so it
+  // is gated here: 'checking' waits silently (like SAVE), 'unconfirmed' says why.
+  const memberGate = useMemberGate();
+  const pickMode = (m: Mode) => {
+    if (m === 'light' && memberGate !== 'open' && memberGate !== 'locked') {
+      if (memberGate === 'unconfirmed') notify('Membership not confirmed', MEMBERSHIP_NOT_CONFIRMED);
+      return;
+    }
+    setMode(m);
+  };
 
   const goBack = () => (mode ? setMode(null) : safeGoBack(navigation));
   const modeMeta = MODES.find((m) => m.key === mode) ?? null;
@@ -1366,7 +1382,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scroll}>
         {mode == null ? (
           <ModeSelect
-            onPick={setMode}
+            onPick={pickMode}
             onLearn={() => navigation.navigate('ToolLearn', { toolKey: 'hzcounter' })}
             onDemo={() => navigation.navigate('ToolDemo', { toolKey: 'hzcounter' })}
             isMember={isMember}

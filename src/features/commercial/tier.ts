@@ -77,9 +77,15 @@ export function isGuestTier(tier: Tier): boolean {
  *  so a signed-in member whose membership read FAILED reads 'guest' — right
  *  for the labs' hold rule above, wrong for copy. Upsell copy waits until a
  *  read has actually answered; while it has not, the plain member copy
- *  shows. Use `useUpsellAllowed()` (./useTier.ts) in a screen. */
+ *  shows. Use `useUpsellAllowed()` (./useTier.ts) in a screen.
+ *
+ *  A REMEMBERED 'free' / 'lapsed' (hunt 5, 2026-10-03) counts as known, the
+ *  same `known` rule as `memberGateOf` below: it is this account's last
+ *  server-confirmed answer (lastTierCache, keyed by uid), and the resolved
+ *  tier can only read 'free' without `tierKnown` from that cache. Otherwise a
+ *  learner the gates lock as a known non-member got the 🔒 with no way in. */
 export function upsellAllowed(tier: Tier, tierKnown: boolean): boolean {
-  if (!tierKnown) return false;
+  if (!tierKnown && tier !== 'free') return false;
   return tier === 'guest' || tier === 'free' || tier === 'preview';
 }
 

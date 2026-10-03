@@ -51,6 +51,8 @@ const FILTERS: { id: Filter; label: string }[] = [
 ];
 const STUDIO_ROUTE: Record<StudioId, 'CymaticsPlateStudio' | 'CymaticsLiquidStudio' | 'CymaticsMembraneStudio'> = { plate: 'CymaticsPlateStudio', liquid: 'CymaticsLiquidStudio', membrane: 'CymaticsMembraneStudio' };
 const STUDIO_TAG: Record<StudioId, string> = { plate: 'PLATE', liquid: 'DISH', membrane: 'DRUM' };
+/** A failed READ of the pattern list (hunt 4): said in BROWSE and in OPEN. */
+const PATTERNS_UNREADABLE = 'Your saved patterns could not be read from this device just now — they are not lost, and nothing is written over them. Leave the gallery and come back to try again.';
 
 // Geometry per (pattern, STATE) — the science chain runs once per distinct
 // state; a rename or a note edit does not recompute the field.
@@ -388,7 +390,7 @@ export function GalleryScreen() {
                 // A failed READ is not an empty library (hunt 4, 2026-10-03):
                 // it said "NOTHING SAVED YET" over every saved pattern. The
                 // list re-reads whenever the gallery comes back into focus.
-                <Text style={styles.caption}>Your saved patterns could not be read from this device just now — they are not lost, and nothing is written over them. Leave the gallery and come back to try again.</Text>
+                <Text style={styles.caption}>{PATTERNS_UNREADABLE}</Text>
               ) : patterns.length === 0 ? (
                 <View style={styles.empty}>
                   <Text style={styles.emptyTitle}>NOTHING SAVED YET</Text>
@@ -466,6 +468,13 @@ export function GalleryScreen() {
                 <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
               </Pressable>
             </>
+          ) : null}
+          {/* OPEN with no pattern to show (hunt 5, 2026-10-03): a studio's
+              "Open the gallery ›" lands here in OPEN mode, and while the list
+              was loading, or when its READ FAILED, the screen was BLANK — the
+              hunt-4 unreadable notice covered BROWSE only. */}
+          {mode === 'open' && !current ? (
+            <Text style={styles.caption}>{patterns === null ? 'Loading…' : patternsUnreadable(patterns) ? PATTERNS_UNREADABLE : 'This pattern is not in the gallery any more. Tap ‹ to see every saved pattern.'}</Text>
           ) : null}
 
           {mode === 'compare' ? (

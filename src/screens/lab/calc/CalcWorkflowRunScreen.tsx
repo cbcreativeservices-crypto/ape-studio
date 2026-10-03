@@ -489,6 +489,9 @@ export function CalcWorkflowRunScreen() {
       notes: run.notes?.trim() || undefined,
     };
   }, [workflow, run, idx, n, computed, stepName]);
+  /** The summary ON SCREEN now — SAVE RESULT compares against it after the write. */
+  const summaryRef = useRef<SavedRunSummary | null>(null);
+  summaryRef.current = summary;
 
   // ONE formatted-text layout for sharing — shared with the Saved Results screen.
   const shareText = () => {
@@ -539,9 +542,17 @@ export function CalcWorkflowRunScreen() {
       return;
     }
     const ok = await workflowStore.saveResult(summary, storeGenRef.current);
-    if (ok) setResultSaved(true);
+    // SAVED ✓ only for the summary that was WRITTEN (hunt 5, 2026-10-03): notes
+    // typed while the save was in flight re-armed SAVE, then this landed and
+    // claimed SAVED ✓ over notes that were never stored — and START AGAIN mid-
+    // save carried the ✓ onto the next run's results. A summary that has since
+    // changed keeps SAVE RESULT.
+    if (ok) {
+      if (summaryRef.current === summary) setResultSaved(true);
+      return;
+    }
     // Fenced by an account wipe: nothing failed, and no popup for the next person.
-    else if (storeGenRef.current === workflowGeneration()) notify('Save failed', 'The result could not be saved. Try again.');
+    if (storeGenRef.current === workflowGeneration()) notify('Save failed', 'The result could not be saved. Try again.');
   };
 
   // ---- Render ---------------------------------------------------------------

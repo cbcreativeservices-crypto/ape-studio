@@ -11,7 +11,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useToolsLocked } from './ToolLockUi';
+import { ToolGatePending } from './ToolLockUi';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { conceptByKey } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { ToolAcademyLock } from './ToolAcademyLock';
@@ -25,7 +26,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ConceptModule'>;
 export function ConceptModuleScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   // Gate on REAL standing, not caps (house rule, ToolLockUi header). Aligned 2026-08-28.
-  const locked = useToolsLocked();
+  // CONTENT ONLY FOR 'open' (hunt 5, 2026-10-03) — see ToolGatePending.
+  const gate = useMemberGate();
+  const locked = gate === 'locked';
   const mod = conceptByKey(route.params.conceptKey);
 
   return (
@@ -43,6 +46,8 @@ export function ConceptModuleScreen({ navigation, route }: Props) {
       <ScrollView contentContainerStyle={styles.scroll}>
         {locked ? (
           <ToolAcademyLock what="This concept module" onUpgrade={() => navigation.navigate('Paywall')} />
+        ) : gate !== 'open' ? (
+          <ToolGatePending gate={gate} />
         ) : !mod ? (
           <View style={styles.authoringCard}>
             <Text style={styles.authoringTitle}>MODULE NOT AVAILABLE</Text>

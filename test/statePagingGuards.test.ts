@@ -104,11 +104,12 @@ describe('a tier decision waits for the tier', () => {
     // The provider boots at 'anonymous'. Gating on the tier alone told a paying
     // member their topic "needs Academy membership".
     const code = strip(read('src', 'screens', 'curriculum', 'TopicDetailModal.tsx'));
-    assert.match(code, /const \{ entitlement, resolved \}/, 'TopicDetailModal no longer reads `resolved`');
+    // Hunt 5 (2026-10-03): `resolved` also flips on a FAILED read, so the hold
+    // is now the member gate — only a KNOWN non-member reads 'locked'.
     assert.match(
       code,
-      /resolved && entitlement !== 'academy'/,
-      'TopicDetailModal decides membership before the tier has resolved again',
+      /const needsMembership = useMemberGate\(\) === 'locked'/,
+      'TopicDetailModal decides membership before the tier is known again',
     );
   });
 });

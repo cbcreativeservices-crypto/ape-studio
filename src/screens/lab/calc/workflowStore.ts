@@ -47,8 +47,21 @@ export function workflowGeneration(): number {
 // Load / save with damage quarantine
 // ---------------------------------------------------------------------------
 
+/** The empty stand-ins `loadList` returns for a list it could not READ (hunt 5,
+ *  2026-10-03 — the hunt-4 Cymatics gallery fix, patternStore): Saved Results
+ *  and My Workflows said "Nothing saved yet" over every saved row. */
+const unreadableLists = new WeakSet<readonly unknown[]>();
+/** True when this list is the empty stand-in for a read that FAILED. */
+export function workflowListUnreadable(list: readonly unknown[]): boolean {
+  return unreadableLists.has(list);
+}
+
 async function loadList<T>(key: CollectionKey, validate: (x: unknown) => x is T): Promise<T[]> {
-  return (await readList(key, validate)) ?? [];
+  const list = await readList(key, validate, false);
+  if (list) return list;
+  const none: T[] = [];
+  unreadableLists.add(none);
+  return none;
 }
 
 /** loadList, but `null` when the storage READ itself failed (full-app run 1,
@@ -57,8 +70,16 @@ async function loadList<T>(key: CollectionKey, validate: (x: unknown) => x is T)
  *  and either way returned [] — so the next upsert wrote `[item]` over the
  *  whole collection and reported "saved". (Android's AsyncStorage cannot read a
  *  row past ~2 MB at all, so a large results list hit this on every save.)
- *  Writers refuse on null; readers show empty without touching the data. */
-async function readList<T>(key: CollectionKey, validate: (x: unknown) => x is T): Promise<T[] | null> {
+ *  Writers refuse on null; readers show empty without touching the data.
+ *
+ *  `inChain`: is this read running on the write chain (serialWrite)? The
+ *  quarantine below WRITES the collection back. From a plain list read (off the
+ *  chain) that write used the snapshot read before any queued upsert landed, so
+ *  a SAVE whose write slipped in between was erased by it after reporting
+ *  success (hunt 5, 2026-10-03). Off the chain the quarantine now runs ON the
+ *  chain instead — re-reading there, after every queued write — and the reader
+ *  gets that fresh list. Only a damaged collection takes this path. */
+async function readList<T>(key: CollectionKey, validate: (x: unknown) => x is T, inChain = true): Promise<T[] | null> {
   const gen = generation;
   let raw: string | null;
   try {
@@ -66,12 +87,15 @@ async function readList<T>(key: CollectionKey, validate: (x: unknown) => x is T)
   } catch {
     return null;
   }
+  const quarantineOnChain = (fallback: T[]): Promise<T[] | null> =>
+    gen === generation ? serialWrite(() => readList(key, validate, true)) : Promise.resolve(fallback);
   try {
     if (raw == null) return [];
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) throw new Error('not an array');
     // Keep the valid rows; quarantine the rest instead of crashing or deleting.
     const good = parsed.filter(validate);
+    if (good.length !== parsed.length && !inChain) return await quarantineOnChain(good);
     // Not after a wipe: these rows were read from the departing account.
     if (good.length !== parsed.length && gen === generation) {
       const bad = parsed.filter((x) => !validate(x));
@@ -83,6 +107,7 @@ async function readList<T>(key: CollectionKey, validate: (x: unknown) => x is T)
   } catch {
     // Whole blob unreadable (it was read, it is not JSON) — quarantine it and
     // start empty. Removed only once the copy is safely set aside.
+    if (!inChain) return await quarantineOnChain([]);
     try {
       if (gen === generation) {
         await AsyncStorage.setItem(`${key}:damaged`, raw as string);

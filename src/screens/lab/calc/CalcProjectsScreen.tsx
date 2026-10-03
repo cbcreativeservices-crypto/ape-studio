@@ -21,7 +21,7 @@ import { useTier } from '../../../features/commercial/useTier';
 import { QUANTITIES, fmtCarried, parseQuantity, type QuantityKind } from './calcUnits';
 import type { Project } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
-import { workflowGeneration, workflowStore } from './workflowStore';
+import { workflowGeneration, workflowListUnreadable, workflowStore } from './workflowStore';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -309,7 +309,12 @@ export function CalcProjectsScreen() {
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
         {!editing ? (
-          projects.length === 0 ? (
+          workflowListUnreadable(projects) ? (
+            // A failed READ is not an empty list (hunt 5, 2026-10-03).
+            <Text style={styles.caption}>
+              Your saved projects could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.
+            </Text>
+          ) : projects.length === 0 ? (
             <Text style={styles.caption}>
               A project stores a venue or rig’s values — room dimensions, temperature, listener
               distance, impedance, target SPL — so any workflow can pull them in with one tap.

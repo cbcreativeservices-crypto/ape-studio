@@ -89,7 +89,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   const navigation = useNavigation<any>();
   // Only registered users (any account, paid or not) can set up a profile
   // (user request 2026-07-22).
-  const { entitlement, resolved, tierKnown } = useEntitlement();
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // `resolved` hold (entitlement roll-out 2026-09-11): the provider boots at
   // 'anonymous', so until the server read landed this screen greeted every
   // signed-in user — members included — with the "Get registered." guest
@@ -101,7 +101,14 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   // tier then reads 'anonymous' and got "Get registered." A real guest is
   // always a KNOWN answer (no session), so the guest CTA still reaches them.
   const hasAccount = !tierKnown || entitlement !== 'anonymous';
-  const accountConfirmed = resolved && entitlement !== 'anonymous';
+  // …OR the membership read gave up (hunt 5, 2026-10-03). The sweep above
+  // stopped calling that learner a guest, but this stayed false for them, so
+  // the QR was never asked for and the tile read "appears here once your
+  // account finishes setting up" for good. `tierReadFailed` is only ever set
+  // for a SIGNED-IN identity (a guest's tier never fails to read), so the
+  // QR / credentials reads still never fire for a genuine guest; their own
+  // failure path says "couldn't load".
+  const accountConfirmed = (resolved && entitlement !== 'anonymous') || tierReadFailed;
   const [acctNote, setAcctNote] = useState(false);
   // The name the user chose for the Registry (set in Profile) — shown on the
   // confirmation once registered (user request 2026-07-22).
