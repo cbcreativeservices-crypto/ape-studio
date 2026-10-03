@@ -558,8 +558,12 @@ export function AwardsScreen({ navigation, route }: Props) {
   // optimistically: a guest must leave no local preference behind (no-tracking
   // promise). Instead the pick is re-persisted by the effect below the moment
   // the tier resolves to a real account.
-  const { entitlement, resolved, tierKnown } = useEntitlement();
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   const hasAccount = resolved && entitlement !== 'anonymous';
+  // The popup's STUDY NOW / GO TO MY ENROLLMENTS are navigation, not a write:
+  // a signed-in member whose membership read FAILED keeps them (tidy hunt 5,
+  // 2026-10-03). The persistence above stays on `hasAccount`.
+  const showStudyNav = hasAccount || tierReadFailed;
   // The "won't be saved without an account" prompt is an identity CLAIM, so it
   // waits for a KNOWN tier (tier sweep 2026-10-03): `resolved` also flips when
   // the membership read FAILED, and a signed-in member with no remembered tier
@@ -1091,8 +1095,8 @@ export function AwardsScreen({ navigation, route }: Props) {
           onEnroll={toggleEnrollInPlace}
           isEnrolled={isCredEnrolled}
           onProgress={progressFromDetail}
-          onStudy={hasAccount ? studyFromDetail : undefined}
-          onEnrollments={hasAccount ? enrollmentsFromDetail : undefined}
+          onStudy={showStudyNav ? studyFromDetail : undefined}
+          onEnrollments={showStudyNav ? enrollmentsFromDetail : undefined}
           /* INSIDE the Modal on purpose: a sibling Modal attaches to the
              activity window and is drawn BENEATH this card on Android.
              See components/PrePaywallPrompt. */
@@ -1184,8 +1188,8 @@ export function AwardsScreen({ navigation, route }: Props) {
           onEnroll={toggleEnrollInPlace}
           isEnrolled={isCredEnrolled}
           onProgress={progressFromDetail}
-          onStudy={hasAccount ? studyFromDetail : undefined}
-          onEnrollments={hasAccount ? enrollmentsFromDetail : undefined}
+          onStudy={showStudyNav ? studyFromDetail : undefined}
+          onEnrollments={showStudyNav ? enrollmentsFromDetail : undefined}
           /* INSIDE the Modal on purpose: a sibling Modal attaches to the
              activity window and is drawn BENEATH this card on Android.
              See components/PrePaywallPrompt. */

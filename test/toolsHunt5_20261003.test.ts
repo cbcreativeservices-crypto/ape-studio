@@ -63,10 +63,11 @@ test('1. MeasurementLibraryScreen: records only for gate open', () => {
   assert.ok(pendingAt < s.indexOf('<FlatList'), 'before any record renders');
 });
 
-test('1. ToolGatePending: blank while checking, honest once the check gave up', () => {
+test('1. ToolGatePending: quiet while checking, honest once the check gave up', () => {
   const s = read('src/screens/tools/ToolLockUi.tsx');
   const c = s.slice(s.indexOf('export function ToolGatePending'), s.indexOf('/** One-line'));
-  assert.match(c, /if \(gate === 'checking'\) return null;/);
+  // A quiet line, not a blank body (tidy hunt 5, 2026-10-03).
+  assert.match(c, /if \(gate === 'checking'\) return <Text style=\{styles\.note\}>Checking your account…<\/Text>;/);
   assert.match(c, /\{MEMBERSHIP_NOT_CONFIRMED\}/);
   assert.doesNotMatch(c, /🔒|Paywall|UPGRADE/, 'no lock, no sell on a failed read');
 });

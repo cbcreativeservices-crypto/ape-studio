@@ -166,7 +166,9 @@ export function LockedButton({
  *  (blank, never a 🔒), 'unconfirmed' says so plainly — TubeCardScreen's
  *  four states. Callers render the content only for gate === 'open'. */
 export function ToolGatePending({ gate }: { gate: 'checking' | 'unconfirmed' }) {
-  if (gate === 'checking') return null;
+  // A quiet line, never an empty body (tidy hunt 5, 2026-10-03): the caller
+  // keeps its header + back; the body says what it is waiting on.
+  if (gate === 'checking') return <Text style={styles.note}>Checking your account…</Text>;
   return (
     <View style={styles.pendingCard}>
       <Text style={styles.pendingEyebrow}>MEMBERSHIP NOT CONFIRMED</Text>

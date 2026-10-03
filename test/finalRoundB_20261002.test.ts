@@ -225,7 +225,8 @@ describe('7 · Cymatics gallery: unreadable ≠ missing', async () => {
   it('the studios that reopen a pattern handle the rejection', () => {
     for (const f of ['LiquidStudioScreen', 'MembraneStudioScreen', 'PlateStudioScreen']) {
       const src = strip(read(`src/screens/lab/cymatics/${f}.tsx`));
-      assert.match(src, /\.getPattern\(savedId\)\s*\.then\([\s\S]*?\}\)\s*\.catch\(\(\) => undefined\);/, f);
+      // Handled AND told (tidy hunt 5, 2026-10-03): the catch now notifies.
+      assert.match(src, /\.getPattern\(savedId\)\s*\.then\([\s\S]*?\}\)\s*\.catch\(\(\) => \{\s*if \(alive\) notify\(/, f);
     }
   });
 });

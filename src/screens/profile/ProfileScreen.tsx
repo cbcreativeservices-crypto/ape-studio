@@ -49,6 +49,7 @@ import {
   type PublicProfile,
 } from '../../features/profile/publicProfile';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { LowLightRow } from '../../features/settings/LowLightLayer';
 import { useLowLight } from '../../features/settings/lowLight';
 import { AudioOutputRow } from '../../features/audio/AudioOutputRow';
@@ -279,6 +280,7 @@ export function ProfileScreen() {
   // completion records; HIDE the student-ID card (QR, AP&E ID) + MIC/PA/REC/MIX
   // certs. Institutional users keep Screen 10 exactly.
   const { commercialMode, caps, entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  const memberGate = useMemberGate();
   // Public / networking profile (device-local for now — backend frozen).
   const [pub, setPub] = useState<PublicProfile>(EMPTY_PUBLIC_PROFILE);
   // "Terms learned" — the self-assessed KNOWN list (client-side; no server metric
@@ -1176,8 +1178,11 @@ export function ProfileScreen() {
                 (AudioLearningScreen's M6 rule). The row only opens the
                 Achievements tab, which the tab bar already gives everyone, so
                 showing it a frame early costs nothing while hiding it from a
-                member who is entitled to it costs trust. */}
-            {!resolved || caps.albumAchievements ? (
+                member who is entitled to it costs trust.
+                `memberGate !== 'locked'` (tidy hunt 5, 2026-10-03): a failed
+                membership read flips `resolved` with guest caps, which hid the
+                row from a paying member. Only a KNOWN guest loses it now. */}
+            {memberGate !== 'locked' || caps.albumAchievements ? (
               <Pressable
                 style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
                 onPress={() =>

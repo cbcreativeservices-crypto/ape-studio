@@ -19,7 +19,8 @@ import { holdMicWarm, releaseMic, releaseMicNow } from '../../features/tools/eng
 import { micReleaseOnBackgroundEnabled } from '../../features/settings/store';
 import { colors, fonts } from '../../theme/tokens';
 import { MIC_LIMITS, toolByKey, type ToolKey } from './toolsData';
-import { LockedButton, MembershipRequiredNote, useToolsLocked } from './ToolLockUi';
+import { LockedButton, MembershipRequiredNote, ToolGatePending, useToolsLocked } from './ToolLockUi';
+import { useMemberGate } from '../../features/commercial/useTier';
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -111,6 +112,10 @@ export function ToolInfoScreen({ navigation, route }: Props) {
   // 🔒 LEARN / DEMO buttons and the "membership required" note at a member,
   // because the provider boots at 'anonymous' until the server read lands.
   const isMember = !useToolsLocked();
+  // A FAILED membership read (tidy hunt 5, 2026-10-03): LEARN/DEMO were live
+  // buttons into a destination that then refused. Match the Tools hub — no
+  // buttons, no 🔒, the honest MEMBERSHIP_NOT_CONFIRMED card instead.
+  const gate = useMemberGate();
   // ONE open per navigation (toddler evening 2026-10-02), the hub's openOnce
   // rule: OPEN TOOL, LEARN and DEMO are three different routes, so two
   // fingers (or a tap landing inside the push) stacked two screens — the
@@ -160,6 +165,9 @@ export function ToolInfoScreen({ navigation, route }: Props) {
 
         {/* Phase-1 training layer: guided LEARN + visual DEMO. Academy-only
             (owner 2026-08-05) — free accounts see them grayed + locked. */}
+        {gate === 'unconfirmed' ? (
+          <ToolGatePending gate="unconfirmed" />
+        ) : (
         <View style={styles.trainRow}>
           {isMember ? (
             <>
@@ -189,6 +197,7 @@ export function ToolInfoScreen({ navigation, route }: Props) {
             </>
           )}
         </View>
+        )}
         {!isMember && <MembershipRequiredNote what="open guided training" />}
 
         <Text style={styles.purpose}>{tool.purpose}</Text>

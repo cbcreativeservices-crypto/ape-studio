@@ -43,7 +43,7 @@ import { CenterLockTuner } from './CenterLockTuner';
 import { ColorWheelButton } from '../../components/ColorWheelButton';
 import { TunerDiagram } from '../../components/ColorTargetDiagrams';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
-import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, useFullScreenGate, useSaveGate, useToolsLocked } from './ToolLockUi';
+import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, ToolGatePending, useFullScreenGate, useSaveGate, useToolsLocked } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
 import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
@@ -1015,12 +1015,15 @@ function ModeSelect({
   onLearn,
   onDemo,
   isMember,
+  unconfirmed,
   onUpgrade,
 }: {
   onPick: (m: Mode) => void;
   onLearn: () => void;
   onDemo: () => void;
   isMember: boolean;
+  /** Membership read FAILED: LEARN/DEMO give way to the honest card (tidy hunt 5). */
+  unconfirmed: boolean;
   onUpgrade: () => void;
 }) {
   return (
@@ -1056,7 +1059,12 @@ function ModeSelect({
         );
       })}
       {/* Phase-1 training layer — this tool skips ToolInfo, so LEARN/DEMO live
-          here. Academy-only (owner 2026-08-05): grayed + locked for free. */}
+          here. Academy-only (owner 2026-08-05): grayed + locked for free.
+          A failed membership read gets the Tools hub's treatment: no buttons,
+          no 🔒, MEMBERSHIP_NOT_CONFIRMED (tidy hunt 5, 2026-10-03). */}
+      {unconfirmed ? (
+        <ToolGatePending gate="unconfirmed" />
+      ) : (
       <View style={styles.trainRow}>
         {isMember ? (
           <>
@@ -1074,6 +1082,7 @@ function ModeSelect({
           </>
         )}
       </View>
+      )}
       {!isMember && <MembershipRequiredNote what="open guided training" />}
       <Text style={styles.disclaimer}>{DISCLAIMER}</Text>
     </>
@@ -1386,6 +1395,7 @@ export function FrequencyCounterScreen({ navigation }: Props) {
             onLearn={() => navigation.navigate('ToolLearn', { toolKey: 'hzcounter' })}
             onDemo={() => navigation.navigate('ToolDemo', { toolKey: 'hzcounter' })}
             isMember={isMember}
+            unconfirmed={memberGate === 'unconfirmed'}
             onUpgrade={() => navigation.navigate('Paywall')}
           />
         ) : mode === 'tap' ? (

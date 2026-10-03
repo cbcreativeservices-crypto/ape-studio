@@ -18,7 +18,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { useTier } from '../../../features/commercial/useTier';
 import type { Workflow, WorkflowStep } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
-import { workflowGeneration, workflowStore } from './workflowStore';
+import { workflowGeneration, workflowListUnreadable, workflowStore } from './workflowStore';
 import { listCalculators, resolveStep, type CatalogEntry } from './workflowCatalog';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -26,6 +26,10 @@ import { cardColumn } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+const WORKFLOW_UNREADABLE =
+  'This workflow couldn’t be read just now. It isn’t lost — go back and open it again in a moment.';
+const WORKFLOW_MISSING = 'This workflow isn’t on this device any more. It may have been deleted.';
 
 export function CalcWorkflowEditScreen() {
   const insets = useSafeAreaInsets();
@@ -46,6 +50,10 @@ export function CalcWorkflowEditScreen() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [dirty, setDirty] = useState(false);
+  // EDIT over a workflow that was never read (tidy hunt 5, 2026-10-03): a
+  // failed read used to open a BLANK form without a word, and its SAVE wrote
+  // that blank form over the stored workflow. Only a 'loaded' edit may save.
+  const [load, setLoad] = useState<'loading' | 'loaded' | 'unreadable' | 'missing'>(editingId ? 'loading' : 'loaded');
   // Bug hunt 2026-09-29: a double SAVE ran two upserts and two goBack()s (the
   // second popped the screen underneath). `savingRef` admits one save at a
   // time; `leavingRef` lets a saved or confirmed-discard exit past the
@@ -86,15 +94,29 @@ export function CalcWorkflowEditScreen() {
     // Only the CURRENT workflow's load may fill the form (pattern hunt P2/P11,
     // 2026-10-02): new params or an unmount retire this read.
     let alive = true;
-    void workflowStore.listWorkflows().then((list) => {
-      if (!alive) return;
-      const w = list.find((x) => x.id === editingId);
-      if (!w) return;
-      setName(w.name);
-      setDescription(w.description ?? '');
-      setSteps(w.steps);
-      setCreatedAt(w.createdAt);
-    });
+    setLoad('loading');
+    void workflowStore
+      .listWorkflows()
+      .then((list) => {
+        if (!alive) return;
+        if (workflowListUnreadable(list)) {
+          setLoad('unreadable');
+          return;
+        }
+        const w = list.find((x) => x.id === editingId);
+        if (!w) {
+          setLoad('missing');
+          return;
+        }
+        setName(w.name);
+        setDescription(w.description ?? '');
+        setSteps(w.steps);
+        setCreatedAt(w.createdAt);
+        setLoad('loaded');
+      })
+      .catch(() => {
+        if (alive) setLoad('unreadable');
+      });
     return () => {
       alive = false;
     };
@@ -154,6 +176,13 @@ export function CalcWorkflowEditScreen() {
   };
 
   const saveOnce = async () => {
+    // Never SAVE over a workflow this screen did not read (tidy hunt 5).
+    if (editingId && load !== 'loaded') {
+      if (load === 'loading') notify('One moment', 'Still opening this workflow. Tap SAVE again in a moment.');
+      else if (load === 'missing') notify('Workflow not found', WORKFLOW_MISSING);
+      else notify('Not saved', WORKFLOW_UNREADABLE);
+      return;
+    }
     // Defense in depth (owner 2026-08-06): creating a custom workflow is
     // Academy-only — even if this screen is reached some other way, the save
     // itself refuses. Editing an already-saved workflow is unaffected.
@@ -229,6 +258,13 @@ export function CalcWorkflowEditScreen() {
         </Pressable>
       </View>
 
+      {load !== 'loaded' ? (
+        <View style={[styles.scroll, cardColumn]}>
+          <Text style={styles.caption}>
+            {load === 'loading' ? 'Opening workflow…' : load === 'missing' ? WORKFLOW_MISSING : WORKFLOW_UNREADABLE}
+          </Text>
+        </View>
+      ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
         <Text style={styles.fieldLabel}>WORKFLOW NAME</Text>
         <TextInput
@@ -326,6 +362,7 @@ export function CalcWorkflowEditScreen() {
           </View>
         ) : null}
       </ScrollView>
+      )}
     </View>
   );
 }

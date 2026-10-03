@@ -47,7 +47,8 @@ test('TrophyScreen and CalcWorkflowEditScreen: a retired keyed read does not lan
   assert.match(t, /let alive = true;[\s\S]{0,200}\.eq\('id', achievementId\)[\s\S]{0,120}if \(alive\) setIconUrl\(/);
   assert.match(t, /return \(\) => \{\s*alive = false;\s*\};\s*\}, \[achievementId\]\);/);
   const w = code(read('src/screens/lab/calc/CalcWorkflowEditScreen.tsx'));
-  assert.match(w, /let alive = true;\s*void workflowStore\.listWorkflows\(\)\.then\(\(list\) => \{\s*if \(!alive\) return;/);
+  // + load state (tidy hunt 5, 2026-10-03); the alive guard is unchanged.
+  assert.match(w, /let alive = true;\s*setLoad\('loading'\);\s*void workflowStore\s*\.listWorkflows\(\)\s*\.then\(\(list\) => \{\s*if \(!alive\) return;/);
   assert.match(w, /return \(\) => \{\s*alive = false;\s*\};\s*\}, \[editingId\]\);/);
 });
 

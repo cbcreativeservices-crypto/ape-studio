@@ -77,6 +77,7 @@ import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { useMemberGate } from '../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED, type MemberGate } from '../../features/commercial/tier';
 import {
   loadLocalMethodStates,
   mergeItemStates,
@@ -167,7 +168,8 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
   return a;
 }
 
-function levelText(item: GlossaryItem, level: number, member: boolean): string {
+function levelText(item: GlossaryItem, level: number, gate: MemberGate): string {
+  const member = gate !== 'locked';
   const join = (a?: string[] | null) => (a && a.length ? a.map((s) => `• ${s}`).join('\n') : null);
   // A side with no authored content used to show the DEFINITION silently under
   // the other side's label ("MISTAKES" reading exactly like "DEFINITION" —
@@ -177,6 +179,10 @@ function levelText(item: GlossaryItem, level: number, member: boolean): string {
   // reason is the tier, not missing content.
   const fallback = (what: string) => `(No ${what} written for this term yet — here is its definition.)\n\n${item.definition}`;
   const memberOnly = (what: string) => `(${what} are an Academy member feature — here is the definition.)\n\n${item.definition}`;
+  // Membership read FAILED (tidy hunt 5, 2026-10-03): the server may have
+  // masked the note, so "none written yet" would be a false claim. Say so.
+  const notConfirmed = (what: string) =>
+    `(${MEMBERSHIP_NOT_CONFIRMED} ${what} can’t be shown until it is — here is the definition.)\n\n${item.definition}`;
   switch (level) {
     case 1:
       return item.definition;
@@ -187,7 +193,14 @@ function levelText(item: GlossaryItem, level: number, member: boolean): string {
     case 4:
       return join(item.scenario_contexts) ?? fallback('scenarios');
     case 5:
-      return join(item.common_mistakes) ?? (member ? fallback('common-mistakes note') : memberOnly('Common-mistakes notes'));
+      return (
+        join(item.common_mistakes) ??
+        (gate === 'unconfirmed'
+          ? notConfirmed('Common-mistakes notes')
+          : member
+            ? fallback('common-mistakes note')
+            : memberOnly('Common-mistakes notes'))
+      );
     case 6: {
       const parts = [
         item.related_terms?.length ? item.related_terms.map((s) => `• ${s}`).join('\n') : null,
@@ -349,7 +362,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // server read landed. Unknown ⇒ read as a member.
   // KNOWN non-member only (tier sweep 2026-10-03): a failed membership read
   // (`resolved`, no tier) was told "an Academy member feature" too.
-  const isMember = useMemberGate() !== 'locked';
+  const memberGate = useMemberGate();
   const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
   const flaggedMode = achievementId === FLAGGED_TOPIC_ID;
@@ -1003,9 +1016,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     const message =
       level === 0
         ? card.term
-        : `${LEVEL_LABELS[level - 1]}. ${levelText(card, level, isMember)}`;
+        : `${LEVEL_LABELS[level - 1]}. ${levelText(card, level, memberGate)}`;
     if (message) AccessibilityInfo.announceForAccessibility(message);
-  }, [card, level, isMember]);
+  }, [card, level, memberGate]);
 
   const goCard = useCallback(
     (dir: 1 | -1) => {
@@ -1617,7 +1630,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       nestedScrollEnabled
                     >
                       <CardTextPress onLongPress={() => setFullscreen(true)}>
-                        <Text style={styles.levelBody}>{renderLinked(levelText(card, 1, isMember), card.id)}</Text>
+                        <Text style={styles.levelBody}>{renderLinked(levelText(card, 1, memberGate), card.id)}</Text>
                       </CardTextPress>
                     </ScrollView>
                   </>
@@ -1680,7 +1693,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     >
                       {/* In-deck glossary terms inside the text are tappable
                           links to their full-screen definition (2026-07-18). */}
-                      <Text style={styles.levelBody}>{renderLinked(levelText(card, level, isMember), card.id)}</Text>
+                      <Text style={styles.levelBody}>{renderLinked(levelText(card, level, memberGate), card.id)}</Text>
                     </DefinitionScroll>
                   </>
                 )}
@@ -1874,7 +1887,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   {enabledLevels.map((lvl) => (
                     <View key={lvl} style={styles.fsSheetSection}>
                       <Text style={styles.linkedEyebrow}>{LEVEL_LABELS[lvl - 1]}</Text>
-                      <Text style={styles.fsDef}>{renderLinked(levelText(card, lvl, isMember), card.id)}</Text>
+                      <Text style={styles.fsDef}>{renderLinked(levelText(card, lvl, memberGate), card.id)}</Text>
                     </View>
                   ))}
                 </ScrollView>
@@ -1913,7 +1926,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       onError={() => setBadImages((prev) => new Set(prev).add(card.id))}
                     />
                   ) : null}
-                  <Text style={styles.fsDef}>{renderLinked(levelText(card, level, isMember), card.id)}</Text>
+                  <Text style={styles.fsDef}>{renderLinked(levelText(card, level, memberGate), card.id)}</Text>
                 </ScrollView>
               )
             ) : (

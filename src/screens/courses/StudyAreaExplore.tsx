@@ -89,11 +89,14 @@ export function StudyAreaExplore({
   const [catalog, setCatalog] = useState<Awaited<ReturnType<typeof loadCatalog>> | null>(null);
   const [detail, setDetail] = useState<CredentialDetail | null>(null);
   const [payPrompt, setPayPrompt] = useState<{ label: string } | null>(null);
-  const { entitlement, resolved, tierKnown } = useEntitlement();
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   /** Can this account actually HOLD an enrollment? Gates the two onward doors:
    *  an anonymous pick does not survive, so offering "my enrollments" would
    *  send them to a list their choice will never appear in. */
   const hasAccount = resolved && entitlement !== 'anonymous';
+  /** The two doors themselves (tidy hunt 5, 2026-10-03): a signed-in member
+   *  whose membership read FAILED reads 'anonymous' too — they keep them. */
+  const showStudyNav = hasAccount || tierReadFailed;
 
   useEffect(() => {
     if (!area) return;
@@ -311,7 +314,7 @@ export function StudyAreaExplore({
             onProgress(c);
           }}
           onStudy={
-            hasAccount
+            showStudyNav
               ? (c) => {
                   onClose();
                   onStudy(c);
@@ -319,7 +322,7 @@ export function StudyAreaExplore({
               : undefined
           }
           onEnrollments={
-            hasAccount
+            showStudyNav
               ? () => {
                   onClose();
                   onEnrollments();

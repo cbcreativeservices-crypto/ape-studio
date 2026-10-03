@@ -161,7 +161,11 @@ describe('4. members-only screens: lock only a KNOWN non-member; say so on a fai
     const hub = read('src/screens/tools/ToolsHubScreen.tsx');
     assert.match(hub, /\{\(gate === 'open' \|\| gate === 'locked'\) && \(/);
     assert.match(hub, /gate === 'unconfirmed' \? <Text style=\{styles\.lockedNote\}>\{MEMBERSHIP_NOT_CONFIRMED\}/);
-    assert.match(read('src/screens/study/FlashcardsScreen.tsx'), /const isMember = useMemberGate\(\) !== 'locked';/);
+    // The gate itself now reaches levelText (tidy hunt 5, 2026-10-03), which
+    // still reads 'locked' as the only non-member.
+    const fc = read('src/screens/study/FlashcardsScreen.tsx');
+    assert.match(fc, /const memberGate = useMemberGate\(\);/);
+    assert.match(fc, /const member = gate !== 'locked';/);
   });
 });
 

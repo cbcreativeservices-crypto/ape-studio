@@ -389,8 +389,20 @@ export function TubeCardScreen() {
   // used to greet every member with "Academy membership required" for the
   // card they had just opened. Blank-for-a-beat is neutral: it neither
   // false-locks a member nor shows the cards to a non-member.
+  // Header + back + one quiet line, never an empty body (tidy hunt 5,
+  // 2026-10-03) — a blank screen reads as broken.
   if (gate === 'checking') {
-    return <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]} />;
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
+        <View style={styles.lockHeader}>
+          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <Text style={styles.barTitle}>TUBE REFERENCE</Text>
+        </View>
+        <Text style={styles.lockBody}>Checking your account…</Text>
+      </View>
+    );
   }
 
   // The read gave up (owner ruling 2026-10-03): say so — no 🔒, no upsell,

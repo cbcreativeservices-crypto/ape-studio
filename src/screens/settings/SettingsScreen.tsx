@@ -1089,7 +1089,9 @@ ${LOCAL_LOSS}`
 
         {/* ACCOUNT */}
         <SettingsSection title="ACCOUNT" summary={apeId || undefined}>
-          {!isGuest ? (
+          {/* `|| tierReadFailed` (tidy hunt 5, 2026-10-03): a signed-in member
+              whose membership read FAILED reads 'anonymous' and lost this row. */}
+          {!isGuest || tierReadFailed ? (
             <View style={[styles.row, styles.rowBorder]}>
               <Text style={styles.rowLabel}>Student ID</Text>
               <Text style={styles.mono}>{apeId}</Text>

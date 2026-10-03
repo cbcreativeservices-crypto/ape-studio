@@ -38,6 +38,7 @@ import { LIBRARY_SHAPES, isLibraryShape, loadLibraryShape } from '../../../featu
 import { formatHz, formatWavelength, nearestNote, wavelengthAir } from '../../../features/cymatics/music';
 import { EXPERIMENT_BY_PRESET, PRESET_BY_ID, type FreqStrategy } from '../../../features/cymatics/presets';
 import { newPattern, patternStore } from '../../../features/cymatics/patternStore';
+import { notify } from '../../../lib/confirm';
 import { defaultPatternName } from '../../../features/cymatics/patternField';
 import { ExperimentWell } from './ExperimentWell';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -203,8 +204,12 @@ function PlateStudio() {
         setFriction(s.friction);
         setReopened(p.name);
       })
-      // An unreadable list now REJECTS (getPattern): nothing to reopen.
-      .catch(() => undefined);
+      // An unreadable list now REJECTS (getPattern): nothing to reopen — and
+      // the learner is told so (tidy hunt 5, 2026-10-03); it used to open in
+      // its old state without a word.
+      .catch(() => {
+        if (alive) notify('Pattern not opened', 'Your saved pattern couldn’t be opened just now. It isn’t lost — try OPEN IN STUDIO again from the Gallery.');
+      });
     return () => {
       alive = false;
     };
