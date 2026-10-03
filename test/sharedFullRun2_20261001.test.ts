@@ -121,7 +121,8 @@ describe('sessionCarryOpen + the guest end-screen line', () => {
 
   it('source: LabEndScreen and the Sound Systems mirror both ask the ledger', () => {
     const end = read('src/screens/lab/kit/LabEndScreen.tsx');
-    assert.match(end, /endLead\(w, \{ mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen\(\) \}\)/);
+    // Tier sweep 2026-10-03: `account` carries the checking / unconfirmed state.
+    assert.match(end, /endLead\(w, \{ mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen\(\), account \}\)/);
     const ss = read('src/screens/lab/soundsystems/SoundSystemsLabScreen.tsx');
     assert.match(ss, /: sessionCarryOpen\(\) \? 'You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress\. Move through the lab in any order — this list is what still counts toward credit\.' : 'You are not signed in, so nothing here is saved\. Move through the lab in any order — this list is what still counts toward credit\.'/);
   });

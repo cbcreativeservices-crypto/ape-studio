@@ -76,7 +76,7 @@ import { markTermsExempt } from '../../features/study/termsExempt';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
 import {
   loadLocalMethodStates,
   mergeItemStates,
@@ -347,8 +347,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // 'anonymous', so level 5 on a card with no authored mistakes told a paying
   // member "Common-mistakes notes are an Academy member feature" until the
   // server read landed. Unknown ⇒ read as a member.
-  const { isMember: memberStanding, resolved: entResolved } = useEntitlement();
-  const isMember = !entResolved || memberStanding;
+  // KNOWN non-member only (tier sweep 2026-10-03): a failed membership read
+  // (`resolved`, no tier) was told "an Academy member feature" too.
+  const isMember = useMemberGate() !== 'locked';
   const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
   const flaggedMode = achievementId === FLAGGED_TOPIC_ID;

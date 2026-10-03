@@ -20,6 +20,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useTier } from '../../../features/commercial/useTier';
 import type { Workflow } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
 import { workflowStore } from './workflowStore';
@@ -34,7 +35,13 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 export function CalcWorkflowsScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
-  const { entitlement, resolved } = useEntitlement();
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  // A signed-in learner whose membership read FAILED (no remembered tier)
+  // reads 'guest' on the resolved-based tier (tier sweep 2026-10-03). Still no
+  // custom workflow (the failed-read rule), but the honest words — never the
+  // membership sell — exactly as CalcLabScreen's gateWorkflow says it.
+  const tier = useTier();
+  const tierUnconfirmed = tier === 'guest' && !tierKnown;
   // workflowLimitsFor, not WORKFLOW_LIMITS[entitlement] — hold the academy row
   // until the entitlement read lands (roll-out 2026-09-11); see the helper.
   const limits = workflowLimitsFor(entitlement, resolved);
@@ -80,6 +87,15 @@ export function CalcWorkflowsScreen() {
     // builder and save one — in that window. `resolved` always flips.
     if (!resolved) {
       notify('One moment', 'Still checking your account. Tap again in a moment.');
+      return false;
+    }
+    if (tierUnconfirmed) {
+      notify(
+        tierReadFailed ? 'Membership not confirmed' : 'One moment',
+        tierReadFailed
+          ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+          : 'Still checking your account. Try again in a moment.',
+      );
       return false;
     }
     if (!atLimit) return true;
@@ -262,7 +278,11 @@ export function CalcWorkflowsScreen() {
         </Text>
         {mine.length === 0 ? (
           <Text style={styles.caption}>
-            {limits.savedWorkflows === 0
+            {tierUnconfirmed
+              ? tierReadFailed
+                ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                : 'Checking your account…'
+              : limits.savedWorkflows === 0
               ? 'Building your own workflows is an Academy membership feature — the templates below are ready to run.'
               : 'Nothing saved yet — start from a template below, or build one with ＋ NEW.'}
           </Text>

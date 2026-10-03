@@ -40,7 +40,9 @@ describe('MasteringLabScreen (pass 3): Module 8 ticks before the load', () => {
 describe('LabCategoryScreen (pass 3): the Ear Lab open rule', () => {
   const s = read('src/screens/lab/LabCategoryScreen.tsx');
   it('arms the preview for a resolved non-member on a members-only leaf', () => {
-    assert.match(s, /resolved && !isMember && \(cat\.section === 'training' \|\| !!leaf\.member\)/);
+    // Tier sweep 2026-10-03: a KNOWN non-member (useMemberGate 'locked').
+    assert.match(s, /const memberOnlyLeaf = \(leaf: LabLeaf\) => cat\.section === 'training' \|\| !!leaf\.member;/);
+    assert.match(s, /const lockedLeaf = \(leaf: LabLeaf\) => gate === 'locked' && memberOnlyLeaf\(leaf\);/);
     const open = s.slice(s.indexOf('const open = '), s.indexOf('return (', s.indexOf('const open = ')));
     assert.ok(open.indexOf('startLabPreview(') >= 0 && open.indexOf('startLabPreview(') < open.indexOf('go(leaf.route'));
   });

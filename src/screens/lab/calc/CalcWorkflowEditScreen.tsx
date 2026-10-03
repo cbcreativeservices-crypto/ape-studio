@@ -15,6 +15,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useTier } from '../../../features/commercial/useTier';
 import type { Workflow, WorkflowStep } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
 import { workflowGeneration, workflowStore } from './workflowStore';
@@ -31,7 +32,12 @@ export function CalcWorkflowEditScreen() {
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkflowEdit'>>();
   const editingId = route.params?.id;
-  const { entitlement, resolved } = useEntitlement();
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  // A failed membership read (no remembered tier) reads 'guest' on the
+  // resolved-based tier (tier sweep 2026-10-03): the save still refuses, but
+  // with the honest words, never the membership sell (CalcLabScreen rule).
+  const tier = useTier();
+  const tierUnconfirmed = tier === 'guest' && !tierKnown;
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -159,6 +165,15 @@ export function CalcWorkflowEditScreen() {
     // the limits are the academy row, so a free account's NEW workflow saved.
     if (!editingId && !resolved) {
       notify('One moment', 'Still checking your account. Tap SAVE again in a moment.');
+      return;
+    }
+    if (!editingId && tierUnconfirmed) {
+      notify(
+        tierReadFailed ? 'Membership not confirmed' : 'One moment',
+        tierReadFailed
+          ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+          : 'Still checking your account. Tap SAVE again in a moment.',
+      );
       return;
     }
     if (!editingId && workflowLimitsFor(entitlement, resolved).savedWorkflows === 0) {

@@ -20,7 +20,8 @@ import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import type { RootStackParamList } from '../../navigation/types';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
@@ -59,13 +60,18 @@ const TRAIN_DESC =
 
 export function AudioLearningScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
-  const { isMember, resolved } = useEntitlement();
+  const gate = useMemberGate();
   // Until the first entitlement read lands, don't assert non-membership: a real
   // member would otherwise see the 🔒 / "PREVIEW" framing flash for a frame
   // before snapping to the unlocked "EXPLORE" view (M6 first-paint guard; launch
   // audit 2026-09-09). The card is tappable by everyone either way (EarLab
   // enforces the per-lab lock), so the neutral pre-resolve view is the member one.
-  const locked = resolved && !isMember;
+  //
+  // KNOWN, not merely resolved (tier sweep 2026-10-03): `resolved` also flips
+  // on a FAILED read, and a member with no remembered tier then saw the 🔒
+  // ACADEMY MEMBERSHIP badge and the free copy. A failed read keeps the
+  // neutral member view and is told plainly that the check failed.
+  const locked = gate === 'locked';
 
   const goFundamentals = () => navigation.navigate('EarLab', { section: 'fundamentals' });
   const goTraining = () => navigation.navigate('EarLab', { section: 'training' });
@@ -90,6 +96,7 @@ export function AudioLearningScreen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.intro}>{locked ? INTRO : INTRO_MEMBER}</Text>
+        {gate === 'unconfirmed' ? <Text style={styles.intro}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}
 
         {/* ── Audio Fundamentals — free to start (core labs free) ──────── */}
         <Pressable

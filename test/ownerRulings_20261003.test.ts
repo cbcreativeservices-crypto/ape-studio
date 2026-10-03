@@ -143,7 +143,9 @@ describe('1 · Glossary: sharing a term costs exactly the one lookup of opening 
     const s = between(src, 'const shareTerm = useCallback(', 'const deferredSearch');
     assert.match(
       s,
-      /if \(serverMetersRef\.current && !detailsRef\.current\[e\.id\]\) \{\s*if \(!\(await openViaGatewayRef\.current\(e\.id\)\)\) return;\s*if \(!detailsRef\.current\[e\.id\] && !sessionDefinition\(e\.id, isMemberRef\.current\)\) \{\s*notifyShareUnreadable\(shareDefinitionUnreadable\(e\.term, 'error'\)\);\s*return;\s*\}\s*\}/,
+      // Tier sweep 2026-10-03: a term whose open was charged but never
+      // answered is said BEFORE the gateway is asked again.
+      /if \(serverMetersRef\.current && !detailsRef\.current\[e\.id\]\) \{\s*if \(defTierRef\.current !== 'member' && sessionChargeUnanswered\(e\.id\)\) \{\s*notifyShareUnreadable\(shareDefinitionUnreadable\(e\.term, 'error'\)\);\s*return;\s*\}\s*if \(!\(await openViaGatewayRef\.current\(e\.id\)\)\) return;\s*if \(!detailsRef\.current\[e\.id\] && !sessionDefinition\(e\.id, isMemberRef\.current\)\) \{\s*notifyShareUnreadable\(shareDefinitionUnreadable\(e\.term, 'error'\)\);\s*return;\s*\}\s*\}/,
     );
     // The guard sits BEFORE the build (whose own read would be the second charge).
     assert.ok(s.indexOf('sessionDefinition(e.id') < s.indexOf('primary = await buildShareTerm(e.id)'));

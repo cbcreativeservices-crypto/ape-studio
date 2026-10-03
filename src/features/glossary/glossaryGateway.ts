@@ -224,6 +224,20 @@ export async function fetchDefinitionViaGateway(id: string): Promise<DefinitionR
  */
 const READ_OK = new Map<string, GatewayDefinition>();
 const READ_PENDING = new Map<string, Promise<DefinitionResult>>();
+/**
+ * SENT, POSSIBLY CHARGED, NEVER ANSWERED (owner ruling 2026-10-03 #1: opening
+ * a term costs 1 lookup; once opened it is free for the session; sharing is
+ * never an extra charge). A read that went out and came back as a plain
+ * 'error' fault — the 12 s deadline, a dropped connection — may already have
+ * been COUNTED by the server: it counts the call, not the answer. The open
+ * path still retries (a fault is never kept, so a re-open asks again — that
+ * is the reader asking for the definition), but SHARE must not be the thing
+ * that spends a second lookup on a term the reader already paid to open.
+ * Refusals ('limit-reached', 'sign-in-required', 'denied', 'not-deployed')
+ * are not charges and are not recorded. Cleared by a good read of the term
+ * and by any identity change, like READ_OK.
+ */
+const READ_UNANSWERED = new Set<string>();
 let readsUid: string | null | undefined;
 let readsGen = 0;
 supabase.auth.onAuthStateChange((_e, session) => {
@@ -231,6 +245,7 @@ supabase.auth.onAuthStateChange((_e, session) => {
   if (uid !== readsUid) {
     READ_OK.clear();
     READ_PENDING.clear();
+    READ_UNANSWERED.clear();
     readsGen += 1;
     readsUid = uid;
   }
@@ -246,6 +261,14 @@ export function sessionDefinition(id: string, member?: boolean): GatewayDefiniti
   return row;
 }
 
+/** True when this session already SENT the metered read for `id` (so the
+ *  server may have charged it) and no definition ever came back. A caller
+ *  that must never spend a second lookup on the same term — SHARE — says the
+ *  definition could not be loaded instead of reading again. */
+export function sessionChargeUnanswered(id: string): boolean {
+  return READ_UNANSWERED.has(id) && !READ_OK.has(id);
+}
+
 /** The metered read, at most once per term per session (per uid). */
 export function readDefinitionOnce(id: string, member?: boolean): Promise<DefinitionResult> {
   const row = sessionDefinition(id, member);
@@ -257,7 +280,14 @@ export function readDefinitionOnce(id: string, member?: boolean): Promise<Defini
     if (READ_PENDING.get(id) === p) READ_PENDING.delete(id);
     // Only for the identity that asked: an answer that lands after a sign-out
     // is the last reader's, and must not be served free to the next one.
-    if (r.state === 'ok' && gen === readsGen) READ_OK.set(id, r.row);
+    if (gen === readsGen) {
+      if (r.state === 'ok') {
+        READ_OK.set(id, r.row);
+        READ_UNANSWERED.delete(id);
+      } else if (r.fault === 'error') {
+        READ_UNANSWERED.add(id);
+      }
+    }
     return r;
   });
   READ_PENDING.set(id, p);

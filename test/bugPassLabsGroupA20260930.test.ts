@@ -50,7 +50,9 @@ test("PREV on WHAT'S LEFT returns to the last module in every module host", () =
 test('the lab menu opens one lab per tap, locked before a preview is armed', () => {
   const src = read('src/screens/lab/EarLabScreen.tsx');
   assert.match(src, /const claimOpen = \(\) =>/);
-  assert.match(src, /if \(!leaf\.route \|\| !claimOpen\(\)\) return;\s*\n\s*if \(leafLocked\(leaf, sec\)\) startLabPreview/);
+  // Tier sweep 2026-10-03: an unconfirmed tier is told so before anything is
+  // armed; the claim still comes first.
+  assert.match(src, /if \(!leaf\.route \|\| !claimOpen\(\)\) return;\s*\n\s*if \(memberOnlyLeaf\(leaf, sec\) && gate !== 'open' && unknownMemberOpen\(\)\) return;\s*\n\s*if \(leafLocked\(leaf, sec\)\) startLabPreview/);
   assert.match(src, /if \(cat\.kind !== 'hub' \|\| !claimOpen\(\)\) return;/);
 });
 

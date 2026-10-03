@@ -122,7 +122,9 @@ describe('4. the commitment intro is held until the tier is known', () => {
   it('hold={!tierKnown}, tierKnown from the screen’s useEntitlement()', () => {
     const s = read('src/screens/courses/CourseSelectionScreen.tsx');
     assert.match(s, /<ScreenIntroOverlay introKey="commitment" delayMs=\{8000\} sessionOnly=\{entitlement !== 'academy'\} hold=\{!tierKnown\} \/>/);
-    assert.match(s, /const \{ commercialMode, entitlement, caps, resolved, isMember, setCommercialMode, setEntitlement, tierKnown \} = useEntitlement\(\);/);
+    // Tier sweep 2026-10-03: isMember left this destructure (the Membership
+    // link now reads useUpsellAllowed); tierKnown is still the screen's own.
+    assert.match(s, /const \{ commercialMode, entitlement, caps, resolved, setCommercialMode, setEntitlement, tierKnown \} = useEntitlement\(\);/);
   });
 });
 

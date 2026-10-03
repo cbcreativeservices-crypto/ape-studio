@@ -558,8 +558,13 @@ export function AwardsScreen({ navigation, route }: Props) {
   // optimistically: a guest must leave no local preference behind (no-tracking
   // promise). Instead the pick is re-persisted by the effect below the moment
   // the tier resolves to a real account.
-  const { entitlement, resolved } = useEntitlement();
+  const { entitlement, resolved, tierKnown } = useEntitlement();
   const hasAccount = resolved && entitlement !== 'anonymous';
+  // The "won't be saved without an account" prompt is an identity CLAIM, so it
+  // waits for a KNOWN tier (tier sweep 2026-10-03): `resolved` also flips when
+  // the membership read FAILED, and a signed-in member with no remembered tier
+  // then reads 'anonymous' — they were told they have no account.
+  const knownGuest = tierKnown && entitlement === 'anonymous';
 
   // Builder selections (user request 2026-07-18): a Specialization Certificate
   // (Level 1) + an Academy Program Certificate (Level 2) — each chosen from its
@@ -768,9 +773,9 @@ export function AwardsScreen({ navigation, route }: Props) {
       // "won't be saved without an account" — false, and alarming. (The pick
       // itself was never at risk; the re-persist effect below already rewrites
       // it once the tier resolves.)
-      if (resolved && entitlement === 'anonymous') setPayPrompt({ label });
+      if (knownGuest) setPayPrompt({ label });
     },
-    [entitlement, resolved, goToIndex],
+    [knownGuest, goToIndex],
   );
 
   // Popup actions (2026-09-15) — the SAME calls the inline card buttons made.
@@ -801,9 +806,9 @@ export function AwardsScreen({ navigation, route }: Props) {
       addBundle(kind, c.name, c.topics);
       addTopicsUnloaded(c.topics); // new topics only (bug hunt 2026-09-29)
       addTopics([...COREQ_TOPIC_GS]);
-      if (resolved && entitlement === 'anonymous') setPayPrompt({ label: c.name });
+      if (knownGuest) setPayPrompt({ label: c.name });
     },
-    [bundleKeys, credKey, resolved, entitlement],
+    [bundleKeys, credKey, knownGuest],
   );
   /**
    * STUDY NOW / GO TO MY ENROLLMENTS — the two onward doors that open once a

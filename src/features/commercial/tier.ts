@@ -82,3 +82,46 @@ export function upsellAllowed(tier: Tier, tierKnown: boolean): boolean {
   if (!tierKnown) return false;
   return tier === 'guest' || tier === 'free' || tier === 'preview';
 }
+
+/**
+ * A members-only gate as FOUR honest states (tier sweep 2026-10-03; owner
+ * rulings 2026-10-03 "if it fails the user needs to know" and "once it fails
+ * it should know and stop checking"; standing rule: never a 🔒 or an upsell to
+ * a member).
+ *
+ *   'open'        — academy standing: the content.
+ *   'locked'      — a KNOWN non-member (a read produced the tier this session,
+ *                   or the provider restored this account's last confirmed
+ *                   'free'): the 🔒 and the membership offer.
+ *   'checking'    — no answer yet, retries still running: neutral (blank /
+ *                   "Checking your account…"), never a lock, never a sell.
+ *   'unconfirmed' — the provider gave up without a tier (`tierReadFailed`):
+ *                   "Couldn't confirm your membership on this phone…". No 🔒,
+ *                   no upsell — and nothing unlocks either.
+ *
+ * `known` is the same rule as ToolLockUi's useToolsLocked / useSaveGate:
+ * `tierKnown`, or a remembered real-account tier. The members-only preview is
+ * deliberately not folded in (pass `tierOf(entitlement, resolved)`): these
+ * gates are about standing, not the preview flag.
+ */
+export type MemberGate = 'open' | 'locked' | 'checking' | 'unconfirmed';
+
+export const MEMBERSHIP_NOT_CONFIRMED =
+  'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.';
+
+export function memberGateOf(tier: Tier, tierKnown: boolean, tierReadFailed: boolean): MemberGate {
+  if (tier === 'member') return 'open';
+  if (tier === 'unknown') return 'checking';
+  const known = tierKnown || tier === 'free';
+  if (known) return 'locked';
+  return tierReadFailed ? 'unconfirmed' : 'checking';
+}
+
+/** Speak to this person AS A GUEST ("you're not signed in", "won't be saved
+ *  without an account")? Only for a KNOWN guest (tier sweep 2026-10-03): the
+ *  resolved-based 'guest' also covers a signed-in learner whose membership
+ *  read FAILED, and telling them they are signed out is false. The labs' hold
+ *  / carry rules stay on `isGuestTier` — only the identity CLAIM moves here. */
+export function guestWordingAllowed(tier: Tier, tierKnown: boolean): boolean {
+  return isGuestTier(tier) && (tier === 'preview' || tierKnown);
+}

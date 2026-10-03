@@ -44,7 +44,7 @@ import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { computeResult } from '../../features/careerfinder/scoring';
 import { useCareerFinder, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { readingColumn } from '../../theme/readingColumn';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useUpsellAllowed } from '../../features/commercial/useTier';
 
 /**
  * What the Academy sets out to do.
@@ -128,8 +128,11 @@ export function CurriculumView({
   // The Career Finder entry is a button beside SUBJECTS (owner 2026-09-04):
   // tapping it opens the green container as a popup.
   const [showFinder, setShowFinder] = useState(false);
-  // Members never see "free" marketing (owner 2026-09-29).
-  const { isMember, resolved: tierResolved } = useEntitlement();
+  // Members never see "free" marketing (owner 2026-09-29) — and neither does
+  // anyone whose tier is not KNOWN yet (tier sweep 2026-10-03): `resolved`
+  // also flips on a FAILED read, and a member with no remembered tier then
+  // read as a non-member and was sold their own membership.
+  const upsell = useUpsellAllowed();
   // Curriculum view split (owner 2026-09-15): TOPICS (flat list of every topic)
   // vs SUBJECTS (the expandable subject → topics tree).
   const [curTab, setCurTab] = useState<'topics' | 'subjects'>('subjects');
@@ -177,8 +180,8 @@ export function CurriculumView({
     if (answered > 0) {
       return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. ${finderSaving ? 'Your answers are saved.' : 'Your answers could not be saved on this phone.'}`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
     }
-    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. ${isMember ? '' : 'Free, '}about five minutes.`, route: 'CareerFinder' };
-  }, [finderRec, finderSaving, isMember]);
+    return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. ${upsell ? 'Free, ' : ''}about five minutes.`, route: 'CareerFinder' };
+  }, [finderRec, finderSaving, upsell]);
 
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
   const [v3Subjects, setV3Subjects] = useState<{ order: number; name: string; field: string; topics: { gs: number; name: string }[] }[]>([]);
@@ -386,7 +389,7 @@ export function CurriculumView({
           <Text style={styles.aboutCtaText} numberOfLines={1}>About the Academy</Text>
         </Pressable>
         {/* Not for members (owner 2026-09-30): Settings › MEMBERSHIP. */}
-        {tierResolved && !isMember ? (
+        {upsell ? (
           <Pressable
             hitSlop={6}
             style={[styles.membershipCta, styles.halfFlex]}
@@ -620,7 +623,7 @@ export function CurriculumView({
         <Pressable style={StyleSheet.absoluteFill} onPress={() => setShowFinder(false)} accessibilityRole="button" accessibilityLabel="Dismiss" />
         <View style={styles.finderModal}>
           <View style={styles.finderEyebrowRow}>
-            <Text style={styles.finderEyebrow}>{isMember ? 'CAREER DISCOVERY LAB' : 'CAREER DISCOVERY LAB · FREE'}</Text>
+            <Text style={styles.finderEyebrow}>{upsell ? 'CAREER DISCOVERY LAB · FREE' : 'CAREER DISCOVERY LAB'}</Text>
             <View style={styles.finderBeta}><Text style={styles.finderBetaText}>BETA</Text></View>
           </View>
           <Text style={styles.finderTitle}>Audio Career Finder</Text>

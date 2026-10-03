@@ -22,6 +22,9 @@ import { AccuracyNote } from '../../components/AccuracyNote';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import type { RootStackParamList } from '../../navigation/types';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
+import { notify } from '../../lib/confirm';
 import { startLabPreview } from '../../features/lab/labPreviewStore';
 import {
   categoryCountLabel,
@@ -74,8 +77,14 @@ export function EarLabScreen({ navigation, route }: Props) {
   // at a paying member, and tapping a row in that window started the preview
   // overlay + upgrade sheet. Treat "not yet known" as a member until the server
   // read lands; the locks re-apply a beat later for anyone who isn't one.
-  const { isMember: memberStanding, resolved } = useEntitlement();
-  const isMember = !resolved || memberStanding;
+  //
+  // KNOWN, not merely resolved (tier sweep 2026-10-03): `resolved` also flips
+  // on a FAILED read, and a member with no remembered tier then saw the whole
+  // section locked and the free / preview copy. The locks and the free copy
+  // now need a KNOWN non-member (useMemberGate 'locked').
+  const { resolved } = useEntitlement();
+  const gate = useMemberGate();
+  const isMember = gate !== 'locked';
   const section = route.params?.section; // undefined = the full combined list
   // Accordion (owner 2026-08-07): every lab row loads COLLAPSED (name + reveal
   // triangle); at most ONE row is expanded at a time, and the expanded row
@@ -111,13 +120,33 @@ export function EarLabScreen({ navigation, route }: Props) {
   const freeIncluded = (leaf: LabLeaf, sec: LabSection) =>
     !isMember && sec === 'fundamentals' && !leaf.member && leaf.status !== 'development';
 
+  // A members-only open while the tier is not KNOWN (tier sweep 2026-10-03):
+  // no preview scrim / upgrade sheet (that sells a member their own
+  // membership) and no live lab (nothing unlocks on a failed read) — the
+  // honest words instead. Before the first read lands (`!resolved`) the old
+  // member-favouring open stands.
+  const unknownMemberOpen = (): boolean => {
+    if (gate === 'unconfirmed') {
+      notify('Membership not confirmed', MEMBERSHIP_NOT_CONFIRMED);
+      return true;
+    }
+    if (gate === 'checking' && resolved) {
+      notify('One moment', 'Still checking your account. Try again in a moment.');
+      return true;
+    }
+    return false;
+  };
+  const memberOnlyLeaf = (leaf: LabLeaf, sec: LabSection) => sec === 'training' || !!leaf.member;
+
   const openLeaf = (leaf: LabLeaf, sec: LabSection) => {
     if (!leaf.route || !claimOpen()) return;
+    if (memberOnlyLeaf(leaf, sec) && gate !== 'open' && unknownMemberOpen()) return;
     if (leafLocked(leaf, sec)) startLabPreview(leaf.route, leaf.name);
     go(leaf.route, leaf.params);
   };
   const openHub = (cat: LabCategory) => {
     if (cat.kind !== 'hub' || !claimOpen()) return;
+    if (cat.section === 'training' && !cat.alwaysFree && gate !== 'open' && unknownMemberOpen()) return;
     // alwaysFree hubs (the Calculator Laboratory) never enter preview mode.
     if (sectionLocked(cat.section) && !cat.alwaysFree) startLabPreview(cat.route, cat.name);
     go(cat.route, cat.params);
@@ -183,6 +212,7 @@ export function EarLabScreen({ navigation, route }: Props) {
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
         <Text style={styles.intro}>{intro}</Text>
+        {gate === 'unconfirmed' ? <Text style={styles.intro}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}
 
         {shownSections.map((sec) => {
           const secLocked = sectionLocked(sec.key);

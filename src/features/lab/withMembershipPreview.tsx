@@ -36,7 +36,8 @@ import { useEffect, useState } from 'react';
 import { AccessibilityInfo, ActivityIndicator, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
-import { useEntitlement } from '../commercial/EntitlementProvider';
+import { useMemberGate } from '../commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../commercial/tier';
 import { isMemberOnlyLabRoute, labRouteName } from '../../screens/lab/labCatalog';
 import { endLabPreview, getLabPreview, startLabPreview, useLabPreview } from './labPreviewStore';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -91,6 +92,30 @@ function GateHold({ onBack }: { onBack?: () => void }) {
   );
 }
 
+/**
+ * THE CHECK GAVE UP (tier sweep 2026-10-03; owner rulings 2026-10-03 "if it
+ * fails the user needs to know" / "once it fails it should know and stop
+ * checking"). A signed-in learner whose membership read FAILED with no
+ * remembered tier used to read as a resolved non-member here — the preview
+ * scrim and the UpgradeSheet sold a paying member their own membership. Now:
+ * the plain words and a way back. The lab still never mounts (nothing unlocks
+ * on a failed read), and there is no spinner — nothing is checking any more.
+ */
+function GateUnconfirmed({ onBack }: { onBack?: () => void }) {
+  return (
+    <View style={styles.hold}>
+      <Text style={styles.holdText} accessibilityLiveRegion="polite">
+        {MEMBERSHIP_NOT_CONFIRMED}
+      </Text>
+      {onBack ? (
+        <Pressable onPress={onBack} style={styles.holdBtn} accessibilityRole="button" accessibilityLabel="Go back">
+          <Text style={styles.holdBtnText}>GO BACK</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   hold: { flex: 1, backgroundColor: colors.screenBg, alignItems: 'center', justifyContent: 'center', gap: 14, padding: 24 },
   holdText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, textAlign: 'center' },
@@ -104,11 +129,13 @@ export function withMembershipPreview<P extends object>(
   function Guarded(props: P) {
     const route = useRoute();
     const navigation = useNavigation();
-    // Real academy standing; `resolved` false until the first server read lands.
-    const { isMember, resolved } = useEntitlement();
+    // Real academy standing, as four honest states (tier sweep 2026-10-03):
+    // 'checking' until a read PRODUCES the tier (or the provider gives up),
+    // not merely until `resolved` — which also flips on a failed read.
+    const gate = useMemberGate();
     const memberOnly = isMemberOnlyLabRoute(route.name);
-    // A resolved non-member on a members-only route is the one case we gate.
-    const gated = memberOnly && resolved && !isMember;
+    // A KNOWN non-member on a members-only route is the one case we gate.
+    const gated = memberOnly && gate === 'locked';
     const preview = useLabPreview();
     const armedForThis = preview.active && preview.route === route.name;
     /**
@@ -150,7 +177,8 @@ export function withMembershipPreview<P extends object>(
     const goBack = () => {
       safeGoBack(navigation); // canGoBack, focused, one leave per tap burst
     };
-    if (memberOnly && !resolved) return <GateHold onBack={goBack} />;
+    if (memberOnly && gate === 'checking') return <GateHold onBack={goBack} />;
+    if (memberOnly && gate === 'unconfirmed') return <GateUnconfirmed onBack={focused ? goBack : undefined} />;
     // Unarmed AND focused means the arm has not landed yet — hold. Unarmed
     // while BLURRED is the pushed-over case above: nothing is visible, and the
     // hold is what the user comes back to right before the arm re-fires.

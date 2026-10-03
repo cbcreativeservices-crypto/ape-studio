@@ -17,6 +17,9 @@ import type { RootStackParamList } from '../../navigation/types';
 import { categoryCountLabel, DEV_NOTE, getCategory, type LabLeaf } from './labCatalog';
 import { useLabDone } from '../../features/lab/labCompletion';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
+import { notify } from '../../lib/confirm';
 import { startLabPreview } from '../../features/lab/labPreviewStore';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -31,7 +34,8 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   // Accordion (owner 2026-08-07): rows load collapsed; one expanded at a time;
   // the expanded row opens via an explicit [OPEN] button.
   const [expandedKey, setExpandedKey] = useState<string | null>(null);
-  const { isMember, resolved } = useEntitlement();
+  const { resolved } = useEntitlement();
+  const gate = useMemberGate();
   const lastOpenAt = useRef(0);
 
   if (!cat || cat.kind !== 'list') {
@@ -50,12 +54,34 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   // gated at the screen (withMembershipPreview gates only routes that are
   // members-only EVERYWHERE in the catalog) got it live. And two OPEN taps
   // inside the beat pushed the lab twice.
-  const lockedLeaf = (leaf: LabLeaf) => resolved && !isMember && (cat.section === 'training' || !!leaf.member);
+  //
+  // KNOWN non-member only (tier sweep 2026-10-03): `resolved && !isMember`
+  // also matched a member whose membership read FAILED — they got the preview
+  // scrim and the upgrade sheet.
+  const memberOnlyLeaf = (leaf: LabLeaf) => cat.section === 'training' || !!leaf.member;
+  const lockedLeaf = (leaf: LabLeaf) => gate === 'locked' && memberOnlyLeaf(leaf);
+  // A members-only open while the tier is not KNOWN (tier sweep 2026-10-03):
+  // no preview scrim / upgrade sheet (that sells a member their own
+  // membership) and no live lab (nothing unlocks on a failed read) — the
+  // honest words instead. Before the first read lands (`!resolved`) the old
+  // member-favouring open stands.
+  const unknownMemberOpen = (): boolean => {
+    if (gate === 'unconfirmed') {
+      notify('Membership not confirmed', MEMBERSHIP_NOT_CONFIRMED);
+      return true;
+    }
+    if (gate === 'checking' && resolved) {
+      notify('One moment', 'Still checking your account. Try again in a moment.');
+      return true;
+    }
+    return false;
+  };
   const open = (leaf: LabLeaf) => {
     if (!leaf.route) return;
     const now = Date.now();
     if (now - lastOpenAt.current < 600) return;
     lastOpenAt.current = now;
+    if (memberOnlyLeaf(leaf) && gate !== 'open' && unknownMemberOpen()) return;
     if (lockedLeaf(leaf)) startLabPreview(leaf.route, leaf.name);
     go(leaf.route, leaf.params);
   };

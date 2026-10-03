@@ -47,6 +47,8 @@ import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features
 import { SpeakButton, stopAllSpeech } from '../../components/SpeakButton';
 import { StudioButton } from '../../components/StudioButton';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useUpsellAllowed } from '../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 import { HelpDot, useScreenHelp } from '../../features/help/ScreenHelpSheet';
 import { getBookmarks, listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
@@ -91,6 +93,7 @@ import {
   probeGateway,
   readDefinitionOnce,
   resetGatewayProbe,
+  sessionChargeUnanswered,
   sessionDefinition,
   type GatewayProbe,
 } from '../../features/glossary/glossaryGateway';
@@ -1314,7 +1317,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
   const [linksOn, setLinksOn] = useGlossaryLinksPref();
   // CM4: commercial rendering — Common Mistakes gating + no academic course
   // filter in public UI (§1 naming rule). Server owns entitlement; we render.
-  const { commercialMode, isMember, entitlement, resolved } = useEntitlement();
+  const { commercialMode, isMember, entitlement, resolved, tierReadFailed } = useEntitlement();
+  // Membership copy (SEE MEMBERSHIP, 🔒 MEMBERS, the upgrade hint) only for a
+  // KNOWN non-member (tier sweep 2026-10-03): `resolved && !isMember` also
+  // matched a member whose membership read FAILED — they were sold their own
+  // membership. A failed read gets the honest words; nothing unlocks.
+  const upsell = useUpsellAllowed();
+  const tierUnconfirmedCopy = tierReadFailed ? MEMBERSHIP_NOT_CONFIRMED : 'Checking your account…';
   // Real membership: gate the mistakes veil + topic-filter links on true
   // standing (provider isMember), never on caps (dev-bypassed) — that regression
   // hid both selling points. See the isMember doc in EntitlementProvider.
@@ -2577,6 +2586,14 @@ ${COPY.glossaryFreeAllowance}`,
       let definition: string | null =
         defTierRef.current === 'member' && e.definition.trim() ? e.definition : null;
       if (definition == null) {
+        // ⛔ SHARING IS NEVER AN EXTRA CHARGE (owner ruling 2026-10-03 #1). The
+        // reader's open of this term already SENT the metered read and it
+        // never answered (timeout / dropped link) — the server may have
+        // counted it. Reading again here would spend a second lookup on one
+        // term (and a multi-term share would do it per term). Said, not
+        // retried; re-opening the term is the reader's own retry.
+        // A member is never metered, so a member's re-read costs nothing.
+        if (!isMemberRef.current && sessionChargeUnanswered(id)) throw shareDefinitionUnreadable(e.term, 'error');
         const gen = readerGenRef.current;
         const r = await readDefinitionOnce(id, isMemberRef.current);
         if (gen !== readerGenRef.current) return null;
@@ -2628,6 +2645,12 @@ ${COPY.glossaryFreeAllowance}`,
       // opened ON TOP of the lock, offering the 120-character teaser as the
       // term's definition. openViaGateway answers false only for those two.
       if (serverMetersRef.current && !detailsRef.current[e.id]) {
+        // Opened earlier this session, charged, never answered (owner ruling
+        // 2026-10-03 #1): not a second gateway read — see buildShareTerm.
+        if (defTierRef.current !== 'member' && sessionChargeUnanswered(e.id)) {
+          notifyShareUnreadable(shareDefinitionUnreadable(e.term, 'error'));
+          return;
+        }
         if (!(await openViaGatewayRef.current(e.id))) return;
         // ⛔ ONE LOOKUP PER SHARE (owner ruling 2026-10-03: sharing "counts as
         // 1 use … not extra to share — just that they opened that term's
@@ -3411,14 +3434,14 @@ ${COPY.glossaryFreeAllowance}`,
                     `!resolved ||` keeps the member view during the entitlement
                     round-trip — the house rule, since flashing a lock at
                     somebody who has paid is the worse error. */}
-                {!resolved || isMember ? (
+                {!resolved || isMember || !upsell ? (
                   <>
                     <Text style={styles.offlineStat}>
                       {offlineStats.definitions >= offlineStats.terms
                         ? `Saved on this phone — all ${offlineStats.terms.toLocaleString()} terms work with no connection.`
                         : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this phone.`}
                     </Text>
-                    {offlineStats.definitions >= offlineStats.terms ? null : (
+                    {offlineStats.definitions >= offlineStats.terms || (resolved && !isMember) ? null : (
                       <Pressable
                         onPress={() => void saveWholeGlossary()}
                         accessibilityRole="button"
@@ -3435,7 +3458,9 @@ ${COPY.glossaryFreeAllowance}`,
                       </Pressable>
                     )}
                     <Text style={styles.offlineHint}>
-                      {savingOffline
+                      {resolved && !isMember
+                        ? tierUnconfirmedCopy
+                        : savingOffline
                         ? 'Keep this screen open. You can carry on reading while it saves.'
                         : 'Working a ship, on a flight, or out on a tour with no wi-fi? Save the whole glossary now and every term stays readable with no signal at all. About 4 MB. Terms you read are kept automatically either way.'}
                     </Text>
@@ -3917,7 +3942,7 @@ ${COPY.glossaryFreeAllowance}`,
                   <Text style={styles.cardPopupCloseText}>✕</Text>
                 </Pressable>
               </View>
-              <Text style={styles.topicLockHint}>{COPY.upgradePhrase}</Text>
+              <Text style={styles.topicLockHint}>{upsell ? COPY.upgradePhrase : tierUnconfirmedCopy}</Text>
               <ScrollView keyboardShouldPersistTaps="handled" {...NO_TOUCH_DELAY}>
                 {/* Equations & Formulas is a free cross-topic reference list, so
                     it stays SELECTABLE even here where per-topic links are
@@ -3935,12 +3960,18 @@ ${COPY.glossaryFreeAllowance}`,
                   <Pressable
                     key={t.id}
                     style={styles.topicRow}
-                    onPress={() => setTopicGate(true)}
+                    onPress={() =>
+                      upsell
+                        ? setTopicGate(true)
+                        : tierReadFailed
+                          ? notify('Membership not confirmed', MEMBERSHIP_NOT_CONFIRMED)
+                          : notify('One moment', 'Still checking your account. Try again in a moment.')
+                    }
                     accessibilityRole="button"
-                    accessibilityLabel={`${t.name} — active membership required to filter`}
+                    accessibilityLabel={upsell ? `${t.name} — active membership required to filter` : t.name}
                   >
                     <Text style={styles.topicRowText}>{t.name}</Text>
-                    <Text style={styles.topicMembersTag}>🔒 MEMBERS</Text>
+                    {upsell ? <Text style={styles.topicMembersTag}>🔒 MEMBERS</Text> : null}
                   </Pressable>
                 ))}
               </ScrollView>

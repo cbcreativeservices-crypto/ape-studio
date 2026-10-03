@@ -62,8 +62,12 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   // before showing their real progress. Holding the guest line until the tier is
   // known costs a guest nothing — the waiting slot simply shows its counts a
   // moment later.
-  const { entitlement, resolved } = useEntitlement();
-  const guest = resolved && entitlement === 'anonymous';
+  //
+  // KNOWN, not merely resolved (tier sweep 2026-10-03): `resolved` also flips
+  // on a FAILED membership read, and a signed-in learner with no remembered
+  // tier then reads 'anonymous' — they were told to sign in.
+  const { entitlement, tierKnown } = useEntitlement();
+  const guest = tierKnown && entitlement === 'anonymous';
   // ONE EXIT for ‹ (night bug pass 3, 2026-10-01): a double tap's second
   // goBack() from the popped route bubbled up and switched to the Home tab.
   // safeGoBack alone guards it (focus check + its time window); the old

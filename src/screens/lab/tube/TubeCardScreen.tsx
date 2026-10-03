@@ -38,7 +38,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
-import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePage, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -59,7 +60,9 @@ export function TubeCardScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'TubeCard'>>();
-  const { isMember: unlocked, resolved: entResolved } = useEntitlement();
+  // Four honest states (tier sweep 2026-10-03): the upsell only for a KNOWN
+  // non-member; a failed membership read is told so, never sold to.
+  const gate = useMemberGate();
 
   const startIdx = Math.max(0, TUBE_REFS.findIndex((r) => r.id === route.params.id));
   const [idx, setIdx] = useState(startIdx);
@@ -386,12 +389,31 @@ export function TubeCardScreen() {
   // used to greet every member with "Academy membership required" for the
   // card they had just opened. Blank-for-a-beat is neutral: it neither
   // false-locks a member nor shows the cards to a non-member.
-  if (!entResolved) {
+  if (gate === 'checking') {
     return <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]} />;
   }
 
+  // The read gave up (owner ruling 2026-10-03): say so — no 🔒, no upsell,
+  // and the cards stay closed (nothing unlocks on a failed read).
+  if (gate === 'unconfirmed') {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
+        <View style={styles.lockHeader}>
+          <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
+            <Text style={styles.back}>‹</Text>
+          </Pressable>
+          <Text style={styles.barTitle}>TUBE REFERENCE</Text>
+        </View>
+        <View style={styles.lockCard}>
+          <Text style={styles.lockEyebrow}>MEMBERSHIP NOT CONFIRMED</Text>
+          <Text style={styles.lockBody}>{MEMBERSHIP_NOT_CONFIRMED}</Text>
+        </View>
+      </View>
+    );
+  }
+
   // Non-members never reach the cards (deep-link safe).
-  if (!unlocked) {
+  if (gate === 'locked') {
     return (
       <View style={[styles.root, { paddingTop: insets.top + 10, paddingHorizontal: 16 }]}>
         <View style={styles.lockHeader}>

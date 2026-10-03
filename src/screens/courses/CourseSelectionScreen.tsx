@@ -50,6 +50,7 @@ import { dotRowFit, cardDimsFor, isCompactHeader, type CardDims } from './cardDi
 import { setLastCourse } from '../../features/dashboard/api';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useUpsellAllowed } from '../../features/commercial/useTier';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
@@ -701,7 +702,12 @@ function CourseCardView({
 }) {
   // CM3: the card RENDERS entitlement capabilities (server-owned once live) —
   // it never decides them. Flag OFF ⇒ everything unlocked-looking as today.
-  const { commercialMode, caps, isMember } = useEntitlement();
+  const { commercialMode, caps } = useEntitlement();
+  // "Free" / membership copy and the 🔒 ACADEMY MODE sell only once a read has
+  // actually PRODUCED a non-member tier (tier sweep 2026-10-03). `!isMember`
+  // alone also matched the boot window and a member whose membership read
+  // FAILED (no remembered tier) — they were marketed the membership they hold.
+  const upsell = useUpsellAllowed();
   const cd = useCardDims();
 
   // "+ XX other" tally card — its own compact look, far right of the deck.
@@ -738,9 +744,11 @@ function CourseCardView({
     // An academy MEMBER already has access — the stub is just unreleased content,
     // so don't upsell them the membership they hold (owner launch-triage). Members
     // see "COMING SOON"; non-members keep the "ACADEMY MODE" → paywall path.
-    const onStubPress = isMember
-      ? () => notify('Coming soon', `${item.name} is on the way — it'll appear here when it's ready.`)
-      : onLockedPress;
+    // Tier sweep 2026-10-03: the paywall path only for a KNOWN non-member
+    // (`upsell`); a member, the boot window and a failed read get COMING SOON.
+    const onStubPress = upsell
+      ? onLockedPress
+      : () => notify('Coming soon', `${item.name} is on the way — it'll appear here when it's ready.`);
     const stubInner = (
       <>
         <LinearGradient
@@ -755,7 +763,7 @@ function CourseCardView({
         <View style={{ alignItems: 'center' }}>
           <View style={{ width: cd.btnW }}>
             <GlassButton maxFontSizeMultiplier={HOME_MAX}
-              label={isMember ? 'COMING SOON' : '🔒 ACADEMY MODE'}
+              label={upsell ? '🔒 ACADEMY MODE' : 'COMING SOON'}
               tint="steel"
               height={50}
               fontSize={13}
@@ -876,7 +884,7 @@ function CourseCardView({
           {/* Members never see "free" marketing (owner 2026-09-29): it tells a
               free user what membership adds, and only points out to a member
               what they could have had for nothing. */}
-          <Eyebrow color={'#5bff85'} w={cd.w} text={isMember ? 'TRAINING LABS' : 'FREE TO BEGIN AND EXPLORE'} />
+          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE TO BEGIN AND EXPLORE' : 'TRAINING LABS'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap, but NOT announced as a button: the real button is
@@ -937,7 +945,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Eyebrow color={'#5bff85'} w={cd.w} text={isMember ? 'NEW TO AUDIO? (BEG LEVEL)' : 'FREE · NEW TO AUDIO? (BEG LEVEL)'} />
+          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE · NEW TO AUDIO? (BEG LEVEL)' : 'NEW TO AUDIO? (BEG LEVEL)'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap without a button role — the START HERE key inside is
@@ -963,7 +971,7 @@ function CourseCardView({
     const url = cardImageUrl(item.kind);
     const color = calc ? '#c4a2ff' : '#5bff85';
     const border = calc ? 'rgba(150,90,220,.6)' : 'rgba(55,224,95,.6)';
-    const eyebrow = calc ? 'AUDIO CALCULATORS' : isMember ? 'CAREER DISCOVERY' : 'FREE · CAREER DISCOVERY';
+    const eyebrow = calc ? 'AUDIO CALCULATORS' : upsell ? 'FREE · CAREER DISCOVERY' : 'CAREER DISCOVERY';
     const onPress = calc ? onOpenCalculators : onOpenCareerFinder;
     const inner = (
       <>
@@ -1076,9 +1084,9 @@ function CourseCardView({
       : isGlossary
         ? onOpenGlossary
         : coming
-          ? isMember
-            ? () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
-            : onLockedPress
+          ? upsell
+            ? onLockedPress
+            : () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
           : locked
             ? null
             : () => onOpenCourse(course!);
@@ -1115,11 +1123,11 @@ function CourseCardView({
   // Members get plain descriptions, never "free"/"included" marketing
   // (owner 2026-09-29).
   const eyebrow = isTools
-    ? isMember ? 'MEASUREMENT TOOLS' : 'INCLUDED FOR EVERYONE'
+    ? upsell ? 'INCLUDED FOR EVERYONE' : 'MEASUREMENT TOOLS'
     : isGlossary
-      ? isMember ? 'REFERENCE' : 'INCLUDED FOR EVERYONE'
+      ? upsell ? 'INCLUDED FOR EVERYONE' : 'REFERENCE'
       : free
-        ? isMember ? 'TOPIC' : 'FREE TOPIC' // keep the free-topic subtitle for free users (2026-07-18 fix)
+        ? upsell ? 'FREE TOPIC' : 'TOPIC' // keep the free-topic subtitle for free users (2026-07-18 fix)
         : coming
           ? // NEW COPY 2026-09-03, owner review. These cards used to read
             // "Specialization Certificate", which the carousel rule now
@@ -1147,7 +1155,7 @@ function CourseCardView({
         <Text style={styles.cardTitle} maxFontSizeMultiplier={HOME_MAX}>{title}</Text>
         {/* Tools tutorial line lives INSIDE the card, below the title (Booth
             2026-07-15) — blue, over the art. */}
-        {isTools && !isMember ? (
+        {isTools && upsell ? (
           <Text style={styles.cardToolsSub} maxFontSizeMultiplier={HOME_MAX}>Learn how to use them with tutorials in Academy Mode</Text>
         ) : null}
         {/* COURSE cards show their topic count below the title, in blue
@@ -1188,14 +1196,14 @@ function CourseCardView({
             // they see COMING SOON instead of the paywall path.
             <View style={{ width: cd.btnW }}>
               <GlassButton maxFontSizeMultiplier={HOME_MAX}
-                label={isMember ? 'COMING SOON' : '🔒 ACADEMY MODE'}
+                label={upsell ? '🔒 ACADEMY MODE' : 'COMING SOON'}
                 tint="steel"
                 height={50}
                 fontSize={13}
                 onPress={
-                  isMember
-                    ? () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
-                    : onLockedPress
+                  upsell
+                    ? onLockedPress
+                    : () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
                 }
               />
             </View>
@@ -1324,7 +1332,8 @@ export function CourseSelectionScreen() {
     requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: activeIdx, animated: false }));
   }, [windowW, activeIdx]);
   // CM2 — commercial mode + entitlement (mock provider; server truth later).
-  const { commercialMode, entitlement, caps, resolved, isMember, setCommercialMode, setEntitlement, tierKnown } = useEntitlement();
+  const { commercialMode, entitlement, caps, resolved, setCommercialMode, setEntitlement, tierKnown } = useEntitlement();
+  const upsell = useUpsellAllowed();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   // Top-left "About" text button → the About popup (owner 2026-08-12).
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -1792,8 +1801,10 @@ export function CourseSelectionScreen() {
       {/* Top-right Membership button (owner 2026-08-12): opposite About →
           opens the academy Paywall. Same absolute-corner treatment.
           NOT for members (owner 2026-09-30): they manage their membership
-          from Settings › MEMBERSHIP. Hidden until the tier is known. */}
-      {resolved && !isMember ? (
+          from Settings › MEMBERSHIP. Hidden until the tier is KNOWN — a
+          failed read (resolved, no tier) is not a non-member (tier sweep
+          2026-10-03). */}
+      {upsell ? (
         <Pressable
           style={[styles.membershipBtn, { top: insets.top + 8 }]}
           onPress={() => (navigation as any).navigate('Paywall')}

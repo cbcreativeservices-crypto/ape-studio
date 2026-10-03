@@ -15,10 +15,11 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { afterDialogCloses, confirmDialog } from '../../../lib/confirm';
+import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
-import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import { TUBE_FAMILY_META, searchTubes, type TubeRef } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
@@ -34,13 +35,20 @@ export function TubeReferenceScreen() {
   // row greyed with an "ACADEMY" chevron and the membership note on top. The
   // rows themselves are public either way — TubeCardScreen is the real gate —
   // so holding the member-favouring state here leaks nothing.
-  const { isMember: memberStanding, resolved: entResolved } = useEntitlement();
-  const unlocked = !entResolved || memberStanding;
+  // KNOWN non-members only (tier sweep 2026-10-03): `resolved` also flips on a
+  // FAILED read, and a member with no remembered tier then saw every row
+  // locked and the upgrade card. A failed read gets the honest note instead.
+  const gate = useMemberGate();
+  const unlocked = gate !== 'locked';
   const [query, setQuery] = useState('');
 
   const hits = useMemo(() => searchTubes(query), [query]);
 
   const openTube = (r: TubeRef) => {
+    if (gate === 'unconfirmed') {
+      notify('Membership not confirmed', MEMBERSHIP_NOT_CONFIRMED);
+      return;
+    }
     if (!unlocked) {
       // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so locked
       // rows were silent taps on the web preview (B-018/B-062).
@@ -93,6 +101,12 @@ export function TubeReferenceScreen() {
       </View>
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
+        {gate === 'unconfirmed' ? (
+          <View style={styles.lockCard}>
+            <Text style={styles.lockEyebrow}>MEMBERSHIP NOT CONFIRMED</Text>
+            <Text style={styles.lockBody}>{MEMBERSHIP_NOT_CONFIRMED}</Text>
+          </View>
+        ) : null}
         {!unlocked ? (
           <View style={styles.lockCard}>
             <Text style={styles.lockEyebrow}>ACADEMY MEMBERS</Text>

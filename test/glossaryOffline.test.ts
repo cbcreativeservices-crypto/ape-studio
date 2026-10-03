@@ -75,7 +75,9 @@ describe('glossary works offline once loaded', () => {
     // Owner: "only member can save all to phone - yes offer the option - let
     // user decide". Hiding it from non-members would leave them never knowing
     // the app can do this, and the decision is theirs to make.
-    assert.match(screen, /\{!resolved \|\| isMember \? \(/, 'the offline block no longer branches on membership');
+    // Tier sweep 2026-10-03: the SEE MEMBERSHIP branch needs a KNOWN
+    // non-member (useUpsellAllowed); a failed read gets the plain block.
+    assert.match(screen, /\{!resolved \|\| isMember \|\| !upsell \? \(/, 'the offline block no longer branches on membership');
     assert.match(screen, /SEE MEMBERSHIP/, 'non-members are no longer offered the option');
     // The UI is not the enforcement.
     assert.match(screen, /if \(resolved && !isMember\) return;/, 'saveWholeGlossary no longer refuses a non-member');

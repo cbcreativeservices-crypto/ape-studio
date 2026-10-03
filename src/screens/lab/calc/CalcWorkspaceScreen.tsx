@@ -8,7 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from '../../../features/keyboard/keyboardControllerSafe';

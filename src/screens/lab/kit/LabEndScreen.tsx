@@ -35,7 +35,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { GlassButton } from '../../../components/GlassButton';
 import { isGuestTier } from '../../../features/commercial/tier';
-import { useTier } from '../../../features/commercial/useTier';
+import { useGuestWording, useTier } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 import { endLead, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
@@ -99,8 +99,14 @@ export function LabEndScreen({
   completeTitle?: string;
 }) {
   const insets = useSafeAreaInsets();
-  const autoGuest = useLabEndGuest();
-  const isGuest = guest ?? autoGuest;
+  // WORDING, not behaviour (tier sweep 2026-10-03): "You are not signed in"
+  // is said to a KNOWN guest only. A signed-in learner whose membership read
+  // failed reads 'guest' on the resolved-based tier — the lab still holds /
+  // blocks for them (useLabEndGuest, unchanged) but the end screen tells them
+  // the truth: checking, or "couldn't confirm", never "not signed in".
+  const wording = useGuestWording();
+  const isGuest = guest ?? wording.guest;
+  const account = guest === undefined ? wording.account : undefined;
   // A members-only preview is told it earns nothing; a signed-out guest that
   // signing in before closing the app keeps the work (owner 2026-10-01).
   const inPreview = useLabPreview().active;
@@ -152,7 +158,7 @@ export function LabEndScreen({
       <Text style={[styles.title, w.complete && { color: colors.green }]} accessibilityRole="header">
         {title}
       </Text>
-      <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen() })}</Text>
+      <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen(), account })}</Text>
       {extra}
 
       {w.left.length > 0 ? (

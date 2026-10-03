@@ -33,6 +33,7 @@ import { AccuracyNote } from '../../components/AccuracyNote';
 import { colors, fonts } from '../../theme/tokens';
 import { readingColumn } from '../../theme/readingColumn';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useGuestWording } from '../../features/commercial/useTier';
 import { heldPaged, holdPagedProgress, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
 import { useAnimationsAllowed } from '../../features/settings/a11y';
 import { confirmDialog } from '../../lib/confirm';
@@ -83,6 +84,7 @@ export function StartHereScreen() {
   // `resolved` REQUIRED: the provider boots at 'anonymous', and a signed-in
   // learner must not be treated as a guest before the tier is known.
   const { entitlement, resolved } = useEntitlement();
+  const guestWording = useGuestWording();
   const noAccountRef = useRef(resolved && entitlement === 'anonymous');
   noAccountRef.current = resolved && entitlement === 'anonymous';
 
@@ -256,7 +258,10 @@ export function StartHereScreen() {
     meters,
     // Reduced motion (OS or app setting) holds every display still.
     focused: focused && !reduceMotion,
-    guest: resolved && entitlement === 'anonymous',
+    // Guest WORDING needs a KNOWN guest (tier sweep 2026-10-03) — the same
+    // central rule as the labs' end screen (useGuestWording): a signed-in
+    // learner whose membership read failed is not told "you're not signed in".
+    guest: guestWording.guest,
     first: { source, setSource, freq, setFreq, gainDb, setGainDb, unplug, setUnplug },
     openRoute: (route, params) => {
       if (!claimOpen()) return;

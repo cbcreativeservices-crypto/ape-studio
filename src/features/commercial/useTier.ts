@@ -8,7 +8,7 @@
  */
 import { useEntitlement } from './EntitlementProvider';
 import { useLabPreview } from '../lab/labPreviewStore';
-import { tierOf, upsellAllowed, type Tier } from './tier';
+import { guestWordingAllowed, isGuestTier, memberGateOf, tierOf, upsellAllowed, type MemberGate, type Tier } from './tier';
 
 export function useTier(): Tier {
   const { entitlement, resolved } = useEntitlement();
@@ -22,4 +22,26 @@ export function useTier(): Tier {
 export function useUpsellAllowed(): boolean {
   const { tierKnown } = useEntitlement();
   return upsellAllowed(useTier(), tierKnown);
+}
+
+/** The members-only gate's honest state for a screen (tier sweep 2026-10-03):
+ *  'open' | 'locked' | 'checking' | 'unconfirmed'. See `memberGateOf`. */
+export function useMemberGate(): MemberGate {
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  return memberGateOf(tierOf(entitlement, resolved), tierKnown, tierReadFailed);
+}
+
+/** The ONE place a screen decides whether to SAY "you are not signed in" /
+ *  "won't be saved without an account" (tier sweep 2026-10-03): a KNOWN guest
+ *  (or a members-only preview) only. `account` names the honest middle state
+ *  for a learner the resolved-based tier calls 'guest' but no read confirmed:
+ *  'checking' while the provider retries, 'unconfirmed' once it gave up.
+ *  Wording only — the labs' hold / carry / save-block rules stay on
+ *  `isGuestTier(useTier())` (useLabEndGuest), unchanged. */
+export function useGuestWording(): { guest: boolean; account?: 'checking' | 'unconfirmed' } {
+  const { tierKnown, tierReadFailed } = useEntitlement();
+  const tier = useTier();
+  const guest = guestWordingAllowed(tier, tierKnown);
+  if (guest || !isGuestTier(tier)) return { guest };
+  return { guest: false, account: tierReadFailed ? 'unconfirmed' : 'checking' };
 }

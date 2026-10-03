@@ -41,6 +41,8 @@ import ToolStripHzcounter from '../../../assets/tool-strips/tool_07_frequency_co
 import ToolStripMultimeter from '../../../assets/tool-strips/tool_08_pro_audio_multimeter_strip.svg';
 import { CompactBrandBar } from '../../components/CompactBrandBar';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 import { CONCEPT_MODULES } from '../../features/tools/learn';
 import { colors, fonts } from '../../theme/tokens';
 import { AccuracyNote } from '../../components/AccuracyNote';
@@ -923,7 +925,12 @@ export function ToolsHubScreen({ navigation }: Props) {
   // disagree about how big a tile is or where it sits (see tileWidthFor).
   const { width: windowW } = useWindowDimensions();
   const tile = useMemo(() => tileMetricsFor(windowW), [windowW]);
-  const { isMember, resolved } = useEntitlement();
+  const { isMember } = useEntitlement();
+  // KNOWN, not merely resolved (tier sweep 2026-10-03): a member whose
+  // membership read FAILED (no remembered tier) read as a non-member here and
+  // got 🔒 rows and the Paywall. 'checking' holds the block; 'unconfirmed'
+  // says so plainly; only a KNOWN non-member ('locked') sees the locks.
+  const gate = useMemberGate();
   // ONE shared mic/DSP session + tick for the live tile previews (owner
   // 2026-08-19). Auto-starts on entry (OS permission prompt on first visit),
   // force-stops on blur/background, resumes on return; 'denied' rests the live
@@ -1149,7 +1156,8 @@ export function ToolsHubScreen({ navigation }: Props) {
               sees the 🔒 locked rows flash before the first entitlement read
               lands (M6 first-paint guard; launch audit 2026-09-09). It pops in a
               beat later with the correct lock state rather than mis-gating. */}
-          {resolved && (
+          {gate === 'unconfirmed' ? <Text style={styles.lockedNote}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}
+          {(gate === 'open' || gate === 'locked') && (
           <>
           {/* Saved Measurement Library — Academy-only (owner 2026-08-05). Free
               accounts see it grayed + locked; a tap routes to the Paywall. */}

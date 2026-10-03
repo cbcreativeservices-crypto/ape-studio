@@ -81,12 +81,23 @@ export function endTitle(w: WhatsLeft): "LAB COMPLETE" | "WHAT'S LEFT" {
  */
 export function endLead(
   w: WhatsLeft,
-  opts: { mode: 'credit' | 'progress'; noun: string; guest?: boolean; preview?: boolean; carry?: boolean },
+  opts: {
+    mode: 'credit' | 'progress';
+    noun: string;
+    guest?: boolean;
+    preview?: boolean;
+    carry?: boolean;
+    /** Tier sweep 2026-10-03: a signed-in learner whose membership read has
+     *  not produced a tier ('checking') or gave up ('unconfirmed'). Neither
+     *  "you are not signed in" (false) nor "everything is saved" (unknown):
+     *  the honest state. Ignored when `guest` is set. */
+    account?: 'checking' | 'unconfirmed';
+  },
 ): string {
   // `carry` (full run 2, 2026-10-01): false when signing in now would carry
   // nothing (after a sign-out, before Guest Mode starts a fresh guest
   // session — sessionCarryOpen). The guest is then told the plain truth.
-  const { mode, noun, guest, preview, carry = true } = opts;
+  const { mode, noun, guest, preview, carry = true, account } = opts;
   const plural = (n: number) => `${n} ${noun}${n === 1 ? '' : 's'}`;
   // A check row (final exam / understanding check) is not a module or page —
   // count it separately so "8 modules + the check" never reads "9 modules of 9".
@@ -110,6 +121,15 @@ export function endLead(
     return w.complete
       ? `You have been through every ${noun}. You are not signed in, so none of this is saved yet — sign in before you close the app to keep it.`
       : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. You are not signed in, so nothing here is saved yet — sign in before you close the app to keep your progress.`;
+  }
+  if (account) {
+    const why =
+      account === 'unconfirmed'
+        ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+        : 'Still checking your account.';
+    return w.complete
+      ? `You have been through every ${noun}. ${why}`
+      : `${onlyCheck ? 'Only the check is left' : `${what} still to go`}. ${why}`;
   }
   if (w.complete) {
     return mode === 'credit'

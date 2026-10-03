@@ -89,14 +89,18 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   const navigation = useNavigation<any>();
   // Only registered users (any account, paid or not) can set up a profile
   // (user request 2026-07-22).
-  const { entitlement, resolved } = useEntitlement();
+  const { entitlement, resolved, tierKnown } = useEntitlement();
   // `resolved` hold (entitlement roll-out 2026-09-11): the provider boots at
   // 'anonymous', so until the server read landed this screen greeted every
   // signed-in user — members included — with the "Get registered." guest
   // call-to-action instead of their Registry block. Unknown ⇒ render as though
   // they have an account. `accountConfirmed` stays STRICT so the QR-token RPC
   // never fires for a genuine guest.
-  const hasAccount = !resolved || entitlement !== 'anonymous';
+  // `tierKnown`, not `resolved` (tier sweep 2026-10-03): `resolved` also flips
+  // on a FAILED membership read, and a signed-in learner with no remembered
+  // tier then reads 'anonymous' and got "Get registered." A real guest is
+  // always a KNOWN answer (no session), so the guest CTA still reaches them.
+  const hasAccount = !tierKnown || entitlement !== 'anonymous';
   const accountConfirmed = resolved && entitlement !== 'anonymous';
   const [acctNote, setAcctNote] = useState(false);
   // The name the user chose for the Registry (set in Profile) — shown on the
