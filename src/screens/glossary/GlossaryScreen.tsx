@@ -866,6 +866,8 @@ const VEIL_PLACEHOLDER =
   '• The mistake that trips up almost everyone the first time.\n' +
   '• A subtle habit the manuals never warn you about.\n' +
   '• Get this right and you will sound like a seasoned pro.';
+/** The veil's line for a KNOWN non-member (see TermDetails' mistakesLockLine). */
+const MISTAKES_LOCK_LINE = `🔒 ${COPY.lockCommonMistakes}`;
 
 function TermDetails({
   d,
@@ -875,6 +877,7 @@ function TermDetails({
   definition,
   begFirst = false,
   mistakesReadable = false,
+  mistakesLockLine = MISTAKES_LOCK_LINE,
   term,
   onLabAction,
   onOpenCalc,
@@ -897,6 +900,12 @@ function TermDetails({
    *  text — everyone else sees the veiled tease + upgrade CTA. `true` iff the
    *  viewer is an academy member (gated on real entitlement, never caps). */
   mistakesReadable?: boolean;
+  /** The line under the veil. The 🔒 "available in academy mode" line only
+   *  for a KNOWN non-member (hunt 6, 2026-10-03 — the tier sweep's rule, "never
+   *  a 🔒 or an upsell to a member"): a learner whose membership is still being
+   *  checked, or whose read failed, gets the honest words instead. The veil
+   *  itself stays — nothing unlocks on an unconfirmed read. */
+  mistakesLockLine?: string;
   /** Audio-lab action handler. Present ⇒ the action row MAY render (only for
    *  terms with a READY Learning Profile — honest-metrics §1.7). Absent (e.g.
    *  no navigation context) ⇒ never rendered. */
@@ -1014,7 +1023,7 @@ function TermDetails({
               colors={['rgba(15,15,17,0)', 'rgba(15,15,17,0.85)']}
               style={styles.veilFade}
             />
-            <Text style={styles.veilLock}>🔒 {COPY.lockCommonMistakes}</Text>
+            <Text style={styles.veilLock}>{mistakesLockLine}</Text>
           </View>
         )}
       </View>
@@ -1324,6 +1333,9 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // membership. A failed read gets the honest words; nothing unlocks.
   const upsell = useUpsellAllowed();
   const tierUnconfirmedCopy = tierReadFailed ? MEMBERSHIP_NOT_CONFIRMED : 'Checking your account…';
+  // The Common Mistakes veil's line (hunt 6): the 🔒 lock line only for a known
+  // non-member, like the topic picker's hint below; the veil stays either way.
+  const mistakesLockLine = upsell ? MISTAKES_LOCK_LINE : tierUnconfirmedCopy;
   /**
    * ⛔ THE CLIENT METERS ONLY A KNOWN NON-MEMBER (owner 2026-10-03 #1).
    * 'locked' = a read produced a non-member tier (or this account's last
@@ -1589,6 +1601,22 @@ ${COPY.glossaryFreeAllowance}`,
       if (serverMeters) return openViaGatewayRef.current(id);
       if (!capped) return true;
       if (consumedRef.current.has(id)) return true; // already looked up this session
+      /**
+       * ⛔ 'absent' MAY ONLY HAVE BEEN A SLOW PROBE (hunt 6, 2026-10-03). The
+       * probe answers 'absent' for a transient fault too (a stall past its 8 s,
+       * a dropped link) and does not cache it — but this screen kept that answer
+       * for the whole visit. With the gateway live, every open then charged
+       * glossary_consume() and showed only the browse view's 120-character
+       * teaser as the definition: a lookup spent, the full text never fetched,
+       * and a term already read this session through the gateway paid again.
+       * Ask once more before charging the fallback meter; a gateway that is
+       * there takes the open (one charge, the full text, the session cache).
+       * Not after a failed key mint — that reader has no key to read it with.
+       */
+      if (!keyFailedOpen && (await probeGateway()) === 'deployed') {
+        setGateway('deployed');
+        return openViaGatewayRef.current(id);
+      }
       if (gateOpeningRef.current) return false; // a consume is in flight — ignore the double-tap
       gateOpeningRef.current = true;
       // The reset must be unconditional (network audit 2026-09-11). consumeGlossary
@@ -1619,7 +1647,7 @@ ${COPY.glossaryFreeAllowance}`,
       warnUsage(u.used, u.limit);
       return true;
     },
-    [capped, capMode, serverMeters],
+    [capped, capMode, serverMeters, keyFailedOpen],
   );
 
   const listRef = useRef<FlatList<Entry>>(null);
@@ -3104,8 +3132,8 @@ ${COPY.glossaryFreeAllowance}`,
   // clamp — leave it out and a guest's rows keep rendering full definitions for
   // the rest of the session, which is the exact hole this clamp closes.
   const rowExtraData = useMemo(
-    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, defRev],
-    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, defRev],
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, defRev, mistakesLockLine],
+    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, defRev, mistakesLockLine],
   );
 
   // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
@@ -3758,6 +3786,7 @@ ${COPY.glossaryFreeAllowance}`,
                       definition={item.definition}
                       begFirst={ttsBeg}
                       mistakesReadable={isMember}
+                      mistakesLockLine={mistakesLockLine}
                       onLabAction={onLabAction}
                       onOpenCalc={onOpenCalc}
                       linksOn={linksOn}
@@ -3894,6 +3923,7 @@ ${COPY.glossaryFreeAllowance}`,
                             definition={item.definition}
                             begFirst={ttsBeg}
                             mistakesReadable={isMember}
+                            mistakesLockLine={mistakesLockLine}
                             onLabAction={onLabAction}
                             onOpenCalc={onOpenCalc}
                             linksOn={linksOn}

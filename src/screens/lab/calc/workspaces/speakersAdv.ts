@@ -331,7 +331,7 @@ const DRIVER: Workspace = {
       plainFormula:
         'The effective port length equals the speed of sound squared times the port area, divided by the square of two pi times the tuning frequency times the box volume; the physical length subtracts the end correction — 1.46 times the square root of the port area over pi.',
       explain:
-        'In a vented (bass-reflex) box the port and the box air form a Helmholtz resonator tuned to fb. This finds the port length for a target tuning. The moving plug of air is acoustically longer than the physical port (the end correction), so a longer or narrower port tunes lower. A negative result means the port area already tunes higher than the target.',
+        'In a vented (bass-reflex) box the port and the box air form a Helmholtz resonator tuned to fb. This finds the port length for a target tuning. The moving plug of air is acoustically longer than the physical port (the end correction), so a longer or narrower port tunes lower. If even a zero-length port of this area tunes below the target, no port length can reach it — a larger port area or a smaller box raises the tuning.',
       keySymbols: ['c', '·', '/', 'π', 'x²', '√', '−', 'f'],
       note: 'End correction 1.46·√(Av/π) added back (one flanged + one free end); real ports vary.',
       compute: (v) => {
@@ -339,6 +339,22 @@ const DRIVER: Workspace = {
         const leff = (c * c * n(v.av)) / (Math.pow(TWO_PI * n(v.fbTarget), 2) * n(v.vb));
         const corr = 1.46 * Math.sqrt(n(v.av) / Math.PI);
         const lv = leff - corr;
+        // No port is shorter than nothing (hunt 6, 2026-10-03): a target above
+        // what a ZERO-length port of this area reaches printed a confident
+        // negative PHYSICAL PORT LENGTH — and the old words had the physics
+        // backwards ("tunes higher … use a smaller port area"). The zero-length
+        // port tunes BELOW the target; fb rises with a larger area or a
+        // smaller box (fb₀ ∝ Av^¼ / √Vb).
+        if (lv < 0) {
+          const fb0 = (c / TWO_PI) * Math.sqrt(n(v.av) / (n(v.vb) * corr));
+          return [
+            {
+              label: 'PHYSICAL PORT LENGTH',
+              text: `No port length reaches ${fmt(n(v.fbTarget))} Hz — even a zero-length port of this area tunes to about ${fmt(fb0)} Hz, below the target. Use a larger port area or a smaller box.`,
+            },
+            { label: 'EFFECTIVE (ACOUSTIC) LENGTH', value: leff, quantity: 'length', unit: 'cm', chainable: false },
+          ];
+        }
         return [
           { label: 'PHYSICAL PORT LENGTH', value: lv, quantity: 'length', unit: 'cm' },
           { label: 'EFFECTIVE (ACOUSTIC) LENGTH', value: leff, quantity: 'length', unit: 'cm', chainable: false },
@@ -351,7 +367,9 @@ const DRIVER: Workspace = {
         return [
           `Effective length L_eff = ${fmt(c)}²·${fmt(n(v.av))} ÷ ((2π·${fmt(n(v.fbTarget))})²·${fmt(n(v.vb))}) = ${fmt(leff)} m.`,
           `Subtract the end correction 1.46·√(Av/π) = ${fmt(corr)} m → physical port ${fmt(leff - corr)} m (${fmt((leff - corr) * 100)} cm).`,
-          n(v.fbTarget) > 0 && leff - corr <= 0 ? `Result is negative — this port area tunes higher than the target even at zero length; use a smaller port area.` : `A longer or narrower port tunes LOWER.`,
+          n(v.fbTarget) > 0 && leff - corr < 0
+            ? `Result is negative — even at zero length this port area tunes BELOW the target (about ${fmt((c / TWO_PI) * Math.sqrt(n(v.av) / (n(v.vb) * corr)))} Hz), so no port length works; use a larger port area or a smaller box.`
+            : `A longer or narrower port tunes LOWER.`,
         ];
       },
     },

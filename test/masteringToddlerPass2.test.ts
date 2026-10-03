@@ -79,7 +79,8 @@ describe('answers given before the tier resolves are not lost on leave', () => {
     assert.match(h, /const pre: MasteringPreLoad \| null = !loaded && !blocked/);
     assert.match(h, /answers: preAnswersRef\.current,/);
     assert.match(h, /at: movedRef\.current \? \{ module: modIdRef\.current, step: stepRef\.current \} : undefined,/);
-    assert.match(h, /void updateMasteringProgress\(\(s\) => \{\s*if \(pre\) carryPreLoad\(s, pre\);\s*\}\)/);
+    // Hunt 6: the carry reports a failed read only on the last retry.
+    assert.match(h, /void updateMasteringProgress\(\(s\) => \{\s*if \(pre\) carryPreLoad\(s, pre\);\s*\}, readRetriesRef\.current >= 3\)/);
   });
 });
 

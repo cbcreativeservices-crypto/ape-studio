@@ -144,7 +144,9 @@ let generation = 0;
 registerLocalStoreReset(() => {
   generation++;
 });
-export function updateMasteringProgress(mutate: (s: MasteringProgressState) => void): Promise<MasteringProgressState> {
+/** `report` = false: the caller retries a failed read itself (the first
+ *  load's carry), so a drop there is not yet a loss. */
+export function updateMasteringProgress(mutate: (s: MasteringProgressState) => void, report = true): Promise<MasteringProgressState> {
   const gen = generation;
   const run = queue.then(async () => {
     const s = await loadMasteringProgress();
@@ -156,6 +158,12 @@ export function updateMasteringProgress(mutate: (s: MasteringProgressState) => v
       return s;
     }
     await save(s);
+    // A change dropped because the READ failed is SAID (hunt 6, 2026-10-03):
+    // save() never writes an unreadable read's copy, so an answer, a QC tick
+    // or a module's credit tapped then was neither written nor queued, while
+    // the screen showed it banked — gone next visit, without a word. A pure
+    // re-read (nothing changed from the empty stand-in) says nothing.
+    if (report && unreadable.has(s) && JSON.stringify(s) !== JSON.stringify({ modules: {} })) reportUnhandledSaveFailure();
     // A BLOCKED read (a guest, or the tier not known yet): the same change
     // lands on the session copy the ledger holds for the sign-in hand-off.
     if (blockedRead.has(s)) holdSessionWork<MasteringProgressState>(CARRY_KEY, (prev) => {

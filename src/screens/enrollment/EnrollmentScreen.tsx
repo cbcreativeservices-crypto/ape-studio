@@ -62,6 +62,7 @@ import {
   removeBundle,
   setBundleLoaded,
   useBundles,
+  useBundlesHydrated,
   type BundleKind,
   type EnrolledBundle,
 } from '../../features/enrollment/enrolledBundlesStore';
@@ -113,7 +114,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
  *  blue), UNLOADED sits gray. Replaces the 3-card icon everywhere it
  *  meant "in the Dashboard deck" — the icon itself now belongs ONLY to My
  *  Custom List, whose identity it is. `dim` = core-locked (can't toggle). */
-function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: boolean }) {
+function LoadPill({ on, small, dim, live = true }: { on: boolean; small?: boolean; dim?: boolean; live?: boolean }) {
   // UNLOADED pills stay STATIC — the gray text + frame + fill never change shade
   // (owner 2026-09-14). Instead a soft light glow breathes AROUND the pill over an
   // 11 s cycle so an unloaded deck reads as "tap to load" without touching the type.
@@ -130,7 +131,10 @@ function LoadPill({ on, small, dim }: { on: boolean; small?: boolean; dim?: bool
   // The motion half is the SUBSCRIBED shared gate (P10b 2026-10-02): the
   // per-render read missed a toggle made in the Settings modal.
   const decorative = useDecorativeMotion();
-  const animate = !on && !suppressed && decorative;
+  // …and only while the page is SHOWING (hunt 6, 2026-10-03): every unloaded
+  // row kept its loop running off-page in the Awards pager and under a pushed
+  // screen — the `sweepLive` rule the lab row's sweep already follows.
+  const animate = !on && !suppressed && decorative && live;
   useEffect(() => {
     if (!animate) return;
     const anim = Animated.loop(
@@ -806,7 +810,14 @@ export function EnrollmentView({
   // "my enrollments" list. (Pro Audio Safety's free taster card is separate and
   // always present regardless.)
   const hasCredential = bundles.some((b) => b.kind === 'cert' || b.kind === 'program');
+  // ⛔ AN UNREAD CREDENTIAL LIST DECIDES NOTHING EITHER (hunt 6, 2026-10-03).
+  // `bundles` is [] until the stored list is read — and stays [] when that
+  // read FAILS — which read as "no credential held": every core was pulled
+  // off Home and, through removeHome, a core chosen as the Home DEFAULT was
+  // cleared for good. Wait for a real read.
+  const bundlesRead = useBundlesHydrated();
   useEffect(() => {
+    if (!bundlesRead) return;
     for (const gs of COREQ_TOPIC_GS) {
       // Unknown % (progress not loaded / offline) decides nothing — it used to
       // read as 0% and re-pin a COMPLETED core onto Home (night pass 2026-10-01).
@@ -815,7 +826,7 @@ export function EnrollmentView({
       if (hasCredential && !done) ensureHome(gs);
       else removeHome(gs);
     }
-  }, [hasCredential, prog]);
+  }, [bundlesRead, hasCredential, prog]);
   const nameFor = (gs: number) => officialTopicName(gs, topicIndex.get(gs)?.name);
   const subjectFor = (gs: number) => topicIndex.get(gs)?.subject ?? '';
 
@@ -1630,7 +1641,7 @@ export function EnrollmentView({
                   aria-pressed={showActive}
                   accessibilityLabel={coreLocked ? 'Locked in your study deck' : showActive ? 'Remove from study deck' : 'Add to study deck'}
                 >
-                  <LoadPill on={showActive} small dim={coreLocked} />
+                  <LoadPill on={showActive} small dim={coreLocked} live={sweepLive} />
                 </Pressable>
                 {/* Study icon alongside the 3-card icon (owner 2026-08-01): lit +
                     opens the Dashboard when the topic is in the deck. */}
@@ -1736,7 +1747,7 @@ export function EnrollmentView({
                     coreLocked ? 'Locked in your study deck until completed' : showActive ? 'Remove from study deck' : 'Add to study deck'
                   }
                 >
-                  <LoadPill on={showActive} dim={coreLocked} />
+                  <LoadPill on={showActive} dim={coreLocked} live={sweepLive} />
                 </Pressable>
                 {/* Study icon LINKED to the deck toggle (user request 2026-07-23):
                     blue when the topic is loaded into the deck, gray when not;
@@ -1944,7 +1955,7 @@ export function EnrollmentView({
             aria-pressed={customOnDash}
             accessibilityLabel={customOnDash ? 'Remove my custom list from the dashboard' : 'Show my custom list on the dashboard'}
           >
-            <LoadPill on={customOnDash} />
+            <LoadPill on={customOnDash} live={sweepLive} />
           </Pressable>
           {/* Study → only when ON (grayed + unpressable when OFF). */}
           <Pressable hitSlop={6}

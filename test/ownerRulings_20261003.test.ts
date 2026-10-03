@@ -202,6 +202,10 @@ describe('2 · OSHA dose: honest above 115 and 130 dBA, still counted', async ()
 describe('3 · Home Setup SAVE: a refused write is said', async () => {
   const home = await import('../src/features/home/homeCardsStore.ts');
   it('setHomeGs answers the write result (true when stored, false when refused)', async () => {
+    // The sheet reads the list when it opens; a save waits for that read
+    // (hunt 6: a whole-list save over an unread list is refused).
+    void home.getHomeGs();
+    for (let i = 0; i < 6; i++) await new Promise<void>((r) => setImmediate(r));
     assert.equal(await home.setHomeGs([1, 2]), true);
     AS.failWrites = true;
     try {

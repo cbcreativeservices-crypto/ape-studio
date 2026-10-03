@@ -94,3 +94,10 @@ export function resetLocal(): void {
 export function useBundles(): EnrolledBundle[] {
   return store.use();
 }
+
+/** Whether the stored bundles have been READ (false while the read is out, or
+ *  after it failed). `useBundles()` is `[]` until then, which is not "holds no
+ *  credential" — an effect that writes from it must wait (hunt 6, 2026-10-03). */
+export function useBundlesHydrated(): boolean {
+  return store.useHydrated();
+}

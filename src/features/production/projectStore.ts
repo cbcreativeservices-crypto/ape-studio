@@ -172,6 +172,11 @@ export type ProjectStore = {
   tryLoad(lab: LabKind): Promise<ProductionProject[] | null>;
   get(lab: LabKind, id: string): Promise<ProductionProject | null>;
   upsert(p: ProductionProject): Promise<boolean>;
+  /** Change ONLY the name, on the stored copy (hunt 6, 2026-10-03). The lab
+   *  home renamed with `upsert({ ...project, name })` — its on-screen copy,
+   *  which after a failed re-read on focus still held the answers from before
+   *  the stage screen, so a rename wrote them back over the learner's work. */
+  rename(lab: LabKind, id: string, name: string): Promise<ProductionProject | null>;
   remove(lab: LabKind, id: string): Promise<boolean>;
   duplicate(lab: LabKind, id: string): Promise<ProductionProject | null>;
   /** Write one answer. Returns the updated project, or null if it is gone. */
@@ -257,6 +262,9 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         else all.unshift(row);
         return write(p.lab, all);
       });
+    },
+    rename(lab, id, name) {
+      return mutate(lab, id, (p) => ({ ...p, name }));
     },
     // Both of these are read-modify-writes of the SAME list as `mutate`, so both
     // belong in its queue (2026-09-17, pass 5). The first version of the

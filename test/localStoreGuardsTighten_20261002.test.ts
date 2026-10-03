@@ -88,7 +88,7 @@ test('onboarding: a failed read is NOT "first run" — nothing written over, the
   assert.deepEqual(stored('ape:onboarding:visited'), ['calc', 'decibel']);
 });
 
-test('Home: a save made after a failed read is WRITTEN once storage answers (it used to be dropped for the launch)', async () => {
+test('Home: after a failed read the store reads AGAIN (it used to stay dead for the launch); a save then lands', async () => {
   store.failReads = false;
   store.clear();
   store.set('ape:homeCards', JSON.stringify([11, 22]));
@@ -97,11 +97,16 @@ test('Home: a save made after a failed read is WRITTEN once storage answers (it 
   void home.getHomeGs(); // hydrate — the read throws
   await settle();
   store.failReads = false;
-  // Home Setup → Save.
-  home.setHomeGs([5, 6]);
+  // Home Setup → Save on a draft built from the UNREAD list: refused (hunt 6,
+  // 2026-10-03 — it was written over [11, 22] once storage answered), and
+  // the refusal reads again, so the reopened sheet shows the real list.
+  assert.equal(await home.setHomeGs([5, 6]), false);
   await settle();
-  assert.deepEqual(home.getHomeGs(), [5, 6]);
-  assert.deepEqual(stored('ape:homeCards'), [5, 6], 'the Home Setup save looked applied but was never written');
+  assert.deepEqual(home.getHomeGs(), [11, 22]);
+  assert.deepEqual(stored('ape:homeCards'), [11, 22]);
+  // The next save (from a sheet built on the real list) is written.
+  assert.equal(await home.setHomeGs([11, 22, 5]), true);
+  assert.deepEqual(stored('ape:homeCards'), [11, 22, 5], 'the Home Setup save looked applied but was never written');
 });
 
 test('Home: while the read KEEPS failing, nothing is written over the stored list; the save lands once it answers', async () => {
@@ -113,23 +118,20 @@ test('Home: while the read KEEPS failing, nothing is written over the stored lis
   store.failReads = true;
   void home.getHomeGs();
   await settle();
-  home.setHomeGs([7]);
+  // A whole-list save over the unread list is refused outright (hunt 6).
+  assert.equal(await home.setHomeGs([7]), false);
   home.ensureHome(3060);
   await settle();
   assert.deepEqual(stored('ape:homeCards'), [11, 22], 'a save over an unreadable list was written');
   assert.equal(store.get('ape:homeDefaultGs'), '22');
-  // The screen still answers the taps meanwhile.
-  assert.deepEqual(home.getHomeGs(), [7, 3060]);
+  // The screen still answers the (additive) taps meanwhile.
+  assert.deepEqual(home.getHomeGs(), [3060]);
   store.failReads = false;
   home.toggleHome(44); // the next tap reads again
   await settle();
-  assert.deepEqual(stored('ape:homeCards'), [7, 3060, 44]);
-  // 22 left Home with the save, so the landing choice went with it — shown at
-  // once, and written when that key is next touched (its own queued clear).
-  assert.equal(home.getDefaultHomeGs(), null);
-  home.removeHome(424242);
-  await settle();
-  assert.equal(store.has('ape:homeDefaultGs'), false);
+  // Laid ON TOP of the stored list — never over it.
+  assert.deepEqual(stored('ape:homeCards'), [11, 22, 3060, 44]);
+  assert.equal(store.get('ape:homeDefaultGs'), '22');
 });
 
 test('Home: the default landing card round-trips in the stored format and stays one of the Home topics', async () => {

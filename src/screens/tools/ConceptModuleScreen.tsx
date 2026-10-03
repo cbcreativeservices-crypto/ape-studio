@@ -7,6 +7,7 @@
  * Academy-gated like Learn mode. Missing module (no content for this item)
  * renders an honest state.
  */
+import { useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,6 +31,17 @@ export function ConceptModuleScreen({ navigation, route }: Props) {
   const gate = useMemberGate();
   const locked = gate === 'locked';
   const mod = conceptByKey(route.params.conceptKey);
+  // ONE open per navigation (hunt 6, 2026-10-03), ToolInfo's openOnce rule:
+  // the "SEE IT IN THE TOOLS" rows open TWO different routes (the Frequency
+  // Counter, and ToolInfo for the rest), so two fingers on the last module's
+  // list stacked the Frequency Counter AND a tool's info screen.
+  const lastOpenRef = useRef(0);
+  const openOnce = (go: () => void) => {
+    const now = Date.now();
+    if (now - lastOpenRef.current < 700) return;
+    lastOpenRef.current = now;
+    go();
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -89,9 +101,11 @@ export function ConceptModuleScreen({ navigation, route }: Props) {
                         // The Frequency Counter has its own modes+results screen;
                         // the rest open their info screen (mirrors ToolsHub —
                         // review 2026-07-23: ToolInfo('hzcounter') was a dead end).
-                        k === 'hzcounter'
-                          ? navigation.navigate('FrequencyCounter')
-                          : navigation.navigate('ToolInfo', { toolKey: k })
+                        openOnce(() =>
+                          k === 'hzcounter'
+                            ? navigation.navigate('FrequencyCounter')
+                            : navigation.navigate('ToolInfo', { toolKey: k }),
+                        )
                       }
                       accessibilityRole="button"
                       accessibilityLabel={t.name}

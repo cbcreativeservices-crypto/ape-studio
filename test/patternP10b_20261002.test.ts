@@ -332,9 +332,9 @@ describe('the sites wave 3 left on the plain read', () => {
     assert.match(awards, /if \(w <= 0 \|\| suppressed \|\| !decorative\) \{/);
     assert.match(awards, /\}, \[w, x, suppressed, decorative\]\);/);
     // The Home shimmer read only the PHONE flag — the app switch never reached it.
-    assert.match(s('src/screens/courses/CourseSelectionScreen.tsx'), /const off = reduceMotion \|\| suppressed \|\| !decorative;/);
+    assert.match(s('src/screens/courses/CourseSelectionScreen.tsx'), /const off = reduceMotion \|\| suppressed \|\| !decorative(?: \|\| !focused)?;/);
     assert.match(s('src/screens/enrollment/LabScopeSweep.tsx'), /\}, \[w, windowW, live, suppressed, decorative, x\]\);/);
-    assert.match(s('src/screens/enrollment/EnrollmentScreen.tsx'), /const animate = !on && !suppressed && decorative;/);
+    assert.match(s('src/screens/enrollment/EnrollmentScreen.tsx'), /const animate = !on && !suppressed && decorative(?: && live)?;/);
     assert.match(s('src/screens/glossary/GlossaryScreen.tsx'), /if \(!motion\) return;\s*const id = setInterval/);
     const pp = s('src/screens/lab/patchbay/art/PatchPairView.tsx');
     assert.match(pp, /if \(reduceMotion \|\| !active \|\| !decorative\) return;/);

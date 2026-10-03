@@ -247,13 +247,13 @@ describe('Career Finder beta feedback: "Saved on this device" only when it was',
 describe('Settings: a save that recovered from a failed read shows what was written', () => {
   it('saveLocalSettings answers the written copy when it differs from what was asked', () => {
     const s = read('features/settings/store.ts');
-    assert.match(s, /export async function saveLocalSettings\(s: LocalSettings\): Promise<LocalSettings \| null> \{/);
+    assert.match(s, /export async function saveLocalSettings\(s: LocalSettings, unreadShown\?: LocalSettings\): Promise<LocalSettings \| null> \{/);
     assert.match(s, /s = applyChanges\(parseStored\(raw\), shown, s\);\s*recovered = true;/);
     assert.match(s, /requestLocalNotifSync\(s\);\s*return recovered \? s : null;\s*\}/);
   });
   it('the screen refreshes its local state from it (all three setters)', () => {
     const s = read('screens/settings/SettingsScreen.tsx');
-    assert.equal((s.match(/void saveLocalSettings\(next\)\.then\(\(written\) => \{\s*if \(written\) setLocal\(written\);/g) ?? []).length, 3);
+    assert.equal((s.match(/void saveLocalSettings\(next, unreadShown\(\)\)\.then\(\(written\) => \{\s*if \(written\) setLocal\(written\);/g) ?? []).length, 3);
   });
 });
 

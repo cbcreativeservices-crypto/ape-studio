@@ -90,6 +90,15 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 export function SettingsScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [local, setLocal] = useState<LocalSettings>(DEFAULT_LOCAL_SETTINGS);
+  /** `local` is still the DEFAULTS stand-in, not the stored settings (hunt 6,
+   *  2026-10-03): a toggle tapped before the load lands saves only its own
+   *  change over the stored record (saveLocalSettings' `unreadShown`). */
+  const localLoaded = useRef(false);
+  const unreadShown = () => (localLoaded.current ? undefined : DEFAULT_LOCAL_SETTINGS);
+  const showStored = (s: LocalSettings) => {
+    setLocal(s);
+    localLoaded.current = true;
+  };
   // The glossary's background save. Read once; the switch writes through.
   const [autoOffline, setAutoOfflineState] = useState(true);
   useEffect(() => {
@@ -171,7 +180,7 @@ export function SettingsScreen({ navigation }: Props) {
   const reloadPrefs = useCallback(async () => {
     try {
       const loaded = await loadLocalSettings();
-      setLocal(loaded);
+      showStored(loaded);
       const p = await fetchNotificationPrefs();
       setPrefs(p);
       if (p) void setPhoneNotificationsEnabled(p.push_enabled, loaded);
@@ -203,7 +212,7 @@ export function SettingsScreen({ navigation }: Props) {
       // read lays only this change over the stored record and answers that
       // copy: show it, so the untouched rows stop showing defaults (pattern
       // hunt wave 3, 2026-10-02).
-      void saveLocalSettings(next).then((written) => {
+      void saveLocalSettings(next, unreadShown()).then((written) => {
         if (written) setLocal(written);
       });
       return next;
@@ -214,7 +223,7 @@ export function SettingsScreen({ navigation }: Props) {
   const setFreq = useCallback((key: string, value: string) => {
     setLocal((prev) => {
       const next = { ...prev, notifyFreq: { ...prev.notifyFreq, [key]: value } };
-      void saveLocalSettings(next).then((written) => {
+      void saveLocalSettings(next, unreadShown()).then((written) => {
         if (written) setLocal(written); // a recovered read: show what was written
       });
       return next;
@@ -224,7 +233,7 @@ export function SettingsScreen({ navigation }: Props) {
   const setTime = useCallback((key: string, value: string) => {
     setLocal((prev) => {
       const next = { ...prev, notifyTime: { ...prev.notifyTime, [key]: value } };
-      void saveLocalSettings(next).then((written) => {
+      void saveLocalSettings(next, unreadShown()).then((written) => {
         if (written) setLocal(written); // a recovered read: show what was written
       });
       return next;

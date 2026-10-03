@@ -21,6 +21,10 @@ const awgFromAreaM2 = (aM2: number) => {
   const dMm = 2000 * Math.sqrt(aM2 / Math.PI);
   return 36 - 39 * (Math.log(dMm / 0.127) / Math.log(92));
 };
+/** A whole gauge as it is written (hunt 6, 2026-10-03): 0 AWG and up as the
+ *  number, −1…−3 as 2/0…4/0 (the scale's own convention, as the gauge input's
+ *  range), and null past 4/0 — the AWG scale ends there (kcmil / mm² beyond). */
+const awgName = (w: number): string | null => (w >= 0 ? `${w} AWG` : w >= -3 ? `${1 - w}/0 AWG` : null);
 
 const TRANSFORMER: Workspace = {
   id: 'transformer',
@@ -293,6 +297,11 @@ const VDROP: Workspace = {
         const Rmax = vdMax / n(v.current);
         const A = (RHO_CU * 2 * n(v.len)) / Rmax;
         const awgReal = awgFromAreaM2(A);
+        const awg = Math.floor(snapWhole(awgReal));
+        // Thicker than 0 AWG (hunt 6, 2026-10-03): a big feeder printed a gauge
+        // that does not exist — "-7" for 239 mm² (past 4/0, the scale's end),
+        // "-1" for what the trade calls 2/0. Named as written, or "beyond 4/0".
+        const name = awgName(awg);
         return [
           // Unit in the LABEL: a 'number' output prints no unit of its own, so
           // "REQUIRED AREA 2.155" left mm² vs m² vs kcmil to guesswork.
@@ -301,7 +310,14 @@ const VDROP: Workspace = {
           //    derived ONLY from the drop budget: 5 m / 20 A / 120 V / 3% returns 17 AWG,
           //    which on a 20 A branch circuit is a fire. The ampacity check is the
           //    caller's, from the code table — see `note` above.
-          { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: Math.floor(snapWhole(awgReal)), quantity: 'number', chainable: false },
+          awg >= 0 || !Number.isFinite(awg)
+            ? { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: awg, quantity: 'number', chainable: false }
+            : {
+                label: 'DROP-LIMITED AWG (CHECK AMPACITY)',
+                text: name
+                  ? `${name} or thicker.`
+                  : `Thicker than 4/0 AWG — past the end of the AWG scale. Choose a conductor of at least ${fmt(A * 1e6)} mm² (kcmil sizes).`,
+              },
           { label: 'MAX ALLOWABLE DROP', value: vdMax, quantity: 'voltage', chainable: false },
         ];
       },
@@ -310,10 +326,14 @@ const VDROP: Workspace = {
         const Rmax = vdMax / n(v.current);
         const A = (RHO_CU * 2 * n(v.len)) / Rmax;
         const awgReal = awgFromAreaM2(A);
+        const awg = Math.floor(snapWhole(awgReal));
+        const name = Number.isFinite(awg) ? awgName(awg) : `${fmtInt(awg)} AWG`;
         return [
           `Allowable drop = ${fmt(n(v.pct))}% × ${fmt(n(v.vsrc))} V = ${fmt(vdMax)} V, so max resistance = ${fmt(Rmax)} Ω.`,
           `Required area = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(Rmax)} = ${fmt(A * 1e6)} mm².`,
-          `That is about ${fmt(awgReal)} AWG — so on DROP ALONE, ${fmtInt(Math.floor(snapWhole(awgReal)))} AWG or thicker (a LOWER gauge number).`,
+          name
+            ? `That is about ${fmt(awgReal)} AWG — so on DROP ALONE, ${name} or thicker (a LOWER gauge number).`
+            : `That is thicker than 4/0 AWG, past the end of the AWG scale — so on DROP ALONE, a conductor of at least ${fmt(A * 1e6)} mm² (kcmil sizes).`,
           'Now check ampacity against the applicable code table for this circuit and its derating, and use whichever conductor is LARGER. Drop sizing alone can return a conductor that cannot legally or safely carry the current.',
         ];
       },

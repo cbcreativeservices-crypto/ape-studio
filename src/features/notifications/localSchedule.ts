@@ -93,7 +93,7 @@ export async function setPhoneNotificationsEnabled(on: boolean, s?: LocalSetting
   // everything, on re-books whatever the user has switched on.
   if (s) {
     lastSlice = ''; // force through the change-gate
-    await syncLocalNotifications(s);
+    await syncLocalNotifications(s).catch(() => {}); // Settings calls this with `void`
   }
 }
 
@@ -232,7 +232,9 @@ export function requestLocalNotifSync(s: LocalSettings): void {
   if (syncTimer) clearTimeout(syncTimer);
   syncTimer = setTimeout(() => {
     syncTimer = null;
-    void syncLocalNotifications(s);
+    // Every reminder is booked before the one write that can still refuse
+    // (the new-terms record); its refusal is not an unhandled rejection.
+    void syncLocalNotifications(s).catch(() => {});
   }, 1200);
 }
 
@@ -310,6 +312,8 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
     }
 
     const T = N.SchedulableTriggerInputTypes;
+    /** The new-terms bookkeeping write, run once everything is booked. */
+    let afterBooking: (() => Promise<void>) | null = null;
     const jobs: Promise<string>[] = [];
     const scheduled: string[] = [];
     const add = (id: string, content: Parameters<typeof N.scheduleNotificationAsync>[0]['content'], trigger: Parameters<typeof N.scheduleNotificationAsync>[0]['trigger']) => {
@@ -392,10 +396,16 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
       } catch {
         /* offline — keep any pending as-is */
       }
+      // The record is written AFTER every reminder is booked (hunt 6,
+      // 2026-10-03): written here, a refused write threw out of the run with
+      // the sweep above already done — term of the day, the curated terms and
+      // both weekly reminders were cancelled and never re-booked, and the
+      // change-gate then skipped every retry with the same settings.
       if (pendingReadFailed) {
         // see above — nothing written, nothing deleted
       } else if (pending) {
-        await AsyncStorage.setItem(K_PENDING_NEW_TERMS, JSON.stringify(pending));
+        const record = JSON.stringify(pending);
+        afterBooking = () => AsyncStorage.setItem(K_PENDING_NEW_TERMS, record);
         add(
           `${ID_PREFIX}newTerms`,
           {
@@ -406,7 +416,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
           { type: T.DATE, date: new Date(pending.fireAt), channelId: CHANNEL_ID },
         );
       } else {
-        await AsyncStorage.removeItem(K_PENDING_NEW_TERMS);
+        afterBooking = () => AsyncStorage.removeItem(K_PENDING_NEW_TERMS);
       }
     }
 
@@ -546,6 +556,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
 
     await Promise.all(jobs);
     console.log(`[notif] scheduled: ${scheduled.join(', ') || '(none)'}`);
+    if (afterBooking) await afterBooking();
   } finally {
     syncing = false;
     const next = rerunWith;

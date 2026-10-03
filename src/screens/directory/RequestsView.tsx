@@ -207,8 +207,17 @@ export function RequestsView() {
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [open, setOpen] = useState<ContactThread | null>(null);
 
+  // NEWEST LOAD WINS (hunt 6, 2026-10-03; pattern P2). Reloads overlap: a
+  // double-tapped RETRY, or the reload after an ACCEPT still out when a BLOCK /
+  // REPORT starts its own. An older list landing last put a just-blocked or
+  // just-answered request back as it was (live buttons included), and an older
+  // failure landing last hung "Showing the last list that loaded" over a list
+  // that had just loaded.
+  const loadTicket = useRef(0);
   const load = useCallback(async () => {
+    const ticket = ++loadTicket.current;
     const r = await fetchContactThreads();
+    if (ticket !== loadTicket.current) return;
     if (!r.ok) {
       setLoadErr(r.error);
       return;

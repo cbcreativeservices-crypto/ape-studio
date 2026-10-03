@@ -70,6 +70,19 @@ export function getHomeGs(): number[] {
  *  Save action. Answers whether the device accepted BOTH writes (owner ruling
  *  2026-10-03: "if it fails the user needs to know") — the sheet says so. */
 export function setHomeGs(gs: number[]): Promise<boolean> {
+  // ⛔ A WHOLE-LIST SAVE NEEDS THE STORED LIST (hunt 6, 2026-10-03). The sheet
+  // builds its draft from getHomeGs(); while the stored list is unread (the
+  // read FAILED, or has not landed) that is the empty placeholder, so the
+  // draft lacked every saved card AND the reserved core slots. `set` queued
+  // it, the sheet said "Home not saved", and the next good read then wrote
+  // that draft OVER the stored list — the cards the learner never saw were
+  // gone. Refuse instead (the sheet says so), and read again so the next
+  // open shows the real list.
+  if (!listStore.isHydrated()) {
+    void listStore.hydrate();
+    void defaultStore.hydrate(); // the sheet reads both when it reopens
+    return Promise.resolve(false);
+  }
   const next = [...new Set(gs)].slice(0, HOME_MAX);
   // The sheet says a refused write itself ("Home not saved"): not the shared notice too.
   const list = listStore.set(next, { reportFailure: false });
@@ -170,6 +183,13 @@ export function getDefaultHomeGs(): number | null {
 /** Set (or clear, with null) the default landing card. A gs that isn't a current
  *  Home topic is ignored (stored as null). */
 export function setDefaultHomeGs(gs: number | null): Promise<boolean> {
+  // Validated against the Home list — an unread list is the empty placeholder,
+  // which would store "none" over the learner's choice (see setHomeGs).
+  if (!listStore.isHydrated()) {
+    void listStore.hydrate();
+    void defaultStore.hydrate();
+    return Promise.resolve(false);
+  }
   return defaultStore.set(validDefault(gs, listStore.get()), { reportFailure: false }); // Home Setup says a refusal
 }
 

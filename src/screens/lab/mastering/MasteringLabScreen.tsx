@@ -154,9 +154,11 @@ export function MasteringLabScreen() {
           at: movedRef.current ? { module: modIdRef.current, step: stepRef.current } : undefined,
         }
       : null;
+    // A failed read here is retried (below) with the same carry, so only the
+    // LAST try may say the carried work was not kept (hunt 6).
     void updateMasteringProgress((s) => {
       if (pre) carryPreLoad(s, pre);
-    }).then((s) => {
+    }, readRetriesRef.current >= 3).then((s) => {
       if (!alive) return;
       // A FAILED read is not the learner's progress: try again shortly rather
       // than land an empty copy for the whole visit. Nothing is marked done

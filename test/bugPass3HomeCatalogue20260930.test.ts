@@ -40,7 +40,8 @@ test('Low-Light / reduced motion: the Home shimmer, the chooser BACK sweep and t
   const home = src('src/screens/courses/CourseSelectionScreen.tsx');
   // P10b (2026-10-02): + the shared decorative gate, which adds the APP's
   // Reduce-animations switch (reduceMotion here is only the phone's flag).
-  assert.match(home, /const off = reduceMotion \|\| suppressed \|\| !decorative;/);
+  // Hunt 6 (2026-10-03): + `|| !focused` (stops while Home is covered).
+  assert.match(home, /const off = reduceMotion \|\| suppressed \|\| !decorative(?: \|\| !focused)?;/);
   assert.match(home, /if \(!active \|\| off\) return null;/);
   assert.doesNotMatch(home, /if \(!active \|\| reduceMotion\)/);
 

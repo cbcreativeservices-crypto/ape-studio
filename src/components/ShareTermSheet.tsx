@@ -332,11 +332,14 @@ export function ShareTermSheet({
       // and the user simply watches the picker close with no explanation. The
       // selection is unaffected either way; this is only about whether the
       // sentence can be seen.
+      // …and since the sheet is CLOSED, the notice must not say the staged
+      // terms are "still here" (shared hunt 6, 2026-10-03): closing drops
+      // them, and reopening starts from the one term again. Say what happened.
       .catch(() => {
         onClose();
         notify(
           'Some terms weren’t added',
-          'Those extra terms could not be loaded. The terms you already selected are still here — try adding them again.',
+          'Those extra terms could not be loaded, so the share was closed and nothing was sent. Open Share again to try once more.',
         );
       })
       .finally(() => {

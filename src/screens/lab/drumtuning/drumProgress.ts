@@ -180,6 +180,13 @@ function runUpdate(mutate: (s: DrumProgressState) => void, report = true): Promi
     // Never write over a copy that could not be read (see readStore), and
     // never across the account wipe.
     const saved = readOk && gen === generation ? await save(s, false, report) : false;
+    // …but a change dropped because the READ failed is SAID (hunt 6,
+    // 2026-10-03): an answer, an interactive or a chapter's credit tapped
+    // while the copy could not be read was never written and never queued,
+    // and the screen went on showing it banked — gone next visit, without a
+    // word. A pure re-read (nothing changed: `s` is still the empty stand-in)
+    // says nothing; the notes caller (report = false) says "not saved" itself.
+    if (!readOk && report && gen === generation && JSON.stringify(s) !== JSON.stringify(empty())) reportUnhandledSaveFailure();
     // Blocked (a guest, or the tier not known yet): the same change lands on
     // the session copy the ledger holds for the sign-in hand-off.
     if (blocked) holdSessionWork<DrumProgressState>(CARRY_KEY, (prev) => {

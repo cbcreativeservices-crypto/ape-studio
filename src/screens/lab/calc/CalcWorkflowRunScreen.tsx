@@ -40,7 +40,7 @@ import { chainFits, fmt, fmtCarried, parseQuantity, unitsFor } from './calcUnits
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
-import { workflowGeneration, workflowStore } from './workflowStore';
+import { workflowGeneration, workflowListUnreadable, workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
 import { summaryToText } from './CalcResultsScreen';
 import { buildReportFromSummary } from './calcReport';
@@ -170,6 +170,17 @@ export function CalcWorkflowRunScreen() {
       const runs = await workflowStore.listRuns();
       const draft = runs.find((r) => r.workflowId === valid.id && !r.completedAt);
       if (!alive) return;
+      // A failed READ of the saved drafts is not "no saved progress" (hunt 6,
+      // 2026-10-03 — the hunt-5 unreadable-list class): the runner opened a
+      // blank run as if nothing had been saved, and every autosave of it then
+      // failed in silence (the store never writes over an unread list), so the
+      // learner's new progress was lost on leaving with nothing said.
+      if (workflowListUnreadable(runs) && limits.canResume && !workflowBlockedRef.current) {
+        notify(
+          'Saved progress not read',
+          'Your saved progress couldn’t be read from this device just now — it isn’t lost. This run can’t be saved until it can be read: leave the workflow and open it again in a moment.',
+        );
+      }
       // A draft started BEFORE the workflow was last edited is keyed to the old
       // steps (inputs by step index + field key): a reorder/swap with the same
       // step count resumed values into different calculators. Start fresh.

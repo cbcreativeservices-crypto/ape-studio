@@ -34,7 +34,7 @@ import { Canvas, Group, RoundedRect, SweepGradient, vec } from '@shopify/react-n
 import { Easing, useDerivedValue, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { BrandLogo } from '../../components/BrandLogo';
 import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
@@ -562,7 +562,12 @@ function CardShimmer({ active, dims }: { active: boolean; dims: CardDims }) {
   // the PHONE's flag, so Settings → Reduce animations never stopped this
   // sweep. The shared decorative gate carries the app toggle (subscribed).
   const decorative = useDecorativeMotion();
-  const off = reduceMotion || suppressed || !decorative;
+  // ⛔ AND NOT WHILE HOME IS COVERED (hunt 6, 2026-10-03): Home stays mounted
+  // under every tab and pushed screen, so the sweep kept firing every
+  // SHIMMER_EVERY_MS on a screen nobody could see — the LabScopeSweep /
+  // Explore-hub "stops off screen" rule, missed here.
+  const focused = useIsFocused();
+  const off = reduceMotion || suppressed || !decorative || !focused;
 
   const angle = useSharedValue(0); // sweep rotation, 0..2π
   const glow = useSharedValue(0); // stroke opacity envelope

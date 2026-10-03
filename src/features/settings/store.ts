@@ -297,14 +297,21 @@ export async function loadLocalSettings(): Promise<LocalSettings> {
  *  changed fields over the stored record — the screen must show that copy,
  *  not the defaults it had for the untouched fields (pattern hunt wave 3,
  *  2026-10-02). Null when what was asked for is what was written, or when
- *  nothing was written (still unreadable, or overtaken by a newer save). */
-export async function saveLocalSettings(s: LocalSettings): Promise<LocalSettings | null> {
+ *  nothing was written (still unreadable, or overtaken by a newer save).
+ *
+ *  `unreadShown` (hunt 6, 2026-10-03): the caller's copy is NOT the stored
+ *  record yet — Settings renders the defaults until its own load lands, and a
+ *  toggle tapped in that window handed over defaults + one change, which was
+ *  written WHOLE over every other stored setting (reminders, haptics, a11y).
+ *  Given the copy the screen showed, only the changed fields are laid over the
+ *  stored record, exactly as after a failed read. */
+export async function saveLocalSettings(s: LocalSettings, unreadShown?: LocalSettings): Promise<LocalSettings | null> {
   settingsGen += 1;
   lastWritten = s;
   const gen = settingsGen;
   let recovered = false;
-  if (readFailed) {
-    const shown = lastKnown ?? DEFAULT_LOCAL_SETTINGS;
+  if (readFailed || unreadShown) {
+    const shown = unreadShown ?? lastKnown ?? DEFAULT_LOCAL_SETTINGS;
     let raw: string | null;
     try {
       raw = await AsyncStorage.getItem(KEY);

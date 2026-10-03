@@ -1369,6 +1369,17 @@ export function FrequencyCounterScreen({ navigation }: Props) {
     setMode(m);
   };
 
+  // ONE open per navigation (hunt 6, 2026-10-03), ToolInfo's openOnce rule.
+  // This tool skips ToolInfo, so its LEARN and DEMO — two different routes —
+  // sit side by side here with no latch: two fingers pushed BOTH screens.
+  const lastOpenRef = useRef(0);
+  const openOnce = (go: () => void) => {
+    const now = Date.now();
+    if (now - lastOpenRef.current < 700) return;
+    lastOpenRef.current = now;
+    go();
+  };
+
   const goBack = () => (mode ? setMode(null) : safeGoBack(navigation));
   const modeMeta = MODES.find((m) => m.key === mode) ?? null;
   // Saved Measurements is Academy-only — non-members route to the Paywall.
@@ -1392,8 +1403,8 @@ export function FrequencyCounterScreen({ navigation }: Props) {
         {mode == null ? (
           <ModeSelect
             onPick={pickMode}
-            onLearn={() => navigation.navigate('ToolLearn', { toolKey: 'hzcounter' })}
-            onDemo={() => navigation.navigate('ToolDemo', { toolKey: 'hzcounter' })}
+            onLearn={() => openOnce(() => navigation.navigate('ToolLearn', { toolKey: 'hzcounter' }))}
+            onDemo={() => openOnce(() => navigation.navigate('ToolDemo', { toolKey: 'hzcounter' }))}
             isMember={isMember}
             unconfirmed={memberGate === 'unconfirmed'}
             onUpgrade={() => navigation.navigate('Paywall')}

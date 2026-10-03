@@ -105,8 +105,11 @@ export function ProductionLabScreen() {
       setNameDraft(null);
       return;
     }
+    // The NAME only, on the stored copy (hunt 6, 2026-10-03): `upsert` of the
+    // on-screen copy wrote its answers back too — stale after a failed
+    // re-read on focus, so a rename erased what the stage screen had saved.
     void projectStore()
-      .upsert({ ...project, name: next, updatedAt: Date.now() })
+      .rename(lab, project.id, next)
       .then((ok) => {
         if (ok) {
           // Only drop the draft once the write has actually landed. Clearing
@@ -121,7 +124,7 @@ export function ProductionLabScreen() {
           );
         }
       });
-  }, [nameDraft, project, reload]);
+  }, [nameDraft, project, reload, lab]);
 
   const confirmDelete = useCallback(() => {
     if (!project) return;
@@ -265,6 +268,15 @@ export function ProductionLabScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.blurb}>{def.blurb}</Text>
+
+        {/* A re-read on focus that FAILED keeps the list on screen (hunt 6,
+            2026-10-03) — and must say so: it is the copy from before the
+            stage screen, so its readiness and its packet can be out of date. */}
+        {readFailed && projects !== null ? (
+          <Text style={styles.sectionIntro}>
+            Your saved projects could not be re-read on this device just now, so what is shown here may be out of date. Leave the lab and open it again.
+          </Text>
+        ) : null}
 
         {projects === null ? (
           readFailed ? (
