@@ -287,6 +287,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 12:05 · ccode · 38dc0a4a
+changed: Hunt 5: 14 fixes + 4 corrections (full-app toddler pass, 10 areas)
+affects other side: nothing — app-only (tier gate gaps, glossary popup/charge wording, calc list races, P2 load tickets). No backend change. The glossary 24h migration request above still stands. NOT published.
+needs: nothing new.
+
 ### 2026-10-03 11:36 · ccode · d3615e7a
 changed: Glossary: draft migration - 24h free re-open ledger (for Comp A to apply)
 affects other side: YES — Comp A please apply supabase/migrations/2026100301_glossary_term_reads_24h.sql (owner approved 2026-10-03). Brief: Downloads/2026-10-03_COMP_A_GLOSSARY_24H_REOPEN.md. Diff vs live get_glossary_definition first; rolled-back test; NOT applied by ccode.
