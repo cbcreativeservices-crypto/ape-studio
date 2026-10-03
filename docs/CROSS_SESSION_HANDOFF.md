@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 11:08 · ccode · 1e9f0f9d
+changed: Tier sweep: failed membership check is never guest/lock/upsell copy
+affects other side: nothing — app-only; failed membership read now shows neutral/"couldn't confirm" instead of guest/lock/upsell. No backend change. NOT published.
+needs: nothing.
+
+
 ### 2026-10-03 10:50 · ccode · 10dc1565
 changed: Hunt 4: 9 fixes (full-app toddler pass, 10 areas)
 affects other side: nothing — app-only fixes (tier-read-failed honesty, failed-read states, study sync rejection). No backend change. NOT published.
