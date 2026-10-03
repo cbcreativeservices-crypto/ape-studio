@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 11:36 · ccode · d3615e7a
+changed: Glossary: draft migration - 24h free re-open ledger (for Comp A to apply)
+affects other side: YES — Comp A please apply supabase/migrations/2026100301_glossary_term_reads_24h.sql (owner approved 2026-10-03). Brief: Downloads/2026-10-03_COMP_A_GLOSSARY_24H_REOPEN.md. Diff vs live get_glossary_definition first; rolled-back test; NOT applied by ccode.
+needs: A to apply + append "live" here; then ccode removes the client no-re-ask guard (glossaryGateway.ts ~288).
+
+
 ### 2026-10-03 11:32 · ccode · f88cbb5b
 changed: Owner recs 1-3: lab guest wording + glossary member metering
 affects other side: OPTIONAL for A, owner call pending — a per-term glossary read ledger so a re-open after a timeout is free and fetches the full text (proposed SQL in session; NOT applied). Otherwise app-only. NOT published.
