@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 10:08 · ccode · 73c310cc
+changed: One shared, rate-limited notice when a quick save is refused by the device (owner: 'if it fails the user needs to know'); screens with their own message opt out; Settings + measurement edits report
+affects other side: client only
+needs: nothing
+
+
 ### 2026-10-03 09:59 · ccode · 34d77504
 changed: Owner rulings 2026-10-03: glossary share never double-charges; OSHA >115/>130 dBA honest warnings; Home Setup save failure told; membership check stops at NOT CONFIRMED after retries (tierReadFailed)
 affects other side: client only
