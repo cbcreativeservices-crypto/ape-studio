@@ -287,6 +287,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 16:53 · ccode · 3c9cb22f
+changed: Hunt 7: 20 fixes + 4 corrections (full-app toddler pass, 10 areas)
+affects other side: nothing backend — app-only. NOT published (owner has not said publish for hunt 7).
+needs: still A to apply migration 2026100301.
+
+
 ### 2026-10-03 13:58 · ccode · OTA publish (production + preview)
 changed: PUBLISHED, owner's explicit go ("then publish"). Built from cce28e83 (code = 00e3869b + docs). Runtimes iOS e8e3455b (build 33) and Android 22976b0e (build 16), on both production and preview. The production update IDs are iOS 01a10377-96e6-7575-858a-9ffe9310140f and Android 01a10377-96e6-72a4-b695-89a1e98d4616. u.expo.dev serves both on channel production (curl-verified).
 affects other side: testers on iOS 32 / Android 15 get NONE of this until they install 33 / 16 (iOS 33 submitted 10-03, fee8903b; Android 16 is in Play internal testing).
