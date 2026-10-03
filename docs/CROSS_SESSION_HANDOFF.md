@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 10:34 · ccode · 4aba33fb
+changed: Older stores: every hand-rolled write that is the user's own change now raises the shared failed-save notice (47 sites, 32 files); bookkeeping and screens with their own message stay silent with reasons; syntax-tree ratchet over all AsyncStorage writes
+affects other side: client only. FYI iOS build 33 was submitted to App Store Connect 2026-10-03 (submission fee8903b).
+needs: nothing
+
+
 ### 2026-10-03 10:08 · ccode · 73c310cc
 changed: One shared, rate-limited notice when a quick save is refused by the device (owner: 'if it fails the user needs to know'); screens with their own message opt out; Settings + measurement edits report
 affects other side: client only
