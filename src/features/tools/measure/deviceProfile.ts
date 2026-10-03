@@ -280,7 +280,7 @@ export async function removeQueuedContributions(ids: readonly string[]): Promise
   if (ids.length === 0) return;
   const drop = new Set(ids);
   // best-effort — a leftover row is deduped server-side on retry
-  await queueStore.mutate((q) => (q.some((c) => drop.has(c.contributionId)) ? q.filter((c) => !drop.has(c.contributionId)) : q));
+  await queueStore.mutate((q) => (q.some((c) => drop.has(c.contributionId)) ? q.filter((c) => !drop.has(c.contributionId)) : q), { reportFailure: false });
 }
 
 export async function clearContributionQueue(): Promise<void> {

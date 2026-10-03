@@ -31,6 +31,7 @@ import {
   type MeasurementRow,
 } from './measurementsBackend';
 import { WARNING_INFO, type SavedMeasurement } from './types';
+import { reportUnhandledSaveFailure } from '../../storage/saveFailureNotice';
 import { QUALITY_LABEL } from './quality';
 import { TOOLS, type ToolKey } from '../../../screens/tools/toolsData';
 
@@ -56,9 +57,10 @@ function rowOf(m: SavedMeasurement): MeasurementRow {
  *  rejection vanished and the user kept a library on screen that was never
  *  stored — which is precisely how the 2026-09-11 loss stayed invisible until a
  *  restart. Never throws: a storage failure must not take down a tool. */
-function guard(what: string, p: Promise<void>): void {
+function guard(what: string, p: Promise<void>, onFail?: () => void): void {
   void p.catch((e: unknown) => {
     console.warn(`[measurements] ${what} FAILED — the library on screen is not persisted:`, e);
+    onFail?.();
   });
 }
 
@@ -360,7 +362,13 @@ export function updateMeasurement(id: string, patch: Partial<Pick<SavedMeasureme
     if (!updated) return;
     const next = { ...updated, ...patch };
     list = list.map((m) => (m.id === id ? next : m));
-    guard('update', putRow(rowOf(next)));
+    // A title/notes edit the device refused is the user's change lost: the
+    // shared notice says so (owner ruling 2026-10-03), unless the account
+    // changed meanwhile.
+    const gen = generation;
+    guard('update', putRow(rowOf(next)), () => {
+      if (gen === generation) reportUnhandledSaveFailure();
+    });
     emit();
   });
 }

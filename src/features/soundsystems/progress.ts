@@ -182,7 +182,7 @@ export function useSoundSystemsProgress(): SoundSystemsProgress {
 /** The learner's own RESET (PagedLab's reset only clears its pages). */
 export async function resetSoundSystemsProgress(): Promise<void> {
   setSession(emptySession());
-  await store.set(EMPTY());
+  await store.set(EMPTY(), { reportFailure: false }); // the account wipe's call: the ape:* sweep removes the key
 }
 
 /** One mode's in-lab RESET: clears only that mode's lists, so the in-mode

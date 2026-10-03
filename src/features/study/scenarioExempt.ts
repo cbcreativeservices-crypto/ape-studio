@@ -47,7 +47,8 @@ export function isScenariosExempt(achievementId: string): boolean {
  *  this before anything mounted useScenarioExempt — deep link / resume — and a
  *  write over an unloaded set would lose every prior exemption). */
 export async function markScenariosExempt(achievementId: string): Promise<void> {
-  await store.mutate((s) => (s.has(achievementId) ? s : new Set([...s, achievementId])));
+  // A derived cache, not the user's change: a lost marker is found again on the next fetch.
+  await store.mutate((s) => (s.has(achievementId) ? s : new Set([...s, achievementId])), { reportFailure: false });
 }
 
 /**

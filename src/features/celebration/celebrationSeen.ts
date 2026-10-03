@@ -94,7 +94,8 @@ export function hasLoaded(): boolean {
 export function markSeen(scope: string, id: CelebrationId): void {
   const k = keyFor(scope, id);
   if (store.get().has(k)) return;
-  void store.mutate((s) => (s.has(k) ? s : new Set([...s, k])));
+  // The app's own marker, not the user's change.
+  void store.mutate((s) => (s.has(k) ? s : new Set([...s, k])), { reportFailure: false });
 }
 
 /**

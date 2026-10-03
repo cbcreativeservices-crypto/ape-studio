@@ -785,7 +785,8 @@ export function onExposureCheckin(cb: (kind: CheckinKind, snap: ExposureSnapshot
 /** Applied on top of the stored settings (held until they have been read).
  *  Resolves true only when the device accepted the write. */
 export function updateExposureSettings(patch: Partial<ExposureSettings>): Promise<boolean> {
-  const written = settingsStore.mutate((s) => ({ ...s, ...patch }));
+  // The Exposure screen says a refusal ("Setting not saved").
+  const written = settingsStore.mutate((s) => ({ ...s, ...patch }), { reportFailure: false });
   evaluateArm();
   emitState();
   return written;

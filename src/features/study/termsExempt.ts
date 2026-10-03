@@ -58,7 +58,8 @@ export function isTermsExempt(achievementId: string): boolean {
  *  reach this via a deep link or a resume before anything mounted the hook,
  *  and a write over an unloaded set would lose every prior exemption. */
 export async function markTermsExempt(achievementId: string): Promise<void> {
-  await store.mutate((s) => (s.has(achievementId) ? s : new Set([...s, achievementId])));
+  // A derived cache, not the user's change: a lost marker is found again on the next fetch.
+  await store.mutate((s) => (s.has(achievementId) ? s : new Set([...s, achievementId])), { reportFailure: false });
 }
 
 /**

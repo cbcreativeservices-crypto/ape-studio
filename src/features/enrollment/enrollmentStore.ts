@@ -211,7 +211,7 @@ async function reconcileFromServer(gen: number): Promise<boolean> {
     const adopted = rows
       .filter((r) => typeof r.gs === 'number')
       .map((r) => ({ gs: r.gs, favorite: !!r.favorite, active: r.active !== false }));
-    void store.set(adopted);
+    void store.set(adopted, { reportFailure: false }); // adopted from the server: a refusal is re-adopted next launch
     return true;
   } catch (e) {
     console.warn('[enrollment] server list read threw:', (e as Error)?.message);

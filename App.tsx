@@ -12,6 +12,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { KeyboardProvider, KeyboardToolbar } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { setMeasurementFailureReporter } from './src/features/tools/measure/measurementStore';
+import { setSaveFailurePresenter } from './src/features/storage/saveFailureNotice';
 import { notify } from './src/lib/confirm';
 import { RootErrorBoundary } from './src/components/RootErrorBoundary';
 import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
@@ -349,6 +350,10 @@ function routeLocalDest(dest: string): void {
 // out through this hook instead. Set once, at module scope, before any tool can
 // run — not in an effect, because the first save could beat the effect.
 setMeasurementFailureReporter((title, body) => notify(title, body));
+// The same for every OTHER device-local write the device refuses and no screen
+// reports itself (owner ruling 2026-10-03: "if it fails the user needs to
+// know"): one shared, rate-limited notice — src/features/storage/saveFailureNotice.ts.
+setSaveFailurePresenter((title, body, onDismiss) => notify(title, body, onDismiss));
 
 function App() {
   // Capture the error tuple: a font-load failure must NOT hang the app forever on

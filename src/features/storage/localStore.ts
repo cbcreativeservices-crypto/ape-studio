@@ -21,6 +21,12 @@
  *   P6  Writes are serialized and answer `Promise<boolean>` — true only when
  *       the device accepted the write — so "Saved" can only come from a real
  *       write.
+ *   A write the DEVICE REFUSED is told to the user (owner ruling 2026-10-03:
+ *       "if it fails the user needs to know"): the shared, rate-limited notice
+ *       in saveFailureNotice.ts — unless the caller passed
+ *       `{ reportFailure: false }` because it says so itself (one message per
+ *       failure, never two) or the write is not the user's change. A write
+ *       dropped by the account wipe (generation moved) is never reported.
  *
  * Deliberately small: a value, a listener set, a queue and a write chain —
  * the same shape as deckOrderStore / enrollmentStore, once, with the rules
@@ -42,6 +48,7 @@
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { registerLocalStoreReset } from './localStoreRegistry';
+import { reportUnhandledSaveFailure } from './saveFailureNotice';
 
 export type LocalStoreSpec<T> = {
   /** The one `ape:` key this store owns. */
@@ -64,6 +71,15 @@ export type LocalStoreSpec<T> = {
   onReset?: () => void;
 };
 
+/** Per-write options. */
+export type WriteOptions = {
+  /** Default true: a write the device refuses raises the shared notice
+   *  (saveFailureNotice). Pass false ONLY when this caller tells the user
+   *  itself, or the write is app bookkeeping rather than the user's change —
+   *  test/failedSaveNotice_20261003 lists every such site with its reason. */
+  reportFailure?: boolean;
+};
+
 export type LocalStore<T> = {
   readonly key: string;
   /** The value as the screen should see it: the hydrated value with every
@@ -84,9 +100,9 @@ export type LocalStore<T> = {
    *  only when the device accepted the write; false for a write that failed,
    *  a mutation dropped by a reset, or a mutation still waiting on a read
    *  that failed (it stays queued and is written after a later read). */
-  mutate(fn: (value: T) => T): Promise<boolean>;
+  mutate(fn: (value: T) => T, opts?: WriteOptions): Promise<boolean>;
   /** Replace the value (a mutation that ignores the hydrated copy). */
-  set(value: T): Promise<boolean>;
+  set(value: T, opts?: WriteOptions): Promise<boolean>;
   subscribe(listener: () => void): () => void;
   /** The account wipe: new generation, memory dropped, queued mutations
    *  dropped (they were the departing user's), `onReset` run. Mounted hooks
@@ -98,7 +114,7 @@ export type LocalStore<T> = {
   useHydrated(): boolean;
 };
 
-type Queued<T> = { fn: (value: T) => T; resolve: ((ok: boolean) => void) | null };
+type Queued<T> = { fn: (value: T) => T; resolve: ((ok: boolean) => void) | null; report: boolean };
 
 export function createLocalStore<T>(spec: LocalStoreSpec<T>): LocalStore<T> {
   const { key, empty, parse } = spec;
@@ -146,8 +162,9 @@ export function createLocalStore<T>(spec: LocalStoreSpec<T>): LocalStore<T> {
     }
   }
 
-  /** Serialized, generation-fenced write of the value as it is NOW. */
-  function scheduleWrite(): Promise<boolean> {
+  /** Serialized, generation-fenced write of the value as it is NOW. A refusal
+   *  is reported (the shared notice) when `report` and the identity held. */
+  function scheduleWrite(report: boolean): Promise<boolean> {
     const gen = generation;
     const v = value;
     const p = writeChain.then(async (): Promise<boolean> => {
@@ -160,6 +177,9 @@ export function createLocalStore<T>(spec: LocalStoreSpec<T>): LocalStore<T> {
         else await AsyncStorage.setItem(key, raw);
         return true;
       } catch {
+        // The device refused it. Said once, app-wide, unless the caller says
+        // it itself — and never for the departing account's write.
+        if (report && gen === generation) reportUnhandledSaveFailure();
         return false;
       }
     });
@@ -186,7 +206,9 @@ export function createLocalStore<T>(spec: LocalStoreSpec<T>): LocalStore<T> {
     }
     markStale();
     if (applied.length === 0) return;
-    void scheduleWrite().then((ok) => {
+    // One write carries every queued change: a caller that reports its own
+    // failure speaks for it, so the shared notice is raised only when none does.
+    void scheduleWrite(applied.every((item) => item.report)).then((ok) => {
       for (const item of applied) item.resolve?.(ok);
     });
   }
@@ -263,10 +285,11 @@ export function createLocalStore<T>(spec: LocalStoreSpec<T>): LocalStore<T> {
     return hydrating;
   }
 
-  function mutate(fn: (v: T) => T): Promise<boolean> {
+  function mutate(fn: (v: T) => T, opts?: WriteOptions): Promise<boolean> {
+    const report = opts?.reportFailure !== false;
     if (!hydrated) {
       return new Promise<boolean>((resolve) => {
-        queue.push({ fn, resolve });
+        queue.push({ fn, resolve, report });
         markStale();
         emit();
         void hydrate();
@@ -279,7 +302,7 @@ export function createLocalStore<T>(spec: LocalStoreSpec<T>): LocalStore<T> {
     }
     markStale();
     emit();
-    return scheduleWrite();
+    return scheduleWrite(report);
   }
 
   function reset(): void {
@@ -329,7 +352,7 @@ export function createLocalStore<T>(spec: LocalStoreSpec<T>): LocalStore<T> {
     isUnreadable: () => unreadable,
     generation: () => generation,
     mutate,
-    set: (v: T) => mutate(() => v),
+    set: (v: T, opts?: WriteOptions) => mutate(() => v, opts),
     subscribe,
     reset,
     use: () => useSyncExternalStore(subscribe, snap, snap),

@@ -132,9 +132,12 @@ export function scenarioQueueGeneration(): number {
 }
 
 export async function queueScenarioCall(item: ScenarioPending): Promise<boolean> {
-  const ok = await store.mutate((items) =>
-    // Above the cap the queue sheds the NEWEST (see MAX_PENDING).
-    items.length >= MAX_PENDING ? items : [...items, item],
+  // The Scenarios report says a refusal ("this device could not keep them").
+  const ok = await store.mutate(
+    (items) =>
+      // Above the cap the queue sheds the NEWEST (see MAX_PENDING).
+      items.length >= MAX_PENDING ? items : [...items, item],
+    { reportFailure: false },
   );
   if (!ok && store.isUnreadable()) {
     console.warn('[scenario-queue] stored queue unreadable — call held in memory until it can be read');
@@ -244,7 +247,7 @@ export function drainScenarioQueue(
         left[0] = { ...left[0], tries: (left[0].tries ?? 0) + 1 };
       }
       return left;
-    });
+    }, { reportFailure: false }); // bookkeeping: a sent call left on disk is sent again
     return pendingNow();
   })().finally(() => {
     draining = null;
@@ -268,7 +271,7 @@ export function drainScenarioQueue(
 export async function clearScenarioQueue(): Promise<void> {
   draining = null;
   store.reset();
-  await store.set([]);
+  await store.set([], { reportFailure: false }); // the account wipe, not the user's change
 }
 
 /** The account wipe (also reached through the store's own registration). */

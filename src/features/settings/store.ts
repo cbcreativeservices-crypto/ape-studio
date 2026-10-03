@@ -19,6 +19,7 @@ import { hasSafeSession } from '../../lib/getSessionSafe';
 import { requestLocalNotifSync, setLocalSettingsUnreadable } from '../notifications/localSchedule';
 import { applyA11yFromSettings, resetA11y } from './a11y';
 import { MUTE_ON_LEAVE_DEFAULT, setMuteOnLeave } from '../audio/leaveAppMute';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 export type LocalSettings = {
   reduceAnimations: boolean;
@@ -341,6 +342,11 @@ export async function saveLocalSettings(s: LocalSettings): Promise<LocalSettings
     await AsyncStorage.setItem(KEY, JSON.stringify(s));
   } catch (e) {
     console.warn('[settings] device write failed — applies for this session only:', (e as Error)?.message);
+    // …and the USER is told (owner ruling 2026-10-03: "if it fails the user
+    // needs to know"): every Settings row saves on tap, so the shared,
+    // rate-limited notice — not one per tap. A wipe or a newer save meanwhile
+    // (the generation moved) is not this write's failure to report.
+    if (gen === settingsGen) reportUnhandledSaveFailure();
   }
   // Reschedule the local reminders whenever their settings change (debounced
   // and change-gated inside — a haptics toggle costs nothing here).

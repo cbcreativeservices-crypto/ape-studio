@@ -82,7 +82,8 @@ export function getSplCalibration(): SplCalibration | null {
  *  Never rejects. */
 export function setSplCalibration(offsetDb: number | null): Promise<boolean> {
   const next: SplCalibration | null = offsetDb == null ? null : { offsetDb, setAt: new Date().toISOString() };
-  return store.set(next).then((ok) => {
+  // SplMeterScreen says a refusal ("Calibration not saved / not cleared").
+  return store.set(next, { reportFailure: false }).then((ok) => {
     if (!ok) console.warn('[calibration] write FAILED — the calibration on screen is not persisted');
     return ok;
   });
