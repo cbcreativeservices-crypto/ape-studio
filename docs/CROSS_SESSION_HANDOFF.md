@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 09:59 · ccode · 34d77504
+changed: Owner rulings 2026-10-03: glossary share never double-charges; OSHA >115/>130 dBA honest warnings; Home Setup save failure told; membership check stops at NOT CONFIRMED after retries (tierReadFailed)
+affects other side: client only
+needs: nothing
+
+
 ### 2026-10-02 14:13 · ccode · 8eec742b
 changed: Evening final round (owner D48: consistency + learning outcomes): tier-known upsell gate, Career screens on shared tier, careerfinder damaged-record + honest saved label, commitment intro hold, onboarding keys survive wipe, honest redeem wording, tool SAVE waits for tier; Drum read-retry + open fence (Mastering parity), exact OSHA PEL/action-level dose, safeGoBack-only back, featured chip, glossary share full definition, Requests err clear, Gallery edit unreadable notice
 affects other side: client only. Calc: OSHA dose now shows PEL (>=90 dBA) and action-level (>=80 dBA) doses separately.
