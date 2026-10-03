@@ -283,6 +283,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 11:32 · ccode · f88cbb5b
+changed: Owner recs 1-3: lab guest wording + glossary member metering
+affects other side: OPTIONAL for A, owner call pending — a per-term glossary read ledger so a re-open after a timeout is free and fetches the full text (proposed SQL in session; NOT applied). Otherwise app-only. NOT published.
+needs: nothing yet.
+
+
 ### 2026-10-03 11:08 · ccode · 1e9f0f9d
 changed: Tier sweep: failed membership check is never guest/lock/upsell copy
 affects other side: nothing — app-only; failed membership read now shows neutral/"couldn't confirm" instead of guest/lock/upsell. No backend change. NOT published.
