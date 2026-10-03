@@ -28,7 +28,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { formatHz } from '../../../features/cymatics/music';
 import { ART_N } from '../../../features/cymatics/figure';
 import { patternGeometry, patternReadout, type PatternGeometry } from '../../../features/cymatics/patternField';
-import { blankArtwork, patternStore, usePatterns, type Artwork, type SavedPattern, type StudioId } from '../../../features/cymatics/patternStore';
+import { blankArtwork, patternStore, patternsUnreadable, usePatterns, type Artwork, type SavedPattern, type StudioId } from '../../../features/cymatics/patternStore';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip } from '../LabShell';
 import { ExportPanel } from './ExportPanel';
@@ -384,6 +384,11 @@ export function GalleryScreen() {
               </View>
               {patterns === null ? (
                 <Text style={styles.caption}>Loading…</Text>
+              ) : patternsUnreadable(patterns) ? (
+                // A failed READ is not an empty library (hunt 4, 2026-10-03):
+                // it said "NOTHING SAVED YET" over every saved pattern. The
+                // list re-reads whenever the gallery comes back into focus.
+                <Text style={styles.caption}>Your saved patterns could not be read from this device just now — they are not lost, and nothing is written over them. Leave the gallery and come back to try again.</Text>
               ) : patterns.length === 0 ? (
                 <View style={styles.empty}>
                   <Text style={styles.emptyTitle}>NOTHING SAVED YET</Text>

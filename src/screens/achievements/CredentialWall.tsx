@@ -84,11 +84,19 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
   // collapse into "COMING SOON — none available yet" / a stuck waiting slot,
   // reporting "you're offline" as "these don't exist" (launch audit 2026-09-09).
   const [failed, setFailed] = useState(false);
+  // The NEXT UP read on its own (hunt 4, 2026-10-03): the error card above is
+  // drawn only while nothing is earned, so for a member with a credential a
+  // failed NEXT UP read left the slot on "Finding your next…" for good.
+  const [nearestFailed, setNearestFailed] = useState(false);
 
   const load = useCallback(() => {
     setFailed(false);
+    setNearestFailed(false);
     fetchEarnedCredentialsByType(kind).then(setRows).catch(() => setFailed(true));
-    fetchNearestCredential(kind).then(setNearest).catch(() => setFailed(true));
+    fetchNearestCredential(kind).then(setNearest).catch(() => {
+      setFailed(true);
+      setNearestFailed(true);
+    });
   }, [kind]);
 
   useFocusEffect(useCallback(() => load(), [load]));
@@ -139,7 +147,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
         ) : (
           <>
             {/* The leading "waiting slot" — always first. */}
-            <WaitingSlot kind={kind} noun={noun} accent={accent} result={nearest} navigation={navigation} guest={guest} />
+            <WaitingSlot kind={kind} noun={noun} accent={accent} result={nearest} navigation={navigation} guest={guest} failed={nearestFailed} onRetry={load} />
 
             {/* Earned credentials — newest first. Image only appears here. */}
             {(rows ?? []).map((c) => {
@@ -237,6 +245,8 @@ function WaitingSlot({
   result,
   navigation,
   guest,
+  failed,
+  onRetry,
 }: {
   kind: CredentialKind;
   noun: string;
@@ -244,7 +254,28 @@ function WaitingSlot({
   result: NearestCredentialResult | null;
   navigation: any;
   guest: boolean;
+  /** The NEXT UP read failed and nothing was shown yet. */
+  failed: boolean;
+  onRetry: () => void;
 }) {
+  // Failed, not loading (hunt 4, 2026-10-03) — say so, and retry on tap.
+  if (!result && failed) {
+    return (
+      <Pressable
+        style={[styles.row, styles.rowWaiting, { borderLeftColor: `${accent}66` }]}
+        onPress={onRetry}
+        accessibilityRole="button"
+        accessibilityLabel={`Could not load your next ${noun}. Try again.`}
+      >
+        <ProgressRing size={48} progress={null} color={accent} centerLabel="—" />
+        <View style={styles.rowMain}>
+          <Text style={styles.eyebrow}>NEXT UP</Text>
+          <Text style={styles.waitingName}>Couldn’t load your next {noun}.</Text>
+          <Text style={styles.waitingMeta}>Tap to try again.</Text>
+        </View>
+      </Pressable>
+    );
+  }
   // Loading — a quiet placeholder slot so the layout doesn't jump.
   if (!result) {
     return (

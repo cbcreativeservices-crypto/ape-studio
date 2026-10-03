@@ -89,7 +89,7 @@ export function StudyAreaExplore({
   const [catalog, setCatalog] = useState<Awaited<ReturnType<typeof loadCatalog>> | null>(null);
   const [detail, setDetail] = useState<CredentialDetail | null>(null);
   const [payPrompt, setPayPrompt] = useState<{ label: string } | null>(null);
-  const { entitlement, resolved } = useEntitlement();
+  const { entitlement, resolved, tierKnown } = useEntitlement();
   /** Can this account actually HOLD an enrollment? Gates the two onward doors:
    *  an anonymous pick does not survive, so offering "my enrollments" would
    *  send them to a list their choice will never appear in. */
@@ -155,9 +155,14 @@ export function StudyAreaExplore({
       addBundle(kind, c.name, c.topics);
       addTopicsUnloaded(c.topics); // new topics only (bug hunt 2026-09-29)
       addTopics([...COREQ_TOPIC_GS]);
-      if (resolved && entitlement === 'anonymous') setPayPrompt({ label: c.name });
+      // "Won't be saved without an account" asserts an identity, so it waits
+      // for a tier a read actually PRODUCED (tierKnown — hunt 4, 2026-10-03):
+      // on `resolved` alone a signed-in member whose membership read failed
+      // reads 'anonymous' and was told they have no account, plus the
+      // membership line (no marketing to members). A real guest is known.
+      if (tierKnown && entitlement === 'anonymous') setPayPrompt({ label: c.name });
     },
-    [bundleKeys, resolved, entitlement],
+    [bundleKeys, tierKnown, entitlement],
   );
 
   // ‹ › neighbours within THIS area's list (clamped, no wrap).

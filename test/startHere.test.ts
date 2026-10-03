@@ -171,13 +171,15 @@ describe('Start Here — free by construction', () => {
     // ONE allowed read (owner 2026-09-29): NextSteps hides its FREE / MEMBERS
     // access tags from members — a label, never a gate.
     // `|| !resolved` (bug pass 2 2026-09-30): no tags before the tier is known.
-    const TAG_ONLY = "const a = isMember || !resolved ? '' : accessTag(s.access);";
+    // useUpsellAllowed (hunt 4, 2026-10-03): no tags until a read actually
+    // produced the tier — a member whose read failed is never tagged.
+    const TAG_ONLY = "const a = upsell ? accessTag(s.access) : '';";
     for (const f of START_FILES) {
       let body = src(f);
       if (f.endsWith('NextSteps.tsx')) {
-        assert.equal(body.split('isMember').length - 1, 2, 'NextSteps reads isMember only to hide the access tag');
+        assert.equal(body.split('useUpsellAllowed()').length - 1, 1, 'NextSteps reads the tier only to hide the access tag');
         assert.ok(body.includes(TAG_ONLY));
-        body = body.replace('const { isMember, resolved } = useEntitlement();', '').replace(TAG_ONLY, '');
+        body = body.replace('const upsell = useUpsellAllowed();', '').replace(TAG_ONLY, '');
       }
       assert.doesNotMatch(body, banned, `${f} touches gating or credit`);
     }

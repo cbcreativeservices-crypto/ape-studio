@@ -56,7 +56,7 @@ import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
-import { redeemAccessCode } from '../../features/commercial/accessCode';
+import { REDEEM_GRANTED_NOT_REFRESHED, redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 // Import kept alongside the disabled mount below so re-enabling is one line.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -417,7 +417,19 @@ export function AuthScreen({ navigation }: Props) {
         const redeem = await redeemAccessCode(code);
         if (redeem.ok) {
           granted = true;
-          await refreshEntitlement(); // pick up the granted academy entitlement
+          // Pick up the granted academy entitlement — and ASK FOR THE TIER, as
+          // Settings → Redeem does (hunt 4, 2026-10-03). A refresh that failed
+          // or lost the race to the sign-in read landed a comp-code account on
+          // a locked Home with no word about the code it had just redeemed.
+          const tier = await refreshEntitlement();
+          if (redeem.status === 'granted' && tier !== 'academy') {
+            setBusy(false);
+            notify('Account created', REDEEM_GRANTED_NOT_REFRESHED, () => {
+              hold();
+              void claimAndProceed(toHome).finally(end);
+            });
+            return;
+          }
         } else {
           // Account is created + signed in; surface why the code didn't apply so
           // an influencer/event user knows to retry it (Settings → Redeem code).

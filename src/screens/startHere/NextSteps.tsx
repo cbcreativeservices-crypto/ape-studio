@@ -12,7 +12,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { NEXT_HANDOFF, NEXT_STEPS, accessTag, type NextStep } from '../../features/startHere/startHereContent';
-import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useUpsellAllowed } from '../../features/commercial/useTier';
 
 export function NextSteps({
   onRoute,
@@ -28,9 +28,13 @@ export function NextSteps({
   // `resolved` (bug pass 2 2026-09-30): the provider boots at 'anonymous', so
   // a paying member saw FREE / MEMBERS tags until the tier read landed. Not
   // yet known ⇒ no tags (the EarLab first-paint rule).
-  const { isMember, resolved } = useEntitlement();
+  // `useUpsellAllowed`, not `resolved` (hunt 4, 2026-10-03; final round A's
+  // rule): `resolved` flips even when the membership read FAILED, so a member
+  // with no cached tier read 'anonymous' and was shown FREE / MEMBERS · FREE
+  // LOOK INSIDE. The tags now wait for a read that actually produced a tier.
+  const upsell = useUpsellAllowed();
   const tag = (s: NextStep) => {
-    const a = isMember || !resolved ? '' : accessTag(s.access);
+    const a = upsell ? accessTag(s.access) : '';
     return s.mic ? (a ? `${a} · USES YOUR MIC` : 'USES YOUR MIC') : a;
   };
   return (

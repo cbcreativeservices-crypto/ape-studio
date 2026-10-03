@@ -28,7 +28,7 @@ test('every other surface branches its free / membership copy on membership', ()
     ['src/screens/enrollment/EnrollmentScreen.tsx', /free && !isCore && !paid \? '  ·  Free'/],
     ['src/screens/lab/AudioLearningScreen.tsx', /locked \? INTRO : INTRO_MEMBER/],
     ['src/screens/lab/EarLabScreen.tsx', /isMember \? '' : sec\.note/],
-    ['src/screens/startHere/NextSteps.tsx', /isMember \|\| !resolved \? '' : accessTag/],
+    ['src/screens/startHere/NextSteps.tsx', /upsell \? accessTag\(s\.access\) : ''/],
     ['src/screens/careerfinder/CareerFinderScreen.tsx', /upsell \? 'AUDIO CAREER FINDER · FREE · NO ACCOUNT' : 'AUDIO CAREER FINDER'/],
     ['src/screens/careerfinder/CareerFamilyScreen.tsx', /\{!upsell\s*\?/],
     ['src/screens/settings/SettingsScreen.tsx', /isMember \? 'Saves' : 'Academy members: saves'/],

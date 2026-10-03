@@ -270,8 +270,21 @@ async function readList<T>(kv: KeyValueStore, key: string, normalise: (x: unknow
   }
 }
 
+/** The empty stand-ins `loadList` returned for a list it could not READ
+ *  (hunt 4, 2026-10-03): the gallery said "NOTHING SAVED YET" over every
+ *  saved pattern. Told apart here, like roomDesignStore's readFailed. */
+const unreadableLists = new WeakSet<readonly unknown[]>();
+/** True when this list is the empty stand-in for a read that FAILED. */
+export function patternsUnreadable(list: readonly unknown[]): boolean {
+  return unreadableLists.has(list);
+}
+
 async function loadList<T>(kv: KeyValueStore, key: string, normalise: (x: unknown) => T | null): Promise<T[]> {
-  return (await readList(kv, key, normalise)) ?? [];
+  const list = await readList(kv, key, normalise);
+  if (list) return list;
+  const none: T[] = [];
+  unreadableLists.add(none);
+  return none;
 }
 
 async function saveList<T>(kv: KeyValueStore, key: string, list: T[]): Promise<boolean> {

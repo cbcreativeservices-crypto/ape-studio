@@ -17,6 +17,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useTier } from '../../../features/commercial/useTier';
 import { QUANTITIES, fmtCarried, parseQuantity, type QuantityKind } from './calcUnits';
 import type { Project } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
@@ -58,10 +59,12 @@ function toDraft(p: Project): DraftValue[] {
 export function CalcProjectsScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
-  const { entitlement, resolved } = useEntitlement();
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // workflowLimitsFor, not WORKFLOW_LIMITS[entitlement] — hold the academy row
   // until the entitlement read lands (roll-out 2026-09-11); see the helper.
   const limits = workflowLimitsFor(entitlement, resolved);
+  /** A signed-in learner whose read failed reads 'guest' (see tier.ts). */
+  const tierUnconfirmed = useTier() === 'guest' && !tierKnown;
 
   const [projects, setProjects] = useState<Project[]>([]);
   // Inline editor: null = list view; {id: null} = creating new.
@@ -124,7 +127,16 @@ export function CalcProjectsScreen() {
     if (limits.savedProjects == null || count < limits.savedProjects) return true;
     // confirmDialog / notify, not Alert.alert: RN-web's Alert is a no-op, so
     // these prompts were silent taps on the web preview (B-018/B-062).
-    if (limits.savedProjects === 0) {
+    if (limits.savedProjects === 0 && tierUnconfirmed) {
+      // Signed in, but the membership read FAILED with no remembered tier
+      // (hunt 4, 2026-10-03): "Sign in" to a signed-in learner was untrue.
+      notify(
+        tierReadFailed ? 'Membership not confirmed' : 'One moment',
+        tierReadFailed
+          ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+          : 'Still checking your account. Try again in a moment.',
+      );
+    } else if (limits.savedProjects === 0) {
       confirmDialog('Sign in to save projects', 'Saved projects need an account.', 'Sign in', () => (navigation as any).navigate('Auth'), {
         cancelText: 'Not now',
       });

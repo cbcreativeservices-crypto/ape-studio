@@ -18,6 +18,7 @@ import { AppState, type AppStateStatus } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import type { StudySnapshot } from './api';
 import { sendCoalescedChunk } from './replayChunk';
+import { armSaveFailureReport } from '../storage/saveFailureNotice';
 import {
   deleteQueuedBatches,
   getQueuedBatches,
@@ -410,6 +411,7 @@ export class StudySession {
      * would have double-counted instead.
      */
     let persisted = true;
+    const reportLost = armSaveFailureReport(); // never across the account wipe
     try {
       enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
     } catch (e) {
@@ -427,7 +429,18 @@ export class StudySession {
       // the write-ahead itself failed, in which case this is the last chance.
       // replayQueue() remains the SINGLE arbiter that eventually drops a
       // genuinely poisoned batch, so this cannot wedge the queue.
-      if (!persisted) enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
+      if (!persisted) {
+        // GUARDED (hunt 4, 2026-10-03): the write-ahead already failed, so
+        // this usually fails the same way (a full disk). Unguarded it threw
+        // out of this catch and rejected flush() — see the replay guard above
+        // — and the lost work was never told (owner ruling 2026-10-03).
+        try {
+          enqueue(this.achievementId, this.methodKey, batchId, seconds, events);
+        } catch (qe) {
+          console.warn('[study-sync] could not queue an unsent batch:', (qe as Error).message);
+          reportLost();
+        }
+      }
       if (!isNetworkError(e)) {
         console.warn('[study-sync] batch rejected, queued for retry:', (e as Error).message);
         this.onRejected?.((e as Error).message);

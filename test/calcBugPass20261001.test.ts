@@ -74,8 +74,9 @@ test('W1 CALCULATE signature is scoped to the function and remembers every paid 
 
 test('W2 the answer waits for the entitlement tier', () => {
   const src = read('screens/lab/calc/CalcWorkspaceScreen.tsx');
-  assert.match(src, /const tierPending = commercialMode && !resolved && !onboardingSampling;/);
-  assert.match(src, /\) : tierPending \? \(\s*<Text style=\{styles\.resultPlaceholder\}>Checking your account…<\/Text>\s*\) : capped && !resultUnlocked \? \(/);
+  // Hunt 4 (2026-10-03) widened the hold to a failed read (calcHunt4_20261003).
+  assert.match(src, /const tierPending = commercialMode && \(!resolved \|\| tierUnconfirmed\) && !onboardingSampling;/);
+  assert.match(src, /\) : tierPending \? \(\s*<Text style=\{styles\.resultPlaceholder\}>[\s\S]{0,260}'Checking your account…'\}\s*<\/Text>\s*\) : capped && !resultUnlocked \? \(/);
 });
 
 test('W3 a late status read cannot overwrite the post-CALCULATE count', () => {

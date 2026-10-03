@@ -83,7 +83,7 @@ export function CalcWorkflowRunScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkflowRun'>>();
-  const { entitlement, resolved, commercialMode } = useEntitlement();
+  const { entitlement, resolved, commercialMode, tierKnown, tierReadFailed } = useEntitlement();
   // ⛔ WORKFLOWS ARE ACADEMY-ONLY — RE-CHECKED HERE (evening hunt 1,
   // 2026-10-02). The lab's gate lets a tap through while the tier is still
   // unknown (`!resolved` counts as allowed, so a member is never sold what they
@@ -93,6 +93,10 @@ export function CalcWorkflowRunScreen() {
   // Once the tier is KNOWN and is not a member, the answers are withheld.
   const tier = useTier();
   const workflowBlocked = commercialMode && tier !== 'unknown' && tier !== 'member';
+  // Blocked because the membership read FAILED (no remembered tier), not
+  // because the account is known to be free (hunt 4, 2026-10-03): the
+  // honest "not confirmed" words, never the membership sell — as CalcLab.
+  const tierUnconfirmed = tier === 'guest' && !tierKnown;
   const workflowBlockedRef = useRef(workflowBlocked);
   workflowBlockedRef.current = workflowBlocked;
   // PIN THE INPUTS ON FOCUS (owner 2026-08-07) — see CalcWorkspaceScreen: the
@@ -544,12 +548,22 @@ export function CalcWorkflowRunScreen() {
           </View>
           <AccuracyNote compact variant="calc" />
         </View>
-        <View style={styles.scroll}>
-          <Text style={styles.sectionTitle}>WORKFLOWS ARE AN ACADEMY FEATURE</Text>
-          <Text style={styles.caption}>
-            Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open to browse, with 5 free calculations a week; membership removes that limit.
-          </Text>
-        </View>
+        {tierUnconfirmed ? (
+          <View style={styles.scroll}>
+            <Text style={styles.caption}>
+              {tierReadFailed
+                ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                : 'Checking your account…'}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.scroll}>
+            <Text style={styles.sectionTitle}>WORKFLOWS ARE AN ACADEMY FEATURE</Text>
+            <Text style={styles.caption}>
+              Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open to browse, with 5 free calculations a week; membership removes that limit.
+            </Text>
+          </View>
+        )}
       </View>
     );
   }

@@ -2570,13 +2570,20 @@ ${COPY.glossaryFreeAllowance}`,
       // silently dropped or cut the definition. Through the shared session
       // cache (a term already read is not read again); one that cannot be
       // read THROWS — the caller says so instead of sharing a short card.
-      const gen = readerGenRef.current;
-      const r = await readDefinitionOnce(id, isMemberRef.current);
-      if (gen !== readerGenRef.current) return null;
-      let definition: string | null = null;
-      if (r.state === 'ok') definition = r.row.definition?.trim() ? r.row.definition : null;
-      else if (r.fault === 'not-deployed') definition = e.definition.trim() ? e.definition : null; // legacy table: full text
-      if (definition == null) throw shareDefinitionUnreadable(e.term, r.state === 'fault' ? r.fault : 'error');
+      // A MEMBER's row is never a teaser (hunt 4, 2026-10-03): the browse
+      // view and the saved-offline copy hand a member the whole text, and on
+      // a ship with no signal the gateway read could only fail — SHARE on a
+      // term the member was reading said "couldn't be loaded". Used as-is.
+      let definition: string | null =
+        defTierRef.current === 'member' && e.definition.trim() ? e.definition : null;
+      if (definition == null) {
+        const gen = readerGenRef.current;
+        const r = await readDefinitionOnce(id, isMemberRef.current);
+        if (gen !== readerGenRef.current) return null;
+        if (r.state === 'ok') definition = r.row.definition?.trim() ? r.row.definition : null;
+        else if (r.fault === 'not-deployed') definition = e.definition.trim() ? e.definition : null; // legacy table: full text
+        if (definition == null) throw shareDefinitionUnreadable(e.term, r.state === 'fault' ? r.fault : 'error');
+      }
       const d = await getDetail(id);
       const purpose = [d?.purpose_function, d?.practical_application].filter(Boolean).join('\n\n') || null;
       return {

@@ -114,7 +114,7 @@ export function CalcWorkspaceScreen() {
   // allowance set to 5 by the owner 2026-09-01, see calcUsage.CALC_WEEKLY_LIMIT).
   // Academy is unlimited; anonymous guests must sign in. The result is hidden
   // behind a CALCULATE button so there is one countable trigger per calculation.
-  const { entitlement, commercialMode, resolved } = useEntitlement();
+  const { entitlement, commercialMode, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // During the first-run onboarding demo the calc is a canned "looks real"
   // landing focused on UX, not the upsell (owner 2026-09-07): no sign-in gate
   // and no weekly-cap prompt — the answer just computes locally. Real gating
@@ -128,13 +128,21 @@ export function CalcWorkspaceScreen() {
   // calculations" with the answer withheld, until the server read landed.
   // (`capped` needs no guard: 'anonymous' is neither 'free' nor 'lapsed', so it
   // is already false pre-resolve.)
-  const mustSignIn = commercialMode && resolved && entitlement === 'anonymous' && !onboardingSampling;
+  // `tierKnown` REQUIRED too (hunt 4, 2026-10-03): `resolved` flips even when
+  // the read FAILED, so a SIGNED-IN learner (a member included) whose read
+  // failed with no remembered tier still read 'anonymous' — and was told to
+  // "Create a free account (or sign in)", with a SIGN IN button, while signed
+  // in. A real guest's tier is always known (no session = a definitive answer).
+  const mustSignIn = commercialMode && resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;
   // ⛔ HOLD THE ANSWER UNTIL THE TIER IS KNOWN (bug pass 2026-10-01). `capped`
   // is false before the entitlement read lands (the provider boots at
   // 'anonymous'), so a FREE account on a slow connection read every answer it
   // typed — uncounted — until the read arrived. `resolved` always flips (the
-  // provider bounds its first attempt), so this never hangs.
-  const tierPending = commercialMode && !resolved && !onboardingSampling;
+  // provider bounds its first attempt), so this never hangs. The unconfirmed
+  // case above holds here too; once the provider gives up (`tierReadFailed`,
+  // owner ruling 2026-10-03) it says so instead of "Checking…".
+  const tierUnconfirmed = resolved && !tierKnown && entitlement === 'anonymous';
+  const tierPending = commercialMode && (!resolved || tierUnconfirmed) && !onboardingSampling;
   const [usage, setUsage] = useState<CalcUsage | null>(null);
   // EVERY input set already paid for on this screen, not just the last one
   // (bug pass 2026-10-01): with one remembered signature, A → B → back to A
@@ -357,7 +365,11 @@ export function CalcWorkspaceScreen() {
                     : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
               </Text>
             ) : tierPending ? (
-              <Text style={styles.resultPlaceholder}>Checking your account…</Text>
+              <Text style={styles.resultPlaceholder}>
+                {tierReadFailed && tierUnconfirmed
+                  ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                  : 'Checking your account…'}
+              </Text>
             ) : capped && !resultUnlocked ? (
               <View style={{ gap: 8 }}>
                 <Pressable

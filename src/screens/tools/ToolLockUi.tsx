@@ -31,8 +31,16 @@ export const MEMBERSHIP_REQUIRED = 'Academy membership required';
  *  useFullScreenGate now holds the member-favouring (unlocked) state until the
  *  tier is known. */
 export function useToolsLocked(): boolean {
-  const { isMember, resolved } = useEntitlement();
-  return resolved && !isMember;
+  const { isMember, resolved, tierKnown, entitlement } = useEntitlement();
+  // KNOWN, NOT MERELY RESOLVED (hunt 4, 2026-10-03). `resolved` also flips
+  // when the read FAILED, and a member with no remembered tier then reads
+  // 'anonymous' — so the library, LEARN and DEMO showed "🔒 Academy membership
+  // required · SEE MEMBERSHIP" to a paying member (the provider's own contract
+  // for a failed read: "never an upsell, never a 🔒"). Same `known` as
+  // useSaveGate below; until then the member-favouring state above holds.
+  const tier = tierOf(entitlement, resolved);
+  const known = tierKnown || tier === 'free' || tier === 'member';
+  return known && !isMember;
 }
 
 /** SAVE gate (owner ruling 2026-09-01): saving a measurement is an Academy

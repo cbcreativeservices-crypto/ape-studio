@@ -15,13 +15,14 @@ import { colors, fonts } from '../../../theme/tokens';
 import { cardColumn } from '../../../theme/readingColumn';
 import { useIsTablet } from '../../../theme/useIsTablet';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { afterDialogCloses, confirmDialog } from '../../../lib/confirm';
+import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { COMING_SOON, SECTION_META, WORKSPACES } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
 import { workflowStore } from './workflowStore';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
+import { useTier } from '../../../features/commercial/useTier';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import type { CalcSectionId } from './calcTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -35,7 +36,7 @@ export function CalcLabScreen() {
   // Tablet (owner 2026-09-29): three calculator plates a row in the centred
   // card column instead of two ~490 pt plates. Phones keep two.
   const tablet = useIsTablet();
-  const { isMember, commercialMode, resolved } = useEntitlement();
+  const { isMember, commercialMode, resolved, tierKnown, tierReadFailed } = useEntitlement();
 
   // ALL workflows are ACADEMY-ONLY (owner 2026-08-13): running a guided
   // multi-step sequence, using templates, AND building your own. Individual
@@ -45,8 +46,24 @@ export function CalcLabScreen() {
   // server read landed got the "Workflows are an Academy feature" sell for the
   // membership they already hold.
   const workflowsAllowed = !commercialMode || !resolved || isMember;
+  // A signed-in learner whose membership read FAILED (no remembered tier)
+  // reads 'guest' on the resolved-based tier (hunt 4, 2026-10-03): they were
+  // sold the membership they may already hold. Still no workflow (the labs'
+  // failed-read rule), but the honest words — never the upsell — as the
+  // tools' SAVE gate says it (owner ruling 2026-10-03).
+  const tier = useTier();
+  const tierUnconfirmed = tier === 'guest' && !tierKnown;
   const gateWorkflow = (proceed: () => void) => {
     if (workflowsAllowed) return proceed();
+    if (tierUnconfirmed) {
+      notify(
+        tierReadFailed ? 'Membership not confirmed' : 'One moment',
+        tierReadFailed
+          ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+          : 'Still checking your account. Try again in a moment.',
+      );
+      return;
+    }
     // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so this gate
     // was a silent tap on the web preview (B-018/B-062).
     confirmDialog(

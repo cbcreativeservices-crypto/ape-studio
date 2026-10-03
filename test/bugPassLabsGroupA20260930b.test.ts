@@ -103,7 +103,7 @@ test('Start Here opens one outward screen per tap', () => {
 });
 
 test('Start Here: no access tags before the tier is known; one quiz answer per question', () => {
-  assert.match(read('src/screens/startHere/NextSteps.tsx'), /const a = isMember \|\| !resolved \? '' : accessTag\(s\.access\);/);
+  assert.match(read('src/screens/startHere/NextSteps.tsx'), /const a = upsell \? accessTag\(s\.access\) : '';/);
   const terms = read('src/screens/startHere/StartHereTermsScreen.tsx');
   assert.match(terms, /if \(picked != null \|\| answeredRef\.current === i\) return;\s*\n\s*answeredRef\.current = i;/);
   assert.match(terms, /answeredRef\.current = -1; setSeed\(seed \+ 7919\)/);
