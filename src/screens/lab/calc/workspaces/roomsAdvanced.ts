@@ -5,9 +5,20 @@
  * are teaching models, not standards-compliant measurements.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, speedOfSoundAir } from '../calcUnits';
+import { RHO_AIR_20C, SABINE_K, fmt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
+
+/**
+ * Panel (membrane) absorber, exact for its model (calc accuracy audit,
+ * 2026-10-04): a limp mass m (kg/m²) on the air spring of a sealed, unfilled
+ * cavity d (m) resonates at f₀ = (c/2π)·√(ρ₀/(m·d)) (Everest & Pohlmann,
+ * Master Handbook of Acoustics, ch. 13). With air at 20 °C that constant is
+ * 59.94 — the "60" of the rule of thumb. Filling the cavity with porous
+ * material softens the spring toward about 50/√(m·d).
+ */
+const PANEL_K = (speedOfSoundAir(20) * Math.sqrt(RHO_AIR_20C)) / (2 * Math.PI);
+const PANEL_K_TXT = fmt(PANEL_K, 4);
 
 /** Largest prime N the QRD workspace accepts. Real diffusers use small primes
  *  (7…199); the compute/table loop N times on EVERY keystroke, so an unbounded
@@ -101,8 +112,8 @@ const EYRING: Workspace = {
         // over-estimate read "—" beside a confident Sabine figure, and ā = 1
         // printed an Eyring RT60 of 0 s. → the "check your inputs" state.
         if (!(a > 0 && a < 1)) throw new Error('average absorption must be between 0 and 1');
-        const sabine = (0.161 * V) / (S * a);
-        const eyring = (0.161 * V) / (-S * Math.log(1 - a));
+        const sabine = (SABINE_K * V) / (S * a);
+        const eyring = (SABINE_K * V) / (-S * Math.log(1 - a));
         return [
           { label: 'RT60 (EYRING)', value: eyring, quantity: 'time', unit: 's' },
           { label: 'RT60 (SABINE)', value: sabine, quantity: 'time', unit: 's', chainable: false },
@@ -117,8 +128,8 @@ const EYRING: Workspace = {
         const V = n(v.vol);
         const S = n(v.surf);
         const a = n(v.aBar);
-        const sabine = (0.161 * V) / (S * a);
-        const eyring = (0.161 * V) / (-S * Math.log(1 - a));
+        const sabine = (SABINE_K * V) / (S * a);
+        const eyring = (SABINE_K * V) / (-S * Math.log(1 - a));
         return [
           `Sabine: 0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(a)}) = ${fmt(sabine)} s.`,
           `Eyring uses −ln(1−ā) = −ln(${fmt(1 - a)}) = ${fmt(-Math.log(1 - a))} in place of ā.`,
@@ -141,7 +152,7 @@ const EYRING: Workspace = {
         const V = n(v.vol);
         const S = n(v.surf);
         const rt = n(v.rtTarget);
-        const a = 1 - Math.exp((-0.161 * V) / (S * rt));
+        const a = 1 - Math.exp((-SABINE_K * V) / (S * rt));
         const sabines = S * a; // total absorption in sabins (metric)
         return [
           { label: 'REQUIRED AVERAGE ABSORPTION ā', value: a, quantity: 'number' },
@@ -152,7 +163,7 @@ const EYRING: Workspace = {
         const V = n(v.vol);
         const S = n(v.surf);
         const rt = n(v.rtTarget);
-        const a = 1 - Math.exp((-0.161 * V) / (S * rt));
+        const a = 1 - Math.exp((-SABINE_K * V) / (S * rt));
         return [
           `Rearranging Eyring: ā = 1 − exp(−0.161 × ${fmt(V)} ÷ (${fmt(S)} × ${fmt(rt)})) = ${fmt(a)}.`,
           `That is ${fmt(S * a)} m² of total (metric) absorption spread over ${fmt(S)} m² of surface.`,
@@ -262,17 +273,21 @@ const ABSORBER: Workspace = {
     'Panel and Helmholtz resonators put absorption exactly where a mode or a boom lives, using ' +
     'depth and mass instead of metres of foam.',
   example:
-    'Panel absorber: a 5 kg/m² membrane over a 5 cm gap tunes to 60/√(5·0.05) ≈ 120 Hz. ' +
-    'Perforated Helmholtz: 5% open area, 10 cm cavity, 12 mm panel, 8 mm holes tunes near 280 Hz.',
+    'Panel absorber: a 5 kg/m² membrane over a 5 cm gap tunes to 59.9/√(5·0.05) ≈ 120 Hz. ' +
+    'Perforated Helmholtz: 5% open area, 10 cm cavity, 12 mm panel, 8 mm holes tunes near 285 Hz.',
   mistakes: [
     'Building a panel absorber with a leaky (non-sealed) cavity — it only works if the trapped air is the spring.',
     'Filling a Helmholtz cavity solidly with dense fill — a little damping broadens it, too much kills the resonance.',
     'Expecting a razor-sharp notch — real tuned absorbers have a useful bandwidth of roughly an octave around f₀, not a single frequency.',
   ],
   warnings:
-    'Teaching approximations. Panel: f₀ ≈ 60/√(m·d) (m in kg/m², d in m). Perforated-panel ' +
-    'Helmholtz: f₀ ≈ (c/2π)·√(P / (d·(t + 0.8·D))) (P = open-area fraction, d = cavity depth, ' +
-    't = panel thickness, D = hole diameter). Real Q depends on damping and construction.',
+    'Lumped-element models. Panel: f₀ = (c/2π)·√(ρ₀/(m·d)) = 59.9/√(m·d) for air at 20 °C ' +
+    '(m in kg/m², d in m) — a limp panel over a sealed, unfilled cavity; porous fill in the cavity ' +
+    'lowers it toward 50/√(m·d), and a stiff panel tunes higher. Perforated-panel Helmholtz: ' +
+    'f₀ = (c/2π)·√(P / (d·(t + 0.8·D))) (P = open-area fraction, d = cavity depth, t = panel ' +
+    'thickness, D = hole diameter; 0.8·D is the end correction of both hole ends). Both hold while ' +
+    'the cavity depth and hole spacing are small next to the wavelength. Real Q depends on damping ' +
+    'and construction — measure the built absorber.',
   glossary: ['Absorption Coefficient', 'Resonance', 'Room Mode', 'Standing wave', 'Reverberation'],
   fields: [
     { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '5', help: 'Surface mass of the membrane, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
@@ -288,14 +303,14 @@ const ABSORBER: Workspace = {
       key: 'panel',
       name: 'Panel (membrane) absorber resonance',
       inputs: ['mass', 'gap'],
-      formula: 'f₀ ≈ 60 / √(m · d)',
+      formula: 'f₀ = (c/2π)·√(ρ₀ / (m · d)) ≈ 59.9 / √(m · d)',
       plainFormula:
-        'The resonant frequency is about 60 divided by the square root of the panel mass times the air-gap depth.',
+        'The resonant frequency equals the speed of sound over two pi, times the square root of the air density over the panel mass times the air-gap depth — about 59.9 divided by the square root of mass times depth for air at 20 °C.',
       explain:
         'A panel (membrane) absorber flexes a mass over a sealed air gap, resonating at a low frequency where thin porous foam fails. A heavier panel or a deeper gap tunes it lower. It works across roughly a half-octave either side of this frequency, and only if the cavity is sealed so the trapped air acts as the spring.',
       keySymbols: ['≈', '/', '√', '·', 'f', 'x₁'],
       compute: (v) => {
-        const f0 = 60 / Math.sqrt(n(v.mass) * n(v.gap));
+        const f0 = PANEL_K / Math.sqrt(n(v.mass) * n(v.gap));
         return [
           { label: 'RESONANT FREQUENCY', value: f0, quantity: 'frequency' },
           // A BAND, not f₀ again (bug pass 2, 2026-09-30): this row printed the
@@ -304,9 +319,9 @@ const ABSORBER: Workspace = {
         ];
       },
       steps: (v) => {
-        const f0 = 60 / Math.sqrt(n(v.mass) * n(v.gap));
+        const f0 = PANEL_K / Math.sqrt(n(v.mass) * n(v.gap));
         return [
-          `f₀ = 60 ÷ √(${fmt(n(v.mass))} kg/m² × ${fmt(n(v.gap))} m) = ${fmt(f0)} Hz.`,
+          `f₀ = ${PANEL_K_TXT} ÷ √(${fmt(n(v.mass))} kg/m² × ${fmt(n(v.gap))} m) = ${fmt(f0)} Hz.`,
           `Heavier panel or deeper gap tunes LOWER; the absorber works roughly ±½ octave around ${fmt(f0)} Hz.`,
         ];
       },
@@ -374,9 +389,14 @@ const TRANSMISSION: Workspace = {
     'Quoting one TL number as if isolation were flat — it rises ~6 dB/octave; bass is always the weakest link.',
   ],
   warnings:
-    'Field-incidence mass law: TL ≈ 20·log₁₀(m·f) − 47 (m in kg/m², f in Hz). It ignores stiffness, ' +
-    'the coincidence dip, and flanking paths. Rated partition performance is measured (ASTM E90 / ' +
-    'STC, ISO 10140), not computed here.',
+    'Field-incidence mass law: TL = 20·log₁₀(m·f) − 47 (m in kg/m², f in Hz) — the normal-incidence ' +
+    'mass law less about 5 dB for sound arriving from all directions (Long, Architectural Acoustics, ' +
+    'ch. 9). It describes a single limp panel only: it holds above the panel’s own resonance and ' +
+    'below about half its coincidence (critical) frequency, where stiffness takes over and TL dips ' +
+    'well below this line — neither edge is computed here, because both need the panel’s stiffness. ' +
+    'Near 0 dB (m·f below about 400) the simplified form departs from the full mass law by more ' +
+    'than 0.5 dB; below m·f ≈ 224 it is refused. Flanking paths are ignored. Rated partition ' +
+    'performance is measured (ASTM E90 / STC, ISO 10140), not computed here.',
   glossary: ['Transmission Loss', 'Decibel', 'Sound Isolation', 'Mass Law', 'Frequency'],
   fields: [
     { key: 'mass', name: 'PANEL MASS (kg/m²)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Surface mass of the wall/panel, kilograms per square metre.', warn: { test: (x) => x <= 0, msg: 'Mass must be greater than zero.' } },
@@ -392,7 +412,7 @@ const TRANSMISSION: Workspace = {
       plainFormula:
         'The transmission loss in dB is about twenty times the base-ten log of the panel mass times the frequency, minus 47.',
       explain:
-        'How much a single limp wall knocks a sound down as it passes through, by the mass law: heavier and higher in frequency both mean more isolation — about 6 dB for every doubling of either. That is why bass leaks first and why doubling drywall only adds ~6 dB. It ignores stiffness, the coincidence dip, and flanking paths.',
+        'How much a single limp wall knocks a sound down as it passes through, by the field-incidence mass law: heavier and higher in frequency both mean more isolation — about 6 dB for every doubling of either. That is why bass leaks first and why doubling drywall only adds ~6 dB. It holds between the panel’s own resonance and about half its coincidence frequency; it ignores stiffness, the coincidence dip, and flanking paths, so real walls can measure well below it.',
       keySymbols: ['≈', '·', 'log₁₀', '−', 'f'],
       compute: (v) => {
         const m = n(v.mass);

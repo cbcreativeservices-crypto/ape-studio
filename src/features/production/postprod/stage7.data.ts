@@ -64,6 +64,7 @@ export const STAGE7_FINISH: StageDef = {
           fieldId: "collection_checks",
           label: "Checked across the set",
           kind: "multiChoice",
+          showWhen: { field: "collection_context", notEquals: ["standalone"] },
           help: "Consistent, not identical. Items in a set should feel like they belong together and still be themselves.",
           options: [
             { value: "loudness", label: "Loudness" },
@@ -417,6 +418,7 @@ export const STAGE7_FINISH: StageDef = {
           fieldId: "access_status",
           label: "State of the accessibility package",
           kind: "choice",
+          showWhen: { field: "access_deliverables", notEquals: ["none"] },
           options: [
             { value: "complete", label: "Complete and checked" },
             { value: "drafted", label: "Drafted, not checked" },
@@ -428,6 +430,7 @@ export const STAGE7_FINISH: StageDef = {
           fieldId: "access_timing_checked",
           label: "Has caption or description timing been verified",
           kind: "choice",
+          showWhen: { field: "access_deliverables", notEquals: ["none"] },
           help: "Captions that drift are worse than none, because a viewer trusts them until they notice.",
           options: [
             { value: "yes", label: "Yes, against the final master" },

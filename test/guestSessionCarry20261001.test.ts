@@ -745,8 +745,10 @@ describe('Cymatics experiment tick-offs', () => {
     assert.match(s, /holdSessionWork<HeldTicks>\(CARRY_KEY, \(prev\) => withHeldTick\(prev, experiment\.id, i, on\), \{ guestOnly: true \}\);/);
     // Wave 2 (2026-10-02): the writer merges into the shared safe store's
     // HYDRATED series — never over ticks that could not be read (it answers
-    // false then, and the ledger tries again).
-    assert.match(s, /registerSessionCarry<HeldTicks>\(CARRY_KEY, \(held\) => ticksStore\.mutate\(\(all\) => mergeHeldTicks\(all, held\)\)\);/);
+    // false then, and the ledger tries again). Since 2026-10-04 it merges
+    // what the ledger holds when it RUNS (an untick let go of meanwhile stays
+    // off — smallFixes_20261004).
+    assert.match(s, /registerSessionCarry<HeldTicks>\(CARRY_KEY, \(held\) => ticksStore\.mutate\(\(all\) => mergeHeldTicks\(all, peekSessionWork<HeldTicks>\(CARRY_KEY\) \?\? held\)\)\);/);
   });
 });
 

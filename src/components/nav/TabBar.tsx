@@ -11,6 +11,8 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { NavIcon, type NavIconName } from './NavIcon';
 import { useFootnote } from '../../lib/footnote';
 import { colors, fonts } from '../../theme/tokens';
+import { CommunityBadge, useCommunityInbox } from '../../features/directory/CommunityBadge';
+import { badgeA11y } from '../../features/directory/inboxCounts';
 
 const TAB_ORDER: NavIconName[] = ['Home', 'Study', 'Achievements', 'Profile'];
 
@@ -26,6 +28,8 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
   // Occasional reminder strip BELOW the nav buttons (Booth 2026-07-08) —
   // renders only when a notice is set (see src/lib/footnote.ts).
   const footnote = useFootnote();
+  const inbox = useCommunityInbox();
+  const inboxLabel = badgeA11y(inbox);
 
   return (
     // Original black nav bar (matches the other screens, Booth 2026-07-11).
@@ -78,10 +82,19 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
               aria-selected={lit}
               // SR label matches the VISIBLE text -- the tab draws "PROGRESS"
               // while the route is named Achievements (QA night 2026-08-31).
-              accessibilityLabel={name === 'Achievements' ? 'Progress' : name}
+              accessibilityLabel={
+                name === 'Achievements'
+                  ? 'Progress'
+                  : name === 'Profile' && inboxLabel
+                    ? `Profile, ${inboxLabel}`
+                    : name
+              }
               onPress={handlePress}
             >
               <NavIcon icon={name} lit={lit} />
+              {/* The community lives under Profile: pending contact requests +
+                  unread messages (owner 2026-10-04). Nothing when unknown. */}
+              {name === 'Profile' ? <CommunityBadge state={inbox} style={styles.badge} /> : null}
             </Pressable>
           );
         })}
@@ -104,6 +117,8 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', height: 60 },
   item: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  // Top-right of the Profile icon, inside the 60 pt bar.
+  badge: { position: 'absolute', top: 6, left: '50%', marginLeft: 8 },
   footnote: {
     borderTopWidth: 1,
     borderTopColor: '#1e1e1e',

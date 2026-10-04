@@ -14,6 +14,12 @@
  * further down the list = further RIGHT of Glossary on the menu. No add-topics
  * browser and no sort chips — the list IS the enrollment list.
  *
+ * START HERE (owner 2026-10-04: "home is default, stays where user last left it
+ * after they move it") is a row of this list too: always on Home, no Home
+ * toggle and no DEFAULT button, but it drags like a topic and SAVE stores its
+ * slot in the Home order (HOME_START_HERE). Never placed → the top row, its
+ * default place right after Career Finder.
+ *
  * Edits a DRAFT (order + on/off + default); Save commits to homeCardsStore,
  * Cancel discards. Non-paid users may look but every write opens the prompt.
  */
@@ -35,7 +41,7 @@ import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
-import { getDefaultHomeGs, getHomeGs, HOME_MAX, isHomeListHydrated, setDefaultHomeGs, setHomeGs, useHomeBundles } from '../../features/home/homeCardsStore';
+import { getDefaultHomeGs, getHomeGs, getHomeOrder, HOME_MAX, HOME_START_HERE, isHomeListHydrated, setDefaultHomeGs, setHomeGs, useHomeBundles } from '../../features/home/homeCardsStore';
 
 const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
@@ -44,6 +50,7 @@ const GRAY = '#54565c';
 const ROW_H = 64; // estimated editable-row height for the drag-to-reorder step
 
 const FOUNDATIONS_LABEL = 'Audio Fundamentals & Advanced Training Labs';
+const START_HERE_LABEL = 'Start Here: Your First Steps in Audio';
 
 export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boolean; onClose: () => void; paid?: boolean }) {
   const insets = useSafeAreaInsets();
@@ -51,7 +58,8 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   const bundles = useBundles();
   const hasCredential = bundles.some((b) => b.kind === 'cert' || b.kind === 'program');
 
-  const [order, setOrder] = useState<number[]>([]); // enrolled NON-core gs, in list order
+  // enrolled NON-core gs + Start Here's slot (HOME_START_HERE), in list order
+  const [order, setOrder] = useState<number[]>([]);
   const [onSet, setOnSet] = useState<Set<number>>(new Set()); // which are on the Home menu
   const [defaultDraft, setDefaultDraft] = useState<number | null>(null);
   const [warn, setWarn] = useState(false);
@@ -130,11 +138,12 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
     dragY.setValue(0);
     // Was the list READ when this draft was built? (final round C, 2026-10-03)
     draftFromReadList.current = isHomeListHydrated();
-    const home = getHomeGs();
-    const onHome = home.filter((g) => enrolledNonCore.includes(g)); // home order first
+    // The saved order WITH Start Here's slot — the top row when never placed.
+    const home = getHomeOrder();
+    const onHome = home.filter((g) => g === HOME_START_HERE || enrolledNonCore.includes(g)); // home order first
     const off = enrolledNonCore.filter((g) => !home.includes(g)); // then the rest, enrollment order
     setOrder([...onHome, ...off]);
-    setOnSet(new Set(onHome));
+    setOnSet(new Set(onHome.filter((g) => g !== HOME_START_HERE)));
     setDefaultDraft(getDefaultHomeGs());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
@@ -172,7 +181,8 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
   const save = () =>
     guard(() => {
       const cores = getHomeGs().filter((g) => COREQ_TOPIC_GS.includes(g)); // preserve reserved cores
-      const editableOn = order.filter((g) => onSet.has(g)); // user's picks, in list order
+      // user's picks, in list order — Start Here's slot with them, where it was left
+      const editableOn = order.filter((g) => g === HOME_START_HERE || onSet.has(g));
       // ⛔ A REFUSED WRITE IS SAID (owner ruling 2026-10-03: "if it fails the
       // user needs to know"). Both results used to be dropped: the sheet
       // closed on SAVE and the new Home lasted only until the next launch.
@@ -379,18 +389,41 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
             ? lockedRow('foundations', <BookIcon color={AMBER} filled size={20} />, FOUNDATIONS_LABEL, 'Required lab · complete inside the lab')
             : null}
 
-          {/* The editable list — ONLY enrolled topics (minus cores). */}
+          {/* The editable list — ONLY enrolled topics (minus cores), plus Start Here. */}
           <Text style={[styles.sectionHead, { marginTop: 16 }]}>ON YOUR HOME</Text>
           <Text style={styles.hint}>
             Tap a topic's Home icon to add/remove it from your menu. Long-press and drag to reorder — the top row is
             closest to Glossary; lower rows sit further right.
           </Text>
-          {order.length === 0 ? (
-            <Text style={styles.empty}>No enrolled topics yet — add topics from your enrollment list.</Text>
-          ) : (
-            order.map((gs) => {
-              const on = onSet.has(gs);
+          {order.map((gs) => {
               const lifted = liftedGs === gs;
+              if (gs === HOME_START_HERE) {
+                // Start Here: always on Home — it moves, it never comes off.
+                return (
+                  <Animated.View
+                    key="startHere"
+                    {...(paid ? rowPan(gs).panHandlers : {})}
+                    {...(paid ? rowTouch(gs) : {})}
+                    accessible
+                    accessibilityLabel={`${START_HERE_LABEL}. Always on your Home. Long-press and drag to move it.`}
+                    style={[
+                      styles.placedRow,
+                      lifted && styles.placedRowLifted,
+                      lifted && { transform: [{ translateY: dragY }, { scale: liftAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) }] },
+                    ]}
+                  >
+                    <HomeIcon color={GREEN} filled size={22} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.placedName}>{START_HERE_LABEL}</Text>
+                      <Text style={styles.placedSubject}>
+                        Always on your Home · drag to move it
+                      </Text>
+                    </View>
+                    <Text style={styles.dragHandle}>⋮⋮</Text>
+                  </Animated.View>
+                );
+              }
+              const on = onSet.has(gs);
               return (
                 <Animated.View
                   key={gs}
@@ -445,8 +478,10 @@ export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boo
                   <Text style={styles.dragHandle}>⋮⋮</Text>
                 </Animated.View>
               );
-            })
-          )}
+            })}
+          {enrolledNonCore.length === 0 ? (
+            <Text style={styles.empty}>No enrolled topics yet — add topics from your enrollment list.</Text>
+          ) : null}
           {order.some((g) => onSet.has(g)) ? (
             <Text style={styles.defaultHint}>The card marked DEFAULT is where your Home carousel opens.</Text>
           ) : null}

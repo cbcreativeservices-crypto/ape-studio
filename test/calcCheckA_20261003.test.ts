@@ -162,9 +162,10 @@ describe('A5 — voltage drop past the supply says the model breaks down', () =>
     assert.match(steps('vdrop', 'drop', v), /model breaks down/);
   });
   it('the placeholder run is untouched (2.371 V, 45.63 V at the load)', () => {
+    // ρ = 1/58 µΩ·m exactly (IACS) since the 2026-10-04 audit — was 1.724e-8.
     const o = outs('vdrop', 'drop', { awg: 16, len: 30, current: 3, vsrc: 48 });
-    assert.ok(Math.abs(num(o, 'VOLTAGE DROP') - 2.3712) < 1e-4);
-    assert.ok(Math.abs(num(o, 'VOLTAGE AT LOAD') - 45.6288) < 1e-4);
+    assert.ok(Math.abs(num(o, 'VOLTAGE DROP') - 2.3714) < 1e-4);
+    assert.ok(Math.abs(num(o, 'VOLTAGE AT LOAD') - 45.6286) < 1e-4);
   });
   it('the steps write −1 AWG as 2/0 AWG, never "-1 AWG"', () => {
     const s = steps('vdrop', 'drop', { awg: -1, len: 30, current: 3, vsrc: 48 });

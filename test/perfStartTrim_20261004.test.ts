@@ -110,9 +110,18 @@ describe('1. the app-start graph no longer reaches the wipe’s lab modules or t
       const stem = file.replace(/^src\//, '').replace(/\.tsx?$/, '').split('/').slice(-2).join('/');
       assert.doesNotMatch(wipe, new RegExp(`from '[^']*${stem}'`), `${WIPE} still imports ${stem}`);
       const s = code(file);
+      assert.match(s, new RegExp(`^export function ${reset}\\(\\): void`, 'm'), `${file} exports ${reset}`);
+      // The Career Finder moved onto the house store (2026-10-04, guestCareer):
+      // createLocalStore registers the store's reset at creation — at module
+      // evaluation, the same moment — and resetLocal is that reset. The
+      // behavioural test below still sees exactly one registration appear.
+      if (/^const store = createLocalStore</m.test(s)) {
+        assert.match(s, /import \{ createLocalStore \} from '[^']*storage\/localStore';/, file);
+        assert.match(s, new RegExp(`^export function ${reset}\\(\\): void \\{\\s*store\\.reset\\(\\);\\s*\\}`, 'm'), `${file}: ${reset} is the store's reset`);
+        continue;
+      }
       assert.match(s, /import \{ registerLocalStoreReset \} from '[^']*storage\/localStoreRegistry';/, file);
       assert.match(s, new RegExp(`^registerLocalStoreReset\\(${reset}\\);`, 'm'), `${file} registers ${reset}`);
-      assert.match(s, new RegExp(`^export function ${reset}\\(\\): void`, 'm'), `${file} exports ${reset}`);
     }
     assert.match(wipe, /^\s*resetRegisteredLocalStores\(\);/m, 'the wipe runs every registered reset');
   });
@@ -206,6 +215,12 @@ function ownedKeys(file: string): string[] {
     assert.ok(k, `${file}: cannot resolve the storage key ${a}`);
     keys.add(k);
   }
+  // A createLocalStore key also owns the safe store's damaged set-aside,
+  // `<key>:damaged` (written by localStore.ts, not by the module itself).
+  for (const m of s.matchAll(/createLocalStore<[^>]*>\(\{\s*key: (\w+),/g)) {
+    const k = consts.get(m[1]);
+    if (k) keys.add(`${k}:damaged`);
+  }
   return [...keys];
 }
 
@@ -217,6 +232,8 @@ describe('2. the wipe still resets every store (behavioural)', () => {
     // keep memory only — public clips on disk are shared content by design).
     assert.deepEqual(new Set(all), new Set([
       'ape:detectiveSolved', 'ape:mixing:focal', 'ape:mixing:priorities',
+      // the safe store's set-aside for a createLocalStore key (2026-10-04)
+      'ape:mixing:priorities:damaged',
       'ape:careerfinder:v1', 'ape:careerfinder:v1:damaged',
     ]));
     for (const total of [false, true]) {
@@ -269,14 +286,14 @@ describe('2. the wipe still resets every store (behavioural)', () => {
     assert.equal(finder.getCareerFinder().rankedFamilyIds, null);
     assert.equal(AS.has('ape:careerfinder:v1'), false, 'storage swept');
 
-    // The next user's own record, then a second wipe: still reached.
-    AS.set('ape:careerfinder:v1', JSON.stringify({
-      version: 'career-finder-v1', responses: {}, index: 0, completed: false, completedAt: null,
-      dimensionScores: null, rankedFamilyIds: null, saved: ['broadcast'], feedback: null,
-    }));
-    await finder.hydrateCareerFinder();
+    // The next user's own record, then a second wipe: still reached. Written
+    // THROUGH the store (2026-10-04, on the house store: after a wipe the
+    // store reads the swept key once, so a record slipped into storage behind
+    // its back is not something the app can produce).
+    finder.toggleSavedFamily('broadcast');
     await settle();
     assert.deepEqual(finder.getCareerFinder().saved, ['broadcast']);
+    assert.ok(AS.has('ape:careerfinder:v1'), 'the next user’s record was written');
     await clearLocalAccountData();
     resetAllLocalStores();
     await settle();
@@ -394,6 +411,9 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   PreProdLab: [true, 'Audio Pre-Production'],
   ProductionActivity: [true, 'Production Labs'],
   ProductionLab: [true, 'Production Labs'],
+  // Added 2026-10-04 with the route (productionDesign): the packet screen sits
+  // inside the paid lab, members-only like its siblings.
+  ProductionPacket: [true, 'Production Labs'],
   ProductionStage: [true, 'Production Labs'],
   Profile: [false, null],
   Programs: [false, null],
@@ -468,12 +488,12 @@ describe('3. the members-only gate decides exactly as before', () => {
     assert.deepEqual(new Set(reached), before);
   });
 
-  it('GUARD: same membersOnly decision and same lab name for all 147 routes', async () => {
+  it('GUARD: same membersOnly decision and same lab name for all 148 routes (147 + ProductionPacket, 2026-10-04)', async () => {
     const cat = await import('../src/screens/lab/labCatalog.ts');
     const now: Record<string, [boolean, string | null]> = {};
     for (const r of Object.keys(GATE_AT_HEAD)) now[r] = [cat.isMemberOnlyLabRoute(r), cat.labRouteName(r) ?? null];
     assert.deepEqual(now, GATE_AT_HEAD);
-    assert.equal(Object.values(now).filter(([m]) => m).length, 72, '72 members-only routes');
+    assert.equal(Object.values(now).filter(([m]) => m).length, 73, '73 members-only routes (72 + ProductionPacket)');
   });
 
   it('GUARD: every route the catalog and the navigator name is in that comparison', () => {

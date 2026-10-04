@@ -89,7 +89,7 @@ export function nioshEdgeWarnings(levels: readonly number[], mins: readonly numb
     ? [
         {
           label: 'ABOVE 140 dBA',
-          text: 'A level here is above 140 dBA. NIOSH recommends no exposure above 140 dBA at all, and its dose counts sound only from 80 to 140 dBA — levels above 140 dBA are counted here by extending the same 3 dB rule, so the result is the formula’s answer, not an allowed exposure.',
+          text: 'A level here is above 140 dBA. NIOSH’s dose counts sound only from 80 to 140 dBA, and NIOSH recommends that no exposure ever exceed 140 dB peak — a steady level above 140 dBA already peaks above that. Levels above 140 dBA are counted here by extending the same 3 dB rule, so the result is the formula’s answer, not an allowed exposure.',
         },
       ]
     : [];
@@ -100,6 +100,27 @@ export function nioshEdgeWarnings(levels: readonly number[], mins: readonly numb
 const V_REF_DBU = DBU_REF_V;
 /** Sound pressure in Pa from SPL — exact 20 µPa reference, never "94 dB = 1 Pa". */
 const paFromSpl = (spl: number) => P_REF_PA * Math.pow(10, spl / 20);
+
+/**
+ * BELOW THE COUNTING THRESHOLD (calc accuracy audit, 2026-10-04). The single-
+ * level allowable-time functions printed the formula's time for ANY level — 70
+ * dBA "allowed 256 hours" under NIOSH, 75 dBA "allowed 128 hours" under OSHA —
+ * while the dose functions beside them (rightly) count nothing below 80 dBA.
+ * Below the threshold the criterion sets no limit at all; say that in words.
+ * Between 80 and 90 dBA OSHA counts the time toward the action-level dose only.
+ */
+export function nioshNoLimit(L: number): string | null {
+  return L < NIOSH_THRESHOLD
+    ? `No limit: NIOSH counts no sound below 80 dBA toward the daily dose, so ${fmt(L)} dBA uses up none of the daily allowance, however long it lasts.`
+    : null;
+}
+export function oshaNoLimit(L: number): string | null {
+  return L < OSHA_ACTION_THRESHOLD
+    ? `No limit: OSHA counts no sound below 80 dBA toward either dose (29 CFR 1910.95), so ${fmt(L)} dBA uses up none of the daily allowance, however long it lasts.`
+    : null;
+}
+export const OSHA_ACTION_ONLY_TEXT =
+  'Between 80 and 90 dBA this time counts toward the hearing-conservation ACTION-LEVEL dose only. The permissible-exposure-limit (PEL) dose counts sound at 90 dBA or more, so this level alone never reaches the PEL.';
 
 /** Leq when every paired duration is 0 min — an average over no time. */
 const LEQ_NO_TIME =
@@ -491,6 +512,13 @@ const WS_DOSE: Workspace = {
       note: 'Criterion 85 dBA · exchange rate 3 dB · reference duration 8 h. Recommended-practice style; not a legal limit.',
       compute: (v) => {
         const T = allowMin(n(v.lex), 85, 3);
+        const none = nioshNoLimit(n(v.lex));
+        if (none) {
+          return [
+            { label: 'ALLOWABLE TIME (85 dBA / 3 dB / 8 h)', text: none },
+            { label: 'CRITERION', text: 'Computed under: 85 dBA criterion · 3 dB exchange rate · 8 h reference · sound from 80 to 140 dBA counted.' },
+          ];
+        }
         return [
           // Where NIOSH stops, said as OSHA's edges are (calc follow-up 2026-10-03).
           ...nioshEdgeWarnings([n(v.lex)], [1]),
@@ -504,6 +532,8 @@ const WS_DOSE: Workspace = {
       steps: (v) => {
         const L = n(v.lex);
         const halvings = (L - 85) / 3;
+        const none = nioshNoLimit(L);
+        if (none) return [`${fmt(L)} dBA is below the 80 dBA level NIOSH starts counting at.`, none];
         return [
           `Excess over the 85 dBA criterion: ${fmt(L)} − 85 = ${fmt(L - 85)} dB → ${fmt(halvings)} halvings at the 3 dB exchange rate.`,
           `T = 480 min ÷ 2^${fmt(halvings)} = ${fmt(allowMin(L, 85, 3))} minutes.`,
@@ -523,10 +553,18 @@ const WS_DOSE: Workspace = {
       note: 'Criterion 90 dBA · exchange rate 5 dB · reference duration 8 h. Permissible-limit style; more lenient than the 3 dB model at high levels.',
       compute: (v) => {
         const T = allowMin(n(v.lex), 90, 5);
+        const none = oshaNoLimit(n(v.lex));
+        if (none) {
+          return [
+            { label: 'ALLOWABLE TIME (90 dBA / 5 dB / 8 h)', text: none },
+            { label: 'CRITERION', text: 'Computed under: 90 dBA criterion · 5 dB exchange rate · 8 h reference · sound from 80 dBA up counted (action level), from 90 dBA up (PEL).' },
+          ];
+        }
         return [
           // The same honesty as the dose (owner ruling 2026-10-03): one level.
           ...oshaEdgeWarnings([n(v.lex)], [1]),
           { label: 'ALLOWABLE TIME (90 dBA / 5 dB / 8 h)', value: T * 60, quantity: 'time', unit: 'min' },
+          ...(n(v.lex) < OSHA_PEL_THRESHOLD ? [{ label: 'WHICH DOSE', text: OSHA_ACTION_ONLY_TEXT }] : []),
           {
             label: 'CRITERION',
             text: 'Computed under: 90 dBA criterion · 5 dB exchange rate · 8 h reference. Every 5 dB above 90 halves the time.',
@@ -536,9 +574,12 @@ const WS_DOSE: Workspace = {
       steps: (v) => {
         const L = n(v.lex);
         const halvings = (L - 90) / 5;
+        const none = oshaNoLimit(L);
+        if (none) return [`${fmt(L)} dBA is below the 80 dBA level OSHA starts counting at.`, none];
         return [
           `Excess over the 90 dBA criterion: ${fmt(L)} − 90 = ${fmt(L - 90)} dB → ${fmt(halvings)} halvings at the 5 dB exchange rate.`,
           `T = 480 min ÷ 2^${fmt(halvings)} = ${fmt(allowMin(L, 90, 5))} minutes.`,
+          ...(L < OSHA_PEL_THRESHOLD ? [OSHA_ACTION_ONLY_TEXT] : []),
         ];
       },
     },
@@ -970,7 +1011,7 @@ const WS_LIMITER: Workspace = {
         return [
           `P = V²/Z rearranges to V = √(P × Z).`,
           `V = √(${fmt(n(v.pwr))} W × ${fmt(n(v.z))} Ω) = ${fmt(volts)} V RMS — the continuous voltage that dissipates the rated power in the nominal impedance.`,
-          `As a level: 20 × log10(${fmt(volts)}/0.7746) =${fmt(20 * Math.log10(volts / V_REF_DBU))} dBu at the speaker terminals.`,
+          `As a level: 20 × log10(${fmt(volts)}/0.7746) = ${fmt(20 * Math.log10(volts / V_REF_DBU))} dBu at the speaker terminals.`,
         ];
       },
     },

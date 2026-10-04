@@ -27,7 +27,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { EXPERIMENTS, experimentRoute, type Experiment } from '../../../features/cymatics/presets';
 import type { RootStackParamList } from '../../../navigation/types';
 import { goToCymatics } from './goToCymatics';
-import { holdSessionWork, registerSessionCarry } from '../../../features/lab/sessionCarry';
+import { holdSessionWork, peekSessionWork, registerSessionCarry, releaseSessionWork } from '../../../features/lab/sessionCarry';
 import { createLocalStore } from '../../../features/storage/localStore';
 
 /* ── tick-off persistence ───────────────────────────────────────────────────
@@ -67,7 +67,11 @@ function withTick(cur: readonly number[], i: number, on: boolean): number[] {
    `ape:*` keys — so the ticks a GUEST makes in this app session are held by
    the shared ledger (features/lab/sessionCarry, `guestOnly`: an account's own
    ticks need no carrying) and written back after the sign-in's wipe. A tick
-   taken off again in the session is let go of too. */
+   taken off again in the session is let go of too — AFTER the sign-in as
+   well (2026-10-04): a guestOnly hold refuses everything once the account is
+   settled, so an untick there stayed held and the next flush ticked it
+   again. An untick is a removal (`releaseSessionWork`, always applied), and
+   the writer merges what the ledger holds when it runs. */
 const CARRY_KEY = 'cymatics:ticks';
 
 /** Pure: the held ticks after one tick (`on`) or untick of step `i`. */
@@ -87,7 +91,7 @@ export function mergeHeldTicks(all: HeldTicks, held: HeldTicks): HeldTicks {
 
 // Merged into the HYDRATED series — never over ticks that could not be read;
 // true only when the device took the write.
-registerSessionCarry<HeldTicks>(CARRY_KEY, (held) => ticksStore.mutate((all) => mergeHeldTicks(all, held)));
+registerSessionCarry<HeldTicks>(CARRY_KEY, (held) => ticksStore.mutate((all) => mergeHeldTicks(all, peekSessionWork<HeldTicks>(CARRY_KEY) ?? held)));
 
 export function ExperimentWell({ experiment }: { experiment: Experiment }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -115,7 +119,8 @@ export function ExperimentWell({ experiment }: { experiment: Experiment }) {
     if (!ticksReady) return;
     const on = !done.includes(i);
     void ticksStore.mutate((a) => ({ ...a, [experiment.id]: withTick(a[experiment.id] ?? [], i, on) }));
-    holdSessionWork<HeldTicks>(CARRY_KEY, (prev) => withHeldTick(prev, experiment.id, i, on), { guestOnly: true });
+    if (on) holdSessionWork<HeldTicks>(CARRY_KEY, (prev) => withHeldTick(prev, experiment.id, i, on), { guestOnly: true });
+    else releaseSessionWork<HeldTicks>(CARRY_KEY, (prev) => withHeldTick(prev, experiment.id, i, false));
   };
 
   const index = EXPERIMENTS.findIndex((e) => e.id === experiment.id);

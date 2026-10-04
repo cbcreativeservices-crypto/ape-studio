@@ -65,6 +65,8 @@ import { NotifyScheduleModal } from '../../features/settings/NotifyScheduleModal
 import { DeleteAccountButton } from '../../features/settings/DeleteAccountButton';
 import { registerAndSavePushToken, registerAndSavePushTokenChecked } from '../../features/notifications/push';
 import { setPhoneNotificationsEnabled } from '../../features/notifications/localSchedule';
+import { releaseCommunityDevice } from '../../features/notifications/communityPush';
+import { CommunityNotifySection } from '../../features/notifications/CommunityNotifySection';
 import {
   WEEKLY_CONCEPT_CATEGORIES,
   deactivateAllWeeklySubscriptions,
@@ -370,6 +372,12 @@ ${LOCAL_LOSS}`
         () => {
           void (async () => {
             markIntentionalSignOut();
+            // Stop this account's member alerts reaching this phone while the
+            // session can still say so (owner 2026-10-04). Best effort and
+            // bounded: a failure never blocks Log out, and the next account's
+            // first launch releases or takes over this phone anyway
+            // (communityPush.syncCommunityDevice).
+            await softDeadline(() => releaseCommunityDevice(), false, 'logout/releaseDevice', 4000);
             /**
              * ⛔ OFFLINE, signOut() DOES NOT SIGN OUT (2026-09-30 bug pass).
              * supabase-js revokes on the server first and, when that request
@@ -877,6 +885,13 @@ ${LOCAL_LOSS}`
           )}
         </SettingsSection>
 
+        {/* MESSAGES & REQUESTS — opt-in alerts between members (owner
+            2026-10-04). Its own section, not inside NOTIFICATIONS: the
+            community is open to every account, while the reminders above are
+            members-only. Renders nothing for a guest, or until the server has
+            the setting. */}
+        <CommunityNotifySection />
+
         {/* DISPLAY + ACCESSIBILITY are one concern to a user ("how it looks and
             reads"), so they live in one section rather than two one-row stubs. */}
         <SettingsSection
@@ -1208,7 +1223,7 @@ ${LOCAL_LOSS}`
                 () =>
                   notify(
                     'Permission prompts reset',
-                    'The camera, location, and photo explainer popups will ask again next time — including if you had chosen “always allow.” This does not change what you’ve allowed in your device Settings.',
+                    'The camera, location, photo and alerts explainer popups will ask again next time — including if you had chosen “always allow.” This does not change what you’ve allowed in your device Settings.',
                   ),
                 // A choice the device would not let go of (owner 2026-10-03).
                 () => notify('Couldn’t reset permission prompts', 'Something went wrong on this device. Try again.'),

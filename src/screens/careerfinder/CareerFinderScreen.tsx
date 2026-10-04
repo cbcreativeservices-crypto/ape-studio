@@ -15,7 +15,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { FAMILY_COUNT, familyById } from '../../features/careerfinder/families';
 import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
-import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderHydrated, useCareerFinderSaving } from '../../features/careerfinder/store';
+import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderFace, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
 import { confirmDialog } from '../../lib/confirm';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
@@ -50,7 +50,10 @@ export function CareerFinderScreen() {
   // never marketed to.
   const upsell = useUpsellAllowed();
   const rec = useCareerFinder();
-  const hydrated = useCareerFinderHydrated();
+  // Three faces (K2, 2026-10-04 — on the house store): 'loading' says so,
+  // 'unreadable' offers the questions with "not saved" wording below, and
+  // only 'ready' with nothing in it is a true first visit.
+  const face = useCareerFinderFace();
   // "saved on this phone" only when it is (final round A, 2026-10-02).
   const saving = useCareerFinderSaving();
   const answered = answeredCount(rec);
@@ -88,7 +91,9 @@ export function CareerFinderScreen() {
       <Lead>{FINDER_INTRO.lead}</Lead>
       <Body>{FINDER_INTRO.body}</Body>
 
-      {!hydrated ? null : rec.completed ? (
+      {face === 'loading' ? (
+        <Text style={styles.note} accessibilityLiveRegion="polite">Loading your answers…</Text>
+      ) : rec.completed ? (
         <View style={styles.actions}>
           <CtaButton label="VIEW MY RESULTS" tone="green" onPress={results} hint="Opens your five career families" />
           <CtaButton label="CHANGE MY ANSWERS" onPress={changeAnswers} hint="Reopens the questions from the top with your answers kept" />
@@ -106,7 +111,7 @@ export function CareerFinderScreen() {
               go" was untrue — and answers given before may still be on the
               phone. Same wording rule as the in-progress note above. */}
           <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={saving ? `Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.` : `Begins the ${QUESTION_COUNT} questions. Your answers could not be saved on this phone.`} />
-          <Text style={styles.note}>{saving ? (upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.') : 'Your saved answers could not be read on this phone, so answers you give now will not be saved.'}</Text>
+          <Text style={styles.note}>{saving ? (upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.') : 'Your saved answers could not be read on this phone, so answers you give now are not being saved.'}</Text>
         </View>
       )}
 

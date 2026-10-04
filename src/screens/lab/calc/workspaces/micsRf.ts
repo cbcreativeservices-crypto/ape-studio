@@ -23,6 +23,20 @@ const FSPL_K_DB = -20 * Math.log10((4 * Math.PI) / C_LIGHT);
 /** The constant as the formula / steps text writes it ("147.55"). */
 const FSPL_K_TXT = fmt(FSPL_K_DB, 5);
 const fsplDb = (distM: number, fHz: number) => 20 * Math.log10(distM) + 20 * Math.log10(fHz) - FSPL_K_DB;
+/**
+ * FRIIS HOLDS ONLY IN THE FAR FIELD (calc accuracy audit, 2026-10-04, D53).
+ * FSPL = 20·log₁₀(4πd/λ) goes NEGATIVE — a "path gain" — once d < λ/4π: 1 cm
+ * at 550 MHz printed a path loss of −12.7 dB and a received power ABOVE the
+ * transmitter's. Inside about one wavelength the antennas are in each other's
+ * near field, where the formula does not apply (Balanis, Antenna Theory,
+ * §2.2.4). Refused in words, naming only the inputs and the wavelength.
+ */
+export function friisNearField(distM: number, fHz: number): string | null {
+  const lambda = C_LIGHT / fHz;
+  return distM < lambda
+    ? `${fmt(distM)} m is closer than one wavelength (${fmt(lambda * 100)} cm at ${fmt(fHz / 1e6)} MHz). Free-space path loss only holds in the far field — at least a wavelength or so apart; this close, the antennas sit in each other’s near field and the formula would even show a gain. Enter a distance of at least ${fmt(lambda)} m.`
+    : null;
+}
 
 /** Both mics hear the source at the same instant — the mono sum has no comb. */
 const NO_ARRIVAL_DIFFERENCE =
@@ -161,7 +175,7 @@ const MICSENS: Workspace = {
   fields: [
     { key: 'mvpa', name: 'SENSITIVITY (mV/Pa)', quantity: 'number', nonNegative: true, placeholder: '15', help: 'Output in millivolts for a 1 Pa (≈ 94 dB SPL) input.', warn: { test: (x) => x <= 0, msg: 'Sensitivity must be greater than zero.' } },
     { key: 'dbvpa', name: 'SENSITIVITY (dBV/Pa)', quantity: 'number', signed: true, placeholder: '-36.5', help: 'Output in dB relative to 1 V/Pa.' },
-    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', signed: true, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'SPL cannot be negative.' } },
+    { key: 'spl', name: 'SOUND PRESSURE LEVEL', quantity: 'spl', signed: true, placeholder: '94', help: 'SPL at the capsule to find the output for.', warn: { test: (x) => x < 0, msg: 'Below 0 dB SPL is quieter than the threshold of hearing — check the value.' } },
   ],
   functions: [
     {
@@ -255,9 +269,11 @@ const RFLINK: Workspace = {
     'Ignoring cable and connector loss on antenna runs — it comes straight off both transmit and receive sides of the budget.',
   ],
   warnings:
-    'Free-space (Friis) path loss only: FSPL(dB) = 20·log₁₀(d) + 20·log₁₀(f) − ' + FSPL_K_TXT + ' (d in m, f in ' +
-    'Hz). Real environments add multipath, body and obstruction loss, and noise — always keep margin ' +
-    'well above zero. Enter frequency in MHz; powers in dBm.',
+    'Free-space (Friis) path loss only: FSPL(dB) = 20·log₁₀(4πd/λ) = 20·log₁₀(d) + 20·log₁₀(f) − ' + FSPL_K_TXT + ' ' +
+    '(d in m, f in Hz; the same as + 32.45 with d in km and f in MHz). It assumes clear line of sight, ' +
+    'matched polarisation and the far field — distances under one wavelength are refused. Real ' +
+    'environments add ground reflection, multipath, body and obstruction loss, and noise — always ' +
+    'keep margin well above zero. Enter frequency in MHz; powers in dBm.',
   glossary: ['Radio Frequency', 'Wireless', 'Decibel', 'Antenna', 'Gain'],
   fields: [
     { key: 'dist', name: 'LINK DISTANCE', quantity: 'length', placeholder: '50', help: 'Transmitter-to-receiver distance.', warn: { test: (x) => x <= 0, msg: 'Distance must be greater than zero.' } },
@@ -280,6 +296,8 @@ const RFLINK: Workspace = {
       keySymbols: ['·', 'log₁₀', '−', 'f'],
       compute: (v) => {
         const f = n(v.freqMHz) * 1e6;
+        const near = friisNearField(n(v.dist), f);
+        if (near) return [{ label: 'INSIDE THE NEAR FIELD', text: near, refusal: true }];
         const fspl = fsplDb(n(v.dist), f);
         return [
           { label: 'FREE-SPACE PATH LOSS', value: fspl, quantity: 'db' },
@@ -288,6 +306,8 @@ const RFLINK: Workspace = {
       },
       steps: (v) => {
         const f = n(v.freqMHz) * 1e6;
+        const near = friisNearField(n(v.dist), f);
+        if (near) return [near];
         const fspl = fsplDb(n(v.dist), f);
         return [
           `FSPL = 20·log₁₀(${fmt(n(v.dist))}) + 20·log₁₀(${fmt(f)}) − ${FSPL_K_TXT} = ${fmt(fspl)} dB.`,
@@ -307,6 +327,8 @@ const RFLINK: Workspace = {
       keySymbols: ['−'],
       compute: (v) => {
         const f = n(v.freqMHz) * 1e6;
+        const near = friisNearField(n(v.dist), f);
+        if (near) return [{ label: 'INSIDE THE NEAR FIELD', text: near, refusal: true }];
         const fspl = fsplDb(n(v.dist), f);
         const prx = n(v.ptx) + n(v.gtx) + n(v.grx) - fspl;
         return [
@@ -317,6 +339,8 @@ const RFLINK: Workspace = {
       },
       steps: (v) => {
         const f = n(v.freqMHz) * 1e6;
+        const near = friisNearField(n(v.dist), f);
+        if (near) return [near];
         const fspl = fsplDb(n(v.dist), f);
         const prx = n(v.ptx) + n(v.gtx) + n(v.grx) - fspl;
         const margin = prx - n(v.rxsens);

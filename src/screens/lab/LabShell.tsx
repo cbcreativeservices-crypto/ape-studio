@@ -37,6 +37,7 @@ import type { DockParam, RackStage } from './rack/rackTypes';
 import { LabUnderstandingCheck } from '../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, hasUnderstandingCheck, understandingFor } from '../../features/lab/understanding';
 import { markLabUnit, registerLabUnits, useLabDone } from '../../features/lab/labCompletion';
+import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 
 // The scroll-lock context moved to ./scrollLock (2026-08-23, Rack Unit kit —
 // avoids an import cycle). Re-exported here so the 30+ existing call sites
@@ -641,6 +642,12 @@ export function LabShell({
         })}
       </View>
 
+      {/* A known guest is told, before they begin, that this session's
+          progress is not saved or credited unless they sign in (owner
+          2026-10-04): a popup once per lab per session, an inline note in
+          Low-Light. Nothing for anyone else. */}
+      <GuestStartReminder activity={`lab:${labId}`} style={styles.guestNote} />
+
       {rack ? (
         // RACK MODE: the frame owns the layout — stage + dock pinned, children
         // scroll in the well. No outer ScrollView (RackUnit owns the well's).
@@ -833,6 +840,7 @@ const styles = StyleSheet.create({
   intro: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
 
   tabRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingBottom: 4 },
+  guestNote: { marginHorizontal: 16 },
   tab: {
     flex: 1,
     borderRadius: 8,

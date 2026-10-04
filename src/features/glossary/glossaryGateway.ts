@@ -135,7 +135,31 @@ export type GatewayDefinition = {
   used?: number | null;
   lim?: number | null;
   window_start?: string | null;
+  /** Start Here's read only (2026100407): this call spent one of the 2 extra
+   *  definitions, and how many are left (null: the bonus does not apply). */
+  bonus_spent?: boolean | null;
+  bonus_left?: number | null;
 };
+
+/**
+ * Which metered RPC an open goes through. 'startHere' = Start Here's own open
+ * (owner 2026-10-04: "Start Here gives the learner 2 extra full glossary
+ * definition lookups, once"). The server spends the extra two first — once per
+ * account AND once per device — then the normal weekly meter. Every other
+ * surface uses the normal RPC.
+ */
+export type MeterVia = 'normal' | 'startHere';
+
+const START_HERE_RPC = 'get_glossary_definition_start_here';
+const START_HERE_STATUS_RPC = 'glossary_start_here_bonus_status';
+/** The Start Here RPCs are not on the server (the migration is not applied
+ *  yet): every open uses the normal meter for the rest of this app session. */
+let startHereRpcAbsent = false;
+/** Start Here's extra definitions left for THIS reader: undefined = not read
+ *  yet, null = the bonus does not apply (a member, no device id, or the server
+ *  does not have it). Cleared on every identity change, with the read caches. */
+let bonusLeft: number | null | undefined;
+let bonusPending: Promise<number | null> | null = null;
 
 export type DefinitionResult =
   | { state: 'ok'; row: GatewayDefinition }
@@ -155,7 +179,22 @@ export type DefinitionResult =
  */
 const DEFINITION_DEADLINE_MS = 8000;
 
-export async function fetchDefinitionViaGateway(id: string): Promise<DefinitionResult> {
+export async function fetchDefinitionViaGateway(id: string, via: MeterVia = 'normal'): Promise<DefinitionResult> {
+  if (via === 'startHere' && !startHereRpcAbsent) {
+    const r = await callDefinitionRpc(id, START_HERE_RPC);
+    // Not on the server yet (before Comp A applies 2026100407, or rolled
+    // back): the normal meter, exactly as before. Nothing was charged — the
+    // function does not exist.
+    if (r.state === 'fault' && r.fault === 'not-deployed') {
+      startHereRpcAbsent = true;
+      return callDefinitionRpc(id, 'get_glossary_definition');
+    }
+    return r;
+  }
+  return callDefinitionRpc(id, 'get_glossary_definition');
+}
+
+async function callDefinitionRpc(id: string, rpc: string): Promise<DefinitionResult> {
   try {
     /**
      * ⛔ BOUNDED — THIS IS THE LIVE METERING PATH (2026-09-23 overnight hunt).
@@ -187,11 +226,11 @@ export async function fetchDefinitionViaGateway(id: string): Promise<DefinitionR
     }
     const { data, error } = await softDeadline(
       // `async () =>`: the Supabase builder is a thenable, not a Promise.
-      async () => await supabase.rpc('get_glossary_definition', { p_id: id, p_device_id }),
+      async () => await supabase.rpc(rpc, { p_id: id, p_device_id }),
       { data: null, error: { message: 'gateway timeout' } } as Awaited<
         ReturnType<typeof supabase.rpc<'get_glossary_definition'>>
       >,
-      'get_glossary_definition',
+      rpc,
       DEFINITION_DEADLINE_MS,
     );
     const fault = classifyGatewayError(error);
@@ -272,6 +311,8 @@ supabase.auth.onAuthStateChange((_e, session) => {
     READ_PENDING.clear();
     READ_UNANSWERED.clear();
     SESSION_FALLBACK_CHARGED.clear();
+    bonusLeft = undefined;
+    bonusPending = null;
     readsGen += 1;
     readsUid = uid;
   }
@@ -295,8 +336,11 @@ export function sessionChargeUnanswered(id: string): boolean {
   return READ_UNANSWERED.has(id) && !READ_OK.has(id);
 }
 
-/** The metered read, at most once per term per session (per uid). */
-export function readDefinitionOnce(id: string, member?: boolean): Promise<DefinitionResult> {
+/** The metered read, at most once per term per session (per uid). `via`
+ *  picks the RPC for a NEW read only (Start Here's extra two, then the week);
+ *  the session caches are shared, so a term paid for in Start Here is free
+ *  everywhere this session, and back (D50). */
+export function readDefinitionOnce(id: string, member?: boolean, via: MeterVia = 'normal'): Promise<DefinitionResult> {
   const row = sessionDefinition(id, member);
   if (row) return Promise.resolve({ state: 'ok', row });
   const pending = READ_PENDING.get(id);
@@ -308,13 +352,16 @@ export function readDefinitionOnce(id: string, member?: boolean): Promise<Defini
     return Promise.resolve({ state: 'fault', fault: 'error' });
   }
   const gen = readsGen;
-  const p = fetchDefinitionViaGateway(id).then((r) => {
+  const p = fetchDefinitionViaGateway(id, via).then((r) => {
     if (READ_PENDING.get(id) === p) READ_PENDING.delete(id);
     // Only for the identity that asked: an answer that lands after a sign-out
     // is the last reader's, and must not be served free to the next one.
     if (gen === readsGen) {
       if (r.state === 'ok') {
-        READ_OK.set(id, r.row);
+        // The session copy never says "this open spent an extra one": a
+        // re-open from the cache is free and spends nothing.
+        READ_OK.set(id, r.row.bonus_spent ? { ...r.row, bonus_spent: false } : r.row);
+        if (r.row.bonus_left !== undefined) bonusLeft = r.row.bonus_left ?? null;
         READ_UNANSWERED.delete(id);
       } else if (r.fault === 'error' && !r.rolledBack) {
         // Only a read that may have been COUNTED (hunt 5, 2026-10-03): a coded
@@ -327,4 +374,65 @@ export function readDefinitionOnce(id: string, member?: boolean): Promise<Defini
   });
   READ_PENDING.set(id, p);
   return p;
+}
+
+// ── Start Here's two extra definitions (owner 2026-10-04) ─────────────────
+
+/**
+ * How many of Start Here's 2 extra definitions this reader has left, or null
+ * when the bonus does not apply or is not known: a member, no device id, the
+ * server does not have it yet (before 2026100407 is applied — the normal
+ * meter then applies and Start Here says nothing about extras), or the read
+ * failed. A failed read is NOT kept ("a failed read is not empty"): the next
+ * call asks again. Read-only on the server: it never spends anything.
+ */
+export function startHereBonusLeft(): Promise<number | null> {
+  if (startHereRpcAbsent) return Promise.resolve(null);
+  if (bonusLeft !== undefined) return Promise.resolve(bonusLeft);
+  if (bonusPending) return bonusPending;
+  const gen = readsGen;
+  const p = (async (): Promise<number | null> => {
+    let p_device_id: string | null = null;
+    try {
+      p_device_id = await getDeviceId();
+    } catch {
+      return null; // no device id → no extras; not kept, asked again next time
+    }
+    const { data, error } = await softDeadline<{ data: unknown; error: { code?: string | null; message?: string } | null }>(
+      async () => {
+        const r = await supabase.rpc(START_HERE_STATUS_RPC, { p_device_id });
+        return { data: r.data as unknown, error: r.error };
+      },
+      { data: null, error: { message: 'bonus status timeout' } },
+      START_HERE_STATUS_RPC,
+      DEFINITION_DEADLINE_MS,
+    );
+    const fault = classifyGatewayError(error);
+    if (fault === 'not-deployed') {
+      startHereRpcAbsent = true;
+      return null;
+    }
+    if (fault) return null; // unknown, not kept
+    const n = typeof data === 'number' && Number.isFinite(data) ? Math.max(0, Math.floor(data)) : null;
+    // Only for the identity that asked (K4).
+    if (gen === readsGen) bonusLeft = n;
+    return n;
+  })().catch(() => null);
+  bonusPending = p;
+  void p.finally(() => {
+    if (bonusPending === p) bonusPending = null;
+  });
+  return p;
+}
+
+/** The last known count, without asking (null/undefined: unknown). */
+export function peekStartHereBonusLeft(): number | null | undefined {
+  return startHereRpcAbsent ? null : bonusLeft;
+}
+
+/** Tests only: forget the Start Here server answer. */
+export function forgetStartHereBonusForTests(): void {
+  startHereRpcAbsent = false;
+  bonusLeft = undefined;
+  bonusPending = null;
 }

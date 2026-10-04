@@ -21,7 +21,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
-export type CapabilityKey = 'camera' | 'location' | 'photo' | 'mic';
+export type CapabilityKey = 'camera' | 'location' | 'photo' | 'mic' | 'notifications';
 export type AskMode = 'ask' | 'always' | 'never';
 
 const KEY = (c: CapabilityKey) => `ape:perm:${c}`;
@@ -77,7 +77,7 @@ export function resetAskModeCache(): void {
  *  the next launch. The rest are still cleared. */
 export async function resetAskModes(): Promise<void> {
   let refused = false;
-  for (const c of ['camera', 'location', 'photo', 'mic'] as CapabilityKey[]) {
+  for (const c of ['camera', 'location', 'photo', 'mic', 'notifications'] as CapabilityKey[]) {
     delete cache[c];
     try {
       await AsyncStorage.removeItem(KEY(c));

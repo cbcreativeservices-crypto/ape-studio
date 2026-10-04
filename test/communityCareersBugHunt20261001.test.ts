@@ -60,10 +60,15 @@ describe('career finder store', () => {
   const store = code('src/features/careerfinder/store.ts');
 
   test('D2: resetLocal re-hydrates for hooks that are already mounted', () => {
+    // On the house store since 2026-10-04 (guestCareer): resetLocal IS the
+    // safe store's reset, which carries the same three guarantees.
     const reset = between(store, 'export function resetLocal(): void {', '\n}');
-    assert.match(reset, /generation \+= 1/);
-    assert.match(reset, /if \(listeners\.size > 0\) void hydrateCareerFinder\(\);/);
+    assert.match(reset, /\): void \{\s*store\.reset\(\);\s*$/);
+    assert.match(store, /const store = createLocalStore<FinderRecord>\(\{ key: KEY,/);
+    const safe = between(code('src/features/storage/localStore.ts'), 'function reset(): void {', '\n  }');
+    assert.match(safe, /generation\+\+/);
+    assert.match(safe, /if \(listeners\.size > 0\) void hydrate\(\);/);
     // …and only after the in-memory reset, so the fence sees the new generation.
-    assert.ok(reset.indexOf('hydrating = null') < reset.indexOf('void hydrateCareerFinder()'));
+    assert.ok(safe.indexOf('hydrating = null') < safe.indexOf('void hydrate()'));
   });
 });

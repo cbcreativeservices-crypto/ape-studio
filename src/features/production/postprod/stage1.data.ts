@@ -355,6 +355,7 @@ export const STAGE1_BRIEF: StageDef = {
           fieldId: "start_timecode",
           label: "Start timecode",
           kind: "text",
+          showWhen: { field: "frame_rate", notEquals: ["none"] },
           help: "Where the programme begins on the delivered master, e.g. 10:00:00:00 or 01:00:00:00.",
           onlyFor: ["podcast", "live"],
           placeholder: "HH:MM:SS:FF"

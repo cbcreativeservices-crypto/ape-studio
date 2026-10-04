@@ -17,7 +17,7 @@
 import { optionalModule } from '../tools/capture/optionalModule';
 import type { ProductionProject } from './types';
 import { READINESS_LABEL, VERDICT_LABEL, valueKey } from './types';
-import type { ResolvedStage, ResolvedField } from './schema';
+import type { NoticeDef, ResolvedStage, ResolvedField } from './schema';
 import { STATUS_OPTIONS } from './schema';
 import type { ReadinessReport } from './readiness';
 import { localDay } from '../../lib/localDate';
@@ -153,7 +153,8 @@ const CSS = `
   .foot { margin-top: 22pt; padding-top: 7pt; border-top: 1px solid #c8ccd4; color: #6b7382; font-size: 8.5pt; }
 `;
 
-function controlTable(d: DocControl): string {
+/** The document-control rows, in print order. */
+function controlRows(d: DocControl): [string, string][] {
   const rows: [string, string][] = [
     ['Project', d.projectName],
     ['Revision', `${d.revision}`],
@@ -162,6 +163,10 @@ function controlTable(d: DocControl): string {
     ['Status', d.approvalStatus],
   ];
   if (d.distribution) rows.push(['Distribution', d.distribution]);
+  return rows;
+}
+
+function controlTable(rows: [string, string][]): string {
   return `<table class="ctl">${rows
     .map(([k, v]) => `<tr><td class="k">${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`)
     .join('')}</table>`;
@@ -175,36 +180,159 @@ export type PacketInput = {
   title?: string;
 };
 
-/**
- * The whole packet as one offline HTML document.
- *
- * Pure: no native modules, no network, no React. The on-screen preview and the
- * PDF render the exact same string, so what the user reads is what they print.
- */
-export function buildPacketHtml(input: PacketInput): string {
+// ── the packet as DATA (2026-10-04, design review #5) ────────────────────────
+//
+// The packet now has a screen. Rendering the HTML in a WebView would not work
+// in the browser preview the owner iterates in, and drawing the screen from a
+// second description of the document would let the screen and the PDF drift.
+// So the document is built ONCE, here, as plain data — every heading, every
+// answer, every gap — and both the HTML (for the PDF) and the screen are
+// renderings of that one model. What the learner reads is what they print.
+
+/** How one answer reads in the packet. */
+export type PacketBody =
+  | { kind: 'value'; text: string }
+  | { kind: 'table'; columns: string[]; rows: string[][] }
+  | { kind: 'na'; reason: string }
+  | { kind: 'empty'; required: boolean };
+
+export type PacketField = { label: string; body: PacketBody };
+export type PacketNotice = { kind: NoticeDef['kind']; text: string };
+export type PacketIssue = { title: string; detail: string };
+export type PacketSection = { title: string; notices: PacketNotice[]; fields: PacketField[] };
+export type PacketStage = {
+  stageId: string;
+  num: number;
+  title: string;
+  /** "Needs attention — 3 of 7 required decisions", or null when unread. */
+  status: string | null;
+  notices: PacketNotice[];
+  sections: PacketSection[];
+  /** Attention and info findings (blockers print at the top). */
+  issues: PacketIssue[];
+};
+export type PacketModel = {
+  title: string;
+  projectName: string;
+  control: [string, string][];
+  verdict: ReadinessReport['verdict'];
+  /** "Not Ready for Production — 12 of 58 required decisions made" */
+  verdictLine: string;
+  blockers: PacketIssue[];
+  accepted: { title: string; acceptedBy: string; reason: string }[];
+  stages: PacketStage[];
+  foot: string;
+};
+
+/** The words an empty answer prints. */
+export function emptyText(required: boolean): string {
+  return required ? 'Not decided — required' : 'Not decided';
+}
+
+function packetBody(field: ResolvedField, raw: unknown, na: string | undefined): PacketBody {
+  if (na && na.trim()) return { kind: 'na', reason: na };
+  if (field.kind === 'table' && Array.isArray(raw) && raw.length) {
+    const cols = field.columns ?? [];
+    return {
+      kind: 'table',
+      columns: cols.map((c) => c.label),
+      rows: (raw as Record<string, unknown>[]).map((r) => cols.map((c) => String(r?.[c.columnId] ?? ''))),
+    };
+  }
+  const text = renderValue(field, raw);
+  return text === '' ? { kind: 'empty', required: field.required } : { kind: 'value', text };
+}
+
+/** The whole packet as data. Pure — tested directly, and drawn by the screen. */
+export function buildPacketModel(input: PacketInput): PacketModel {
   const { project, stages, report } = input;
   const title = input.title ?? (project.lab === 'preprod' ? 'Production Packet' : 'Delivery Package');
   const d = docControl(project, report);
+  return {
+    title,
+    projectName: project.name,
+    control: controlRows(d),
+    verdict: report.verdict,
+    verdictLine:
+      `${VERDICT_LABEL[project.lab][report.verdict]} — ` +
+      `${report.answeredRequired} of ${report.totalRequired} required decisions made`,
+    blockers: report.blockers.map((b) => ({ title: b.title, detail: b.detail })),
+    accepted: report.acceptedBlockers.map((b) => ({
+      title: b.title,
+      acceptedBy: b.accepted!.acceptedBy,
+      reason: b.accepted!.reason,
+    })),
+    stages: stages.map((stage) => {
+      const sr = report.stages.find((s) => s.stageId === stage.stageId);
+      return {
+        stageId: stage.stageId,
+        num: stage.num,
+        title: stage.title,
+        status: sr
+          ? `${READINESS_LABEL[sr.state]} — ${sr.answeredRequired} of ${sr.totalRequired} required decisions`
+          : null,
+        notices: stage.notices.map((n) => ({ kind: n.kind, text: n.text })),
+        sections: stage.sections.map((section) => ({
+          title: section.title,
+          notices: section.notices.map((n) => ({ kind: n.kind, text: n.text })),
+          fields: section.fields.map((field) => {
+            const key = valueKey(stage.stageId, field.fieldId);
+            return { label: field.label, body: packetBody(field, project.values[key], project.na[key]) };
+          }),
+        })),
+        issues: (sr?.findings ?? [])
+          .filter((f) => f.severity !== 'blocker')
+          .map((f) => ({ title: f.title, detail: f.detail })),
+      };
+    }),
+    foot:
+      `${project.name} — revision ${d.revision}, ${d.revisionDate}. ` +
+      'Prepared with the Pro Audio Training Academy production lab. This document records planning decisions; ' +
+      'it is not legal advice, and rigging, electrical distribution and similar work must be approved by ' +
+      'qualified personnel.',
+  };
+}
 
-  const verdictClass =
-    report.verdict === 'ready' ? 'v-ready' : report.verdict === 'ready_with_conditions' ? 'v-cond' : 'v-not';
+function bodyHtml(b: PacketBody): string {
+  switch (b.kind) {
+    case 'na':
+      return `<span class="na">Not applicable — ${escapeHtml(b.reason)}</span>`;
+    case 'empty':
+      return `<span class="empty">${emptyText(b.required)}</span>`;
+    case 'table': {
+      const head = b.columns.map((c) => `<th>${escapeHtml(c)}</th>`).join('');
+      const body = b.rows.map((r) => `<tr>${r.map((c) => `<td>${escapeHtml(c)}</td>`).join('')}</tr>`).join('');
+      return `<table class="grid"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+    }
+    default:
+      return `<span class="val">${escapeHtml(b.text)}</span>`;
+  }
+}
+
+/**
+ * The whole packet as one offline HTML document — the PDF's source.
+ *
+ * Pure: no native modules, no network, no React. It renders `buildPacketModel`,
+ * which is also what the Packet screen draws, so what the user reads is what
+ * they print.
+ */
+export function buildPacketHtml(input: PacketInput): string {
+  const m = buildPacketModel(input);
+  const verdictClass = m.verdict === 'ready' ? 'v-ready' : m.verdict === 'ready_with_conditions' ? 'v-cond' : 'v-not';
 
   const parts: string[] = [];
-  parts.push(`<h1>${escapeHtml(title)}</h1>`);
-  parts.push(`<p class="sub">${escapeHtml(project.name)}</p>`);
-  parts.push(controlTable(d));
+  parts.push(`<h1>${escapeHtml(m.title)}</h1>`);
+  parts.push(`<p class="sub">${escapeHtml(m.projectName)}</p>`);
+  parts.push(controlTable(m.control));
 
   // Readiness first. A packet that hides its own gaps is the thing this lab
   // exists to prevent, so the verdict is page one, above the content.
-  parts.push(
-    `<div class="verdict ${verdictClass}">${escapeHtml(VERDICT_LABEL[project.lab][report.verdict])} — ` +
-      `${report.answeredRequired} of ${report.totalRequired} required decisions made</div>`,
-  );
+  parts.push(`<div class="verdict ${verdictClass}">${escapeHtml(m.verdictLine)}</div>`);
 
-  if (report.blockers.length) {
+  if (m.blockers.length) {
     parts.push('<h2>Must be resolved before proceeding</h2>');
     parts.push(
-      `<ul class="issues">${report.blockers
+      `<ul class="issues">${m.blockers
         .map(
           (b) =>
             `<li class="blocker"><div class="t">${escapeHtml(b.title)}</div><div class="d">${escapeHtml(b.detail)}</div></li>`,
@@ -213,76 +341,48 @@ export function buildPacketHtml(input: PacketInput): string {
     );
   }
 
-  if (report.acceptedBlockers.length) {
+  if (m.accepted.length) {
     parts.push('<h2>Accepted conditions</h2>');
     parts.push(
-      report.acceptedBlockers
-        .map((b) => {
-          const a = b.accepted!;
-          return `<div class="cond"><strong>${escapeHtml(b.title)}</strong><br/>Accepted by ${escapeHtml(
-            a.acceptedBy,
-          )} — ${escapeHtml(a.reason)}</div>`;
-        })
+      m.accepted
+        .map(
+          (a) =>
+            `<div class="cond"><strong>${escapeHtml(a.title)}</strong><br/>Accepted by ${escapeHtml(
+              a.acceptedBy,
+            )} — ${escapeHtml(a.reason)}</div>`,
+        )
         .join(''),
     );
   }
 
-  for (const stage of stages) {
-    const sr = report.stages.find((s) => s.stageId === stage.stageId);
+  for (const stage of m.stages) {
     parts.push(`<h2>${stage.num}. ${escapeHtml(stage.title)}</h2>`);
-    if (sr) {
-      parts.push(
-        `<p class="sub">${escapeHtml(READINESS_LABEL[sr.state])} — ${sr.answeredRequired} of ${sr.totalRequired} required decisions</p>`,
-      );
-    }
+    if (stage.status !== null) parts.push(`<p class="sub">${escapeHtml(stage.status)}</p>`);
     for (const n of stage.notices) {
       parts.push(`<div class="notice ${n.kind}">${escapeHtml(n.text)}</div>`);
     }
-
     for (const section of stage.sections) {
       parts.push(`<h3>${escapeHtml(section.title)}</h3>`);
       for (const n of section.notices) {
         parts.push(`<div class="notice ${n.kind}">${escapeHtml(n.text)}</div>`);
       }
-      for (const field of section.fields) {
-        const key = valueKey(stage.stageId, field.fieldId);
-        const na = project.na[key];
-        const raw = project.values[key];
-        let body: string;
-        if (na && na.trim()) {
-          body = `<span class="na">Not applicable — ${escapeHtml(na)}</span>`;
-        } else {
-          const rendered = renderValue(field, raw);
-          body =
-            rendered === ''
-              ? `<span class="empty">${field.required ? 'Not decided — required' : 'Not decided'}</span>`
-              : field.kind === 'table'
-                ? rendered
-                : `<span class="val">${escapeHtml(rendered)}</span>`;
-        }
-        parts.push(`<div class="f"><span class="lab">${escapeHtml(field.label)}:</span> ${body}</div>`);
+      for (const f of section.fields) {
+        parts.push(`<div class="f"><span class="lab">${escapeHtml(f.label)}:</span> ${bodyHtml(f.body)}</div>`);
       }
     }
-
-    const issues = (sr?.findings ?? []).filter((f) => f.severity !== 'blocker');
-    if (issues.length) {
+    if (stage.issues.length) {
       parts.push(
-        `<ul class="issues">${issues
+        `<ul class="issues">${stage.issues
           .map((f) => `<li><div class="t">${escapeHtml(f.title)}</div><div class="d">${escapeHtml(f.detail)}</div></li>`)
           .join('')}</ul>`,
       );
     }
   }
 
-  parts.push(
-    `<div class="foot">${escapeHtml(project.name)} — revision ${d.revision}, ${escapeHtml(d.revisionDate)}. ` +
-      'Prepared with the Pro Audio Training Academy production lab. This document records planning decisions; ' +
-      'it is not legal advice, and rigging, electrical distribution and similar work must be approved by ' +
-      'qualified personnel.</div>',
-  );
+  parts.push(`<div class="foot">${escapeHtml(m.foot)}</div>`);
 
   return `<!doctype html><html><head><meta charset="utf-8"/><title>${escapeHtml(
-    title,
+    m.title,
   )}</title><style>${CSS}</style></head><body>${parts.join('\n')}</body></html>`;
 }
 

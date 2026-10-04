@@ -15,11 +15,11 @@ const inside = read('src/screens/curriculum/InsideStats.tsx');
 const awards = read('src/screens/awards/AwardsScreen.tsx');
 
 test('Home landing waits for the entitlement read (the deck is not mounted before it)', () => {
-  const start = home.indexOf('const startHereIdx = deck.findIndex');
+  const start = home.indexOf('const glossaryIdx = Math.max(0, deck.findIndex');
   const landed = home.indexOf('sessionLanded = true;');
   const gate = home.indexOf('if (!resolved) return;', start);
   assert.ok(start > 0 && gate > start && gate < landed, 'the resolved gate sits before sessionLanded is spent');
-  assert.match(home, /\}, \[cards, defaultHomeGs, firstOpen, resolved\]\);/, 'and re-runs when it resolves');
+  assert.match(home, /\}, \[cards, defaultHomeGs, resolved\]\);/, 'and re-runs when it resolves');
 });
 
 test('leaving Home drops a pending Study Area EXPLORE', () => {

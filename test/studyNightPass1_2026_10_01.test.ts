@@ -81,7 +81,9 @@ describe('FinalExam "Submit failed" OK never fires goBack from a replaced screen
 describe('Flashcards linked-term viewer: newest request wins', () => {
   const s = read('src', 'screens', 'study', 'FlashcardsScreen.tsx');
   it('a slow fetch cannot replace a newer term or reopen a closed viewer', () => {
-    assert.match(s, /if \(it && req === openTermReqRef\.current\) setLinkedTerm\(it\);/);
+    // 2026-10-04 (smallFixes): the newest-request check now comes first, so a
+    // failed read is told (notify) for the newest tap only.
+    assert.match(s, /if \(req !== openTermReqRef\.current\) return;\s*if \(it\) setLinkedTerm\(it\);/);
     assert.match(s, /const closeLinkedTerm = useCallback\(\(\) => \{\s*openTermReqRef\.current\+\+;\s*setLinkedTerm\(null\);/);
     assert.doesNotMatch(s, /onClose=\{\(\) => setLinkedTerm\(null\)\}/);
   });

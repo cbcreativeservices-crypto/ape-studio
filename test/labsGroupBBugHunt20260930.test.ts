@@ -60,7 +60,13 @@ test('production screens: START AGAIN confirms; SHARE is single-flight; rename c
   assert.doesNotMatch(act, /onPress=\{\(\) => void restart\(\)\}/);
   assert.match(act, /PATHWAY_LABEL\[project\?\.pathway \?\? pathway\]/);
   const lab = read('src/screens/lab/production/ProductionLabScreen.tsx');
-  assert.match(lab, /if \(!project \|\| !report \|\| sharingRef\.current\) return;/);
+  // 2026-10-04: SHARE moved to the packet screen (design review #5). It is
+  // single-flight there through the house latch, and the lab home has no
+  // share path left to double-fire.
+  const packet = read('src/screens/lab/production/ProductionPacketScreen.tsx');
+  assert.match(packet, /const share = useLatchedPress\(async \(\) => \{\s*\n\s*if \(!project \|\| !built\) return;/);
+  assert.match(packet, /onPress=\{share\}/);
+  assert.doesNotMatch(lab, /exportPacketPdf/);
   assert.doesNotMatch(lab, /onSubmitEditing=\{commitName\}/);
   const stage = read('src/screens/lab/production/ProductionStageScreen.tsx');
   assert.match(stage, /keyboardVerticalOffset=\{0\}/);

@@ -217,6 +217,7 @@ const NOT_A_MODULE_LAB: Record<string, string> = {
   'production/ProductionLabScreen.tsx': 'production lab home — project/stage list, any order',
   'production/ProductionStageScreen.tsx': 'production lab — one stage form',
   'production/ProductionActivityScreen.tsx': 'production lab — one exercise brief/debrief',
+  'production/ProductionPacketScreen.tsx': 'production lab — the packet document; it IS the lab\'s what\'s-left screen (every open stage, a link into each)',
   'tube/TubeCardScreen.tsx': 'reference card viewer',
   'tube/TubeReferenceScreen.tsx': 'reference list',
   'rack/StageFullScreen.tsx': 'component (the rack full screen), not a route',

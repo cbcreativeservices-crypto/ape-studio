@@ -623,6 +623,7 @@ const MEMBER_ONLY_EXTRA_ROUTES: Record<string, string> = {
   ProductionLab: 'Production Labs',
   ProductionStage: 'Production Labs',
   ProductionActivity: 'Production Labs',
+  ProductionPacket: 'Production Labs',
   // The Sound Systems Lab's five mode screens (the catalog names the hub).
   SoundSystemsLearn: 'Sound Systems Lab',
   SoundSystemsBuild: 'Sound Systems Lab',

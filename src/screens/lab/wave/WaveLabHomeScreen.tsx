@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
+import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { LabHeader } from '../kit/LabNavBar';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -63,6 +64,9 @@ export function WaveLabHomeScreen() {
         />
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+        {/* Before a guest begins (owner 2026-10-04): once per lab per session
+            (the modules share it), inline in Low-Light, nothing for others. */}
+        <GuestStartReminder activity="lab:af_wave_physics" />
         {/* Guided Lessons at the very top, before the module list (owner 2026-08-05). */}
         <Pressable
           style={styles.lessonBtnTop}

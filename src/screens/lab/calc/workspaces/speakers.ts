@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtInt, snapWhole } from '../calcUnits';
+import { copperOhmPerM, fmt, fmtInt, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]) => (typeof v === 'number' ? [v] : v);
@@ -162,7 +162,7 @@ const WS_SPEAKERPOWER: Workspace = {
         ];
         if (N > 1) {
           s.push(
-            `${N} uncorrelated sources add 10·log10(${N}) = ${fmt(10 * Math.log10(N))} dB → ${fmt(one + 10 * Math.log10(N))} dB SPL. Real arrays couple and steer — treat this as an upper-hand estimate.`
+            `${N} uncorrelated sources add 10·log10(${N}) = ${fmt(10 * Math.log10(N))} dB → ${fmt(one + 10 * Math.log10(N))} dB SPL. Real arrays couple and steer, so the true sum varies by position — treat this as an estimate.`
           );
         }
         return s;
@@ -436,18 +436,7 @@ const WS_IMPEDANCE: Workspace = {
 /* 3 · Speaker Cable Loss                                             */
 /* ------------------------------------------------------------------ */
 
-/**
- * Copper resistance per meter of a SINGLE conductor, by AWG (Ω/m at ~20 °C),
- * for the common speaker gauges. Any other whole gauge 0–40 is computed from
- * the standard AWG wire area — see ohmPerM.
- */
-const AWG_OHM_PER_M: Record<number, number> = {
-  10: 0.00328,
-  12: 0.00521,
-  14: 0.00829,
-  16: 0.01318,
-  18: 0.02095,
-};
+/** The common speaker gauges the recommendation scans. */
 const AWG_LIST = [10, 12, 14, 16, 18];
 
 // Every whole gauge is costed AS ITSELF (full-app run 2, 2026-10-01). It used
@@ -462,15 +451,12 @@ const nearestAwg = (g: number): number => {
   if (!(w >= 0 && w <= 40)) throw new Error('gauge must be 0–40 AWG');
   return w;
 };
-/** Ω/m of one copper conductor: the table for the listed gauges, otherwise
- *  ρ ÷ area from the AWG definition d = 0.127 mm × 92^((36 − n)/39), with
- *  ρ = 1.724e-8 Ω·m at 20 °C (the same physics as Voltage Drop), to 4 figures. */
-const ohmPerM = (g: number): number => {
-  const listed = AWG_OHM_PER_M[g];
-  if (listed !== undefined) return listed;
-  const dM = (0.127 * Math.pow(92, (36 - g) / 39)) / 1000;
-  return Number((1.724e-8 / ((Math.PI * dM * dM) / 4)).toPrecision(4));
-};
+/** Ω/m of one copper conductor at 20 °C, from the SHARED copper model in
+ *  calcUnits — the very numbers Voltage Drop uses (calc accuracy audit,
+ *  2026-10-04). The listed gauges used a hand-typed table that disagreed with
+ *  Voltage Drop about the same wire: 16 AWG was 0.01318 Ω/m here and
+ *  0.013173 there, 10 AWG 0.00328 against 0.003277. */
+const ohmPerM = (g: number): number => copperOhmPerM(g, 20);
 
 const WS_CABLE: Workspace = {
   id: 'cable',
@@ -487,7 +473,7 @@ const WS_CABLE: Workspace = {
     'damping factor — the amp’s grip on the woofer — at a number the amplifier spec never ' +
     'promised you.',
   example:
-    '30 m of 16 AWG into an 8 Ω box: loop resistance = 2 × 30 × 0.01318 = 0.79 Ω. Level loss = ' +
+    '30 m of 16 AWG into an 8 Ω box: loop resistance = 2 × 30 × 0.01317 = 0.79 Ω. Level loss = ' +
     '20·log10(8 / 8.79) ≈ −0.82 dB, and about 9% of the amplifier’s power is dissipated in ' +
     'the cable. The cable alone limits system damping factor to about 8/0.79 ≈ 10 — no matter ' +
     'how stiff the amplifier is.',
@@ -497,9 +483,11 @@ const WS_CABLE: Workspace = {
     'Thinking a gauge number halved means resistance halved — AWG is logarithmic: −3 gauge numbers ≈ half the resistance (12 AWG is ~half of 15, not of 24).',
   ],
   warnings:
-    'Copper values are for a single conductor at ~20 °C; resistance rises ~0.4%/°C. Connector ' +
-    'and terminal resistance is not modeled. Any whole gauge 0–40 AWG is costed from its ' +
-    'standard copper area; a fractional entry is rounded to the nearest whole gauge.',
+    'Solid annealed copper at 20 °C (IACS, ρ = 1.7241×10⁻⁸ Ω·m — the same copper model as Voltage ' +
+    'Drop); resistance rises 0.393% per °C, and stranded cable reads about 2% higher. Connector ' +
+    'and terminal resistance is not modeled, and the load is treated as its nominal resistance. ' +
+    'Any whole gauge 0–40 AWG is costed from its standard (ASTM B258) copper area; a fractional ' +
+    'entry is rounded to the nearest whole gauge.',
   glossary: ['Damping Factor', 'Impedance', 'Resistance', 'AWG'],
   fields: [
     {
@@ -584,7 +572,7 @@ const WS_CABLE: Workspace = {
         const s: string[] = [];
         if (g !== gIn) s.push(`Gauge rounded to the nearest whole gauge: ${fmt(gIn)} → ${g} AWG.`);
         s.push(
-          `Current travels out AND back: Rloop = 2 × ${fmt(L)} m × ${rpm} Ω/m = ${fmt(rloop)} Ω.`,
+          `Current travels out AND back: Rloop = 2 × ${fmt(L)} m × ${fmt(rpm)} Ω/m = ${fmt(rloop)} Ω.`,
           `The speaker gets Z/(Z+Rloop) = ${fmt(z)}/${fmt(z + rloop)} = ${fmt(frac)} of the voltage → 20·log10(${fmt(frac)}) = ${fmt(20 * Math.log10(frac))} dB.`,
           `Power lost = 1 − ${fmt(frac)} = ${fmt((1 - frac) * 100, 3)}% of the amplifier’s output, spent heating copper.`
         );
@@ -623,7 +611,7 @@ const WS_CABLE: Workspace = {
         return [
           `Loss of ${fmt(dB)} dB means the divider ratio (Z+Rloop)/Z = 10^(${fmt(dB)}/20) = ${fmt(Math.pow(10, dB / 20))}.`,
           `Invert for the resistance: Rloop_max = ${fmt(z)} × (10^(${fmt(dB)}/20) − 1) = ${fmt(rloopMax)} Ω.`,
-          `Length: Lmax = ${fmt(rloopMax)} ÷ (2 × ${rpm} Ω/m) = ${fmt(rloopMax / (2 * rpm))} m one-way for ${g} AWG.`,
+          `Length: Lmax = ${fmt(rloopMax)} ÷ (2 × ${fmt(rpm)} Ω/m) = ${fmt(rloopMax / (2 * rpm))} m one-way for ${g} AWG.`,
         ];
       },
     },
@@ -642,7 +630,7 @@ const WS_CABLE: Workspace = {
         const z = n(v.z);
         const dB = Math.abs(n(v.maxloss));
         const passing = AWG_LIST.filter((g) => {
-          const rloop = 2 * L * (AWG_OHM_PER_M[g] ?? NaN);
+          const rloop = 2 * L * ohmPerM(g);
           return -20 * Math.log10(z / (z + rloop)) <= dB;
         });
         // Highest AWG number = thinnest wire that still passes.
@@ -655,7 +643,7 @@ const WS_CABLE: Workspace = {
             },
           ];
         }
-        const rloop = 2 * L * (AWG_OHM_PER_M[rec] ?? NaN);
+        const rloop = 2 * L * ohmPerM(rec);
         return [
           { label: 'RECOMMENDED GAUGE', text: `${rec} AWG — the thinnest listed gauge meeting the ${fmt(dB)} dB budget.` },
           { label: 'ITS LOSS ON THIS RUN', value: 20 * Math.log10(z / (z + rloop)), quantity: 'db' },
@@ -669,7 +657,7 @@ const WS_CABLE: Workspace = {
           title: `All listed gauges over ${fmt(L)} m into ${fmt(z)} Ω (budget ${fmt(dB)} dB)`,
           cols: ['AWG', 'Loop Ω', 'Loss dB', 'Power lost', 'Verdict'],
           rows: AWG_LIST.map((g) => {
-            const rloop = 2 * L * (AWG_OHM_PER_M[g] ?? NaN);
+            const rloop = 2 * L * ohmPerM(g);
             const frac = z / (z + rloop);
             const loss = -20 * Math.log10(frac);
             return [

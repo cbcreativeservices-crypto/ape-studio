@@ -23,17 +23,13 @@ test('the Start Here popup passes the built-in entry, and a preloaded entry skip
   assert.match(bits, /preloaded=\{starterGlossaryEntry\(full\)\}/);
   const popup = readFileSync('src/features/glossary/GlossaryTermPopup.tsx', 'utf8');
   const pre = popup.indexOf('if (preloaded) {');
-  assert.ok(pre > 0 && pre < popup.indexOf('readOnce(hit.id)'), 'preloaded returns before the gateway call');
+  assert.ok(pre > 0 && pre < popup.indexOf('readOnce(hit.id, via)'), 'preloaded returns before the gateway call');
 });
 
-test('Start Here is the landing only on the first app open; Glossary after', () => {
-  // Owner 2026-09-29 (revised): "The intro lab should be the default spot only
-  // for the first time the user opens the app."
+test('every open lands on Glossary, the first one included (owner 2026-10-04)', () => {
+  // Replaces the 2026-09-29 "first open lands on Start Here" — see
+  // test/startHereDecisions_20261004.test.ts for the receipt.
   const home = readFileSync('src/screens/courses/CourseSelectionScreen.tsx', 'utf8');
-  assert.match(home, /target = firstOpen && startHereIdx >= 0 \? startHereIdx : glossaryIdx;/);
-  assert.match(home, /isFirstAppOpen\(\)/);
-  const fo = readFileSync('src/features/startHere/firstOpen.ts', 'utf8');
-  // The flag is written on the first read, so the NEXT launch is not first.
-  assert.ok(fo.indexOf('if (seen) return false;') < fo.indexOf("setItem(FIRST_OPEN_KEY, '1')"));
-  assert.match(fo, /seenHomeBefore/);
+  assert.match(home, /if \(!sessionLanded\) \{\s*target = glossaryIdx;/);
+  assert.doesNotMatch(home, /isFirstAppOpen|firstOpen/);
 });

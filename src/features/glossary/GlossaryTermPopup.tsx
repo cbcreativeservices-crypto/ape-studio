@@ -23,7 +23,7 @@
  * behaviour change worth knowing about rather than discovering.
  * See docs/APE_GLOSSARY_DEVICE_ID_BUILD_PLAN_2026_09_13.md.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useMemberGate } from '../commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../commercial/tier';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -38,6 +38,8 @@ import {
   sessionChargeUnanswered,
   sessionDefinition,
   type DefinitionResult,
+  type GatewayDefinition,
+  type MeterVia,
 } from './glossaryGateway';
 import { popupCard } from '../../theme/readingColumn';
 import { softDeadline } from '../../lib/boundedCall';
@@ -62,8 +64,8 @@ const LOOKUP_DEADLINE_MS = 8000;
  * The cache is SHARED with the Glossary screen (evening hunt 2, 2026-10-02 —
  * see readDefinitionOnce): a term paid for here is free there, and back.
  */
-function readOnce(id: string): Promise<DefinitionResult> {
-  return readDefinitionOnce(id);
+function readOnce(id: string, via: MeterVia): Promise<DefinitionResult> {
+  return readDefinitionOnce(id, undefined, via);
 }
 
 /**
@@ -78,11 +80,23 @@ function readOnce(id: string): Promise<DefinitionResult> {
  */
 const NAME_HITS = new Map<string, { id: string; term: string; plainNull: boolean }>();
 
+/** True when this reader already opened (paid for) the term with this NAME
+ *  this session — a re-open is free (D50), so Start Here does not ask first.
+ *  Also true for a sent-but-unanswered open, which is never re-sent. */
+export function termPaidThisSession(termName: string): boolean {
+  const known = NAME_HITS.get(termName);
+  if (!known) return false;
+  return sessionDefinition(known.id) != null || sessionChargeUnanswered(known.id);
+}
+
 export function GlossaryTermPopup({
   termName,
   onClose,
   embedded,
   preloaded,
+  via = 'normal',
+  footer,
+  onRead,
 }: {
   /** The term to show, or null when the popup is closed. */
   termName: string | null;
@@ -99,6 +113,14 @@ export function GlossaryTermPopup({
    *  starter words open FREE). Shown as-is: no corpus read, no metered
    *  gateway call, so it never spends a weekly lookup. */
   preloaded?: { term: string; definition: string; plain_english: string } | null;
+  /** Which metered read a NEW open uses (owner 2026-10-04): 'startHere' spends
+   *  Start Here's 2 extra definitions first, then the week. Default: normal. */
+  via?: MeterVia;
+  /** The caller's own lines under the entry (Start Here's related words). */
+  footer?: ReactNode;
+  /** A fresh metered answer for the term on screen (Start Here reads
+   *  `bonus_spent` / `bonus_left` from it). Not called for a session re-open. */
+  onRead?: (row: GatewayDefinition) => void;
 }) {
   const [row, setRow] = useState<Row | null>(null);
   const [loading, setLoading] = useState(false);
@@ -260,8 +282,9 @@ export function GlossaryTermPopup({
       // gateway for the real text; a refusal (out of lookups, or no device key)
       // simply leaves the teaser on screen with the caller's "OPEN THE
       // GLOSSARY ›" link, which is where the lock and the upgrade path live.
-      const full = await readOnce(hit.id);
+      const full = await readOnce(hit.id, via);
       if (cancelled) return;
+      if (full.state === 'ok') onRead?.(full.row);
       if (full.state !== 'ok') {
         // Say which kind of short it is. `sign-in-required` and `not-deployed`
         // both mean the caller's own fallback is in play, so they are not
@@ -365,6 +388,7 @@ export function GlossaryTermPopup({
                 <Text style={styles.def}>{row.plain_english.trim()}</Text>
               </>
             ) : null}
+            {footer}
           </ScrollView>
           <Pressable onPress={onClose} style={styles.doneBtn} accessibilityRole="button" accessibilityLabel="Done">
             <Text style={styles.doneText}>DONE</Text>

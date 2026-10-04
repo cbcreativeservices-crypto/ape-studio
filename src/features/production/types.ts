@@ -97,6 +97,13 @@ export type ProductionProject = {
   scenarioId?: string;
   /** Document-control revision, incremented when a packet is exported. */
   revision: number;
+  /**
+   * The stage the user last answered something in (2026-10-04, design review
+   * #5: pick up where you left off). Written by the SAME store write as the
+   * answer, so it costs no extra save and can never claim a stage the answer
+   * did not reach.
+   */
+  lastStageId?: string;
 };
 
 // ── findings ─────────────────────────────────────────────────────────────────
@@ -219,6 +226,15 @@ export function isAnswered(v: FieldValue | undefined): boolean {
     );
   }
   return scalarAnswered(v);
+}
+
+/**
+ * The project worked on most recently (newest `updatedAt`), or undefined.
+ * The lab home opens this one when nothing is chosen yet — pick up where you
+ * left off, not wherever the list happens to start (2026-10-04).
+ */
+export function mostRecentProject(list: ProductionProject[]): ProductionProject | undefined {
+  return list.reduce<ProductionProject | undefined>((best, p) => (!best || p.updatedAt > best.updatedAt ? p : best), undefined);
 }
 
 /** Stable id for a new project. */

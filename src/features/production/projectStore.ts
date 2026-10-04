@@ -21,7 +21,7 @@ import type {
   ValueMap,
 } from './types';
 import { newProjectId, valueKey } from './types';
-import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
+import { holdSessionWork, peekSessionWork, registerSessionCarry, releaseSessionWork } from '../lab/sessionCarry';
 import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 export const PROJECT_KEYS: Record<LabKind, string> = {
@@ -77,7 +77,7 @@ function normaliseConditions(x: unknown): AcceptedCondition[] {
 /** Returns null for a row that cannot be trusted — the caller sets it aside. */
 export function normaliseProject(x: unknown): ProductionProject | null {
   if (!isPlainObject(x)) return null;
-  const { id, lab, pathway, name, createdAt, updatedAt, scenarioId, revision } = x;
+  const { id, lab, pathway, name, createdAt, updatedAt, scenarioId, revision, lastStageId } = x;
   if (typeof id !== 'string' || !id) return null;
   if (lab !== 'preprod' && lab !== 'postprod') return null;
   if (typeof pathway !== 'string') return null;
@@ -94,6 +94,7 @@ export function normaliseProject(x: unknown): ProductionProject | null {
     acceptedConditions: normaliseConditions(x.acceptedConditions),
     ...(typeof scenarioId === 'string' ? { scenarioId } : {}),
     revision: typeof revision === 'number' && revision >= 0 ? revision : 0,
+    ...(typeof lastStageId === 'string' && lastStageId ? { lastStageId } : {}),
   };
 }
 
@@ -327,7 +328,9 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         const all = await list(lab).catch(() => null);
         if (!all) return false;
         const ok = await write(lab, all.filter((p) => p.id !== id));
-        if (ok) holdProject({ drop: { lab, id } });
+        // A REMOVAL: let go of in the ledger even after the account is
+        // settled (a guestOnly hold refuses everything then; 2026-10-04).
+        if (ok) releaseSessionWork<HeldProjects>(CARRY_KEY, (prev) => withHeldProject(prev, { drop: { lab, id } }));
         return ok;
       });
     },
@@ -354,10 +357,13 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
       return copy;
       });
     },
+    // Both record the stage as where the user left off — inside the same write,
+    // so the marker exists only if the answer landed (2026-10-04).
     setValue(lab, id, stageId, fieldId, value) {
       return mutate(lab, id, (p) => ({
         ...p,
         values: { ...p.values, [valueKey(stageId, fieldId)]: value },
+        lastStageId: stageId,
       }));
     },
     setNa(lab, id, stageId, fieldId, reason) {
@@ -366,7 +372,7 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         const k = valueKey(stageId, fieldId);
         if (reason.trim()) na[k] = reason.trim();
         else delete na[k];
-        return { ...p, na };
+        return { ...p, na, lastStageId: stageId };
       });
     },
     acceptCondition(lab, id, c) {
@@ -389,9 +395,12 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
     async carryIn(held) {
       let ok = true;
       for (const lab of ['preprod', 'postprod'] as const) {
-        const rows = held[lab] ?? [];
-        if (!rows.length) continue;
+        if (!(held[lab] ?? []).length) continue;
         const landed = await serialize(lab, async () => {
+          // What the ledger holds NOW (2026-10-04): a delete that ran first
+          // on this chain has been let go of there and must not come back.
+          const rows = (peekSessionWork<HeldProjects>(CARRY_KEY) ?? held)[lab] ?? [];
+          if (!rows.length) return true;
           const all = await list(lab).catch(() => null);
           if (!all) return false;
           return write(lab, mergeHeldProjects(all, rows));

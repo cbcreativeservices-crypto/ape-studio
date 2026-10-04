@@ -289,9 +289,14 @@ export const STAGE5_BUILD: StageDef = {
         },
         {
           fieldId: "correction_scope",
-          showWhen: { field: "correction_decision", notEquals: ["none_needed", "prohibited"] },
+          // Kept in view when correction is RULED OUT (review 2026-10-04): a
+          // hidden answer is never evaluated, so hiding this on "prohibited"
+          // silenced build-correction-not-agreed for exactly the case it
+          // exists for — correction applied after the brief ruled it out.
+          showWhen: { field: "correction_decision", notEquals: ["none_needed"] },
           label: "What is being corrected",
           kind: "multiChoice",
+          help: "If correction was ruled out, leave this empty. Anything ticked here is a change to a performance that nobody agreed to.",
           options: [
             { value: "pitch", label: "Pitch" },
             { value: "timing", label: "Timing" },

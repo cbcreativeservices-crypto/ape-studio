@@ -26,6 +26,9 @@ import {
   type ThreadMessage,
 } from '../../features/directory/api';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
+import { markThreadSeen, threadUnread } from '../../features/directory/inboxCounts';
+import { markThreadRead } from '../../features/directory/inboxApi';
+import { refreshCommunityInbox, useCommunityInbox } from '../../features/directory/CommunityBadge';
 import { cardColumn } from '../../theme/readingColumn';
 
 const REASONS: { key: ReportReason; label: string }[] = [
@@ -55,6 +58,13 @@ const STATUS_LABEL: Record<ContactThread['status'], string> = {
 
 type ThreadAction = 'accept' | 'decline' | 'withdraw';
 
+/** "OPEN CONVERSATION (5)", plus "· 2 NEW" when the server says two of them
+ *  are unread (owner 2026-10-04). Nothing is added when unread is unknown. */
+export function conversationLabel(t: ContactThread, unread: number): string {
+  const base = `OPEN CONVERSATION (${t.messageCount})`;
+  return unread > 0 ? `${base} · ${unread} NEW` : base;
+}
+
 /** One flattened row of the requests list: a section eyebrow or a request card.
  *  INCOMING and SENT always shared one scroller, so they share one FlatList. */
 type RequestRow =
@@ -76,6 +86,7 @@ const IncomingCard = memo(function IncomingCard({
   onError,
   onBlocked,
   acting,
+  unread,
 }: {
   t: ContactThread;
   onAct: (t: ContactThread, action: ThreadAction) => void;
@@ -87,6 +98,8 @@ const IncomingCard = memo(function IncomingCard({
   onBlocked: (t: ContactThread) => void;
   /** An accept/decline/withdraw is in flight — see `act`. */
   acting: boolean;
+  /** Unread messages from them in this conversation (0 when unknown). */
+  unread: number;
 }) {
   return (
     <View style={st.card}>
@@ -102,7 +115,7 @@ const IncomingCard = memo(function IncomingCard({
         </View>
       ) : null}
       {t.status === 'accepted' ? (
-        <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
+        <PrimaryButton label={conversationLabel(t, unread)} onPress={() => onOpen(t)} />
       ) : null}
       <ThreadModeration t={t} onReload={onReload} onError={onError} onBlocked={onBlocked} />
     </View>
@@ -176,6 +189,7 @@ const OutgoingCard = memo(function OutgoingCard({
   onError,
   onBlocked,
   acting,
+  unread,
 }: {
   t: ContactThread;
   onAct: (t: ContactThread, action: ThreadAction) => void;
@@ -185,6 +199,8 @@ const OutgoingCard = memo(function OutgoingCard({
   onError: (e: string | null) => void;
   onBlocked: (t: ContactThread) => void;
   acting: boolean;
+  /** Unread messages from them in this conversation (0 when unknown). */
+  unread: number;
 }) {
   return (
     <View style={st.card}>
@@ -197,7 +213,7 @@ const OutgoingCard = memo(function OutgoingCard({
       ) : null}
       {t.status === 'accepted' ? (
         <>
-          <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
+          <PrimaryButton label={conversationLabel(t, unread)} onPress={() => onOpen(t)} />
           {/* Accepted = they can now write back — see ThreadModeration. */}
           <ThreadModeration t={t} onReload={onReload} onError={onError} onBlocked={onBlocked} />
         </>
@@ -208,7 +224,18 @@ const OutgoingCard = memo(function OutgoingCard({
 
 export function RequestsView({
   onBlocked,
+  openThreadId = null,
+  onOpenedThread,
 }: {
+  /**
+   * A tapped member alert asked for this conversation (owner 2026-10-04).
+   * Opened once the list has loaded AND contains it as an open conversation —
+   * a thread that is not this account's, or no longer open (blocked,
+   * declined), is simply not opened; the list is the answer. Handed back
+   * through `onOpenedThread` either way, so it is consumed once.
+   */
+  openThreadId?: string | null;
+  onOpenedThread?: () => void;
   /**
    * A member was blocked from here (hunt 11, 2026-10-04). Explore stays
    * MOUNTED across tab switches now and keeps its list up while it refreshes,
@@ -248,11 +275,26 @@ export function RequestsView({
     }
     setLoadErr(null);
     setThreads(r.rows);
+    // The badges re-read with the list: an answered request or a new one
+    // seen here must not leave the old count on Profile / the tab.
+    void refreshCommunityInbox(true);
   }, []);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  const inbox = useCommunityInbox();
+
+  // A linked conversation (member alert tap): open it once the list knows it.
+  const onOpenedRef = useRef(onOpenedThread);
+  onOpenedRef.current = onOpenedThread;
+  useEffect(() => {
+    if (!openThreadId || threads === null) return;
+    const hit = threads.find((t) => t.id === openThreadId);
+    if (hit && hit.status === 'accepted') setOpen(hit);
+    onOpenedRef.current?.();
+  }, [openThreadId, threads]);
 
   // One answer at a time, until the list has reloaded (bug hunt 2026-09-29):
   // the buttons stayed live while the answer was out, so a double-tap sent
@@ -301,6 +343,7 @@ export function RequestsView({
             onError={setErr}
             onBlocked={noteBlocked}
             acting={acting}
+            unread={threadUnread(inbox, item.thread.id)}
           />
         );
       }
@@ -313,10 +356,11 @@ export function RequestsView({
           onError={setErr}
           onBlocked={noteBlocked}
           acting={acting}
+          unread={threadUnread(inbox, item.thread.id)}
         />
       );
     },
-    [act, openThread, load, acting, noteBlocked],
+    [act, openThread, load, acting, noteBlocked, inbox],
   );
 
   // Never loaded and the fetch failed → say so and offer a retry (not "none").
@@ -623,6 +667,12 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     setMsgs(r.rows);
     // Same fence as above (no await between, so it still holds).
     if (openId.current === id && seq === loadSeq.current) setAllow(a);
+    // Read up to now — only after the messages were actually SHOWN. The badge
+    // drops this conversation only when the server stored the mark (before
+    // the read-state migration it cannot, and nothing is claimed).
+    void markThreadRead(id).then((ok) => {
+      if (ok) markThreadSeen(id);
+    });
   }, [thread]);
 
   // Clear the previous conversation BEFORE fetching the next one (network audit

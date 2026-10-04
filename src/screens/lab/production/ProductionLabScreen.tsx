@@ -26,14 +26,16 @@ import { colors, fonts } from '../../../theme/tokens';
 import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { resolveStage } from '../../../features/production/schema';
+import { resolveLab } from '../../../features/production/schema';
 import { readProject } from '../../../features/production/readiness';
-import { buildPacketHtml, exportPacketPdf, isPdfAvailable } from '../../../features/production/packet';
+import { buildPacketHtml } from '../../../features/production/packet';
 import { createProjectStore, newProject, projectStore } from '../../../features/production/projectStore';
 import type { Finding, PathwayId, ProductionProject } from '../../../features/production/types';
-import { LAUNCH_PATHWAYS, PATHWAY_LABEL } from '../../../features/production/types';
+import { LAUNCH_PATHWAYS, PATHWAY_LABEL, mostRecentProject } from '../../../features/production/types';
 import { authoredStage, labDef } from '../../../features/production/labs';
-import { ReadinessMeter, StageProgressRow } from './ReadinessMeter';
+import { useLatchedPress } from '../../../lib/latch';
+import { localDay } from '../../../lib/localDate';
+import { ReadinessMeter, StageProgressRow, stageSignalLabel } from './ReadinessMeter';
 import { AcceptConditionSheet } from './AcceptConditionSheet';
 import { STATE_TINT } from './FieldRow';
 import { isActivityProject } from '../../../features/production/activities';
@@ -82,7 +84,10 @@ export function ProductionLabScreen() {
     // the exercises are still reachable from where they belong.
     const own = list.filter((p) => !isActivityProject(p));
     setProjects(own);
-    setOpenId((cur) => (cur && own.some((p) => p.id === cur) ? cur : own[0]?.id ?? null));
+    // PICK UP WHERE YOU LEFT OFF (2026-10-04, design review #5): with nothing
+    // chosen yet, open the project worked on most recently — not whichever
+    // happened to be created last.
+    setOpenId((cur) => (cur && own.some((p) => p.id === cur) ? cur : mostRecentProject(own)?.id ?? null));
   }, [lab]);
 
   // Re-read on focus: a stage screen writes through the store, so coming back
@@ -145,17 +150,42 @@ export function ProductionLabScreen() {
     );
   }, [project, lab, reload]);
 
-  const { stages, report } = useMemo(() => {
-    if (!project) return { stages: [], report: null };
-    const resolved = def.outline
+  const { report } = useMemo(() => {
+    if (!project) return { report: null };
+    const authored = def.outline
       .map((o) => authoredStage(lab, o.stageId))
-      .filter((s): s is NonNullable<typeof s> => Boolean(s))
-      // Values are passed so `showWhen` can hide conditional fields — and,
-      // crucially, so readiness counts the SAME set the user was asked. A
-      // hidden field must never count as missing.
-      .map((s) => resolveStage(s, project.pathway, project.values));
-    return { stages: resolved, report: readProject(resolved, project) };
+      .filter((s): s is NonNullable<typeof s> => Boolean(s));
+    // Values are passed so `showWhen` can hide conditional fields — and,
+    // crucially, so readiness counts the SAME set the user was asked. A
+    // hidden field must never count as missing. The whole lab at once, so a
+    // condition naming another stage resolves here exactly as on the stage.
+    const resolved = resolveLab(authored, project.pathway, project.values);
+    // A report that cannot be worked out is UNREAD, not zero (K2): the rows
+    // then show "—" rather than a 0% that says the work is gone.
+    try {
+      return { report: readProject(resolved, project) };
+    } catch {
+      return { report: null };
+    }
   }, [project, def, lab]);
+
+  // Duplicate (2026-10-04, design review #5): `projectStore.duplicate` was
+  // reachable from no screen. One run at a time; the copy opens only once it
+  // is on disk, and a refused write says so.
+  const duplicate = useLatchedPress(async () => {
+    if (!project) return;
+    const copy = await projectStore().duplicate(lab, project.id);
+    if (!copy) {
+      notify('Not duplicated', 'A copy of this project could not be saved on this device. The original is unchanged.');
+      return;
+    }
+    setNameDraft(null);
+    await reload();
+    setOpenId(copy.id);
+  });
+
+  /** Where this project was last worked on, if that stage still exists. */
+  const resume = project?.lastStageId ? def.outline.find((o) => o.stageId === project.lastStageId) : undefined;
 
   /** In-flight guard (bug hunt 2026-09-29): a double tap on a START A
    *  PROJECT row ran start() twice before the first upsert resolved and
@@ -226,29 +256,8 @@ export function ProductionLabScreen() {
     [project, accepting, reload, lab],
   );
 
-  // One export at a time (bug hunt 2026-09-30): a double tap printed twice,
-  // iOS refused the second share ("another share request is being
-  // processed") and the learner was told the packet failed over an open sheet.
-  const sharingRef = useRef(false);
-  const sharePacket = useCallback(async () => {
-    if (!project || !report || sharingRef.current) return;
-    sharingRef.current = true;
-    let res: Awaited<ReturnType<typeof exportPacketPdf>>;
-    try {
-      res = await exportPacketPdf({ project, stages, report });
-    } finally {
-      sharingRef.current = false;
-    }
-    if (res.ok) return;
-    notify(
-      'Packet not shared',
-      res.reason === 'needs_build'
-        ? 'Printing to PDF isn’t available on this device. The packet is readable here in the meantime.'
-        : res.reason === 'no_share_target'
-          ? 'This device has nowhere to send the file.'
-          : 'The packet could not be produced.',
-    );
-  }, [project, report, stages]);
+  // The packet (and its PDF share) has its own screen now (2026-10-04, design
+  // review #5): ProductionPacketScreen renders the document in-app.
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
@@ -351,6 +360,18 @@ export function ProductionLabScreen() {
                 selectTextOnFocus
                 accessibilityLabel="Project name — edit to rename"
               />
+            </View>
+            <View style={styles.ownRow}>
+              <Text style={[styles.projectMeta, { flex: 1 }]}>{PATHWAY_LABEL[project.pathway]}</Text>
+              <Pressable
+                onPress={duplicate}
+                hitSlop={8}
+                style={styles.ownBtn}
+                accessibilityRole="button"
+                accessibilityLabel={`Duplicate the project ${project.name}`}
+              >
+                <Text style={styles.ownText}>DUPLICATE</Text>
+              </Pressable>
               <Pressable
                 onPress={confirmDelete}
                 hitSlop={8}
@@ -361,10 +382,30 @@ export function ProductionLabScreen() {
                 <Text style={styles.deleteText}>DELETE</Text>
               </Pressable>
             </View>
-            <Text style={styles.projectMeta}>{PATHWAY_LABEL[project.pathway]}</Text>
+
+            {/* PICK UP WHERE YOU LEFT OFF (2026-10-04, design review #5). The
+                stage comes from the same write that saved the last answer, so
+                it can never name a stage the answer did not reach. */}
+            {resume && authoredStage(lab, resume.stageId) ? (
+              <Pressable
+                style={styles.resume}
+                onPress={() =>
+                  navigation.navigate('ProductionStage', { lab, projectId: project.id, stageId: resume.stageId })
+                }
+                accessibilityRole="button"
+                accessibilityLabel={`Pick up where you left off: stage ${resume.num}, ${resume.title}`}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.resumeKicker}>PICK UP WHERE YOU LEFT OFF</Text>
+                  <Text style={styles.resumeTitle}>{`Stage ${resume.num} · ${resume.title}`}</Text>
+                  <Text style={styles.resumeNote}>{`You last answered a question here · project last changed ${localDay(project.updatedAt)}`}</Text>
+                </View>
+                <Text style={styles.pathwayGo}>›</Text>
+              </Pressable>
+            ) : null}
 
             {report ? (
-              <ReadinessMeter report={report} lab={lab} onAcceptBlocker={setAccepting} />
+              <ReadinessMeter report={report} lab={lab} onAcceptBlocker={setAccepting} unreadable={readFailed} />
             ) : null}
 
             <Text style={styles.sectionTitle}>
@@ -395,11 +436,15 @@ export function ProductionLabScreen() {
                   accessibilityRole="button"
                   accessibilityState={{ disabled: !open }}
                   accessibilityLabel={
-                    open ? `Stage ${o.num}, ${o.title}` : `Stage ${o.num}, ${o.title}, not open yet`
+                    open
+                      ? `Stage ${o.num}, ${o.title}, ${stageSignalLabel(sr ?? null, readFailed)}`
+                      : `Stage ${o.num}, ${o.title}, not open yet`
                   }
                 >
-                  {sr ? (
-                    <StageProgressRow stage={sr} />
+                  {open ? (
+                    // An open stage with no report could not be worked out:
+                    // "—", never "Not open yet" and never 0% (K2).
+                    <StageProgressRow stage={sr ?? null} num={o.num} title={o.title} unreadable={readFailed} />
                   ) : (
                     <View style={styles.closedRow}>
                       <View style={[styles.closedDot, { backgroundColor: STATE_TINT.missing }]} />
@@ -451,21 +496,16 @@ export function ProductionLabScreen() {
             <Text style={styles.sectionTitle}>{def.packetName.toUpperCase()}</Text>
             <Text style={styles.sectionIntro}>
               Everything decided so far, as one document, with the gaps and any accepted conditions printed rather
-              than hidden.
+              than hidden — and what is still left, stage by stage.
             </Text>
             <Pressable
               style={styles.packetBtn}
-              onPress={() => void sharePacket()}
+              onPress={() => navigation.navigate('ProductionPacket', { lab, projectId: project.id })}
               accessibilityRole="button"
-              accessibilityLabel="Share the production packet as a PDF"
+              accessibilityLabel={`Open the ${def.packetName}`}
             >
-              <Text style={styles.packetBtnText}>SHARE AS PDF</Text>
+              <Text style={styles.packetBtnText}>{`OPEN THE ${def.packetName.toUpperCase()}`}</Text>
             </Pressable>
-            {!isPdfAvailable() ? (
-              <Text style={styles.packetNote}>
-                Printing to PDF isn’t available on this device. Everything in the packet is readable on these screens now.
-              </Text>
-            ) : null}
           </>
         )}
       </ScrollView>
@@ -565,6 +605,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   deleteText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: '#ff8a7a' },
+  ownRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  ownBtn: {
+    paddingHorizontal: 12,
+    borderRadius: 7,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  ownText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.textSecondary },
+  resume: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.45)',
+    backgroundColor: 'rgba(255,198,77,.07)',
+    borderRadius: 9,
+    paddingVertical: 11,
+    paddingHorizontal: 12,
+    minHeight: 48,
+  },
+  resumeKicker: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: colors.amberLabel },
+  resumeTitle: { fontFamily: fonts.barlowSemiBold, fontSize: 14.5, color: colors.textPrimary, marginTop: 2 },
+  resumeNote: { fontFamily: fonts.barlowRegular, fontSize: 12, color: colors.textMuted, marginTop: 1 },
   projectMeta: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textMuted, marginBottom: 4 },
 
   stage: {

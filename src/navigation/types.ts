@@ -159,7 +159,10 @@ export type RootStackParamList = {
    *  Requests. (The old standalone `Directory` "Get Discovered" modal route was
    *  unreachable and removed 2026-09-10; that content lives as DirectoryView in
    *  the Awards pager.) */
-  AudioCommunityDirectory: undefined;
+  /** `tab: 'requests'` + `thread` (a request uuid) open that conversation —
+   *  how a tapped member alert lands (2026-10-04). Validated on arrival
+   *  (communityRules.directoryParams): a link can carry anything. */
+  AudioCommunityDirectory: { tab?: string; thread?: string } | undefined;
   /** Admin-only: the employer application queue. Guarded by is_admin() in the DB. */
   EmployerAdmin: undefined;
   /** Admin-only: the abuse-report queue. Guarded by is_admin() in the DB.
@@ -308,6 +311,12 @@ export type RootStackParamList = {
     lab: import('../features/production/types').LabKind;
     activityId: string;
     pathway: import('../features/production/types').PathwayId;
+  };
+  /** The project's packet, drawn in the app, with WHAT'S LEFT (2026-10-04).
+   *  No deep link: projects are device-local. */
+  ProductionPacket: {
+    lab: import('../features/production/types').LabKind;
+    projectId: string;
   };
   CymaticsModule: { id: import('../screens/lab/cymatics/modules/registry').CymaticsModuleId };
   CymaticsPlateStudio: { preset?: string; saved?: string } | undefined;

@@ -76,6 +76,13 @@ const PARAM_SAMPLES: Record<string, string> = {
    * would assert that the filter accepts a value the app cannot open.
    */
   lab: 'preprod',
+  /**
+   * `directory/:tab?/:thread?` (2026-10-04, member alerts): only the REQUESTS
+   * tab with a real request uuid is claimed — the same allowlist rule as the
+   * two above, so the sample is a value the app really opens.
+   */
+  tab: 'requests',
+  thread: '3f2b8c1e-5d4a-4b6f-9a7e-1c2d3e4f5a6b',
 };
 
 function sample(path: string): string {

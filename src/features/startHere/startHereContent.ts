@@ -526,8 +526,10 @@ export const SECTIONS: readonly StartSection[] = [
     id: 'l3',
     kind: 'lesson',
     num: 3,
-    title: 'The Two Basic Parts of Sound',
-    short: 'Two parts of sound',
+    // Owner 2026-10-04: "How High, How Loud" (frequency and amplitude are
+    // properties of a sound, not its parts — the reviewer's 2026-09-29 note).
+    title: 'How High, How Loud',
+    short: 'How high, how loud',
     blurb: 'Frequency and pitch; amplitude and loudness.',
     pages: [
       {

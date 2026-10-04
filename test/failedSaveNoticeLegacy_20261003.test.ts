@@ -351,7 +351,6 @@ function tally(): Tally {
 const REPORTED: Record<string, number> = {
   'features/amp/ampProgress.ts': 2, // save + the sign-in hand-off
   'features/audio/soundSafetyAck.ts': 1, // the ACCEPT
-  'features/careerfinder/store.ts': 1, // persist (answers, ★, resets; feedback only on the way out)
   'features/ear/earProgress.ts': 2, // save + the hand-off
   'features/glossary/autoOfflinePref.ts': 1,
   'features/glossary/deviceKey.ts': 1, // the device-key consent the user granted
@@ -404,7 +403,6 @@ const SILENT: Record<string, { count: number; why: string }> = {
     why: 'B: the listening record the monitor writes by itself every 15 s, its index, retention pruning and the damaged set-aside (app-measured, not a change the user made); C: the two DELETES (today / history) answer false and the Exposure screen says so',
   },
   'features/audio/soundSafetyAck.ts': { count: 3, why: 'B: the damaged set-aside, and taking back a departing account’s acceptance after the wipe' },
-  'features/careerfinder/store.ts': { count: 1, why: 'B: setting a damaged record aside (housekeeping)' },
   'features/celebration/useCredentialCelebration.ts': { count: 2, why: 'B: the app’s known-credentials seen-marker; a lost write costs a repeat celebration, never credit' },
   'features/commercial/EntitlementProvider.tsx': { count: 2, why: 'B: dev-only overrides (__DEV__)' },
   'features/commercial/lastTierCache.ts': { count: 2, why: 'B: a cache of the last confirmed tier, replaced by the next server answer' },
@@ -431,7 +429,6 @@ const SILENT: Record<string, { count: number; why: string }> = {
   'features/review/reviewPrompt.ts': { count: 1, why: 'B: the store-review prompt counter (the app’s own)' },
   'features/roomdesign/roomDesignStore.ts': { count: 1, why: 'C: persist() for SAVE and DELETE answers false and the Room Design screens say "not saved" / put the row back' },
   'features/settings/lowLight.ts': { count: 1, why: 'B: touchLowLight, the app’s own last-touched clock, not the user’s change' },
-  'features/startHere/firstOpen.ts': { count: 1, why: 'B: the first-open flag the app sets itself' },
   'features/storage/localStore.ts': { count: 3, why: 'B: the safe store’s damaged set-aside and its one-time prepare (migration) write, best-effort with the value in memory' },
   'features/study/localProgress.ts': { count: 1, why: 'B: clearAllLocalMethodStates, part of the account wipe' },
   'features/tools/measure/measurementsBackend.ts': { count: 1, why: 'B: setting a damaged library aside (housekeeping)' },

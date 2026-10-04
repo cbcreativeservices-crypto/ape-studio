@@ -188,6 +188,7 @@ export const STAGE3_PEOPLE: StageDef = {
           fieldId: "electrician",
           label: "Licensed electrician or certified entertainment electrician",
           kind: "text",
+          showWhen: { field: "power_source", notEquals: ["existing_outlets"] },
           help: "Tie-ins, temporary distribution and generators must be connected and signed off by a licensed or certified electrician, as your country, venue and insurer require. This training does not qualify anyone to do it.",
           required: false
         },
@@ -220,6 +221,7 @@ export const STAGE3_PEOPLE: StageDef = {
           fieldId: "mix_engineer",
           label: "Mix engineer",
           kind: "text",
+          showWhen: { field: "define.services", equals: ["mixing"] },
           help: "Only if mixing is in scope. Leave blank if the client is taking the tracks elsewhere, and make sure the scope says so.",
           required: false,
           onlyFor: [
@@ -231,6 +233,7 @@ export const STAGE3_PEOPLE: StageDef = {
           fieldId: "mastering_engineer",
           label: "Mastering engineer",
           kind: "text",
+          showWhen: { field: "define.services", equals: ["mastering"] },
           help: "Only if mastering is in scope. If it is, they need the destination specifications from stage 2 before they start.",
           required: false,
           onlyFor: [

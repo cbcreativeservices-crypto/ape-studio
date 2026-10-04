@@ -304,7 +304,6 @@ describe('P16 R5 — calculator parse sites', () => {
    *  text, with reasons. Shrink-only. */
   const NUMBER_ALLOWED: Record<string, { n: number; why: string }> = {
     'calcUnits.ts': { n: 2, why: 'inside fmt (toPrecision round-trip) and parseQuantity itself, after its strict regex' },
-    'workspaces/speakers.ts': { n: 1, why: 'ohmPerM: Number(x.toPrecision(4)) rounds a computed table value, no text' },
   };
   it('no parseFloat / parseInt anywhere in the calculators; Number( only at allowlisted sites', () => {
     const over: string[] = [];

@@ -60,7 +60,9 @@ describe('H11-4 a block made in Requests reaches the kept-mounted Explore list',
   const req = read('src/screens/directory/RequestsView.tsx');
 
   it('the host hands RequestsView the same block marker the member sheet uses', () => {
-    assert.match(host, /<RequestsView onBlocked=\{markBlocked\} \/>/);
+    // (2026-10-04, userNotifications: RequestsView also takes the linked
+    // conversation now — the block marker is still the first prop.)
+    assert.match(host, /<RequestsView\s+onBlocked=\{markBlocked\}[\s\S]*?\/>/);
     assert.match(host, /<MemberSheet[\s\S]*?onBlocked=\{markBlocked\}/);
   });
 

@@ -356,9 +356,6 @@ describe('seen-flags in components fail toward NOT re-showing', () => {
     assert.match(s, /INTRO_STORAGE_PREFIX \+ key\);\s*if \(alive && !dismissedRef\.current\) setVisible\(seen == null\);[\s\S]*?\}\)\(\)\.catch\(\(\) => \{\s*if \(alive\) setVisible\(false\);\s*\}\);/);
     assert.equal((s.match(/AsyncStorage\.setItem\(/g) ?? []).length, 1, 'one write, in dismiss');
   });
-  it('[confirm] firstOpen: the flag is written only after a read that answered "absent"', () => {
-    const s = read('src/features/startHere/firstOpen.ts');
-    assert.ok(s.indexOf('if (seen) return false;') < s.indexOf("setItem(FIRST_OPEN_KEY, '1')"));
-    assert.match(s, /\} catch \{\s*return false; \/\/ storage unavailable/);
-  });
+  // firstOpen.ts was removed 2026-10-04 (owner: every open, the first one
+  // included, lands on Glossary — no first-open flag is read or written).
 });

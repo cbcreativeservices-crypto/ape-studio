@@ -67,12 +67,17 @@ describe('moderation queue', () => {
 
 describe('career finder store', () => {
   test('F3: a hydrate that outlives resetLocal() cannot restore the old record', () => {
+    // On the house store since 2026-10-04 (guestCareer): hydrate and reset
+    // ARE the safe store's, whose generation fence is pinned here.
     const src = code('src/features/careerfinder/store.ts');
     const hyd = between(src, 'export function hydrateCareerFinder', 'export const getCareerFinder');
-    assert.match(hyd, /const g = generation;/);
-    assert.match(hyd, /if \(g === generation && !wrote && raw\) state = clean/);
-    assert.match(hyd, /if \(g !== generation\) return;\s*hydrated = true;/);
+    assert.match(hyd, /return store\.hydrate\(\);/);
     const reset = between(src, 'export function resetLocal', '\n}');
-    assert.match(reset, /generation \+= 1;/);
+    assert.match(reset, /store\.reset\(\);/);
+    const safe = code('src/features/storage/localStore.ts');
+    const safeHyd = between(safe, 'function hydrate(): Promise<void> {', '\n  function mutate(');
+    assert.match(safeHyd, /const gen = generation;/);
+    assert.match(safeHyd, /if \(gen !== generation\) return;\s*let loaded: T;/);
+    assert.match(between(safe, 'function reset(): void {', '\n  }'), /generation\+\+;/);
   });
 });

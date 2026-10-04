@@ -53,7 +53,7 @@ import { useUpsellAllowed } from '../../features/commercial/useTier';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
-import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
+import { startHereAfter, useDefaultHomeGs, useHomeBundles, useHomeGs, useHomeOrder } from '../../features/home/homeCardsStore';
 import { prefetchCardArt } from '../../features/home/cardArtPrefetch';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
@@ -62,7 +62,6 @@ import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { AboutHomeSheet } from '../about/AboutHomeSheet';
-import { isFirstAppOpen } from '../../features/startHere/firstOpen';
 import { StudyAreaExplore } from './StudyAreaExplore';
 import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
@@ -1314,20 +1313,6 @@ export function CourseSelectionScreen() {
   const sidePad = Math.max(0, Math.round((windowW - cd.w) / 2));
   const navigation = useNavigation();
   const [cards, setCards] = useState<Card[] | null>(null);
-  // Is this the app's FIRST open on this device? (owner 2026-09-29: "The intro
-  // lab should be the default spot only for the first time the user opens the
-  // app" — every later open lands on Glossary as normal.) null until known, so
-  // the landing below waits for the answer instead of guessing.
-  const [firstOpen, setFirstOpen] = useState<boolean | null>(null);
-  useEffect(() => {
-    let alive = true;
-    void isFirstAppOpen().then((v) => {
-      if (alive) setFirstOpen(v);
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
   const [error, setError] = useState<string | null>(null);
   // The Study Area whose EXPLORE picker/popup is open (owner 2026-09-16).
   const [exploreArea, setExploreArea] = useState<string | null>(null);
@@ -1509,6 +1494,8 @@ export function CourseSelectionScreen() {
   // topics and/or cert/program bundles, the Home deck becomes Tools + Glossary
   // (locked) + those topic cards + bundle cards.
   const homeGs = useHomeGs();
+  // The same saved order WITH Start Here's slot (owner 2026-10-04).
+  const homeOrder = useHomeOrder();
   const homeBundleKeys = useHomeBundles();
   const defaultHomeGs = useDefaultHomeGs();
   const bundles = useBundles();
@@ -1538,16 +1525,25 @@ export function CourseSelectionScreen() {
     if (entitlement === 'academy' && (homeGs.length > 0 || homeBundleKeys.length > 0)) {
       // Pinned head cards survive the custom deck: Lab (far left, owner request
       // 2026-07-26) + Tools + Glossary, in deck order.
-      // Start Here rides with them (owner 2026-09-29: it is always free and
-      // always reachable from its own Home card).
       const fixed = cards.filter(
         (c) =>
           c.kind === 'lab' ||
           c.kind === 'tools' ||
           c.kind === 'calculators' ||
           c.kind === 'glossary' ||
-          c.kind === 'careerFinder' ||
-          c.kind === 'startHere',
+          c.kind === 'careerFinder',
+      );
+      // START HERE is on this deck too (always free, and its own Home card is
+      // the way in — owner 2026-09-29), but it is NOT pinned any more (owner
+      // 2026-10-04: "home is default, stays where user last left it after
+      // they move it"). Home Setup moves it like a topic row and its slot is
+      // saved in the Home order (HOME_START_HERE). Never placed → its default
+      // place, right after Career Finder; placed → right after the topic card
+      // the learner left it below.
+      const startHere = cards.filter((c) => c.kind === 'startHere');
+      const shAfter = startHereAfter(
+        homeOrder,
+        (gs) => COREQ_TOPIC_GS.includes(gs) || gs === LAB_PROXY_GS || CAROUSEL_HIDDEN_PREREQ_GS.includes(gs),
       );
       // gs3081 "Audio Fundamentals" is the LAB-PROXY topic: it exists only so
       // finishing every Audio Fundamentals lab can mark one achievement complete
@@ -1577,13 +1573,22 @@ export function CourseSelectionScreen() {
       // The showcase run (owner 2026-09-05) follows on the member deck as well:
       // it is advertising, and it belongs to the right of the member's own cards.
       const showcase = cards.filter((c) => c.kind === 'showcase');
-      return [...fixed, ...bundleCards, ...topicCards, ...showcase];
+      const anchor = shAfter == null ? -1 : topicCards.findIndex((c) => c.kind === 'homeTopic' && c.gs === shAfter);
+      if (anchor < 0) return [...fixed, ...startHere, ...bundleCards, ...topicCards, ...showcase];
+      return [
+        ...fixed,
+        ...bundleCards,
+        ...topicCards.slice(0, anchor + 1),
+        ...startHere,
+        ...topicCards.slice(anchor + 1),
+        ...showcase,
+      ];
     }
     // No Home-Setup cards placed → the default deck from load(). The legacy
     // per-card "my courses" star deck was removed (user request 2026-07-24);
     // Home Setup now owns course selection + default position.
     return cards;
-  }, [cards, entitlement, homeGs, homeBundleKeys, bundles, v3NameIndex]);
+  }, [cards, entitlement, homeGs, homeOrder, homeBundleKeys, bundles, v3NameIndex]);
   const dotFit = dotRowFit(displayDeck?.length ?? 0, windowW);
 
 
@@ -1603,21 +1608,20 @@ export function CourseSelectionScreen() {
     const deck = displayDeck;
     if (!deck || deck.length === 0) return;
     const findId = (id: string) => deck.findIndex((c) => c.id === id);
+    // EVERY open lands on Glossary, the first one included (owner 2026-10-04,
+    // replacing the 2026-09-29 "first open lands on Start Here"). Start Here
+    // sits in the Glossary card's right-hand peek. A member's own Home default
+    // / latest Home card still wins below.
     const glossaryIdx = Math.max(0, deck.findIndex((c) => c.kind === 'glossary'));
-    // THE FIRST APP OPEN LANDS ON START HERE (owner 2026-09-29); every later
-    // open lands on Glossary as normal. A member's own Home default / latest
-    // Home card still wins below.
-    const startHereIdx = deck.findIndex((c) => c.kind === 'startHere');
-    if (!sessionLanded && firstOpen === null) return; // wait for the answer
-    // ⛔ WAIT FOR `resolved` TOO (overnight hunt 2026-09-30). The deck is not
+    // ⛔ WAIT FOR `resolved` (overnight hunt 2026-09-30). The deck is not
     // mounted until the entitlement read lands (spinner below), so a landing
     // run before then scrolled a null list AND spent `sessionLanded` — the
-    // cold start then opened on the far-left Lab card instead of Glossary /
-    // Start Here, and a member's deck was measured before it was theirs.
+    // cold start then opened on the far-left Lab card instead of Glossary,
+    // and a member's deck was measured before it was theirs.
     if (!resolved) return;
     let target: number;
     if (!sessionLanded) {
-      target = firstOpen && startHereIdx >= 0 ? startHereIdx : glossaryIdx;
+      target = glossaryIdx;
       if (defaultHomeGs != null) {
         const i = findId(`home-${defaultHomeGs}`);
         if (i >= 0) target = i;
@@ -1638,7 +1642,7 @@ export function CourseSelectionScreen() {
     const t = setTimeout(() => listRef.current?.scrollToIndex({ index: target, animated: false }), 0);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards, defaultHomeGs, firstOpen, resolved]);
+  }, [cards, defaultHomeGs, resolved]);
 
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     const idx = viewableItems[0]?.index;

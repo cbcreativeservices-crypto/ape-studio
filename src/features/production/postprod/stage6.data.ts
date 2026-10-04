@@ -316,6 +316,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "automation_checked",
           label: "Automation checked for",
           kind: "multiChoice",
+          showWhen: { field: "automation_used", notEquals: ["none"] },
           help: "The specific faults that survive a mix and appear in the printed master.",
           options: [
             { value: "jumps", label: "Abrupt jumps" },
@@ -450,6 +451,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "recombination_difference",
           label: "If they do not match, what is different",
           kind: "longText",
+          showWhen: { field: "recombination_test", equals: ["close", "differs"] },
           help: "Level, missing shared effects, duplicated processing, missing automation, phase. Knowing which one it is takes minutes; guessing takes days.",
           allowNa: true
         },

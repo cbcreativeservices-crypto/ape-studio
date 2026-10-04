@@ -85,9 +85,16 @@ test('C1 — compressor ratio for a target output refuses impossible targets', (
   const ratio = f.compute({ thr: -20, inLvl: -8, targetOut: -17 }).find((o) => o.label.startsWith('REQUIRED RATIO'));
   assert.ok(ratio && 'value' in ratio);
   assert.equal(ratio.value, 4);
-  assert.throws(() => f.compute({ thr: -20, inLvl: -8, targetOut: -25 })); // below threshold: was −2.4:1
-  assert.throws(() => f.compute({ thr: -20, inLvl: -8, targetOut: -2 })); // louder than the input: was 0.67:1
-  assert.throws(() => f.compute({ thr: -20, inLvl: -30, targetOut: -25 })); // input never crosses threshold
+  // Calc accuracy audit 2026-10-04: no longer a bare throw ("check for zeros")
+  // but a REFUSAL in words — still no ratio printed (D53).
+  const refused = (v: Record<string, number>) => {
+    const o = f.compute(v);
+    assert.ok(o.length === 1 && 'text' in o[0] && (o[0] as { refusal?: true }).refusal === true, JSON.stringify(o));
+    assert.ok(!o.some((x) => 'value' in x));
+  };
+  refused({ thr: -20, inLvl: -8, targetOut: -25 }); // below threshold: was −2.4:1
+  refused({ thr: -20, inLvl: -8, targetOut: -2 }); // louder than the input: was 0.67:1
+  refused({ thr: -20, inLvl: -30, targetOut: -25 }); // input never crosses threshold
 });
 
 test('Z1 — a zero-ohm speaker is an error, not silently dropped', () => {

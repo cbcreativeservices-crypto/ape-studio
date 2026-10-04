@@ -45,8 +45,14 @@ export function registerActivityChecks(entries: Record<string, Criterion[]>): vo
   for (const [id, criteria] of Object.entries(entries)) ACTIVITY_CHECKS[id] = criteria;
 }
 
-function context(project: ProductionProject): ActivityContext {
-  const get = (s: string, f: string) => project.values[valueKey(s, f)];
+function context(project: ProductionProject, hidden: ReadonlySet<string>): ActivityContext {
+  // A field hidden by an earlier answer keeps its stored value but is never
+  // evaluated (2026-10-04): an exercise must not pass on an answer the learner
+  // can no longer see.
+  const get = (s: string, f: string) => {
+    const k = valueKey(s, f);
+    return hidden.has(k) ? undefined : project.values[k];
+  };
   return { project, get, answered: (s, f) => isAnswered(get(s, f)) };
 }
 
@@ -54,10 +60,16 @@ function context(project: ProductionProject): ActivityContext {
  * Evaluate an activity. An activity with no registered criteria returns
  * `passed: false` with nothing met, rather than passing by default — silence
  * must never look like success.
+ *
+ * `hidden`: the value keys `showWhen` hides for this project (`hiddenKeys`).
  */
-export function checkActivity(activityId: string, project: ProductionProject): ActivityResult {
+export function checkActivity(
+  activityId: string,
+  project: ProductionProject,
+  hidden: ReadonlySet<string> = new Set(),
+): ActivityResult {
   const criteria = ACTIVITY_CHECKS[activityId] ?? [];
-  const ctx = context(project);
+  const ctx = context(project, hidden);
   const met: Criterion[] = [];
   const unmet: Criterion[] = [];
   for (const c of criteria) (c.met(ctx) ? met : unmet).push(c);

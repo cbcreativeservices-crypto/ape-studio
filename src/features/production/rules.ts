@@ -23,7 +23,7 @@ import type {
 } from './types';
 import { isAnswered, valueKey } from './types';
 import type { ResolvedStage, RuleDef } from './schema';
-import { stageFields } from './schema';
+import { labHiddenKeys, stageFields } from './schema';
 import { parseQuantity } from '../../screens/lab/calc/calcUnits';
 
 /**
@@ -41,6 +41,8 @@ export type RuleContext = {
   answered(stageId: string, fieldId: string): boolean;
   /** Marked not-applicable, with a reason. */
   isNa(stageId: string, fieldId: string): boolean;
+  /** Hidden by an earlier answer (`showWhen`). `get` already reads it as empty. */
+  hidden(stageId: string, fieldId: string): boolean;
   /** Today, injectable so date rules are deterministic under test. */
   now: number;
 };
@@ -385,12 +387,26 @@ export function namesMoreThanOne(text: string): boolean {
 
 // ── evaluation ───────────────────────────────────────────────────────────────
 
+/**
+ * ── A HIDDEN FIELD IS NEVER EVALUATED (2026-10-04, design review #1) ────────
+ *
+ * `showWhen` hides a question an earlier answer made irrelevant, and the
+ * stored answer is KEPT so nothing is lost if it comes back. But a kept answer
+ * is not part of the plan the user is looking at: a rule reading it would
+ * raise (or clear) a finding about a question nobody can see, and the finding's
+ * fix would point at nothing. So the context masks every hidden key — `get`
+ * reads it as unanswered, `isNa` as not skipped — and a plain "watched field is
+ * empty" rule skips a hidden watch instead of counting it as missing.
+ */
 function buildContext(
   project: ProductionProject,
   stage: ResolvedStage,
   now: number,
+  hidden: ReadonlySet<string>,
 ): RuleContext {
-  const values = project.values;
+  const raw = project.values;
+  const values: ValueMap = {};
+  for (const [k, v] of Object.entries(raw)) if (!hidden.has(k)) values[k] = v;
   const get = (s: string, f: string) => values[valueKey(s, f)];
   return {
     project,
@@ -399,7 +415,11 @@ function buildContext(
     values,
     get,
     answered: (s, f) => isAnswered(get(s, f)),
-    isNa: (s, f) => typeof project.na[valueKey(s, f)] === 'string' && project.na[valueKey(s, f)].trim() !== '',
+    isNa: (s, f) => {
+      const k = valueKey(s, f);
+      return !hidden.has(k) && typeof project.na[k] === 'string' && project.na[k].trim() !== '';
+    },
+    hidden: (s, f) => hidden.has(valueKey(s, f)),
     now,
   };
 }
@@ -421,18 +441,26 @@ function shouldFire(rule: RuleDef, ctx: RuleContext): boolean {
   return rule.watches.some((w) => {
     const [stageId, fieldId] = w.split('.');
     if (!stageId || !fieldId) return false;
+    // A question the user was never asked is never "missing".
+    if (ctx.hidden(stageId, fieldId)) return false;
     if (ctx.isNa(stageId, fieldId)) return false;
     return !ctx.answered(stageId, fieldId);
   });
 }
 
-/** Findings for one stage. */
+/**
+ * Findings for one stage.
+ *
+ * `hidden` is the set of value keys `showWhen` hid — the WHOLE LAB's when the
+ * caller has it (a rule can read another stage), otherwise this stage's own.
+ */
 export function evaluateStage(
   stage: ResolvedStage,
   project: ProductionProject,
   now: number = Date.now(),
+  hidden: ReadonlySet<string> = new Set(stage.hidden ?? []),
 ): Finding[] {
-  const ctx = buildContext(project, stage, now);
+  const ctx = buildContext(project, stage, now, hidden);
   const out: Finding[] = [];
   for (const rule of stage.rules) {
     if (!shouldFire(rule, ctx)) continue;
@@ -441,7 +469,7 @@ export function evaluateStage(
       ruleId: rule.ruleId,
       stageId: stage.stageId,
       fieldIds: rule.watches
-        .filter((w) => w.startsWith(`${stage.stageId}.`))
+        .filter((w) => w.startsWith(`${stage.stageId}.`) && !hidden.has(w))
         .map((w) => w.slice(stage.stageId.length + 1)),
       severity: rule.severity,
       kind: rule.kind,
@@ -461,7 +489,8 @@ export function evaluateAll(
   project: ProductionProject,
   now: number = Date.now(),
 ): Finding[] {
-  return stages.flatMap((s) => evaluateStage(s, project, now));
+  const hidden = labHiddenKeys(stages);
+  return stages.flatMap((s) => evaluateStage(s, project, now, hidden));
 }
 
 /**

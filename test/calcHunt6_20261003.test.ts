@@ -115,7 +115,7 @@ describe('H6-3 — the drop-limited gauge is a gauge that exists', () => {
     assert.ok(row);
     assert.equal(row.value, undefined, `no numeric gauge (was ${row.value})`);
     assert.match(row.text ?? '', /Thicker than 4\/0 AWG/);
-    assert.match(row.text ?? '', /239\.4 mm²/);
+    assert.match(row.text ?? '', /239\.5 mm²/); // ρ = 1/58 µΩ·m exactly since 2026-10-04 (was 239.4)
     const steps = fn('vdrop', 'gaugeFor').steps!({ len: 100, current: 100, vsrc: 48, pct: 3 }).join(' ');
     assert.doesNotMatch(steps, /-\d+ AWG or thicker/);
   });

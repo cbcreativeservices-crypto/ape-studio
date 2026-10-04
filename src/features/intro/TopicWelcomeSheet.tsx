@@ -32,7 +32,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
-import { Modal } from '../../components/DimModal';
+import { Modal, rootModalHoldMs } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 
 export const WELCOME_SEEN_PREFIX = 'ape:welcome:seen:';
@@ -87,9 +87,29 @@ async function fetchWelcome(topicId: string): Promise<Copy | null> {
   }
 }
 
-export function TopicWelcomeSheet({ topicId, enabled = true }: { topicId: string; enabled?: boolean }) {
+export function TopicWelcomeSheet({
+  topicId,
+  enabled = true,
+  hold = false,
+  onOwedChange,
+}: {
+  topicId: string;
+  enabled?: boolean;
+  /** The host has another popup up or still to come (Flashcards: its own
+   *  first-visit intro). DEFERS, never marks seen — the ScreenIntroOverlay
+   *  `hold` rule (2026-10-04). */
+  hold?: boolean;
+  /** Told whether the welcome is still OWED on this visit: its lookup has not
+   *  answered, or it is due and not dismissed (even while held, suppressed or
+   *  unfocused). The host's own timed popups wait on it (Flashcards' 45 s
+   *  tutorial, 2026-10-04): a second root Modal beside this one is refused
+   *  on iOS. */
+  onOwedChange?: (owed: boolean) => void;
+}) {
   const [copy, setCopy] = useState<Copy | null>(null);
   const [visible, setVisible] = useState(false);
+  /** The lookup has answered, whichever way (or none was needed). */
+  const [looked, setLooked] = useState(false);
   const focused = useIsFocused();
   const suppressed = useOverlaysSuppressed();
   // One lookup per mount, whatever re-renders happen around it.
@@ -121,11 +141,21 @@ export function TopicWelcomeSheet({ topicId, enabled = true }: { topicId: string
       if (!alive || !found) return;
       setCopy(found);
       setVisible(true);
-    })();
+    })()
+      // Answered on EVERY exit — shown, seen, none, failed, or abandoned —
+      // so a host waiting on `onOwedChange` is never left waiting.
+      .catch(() => {})
+      .finally(() => setLooked(true));
     return () => {
       alive = false;
     };
   }, [enabled, topicId]);
+  const owed = enabled && !!topicId && (!looked || visible);
+  const onOwedRef = useRef(onOwedChange);
+  onOwedRef.current = onOwedChange;
+  useEffect(() => {
+    onOwedRef.current?.(owed);
+  }, [owed]);
 
   const dismiss = useCallback(() => {
     setVisible(false);
@@ -136,7 +166,28 @@ export function TopicWelcomeSheet({ topicId, enabled = true }: { topicId: string
     if (uid) void AsyncStorage.setItem(seenKey(uid, topicId), new Date().toISOString()).catch(() => {});
   }, [topicId]);
 
-  const show = visible && !!copy && focused && !suppressed;
+  /**
+   * ⛔ NEVER BESIDE, NEVER DURING A DISMISS (2026-10-04; catalog K10). On the
+   * first-ever Flashcards visit the `flashcards` intro and this welcome were
+   * both due: iOS refuses the second root Modal, nothing showed, and since
+   * the seen flag is written only on dismiss the welcome came back on a later
+   * visit instead. `hold` waits for the host's other popup; once it lets go,
+   * the closing Modal's fade is waited out (rootModalHoldMs — the
+   * GlossaryLockView / AppDialog rule) before this one presents. Once up, it
+   * stays.
+   */
+  const wanted = visible && !!copy && focused && !suppressed;
+  const presentedRef = useRef(false);
+  if (!wanted) presentedRef.current = false;
+  const holdMs = wanted && !hold && !presentedRef.current ? rootModalHoldMs() : 0;
+  const [, setHoldTick] = useState(0);
+  useEffect(() => {
+    if (holdMs <= 0) return undefined;
+    const t = setTimeout(() => setHoldTick((n) => n + 1), holdMs);
+    return () => clearTimeout(t);
+  }, [holdMs]);
+  const show = wanted && (presentedRef.current || (!hold && holdMs <= 0));
+  if (show) presentedRef.current = true;
   if (!show || !copy) return null;
 
   return (

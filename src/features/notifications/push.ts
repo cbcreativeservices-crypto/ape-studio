@@ -9,6 +9,13 @@ import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { sharedAppUserId } from '../account/appUserIdMemo';
 import { payloadFromUnknown, type WeeklyConceptPayload } from './weeklyConcept';
+// Required on first use (a notification arriving or tapped), not imported:
+// push.ts is in the app-start graph and that graph is budgeted
+// (test/perfStartTrim_20261004). Pure module — no native side.
+const rules = (): typeof import('./communityRules') =>
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('./communityRules') as typeof import('./communityRules');
+import { getLowLight, isLowLightUnreadable } from '../settings/lowLight';
 
 // Type-only import — erased at runtime, never touches the native module.
 import type * as NotificationsTypes from 'expo-notifications';
@@ -46,12 +53,16 @@ export function getNotifications(): NotificationsModule | null {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const m = require('expo-notifications') as NotificationsModule;
     m.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-        shouldShowBanner: true,
-        shouldShowList: true,
-      }),
+      // A member alert (message / contact request) arriving while the app is
+      // open is held out of the banner and silent in Low-Light Production
+      // Mode — or while that mode's stored value is unreadable (owner rule:
+      // nothing auto-appears). It still lands in the list. Every other kind
+      // is presented exactly as before (communityRules.foregroundPresentation).
+      handleNotification: async (n) =>
+        rules().foregroundPresentation(
+          rules().isCommunityData(n?.request?.content?.data),
+          getLowLight() || isLowLightUnreadable(),
+        ),
     });
     notifMod = m;
   } catch {
@@ -253,14 +264,63 @@ function localDestFromResponse(
   return typeof data.dest === 'string' ? data.dest : '';
 }
 
+/** Cold-start park for a tapped MEMBER alert — the same contract as the two
+ *  above: the tap can resolve before NavigationContainer mounts, so the path
+ *  waits here and App's onReady drains it. */
+let pendingCommunityPath: string | null = null;
+
+export function queueCommunityPath(path: string): void {
+  pendingCommunityPath = path;
+}
+
+export function flushCommunityPathNav(go: (path: string) => void): void {
+  if (!pendingCommunityPath) return;
+  const next = pendingCommunityPath;
+  pendingCommunityPath = null;
+  go(next);
+}
+
+/**
+ * This device's Expo push address, or null (no native module, no permission,
+ * no project id, or the push service did not answer). Asks NOTHING — the
+ * caller has already been through the permission prompt.
+ */
+export async function getExpoPushTokenOnly(): Promise<string | null> {
+  try {
+    const Notifications = getNotifications();
+    if (!Notifications) return null;
+    const perm = await Notifications.getPermissionsAsync();
+    if (perm.status !== 'granted') return null;
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+    if (!projectId) return null;
+    return (await Notifications.getExpoPushTokenAsync({ projectId })).data ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function attachWeeklyConceptPush(
   nav: NavFn,
   onLocal?: (dest: string) => void,
+  community?: {
+    /** A member alert was TAPPED: open this app path. */
+    open: (path: string) => void;
+    /** A member alert ARRIVED while the app is open: re-read the counts. */
+    received?: () => void;
+  },
 ): () => void {
   const Notifications = getNotifications();
   if (!Notifications) return () => {};
 
   const route = (response: NotificationsTypes.NotificationResponse | null): boolean => {
+    // A member alert first: its payload has no `concept`, but checking it
+    // before the weekly parser keeps the two contracts from ever overlapping.
+    const data = response?.notification.request.content.data;
+    if (rules().isCommunityData(data)) {
+      const tap = rules().communityTapFrom(data);
+      if (tap && community) community.open(rules().communityPath(tap));
+      return true;
+    }
     const payload = payloadFromResponse(response);
     if (payload) {
       nav(payload);
@@ -277,6 +337,11 @@ export function attachWeeklyConceptPush(
   const sub = Notifications.addNotificationResponseReceivedListener((response) => {
     route(response);
   });
+  const got = community?.received
+    ? Notifications.addNotificationReceivedListener((n) => {
+        if (rules().isCommunityData(n?.request?.content?.data)) community.received?.();
+      })
+    : null;
 
   // Fail-soft like the rest of this module: a rejection here must not become
   // an unhandled rejection at boot.
@@ -290,5 +355,8 @@ export function attachWeeklyConceptPush(
       /* no cold-start payload available — nothing to route */
     });
 
-  return () => sub.remove();
+  return () => {
+    sub.remove();
+    got?.remove();
+  };
 }

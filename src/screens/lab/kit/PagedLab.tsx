@@ -45,6 +45,7 @@ import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { forgetHeldPaged, heldPaged, holdPagedProgress, isPagedProgressUnreadable, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
 import { useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { ProgressUnreadableNote } from './ProgressUnreadableNote';
+import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 
@@ -443,6 +444,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} />
         <LabNavBar nav={nav} />
         {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
+        {/* Before a guest begins (owner 2026-10-04): progress here is not
+            saved or credited unless they sign in this session. Once per lab
+            per session; inline in Low-Light; nothing for anyone else. */}
+        {ending ? null : <GuestStartReminder activity={`paged:${labId}`} kind={creditLabKey ? 'credit' : 'progress'} style={styles.unreadable} />}
         {ending ? (
           <LabEndScreen
             labTitle={title}

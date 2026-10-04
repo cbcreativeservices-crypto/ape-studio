@@ -15,8 +15,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { resolveStage } from '../../../features/production/schema';
+import { labHiddenKeys, resolveLab, resolveStage } from '../../../features/production/schema';
 import type { NoticeDef } from '../../../features/production/schema';
+import { StageSignalBadge } from './ReadinessMeter';
 import { readStage } from '../../../features/production/readiness';
 import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject, FieldValue } from '../../../features/production/types';
@@ -74,13 +75,29 @@ export function ProductionStageScreen() {
   }, [lab, projectId]);
 
   const authored = authoredStage(lab, stageId);
-  const stage = useMemo(
+  // The WHOLE lab resolves together (2026-10-04): a condition can name a field
+  // in another stage ("only if mixing is in scope"), and a rule here can read
+  // another stage — neither may see an answer the user was not asked for.
+  const { stage, hidden } = useMemo(() => {
+    if (!authored || !project) return { stage: null, hidden: new Set<string>() };
+    const all = labDef(lab)?.stages ?? [authored];
     // `project.values` in the deps: answering the controlling field must
     // reveal or hide its dependants immediately, not on the next mount.
-    () => (authored && project ? resolveStage(authored, project.pathway, project.values) : null),
-    [authored, project],
-  );
-  const report = useMemo(() => (stage && project ? readStage(stage, project) : null), [stage, project]);
+    const resolved = resolveLab(all, project.pathway, project.values);
+    return {
+      stage: resolved.find((s) => s.stageId === authored.stageId) ?? resolveStage(authored, project.pathway, project.values),
+      hidden: labHiddenKeys(resolved),
+    };
+  }, [authored, project, lab]);
+  // A report that cannot be worked out is UNREAD, not zero (K2).
+  const report = useMemo(() => {
+    if (!stage || !project) return null;
+    try {
+      return readStage(stage, project, Date.now(), hidden);
+    } catch {
+      return null;
+    }
+  }, [stage, project, hidden]);
   /** So the summary at the top can jump to the list at the bottom. */
   const scrollRef = useRef<ScrollView>(null);
   const blockerCount = report ? report.findings.filter((f) => f.severity === 'blocker').length : 0;
@@ -188,6 +205,9 @@ export function ProductionStageScreen() {
             {stage?.title ?? 'Stage'}
           </Text>
         </View>
+        {/* The stage's own number and state (2026-10-04, design review #4);
+            "—" until the project is read, and if it cannot be. */}
+        <StageSignalBadge stage={report} />
         <AccuracyNote variant="practice" compact />
       </View>
 
@@ -208,7 +228,9 @@ export function ProductionStageScreen() {
         <View style={styles.empty}>
           <Text style={styles.emptyText}>
             {project
-              ? 'This stage is not authored yet.'
+              ? authored
+                ? 'This stage could not be worked out from the saved answers just now. Your answers are unchanged — go back and open it again.'
+                : 'This stage is not available.'
               : loadState === 'unreadable'
                 ? 'This project could not be read on this device just now. Go back and open it again.'
               : loadState === 'missing'
@@ -237,7 +259,7 @@ export function ProductionStageScreen() {
           <View style={styles.progressRow}>
             <View style={[styles.dot, { backgroundColor: STATE_TINT[report.state] }]} />
             <Text style={styles.progressText}>
-              {report.answeredRequired} of {report.totalRequired} required decisions made
+              {`${report.answeredRequired} of ${report.totalRequired} required decisions made · ${report.answeredAll} of ${report.totalAll} questions answered`}
             </Text>
           </View>
 
@@ -284,6 +306,15 @@ export function ProductionStageScreen() {
               {section.notices.map((n, i) => (
                 <Notice key={`${section.sectionId}-${i}`} notice={n} />
               ))}
+              {/* Said, not silent (2026-10-04): a question that vanished
+                  must not look like a question that was lost. */}
+              {section.hiddenCount ? (
+                <Text style={styles.hiddenNote}>
+                  {section.hiddenCount === 1
+                    ? 'One question here is hidden because an earlier answer means it does not apply. If that answer changes, it comes back with anything you wrote in it.'
+                    : `${section.hiddenCount} questions here are hidden because an earlier answer means they do not apply. If that answer changes, they come back with anything you wrote in them.`}
+                </Text>
+              ) : null}
               {section.fields.map((field) => {
                 const key = valueKey(stage.stageId, field.fieldId);
                 const fieldState = report.fields.find((f) => f.fieldId === field.fieldId)?.state ?? 'missing';
@@ -319,6 +350,17 @@ export function ProductionStageScreen() {
               ))}
             </View>
           ) : null}
+
+          {/* Never a dead end (2026-10-04): the packet screen carries the
+              whole plan's WHAT'S LEFT, stage by stage, with a way into each. */}
+          <Pressable
+            style={styles.leftLink}
+            onPress={() => navigation.navigate('ProductionPacket', { lab, projectId: project.id })}
+            accessibilityRole="button"
+            accessibilityLabel={`See what is left in the whole plan, and the ${labDef(lab)?.packetName ?? 'packet'}`}
+          >
+            <Text style={styles.leftLinkText}>{`WHAT'S LEFT IN THE WHOLE PLAN · ${(labDef(lab)?.packetName ?? 'packet').toUpperCase()} ›`}</Text>
+          </Pressable>
         </ScrollView>
       )}
     </KeyboardAvoidingView>
@@ -423,6 +465,18 @@ const styles = StyleSheet.create({
   findingDetail: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
   findingHint: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18, color: colors.textSecondary, marginTop: 5 },
 
+  hiddenNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, fontStyle: 'italic', marginBottom: 10 },
+  leftLink: {
+    marginTop: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255,198,77,.45)',
+    borderRadius: 9,
+    minHeight: 48,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+  },
+  leftLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.8, color: colors.amber },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 30 },
   emptyText: { fontFamily: fonts.barlowRegular, fontSize: 14, color: colors.textSub, textAlign: 'center' },
 });

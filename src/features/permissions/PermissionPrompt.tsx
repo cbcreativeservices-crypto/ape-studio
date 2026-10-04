@@ -57,6 +57,16 @@ const COPY: Record<CapabilityKey, PermissionCopy> = {
       'on your device and never uploaded automatically.',
     allowLabel: 'OPEN CAMERA',
   },
+  // Member-to-member alerts (owner 2026-10-04). Asked only when the person
+  // switches "Alert me on this phone" on in Settings — never at launch.
+  notifications: {
+    title: 'Get alerts for messages and requests?',
+    body:
+      'We’ll let you know when another member messages you or asks to contact you. ' +
+      'An alert shows their name and “sent you a message” — not what they wrote, unless ' +
+      'you choose that in Settings. Your phone will ask you next.',
+    allowLabel: 'ALLOW ALERTS',
+  },
 };
 
 /** Result of a permission flow: 'granted' proceeds, anything else stops. */

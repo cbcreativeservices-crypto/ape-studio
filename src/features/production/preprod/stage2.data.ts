@@ -552,6 +552,7 @@ export const STAGE2_DELIVER: StageDef = {
           fieldId: "timecode_notes",
           label: "Sync details",
           kind: "longText",
+          showWhen: { field: "timecode_required", notEquals: ["no"] },
           help: "What the audio must sync to, who owns the frame rate and sample rate on the picture side, and how sync is confirmed before the day.",
           required: false
         }

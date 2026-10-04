@@ -14,30 +14,42 @@ import { colors, fonts } from '../../../theme/tokens';
 import { READINESS_LABEL, VERDICT_LABEL } from '../../../features/production/types';
 import type { Finding, LabKind, ReadinessState } from '../../../features/production/types';
 import type { ReadinessReport, StageReadiness } from '../../../features/production/readiness';
+import { stageSignal } from '../../../features/production/readiness';
+import { fitValue } from '../../../theme/legibility';
 import { STATE_TINT } from './FieldRow';
 
 export function ReadinessMeter({
   report,
   lab,
   onAcceptBlocker,
+  unreadable,
 }: {
   report: ReadinessReport;
   lab: LabKind;
   /** Tapping a blocker offers to record an accepted condition. */
   onAcceptBlocker?: (f: Finding) => void;
+  /**
+   * The saved projects could not be re-read (K2, 2026-10-04): the report is
+   * from the copy on screen, which may be out of date, so the NUMBER is not
+   * stated — "—", never a figure that may no longer be true.
+   */
+  unreadable?: boolean;
 }) {
-  const verdictTint =
-    report.verdict === 'ready' ? colors.green : report.verdict === 'ready_with_conditions' ? colors.amber : colors.red;
+  const verdictTint = unreadable
+    ? colors.textMuted
+    : report.verdict === 'ready' ? colors.green : report.verdict === 'ready_with_conditions' ? colors.amber : colors.red;
 
   return (
     <View style={styles.wrap}>
       <View style={styles.topRow}>
         <View style={{ flex: 1 }}>
           <Text style={styles.kicker}>PRODUCTION READINESS</Text>
-          <Text style={[styles.verdict, { color: verdictTint }]}>{VERDICT_LABEL[lab][report.verdict]}</Text>
+          <Text style={[styles.verdict, { color: verdictTint }]}>
+            {unreadable ? 'Could not be re-read just now' : VERDICT_LABEL[lab][report.verdict]}
+          </Text>
         </View>
         <View style={styles.scoreBox}>
-          <Text style={[styles.score, { color: verdictTint }]}>{report.score}</Text>
+          <Text style={[styles.score, { color: verdictTint }]}>{unreadable ? '—' : report.score}</Text>
           <Text style={styles.scoreOf}>/ 100</Text>
         </View>
       </View>
@@ -57,14 +69,16 @@ export function ReadinessMeter({
           style={[
             styles.barFill,
             {
-              width: `${report.totalRequired === 0 ? 0 : (report.answeredRequired / report.totalRequired) * 100}%`,
+              width: `${unreadable || report.totalRequired === 0 ? 0 : (report.answeredRequired / report.totalRequired) * 100}%`,
               backgroundColor: report.verdict === 'ready' ? verdictTint : colors.amber,
             },
           ]}
         />
       </View>
       <Text style={styles.counts}>
-        {report.answeredRequired} of {report.totalRequired} required decisions made
+        {unreadable
+          ? 'Your saved answers could not be read just now, so no figure is shown.'
+          : `${report.answeredRequired} of ${report.totalRequired} required decisions made`}
       </Text>
 
       {report.blockers.length > 0 ? (
@@ -110,35 +124,106 @@ export function ReadinessMeter({
   );
 }
 
-/** One row per stage, for the lab home. */
-export function StageProgressRow({ stage }: { stage: StageReadiness }) {
-  const tint = STATE_TINT[stage.state as ReadinessState];
+/**
+ * The words a screen reader hears for one stage's signal — the number, the
+ * state and the counts, so nothing is carried by colour alone.
+ */
+export function stageSignalLabel(stage: StageReadiness | null, unreadable?: boolean): string {
+  const sig = stageSignal(unreadable ? null : stage);
+  if (sig.pct === null || !stage) return 'progress could not be read just now';
+  return `${sig.pct} percent, ${READINESS_LABEL[stage.state]}, ${stage.answeredRequired} of ${stage.totalRequired} required decisions, ${stage.answeredAll} of ${stage.totalAll} questions answered`;
+}
+
+/**
+ * One row per stage, for the lab home.
+ *
+ * ── A NUMBER, A STATE AND THE COUNTS (2026-10-04, design review #4) ──────────
+ * The number is `stageSignal` — the project score's formula on one stage, held
+ * under 100 until the stage is complete, so an open blocker can never read as
+ * done. Its colour is the state's `STATE_TINT`. Under the title: the state
+ * word and BOTH counts, because a stage measured on its required fields can be
+ * "Complete" with optional questions still blank, and those print "Not
+ * decided" in the packet — green must never mean "nothing left here".
+ *
+ * `stage` null or `unreadable`: the project could not be (re-)read, so the row
+ * shows "—" and says so. Never 0%: that would tell the learner the work is gone.
+ */
+export function StageProgressRow({
+  stage,
+  num,
+  title,
+  unreadable,
+}: {
+  stage: StageReadiness | null;
+  num: number;
+  title: string;
+  unreadable?: boolean;
+}) {
+  const sig = stageSignal(unreadable ? null : stage);
+  const tint = sig.state ? STATE_TINT[sig.state] : colors.textMuted;
   return (
     <View style={styles.stageRow}>
       <View style={[styles.stageDot, { backgroundColor: tint }]} />
-      <Text style={styles.stageNum}>{stage.num}</Text>
-      <Text style={styles.stageTitle} numberOfLines={1}>
-        {stage.title}
+      <Text style={styles.stageNum}>{num}</Text>
+      <View style={styles.stageMid}>
+        <Text style={styles.stageTitle} numberOfLines={1}>
+          {title}
+        </Text>
+        <Text style={styles.stageSub}>
+          {sig.state && stage ? (
+            <>
+              <Text style={{ color: tint }}>{READINESS_LABEL[sig.state]}</Text>
+              {` · ${stage.answeredRequired} of ${stage.totalRequired} required · ${stage.answeredAll} of ${stage.totalAll} answered`}
+            </>
+          ) : (
+            'Could not be read just now'
+          )}
+        </Text>
+      </View>
+      <Text style={[styles.stagePct, { color: tint }]} {...fitValue(17)}>
+        {sig.text}
       </Text>
-      {/* ── "COMPLETE" WAS OVERSTATING (2026-09-18, design review #4) ─────────
-          A stage is measured on its REQUIRED fields only. Pre-production stage
-          5 has 34 fields and about 7 required, so seven answers turned a
-          34-field stage green while 27 stayed blank — and those 27 print
-          "Not decided" in the packet the user hands a client.
-
-          The state word is still the state word; it now carries the real count
-          beside it, so green never means "nothing left here" when 27 things
-          are left. */}
-      <Text style={styles.stageCounts}>
-        {stage.answeredAll}/{stage.totalAll}
-      </Text>
-      <Text style={[styles.stageState, { color: tint }]}>{READINESS_LABEL[stage.state]}</Text>
     </View>
   );
 }
 
+/**
+ * The same signal for the stage screen's header: the number over the state
+ * word. `stage` null = not read (yet, or at all) → "—".
+ */
+export function StageSignalBadge({ stage }: { stage: StageReadiness | null }) {
+  const sig = stageSignal(stage);
+  const tint = sig.state ? STATE_TINT[sig.state] : colors.textMuted;
+  return (
+    <View
+      style={styles.badge}
+      accessible
+      accessibilityLabel={`This stage: ${stageSignalLabel(stage)}`}
+    >
+      <Text style={[styles.badgePct, { color: tint }]} {...fitValue(18)}>
+        {sig.text}
+      </Text>
+      {sig.state ? <Text style={[styles.badgeWord, { color: tint }]}>{BADGE_WORD[sig.state]}</Text> : null}
+    </View>
+  );
+}
+
+/** The header has room for one short word; the full state is in its label. */
+const BADGE_WORD: Record<ReadinessState, string> = {
+  complete: 'COMPLETE',
+  attention: 'UNDER WAY',
+  missing: 'NOT STARTED',
+  conflict: 'BLOCKED',
+  na: 'N/A',
+};
+
 const styles = StyleSheet.create({
-  stageCounts: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.textSub, marginRight: 8 },
+  stageMid: { flex: 1, gap: 2 },
+  stageSub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSub },
+  stagePct: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, minWidth: 46, textAlign: 'right' },
+  badge: { alignItems: 'flex-end', minWidth: 58 },
+  badgePct: { fontFamily: fonts.oswaldSemiBold, fontSize: 18 },
+  badgeWord: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.6 },
   wrap: {
     borderWidth: 1,
     borderColor: colors.hairline,
@@ -188,9 +273,8 @@ const styles = StyleSheet.create({
   condHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, color: colors.amber },
   condItem: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSecondary },
 
-  stageRow: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 9 },
+  stageRow: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 9, minHeight: 48 },
   stageDot: { width: 8, height: 8, borderRadius: 4 },
   stageNum: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textMuted, width: 15 },
   stageTitle: { flex: 1, fontFamily: fonts.barlowMedium, fontSize: 14, color: colors.textPrimary },
-  stageState: { fontFamily: fonts.barlowMedium, fontSize: 12 },
 });

@@ -14,6 +14,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { LabEndScreen } from '../kit/LabEndScreen';
+import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { ScrollLockProvider } from '../LabShell';
 import { LabPhotoLightbox } from '../labPhoto';
@@ -159,6 +160,9 @@ export function WaveModuleScreen() {
       {/* The shared header: ‹ LEAVES THE LAB (kit/LabNavBar). */}
       <LabHeader title={meta.title.toUpperCase()} subtitle="Wave Physics Laboratory" right={<AccuracyNote compact />} />
       <LabNavBar nav={nav} />
+      {/* A module opened straight (a deep link) still reminds a guest first;
+          from the hub it was already shown — one id for the whole lab. */}
+      {endScreen ? null : <GuestStartReminder activity="lab:af_wave_physics" style={styles.guestNote} />}
       {endScreen ?? (
         <ScrollLockProvider value={setScrollLocked}>
         {RACK_MODULES.has(meta.id) ? (
@@ -205,6 +209,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   scroll: { padding: 16, paddingBottom: 30, gap: 12 },
   rackFill: { flex: 1 },
+  guestNote: { marginHorizontal: 16 },
   // Bottom guided-lesson row — mirrors LabShell v2's lessonRow styling.
   lessonRow: {
     borderRadius: 9,

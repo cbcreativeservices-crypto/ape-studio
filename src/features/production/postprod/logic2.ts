@@ -119,7 +119,11 @@ registerRuleLogic({
     ['heavy', 'quantised'].includes(str(ctx.get('build', 'correction_amount'))) &&
     many(ctx.get('build', 'correction_guards')).length === 0,
 
+  // Not while the key-and-scale question is hidden (correction ruled out):
+  // a finding must never ask for an answer the learner cannot see. The
+  // "not agreed" finding is the one that applies then (review 2026-10-04).
   'build-correction-no-scale': (ctx) =>
+    !ctx.hidden('build', 'correction_target') &&
     many(ctx.get('build', 'correction_scope')).includes('pitch') &&
     str(ctx.get('build', 'correction_target')) === '',
 

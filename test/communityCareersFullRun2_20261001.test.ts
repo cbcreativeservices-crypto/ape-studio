@@ -60,26 +60,29 @@ describe('E1: COMMON ENTRY POINTS never lists a PE-licence or graduate-degree ti
 describe('S1: Career Finder store — no write lands on an unread record', () => {
   const src = read('src/features/careerfinder/store.ts');
 
+  // On the house store since 2026-10-04 (guestCareer): every action is a
+  // pure change of the HYDRATED record through store.mutate — queued until
+  // the read lands, applied on top of it, dropped by an account reset — and
+  // the record is never written while it could not be read. Behaviour is
+  // proven in test/guestCareer_20261004 and test/localStore.
   for (const fn of ['answerQuestion', 'setQuestionIndex', 'completeCareerFinder', 'reopenCareerFinder', 'resetCareerFinder', 'toggleSavedFamily', 'setCareerFinderFeedback']) {
-    it(`${fn} waits for the hydrate (act), so it spreads the STORED record`, () => {
-      assert.match(body(src, fn), /\bact\(/);
+    it(`${fn} waits for the hydrate (store.mutate), so it spreads the STORED record`, () => {
+      assert.match(body(src, fn), /\bstore\.mutate\(/);
+      assert.doesNotMatch(body(src, fn), /AsyncStorage|\bstate\b/);
     });
   }
 
-  it('act runs only once hydrated, and drops an action an account switch overtook', () => {
-    // Wave 3 (2026-10-02, class P6): act answers the write result, and still
-    // runs at once when hydrated, else after the read and only if no account
-    // switch overtook it.
-    assert.match(src, /function act\(fn: \(\) => Promise<boolean> \| void\): Promise<boolean> \{[\s\S]*?if \(hydrated\) return result\(fn\(\)\);\s*const g = generation;\s*return hydrateCareerFinder\(\)\.then\(\(\) => \(g === generation && hydrated \? result\(fn\(\)\) : false\)\);/);
+  it('the store is the safe store, keyed on the one Career Finder record', () => {
+    assert.match(src, /const store = createLocalStore<FinderRecord>\(\{ key: KEY, empty: EMPTY, parse: clean \}\);/);
+    assert.match(src, /const KEY = 'ape:careerfinder:v1';/);
+    assert.doesNotMatch(src, /import AsyncStorage|AsyncStorage\./);
   });
 
-  it('a storage read that THREW blocks the write-back of the empty copy', () => {
-    assert.match(src, /if \(g === generation\) readFailed = true;/);
-    assert.match(body(src, 'resetLocal'), /readFailed = false;/);
-    const persist = src.slice(src.indexOf('function persist('), src.indexOf('function act('));
-    // Wave 3 (2026-10-02, class P6): persist answers whether the write landed,
-    // and still writes nothing over a record that could not be read.
-    assert.match(persist, /if \(readFailed\) return Promise\.resolve\(false\);\s*return AsyncStorage\.setItem/);
+  it('a storage read that THREW blocks the write-back of the empty copy, and the screens are told', () => {
+    const safe = read('src/features/storage/localStore.ts');
+    // The safe store's read failure: unhydrated, unreadable, nothing written.
+    assert.match(safe, /unreadable = true;\s*hydrating = null;/);
+    assert.match(src, /export const isCareerFinderSaving = \(\): boolean => !store\.isUnreadable\(\);/);
   });
 });
 

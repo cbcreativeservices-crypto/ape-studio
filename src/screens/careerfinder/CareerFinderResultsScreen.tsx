@@ -22,7 +22,7 @@ import { familyFieldOf, familyMetaOf, furtherEducationForTitle, isRegulatedTitle
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
-import { getCareerFinder, resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, useCareerFinderSaving, type FeedbackAnswer } from '../../features/careerfinder/store';
+import { answeredCount, getCareerFinder, resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, useCareerFinderFace, useCareerFinderSaving, type FeedbackAnswer } from '../../features/careerfinder/store';
 import { confirmReset } from './CareerFinderScreen';
 import { BetaPill, Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, RankBadge, SectionLabel, TextLink } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -34,6 +34,7 @@ export function CareerFinderResultsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const rec = useCareerFinder();
   const saving = useCareerFinderSaving();
+  const face = useCareerFinderFace();
   const result = useMemo(() => computeResult(rec.responses, familyFieldOf), [rec.responses]);
   const strongestCodes = result.strongest.map((d) => d.code);
   const [note, setNote] = useState(rec.feedback?.note ?? '');
@@ -161,6 +162,29 @@ export function CareerFinderResultsScreen() {
 
   const top2 = result.top.filter((t) => t.rank <= 2);
   const rest = result.top.filter((t) => t.rank > 2);
+
+  // THREE FACES (K2, 2026-10-04): results computed from an empty record are
+  // not results. Still reading → say so; could not be read → say so (never
+  // an empty profile dressed as "your results"); read and empty → nothing to
+  // show yet, and the way to the questions.
+  if (face !== 'ready' || answeredCount(rec) === 0) {
+    const words =
+      face === 'loading'
+        ? 'Loading your results…'
+        : face === 'unreadable' && answeredCount(rec) === 0
+          ? 'Your saved answers and results could not be read on this phone, so there is nothing to show yet. Go back and open the Career Finder again to retry.'
+          : face === 'ready'
+            ? 'No results yet — answer the questions first.'
+            : null;
+    if (words) {
+      return (
+        <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back" headerRight={<BetaPill />}>
+          <Body>{words}</Body>
+          {face === 'ready' ? <CtaButton label="START CAREER FINDER" tone="green" onPress={() => navigation.replace('CareerFinderQuiz')} /> : null}
+        </FinderShell>
+      );
+    }
+  }
 
   return (
     <FinderShell kicker="AUDIO CAREER FINDER · RESULTS" title="Your Audio Career Results" onBack={() => safeGoBack(navigation)} backLabel="Back" headerRight={<BetaPill />}>

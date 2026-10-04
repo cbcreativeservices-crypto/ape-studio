@@ -7,10 +7,41 @@
  * LABELS carry the unit; compute converts from base F/H.
  */
 import type { Workspace } from '../calcTypes';
-import { P_REF_PA, fmt, speedOfSoundAir } from '../calcUnits';
+import { P_REF_PA, RHO_AIR_20C, fmt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const TWO_PI = 2 * Math.PI;
+
+/** Crossover constants at full precision (calc accuracy audit, 2026-10-04):
+ *  first order 1/(2π) = 0.159155; second-order Butterworth (Q = 1/√2)
+ *  1/(2π·√2) = 0.112540 and √2/(2π) = 0.225079 (Dickason, Loudspeaker Design
+ *  Cookbook, ch. 8). They were the 5-figure 0.15915 / 0.11254 / 0.22508. */
+const K1 = 1 / TWO_PI;
+const K2C = 1 / (TWO_PI * Math.SQRT2);
+const K2L = Math.SQRT2 / TWO_PI;
+
+/** Air density for the piston formula: dry air at 20 °C (it was 1.2). */
+const RHO0 = RHO_AIR_20C;
+/**
+ * Where the half-space piston formula holds (calc accuracy audit, 2026-10-04):
+ * p = ρ₀·2π·f²·Sd·x/r is the FAR-FIELD, on-axis pressure of a rigid piston in
+ * an infinite baffle (Beranek & Mellow, Acoustics, ch. 13). Inside the
+ * Rayleigh distance Sd/λ (or closer than the cone's own radius) the on-axis
+ * pressure no longer falls as 1/r and the formula over-reads — refused.
+ */
+export function pistonNearField(sd: number, f: number, r: number, c: number): string | null {
+  const a = Math.sqrt(sd / Math.PI);
+  const rayleigh = (sd * f) / c;
+  const rMin = Math.max(a, rayleigh);
+  return r < rMin
+    ? `${fmt(r)} m is inside this cone’s near field — at ${fmt(f)} Hz the piston formula holds only from about ${fmt(rMin)} m out (the larger of the cone radius and the Rayleigh distance Sd ÷ λ). Closer in, the on-axis pressure does not fall as 1/r, so no figure is given. Enter a distance of at least ${fmt(rMin)} m.`
+    : null;
+}
+/** A port longer than ~λ/12 at fb starts behaving as a pipe, not a lumped mass
+ *  (its inertance rises as tan(kL)/kL — about 10% at λ/12), so the box tunes
+ *  LOWER than the Helmholtz figure. Said beside the answer, not hidden. */
+const portLongText = (leff: number, lambda: number) =>
+  `This port’s acoustic length (${fmt(leff * 100)} cm) is more than a twelfth of a wavelength at the tuning (λ/12 = ${fmt((lambda / 12) * 100)} cm). The lumped Helmholtz model assumes a short port; this one starts to act as a pipe, so the box will tune somewhat LOWER than the target — measure the built tuning.`;
 
 const CROSSOVER: Workspace = {
   id: 'crossover',
@@ -35,9 +66,10 @@ const CROSSOVER: Workspace = {
     'Treating a driver as a resistor — these idealized values are a starting point; real crossovers are tuned by measurement.',
   ],
   warnings:
-    'Idealized values assuming a purely resistive load R. First-order: C = 0.1592/(f·R), ' +
-    'L = 0.1592·R/f. Second-order Butterworth: C = 0.1125/(f·R), L = 0.2251·R/f. Real drivers are ' +
-    'reactive — measure and adjust.',
+    'Exact for a purely resistive load R. First-order: C = 1/(2π·f·R) = 0.1592/(f·R), ' +
+    'L = R/(2π·f) = 0.1592·R/f. Second-order Butterworth (Q = 0.707): C = 1/(2π·√2·f·R) = 0.1125/(f·R), ' +
+    'L = √2·R/(2π·f) = 0.2251·R/f. Real drivers are reactive, so the real crossover point moves — ' +
+    'flatten the impedance first (Zobel), then measure and adjust.',
   glossary: ['Crossover', 'Filter', 'Inductor', 'Capacitor', 'Cutoff frequency', 'Impedance'],
   fields: [
     { key: 'fx', name: 'CROSSOVER FREQUENCY', quantity: 'frequency', placeholder: '2500', help: 'The frequency where the two drivers hand off.', warn: { test: (x) => x <= 0, msg: 'Frequency must be greater than zero.' } },
@@ -57,8 +89,8 @@ const CROSSOVER: Workspace = {
       compute: (v) => {
         const f = n(v.fx);
         const R = n(v.z);
-        const C = 0.15915 / (f * R);
-        const L = (0.15915 * R) / f;
+        const C = K1 / (f * R);
+        const L = (K1 * R) / f;
         return [
           { label: 'CAPACITOR (µF) — high-pass', value: C * 1e6, quantity: 'number', chainable: false },
           { label: 'INDUCTOR (mH) — low-pass', value: L * 1e3, quantity: 'number', chainable: false },
@@ -68,8 +100,8 @@ const CROSSOVER: Workspace = {
         const f = n(v.fx);
         const R = n(v.z);
         return [
-          `C = 0.1592 ÷ (${fmt(f)} × ${fmt(R)}) = ${fmt((0.15915 / (f * R)) * 1e6)} µF (in series with the tweeter).`,
-          `L = 0.1592 × ${fmt(R)} ÷ ${fmt(f)} = ${fmt(((0.15915 * R) / f) * 1e3)} mH (in series with the woofer).`,
+          `C = 0.1592 ÷ (${fmt(f)} × ${fmt(R)}) = ${fmt((K1 / (f * R)) * 1e6)} µF (in series with the tweeter).`,
+          `L = 0.1592 × ${fmt(R)} ÷ ${fmt(f)} = ${fmt(((K1 * R) / f) * 1e3)} mH (in series with the woofer).`,
         ];
       },
     },
@@ -88,16 +120,16 @@ const CROSSOVER: Workspace = {
         const f = n(v.fx);
         const R = n(v.z);
         return [
-          { label: 'CAPACITOR (µF)', value: (0.11254 / (f * R)) * 1e6, quantity: 'number', chainable: false },
-          { label: 'INDUCTOR (mH)', value: ((0.22508 * R) / f) * 1e3, quantity: 'number', chainable: false },
+          { label: 'CAPACITOR (µF)', value: (K2C / (f * R)) * 1e6, quantity: 'number', chainable: false },
+          { label: 'INDUCTOR (mH)', value: ((K2L * R) / f) * 1e3, quantity: 'number', chainable: false },
         ];
       },
       steps: (v) => {
         const f = n(v.fx);
         const R = n(v.z);
         return [
-          `C = 0.1125 ÷ (${fmt(f)} × ${fmt(R)}) = ${fmt((0.11254 / (f * R)) * 1e6)} µF.`,
-          `L = 0.2251 × ${fmt(R)} ÷ ${fmt(f)} = ${fmt(((0.22508 * R) / f) * 1e3)} mH.`,
+          `C = 0.1125 ÷ (${fmt(f)} × ${fmt(R)}) = ${fmt((K2C / (f * R)) * 1e6)} µF.`,
+          `L = 0.2251 × ${fmt(R)} ÷ ${fmt(f)} = ${fmt(((K2L * R) / f) * 1e3)} mH.`,
           `Each filter uses one L and one C; reverse the tweeter’s polarity for a flat Butterworth sum.`,
         ];
       },
@@ -249,7 +281,9 @@ const DRIVER: Workspace = {
     'Ignoring port end correction on vented boxes — the air plug is acoustically longer than the physical port, tuning lower than the raw length suggests.',
   ],
   warnings:
-    'Small-signal, half-space piston model: SPL from p = 1.2·2π·f²·Sd·(Xpk/√2)/r. Sealed: ' +
+    'Rigid piston in an infinite baffle (half-space), far field, on axis: p = ρ₀·2π·f²·Sd·(Xpk/√2)/r ' +
+    'with ρ₀ = 1.204 kg/m³ (air at 20 °C); distances inside the cone’s near field are refused. ' +
+    'Free-standing (full-space) boxes play about 6 dB lower at low frequency; room gain adds. Sealed: ' +
     'fc = fs·√(1+Vas/Vb), Qtc = Qts·√(1+Vas/Vb). Vented (Helmholtz): fb = (c/2π)·√(Av/(Vb·L_eff)), ' +
     'L_eff = Lv + 1.46·√(Av/π). Thiele–Small small-signal theory; real drivers compress at Xmax.',
   glossary: ['Sensitivity', 'Sound Pressure Level', 'Resonance', 'Loudspeaker', 'Q factor'],
@@ -272,14 +306,16 @@ const DRIVER: Workspace = {
       key: 'excursionSPL',
       name: 'Displacement-limited SPL',
       inputs: ['sd', 'xmax', 'f', 'dist'],
-      formula: 'p = 1.2·2π·f²·Sd·(Xpk/√2) / r; SPL = 20·log₁₀(p / 20µPa)',
+      formula: 'p = ρ₀·2π·f²·Sd·(Xpk/√2) / r; SPL = 20·log₁₀(p / 20µPa)',
       plainFormula:
-        'The radiated pressure equals 1.2 times two pi times the frequency squared times the cone area times the peak excursion over root two, divided by the distance; the SPL is twenty times the base-ten log of that pressure over 20 micropascals.',
+        'The radiated pressure equals the air density (1.204 kg/m³) times two pi times the frequency squared times the cone area times the peak excursion over root two, divided by the distance; the SPL is twenty times the base-ten log of that pressure over 20 micropascals.',
       explain:
-        'Low-frequency output is displacement-limited: a cone makes bass by moving air, and the air moved is cone area times excursion. This finds the maximum SPL a driver’s travel can produce at a frequency and distance. Dropping an octave needs four times the excursion for the same level — the physics behind big subwoofers.',
+        'Low-frequency output is displacement-limited: a cone makes bass by moving air, and the air moved is cone area times excursion. This finds the maximum SPL a driver’s travel can produce at a frequency and distance. Dropping an octave needs four times the excursion for the same level — the physics behind big subwoofers. Model: a rigid piston in a large baffle (half-space), on axis, in the far field, at its linear Xmax; real cones compress near Xmax.',
       keySymbols: ['·', 'π', '/', '√', 'x²', 'f', 'µ', 'log₁₀', 'Sd'],
       compute: (v) => {
-        const p = (1.2 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
+        const near = pistonNearField(n(v.sd), n(v.f), n(v.dist), speedOfSoundAir(20));
+        if (near) return [{ label: 'INSIDE THE NEAR FIELD', text: near, refusal: true }];
+        const p = (RHO0 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
         const spl = 20 * Math.log10(p / P_REF_PA);
         return [
           { label: 'MAX SPL AT DISTANCE', value: spl, quantity: 'spl' },
@@ -287,10 +323,12 @@ const DRIVER: Workspace = {
         ];
       },
       steps: (v) => {
-        const p = (1.2 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
+        const near = pistonNearField(n(v.sd), n(v.f), n(v.dist), speedOfSoundAir(20));
+        if (near) return [near];
+        const p = (RHO0 * TWO_PI * n(v.f) * n(v.f) * n(v.sd) * (n(v.xmax) / Math.SQRT2)) / n(v.dist);
         const spl = 20 * Math.log10(p / P_REF_PA);
         return [
-          `RMS pressure at full excursion (Xmax), p = 1.2·2π·${fmt(n(v.f))}²·${fmt(n(v.sd))}·(${fmt(n(v.xmax))}/√2) ÷ ${fmt(n(v.dist))} = ${fmt(p)} Pa.`,
+          `RMS pressure at full excursion (Xmax), p = 1.204·2π·${fmt(n(v.f))}²·${fmt(n(v.sd))}·(${fmt(n(v.xmax))}/√2) ÷ ${fmt(n(v.dist))} = ${fmt(p)} Pa.`,
           `SPL = 20·log₁₀(${fmt(p)} / 20µPa) = ${fmt(spl)} dB SPL (half-space, small signal).`,
           `Dropping an octave needs 4× the excursion for the same SPL — the physics behind big subs.`,
         ];
@@ -331,7 +369,7 @@ const DRIVER: Workspace = {
       plainFormula:
         'The effective port length equals the speed of sound squared times the port area, divided by the square of two pi times the tuning frequency times the box volume; the physical length subtracts the end correction — 1.46 times the square root of the port area over pi.',
       explain:
-        'In a vented (bass-reflex) box the port and the box air form a Helmholtz resonator tuned to fb. This finds the port length for a target tuning. The moving plug of air is acoustically longer than the physical port (the end correction), so a longer or narrower port tunes lower. If even a zero-length port of this area tunes below the target, no port length can reach it — a larger port area or a smaller box raises the tuning.',
+        'In a vented (bass-reflex) box the port and the box air form a Helmholtz resonator tuned to fb. This finds the port length for a target tuning. The moving plug of air is acoustically longer than the physical port (the end correction), so a longer or narrower port tunes lower. If even a zero-length port of this area tunes below the target, no port length can reach it — a larger port area or a smaller box raises the tuning. Model: lumped Helmholtz resonator (box and port small next to the wavelength), net box volume, round port with one flanged and one free end; a port longer than about λ/12 is flagged.',
       keySymbols: ['c', '·', '/', 'π', 'x²', '√', '−', 'f'],
       note: 'End correction 1.46·√(Av/π) added back (one flanged + one free end); real ports vary.',
       compute: (v) => {
@@ -362,9 +400,11 @@ const DRIVER: Workspace = {
             { label: 'EFFECTIVE (ACOUSTIC) LENGTH', value: leff, quantity: 'length', unit: 'cm', chainable: false },
           ];
         }
+        const lambda = c / n(v.fbTarget);
         return [
           { label: 'PHYSICAL PORT LENGTH', value: lv, quantity: 'length', unit: 'cm' },
           { label: 'EFFECTIVE (ACOUSTIC) LENGTH', value: leff, quantity: 'length', unit: 'cm', chainable: false },
+          ...(leff > lambda / 12 ? [{ label: 'MODEL LIMIT', text: portLongText(leff, lambda) }] : []),
         ];
       },
       steps: (v) => {

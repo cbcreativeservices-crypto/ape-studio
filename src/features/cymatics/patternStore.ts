@@ -22,9 +22,8 @@ import { DEFAULT_LIQUID, type LiquidSpec } from './faraday';
 import { DEFAULT_MEMBRANE, type MembraneSpec } from './membrane';
 import { DEFAULT_PLATE, type PlateSpec } from './plateModes';
 import { START_LEVEL_01 } from '../audio/startLevel';
-import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
+import { holdSessionWork, peekSessionWork, registerSessionCarry, releaseSessionWork } from '../lab/sessionCarry';
 import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
-import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 
 export type StudioId = 'plate' | 'liquid' | 'membrane';
 
@@ -261,24 +260,19 @@ export function withHeldGallery(
   return { patterns, artwork };
 }
 
-function holdGallery(change: Parameters<typeof withHeldGallery>[1]): void {
+/* A DELETE IS HONOURED BY THE CARRY (hunt 13; shared since 2026-10-04). A
+   delete or a cleared colouring is a REMOVAL: the ledger lets go of it even
+   after the account is settled (`releaseSessionWork`; a guestOnly hold
+   refuses additions only), and `carryIn` merges what the ledger holds when
+   it RUNS — so neither a re-run of a failed carry nor a delete that reached
+   the write chain first puts a deleted pattern back. A later save of the
+   same id is held again like any save. */
+function holdGallery(change: { pattern?: SavedPattern; artwork?: Artwork }): void {
   holdSessionWork<HeldGallery>(CARRY_KEY, (prev) => withHeldGallery(prev, change), { guestOnly: true });
 }
-
-/* A DELETE IS HONOURED BY THE CARRY (hunt 13, 2026-10-04). The ledger
-   refuses a guestOnly hold once the account is settled — removals included —
-   so a pattern (or colouring) deleted after the sign-in stayed in what was
-   held. The writer runs again whenever the held copy was not written (a carry
-   whose write failed, re-run by any later flush) and it ran LATE when the
-   delete reached the write chain first: the deleted pattern came back. What
-   this session deleted is remembered here and never carried back in; a later
-   save of the same id lets go of it. Cleared by the account wipe. */
-const deletedPatternIds = new Set<string>();
-const deletedArtworkIds = new Set<string>();
-registerLocalStoreReset(() => {
-  deletedPatternIds.clear();
-  deletedArtworkIds.clear();
-});
+function releaseGallery(change: { dropPattern?: string; dropArtwork?: string }): void {
+  releaseSessionWork<HeldGallery>(CARRY_KEY, (prev) => withHeldGallery(prev, change));
+}
 
 /** Pure: the stored rows plus the held ones — by id, the newer `updatedAt`
  *  wins; a held row the list lacks is added (patterns newest first). */
@@ -400,10 +394,7 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       if (i >= 0) list[i] = row;
       else list.unshift(row);
       const ok = await saveList(kv, PATTERN_KEYS.patterns, list);
-      if (ok) {
-        deletedPatternIds.delete(row.id);
-        holdGallery({ pattern: row });
-      }
+      if (ok) holdGallery({ pattern: row });
       return ok;
     }),
     deletePattern: (id) => serial(async () => {
@@ -412,10 +403,7 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       const ok = await saveList(kv, PATTERN_KEYS.patterns, read.filter((x) => x.id !== id));
       const arts = await artworksRW();
       if (arts) await saveList(kv, PATTERN_KEYS.artwork, arts.filter((a) => a.patternId !== id));
-      if (ok) {
-        deletedPatternIds.add(id);
-        holdGallery({ dropPattern: id });
-      }
+      if (ok) releaseGallery({ dropPattern: id });
       return ok;
     }),
     duplicatePattern: (id) => serial(async () => {
@@ -449,29 +437,22 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       if (i >= 0) list[i] = row;
       else list.push(row);
       const ok = await saveList(kv, PATTERN_KEYS.artwork, list);
-      if (ok) {
-        deletedArtworkIds.delete(row.patternId);
-        holdGallery({ artwork: row });
-      }
+      if (ok) holdGallery({ artwork: row });
       return ok;
     }),
     deleteArtwork: (patternId) => serial(async () => {
       const list = await artworksRW();
       if (!list) return false;
       const ok = await saveList(kv, PATTERN_KEYS.artwork, list.filter((a) => a.patternId !== patternId));
-      if (ok) {
-        deletedArtworkIds.add(patternId);
-        holdGallery({ dropArtwork: patternId });
-      }
+      if (ok) releaseGallery({ dropArtwork: patternId });
       return ok;
     }),
     // On the write chain; never over a list that could not be read.
     carryIn: (heldIn) => serial(async () => {
-      // Never carry back what this session deleted (see deletedPatternIds).
-      const held: HeldGallery = {
-        patterns: heldIn.patterns.filter((p) => !deletedPatternIds.has(p.id)),
-        artwork: heldIn.artwork.filter((a) => !deletedPatternIds.has(a.patternId) && !deletedArtworkIds.has(a.patternId)),
-      };
+      // What the ledger holds NOW, not the copy this write was queued with:
+      // a delete that ran first on this chain has already been let go of
+      // there, and must not come back (see releaseGallery).
+      const held: HeldGallery = peekSessionWork<HeldGallery>(CARRY_KEY) ?? heldIn;
       if (!held.patterns.length && !held.artwork.length) return true;
       const pats = await patternsRW();
       // The artwork list is needed only when colourings are carried (hunt

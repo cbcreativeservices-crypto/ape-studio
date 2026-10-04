@@ -7,15 +7,22 @@
  * QuantityKind for either); the compute() converts to base H/F.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtInt, snapWhole } from '../calcUnits';
+import { ALPHA_CU_20C, BTU_PER_HR_PER_W, CU_TEMP_RANGE, awgAreaM2, fmt, fmtInt, rhoCopper, snapWhole } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
-const RHO_CU = 1.724e-8; // copper resistivity, Ω·m at 20 °C
-/** AWG → conductor diameter (mm). */
-const awgDiaMm = (awg: number) => 0.127 * Math.pow(92, (36 - awg) / 39);
-/** AWG → cross-section area (m²). */
-const awgAreaM2 = (awg: number) => Math.PI * Math.pow(awgDiaMm(awg) / 2 / 1000, 2);
+/** CONDUCTOR TEMPERATURE (calc accuracy audit, 2026-10-04): copper was costed
+ *  at 20 °C only, so a loaded cable — 75 °C is the NEC Chapter 9 Table 8 basis
+ *  — read about 18% LESS resistance and drop than it really has. The run's own
+ *  temperature is now an input; a caller that passes none (an old test) is
+ *  costed at 20 °C, as before. Shared copper constants live in calcUnits. */
+const condTempOf = (v: Record<string, number | number[]>): number =>
+  typeof v.condTemp === 'number' ? v.condTemp : 20;
+/** The resistivity line of the steps, at the run's temperature. */
+const rhoStep = (t: number): string =>
+  `ρ at ${fmt(t)} °C = 1.7241e-8 × (1 + ${ALPHA_CU_20C} × (${fmt(t)} − 20)) = ${fmt(rhoCopper(t))} Ω·m`;
+/** The finest gauge this calculator covers (the WIRE GAUGE field's top end). */
+const AWG_FINEST = 40;
 /** Area (m²) → nearest AWG (real number; floor it to size UP a wire). */
 const awgFromAreaM2 = (aM2: number) => {
   const dMm = 2000 * Math.sqrt(aM2 / Math.PI);
@@ -240,19 +247,22 @@ const VDROP: Workspace = {
     'the wire is too thin. A supply that reads fine at the rack can arrive out of spec at the far ' +
     'end. This is how you size a gauge before the gear misbehaves.',
   example:
-    'A 30 m run of 16 AWG carrying 3 A from a 48 V supply: round-trip resistance ≈ 0.79 Ω, so the ' +
-    'drop ≈ 2.4 V (≈ 5%) and ≈ 7.1 W is lost as heat in the cable.',
+    'A 30 m run of 16 AWG carrying 3 A from a 48 V supply, copper at 75 °C: round-trip resistance ' +
+    '≈ 0.96 Ω, so the drop ≈ 2.9 V (≈ 6%) and ≈ 8.7 W is lost as heat in the cable. Costed cold at ' +
+    '20 °C the same run reads 0.79 Ω and 2.4 V — 18% less than the loaded cable really drops.',
   mistakes: [
     'Counting only the one-way length — current flows OUT and BACK, so voltage drop uses TWICE the run length.',
     'Sizing by current rating alone — a wire can be "rated" for the current yet still drop far too much voltage over a long run.',
     'Ignoring that thin, long DC feeds waste real power as heat (I²R) on top of the voltage sag.',
   ],
   warnings:
-    'DC or SINGLE-PHASE AC only: round-trip resistance R = ρ·2L/A, drop = I·R. For a ' +
+    'DC or SINGLE-PHASE AC only: round-trip resistance R = ρ(T)·2L/A, drop = I·R. For a ' +
     'THREE-PHASE feeder use √3·L·I·R per phase — this calculator will read about 15% high. ' +
-    'Copper at 20 °C (ρ = 1.724×10⁻⁸ Ω·m); a hot conductor at 60 °C has roughly 16% more ' +
-    'resistance, so the real drop is higher than shown. Conductor reactance and power factor ' +
-    'are not modelled. AWG area from the standard geometric definition.',
+    'Solid annealed copper (IACS: ρ = 1.7241×10⁻⁸ Ω·m at 20 °C, rising 0.393% per °C), at the ' +
+    'conductor temperature you enter — use 75 °C (or the insulation rating) for a cable carrying ' +
+    'its load; costed at 20 °C a loaded cable’s drop reads about 18% low. Stranded wire reads about ' +
+    '2% higher than solid. Conductor reactance, power factor and connector resistance are not ' +
+    'modelled (reactance matters on large AC conductors). AWG area from the ASTM B258 definition.',
   glossary: ['Voltage', 'Resistance', 'Current', 'AWG', 'Power'],
   fields: [
     { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
@@ -260,21 +270,22 @@ const VDROP: Workspace = {
     { key: 'current', name: 'CURRENT', quantity: 'current', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
     { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
     { key: 'pct', name: 'ALLOWABLE DROP', quantity: 'percent', nonNegative: true, placeholder: '3', help: 'The maximum voltage drop you will accept, in percent.', warn: { test: (x) => x <= 0, msg: 'Allowable drop must be greater than zero.' } },
+    { key: 'condTemp', name: 'CONDUCTOR TEMPERATURE', quantity: 'temperature', signed: true, range: CU_TEMP_RANGE, placeholder: '75', help: 'How hot the copper runs. For a cable carrying its full load use the insulation’s rated temperature — 75 °C is the NEC Chapter 9 Table 8 basis. Use 20 °C only for a cool, lightly loaded run. Copper resistance rises 0.393% per °C.' },
   ],
   functions: [
     {
       key: 'drop',
       name: 'Voltage drop over a run',
-      inputs: ['awg', 'len', 'current', 'vsrc'],
-      formula: 'R = ρ·2L/A; Vdrop = I·R; loss = I²·R',
+      inputs: ['awg', 'len', 'current', 'vsrc', 'condTemp'],
+      formula: 'R = ρ(T)·2L/A; ρ(T) = ρ₂₀·(1 + 0.00393·(T − 20)); Vdrop = I·R; loss = I²·R',
       plainFormula:
-        'The round-trip resistance equals the resistivity times twice the length over the cross-section area; the voltage drop equals the current times that resistance; and the power lost equals the current squared times the resistance.',
+        'The round-trip resistance equals the copper resistivity at the conductor temperature times twice the length over the cross-section area; the voltage drop equals the current times that resistance; and the power lost equals the current squared times the resistance.',
       explain:
-        'Every metre of cable has resistance, and the current flows out and back (hence ×2), dropping voltage before it reaches the load. This gives the round-trip resistance, the volts lost, the share that never arrives, and the power burned as heat — the physics behind sagging long DC and phantom feeds.',
+        'Every metre of cable has resistance, and the current flows out and back (hence ×2), dropping voltage before it reaches the load. Copper resistance rises with temperature (0.393% per °C), so a loaded cable at 75 °C drops about 22% more than the same cable at 20 °C. This gives the round-trip resistance, the volts lost, the share that never arrives, and the power burned as heat. Model: solid copper, DC or single-phase AC, no reactance.',
       keySymbols: ['ρ', '·', '/', 'R', 'x²'],
       compute: (v) => {
         const A = awgAreaM2(n(v.awg));
-        const R = (RHO_CU * 2 * n(v.len)) / A;
+        const R = (rhoCopper(condTempOf(v)) * 2 * n(v.len)) / A;
         const vd = n(v.current) * R;
         // I·R at or past the supply (calc check A, 2026-10-03): VOLTAGE AT LOAD
         // went NEGATIVE (−12 V from a 48 V supply), the drop read over 100% and
@@ -297,13 +308,15 @@ const VDROP: Workspace = {
       },
       steps: (v) => {
         const A = awgAreaM2(n(v.awg));
-        const R = (RHO_CU * 2 * n(v.len)) / A;
+        const T = condTempOf(v);
+        const R = (rhoCopper(T) * 2 * n(v.len)) / A;
         const vd = n(v.current) * R;
         return [
           // Written as the trade writes it (calc check A, 2026-10-03): −1 AWG
           // printed "-1 AWG" here — the hunt-6 "-7 AWG" class; it is 2/0.
           `${awgName(Math.round(n(v.awg))) ?? `${fmtInt(n(v.awg))} AWG`} ≈ ${fmt(A * 1e6)} mm²; round trip = 2 × ${fmt(n(v.len))} m.`,
-          `R = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(A)} = ${fmt(R)} Ω.`,
+          `${rhoStep(T)}.`,
+          `R = (${fmt(rhoCopper(T))} × ${fmt(2 * n(v.len))}) ÷ ${fmt(A)} = ${fmt(R)} Ω.`,
           vd > 0 && vd >= n(v.vsrc)
             ? dropBreaksDown(n(v.current), R, n(v.vsrc))
             : `Vdrop = ${fmt(n(v.current))} A × ${fmt(R)} Ω = ${fmt(vd)} V (${fmt((vd / n(v.vsrc)) * 100)}% of ${fmt(n(v.vsrc))} V); ${fmt(n(v.current) * n(v.current) * R)} W is lost as heat.`,
@@ -313,10 +326,10 @@ const VDROP: Workspace = {
     {
       key: 'gaugeFor',
       name: 'Gauge needed for an allowable drop (reverse)',
-      inputs: ['len', 'current', 'vsrc', 'pct'],
-      formula: 'A = ρ·2L·I / (Vsrc·pct%)',
+      inputs: ['len', 'current', 'vsrc', 'pct', 'condTemp'],
+      formula: 'A = ρ(T)·2L·I / (Vsrc·pct%)',
       plainFormula:
-        'The required conductor area equals the resistivity times twice the length times the current, divided by the supply voltage times the allowable-drop percentage.',
+        'The required conductor area equals the copper resistivity at the conductor temperature times twice the length times the current, divided by the supply voltage times the allowable-drop percentage.',
       explain:
         'The voltage-drop calculation solved backwards: the wire cross-section — and so the gauge — needed to keep a run within an allowable percentage drop. A longer run or more current needs more copper; choose the resulting AWG number or thicker (a lower number).',
       keySymbols: ['ρ', '·', '/', '%'],
@@ -330,7 +343,7 @@ const VDROP: Workspace = {
       compute: (v) => {
         const vdMax = (n(v.vsrc) * n(v.pct)) / 100;
         const Rmax = vdMax / n(v.current);
-        const A = (RHO_CU * 2 * n(v.len)) / Rmax;
+        const A = (rhoCopper(condTempOf(v)) * 2 * n(v.len)) / Rmax;
         const awgReal = awgFromAreaM2(A);
         const awg = Math.floor(snapWhole(awgReal));
         // Thicker than 0 AWG (hunt 6, 2026-10-03): a big feeder printed a gauge
@@ -345,7 +358,15 @@ const VDROP: Workspace = {
           //    derived ONLY from the drop budget: 5 m / 20 A / 120 V / 3% returns 17 AWG,
           //    which on a 20 A branch circuit is a fire. The ampacity check is the
           //    caller's, from the code table — see `note` above.
-          awg >= 0 || !Number.isFinite(awg)
+          // Finer than 40 AWG (calc accuracy audit, 2026-10-04): a tiny current
+          // over a short run printed "92 AWG" — a gauge no table lists. The drop
+          // is simply not the limit; ampacity decides.
+          awg > AWG_FINEST && Number.isFinite(awg)
+            ? {
+                label: 'DROP-LIMITED AWG (CHECK AMPACITY)',
+                text: `Any gauge up to ${AWG_FINEST} AWG (the finest this calculator covers) keeps the drop inside the budget — the drop does not limit this run. Size it by ampacity.`,
+              }
+            : awg >= 0 || !Number.isFinite(awg)
             ? { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: awg, quantity: 'number', chainable: false }
             : {
                 label: 'DROP-LIMITED AWG (CHECK AMPACITY)',
@@ -357,18 +378,22 @@ const VDROP: Workspace = {
         ];
       },
       steps: (v) => {
+        const T = condTempOf(v);
         const vdMax = (n(v.vsrc) * n(v.pct)) / 100;
         const Rmax = vdMax / n(v.current);
-        const A = (RHO_CU * 2 * n(v.len)) / Rmax;
+        const A = (rhoCopper(T) * 2 * n(v.len)) / Rmax;
         const awgReal = awgFromAreaM2(A);
         const awg = Math.floor(snapWhole(awgReal));
         const name = Number.isFinite(awg) ? awgName(awg) : `${fmtInt(awg)} AWG`;
         return [
           `Allowable drop = ${fmt(n(v.pct))}% × ${fmt(n(v.vsrc))} V = ${fmt(vdMax)} V, so max resistance = ${fmt(Rmax)} Ω.`,
-          `Required area = (1.724e-8 × ${fmt(2 * n(v.len))}) ÷ ${fmt(Rmax)} = ${fmt(A * 1e6)} mm².`,
+          `${rhoStep(T)}.`,
+          `Required area = (${fmt(rhoCopper(T))} × ${fmt(2 * n(v.len))}) ÷ ${fmt(Rmax)} = ${fmt(A * 1e6)} mm².`,
           // Never "about −1.3 AWG" (hunt 7, 2026-10-03 — the hunt-6 "-7 AWG"
           // class, left in the steps): past 0 AWG there is no such number.
-          name && awg < 0
+          awg > AWG_FINEST && Number.isFinite(awg)
+            ? `That is finer than ${AWG_FINEST} AWG — any gauge this calculator covers stays inside the drop budget, so the drop does not limit this run.`
+            : name && awg < 0
             ? `That is thicker than 0 AWG — so on DROP ALONE, ${name} or thicker.`
             : name
             ? `That is about ${fmt(awgReal)} AWG — so on DROP ALONE, ${name} or thicker (a LOWER gauge number).`
@@ -403,7 +428,9 @@ const RACK: Workspace = {
     'Sealing gear in a rack with no airflow path — heat has to leave or the thermal protection will end your night.',
   ],
   warnings:
-    'BTU/hr = W × 3.412; mains current I = P/V; cooling airflow CFM ≈ BTU/hr ÷ (1.08·ΔT°F). ' +
+    'BTU/hr = W × 3.4121 (NIST SP 811); mains current I = P/V; cooling airflow CFM = BTU/hr ÷ (1.08·ΔT°F), ' +
+    'where 1.08 is standard sea-level air (0.075 lb/ft³ × 0.24 BTU/lb·°F × 60 min/hr) — thinner air at ' +
+    'altitude needs MORE airflow than shown. ' +
     'I = P/V ASSUMES A POWER FACTOR OF 1 — gear with a lower power factor (many switch-mode ' +
     'amplifier supplies sit at 0.6–0.9) draws MORE current than shown, so treat this as a floor ' +
     'and confirm against the nameplate current rating. Duty cycle and rack airflow paths vary.',
@@ -419,15 +446,15 @@ const RACK: Workspace = {
       key: 'heatLoad',
       name: 'Current, heat & airflow',
       inputs: ['watts', 'mains', 'dTempF'],
-      formula: 'I = P/V; BTU/hr = W·3.412; CFM = BTU/hr / (1.08·ΔT)',
+      formula: 'I = P/V; BTU/hr = W·3.4121; CFM = BTU/hr / (1.08·ΔT)',
       plainFormula:
-        'The mains current equals the power over the voltage; the heat output equals the wattage times 3.412 BTU per hour; and the cooling airflow equals the heat output divided by 1.08 times the temperature rise.',
+        'The mains current equals the power over the voltage; the heat output equals the wattage times 3.4121 BTU per hour; and the cooling airflow equals the heat output divided by 1.08 times the temperature rise.',
       explain:
         'Every watt a rack draws that doesn’t leave as sound leaves as heat. From the total device wattage this gives the mains current it pulls, the heat it dumps in BTU per hour, and the airflow (CFM) needed to hold a chosen temperature rise — sizing the circuit, the AC load, and the fans before something trips or cooks.',
       keySymbols: ['Δ', '·', '/'],
       compute: (v) => {
         const W = n(v.watts);
-        const btu = W * 3.412;
+        const btu = W * BTU_PER_HR_PER_W;
         return [
           { label: 'MAINS CURRENT', value: W / n(v.mains), quantity: 'current' },
           { label: 'HEAT OUTPUT (BTU/hr)', value: btu, quantity: 'number', chainable: false },
@@ -436,10 +463,10 @@ const RACK: Workspace = {
       },
       steps: (v) => {
         const W = n(v.watts);
-        const btu = W * 3.412;
+        const btu = W * BTU_PER_HR_PER_W;
         return [
           `Current = ${fmt(W)} W ÷ ${fmt(n(v.mains))} V = ${fmt(W / n(v.mains))} A.`,
-          `Heat = ${fmt(W)} × 3.412 = ${fmt(btu)} BTU/hr.`,
+          `Heat = ${fmt(W)} × 3.4121 = ${fmt(btu)} BTU/hr (1 W = 3.4121 BTU/hr).`,
           `Airflow to hold a ${fmt(n(v.dTempF))} °F rise ≈ ${fmt(btu)} ÷ (1.08 × ${fmt(n(v.dTempF))}) = ${fmt(btu / (1.08 * n(v.dTempF)))} CFM.`,
         ];
       },

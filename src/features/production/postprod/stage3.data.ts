@@ -333,6 +333,7 @@ export const STAGE3_SESSION: StageDef = {
           fieldId: "drift_action",
           label: "What you did about it",
           kind: "choice",
+          showWhen: { field: "drift_diagnosis", notEquals: ["none"] },
           help: "Whatever you choose, it happens to the working copy. The originals do not move.",
           options: [
             { value: "move", label: "Moved it — constant offset" },

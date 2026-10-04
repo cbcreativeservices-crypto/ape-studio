@@ -4,7 +4,7 @@
  * Follows the wave.ts exemplar pattern (owner spec 2026-07-29).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtCount, fmtInt, snapWhole, speedOfSoundAir } from '../calcUnits';
+import { SABINE_K, fmt, fmtCount, fmtInt, snapWhole, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const arr = (v: number | number[]): number[] => (typeof v === 'number' ? [v] : v);
@@ -500,11 +500,11 @@ const WS_FILESIZE: Workspace = {
   whyItMatters:
     'Running out of storage mid-take is a career-limiting event. Knowing the per-minute rate of ' +
     'your format lets you sanity-check a card before a gig, budget drive space for a session, ' +
-    'and spot a mis-set format (a 32-bit float 96 kHz session fills a drive 4× faster than ' +
-    '16/44.1).',
+    'and spot a mis-set format (a 32-bit float 96 kHz session fills a drive about 4.4× faster ' +
+    'than 16/44.1).',
   example:
     '24-bit / 48 kHz stereo: 48000 × 24 ÷ 8 × 2 = 288000 bytes/s = 288 kB/s ≈ 17.3 MB per ' +
-    'minute (about 1.04 GB per hour). A 64 GB card holds 64e9 ÷ 288000 ≈ 222222 s ≈ 61 hours ' +
+    'minute (about 1.04 GB per hour). A 64 GB card holds 64e9 ÷ 288000 ≈ 222222 s ≈ 61.7 hours ' +
     'of stereo recording at that format.',
   mistakes: [
     'Mixing bits and bytes — data rates quote bits, files store bytes; the ÷8 is where most estimates go wrong by a factor of eight.',
@@ -822,7 +822,12 @@ const WS_ROOMMODES: Workspace = {
 
 /* ─────────────────── 5 · Reverberation Time (Sabine) ────────────────────── */
 
-const SABINE_K = 0.161; // metric Sabine constant (s/m)
+/** Sabine's metric constant 0.161 s/m now comes from calcUnits (one shared
+ *  value for Sabine, Eyring, the Treatment Planner and Critical Distance). */
+/** Sabine reads long once the average absorption passes about 0.3 (Kuttruff,
+ *  Room Acoustics, §5.1); past it the Eyring figure is the better estimate. */
+const SABINE_ALPHA_LIMIT = 0.3;
+const eyringRt = (V: number, S: number, aBar: number) => (SABINE_K * V) / (-S * Math.log(1 - aBar));
 
 /** The room already holds MORE absorption than the target needs (beyond float
  *  noise) — the shortfall is negative and there is nothing to add. */
@@ -856,9 +861,11 @@ const WS_SABINE: Workspace = {
     'Chasing RT60 in small rooms — below a few hundred hertz, modal behavior dominates and a single decay number stops describing what you hear.',
   ],
   warnings:
-    'Sabine assumes a diffuse field and average absorption below roughly 0.3 — dead rooms need ' +
-    'the Eyring equation (Advanced tier). Coefficients here are single-band teaching values; ' +
-    'real products are measured per frequency band under ISO 354, and real rooms under ISO 3382.',
+    'Sabine RT60 = 0.161·V/A (0.161 = 24·ln10/c for air at about 20 °C). It assumes a diffuse field ' +
+    'and average absorption below roughly 0.3 — dead rooms need the Eyring equation (Advanced tier), ' +
+    'and it leaves out air absorption (the 4mV term), which shortens the decay of large rooms above ' +
+    'about 2 kHz. Coefficients here are single-band values; real products are measured per ' +
+    'frequency band under ISO 354, and real rooms under ISO 3382.',
   glossary: ['Reverberation Time', 'RT60', 'Absorption Coefficient', 'Room Mode'],
   fields: [
     { key: 'vol', name: 'ROOM VOLUME', quantity: 'volume', placeholder: '100', help: 'Length × width × height of the room.' },
@@ -935,7 +942,26 @@ const WS_SABINE: Workspace = {
         const S = arr(v.surfaces);
         const al = arr(v.coeffs);
         const A = S.reduce((sum, s, i) => sum + s * (al[i] ?? 0), 0);
+        // Sabine's own limit, said (calc accuracy audit, 2026-10-04): over the
+        // listed surfaces the average absorption is A ÷ ΣS. Past ~0.3 Sabine
+        // reads long (at ā = 0.5 by 39%) — give the Eyring figure beside it.
+        const m = Math.min(S.length, al.length);
+        const Ssum = S.slice(0, m).reduce((a, b) => a + b, 0);
+        const aBar = Ssum > 0 ? A / Ssum : NaN;
+        const deadRoom =
+          aBar > SABINE_ALPHA_LIMIT
+            ? [
+                {
+                  label: 'SABINE LIMIT',
+                  text:
+                    aBar >= 1
+                      ? `The listed surfaces average α = ${fmt(aBar)} — fully absorptive. Sabine still prints a decay time, but a room this dead has essentially none; if these are all the room’s surfaces, do not trust the RT60 below.`
+                      : `The listed surfaces average α = ${fmt(aBar)}, above the ≈ 0.3 where Sabine holds. If these are ALL the room’s surfaces, Sabine reads long here — Eyring gives ${fmt(eyringRt(n(v.vol), Ssum, aBar))} s.`,
+                },
+              ]
+            : [];
         return [
+          ...deadRoom,
           // Mismatched lists used to pair SILENTLY — a surface with no α counted
           // as zero absorption and the RT60 came out long with nothing said (the
           // same hole dose.ts closed 2026-09-01). Announce it the same way.

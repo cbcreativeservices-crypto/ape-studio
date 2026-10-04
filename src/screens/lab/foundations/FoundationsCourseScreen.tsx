@@ -61,6 +61,7 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
+import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
 import { RackUnit } from '../rack/RackUnit';
@@ -2241,6 +2242,10 @@ export function FoundationsCourseScreen() {
   // paragraphs above the module's own captions…
   const wellTop = (
     <>
+      {/* Before a guest begins (owner 2026-10-04): a popup once per session;
+          in Low-Light the same words inline here, inside the well — never
+          between the nav row and the rack (owner 2026-09-13). */}
+      <GuestStartReminder activity={`lab:${FOUNDATIONS_LAB_KEY}`} />
       {!engineReady ? <EngineGate state={gate} /> : null}
       {tone.error ? <Text style={[styles.body, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
       <Text style={styles.tag}>{s.tag} · {step + 1} OF {STEPS.length}</Text>

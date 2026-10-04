@@ -220,7 +220,8 @@ export function fmtInt(x: number): string {
   return Number.isFinite(x) ? String(Math.round(x)) : '—';
 }
 
-/** Speed of sound in dry air from temperature (°C) — classroom model. */
+/** Speed of sound in dry air from temperature (°C): the ideal-gas model
+ *  c = 331.3·√(1 + T/273.15) m/s (331.3 m/s at 0 °C; 343.2 m/s at 20 °C). */
 export function speedOfSoundAir(tempC: number): number {
   return 331.3 * Math.sqrt(1 + tempC / 273.15);
 }
@@ -241,6 +242,56 @@ export const DBU_REF_V = Math.sqrt(0.6);
 export const P_REF_PA = 2e-5;
 /** The SPL of exactly 1 Pa: 20·log10(1 Pa / 20 µPa) = 93.979 dB SPL. */
 export const SPL_OF_1_PA = 20 * Math.log10(1 / P_REF_PA);
+
+// ── Shared physical constants (calc accuracy audit, 2026-10-04) ───────────
+// Each lived as a rounded literal in one or more workspaces. One place, full
+// precision, with its source — so two calculators never disagree about the
+// same wire, the same air or the same watt.
+
+/** Annealed copper resistivity at 20 °C: 1/58 Ω·mm²/m = 1.72414×10⁻⁸ Ω·m —
+ *  the International Annealed Copper Standard (IEC 60028; ASTM B193). */
+export const RHO_CU_20C = 1 / 58e6;
+/** Copper's temperature coefficient of resistance at 20 °C: 0.00393 per °C
+ *  (IACS annealed copper, IEC 60028). R(T) = R₂₀·(1 + α·(T − 20)). */
+export const ALPHA_CU_20C = 0.00393;
+/** The conductor-temperature span the linear copper model is used over here
+ *  (−40 °C to 150 °C — beyond the 90 °C rating of common building wire). */
+export const CU_TEMP_RANGE: readonly [number, number] = [-40, 150];
+/** Copper resistivity at a conductor temperature (°C), linear model. */
+export function rhoCopper(tempC: number): number {
+  return RHO_CU_20C * (1 + ALPHA_CU_20C * (tempC - 20));
+}
+/** AWG → conductor diameter (m): d = 0.127 mm × 92^((36 − n)/39) (ASTM B258).
+ *  n = −1, −2, −3 are 2/0, 3/0, 4/0. */
+export function awgDiameterM(awg: number): number {
+  return (0.127 * Math.pow(92, (36 - awg) / 39)) / 1000;
+}
+/** AWG → conductor cross-section (m²), solid round conductor. */
+export function awgAreaM2(awg: number): number {
+  const d = awgDiameterM(awg);
+  return (Math.PI * d * d) / 4;
+}
+/** Resistance per metre of ONE copper conductor of a gauge at a temperature. */
+export function copperOhmPerM(awg: number, tempC = 20): number {
+  return rhoCopper(tempC) / awgAreaM2(awg);
+}
+
+/** 1 W = 3.412 141 63 BTU(IT)/h (1 BTU_IT = 1055.055 852 62 J; NIST SP 811). */
+export const BTU_PER_HR_PER_W = 3600 / 1055.05585262;
+
+/** Density of dry air at 20 °C and 101.325 kPa: p/(R·T) = 101325/(287.05·293.15)
+ *  = 1.2041 kg/m³ (ISO 2533 gas constant). */
+export const RHO_AIR_20C = 101325 / (287.05 * 293.15);
+
+/** Sabine's metric constant, 0.161 s/m — 24·ln(10)/c for air at about 20 °C
+ *  (24·ln10 ÷ 343.2 = 0.1610). The published value every Sabine/Eyring form
+ *  here uses (ISO 3382-2 writes it 55.3/c). */
+export const SABINE_K = 0.161;
+
+/** Quantization: 20·log10(2) = 6.0206 dB per bit, and 10·log10(3/2) = 1.7609 dB
+ *  for a full-scale sine against uniform quantization noise (q²/12). */
+export const DB_PER_BIT = 20 * Math.log10(2);
+export const FULL_SCALE_SINE_DB = 10 * Math.log10(1.5);
 
 /** Where a space-like separator (space, _, no-break spaces, ') may stand in a
  *  number: between three-digit groups of the whole part (first group 1–3

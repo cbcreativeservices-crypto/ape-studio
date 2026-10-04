@@ -197,6 +197,9 @@ const MemberGated = {
   CymaticsGallery: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/cymatics/GalleryScreen').GalleryScreen))),
   ProductionStage: lazyScreen(() => withMembershipPreview(require('../screens/lab/production/ProductionStageScreen').ProductionStageScreen)),
   ProductionActivity: lazyScreen(() => withMembershipPreview(require('../screens/lab/production/ProductionActivityScreen').ProductionActivityScreen)),
+  // The packet screen (2026-10-04, design review #5): inside the paid lab, so
+  // gated like its siblings, and lazy like every lab route.
+  ProductionPacket: lazyScreen(() => withMembershipPreview(require('../screens/lab/production/ProductionPacketScreen').ProductionPacketScreen)),
 
   // ── THE PREDICATE IS NOT THE GATE EITHER (2026-09-17, pass 5) ──────────
   //
@@ -491,6 +494,7 @@ export function RootNavigator() {
       <Stack.Screen name="ProductionLab" getComponent={MemberGated.ProductionLab} />
       <Stack.Screen name="ProductionStage" getComponent={MemberGated.ProductionStage} />
       <Stack.Screen name="ProductionActivity" getComponent={MemberGated.ProductionActivity} />
+      <Stack.Screen name="ProductionPacket" getComponent={MemberGated.ProductionPacket} />
       <Stack.Screen name="CymaticsModule" getComponent={MemberGated.CymaticsModule} />
       <Stack.Screen name="CymaticsPlateStudio" getComponent={MemberGated.CymaticsPlateStudio} />
       <Stack.Screen name="CymaticsLiquidStudio" getComponent={MemberGated.CymaticsLiquidStudio} />

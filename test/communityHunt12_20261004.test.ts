@@ -98,7 +98,10 @@ describe('H12-2 Career Finder hub: an unreadable record is not a fresh start (K2
   });
 
   it('the note says the saved answers could not be read, instead of the trust line', () => {
-    assert.match(branch, /\{saving \? \(upsell \? FINDER_INTRO\.trust : 'Your answers stay on this phone\.'\) : 'Your saved answers could not be read on this phone, so answers you give now will not be saved\.'\}/);
+    // 2026-10-04 (guestCareer, on the house store): answers given while the
+    // record is unreadable are QUEUED and written if a later read succeeds,
+    // so "will not be saved" became the present-tense truth.
+    assert.match(branch, /\{saving \? \(upsell \? FINDER_INTRO\.trust : 'Your answers stay on this phone\.'\) : 'Your saved answers could not be read on this phone, so answers you give now are not being saved\.'\}/);
   });
 });
 

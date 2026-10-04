@@ -51,7 +51,11 @@ describe('glossary meter per device', () => {
     assert.match(cap, /rpc\('glossary_consume', await deviceArg\(\)\)/);
     assert.match(cap, /rpc\('glossary_usage_status', await deviceArg\(\)\)/);
     assert.match(gateway, /getDeviceId/);
-    assert.match(gateway, /rpc\('get_glossary_definition', \{ p_id: id, p_device_id \}\)/);
+    // 2026-10-04: one call site serves both metered RPCs (the normal one and
+    // Start Here's), and both send the device id.
+    assert.match(gateway, /supabase\.rpc\(rpc, \{ p_id: id, p_device_id \}\)/);
+    assert.match(gateway, /return callDefinitionRpc\(id, 'get_glossary_definition'\);\s*\}/);
+    assert.match(gateway, /supabase\.rpc\(START_HERE_STATUS_RPC, \{ p_device_id \}\)/);
   });
 
   it('the per-install id survives the account wipe', () => {

@@ -25,6 +25,7 @@ import { REGISTRY_BASE_URL } from '../../features/profile/registry';
 import { CredentialQr } from '../../components/CredentialQr';
 import { fetchMyCredentials } from '../../features/credentials/api';
 import { readingColumn } from '../../theme/readingColumn';
+import { CommunityBadge } from '../../features/directory/CommunityBadge';
 
 const DIRECTORY_INTRO_TITLE = 'Get Discovered';
 
@@ -312,6 +313,9 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
             accessibilityLabel="Set up my community directory profile"
           >
             <Text style={styles.registryBtnText}>SET UP MY PROFILE ›</Text>
+            {/* The directory's REQUESTS waiting behind this button (owner
+                2026-10-04). Nothing when the count is unknown or 0. */}
+            <CommunityBadge style={{ position: 'absolute', top: -7, right: -7 }} />
           </Pressable>
         </View>
       ) : (

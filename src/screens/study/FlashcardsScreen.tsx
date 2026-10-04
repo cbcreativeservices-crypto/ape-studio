@@ -31,8 +31,9 @@ import { Image } from 'expo-image';
 // on Android). The Low-Light wash comes with it.
 import { Modal } from '../../components/DimModal';
 import { HOST_DISMISS_MS } from '../../components/DimModal';
+import { rootModalHoldMs } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
-import { confirmDialog } from '../../lib/confirm';
+import { confirmDialog, notify } from '../../lib/confirm';
 import Svg, { Circle, Ellipse, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
@@ -74,7 +75,7 @@ import {
 import { BookmarkIcon, TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { devBypass } from '../../config/devMode';
-import { IntroSheet, ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { IntroSheet, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { INTRO_STORAGE_PREFIX } from '../../features/intro/screenIntros';
 import { emitStudyProgress, StudySession } from '../../features/study/sync';
@@ -455,6 +456,14 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   const [linkedTerm, setLinkedTerm] = useState<GlossaryItem | null>(null);
   /** Request token for openTermFromList — see there. */
   const openTermReqRef = useRef(0);
+  // Leaving the screen cancels a term fetch still in flight: it must not open
+  // a viewer, or tell its failure, on a screen the learner has left.
+  useEffect(
+    () => () => {
+      openTermReqRef.current++;
+    },
+    [],
+  );
   // Term images (Booth 2026-07-16): glossary_media url per item; ids whose
   // image failed to load (e.g. art not uploaded yet) fall back to text-only.
   const [mediaByItem, setMediaByItem] = useState<Record<string, string>>({});
@@ -691,8 +700,34 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // banner are Modals too, and a second Modal opened as a sibling of an open
   // one is refused on iOS (nothing shows; the tutorial was still marked seen)
   // and drawn BEHIND it on Android. They wait, exactly as for fullscreen.
+  // T1, OWNED HERE (2026-10-04; catalog K10) — the Dashboard's hunt-13 rule.
+  // It was a self-contained <ScreenIntroOverlay>, a Modal this screen could
+  // not see, so on a first-ever visit the topic welcome presented beside it:
+  // iOS refused the second, and the welcome (seen only on dismiss) came back
+  // on a later visit instead. The welcome now waits for it.
+  const flashIntro = useScreenIntro('flashcards');
+  // ⛔ …and while the T1 intro or the topic welcome is UP OR OWED (2026-10-04;
+  // catalog K10). The 45 s timer and the 5-swipe trigger could present the
+  // tutorial beside either one: iOS refuses the second root Modal. The
+  // tutorial waits (deferred, not marked seen — see showTutorial) and, once
+  // both have closed, waits out the closing Modal's fade too (rootModalHoldMs,
+  // the afterDialogCloses rule) before it presents. Starts owed: the welcome
+  // reports in after its lookup (flagged mode has no welcome — it says so).
+  const [welcomeOwed, setWelcomeOwed] = useState(true);
+  const introsOwed = flashIntro.owed || welcomeOwed;
+  const [introsSettled, setIntrosSettled] = useState(false);
+  useEffect(() => {
+    if (introsOwed) {
+      setIntrosSettled(false);
+      return undefined;
+    }
+    // Measured after the commit that closed the popup (its Modal's cleanup
+    // stamps the close), never less than one dismiss.
+    const t = setTimeout(() => setIntrosSettled(true), Math.max(HOST_DISMISS_MS, rootModalHoldMs()));
+    return () => clearTimeout(t);
+  }, [introsOwed]);
   const tutorialBlocked =
-    overlaysSuppressed || !isFocused || fullscreen || !!termList || sessionTimer.configOpen;
+    overlaysSuppressed || !isFocused || fullscreen || !!termList || sessionTimer.configOpen || !introsSettled;
   const tutorialBlockedRef = useRef(tutorialBlocked);
   tutorialBlockedRef.current = tutorialBlocked;
   const [pendingTutorial, setPendingTutorial] = useState<
@@ -1123,12 +1158,20 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         setLinkedTerm(local);
         return;
       }
+      // A read that fails is TOLD (owner 2026-10-04): the list had already
+      // closed and nothing opened, silently. Only for the newest tap, and not
+      // once the learner has moved on. The shared notice waits out the list
+      // popup's dismissal itself (AppDialogHost + rootModalHoldMs, K10).
+      let it: GlossaryItem | undefined;
+      let failed = false;
       try {
-        const [it] = await fetchGlossaryItemsByIds([id]);
-        if (it && req === openTermReqRef.current) setLinkedTerm(it);
+        [it] = await fetchGlossaryItemsByIds([id]);
       } catch {
-        /* offline / fetch error → no-op */
+        failed = true;
       }
+      if (req !== openTermReqRef.current) return;
+      if (it) setLinkedTerm(it);
+      else notify("Couldn't open that term", failed ? 'Check your connection and try again.' : 'Please try again in a moment.');
     },
     [items],
   );
@@ -1444,7 +1487,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           user per topic (copy lives on achievements.flashcard_welcome_*).
           Skipped for the flagged-terms pseudo-topic, which is the user's own
           list and has no welcome row. Self-suppressing in Low-Light mode. */}
-      <TopicWelcomeSheet topicId={achievementId} enabled={!flaggedMode} />
+      <TopicWelcomeSheet
+        topicId={achievementId}
+        enabled={!flaggedMode}
+        hold={flashIntro.owed || !!termList || sessionTimer.configOpen || fullscreen || (!!tutorial && !tutorialBlocked)}
+        onOwedChange={setWelcomeOwed}
+      />
       <View style={styles.body}>
         {/* No pace timer on Flashcards (owner 2026-08-13) — the pace timer is a
             HOMEWORK-method aid (Fill-in-Blank / Matching / Scenarios). */}
@@ -2067,7 +2115,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
       ) : null}
 
       {/* T1 on entry; T2/T3 fire on the triggers above. */}
-      <ScreenIntroOverlay introKey="flashcards" />
+      {flashIntro.visible ? <IntroSheet introKey="flashcards" onDismiss={flashIntro.dismiss} /> : null}
       {tutorial && !tutorialBlocked ? <IntroSheet introKey={tutorial.key} onDismiss={dismissTutorial} /> : null}
 
       {/* Session timer: length picker + expiry banner (owner 2026-08-13). */}

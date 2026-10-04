@@ -139,7 +139,8 @@ describe('the Glossary screen and the popup read through the session cache', () 
   });
   it('the popup no longer keeps a cache of its own', () => {
     const p = read('src/features/glossary/GlossaryTermPopup.tsx');
-    assert.match(p, /return readDefinitionOnce\(id\);/);
+    // 2026-10-04: + `via` (Start Here's extras); still the shared session read.
+    assert.match(p, /return readDefinitionOnce\(id, undefined, via\);/);
     assert.ok(!/new Map<string, Promise<DefinitionResult>>/.test(p));
   });
 });

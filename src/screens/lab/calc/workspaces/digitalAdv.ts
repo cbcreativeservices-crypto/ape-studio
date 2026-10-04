@@ -4,7 +4,19 @@
  * Convolution Resources. Section 'digital'. Same pattern as wave.ts.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, fmtCount, snapWhole } from '../calcUnits';
+import { DB_PER_BIT, FULL_SCALE_SINE_DB, fmt, fmtCount, snapWhole } from '../calcUnits';
+
+/** TPDF dither (the standard choice) adds twice the quantization noise power:
+ *  10·log10(3) = 4.77 dB more noise (Lipshitz, Wannamaker & Vanderkooy, JAES
+ *  1992). A properly dithered converter's ideal SNR is therefore 6.02·N − 3.01. */
+const TPDF_NOISE_DB = 10 * Math.log10(3);
+
+/** A transition band must fit below Nyquist: the passband edge, the stopband
+ *  edge and the band between all lie in 0 … fs/2. */
+const firTransitionTooWide = (sr: number, trans: number): string | null =>
+  trans >= sr / 2
+    ? `A ${fmt(trans)} Hz transition band cannot fit in a ${fmt(sr)} Hz system — everything a digital filter does happens between 0 Hz and half the sample rate (${fmt(sr / 2)} Hz). Enter a transition narrower than ${fmt(sr / 2)} Hz.`
+    : null;
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -354,9 +366,11 @@ const FIRLEN: Workspace = {
     'Treating the estimate as exact — window and design method shift the real tap count; this is a sizing rule of thumb.',
   ],
   warnings:
-    'Harris rule of thumb: N ≈ (fs/Δf)·(A/22), with Δf the transition width (Hz) and A the stopband ' +
-    'attenuation (dB). Linear-phase latency = (N−1)/2 samples. Exact designs (Parks–McClellan, ' +
-    'windowed-sinc) vary — size, then verify.',
+    'fred harris’s rule of thumb (harris, "On the use of windows…", Proc. IEEE 1978): N ≈ (fs/Δf)·(A/22), ' +
+    'with Δf the transition width (Hz) and A the stopband attenuation (dB). The result is exactly what ' +
+    'that rule gives; the rule itself is an ESTIMATE — an optimal (Parks–McClellan) design usually ' +
+    'lands within about 10% of it, a windowed-sinc design needs more taps. Linear-phase latency = ' +
+    '(N−1)/2 samples, exactly. A transition band wider than half the sample rate is refused.',
   glossary: ['FIR Filter', 'Linear Phase', 'Latency', 'Sample Rate', 'Transition Band'],
   fields: [
     { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
@@ -373,9 +387,11 @@ const FIRLEN: Workspace = {
       plainFormula:
         'The number of taps is about the sample rate divided by the transition width, times the stopband attenuation over 22; the latency is the taps minus one, over two.',
       explain:
-        'A linear-phase FIR filter’s sharpness comes from its length: a narrower transition band and a deeper stopband both need more taps, and every tap adds latency. This sizes the tap count and the delay it costs — the trade behind linear-phase EQ, oversampling, and steep crossovers.',
+        'A linear-phase FIR filter’s sharpness comes from its length: a narrower transition band and a deeper stopband both need more taps, and every tap adds latency. This sizes the tap count by fred harris’s rule of thumb — an estimate a real design lands near, not on — and gives the delay it costs, which for a linear-phase filter is exact.',
       keySymbols: ['≈', 'fs', '/', 'Δ', '·', '−'],
       compute: (v) => {
+        const tooWide = firTransitionTooWide(n(v.sr), n(v.trans));
+        if (tooWide) return [{ label: 'NO SUCH FILTER', text: tooWide, refusal: true }];
         const N = Math.ceil(snapWhole((n(v.sr) / n(v.trans)) * (n(v.atten) / 22)));
         // A filter has at least one tap (calc check A, 2026-10-03): 0 dB of
         // stopband gave N = 0 taps and a NEGATIVE latency of −0.5 samples.
@@ -388,6 +404,8 @@ const FIRLEN: Workspace = {
         ];
       },
       steps: (v) => {
+        const tooWide = firTransitionTooWide(n(v.sr), n(v.trans));
+        if (tooWide) return [tooWide];
         const N = Math.ceil(snapWhole((n(v.sr) / n(v.trans)) * (n(v.atten) / 22)));
         const latS = (N - 1) / 2;
         return [
@@ -537,18 +555,20 @@ const BITDEPTH: Workspace = {
     'of thumb comes from.',
   example:
     '16-bit: SNR ≈ 6.02 × 16 + 1.76 ≈ 98.1 dB, from 2¹⁶ = 65,536 levels. 24-bit: 6.02 × 24 + 1.76 ' +
-    '≈ 146.2 dB, from 2²⁴ = 16,777,216 levels. Each added bit is one more doubling of levels and ' +
+    '≈ 146.3 dB, from 2²⁴ = 16,777,216 levels. Each added bit is one more doubling of levels and ' +
     '≈ 6 dB more range.',
   mistakes: [
     'Quoting the SNR without the +1.76 dB — "6 dB per bit" gives the DYNAMIC RANGE (6.02·N); the full-scale-sine SNR adds ≈ 1.76 dB on top.',
     'Expecting a real converter to reach the theoretical figure — thermal noise, jitter and analog stages put practical 24-bit converters near 120 dB, not 146 dB. The formula is the CEILING.',
     'Believing more bits raise the loudest level — bit depth sets how far BELOW full scale the noise floor sits (dynamic range), not the maximum level.',
-    'Forgetting this assumes dither — the clean 6.02·N+1.76 result describes a properly dithered, full-scale sine; an undithered low-level signal distorts instead of just getting noisier.',
+    'Forgetting dither costs noise — 6.02·N + 1.76 dB assumes the quantization error behaves as smooth white noise. Proper (TPDF) dither guarantees that, but adds about 4.8 dB of noise, so a dithered system’s ideal SNR is about 6.02·N − 3.01 dB (93.3 dB at 16 bits). Without dither a low-level signal distorts instead.',
   ],
   warnings:
-    'Theoretical ideal: SNR = 6.02·N + 1.76 dB for a dithered full-scale sine wave; dynamic range ' +
-    '= 6.02·N dB; levels = 2^N. Real converters fall short of this ceiling because of analog ' +
-    'noise, jitter, and reference limits — treat it as the physics limit, not a spec you will measure.',
+    'Theoretical ideal: SNR = 6.02·N + 1.76 dB for a full-scale sine against quantization noise of ' +
+    'power q²/12 (exactly 20·log₁₀2 = 6.0206 dB per bit and 10·log₁₀1.5 = 1.761 dB); dynamic range ' +
+    '= 6.02·N dB; levels = 2^N. With TPDF dither the noise is 4.77 dB higher (SNR 6.02·N − 3.01 dB). ' +
+    'Real converters fall short because of analog noise, jitter, and reference limits — treat it ' +
+    'as the physics limit, not a spec you will measure.',
   glossary: ['Bit Depth', 'Dynamic Range', 'Quantization', 'Dither', 'Signal-to-Noise Ratio'],
   fields: [
     { key: 'bits', name: 'BIT DEPTH', quantity: 'number', nonNegative: true, placeholder: '24', help: 'Bits per sample — common PCM depths are 16, 24 and 32.', warn: { test: (x) => x <= 0 || x > 64, msg: 'Bit depth should be a positive number of bits (common values: 16, 24, 32).' } },
@@ -563,22 +583,24 @@ const BITDEPTH: Workspace = {
       plainFormula:
         'The signal-to-noise ratio equals 6.02 times the number of bits plus 1.76 dB; the dynamic range equals 6.02 times the bits; and the number of levels equals two raised to the bits.',
       explain:
-        'What one more bit buys. Each bit doubles the quantization levels and adds about 6 dB of theoretical dynamic range; a full-scale sine’s SNR adds 1.76 dB on top. This is the dithered ideal — real converters fall below it. Bit depth sets how far below full scale the noise floor sits, not the maximum level.',
+        'What one more bit buys. Each bit doubles the quantization levels and adds 6.02 dB of theoretical dynamic range; a full-scale sine’s SNR adds 1.76 dB on top. That is the undithered ideal (quantization noise only); TPDF dither adds 4.77 dB of noise, and real converters fall lower still. Bit depth sets how far below full scale the noise floor sits, not the maximum level.',
       keySymbols: ['·', 'x²'],
       compute: (v) => {
         const N = n(v.bits);
         return [
-          { label: 'THEORETICAL SNR (full-scale sine)', value: 6.02 * N + 1.76, quantity: 'db' },
-          { label: 'DYNAMIC RANGE', value: 6.02 * N, quantity: 'db', chainable: false },
+          { label: 'THEORETICAL SNR (full-scale sine)', value: DB_PER_BIT * N + FULL_SCALE_SINE_DB, quantity: 'db' },
+          { label: 'DYNAMIC RANGE', value: DB_PER_BIT * N, quantity: 'db', chainable: false },
+          { label: 'SNR WITH TPDF DITHER', value: DB_PER_BIT * N + FULL_SCALE_SINE_DB - TPDF_NOISE_DB, quantity: 'db', chainable: false },
           { label: 'QUANTIZATION LEVELS 2^N', value: Math.pow(2, N), quantity: 'number', chainable: false },
         ];
       },
       steps: (v) => {
         const N = n(v.bits);
         return [
-          `Each bit is one binary digit, so the number of distinct code values is 2^${fmt(N)} = ${fmt(Math.pow(2, N))}.`,
-          `Dynamic range ≈ 6.02 × N = 6.02 × ${fmt(N)} = ${fmt(6.02 * N)} dB — the "≈ 6 dB per bit" rule.`,
-          `Full-scale-sine SNR adds 1.76 dB: 6.02 × ${fmt(N)} + 1.76 = ${fmt(6.02 * N + 1.76)} dB. This is the dithered ideal; real converters land below it.`,
+          `Each bit is one binary digit, so the number of distinct code values is 2^${fmtCount(N)} = ${fmtCount(Math.pow(2, N))}.`,
+          `Dynamic range = 6.0206 × N = 6.0206 × ${fmtCount(N)} = ${fmt(DB_PER_BIT * N)} dB — the "≈ 6 dB per bit" rule (6.0206 = 20·log₁₀2).`,
+          `Full-scale-sine SNR adds 1.761 dB: ${fmt(DB_PER_BIT * N)} + 1.761 = ${fmt(DB_PER_BIT * N + FULL_SCALE_SINE_DB)} dB — quantization noise only.`,
+          `With TPDF dither the noise rises 4.77 dB: ${fmt(DB_PER_BIT * N + FULL_SCALE_SINE_DB - TPDF_NOISE_DB)} dB. Real converters land below both.`,
         ];
       },
     },
@@ -593,21 +615,21 @@ const BITDEPTH: Workspace = {
       keySymbols: ['/'],
       compute: (v) => {
         const dr = n(v.dr);
-        const exact = dr / 6.02;
+        const exact = dr / DB_PER_BIT;
         const need = Math.ceil(snapWhole(exact));
         return [
           { label: 'BITS NEEDED (rounded up)', value: need, quantity: 'number' },
           { label: 'EXACT (unrounded)', value: exact, quantity: 'number', chainable: false },
-          { label: 'RANGE THOSE BITS ACTUALLY GIVE', value: 6.02 * need, quantity: 'db', chainable: false },
+          { label: 'RANGE THOSE BITS ACTUALLY GIVE', value: DB_PER_BIT * need, quantity: 'db', chainable: false },
         ];
       },
       steps: (v) => {
         const dr = n(v.dr);
-        const exact = dr / 6.02;
+        const exact = dr / DB_PER_BIT;
         const need = Math.ceil(snapWhole(exact));
         return [
-          `Each bit adds ≈ 6.02 dB, so bits = range ÷ 6.02 = ${fmt(dr)} ÷ 6.02 = ${fmt(exact)}.`,
-          `Bits come in whole numbers, so round UP to ${fmt(need)} bits — which delivers 6.02 × ${fmt(need)} = ${fmt(6.02 * need)} dB of range.`,
+          `Each bit adds 6.0206 dB (20·log₁₀2), so bits = range ÷ 6.0206 = ${fmt(dr)} ÷ 6.0206 = ${fmt(exact)}.`,
+          `Bits come in whole numbers, so round UP to ${fmtCount(need)} bits — which delivers 6.0206 × ${fmtCount(need)} = ${fmt(DB_PER_BIT * need)} dB of range.`,
           `(For example, a 90 dB target needs 15 bits of range → in practice you would pick 16-bit, the nearest standard depth.)`,
         ];
       },

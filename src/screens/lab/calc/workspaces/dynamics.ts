@@ -21,6 +21,18 @@ const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const ratioBelowOne = (r: number) =>
   `A ratio of ${fmt(r)}:1 is not compression. A compressor’s ratio starts at 1:1 (no change) and goes up — at 4:1, 4 dB in above the threshold gives 1 dB out. Below 1:1 the output would rise faster than the input, which is an expander, not a compressor. Enter a ratio of 1 or more.`;
 
+/** No downward-compression ratio reaches the target — said in words (calc
+ *  accuracy audit, 2026-10-04, D53); it was a thrown error that showed only
+ *  the generic "check for zeros or reversed inputs". Inputs only. */
+const noRatioReaches = (thr: number, inp: number, out: number): string =>
+  !(inp > thr)
+    ? `The input (${fmt(inp)} dBFS) is not above the threshold (${fmt(thr)} dBFS), so a compressor leaves it untouched — no ratio changes it. Raise the input or lower the threshold.`
+    : out < thr
+      ? `No compressor ratio can bring ${fmt(inp)} dBFS down to ${fmt(out)} dBFS: even an infinite ratio stops at the threshold (${fmt(thr)} dBFS). Lower the threshold, or reduce the gain after the compressor.`
+      : out === thr
+        ? `Landing exactly on the threshold (${fmt(thr)} dBFS) needs an infinite ratio — a limiter, not a compressor setting.`
+        : `A target above the input (${fmt(out)} dBFS over ${fmt(inp)} dBFS) is a boost — a compressor only turns loud parts down. Add makeup gain instead.`;
+
 const WS_COMPRESSOR: Workspace = {
   id: 'compressor',
   name: 'Compressor Math',
@@ -137,7 +149,9 @@ const WS_COMPRESSOR: Workspace = {
         // confident "−2.4:1" (target below threshold) or "0.5:1" (target above
         // the input — an expander, not a compressor). Throw → runCompute shows
         // "no valid result" instead of a ratio no compressor can be set to.
-        if (!(above > 0 && outAbove > 0 && out <= inp)) throw new Error('target outside the compressor range');
+        if (!(above > 0 && outAbove > 0 && out <= inp)) {
+          return [{ label: 'NO RATIO REACHES THIS', text: noRatioReaches(thr, inp, out), refusal: true }];
+        }
         const ratio = above / outAbove;
         return [
           { label: 'REQUIRED RATIO (n:1)', value: ratio, quantity: 'number' },
@@ -150,6 +164,7 @@ const WS_COMPRESSOR: Workspace = {
         const out = n(v.targetOut);
         const above = inp - thr;
         const outAbove = out - thr;
+        if (!(above > 0 && outAbove > 0 && out <= inp)) return [noRatioReaches(thr, inp, out)];
         return [
           `Input above threshold: ${fmt(inp)} − (${fmt(thr)}) = ${fmt(above)} dB.`,
           `Wanted output above threshold: ${fmt(out)} − (${fmt(thr)}) = ${fmt(outAbove)} dB.`,

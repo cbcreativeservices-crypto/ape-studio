@@ -17,8 +17,18 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
-import { starterGlossaryEntry } from '../../features/startHere/startHereGlossary';
-import { GlossaryTermPopup } from '../../features/glossary/GlossaryTermPopup';
+import {
+  bonusSpentLine,
+  relatedAskBody,
+  relatedIntro,
+  relatedPlan,
+  starterGlossaryEntry,
+  starterRelated,
+} from '../../features/startHere/startHereGlossary';
+import { GlossaryTermPopup, termPaidThisSession } from '../../features/glossary/GlossaryTermPopup';
+import { peekStartHereBonusLeft, startHereBonusLeft } from '../../features/glossary/glossaryGateway';
+import { CROSS_LINK_CANCEL, CROSS_LINK_OPEN, crossLinkTitle } from '../../features/glossary/crossLinkCharge';
+import { useMemberGate } from '../../features/commercial/useTier';
 import { colors, fonts } from '../../theme/tokens';
 import { popupCard } from '../../theme/readingColumn';
 import {
@@ -54,6 +64,9 @@ export function TermSheet({ termId, onClose }: { termId: string | null; onClose:
   // The full glossary entry opens INSIDE this popup (embedded), so closing it
   // lands back on the short meaning, and closing that lands back on the page.
   const [full, setFull] = useState<string | null>(null);
+  // "This used one of Start Here's 2 extra definitions" — for the term whose
+  // fresh read spent one (the server's answer, never a guess).
+  const [spent, setSpent] = useState<{ name: string; line: string } | null>(null);
   const close = () => {
     setFull(null);
     onClose();
@@ -67,7 +80,21 @@ export function TermSheet({ termId, onClose }: { termId: string | null; onClose:
             <Text style={styles.doneText}>DONE</Text>
           </Pressable>
         </Pressable>
-        {full ? <GlossaryTermPopup embedded termName={full} preloaded={starterGlossaryEntry(full)} onClose={() => setFull(null)} /> : null}
+        {full ? (
+          <GlossaryTermPopup
+            embedded
+            termName={full}
+            preloaded={starterGlossaryEntry(full)}
+            // A related word that is not a starter word: Start Here's own read —
+            // its 2 extra definitions first, then the week (owner 2026-10-04).
+            via="startHere"
+            onRead={(row) => {
+              if (row.bonus_spent) setSpent({ name: full, line: bonusSpentLine(row.bonus_left) });
+            }}
+            footer={<RelatedWords key={full} name={full} spentLine={spent?.name === full ? spent.line : null} onOpen={setFull} />}
+            onClose={() => setFull(null)}
+          />
+        ) : null}
       </Pressable>
     </Modal>
   );
@@ -91,6 +118,84 @@ function TermBody({ t, onFull }: { t: StarterTerm; onFull: () => void }) {
         </Pressable>
       ) : (
         <Text style={styles.sheetGap}>{t.glossaryGap}</Text>
+      )}
+    </View>
+  );
+}
+
+/**
+ * RELATED WORDS under a starter word's full entry (owner 2026-10-04: "Start
+ * Here gives the learner 2 extra full glossary definition lookups, once").
+ *
+ * - A related word that is a starter word opens its built-in entry: free.
+ * - A member ('open') opens any related word: the server never meters them.
+ * - A known non-member ('locked') is ASKED first for a new word (D55): Cancel
+ *   charges nothing; Open spends one of Start Here's 2 extras (server-counted,
+ *   once per account AND per device), then the normal weekly lookups.
+ * - 'checking' / 'unconfirmed': no related words at all — a maybe-member is
+ *   never charged and never shown lookup wording (D52, owner 2026-10-03 #2).
+ * - A word already opened this session opens free, no question (D50).
+ * The question is drawn INSIDE this popup — the popup already sits in Start
+ * Here's word sheet (a Modal), so a dialog would be Modal over Modal (K10).
+ */
+function RelatedWords({ name, spentLine, onOpen }: { name: string; spentLine: string | null; onOpen: (term: string) => void }) {
+  const gate = useMemberGate();
+  const related = starterRelated(name);
+  const [left, setLeft] = useState<number | null | undefined>(() => peekStartHereBonusLeft());
+  const [ask, setAsk] = useState<string | null>(null);
+  useEffect(() => {
+    if (gate !== 'locked' || related.length === 0) return;
+    let alive = true;
+    void startHereBonusLeft().then((n) => {
+      if (alive) setLeft(n);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [gate, related.length]);
+
+  if (spentLine) return <Text style={styles.relSpent}>{spentLine}</Text>;
+  if (related.length === 0 || (gate !== 'open' && gate !== 'locked')) return null;
+  const metered = gate === 'locked';
+  const tap = (term: string) => {
+    const plan = relatedPlan({ starter: !!starterGlossaryEntry(term), metered, alreadyOpened: termPaidThisSession(term) });
+    if (plan === 'open') onOpen(term);
+    else setAsk(term);
+  };
+  return (
+    <View style={styles.relWrap}>
+      <Text style={styles.relEyebrow}>RELATED WORDS</Text>
+      {metered ? <Text style={styles.relIntro}>{relatedIntro(left)}</Text> : null}
+      {ask ? (
+        <View style={styles.relAsk} accessibilityLiveRegion="polite">
+          <Text style={styles.relAskTitle}>{crossLinkTitle(ask)}</Text>
+          <Text style={styles.relIntro}>{relatedAskBody(left)}</Text>
+          <View style={styles.relAskBtns}>
+            <Pressable onPress={() => setAsk(null)} style={styles.relBtn} accessibilityRole="button" accessibilityLabel={`${CROSS_LINK_CANCEL}. Nothing is used.`}>
+              <Text style={styles.relBtnText}>{CROSS_LINK_CANCEL.toUpperCase()}</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                const term = ask;
+                setAsk(null);
+                onOpen(term);
+              }}
+              style={[styles.relBtn, styles.relBtnGo]}
+              accessibilityRole="button"
+              accessibilityLabel={CROSS_LINK_OPEN}
+            >
+              <Text style={[styles.relBtnText, styles.relBtnGoText]}>{CROSS_LINK_OPEN.toUpperCase()}</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.chips}>
+          {related.map((r) => (
+            <Pressable key={r} onPress={() => tap(r)} style={styles.chip} hitSlop={4} accessibilityRole="button" accessibilityLabel={`Related word: ${r}. Opens its entry`}>
+              <Text style={styles.chipText}>{r}</Text>
+            </Pressable>
+          ))}
+        </View>
       )}
     </View>
   );
@@ -379,6 +484,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   chipText: { color: '#cfe9ff', fontFamily: fonts.barlowSemiBold, fontSize: 14 },
+  // Related words inside the full-entry popup (owner 2026-10-04)
+  relWrap: { gap: 8, marginTop: 14, borderTopWidth: 1, borderTopColor: '#1f1f24', paddingTop: 12 },
+  relEyebrow: { color: colors.amberLabel, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6 },
+  relIntro: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
+  relSpent: { color: colors.amber, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, marginTop: 10 },
+  relAsk: { gap: 8, borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.4)', backgroundColor: '#17140c', padding: 12 },
+  relAskTitle: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 16 },
+  relAskBtns: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10 },
+  relBtn: { minHeight: 44, justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, paddingHorizontal: 14 },
+  relBtnGo: { borderColor: 'rgba(255,198,77,.6)' },
+  relBtnText: { color: colors.textSub, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1 },
+  relBtnGoText: { color: colors.amber },
 
   // Reading
   lead: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 15.5, lineHeight: 22 },

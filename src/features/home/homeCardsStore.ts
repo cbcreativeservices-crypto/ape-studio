@@ -23,12 +23,55 @@ const KEY = 'ape:homeCards';
 const BKEY = 'ape:homeBundles';
 const DKEY = 'ape:homeDefaultGs';
 
+/**
+ * START HERE's place in the saved Home order (owner 2026-10-04: "home is
+ * default, stays where user last left it after they move it"). Start Here is
+ * on every Home deck; on a member's custom deck Home Setup lets them drag it
+ * like a topic row, and its slot is stored IN this list, beside the topics,
+ * as this marker. It is never a topic: every topic view below leaves it out,
+ * and it does not count toward HOME_MAX.
+ *
+ * A saved list WITHOUT the marker (every list saved before this, and every
+ * new account) has Start Here at its default place — the front, right after
+ * Career Finder — added on READ only (`withStartHere`): a stored order is not
+ * rewritten to add it. The first Home Setup save stores it where the learner
+ * left it; from then on their order wins. It cannot be taken off Home (it is
+ * the only way into Start Here — owner 2026-09-29: "always reachable from its
+ * own Home card").
+ */
+export const HOME_START_HERE = -1;
+
+const isTopic = (g: number) => g !== HOME_START_HERE;
+/** Dedupe; at most HOME_MAX topics; the Start Here marker kept where it is. */
+function capTopics(l: number[]): number[] {
+  let n = 0;
+  return [...new Set(l)].filter((g) => !isTopic(g) || ++n <= HOME_MAX);
+}
+
+/** Last-input memo: the views below must hand React the SAME array until the
+ *  stored list changes (useMemo deps, useSyncExternalStore snapshots). */
+function lastOf(fn: (l: number[]) => number[]): (l: number[]) => number[] {
+  let lastIn: number[] | null = null;
+  let lastOut: number[] = [];
+  return (l) => {
+    if (l !== lastIn) {
+      lastIn = l;
+      lastOut = fn(l);
+    }
+    return lastOut;
+  };
+}
+/** The topics only (what every topic caller has always read). */
+const topicsView = lastOf((l) => (l.includes(HOME_START_HERE) ? l.filter(isTopic) : l));
+/** The whole order with Start Here in it — at the front when never placed. */
+const orderView = lastOf((l) => (l.includes(HOME_START_HERE) ? l : [HOME_START_HERE, ...l]));
+
 const listStore = createLocalStore<number[]>({
   key: KEY,
   empty: () => [],
   parse: (p) => {
     if (!Array.isArray(p)) throw new Error('home cards: not a list');
-    return [...new Set(p.filter((g): g is number => typeof g === 'number'))].slice(0, HOME_MAX);
+    return capTopics(p.filter((g): g is number => typeof g === 'number'));
   },
 });
 
@@ -53,17 +96,41 @@ const defaultStore = createLocalStore<number | null>({
 
 /** Total Home cards (topics + bundles) — the 20-cap counts both. */
 export function homeCardCount(): number {
-  return listStore.get().length + bundleStore.get().length;
+  return topicsView(listStore.get()).length + bundleStore.get().length;
 }
 
 const addTopic = (gs: number) => (l: number[]) =>
-  l.includes(gs) || l.length + bundleStore.get().length >= HOME_MAX ? l : [...l, gs];
+  !isTopic(gs) || l.includes(gs) || topicsView(l).length + bundleStore.get().length >= HOME_MAX ? l : [...l, gs];
 const dropTopic = (gs: number) => (l: number[]) => (l.includes(gs) ? l.filter((g) => g !== gs) : l);
 /** A topic leaving Home takes the default-landing choice with it. */
 const clearDefaultIf = (gone: (d: number) => boolean) => (d: number | null) => (d != null && gone(d) ? null : d);
 
 export function getHomeGs(): number[] {
-  return listStore.get();
+  return topicsView(listStore.get());
+}
+
+/** The saved Home order WITH Start Here's slot (HOME_START_HERE) — at the
+ *  front when it has never been placed. For Home Setup and the Home deck. */
+export function getHomeOrder(): number[] {
+  return orderView(listStore.get());
+}
+
+/** Live view of getHomeOrder. */
+export function useHomeOrder(): number[] {
+  return orderView(listStore.use());
+}
+
+/**
+ * Where Start Here goes on a member's Home deck: null = its default place
+ * (right after Career Finder, ahead of the member's own cards); otherwise the
+ * gs of the topic card it follows. The required cores are skipped — Home
+ * Setup keeps them at the front of the saved list, ahead of every row the
+ * learner can move — and so is anything the deck does not show (`skip`).
+ */
+export function startHereAfter(order: readonly number[], skip: (gs: number) => boolean): number | null {
+  const i = order.indexOf(HOME_START_HERE);
+  for (let j = i - 1; j >= 0; j--) if (!skip(order[j])) return order[j];
+  return null;
 }
 
 /** Whether the stored Home list has been READ (not the empty placeholder).
@@ -90,7 +157,9 @@ export function setHomeGs(gs: number[]): Promise<boolean> {
     void defaultStore.hydrate(); // the sheet reads both when it reopens
     return Promise.resolve(false);
   }
-  const next = [...new Set(gs)].slice(0, HOME_MAX);
+  // The Home Setup save carries Start Here's slot (HOME_START_HERE) where the
+  // learner left it; it is stored like any row and never counted as a topic.
+  const next = capTopics(gs);
   // The sheet says a refused write itself ("Home not saved"): not the shared notice too.
   const list = listStore.set(next, { reportFailure: false });
   const def = defaultStore.mutate(clearDefaultIf((d) => !next.includes(d)), { reportFailure: false });
@@ -98,7 +167,7 @@ export function setHomeGs(gs: number[]): Promise<boolean> {
 }
 
 export function isOnHome(gs: number): boolean {
-  return listStore.get().includes(gs);
+  return topicsView(listStore.get()).includes(gs);
 }
 
 /** Toggle a single topic on/off Home (per-card book toggle, user request
@@ -164,7 +233,7 @@ export function useHomeBundles(): string[] {
 
 /** Live view of the Home topic list. */
 export function useHomeGs(): number[] {
-  return listStore.use();
+  return topicsView(listStore.use());
 }
 
 /** Reset ALL in-memory caches (account wipe / user switch — clearLocalAccountData).
@@ -181,7 +250,8 @@ export function resetLocal(): void {
  * explicit choice → the carousel opens on Glossary (its prior default). Always
  * one of the Home topics, or null. */
 
-const validDefault = (d: number | null, list: number[]): number | null => (d != null && list.includes(d) ? d : null);
+const validDefault = (d: number | null, list: number[]): number | null =>
+  d != null && isTopic(d) && list.includes(d) ? d : null;
 
 export function getDefaultHomeGs(): number | null {
   return validDefault(defaultStore.get(), listStore.get());

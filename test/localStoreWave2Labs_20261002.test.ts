@@ -295,7 +295,8 @@ describe('screens/lab — the storage parts', () => {
     assert.match(s, /throw new Error\('not a tick series'\)/, 'a damaged blob is set aside, not trusted');
     assert.match(s, /const on = !done\.includes\(i\);\s*void ticksStore\.mutate\(\(a\) => \(\{ \.\.\.a, \[experiment\.id\]: withTick\(a\[experiment\.id\] \?\? \[\], i, on\) \}\)\);/);
     assert.match(s, /holdSessionWork<HeldTicks>\(CARRY_KEY, \(prev\) => withHeldTick\(prev, experiment\.id, i, on\), \{ guestOnly: true \}\);/, 'the guest carry is kept');
-    assert.match(s, /registerSessionCarry<HeldTicks>\(CARRY_KEY, \(held\) => ticksStore\.mutate\(\(all\) => mergeHeldTicks\(all, held\)\)\);/);
+    // 2026-10-04 (smallFixes): what the ledger holds when the writer runs.
+    assert.match(s, /registerSessionCarry<HeldTicks>\(CARRY_KEY, \(held\) => ticksStore\.mutate\(\(all\) => mergeHeldTicks\(all, peekSessionWork<HeldTicks>\(CARRY_KEY\) \?\? held\)\)\);/);
   });
 
   it('Mixing: the priorities are an edit of the STORED list; the focal point re-reads after a failed read', () => {

@@ -255,6 +255,7 @@ export const STAGE6_READINESS: StageDef = {
           fieldId: "rigging_signoff",
           label: "Rigging inspection and sign-off",
           kind: "status",
+          showWhen: { field: "people.rigging_required", notEquals: ["no"] },
           help: "Approved means the certified rigger named in stage 3 has inspected and signed off everything that is flown. Only that person can approve it; this training does not qualify anyone to.",
           required: false,
           onlyFor: [
@@ -265,6 +266,7 @@ export const STAGE6_READINESS: StageDef = {
           fieldId: "power_signoff",
           label: "Temporary power test and sign-off",
           kind: "status",
+          showWhen: { field: "people.power_source", notEquals: ["existing_outlets", "house_distro", "generator_direct"] },
           help: "Approved means the licensed or certified electrician from stage 3 has tested and signed off the tie-in, distribution or generator connection. Not required for wall outlets, venue power or a generator used directly.",
           required: false
         },

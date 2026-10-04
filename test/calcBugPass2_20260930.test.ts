@@ -147,7 +147,8 @@ test('A1 — the useful band is a range around f₀', () => {
   const outs = fn('absorber', 'panel').compute({ mass: 5, gap: 0.05 });
   const band = outs.find((o) => o.label === 'USEFUL BAND (≈ ±½ oct)');
   assert.ok(band && 'text' in band);
-  assert.equal(band.text, '84.85–169.7 Hz');
+  // 59.94/√(m·d) — the exact (c/2π)·√ρ₀ constant (calc accuracy audit 2026-10-04), was 60.
+  assert.equal(band.text, '84.77–169.5 Hz');
 });
 
 test('I1 — third-order LOWER is lower whatever order the tones are typed', () => {

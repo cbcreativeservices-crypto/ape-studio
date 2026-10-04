@@ -93,7 +93,8 @@ describe('1. Home Setup — a draft from an unread list is never saved', () => {
   it('the sheet captures it when the draft is built and refuses SAVE on a stale draft', () => {
     const s = read('screens/enrollment/HomeSetupSheet.tsx');
     const open = s.slice(s.indexOf('// (Re)build the draft each time the sheet opens'), s.indexOf('}, [visible]);', s.indexOf('// (Re)build the draft')));
-    assert.match(open, /draftFromReadList\.current = isHomeListHydrated\(\);\s*const home = getHomeGs\(\);/);
+    // 2026-10-04 (homeStartHereCard): the draft reads the order WITH Start Here's slot.
+    assert.match(open, /draftFromReadList\.current = isHomeListHydrated\(\);\s*\/\/[^\n]*\n\s*const home = getHomeOrder\(\);/);
     const save = s.slice(s.indexOf('const save = () =>'), s.indexOf('// ── Long-press-hold-then-drag'));
     assert.match(save, /const fromRead = draftFromReadList\.current;/);
     assert.match(save, /const list = fromRead \? setHomeGs\(\[\.\.\.cores, \.\.\.editableOn\]\) : Promise\.resolve\(false\);/);

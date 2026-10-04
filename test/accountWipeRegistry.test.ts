@@ -43,8 +43,6 @@ const REGISTRY = fileURLToPath(
  * the reason is the part that matters.
  */
 const EXEMPT: Record<string, string> = {
-  'features/startHere/firstOpen.ts':
-    'the "first app open" flag is DEVICE-level (owner 2026-09-29: Start Here is the landing only the first time the app is opened) — on the KEEP list, no identity, no progress, no content',
   'screens/lab/rack/RackUnit.tsx':
     "the “hide the display” reading preference is device-level and is on the KEEP list for the same reason as showBigPicture and glossary autoOffline — it records no progress, no identity and no content, only how much room the lesson gets (tester report 2026-09-23)",
   'screens/auth/AuthScreen.tsx':

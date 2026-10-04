@@ -32,6 +32,8 @@ const sessionShownIntros = new Set<IntroKey>();
  */
 export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false) {
   const [visible, setVisible] = useState(false);
+  /** The stored flag has answered (or no read was needed). */
+  const [decided, setDecided] = useState(false);
   const dismissedRef = useRef(false);
   // Suppression: NOTHING shows when the dev kill-switch is on OR Low-Light
   // Production Mode is engaged — this wins even over DEV_BYPASS.alwaysShowIntros.
@@ -50,12 +52,16 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
     let alive = true;
     if (devBypass('alwaysShowIntros')) {
       setVisible(true); // every entry = first time (dev, incl. placeholders so they can be felt)
+      setDecided(true);
       return;
     }
     // Never show an UNFINISHED (placeholder) intro to real users — its copy
     // isn't final and it carries a PLACEHOLDER badge. It reappears the moment
     // its copy is finalized (placeholder:false). Launch sweep 2026-09-07.
-    if (SCREEN_INTROS[key].placeholder !== false) return;
+    if (SCREEN_INTROS[key].placeholder !== false) {
+      setDecided(true);
+      return;
+    }
     if (sessionOnly) {
       // Once per app session: mark shown on first entry so it can't reappear
       // later this session; the flag clears on relaunch, so it returns next time.
@@ -63,6 +69,7 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
         sessionShownIntros.add(key);
         setVisible(true);
       }
+      setDecided(true);
       return;
     }
     // The STORED flag decides, both ways (evening pass 2, 2026-10-02). This
@@ -73,8 +80,13 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
     // for good got it again on every sign-in, and the re-run that read their
     // stored "1" left it on screen.
     (async () => {
-      const seen = await AsyncStorage.getItem(INTRO_STORAGE_PREFIX + key);
-      if (alive && !dismissedRef.current) setVisible(seen == null);
+      try {
+        const seen = await AsyncStorage.getItem(INTRO_STORAGE_PREFIX + key);
+        if (alive && !dismissedRef.current) setVisible(seen == null);
+      } finally {
+        // Answered either way (see `owed`).
+        if (alive) setDecided(true);
+      }
       // A failed read shows nothing — an intro is never worth an unhandled
       // rejection on every screen that hosts one (bug hunt 2026-09-30). That
       // is also the safe side for a "seen" flag (wave 2, 2026-10-02,
@@ -113,7 +125,15 @@ export function useScreenIntro(key: IntroKey, sessionOnly = false, hold = false)
    * intro held here is not consumed — it appears the moment the blocking thing
    * resolves, which is the whole point. Same shape as `suppressed` above.
    */
-  return { visible: visible && focused && !suppressed && !hold, dismiss };
+  /**
+   * `owed` (2026-10-04): the intro is still to come on this visit — its stored
+   * flag has not answered yet, or it is due and not dismissed (even while
+   * held, suppressed or unfocused). A host's OTHER first-visit popup (the
+   * Flashcards topic welcome) waits on it: a second root Modal presented
+   * beside this one is refused on iOS and never marked seen.
+   */
+  const owed = !decided || (visible && !dismissedRef.current);
+  return { visible: visible && focused && !suppressed && !hold, dismiss, owed };
 }
 
 export function IntroSheet({

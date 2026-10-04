@@ -141,7 +141,8 @@ describe('F3 — the NIOSH dose integrates 80–140 dBA (DHHS/NIOSH 98-126)', ()
   });
   it('above 140 dBA: still counted, and the result says NIOSH stops there', () => {
     const o = outs('dose', 'doseNiosh', { doseLevels: [141], doseMins: [1] });
-    assert.match(row(o, 'ABOVE 140 dBA')?.text ?? '', /no exposure above 140 dBA/);
+    // NIOSH's 140 is a PEAK limit (dB peak), said so since the 2026-10-04 audit.
+    assert.match(row(o, 'ABOVE 140 dBA')?.text ?? '', /no exposure ever exceed 140 dB peak/);
     assert.ok(num(o, 'DAILY DOSE (85 dBA / 3 dB)') > 0);
     assert.ok(row(outs('dose', 'allowNiosh', { lex: 141 }), 'ABOVE 140 dBA'));
     assert.equal(row(outs('dose', 'doseNiosh', { doseLevels: [140], doseMins: [1] }), 'ABOVE 140 dBA'), undefined);

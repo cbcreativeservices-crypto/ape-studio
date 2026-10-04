@@ -62,7 +62,7 @@ test('SAVE ALL cannot run twice from a double tap', () => {
 
 test('the term popup charges a term once per session and names the missing device key', () => {
   const popup = read('src/features/glossary/GlossaryTermPopup.tsx');
-  assert.match(popup, /const full = await readOnce\(hit\.id\);/);
+  assert.match(popup, /const full = await readOnce\(hit\.id, via\);/);
   assert.ok(!/await fetchDefinitionViaGateway\(/.test(popup), 'the popup calls the metered read directly again');
   // Hunt 13: the key is named only to a reader known to have no session.
   assert.match(popup, /classifyGatewayError\(error\) === 'denied'\) \{[\s\S]{0,1400}?else setNeedsKey\(true\);/);

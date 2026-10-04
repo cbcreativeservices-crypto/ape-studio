@@ -32,7 +32,7 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 import { getLabPreview } from '../lab/labPreviewStore';
-import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
+import { holdSessionWork, peekSessionWork, registerSessionCarry, releaseSessionWork } from '../lab/sessionCarry';
 import type { RoomDesign } from '../../screens/lab/roomdesign/roomModel';
 
 const STORAGE_KEY = 'ape:roomdesign:v1';
@@ -164,7 +164,6 @@ export function saveRoomDesign(design: RoomDesign): Promise<boolean> {
         list = prev;
         emit();
       }
-      if (ok) deletedSinceCarry.delete(stamped.id);
       return ok;
     });
   });
@@ -194,9 +193,7 @@ export function withDesigns(lib: readonly RoomDesign[], add: readonly RoomDesign
  */
 export function holdRoomDesignForSession(design: RoomDesign): boolean {
   const stamped = { ...design, updatedAt: Date.now() };
-  const held = holdSessionWork<RoomDesign[]>(CARRY_KEY, (prev) => withDesigns(prev ?? [], [stamped]));
-  if (held) deletedSinceCarry.delete(stamped.id); // saved again: carried again
-  return held;
+  return holdSessionWork<RoomDesign[]>(CARRY_KEY, (prev) => withDesigns(prev ?? [], [stamped]));
 }
 
 // The ledger's writer: the held designs join the signed-in account's library
@@ -207,8 +204,9 @@ registerSessionCarry<RoomDesign[]>(CARRY_KEY, async (designs) => {
   await hydrate();
   if (gen !== generation || !hydrated) return false;
   const prev = list;
-  // Never a design the account has deleted since (see deletedSinceCarry).
-  list = withDesigns(list, sanitize(designs).filter((d) => !deletedSinceCarry.has(d.id)));
+  // What the ledger holds NOW, not the copy this write was started with: a
+  // design deleted meanwhile has been let go of there (see deleteRoomDesign).
+  list = withDesigns(list, sanitize(peekSessionWork<RoomDesign[]>(CARRY_KEY) ?? designs));
   emit();
   try {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(list));
@@ -224,13 +222,13 @@ registerSessionCarry<RoomDesign[]>(CARRY_KEY, async (designs) => {
   }
 });
 
-/* A DELETE IS HONOURED BY THE CARRY (hunt 13, 2026-10-04). The ledger keeps
-   what it held for the whole session and writes it ALL again whenever a newer
-   hold lands — a signed-in learner whose membership read later fails is
-   treated as a guest, and their next SAVE is held. A carried design the
-   account had deleted meanwhile came back with it. Deleted ids are kept here
-   (a save of the same id lets go) and cleared with the store on the wipe. */
-const deletedSinceCarry = new Set<string>();
+/* A DELETE IS HONOURED BY THE CARRY (hunt 13; shared since 2026-10-04). The
+   ledger keeps what it held for the whole session and writes it ALL again
+   whenever a newer hold lands — a signed-in learner whose membership read
+   later fails is treated as a guest, and their next SAVE is held. A carried
+   design the account had deleted meanwhile came back with it. A delete now
+   lets go of the design in the ledger (`releaseSessionWork`, which applies
+   whoever is signed in); a later save of the same id is held again. */
 
 /** True while the saved designs could not be read from the device. */
 export function isRoomDesignStoreUnreadable(): boolean {
@@ -248,13 +246,15 @@ export function deleteRoomDesign(id: string): Promise<boolean> {
     const next = list.filter((d) => d.id !== id);
     list = next;
     emit();
+    // Let go of it in the session carry too — a guest's delete as well
+    // (2026-10-04: a guest who saved, deleted, then signed in got it back).
+    releaseSessionWork<RoomDesign[]>(CARRY_KEY, (held) => held.filter((d) => d.id !== id));
     if (saveBlocked) return true; // a guest's session copy: nothing on disk to remove
     return persist().then((ok) => {
       if (!ok && list === next) {
         list = prev;
         emit();
       }
-      if (ok) deletedSinceCarry.add(id);
       return ok;
     });
   });
@@ -264,7 +264,6 @@ export function deleteRoomDesign(id: string): Promise<boolean> {
  *  by clearLocalAccountData's `ape:*` sweep) and fence any in-flight read. */
 export function resetLocal(): void {
   generation++;
-  deletedSinceCarry.clear();
   list = [];
   hydrated = false;
   hydrating = null;

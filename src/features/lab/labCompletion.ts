@@ -27,7 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from '../study/sync';
 import { getLabPreview } from './labPreviewStore';
-import { holdSessionWork, registerSessionCarry } from './sessionCarry';
+import { holdSessionWork, onSessionCarrySettled, registerSessionCarry, sessionWipePending } from './sessionCarry';
 import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 import { WAVE_MODULES } from '../../screens/lab/wave/modules/registry';
 import { DIGITAL_MODULES } from '../../screens/lab/digital/modules/registry';
@@ -340,6 +340,15 @@ export function useAudioFundamentalsComplete(): boolean {
 
 async function fireComplete(labKey: string): Promise<void> {
   if (sent.has(labKey)) return;
+  // NOT WHILE A NEW IDENTITY'S WIPE IS PENDING (guest wave, 2026-10-04; owner
+  // "not if they sign out or close app first"). Between a sign-in and its
+  // device wipe, the units in memory are the device's previous occupant's —
+  // a guest who closed the app before signing in (their units were stored,
+  // and the boot read loaded them), or work done after a sign-out. Sent in
+  // that window, mark_lab_complete credited THEM to the account just signed
+  // into. It waits: `onSessionCarrySettled` retries, and a same-session
+  // guest's units are replayed by the ledger after the wipe and sent then.
+  if (sessionWipePending()) return;
   const gen = completionGen;
   try {
     const { data, error } = await supabase.rpc('mark_lab_complete', { p_lab_key: labKey });
@@ -371,6 +380,15 @@ async function retryUnsent(): Promise<void> {
     if (isLabComplete(labKey) && !sent.has(labKey)) await fireComplete(labKey);
   }
 }
+
+// A completion held back while an identity's wipe was pending (fireComplete)
+// is sent once the device is that identity's own again — e.g. a member's
+// boot retry that ran in the moment between their session answer and its
+// (no-op) device sync. After a real switch the wipe has emptied memory, so
+// nothing of the previous occupant is left to send.
+onSessionCarrySettled(() => {
+  void retryUnsent();
+});
 
 /**
  * Record that the user cleared one unit of a lab (a module viewed, a section

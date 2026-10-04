@@ -16,19 +16,23 @@ import { setSaveFailurePresenter } from './src/features/storage/saveFailureNotic
 import { notify } from './src/lib/confirm';
 import { RootErrorBoundary } from './src/components/RootErrorBoundary';
 import { navigationRef } from './src/navigation/navigationRef';
-import { linking } from './src/navigation/linking';
-import { attachLinkCapture, pendingLinkUrl, setPendingLink } from './src/navigation/pendingLink';
+import { linking, navigateToPath } from './src/navigation/linking';
+import { attachLinkCapture, clearPendingLink, pendingLinkUrl, setPendingLink } from './src/navigation/pendingLink';
 import { recordAppSession } from './src/features/review/reviewPrompt';
 import { startAutoUpdate } from './src/features/updates/startAutoUpdate';
 import { drainStudyQueue } from './src/features/study/sync';
 import { flushScenarioQueue } from './src/features/study/scenarioHomework';
 import {
   attachWeeklyConceptPush,
+  flushCommunityPathNav,
   flushLocalDestNav,
   flushWeeklyConceptNav,
+  queueCommunityPath,
   queueLocalDest,
   queueWeeklyConcept,
 } from './src/features/notifications/push';
+import { runSoon } from './src/lib/afterInteractions';
+import { refreshCommunityInbox } from './src/features/directory/CommunityBadge';
 import { syncLocalNotificationsThrottled } from './src/features/notifications/localSchedule';
 import { loadLocalSettings } from './src/features/settings/store';
 import { FirstRunCoordinator } from './src/features/intro/FirstRunCoordinator';
@@ -148,6 +152,28 @@ function routeLocalDest(dest: string): void {
   }
 }
 
+/**
+ * Open a tapped member alert's conversation (owner 2026-10-04) by the deep-link
+ * rules, not a hand-built route: the path is remembered as a pending link
+ * FIRST, then navigated through linking's own table. Signed out (Auth is the
+ * base), nothing is pushed above Auth — AuthScreen resumes the link after
+ * sign-in. Signed in, it opens now and the remembered link is dropped so a
+ * later sign-out → sign-in cannot replay it; during the cold-start Splash it
+ * is kept, and Splash itself clears it once it finds a session.
+ */
+function openCommunityPath(path: string): void {
+  setPendingLink(pendingLinkUrl(path));
+  let base: string | undefined;
+  try {
+    base = navigationRef.getRootState()?.routes?.[0]?.name;
+  } catch {
+    base = undefined;
+  }
+  if (base === 'Auth') return;
+  navigateToPath(path);
+  if (base && base !== 'Splash') clearPendingLink();
+}
+
 // A failed measurement write has to reach a HUMAN (2026-09-17). The store is
 // deliberately free of react-native so its node test can load it, so it calls
 // out through this hook instead. Set once, at module scope, before any tool can
@@ -200,7 +226,53 @@ function App() {
       }
       routeLocalDest(dest);
     };
-    return attachWeeklyConceptPush(open, openLocal);
+    // A tapped MEMBER alert (message / contact request, owner 2026-10-04)
+    // opens its conversation through the ordinary link rules: parked until
+    // the navigator mounts, then remembered as a pending link (so a tap while
+    // signed out resumes after sign-in, and Splash / the link capture clear it
+    // once signed in) and navigated through the one URL→screen table.
+    const openCommunity = (path: string) => {
+      if (!navigationRef.isReady()) {
+        queueCommunityPath(path);
+        return;
+      }
+      openCommunityPath(path);
+    };
+    return attachWeeklyConceptPush(open, openLocal, {
+      open: openCommunity,
+      received: () => void refreshCommunityInbox(true),
+    });
+  }, []);
+
+  // Community unread counts + this phone's alert registration (owner
+  // 2026-10-04): read on launch, on every return to the foreground, and every
+  // two minutes while the app is in front. Each read is newest-wins and fenced
+  // against an account switch inside the store (features/directory/inboxCounts).
+  useEffect(() => {
+    const tick = () => {
+      void refreshCommunityInbox(true);
+      // Required here, not imported: keeps the alert-registration code (and the
+      // device-id module) out of the app-start graph (perf start trim budget).
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      void (require('./src/features/notifications/communityPush') as typeof import('./src/features/notifications/communityPush')).syncCommunityDevice();
+    };
+    // The first read waits until the launch has settled (off the render path).
+    const first = runSoon(tick, { idleTimeoutMs: 3000 });
+    let timer: ReturnType<typeof setInterval> | null = setInterval(tick, 120_000);
+    const sub = AppState.addEventListener('change', (st) => {
+      if (st === 'active') {
+        tick();
+        if (!timer) timer = setInterval(tick, 120_000);
+      } else if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    });
+    return () => {
+      first.cancel();
+      sub.remove();
+      if (timer) clearInterval(timer);
+    };
   }, []);
 
   // Local reminder upkeep (S11, wired 2026-08-29): each boot AND each return
@@ -395,6 +467,8 @@ function App() {
                 flushWeeklyConceptNav((payload) => navigationRef.navigate('WeeklyConcept', payload));
                 // Drain a cold-start LOCAL reminder tap too — same contract.
                 flushLocalDestNav(routeLocalDest);
+                // …and a cold-start MEMBER alert tap.
+                flushCommunityPathNav(openCommunityPath);
               }}
             >
               <RootNavigator />

@@ -68,6 +68,7 @@ import { confirmDialog, notify } from '../../lib/confirm';
 import { useInFlightLatch } from '../../lib/latch';
 import { loadShowBigPicture, saveShowBigPicture } from '../../features/profile/bigPicturePref';
 import { cardColumn } from '../../theme/readingColumn';
+import { CommunityBadge } from '../../features/directory/CommunityBadge';
 
 
 /**
@@ -1416,6 +1417,9 @@ export function ProfileScreen() {
                 <Text style={styles.rowLabel}>Open the Directory</Text>
                 <Text style={styles.rowHint}>Explore · My Profile · Requests</Text>
               </View>
+              {/* Pending contact requests + unread messages (owner
+                  2026-10-04). Nothing when the count is unknown. */}
+              <CommunityBadge style={{ marginRight: 8 }} />
               <Text style={styles.chevron}>›</Text>
             </Pressable>
           </Section>

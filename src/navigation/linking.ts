@@ -104,7 +104,8 @@ export const linking: LinkingOptions<RootStackParamList> = {
       PublicGlossary: 'glossary/:query?',
       // Awards / community / careers
       Awards: 'awards/:category',
-      AudioCommunityDirectory: 'directory',
+      // `directory/requests/<id>` — a tapped member alert (2026-10-04).
+      AudioCommunityDirectory: 'directory/:tab?/:thread?',
       CareerFinder: 'careers',
     },
   },

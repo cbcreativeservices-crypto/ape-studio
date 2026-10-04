@@ -11,7 +11,7 @@
  * work. A pathway NEVER forks a screen.
  */
 import type { FieldValue, PathwayId, Severity, FindingKind, ValueMap } from './types';
-import { isAnswered, valueKey } from './types';
+import { LAUNCH_PATHWAYS, isAnswered, valueKey } from './types';
 
 export type FieldKind =
   | 'text'
@@ -97,18 +97,39 @@ export type FieldDef = {
 };
 
 /**
- * A condition on another field's answer, within the SAME stage.
+ * A condition on another field's answer.
  *
  * Deliberately not a general expression language: a `field` plus a list of
  * values is enough for every case the labs have, and it stays readable in the
  * content files where it is authored.
+ *
+ * ── THE RULES OF THE CONDITION (2026-10-04, design review #1 completed) ──────
+ *
+ *   • The controlling field must be a `choice`, `multiChoice` or `status`
+ *     field, and every value named here must be one of its options. A typo in
+ *     a value would otherwise never match and silently never hide anything —
+ *     `validateStage` refuses it instead.
+ *   • `field` is a `fieldId` in this stage, or `stageId.fieldId` for a field in
+ *     another stage of the same lab ("only if mixing is in scope" is answered in
+ *     stage 1 and asked about in stage 3).
+ *   • An UNANSWERED controller shows the field (unknown is visible).
+ *   • A HIDDEN controller hides its dependants: a question about an answer
+ *     nobody was asked for does not apply either.
+ *   • `equals` shows the field when ANY selected answer is listed.
+ *   • `notEquals` hides it when EVERY selected answer is listed — for a single
+ *     choice that is simply "the answer is one of these"; for a multi-choice it
+ *     means "none" ticked on its own hides, while "none" ticked beside a real
+ *     answer (a contradiction) keeps the question in view.
+ *   • A hidden field keeps its stored answer. It is not evaluated — no rule,
+ *     no score, no packet line reads it — and it comes back, answer intact, the
+ *     moment the controlling answer changes.
  */
 export type ShowWhen = {
-  /** `fieldId` of another field in this stage. */
+  /** `fieldId` in this stage, or `stageId.fieldId` in another stage of the lab. */
   field: string;
-  /** Show when the answer is one of these. */
+  /** Show when any selected answer is one of these. */
   equals?: string[];
-  /** Show unless the answer is one of these. */
+  /** Hide when every selected answer is one of these. */
   notEquals?: string[];
 };
 
@@ -193,12 +214,23 @@ export type ResolvedField = Omit<FieldDef, 'required' | 'labelBy' | 'helpBy' | '
 export type ResolvedSection = Omit<SectionDef, 'fields' | 'onlyFor' | 'notices'> & {
   fields: ResolvedField[];
   notices: NoticeDef[];
+  /** Questions in this section hidden by an earlier answer (they come back
+   *  with their answers if that answer changes). Drives the screen's note. */
+  hiddenCount?: number;
 };
 
 export type ResolvedStage = Omit<StageDef, 'sections' | 'rules' | 'notices'> & {
   sections: ResolvedSection[];
   rules: RuleDef[];
   notices: NoticeDef[];
+  /**
+   * Value keys (`stageId.fieldId`) of this stage's fields that `showWhen` hid.
+   * Rules and readiness read this so a hidden field is never evaluated: it
+   * never blocks, never scores, and its stored answer is never read.
+   * Fields absent because of the PATHWAY are not listed — they were never part
+   * of this project at all.
+   */
+  hidden?: string[];
 };
 
 function resolveRequired(req: FieldDef['required'], p: PathwayId): boolean {
@@ -207,42 +239,127 @@ function resolveRequired(req: FieldDef['required'], p: PathwayId): boolean {
   return req[p] ?? false;
 }
 
+/** The value key a `showWhen` names, from the stage it is written in. */
+export function showWhenKey(stageId: string, ref: string): string {
+  return ref.includes('.') ? ref : valueKey(stageId, ref);
+}
+
 /**
- * Collapse a stage for one pathway: drop what does not apply, apply the wording
- * overrides, and settle required-ness. Screens only ever see the result, which
- * is why they contain no pathway logic at all.
- */
-/**
- * Does this `showWhen` pass, given the project's current answers?
+ * Does this answer satisfy the condition? Pure value test — whether the
+ * controller is itself hidden is decided by the caller.
  *
  * UNKNOWN IS VISIBLE. When the controlling field has not been answered yet, the
  * condition cannot be evaluated and the dependent field SHOWS. Hiding on
  * unknown would mean a fresh project opens with half its questions missing and
  * no way to discover them — the opposite of the point.
  */
-function showWhenPasses(rule: ShowWhen | undefined, stageId: string, values: ValueMap | undefined): boolean {
-  if (!rule) return true;
-  if (!values) return true; // no values supplied — resolve everything (used by previews/tests)
-  const raw = values[valueKey(stageId, rule.field)];
+function answerPasses(rule: ShowWhen, raw: FieldValue | undefined): boolean {
   if (!isAnswered(raw)) return true;
   const answers = (Array.isArray(raw) ? raw : [raw])
     .filter((v): v is string => typeof v === 'string')
     .map((v) => v.toLowerCase());
   if (answers.length === 0) return true;
   if (rule.equals && !rule.equals.some((e) => answers.includes(e.toLowerCase()))) return false;
-  if (rule.notEquals && rule.notEquals.some((e) => answers.includes(e.toLowerCase()))) return false;
+  if (rule.notEquals) {
+    const not = rule.notEquals.map((e) => e.toLowerCase());
+    if (answers.every((a) => not.includes(a))) return false;
+  }
   return true;
 }
 
-export function resolveStage(stage: StageDef, pathway: PathwayId, values?: ValueMap): ResolvedStage {
+/**
+ * Every value key `showWhen` hides, across `stages`, for one pathway and one
+ * set of answers.
+ *
+ * Pass the WHOLE LAB when you have it: a condition can name a field in another
+ * stage, and a hidden controller hides its dependants, which can only be known
+ * with the controller's own stage in hand. Given a single stage, a condition
+ * naming another stage is still tested against its stored answer.
+ *
+ * With no `values` nothing is hidden (previews and tests resolve everything).
+ */
+export function hiddenKeys(stages: StageDef[], pathway: PathwayId, values: ValueMap | undefined): Set<string> {
+  const hidden = new Set<string>();
+  if (!values) return hidden;
+  type Node = { stageId: string; field: FieldDef; section: SectionDef };
+  const nodes = new Map<string, Node>();
+  for (const st of stages) {
+    for (const sec of st.sections) {
+      if (!appliesTo(sec.onlyFor, pathway)) continue;
+      for (const f of sec.fields) {
+        if (!appliesTo(f.onlyFor, pathway)) continue;
+        nodes.set(valueKey(st.stageId, f.fieldId), { stageId: st.stageId, field: f, section: sec });
+      }
+    }
+  }
+  const memo = new Map<string, boolean>();
+  const visiting = new Set<string>();
+  const passes = (rule: ShowWhen | undefined, stageId: string): boolean => {
+    if (!rule) return true;
+    const ck = showWhenKey(stageId, rule.field);
+    // A hidden controller hides its dependants.
+    if (nodes.has(ck) && !visible(ck)) return false;
+    return answerPasses(rule, values[ck]);
+  };
+  const visible = (key: string): boolean => {
+    const known = memo.get(key);
+    if (known !== undefined) return known;
+    const n = nodes.get(key);
+    if (!n) return true;
+    // A cycle is refused by validateStage/validateStages; at run time it must
+    // never hide anything, so a field met again mid-walk reads as visible.
+    if (visiting.has(key)) return true;
+    visiting.add(key);
+    const ok = passes(n.section.showWhen, n.stageId) && passes(n.field.showWhen, n.stageId);
+    visiting.delete(key);
+    memo.set(key, ok);
+    return ok;
+  };
+  for (const key of nodes.keys()) if (!visible(key)) hidden.add(key);
+  return hidden;
+}
+
+/** Every hidden key across already-resolved stages (the lab-wide set rules read). */
+export function labHiddenKeys(stages: ResolvedStage[]): Set<string> {
+  const out = new Set<string>();
+  for (const s of stages) for (const k of s.hidden ?? []) out.add(k);
+  return out;
+}
+
+/**
+ * Collapse a stage for one pathway: drop what does not apply, apply the wording
+ * overrides, and settle required-ness. Screens only ever see the result, which
+ * is why they contain no pathway logic at all.
+ *
+ * `lab` (optional) is every stage of the lab, so a condition naming another
+ * stage — and a chain of conditions — resolves exactly as it does on the lab
+ * home. Screens pass it; `resolveLab` does it for a whole lab at once.
+ */
+export function resolveStage(stage: StageDef, pathway: PathwayId, values?: ValueMap, lab?: StageDef[]): ResolvedStage {
+  return resolveWith(stage, pathway, hiddenKeys(lab ?? [stage], pathway, values));
+}
+
+/** Resolve a whole lab against one set of answers (one visibility pass). */
+export function resolveLab(stages: StageDef[], pathway: PathwayId, values?: ValueMap): ResolvedStage[] {
+  const hidden = hiddenKeys(stages, pathway, values);
+  return stages.map((s) => resolveWith(s, pathway, hidden));
+}
+
+function resolveWith(stage: StageDef, pathway: PathwayId, hiddenSet: Set<string>): ResolvedStage {
   const sections: ResolvedSection[] = [];
+  const hidden: string[] = [];
   for (const s of stage.sections) {
     if (!appliesTo(s.onlyFor, pathway)) continue;
-    if (!showWhenPasses(s.showWhen, stage.stageId, values)) continue;
     const fields: ResolvedField[] = [];
+    let hiddenCount = 0;
     for (const f of s.fields) {
       if (!appliesTo(f.onlyFor, pathway)) continue;
-      if (!showWhenPasses(f.showWhen, stage.stageId, values)) continue;
+      const key = valueKey(stage.stageId, f.fieldId);
+      if (hiddenSet.has(key)) {
+        hidden.push(key);
+        hiddenCount++;
+        continue;
+      }
       const { required, labelBy, helpBy, onlyFor, ...rest } = f;
       fields.push({
         ...rest,
@@ -252,12 +369,16 @@ export function resolveStage(stage: StageDef, pathway: PathwayId, values?: Value
         allowNa: f.allowNa !== false,
       });
     }
+    // A section whose own condition hid every field it has on this pathway is
+    // not drawn at all (its notices go with it).
+    if (s.showWhen && fields.length === 0 && hiddenCount > 0) continue;
     sections.push({
       sectionId: s.sectionId,
       title: s.title,
       intro: s.intro,
       fields,
       notices: (s.notices ?? []).filter((n) => appliesTo(n.onlyFor, pathway)),
+      hiddenCount,
     });
   }
   return {
@@ -270,6 +391,7 @@ export function resolveStage(stage: StageDef, pathway: PathwayId, values?: Value
     sections,
     rules: stage.rules.filter((r) => appliesTo(r.onlyFor, pathway)),
     activity: stage.activity,
+    hidden,
   };
 }
 
@@ -319,6 +441,35 @@ export function validateStage(stage: StageDef): string[] {
     }
   }
 
+  // ── showWhen (2026-10-04) ────────────────────────────────────────────────
+  // Same-stage references are checked here; a reference into another stage is
+  // checked by validateStages, which can see the whole lab.
+  const byId = new Map<string, FieldDef>();
+  for (const s of stage.sections) for (const f of s.fields) byId.set(f.fieldId, f);
+  for (const s of stage.sections) {
+    const own = (fid: string) => s.fields.some((f) => f.fieldId === fid);
+    if (s.showWhen) {
+      const at = `${stage.stageId}.[${s.sectionId}]`;
+      const local = localRef(stage.stageId, s.showWhen.field);
+      if (local !== null) {
+        errors.push(...checkShowWhen(at, s.showWhen, byId.get(local)));
+        if (own(local)) errors.push(`${at}: showWhen is controlled by "${local}", a field inside the section it hides`);
+      } else errors.push(...checkShowWhenShape(at, s.showWhen));
+    }
+    for (const f of s.fields) {
+      if (!f.showWhen) continue;
+      const at = `${stage.stageId}.${f.fieldId}`;
+      const local = localRef(stage.stageId, f.showWhen.field);
+      if (local === f.fieldId) {
+        errors.push(`${at}: showWhen names the field itself`);
+        continue;
+      }
+      if (local !== null) errors.push(...checkShowWhen(at, f.showWhen, byId.get(local)));
+      else errors.push(...checkShowWhenShape(at, f.showWhen));
+    }
+  }
+  for (const cycle of showWhenCycles([stage])) errors.push(`showWhen cycle: ${cycle}`);
+
   for (const r of stage.rules) {
     if (ruleIds.has(r.ruleId)) errors.push(`${stage.stageId}: duplicate ruleId "${r.ruleId}"`);
     ruleIds.add(r.ruleId);
@@ -343,6 +494,89 @@ export function validateStage(stage: StageDef): string[] {
   }
 
   return errors;
+}
+
+/** The fieldId a reference names in `stageId`, or null when it names another stage. */
+function localRef(stageId: string, ref: string): string | null {
+  if (!ref.includes('.')) return ref;
+  const [sid, fid] = ref.split('.');
+  return sid === stageId ? fid : null;
+}
+
+/** The shape every condition needs, whatever it points at. */
+function checkShowWhenShape(at: string, rule: ShowWhen): string[] {
+  const errors: string[] = [];
+  if (!rule.field) errors.push(`${at}: showWhen names no field`);
+  if (!(rule.equals?.length || rule.notEquals?.length)) {
+    errors.push(`${at}: showWhen needs "equals" or "notEquals" values`);
+  }
+  return errors;
+}
+
+/**
+ * A condition against its controlling field: the field must exist, must be a
+ * field with a fixed set of answers, and every value named must be one of
+ * them. A misspelt value would never match, so the field would silently never
+ * hide (or, under `equals`, never show).
+ */
+function checkShowWhen(at: string, rule: ShowWhen, controller: FieldDef | undefined): string[] {
+  const errors = checkShowWhenShape(at, rule);
+  if (!controller) {
+    errors.push(`${at}: showWhen names "${rule.field}", which does not exist`);
+    return errors;
+  }
+  const kinds: FieldKind[] = ['choice', 'multiChoice', 'status'];
+  if (!kinds.includes(controller.kind)) {
+    errors.push(`${at}: showWhen is controlled by "${rule.field}", a ${controller.kind} field — it must be choice, multiChoice or status`);
+    return errors;
+  }
+  const allowed = (
+    controller.kind === 'status' ? [...STATUS_OPTIONS] : (controller.options ?? []).map((o) => o.value)
+  ).map((v) => v.toLowerCase());
+  for (const v of [...(rule.equals ?? []), ...(rule.notEquals ?? [])]) {
+    if (!allowed.includes(v.toLowerCase())) errors.push(`${at}: showWhen value "${v}" is not an option of "${rule.field}"`);
+  }
+  return errors;
+}
+
+/**
+ * Cycles in the visibility graph (field → its controller; a section's fields →
+ * the section's controller). Each cycle is reported once, as a path. A cycle
+ * would leave a field whose visibility depends on itself.
+ */
+function showWhenCycles(stages: StageDef[]): string[] {
+  const edges = new Map<string, string[]>();
+  const add = (from: string, to: string) => edges.set(from, [...(edges.get(from) ?? []), to]);
+  for (const st of stages) {
+    for (const sec of st.sections) {
+      for (const f of sec.fields) {
+        const k = valueKey(st.stageId, f.fieldId);
+        if (f.showWhen?.field) add(k, showWhenKey(st.stageId, f.showWhen.field));
+        if (sec.showWhen?.field) add(k, showWhenKey(st.stageId, sec.showWhen.field));
+      }
+    }
+  }
+  const out: string[] = [];
+  const seen = new Set<string>();
+  const state = new Map<string, 'open' | 'done'>();
+  const walk = (k: string, path: string[]) => {
+    const s = state.get(k);
+    if (s === 'done') return;
+    if (s === 'open') {
+      const loop = [...path.slice(path.indexOf(k)), k];
+      const id = [...loop].slice(0, -1).sort().join('|');
+      if (!seen.has(id)) {
+        seen.add(id);
+        out.push(loop.join(' → '));
+      }
+      return;
+    }
+    state.set(k, 'open');
+    for (const next of edges.get(k) ?? []) walk(next, [...path, k]);
+    state.set(k, 'done');
+  };
+  for (const k of edges.keys()) walk(k, []);
+  return out;
 }
 
 /**
@@ -396,6 +630,29 @@ export function validateStages(stages: StageDef[]): string[] {
       }
     }
   }
+
+  // showWhen that reaches into ANOTHER stage (same-stage ones are checked by
+  // validateStage). An unknown stage is as much an error as an unknown field:
+  // a condition that names nothing would never hide anything.
+  const fieldByKey = new Map<string, FieldDef>();
+  for (const s of stages) for (const sec of s.sections) for (const f of sec.fields) fieldByKey.set(`${s.stageId}.${f.fieldId}`, f);
+  for (const s of stages) {
+    for (const sec of s.sections) {
+      const conds: [string, ShowWhen | undefined][] = [
+        [`${s.stageId}.[${sec.sectionId}]`, sec.showWhen],
+        ...sec.fields.map((f) => [`${s.stageId}.${f.fieldId}`, f.showWhen] as [string, ShowWhen | undefined]),
+      ];
+      for (const [at, rule] of conds) {
+        if (!rule || localRef(s.stageId, rule.field) !== null) continue;
+        errors.push(...checkShowWhen(at, rule, fieldByKey.get(rule.field)).filter((e) => !e.includes('needs "equals"') && !e.includes('names no field')));
+      }
+    }
+  }
+  // Cycles that cross stages (a single-stage cycle is already reported above).
+  for (const cycle of showWhenCycles(stages)) {
+    const sids = new Set(cycle.split(' → ').map((k) => k.split('.')[0]));
+    if (sids.size > 1) errors.push(`showWhen cycle: ${cycle}`);
+  }
   return errors;
 }
 
@@ -447,6 +704,14 @@ export function validateSeeds(stages: StageDef[]): string[] {
             errors.push(`${a.activityId}: "${key}" seeds unknown option "${v}"`);
           }
         }
+      }
+    }
+    // An exercise must not hide what it seeded: the learner is sent to repair
+    // a value they would then never see (2026-10-04, showWhen).
+    for (const pw of a.onlyFor ?? LAUNCH_PATHWAYS) {
+      const hidden = hiddenKeys(stages, pw, a.seed as ValueMap);
+      for (const key of Object.keys(a.seed)) {
+        if (hidden.has(key)) errors.push(`${a.activityId} (${pw}): seeds "${key}", which its own seed hides`);
       }
     }
   }

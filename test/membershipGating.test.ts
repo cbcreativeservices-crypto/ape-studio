@@ -143,6 +143,8 @@ describe('members-only labs are gated at the navigator', () => {
       'CymaticsGallery',
       'ProductionStage',
       'ProductionActivity',
+      // 2026-10-04: the packet screen, added in the same change as its route.
+      'ProductionPacket',
       // The shared target both named production routes point at. The catalog
       // names PreProdLab / PostProdLab and has no row for this one.
       'ProductionLab',

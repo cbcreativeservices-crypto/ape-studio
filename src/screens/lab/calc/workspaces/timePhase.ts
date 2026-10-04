@@ -738,7 +738,11 @@ const WS_LATENCY: Workspace = {
         return [
           { label: 'ROUND-TRIP LATENCY', value: rt, quantity: 'time', unit: 'ms' },
           { label: 'ROUND-TRIP IN SAMPLES', value: rt * sr, quantity: 'samples', chainable: false },
-          { label: 'ONE-WAY (INPUT SIDE)', value: tin + n(v.proc) / 2, quantity: 'time', unit: 'ms', chainable: false },
+          // Calc accuracy audit (2026-10-04): this read "ONE-WAY (INPUT SIDE)"
+          // = input buffer + HALF the processing time — a 50/50 split of the
+          // converter and plugin time with nothing behind it. The input buffer
+          // alone is the figure the arithmetic actually knows.
+          { label: 'INPUT BUFFER ALONE', value: tin, quantity: 'time', unit: 'ms', chainable: false },
           { label: 'INPUT / OUTPUT / PROCESSING', text: `${fmt(tin * 1000)} ms + ${fmt(tout * 1000)} ms + ${fmt(n(v.proc) * 1000)} ms` },
         ];
       },
@@ -750,7 +754,7 @@ const WS_LATENCY: Workspace = {
         return [
           `Input buffer: ${fmtCount(n(v.inBuf))} ÷ ${fmt(sr)} = ${fmt(tin * 1000)} ms. Output buffer: ${fmtCount(n(v.outBuf))} ÷ ${fmt(sr)} = ${fmt(tout * 1000)} ms.`,
           `Round trip = ${fmt(tin * 1000)} + ${fmt(tout * 1000)} + ${fmt(n(v.proc) * 1000)} ms processing = ${fmt(rt * 1000)} ms (${fmtCount(rt * sr)} samples).`,
-          `This is what a performer monitoring through the DAW actually feels — roughly like standing ${fmt(rt * 343)} m from their own voice.`,
+          `This is what a performer monitoring through the DAW actually feels — roughly like standing ${fmt(rt * speedOfSoundAir(20))} m from their own voice (sound in air at 20 °C).`,
         ];
       },
     },
@@ -767,7 +771,7 @@ const WS_LATENCY: Workspace = {
         { label: 'TIME', value: n(v.smp) / n(v.sr), quantity: 'time', unit: 'ms' },
       ],
       steps: (v) => [
-        `t = ${fmt(n(v.smp))} samples ÷ ${fmt(n(v.sr))} Hz = ${fmt((n(v.smp) / n(v.sr)) * 1000)} ms.`,
+        `t = ${fmtCount(n(v.smp))} samples ÷ ${fmt(n(v.sr))} Hz = ${fmt((n(v.smp) / n(v.sr)) * 1000)} ms.`,
       ],
     },
     {
@@ -780,14 +784,14 @@ const WS_LATENCY: Workspace = {
         'The reverse: a delay time as a sample count, with the nearest whole sample — for setting sample-based delays or lining up regions on the grid.',
       keySymbols: ['·'],
       compute: (v) => {
-        const N = n(v.t) * n(v.sr);
+        const N = denoise(n(v.t) * n(v.sr));
         return [
           { label: 'EXACT SAMPLES', value: N, quantity: 'samples' },
           { label: 'NEAREST WHOLE SAMPLE', text: `${fmtInt(N)} samples` }, // fmtInt: NaN/∞ read as — (bug hunt 2026-09-29)
         ];
       },
       steps: (v) => [
-        `N = ${fmt(n(v.t) * 1000)} ms × ${fmt(n(v.sr))} Hz = ${fmt(n(v.t) * n(v.sr))} samples.`,
+        `N = ${fmt(n(v.t) * 1000)} ms × ${fmt(n(v.sr))} Hz = ${fmtCount(denoise(n(v.t) * n(v.sr)))} samples.`,
       ],
     },
   ],

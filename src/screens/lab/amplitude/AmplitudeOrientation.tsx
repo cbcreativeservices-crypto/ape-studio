@@ -32,6 +32,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { markLabReviewed, useLabDone } from '../../../features/lab/labCompletion';
+import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { AlphaType, Canvas, ColorType, DashPathEffect, Image, LinearGradient, Path, Rect, Skia, Text as SkiaText, useFont, vec } from '@shopify/react-native-skia';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import {
@@ -1023,6 +1024,9 @@ export function AmplitudeLabScreen() {
             The body's single check-gated button now records BOTH; a passed
             retrieval check is stronger review evidence than a self-report tap,
             so §1.7 is strengthened, not bent. */}
+        {/* Before a guest begins (owner 2026-10-04): this lab's review is
+            credit, and a guest's is kept only if they sign in this session. */}
+        <GuestStartReminder activity="lab:af_amplitude" />
         <AmplitudeColorBody alsoReviewLab />
       </ScrollView>
     </View>

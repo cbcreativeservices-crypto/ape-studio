@@ -905,7 +905,8 @@ export const STAGE5_TECHNICAL: StageDef = {
           fieldId: "timecode_plan",
           label: "Timecode and picture sync plan",
           kind: "longText",
-          help: "Only if a deliverable must sync to picture. Who provides timecode, the frame rate the picture side has set, and how sync is confirmed before the day.",
+          showWhen: { field: "deliver.timecode_required", notEquals: ["no"] },
+          help: "Needed whenever stage 2 says timecode or sync is required: to picture, or to another system that follows timecode, such as lighting, video or playback. Who provides timecode, the frame rate agreed with the picture or show-control side, and how sync is confirmed before the day.",
           required: false
         }
       ]

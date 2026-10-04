@@ -24,7 +24,7 @@ import type {
 } from './types';
 import { isAnswered, valueKey } from './types';
 import type { ResolvedStage } from './schema';
-import { stageFields } from './schema';
+import { labHiddenKeys, stageFields } from './schema';
 import { evaluateStage } from './rules';
 
 export type FieldReadiness = {
@@ -82,13 +82,20 @@ function isAccepted(f: Finding): boolean {
   return a.acceptedBy.trim().length > 0 && a.reason.trim().length > 0;
 }
 
+/**
+ * `hidden`: value keys `showWhen` hid — the whole lab's when the caller has it
+ * (`labHiddenKeys`), so a cross-stage rule never reads a hidden answer. A
+ * hidden field is already absent from `stage`, so it never counts as missing
+ * and never scores; this makes sure no rule reads it either.
+ */
 export function readStage(
   stage: ResolvedStage,
   project: ProductionProject,
   now: number = Date.now(),
+  hidden: ReadonlySet<string> = new Set(stage.hidden ?? []),
 ): StageReadiness {
   const fields = stageFields(stage);
-  const findings = evaluateStage(stage, project, now);
+  const findings = evaluateStage(stage, project, now, hidden);
 
   const fieldStates: FieldReadiness[] = fields.map((f) => {
     const d = decided(project, stage.stageId, f.fieldId);
@@ -143,7 +150,8 @@ export function readProject(
   project: ProductionProject,
   now: number = Date.now(),
 ): ReadinessReport {
-  const stageReports = stages.map((s) => readStage(s, project, now));
+  const hidden = labHiddenKeys(stages);
+  const stageReports = stages.map((s) => readStage(s, project, now, hidden));
   const findings = stageReports.flatMap((s) => s.findings);
   const blockers = stageReports.flatMap((s) => s.blockers);
   const acceptedBlockers = findings.filter((f) => f.severity === 'blocker' && isAccepted(f));
@@ -170,7 +178,10 @@ export function readProject(
   // a sliver; ten findings against a finished plan still costs the full fifth,
   // which is the point of having a penalty at all.
   const penalty = Math.min(0.2, attention * 0.02, base * 0.4);
-  const score = Math.max(0, Math.round((base - penalty) * 100));
+  // RULE 1 reaches the number too (2026-10-04, design review #4): with every
+  // required decision made and a blocker still open the score read 100 beside
+  // "Not Ready" — a finished-looking number on an unfinished plan.
+  const score = capWhileBlocked(Math.max(0, Math.round((base - penalty) * 100)), blockers.length > 0);
 
   let verdict: ProjectVerdict;
   if (blockers.length > 0) {
@@ -195,6 +206,96 @@ export function readProject(
     answeredRequired,
     totalRequired,
   };
+}
+
+/** The most a number may read while a blocker is open: never the finished 100. */
+export const BLOCKED_CEILING = 99;
+
+function capWhileBlocked(score: number, blocked: boolean): number {
+  return blocked ? Math.min(score, BLOCKED_CEILING) : score;
+}
+
+/**
+ * One stage as a number and a state (2026-10-04, design review #4).
+ *
+ * THE NUMBER is the project score's own formula applied to one stage, so the
+ * stage list and the headline number speak the same language:
+ *   decisions made ÷ decisions required (all of the stage's questions when it
+ *   has no required ones), less the same attention penalty — at most 0.02 a
+ *   finding, at most a fifth, and never more than 40% of what was earned, so a
+ *   penalty can shrink progress but never erase it.
+ *
+ * THE CEILING. 100 means DONE, so only a `complete` (or wholly
+ * not-applicable) stage may read it. A stage with an open blocker is held at
+ * 99 at most, in the blocker colour beside "Conflict detected" — the blocker
+ * still cannot be outscored, and the number cannot pretend otherwise.
+ *
+ * THE COLOUR is the stage's readiness state through the existing `STATE_TINT`
+ * tokens (theme colours, not new ones): grey before anything is decided, amber
+ * while under way, red with a blocker open, green when complete.
+ *
+ * UNREADABLE IS NOT ZERO (K2). No report — the project could not be read, or
+ * the stage could not be worked out — gives `pct: null` and the text "—",
+ * never "0%": a zero would tell the learner their work is gone.
+ */
+export type StageSignal = {
+  /** 0..100, or null when the stage's data could not be read. */
+  pct: number | null;
+  /** What the screen prints: "64%" or "—". */
+  text: string;
+  /** The readiness state the colour and the word come from; null when unread. */
+  state: ReadinessState | null;
+};
+
+export function stageSignal(sr: StageReadiness | null | undefined): StageSignal {
+  if (!sr) return { pct: null, text: '—', state: null };
+  const attention = sr.findings.filter((f) => f.severity === 'attention').length;
+  const penalty = Math.min(0.2, attention * 0.02, sr.progress * 0.4);
+  let pct = Math.max(0, Math.min(100, Math.round((sr.progress - penalty) * 100)));
+  if (sr.state !== 'complete' && sr.state !== 'na') pct = Math.min(pct, BLOCKED_CEILING);
+  pct = capWhileBlocked(pct, sr.blockers.length > 0);
+  return { pct, text: `${pct}%`, state: sr.state };
+}
+
+/** One stage's outstanding work, for the packet's WHAT'S LEFT list. */
+export type StageLeft = {
+  stageId: string;
+  num: number;
+  title: string;
+  /** Required decisions neither answered nor marked not applicable. */
+  missingRequired: number;
+  /** Unresolved blockers. */
+  blockers: number;
+  /** Attention findings (things to look at, not blockers). */
+  attention: number;
+};
+
+/**
+ * What a project still needs, stage by stage — only the stages with something
+ * outstanding, in stage order. An empty list means nothing required is left
+ * and nothing blocks the plan (attention findings included: a list that hid
+ * them would call a plan finished that the rules are still questioning).
+ */
+export function projectLeft(report: ReadinessReport): StageLeft[] {
+  return report.stages
+    .map((s) => ({
+      stageId: s.stageId,
+      num: s.num,
+      title: s.title,
+      missingRequired: s.totalRequired - s.answeredRequired,
+      blockers: s.blockers.length,
+      attention: s.findings.filter((f) => f.severity === 'attention').length,
+    }))
+    .filter((s) => s.missingRequired > 0 || s.blockers > 0 || s.attention > 0);
+}
+
+/** "2 required decisions · 1 blocker · 3 things to look at" — plain words. */
+export function stageLeftLine(s: StageLeft): string {
+  const parts: string[] = [];
+  if (s.missingRequired > 0) parts.push(`${s.missingRequired} required decision${s.missingRequired === 1 ? '' : 's'}`);
+  if (s.blockers > 0) parts.push(`${s.blockers} blocker${s.blockers === 1 ? '' : 's'}`);
+  if (s.attention > 0) parts.push(`${s.attention} thing${s.attention === 1 ? '' : 's'} to look at`);
+  return parts.join(' · ');
 }
 
 /**

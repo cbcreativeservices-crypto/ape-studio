@@ -11,7 +11,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { CommunityBadge, useCommunityInbox } from '../../features/directory/CommunityBadge';
+import { badgeA11y } from '../../features/directory/inboxCounts';
+import { directoryParams } from '../../features/notifications/communityRules';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { Banner, Chip, ChipWrap, Helper, Loading, PrimaryButton, SelfReportedNote, useSending, useSendingPer } from './directoryBits';
@@ -43,7 +46,25 @@ const TABS: { key: Tab; label: string }[] = [
 export function AudioCommunityDirectoryScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const [tab, setTab] = useState<Tab>('explore');
+  const route = useRoute();
+  // A tapped member alert lands here as `directory/requests/<id>` (owner
+  // 2026-10-04). Validated: anything else opens the screen as before.
+  const linked = directoryParams(route.params);
+  const [tab, setTab] = useState<Tab>(linked.requests ? 'requests' : 'explore');
+  /** The conversation a tap asked for; RequestsView opens it once its list
+   *  has loaded and finds it there, then hands it back (consumed once). */
+  const [openThreadId, setOpenThreadId] = useState<string | null>(linked.thread);
+  // A second tap while this screen is already open arrives as new params on
+  // the same route (navigateToPath uses `pop: true`).
+  const linkKey = `${linked.requests ? 'r' : ''}:${linked.thread ?? ''}`;
+  const lastLinkKey = useRef(linkKey);
+  useEffect(() => {
+    if (lastLinkKey.current === linkKey) return;
+    lastLinkKey.current = linkKey;
+    if (linked.requests) setTab('requests');
+    if (linked.thread) setOpenThreadId(linked.thread);
+  }, [linkKey, linked.requests, linked.thread]);
+  const inbox = useCommunityInbox();
   const [memberToken, setMemberToken] = useState<string | null>(null);
   /** The tapped card's display name, so the sheet's title is right from its
    *  first frame instead of "MEMBER" until the profile read lands. */
@@ -93,9 +114,16 @@ export function AudioCommunityDirectoryScreen() {
             accessibilityRole="tab"
             accessibilityState={{ selected: tab === t.key }}
             aria-selected={tab === t.key}
-            accessibilityLabel={t.label}
+            accessibilityLabel={
+              t.key === 'requests' && badgeA11y(inbox) ? `${t.label}, ${badgeA11y(inbox)}` : t.label
+            }
           >
-            <Text style={[st.tabText, tab === t.key && st.tabTextOn]}>{t.label}</Text>
+            <View style={st.tabLabelRow}>
+              <Text style={[st.tabText, tab === t.key && st.tabTextOn]}>{t.label}</Text>
+              {/* Pending requests + unread messages (owner 2026-10-04). No
+                  badge when the count is unknown — never a false 0. */}
+              {t.key === 'requests' ? <CommunityBadge state={inbox} /> : null}
+            </View>
           </Pressable>
         ))}
       </View>
@@ -111,7 +139,13 @@ export function AudioCommunityDirectoryScreen() {
         <ExploreView onOpenMember={openMember} hiddenTokens={blockedTokens} active={tab === 'explore'} />
       </View>
       {tab === 'profile' ? <MyProfileView /> : null}
-      {tab === 'requests' ? <RequestsView onBlocked={markBlocked} /> : null}
+      {tab === 'requests' ? (
+        <RequestsView
+          onBlocked={markBlocked}
+          openThreadId={openThreadId}
+          onOpenedThread={() => setOpenThreadId(null)}
+        />
+      ) : null}
 
       <MemberSheet
         token={memberToken}
@@ -593,6 +627,7 @@ const st = StyleSheet.create({
   tabOn: { borderColor: 'rgba(255,198,77,.6)', backgroundColor: '#241a06' },
   tabText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textMuted },
   tabTextOn: { color: colors.amber },
+  tabLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sheetRoot: { flex: 1, backgroundColor: 'rgba(0,0,0,.75)', justifyContent: 'flex-end' },
   sheet: {
     // Tablet (owner 2026-09-29): the sheet rides centred at the card column

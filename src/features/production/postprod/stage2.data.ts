@@ -247,12 +247,14 @@ export const STAGE2_MEDIA: StageDef = {
           fieldId: "verify_owner",
           label: "Who verified it",
           kind: "text",
+          showWhen: { field: "verify_coverage", notEquals: ["none"] },
           help: "Ideally not the same person who did the copy, though on most jobs it is."
         },
         {
           fieldId: "verify_findings",
           label: "What the verification found",
           kind: "longText",
+          showWhen: { field: "verify_coverage", notEquals: ["none"] },
           help: "Including \"nothing\". A recorded clean result is evidence; an unrecorded one is a memory.",
           placeholder: "e.g. 212 of 212 files matched. One file on card B failed twice and was re-copied from the original successfully."
         }

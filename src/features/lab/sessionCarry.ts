@@ -80,7 +80,8 @@ export function registerSessionCarry<T>(key: string, writer: SessionWriter<T>): 
  *
  * `guestOnly`: the store writes for everyone (labCompletion, the Cymatics
  * tick-offs) and only needs carrying across the sign-in wipe, so it holds
- * nothing once an account is known.
+ * nothing once an account is known. That refusal is for ADDITIONS: a delete
+ * or untick goes through `releaseSessionWork`, which always applies.
  *
  * Returns true when the work was held (false: a preview, or after a sign-out
  * — the caller must not promise that signing in keeps it).
@@ -95,6 +96,33 @@ export function holdSessionWork<T>(key: string, update: (prev: T | undefined) =>
   held.set(key, update(held.get(key) as T | undefined));
   versions.set(key, (versions.get(key) ?? 0) + 1);
   if (isAccount(owner) && !syncPending) void flushSessionWork();
+  return true;
+}
+
+/**
+ * A REMOVAL from held work — a delete, an untick (owner 2026-10-04). Unlike
+ * `holdSessionWork` it ALWAYS applies while something is held for `key`: once
+ * the account is settled a `guestOnly` hold refuses everything, and a removal
+ * refused there stayed in what was held, so the next flush (a failed carry
+ * re-run, a later hold) wrote the deleted row or the untaken tick BACK.
+ * `update` receives what is held and must only TAKE AWAY. Nothing is held →
+ * nothing to let go of (false); a removal never starts a hold, so it never
+ * carries anything, and it changes nothing about who is carried to (the wipe
+ * rules and the epoch fences stand). A preview may let go too: it earns
+ * nothing, and letting go is not earning.
+ *
+ * Writers should merge what the ledger holds WHEN THEY RUN
+ * (`peekSessionWork(key) ?? held`), not the copy they were queued with — a
+ * delete that reached a store's write chain first must not be undone by it.
+ */
+export function releaseSessionWork<T>(key: string, update: (prev: T) => T): boolean {
+  if (!held.has(key)) return false;
+  const before = versions.get(key) ?? 0;
+  held.set(key, update(held.get(key) as T));
+  versions.set(key, before + 1);
+  // What is left is part of what already landed: nothing new to write.
+  if (written.get(key) === before) written.set(key, before + 1);
+  else if (isAccount(owner) && !syncPending) void flushSessionWork();
   return true;
 }
 
@@ -174,7 +202,39 @@ export async function settleSessionCarry(): Promise<void> {
   // account's wipe — which then deleted it, and it was marked written.
   if (settled < noted) return;
   syncPending = false;
+  for (const l of [...settledListeners]) {
+    try {
+      l();
+    } catch {
+      // one store's retry must not stop the hand-off
+    }
+  }
   if (isAccount(owner)) await flushSessionWork();
+}
+
+/**
+ * A NEW IDENTITY IS NOTED BUT ITS DEVICE WIPE HAS NOT RUN (guest wave,
+ * 2026-10-04: "a guest who signs in yes carries, but not if they sign out or
+ * close app first"). Until it has, what the stores hold in memory and on disk
+ * is NOT this identity's: a previous launch's guest units (a guest who closed
+ * the app before signing in), or work done after a sign-out. Nothing may be
+ * CREDITED to the account from it meanwhile — labCompletion's
+ * mark_lab_complete waits, and runs again from `onSessionCarrySettled`. A
+ * same-session guest's own work is not lost by the wait: the ledger replays
+ * it after the wipe, and it is credited then.
+ */
+export function sessionWipePending(): boolean {
+  return syncPending;
+}
+
+const settledListeners = new Set<() => void>();
+/** Runs each time a settle ends the wait (see `sessionWipePending`).
+ *  Registered once, at module load; returns an unsubscribe. */
+export function onSessionCarrySettled(fn: () => void): () => void {
+  settledListeners.add(fn);
+  return () => {
+    settledListeners.delete(fn);
+  };
 }
 
 /** A deliberate Guest Mode start (AuthScreen): a fresh guest session. */
@@ -196,7 +256,12 @@ export function flushSessionWork(): Promise<void> {
     do {
       flushAgain = false;
       const ep = epoch;
-      for (const [key, value] of [...held]) {
+      // Each key's value is read when ITS turn comes (2026-10-04), not from a
+      // copy taken at the start of the pass: a removal made while an earlier
+      // key's writer ran must not be written back by this one.
+      for (const key of [...held.keys()]) {
+        if (!held.has(key)) continue; // let go of meanwhile (a practice reset)
+        const value = held.get(key);
         const version = versions.get(key) ?? 0;
         if (written.get(key) === version) continue;
         const writer = writers.get(key);

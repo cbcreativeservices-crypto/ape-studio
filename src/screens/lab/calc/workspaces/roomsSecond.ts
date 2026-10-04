@@ -5,9 +5,19 @@
  * solves, unit-aware fields, worked steps, honesty notes, glossary terms.
  */
 import type { Workspace } from '../calcTypes';
-import { fmt, speedOfSoundAir } from '../calcUnits';
+import { SABINE_K, fmt, speedOfSoundAir } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
+
+/**
+ * Critical distance, exact for its model (calc accuracy audit, 2026-10-04):
+ * Dc = √(Q·A / 16π) with Sabine's A = 0.161·V/RT60 (Davis & Patronis, Sound
+ * System Engineering, ch. 5), so Dc = √(0.161/16π)·√(Q·V/RT60) = 0.0566·√(…).
+ * The rounded textbook 0.057 read 0.7% long.
+ */
+const DC_K = Math.sqrt(SABINE_K / (16 * Math.PI));
+const critDist = (q: number, vol: number, rt: number) => DC_K * Math.sqrt((q * vol) / rt);
+const DC_K_TXT = fmt(DC_K, 3);
 
 const CRITICAL_DISTANCE: Workspace = {
   id: 'critdist',
@@ -24,7 +34,7 @@ const CRITICAL_DISTANCE: Workspace = {
     'but clarity keeps falling. Gain-before-feedback, intelligibility, and mic distance all live ' +
     'or die by where Dc sits — a live-sound rig fights a small Dc; a dry studio enjoys a large one.',
   example:
-    'A 300 m³ room with RT60 = 0.8 s and an omni source (Q = 1): Dc = 0.057·√(1·300/0.8) ≈ 1.1 m. ' +
+    'A 300 m³ room with RT60 = 0.8 s and an omni source (Q = 1): Dc = 0.0566·√(1·300/0.8) ≈ 1.1 m. ' +
     'A cardioid pointing at the listener (Q ≈ 3) pushes Dc to ≈ 1.9 m — directivity buys distance.',
   mistakes: [
     'Treating Dc as a hard wall — it is the crossover point, not a cliff; the direct field keeps falling 6 dB per doubling on both sides of it.',
@@ -32,7 +42,8 @@ const CRITICAL_DISTANCE: Workspace = {
     'Assuming a bigger room always means a smaller Dc — Dc grows with volume; it shrinks with reverberation (RT60).',
   ],
   warnings:
-    'Classroom diffuse-field model: Dc = 0.057·√(Q·V / RT60) (metric). It assumes a reasonably ' +
+    'Diffuse-field model: Dc = √(Q·A/16π) with Sabine’s A = 0.161·V/RT60, i.e. Dc = 0.0566·√(Q·V / RT60) ' +
+    '(metric; often rounded to 0.057). It assumes a reasonably ' +
     'diffuse reverberant field and a single directivity factor — real rooms and real polar ' +
     'patterns vary with frequency. Formal room acoustics is the domain of ISO 3382.',
   glossary: ['Critical distance', 'Reverberation Time', 'RT60', 'Directivity', 'Q factor', 'Reverberation'],
@@ -47,23 +58,23 @@ const CRITICAL_DISTANCE: Workspace = {
       key: 'dc',
       name: 'Critical distance from room + directivity',
       inputs: ['vol', 'rt60', 'q'],
-      formula: 'Dc = 0.057 · √(Q · V / RT60)',
+      formula: 'Dc = 0.0566 · √(Q · V / RT60)',
       plainFormula:
-        'The critical distance equals 0.057 times the square root of the directivity times the room volume divided by the reverberation time.',
+        'The critical distance equals 0.0566 (the square root of 0.161 over 16π) times the square root of the directivity times the room volume divided by the reverberation time.',
       explain:
         'The critical distance is where a source’s direct sound and the room’s reverberant field are equally loud — closer, you hear the source; farther, the room. A more directional source (higher Q) or a bigger, deader room pushes it out. Doubling the directivity multiplies the distance by about 1.4.',
       keySymbols: ['·', '√', 'Q', '/'],
       compute: (v) => {
-        const dc = 0.057 * Math.sqrt((n(v.q) * n(v.vol)) / n(v.rt60));
+        const dc = critDist(n(v.q), n(v.vol), n(v.rt60));
         return [
           { label: 'CRITICAL DISTANCE Dc', value: dc, quantity: 'length' },
           { label: 'Dc IN FEET', value: dc, quantity: 'length', unit: 'ft', chainable: false },
         ];
       },
       steps: (v) => {
-        const dc = 0.057 * Math.sqrt((n(v.q) * n(v.vol)) / n(v.rt60));
+        const dc = critDist(n(v.q), n(v.vol), n(v.rt60));
         return [
-          `Dc = 0.057 × √(${fmt(n(v.q))} × ${fmt(n(v.vol))} ÷ ${fmt(n(v.rt60))}) = ${fmt(dc)} m (${fmt(dc / 0.3048)} ft).`,
+          `Dc = ${DC_K_TXT} × √(${fmt(n(v.q))} × ${fmt(n(v.vol))} ÷ ${fmt(n(v.rt60))}) = ${fmt(dc)} m (${fmt(dc / 0.3048)} ft).`,
           `Inside ${fmt(dc)} m the source dominates; beyond it the room does. Doubling the directivity Q multiplies Dc by √2 (≈ 1.41×).`,
         ];
       },
@@ -80,7 +91,7 @@ const CRITICAL_DISTANCE: Workspace = {
       keySymbols: ['/', 'log₁₀'],
       note: 'Positive dB = direct sound still wins; 0 dB is exactly at Dc; negative = the room is louder than the source.',
       compute: (v) => {
-        const dc = 0.057 * Math.sqrt((n(v.q) * n(v.vol)) / n(v.rt60));
+        const dc = critDist(n(v.q), n(v.vol), n(v.rt60));
         const drr = 20 * Math.log10(dc / n(v.r));
         return [
           { label: 'DIRECT-TO-REVERBERANT RATIO', value: drr, quantity: 'db' },
@@ -88,7 +99,7 @@ const CRITICAL_DISTANCE: Workspace = {
         ];
       },
       steps: (v) => {
-        const dc = 0.057 * Math.sqrt((n(v.q) * n(v.vol)) / n(v.rt60));
+        const dc = critDist(n(v.q), n(v.vol), n(v.rt60));
         const drr = 20 * Math.log10(dc / n(v.r));
         return [
           `Dc = ${fmt(dc)} m for this room and directivity.`,

@@ -21,7 +21,9 @@
  *     (useCourseTone): audio-output gate, speaker guard, stop on mute, stop on
  *     close — and it stops on every page change.
  *   • Nothing auto-appears (Low-Light Production Mode): every popup here is
- *     opened by a tap.
+ *     opened by a tap. The one exception outside Low-Light is a KNOWN
+ *     guest's save reminder before they begin (owner 2026-10-04,
+ *     GuestStartReminder) — once per session, inline in Low-Light.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -36,6 +38,7 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useGuestWording } from '../../features/commercial/useTier';
 import { heldPaged, holdPagedProgress, isPagedProgressUnreadable, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
 import { ProgressUnreadableNote } from '../lab/kit/ProgressUnreadableNote';
+import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import { useAnimationsAllowed } from '../../features/settings/a11y';
 import { confirmDialog } from '../../lib/confirm';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -420,6 +423,11 @@ export function StartHereScreen() {
             </Text>
           </Pressable>
           {pagesUnreadable ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
+          {/* Before a guest begins (owner 2026-10-04): their pages are not
+              saved unless they sign in this session ('progress' — Start Here
+              earns no credit for anyone). A popup once per session; in
+              Low-Light, this inline note instead (nothing auto-appears). */}
+          <GuestStartReminder activity="startHere" kind="progress" style={styles.unreadable} />
           {/* A tone start the engine refused is SAID (hunt 9, 2026-10-03 —
               useCourseTone's `error`, the rule every other lab on this voice
               follows): PLAY just stayed dark without a word. */}

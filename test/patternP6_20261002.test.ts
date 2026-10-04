@@ -230,9 +230,11 @@ describe('Career Finder beta feedback: "Saved on this device" only when it was',
     const s = read('features/careerfinder/store.ts');
     // 2026-10-03: a refused write also raises the shared failed-save notice
     // (unless the caller says it itself) — the answer is unchanged.
-    assert.match(s, /function persist\(next: FinderRecord, report = true\): Promise<boolean> \{[\s\S]*?if \(readFailed\) return Promise\.resolve\(false\);\s*return AsyncStorage\.setItem\(KEY, JSON\.stringify\(next\)\)\.then\(\s*\(\) => true,\s*\(\) => \{[\s\S]*?return false;\s*\},?\s*\);/);
-    assert.match(s, /export function setCareerFinderFeedback\(answer: FeedbackAnswer, note = '', report = false\): Promise<boolean> \{\s*return act\(/);
-    assert.match(s, /function act\(fn: \(\) => Promise<boolean> \| void\): Promise<boolean>/);
+    // 2026-10-04 (guestCareer): on the house store, whose mutate answers true
+    // only when the device accepted the write, false while the record could
+    // not be read (queued), false for a refusal — test/localStore pins it.
+    assert.match(s, /export function setCareerFinderFeedback\(answer: FeedbackAnswer, note = '', report = false\): Promise<boolean> \{\s*return store\.mutate\(\(r\) => \(\{ \.\.\.r, feedback: \{ answer, note, at: new Date\(\)\.toISOString\(\) \} \}\), \{ reportFailure: report \}\);/);
+    assert.match(s, /const store = createLocalStore<FinderRecord>\(/);
   });
   it('the screen words the result', () => {
     const s = read('screens/careerfinder/CareerFinderResultsScreen.tsx');

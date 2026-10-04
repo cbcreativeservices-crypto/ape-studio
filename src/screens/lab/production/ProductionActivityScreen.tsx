@@ -26,7 +26,8 @@ import { checkActivity, seedActivityProject, type ActivityResult } from '../../.
 import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject } from '../../../features/production/types';
 import { PATHWAY_LABEL } from '../../../features/production/types';
-import { stageForActivity } from '../../../features/production/labs';
+import { labDef, stageForActivity } from '../../../features/production/labs';
+import { hiddenKeys } from '../../../features/production/schema';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -93,9 +94,14 @@ export function ProductionActivityScreen() {
     }, [load]),
   );
 
+  // A field hidden by an earlier answer is not evaluated (2026-10-04): the
+  // check must not pass on an answer the learner can no longer see.
   const result: ActivityResult | null = useMemo(
-    () => (project ? checkActivity(activityId, project) : null),
-    [activityId, project],
+    () =>
+      project
+        ? checkActivity(activityId, project, hiddenKeys(labDef(lab)?.stages ?? [], project.pathway, project.values))
+        : null,
+    [activityId, project, lab],
   );
 
   const restart = useCallback(async () => {

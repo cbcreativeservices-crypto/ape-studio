@@ -138,22 +138,36 @@ describe('the authored gates point at fields that exist', () => {
     '../src/features/production/postprod/stage5.data.ts',
   ];
 
+  // 2026-10-04: a gate may now name a field in ANOTHER stage of the same lab
+  // as `stageId.fieldId` ("only if mixing is in scope" is answered in stage 1
+  // and asked about in stage 3). The check is no looser: a bare name must be
+  // in its own stage, a dotted one must exist in the lab — and validateStages
+  // (productionDesign_20261004.test.ts) additionally checks kinds, option
+  // values and cycles.
   for (const rel of files) {
-    it(`${rel.split('/').pop()} — every showWhen names a field in its own stage`, async () => {
+    it(`${rel.split('/').pop()} — every showWhen names a field in its own stage, or stage.field in its lab`, async () => {
       const mod = (await import(rel)) as Record<string, unknown>;
       const stage = Object.values(mod).find(
         (v) => v && typeof v === 'object' && 'sections' in (v as object),
-      ) as { sections: { fields: { fieldId: string; showWhen?: { field: string } }[] }[] } | undefined;
+      ) as { stageId: string; sections: { fields: { fieldId: string; showWhen?: { field: string } }[] }[] } | undefined;
       assert.ok(stage, 'stage export not found');
+      const labIndex = rel.includes('/preprod/')
+        ? '../src/features/production/preprod/index.ts'
+        : '../src/features/production/postprod/index.ts';
+      const lab = Object.values((await import(labIndex)) as Record<string, unknown>).find((v) =>
+        Array.isArray(v) && (v as { stageId?: string; sections?: unknown }[]).some((s) => s?.stageId === stage.stageId && Array.isArray(s.sections)),
+      ) as { stageId: string; sections: { fields: { fieldId: string }[] }[] }[];
+      const labKeys = new Set(lab.flatMap((s) => s.sections.flatMap((sec) => sec.fields.map((f) => `${s.stageId}.${f.fieldId}`))));
       const present = new Set(stage.sections.flatMap((s) => s.fields.map((f) => f.fieldId)));
       const gated = stage.sections
         .flatMap((s) => s.fields)
         .filter((f) => f.showWhen);
       assert.ok(gated.length > 0, 'expected at least one authored gate here');
       for (const f of gated) {
+        const ref = f.showWhen!.field;
         assert.ok(
-          present.has(f.showWhen!.field),
-          `${f.fieldId} is gated on "${f.showWhen!.field}", which is not a field in this stage`,
+          ref.includes('.') ? labKeys.has(ref) : present.has(ref),
+          `${f.fieldId} is gated on "${ref}", which is not a field in this stage (or, dotted, in this lab)`,
         );
       }
     });

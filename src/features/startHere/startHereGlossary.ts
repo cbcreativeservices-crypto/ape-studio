@@ -123,3 +123,80 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
 export function starterGlossaryEntry(glossaryTerm: string): StarterGlossaryEntry | null {
   return STARTER_GLOSSARY[glossaryTerm.trim().toLowerCase()] ?? null;
 }
+
+/**
+ * RELATED WORDS under a starter word's full entry (owner 2026-10-04: Start
+ * Here's 2 extra definitions are spent here). Each list is the entry's own
+ * `related_terms` from the `glossary` table (copied 2026-10-04), kept to the
+ * names that open a glossary entry of their own, in the glossary's spelling.
+ * Two were left out because the glossary's only entry with that name is a
+ * different sense: "Damping" and "Density" are the reverb controls, not the
+ * vibration / medium meanings these lessons use.
+ *
+ * A related word that is itself a starter word opens its built-in entry
+ * (free, as every starter word). Any other opens through Start Here's metered
+ * read: one of the 2 extra definitions while any are left, then the normal
+ * weekly lookups — and the learner is asked first (D55).
+ */
+export const STARTER_RELATED: Record<string, readonly string[]> = {
+  amplitude: ['Level', 'Waveform', 'loudness (perceptual)', 'Decibel (dB)', 'SPL (sound pressure level)'],
+  audio: ['Frequency', 'Sound', 'Audio Frequency', 'Bandwidth'],
+  'audio cable': ['Balanced line', 'Unbalanced line', 'Shielding', 'Speaker cable', 'Audio connectors'],
+  'decibel (db)': ['SPL (sound pressure level)', 'Amplitude', 'Frequency Response'],
+  frequency: ['Frequency Response', 'Wavelength', 'Audio Frequency', 'Pitch', 'Cycles'],
+  'input/output': ['Analog-to-digital converter', 'Digital-to-analog converter', 'Audio Interface', 'Latency', 'Balanced line'],
+  'listening position': ['Soundstage', 'Imaging', 'Speaker Placement', 'Toe-In', 'Audyssey'],
+  loudness: ['LUFS', 'Loudness Normalization', 'Limiting', 'Dynamic Range', 'Equal-Loudness Contours', 'True Peak'],
+  'loudspeaker (speaker)': ['Transducer', 'woofer', 'tweeter', 'Monitor Speakers (Studio Monitors)', 'Impedance', 'Amplifier', 'Crossover Frequency'],
+  medium: ['Propagation', 'Speed of Sound', 'Acoustic Impedance', 'Elasticity'],
+  'meter (metering)': ['Metering Scale', 'dBFS', 'Clipping', 'Gain structure'],
+  'microphone (mic)': ['Microphone types', 'Transducer', 'Frequency Response', 'Polar Pattern (Pickup Pattern)', 'Mic Preamp (Preamp)'],
+  noise: ['Noise Floor', 'Hiss', 'Hum', 'Signal-to-Noise Ratio (SNR)', 'Ambient noise'],
+  pitch: ['Fundamental', 'Frequency', 'Musical note', 'Hertz (Hz)', 'Octave'],
+  playback: ['Roll-In Video', 'Walk-On Music', 'Cue Sheet', 'Show Caller', 'Transition'],
+  'pure tone': ['Complex Tone', 'Harmonic Series', 'Sound Wave', 'Period', 'Beat Frequency'],
+  recording: ['Recording Feed', 'Archive', 'Webcast', 'Playback', 'Backup System'],
+  'signal path': ['Signal flow', 'Routing', 'Gain Staging', 'Insert Point', 'Signal Management'],
+  sound: ['Pressure Wave', 'Frequency', 'Acoustic Pressure', 'Wavelength', 'Compression', 'Particle Displacement'],
+  vibration: ['Resonance', 'Frequency', 'Amplitude', 'vibration transducer'],
+  waveform: ['sine wave', 'Envelope', 'Transient', 'Peak level', 'Clipping'],
+};
+
+export function starterRelated(glossaryTerm: string): readonly string[] {
+  return STARTER_RELATED[glossaryTerm.trim().toLowerCase()] ?? [];
+}
+
+/** What a tap on a related word inside Start Here does (D55 + the 2 extras).
+ *  Pure, so the decision is tested directly. */
+export type RelatedPlan =
+  /** A starter word (built-in, free), a member, or a term already opened this
+   *  session: open it, nothing to ask, nothing charged. */
+  | 'open'
+  /** A known non-member, new term: ask first; Cancel charges nothing. */
+  | 'ask';
+
+export function relatedPlan(a: { starter: boolean; metered: boolean; alreadyOpened: boolean }): RelatedPlan {
+  if (a.starter || !a.metered || a.alreadyOpened) return 'open';
+  return 'ask';
+}
+
+/** The line above the related words, for a known non-member. `left` is the
+ *  server's count of extras; null/undefined = unknown or not offered → the
+ *  normal wording only, never a promise of extras. */
+export function relatedIntro(left: number | null | undefined): string {
+  if (left == null) return 'Opening a related word uses 1 definition lookup.';
+  if (left > 0) return `Start Here includes 2 extra definitions (${left} left). After those, a related word uses 1 of your weekly definition lookups.`;
+  return 'You’ve used Start Here’s 2 extra definitions. Opening a related word now uses 1 of your weekly definition lookups.';
+}
+
+/** The question before a charged open. */
+export function relatedAskBody(left: number | null | undefined): string {
+  if (left != null && left > 0) return `This uses 1 of Start Here’s 2 extra definitions (${left} left).`;
+  return 'Opening this word uses 1 definition lookup.';
+}
+
+/** Said under a definition whose open spent an extra one (server's answer). */
+export function bonusSpentLine(left: number | null | undefined): string {
+  const n = left == null ? null : Math.max(0, left);
+  return n == null ? 'This used one of Start Here’s 2 extra definitions.' : `This used one of Start Here’s 2 extra definitions (${n} left).`;
+}

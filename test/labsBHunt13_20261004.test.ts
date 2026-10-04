@@ -73,13 +73,14 @@ test('Cymatics carry: a pattern deleted after the carry is never written back by
   assert.equal(await account.carryIn(held), true);
   assert.deepEqual((await account.loadPatterns()).map((x) => x.id), [p.id]);
   await carry.settleSessionCarry();
-  // The account deletes it — the ledger no longer takes a guestOnly change,
-  // so the deleted row is still among what is held…
+  // The account deletes it. Since 2026-10-04 (smallFixes) a removal is let
+  // go of in the ledger even after the account is settled…
   assert.equal(await account.deletePattern(p.id), true);
   const still = carry.peekSessionWork<{ patterns: { id: string }[] }>('cymatics:gallery');
-  assert.deepEqual(still!.patterns.map((x) => x.id), [p.id]);
-  // …and the writer runs again with it (a later flush).
-  assert.equal(await account.carryIn(still as never), true);
+  assert.deepEqual(still!.patterns.map((x) => x.id), [], 'the delete reached the ledger');
+  // …and a writer run with the copy it was queued with (a later flush of
+  // the older hold) still does not bring it back.
+  assert.equal(await account.carryIn(held), true);
   assert.deepEqual((await account.loadPatterns()).map((x) => x.id), [], 'the deleted pattern stays deleted');
   assert.equal((await account.loadArtworks()).length, 0, 'and so does its colouring');
   carry.__resetSessionCarryForTests();

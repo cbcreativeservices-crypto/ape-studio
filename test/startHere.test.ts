@@ -86,7 +86,7 @@ describe('Start Here — lessons, lab and exercises', () => {
     const lessons = SECTIONS.filter((s) => s.kind === 'lesson' || s.kind === 'review');
     assert.deepEqual(
       lessons.map((s) => s.title),
-      ['What Is Sound?', 'From Sound to Audio', 'The Two Basic Parts of Sound', 'What Audio Equipment Does', 'Seeing and Measuring Sound', 'Listen, Review, and Choose What’s Next'],
+      ['What Is Sound?', 'From Sound to Audio', 'How High, How Loud', 'What Audio Equipment Does', 'Seeing and Measuring Sound', 'Listen, Review, and Choose What’s Next'],
     );
     const lab = SECTIONS.find((s) => s.kind === 'lab');
     assert.ok(lab, 'the guided lab exists');

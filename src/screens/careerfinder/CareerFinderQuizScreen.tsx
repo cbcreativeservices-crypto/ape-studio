@@ -23,7 +23,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { hapticsEnabled } from '../../features/settings/store';
 import { ANSWERS, QUESTIONS, QUESTION_COUNT, type Response } from '../../features/careerfinder/questions';
-import { allAnswered, answerQuestion, completeCareerFinder, firstUnansweredIndex, setQuestionIndex, useCareerFinder, useCareerFinderHydrated, useCareerFinderSaving } from '../../features/careerfinder/store';
+import { allAnswered, answerQuestion, completeCareerFinder, firstUnansweredIndex, setQuestionIndex, useCareerFinder, useCareerFinderFace, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { FinderShell, NavButton, ProgressBar } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
 
@@ -38,7 +38,11 @@ const MILESTONE: Record<number, string> = { 6: 'A quarter done', 13: 'Halfway â€
 export function CareerFinderQuizScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const rec = useCareerFinder();
-  const hydrated = useCareerFinderHydrated();
+  // Seed once the record is KNOWN â€” read, or known to be unreadable (then the
+  // questions still work, on this session's answers, and say "not saved").
+  // On the house store an unreadable record stays unhydrated, so waiting for
+  // `hydrated` alone would have left the quiz unseeded for good (2026-10-04).
+  const hydrated = useCareerFinderFace() !== 'loading';
   // The back label promises a save only when one happens (final round A,
   // 2026-10-02): an unreadable record is never written over.
   const saving = useCareerFinderSaving();
