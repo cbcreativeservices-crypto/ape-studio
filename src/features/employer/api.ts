@@ -11,7 +11,7 @@
  * runs the network checks.
  */
 import { supabase } from '../../lib/supabase';
-import { hasSafeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
 
 /**
@@ -56,7 +56,11 @@ export type EmployerState =
 export async function fetchMyEmployerApplication(): Promise<EmployerState> {
   try {
     // A guest has no application; the RPC answers 401 without a session.
-    if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchMyEmployerApplication'))) return { state: 'none' };
+    // A session read that did not come back is UNKNOWN, not a guest
+    // (2026-10-03) — 'none' would tell an applicant they never applied.
+    const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'fetchMyEmployerApplication');
+    if (timedOut) return { state: 'error' };
+    if (!got.data.session) return { state: 'none' };
     const { data, error } = await supabase.rpc('employer_application_mine');
     if (error) return { state: 'error' };
     const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown> | undefined;
@@ -107,7 +111,10 @@ export async function amIVerifiedEmployer(): Promise<boolean | null> {
   // told "This application is no longer active." Never grants anything — only
   // `true` opens the chips, and the RPCs are refused server-side regardless.
   try {
-    if (!(await hasSafeSession(supabase.auth.getSession(), 'amIVerifiedEmployer'))) return false;
+    // An UNKNOWN session is a failed read (null), not "not verified".
+    const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'amIVerifiedEmployer');
+    if (timedOut) return null;
+    if (!got.data.session) return false;
     const { data, error } = await supabase.rpc('am_i_verified_employer');
     if (error) return null;
     return data === true;

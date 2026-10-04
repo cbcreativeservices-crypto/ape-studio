@@ -43,7 +43,7 @@ import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ApeDsp, GEN_MODES } from '../../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../../modules/ape-dsp';
 import { GlassButton } from '../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -136,6 +136,8 @@ export type ToneApi = {
   /** engineVersion ≥ 5 — the hard-panned stereo dual-oscillator exists. */
   stereoReady: boolean;
   playing: boolean;
+  /** A start the engine refused, in the learner's words ('' when none). */
+  error: string;
   /** ⚠️ The current frequency/level are deliberately NOT on this API and NOT in
    *  React state — see `set` below. Nothing renders them (the bezel's TONE cell
    *  reads `playing` only); putting them in state made every touch-move of a
@@ -168,6 +170,9 @@ export function useCourseTone(engineReady: boolean): ToneApi {
   // panicMuteAudio(), which stops the generator underneath this screen.
   // Without this the transport stays lit over silence.
   useStopOnAudioMute(setPlaying);
+  /** A start the engine refused is SAID (hunt 9, 2026-10-03 — the hunt-7
+   *  Cymatics rule): the transport just stayed off without a word. */
+  const [error, setError] = useState('');
   const genRef = useRef(0);
   // The generation of the last stop() (bug pass 2 2026-09-30). A start that
   // finds itself superseded used to genStop() unconditionally — but when the
@@ -191,6 +196,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
       void (async () => {
         const ok = await requestAudioOutput();
         if (!ok || gen !== genRef.current) return;
+        setError('');
         ApeDsp.genSet({
           mode: GEN_MODES.sine,
           frequency: freqRef.current,
@@ -210,7 +216,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           setPlaying(true);
           noteAudioActivity();
         } catch {
-          /* engine start failure — buttons stay honest via playing=false */
+          if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
         }
       })();
     },
@@ -266,6 +272,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
       void (async () => {
         const ok = await requestAudioOutput();
         if (!ok || gen !== genRef.current) return;
+        setError('');
         // guardAdditiveForEngine: JS per-harmonic HPF below v4; raw on ≥4
         // (the native route-aware HPF owns speaker safety there).
         ApeDsp.genSet({
@@ -287,7 +294,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           setPlaying(true);
           noteAudioActivity();
         } catch {
-          /* engine start failure — buttons stay honest via playing=false */
+          if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
         }
       })();
     },
@@ -311,6 +318,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
       void (async () => {
         const ok = await requestAudioOutput();
         if (!ok || gen !== genRef.current) return;
+        setError('');
         // v5 ⇒ the native route-aware HPF (v4+) exists — no JS level guard.
         ApeDsp.genSet({ mode: GEN_MODES.sine, frequency: fL, levelDb: db, stereo: { on: true, fL, fR } });
         stereoRef.current = true;
@@ -328,7 +336,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
           setPlaying(true);
           noteAudioActivity();
         } catch {
-          /* engine start failure — buttons stay honest via playing=false */
+          if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
         }
       })();
     },
@@ -366,6 +374,7 @@ export function useCourseTone(engineReady: boolean): ToneApi {
     additiveReady,
     stereoReady,
     playing,
+    error,
     play,
     set,
     playAdditive,
@@ -2233,6 +2242,7 @@ export function FoundationsCourseScreen() {
   const wellTop = (
     <>
       {!engineReady ? <EngineGate state={gate} /> : null}
+      {tone.error ? <Text style={[styles.body, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
       <Text style={styles.tag}>{s.tag} · {step + 1} OF {STEPS.length}</Text>
       <View style={styles.titleRow}>
         <Text style={[styles.stepTitle, { flex: 1 }]}>{s.title}</Text>

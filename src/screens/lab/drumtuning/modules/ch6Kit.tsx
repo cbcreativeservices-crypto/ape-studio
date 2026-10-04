@@ -82,17 +82,27 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
   // the display a split second later counted as "heard" — the credit's "hear
   // ▶ BOTH" paid for a rack-tom click with the floor tom never played (the
   // Chapter 4 HEARD_AFTER_MS rule). The floor enters at RACK_FIRST_S + GAP_S.
+  // The CREDIT needs the DISTINCT pair heard (hunt 9, 2026-10-03): ▶ BOTH on
+  // the upside-down starting pair, then a fader ride to green, credited "Build
+  // the tom range" with the range never heard ("Reach DISTINCT and hear ▶
+  // BOTH" — the Chapter 4 rule: heard per setup). A fader move changes the
+  // clip key and stops the play, so the verdict cannot change mid-play.
+  const [heardDistinct, setHeardDistinct] = useState(false);
   useEffect(() => {
     if (!both.playing) return;
-    const id = setTimeout(() => setHeardBoth(true), (RACK_FIRST_S + GAP_S) * 1000 + FLOOR_HEARD_MS);
+    const atDistinct = verdict.kind === 'distinct';
+    const id = setTimeout(() => {
+      setHeardBoth(true);
+      if (atDistinct) setHeardDistinct(true);
+    }, (RACK_FIRST_S + GAP_S) * 1000 + FLOOR_HEARD_MS);
     return () => clearTimeout(id);
-  }, [both.playing]);
+  }, [both.playing, verdict.kind]);
   useEffect(() => {
-    if (verdict.kind === 'distinct' && heardBoth && !reported.current) {
+    if (verdict.kind === 'distinct' && heardDistinct && !reported.current) {
       reported.current = true;
       onInteractive();
     }
-  }, [verdict.kind, heardBoth, onInteractive]);
+  }, [verdict.kind, heardDistinct, onInteractive]);
 
   const stopAll = () => {
     rack.stop();

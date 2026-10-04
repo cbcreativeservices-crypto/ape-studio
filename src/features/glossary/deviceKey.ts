@@ -60,7 +60,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { armSaveFailureReport } from '../storage/saveFailureNotice';
 
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { softDeadline } from '../../lib/boundedCall';
 import { classifyMintError, singleFlight, type ConsentRecord } from './deviceKeyState';
 
@@ -144,8 +144,21 @@ export function mintDeviceKey(): Promise<MintResult> {
 
 async function mintNow(): Promise<MintResult> {
   try {
-    const { data } = await safeSession(supabase.auth.getSession(), 'deviceKey');
-    if (data.session) return { ok: true };
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'deviceKey');
+    if (result.data.session) return { ok: true };
+    /**
+     * ⛔ "NO SESSION" THAT IS ONLY "COULDN'T READ IT" MUST NOT MINT (hunt 9,
+     * 2026-10-03). A stalled keychain read, or an expired token whose refresh
+     * could not reach the server (AuthRetryableFetchError — the session stays
+     * STORED), reads as no session here. signInAnonymously() takes no lock and
+     * saves its new session over whatever is stored, announcing SIGNED_IN for
+     * a NEW uid: a signed-in member on a slow cold start (the provider still at
+     * its boot 'anonymous', so the Glossary asks for a device ID) who tapped
+     * AGREE was signed out of their own account into a throwaway key — and the
+     * identity change then wiped their device's account data. Unknown is a
+     * network failure: the screen already fails open on it.
+     */
+    if (timedOut) return { ok: false, reason: 'network', message: 'session unreadable — not minting over it' };
     const { error } = await supabase.auth.signInAnonymously();
     if (!error) return { ok: true };
     return { ok: false, reason: classifyMintError(error.message), message: error.message };

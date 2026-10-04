@@ -731,6 +731,21 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
         )}
         ListHeaderComponent={
           <>
+            {/* Unreadable but NOT empty (hunt 9, 2026-10-03): a measurement
+                saved while the stored library could not be read is the only
+                row in memory, so the list showed that one record as the whole
+                library — the "could not be read" card lives in the EMPTY slot
+                and never appeared. */}
+            {measurementsUnreadable() && all.length > 0 ? (
+              <View style={styles.emptyCard}>
+                <Text style={styles.emptyTitle}>SAVED MEASUREMENTS COULD NOT BE READ</Text>
+                <Text style={styles.emptyBody}>
+                  Your earlier measurements could not be read on this device just now, so only the ones
+                  saved since are listed below. Nothing has been deleted. Leave this screen and come back
+                  to try again.
+                </Text>
+              </View>
+            ) : null}
             {compareMode && (
               <Text style={styles.compareHint}>
                 {pickedMs.length < 2

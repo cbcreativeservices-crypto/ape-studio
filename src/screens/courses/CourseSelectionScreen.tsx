@@ -42,7 +42,7 @@ import { CardArt } from '../../components/CardArt';
 import { StudioButton } from '../../components/StudioButton';
 import { SwitchButton } from '../../components/SwitchButton';
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
@@ -1380,12 +1380,16 @@ export function CourseSelectionScreen() {
     // error (fix 2026-07-26: Guest Mode landed on the academy path). Keyed on the
     // real session, NOT entitlement, since returning authed users also default to
     // the mock 'anonymous' entitlement.
-    const { data: sessData } = await safeSession(supabase.auth.getSession(), 'Home');
+    const { result: { data: sessData }, timedOut: sessionUnknown } = await safeSessionResult(supabase.auth.getSession(), 'Home');
     // …and NOT on the mere presence of one either: the glossary's temporary
     // device key is an anonymous session, and reading it as "signed in" would
     // put a guest back on the academy path this line exists to keep them off.
-    const isGuest = !isRealAccount(sessData.session);
-    setIsGuest(isGuest);
+    // ⛔ An UNKNOWN read (stall / rejection / offline refresh — the session is
+    // still stored) is not a guest (safe-session sweep, 2026-10-03): it leaves
+    // the guest flag as it was and takes the ordinary path below, so a member
+    // is never handed the guest sign-up gate. The Study tab's own load says
+    // "couldn't reach your account" (Dashboard, hunt 7).
+    if (!sessionUnknown) setIsGuest(!isRealAccount(sessData.session));
     // The PUBLIC-catalog builder — used for guests/commercial mode AND as the
     // self-heal fallback when an authed load fails on a broken session.
     const buildPublicCatalog = async () => {

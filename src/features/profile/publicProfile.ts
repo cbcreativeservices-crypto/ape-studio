@@ -248,6 +248,15 @@ export async function setRegistryVisible(
   p: PublicProfile,
   opts?: { adult?: boolean },
 ): Promise<boolean> {
+  // OFF CANCELS A PENDING PUBLISH (hunt 9, 2026-10-03). An About-you edit
+  // while listed queues a debounced `on: true` sync holding that profile, and
+  // savePublicProfile only re-queues while listed — so switching OFF inside
+  // the debounce left it armed, and 1.5 s later it put the page back up,
+  // public, under a switch reading off.
+  if (!on && listingSyncTimer) {
+    clearTimeout(listingSyncTimer);
+    listingSyncTimer = null;
+  }
   const ok = await setRegistryListing({
     on,
     adult: opts?.adult ?? adultConfirmed,

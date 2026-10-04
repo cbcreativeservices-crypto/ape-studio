@@ -21,7 +21,7 @@ import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
-import { hasSafeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
 import { clearAttemptDraft } from '../assess/attemptDraft';
 import {
@@ -236,8 +236,11 @@ export async function startQuizAttempt(achievementId: string): Promise<AttemptPa
     });
   let { data, error } = await call();
   if (error && error.message.includes('user_not_found')) {
-    const signedIn = await hasSafeSession(supabase.auth.getSession(), 'quiz/start');
-    if (signedIn) {
+    // An UNKNOWN read (stall / rejection / offline refresh — the session is
+    // still stored) still earns the one retry (safe-session sweep,
+    // 2026-10-03): skipping it showed a signed-in member "Sign out and back in".
+    const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'quiz/start');
+    if (timedOut || got.data.session) {
       console.warn('[quiz] start denied before the session loaded; retrying once');
       ({ data, error } = await call());
     }

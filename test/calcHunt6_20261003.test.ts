@@ -82,7 +82,8 @@ describe('H6-2 — vented port length never prints an impossible negative', () =
     const corr = 1.46 * Math.sqrt(v.av / Math.PI);
     const fb0 = (c / (2 * Math.PI)) * Math.sqrt(v.av / (v.vb * corr));
     assert.ok(fb0 < v.fbTarget, 'physics: a zero-length port of this area tunes below the target');
-    const text = outs('driver', 'portLength', v).find((x) => x.label === 'PHYSICAL PORT LENGTH')?.text ?? '';
+    // Hunt 9: the figure moved from the refusal row to the unmarked THE FIGURES row.
+    const text = outs('driver', 'portLength', v).find((x) => x.label === 'THE FIGURES')?.text ?? '';
     assert.match(text, new RegExp(`about ${fb0.toPrecision(4).replace('.', '\\.')} Hz, below the target`));
     // And a larger area really does raise it (fb0 ∝ Av^¼), as the advice says.
     const fb0Big = (c / (2 * Math.PI)) * Math.sqrt((4 * v.av) / (v.vb * 1.46 * Math.sqrt((4 * v.av) / Math.PI)));

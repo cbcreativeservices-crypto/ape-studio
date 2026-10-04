@@ -17,7 +17,7 @@ import { loadLastTier, saveLastTier } from './lastTierCache';
 import { devBypass } from '../../config/devMode';
 import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
-import { safeSession, SESSION_TIMEOUT_MS } from '../../lib/getSessionSafe';
+import { safeSession, safeSessionResult } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
 import { accessEndsAt, classifyExpiry, verdictKeepsAccess } from './entitlementExpiry';
 import { setMemberStanding } from './memberStanding';
@@ -374,6 +374,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       // session now = a failed read: keep the tier, retry.
       const { data: live } = await safeSession(supabase.auth.getSession(), 'entitlement/derive');
       if (!isRealAccount(live.session)) return false;
+      // The first CONFIRMED identity after a boot that could not tell who this
+      // was (safe-session sweep, 2026-10-03): seed the baseline now, so a later
+      // account switch still wipes. A first real uid never wipes (see below).
+      if (!uidSeeded.current && current()) clearLocalOnUserChange(identityOf(live.session));
       const { data, error } = await readAcademyRows();
       if (error) {
         // supabase-js RESOLVES with { error }; a transient RLS/network failure
@@ -489,9 +493,8 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // paint on `resolved` and shows a bare spinner with no text, no Retry and
     // no timeout. A reject was handled; a stall was not, and a stall is the
     // failure this app has actually seen twice.
-    const bootAskedAt = Date.now();
-    void safeSession(supabase.auth.getSession(), 'EntitlementProvider/boot')
-      .then(async ({ data }) => {
+    void safeSessionResult(supabase.auth.getSession(), 'EntitlementProvider/boot')
+      .then(async ({ result: { data }, timedOut }) => {
         // ⛔ A STALL IS NOT A GUEST (night bug pass 1, 2026-10-01). safeSession
         // answers a getSession() that outlives its bound as "signed out" — and
         // at a cold start getSession waits on supabase-js's own initialise,
@@ -503,7 +506,18 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         // INITIAL_SESSION once initialise finishes, with the real answer, so a
         // stalled boot read decides nothing and leaves it to that event.
         // (`resolved` still flips in the .finally below.)
-        if (!data.session && Date.now() - bootAskedAt >= SESSION_TIMEOUT_MS) return;
+        //
+        // ⛔ AN OFFLINE REFRESH IS NOT A GUEST EITHER (safe-session sweep,
+        // 2026-10-03). The elapsed-time test that stood here caught only the
+        // 5 s stall.
+        // An expired token on a dead connection comes back FAST as
+        // `{ session: null, error: AuthRetryableFetchError }` with the session
+        // still stored — and since hunt 8 Splash sends exactly that member to
+        // Main — so this ran the GUEST WIPE of their local study mirror and
+        // settled them as 'anonymous'. `timedOut` covers the stall, a rejected
+        // read and that retryable error alike: we do not know who this is, so
+        // decide nothing and leave it to INITIAL_SESSION (which re-checks).
+        if (timedOut) return;
         clearLocalOnUserChange(identityOf(data.session));
         // ── START FROM WHAT THE SERVER LAST CONFIRMED (2026-09-18) ───────────
         //
@@ -550,7 +564,40 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       .finally(() => {
         if (alive) setResolved(true); // first read attempted — first paint can proceed
       });
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+    type AuthChange = Parameters<Parameters<typeof supabase.auth.onAuthStateChange>[0]>;
+    // `confirmed`: this null was re-read and is a definite "no session".
+    const { data: sub } = supabase.auth.onAuthStateChange(function onAuthChange(
+      event: AuthChange[0],
+      session: AuthChange[1],
+      confirmed = false,
+    ): void {
+      // ⛔ A NULL INITIAL_SESSION IS NOT ALWAYS A SIGN-OUT (safe-session sweep,
+      // 2026-10-03). auth-js emits INITIAL_SESSION null whenever its session
+      // read ERRORS — including an expired token whose refresh could not reach
+      // the server, where the session stays stored (GoTrueClient
+      // `_emitInitialSession`). Taken at its word that ran the guest wipe of a
+      // member's local study mirror and settled them 'anonymous'. Re-read it:
+      // only a read that came back (not timedOut) and still has no session is
+      // a guest. An unknown wipes nothing and decides no tier — the bounded
+      // retry below keeps asking and ends on tierReadFailed (honest
+      // "couldn't confirm") if the network never returns. A real sign-out is
+      // untouched: SIGNED_OUT never comes this way, and a dead refresh token
+      // REMOVES the session, so the re-read answers a definite null.
+      if (event === 'INITIAL_SESSION' && !session && !confirmed) {
+        const genAtEvent = generation;
+        void safeSessionResult(supabase.auth.getSession(), 'entitlement/initial')
+          .then(({ result, timedOut }) => {
+            // A sign-in/out (or any re-derive) since this event owns the state.
+            if (!alive || generation !== genAtEvent) return;
+            if (timedOut) {
+              void deriveWithRetry(true);
+              return;
+            }
+            onAuthChange(event, result.data.session as AuthChange[1], true);
+          })
+          .catch(() => {});
+        return;
+      }
       // PASSWORD_RECOVERY IS A SIGN-IN (2026-09-30 bug pass). The in-app reset
       // (AuthScreen → verifyRecoveryOtp) creates the session with verifyOtp,
       // and supabase-js announces a recovery verify as PASSWORD_RECOVERY, never

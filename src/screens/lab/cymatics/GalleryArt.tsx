@@ -137,6 +137,23 @@ export function GalleryArt({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+  // "Save failed — retry" follows the autosave's rules (hunt 9, 2026-10-03):
+  // it set SAVED from its own write even when a newer edit had failed since
+  // (a slow retry landing last read "Artwork saved ✓" over an unsaved edit),
+  // left `dirty` set after a landed retry (the leave-flush then re-wrote and
+  // could warn "not saved" about saved work), and never told the gallery's
+  // thumbnail cache.
+  const retrySave = () => {
+    const a = art;
+    void patternStore()
+      .saveArtwork(a)
+      .then((ok) => {
+        if (ok) onArtwork(a);
+        if (latest.current !== a) return;
+        setSaveState(ok ? 'saved' : 'failed');
+        dirty.current = !ok;
+      });
+  };
 
   // ── the tap ──────────────────────────────────────────────────────────────
   const tap = (x: number, y: number, w: number, h: number) => {
@@ -271,7 +288,7 @@ export function GalleryArt({
           <Text style={styles.caption}>Tap a region to fill it. Nodal lines are the still lines of the figure — a fill never crosses one. UNDO and REDO are on the bezel.</Text>
           <View style={styles.chips}>
             <LabChip label="Clear all fills" selected={false} onPress={() => patch({ fills: [] })} />
-            <LabChip label={saveState === 'saved' ? 'Artwork saved ✓' : saveState === 'saving' ? 'Saving…' : 'Save failed — retry'} selected={false} onPress={() => void patternStore().saveArtwork(art).then((ok) => setSaveState(ok ? 'saved' : 'failed'))} />
+            <LabChip label={saveState === 'saved' ? 'Artwork saved ✓' : saveState === 'saving' ? 'Saving…' : 'Save failed — retry'} selected={false} onPress={retrySave} />
           </View>
           <ExportPanel subject={{ kind: 'pattern', pattern, geometry, artwork: art }} onHelp={onHelp} />
           <Pressable style={styles.lessonRow} onPress={() => onHelp('gallery')} accessibilityRole="button" accessibilityLabel="Open the guided lesson">

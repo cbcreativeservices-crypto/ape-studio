@@ -26,7 +26,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { ApeDsp, GEN_MODES } from '../../../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../../../modules/ape-dsp';
 import { GlassButton } from '../../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
@@ -414,6 +414,9 @@ const CHECK_AA: CheckSpec = {
 function useAliasTone(engineReady: boolean, focused: boolean) {
   const { requestAudioOutput } = useAudioOutputGate();
   const [playing, setPlaying] = useState<PlayWhich | null>(null);
+  /** A start the engine refused is SAID (hunt 9, 2026-10-03 — the hunt-7
+   *  Cymatics rule): the button just stayed PLAY without a word. */
+  const [error, setError] = useState('');
   const genRef = useRef(0);
   // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — every change plays the new
   // sound until ■). Riding FREQ through Nyquist walks the alias down through
@@ -433,6 +436,7 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
       void (async () => {
         const ok = await requestAudioOutput();
         if (!ok || gen !== genRef.current) return;
+        setError('');
         ApeDsp.genSet({
           mode: GEN_MODES.sine,
           frequency: freqHz,
@@ -452,7 +456,7 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
           setPlaying(which);
           noteAudioActivity();
         } catch {
-          /* engine start failure — buttons stay honest via playing=null */
+          if (gen === genRef.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
         }
       })();
     },
@@ -507,7 +511,7 @@ function useAliasTone(engineReady: boolean, focused: boolean) {
     return () => clearInterval(id);
   }, [playing]);
 
-  return { playing, play, stop, retarget };
+  return { playing, error, play, stop, retarget };
 }
 
 function SamplingHero({
@@ -771,6 +775,7 @@ export function SamplingModule(p: DigitalModuleProps) {
                 disabled={!canAlias && playing !== 'alias' /* armed-and-quiet must still stop */}
                 onPress={() => (playing === 'alias' ? stop() : play('alias', alias))}
               />
+              {tone.error ? <Text style={[dstyles.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
               {!aliased ? (
                 <Text style={dstyles.caption}>
                   Below Nyquist the predicted alias IS the input — both buttons play the same tone.

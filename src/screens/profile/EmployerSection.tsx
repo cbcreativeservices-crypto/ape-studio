@@ -104,6 +104,8 @@ export function EmployerSection() {
    */
   const failedRef = useRef(false);
   const loadTicket = useRef(0);
+  /** The stored choices have been read once; `picked` is authoritative after. */
+  const pickedLoaded = useRef(false);
   const load = useCallback(async () => {
     const ticket = ++loadTicket.current;
     const [state, isVerified] = await Promise.all([
@@ -127,8 +129,15 @@ export function EmployerSection() {
       if (!t || !mine) failedRef.current = true;
       // A retry that now reads the stored choices clears the earlier failure.
       if (mine) setInterestsFailed(false);
-      if (mine) setPicked(mine);
-      else setInterestsFailed(true);
+      // Choices already READ are the screen's to keep (hunt 9, 2026-10-03).
+      // A focus reload also runs when only the application read failed, with
+      // the chips live: applying its (older) list mid-save darkened the chip
+      // just tapped while its write landed, and the next tap in that row wrote
+      // the whole list without it. Only choices never read are filled in.
+      if (mine && !pickedLoaded.current) {
+        pickedLoaded.current = true;
+        setPicked(mine);
+      } else if (!mine && !pickedLoaded.current) setInterestsFailed(true);
     }
   }, []);
 

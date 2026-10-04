@@ -31,7 +31,7 @@
 import { Share } from 'react-native';
 
 import { optionalModule } from '../tools/capture/optionalModule';
-import { fetchMyQrToken } from '../profile/api';
+import { fetchMyQrTokenOrThrow } from '../profile/api';
 import { registryUrl } from '../profile/registry';
 
 type ClipboardLib = { setStringAsync(text: string): Promise<boolean | void> };
@@ -66,7 +66,12 @@ export function canCopy(): boolean {
  * a mystery.
  */
 export async function myRegistryLink(): Promise<string | null> {
-  const token = await fetchMyQrToken();
+  // STRICT read (hunt 9, 2026-10-03): the lenient fetchMyQrToken answers null
+  // for a read that FAILED (offline, a denial) exactly as for "no token yet",
+  // so an offline member tapping COPY LINK / SHARE LINK was told their
+  // verified record "is still being set up". A failed read now throws, and
+  // both callers below turn it into `failed` ("Could not share… Try again.").
+  const token = await fetchMyQrTokenOrThrow();
   return token ? registryUrl(token) : null;
 }
 

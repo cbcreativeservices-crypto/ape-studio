@@ -52,7 +52,7 @@ import {
 } from '../../features/auth/api';
 import { supabase } from '../../lib/supabase';
 import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { COPY } from '../../lib/copy';
 import { registerCommercialUser } from '../../features/commercial/commercialAuth';
@@ -306,8 +306,11 @@ export function AuthScreen({ navigation }: Props) {
      * there is nothing to undo and Guest Mode proceeds as before.
      */
     if (outError) {
-      const { data: still } = await safeSession(supabase.auth.getSession(), 'AuthScreen/guest');
-      if (isRealAccount(still.session)) {
+      // An UNKNOWN read (stall / rejection / offline refresh — the session is
+      // still stored) is not "no account": never wipe while one may be stored
+      // (safe-session sweep, 2026-10-03).
+      const { result: { data: still }, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'AuthScreen/guest');
+      if (timedOut || isRealAccount(still.session)) {
         consumeIntentionalSignOut(); // no SIGNED_OUT is coming for it
         setError('Couldn’t reach the Academy — check your connection and try again.');
         return;

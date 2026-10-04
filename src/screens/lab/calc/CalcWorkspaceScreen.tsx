@@ -289,6 +289,7 @@ export function CalcWorkspaceScreen() {
       functionName: fn.name,
       reportPrefix: ws.reportPrefix,
       primaryResultLabel: fn.primaryResultLabel,
+      refused,
       inputs: inputsForReport,
       results: resultsForReport,
       // fn.note + the workspace standards/honesty block; buildReportFromCalc

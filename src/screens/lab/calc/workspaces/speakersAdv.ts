@@ -350,9 +350,15 @@ const DRIVER: Workspace = {
           return [
             {
               label: 'PHYSICAL PORT LENGTH',
-              text: `No port length reaches ${fmt(n(v.fbTarget))} Hz — even a zero-length port of this area tunes to about ${fmt(fb0)} Hz, below the target. Use a larger port area or a smaller box.`,
+              // Inputs only (hunt 9, 2026-10-03): a capped account reads ONLY
+              // the refusal rows, for free. fb₀ fixes c²·Av/Vb, so with it
+              // L = corr·((fb₀/fb)² − 1) answers EVERY reachable target — a
+              // huge target leaked the paid answer. The figure rides an
+              // unmarked row members see (as vdrop's THE FIGURES does).
+              text: `No port length reaches ${fmt(n(v.fbTarget))} Hz — even a zero-length port of this area tunes below the target. Use a larger port area or a smaller box.`,
               refusal: true,
             },
+            { label: 'THE FIGURES', text: `Even a zero-length port of this area tunes to about ${fmt(fb0)} Hz, below the target.` },
             { label: 'EFFECTIVE (ACOUSTIC) LENGTH', value: leff, quantity: 'length', unit: 'cm', chainable: false },
           ];
         }

@@ -73,13 +73,13 @@ export function LabRequirementsSheet({
             <Text style={s.groupNote}>
               Required for every certificate and program. Complete a lab once and it counts toward all of them.
             </Text>
-            <LabChecklist rows={fundamentals} onOpen={onOpenLab} />
+            <LabChecklist rows={fundamentals} onOpen={onOpenLab} unreadable={progressUnreadable} />
 
             {member.length > 0 ? (
               <>
                 <Text style={s.groupHead}>REQUIRED FOR THIS CREDENTIAL</Text>
                 <Text style={s.groupNote}>Member labs this credential needs on top of the fundamentals.</Text>
-                <LabChecklist rows={member} onOpen={onOpenLab} />
+                <LabChecklist rows={member} onOpen={onOpenLab} unreadable={progressUnreadable} />
                 {/* ⚠️ Say it rather than let the dashes puzzle them. Member
                     labs record no progress yet, so the summary above counts
                     only the fundamentals — and a learner who finished all of

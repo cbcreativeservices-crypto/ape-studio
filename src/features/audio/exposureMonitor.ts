@@ -570,6 +570,13 @@ function tick(): void {
   sounding = src.active;
 
   if (src.active) {
+    // The quiet-gap rule on RESUME too (hunt 9, 2026-10-03). The gap was only
+    // checked on a quiet tick, but the poller stops in the background (and
+    // when tracking/output is off), so audio that started again hours later
+    // carried on the OLD session: its start time, its length, its "sustained
+    // ≥88 dBA" count and its spent once-a-session advisory latch — so a new
+    // loud stretch never got its advisory.
+    if (session && now - session.lastActiveMs > settings.sessionGapMinutes * 60000) closeSession(session.lastActiveMs);
     soundingStreak += 1;
     currentDb = src.db;
     route = src.rt;

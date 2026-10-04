@@ -31,7 +31,9 @@ const STUBS: Record<string, string> = {
     auth: { async getSession() { return { data: { session: { user: { id: 'u' } } } }; } },
     async rpc(name) { return globalThis.__AH7_RPC__(name); },
   };`),
-  'lib/getSessionSafe': mod(`export async function hasSafeSession() { return true; }`),
+  // (Safe-session sweep 2026-10-03: employer/api reads through safeSessionResult.)
+  'lib/getSessionSafe': mod(`export async function hasSafeSession() { return true; }
+    export async function safeSessionResult(p) { return { result: await p, timedOut: false }; }`),
   'lib/boundedCall': mod(`export async function withDeadline(fn) { return await fn(); }`),
 };
 

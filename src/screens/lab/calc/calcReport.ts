@@ -195,6 +195,12 @@ export function buildReportFromCalc(p: {
   reportPrefix?: string;
   /** Output label chosen as the headline result; falls back to first numeric. */
   primaryResultLabel?: string;
+  /** The calculator REFUSED the inputs (calcTypes `refusal`): there is no
+   *  answer to headline (hunt 9, 2026-10-03). The first numeric row of a
+   *  refusal is a supporting figure — a refused port length headlined its
+   *  ACOUSTIC length, unlabelled, as the PRIMARY RESULT of "Vented port
+   *  length", which reads as the port to cut. The rows still list in full. */
+  refused?: boolean;
   inputs: { label: string; value: string; unit?: string; detail?: string }[];
   results: { label: string; formattedValue: string; isText?: boolean }[];
   notes?: string[];
@@ -207,9 +213,11 @@ export function buildReportFromCalc(p: {
     formattedValue: r.formattedValue,
   }));
   const numeric = results.filter((r, idx) => !p.results[idx].isText && looksNumeric(r.formattedValue));
-  const primaryResult = p.primaryResultLabel
-    ? numeric.find((r) => r.label === p.primaryResultLabel) ?? numeric[0]
-    : numeric[0];
+  const primaryResult = p.refused
+    ? undefined
+    : p.primaryResultLabel
+      ? numeric.find((r) => r.label === p.primaryResultLabel) ?? numeric[0]
+      : numeric[0];
 
   const notes: string[] = [];
   const warnings: string[] = [];

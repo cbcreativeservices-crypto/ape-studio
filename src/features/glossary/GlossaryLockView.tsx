@@ -19,7 +19,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
-import { Modal } from '../../components/DimModal';
+import { Modal, rootModalHoldMs } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
 import { GLOSSARY_WEEKLY_LIMIT } from './glossaryCap';
 
@@ -79,6 +79,28 @@ export function GlossaryLockView({
    *  status and lift the lock without a manual reload. */
   onExpired?: () => void;
 }) {
+  /**
+   * ⛔ NOT OVER A MODAL STILL CLOSING (hunt 9, 2026-10-03). The lock goes up
+   * when a metered read answers "out of lookups" — and the commonest way to
+   * reach a NEW term mid-visit is from the Bookmarks / Custom / Recent list or
+   * the bookmark popup, which close as the term opens. The read answers inside
+   * their fade, iOS refuses to present a Modal over one still animating away,
+   * and with `visible` already true RN never asks again: no lock, the term does
+   * not open, and every later tap sets a lock that is already "up" — a glossary
+   * that silently stops opening anything. Wait out the dismissal like every
+   * other root surface (AppDialog, MembershipGate); once presented, it stays.
+   */
+  const presentedRef = useRef(false);
+  if (!visible) presentedRef.current = false;
+  const holdMs = visible && !presentedRef.current ? rootModalHoldMs() : 0;
+  const [, setHoldTick] = useState(0);
+  useEffect(() => {
+    if (holdMs <= 0) return;
+    const t = setTimeout(() => setHoldTick((n) => n + 1), holdMs);
+    return () => clearTimeout(t);
+  }, [holdMs]);
+  const present = visible && holdMs <= 0;
+  if (present) presentedRef.current = true;
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     if (!visible) return;
@@ -106,7 +128,7 @@ export function GlossaryLockView({
   return (
     <Modal
       accessibilityViewIsModal
-      visible={visible}
+      visible={present}
       transparent
       animationType="fade"
       statusBarTranslucent

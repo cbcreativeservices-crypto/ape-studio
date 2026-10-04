@@ -886,6 +886,15 @@ const WS_CV70: Workspace = {
         const tapw = n(v.tapw);
         const hr = n(v.hr);
         const usable = prated / Math.pow(10, hr / 10);
+        // Over budget already (hunt 9, 2026-10-03): the steps printed a
+        // negative "Room left" and then "floor(−120.6 ÷ 10) = 0" — false
+        // arithmetic (that floor is −13). Say the overage in words instead.
+        if (usable < load) {
+          return [
+            `Usable budget = ${fmt(prated)} W ÷ 10^(${fmt(hr)}/10) = ${fmt(usable)} W after reserving headroom.`,
+            `The ${fmt(load)} W already tapped is ${fmt(load - usable)} W OVER that budget — there is no room left, so 0 more speakers fit.`,
+          ];
+        }
         return [
           `Usable budget = ${fmt(prated)} W ÷ 10^(${fmt(hr)}/10) = ${fmt(usable)} W after reserving headroom.`,
           `Room left = ${fmt(usable)} − ${fmt(load)} = ${fmt(usable - load)} W.`,

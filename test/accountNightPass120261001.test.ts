@@ -65,9 +65,11 @@ test('GET MEMBERSHIP from the un-hosted card also waits for its own Modal to clo
 
 test('a stalled getSession never asserts "guest" for a signed-in member', () => {
   // Boot: a stall decides nothing; INITIAL_SESSION carries the real answer.
-  const boot = body(provider, 'const bootAskedAt = Date.now();', '.finally(() => {');
-  assert.match(boot, /if \(!data\.session && Date\.now\(\) - bootAskedAt >= SESSION_TIMEOUT_MS\) return;/);
-  assert.ok(boot.indexOf('return;') < boot.indexOf('clearLocalOnUserChange(identityOf(data.session));'));
+  // (Safe-session sweep 2026-10-03: the elapsed-time test became `timedOut`,
+  // which also covers a rejected read and an offline token refresh.)
+  const boot = body(provider, "safeSessionResult(supabase.auth.getSession(), 'EntitlementProvider/boot')", '.finally(() => {');
+  assert.match(boot, /if \(timedOut\) return;/);
+  assert.ok(boot.indexOf('if (timedOut) return;') < boot.indexOf('clearLocalOnUserChange(identityOf(data.session));'));
   // refreshEntitlement: no session while the provider knows an account → read failed, tier kept.
   const refresh = body(provider, 'const refreshEntitlement = useCallback', 'const setCommercialMode');
   assert.match(refresh, /if \(!isRealAccount\(sess\.session\)\) \{[\s\S]*?if \(lastUid\.current !== null\) return false;\s*setEntitlementState\('anonymous'\);/);

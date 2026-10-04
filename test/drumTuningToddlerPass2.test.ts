@@ -220,7 +220,8 @@ describe('drum toddler pass 2 — chapter corrections', () => {
   it('Ch6: ▶ BOTH counts as heard only once the floor tom has sounded', () => {
     const ch6 = strip(read(`${DIR}/modules/ch6Kit.tsx`));
     assert.doesNotMatch(ch6, /if \(both\.playing\) setHeardBoth\(true\);/);
-    assert.match(ch6, /if \(!both\.playing\) return;\s*const id = setTimeout\(\(\) => setHeardBoth\(true\), \(RACK_FIRST_S \+ GAP_S\) \* 1000 \+ FLOOR_HEARD_MS\);\s*return \(\) => clearTimeout\(id\);/);
+    // Hunt 9 keeps the timer and also records whether the pair heard was DISTINCT.
+    assert.match(ch6, /if \(!both\.playing\) return;\s*const atDistinct = verdict\.kind === 'distinct';\s*const id = setTimeout\(\(\) => \{\s*setHeardBoth\(true\);\s*if \(atDistinct\) setHeardDistinct\(true\);\s*\}, \(RACK_FIRST_S \+ GAP_S\) \* 1000 \+ FLOOR_HEARD_MS\);\s*return \(\) => clearTimeout\(id\);/);
   });
 
   it('Ch6: the cap names the note it drops; names and notes are length-limited', () => {

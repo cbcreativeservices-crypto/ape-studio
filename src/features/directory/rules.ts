@@ -247,7 +247,13 @@ export function readableError(message: string | undefined): string {
     m.includes('fetch failed') ||
     m.includes('load failed') ||
     m.includes('network request failed') ||
-    m.includes('network error')
+    m.includes('network error') ||
+    // The bounded client's deadline (src/lib/boundedCall.ts): postgrest-js
+    // resolves `{ error }` with "AbortError: supabase /rest/v1/rpc/… timeout
+    // after 30000ms". A stalled connection is the offline case, not "something
+    // went wrong on our side" (hunt 9, 2026-10-03).
+    m.includes('aborterror') ||
+    m.includes('timeout after')
   )
     return 'No connection. Try again.';
   // ⚠️ The fall-through used to be `message ?? …`, which handed the member the
@@ -261,6 +267,11 @@ export function readableError(message: string | undefined): string {
   if (m.includes('this conversation is not open'))
     return 'This conversation is not open yet — the other member has not accepted your request.';
   if (m.includes('that is your own profile')) return 'That is your own profile.';
+  // contact_block / contact_report: the profile behind the open sheet was
+  // deleted since it was read (hunt 9, 2026-10-03). It fell through to
+  // "Something went wrong on our side… try again", and trying again can only
+  // fail the same way.
+  if (m.includes('no such member')) return 'That member’s profile is no longer available.';
   if (m.includes('sign in first')) return 'Your session has ended. Sign in again to continue.';
   return 'Something went wrong on our side. Nothing you entered was lost — try again, and email info@proaudiotrainingacademy.com if it keeps happening.';
 }

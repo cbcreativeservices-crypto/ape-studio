@@ -420,6 +420,10 @@ export function StartHereScreen() {
             </Text>
           </Pressable>
           {pagesUnreadable ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
+          {/* A tone start the engine refused is SAID (hunt 9, 2026-10-03 —
+              useCourseTone's `error`, the rule every other lab on this voice
+              follows): PLAY just stayed dark without a word. */}
+          {tone.error ? <Text style={styles.toneError}>{tone.error}</Text> : null}
           {listOpen ? (
             <ScrollView style={styles.listScroll} contentContainerStyle={[styles.list, readingColumn]}>
               {SECTIONS.map((s) => (
@@ -525,6 +529,7 @@ const styles = StyleSheet.create({
   },
   wordsText: { color: colors.cyanBright, fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2 },
   unreadable: { marginHorizontal: 16, marginBottom: 6 },
+  toneError: { marginHorizontal: 16, marginBottom: 6, color: '#ff6b5e', fontFamily: fonts.barlowMedium, fontSize: 12.5 },
   dots: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 16, paddingVertical: 6, flexWrap: 'wrap' },
   dot: { width: 11, height: 6, borderRadius: 3, backgroundColor: '#26262b' },
   dotGap: { marginLeft: 5 },

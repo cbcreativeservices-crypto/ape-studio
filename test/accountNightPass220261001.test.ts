@@ -50,7 +50,8 @@ test('Guest Mode sign-out is bounded, and a stall refuses without the lock-queue
   assert.match(guest, /await signOutLocalRefusing\(\d+\);/);
   const stall = guest.indexOf('/signOut timeout/.test(');
   assert.ok(stall > 0);
-  assert.ok(stall < guest.indexOf('safeSession(supabase.auth.getSession()'));
+  // (Safe-session sweep 2026-10-03: the session check is safeSessionResult now.)
+  assert.ok(stall < guest.indexOf('safeSessionResult(supabase.auth.getSession()'));
 });
 
 test('an offline recovery-code check does not blame the code', () => {

@@ -47,20 +47,26 @@ export function LabChecklistSummary({ rows, label }: { rows: readonly LabRequire
 export function LabChecklist({
   rows,
   onOpen,
+  unreadable,
 }: {
   rows: readonly LabRequirementRow[];
   /** Tapping a row opens that lab. Omit to render the list read-only. */
   onOpen?: (row: LabRequirementRow) => void;
+  /** The stored lab progress could NOT BE READ (D51; shared hunt 9,
+   *  2026-10-03): a tracked lab not done in this session's stand-in copy is
+   *  unknown, never "Not started" — no empty box and no "n of N". */
+  unreadable?: boolean;
 }) {
   if (rows.length === 0) return null;
   return (
     <View style={s.list}>
       {rows.map((r) => {
         const openable = !!onOpen && !!r.route;
+        const unknown = !!unreadable && r.tracked && !r.done;
         // Units cleared, but only where the lab actually tracks them and is
         // part-way through. "0 of 12" on an untouched lab is noise; the empty
         // checkbox already says it.
-        const partial = !r.done && r.total > 0 && r.cleared > 0 ? `${r.cleared} of ${r.total}` : null;
+        const partial = !unknown && !r.done && r.total > 0 && r.cleared > 0 ? `${r.cleared} of ${r.total}` : null;
         const Row = openable ? Pressable : View;
         return (
           <Row
@@ -74,14 +80,16 @@ export function LabChecklist({
                       ? 'Required. Progress is not recorded for this lab yet.'
                       : r.done
                         ? 'Complete.'
-                        : partial
-                          ? `${partial} sections done.`
-                          : 'Not started.'
+                        : unknown
+                          ? 'Progress could not be read.'
+                          : partial
+                            ? `${partial} sections done.`
+                            : 'Not started.'
                   } Opens the lab.`,
                 }
               : {
                   accessible: true,
-                  accessibilityLabel: `${r.name}. ${r.tracked ? (r.done ? 'Complete.' : 'Not started.') : 'Required.'}`,
+                  accessibilityLabel: `${r.name}. ${r.tracked ? (r.done ? 'Complete.' : unknown ? 'Progress could not be read.' : 'Not started.') : 'Required.'}`,
                 })}
             style={s.row}
           >
@@ -91,7 +99,7 @@ export function LabChecklist({
                 progress, so a checkbox there would promise a tick the app can
                 never give. A dash says "required, not a task I can score". */}
             <Text style={[s.box, r.done && s.boxDone, !r.tracked && s.boxUntracked]}>
-              {!r.tracked ? '–' : r.done ? '✓' : '○'}
+              {!r.tracked ? '–' : r.done ? '✓' : unknown ? '?' : '○'}
             </Text>
             <View style={s.rowBody}>
               <Text style={[s.rowName, r.done && s.rowNameDone]} numberOfLines={2}>

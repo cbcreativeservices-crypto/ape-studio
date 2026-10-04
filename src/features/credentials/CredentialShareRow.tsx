@@ -31,7 +31,7 @@ import {
   shareOutcomeMessage,
   shareRegistryLink,
 } from './shareCredential';
-import { fetchMyQrToken, fetchMyRegistryName } from '../profile/api';
+import { fetchMyQrTokenOrThrow, fetchMyRegistryName } from '../profile/api';
 
 export function CredentialShareRow({
   credentialName,
@@ -51,6 +51,8 @@ export function CredentialShareRow({
   const [loadNonce, setLoadNonce] = useState(0);
   /** The holder-name read FAILED (as opposed to "no name set"). */
   const [nameFailed, setNameFailed] = useState(false);
+  /** The QR-token read FAILED (as opposed to "no token yet"). */
+  const [tokenFailed, setTokenFailed] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -65,14 +67,21 @@ export function CredentialShareRow({
         (n) => ({ failed: false, name: n }),
         () => ({ failed: true, name: null as string | null }),
       ),
-      fetchMyQrToken(),
-      myRegistryLink(),
+      // STRICT token read (hunt 9, 2026-10-03): a token read that FAILED is
+      // remembered, not flattened to "no token yet" — SHARE QR used to tell an
+      // offline member their record "is still being set up".
+      fetchMyQrTokenOrThrow().then(
+        (t) => ({ failed: false, token: t }),
+        () => ({ failed: true, token: null as string | null }),
+      ),
+      myRegistryLink().catch(() => null),
     ]).then(
-      ([nameRead, tok, link]) => {
+      ([nameRead, tokRead, link]) => {
         if (!alive) return;
         setNameFailed(nameRead.failed);
         if (nameRead.name) setHolderName(nameRead.name);
-        setToken(tok);
+        setTokenFailed(tokRead.failed);
+        setToken(tokRead.token);
         setUrl(link);
       },
     );
@@ -107,7 +116,7 @@ export function CredentialShareRow({
      */
     if (!token) {
       setLoadNonce((n) => n + 1);
-      onMessage(shareOutcomeMessage({ ok: false, reason: 'no_token' }, 'QR'));
+      onMessage(shareOutcomeMessage({ ok: false, reason: tokenFailed ? 'failed' : 'no_token' }, 'QR'));
       return;
     }
     // …and no card carrying a stand-in name because the name read FAILED
@@ -128,7 +137,7 @@ export function CredentialShareRow({
     // cancelled", so this cannot distinguish them — it says the one thing that
     // is true either way rather than guessing.
     onMessage(ok ? null : 'Could not share the QR image. You can copy the link instead.');
-  }, [token, nameFailed, url, onMessage]);
+  }, [token, tokenFailed, nameFailed, url, onMessage]);
 
   // ONE share at a time across all three buttons (pattern P9, 2026-10-02).
   // `busy` is state, so a same-frame double tap — or SHARE LINK then SHARE QR —

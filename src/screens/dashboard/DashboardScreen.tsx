@@ -121,7 +121,9 @@ import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
 import { QUIZ_OUTCOME_COPY, replayQuizSubmissions } from '../../features/quiz/api';
 import { EXAM_OUTCOME_COPY, EXAM_PASS_NOT_ISSUED_COPY, replayExamSubmissions } from '../../features/finalExam/api';
-import { onStudyProgress } from '../../features/study/sync';
+import { onStudyProgress, replayQueue } from '../../features/study/sync';
+import { flushScenarioQueue } from '../../features/study/scenarioHomework';
+import { softDeadline } from '../../lib/boundedCall';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { useTermsExempt } from '../../features/study/termsExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
@@ -575,6 +577,24 @@ const STUDY_ROUTES: Partial<
  * with no word. Navigate only once the sign-out really happened.
  */
 async function signOutOrSay(onDone: () => void): Promise<void> {
+  /**
+   * SEND WHAT IS STILL QUEUED **BEFORE** SIGNING OUT (hunt 9, 2026-10-03 —
+   * Settings › Log out's rule). The SIGNED_OUT wipe drops the offline
+   * study / quiz / scenario queues, and by then there is no session to send
+   * them with. This button is reached from the error screen — a cold load
+   * that FAILED, which is exactly when the launch drain failed too — so a
+   * learner whose connection had just come back lost the work they did
+   * offline, under a dialog that said their progress was safe. Online, the
+   * ordinary case, it now simply lands; bounded like Settings.
+   */
+  await softDeadline(
+    async () => {
+      await Promise.allSettled([replayQueue(), replayQuizSubmissions(), flushScenarioQueue()]);
+    },
+    undefined,
+    'dashboard/logout-flush',
+    15000,
+  );
   markIntentionalSignOut();
   // Local scope (bug pass 2026-09-30): sign THIS device out, not the website
   // or the user's other sessions — same as Settings › Log out.

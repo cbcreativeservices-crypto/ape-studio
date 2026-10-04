@@ -22,7 +22,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Svg, { Defs, Line, LinearGradient as SvgGradient, Path, Stop } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ApeDsp, GEN_MODES } from '../../../../../modules/ape-dsp';
+import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, GEN_MODES } from '../../../../../modules/ape-dsp';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import { startFenced } from '../../../../features/audio/startFenced';
@@ -86,6 +86,9 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
   // Something else can silence this lab — backgrounding, shake-to-mute, the
   // idle auto-mute. Without this the transport stayed lit over silence.
   useStopOnAudioMute(setRunning);
+  /** A start the engine refused is SAID (hunt 9, 2026-10-03 — the hunt-7
+   *  Nodes / Harmonics rule): PLAY just stayed off without a word. */
+  const [error, setError] = useState('');
 
   const gen = useRef(0);
   // STAYS ARMED (owner 2026-09-29: ▶ arms a lab — every change plays the new
@@ -106,6 +109,7 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
     want.current = true;
     const ok = await requestAudioOutput();
     if (!ok || g !== gen.current) return;
+    setError('');
     ApeDsp.genSet(params());
     try {
       // The fence (startFenced): a mute, a stop/quiet, or a stop-all that lands
@@ -121,7 +125,7 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
       setRunning(true);
       noteAudioActivity();
     } catch {
-      /* the engine reports through its gate */
+      if (g === gen.current) setError(AUDIO_UNAVAILABLE_MESSAGE);
     }
   }, [playable, requestAudioOutput, params]);
   const stop = useCallback(() => {
@@ -162,7 +166,7 @@ function useRatioTone(f0: number, n1: number, n2: number, detune: number) {
     const id = setInterval(noteAudioActivity, 500);
     return () => clearInterval(id);
   }, [running]);
-  return { running, start, stop, playable, additiveReady, dualReady, engineReady, detuned };
+  return { running, error, start, stop, playable, additiveReady, dualReady, engineReady, detuned };
 }
 
 const STOPS = WAVE_LEVEL_STOPS.map((s) => ({ offset: `${Math.round(s.offset * 100)}%`, color: s.color }));
@@ -419,6 +423,7 @@ export function HarmonyModule({ help, focused }: CymaticsModuleProps) {
               ? `PLAY renders the pair EXACTLY: harmonics ${ratio.n1} and ${ratio.n2} of ${formatHz(base)} through the additive engine.`
               : 'Locked ratios need the additive engine (engine 3).'}
       </Text>
+      {tone.error ? <Text style={[P.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}
       {tone.detuned ? (
         <View style={P.card}>
           <Text style={P.strong}>

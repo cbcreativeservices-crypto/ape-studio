@@ -39,7 +39,8 @@ test('deliberate sign-outs are LOCAL — Log out, Guest Mode, ensureSession, rec
 
 test('Guest Mode refuses to go in while an ACCOUNT session survived a failed sign-out', () => {
   const guest = auth.slice(auth.indexOf('const enterGuest = async'), auth.indexOf('await runAfterAccountSync('));
-  assert.match(guest, /if \(outError\) \{[\s\S]*?if \(isRealAccount\(still\.session\)\) \{\s*consumeIntentionalSignOut\(\);[\s\S]*?return;/);
+  // (Safe-session sweep 2026-10-03: an UNKNOWN session read refuses too.)
+  assert.match(guest, /if \(outError\) \{[\s\S]*?if \(timedOut \|\| isRealAccount\(still\.session\)\) \{\s*consumeIntentionalSignOut\(\);[\s\S]*?return;/);
 });
 
 test('cancelling recovery after a verified code signs that recovery session out', () => {

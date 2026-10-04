@@ -436,18 +436,40 @@ export function ProfileScreen() {
     fields: V3Field[];
     state: 'loading' | 'ready' | 'unavailable';
   }>({ certs: [], programs: [], fields: [], state: 'loading' });
-  useEffect(() => {
-    let alive = true;
+  /**
+   * "TRY AGAIN" HAS TO WORK (hunt 9, 2026-10-03). This was read once, at
+   * mount, and Profile is a TAB — it stays mounted — so a failed read kept
+   * "check your connection and try again" (and enrolled rows that cannot open
+   * their earn-path screen) until the app was killed. A failed read re-asks
+   * when Profile is focused again; the newest read wins.
+   */
+  const catalogTicket = useRef(0);
+  const catalogFailedRef = useRef(false);
+  const loadCatalog = useCallback(() => {
+    const ticket = ++catalogTicket.current;
     void Promise.all([fetchV3Certs(), fetchV3Programs(), fetchV3Curriculum()]).then(
       ([certs, programs, fields]) => {
-        if (!alive) return;
+        if (ticket !== catalogTicket.current) return;
         const ok = certs.length > 0 && programs.length > 0 && fields.length > 0;
+        catalogFailedRef.current = !ok;
         setCatalog({ certs, programs, fields, state: ok ? 'ready' : 'unavailable' });
       },
-      () => { if (alive) setCatalog((c) => ({ ...c, state: 'unavailable' })); },
+      () => {
+        if (ticket !== catalogTicket.current) return;
+        catalogFailedRef.current = true;
+        setCatalog((c) => ({ ...c, state: 'unavailable' }));
+      },
     ); // [38] (2026-09-07): guard the rejection (was unhandled)
-    return () => { alive = false; };
   }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (catalogFailedRef.current) loadCatalog();
+    }, [loadCatalog]),
+  );
+  useEffect(() => {
+    loadCatalog();
+    return () => { catalogTicket.current += 1; };
+  }, [loadCatalog]);
 
   // Name → credential id, so a progress row can open the AwardProgress earn-path
   // screen for that certificate / program (My Progress is retrospective: it
