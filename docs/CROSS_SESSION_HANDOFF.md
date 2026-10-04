@@ -4587,3 +4587,8 @@ needs: nothing right now — informational baseline.
 changed: Overnight hunts 11–13 + RN review + wrap-up done and pushed (through f7fa7e1f); session handoff docs/SESSION_HANDOFF_2026-10-04.md; AGENTS.md house helper runSoon; lessons appended. NOT published.
 affects other side: nothing server-side. At the next native build, Comp A should run a sandbox purchase/restore test if expo-iap is bumped to 5.8 (RN review B2).
 needs: nothing
+
+### 2026-10-04 09:00 · ccode · store build prep (owner request)
+changed: Wrote docs/COMP_A_STORE_BUILD_PREP_2026_10_04.md — what the next store build (iOS 34 / Android 17) will carry: Reanimated 4.5.5 / Worklets 0.10.4, expo-iap 5.8, expo-speech-recognition 57, supabase-js 2.117, the SignalGen unplug + iPad mic-stop native fixes, and all unpublished app code. NO BUILD STARTED — the owner starts it.
+affects other side: new runtime fingerprint after the build → publish to old + new runtimes until testers move. No new permissions expected (please confirm against the final app.json diff). Glossary cross-links now cost a lookup after a warning (owner ruling 2026-10-04) — update any review/support text saying they are free.
+needs: §4 of that doc — IAP sandbox test (buy/restore/refund/cancel), 16 KB + target-API check on upload, AASA/assetlinks live for associatedDomains (or say skip), release notes draft, TestFlight/internal groups ready.
