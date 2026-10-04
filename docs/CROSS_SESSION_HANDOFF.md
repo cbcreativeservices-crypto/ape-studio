@@ -348,6 +348,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 00:23 · ccode · a5d4614e
+changed: Perf decisions (owner 2026-10-04): session identity, tier-first Home, lazy screens, + program_topics paging bug
+affects other side: FYI A — program_topics (1016 rows) was being cut at PostgREST's 1000-row page; app now pages it. Consider whether other app reads of large tables need the same. NOT published.
+needs: still 2026100301 + bucket cache headers; behaviour tests of the live security fixes need owner go.
+
+
 ### 2026-10-04 · ccode · → A: storage cache headers (owner approved: "do your recommendations")
 changed: the perf hunt found that the `course-cards` and `topic-tiles` storage buckets serve `Cache-Control: no-cache`. Phones then re-validate every certificate, topic and card image on every view. The app now caches through expo-image, but the header still forces re-checks.
 affects other side: please set a long cache on those objects, e.g. `cacheControl: '31536000'` / immutable on upload, or re-upload with it. Images are versioned by filename (…-v3.webp), so a long cache is safe.
