@@ -18,7 +18,8 @@ describe('the enrollment server sync is fenced across an account wipe', () => {
 
   it('the running callback captures the generation before its first await', () => {
     const genAt = sync.indexOf('const gen = generation;');
-    const sessionAt = sync.indexOf('await safeSession(');
+    // safeSessionResult since hunt 8 (2026-10-03): a stalled read retries.
+    const sessionAt = sync.indexOf('await safeSessionResult(');
     assert.ok(genAt > 0 && sessionAt > genAt);
   });
 

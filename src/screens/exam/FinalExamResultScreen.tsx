@@ -70,6 +70,24 @@ const COPY: Record<string, { title: string; body: string; tone: 'good' | 'bad' |
   },
 };
 
+/**
+ * ⛔ A PASS IS NOT ALWAYS AN ISSUED CREDENTIAL (deep-dive A, 2026-10-03).
+ *
+ * submit_final_exam awards only `IF v_passed AND v_month_ok AND
+ * has_academy_access(auth.uid())` (the refund gate, applied 2026-10-02). A
+ * paper started while a member and submitted after a refund — or after a
+ * cancelled cycle ran out mid-exam, or replayed from the offline queue days
+ * later — comes back `outcome: 'pass'` with `credential_awarded: false`. The
+ * pass copy said "It has been added to your record" and offered View on
+ * Profile, for a credential that was never written. Kept OUT of COPY on
+ * purpose: COPY is keyed by server outcome (examOutcomeCopy.test).
+ */
+const PASS_NOT_ISSUED = {
+  title: 'PASSED',
+  body: 'You met the standard, but your membership was not active when this exam was submitted, so the credential has not been issued. Rejoin and you may sit the Final Exam again to have it issued.',
+  tone: 'warn' as const,
+};
+
 function fmtLockout(iso: string | null): string | null {
   if (!iso) return null;
   const d = new Date(iso);
@@ -81,7 +99,8 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
   const { result, awardName, awardType, awardId } = route.params;
   const insets = useSafeAreaInsets();
 
-  const copy = COPY[result.outcome] ?? COPY.no_pass;
+  const passNotIssued = result.outcome === 'pass' && result.credential_awarded !== true;
+  const copy = passNotIssued ? PASS_NOT_ISSUED : (COPY[result.outcome] ?? COPY.no_pass);
   const lockout = useMemo(() => fmtLockout(result.lockout_until), [result.lockout_until]);
   // Has the learner been TOLD their result? A held paper is graded; they simply
   // have not been shown it. Everything score-shaped hangs off this.
@@ -167,7 +186,7 @@ export function FinalExamResultScreen({ navigation, route }: Props) {
               onPress={leaveOnce(() => (navigation as any).replace('FinalExam', { awardType, awardId, awardName }))}
             />
           )}
-          {result.outcome === 'pass' && (
+          {result.outcome === 'pass' && !passNotIssued && (
             // [30] (2026-09-07): the pass copy says the credential is viewable on
             // the profile — give a direct path there (Profile is a Main tab).
             <StudioButton

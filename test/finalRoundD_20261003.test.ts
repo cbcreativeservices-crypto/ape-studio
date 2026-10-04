@@ -90,7 +90,8 @@ test('2 · Profile: a failed credentials read is not "0 certificates you have ea
   const s = read('src/screens/profile/ProfileScreen.tsx');
   assert.ok(!s.includes('fetchMyCredentials().then(setCredentials, () => {})'), 'the failure is still swallowed');
   assert.match(s, /const \[credsFailed, setCredsFailed\] = useState\(false\);/);
-  assert.match(s, /\(\) => setCredsFailed\(true\),/);
+  // Hunt 8: the rejection is ticketed (only the newest read lands) — still remembered.
+  assert.match(s, /\(\) => \{\s*if \(creds === credsTicket\.current\) setCredsFailed\(true\);\s*\}/);
   const man = s.slice(s.indexOf('ON MY PUBLIC PAGE'));
   assert.match(man.slice(0, 800), /\{credsFailed\s*\?\s*'· The certificates you have earned \(couldn’t be loaded just now\)'/);
 });

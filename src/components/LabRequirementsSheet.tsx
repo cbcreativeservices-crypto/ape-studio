@@ -20,6 +20,8 @@ import { Modal } from './DimModal';
 import { LabChecklist, LabChecklistSummary } from './LabChecklist';
 import { StudioButton } from './StudioButton';
 import type { LabRequirementRow } from '../features/lab/labRequirementList';
+import { useLabCompletionUnreadable } from '../features/lab/labCompletion';
+import { CREDENTIAL_LAB_PROGRESS_UNREADABLE } from '../screens/lab/kit/labEnd';
 import { colors, fonts } from '../theme/tokens';
 import { cardColumn } from '../theme/readingColumn';
 
@@ -42,6 +44,11 @@ export function LabRequirementsSheet({
   onClose: () => void;
 }) {
   const all = [...fundamentals, ...member];
+  // ⛔ A FAILED READ IS NOT "0 of N" (D51; deep-dive A 2026-10-03). When the
+  // stored lab units could not be read, the rows are this session's units on
+  // an empty copy, and the summary told a learner with every lab done
+  // "15 still to finish before this counts toward your credit".
+  const progressUnreadable = useLabCompletionUnreadable();
   return (
     <Modal accessibilityViewIsModal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={s.backdrop}>
@@ -55,7 +62,11 @@ export function LabRequirementsSheet({
             </View>
           </View>
 
-          <LabChecklistSummary rows={all} />
+          {progressUnreadable ? (
+            <Text style={s.unreadableNote}>{CREDENTIAL_LAB_PROGRESS_UNREADABLE}</Text>
+          ) : (
+            <LabChecklistSummary rows={all} />
+          )}
 
           <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator>
             <Text style={s.groupHead}>AUDIO FUNDAMENTALS</Text>
@@ -125,6 +136,7 @@ const s = StyleSheet.create({
   groupHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.6, color: colors.amber, marginTop: 6 },
   groupNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSubAlt, marginBottom: 2 },
   trackNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textSubAlt, marginTop: 6 },
+  unreadableNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.amber },
   noneNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSubAlt, marginTop: 8 },
   actions: { flexDirection: 'row', gap: 10 },
 });

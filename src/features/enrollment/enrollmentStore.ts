@@ -25,7 +25,7 @@
  */
 import { useSyncExternalStore } from 'react';
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { createLocalStore } from '../storage/localStore';
 import { freshGs, studyFocusAction } from './enrollmentPlan';
@@ -236,8 +236,15 @@ function scheduleServerSync(delayMs = 800) {
     const gen = generation;
     void (async () => {
       try {
-        const { data } = await safeSession(supabase.auth.getSession(), 'enrollmentStore');
+        const { result: sess, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'enrollmentStore');
         if (gen !== generation) return;
+        // A session read that STALLED or could not refresh (offline with an
+        // expired token) is not "a guest" (hunt 8, 2026-10-03): returning here
+        // dropped the push with no retry, so an ENROLL tapped in that moment
+        // never reached the server master list, which then refused study and
+        // the quiz on that topic until some later edit. Retry like a failure.
+        if (timedOut) throw new Error('session could not be read');
+        const data = sess.data;
         // Guests (incl. an anonymous device key) keep enrollment device-local:
         // syncing would write a master list for a uid deleted within the week.
         if (!isRealAccount(data.session)) return;

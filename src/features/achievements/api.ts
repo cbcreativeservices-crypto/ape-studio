@@ -276,6 +276,20 @@ export async function fetchNearestCredential(
   const top = ranked[0];
 
   const exact = await fetchAwardProgress(type, top.c.id);
+  /**
+   * ⛔ A FAILED EXACT READ IS NOT THE CATALOG COUNT (deep-dive A, 2026-10-03).
+   * fetchAwardProgress answers null for a guest AND for a read that failed.
+   * The catalog fallback counts only the credential's own topics — not the
+   * four standing requirements award_required_topics unions in — so a member
+   * whose read dropped was shown a full ring and "12 of 12 topics complete"
+   * for a credential whose exam is still locked. For a signed-in account,
+   * null is a failure: throw, and the wall draws its NEXT UP retry (D51).
+   * The guest keeps the catalog count (the RPC is not granted to anon).
+   */
+  if (exact == null) {
+    const me = await myUserRowOrThrow<{ id: string }>('id');
+    if (me?.id) throw new Error('award progress unreadable');
+  }
   return {
     kind: 'candidate',
     id: top.c.id,

@@ -39,6 +39,12 @@ export function accountWhy(account: AccountWording): string {
 export const PROGRESS_UNREADABLE =
   'Your saved progress could not be read from this device just now — it is not lost, and nothing is written over it. Leave this lab and come back to try again.';
 
+/** PROGRESS_UNREADABLE's sibling for a CREDENTIAL's lab list (LabRequirementsSheet,
+ *  deep-dive A 2026-10-03): there is no lab to leave there, so it names the
+ *  screen instead. A failed read is never "0 of N labs complete" (D51). */
+export const CREDENTIAL_LAB_PROGRESS_UNREADABLE =
+  'Your lab progress could not be read from this device just now — it is not lost. Come back to this screen to try again.';
+
 /** The quiet line while the saved progress is still being read, for a hub
  *  that would otherwise flash "0 of N" before the read lands. */
 export const PROGRESS_LOADING = 'Reading your saved progress…';

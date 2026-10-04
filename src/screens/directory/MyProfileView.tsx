@@ -155,6 +155,14 @@ export function MyProfileView() {
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [creds, setCreds] = useState<EarnedCredentialRow[]>([]);
+  /**
+   * The earned-credentials read FAILED (deep dive B, 2026-10-03). It was
+   * `.catch(() => [])`, so a dropped read hid FEATURED CREDENTIALS outright —
+   * the member could neither see nor change what their public page shows —
+   * and the preview drew VERIFIED CREDENTIALS over an empty list. A failed
+   * read is not "you have earned nothing" (three faces).
+   */
+  const [credsFailed, setCredsFailed] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [legacy, setLegacy] = useState<LegacyDraft | null>(null);
@@ -194,7 +202,10 @@ export function MyProfileView() {
         const [t, mine, c, migrated] = await Promise.all([
           fetchTaxonomy(),
           fetchMyCommunityProfile(),
-          fetchMyCredentials().catch(() => []),
+          fetchMyCredentials().then(
+            (rows) => ({ rows, failed: false }),
+            () => ({ rows: [] as EarnedCredentialRow[], failed: true }),
+          ),
           alreadyMigrated().catch(() => false),
         ]);
         if (!alive) return;
@@ -207,7 +218,8 @@ export function MyProfileView() {
           return;
         }
         setTax(t);
-        setCreds(c);
+        setCreds(c.rows);
+        setCredsFailed(c.failed);
         if (mine.status === 'ok') {
           setP(mine.profile);
           pRef.current = mine.profile;
@@ -694,7 +706,14 @@ export function MyProfileView() {
         </ChipWrap>
       </Section>
 
-      {creds.length ? (
+      {credsFailed ? (
+        <Section title="FEATURED CREDENTIALS" summary={`${p.featuredCredentialIds.length} shown`}>
+          <Banner tone="warn">
+            Couldn’t load your earned credentials just now, so they can’t be changed here. What your
+            profile already shows is unchanged. Leave this screen and come back to try again.
+          </Banner>
+        </Section>
+      ) : creds.length ? (
         <Section title="FEATURED CREDENTIALS" summary={`${p.featuredCredentialIds.length} shown`}>
           <Helper>
             Choose which earned Pro Audio Training Academy credentials appear on your profile.
@@ -835,7 +854,14 @@ export function MyProfileView() {
         chosen={p.specialties}
         onToggle={(slug) => toggleIn('specialties', slug, LIMITS.specialties)}
       />
-      <PreviewSheet open={previewOpen} onClose={() => setPreviewOpen(false)} p={p} label={label} creds={creds} />
+      <PreviewSheet
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        p={p}
+        label={label}
+        creds={creds}
+        credsFailed={credsFailed}
+      />
     </ScrollView>
   );
 }
@@ -932,12 +958,14 @@ function PreviewSheet({
   p,
   label,
   creds,
+  credsFailed,
 }: {
   open: boolean;
   onClose: () => void;
   p: CommunityProfile;
   label: (k: keyof Taxonomy, s: string) => string;
   creds: EarnedCredentialRow[];
+  credsFailed: boolean;
 }) {
   return (
     <Modal accessibilityViewIsModal visible={open} transparent animationType="slide" onRequestClose={onClose}>
@@ -975,6 +1003,12 @@ function PreviewSheet({
             {p.featuredCredentialIds.length ? (
               <>
                 <Eyebrow>VERIFIED CREDENTIALS</Eyebrow>
+                {credsFailed ? (
+                  <Text style={st.pvNever}>
+                    Couldn’t load your credentials to preview them. Your public page still shows the
+                    ones you chose.
+                  </Text>
+                ) : null}
                 {creds
                   .filter((c) => p.featuredCredentialIds.includes(c.id))
                   .map((c) => (

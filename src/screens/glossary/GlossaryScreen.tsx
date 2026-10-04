@@ -867,6 +867,19 @@ const VEIL_PLACEHOLDER =
   '• The mistake that trips up almost everyone the first time.\n' +
   '• A subtle habit the manuals never warn you about.\n' +
   '• Get this right and you will sound like a seasoned pro.';
+/** Under a definition that is only the browse view's opening because its
+ *  metered read failed (see `shortRead`). The 'unanswered' words are the term
+ *  popup's own. */
+function ShortReadNote({ kind }: { kind: 'unanswered' | 'other' | undefined }) {
+  if (!kind) return null;
+  return (
+    <Text style={styles.shortReadNote}>
+      {kind === 'unanswered'
+        ? 'This is the opening of the entry — the full definition didn’t arrive when this term was opened. So you’re never charged twice, it isn’t fetched again until you next open the app.'
+        : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Close the term and open it again to retry.'}
+    </Text>
+  );
+}
 /** The veil's line for a KNOWN non-member (see TermDetails' mistakesLockLine). */
 const MISTAKES_LOCK_LINE = `🔒 ${COPY.lockCommonMistakes}`;
 
@@ -1685,6 +1698,17 @@ ${COPY.glossaryFreeAllowance}`,
   // row / popup sat on "Loading…" forever after a transient failure, with no
   // error and no retry the user could see.
   const [detailErrs, setDetailErrs] = useState<Record<string, true>>({});
+  /**
+   * ⛔ A FAILED METERED READ LEAVES THE OPENING ON SCREEN — SAY SO (hunt 8,
+   * 2026-10-03; the term popup's `partial` note, here on the screen). For
+   * anyone who is not a member the row holds the browse view's 120-character
+   * opening; when the gateway read faults the term still opens (fail open),
+   * and that opening showed as the whole definition with nothing to say it was
+   * cut — after a timed-out read for the rest of the session, since that term
+   * is not re-sent (owner 2026-10-03 #2). id → which note; cleared by a good
+   * read and by a reader change.
+   */
+  const [shortRead, setShortRead] = useState<Record<string, 'unanswered' | 'other'>>({});
   // Term media (glossary_media): id → first image URL. Drives the media icon
   // next to a term and the in-definition image (user request 2026-07-18).
   const [mediaById, setMediaById] = useState<Record<string, string>>({});
@@ -1795,6 +1819,12 @@ ${COPY.glossaryFreeAllowance}`,
           delete next[id];
           return next;
         });
+        setShortRead((prev) => {
+          if (!prev[id]) return prev;
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
         lastViewedTermRef.current = id;
         if (fresh && typeof used === 'number' && typeof lim === 'number') warnUsage(used, lim);
         return true;
@@ -1828,6 +1858,12 @@ ${COPY.glossaryFreeAllowance}`,
         return false;
       }
       // 'not-deployed' / 'denied' / 'error' → let the legacy detail fetch try.
+      // A member's browse row is already whole, and 'not-deployed' reads the
+      // legacy table's full text; anyone else is left with the opening.
+      if (!isMember && r.fault !== 'not-deployed') {
+        const note = r.fault === 'error' && sessionChargeUnanswered(id) ? 'unanswered' : 'other';
+        setShortRead((prev) => (prev[id] === note ? prev : { ...prev, [id]: note }));
+      }
       return true;
     },
     [putDetail, isMember, meterKnown, memberGate],
@@ -2566,6 +2602,7 @@ ${COPY.glossaryFreeAllowance}`,
        */
       detailsRef.current = {};
       setDetails({});
+      setShortRead({}); // the last reader's notes, over text just blanked
       SESSION_FALLBACK_CHARGED.clear();
       // Reads still out for the last reader must not land after this blank
       // (see readerGenRef), and a new reader's tap must not share one.
@@ -3149,8 +3186,8 @@ ${COPY.glossaryFreeAllowance}`,
   // clamp — leave it out and a guest's rows keep rendering full definitions for
   // the rest of the session, which is the exact hole this clamp closes.
   const rowExtraData = useMemo(
-    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, defRev, mistakesLockLine],
-    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, defRev, mistakesLockLine],
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
+    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
   );
 
   // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
@@ -3736,16 +3773,19 @@ ${COPY.glossaryFreeAllowance}`,
                   // Feature 1: cross-links live in the EXPANDED definition
                   // (collapsed rows stay plain — the row tap owns them).
                   // BEG order (Booth 2026-07-11): plain-English on top.
-                  <LinkedText
-                    text={ttsBeg ? item.plain_english || item.definition : item.definition}
-                    style={[styles.definition, ttsBeg && styles.definitionBeg]}
-                    selfId={item.id}
-                    index={termIndex}
-                    onLink={onLinkPress}
-                    onOpenCalc={onOpenCalc}
-                    highlight={hq}
-                    linksOn={linksOn}
-                  />
+                  <>
+                    <LinkedText
+                      text={ttsBeg ? item.plain_english || item.definition : item.definition}
+                      style={[styles.definition, ttsBeg && styles.definitionBeg]}
+                      selfId={item.id}
+                      index={termIndex}
+                      onLink={onLinkPress}
+                      onOpenCalc={onOpenCalc}
+                      highlight={hq}
+                      linksOn={linksOn}
+                    />
+                    <ShortReadNote kind={shortRead[item.id]} />
+                  </>
                 ) : (
                   /**
                    * COLLAPSED ROW — clamped for a CAPPED reader (bug hunt
@@ -3930,6 +3970,7 @@ ${COPY.glossaryFreeAllowance}`,
                           // the card popup's main definition ignored it).
                           linksOn={linksOn}
                         />
+                        <ShortReadNote kind={shortRead[item.id]} />
                         {d ? (
                           <TermDetails
                             d={d}
@@ -4854,6 +4895,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   detailLoading: { fontFamily: fonts.mono, fontSize: 12, color: colors.textMuted, marginTop: 10 },
+  // Same voice as the term popup's `partial` note: amber = the thing to act on.
+  shortReadNote: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.amber, marginTop: 8 },
   // [72]: failed detail fetch — amber (never colour alone: it also says "retry")
   // on a 44pt-tall hit area.
   detailError: { fontFamily: fonts.mono, fontSize: 12, color: colors.amberLabel },

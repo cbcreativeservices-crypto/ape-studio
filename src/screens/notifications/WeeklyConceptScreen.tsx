@@ -30,7 +30,18 @@ export function WeeklyConceptScreen({ navigation, route }: Props) {
 
   useEffect(() => {
     const initial = fromRoute(route.params);
-    if (hasBody(initial) || !route.params.concept_id) return;
+    // THE CARD FOLLOWS THE PARAMS (hunt 8, 2026-10-03). A second push tapped
+    // while a card is open navigates here with `pop: true` (App.tsx) — the SAME
+    // screen, new params. The card was state seeded once at mount, so it kept
+    // showing the FIRST concept; and a payload with a body arriving while the
+    // first one's fetch was in flight left the spinner up for good (the
+    // cancelled fetch never cleared it).
+    setCard(initial);
+    setLoadError(false);
+    if (hasBody(initial) || !route.params.concept_id) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     setLoading(true);
     setLoadError(false);

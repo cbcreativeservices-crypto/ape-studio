@@ -125,6 +125,16 @@ export const EXAM_OUTCOME_COPY: Record<
  * is how it was caught in the result screen. Read them only after narrowing on
  * `outcome`.
  */
+/**
+ * A PASS THAT ISSUED NOTHING (deep-dive A, 2026-10-03). submit_final_exam
+ * awards only while `has_academy_access` holds at submit time, so a paper
+ * replayed from the offline queue after a refund or a lapsed cycle returns
+ * `outcome: 'pass'` with `credential_awarded: false`. EXAM_OUTCOME_COPY.pass
+ * ("…has been added to your record") is false for it.
+ */
+export const EXAM_PASS_NOT_ISSUED_COPY =
+  'You passed, but your membership was not active when this exam was submitted, so the credential has not been issued. Rejoin and you may sit the Final Exam again to have it issued.';
+
 export type ExamResult = {
   attempt_id: string;
   award_type: AwardType;

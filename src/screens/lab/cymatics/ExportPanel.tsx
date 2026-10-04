@@ -259,7 +259,9 @@ export function ExportPanel({ subject, onHelp }: { subject: ExportSubject; onHel
       </View>
       {missing.length > 0 ? (
         <Text style={styles.note}>
-          {missing.join(' · ')} {missing.length > 1 ? 'need' : 'needs'} not available on this device. SVG works now.
+          {/* Grammar repaired (hunt 8, 2026-10-03): a copy pass left "SHARE ·
+              SAVE need not available on this device" — read as "need not". */}
+          {missing.join(' · ')} {missing.length > 1 ? 'are' : 'is'} not available on this device. SVG works now.
         </Text>
       ) : null}
       {msg ? <Text style={styles.msg}>{msg}</Text> : null}

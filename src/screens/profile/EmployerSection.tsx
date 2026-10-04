@@ -21,6 +21,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { Chip, ChipWrap } from '../directory/directoryBits';
 import { fetchTaxonomy, type Taxonomy } from '../../features/directory/api';
@@ -92,11 +93,25 @@ export function EmployerSection() {
   const saveChain = useRef<Promise<unknown>>(Promise.resolve());
   const seq = useRef<Record<string, number>>({});
 
+  /**
+   * "REOPEN THIS SCREEN" HAS TO WORK (deep dive B, 2026-10-03). Every failure
+   * line below tells the employer to reopen the screen, but this loaded once on
+   * mount and Profile is a TAB — it stays mounted — so leaving and coming back
+   * re-asked nothing. A verified employer whose check dropped once kept "Couldn’t
+   * check your employer account" (and no chips) until the app was killed. A
+   * failed read now re-asks when Profile is focused again; a clean load never
+   * does, so an in-flight chip save is never read over. Newest load wins.
+   */
+  const failedRef = useRef(false);
+  const loadTicket = useRef(0);
   const load = useCallback(async () => {
+    const ticket = ++loadTicket.current;
     const [state, isVerified] = await Promise.all([
       fetchMyEmployerApplication(),
       amIVerifiedEmployer(),
     ]);
+    if (ticket !== loadTicket.current) return;
+    failedRef.current = isVerified === null || state.state === 'error';
     setVerified(isVerified === true);
     // A FAILED verified-check is not "not verified" (hunt 7, 2026-10-03).
     setVerifyFailed(isVerified === null);
@@ -107,7 +122,11 @@ export function EmployerSection() {
 
     if (isVerified) {
       const [t, mine] = await Promise.all([fetchTaxonomy(), fetchMyEmployerInterests()]);
+      if (ticket !== loadTicket.current) return;
       setTax(t);
+      if (!t || !mine) failedRef.current = true;
+      // A retry that now reads the stored choices clears the earlier failure.
+      if (mine) setInterestsFailed(false);
       if (mine) setPicked(mine);
       else setInterestsFailed(true);
     }
@@ -116,6 +135,12 @@ export function EmployerSection() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (failedRef.current) void load();
+    }, [load]),
+  );
 
   // Nothing to say to a member, so say nothing.
   if (!loaded || (!app && !verified)) return null;

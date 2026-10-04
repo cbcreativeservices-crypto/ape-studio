@@ -9,14 +9,20 @@
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
-import { markLabReviewed, useLabCompletion, type LabKey } from './labCompletion';
+import { markLabReviewed, useLabCompletion, useLabCompletionUnreadable, type LabKey } from './labCompletion';
 import { useGuestWording } from '../commercial/useTier';
 import { useLabPreview } from './labPreviewStore';
 import { sessionCarryOpen } from './sessionCarry';
 import { reviewCreditLine } from '../../screens/lab/kit/labEnd';
+import { ProgressUnreadableNote } from '../../screens/lab/kit/ProgressUnreadableNote';
 
 export function LabReviewButton({ labKey }: { labKey: LabKey }) {
   const { complete } = useLabCompletion(labKey);
+  // The stored units could NOT BE READ (hunt 8, 2026-10-03; D51 / owner "do
+  // 2"): a lab reviewed on an earlier visit would read "MARK AS REVIEWED" as
+  // if it never was. The shared note says so; the button stays (marking again
+  // is idempotent and merges with the stored copy once it reads).
+  const unreadable = useLabCompletionUnreadable();
   // A guest's mark is held for this session only (final round C, 2026-10-03):
   // "counts toward your credit" is said only where it is true — the labs'
   // end-screen wording otherwise (kit/labEnd reviewCreditLine).
@@ -33,7 +39,7 @@ export function LabReviewButton({ labKey }: { labKey: LabKey }) {
     );
   }
 
-  return (
+  const button = (
     <Pressable
       style={styles.card}
       onPress={() => markLabReviewed(labKey)}
@@ -46,6 +52,13 @@ export function LabReviewButton({ labKey }: { labKey: LabKey }) {
         {credit ?? 'It counts toward your Audio Fundamentals credit.'}
       </Text>
     </Pressable>
+  );
+  if (!unreadable) return button;
+  return (
+    <View style={styles.stack}>
+      <ProgressUnreadableNote />
+      {button}
+    </View>
   );
 }
 
@@ -60,6 +73,7 @@ const styles = StyleSheet.create({
     gap: 5,
     marginTop: 4,
   },
+  stack: { gap: 6, marginTop: 4 },
   cardDone: { borderColor: 'rgba(55,224,95,.5)', backgroundColor: '#0c1a10' },
   btnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.amber },
   doneText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.green },

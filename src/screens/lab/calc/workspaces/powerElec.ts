@@ -32,6 +32,19 @@ const dropBreaksDown = (I: number, R: number, Vs: number): string =>
   `${I * R > Vs ? 'more than' : 'all of'} the ${fmt(Vs)} V supply, leaving nothing for the load. ` +
   `This supply cannot deliver ${fmt(I)} A over this cable; even with the far end shorted, at most ${fmt(Vs / R)} A could flow. ` +
   'Use a thicker gauge, a shorter run, or a higher supply voltage.';
+/** The REFUSAL row's words — inputs only (hunt 8, 2026-10-03). A capped account
+ *  reads ONLY the refusal rows of a refused result, for free; the words above
+ *  print the cable's round-trip resistance (this calculator's first answer) and
+ *  I·R, so a huge CURRENT revealed any cable's resistance without spending a
+ *  calculation. The figures ride a separate, unmarked row members see. */
+const dropBreaksDownWhy = (I: number, R: number, Vs: number): string =>
+  `The model breaks down here: ${fmt(I)} A through this cable would drop ` +
+  `${I * R > Vs ? 'more than' : 'all of'} the ${fmt(Vs)} V supply, leaving nothing for the load. ` +
+  `This supply cannot deliver ${fmt(I)} A over this cable. ` +
+  'Use a thicker gauge, a shorter run, or a higher supply voltage.';
+const dropBreaksDownFigures = (I: number, R: number, Vs: number): string =>
+  `${fmt(I)} A through ${fmt(R)} Ω of cable would drop I·R = ${fmt(I * R)} V; ` +
+  `even with the far end shorted, at most ${fmt(Vs / R)} A could flow.`;
 
 const TRANSFORMER: Workspace = {
   id: 'transformer',
@@ -270,7 +283,8 @@ const VDROP: Workspace = {
         if (vd > 0 && vd >= n(v.vsrc)) {
           return [
             { label: 'ROUND-TRIP RESISTANCE', value: R, quantity: 'impedance' },
-            { label: 'MODEL BREAKS DOWN', text: dropBreaksDown(n(v.current), R, n(v.vsrc)), refusal: true },
+            { label: 'MODEL BREAKS DOWN', text: dropBreaksDownWhy(n(v.current), R, n(v.vsrc)), refusal: true },
+            { label: 'THE FIGURES', text: dropBreaksDownFigures(n(v.current), R, n(v.vsrc)) },
           ];
         }
         return [

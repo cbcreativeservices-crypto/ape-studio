@@ -19,7 +19,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { GlassButton } from '../../../../components/GlassButton';
-import { markLabUnit, useLabClearedUnits, useLabCompletion } from '../../../../features/lab/labCompletion';
+import { markLabUnit, useLabClearedUnits, useLabCompletion, useLabCompletionUnreadable } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CheckQuestion } from '../../foundations/bits';
 import { useCableStepNav } from './bits';
@@ -104,6 +104,13 @@ function WhatsLeft({ nav }: { nav: ((id: CableLessonId) => void) | null }) {
 
 export function Lesson12Body() {
   const completion = useLabCompletion('af_cables');
+  // UNREADABLE is not "not started" (hunt 8, 2026-10-03; owner "do 2", D51):
+  // the shell hides its "N/M UNITS" and shows the shared note above every
+  // step when the banked units could not be read — but this, the lab's
+  // what's-left step, still said "0 OF N UNITS CLEARED" and listed every
+  // step "not yet solved" under that note. The note stands for it (the
+  // Sound Systems hub's rule); the banks below stay open to practise.
+  const unreadable = useLabCompletionUnreadable();
   const nav = useCableStepNav();
 
   // ── general bank: FINAL_UNIT only when ALL ten are solved (§1.7) ─────────
@@ -151,7 +158,7 @@ export function Lesson12Body() {
           <CheckDoneBanner text="LAB COMPLETE — Cable & Connector Fundamentals" />
           <Text style={s.body}>Credit for this lab is recorded through the Academy’s lab system.</Text>
         </>
-      ) : (
+      ) : unreadable ? null : (
         <>
           <Eyebrow text={`LAB PROGRESS · ${completion.cleared} OF ${completion.total} UNITS CLEARED`} />
           <WhatsLeft nav={nav} />

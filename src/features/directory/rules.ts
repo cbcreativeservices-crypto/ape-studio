@@ -170,8 +170,36 @@ export function readableError(message: string | undefined): string {
   // guest during the lab sweep.)
   if (m.includes('permission denied for function'))
     return 'Sign in to use the Audio Community Directory.';
+  // …but a guest who has the app's ANONYMOUS session (the glossary meter makes
+  // one) IS `authenticated`, gets past the grant, and is refused inside the
+  // function instead: "sign in to browse the directory" from the search,
+  // "no account" from every profile save (deep dive B, 2026-10-03). Both fell
+  // through to "Something went wrong on our side… try again" — a guest told
+  // the server was broken, with a RETRY that can only fail the same way.
+  if (m.includes('sign in to browse the directory') || m.includes('no account'))
+    return 'Sign in to use the Audio Community Directory.';
   if (m.includes('at most')) return 'That is more than you can select here.';
   if (m.includes('needs one of its areas')) return 'Add the matching area first, or remove that specialty.';
+  // ── SPECIFIC BEFORE GENERIC (deep dive B, 2026-10-03) ───────────────────
+  // These four server sentences ALSO contain "display name" or "open to", so
+  // the broad tests below swallowed them: a member whose name was held for
+  // review — or whose About had a blocked word — was told to "Add a public
+  // display name" they already had, and a contact request for a reason the
+  // member does not offer said "Choose at least one Open To option first".
+  if (m.includes('review your public display name'))
+    return 'Review your public display name before appearing in search.';
+  if (m.includes('needs review before it can be published'))
+    return 'Your public display name or About text needs review before it can be published. Edit it, then try again.';
+  if (m.includes('language that is not allowed'))
+    return 'Your display name or About text contains language that is not allowed. Please revise it.';
+  if (m.includes('not something this member is open to'))
+    return 'This member is not open to that. Pick another reason.';
+  // The one-pending-request index (contact_requests_one_pending): a second
+  // request to someone who has not answered the first. It fell through to
+  // "Something went wrong on our side… try again", and trying again can only
+  // fail the same way.
+  if (m.includes('contact_requests_one_pending'))
+    return 'You already sent this member a request. Wait for their answer under Requests.';
   if (m.includes('primary area')) return 'Choose one primary area before publishing.';
   if (m.includes('display name')) return 'Add a public display name before publishing.';
   if (m.includes('how i am involved')) return 'Choose at least one “How I’m Involved” option.';
@@ -182,8 +210,6 @@ export function readableError(message: string | undefined): string {
   if (m.includes('publish your profile first')) return 'Publish your profile first.';
   if (m.includes('open to')) return 'Choose at least one “Open To” option first.';
   if (m.includes('not accepting contact')) return 'This member is not accepting contact.';
-  if (m.includes('not something this member is open to'))
-    return 'This member is not open to that. Pick another reason.';
   if (m.includes('links and contact details')) return 'Remove links and contact details from your message.';
   // ⚠️ Every server window is `created_at > now() - interval '…'` — ROLLING,
   // not a calendar day or week. These four used to say "resets tomorrow" /
@@ -208,8 +234,6 @@ export function readableError(message: string | undefined): string {
   if (m.includes('message is longer than'))
     return 'That message is longer than 1,000 characters. Shorten it and send again.';
   if (m.includes('already answered')) return 'That request has already been answered.';
-  if (m.includes('review your public display name'))
-    return 'Review your public display name before appearing in search.';
   if (m.includes('about_safe') || (m.includes('check constraint') && m.includes('about')))
     return 'Remove any email address, phone number, link or @handle from About My Work.';
   // supabase-js does not throw on a network failure — it resolves with

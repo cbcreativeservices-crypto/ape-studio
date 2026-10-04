@@ -30,7 +30,7 @@
  */
 import { useSyncExternalStore } from 'react';
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
 import { SEC_PER_Q, type PaceMethodKey, type PaceStatus } from './paceStore';
 import { emitStudyProgress } from './sync';
@@ -270,8 +270,14 @@ let creditGeneration = 0;
  */
 async function hasAccount(): Promise<boolean | null> {
   try {
-    const { data } = await safeSession(supabase.auth.getSession(), 'timeTrial');
-    return isRealAccount(data.session);
+    // A read that STALLED, or came back empty because the token refresh could
+    // not reach the server (a trial ending offline — the very case the retry
+    // below exists for), is "could not tell", never "no account" (hunt 8,
+    // 2026-10-03): `safeSession` answered both as signed out, so a member's
+    // pass was marked 'no_account', never sent, and they were told to sign in.
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'timeTrial');
+    if (timedOut) return null;
+    return isRealAccount(result.data.session);
   } catch {
     return null;
   }

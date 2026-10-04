@@ -14,7 +14,8 @@ import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../theme/tokens';
 import { supabase } from '../lib/supabase';
 import type { RootStackParamList } from '../navigation/types';
 import { clearPendingLink } from '../navigation/pendingLink';
-import { isRealAccount } from '../features/commercial/realAccount';
+import { splashBase } from '../navigation/splashRoute';
+import { safeSessionResult } from '../lib/getSessionSafe';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
@@ -34,20 +35,15 @@ export function SplashScreen({ navigation }: Props) {
     // adapter can fail on device), which would throw in the timer and leave the
     // app stuck on Splash forever. Default to the signed-out route instead
     // (bug audit 2026-09-09).
-    const sessionP = supabase.auth.getSession().catch(() => ({ data: { session: null } }));
-    // The `.catch` handles getSession() REJECTING, but not it HANGING (never
-    // settling) — a stalled native secure-store read would leave `await sessionP`
-    // pending forever and freeze the app on Splash. Race it against a fallback so
-    // a stall defaults to the signed-out route (QA Wave D, D-2 2026-09-10).
-    let hangTimer: ReturnType<typeof setTimeout> | undefined;
-    const sessionSafe = Promise.race([
-      sessionP,
-      new Promise<{ data: { session: null } }>((resolve) => {
-        hangTimer = setTimeout(() => resolve({ data: { session: null } }), 5000);
-      }),
-    ]);
+    // …and not it HANGING (never settling) either — a stalled native
+    // secure-store read would leave the await pending forever and freeze the
+    // app on Splash (QA Wave D, D-2 2026-09-10). The shared bound covers both
+    // (a rejection or a stall → the signed-out route, as before) and also says
+    // when a STORED session's refresh could not reach the server (hunt 8,
+    // 2026-10-03) — see splashRoute.ts.
+    const sessionSafe = safeSessionResult(supabase.auth.getSession(), 'Splash');
     const timer = setTimeout(async () => {
-      const { data } = await sessionSafe;
+      const read = await sessionSafe;
       if (cancelled) return;
       // Boot: session → Main (Dashboard), else → the finished login screen.
       // The pre-auth commercial Landing is still WIP, so startup does NOT route
@@ -70,9 +66,11 @@ export function SplashScreen({ navigation }: Props) {
       // route every guest who accepted it straight past the login screen for
       // good — and Settings' "Sign in / create account" (which resets to
       // Splash) would bounce them right back into the app. Ask for an ACCOUNT.
-      const signedIn = isRealAccount(data.session);
+      // …and a member whose stored session could not be REFRESHED offline is
+      // still signed in (hunt 8): splashBase says Main for exactly that.
+      const base = splashBase(read);
+      const signedIn = base === 'Main';
       if (signedIn) clearPendingLink();
-      const base = signedIn ? 'Main' : 'Auth';
       const pushed: PartialRoute<Route<keyof RootStackParamList>>[] = navigation
         .getState()
         .routes.filter((r) => r.name !== 'Splash')
@@ -101,7 +99,6 @@ export function SplashScreen({ navigation }: Props) {
     return () => {
       cancelled = true;
       clearTimeout(timer);
-      if (hangTimer) clearTimeout(hangTimer);
     };
   }, [navigation, logoOpacity, textOpacity]);
 

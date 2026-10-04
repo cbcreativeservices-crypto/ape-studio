@@ -105,6 +105,7 @@ import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import {
   FLAGGED_TOPIC_ID,
   FLAGGED_TOPIC_NAME,
+  readTermList,
   useCustomOnDashboard,
   useTermList,
 } from '../../features/flags/flaggedStore';
@@ -119,7 +120,7 @@ import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
 import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
 import { QUIZ_OUTCOME_COPY, replayQuizSubmissions } from '../../features/quiz/api';
-import { EXAM_OUTCOME_COPY, replayExamSubmissions } from '../../features/finalExam/api';
+import { EXAM_OUTCOME_COPY, EXAM_PASS_NOT_ISSUED_COPY, replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress } from '../../features/study/sync';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { useTermsExempt } from '../../features/study/termsExempt';
@@ -931,9 +932,15 @@ export function DashboardScreen() {
           continue;
         }
         const awarded = result.credential_awarded ? ' Credential awarded.' : '';
+        // A pass that issued nothing (membership ended before the replay) must
+        // not read "added to your record" — see EXAM_PASS_NOT_ISSUED_COPY.
+        const line =
+          result.outcome === 'pass' && result.credential_awarded !== true
+            ? EXAM_PASS_NOT_ISSUED_COPY
+            : EXAM_OUTCOME_COPY[result.outcome];
         notify(
           'Offline exam submitted',
-          `Score ${result.score}/${result.size}. ${EXAM_OUTCOME_COPY[result.outcome]}${awarded}`,
+          `Score ${result.score}/${result.size}. ${line}${awarded}`,
         );
       }
       // A session-less GUEST studies the FREE topics on-device only. It must NEVER
@@ -1455,14 +1462,21 @@ export function DashboardScreen() {
     setTermsError(false);
     setTermList(null);
     try {
-      const items = await fetchGlossaryItemsByIds([...starred]);
+      // The STORED list, read (hunt 8, 2026-10-03; final round C's readTermList,
+      // which Flashcards already uses). The live `starred` set is the empty
+      // placeholder until the store's read lands, and stays empty when that
+      // read FAILED — so a learner with a full Custom List tapped the card and
+      // got "0 terms", the unreadable face shown as the empty one. A failed
+      // read rejects here → "Could not load" + Retry, which reads again.
+      const ids = await readTermList('starred');
+      const items = await fetchGlossaryItemsByIds([...ids]);
       if (termsReqRef.current !== req) return;
       setTermList(items.map((i) => ({ id: i.id, term: i.term }))); // API pre-sorts by term
     } catch {
       if (termsReqRef.current !== req) return;
       setTermsError(true); // see openTerms — never a silent empty list
     }
-  }, [starred]);
+  }, []);
 
   // Dev Visual Index: auto-open the Custom List terms popup for preview (TEMPORARY).
   useEffect(() => {

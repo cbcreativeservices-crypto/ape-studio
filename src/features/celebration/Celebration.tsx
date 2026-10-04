@@ -78,10 +78,14 @@ export function Celebration({
   // region, so on iOS an award or an encouragement appeared and said nothing.
   // It is a one-shot event, so it is safe to speak; keyed on the definition so
   // a re-render does not repeat it.
+  // Keyed on the SPOKEN TEXT, not the `values` object (hunt 8, 2026-10-03):
+  // the Dashboard builds a fresh values object on every render (pick()), so
+  // in Low-Light VoiceOver re-read the notice on each Dashboard re-render.
+  const spoken = fill(def.title, values);
   useEffect(() => {
     if (form !== 'notice' || Platform.OS !== 'ios') return;
-    AccessibilityInfo.announceForAccessibility(fill(def.title, values));
-  }, [def, form, values]);
+    AccessibilityInfo.announceForAccessibility(spoken);
+  }, [spoken, form]);
 
   if (form === 'notice') {
     return (

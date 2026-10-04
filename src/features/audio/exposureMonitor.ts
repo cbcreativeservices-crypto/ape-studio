@@ -579,13 +579,20 @@ function tick(): void {
     // Sub-second taps / one-shot cues never open a session (§2.4): require two
     // consecutive audible ticks before counting begins (the first tick is
     // retro-credited so no real listening time is lost).
+    // Retro-credited to the DAY too (hunt 8, 2026-10-03): the held second went
+    // into the session only, so every session's first second of listening —
+    // its time AND its dose — was missing from today's record (Current
+    // session 0:02 over Today 1 s).
+    let dt = 1; // seconds
     if (!session) {
       if (soundingStreak < 2) {
         pendingSec = 1;
         emitState();
         return;
       }
-      session = { startMs: now - pendingSec * 1000, activeSec: pendingSec, maxDb: 0, lastActiveMs: now };
+      session = { startMs: now - pendingSec * 1000, activeSec: 0, maxDb: 0, lastActiveMs: now };
+      dt += pendingSec;
+      pendingSec = 0; // credited once
       sessionHadGap = false; // fresh session — clear the continuity latch
     }
 
@@ -593,7 +600,6 @@ function tick(): void {
     // integral spanned a gap (Phase 1 A1) — latch it for honest disclosure.
     if (src.micGap && route === 'environmental') sessionHadGap = true;
 
-    const dt = 1; // seconds
     session.activeSec += dt;
     session.lastActiveMs = now;
     if (lvl > session.maxDb) session.maxDb = lvl;
@@ -607,10 +613,11 @@ function tick(): void {
     if (Number.isFinite(allow)) d.dose += dt / allow;
 
     // Routine check-in: fires each time TODAY's active minutes cross a multiple
-    // of the interval (active time, not clock time — §4).
+    // of the interval (active time, not clock time — §4). A CROSSING, since a
+    // session's opening tick adds its retro-credited second as well.
     if (settings.checkinMinutes > 0) {
       const intSec = settings.checkinMinutes * 60;
-      if (d.activeSec % intSec === 0) {
+      if (Math.floor(d.activeSec / intSec) > Math.floor((d.activeSec - dt) / intSec)) {
         d.checkins += 1;
         emitCheckin('routine');
       }

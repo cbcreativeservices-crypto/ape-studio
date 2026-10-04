@@ -24,7 +24,8 @@ import {
   AMP_CHECKS, AMP_MODULES, MISCONCEPTIONS, WAVE_KINDS, APP_SCENARIOS, APP_CHOICES, MYTH_REVIEW_IDS,
   type WaveKind, type AppClassChoice, type AmpModuleId,
 } from '../../../../features/amp/ampContent';
-import { loadAmpProgress, updateAmpProgress, type AmpProgressState } from '../../../../features/amp/ampProgress';
+import { isAmpProgressUnreadable, loadAmpProgress, updateAmpProgress, type AmpProgressState } from '../../../../features/amp/ampProgress';
+import { ProgressUnreadableNote } from '../../kit/ProgressUnreadableNote';
 import { useEntitlement } from '../../../../features/commercial/EntitlementProvider';
 import { rigStatusBezel, type RigPicture, type RigTrace } from '../AmpRig';
 import { faderParam } from '../AmpRack';
@@ -96,6 +97,12 @@ const CH_START = { source: 0.8, mixer: 0.5, amp: 0.5, mode: 'stereo' as const, s
 export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [progress, setProgress] = useState<AmpProgressState | null>(null);
+  // The stored progress could NOT BE READ (hunt 8, 2026-10-03; owner "do 2",
+  // D51): the completion summary below drew the empty stand-in as the
+  // learner's record — every module ○, "CONCEPTS MASTERED · 0" and "Nothing
+  // flagged — every module check you answered was right". Kept as a flag
+  // because the submit path copies the state (the copy is not the marked one).
+  const [unreadable, setUnreadable] = useState(false);
   // Summary links PUSH the module (bug hunt 2026-09-30): navigate() to the
   // current route name only swapped params on this screen, so the learner
   // landed at Module 8's deep scroll offset inside another module and BACK
@@ -114,7 +121,9 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
     if (!resolved) return;
     let alive = true;
     void loadAmpProgress().then((s) => {
-      if (alive) setProgress(s);
+      if (!alive) return;
+      setUnreadable(isAmpProgressUnreadable(s));
+      setProgress(s);
     });
     return () => {
       alive = false;
@@ -237,7 +246,10 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
     void updateAmpProgress((s) => {
       s.final = result;
       if (!s.bestFinal || result.scorePct > s.bestFinal.scorePct) s.bestFinal = result;
-    }).then((s) => setProgress({ ...s }));
+    }).then((s) => {
+      setUnreadable(isAmpProgressUnreadable(s));
+      setProgress({ ...s });
+    });
   }, [finalPct, chSubmitted, challenge, onFinalSubmitted]);
 
   const retakeFinal = () => {
@@ -582,14 +594,19 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
               {/* ── 6 completion summary ── */}
               <SectionTitle>6 · COMPLETION SUMMARY</SectionTitle>
               <Card>
+                {/* Unreadable: the shared note stands for the record — the
+                    modules stay listed to open, with no ✓ / ○ claim. */}
+                {unreadable ? <ProgressUnreadableNote /> : null}
                 <Text style={styles.sumLabel}>MODULES</Text>
                 {summary.mods.map((m) => (
                   <Pressable key={m.id} onPress={() => openModule(m.id)} style={styles.sumRow} accessibilityRole="button" accessibilityLabel={`Open module ${m.num}, ${m.title}`}>
-                    <Text style={[styles.sumMark, { color: m.done ? colors.green : colors.textMuted }]}>{m.done ? '✓' : '○'}</Text>
+                    <Text style={[styles.sumMark, { color: m.done && !unreadable ? colors.green : colors.textMuted }]}>{unreadable ? '·' : m.done ? '✓' : '○'}</Text>
                     <Text style={styles.sumText}>{m.num}. {m.title}</Text>
                     <Text style={styles.sumLink}>open ›</Text>
                   </Pressable>
                 ))}
+                {unreadable ? null : (
+                <>
                 <Text style={styles.sumLabel}>CONCEPTS MASTERED · {summary.mastered.length}</Text>
                 {summary.mastered.slice(0, 6).map((q) => (
                   <Text key={q} style={styles.sumSmall}>✓ {q}</Text>
@@ -606,6 +623,8 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                 <Text style={styles.sumText}>
                   {progress?.final ? `Latest ${Math.round(progress.final.scorePct)}% · best ${Math.round((progress.bestFinal ?? progress.final).scorePct)}%` : 'Not submitted yet'}
                 </Text>
+                </>
+                )}
               </Card>
             </>
           ),

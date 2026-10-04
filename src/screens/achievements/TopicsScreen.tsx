@@ -58,6 +58,9 @@ export function TopicsScreen() {
   const [loadError, setLoadError] = useState(false);
   const fieldsRef = useRef(fields);
   fieldsRef.current = fields;
+  /** The last load that landed FAILED (its [] is the error state's, not a
+   *  read). See the LOADING face in load(). */
+  const failedRef = useRef(false);
   // ONE EXIT for ‹ (night bug pass 3, 2026-10-01): a double tap's second
   // goBack() from the popped route bubbled up and switched to the Home tab.
   // safeGoBack alone guards it (focus check + its time window); the old
@@ -77,9 +80,15 @@ export function TopicsScreen() {
   const load = useCallback(() => {
       const my = ++loadSeq.current;
       setLoadError(false);
+      // Back to the LOADING face after a failed load (hunt 8, 2026-10-03):
+      // RETRY from the error state left `fields` at [] with the error
+      // cleared, so the read in flight showed "No topics available yet."
+      // and "0 / 0" as fact.
+      if (failedRef.current) setFields(null);
       fetchTopicAchievements()
         .then(({ fields, earnedTotal, totalCount }) => {
           if (my !== loadSeq.current) return;
+          failedRef.current = false;
           setFields(fields);
           setEarnedTotal(earnedTotal);
           setTotal(totalCount);
@@ -91,6 +100,7 @@ export function TopicsScreen() {
           // an error. The error is for the empty state only (AchievementsHome).
           if (fieldsRef.current && fieldsRef.current.length > 0) return;
           setFields([]);
+          failedRef.current = true;
           setLoadError(true);
         });
   }, []);
@@ -112,8 +122,11 @@ export function TopicsScreen() {
             <Text style={styles.back}>‹</Text>
           </Pressable>
           <Text style={styles.title}>TOPICS</Text>
+          {/* Not a count until one was READ (hunt 8, 2026-10-03): while
+              loading, and on a failed read, this said "0 / 0" beside the
+              error card — the Trophy Case hub's '— / —' rule. */}
           <Text style={styles.counter}>
-            {earnedTotal} / {total}
+            {fields !== null && !loadError ? `${earnedTotal} / ${total}` : '— / —'}
           </Text>
           <View style={styles.flex} />
           <Pressable accessibilityRole="button" accessibilityLabel="Your gallery" onPress={() => navigation.navigate('Gallery')} hitSlop={8}>

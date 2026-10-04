@@ -65,6 +65,7 @@ import {
   type V3Field,
 } from '../../data/v3Curriculum';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { useInFlightLatch } from '../../lib/latch';
 import { loadShowBigPicture, saveShowBigPicture } from '../../features/profile/bigPicturePref';
 import { cardColumn } from '../../theme/readingColumn';
 
@@ -292,10 +293,20 @@ export function ProfileScreen() {
   const [exportingId, setExportingId] = useState<string | null>(null);
   const [credMessage, setCredMessage] = useState<string | null>(null);
 
+  /** Only the NEWEST read may land (hunt 8, 2026-10-03). Profile reloads on
+   *  every focus, so a read that stalled offline could answer after the read
+   *  of a later visit had shown the ID card — its 'unavailable' then blanked
+   *  the card and put up "check your connection" over a good answer. The same
+   *  for the credentials read beside it ("couldn't load" over loaded rows). */
+  const profileTicket = useRef(0);
+  const credsTicket = useRef(0);
   const loadProfile = useCallback(() => {
+    const ticket = ++profileTicket.current;
+    const current = () => ticket === profileTicket.current;
     setProfileError(false);
     fetchProfile()
       .then((res) => {
+        if (!current()) return;
         if (res.state === 'profile') {
           setProfile(res.profile);
           return;
@@ -310,7 +321,9 @@ export function ProfileScreen() {
         // notification prefs (M12, 2026-09-07) and Profile was left behind.
         setProfileError(res.state === 'unavailable');
       })
-      .catch(() => setProfileError(true));
+      .catch(() => {
+        if (current()) setProfileError(true);
+      });
   }, []);
   useFocusEffect(
     useCallback(() => {
@@ -326,12 +339,16 @@ export function ProfileScreen() {
       // [38] (2026-09-07): guard the rejection like fetchProfile beside it.
       // Final round D (2026-10-03): a failed read is remembered, so the publish
       // manifest no longer states "0 certificates you have earned" as fact.
+      const creds = ++credsTicket.current;
       fetchMyCredentials().then(
         (rows) => {
+          if (creds !== credsTicket.current) return;
           setCredentials(rows);
           setCredsFailed(false);
         },
-        () => setCredsFailed(true),
+        () => {
+          if (creds === credsTicket.current) setCredsFailed(true);
+        },
       );
     }, [loadProfile, resolved]),
   );
@@ -640,8 +657,19 @@ export function ProfileScreen() {
    * switch that shows "on" while the server disagrees is worse than one that
    * refuses to move.
    */
+  /**
+   * ONE LISTING WRITE AT A TIME (deep dive B, 2026-10-03). OFF is applied the
+   * instant it is tapped, so ON (still out) then OFF sent two unordered RPCs:
+   * if the ON landed last the page went PUBLIC under a switch reading off, and
+   * a failed earlier write rolled the switch back over a later tap that had
+   * gone through (ON → OFF → ON with the first ON failing read "off" while
+   * listed). A tap while a write is out is refused; the switch is controlled,
+   * so it simply does not move until the server has answered.
+   */
+  const registryLatch = useInFlightLatch();
   const onRegistryToggle = useCallback(
     (v: boolean) => {
+      if (registryLatch.busy()) return;
       // GUESTS CANNOT BE LISTED — SAY SO (TestFlight build 32, owner on the
       // Pixel). Publishing is a server write that needs an account, so for a
       // guest the chain below ran 18+ → Publish → a refused RPC → the switch
@@ -657,8 +685,9 @@ export function ProfileScreen() {
         return;
       }
       const apply = (adult?: boolean) => {
-        setPubKey('showInRegistry', v);
-        void setRegistryVisible(v, { ...pub, showInRegistry: v }, { adult }).then((ok) => {
+        void registryLatch.run(async () => {
+          setPubKey('showInRegistry', v);
+          const ok = await setRegistryVisible(v, { ...pub, showInRegistry: v }, { adult });
           if (ok) return;
           setPubKey('showInRegistry', !v);
           warn(
@@ -693,7 +722,7 @@ export function ProfileScreen() {
         () => consent(true),
       );
     },
-    [setPubKey, pub, registryGuest, navigation],
+    [setPubKey, pub, registryGuest, navigation, registryLatch],
   );
 
   // This product ships COMMERCIAL-only: the institutional / "MIRAMAR COLLEGE" Profile

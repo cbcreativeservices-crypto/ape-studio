@@ -26,8 +26,9 @@ import { readdirSync, readFileSync } from 'node:fs';
 
 const ROOT = new URL('../src/', import.meta.url);
 
-/** The helper itself, and Splash's own local race which predates it. */
-const ALLOWED = ['lib/getSessionSafe.ts', 'screens/SplashScreen.tsx'];
+/** The helper itself. (Splash's own local race, which predated it, now goes
+ *  through safeSessionResult too — hunt 8, 2026-10-03 — so it left the list.) */
+const ALLOWED = ['lib/getSessionSafe.ts'];
 
 const walk = (dir: URL): URL[] =>
   readdirSync(dir, { withFileTypes: true }).flatMap((e) =>

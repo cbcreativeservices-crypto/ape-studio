@@ -52,6 +52,9 @@ export function GalleryScreen() {
   const [loadError, setLoadError] = useState(false);
   const entriesRef = useRef(entries);
   entriesRef.current = entries;
+  /** The last load that landed FAILED (its [] is the error card's, not a
+   *  read). See the LOADING face in load(). */
+  const failedRef = useRef(false);
   // ONE EXIT for ‹ (night bug pass 3, 2026-10-01): a double tap's second
   // goBack() from the popped route bubbled up and switched to the Home tab.
   // safeGoBack alone guards it (focus check + its time window); the old
@@ -70,9 +73,16 @@ export function GalleryScreen() {
   const load = useCallback(() => {
     const ticket = ++loadTicket.current;
     setLoadError(false);
+    // Back to the LOADING face while nothing is on screen (hunt 8,
+    // 2026-10-03): RETRY from the error card left `entries` at [] with the
+    // error cleared, so the read in flight showed "No trophies yet — Earn
+    // your first trophy" to a member whose gallery simply had not loaded.
+    if (failedRef.current) setEntries(null);
     fetchGalleryV3()
       .then((e) => {
-        if (ticket === loadTicket.current) setEntries(e);
+        if (ticket !== loadTicket.current) return;
+        failedRef.current = false;
+        setEntries(e);
       })
       .catch(() => {
         if (ticket !== loadTicket.current) return;
@@ -83,6 +93,7 @@ export function GalleryScreen() {
         // state only.
         if (entriesRef.current && entriesRef.current.length > 0) return;
         setEntries([]);
+        failedRef.current = true;
         setLoadError(true);
       });
   }, []);
