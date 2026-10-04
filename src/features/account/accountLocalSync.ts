@@ -22,6 +22,7 @@ import { supabase } from '../../lib/supabase';
 import { isRealAccount } from '../commercial/realAccount';
 import { clearLocalAccountData, resetAllLocalStores } from './clearLocalAccountData';
 import { softDeadline } from '../../lib/boundedCall';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { noteSessionIdentity, settleSessionCarry } from '../lab/sessionCarry';
 
 /** Marker holding the id of the user whose data currently lives on the device.
@@ -98,6 +99,30 @@ export function useAccountLocalSync(): void {
      * account that is no longer signed in, and the next switch skipped the
      * wipe. Chained, each sync sees the marker the previous one wrote.
      */
+    /** Auth events seen; a re-read answers only if none came after it. */
+    let events = 0;
+    /** This launch has settled whose device this is (see the re-read below). */
+    let decided = false;
+    type AnySession = { user?: { id?: string; is_anonymous?: boolean | null } } | null | undefined;
+    const settle = (session: AnySession) => {
+      decided = true;
+      // ⚠️ An ANONYMOUS session maps to the GUEST identity (''), not to its
+      // own uid. The glossary's temporary device key would otherwise read as
+      // "a different user signed in" and wipe the guest's enrollment, Home
+      // cards and lab state — once on accepting it, and again every time the
+      // 7-day purge forces a new one. The dialog promises the opposite:
+      // "none of your progress is stored with it".
+      const identity = isRealAccount(session) ? (session?.user?.id ?? '') : '';
+      // GUEST WORK → THE ACCOUNT (owner ruling 2026-10-01: "if in same
+      // session guest signs in then current session is saved and stored").
+      // The lab ledger learns the identity NOW, in event order (a sign-out
+      // drops what it held at once), and writes a guest session's work to
+      // its first account only AFTER this sign-in's wipe has run — or the
+      // wipe would delete it.
+      noteSessionIdentity(identity);
+      chain = chain.then(() => syncLocalToIdentity(identity)).catch(() => {});
+      chain = chain.then(() => settleSessionCarry()).catch(() => {});
+    };
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       // SIGNED_IN (login), SIGNED_OUT (logout → guest), INITIAL_SESSION (cold
       // start). TOKEN_REFRESHED and the like keep the same identity, so the
@@ -112,22 +137,37 @@ export function useAccountLocalSync(): void {
         event === 'INITIAL_SESSION' ||
         event === 'PASSWORD_RECOVERY'
       ) {
-        // ⚠️ An ANONYMOUS session maps to the GUEST identity (''), not to its
-        // own uid. The glossary's temporary device key would otherwise read as
-        // "a different user signed in" and wipe the guest's enrollment, Home
-        // cards and lab state — once on accepting it, and again every time the
-        // 7-day purge forces a new one. The dialog promises the opposite:
-        // "none of your progress is stored with it".
-        const identity = isRealAccount(session) ? (session?.user?.id ?? '') : '';
-        // GUEST WORK → THE ACCOUNT (owner ruling 2026-10-01: "if in same
-        // session guest signs in then current session is saved and stored").
-        // The lab ledger learns the identity NOW, in event order (a sign-out
-        // drops what it held at once), and writes a guest session's work to
-        // its first account only AFTER this sign-in's wipe has run — or the
-        // wipe would delete it.
-        noteSessionIdentity(identity);
-        chain = chain.then(() => syncLocalToIdentity(identity)).catch(() => {});
-        chain = chain.then(() => settleSessionCarry()).catch(() => {});
+        const mine = ++events;
+        // ⛔ A NULL INITIAL_SESSION IS NOT ALWAYS "SIGNED OUT" (hunt 10,
+        // 2026-10-03 — the EntitlementProvider sweep's twin, missed here).
+        // auth-js emits INITIAL_SESSION null whenever its session read ERRORS,
+        // including a member's expired token on a dead connection (the
+        // session stays stored). Read as the guest identity '', a member who
+        // opened the app offline had EVERYTHING on the device wiped — the
+        // unsent offline study/quiz/scenario queues, saved measurements, room
+        // designs, enrollment, Home cards — and the marker left at '' wiped
+        // whatever they did offline again at the next online launch. Re-read:
+        // only a read that came back with no session is a guest; an UNKNOWN
+        // one decides nothing (no wipe, no identity for the lab ledger) until
+        // the session is confirmed — below, or by a real sign-in/out.
+        if (event === 'INITIAL_SESSION' && !session) {
+          void safeSessionResult(supabase.auth.getSession(), 'accountLocalSync/initial')
+            .then(({ result, timedOut }) => {
+              if (timedOut || mine !== events) return;
+              settle(result.data.session as AnySession);
+            })
+            .catch(() => {});
+          return;
+        }
+        settle(session);
+        return;
+      }
+      // The refresh that gets through once the network is back is the first
+      // CONFIRMED identity of a launch that could not tell (above). Same
+      // person as the marker: no wipe, and the ledger writes their held work.
+      if (event === 'TOKEN_REFRESHED' && session && !decided) {
+        events += 1;
+        settle(session);
       }
     });
     return () => {

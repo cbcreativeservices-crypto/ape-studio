@@ -491,7 +491,7 @@ export function DrumTuningLabScreen() {
             `hidden` flag stops its sound and its animation. */}
         <View style={end ? styles.gone : styles.body} accessibilityElementsHidden={!!end} importantForAccessibility={end ? 'no-hide-descendants' : 'auto'}>
           <StepHostContext.Provider value={host}>
-            <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} unsavedIds={unsavedIds} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} guest={resolved && guest} preview={preview} account={wording.account} />
+            <Component key={`${mod.id}:${runId}`} onAnswered={onAnswered} onInteractive={onInteractive} answers={answers} notes={notes} unsavedIds={unsavedIds} onSaveNote={onSaveNote} onDeleteNote={onDeleteNote} notesUnreadable={progressUnreadable} guest={resolved && guest} preview={preview} account={wording.account} />
           </StepHostContext.Provider>
         </View>
       </View>

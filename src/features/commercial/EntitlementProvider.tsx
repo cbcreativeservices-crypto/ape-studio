@@ -598,6 +598,16 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
           .catch(() => {});
         return;
       }
+      // ⛔ THE MEMBER WHO COMES BACK ONLINE (hunt 10, 2026-10-03). After an
+      // offline boot whose session read never came back (the branch above),
+      // nothing here knows who this is: `lastUid` is null, so the foreground
+      // re-read below skips them, and once the bounded retry is spent nothing
+      // asked again — a member stayed "not confirmed" for the whole run after
+      // their connection returned. The token refresh that gets through is the
+      // first CONFIRMED session: take it as the launch's answer (seeds the
+      // baseline — a first real uid never wipes — and reads the tier). Only
+      // while unseeded, so an ordinary hourly refresh still re-reads nothing.
+      if (event === 'TOKEN_REFRESHED' && session && !uidSeeded.current) event = 'INITIAL_SESSION';
       // PASSWORD_RECOVERY IS A SIGN-IN (2026-09-30 bug pass). The in-app reset
       // (AuthScreen → verifyRecoveryOtp) creates the session with verifyOtp,
       // and supabase-js announces a recovery verify as PASSWORD_RECOVERY, never

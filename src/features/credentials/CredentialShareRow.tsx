@@ -27,11 +27,11 @@ import { CARD_W, CredentialShareCard } from './CredentialShareCard';
 import {
   canCopy,
   copyRegistryLink,
-  myRegistryLink,
   shareOutcomeMessage,
   shareRegistryLink,
 } from './shareCredential';
 import { fetchMyQrTokenOrThrow, fetchMyRegistryName } from '../profile/api';
+import { registryUrl } from '../profile/registry';
 
 export function CredentialShareRow({
   credentialName,
@@ -74,15 +74,19 @@ export function CredentialShareRow({
         (t) => ({ failed: false, token: t }),
         () => ({ failed: true, token: null as string | null }),
       ),
-      myRegistryLink().catch(() => null),
     ]).then(
-      ([nameRead, tokRead, link]) => {
+      ([nameRead, tokRead]) => {
         if (!alive) return;
         setNameFailed(nameRead.failed);
         if (nameRead.name) setHolderName(nameRead.name);
         setTokenFailed(tokRead.failed);
         setToken(tokRead.token);
-        setUrl(link);
+        // ONE READ, ONE TOKEN (hunt 10, 2026-10-03): the printed address came
+        // from a SECOND, independent token read (myRegistryLink). When that one
+        // failed and the first did not, SHARE QR sent a card with a working QR
+        // captioned "Your verified record is still being set up." The address
+        // is derived from the token on the card, as certificatePdf does.
+        setUrl(tokRead.token ? registryUrl(tokRead.token) : null);
       },
     );
     return () => {

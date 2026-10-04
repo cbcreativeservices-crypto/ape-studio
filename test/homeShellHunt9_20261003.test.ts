@@ -28,7 +28,8 @@ test('[R2] Dashboard sign-out sends the queued study/quiz/scenario work BEFORE s
   // Bounded, so a send that never answers cannot hold the button forever.
   assert.match(fn, /await softDeadline\(\s*async \(\) => \{\s*await Promise\.allSettled/);
   assert.match(src, /import \{ onStudyProgress, replayQueue \} from '\.\.\/\.\.\/features\/study\/sync';/);
-  assert.match(src, /import \{ flushScenarioQueue \} from '\.\.\/\.\.\/features\/study\/scenarioHomework';/);
+  // (hunt 10 also imports pendingScenarioCount from here — the stranded count.)
+  assert.match(src, /import \{ flushScenarioQueue(, pendingScenarioCount)? \} from '\.\.\/\.\.\/features\/study\/scenarioHomework';/);
 });
 
 

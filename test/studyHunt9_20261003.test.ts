@@ -28,7 +28,9 @@ describe('Credential share: a FAILED token read is not "your record is still bei
     assert.doesNotMatch(src, /\bfetchMyQrToken\(\)/);
     assert.match(src, /fetchMyQrTokenOrThrow\(\)\.then\(/);
     assert.match(src, /setTokenFailed\(tokRead\.failed\)/);
-    assert.match(src, /myRegistryLink\(\)\.catch\(\(\) => null\)/, 'the strict link read must not reject the row load');
+    // Hunt 10: the row no longer makes a second (link) read at all — the
+    // address is derived from the token read above, which cannot reject the load.
+    assert.doesNotMatch(src, /myRegistryLink\(\)/, 'no second, independent token read in the row');
     const at = src.indexOf('const qrNow = useCallback(');
     const body = src.slice(at, src.indexOf('captureAndShare(', at));
     assert.match(body, /reason: tokenFailed \? 'failed' : 'no_token'/);

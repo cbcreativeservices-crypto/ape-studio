@@ -847,7 +847,12 @@ const WS_QBW: Workspace = {
           { label: 'ARITHMETIC AVERAGE (for contrast)', value: (a + b) / 2, quantity: 'frequency', chainable: false },
           { label: 'WIDTH IN OCTAVES', value: log2(b / a), quantity: 'number', chainable: false },
           { label: 'BANDWIDTH', value: bw, quantity: 'frequency', chainable: false },
-          { label: 'Q OF THIS BAND', value: fc / bw, quantity: 'number', chainable: false },
+          // The same frequency twice is a band of no width (hunt 10, 2026-10-03):
+          // Q = fc ÷ 0 printed "Q OF THIS BAND —" beside BANDWIDTH 0 Hz. Said in
+          // words, as the comb's "no path difference" rows are.
+          bw > 0
+            ? { label: 'Q OF THIS BAND', value: fc / bw, quantity: 'number', chainable: false }
+            : { label: 'Q OF THIS BAND', text: 'The two frequencies are the same, so this band has no width — Q (centre ÷ bandwidth) has no value for a band 0 Hz wide.' },
         ];
       },
       steps: (v) => {

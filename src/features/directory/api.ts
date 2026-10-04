@@ -347,7 +347,13 @@ export async function searchDirectory(
         contactEnabled: !!r.contact_enabled,
       })),
     };
-  } catch {
+  } catch (e) {
+    // The 10-second deadline above REJECTS ("directory_search timeout after
+    // 10000ms") — a stalled connection, the offline case (hunt 10, 2026-10-03).
+    // It landed here and told the member something went wrong and to email
+    // support; readableError already names it "No connection" (hunt 9).
+    const msg = e instanceof Error ? e.message : '';
+    if (/timeout after/i.test(msg)) return { status: 'error', error: readableError(msg) };
     // See the note on the save arms: a dropped connection RESOLVES with
     // `{ error }` and is handled by readableError, so reaching this
     // catch means a thrown exception, not the member's router.

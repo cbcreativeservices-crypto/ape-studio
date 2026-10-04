@@ -122,7 +122,9 @@ import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intr
 import { QUIZ_OUTCOME_COPY, replayQuizSubmissions } from '../../features/quiz/api';
 import { EXAM_OUTCOME_COPY, EXAM_PASS_NOT_ISSUED_COPY, replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress, replayQueue } from '../../features/study/sync';
-import { flushScenarioQueue } from '../../features/study/scenarioHomework';
+import { flushScenarioQueue, pendingScenarioCount } from '../../features/study/scenarioHomework';
+import { getQueuedBatches } from '../../features/study/studyQueueStorage';
+import { getQueuedSubmissions } from '../../features/quiz/submissionQueueStorage';
 import { softDeadline } from '../../lib/boundedCall';
 import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { useTermsExempt } from '../../features/study/termsExempt';
@@ -595,6 +597,34 @@ async function signOutOrSay(onDone: () => void): Promise<void> {
     'dashboard/logout-flush',
     15000,
   );
+  /**
+   * ⛔ …AND SAY WHAT COULD NOT BE SENT (hunt 10, 2026-10-03 — the other half
+   * of Settings › Log out's rule). The flush above can fail while the
+   * sign-out still succeeds: a flaky connection, a send past the 15 s bound,
+   * a server that answered the sign-out but refused the replay. Signing out
+   * then wiped the queues anyway, under a dialog that had just said "Your
+   * saved progress stays with your account". Name the count and ask, the way
+   * Settings does; NOT NOW keeps the work queued for the next launch.
+   */
+  const stranded =
+    getQueuedBatches().length + getQueuedSubmissions().length + (await pendingScenarioCount().catch(() => 0));
+  if (stranded > 0) {
+    const them = stranded === 1 ? 'it' : 'them';
+    confirmDialog(
+      'Sign out anyway?',
+      `${stranded} piece${stranded === 1 ? '' : 's'} of study progress could not be saved to your account — most likely you are offline. Signing out now DISCARDS ${them}. Reconnect and reopen the app to save ${them} first.`,
+      'Sign out',
+      () => {
+        void finishSignOut(onDone);
+      },
+      { destructive: true, cancelText: 'NOT NOW' },
+    );
+    return;
+  }
+  await finishSignOut(onDone);
+}
+
+async function finishSignOut(onDone: () => void): Promise<void> {
   markIntentionalSignOut();
   // Local scope (bug pass 2026-09-30): sign THIS device out, not the website
   // or the user's other sessions — same as Settings › Log out.

@@ -2494,6 +2494,28 @@ ${COPY.glossaryFreeAllowance}`,
       const tier = defTierRef.current;
       const gen = readerGenRef.current; // …and whose (pass 1, 2026-10-01)
       if (!tier) return;
+      /**
+       * ⛔ A TERM ALREADY PAID FOR THIS SESSION GETS ITS FULL TEXT BACK (hunt 10,
+       * 2026-10-03). The metered read patches the full definition onto the
+       * entry OBJECT — and the 5-minute background release drops the corpus
+       * while this screen stays mounted (Σ to the Calculator Lab, the Paywall).
+       * Coming back re-loads fresh entries with blank definitions, and this
+       * filled the blank with the browse view's 120-character TEASER: a term
+       * the reader had paid a lookup for — even one still expanded on screen —
+       * showed the opening as the whole definition, with no note, and a re-tap
+       * never re-read it (the session cache already answers "read"). The text
+       * is still in that cache, for this reader and this standing: use it.
+       */
+      let refilled = false;
+      for (const id of ids) {
+        const e = entryByIdRef.current.get(id);
+        const paid = e && e.definition === '' ? sessionDefinition(id, tier === 'member') : null;
+        if (e && paid?.definition) {
+          e.definition = paid.definition;
+          refilled = true;
+        }
+      }
+      if (refilled) setDefRev((n) => n + 1);
       const want = ids.filter((id) => {
         if (requestedDefsRef.current.has(id)) return false;
         const e = entryByIdRef.current.get(id);

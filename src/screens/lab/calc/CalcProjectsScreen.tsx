@@ -115,10 +115,16 @@ export function CalcProjectsScreen() {
   // load and a save's reload overlap; the older list landing last hid the
   // project just saved.
   const reloadSeq = useRef(0);
+  // The LOADING face (hunt 10, 2026-10-03 — the three list faces, as Saved
+  // Results and My Workflows got in hunt 7): until the first read lands the
+  // list is the initial [], which showed the "no projects yet" face over
+  // every saved project for as long as the read took.
+  const [loaded, setLoaded] = useState(false);
   const reload = useCallback(() => {
     const my = ++reloadSeq.current;
     void workflowStore.listProjects().then((list) => {
       if (my === reloadSeq.current) setProjects(list);
+      if (my === reloadSeq.current) setLoaded(true);
     });
   }, []);
   useEffect(reload, [reload]);
@@ -309,7 +315,9 @@ export function CalcProjectsScreen() {
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
         {!editing ? (
-          workflowListUnreadable(projects) ? (
+          !loaded ? (
+            <Text style={styles.caption}>Loading your projects…</Text>
+          ) : workflowListUnreadable(projects) ? (
             // A failed READ is not an empty list (hunt 5, 2026-10-03).
             <Text style={styles.caption}>
               Your saved projects could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.

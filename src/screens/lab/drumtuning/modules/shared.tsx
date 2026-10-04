@@ -33,6 +33,9 @@ export type ChapterProps = {
   unsavedIds?: ReadonlySet<string>;
   onSaveNote: (note: TuningNote) => Promise<NoteSaveResult>;
   onDeleteNote: (id: string) => Promise<NoteDeleteResult>;
+  /** Chapter 6: the stored progress (notes included) could not be read —
+   *  the list is a stand-in, never "No notes saved yet" (hunt 10, D51). */
+  notesUnreadable?: boolean;
   /** A signed-out guest or a members-only preview: nothing is saved. */
   guest: boolean;
   preview: boolean;

@@ -76,6 +76,11 @@ export async function savePagedProgress(labId: string, p: PagedProgress): Promis
     try {
       raw = await AsyncStorage.getItem(key(labId));
     } catch {
+      // The page this save carried is dropped (never written over a copy
+      // that could not be read) — and SAID (hunt 10, 2026-10-03; Amp, Ear and
+      // Tuning's hunt 7 rule): a ✓ the screen showed was gone next visit,
+      // without a word. Callers save only after a change.
+      reportRefused();
       return;
     }
     // STAYS flagged until a load succeeds (evening pass 3, 2026-10-02): the

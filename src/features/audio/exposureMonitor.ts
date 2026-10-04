@@ -601,6 +601,11 @@ function tick(): void {
       dt += pendingSec;
       pendingSec = 0; // credited once
       sessionHadGap = false; // fresh session — clear the continuity latch
+      // …and its once-a-session advisory latch (hunt 10, 2026-10-03). Only
+      // closeSession() cleared it, and "Delete today" drops the session
+      // WITHOUT closing it: a listener whose advisory had fired, who deleted
+      // today and went on listening loud, never got the advisory again.
+      advisoryFiredThisSession = false;
     }
 
     // A dropout while the mic is the measured source means this session's dose

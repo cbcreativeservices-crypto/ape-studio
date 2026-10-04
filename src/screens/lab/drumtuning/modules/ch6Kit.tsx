@@ -19,7 +19,7 @@ import { DRUMS, renderStrike, tomInterval, type RenderResult, type StrikeParams 
 import { KIT_ASPECT, KitStage, type KitSounding } from '../stagesDrum';
 import { useDrumPlayback } from '../useDrumPlayback';
 import { RENDER_BADGE, headAtHz, syncOf, type ChapterProps } from './shared';
-import { accountWhy, type AccountWording } from '../../kit/labEnd';
+import { accountWhy, PROGRESS_UNREADABLE, type AccountWording } from '../../kit/labEnd';
 
 const RACK_FIRST_S = 1.2;
 const GAP_S = 0.35;
@@ -50,7 +50,7 @@ function accountNotesLine(account: AccountWording): string {
   return `${accountWhy(account)} Until it is confirmed, notes are kept for this session only — not saved on this device.`;
 }
 
-export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteNote, guest, preview, account }: ChapterProps) {
+export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteNote, notesUnreadable, guest, preview, account }: ChapterProps) {
   // Starts UPSIDE DOWN on purpose (floor above rack): both faders have to be
   // reasoned about, and the three verdicts are all met on the way.
   const [rackHz, setRackHz] = useState(140);
@@ -268,7 +268,7 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
                   ))}
                 </View>
               ) : (
-                <Body>No notes saved yet.</Body>
+                <Body>{notesUnreadable ? PROGRESS_UNREADABLE : 'No notes saved yet.'}</Body>
               )}
             </>
           ),
@@ -277,10 +277,17 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
           key: 'review', title: 'Review', kind: 'REVIEW', layout: 'read',
           body: (
             <>
+              {/* At DISTINCT, "both heard" is the credit's own evidence (hunt
+                  10): after hunt 9's heardDistinct, ▶ BOTH on the starting
+                  pair then a ride to green read "DISTINCT, both heard" here
+                  while the credit had not landed. */}
               <YourRun lines={[
-                `Rack ${rackHz} / floor ${floorHz} Hz — ${Math.abs(verdict.semitones).toFixed(1)} st, ${verdict.kind.toUpperCase()}${heardBoth ? ', both heard' : ', ▶ BOTH not heard yet'}.`,
+                `Rack ${rackHz} / floor ${floorHz} Hz — ${Math.abs(verdict.semitones).toFixed(1)} st, ${verdict.kind.toUpperCase()}${(verdict.kind === 'distinct' ? heardDistinct : heardBoth) ? ', both heard' : ', ▶ BOTH not heard yet'}.`,
                 `Verdicts met on the way: ${[...verdictsSeen].map((v) => v.toUpperCase()).join(' → ')}.`,
-                `Tuning notes on this device: ${notes.length}.`,
+                // Counted like the notes list's own heading (hunt 10): a
+                // guest's session notes and the NOT SAVED ones were counted
+                // as "on this device".
+                guest || account ? `Tuning notes this session, not saved on this device: ${notes.length}.` : `Tuning notes on this device: ${sorted.length - unsavedCount}.`,
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="Two toms sound like one drum in a fill. What is wrong, and what do you change?" a="They are too close in pitch. Open the step between them — a third to a fifth is a common aim — keeping each drum inside the band where it responds." />

@@ -258,7 +258,16 @@ export async function signOutLocalRefusing(ms: number): Promise<{ error: Error |
   // server half and drop a live account locally. A stalled read refuses.
   let session: unknown;
   try {
-    session = (await withDeadline(() => supabase.auth.getSession(), 'signOut', ms)).data.session;
+    const got = await withDeadline(() => supabase.auth.getSession(), 'signOut', ms);
+    session = got.data.session;
+    // ⛔ AN EXPIRED TOKEN ON A DEAD CONNECTION IS STILL STORED (hunt 10,
+    // 2026-10-03). auth-js answers it FAST as `{ session: null, error:
+    // AuthRetryableFetchError }` — read as "no session", the server half was
+    // skipped and the local half REMOVED the account offline, which is the
+    // one thing this refusing sign-out exists not to do (supabase-js's own
+    // signOut refuses here too). Refused like any other offline failure.
+    const err = (got as { error?: { name?: string } | null }).error;
+    if (!session && err?.name === 'AuthRetryableFetchError') return { error: err as Error };
   } catch (e) {
     return { error: e as Error };
   }
