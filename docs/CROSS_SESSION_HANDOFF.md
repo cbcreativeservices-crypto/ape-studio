@@ -455,6 +455,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 11:44 · ccode · 30ff79f1
+changed: Docs: handoff 10-04B points at docs/bughunt process files
+affects other side: nothing (doc pointer).
+needs: nothing
+
+
 ### 2026-10-04 11:25 · ccode · 5eff68ab
 changed: Evening rulings 2026-10-04: guests ephemeral, guest study reminders, Production learning moments, ampacity calculator, loudness targets
 affects other side: one more DRAFT migration: supabase/migrations/2026100430_glossary_youtube_loudness.sql (YouTube loudness wording in 'K-weighted (LUFS)'; keyed on id + current text). Guests can never start/submit a quiz (server user_not_found) — by design, no change asked. NOT published.
