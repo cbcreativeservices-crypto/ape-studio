@@ -523,6 +523,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 14:49 · ccode · ac652c44
+changed: feat(miking): step 3 — scene (useRig shared values, PlacementScene with Gesture Handler pan + pinch, DualView, live readout, comb panel, polar compare), kick art, generic kick-type mic drawings, StageFullScreen scroll-lock addition
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
 ### 2026-10-04 14:19 · ccode · 24c5871f
 changed: feat(miking): step 1 — pure engine (types, units, frame, sdf/collision, readouts, zones, polar, twoMic, levels, describe, validate) + geometry/physics tests
 affects other side: nothing (branch final-lab, miking lab work).
