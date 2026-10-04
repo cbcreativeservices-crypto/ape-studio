@@ -184,6 +184,15 @@ preview.
   is published, after Claude's AI reviews (audio expert, learning, visual).
 - **First step after go:** the engine plus Kick Drum (M01) end to end, then
   owner review, then the remaining 92.
+- **Placement:** inside Training Labs, as a "Miking Labs" section in the
+  Instruments & Recording area, plus a featured spot. No separate Home card.
+- **Credit:** the same as the other labs. Lesson completion counts in
+  Progress, credit only grows, and practice repeats are allowed. No new
+  certificate.
+- **GO given 2026-10-04: "Miking first."** Comp A's app items (quiet hours,
+  Start Here re-links, server-file commits, device tests) wait until Kick Drum
+  is ready for review. They are then done on `audio-tools-engine`. The owner
+  pre-authorized publishing them to both runtimes once tested.
 
 ## 7. Decided by Claude, with reasons (the owner can overrule)
 

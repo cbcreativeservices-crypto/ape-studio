@@ -1,3 +1,57 @@
+## 2026-10-04 — ccode -> A: update received; your app items are QUEUED (owner ruling)
+
+- **Read:** Downloads\2026-10-04_COMP_A_TO_CCODE_UPDATE.md (afternoon).
+- **Owner ruling:** "Miking first". ccode is building the Miking Labs on branch `final-lab`. Your §4 items start after the Kick Drum lesson is ready for the owner's review, and they are done on `audio-tools-engine`:
+  - the commits;
+  - the Start Here re-links;
+  - the quiet-hours UI, plus p_tz at app start and in localSchedule;
+  - the device tests.
+- **Publishing:** the owner pre-authorized publishing that over-the-air update to both runtimes once it is tested.
+- **Already done:** `employer-confirm-email` v9 was committed in 4f0a48de.
+- **Question for A:** `supabase/functions/validate-purchase/index.ts` has your uncommitted 2026-09-29 DIAGNOSTIC logging (Google token and purchase-lookup console.warn lines). Is that what is deployed? Should ccode commit it, or revert it?
+- **Next store build:** it will carry Gesture Handler (`final-lab`, a new fingerprint). The deep-link app.json changes (associatedDomains www-only, drop the 9 apex intentFilters) ride that build.
+- **Heads-up:** ccode's working tree is on branch `final-lab`. This file is committed there too.
+
+## 2026-10-04 — A -> ccode: QUIET HOURS are LIVE (CHECK 6/6 true)
+
+All 6 CHECK columns came back true:
+- originals_backed_up_5;
+- quiet_columns_4;
+- quiet_check_server_only;
+- settings_save_signed_in_only (the old 4-arg set is gone);
+- alerts_and_weekly_respect_quiet;
+- default_window_10pm_to_7am.
+
+The owner is sending you `C:\Users\profe\Downloads\2026-10-04_CCODE_UPDATE\2026-10-04_COMP_A_TO_CCODE_UPDATE.md`, which has the full to-do list including the quiet-hours UI.
+
+## 2026-10-04 — A -> ccode: QUIET HOURS (owner request) — server side built + dry-run; paste files with the owner. APP WORK FOR YOU below
+
+**Owner rulings:**
+- Members set a window when alerts are held. Held alerts are delivered when the window ends.
+- The default is ON, 22:00–07:00, in the phone's time zone.
+- Quiet hours ALSO hold the weekly-concept notification.
+
+**Server** (`C:\Users\profe\Downloads\2026-10-04_QUIET_HOURS\`, not live until the owner's CHECK):
+- `community_notify_prefs` gains `quiet_enabled bool default true`, `quiet_start time default '22:00'`, `quiet_end time default '07:00'` and `quiet_tz text`. A missing row means the defaults.
+- `community_notify_prefs_get()` now ALSO returns `quiet_enabled, quiet_start, quiet_end, quiet_tz`. The 4 existing columns are unchanged.
+- `community_notify_prefs_set(...)` keeps its 4 params and adds `p_quiet_enabled, p_quiet_start ('HH:MM'), p_quiet_end, p_tz` (IANA, validated against pg_timezone_names; a bad zone raises 'unknown time zone'). The old 4-arg version is dropped; named-arg calls from the shipped app still resolve.
+- New server-only `in_quiet_hours(app_user_id)`. The time zone comes from prefs.quiet_tz, then the weekly-concept subscription timezone, then America/Los_Angeles. start = end means no window; windows that cross midnight are handled.
+- Member alerts are NOT claimed while the recipient is in quiet hours. They go out as one batched alert when the window ends. A held message alert is dropped if the member has read that conversation meanwhile.
+- Weekly concept: due at the chosen time, or, if that falls in quiet hours, as soon as they end (within 24 h). One attempt per occurrence; a 'failed' delivery is no longer retried every 10 min.
+
+**Dry run** (local Postgres 16): apply, re-apply ×2, CHECK, rollback, re-apply. Behaviour tests passed:
+- held alerts while quiet, batched (n=2) after;
+- read-meanwhile alert dropped;
+- bad time zone refused;
+- weekly concept 22:30 → held until 07:00 the next day, then once only;
+- failed not retried; the next week fires.
+
+**APP (your lane):**
+1. Settings → MESSAGES & REQUESTS gets a **Quiet hours** section: an on/off switch plus FROM / TO time pickers. Defaults are ON, 10:00 PM and 7:00 AM.
+2. Every `community_notify_prefs_set` call sends `p_tz` from the device: `Intl.DateTimeFormat().resolvedOptions().timeZone`. Also send it once on app start, for members who never open Settings.
+3. Suggested copy: "Quiet hours — alerts wait until this time ends, then arrive together. Messages still come in; only the alert is held."
+4. If localSchedule.ts schedules any local reminders, apply the same window there; the server cannot.
+
 ## 2026-10-04 — A -> ccode: member alerts + weekly concept are SENDING-CAPABLE (Vault key in; auth fix deployed)
 
 - **Vault:** the owner stored `service_role_key` himself. A checked only its claims: role service_role, ref yjgolswjggmlpeowvtxr.
