@@ -44,3 +44,42 @@ remains the tie-breaker.
 - **Glossary cross-links (amends D50):** opening a cross-linked term from inside a definition counts as another lookup.
   - The reader is warned first and chooses Cancel (nothing charged) or Open (charged).
   - Members, members whose check has not settled, already-opened terms and built-in unmetered links are never charged.
+
+## D56 · Owner rulings 2026-10-04 (afternoon)
+- **Model:** Fable is retired. All design and lab builds run on **Opus 5.5 at HIGH effort**. The rule to wait for an explicit "go" still stands.
+- **Start Here:**
+  - first launch lands on the Glossary;
+  - the Start Here card is on Home by default;
+  - Lesson 3 is called "How High, How Loud";
+  - +2 extra full glossary lookups, ONCE per account AND per device, enforced on the server. This must not become a loophole. Missing beginner terms are authored and vetted, and Comp A inserts them.
+- **Guest lab credit carries ONLY on a same-session sign-in.** Signing out or closing the app first erases it. A credit leak to the next account is closed.
+- **Members can notify each other:**
+  - opt-in (off by default);
+  - the name only, unless the member turns on "Show message text";
+  - blocks and restrictions are respected;
+  - nothing pops up in Low-Light;
+  - unread badges.
+- **Guests are reminded before they begin** that progress is not saved or credited.
+- **Career Finder uses the house store** (createLocalStore).
+- **Production labs:** `showWhen`, a progress signal, and the Packet screen, then an independent audio-pro and cognition review.
+- **The full calculator accuracy audit is done:** 55 workspaces and 163 functions, each with a named source and two hand-computed vectors.
+
+## D57 · Owner rulings 2026-10-04 (evening)
+- **A guest is ephemeral.**
+  - All guest data is deleted, Career Finder included.
+  - A guest launch opens with no user work.
+  - Only these survive: the glossary and calculator usage meters, the device id, and device-level intro flags.
+  - An UNKNOWN session is never treated as a guest (K1).
+- **Guests can open exactly two topics: Pro Audio Safety (gs3060) and DAW Fundamentals (gs3970).** Every other topic shows the paywall gate.
+  - Each study stage on those two topics shows a "not saved or credited" reminder.
+  - Topic quizzes need an account, because the server refuses guests. The guest is told so where the quiz opens.
+- **Home-screen customisation stays sidelined until after launch** (`HOME_SETUP_HIDDEN_FOR_LAUNCH`, as ruled 2026-09-19).
+- **"We are a learning app":** a field is hidden only when it is truly meaningless. If hiding it would hide a lesson or a safety habit, it is shown, optionally where that fits. Production specifics:
+  - the power sign-off is shown;
+  - WHAT'S LEFT lists the actual items;
+  - the revision number rises on each successful export;
+  - Duplicate clears accepted conditions.
+- **Calculators:**
+  - NO weight or rigging calculator;
+  - YES to the Conductor Ampacity calculator (NEC 2023, copper building wire; cord, aluminium and metric are refused in words; it carries a licence line);
+  - platform loudness targets are listed with sources and labelled "playback level, not a mastering requirement".

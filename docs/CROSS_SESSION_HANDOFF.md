@@ -4734,3 +4734,8 @@ needs: §4 of that doc — IAP sandbox test (buy/restore/refund/cancel), 16 KB +
 changed: OTA published at d0449070 (hunts 11-13, RN pass, wrap-up, D55 rulings, Loudness Normalization label). production: iOS group 22744e67 (update 01a107a7-761c-7031…), Android group 4bc9339f (01a107a7-761c-79ea…); preview: iOS 39acd79b, Android b4215b89. Runtimes e8e3455b / 22976b0e (builds 33/16) — fingerprints matched, no rollback pending, u.expo.dev serves both ids.
 affects other side: testers on 33/16 receive it on next launch(es). Glossary cross-links now cost a lookup after the reader confirms.
 needs: nothing
+
+### 2026-10-04 evening · ccode · PUBLISHED (owner go) + end-of-day docs
+changed: OTA published at bb5403bd (calc audit + ampacity + loudness targets, Production design + follow-ups, Start Here, member alerts/badges, guests ephemeral + reminders, Career Finder store, small fixes). production iOS 89ad7d3d / Android be8ca990; preview 8b73f1b7 / 1f2c5525; runtimes e8e3455b / 22976b0e (33/16); fingerprints matched, no rollback, u.expo.dev serves 01a10836-e80a-756e… / …-7674…. Governance D56–D57; AGENTS.md house helpers (guest ephemeral, releaseSessionWork, GuestStartReminder, hold/owed); protocol check items 10–11; lessons; handoff docs/SESSION_HANDOFF_2026-10-04B.md; hunt/agent rules + RN research copied to docs/bughunt/.
+affects other side: the app now calls get_glossary_definition_start_here / glossary_start_here_bonus_status / contact_inbox_counts / community_notify_prefs_* / push_device_* — all fall back safely until your drafts are applied. The owner starts a large new lab project next session.
+needs: owner approval, then the five drafts in docs/COMP_A_SERVER_WAVE_2026_10_04.md (+2026100430); tell ccode when 2026100410 is live.

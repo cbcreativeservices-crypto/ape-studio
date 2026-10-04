@@ -8,3 +8,5 @@ PROTOCOL CHECK (read at the START of this response and again BEFORE you deliver 
 7. LOOK FIRST: search docs/, src/, and web/ before asking the owner something the project already answers.
 8. HOUSE HELPERS (AGENTS.md, governance D47): saved data → createLocalStore; sound start → startFenced; back → safeGoBack / useBackWhileFocused; dialog→modal → useModalHandoff; async button → useLatchedPress; tier → useTier; animation → useDecorativeMotion; value text → fitValue. Ratchet tests enforce them; allowlists only shrink.
 9. NEVER PUBLISH UNASKED. Pushing deploys the website (Vercel). Another ccode session may be active: check `git log origin/audio-tools-engine` before pushing and fill only your own sync stubs.
+10. MODEL + GO: design/lab builds run on Opus 5.5 at HIGH effort (Fable retired 2026-10-04), and only after the owner's explicit go. A spec is not a go.
+11. GUESTS ARE EPHEMERAL (D57): only the meters, the device id and intro flags survive a guest. An unknown session is NOT a guest. "We are a learning app": never hide a lesson.

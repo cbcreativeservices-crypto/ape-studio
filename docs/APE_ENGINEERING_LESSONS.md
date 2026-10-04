@@ -826,3 +826,13 @@ process is running.
 - **guestOnly session holds refuse removals once the account is settled**, so a delete after sign-in can be undone by a re-flush of the carry. Each carried store now keeps a "deleted since" set; a shared fix in holdSessionWork is a candidate.
 - **A tier that is not settled must not drive a destructive align.** The Glossary aligned its offline store to 'free' on an unconfirmed member and wiped their saved definitions. Settled = gate 'open' or 'locked'.
 - **Python on this machine defaults to cp1252.** A default-encoding read/write round-trips bytes but writes any NEW non-ASCII character as cp1252 (an em dash became byte 0x97 in LabShell.tsx). Always `encoding='utf-8', newline=''` — or the Edit tool.
+
+## 2026-10-04 (afternoon and evening waves)
+- **Server-enforced, never-resetting grants close loopholes.** The Start Here +2 is recorded per `auth.uid()` AND per device id. A reinstall or a new account on the same phone can't re-grant it. The client falls back to the normal meter until the RPC exists (PGRST202), so nothing is promised early.
+- **A wipe on launch must wait for the launch's OWN answer.** Use only the INITIAL_SESSION and its `safeSessionResult` re-read. A stall or AuthRetryableFetchError means "unknown", so no wipe. Run it on the same queue as the session carry, so it never races a carry.
+- **Credit sent before a wipe settles can land on the wrong account.** labCompletion now waits on `sessionWipePending()` and retries after `onSessionCarrySettled()`.
+- **Check reachability before building a reminder.** The quiz success/results reminders turned out to be unreachable for guests: the server's `start_quiz_attempt` returns `user_not_found` for them. Read the server path first.
+- **Calculator audits need hand vectors written from the published formula, not from app code.** 326 vectors found 16 classes of defect. Examples: copper costed at 20 °C under-reports the drop on a warm loaded cable by about 18%, and a "dithered" SNR was 4.77 dB too good. Code tables (NEC 310.16) are pinned cell by cell.
+- **A table copy disagrees as soon as two exist.** Cable Loss had its own Ω/m table that differed from Voltage Drop's. Keep one shared model in calcUnits.ts.
+- **Agents in parallel on shared files work if each re-reads before editing and keeps edits small.** Eleven agents touched overlapping files (sessionCarry, projectStore, FlashcardsScreen, navigation/types) with no lost work. The lead re-runs the full suite after the last one lands.
+- **New subagent definitions do not hot-load.** A `~/.claude/agents/*.md` file created mid-session is only available in the next session.

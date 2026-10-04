@@ -21,4 +21,8 @@ Each one closes a bug class app-wide, and a ratchet test fails if you bypass it.
 - Decorative animation → `useDecorativeMotion()`. Value text → `fitValue()` (≥ 9 pt). Calc fields → a sign/range class; counts → `snapWhole`.
 - Supabase calls are bounded at the client (src/lib/supabase.ts). Do not create another client.
 - "Later, off the render path" → `runSoon()` (src/lib/afterInteractions.ts): a real macrotask, or `{ idleTimeoutMs }` for pre-warming. Never `InteractionManager` (a same-tick microtask stub in RN 0.86, removed in SDK 58; ratchet). Never open a SQLite database at module scope — open on first use.
+- Guest work → it is EPHEMERAL (D57). The guest wipe keeps only `GUEST_KEEP` (meters, device id, intro flags; `keepsThroughWipe` in clearLocalAccountData.ts). Same-session carry → `holdSessionWork`; a removal after sign-in → `releaseSessionWork` (src/features/lab/sessionCarry.ts). Never treat an UNKNOWN session as a guest.
+- Guest "not saved" reminders → `GuestStartReminder` / `remindAsGuest(tier, useGuestWording().guest)` (src/features/lab/). One popup per activity per session; an inline note in Low-Light.
+- A popup that must wait for another surface (intro, welcome) → a `hold` prop plus `rootModalHoldMs`; never present during a dismiss (`useScreenIntro().owed`).
+- Design and lab builds run on Opus 5.5 at HIGH effort, only after the owner's explicit go (D56).
 Run the tests with `node --test --test-timeout=120000 "test/**/*.test.ts"`. Never edit package.json scripts (fingerprint risk). Catalog: docs/bughunt/PATTERN_CATALOG_2026_10_02.md.
