@@ -311,6 +311,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 · ccode · → A: storage cache headers (owner approved: "do your recommendations")
+changed: the perf hunt found that the `course-cards` and `topic-tiles` storage buckets serve `Cache-Control: no-cache`. Phones then re-validate every certificate, topic and card image on every view. The app now caches through expo-image, but the header still forces re-checks.
+affects other side: please set a long cache on those objects, e.g. `cacheControl: '31536000'` / immutable on upload, or re-upload with it. Images are versioned by filename (…-v3.webp), so a long cache is safe.
+needs: A to apply. Separately, smaller thumbnails (credential art ~204 KB and topic tiles ~150 KB, shown at 34–56 pt) would help a lot. That means creating images, which needs the owner to name the folder and give an explicit go, so it is NOT requested yet.
+
 ### 2026-10-03 23:55 · ccode · f578503d
 changed: Performance hunt: 75 delay/stall fixes across 10 areas (no packages, no assets touched)
 affects other side: OPTIONAL for A — course-cards and topic-tiles buckets serve Cache-Control: no-cache; a long immutable cache + small thumbnails would speed every image. App-only otherwise. NOT published.
