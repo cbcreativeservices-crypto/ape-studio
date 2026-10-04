@@ -11,10 +11,12 @@ import type { Rig } from './useRig.ts';
 import type { ReadoutWords } from './readoutText.ts';
 
 /** The reference head and line every readout names (one place). */
-export function refLabels(rig: Pick<Rig, 'lesson' | 'surfaceId' | 'lineId'>): { surfaceLabel: string; lineLabel: string } {
+export function refLabels(rig: Pick<Rig, 'lesson' | 'surfaceId' | 'lineId'>): { surfaceLabel: string; lineLabel: string; minusWords?: string; minusKey?: string } {
+  const s = rig.lesson.model.surfaces.find((q) => q.id === rig.surfaceId);
   return {
-    surfaceLabel: rig.lesson.model.surfaces.find((s) => s.id === rig.surfaceId)?.label ?? 'the reference head',
+    surfaceLabel: s?.label ?? 'the reference head',
     lineLabel: rig.lesson.model.lines.find((l) => l.id === rig.lineId)?.label ?? 'the reference line',
+    ...(s?.minus ? { minusWords: s.minus.words, minusKey: s.minus.key } : {}),
   };
 }
 

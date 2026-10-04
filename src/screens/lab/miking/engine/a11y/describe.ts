@@ -22,6 +22,8 @@ export type MicDescription = {
   zoneKind: 'sourced' | 'trial' | null;
   /** Off-axis is meaningless for a surface plate (fixed aim). */
   showAim: boolean;
+  /** How a negative distance is said (default "behind"). */
+  minusWords?: string;
 };
 
 export type SceneDescription = {
@@ -36,7 +38,7 @@ export function describeMic(m: MicDescription, short = false): string {
   'worklet';
   const r = m.readouts;
   const where = r.inside ? 'inside the drum' : 'outside the drum';
-  const dist = `${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? 'from' : 'behind'} ${m.surfaceLabel}`;
+  const dist = `${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? 'from' : m.minusWords ?? 'behind'} ${m.surfaceLabel}`;
   const off = `${fmtLen(r.radial)} off ${m.lineLabel}`;
   const aim = m.showAim ? `, aimed ${fmtAngle(r.offAxis)} off the head's axis` : '';
   const zone = m.zoneLabel ? ` In the ${m.zoneKind === 'trial' ? 'TRIAL' : 'documented'} zone: ${m.zoneLabel}.` : ' Not in a documented zone.';

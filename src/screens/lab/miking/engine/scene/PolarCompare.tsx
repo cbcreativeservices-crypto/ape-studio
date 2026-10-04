@@ -17,7 +17,8 @@ import type { MicPattern } from '../model/types.ts';
 import { gain, isModelled, nullAngles } from '../physics/polar.ts';
 import { micType } from '../../data/micTypes.ts';
 
-const BLUE = '#6fa8ff';
+/** IDEAL-model white: blue means SOURCED everywhere in the Miking Labs (review M4). */
+const IDEAL = '#e8eaee';
 const AMBER = '#ffc64d';
 const RED = '#ff6b5e';
 
@@ -74,8 +75,8 @@ export function PolarCompare({ w, h, typeId, pattern, angle, label }: { w: numbe
         <Line p1={vec(cx - R, cy)} p2={vec(cx + R, cy)} color="#3a3b46" strokeWidth={1} />
         {isModelled(pattern) ? (
           <>
-            <Path path={lobe} color={BLUE} opacity={0.14} />
-            <Path path={lobe} style="stroke" strokeWidth={2} color={BLUE} />
+            <Path path={lobe} color={IDEAL} opacity={0.08} />
+            <Path path={lobe} style="stroke" strokeWidth={2} color={IDEAL} opacity={0.85} />
             <Path path={nullPath} style="stroke" strokeWidth={1.4} color={RED} opacity={0.8}>
               <DashPathEffect intervals={[5, 4]} />
             </Path>

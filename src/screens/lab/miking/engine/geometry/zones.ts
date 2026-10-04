@@ -4,11 +4,13 @@
  * A zone is measured from ITS OWN reference surface (lesson L39: "presented
  * with their physical reference head"): distance = (p − surface.point) ·
  * normal, signed. A zone's optional radial band is the distance from a named
- * reference line (the beater line, the drum axis). No magnetic snapping: the
- * zone only lights up.
+ * reference line (the beater line, the drum axis). A zone whose source row
+ * names an orientation ("on-axis with beater") also tests the AIM: the front
+ * axis within `aim.maxOffAxis` of the head it is measured from (review M6).
+ * No magnetic snapping: the zone only lights up.
  */
 import type { CompiledScene, DocumentedZone, MicPose, RefLine, ReferenceSurface, VariantId } from '../model/types.ts';
-import { distToLine, dot, sub } from './vec.ts';
+import { aimVec, angleBetween, distToLine, dot, sub } from './vec.ts';
 import { isInside } from './collision.ts';
 
 export type ZoneCtx = {
@@ -67,6 +69,12 @@ export function inZone(zone: DocumentedZone, ctx: ZoneCtx, pose: MicPose): boole
     if (zone.side === 'inside' && !inside) return false;
     if (zone.side === 'outside' && inside) return false;
   }
+  if (zone.aim) {
+    const s = findSurface(ctx.surfaces, zone.refSurface);
+    if (!s) return false;
+    const off = angleBetween(aimVec(pose.az, pose.el), { x: -s.normal.x, y: -s.normal.y, z: -s.normal.z });
+    if (off > zone.aim.maxOffAxis + EPS) return false;
+  }
   if (zone.radial) {
     const r = lineDistance(ctx.lines, zone.radial.line, pose);
     if (!(r === r)) return false;
@@ -93,4 +101,28 @@ export function zonesAvailable(zones: DocumentedZone[], variant: VariantId, micT
     if (rq.micTypeIds && !rq.micTypeIds.includes(micTypeId)) return false;
     return true;
   });
+}
+
+/**
+ * Is any edge of this zone DRAWN BY THE LAB (review M5)? The source gives the
+ * position in words, but the band's numbers, its off-line limits or its aim
+ * tolerance are the lab's drawing of those words. Such a zone is shown as
+ * "SOURCED*" with "* edges drawn by the lab" — never as plain SOURCED.
+ */
+export function zoneEdgesByLab(z: DocumentedZone): boolean {
+  if (z.kind !== 'sourced') return false;
+  if (z.bandProv && z.bandProv.kind !== 'sourced') return true;
+  if (z.radial && z.radial.prov.kind !== 'sourced') return true;
+  if (z.aim && z.aim.prov.kind !== 'sourced') return true;
+  return false;
+}
+
+/** The lab-drawn parts of a zone, in words, for its card. */
+export function labDrawnNotes(z: DocumentedZone): string[] {
+  const out: string[] = [];
+  const say = (p: { kind: string; reason?: string; note?: string }) => (p.kind === 'illustrative' ? p.reason ?? '' : p.note ?? '');
+  if (z.bandProv && z.bandProv.kind !== 'sourced') out.push(say(z.bandProv as never));
+  if (z.radial && z.radial.prov.kind !== 'sourced') out.push(say(z.radial.prov as never));
+  if (z.aim && z.aim.prov.kind !== 'sourced') out.push(`aim: ${say(z.aim.prov as never)}`);
+  return out.filter(Boolean);
 }

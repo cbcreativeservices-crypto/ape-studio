@@ -12,7 +12,9 @@
  *   • the FAR HALF seen through the cut — the shell's inner surface (its
  *     grain lines bunch toward the edges, the way a cylinder foreshortens) and
  *     the far half of each hoop, edge-on, darker;
- *   • HIDDEN edges dashed (the offset port, which lies off both cut planes).
+ *   • the offset PORT, which lies off both cut planes, PROJECTED onto the
+ *     head line as an opening in the front-head film (portOpening) — a hole
+ *     IN the head where the boom passes, never a shape beyond the head plane.
  *
  * ART PASS (2026-10-04, polish): gradients for form, light from the upper
  * left, rim highlights and soft contact shadows; a strict stroke hierarchy
@@ -30,13 +32,13 @@
  *     ILLUSTRATIVE positions, sourced count. Claw hooks: the purpose is
  *     sourced (TAMA-SSC, YMH-HUB), the count is not (one per rod, convention).
  *   • NOT drawn: a beater patch (no source), a port reinforcement ring (its
- *     width is UNKNOWN and the port is hidden in both cuts), any brand mark.
+ *     width is UNKNOWN), any brand mark.
  *   • Head films are drawn ≈ 5 mm thick so they read at phone size (real
  *     film is a fraction of a millimetre): a line weight, not a dimension.
  */
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
-import { KICK_ANCHORS, KICK_GEOM as G, silhouetteRods } from './geometry.ts';
+import { KICK_ANCHORS, KICK_GEOM as G, portOpening, silhouetteRods } from './geometry.ts';
 
 const PORT = KICK_ANCHORS['bd.port.center'];
 
@@ -160,12 +162,15 @@ function shellParts(view: ViewId) {
   const batter = rect(make(), -2.5, -R - 2, 2.5, R + 2);
   const front = rect(make(), L - 2.5, -R - 2, L + 2.5, R + 2);
   const frontSheen = seg(make(), L - 1.6, -R, L - 1.6, R);
-  // The port (hidden in both cuts): its extent along the head line.
-  const pc = view === 'side' ? PORT.y : PORT.z;
-  const port = seg(make(), L, pc - G.portR, L, pc + G.portR);
-  const portTicks = seg(seg(make(), L - 9, pc - G.portR, L + 9, pc - G.portR), L - 9, pc + G.portR, L + 9, pc + G.portR);
+  // PORTED front head: the same film with an OPENING where the port is — a
+  // hole IN the head, projected onto the head line (portOpening), never a
+  // disc beyond it. Its rim is drawn across the film's thickness.
+  const po = portOpening(view);
+  const frontPorted = rect(rect(make(), L - 2.5, -R - 2, L + 2.5, po.lo), L - 2.5, po.hi, L + 2.5, R + 2);
+  const frontSheenPorted = seg(seg(make(), L - 1.6, -R, L - 1.6, po.lo), L - 1.6, po.hi, L - 1.6, R);
+  const portRim = seg(seg(make(), L - 7, po.lo, L + 7, po.lo), L - 7, po.hi, L + 7, po.hi);
   const hw = buildHardware(view);
-  return { wallTop, wallBot, plyLines, gloss, innerEdge, outerEdge, cavity, grain, endShadeB, endShadeR, hoopFar, hoopCut, batter, front, frontSheen, port, portTicks, hw };
+  return { wallTop, wallBot, plyLines, gloss, innerEdge, outerEdge, cavity, grain, endShadeB, endShadeR, hoopFar, hoopCut, batter, front, frontSheen, frontPorted, frontSheenPorted, portRim, hw };
 }
 
 function pillowSide(): SkPath {
@@ -357,11 +362,11 @@ export function KickArt({ view, variant }: { view: ViewId; variant: VariantId })
       <Path path={g.batter}>
         <LinearGradient start={vec(0, -R)} end={vec(0, R)} colors={HEAD_COATED} />
       </Path>
-      <Path path={g.front}>
+      <Path path={ported ? g.frontPorted : g.front}>
         <LinearGradient start={vec(0, -R)} end={vec(0, R)} colors={HEAD_EBONY} />
       </Path>
-      <Path path={g.frontSheen} style="stroke" strokeWidth={1.2} color="#c3cbdb" opacity={0.75} />
-      <Path path={g.front} style="stroke" strokeWidth={0.8} color="#8d97ab" opacity={0.6} />
+      <Path path={ported ? g.frontSheenPorted : g.frontSheen} style="stroke" strokeWidth={1.2} color="#c3cbdb" opacity={0.75} />
+      <Path path={ported ? g.frontPorted : g.front} style="stroke" strokeWidth={0.8} color="#8d97ab" opacity={0.6} />
 
       {/* HOOP cut faces (end grain), lit edge on top. */}
       <Path path={g.hoopCut}>
@@ -388,16 +393,9 @@ export function KickArt({ view, variant }: { view: ViewId; variant: VariantId })
       <Path path={hw.tees} color="#c6cad4" />
       <Path path={hw.tees} style="stroke" strokeWidth={0.8} color={INK} />
 
-      {/* PORT: off both cut planes, so a HIDDEN edge (dashed), with end ticks. */}
-      {ported ? (
-        <>
-          <Path path={g.port} style="stroke" strokeWidth={7} color="#0d0e12" opacity={0.85} />
-          <Path path={g.port} style="stroke" strokeWidth={4} color={HIDDEN}>
-            <DashPathEffect intervals={[10, 7]} />
-          </Path>
-          <Path path={g.portTicks} style="stroke" strokeWidth={2} color={HIDDEN} opacity={0.9} />
-        </>
-      ) : null}
+      {/* PORT: the opening's rim across the head film (the gap itself is
+          the film left undrawn above). */}
+      {ported ? <Path path={g.portRim} style="stroke" strokeWidth={2.4} strokeCap="round" color={HIDDEN} opacity={0.95} /> : null}
 
       {g.kind === 'top' ? (
         <>

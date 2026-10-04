@@ -81,6 +81,9 @@ export type ReferenceSurface = {
   point: Vec3;
   /** Unit normal; distances are signed along it. */
   normal: Vec3;
+  /** How a NEGATIVE distance is said (default "behind" / "BEHIND"): for the
+   *  front head a negative distance is INSIDE the drum (review m13). */
+  minus?: { words: string; key: string };
 };
 export type RefLine = { id: string; label: string; point: Vec3; dir: Vec3 };
 export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
@@ -106,6 +109,11 @@ export type DocumentedZone = {
   /** Distance from a reference line (mm). */
   radial?: { line: string; min?: number; max?: number; prov: Provenance };
   requires?: { variant?: VariantId; mount?: MountKind; micTypeIds?: string[] };
+  /** Where the source's row includes an orientation ("on-axis with beater",
+   *  "facing the beater head"): the mic's front axis must be within
+   *  `maxOffAxis` degrees of −normal of the zone's own head. The tolerance is
+   *  the lab's (ILLUSTRATIVE unless a source gives one). */
+  aim?: { maxOffAxis: number; prov: Provenance };
   /** "Go to zone" pose: inside the zone and collision-free (tested). */
   start: MicPose;
   /** The tendency, in words ("tendency", never "result"). */
@@ -145,7 +153,9 @@ export type MicSlot = 'A' | 'B';
 export type MicState = { slot: MicSlot; typeId: string; pattern: MicPattern; pose: MicPose; polarity: 1 | -1; on: boolean };
 export type ViewId = 'side' | 'top';
 export type Scenario = 'studio' | 'live';
-export type Wedge = { id: string; label: string; p: Vec3; az: number };
+/** A floor monitor at an ILLUSTRATIVE stage position: `p` on the floor, the
+ *  sound radiating from `p + lift` (its baffle), facing `faces`. */
+export type Wedge = { id: string; label: string; short: string; p: Vec3; lift: number; faces: Vec3; note: string; prov: Provenance };
 
 /** One collision solid, flattened for the worklets (plain data only). */
 export type Solid = { partId: string; label: string; shape: Shape3; clearance: number };
@@ -203,8 +213,25 @@ export type InstrumentModel = {
   /** Port per variant (none = intact). */
   ports: Record<VariantId, { c: Vec3; r: number } | null>;
 };
-export type MikingScenario = { id: string; page: PageId; prompt: string; options: readonly string[]; correct: string; explain: string };
-export type Symptom = { id: string; observation: string; firstChecks: string; src?: SrcKey; options: readonly string[]; correct: string; explain: string };
+/** A wrong option -> why it is wrong (elaborated feedback: the misconception
+ *  the learner just chose is answered, not only "try again"). */
+export type WhyWrong = Readonly<Record<string, string>>;
+export type MikingScenario = { id: string; page: PageId; prompt: string; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
+export type Symptom = { id: string; observation: string; firstChecks: string; src?: SrcKey; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
+/** Put the steps of a procedure in order. `steps` is the right order; a tap
+ *  on a step that cannot come yet is answered with that step's `early`. */
+export type OrderTask = { id: string; page: PageId; prompt: string; steps: readonly { text: string; early: string }[]; explain: string };
+/**
+ * A constructed setup task (the lesson's final task, L89): a brief, a choice
+ * of setup where SEVERAL are acceptable, then the reasons the learner gives
+ * for it. Feedback checks the reasoning for consistency with the brief and
+ * the chosen setup; it never compares with one fixed answer.
+ */
+export type SetupChoice = { id: string; label: string; ok: boolean; power: 'none' | 'phantom'; feedback: string };
+export type SetupReason = { id: string; label: string; role: 'required' | 'optional' | 'wrong'; feedback: string };
+export type SetupTask = { id: string; page: PageId; brief: string; setups: readonly SetupChoice[]; reasons: readonly SetupReason[]; explain: string };
+/** An ungraded prediction made BEFORE an activity (try before tell). */
+export type Prediction = { prompt: string; options: readonly string[]; after: string };
 export type SourceRef = { key: SrcKey; label: string; url?: string; checked?: string; note?: string };
 export type PageCredit = { scenarios: string[]; interactive?: string; note: string };
 export type PageContent = { title: string; goal: string; credit: PageCredit; takeaway: string };
@@ -219,10 +246,15 @@ export type Lesson = {
   pages: Record<PageId, PageContent>;
   scenarios: MikingScenario[];
   symptoms: Symptom[];
+  orderTasks: OrderTask[];
+  setupTasks: SetupTask[];
+  /** One prediction per rack page, asked before the activity. */
+  predictions: Partial<Record<PageId, Prediction>>;
   practice: { task: string; fields: { id: string; label: string; kind: 'text' | 'choice'; choices?: string[] }[] };
   sources: SourceRef[];
   audit: { agreement: string; tension: string; gaps: string };
-  unknowns: string[];
+  /** Each unknown in words; `dims` names (code only) the placeholders it covers. */
+  unknowns: { text: string; dims: string[] }[];
   corrections: { id: string; text: string }[];
   live: { wedges: Wedge[] };
   accuracyDetail: string;

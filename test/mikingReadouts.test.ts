@@ -28,7 +28,7 @@ import { compileScene } from '../src/screens/lab/miking/engine/geometry/collisio
 import { deriveReadouts, type ReadoutCtx } from '../src/screens/lab/miking/engine/geometry/readouts.ts';
 import { fmtAngle, fmtImperial, fmtLen, fmtMetric } from '../src/screens/lab/miking/engine/model/units.ts';
 import { describeMic } from '../src/screens/lab/miking/engine/a11y/describe.ts';
-import { lenCell, liveLine, placementBezel, withStop, type ReadoutWords } from '../src/screens/lab/miking/engine/scene/readoutText.ts';
+import { lenCell, liveLine, placementBezel, withStop, zoneMark, type ReadoutWords } from '../src/screens/lab/miking/engine/scene/readoutText.ts';
 import type { MicPose, VariantId } from '../src/screens/lab/miking/engine/model/types.ts';
 
 const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8').replace(/\r\n/g, '\n');
@@ -109,7 +109,8 @@ describe('one pose → one set of printed numbers', () => {
             assert.ok(!strip.includes('✕'));
             assert.ok(!now.includes('Blocked'));
             assert.equal(bezel[3].k, 'ZONE');
-            assert.equal(bezel[3].v, zone ? (zone.kind === 'trial' ? 'TRIAL' : 'SOURCED') : 'NONE');
+            assert.equal(bezel[3].v, zoneMark(zone));
+            assert.ok(['TRIAL', 'SOURCED', 'SOURCED*', 'NONE'].includes(bezel[3].v));
           }
         });
       }

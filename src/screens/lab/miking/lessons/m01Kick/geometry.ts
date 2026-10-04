@@ -81,13 +81,13 @@ export const KICK_MODEL: InstrumentModel = {
   parts,
   regions: [
     { id: 'r.strike', partId: 'kick.batter', label: 'beater strike', anchor: KICK_ANCHORS['pedal.beater.strike'], prov: D.strikeY.prov, note: 'The beater strikes the batter head: beater articulation (the attack) starts here.' },
-    { id: 'r.reso', partId: 'kick.reso', label: 'resonant head', anchor: KICK_ANCHORS['bd.reso.center'], prov: D.L.prov, note: 'The front head, the air cavity and the shell carry the resonance.' },
+    { id: 'r.reso', partId: 'kick.reso', label: 'resonant head', anchor: KICK_ANCHORS['bd.reso.center'], prov: D.L.prov, note: 'The front head is where much of the drum’s resonance radiates; it rings together with the batter head, the air inside and the shell.' },
     { id: 'r.port', partId: 'kick.port', label: 'port', anchor: KICK_ANCHORS['bd.port.center'], prov: D.portY.prov, variants: ['ported'], note: 'Sound and moving air leave through the port — port air can pop a mic.' },
-    { id: 'r.shell', partId: 'kick.shell', label: 'shell', anchor: { x: L / 2, y: -R, z: 0 }, prov: D.tShell.prov, note: 'The shell and its tuning shape how long the drum rings.' },
+    { id: 'r.shell', partId: 'kick.shell', label: 'shell', anchor: { x: L / 2, y: -R, z: 0 }, prov: D.tShell.prov, note: 'The shell, the heads’ tuning and any damping shape how long the drum rings.' },
   ],
   surfaces: [
     { id: 'batter', partId: 'kick.batter', label: 'the batter head', point: { x: 0, y: 0, z: 0 }, normal: { x: 1, y: 0, z: 0 } },
-    { id: 'reso', partId: 'kick.reso', label: 'the front head', point: { x: L, y: 0, z: 0 }, normal: { x: 1, y: 0, z: 0 } },
+    { id: 'reso', partId: 'kick.reso', label: 'the front head', point: { x: L, y: 0, z: 0 }, normal: { x: 1, y: 0, z: 0 }, minus: { words: 'inside the drum from', key: 'INSIDE FROM' } },
   ],
   lines: [
     { id: 'beater', label: 'the beater line', point: KICK_ANCHORS['pedal.beater.strike'], dir: { x: 1, y: 0, z: 0 } },
@@ -120,6 +120,20 @@ export const KICK_MODEL: InstrumentModel = {
   interior: { x0: 0, x1: L, rIn: R_IN, c: { x: 0, y: 0, z: 0 } },
   ports: { ported: { c: KICK_ANCHORS['bd.port.center'], r: portR }, intact: null },
 };
+
+/**
+ * The PORT as the drawing shows it in each view: an OPENING in the front-head
+ * film at x = L, spanning the port's extent along the view's vertical axis
+ * (side: y; top: z). The port lies off both cut planes (side cut z = 0, top
+ * cut y = 0), so it is drawn PROJECTED onto the head line — a gap in the head,
+ * where the boom passes through — never as a disc beyond the head plane
+ * (geometry fix 2026-10-04). Pure; the art and the tests read the same span.
+ */
+export function portOpening(view: 'side' | 'top'): { x: number; lo: number; hi: number } {
+  const c = KICK_ANCHORS['bd.port.center'];
+  const v = view === 'side' ? c.y : c.z;
+  return { x: c.x, lo: v - KICK_GEOM.portR, hi: v + KICK_GEOM.portR };
+}
 
 /**
  * Rods whose silhouette the cut leaves visible: side view = the far half

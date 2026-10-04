@@ -17,7 +17,7 @@ import { useDerivedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../../theme/tokens';
 import type { MicPattern, Vec3 } from '../model/types.ts';
 import { isModelled } from '../physics/polar.ts';
-import { C20, COMB_FLOOR_DB, EQUAL_PATH_MM, combDb, deltaTms, micGain, notchesHz, pathDiffMm } from '../physics/twoMic.ts';
+import { C20, COMB_FLOOR_DB, EQUAL_PATH_MM, combDb, deltaTms, effectivePolarity, micGain, notchesHz, pathDiffMm } from '../physics/twoMic.ts';
 import { dist } from '../geometry/vec.ts';
 import type { Rig } from './useRig.ts';
 
@@ -45,16 +45,25 @@ export function CombPanel({ rig, source, w, h, label }: { rig: Rig; source: Vec3
   const xOf = (f: number) => padL + (Math.log10(f / F0) / Math.log10(F1 / F0)) * gw;
   const yOf = (db: number) => padT + ((DB_TOP - db) / (DB_TOP - COMB_FLOOR_DB)) * gh;
 
+  // SIGNED gains (review M8): a source in a mic's ideal rear lobe arrives
+  // inverted, so the effective polarity — not the switch alone — picks the
+  // notch set. Magnitudes go to combDb with that effective sign.
+  const gains = useDerivedValue(() => {
+    const pa = a.value;
+    const pb = b.value;
+    const gA = isModelled(patA) ? micGain(patA, pa, source) : 1000 / Math.max(1, dist(pa.p, source));
+    const gB = isModelled(patB) ? micGain(patB, pb, source) : 1000 / Math.max(1, dist(pb.p, source));
+    return { gA: Math.abs(gA), gB: Math.abs(gB), s: effectivePolarity(pol, gA, gB) };
+  });
   const curve = useDerivedValue(() => {
     const p = Skia.Path.Make();
     const pa = a.value;
     const pb = b.value;
-    const gA = isModelled(patA) ? Math.abs(micGain(patA, pa, source)) : 1000 / Math.max(1, dist(pa.p, source));
-    const gB = isModelled(patB) ? Math.abs(micGain(patB, pb, source)) : 1000 / Math.max(1, dist(pb.p, source));
+    const g = gains.value;
     const dt = deltaTms(pathDiffMm(source, pa.p, pb.p));
     for (let i = 0; i < N; i++) {
       const f = F0 * Math.pow(F1 / F0, i / (N - 1));
-      const db = combDb(f, dt, gA, gB, pol);
+      const db = combDb(f, dt, g.gA, g.gB, g.s);
       const x = padL + (i / (N - 1)) * gw;
       const y = padT + ((DB_TOP - db) / (DB_TOP - COMB_FLOOR_DB)) * gh;
       if (i === 0) p.moveTo(x, y);
@@ -73,7 +82,7 @@ export function CombPanel({ rig, source, w, h, label }: { rig: Rig; source: Vec3
     const p = Skia.Path.Make();
     const dt = deltaTms(pathDiffMm(source, a.value.p, b.value.p));
     if (Math.abs(dt) * C20 < EQUAL_PATH_MM) return p;
-    const ns = notchesHz(dt, pol, F1, 64);
+    const ns = notchesHz(dt, gains.value.s, F1, 64);
     for (let i = 0; i < ns.length; i++) {
       if (ns[i] < F0) continue;
       const x = padL + (Math.log10(ns[i] / F0) / Math.log10(F1 / F0)) * gw;
@@ -124,6 +133,7 @@ export function CombPanel({ rig, source, w, h, label }: { rig: Rig; source: Vec3
           </Text>
         ))}
         <Text style={[styles.axis, styles.dbAxis, { top: yOf(0) - 7 }]}>0 dB</Text>
+        <Text style={[styles.axis, styles.inStep, { top: yOf(0) - 15, left: padL + 4 }]}>0 dB = the two arrivals in step</Text>
         <Text style={[styles.axis, styles.dbAxis, { top: yOf(-30) - 7 }]}>−30</Text>
       </View>
       <Text style={styles.badge}>IDEAL MODEL · not a measurement of this drum · Hz, log scale</Text>
@@ -135,5 +145,6 @@ const styles = StyleSheet.create({
   wrap: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 8, backgroundColor: '#0c0c0f', paddingBottom: 4 },
   axis: { position: 'absolute', width: 28, textAlign: 'center', color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9 },
   dbAxis: { left: 0, width: 28, textAlign: 'right' },
+  inStep: { width: 220, textAlign: 'left' },
   badge: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 0.8, textAlign: 'center', paddingTop: 2 },
 });

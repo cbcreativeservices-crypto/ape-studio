@@ -84,3 +84,18 @@ export function micGain(p: PatternId, pose: MicPose, src: Vec3): number {
   const r = Math.max(1, dist(pose.p, src)) / 1000;
   return gain(p, arrivalAngle(pose, src)) / r;
 }
+
+/**
+ * THE REAR-LOBE SIGN (review M8). An ideal supercardioid / hypercardioid
+ * picks up a source behind it with INVERTED polarity (g(θ) < 0). The comb
+ * must use the SIGNED gains: the effective polarity of the sum is the switch
+ * times the sign of each mic's pickup. With the switch at "+", a source in
+ * one mic's rear lobe still puts the notches on the inverted set.
+ * A mic with no modelled pattern (a boundary plate) counts as positive.
+ */
+export function effectivePolarity(switchPol: 1 | -1, gA: number, gB: number): 1 | -1 {
+  'worklet';
+  const sA = gA < 0 ? -1 : 1;
+  const sB = gB < 0 ? -1 : 1;
+  return (switchPol * sA * sB) as 1 | -1;
+}

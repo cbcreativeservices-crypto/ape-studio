@@ -125,6 +125,24 @@ export function checkAssembly(scene: CompiledScene, pose: MicPose, body: MicBody
   return null;
 }
 
+/**
+ * THE DRUM IN THE PATH (review M2c): the first of `partIds` that the straight
+ * line from `a` to `b` passes through, or null. Page 4 uses it to say when the
+ * shell or a head sits between a mic and a monitor — the free-field pattern
+ * ignores that shielding, so the pickup readout must not pretend otherwise.
+ */
+export function solidOnPath(scene: CompiledScene, a: Vec3, b: Vec3, partIds: readonly string[]): { partId: string; label: string } | null {
+  // 0.8 mm steps: a head is a 1 mm slab, so a coarser walk could step over it.
+  const d = sub(b, a);
+  const n = Math.max(1, Math.ceil(len(d) / 0.8));
+  const solids = scene.solids.filter((so) => partIds.includes(so.partId));
+  for (let k = 1; k < n; k++) {
+    const q = add(a, scale(d, k / n));
+    for (const so of solids) if (sdf(so.shape, q) < 0) return { partId: so.partId, label: so.label };
+  }
+  return null;
+}
+
 export type Bounds = { min: Vec3; max: Vec3 };
 
 function clampP(p: Vec3, b: Bounds): Vec3 {

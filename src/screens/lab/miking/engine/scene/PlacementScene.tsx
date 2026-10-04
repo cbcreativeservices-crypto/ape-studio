@@ -54,6 +54,8 @@ const BLUE = '#6fa8ff';
 const AMBER = '#ffc64d';
 const RED = '#ff6b5e';
 const GREY = '#8a8f9c';
+/** The IDEAL-model colour (charter: blue = SOURCED, amber = TRIAL, grey = ILLUSTRATIVE). */
+const IDEAL = '#e8eaee';
 const POLAR_R = 170; // mm: the drawn radius of an on-axis lobe (a drawing size, not a range)
 const MAX_ZOOM = 5;
 /** Below this fit scale (px per mm) no part label can sit by its part:
@@ -71,8 +73,9 @@ export type SceneOptions = {
   showEnvelopes?: boolean;
   /** Page 5: straight paths from this source to each mic (an OVERLAY). */
   pathsFrom?: Vec3 | null;
-  /** Page 4: a monitor wedge at this point. */
-  wedge?: Vec3 | null;
+  /** Page 4: a floor monitor — drawn on the floor at `at`, facing `faces`;
+   *  the dashed sight line runs from the mic to `src` (its baffle). */
+  wedge?: { at: Vec3; faces: Vec3; src: Vec3 } | null;
   highlight?: string | null;
   onTapPart?: (partId: string) => void;
 };
@@ -254,8 +257,14 @@ const STAND_ART = (() => {
       baseSide.addRRect(Skia.RRectXY(Skia.XYWHRect(-58, -11, 116, 11), 5, 5));
       const hubSide = Skia.Path.Make();
       hubSide.addRRect(Skia.RRectXY(Skia.XYWHRect(-13, -26, 26, 17), 4, 4));
+      // Seen from above: a TRIPOD base (three legs and a hub) — never a plain
+      // disc, which next to the head read as the port (geometry fix 2026-10-04).
       const baseTop = Skia.Path.Make();
-      baseTop.addCircle(0, 0, 58);
+      for (let k = 0; k < 3; k++) {
+        const a = (k * 2 * Math.PI) / 3 + Math.PI / 6;
+        baseTop.moveTo(0, 0);
+        baseTop.lineTo(Math.cos(a) * 70, Math.sin(a) * 70);
+      }
       made = { baseSide, hubSide, baseTop };
     }
     return made;
@@ -326,8 +335,9 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
           </>
         ) : (
           <>
-            <Path path={art.baseTop} color="#1d1e23" opacity={0.75} />
-            <Path path={art.baseTop} style="stroke" strokeWidth={2.5} color="#4a4e57" opacity={0.8} />
+            <Path path={art.baseTop} style="stroke" strokeWidth={13} strokeCap="round" color="#0b0c0f" opacity={0.9} />
+            <Path path={art.baseTop} style="stroke" strokeWidth={8} strokeCap="round" color="#4d515b" />
+            <Circle cx={0} cy={0} r={13} color="#2a2c32" />
           </>
         )}
       </Group>
@@ -373,11 +383,43 @@ function PolarSlice({ pose, view, pattern }: { pose: SharedValue<MicPose>; view:
     return p;
   });
   if (!isModelled(pattern)) return null;
+  // IDEAL, not sourced: drawn in the neutral "ideal model" white, dashed —
+  // never the zone blue, which means SOURCED (review M4).
   return (
     <>
-      <Path path={path} color={BLUE} opacity={0.12} />
-      <Path path={path} style="stroke" strokeWidth={3} color={BLUE} opacity={0.85} />
+      <Path path={path} color={IDEAL} opacity={0.06} />
+      <Path path={path} style="stroke" strokeWidth={2.5} color={IDEAL} opacity={0.7}>
+        <DashPathEffect intervals={[10, 7]} />
+      </Path>
     </>
+  );
+}
+
+/** The lobe's in-canvas tag, following the mic (UI thread; no React work). */
+function LobeTag({ pose, view, xf, scale, maxX, maxY }: { pose: SharedValue<MicPose>; view: ViewId; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number }) {
+  const text = 'IDEAL PATTERN · SHAPE, NOT RANGE';
+  const W = labelWidth(text, scale, maxX);
+  const style = useAnimatedStyle(() => {
+    const p = pose.value;
+    const x = xf.value.ox + p.p.x * xf.value.s;
+    const above = xf.value.oy + (vOf(view, p.p) - POLAR_R) * xf.value.s - 14 * scale;
+    const below = xf.value.oy + (vOf(view, p.p) + POLAR_R) * xf.value.s + 2;
+    const left = Math.max(2, Math.min(maxX - W - 2, x - W / 2));
+    // Above the lobe, unless that lands in the top-right corner the glass's
+    // inset owns — then below it.
+    const inInset = left + W > maxX * 0.7 && above < maxY * 0.62;
+    const y = inInset ? below : above;
+    // No clean spot (the badge still says it): hidden rather than on top of
+    // another label.
+    const ok = y > 4 && y < maxY - 34;
+    return { opacity: ok ? 1 : 0, transform: [{ translateX: left }, { translateY: y }] };
+  });
+  return (
+    <Animated.View pointerEvents="none" style={[styles.label, { width: W }, style]}>
+      <Text style={[styles.labelText, { fontSize: 9 * scale, textAlign: 'center', color: '#d9dde5' }]} {...fitValue(9 * scale)}>
+        {text}
+      </Text>
+    </Animated.View>
   );
 }
 
@@ -410,13 +452,17 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
     return p;
   }, [r.u0, r.u1, r.v0, r.v1]);
   const tone = z.kind === 'trial' ? AMBER : BLUE;
+  // The DRAWN band is the distance band: dotted when its numbers are the lab's.
+  const labEdges = z.kind === 'sourced' && !!z.bandProv && z.bandProv.kind !== 'sourced';
   const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.26 : 0.04));
   const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : 0.45));
   return (
     <>
       <Path path={path} color={tone} opacity={fill} />
-      <Path path={path} style="stroke" strokeWidth={z.kind === 'trial' ? 2.5 : 2.5} color={tone} opacity={edge}>
-        {z.kind === 'trial' ? <DashPathEffect intervals={[14, 9]} /> : null}
+      {/* Edge: solid = the source's own numbers; long dashes = TRIAL; short
+          dots = a sourced position whose distance edges the lab drew. */}
+      <Path path={path} style="stroke" strokeWidth={2.5} color={tone} opacity={edge}>
+        {z.kind === 'trial' ? <DashPathEffect intervals={[14, 9]} /> : labEdges ? <DashPathEffect intervals={[3, 6]} /> : null}
       </Path>
     </>
   );
@@ -808,10 +854,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           {pathsFrom ? <PathsOverlay rig={rig} view={view} from={pathsFrom} /> : null}
           {wedge ? (
             <>
-              <Line p1={vec(rig.mics[0]?.pose.p.x ?? 0, vOf(view, rig.mics[0]?.pose.p ?? wedge))} p2={vec(wedge.x, vOf(view, wedge))} color={AMBER} strokeWidth={5} opacity={0.8}>
+              <Line p1={vec(rig.mics[0]?.pose.p.x ?? 0, vOf(view, rig.mics[0]?.pose.p ?? wedge.src))} p2={vec(wedge.src.x, vOf(view, wedge.src))} color={AMBER} strokeWidth={5} opacity={0.8}>
                 <DashPathEffect intervals={[30, 20]} />
               </Line>
-              <WedgeGlyph at={wedge} view={view} aimAt={rig.mics[0]?.pose.p ?? wedge} />
+              <WedgeGlyph at={wedge.at} view={view} faces={wedge.faces} />
             </>
           ) : null}
           {micsShown.map((m) => (
@@ -828,6 +874,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       {labels.map((l) => (
         <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={textScale} maxX={w} />
       ))}
+      {showPolar && !mini && showLabels
+        ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} />)
+        : null}
       {!mini && interactive && showLive ? (
         <View pointerEvents="none" style={styles.liveWrap}>
           {micsShown.map((m) => (
@@ -848,11 +897,13 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   return <GestureDetector gesture={gesture}>{canvas}</GestureDetector>;
 }
 
-/** A floor monitor wedge (generic), drawn facing `aimAt`. */
-function WedgeGlyph({ at, view, aimAt }: { at: Vec3; view: ViewId; aimAt: Vec3 }) {
+/** A floor monitor wedge (generic), standing on the floor at `at`, its
+ *  sloped baffle facing `faces` (plan: rotated; side: mirrored). */
+function WedgeGlyph({ at, view, faces }: { at: Vec3; view: ViewId; faces: Vec3 }) {
   const u = at.x;
   const v = vOf(view, at);
-  const ang = Math.atan2(vOf(view, aimAt) - v, aimAt.x - u);
+  const ang = Math.atan2(faces.z, faces.x);
+  const flip = view === 'side' && faces.x < 0 ? -1 : 1;
   const cab = useMemo(() => {
     const p = Skia.Path.Make();
     if (view === 'top') {
@@ -895,7 +946,7 @@ function WedgeGlyph({ at, view, aimAt }: { at: Vec3; view: ViewId; aimAt: Vec3 }
     return { grille, holes, recess, corners, driver };
   }, [view]);
   return (
-    <Group transform={[{ translateX: u }, { translateY: v }, { rotate: view === 'top' ? ang : 0 }]}>
+    <Group transform={[{ translateX: u }, { translateY: v }, { rotate: view === 'top' ? ang : 0 }, { scaleX: flip }]}>
       <Group transform={[{ translateX: 14 }, { translateY: 18 }]}>
         <Path path={cab} color="#000" opacity={0.6}>
           <BlurMask blur={22} style="normal" />

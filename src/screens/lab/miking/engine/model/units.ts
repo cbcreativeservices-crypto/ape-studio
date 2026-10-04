@@ -76,10 +76,13 @@ export function fmtSigned(mm: number, plus: string, minus: string): string {
   return `${fmtLen(Math.abs(mm))} ${r > 0 ? plus : minus}`;
 }
 
-/** Milliseconds, 2 decimals ("0.58 ms"); Hz to 3 significant figures. */
+/** Milliseconds, rounded to 0.05 ms with "≈" ("≈ 0.70 ms"): the path
+ *  difference is known to ≈ 5 mm (≈ 0.015 ms) and the acoustic centre is
+ *  unknown, so 0.01 ms would claim more than the drawing knows (review m12). */
 export function fmtMs(ms: number): string {
   'worklet';
-  return `${Math.abs(ms).toFixed(2)} ms`;
+  const r = Math.round(Math.abs(ms) / 0.05) * 0.05;
+  return `≈ ${r.toFixed(2)} ms`;
 }
 export function fmtHz(hz: number): string {
   'worklet';
@@ -93,4 +96,21 @@ export function fmtDb(db: number): string {
   if (db <= -59.5) return 'below −60 dB';
   const r = Math.round(db * 10) / 10;
   return `${r > 0 ? '+' : r < 0 ? '−' : ''}${Math.abs(r).toFixed(1)} dB`;
+}
+
+/**
+ * An IDEAL pattern's pickup for display (reviews M3 / M8). An ideal
+ * first-order null is infinitely deep on paper, so any number near it is an
+ * artefact of where the control landed; real microphones reject far less
+ * there, and least at low frequencies. Below IDEAL_NULL_DB no number is
+ * printed: "deep null (ideal)".
+ */
+export const IDEAL_NULL_DB = -25;
+export function isDeepNull(db: number): boolean {
+  'worklet';
+  return db < IDEAL_NULL_DB;
+}
+export function fmtIdealPickup(db: number): string {
+  'worklet';
+  return isDeepNull(db) ? 'deep null (ideal)' : `${fmtDb(db)} (ideal)`;
 }

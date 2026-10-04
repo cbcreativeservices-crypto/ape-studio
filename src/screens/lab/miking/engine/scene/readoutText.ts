@@ -17,6 +17,7 @@
  */
 import type { DocumentedZone, Readouts } from '../model/types.ts';
 import { fmtAngle, fmtImperial, fmtLen, fmtMetric } from '../model/units.ts';
+import { zoneEdgesByLab } from '../geometry/zones.ts';
 
 export type Stop = null | { partId: string; label: string };
 
@@ -28,6 +29,9 @@ export type ReadoutWords = {
   lineLabel: string;
   /** Off-axis is meaningless for a surface plate (fixed aim). */
   showAim: boolean;
+  /** A negative distance in words / as a bezel key (default behind / BEHIND). */
+  minusWords?: string;
+  minusKey?: string;
 };
 
 /** The readouts as shown: an actual intersection wins, else the stop reason. */
@@ -40,7 +44,7 @@ export function withStop(r: Readouts, stop: Stop): Readouts {
 /** The live strip over the canvas (one line per mic). */
 export function liveLine(r: Readouts, w: ReadoutWords): string {
   'worklet';
-  const dist = `${w.slot} · ${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? 'from' : 'behind'} ${w.surfaceLabel} · ${fmtLen(r.radial)} off ${w.lineLabel}${w.showAim ? ` · aim ${fmtAngle(r.offAxis)}` : ''}`;
+  const dist = `${w.slot} · ${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? 'from' : w.minusWords ?? 'behind'} ${w.surfaceLabel} · ${fmtLen(r.radial)} off ${w.lineLabel}${w.showAim ? ` · aim ${fmtAngle(r.offAxis)}` : ''}`;
   return r.blocked ? `${dist} · ✕ ${r.blocked.label}` : dist;
 }
 
@@ -69,6 +73,14 @@ export type BezelCell = { k: string; v: string; sub?: string; tint?: string; fle
 
 export const ZONE_TINT = { sourced: '#6fa8ff', trial: '#ffc64d', blocked: '#ff6b5e' } as const;
 
+/** A zone's mark: TRIAL, SOURCED, or SOURCED* when any edge of it is the
+ *  lab's drawing of the source's words (review M5). */
+export function zoneMark(zone: DocumentedZone | null): string {
+  if (!zone) return 'NONE';
+  if (zone.kind === 'trial') return 'TRIAL';
+  return zoneEdgesByLab(zone) ? 'SOURCED*' : 'SOURCED';
+}
+
 /** Page 3's bezel: distance (from the zone's / chosen head), off the line,
  *  aim, zone — all from the SAME shown readouts as the strip and NOW line. */
 export function placementBezel(r: Readouts, w: ReadoutWords, zone: DocumentedZone | null, partShort: (partId: string) => string = (id) => id): BezelCell[] {
@@ -77,13 +89,13 @@ export function placementBezel(r: Readouts, w: ReadoutWords, zone: DocumentedZon
   return [
     // The slot letter lives in the strip ("A · …"); one mic per page-3 bezel,
     // so the key spends its width on the head it is measured from.
-    { k: `${r.distance >= 0 ? 'FROM' : 'BEHIND'} ${shortRef(w.surfaceLabel)}`, v: d.v, sub: d.sub, flex: 1.4 },
+    { k: `${r.distance >= 0 ? 'FROM' : w.minusKey ?? 'BEHIND'} ${shortRef(w.surfaceLabel)}`, v: d.v, sub: d.sub, flex: 1.4 },
     { k: `OFF ${lineRef(w.lineLabel)}`, v: off.v, sub: off.sub, flex: 1.5 },
     { k: 'AIM', v: w.showAim ? fmtAngle(r.offAxis) : 'FLAT', flex: 0.8 },
     // The stop names the PART (its short name), in red, with the ✕ in the
     // key — colour is never the only signal (charter §8).
     r.blocked
       ? { k: '✕ STOPPED', v: partShort(r.blocked.partId).toUpperCase(), tint: ZONE_TINT.blocked, flex: 1.3 }
-      : { k: 'ZONE', v: zone ? (zone.kind === 'trial' ? 'TRIAL' : 'SOURCED') : 'NONE', sub: zone ? (zone.kind === 'trial' ? 'dashed band' : 'solid band') : undefined, tint: zone ? ZONE_TINT[zone.kind] : undefined, flex: 1.3 },
+      : { k: 'ZONE', v: zoneMark(zone), sub: zone ? (zone.kind === 'trial' ? 'trial reading' : zoneEdgesByLab(zone) ? '* lab edges' : 'from source') : undefined, tint: zone ? ZONE_TINT[zone.kind] : undefined, flex: 1.3 },
   ];
 }
