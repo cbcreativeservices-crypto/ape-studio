@@ -47,9 +47,15 @@ describe('GlossaryScreen: a cross-link detail is not a paid read', () => {
     );
     assert.match(body, /\[readViaGateway, isMember\],/);
   });
-  it('cross-links stay free: openLinked still fills the detail without the gate', () => {
+  // Updated 2026-10-04 (owner ruling: a metered reader is warned and CHARGED
+  // for a cross-link; see test/glossaryXlinkRulings_20261004). What stays from
+  // this guard: the hop itself charges nothing and fills the detail, and an
+  // UNMETERED reader's hop goes straight to it, with no gate.
+  it('the hop itself is free and fills the detail; an unmetered reader hops without the gate', () => {
+    const hop = SCREEN.slice(SCREEN.indexOf('const hopToLinked = useCallback('), SCREEN.indexOf('/** A METERED hop: charged'));
+    assert.match(hop, /void fetchDetails\(id\);/);
+    assert.doesNotMatch(hop, /gateDefinitionOpen|openViaGateway/);
     const linked = SCREEN.slice(SCREEN.indexOf('const openLinked = useCallback('), SCREEN.indexOf('const onLinkPress = useCallback('));
-    assert.match(linked, /void fetchDetails\(id\);/);
-    assert.doesNotMatch(linked, /gateDefinitionOpen|openViaGateway/);
+    assert.match(linked, /if \(plan === 'free-hop'\) \{\s*hopToLinked\(id\);\s*return;\s*\}/);
   });
 });

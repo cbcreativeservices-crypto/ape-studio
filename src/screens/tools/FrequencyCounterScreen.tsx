@@ -45,7 +45,7 @@ import { TunerDiagram } from '../../components/ColorTargetDiagrams';
 import { useToolColorPref } from '../../features/tools/waveColorPref';
 import { LockedButton, MembershipRequiredNote, MEMBERSHIP_REQUIRED, ToolGatePending, useFullScreenGate, useSaveGate, useToolsLocked } from './ToolLockUi';
 import { useToolUsage } from '../../features/tools/telemetry';
-import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -402,7 +402,7 @@ function LivePitchMode({
   helpAll: () => void;
   onOpenLibrary: () => void;
 }) {
-  const { state, frames, start, stop, lastError } = useDspEngine(
+  const { state, frames, start, stop, lastError, meterFlags } = useDspEngine(
     { pitchEnabled: true },
     { meter: true, pitch: true },
   );
@@ -587,7 +587,7 @@ function LivePitchMode({
   // Quality flags: native meter conditions (clipping / OS-processed input /
   // Bluetooth / stalled capture) via the SHARED mapping, plus this tool's own
   // honest conditions — the same flags shown live are stored on save (§6).
-  const flags = meterWarningFlags(liveFrame); // raw: a dead capture must still flag
+  const flags = meterFlags(liveFrame); // raw: a dead capture must still flag
   if (running && lowSignal && !flags.includes('insufficient_signal')) flags.push('insufficient_signal');
   if (running && stats?.stabilityLabel === 'Unstable' && !flags.includes('unstable_measurement'))
     flags.push('unstable_measurement');
@@ -614,7 +614,7 @@ function LivePitchMode({
       fr.levelDb >= PITCH_LOW_SIGNAL_DB &&
       fr.freq > 0;
     if (!ok || s == null) return;
-    const saveFlags = meterWarningFlags(state === 'running' ? frames.meter : null);
+    const saveFlags = meterFlags(state === 'running' ? frames.meter : null);
     if (s.stabilityLabel === 'Unstable' && !saveFlags.includes('unstable_measurement'))
       saveFlags.push('unstable_measurement');
     // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
@@ -658,7 +658,7 @@ function LivePitchMode({
       if (savedTimer.current) clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-  }, [state, frames.pitch, frames.meter, saveGate, saveLatch]);
+  }, [state, frames.pitch, frames.meter, saveGate, saveLatch, meterFlags]);
 
   if (state === 'absent' || state === 'spike' || state === 'denied' || state === 'error') {
     return <EngineGate state={state} lastError={lastError} onRetry={start} />;

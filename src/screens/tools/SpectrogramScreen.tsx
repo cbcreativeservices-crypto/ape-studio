@@ -47,7 +47,7 @@ import Svg, { Line, Rect } from 'react-native-svg';
 import { AlphaType, Canvas, ColorType, Image as SkiaImage, Skia } from '@shopify/react-native-skia';
 import { ApeDsp, type EngineConfig } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -308,7 +308,7 @@ export function SpectrogramScreen({ navigation }: Props) {
   // object we pass on mount. No live engine-setting changes on this screen —
   // dynamic range is a pure display scale.
   const cfg = useRef<EngineConfig>({ fftSize: FFT_SIZE, spectrumEnabled: true }).current;
-  const { state, frames, start, stop, lastError } = useDspEngine(cfg, { meter: true });
+  const { state, frames, start, stop, lastError, meterFlags } = useDspEngine(cfg, { meter: true });
 
   const [history, setHistory] = useState<SpectroColumnData[]>([]);
   const [dynRange, setDynRange] = useState<number>(60);
@@ -467,7 +467,7 @@ export function SpectrogramScreen({ navigation }: Props) {
       return;
     }
     if (state !== 'running' || history.length === 0) return;
-    const flags = meterWarningFlags(frames.meter);
+    const flags = meterFlags(frames.meter);
     const meta = ApeDsp.getSpectrumMeta();
     const routeName = ApeDsp.getInfo()?.routeName;
     // One record per tap (bug hunt 2026-09-29): a double-tap SAVE wrote two.
@@ -502,7 +502,7 @@ export function SpectrogramScreen({ navigation }: Props) {
       if (savedTimer.current) clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-  }, [state, history, frames, dynRange, saveGate, saveLatch]);
+  }, [state, history, frames, dynRange, saveGate, saveLatch, meterFlags]);
 
   // ---- FULL SCREEN (owner 2026-09-29) — the audio tools' landscape full
   // screen (ToolFullScreen: Waveform mechanism, D35 working surface). Same
@@ -535,7 +535,7 @@ export function SpectrogramScreen({ navigation }: Props) {
           ]
         : null;
 
-  const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];
+  const liveFlags = state === 'running' ? meterFlags(frames.meter) : [];
   // A METER MUST NOT KEEP READING AFTER THE MIC IS RELEASED. `stop()` releases
   // the mic and halts polling but never clears `frames`, so the last live frame
   // stayed on screen indefinitely — a full trace and a real-looking level, with

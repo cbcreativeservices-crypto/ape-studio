@@ -4,7 +4,8 @@
  *
  * GROUND TRUTH, not screen visibility: a 1 s poller (armed ONLY while the
  * global audio-output gate is enabled — audio cannot sound otherwise) reads the
- * native voice statuses (generator / binaural / modular) and text-to-speech.
+ * native voice statuses (generator / binaural / modular), text-to-speech and
+ * every clip player that is sounding (filePlayers — owner 2026-10-04).
  * Any combination of simultaneous sources is ONE combined estimate per tick,
  * so layered voices can never double-count listening time (§30).
  *
@@ -36,6 +37,7 @@ import { isAudioOutputEnabled, isMicActive } from './audioOutputStore';
 import { getSplCalibration } from '../tools/measure/calibrationStore';
 import { areOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { createLocalStore } from '../storage/localStore';
+import { soundingFilePlayerDbfs } from './filePlayers';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -572,6 +574,15 @@ function readSources(): { active: boolean; db: number | null; rt: RouteKey; meas
     if (ApeDsp.modStatus()?.running) outDbfs = Math.max(outDbfs, BIN_MOD_DBFS);
   }
   if (ttsSpeaking) outDbfs = Math.max(outDbfs, TTS_DBFS);
+  // Recorded / rendered clips (owner 2026-10-04: "clips count if output is
+  // happening") — Ear Training, Drum, Mixing, Mastering, Tuning, the lab clip
+  // players and the Scenarios player all play through the file-player register.
+  // Only a player that is SOUNDING counts (stopped, paused, muted, not loaded or
+  // failed, buffering: silent); its level is the clip's measured RMS — or the
+  // conservative assumption for a streamed clip — plus its volume, on the same
+  // dBFS scale as the generator, into the same reference below.
+  const clipDbfs = soundingFilePlayerDbfs();
+  if (clipDbfs > NEGLIGIBLE_DBFS) outDbfs = Math.max(outDbfs, clipDbfs);
   const outDb = outDbfs > -Infinity ? Math.round((settings.refSplAt0Dbfs + outDbfs) * 10) / 10 : null;
   const outRoute = outDb != null ? routeFromNative(ApeDsp.getInfo()?.outputRoute) : 'unknown';
 
@@ -1069,4 +1080,4 @@ export function exposureMessage(snap: ExposureSnapshot): string {
 }
 
 export const EXPOSURE_HONESTY_LINE =
-  'Tracks BOTH what the app plays (estimated) and what the microphone measures while you monitor (measured when field-calibrated). Actual level at your ear depends on your device, headphones, fit and source. Not a medical or compliance measurement.';
+  'Tracks BOTH what the app plays (estimated) and what the microphone measures while you monitor (measured when field-calibrated). What the app plays includes tones and lab clips, counted only while they are actually playing, with each level estimated from the sound and your volume reference. Actual level at your ear depends on your device, headphones, fit and source. Not a medical or compliance measurement.';

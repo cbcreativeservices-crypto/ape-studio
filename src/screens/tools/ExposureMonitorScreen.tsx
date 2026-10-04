@@ -328,9 +328,13 @@ export function ExposureMonitorScreen() {
           )}
           <Text style={styles.note}>
             The monitor tracks BOTH what the app plays and what the microphone measures while you monitor a room or
-            venue — using the SPL meter at a concert IS tracked. Environmental levels are measured (approximate) when the
-            SPL meter is field-calibrated, otherwise estimated. Bluetooth and external outputs are never assumed to be
-            headphones.
+            venue — using the SPL meter at a concert IS tracked. What the app plays includes tones and lab clips (Ear
+            Training, Drum, Mixing, Mastering, Tuning and the other lab clips): a clip counts only while it is actually
+            playing — never while it is stopped, paused, muted or failed to load. Its level is estimated from the clip
+            itself (measured from its samples where the app holds them, otherwise a deliberately loud assumption) and
+            the reference below for your usual volume; the phone’s volume buttons are not read. Environmental levels
+            are measured (approximate) when the SPL meter is field-calibrated, otherwise estimated. Bluetooth and
+            external outputs are never assumed to be headphones.
           </Text>
         </Section>
 

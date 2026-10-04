@@ -30,6 +30,7 @@ import { acquireMic, micAcquireSeq, releaseMic, releaseMicNow } from './micSessi
 import { releaseOnSupersede } from './startSupersede';
 import { markMicAcquire } from '../devTiming';
 import type { WarningFlag } from '../measure/types';
+import { createClipBaseline, type ClipBaseline } from './clipBaseline';
 
 /** Android runtime mic-permission request (iOS requests it natively inside the
  *  module). Returns true if granted. No-op → true on non-Android. */
@@ -116,6 +117,15 @@ export function useDspEngine(config: EngineConfig, poll: {
   // the first is still opening join it instead of spawning a rival.
   const latestStartRef = useRef(0);
   const inFlightRef = useRef<{ gen: number; promise: Promise<void> } | null>(null);
+  // Per-run clip baseline (owner ruling 2026-10-04: "clipping clears when
+  // moving to another tool"). Armed every time start() goes live — see
+  // clipBaseline.ts. `meterFlags` is the ONLY flag mapping a tool should use.
+  const clipRef = useRef<ClipBaseline | null>(null);
+  if (clipRef.current == null) clipRef.current = createClipBaseline();
+  const meterFlags = useCallback(
+    (m: MeterFrame | null) => meterWarningFlags(m, clipRef.current ?? undefined),
+    [],
+  );
 
   const stopPolling = useCallback(() => {
     if (timer.current) clearInterval(timer.current);
@@ -187,6 +197,16 @@ export function useDspEngine(config: EngineConfig, poll: {
         if (releaseOnSupersede(gen, latestStartRef.current)) releaseMic();
         return;
       }
+      // THIS run starts clean: whatever the shared capture counted before
+      // (the previous tool on a warm stream, or this tool's last run) is the
+      // baseline, never this run's clipping.
+      let armFrame: MeterFrame | null = null;
+      try {
+        armFrame = ApeDsp.getMeterFrame();
+      } catch {
+        armFrame = null; // a failed read must not fail the start
+      }
+      clipRef.current?.arm(armFrame?.clipRuns ?? 0, armFrame?.sequence);
       setState('running');
       stopPolling();
       // Only run the React-state poll if the caller actually wants frames. A
@@ -274,7 +294,16 @@ export function useDspEngine(config: EngineConfig, poll: {
     [],
   );
 
-  return { state, frames, start, stop, lastError, resetPeakHold: ApeDsp.resetPeakHold, resetLeq: () => ApeDsp.resetLeq() };
+  return {
+    state,
+    frames,
+    start,
+    stop,
+    lastError,
+    meterFlags,
+    resetPeakHold: ApeDsp.resetPeakHold,
+    resetLeq: () => ApeDsp.resetLeq(),
+  };
 }
 
 /** Auto-start capture ONCE on mount when the engine is ready (owner 2026-08-01:
@@ -515,11 +544,16 @@ export function frameIsLive(m: MeterFrame | null | undefined): m is MeterFrame {
 }
 
 /** Map live native conditions → the Phase-2 quality flags (spec §6). The SAME
- *  flags shown live are stored on save, so screen and library always agree. */
-export function meterWarningFlags(m: MeterFrame | null): WarningFlag[] {
+ *  flags shown live are stored on save, so screen and library always agree.
+ *
+ *  `clip`: the tool run's baseline. Tools pass it via useDspEngine's
+ *  `meterFlags` so only clipping during THIS run raises input_clipping (owner
+ *  ruling 2026-10-04). Without it the raw per-capture counter is used. */
+export function meterWarningFlags(m: MeterFrame | null, clip?: ClipBaseline): WarningFlag[] {
   if (!m) return [];
   const flags: WarningFlag[] = [];
-  if (m.clipRuns > 0) flags.push('input_clipping');
+  const clipRuns = clip ? clip.runsSince(m.clipRuns, m.sequence) : m.clipRuns;
+  if (clipRuns > 0) flags.push('input_clipping');
   if (m.processedInput) flags.push('uncalibrated_input'); // OS is filtering the mic
   if (m.bluetoothInput) flags.push('unsupported_input'); // HFP band-limits (spike rule)
   // Continuity: droppedFrames is a monotonic per-capture counter — any dropout

@@ -42,7 +42,7 @@ import { Canvas, Path as SkiaPath, LinearGradient as SkiaGradient, Skia, vec } f
 import * as Crypto from 'expo-crypto';
 import { ApeDsp, type WaveBucket } from '../../../modules/ape-dsp';
 import { GlassButton } from '../../components/GlassButton';
-import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, levelColorForDb } from '../../features/tools/levelColor';
 import { useColorModePref } from '../../features/tools/colorModePref';
 import { useWaveColorPref, WAVE_COLOR_SWATCHES } from '../../features/tools/waveColorPref';
@@ -109,7 +109,7 @@ const fmtDb = (v: number | undefined | null) =>
 export function WaveformScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('waveform');
   const insets = useSafeAreaInsets();
-  const { state, frames, start, stop, lastError } = useDspEngine(
+  const { state, frames, start, stop, lastError, meterFlags } = useDspEngine(
     { waveformEnabled: true },
     { meter: true, waveform: true },
   );
@@ -273,7 +273,7 @@ export function WaveformScreen({ navigation }: Props) {
   // Live quality flags (spec §6) — the SAME flags get stored on save.
   // ⚠️ From the RAW frame, not the blanked one: a dead capture is exactly when
   // `engine_inactive` must appear, and it cannot come from a null meter.
-  const flags = useMemo(() => meterWarningFlags(liveFrame), [liveFrame]);
+  const flags = useMemo(() => meterFlags(liveFrame), [liveFrame, meterFlags]);
 
   // Clip-overrun display count + latch (item 4). Green 0 until the first real
   // overrun, then red until reset.

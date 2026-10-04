@@ -59,7 +59,7 @@ import { ContributeCalibrationPrompt } from '../../components/ContributeCalibrat
 import { buildDeviceKey, crowdsourceDeclined } from '../../features/tools/measure/deviceProfile';
 import { fetchCommunityProfile, type CommunityProfile } from '../../features/tools/measure/catalogClient';
 import { resolveLedFill, useLedAvgColorPref, useLedColorPref } from '../../features/tools/ledScheme';
-import { frameIsLive, healthWarningFlags, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, healthWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { useRafFrameLoop } from '../../features/tools/engine/useRafFrameLoop';
 import { clampCalOffset, isSplCalibrationUnreadable, setSplCalibration, useSplCalibration } from '../../features/tools/measure/calibrationStore';
 import { afterDialogCloses, notify } from '../../lib/confirm';
@@ -601,7 +601,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // Instead we drive the live meters DIRECTLY off ApeDsp.getMeterFrame() each
   // animation frame into SharedValues (UI thread), and update the TEXT readouts
   // on a slow throttle. See the rAF loop below.
-  const { state, start, stop, lastError, resetPeakHold, resetLeq } = useDspEngine({}, {});
+  const { state, start, stop, lastError, resetPeakHold, resetLeq, meterFlags } = useDspEngine({}, {});
 
   // Auto-resume within the SPL ecosystem (owner 2026-07-30): the engine tears
   // the mic down on blur for privacy (useDspEngine), so navigating to the
@@ -869,7 +869,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // input (measurement mode not honored) — that stays a warning even when
   // field-calibrated, because it undermines the calibration itself.
   const flags: WarningFlag[] = [
-    ...meterWarningFlags(meter),
+    ...meterFlags(meter),
     ...healthWarningFlags(ApeDsp.getInfo()),
     // Blanking the numbers is honest but SILENT, and `meter` is null here so
     // meterWarningFlags cannot raise this itself. Say why the readouts went
@@ -1441,7 +1441,7 @@ export function SplMeterScreen({ navigation }: Props) {
     // window, before the button greys — saved its frozen Leq/peak as a log.
     // Same verdict every other tool's SAVE uses.
     if (!frameIsLive(m)) return;
-    const saveFlags = [...meterWarningFlags(m), ...healthWarningFlags(ApeDsp.getInfo())];
+    const saveFlags = [...meterFlags(m), ...healthWarningFlags(ApeDsp.getInfo())];
     // Without a field calibration the record is explicitly uncalibrated
     // (spec §9 required warning). With one (ruling R1), the record carries
     // calibration_status 'calibrated' + the disclosed offset instead.
@@ -1507,7 +1507,7 @@ export function SplMeterScreen({ navigation }: Props) {
       savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, weighting, response, offset, cal, saveGate, saveLatch]);
+  }, [state, weighting, response, offset, cal, saveGate, saveLatch, meterFlags]);
 
   return (
     <View style={styles.root}>

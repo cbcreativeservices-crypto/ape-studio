@@ -35,3 +35,12 @@ remains the tie-breaker.
 - EarLab / LabCategory may open a members-only row in the sub-second window before the first membership read lands (member-favouring).
 - The Dashboard study switches still open while membership is 'unconfirmed'; the study screens and the server still gate.
 - An offline cold start more than about 1 h after last use goes to the login screen (auth-js behaviour; an offline-mode product decision).
+
+## D55 · Owner rulings 2026-10-04 (morning)
+- **Hearing exposure:** lab and clip playback counts toward the daily exposure while sound is actually being output (not while stopped, paused, muted or failed to load).
+- **Clipping flag:** the input-clipping indication and the saved flag belong to the tool's own run. They clear when the user moves to another tool.
+- **Calculator inputs:** "- 5" / "+ 5" with a space stay refused.
+- **Loudness:** a negative margin reads "OVER CEILING BY …" with the positive amount.
+- **Glossary cross-links (amends D50):** opening a cross-linked term from inside a definition counts as another lookup.
+  - The reader is warned first and chooses Cancel (nothing charged) or Open (charged).
+  - Members, members whose check has not settled, already-opened terms and built-in unmetered links are never charged.

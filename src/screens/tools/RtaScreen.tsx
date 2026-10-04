@@ -74,7 +74,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Crypto from 'expo-crypto';
 import Svg, { Defs, G, Line, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { ApeDsp, type BandsFrame, type EngineConfig, type MeterFrame } from '../../../modules/ape-dsp';
-import { frameIsLive, meterWarningFlags, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
+import { frameIsLive, useDspEngine, useToolAutoStart } from '../../features/tools/engine/useDspEngine';
 import { saveMeasurement } from '../../features/tools/measure/measurementStore';
 import { useSaveLatch } from '../../features/tools/measure/saveLatch';
 import { evaluateQuality } from '../../features/tools/measure/quality';
@@ -833,7 +833,7 @@ export function RtaScreen({ navigation }: Props) {
   const [weighting, setWeighting] = useState<Weighting>('Z');
   const fraction = fractionFor(mode); // what the ENGINE is banding at (save path)
 
-  const { state, frames, start, stop, lastError, resetPeakHold } = useDspEngine(cfg, {
+  const { state, frames, start, stop, lastError, resetPeakHold, meterFlags } = useDspEngine(cfg, {
     meter: true,
     bands: true,
   });
@@ -1068,7 +1068,7 @@ export function RtaScreen({ navigation }: Props) {
     const bands = frames.bands;
     // Same verdict as the display — a dead mic has no spectrum to save.
     if (state !== 'running' || !frameIsLive(frames.meter) || bands == null || bands.centers.length === 0) return;
-    const flags = meterWarningFlags(frames.meter);
+    const flags = meterFlags(frames.meter);
     // Q2: persist ONLY resolvable bands — the payload has no resolvable flag,
     // so storing flagged-unresolvable levels would fabricate data on replay.
     const bandsHz: number[] = [];
@@ -1114,9 +1114,9 @@ export function RtaScreen({ navigation }: Props) {
       if (savedTimer.current) clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setJustSaved(false), 1800);
     });
-  }, [state, frames, fraction, alpha, saveGate, saveLatch]);
+  }, [state, frames, fraction, alpha, saveGate, saveLatch, meterFlags]);
 
-  const liveFlags = state === 'running' ? meterWarningFlags(frames.meter) : [];
+  const liveFlags = state === 'running' ? meterFlags(frames.meter) : [];
   // A METER MUST NOT KEEP READING AFTER THE MIC IS RELEASED. `stop()` releases
   // the mic and halts polling but never clears `frames`, so the last live frame
   // stayed on screen indefinitely — a full trace and a real-looking level, with

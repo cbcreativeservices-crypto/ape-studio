@@ -112,6 +112,15 @@ import {
   sessionDefinition,
   type GatewayProbe,
 } from '../../features/glossary/glossaryGateway';
+import {
+  CROSS_LINK_CANCEL,
+  CROSS_LINK_OPEN,
+  crossLinkBody,
+  crossLinkPlan,
+  crossLinkTitle,
+  lookupsLeft,
+} from '../../features/glossary/crossLinkCharge';
+import { useInFlightLatch } from '../../lib/latch';
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
@@ -1703,6 +1712,14 @@ ${COPY.glossaryFreeAllowance}`,
   );
   const [resetAt, setResetAt] = useState<number | null>(null);
   const lastViewedTermRef = useRef<string | null>(null);
+  /**
+   * This reader's weekly count as last REPORTED by the meter itself — the
+   * focus status read, a fallback consume, or a metered gateway read. Only
+   * ever a number the meter answered; null until one has (and after a reader
+   * change). The cross-link warning (owner 2026-10-04) says "You have N left
+   * this week" only from this, never from a guess.
+   */
+  const meterCountRef = useRef<{ used: number; limit: number } | null>(null);
 
   /** Charge one lookup before revealing a definition. Returns false when a
    *  capped user is out of lookups — the glossary LOCKS and the caller does NOT
@@ -1752,6 +1769,7 @@ ${COPY.glossaryFreeAllowance}`,
         lastViewedTermRef.current = id;
         return true;
       }
+      meterCountRef.current = { used: u.used, limit: u.limit };
       if (!u.allowed) {
         // Out of lookups → LOCK the glossary (owner 2026-09-10). Don't open.
         setResetAt(u.windowStart != null ? u.windowStart + GLOSSARY_WEEK_MS : null);
@@ -1936,6 +1954,9 @@ ${COPY.glossaryFreeAllowance}`,
           return next;
         });
         lastViewedTermRef.current = id;
+        // The meter's own count, for the cross-link warning (a cached read
+        // carries the count from when it was charged, so only a fresh one).
+        if (fresh && typeof used === 'number' && typeof lim === 'number') meterCountRef.current = { used, limit: lim };
         /**
          * ⛔ THE HEADS-UP IS FOR A KNOWN NON-MEMBER ONLY (hunt 12, 2026-10-04;
          * K3, owner 2026-10-03 #1). The server sends the week's count with any
@@ -1968,6 +1989,7 @@ ${COPY.glossaryFreeAllowance}`,
         }
         // Same lock as the device-local meter, driven by the server's count.
         const st = await getGlossaryStatus('server');
+        if (!st.unavailable) meterCountRef.current = { used: st.used, limit: st.limit };
         setResetAt(!st.unavailable && st.windowStart != null ? st.windowStart + GLOSSARY_WEEK_MS : null);
         setLocked(true);
         return false;
@@ -1998,8 +2020,8 @@ ${COPY.glossaryFreeAllowance}`,
     (id: string): Promise<boolean> => {
       /**
        * Already read THROUGH THE GATEWAY this session — free. ⛔ Not merely "has
-       * a detail" (hunt 7, 2026-10-03): a cross-link hop (free, unmetered)
-       * fills the detail from glossary_study_v, which carries no definition —
+       * a detail" (hunt 7, 2026-10-03): an unmetered cross-link hop (since
+       * 2026-10-04 only for a reader who is not metered) fills the detail from glossary_study_v, which carries no definition —
        * the row still holds the browse view's 120-character teaser. A free
        * reader who hopped to a term and later opened it was then never sent
        * the metered read: the teaser showed as the whole definition, silently,
@@ -2030,8 +2052,10 @@ ${COPY.glossaryFreeAllowance}`,
        * VERIFIED ON THE LIVE PROJECT 2026-09-20: neither `public.glossary` nor
        * `public.glossary_full_v` grants SELECT to `anon` OR `authenticated` —
        * both return 42501. This is the only path that fills a term's detail
-       * body, and `openLinked` calls it directly and deliberately, because
-       * cross-links are FREE and must not spend a weekly lookup. The free
+       * body, and the cross-link hop (`hopToLinked`) calls it directly — an
+       * UNMETERED reader's hop (a member, 'checking' / 'unconfirmed') must not
+       * spend a lookup; a metered reader's hop is charged first, by choice
+       * (owner ruling 2026-10-04, see `openLinked`). The free
        * route WAS those two direct table reads, so when the grants went, every
        * cross-link hop became "Couldn't load details — tap to retry"
        * permanently, for members and free users alike, with a retry button
@@ -2161,10 +2185,10 @@ ${COPY.glossaryFreeAllowance}`,
     [recordRecent, registerCoach, fetchDetails, gateDefinitionOpen],
   );
 
-  /** Follow a cross-link: remember where we are, then hop to the new term.
-   *  Cross-links are FREE — they don't spend a weekly lookup (owner 2026-09-10);
-   *  they DO update "last viewed" so a post-upgrade return lands on this term. */
-  const openLinked = useCallback(
+  /** The hop itself: remember where we are, then push the new term on the
+   *  trail. Updates "last viewed" so a post-upgrade return lands on this term.
+   *  Charges nothing — every caller has already decided what the hop costs. */
+  const hopToLinked = useCallback(
     (id: string) => {
       openSeqRef.current += 1; // a root open still in flight must not land over this hop
       lastViewedTermRef.current = id;
@@ -2180,6 +2204,87 @@ ${COPY.glossaryFreeAllowance}`,
       popupScrollY.current = 0;
     },
     [recordRecent, fetchDetails],
+  );
+
+  /** A METERED hop: charged exactly like any other open (gateDefinitionOpen →
+   *  the gateway read, or the fallback meter), and only the LATEST open lands
+   *  (openSeqRef, as openPopupRoot). A refusal leaves the trail as it was —
+   *  the existing limit-reached handling (the lock) is already going up. */
+  const openLinkedMetered = useCallback(
+    async (id: string) => {
+      const seq = ++openSeqRef.current;
+      if (!(await gateDefinitionOpen(id))) return;
+      if (seq !== openSeqRef.current) return;
+      hopToLinked(id);
+    },
+    [gateDefinitionOpen, hopToLinked],
+  );
+
+  // ⛔ ONE ASK, ONE CHARGE (K11). A same-frame double tap on a link — or a tap
+  // on a second link while the first dialog is up — must not raise two
+  // dialogs; claimed synchronously, released by the dialog's own answer.
+  // The latch then holds the charged open itself, so it runs once.
+  const crossLinkAskingRef = useRef(false);
+  const crossLinkLatch = useInFlightLatch();
+
+  /**
+   * Follow a cross-link (owner ruling 2026-10-04, replacing the free hop of
+   * 2026-09-10): "before opening the crosslinked other glossary term from the
+   * link in the description, warn that opening the new term link will count as
+   * another credit. the user can decide then to close or go to the other term
+   * and use the credit."
+   *
+   * - Not metered (a member; 'checking' / 'unconfirmed', owner 2026-10-03 #2):
+   *   the old free hop — no dialog, no charge.
+   * - Metered, term already opened this session: free, no dialog; it opens
+   *   through the session cache (full text, nothing charged).
+   * - Metered, week known to be used up: straight to the lock, no dialog.
+   * - Otherwise: ask. Cancel changes nothing; Open charges and shows the full
+   *   definition. The dialog is the house confirmDialog; this popup is an
+   *   in-tree overlay, not a Modal, so there is no Modal-over-Modal (K10).
+   */
+  const openLinked = useCallback(
+    (id: string) => {
+      const metered = meterKnown && (serverMeters || capped);
+      const alreadyOpened =
+        sessionDefinition(id, isMember) != null ||
+        sessionChargeUnanswered(id) ||
+        (!serverMeters && SESSION_FALLBACK_CHARGED.has(id));
+      const left = lookupsLeft(meterCountRef.current);
+      const plan = crossLinkPlan({ metered, alreadyOpened, left });
+      if (plan === 'free-hop') {
+        hopToLinked(id);
+        return;
+      }
+      if (plan !== 'ask') {
+        void crossLinkLatch.run(() => openLinkedMetered(id)).catch(() => {});
+        return;
+      }
+      if (crossLinkAskingRef.current || crossLinkLatch.busy()) return;
+      crossLinkAskingRef.current = true;
+      const term = entryByIdRef.current.get(id)?.term ?? 'this term';
+      confirmDialog(
+        crossLinkTitle(term),
+        crossLinkBody(left),
+        CROSS_LINK_OPEN,
+        () => {
+          void crossLinkLatch
+            .run(() => openLinkedMetered(id))
+            .catch(() => {})
+            .finally(() => {
+              crossLinkAskingRef.current = false;
+            });
+        },
+        {
+          cancelText: CROSS_LINK_CANCEL,
+          // Cancel / scrim / BACK: nothing charged, nothing moved.
+          onCancel: () => {
+            crossLinkAskingRef.current = false;
+          },
+        },
+      );
+    },
+    [meterKnown, serverMeters, capped, isMember, hopToLinked, openLinkedMetered, crossLinkLatch],
   );
 
   /** One link tap: single sense → open; multiple senses → chooser. Marks the
@@ -2307,6 +2412,7 @@ ${COPY.glossaryFreeAllowance}`,
           if (capped) {
             const st = await getGlossaryStatus(capMode);
             if (!alive) return;
+            meterCountRef.current = st.unavailable ? null : { used: st.used, limit: st.limit };
             if (!st.unavailable && !st.allowed) {
               setResetAt(st.windowStart != null ? st.windowStart + GLOSSARY_WEEK_MS : null);
               setLocked(true);
@@ -2806,6 +2912,7 @@ ${COPY.glossaryFreeAllowance}`,
       setDetails({});
       setShortRead({}); // the last reader's notes, over text just blanked
       SESSION_FALLBACK_CHARGED.clear();
+      meterCountRef.current = null; // the last reader's weekly count
       // Reads still out for the last reader must not land after this blank
       // (see readerGenRef), and a new reader's tap must not share one.
       readerGenRef.current += 1;
@@ -2917,7 +3024,7 @@ ${COPY.glossaryFreeAllowance}`,
         /**
          * ⛔ "LOOKUPS ARE USED UP" ONLY TO A KNOWN NON-MEMBER (hunt 13,
          * 2026-10-04; K3/K6, owner 2026-10-03 #1). A term whose detail came
-         * from a free cross-link hop skips the open above and is read here;
+         * from an unmetered cross-link hop skips the open above and is read here;
          * a refusal then told a reader whose membership is being checked, or
          * could not be confirmed, that their week was used up — the words
          * readViaGateway and the term popup already refuse to say to them.

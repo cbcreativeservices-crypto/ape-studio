@@ -14,7 +14,7 @@
 import { Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
-import { unregisterFilePlayer } from '../audio/filePlayers';
+import { measuredClipLevelDb, setFilePlayerLevel, unregisterFilePlayer } from '../audio/filePlayers';
 import { applyCeiling } from '../audio/outputCeiling';
 import { encodeWav, type Buf } from './earDsp';
 
@@ -142,10 +142,17 @@ export class EarClipPlayer {
     // toBase64 keep the JS thread free between clips. Same files, same order.
     if (this.disposed) return;
     const uris: string[] = [];
+    // The level each clip will PLAY at, measured from the very samples written
+    // (owner 2026-10-04, "clips count if output is happening"): the exposure
+    // monitor counts a clip only while its player is sounding, at this level
+    // plus the player's volume. Measured here, never assumed, because this is
+    // the one place the decoded/rendered buffer is in hand.
+    const clipLevels: number[] = [];
     try {
       for (const b of bufs) {
         const uri = await bufToWavFile(b);
         uris.push(uri);
+        clipLevels.push(measuredClipLevelDb(b instanceof Float32Array ? [b] : [b.l, b.r]));
         // Torn down mid-load: delete what we have already written and stop before
         // any player is created. Nothing else holds these paths.
         if (this.disposed || gen !== this.loadGen) {
@@ -163,14 +170,17 @@ export class EarClipPlayer {
     this.files = uris;
     uris.forEach((uri, i) => {
       const existing = this.players.get(i);
-      if (existing) existing.replace({ uri });
-      else {
+      if (existing) {
+        existing.replace({ uri });
+        setFilePlayerLevel(existing, clipLevels[i]);
+      } else {
         const p = createAudioPlayer({ uri });
         // Hard output ceiling (owner 2026-09-17). expo-audio defaults volume to
         // 1.0, so without this a normalised clip plays ~20 dB hotter than the
         // native generator's default tone — a large, sudden jump with nothing
         // between it and the user's ears.
         applyCeiling(p);
+        setFilePlayerLevel(p, clipLevels[i]);
         this.players.set(i, p);
         try {
           const sub = p.addListener('playbackStatusUpdate', (st: { didJustFinish?: boolean }) => {

@@ -138,7 +138,8 @@ test('4 — Light Pulse closes the camera in the background', () => {
 
 test('5 — SPL SAVE LOG refuses a dead capture frame', () => {
   const src = read('screens/tools/SplMeterScreen.tsx');
-  const fn = src.slice(src.indexOf('const onSaveLog = useCallback'), src.indexOf('const saveFlags = [...meterWarningFlags(m)'));
+  const fn = src.slice(src.indexOf('const onSaveLog = useCallback'), src.indexOf('const saveFlags = [...meterFlags(m)'));
+  assert.ok(fn.length > 0 && fn.length < 4000, 'the SAVE LOG slice is found');
   assert.match(fn, /if \(!frameIsLive\(m\)\) return;/);
   assert.doesNotMatch(fn, /if \(!m\) return;/);
 });

@@ -70,11 +70,11 @@ test('SPL calibration offset is clamped to the catalog range, and a bad queued r
 });
 
 test('tool SAVE callbacks see the current save gate', () => {
-  assert.match(read('screens/tools/SplMeterScreen.tsx'), /\[state, weighting, response, offset, cal, saveGate, saveLatch\]\);/);
-  assert.match(read('screens/tools/RtaScreen.tsx'), /\[state, frames, fraction, alpha, saveGate, saveLatch\]\);/);
-  assert.match(read('screens/tools/SpectrogramScreen.tsx'), /\[state, history, frames, dynRange, saveGate, saveLatch\]\);/);
+  assert.match(read('screens/tools/SplMeterScreen.tsx'), /\[state, weighting, response, offset, cal, saveGate, saveLatch, meterFlags\]\);/);
+  assert.match(read('screens/tools/RtaScreen.tsx'), /\[state, frames, fraction, alpha, saveGate, saveLatch, meterFlags\]\);/);
+  assert.match(read('screens/tools/SpectrogramScreen.tsx'), /\[state, history, frames, dynRange, saveGate, saveLatch, meterFlags\]\);/);
   const fc = read('screens/tools/FrequencyCounterScreen.tsx');
-  assert.match(fc, /\[state, frames\.pitch, frames\.meter, saveGate, saveLatch\]\);/);
+  assert.match(fc, /\[state, frames\.pitch, frames\.meter, saveGate, saveLatch, meterFlags\]\);/);
   assert.match(fc, /\[stats, flags, saveGate, saveLatch\]\);/);
 });
 

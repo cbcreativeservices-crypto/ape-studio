@@ -406,7 +406,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     waveformEnabled: true,
     bandAvgAlpha: 0.6, // faster bar response (owner 2026-08-05, item 4) — LOW default
   }).current;
-  const { state, frames, start, stop, lastError, resetPeakHold } = useDspEngine(cfg, {
+  const { state, frames, start, stop, lastError, resetPeakHold, meterFlags } = useDspEngine(cfg, {
     meter: true,
     bands: true,
     pitch: true,
@@ -995,7 +995,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     setDraft({
       payload,
       sampleRate: specView?.sampleRate ?? null,
-      flags: meterWarningFlags(m),
+      flags: meterFlags(m),
       routeName,
     });
     setNotes('');
@@ -1004,7 +1004,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     setGeo(null);
     setPhotoBlocked(false);
     setLocationBlocked(false);
-  }, [state, chips, sgHistory, specView, splOffset, calibrated]);
+  }, [state, chips, sgHistory, specView, splOffset, calibrated, meterFlags]);
 
   const saveGate = useSaveGate();
   const saveLatch = useSaveLatch();
@@ -1083,7 +1083,7 @@ export function MultiMeterScreen({ navigation }: Props) {
   }, [draft, notes, smoothing, zoom, photoUri, geo, saveGate, calibrated, splOffset, saveLatch]);
 
   // ---- Derived render data ---------------------------------------------------
-  const liveFlags = running ? meterWarningFlags(liveFrame) : []; // raw: a dead capture must still flag
+  const liveFlags = running ? meterFlags(liveFrame) : []; // raw: a dead capture must still flag
   // 61-band 1/6-oct (owner rev 24). captureLive, not running (2026-09-30):
   // the RTA's "no bars without a live capture" ruling (2026-09-22) — a stall
   // left the last bands standing beside blanked numbers.

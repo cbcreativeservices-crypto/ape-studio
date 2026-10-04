@@ -11,6 +11,18 @@ import { fmt } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
+/** Owner ruling 2026-10-04: a NEGATIVE margin to the ceiling is a level OVER
+ *  the ceiling — it reads "OVER CEILING BY x dB" with the positive amount,
+ *  never "MARGIN TO CEILING −x dB". Zero and positive keep "MARGIN TO CEILING".
+ *  The boundary is decided on the value as displayed: results print at sig
+ *  figures (fmt), which never rounds a non-zero value to 0, so only float
+ *  noise (|m| < 1e-9 dB, far below any figure shown) is snapped to an exact 0
+ *  — there is never a "−0" and never an "OVER CEILING BY 0". */
+export function ceilingMargin(margin: number): { label: 'MARGIN TO CEILING' | 'OVER CEILING BY'; value: number } {
+  const m = Number.isFinite(margin) && Math.abs(margin) < 1e-9 ? 0 : margin;
+  return m < 0 ? { label: 'OVER CEILING BY', value: -m } : { label: 'MARGIN TO CEILING', value: m };
+}
+
 const LOUDNORM: Workspace = {
   id: 'loudnorm',
   name: 'Loudness Normalization',
@@ -189,15 +201,18 @@ const LOUDTP: Workspace = {
         return [
           { label: 'RECOMMENDED CEILING (dBTP)', value: ceiling, quantity: 'number', chainable: false },
           { label: 'SAMPLE-PEAK HEADROOM TO 0 dBFS', value: -n(v.samplePeak), quantity: 'db', chainable: false },
-          { label: 'MARGIN TO CEILING', value: ceiling - n(v.samplePeak), quantity: 'db', chainable: false },
+          { ...ceilingMargin(ceiling - n(v.samplePeak)), quantity: 'db', chainable: false },
         ];
       },
       steps: (v) => {
         const ceiling = n(v.lossy) >= 1 ? -2 : -1;
+        const cm = ceilingMargin(ceiling - n(v.samplePeak));
         return [
           `${n(v.lossy) >= 1 ? 'Lossy' : 'Lossless'} delivery → recommended true-peak ceiling ${fmt(ceiling)} dBTP.`,
           `Your sample peak of ${fmt(n(v.samplePeak))} dBFS is ${fmt(-n(v.samplePeak))} dB below full scale — but true peak can sit up to ~3 dB higher.`,
-          `Margin from sample peak to the ceiling = ${fmt(ceiling - n(v.samplePeak))} dB; measure true peak with an oversampling meter to be sure.`,
+          cm.label === 'OVER CEILING BY'
+            ? `Sample peak − ceiling = ${fmt(n(v.samplePeak))} − (${fmt(ceiling)}) = ${fmt(cm.value)} dB OVER the ceiling — lower the level or limit before export; measure true peak with an oversampling meter to be sure.`
+            : `Margin from sample peak to the ceiling = ${fmt(cm.value)} dB; measure true peak with an oversampling meter to be sure.`,
         ];
       },
     },
