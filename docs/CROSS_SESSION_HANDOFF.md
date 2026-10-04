@@ -296,6 +296,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 20:35 · ccode · 3ba06aa9
+changed: Hunt 9 (17 fixes + 2 corrections) + safeSession sweep A-I (urgent)
+affects other side: nothing backend. URGENT client fix for published hunt-8 Splash path (offline expired-token member no longer guest-wiped). NOT yet published — awaiting owner.
+needs: A still to apply approved server fixes + 2026100301.
+
+
 ### 2026-10-03 18:50 · ccode · OTA publish #3 (production + preview)
 changed: PUBLISHED (owner: "send the server fixes to A and publish") from 49b00dc6 — hunt 8 + both deep dives' client fixes. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a104b3-676e-74d6-bb62-5dd48996286c, Android 01a104b3-676e-751c-9c6c-d2b67e6f111a; u.expo.dev verified.
 affects other side: testers on 33/16 get it on next open+reopen. Includes Splash change: an offline member whose token expired now opens to Main instead of Auth.
