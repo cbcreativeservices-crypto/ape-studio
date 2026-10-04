@@ -89,6 +89,14 @@ Deno.serve(async (req) => {
   const outcome = row?.outcome ?? "pending";
   const reasons = row?.reasons ?? [];
 
+  // A wrong or expired code is RETURNED by the RPC (2026-10-03), not raised,
+  // so the attempt counter it just bumped is kept — a raise rolled it back and
+  // the 6-try limit never counted. Keep the same human messages as before.
+  if (outcome === "wrong_code") return json({ ok: false, error: "that code is not right" }, 400);
+  if (outcome === "expired") {
+    return json({ ok: false, error: "that code has expired — request a new one" }, 400);
+  }
+
   // Already-confirmed is not an error and not news — do not re-notify.
   if (outcome === "already_confirmed") return json({ ok: true, outcome, reasons: [] });
 
