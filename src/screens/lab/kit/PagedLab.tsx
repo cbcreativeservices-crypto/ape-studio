@@ -48,6 +48,9 @@ import { ProgressUnreadableNote } from './ProgressUnreadableNote';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 
+/** The longest a page body waits for the saved place (see awaitingRestore). */
+export const RESTORE_WAIT_MS = 200;
+
 export type PageCtx = {
   reduceMotion: boolean;
   markDone: () => void;
@@ -188,6 +191,21 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const [page, setPage] = useState(0);
   // The what's-left end screen (owner 2026-09-29) — shown in place of the page.
   const [ending, setEnding] = useState(false);
+  /**
+   * PAINT THE LEARNER'S PAGE, NOT PAGE 1 THEN A JUMP (perf hunt 2026-10-03).
+   * Most visits RESTORE a later page, and the shell mounted page 1 in full —
+   * its drawings, its controls, its on-mount work — only to tear it down a
+   * storage read later and mount the restored page. When the tier is already
+   * known at mount (the usual case), the page body waits for that one read,
+   * bounded by RESTORE_WAIT_MS so a slow device still shows page 1 as before.
+   * The header and the nav strip draw at once, and a tap on them ends the wait.
+   */
+  const [awaitingRestore, setAwaitingRestore] = useState(() => resolved);
+  useEffect(() => {
+    if (!awaitingRestore) return;
+    const t = setTimeout(() => setAwaitingRestore(false), RESTORE_WAIT_MS);
+    return () => clearTimeout(t);
+  }, [awaitingRestore]);
   const bankedPages = useLabClearedUnits(creditLabKey ?? labId);
   const bankedCheck = useLabClearedUnits(labId);
   // The banked credit (Patchbay / Connector Select pages, a passed check)
@@ -270,6 +288,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       setPagesUnreadable(!guestRef.current && isPagedProgressUnreadable(labId));
       setProgress(next);
       if (!navigatedRef.current) setPage(Math.min(p.lastPage, pagesWithCheck.length - 1));
+      setAwaitingRestore(false); // same batch: the restored page is the first one mounted
     });
     return () => { alive = false; };
     // pages.length only feeds the check-page rule above; it moves with
@@ -367,6 +386,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
 
   const def = pagesWithCheck[page];
   const Page = def.Component;
+  // See awaitingRestore: nothing of a page is mounted until its place is known.
+  const holdPageBody = awaitingRestore && progress == null && !navigatedRef.current;
   const isDone = !!progress?.completed.includes(page);
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo };
 
@@ -445,11 +466,15 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
                   genuinely a first-page thing; the calibration note is a standing
                   statement about every page. */}
               <AccuracyNote style={styles.accuracy} />
-              {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-              <Page ctx={ctx} />
-              {/* The in-flow NEXT / FINISH at the end of the reading (nothing is
-                  pinned at the bottom any more). */}
-              <LabNextButton nav={nav} />
+              {holdPageBody ? null : (
+                <>
+                  {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+                  <Page ctx={ctx} />
+                  {/* The in-flow NEXT / FINISH at the end of the reading (nothing is
+                      pinned at the bottom any more). */}
+                  <LabNextButton nav={nav} />
+                </>
+              )}
             </ScrollLockProvider>
           </ScrollView>
         )}

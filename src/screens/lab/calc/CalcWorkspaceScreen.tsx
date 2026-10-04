@@ -6,7 +6,7 @@
  * practical example, common mistakes, standards honesty block, glossary
  * terms, OS share sheet, and the Calculation Chain (SEND → / USE).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { Pressable, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
@@ -84,6 +84,12 @@ export function CalcWorkspaceScreen() {
   // Per-formula key popup (owner 2026-08-13) — the purple key opens THIS formula's
   // own explanation, not the whole symbol key.
   const [keyOpen, setKeyOpen] = useState(false);
+  // Stable handlers for the memoised lower body (perf hunt 2026-10-03).
+  const onPickFn = useCallback((i: number) => {
+    setFnIdx(i);
+    setStepsOpen(false);
+  }, []);
+  const onOpenKey = useCallback(() => setKeyOpen(true), []);
   // Persisted collapse state for the bottom explanation sections (owner 2026-08-05).
   const { open: secOpen, toggle: toggleSec } = useCalcSectionOpen();
   // Once the user starts entering values, hide the intro copy to free the upper
@@ -559,113 +565,21 @@ export function CalcWorkspaceScreen() {
           })}
         </View>
 
-        {/* Function picker — pick WHAT you're solving for. Below the inputs so
-            the default function's inputs + the pinned answer lead (owner
-            2026-08-23 calc rack); switching re-shapes the inputs above. */}
-        <View style={styles.fnPicker}>
-          <Text style={styles.eyebrowTight}>WHAT ARE YOU CALCULATING?</Text>
-          <View style={styles.fnList}>
-            {ws.functions.map((f, i) => {
-              const sel = i === fnIdx;
-              return (
-                <Pressable
-                  key={f.key}
-                  style={[styles.fnOption, sel && styles.fnOptionSel]}
-                  onPress={() => { setFnIdx(i); setStepsOpen(false); }}
-                  accessibilityRole="radio"
-                  // `checked`, not `selected`: role="radio" takes aria-checked,
-                  // so every calculator function announced as an unchecked
-                  // radio and the user could not tell which one was active.
-                  accessibilityState={{ checked: sel }}
-                  aria-checked={sel}
-                  accessibilityLabel={f.name}
-                >
-                  <View style={[styles.fnRadio, sel && styles.fnRadioSel]}>
-                    {sel ? <View style={styles.fnRadioDot} /> : null}
-                  </View>
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <Text style={[styles.fnOptName, sel && styles.fnOptNameSel]}>{f.name}</Text>
-                    <Text style={styles.fnOptFormula} numberOfLines={1}>{f.formula}</Text>
-                  </View>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
-
-        <View style={styles.formulaRow}>
-          <Text style={styles.formula}>FORMULA   {fn.formula}</Text>
-          {/* Opens THIS formula's own key popup — formula, plain-English reading,
-              what it calculates + its elements, and only the symbols it uses
-              (owner 2026-08-13). The full symbol key is one tap further in. */}
-          <Pressable
-            onPress={() => setKeyOpen(true)}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel="Formula key — what this formula and its symbols mean"
-          >
-            <Text style={styles.formulaKey}>π KEY</Text>
-          </Pressable>
-        </View>
-        {fn.note ? <Text style={styles.caption}>{fn.note}</Text> : null}
-        {chain ? (
-          <View style={styles.chainRow}>
-            <Text style={[styles.chainBanner, { flex: 1 }]}>
-              CHAIN: {chain.label} from {chain.fromWorkspace} is ready — any matching input offers “USE”.
-            </Text>
-            <Pressable onPress={() => setChainValue(null)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Clear the calculation chain">
-              <Text style={styles.chainClear}>✕ CLEAR</Text>
-            </Pressable>
-          </View>
-        ) : null}
-
-        {/* Explanation sections — collapsible, default open, remembered per user
-            (owner 2026-08-05). Tap a heading to collapse/expand. */}
-        <Pressable onPress={() => toggleSec('why')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.why }} aria-expanded={secOpen.why} accessibilityLabel="Why this matters">
-          <Text style={styles.eyebrow}>{secOpen.why ? '▾' : '▸'} WHY THIS MATTERS</Text>
-        </Pressable>
-        {secOpen.why ? <Text style={styles.body}>{ws.whyItMatters}</Text> : null}
-
-        <Pressable onPress={() => toggleSec('example')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.example }} aria-expanded={secOpen.example} accessibilityLabel="Practical example">
-          <Text style={styles.eyebrow}>{secOpen.example ? '▾' : '▸'} PRACTICAL EXAMPLE</Text>
-        </Pressable>
-        {secOpen.example ? <Text style={styles.body}>{ws.example}</Text> : null}
-
-        <Pressable onPress={() => toggleSec('mistakes')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.mistakes }} aria-expanded={secOpen.mistakes} accessibilityLabel="Common mistakes">
-          <Text style={styles.eyebrow}>{secOpen.mistakes ? '▾' : '▸'} COMMON MISTAKES</Text>
-        </Pressable>
-        {secOpen.mistakes
-          ? ws.mistakes.map((m, i) => (
-              <Text key={i} style={styles.mistake}>• {m}</Text>
-            ))
-          : null}
-        {ws.warnings ? (
-          <View style={styles.warnBlock}>
-            <Text style={styles.warnBlockText}>{ws.warnings}</Text>
-          </View>
-        ) : null}
-        <Text style={styles.eyebrow}>IN THE GLOSSARY</Text>
-        {/* Tap a term → in-place definition popup (owner 2026-08-07). The old
-            "OPEN THE GLOSSARY ›" link was removed (owner 2026-08-09): it switched
-            to the Glossary TAB, which popped this calculator off the stack —
-            stranding the user on the general glossary landing with no way back and
-            no focused term. The popup shows the SPECIFIC term and keeps every
-            input + the scroll position, so the user returns right here to keep
-            going. */}
-        <Text style={styles.caption}>Tap any term for its definition — it opens right here and keeps your inputs, so you return to your calculation.</Text>
-        <View style={styles.chipRow}>
-          {ws.glossary.map((g) => (
-            <Pressable
-              key={g}
-              style={styles.glossChip}
-              onPress={() => setPopupTerm(g)}
-              accessibilityRole="button"
-              accessibilityLabel={`Show the glossary definition of ${g}`}
-            >
-              <Text style={styles.glossText}>{g}</Text>
-            </Pressable>
-          ))}
-        </View>
+        {/* Everything below the inputs — the function picker, the formula,
+            the explanations and the glossary chips — is one memoised block
+            (perf hunt 2026-10-03): none of it depends on what is typed, yet
+            every keystroke re-rendered all of it with the answer. */}
+        <WorkspaceLowerBody
+          ws={ws}
+          fn={fn}
+          fnIdx={fnIdx}
+          onPickFn={onPickFn}
+          onOpenKey={onOpenKey}
+          chain={chain}
+          secOpen={secOpen}
+          toggleSec={toggleSec}
+          onTerm={setPopupTerm}
+        />
       </KeyboardAwareScrollView>
       <GlossaryTermPopup termName={popupTerm} onClose={() => setPopupTerm(null)} />
       <FormulaKeyPopup
@@ -681,6 +595,144 @@ export function CalcWorkspaceScreen() {
     </View>
   );
 }
+
+/** The part of a calculator below its inputs (perf hunt 2026-10-03): the
+ *  function picker, formula line, chain banner, WHY / EXAMPLE / MISTAKES,
+ *  warnings and glossary chips. Memoised — every prop is stable while the
+ *  learner types, so a keystroke re-renders the inputs and the answer only. */
+const WorkspaceLowerBody = memo(function WorkspaceLowerBody({
+  ws,
+  fn,
+  fnIdx,
+  onPickFn,
+  onOpenKey,
+  chain,
+  secOpen,
+  toggleSec,
+  onTerm,
+}: {
+  ws: Workspace;
+  fn: Workspace['functions'][number];
+  fnIdx: number;
+  onPickFn: (i: number) => void;
+  onOpenKey: () => void;
+  chain: ReturnType<typeof useChainValue>;
+  secOpen: ReturnType<typeof useCalcSectionOpen>['open'];
+  toggleSec: ReturnType<typeof useCalcSectionOpen>['toggle'];
+  onTerm: (term: string) => void;
+}) {
+  return (
+    <>
+      {/* Function picker — pick WHAT you're solving for. Below the inputs so
+          the default function's inputs + the pinned answer lead (owner
+          2026-08-23 calc rack); switching re-shapes the inputs above. */}
+      <View style={styles.fnPicker}>
+        <Text style={styles.eyebrowTight}>WHAT ARE YOU CALCULATING?</Text>
+        <View style={styles.fnList}>
+          {ws.functions.map((f, i) => {
+            const sel = i === fnIdx;
+            return (
+              <Pressable
+                key={f.key}
+                style={[styles.fnOption, sel && styles.fnOptionSel]}
+                onPress={() => onPickFn(i)}
+                accessibilityRole="radio"
+                // `checked`, not `selected`: role="radio" takes aria-checked,
+                // so every calculator function announced as an unchecked
+                // radio and the user could not tell which one was active.
+                accessibilityState={{ checked: sel }}
+                aria-checked={sel}
+                accessibilityLabel={f.name}
+              >
+                <View style={[styles.fnRadio, sel && styles.fnRadioSel]}>
+                  {sel ? <View style={styles.fnRadioDot} /> : null}
+                </View>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text style={[styles.fnOptName, sel && styles.fnOptNameSel]}>{f.name}</Text>
+                  <Text style={styles.fnOptFormula} numberOfLines={1}>{f.formula}</Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      <View style={styles.formulaRow}>
+        <Text style={styles.formula}>FORMULA   {fn.formula}</Text>
+        {/* Opens THIS formula's own key popup — formula, plain-English reading,
+            what it calculates + its elements, and only the symbols it uses
+            (owner 2026-08-13). The full symbol key is one tap further in. */}
+        <Pressable
+          onPress={onOpenKey}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Formula key — what this formula and its symbols mean"
+        >
+          <Text style={styles.formulaKey}>π KEY</Text>
+        </Pressable>
+      </View>
+      {fn.note ? <Text style={styles.caption}>{fn.note}</Text> : null}
+      {chain ? (
+        <View style={styles.chainRow}>
+          <Text style={[styles.chainBanner, { flex: 1 }]}>
+            CHAIN: {chain.label} from {chain.fromWorkspace} is ready — any matching input offers “USE”.
+          </Text>
+          <Pressable onPress={() => setChainValue(null)} hitSlop={8} accessibilityRole="button" accessibilityLabel="Clear the calculation chain">
+            <Text style={styles.chainClear}>✕ CLEAR</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {/* Explanation sections — collapsible, default open, remembered per user
+          (owner 2026-08-05). Tap a heading to collapse/expand. */}
+      <Pressable onPress={() => toggleSec('why')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.why }} aria-expanded={secOpen.why} accessibilityLabel="Why this matters">
+        <Text style={styles.eyebrow}>{secOpen.why ? '▾' : '▸'} WHY THIS MATTERS</Text>
+      </Pressable>
+      {secOpen.why ? <Text style={styles.body}>{ws.whyItMatters}</Text> : null}
+
+      <Pressable onPress={() => toggleSec('example')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.example }} aria-expanded={secOpen.example} accessibilityLabel="Practical example">
+        <Text style={styles.eyebrow}>{secOpen.example ? '▾' : '▸'} PRACTICAL EXAMPLE</Text>
+      </Pressable>
+      {secOpen.example ? <Text style={styles.body}>{ws.example}</Text> : null}
+
+      <Pressable onPress={() => toggleSec('mistakes')} accessibilityRole="button" accessibilityState={{ expanded: secOpen.mistakes }} aria-expanded={secOpen.mistakes} accessibilityLabel="Common mistakes">
+        <Text style={styles.eyebrow}>{secOpen.mistakes ? '▾' : '▸'} COMMON MISTAKES</Text>
+      </Pressable>
+      {secOpen.mistakes
+        ? ws.mistakes.map((m, i) => (
+            <Text key={i} style={styles.mistake}>• {m}</Text>
+          ))
+        : null}
+      {ws.warnings ? (
+        <View style={styles.warnBlock}>
+          <Text style={styles.warnBlockText}>{ws.warnings}</Text>
+        </View>
+      ) : null}
+      <Text style={styles.eyebrow}>IN THE GLOSSARY</Text>
+      {/* Tap a term → in-place definition popup (owner 2026-08-07). The old
+          "OPEN THE GLOSSARY ›" link was removed (owner 2026-08-09): it switched
+          to the Glossary TAB, which popped this calculator off the stack —
+          stranding the user on the general glossary landing with no way back and
+          no focused term. The popup shows the SPECIFIC term and keeps every
+          input + the scroll position, so the user returns right here to keep
+          going. */}
+      <Text style={styles.caption}>Tap any term for its definition — it opens right here and keeps your inputs, so you return to your calculation.</Text>
+      <View style={styles.chipRow}>
+        {ws.glossary.map((g) => (
+          <Pressable
+            key={g}
+            style={styles.glossChip}
+            onPress={() => onTerm(g)}
+            accessibilityRole="button"
+            accessibilityLabel={`Show the glossary definition of ${g}`}
+          >
+            <Text style={styles.glossText}>{g}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </>
+  );
+});
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },

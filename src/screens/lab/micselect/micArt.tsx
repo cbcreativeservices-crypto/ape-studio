@@ -8,14 +8,17 @@
  * requested size, so one set of coordinates serves cards, chips and the
  * challenge list. Static geometry only — no animation.
  */
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+// expo-image (perf hunt 2026-10-03): memory + disk cache and off-thread decode,
+// so a photo seen once paints at once on every later page and lightbox.
+import { Image } from 'expo-image';
 import { useLightboxSide } from '../labPhoto';
 import { Modal } from '../../../components/DimModal';
 import { Canvas, Circle, Group, Line, LinearGradient, Oval, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { CondenserMic as SharedLdcMic, HandheldMic } from '../../../features/lab/micDrawings';
 import type { MicKind } from './micSelectData';
-import { micImageUrl } from './micImages';
+import { allMicImageUrls, micImageUrl } from './micImages';
 
 const BODY_HI = '#6e7482';
 const BODY_MID = '#3b3f49';
@@ -300,6 +303,12 @@ const LightboxCtx = createContext<((kind: MicKind) => void) | null>(null);
 export function MicPhotoLightbox({ children }: { children: ReactNode }) {
   const [kind, setKind] = useState<MicKind | null>(null);
   const lbSide = useLightboxSide();
+  // Warm all twelve mic photos once the lab opens (perf hunt 2026-10-03):
+  // each type card and detail panel used to fetch its photo on first show,
+  // so stepping through the mic types painted empty tiles first.
+  useEffect(() => {
+    Image.prefetch(allMicImageUrls(), 'memory-disk').catch(() => {});
+  }, []);
   const url = kind ? micImageUrl(kind) : null;
   return (
     <LightboxCtx.Provider value={setKind}>
@@ -311,7 +320,8 @@ export function MicPhotoLightbox({ children }: { children: ReactNode }) {
               <Image accessible
                 source={{ uri: url }}
                 style={styles.lbImage}
-                resizeMode="contain"
+                contentFit="contain"
+                cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
                 accessibilityRole="image"
                 accessibilityLabel={kind ? `${kind} microphone reference image` : 'Microphone reference image'}
@@ -361,7 +371,8 @@ export function MicVisual({
       <Image accessible
         source={{ uri: url }}
         style={styles.photo}
-        resizeMode="contain"
+        contentFit="contain"
+        cachePolicy="memory-disk"
         onError={() => setFailed(true)}
         accessibilityIgnoresInvertColors
         accessibilityLabel={`${kind} microphone photo`}

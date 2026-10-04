@@ -56,13 +56,26 @@ export async function fetchAwardProgress(
   awardType: AwardType,
   awardId: string,
 ): Promise<AwardProgress | null> {
-  const userId = await internalUserId();
+  // The identity read and the required-topics RPC run TOGETHER (perf hunt
+  // 2026-10-03). The RPC does not depend on the user id, but it waited for it:
+  // two serial round trips before the third, on every AwardProgress open and
+  // every NEXT UP slot. The no-account answer is unchanged — checked first,
+  // before the RPC's result is even looked at (it is not granted to a guest).
+  // A REJECTED rpc (the client's deadline) is held, not raised, until the
+  // guest check: a guest got null before, never a rejection.
+  const reqRead = Promise.resolve(
+    supabase.rpc('award_required_topics', {
+      p_award_type: awardType,
+      p_award_id: awardId,
+    }),
+  ).then(
+    (res) => ({ ok: true as const, res }),
+    (e: unknown) => ({ ok: false as const, e }),
+  );
+  const [userId, req] = await Promise.all([internalUserId(), reqRead]);
   if (!userId) return null;
-
-  const { data: reqRows, error: reqErr } = await supabase.rpc('award_required_topics', {
-    p_award_type: awardType,
-    p_award_id: awardId,
-  });
+  if (!req.ok) throw req.e;
+  const { data: reqRows, error: reqErr } = req.res;
   if (reqErr) {
     console.warn('[awards] award_required_topics failed:', reqErr.message);
     return null;

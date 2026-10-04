@@ -14,7 +14,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { gridColumns } from '../../theme/tablet';
 import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
-import { fetchGalleryV3, type GalleryEntry } from '../../features/achievements/api';
+import { fetchGalleryV3Shared, type GalleryEntry } from '../../features/achievements/api';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 // A row item is either a trophy entry or the odd-row-padding spacer sentinel.
@@ -78,7 +78,7 @@ export function GalleryScreen() {
     // error cleared, so the read in flight showed "No trophies yet — Earn
     // your first trophy" to a member whose gallery simply had not loaded.
     if (failedRef.current) setEntries(null);
-    fetchGalleryV3()
+    fetchGalleryV3Shared()
       .then((e) => {
         if (ticket !== loadTicket.current) return;
         failedRef.current = false;

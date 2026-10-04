@@ -164,7 +164,7 @@ export function tubePageUrl(stem: string, page: 1 | 2): string {
  * the current session's access token automatically.
  */
 export async function fetchTubePageUri(stem: string, page: 1 | 2): Promise<string | null> {
-  const r = await fetchTubePage(stem, page);
+  const r = await fetchTubePageCached(stem, page);
   return r.url;
 }
 
@@ -212,6 +212,45 @@ export async function fetchTubePage(
   } catch {
     return { url: null, reason: 'network' };
   }
+}
+
+// ── Signed-URL memo (perf hunt 2026-10-03) ────────────────────────────────
+// Every page turn used to pay a session read + an Edge Function round trip,
+// and the neighbour warm-up fetched a DIFFERENT signed URL from the one the
+// viewer later asked for — so the image cache (keyed by URL) never hit and the
+// prefetch was wasted. Now a good answer is remembered for 90 s (the signed
+// URL lives 120 s) and concurrent asks share one request, so the warm-up and
+// the viewer resolve to the SAME URL and the swipe lands on a warm image.
+// Only 'ok' answers are remembered; a failure is never cached. RETRY passes
+// `fresh` and always asks the server again.
+const TUBE_URL_TTL_MS = 90_000;
+type TubePageResult = Awaited<ReturnType<typeof fetchTubePage>>;
+const tubeUrlMemo = new Map<string, { url: string; at: number }>();
+const tubeUrlInflight = new Map<string, Promise<TubePageResult>>();
+
+export function fetchTubePageCached(
+  stem: string,
+  page: 1 | 2,
+  opts?: { fresh?: boolean },
+): Promise<TubePageResult> {
+  const key = `${stem}-p${page}`;
+  if (!opts?.fresh) {
+    const hit = tubeUrlMemo.get(key);
+    if (hit && Date.now() - hit.at < TUBE_URL_TTL_MS) return Promise.resolve({ url: hit.url, reason: 'ok' });
+    const pending = tubeUrlInflight.get(key);
+    if (pending) return pending;
+  }
+  const p = fetchTubePage(stem, page)
+    .then((r) => {
+      if (r.url) tubeUrlMemo.set(key, { url: r.url, at: Date.now() });
+      else tubeUrlMemo.delete(key);
+      return r;
+    })
+    .finally(() => {
+      if (tubeUrlInflight.get(key) === p) tubeUrlInflight.delete(key);
+    });
+  tubeUrlInflight.set(key, p);
+  return p;
 }
 
 /** Case-insensitive search over short name, header name, alternates, base and

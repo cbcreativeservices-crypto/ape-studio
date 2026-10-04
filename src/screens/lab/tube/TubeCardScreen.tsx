@@ -14,17 +14,16 @@
  * The sheet follows the finger and snaps to the next/prev sheet past a
  * threshold, else springs back.
  *
- * DELIBERATELY core RN only (PanResponder + Animated + Image): the project has
- * no gesture-handler / expo-image, and a native add would stay dark until the
- * next EAS dev build. Native URL caching + Image.prefetch of neighbours keeps
- * paging snappy.
+ * Gestures are core RN (PanResponder + Animated). The card itself is drawn by
+ * expo-image (already installed; perf hunt 2026-10-03) with a memory+disk
+ * cache, and neighbours are prefetched through the SAME signed URL the viewer
+ * will ask for (tubeRefs fetchTubePageCached), so paging lands on warm images.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import {
   ActivityIndicator,
   Animated,
-  Image,
   type LayoutChangeEvent,
   PanResponder,
   Pressable,
@@ -40,7 +39,10 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useMemberGate } from '../../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
-import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePage, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
+// expo-image (perf hunt 2026-10-03): memory + disk cache, and its prefetch
+// fills the SAME cache the viewer reads, so a warmed neighbour paints at once.
+import { Image } from 'expo-image';
+import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePageCached, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
@@ -343,12 +345,17 @@ export function TubeCardScreen() {
   // Resolve the VISIBLE page's signed URL whenever the tube/page changes or a
   // retry is requested. A failure (not entitled / offline) shows the load-error
   // state, consistent with the previous behaviour.
+  // RETRY asks the server afresh; a plain page turn reuses the signed URL the
+  // neighbour warm-up already fetched (same URL → the image cache hits).
+  const lastRetryRef = useRef(retryKey);
   useEffect(() => {
     let alive = true;
+    const fresh = retryKey !== lastRetryRef.current;
+    lastRetryRef.current = retryKey;
     setPageUri(null);
     setLoaded(false);
     setFailed(false);
-    fetchTubePage(tube.stem, page)
+    fetchTubePageCached(tube.stem, page, { fresh })
       .then((r) => {
         if (!alive) return;
         if (r.url) setPageUri(r.url);
@@ -374,7 +381,7 @@ export function TubeCardScreen() {
     let alive = true;
     const warm = async (stem: string, p: 1 | 2) => {
       const u = await fetchTubePageUri(stem, p);
-      if (alive && u) Image.prefetch(u).catch(() => {});
+      if (alive && u) Image.prefetch(u, 'memory-disk').catch(() => {});
     };
     void warm(tube.stem, 2);
     if (prev) void warm(prev.stem, 2);
@@ -524,7 +531,8 @@ export function TubeCardScreen() {
               key={`${tube.stem}-p${page}-${retryKey}`}
               source={{ uri: pageUri }}
               style={{ width: imgW, height: imgH }}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
               onLoad={() => setLoaded(true)}
               onError={() => setFailed(true)}
               accessibilityLabel={`${tube.short} reference card, page ${page} of ${pageCount} — ${tube.role}`}

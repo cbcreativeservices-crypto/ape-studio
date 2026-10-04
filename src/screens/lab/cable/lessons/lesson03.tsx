@@ -27,7 +27,7 @@ import {
   PrincipleBanner,
   lessonStyles as s,
 } from './bits';
-import { ConnectorCard, InkLegend, RecognitionStrip } from './connectorCard';
+import { ConnectorCard, InkLegend, RecognitionStrip, usePrefetchConnectorImages } from './connectorCard';
 
 /** Recognition-tier records surfaced view-only alongside the analog family
  *  (sweep 2026-08-15): identify + purpose only — never assessed. */
@@ -48,6 +48,8 @@ export function Lesson03Body() {
   const [sel, setSel] = useState<ConnectorId>('xlr3');
   const entry = L03_ENTRIES.find((e) => e.id === sel);
   const rec = getConnector(sel);
+  // Every chip's photo is warmed on mount, so a tap paints at once (perf hunt 2026-10-03).
+  usePrefetchConnectorImages(L03_ENTRIES.map((e) => e.id));
 
   /** Inks actually used across the seven records' pinouts — derived from the
    *  verified data itself (one source of truth), shown once above the cards

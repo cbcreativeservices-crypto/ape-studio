@@ -23,7 +23,7 @@
  * Never certified metering. The screens say so (badge + AccuracyNote).
  */
 import { SR, applyBiquad, rbj, type Mono, type Stereo } from '../../../features/ear/earDsp.ts';
-import { loudnessLufsEstimate, truePeakDbEstimate } from '../mixing/engine/advanced.ts';
+import { loudnessLufsEstimate } from '../mixing/engine/advanced.ts';
 import type { MixSettings } from '../mixing/audio/mixAudio.ts';
 
 /* ── the delivered mix ───────────────────────────────────────────────────── */
@@ -232,9 +232,65 @@ export function rmsDbOf(s: Stereo): number {
   return 10 * Math.log10(Math.max(sum / (2 * Math.max(1, n)), 1e-18));
 }
 
+/**
+ * The TRUE-PEAK estimate of mixing/engine/advanced.ts (truePeakDbEstimate:
+ * 4× oversampling, 8-tap Hann-windowed sinc), with the sinc and window
+ * factors computed ONCE instead of per sample (perf hunt 2026-10-03). The
+ * original evaluates Math.sin + Math.cos 24 times per sample — 21 M trig calls
+ * for one 10 s stereo version, 515 ms in Node — and every LISTEN ▶ measured
+ * two to four versions before a sound could start. Same factors, same order
+ * of multiplication (x·sinc·win), same additions: the result is bit-identical
+ * (pinned in test/perfLabsB_20261003.test.ts); ~25× faster.
+ */
+const TP_OS = 4;
+const TP_TAPS = 8;
+const TP_SINC: number[][] = [];
+const TP_WIN: number[][] = [];
+for (let p = 1; p < TP_OS; p++) {
+  const frac = p / TP_OS;
+  const sincRow: number[] = [];
+  const winRow: number[] = [];
+  for (let t = -TP_TAPS / 2 + 1; t <= TP_TAPS / 2; t++) {
+    const d = frac - t;
+    sincRow.push(d === 0 ? 1 : Math.sin(Math.PI * d) / (Math.PI * d));
+    winRow.push(0.5 + 0.5 * Math.cos((Math.PI * d) / (TP_TAPS / 2)));
+  }
+  TP_SINC.push(sincRow);
+  TP_WIN.push(winRow);
+}
+export function truePeakDbFast(s: Stereo): number {
+  const T0 = -TP_TAPS / 2 + 1;
+  let peak = 0;
+  const consider = (x: Mono) => {
+    const n = x.length;
+    for (let i = 0; i < n; i++) {
+      const a = Math.abs(x[i]);
+      if (a > peak) peak = a;
+    }
+    for (let i = 0; i < n - 1; i++) {
+      const edge = i + T0 < 0 || i + TP_TAPS / 2 >= n;
+      for (let p = 0; p < TP_OS - 1; p++) {
+        const sinc = TP_SINC[p];
+        const win = TP_WIN[p];
+        let v = 0;
+        for (let k = 0; k < TP_TAPS; k++) {
+          const idx = i + T0 + k;
+          if (edge && (idx < 0 || idx >= n)) continue;
+          v += x[idx] * sinc[k] * win[k];
+        }
+        const a = Math.abs(v);
+        if (a > peak) peak = a;
+      }
+    }
+  };
+  consider(s.l);
+  consider(s.r);
+  return 20 * Math.log10(Math.max(peak, 1e-9));
+}
+
 export function measure(s: Stereo): Measure {
   const peakDb = samplePeakDb(s);
-  const truePeakDb = truePeakDbEstimate(s);
+  const truePeakDb = truePeakDbFast(s);
   const lufs = loudnessLufsEstimate(s);
   return { peakDb, truePeakDb, lufs, plr: truePeakDb - lufs, rmsDb: rmsDbOf(s) };
 }

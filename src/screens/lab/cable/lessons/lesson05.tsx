@@ -40,12 +40,14 @@ import {
   type Verdict,
   useShuffled,
 } from './bits';
-import { ConnectorCard, InkLegend, RecognitionStrip } from './connectorCard';
+import { ConnectorCard, InkLegend, RecognitionStrip, usePrefetchConnectorImages } from './connectorCard';
 
 export function Lesson05Body() {
   // ── connector-card browser (six verified speaker records) ─────────────────
   const [conn, setConn] = useState<ConnectorId>('speakon_nl2');
   const rec = getConnector(conn);
+  // Every chip's photo is warmed on mount, so a tap paints at once (perf hunt 2026-10-03).
+  usePrefetchConnectorImages(SPEAKER_CONNECTORS.map((c) => c.id));
   /** Recognition-tier record surfaced view-only (sweep 2026-08-15):
    *  identify + purpose only — never assessed. */
   const nl8 = getConnector('speakon_nl8');

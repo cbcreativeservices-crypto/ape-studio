@@ -63,8 +63,10 @@ import {
   directivityGain,
   fieldAt,
   fieldDb,
+  fieldDbPrepared,
   imageSources,
   maekawaAttenuationDb,
+  prepareField,
   modePressure,
   refractedRayHeight,
   speedOfSound,
@@ -1416,11 +1418,15 @@ export function RoomSceneView(p: RoomSceneProps) {
       }
     } else {
       const images = scene.sources.map((s) => imageSources(scene, s, freq, 2));
+      // Prepared once per picture (perf hunt 2026-10-03): bit-identical to
+      // fieldDb(fieldAt(…)) per cell, without re-deriving the per-source
+      // constants 24 000+ times on every FREQ tick or source drag.
+      const field = prepareField(scene, freq, images);
       for (let r = 0; r < ROWS; r++) {
         const my = ((r + 0.5) / ROWS) * scene.h;
         addFieldRow(buckets, COLS, geo.x0, geo.y0 + r * ch, cw, ch, (c) => {
           const mx = ((c + 0.5) / COLS) * scene.w;
-          const db = fieldDb(fieldAt(scene, mx, my, freq, images));
+          const db = fieldDbPrepared(field, mx, my);
           return Math.round(Math.max(0, Math.min(1, (db + 30) / 42)) * (BUCKET_N - 1));
         });
       }

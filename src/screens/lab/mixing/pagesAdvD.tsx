@@ -13,7 +13,7 @@ import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { AbPlayer, ConceptList, GoalChips, MiniConsole, MixMantra, useMixPlayback, useMixPriorities, useVisitGoals, type MixVariant } from './kit';
 import { PRIORITY_CHOICES } from './pagesAdvA';
-import { loudnessLufsEstimate, nullResidueDb, sumStereo, truePeakDbEstimate } from './engine/advanced.ts';
+import { loudnessLufsEstimate, nullResidueDb, sumStereo, truePeakDbFast } from './engine/advanced.ts';
 import { renderMix, type MixSettings } from './audio/mixAudio.ts';
 import { TRACK_IDS, type TrackId } from './engine/mixModel.ts';
 
@@ -53,7 +53,7 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
       const lufs = loudnessLufsEstimate(m.stereo);
       await new Promise<void>((r) => setTimeout(r, 30));
       if (!guard.alive()) return;
-      const tp = truePeakDbEstimate(m.stereo);
+      const tp = truePeakDbFast(m.stereo);
       setMeasured({ lufs, tp, masterDb });
       // iOS VoiceOver never hears LiveRegion lines — announce (design P1-4).
       AccessibilityInfo.announceForAccessibility?.(`Loudness ${lufs.toFixed(1)} LUFS. True peak ${tp.toFixed(1)} dB true peak.`);

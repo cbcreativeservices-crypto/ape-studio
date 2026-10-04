@@ -232,8 +232,12 @@ export function ControlSlider({
   // FILL has to be laid out from it, so it needs a rendered value too. 0 means
   // "not measured yet" and falls back to the old percentage for one frame.
   const [trackW, setTrackW] = useState(0);
+  // The value the slider last reported (or was given) — read by the drag so a
+  // frame that stays on the same step is dropped.
+  const valueRef = useRef(value);
+  valueRef.current = value;
   const set = useCallback(
-    (x: number) => {
+    (x: number, always = false) => {
       // Read the touch in the SAME inset lane the cap travels in. The cap's
       // centre sits at `frac*(W - CAP_W) + CAP_W/2`, so mapping a raw `x/W`
       // is not its inverse: the two agree only at dead centre and diverge to
@@ -247,7 +251,14 @@ export function ControlSlider({
       const frac = Math.min(1, Math.max(0, (x - CAP_W / 2) / Math.max(1, wRef.current - CAP_W)));
       const raw = min + frac * (max - min);
       const snapped = Math.round(raw / step) * step;
-      onChange(Math.min(max, Math.max(min, snapped)));
+      const next = Math.min(max, Math.max(min, snapped));
+      // A drag frame that lands on the SAME step is not a change (perf hunt
+      // 2026-10-03): callers' onChange builds a fresh state object and marks
+      // the page touched, so every finger twitch inside one step re-rendered
+      // the whole lab page. The touch-down (grant) always reports.
+      if (!always && next === valueRef.current) return;
+      valueRef.current = next;
+      onChange(next);
     },
     [min, max, step, onChange],
   );
@@ -265,7 +276,7 @@ export function ControlSlider({
       onMoveShouldSetPanResponder: (_e, g) => !disabledRef.current && Math.abs(g.dx) > Math.abs(g.dy),
       // Once a horizontal drag is ours, the parent ScrollView must not take it back.
       onPanResponderTerminationRequest: () => false,
-      onPanResponderGrant: (e) => setRef.current(e.nativeEvent.locationX),
+      onPanResponderGrant: (e) => setRef.current(e.nativeEvent.locationX, true),
       onPanResponderMove: (e) => setRef.current(e.nativeEvent.locationX),
     }),
   ).current;

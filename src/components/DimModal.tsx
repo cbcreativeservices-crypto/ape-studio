@@ -120,7 +120,12 @@ let lastHostClosedAt = 0;
  * audio gate learned this first — its `rootHold`). A root surface that is
  * asked for just as a host closes waits this long before presenting its own.
  */
-export const HOST_DISMISS_MS = 450;
+// WEB: 0 (perf hunt 2026-10-03). The wait exists for UIKit's refusal and
+// Android's window order; a react-native-web Modal is a DOM portal that
+// presents over a closing one at once, so in the browser preview every
+// popup → Paywall/Settings hop and every dialog after a sheet waited 450 ms
+// (and held the dialog queue 900 ms) for nothing. Native keeps 450 untouched.
+export const HOST_DISMISS_MS = Platform.OS === 'web' ? 0 : 450;
 const listeners = new Set<() => void>();
 
 function emit(): void {

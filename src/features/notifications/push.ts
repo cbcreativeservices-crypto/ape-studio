@@ -177,6 +177,16 @@ async function registerAndSavePushTokenOnce(): Promise<{ token: string | null; s
     return none;
   }
 
+  // ⚡ THE ACCOUNT LOOKUP RUNS BESIDE THE TOKEN FETCH (perf hunt 2026-10-03).
+  // Both are network trips (Expo's push service; the auth server + users row)
+  // and neither needs the other, but they ran one after the other while the
+  // Weekly-concept and Phone-notifications switches waited. Started here, it
+  // is awaited exactly where it was, so a throw still reaches the caller's
+  // catch as before; on the early `return none` below nobody awaits it, and
+  // the no-op catch keeps that unread result from being an unhandled rejection.
+  const uidP = appUserId(); // app id — NOT the auth uid (see appUserId)
+  uidP.catch(() => {});
+
   let token: string;
   try {
     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
@@ -185,7 +195,7 @@ async function registerAndSavePushTokenOnce(): Promise<{ token: string | null; s
     return none;
   }
 
-  const uid = await appUserId(); // app id — NOT the auth uid (see appUserId)
+  const uid = await uidP;
   if (!uid) return { token, saved: false };
 
   const { data, error } = await supabase

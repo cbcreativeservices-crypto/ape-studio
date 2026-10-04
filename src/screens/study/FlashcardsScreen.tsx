@@ -18,7 +18,13 @@
  *  - Controls pinned to the bottom; card flexes to fill.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
-import { AccessibilityInfo, ActivityIndicator, BackHandler, FlatList, Image, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, BackHandler, FlatList, PanResponder, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+// expo-image, not react-native's Image (perf hunt 2026-10-03): term art is
+// prefetched into expo-image's MEMORY + DISK cache, so the next card's picture
+// is already decoded when the swipe lands, and a revisit (even after a
+// relaunch) paints from disk instead of the network. RN's Image.prefetch kept
+// nothing across launches on iOS and decoded on the main thread.
+import { Image } from 'expo-image';
 // DimModal, not react-native's (bug pass 2, 2026-09-30): the raw Modal was no
 // overlay HOST, so a SpeakButton's audio-output gate or a confirm raised from
 // inside full screen / the term list could not appear on iOS (and drew behind
@@ -539,9 +545,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         void fetchTopicMedia(fetched.map((it) => it.id)).then((m) => {
           if (!alive) return;
           setMediaByItem(m);
-          for (const uri of new Set(Object.values(m))) {
-            Image.prefetch(uri).catch(() => {});
-          }
+          const uris = [...new Set(Object.values(m))];
+          if (uris.length) Image.prefetch(uris, 'memory-disk').catch(() => {});
         });
         // MERGE the device mirror over the server row (same rule the Dashboard
         // uses for display): resume must survive a server write that is slow,
@@ -1645,7 +1650,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                         <Image accessible
                           source={{ uri: mediaByItem[card.id] }}
                           style={styles.termImage}
-                          resizeMode="contain"
+                          contentFit="contain"
+                          cachePolicy="memory-disk"
                           accessibilityLabel={`${card.term} image`}
                           onError={() =>
                             setBadImages((prev) => new Set(prev).add(card.id))
@@ -1880,7 +1886,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     <Image accessible
                       source={{ uri: mediaByItem[card.id] }}
                       style={styles.fsSheetImage}
-                      resizeMode="contain"
+                      contentFit="contain"
+                      cachePolicy="memory-disk"
                       accessibilityLabel={`${card.term} image`}
                       onError={() => setBadImages((prev) => new Set(prev).add(card.id))}
                     />
@@ -1923,7 +1930,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                     <Image accessible
                       source={{ uri: mediaByItem[card.id] }}
                       style={styles.fsSheetImage}
-                      resizeMode="contain"
+                      contentFit="contain"
+                      cachePolicy="memory-disk"
                       accessibilityLabel={`${card.term} image`}
                       onError={() => setBadImages((prev) => new Set(prev).add(card.id))}
                     />

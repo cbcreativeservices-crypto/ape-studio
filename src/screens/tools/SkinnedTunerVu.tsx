@@ -42,7 +42,7 @@
  * Modal), driven by the published tuner frames, opened by TAPPING the meter
  * display (like the other audio tools — no icon key).
  */
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Image, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated';
@@ -162,7 +162,12 @@ function pxStyle(s: number, x: number, y: number, w: number, h: number) {
   return { position: 'absolute' as const, left: x * s, top: y * s, width: w * s, height: h * s };
 }
 
-function PrintedScale({ s, tuneInk }: { s: number; tuneInk: string }) {
+/** MEMOISED (perf hunt 2026-10-03): ~60 rotated bar segments, ~22 ticks and
+ *  the numerals — about 90 transformed Views that depend only on the scale and
+ *  the in-tune ink. The meter re-renders on every 15 Hz pitch frame (its Hz
+ *  text and cents change), and this whole printed face was rebuilt each time
+ *  although it never moves. */
+const PrintedScale = memo(function PrintedScale({ s, tuneInk }: { s: number; tuneInk: string }) {
   const ticks: { c: number; top: number; w: number; ink: 'zero' | 'zone' | 'soft' | 'fine' }[] = [];
   for (let c = -TUNER_MAX_CENTS; c <= TUNER_MAX_CENTS; c += 5) {
     const major = c % 10 === 0;
@@ -249,7 +254,7 @@ function PrintedScale({ s, tuneInk }: { s: number; tuneInk: string }) {
       })()}
     </View>
   );
-}
+});
 
 /* ── The meter ───────────────────────────────────────────────────────────── */
 export function SkinnedTunerVu({

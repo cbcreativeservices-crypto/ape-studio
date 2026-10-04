@@ -7,8 +7,11 @@
  * with announced chips, short-button ConceptList (never prose in a button
  * label), preview-safe cross-lab links, and 44 pt targets throughout.
  */
-import { useRef, useState } from 'react';
-import { AccessibilityInfo, Image, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, StyleSheet, Text, View } from 'react-native';
+// expo-image (perf hunt 2026-10-03): memory + disk cache and off-thread decode,
+// so a photo seen once paints at once on every later page and lightbox.
+import { Image } from 'expo-image';
 import { colors, fonts } from '../../../theme/tokens';
 import { useMarkWhen, Btn } from '../tuning/components/primitives';
 import { navigationRef } from '../../../navigation/navigationRef';
@@ -112,6 +115,18 @@ export function OpenLabLink({ route, label }: { route: string; label: string }) 
 /** Verified connector photo(s) — the glossary-bucket images the owner
  *  ruled ideal for identification. Multi-view connectors render a labeled
  *  row; unmapped ids render nothing (never a placeholder). */
+/** Warm the photos a page can reveal (a bench card opening, a family chip)
+ *  so they paint at once instead of after a download (perf hunt 2026-10-03).
+ *  Only the page's own connectors; best-effort. */
+export function usePrefetchConnectorPhotos(ids: readonly ConnectorId[]): void {
+  const key = ids.join('|');
+  useEffect(() => {
+    const urls = ids.flatMap((id) => connectorImages(id).map((im) => im.url));
+    if (urls.length) Image.prefetch(urls, 'memory-disk').catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+}
+
 export function ConnectorPhoto({ id, size = 96, single, name }: {
   id: ConnectorId;
   size?: number;
@@ -129,7 +144,7 @@ export function ConnectorPhoto({ id, size = 96, single, name }: {
     <View style={styles.photoRow}>
       {images.map((img) => (
         <View key={img.url + img.label} style={{ alignItems: 'center', gap: 2 }}>
-          <Image source={{ uri: img.url }} style={[styles.photo, { width: size, height: size }]} resizeMode="contain" accessibilityIgnoresInvertColors accessible accessibilityLabel={name ? `Photo: ${name}${img.label ? `, ${img.label.toLowerCase()} view` : ''}` : img.label ? `Photo: ${img.label.toLowerCase()} view` : 'Connector photo'} />
+          <Image source={{ uri: img.url }} style={[styles.photo, { width: size, height: size }]} contentFit="contain" cachePolicy="memory-disk" accessibilityIgnoresInvertColors accessible accessibilityLabel={name ? `Photo: ${name}${img.label ? `, ${img.label.toLowerCase()} view` : ''}` : img.label ? `Photo: ${img.label.toLowerCase()} view` : 'Connector photo'} />
           {img.label ? <Text style={styles.photoLabel}>{img.label}</Text> : null}
         </View>
       ))}

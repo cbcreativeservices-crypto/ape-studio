@@ -15,7 +15,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
 import { TrophyModal } from '../../components/TrophyModal';
 import { StudioButton } from '../../components/StudioButton';
-import { fetchTopicAchievements, type FieldGroup, type TopicAchievement } from '../../features/achievements/api';
+import { fetchTopicAchievementsShared, prefetchTrophyCase, type FieldGroup, type TopicAchievement } from '../../features/achievements/api';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
@@ -85,7 +85,7 @@ export function TopicsScreen() {
       // cleared, so the read in flight showed "No topics available yet."
       // and "0 / 0" as fact.
       if (failedRef.current) setFields(null);
-      fetchTopicAchievements()
+      fetchTopicAchievementsShared()
         .then(({ fields, earnedTotal, totalCount }) => {
           if (my !== loadSeq.current) return;
           failedRef.current = false;
@@ -129,7 +129,7 @@ export function TopicsScreen() {
             {fields !== null && !loadError ? `${earnedTotal} / ${total}` : '— / —'}
           </Text>
           <View style={styles.flex} />
-          <Pressable accessibilityRole="button" accessibilityLabel="Your gallery" onPress={() => navigation.navigate('Gallery')} hitSlop={8}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Your gallery" onPressIn={() => prefetchTrophyCase('gallery')} onPress={() => navigation.navigate('Gallery')} hitSlop={8}>
             <Text style={styles.galleryLink}>YOUR GALLERY ›</Text>
           </Pressable>
         </View>

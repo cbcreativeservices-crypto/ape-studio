@@ -43,7 +43,6 @@ const NEEDS_NO_GUARD: Record<string, string> = {
   'src/features/intro/onboardingFlow.ts': '[]-deps subscribe hook: the late hydrate re-reads module state; no key to go stale',
   'src/features/lab/amplitudeOrientation.ts': '[]-deps subscribe hook: the late hydrate re-reads module state; no key to go stale',
   'src/features/onboarding/attractStore.ts': '[]-deps subscribe hooks: the late hydrate re-reads module state; no key to go stale',
-  'src/features/lab/useLabAudio.ts': 'signature hit is the play() callback, not an effect; its effect is synchronous',
   'src/features/tools/telemetry.ts': 'fire-and-forget usage RPC from the unmount cleanup; touches no state',
   'src/features/tools/withKeepAwake.tsx': 'native keep-awake activate; the cleanup deactivates the same tag',
   'src/lib/coachMark.ts': 'one-shot read latched by started.current; writes refs and one setVisible',

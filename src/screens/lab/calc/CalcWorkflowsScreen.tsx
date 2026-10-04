@@ -216,8 +216,12 @@ export function CalcWorkflowsScreen() {
     });
   };
 
-  const Row = ({ w, template, index, count }: { w: Workflow; template: boolean; index?: number; count?: number }) => (
-    <View style={styles.card}>
+  // A render FUNCTION, not a component declared in the body (perf hunt
+  // 2026-10-03): `<Row />` was a brand-new component type on every render, so
+  // React unmounted and rebuilt every workflow card — each ★, each ▲▼, every
+  // focus reload — instead of updating the one thing that changed.
+  const renderRow = ({ w, template, index, count }: { w: Workflow; template: boolean; index?: number; count?: number }) => (
+    <View key={w.id} style={styles.card}>
       <View style={styles.cardHead}>
         <Text style={styles.cardName}>{w.name}</Text>
         {/* Reorder My Workflows (owner 2026-08-06) — accessible ▲▼, persisted. */}
@@ -315,14 +319,12 @@ export function CalcWorkflowsScreen() {
               : 'Nothing saved yet — start from a template below, or build one with ＋ NEW.'}
           </Text>
         ) : (
-          mine.map((w, i) => <Row key={w.id} w={w} template={false} index={i} count={mine.length} />)
+          mine.map((w, i) => renderRow({ w, template: false, index: i, count: mine.length }))
         )}
 
         <Text style={[styles.sectionTitle, { color: colors.blue }]}>WORKFLOW TEMPLATES</Text>
         <Text style={styles.caption}>Built-in sequences using the lab’s calculators. Duplicate one to customize it.</Text>
-        {WORKFLOW_TEMPLATES.map((w) => (
-          <Row key={w.id} w={w} template />
-        ))}
+        {WORKFLOW_TEMPLATES.map((w) => renderRow({ w, template: true }))}
       </ScrollView>
     </View>
   );

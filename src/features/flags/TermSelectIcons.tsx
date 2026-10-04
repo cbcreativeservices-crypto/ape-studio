@@ -11,7 +11,7 @@
  * a small bubble confirming what the button does — Flagged / Favorites /
  * Custom / Known. Deliberately NOT on ✗ (remove).
  */
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { DeckIcon } from '../../components/DeckIcon';
@@ -20,8 +20,8 @@ import {
   setInTermList,
   toggleBookmark,
   toggleTermList,
-  useBookmarks,
-  useTermList,
+  useInTermList,
+  useIsBookmarked,
 } from './flaggedStore';
 
 /** Bookmark glyph (user request 2026-07-18 — replaces the ⚑ flag). Filled when
@@ -159,7 +159,11 @@ function IconToggle({
   );
 }
 
-export function TermSelectIcons({
+// ⚡ memo (perf hunt 2026-10-03): every prop is a primitive, and the row's
+// live state comes from its own per-term subscriptions below — so a parent
+// re-render (a flashcard flip, a popup list's other row) has nothing to
+// change here and is skipped.
+export const TermSelectIcons = memo(function TermSelectIcons({
   id,
   bookmarkCtx,
   hideKnown = false,
@@ -175,33 +179,34 @@ export function TermSelectIcons({
    *  icon (user request 2026-07-25). */
   hideBookmark?: boolean;
 }) {
-  const bookmarked = useBookmarks(bookmarkCtx);
-  const starred = useTermList('starred');
-  const known = useTermList('known');
-  const isKnown = known.has(id);
+  // ⚡ Per-term booleans, not the whole lists (perf hunt 2026-10-03): a tap
+  // in one row re-renders that row's icons only, not every row on screen.
+  const isBookmarked = useIsBookmarked(bookmarkCtx, id);
+  const isStarred = useInTermList('starred', id);
+  const isKnown = useInTermList('known', id);
   const { hint, showHint } = useHoldHint();
   return (
     <View style={styles.row}>
       {hint ? <HintBubble text={hint} /> : null}
       {hideBookmark ? null : (
         <IconToggle
-          renderGlyph={(c) => <BookmarkIcon color={c} filled={bookmarked.has(id)} />}
-          on={bookmarked.has(id)}
+          renderGlyph={(c) => <BookmarkIcon color={c} filled={isBookmarked} />}
+          on={isBookmarked}
           onColor="#b45bff"
-          label={bookmarked.has(id) ? 'Remove bookmark' : 'Bookmark term'}
+          label={isBookmarked ? 'Remove bookmark' : 'Bookmark term'}
           onPress={() => toggleBookmark(bookmarkCtx, id)}
-          onLongPress={() => showHint(bookmarked.has(id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks')}
+          onLongPress={() => showHint(isBookmarked ? 'Removes from Bookmarks' : 'Adds to Bookmarks')}
         />
       )}
       <IconToggle
         renderGlyph={(c) => (
-          <DeckIcon color={c} size={17} fill={starred.has(id) ? `${c}33` : 'none'} />
+          <DeckIcon color={c} size={17} fill={isStarred ? `${c}33` : 'none'} />
         )}
-        on={starred.has(id)}
+        on={isStarred}
         onColor="#2f9bff"
-        label={starred.has(id) ? 'Remove from custom list' : 'Add to custom list'}
+        label={isStarred ? 'Remove from custom list' : 'Add to custom list'}
         onPress={() => toggleTermList('starred', id)}
-        onLongPress={() => showHint(starred.has(id) ? 'Removes from Custom list' : 'Adds to Custom list')}
+        onLongPress={() => showHint(isStarred ? 'Removes from Custom list' : 'Adds to Custom list')}
       />
       {hideKnown ? null : (
         <>
@@ -225,7 +230,7 @@ export function TermSelectIcons({
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14 },

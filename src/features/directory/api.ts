@@ -455,6 +455,42 @@ export async function fetchPublicProfile(
   }
 }
 
+/**
+ * PRESS-IN PREFETCH for the member sheet (perf hunt 2026-10-03).
+ *
+ * The sheet used to start `fetchPublicProfile` only after it mounted — i.e.
+ * after the finger lifted and the slide-up began — so "Loading profile…" sat
+ * for the full round trip on every open. Explore now calls
+ * `prefetchPublicProfile` on press-IN, and the sheet TAKES that promise.
+ *
+ * ONE-SHOT and short-lived, so nothing stale is ever served: `take` removes
+ * the entry, which means a RETRY (or a second open of the same member) always
+ * reads fresh, and an entry older than PREFETCH_MS is ignored. A failed
+ * prefetch resolves null exactly as a direct read would, and the sheet shows
+ * its own error + Retry for it.
+ */
+type PublicProfileRead = Awaited<ReturnType<typeof fetchPublicProfile>>;
+const PROFILE_PREFETCH_MS = 15_000;
+const profilePrefetch = new Map<string, { at: number; p: Promise<PublicProfileRead> }>();
+
+export function prefetchPublicProfile(token: string): void {
+  if (!token) return;
+  const now = Date.now();
+  // Bounded: a press-in that turned into a scroll leaves an entry nobody
+  // takes, so expired ones are dropped here.
+  for (const [k, v] of profilePrefetch) if (now - v.at >= PROFILE_PREFETCH_MS) profilePrefetch.delete(k);
+  if (profilePrefetch.has(token)) return; // already in flight / fresh
+  profilePrefetch.set(token, { at: now, p: fetchPublicProfile(token) });
+}
+
+/** The prefetched read for `token`, or null (none, or too old). One-shot. */
+export function takePrefetchedPublicProfile(token: string): Promise<PublicProfileRead> | null {
+  const hit = profilePrefetch.get(token);
+  profilePrefetch.delete(token);
+  if (!hit || Date.now() - hit.at >= PROFILE_PREFETCH_MS) return null;
+  return hit.p;
+}
+
 /* ── Contact ──────────────────────────────────────────────────────────── */
 
 export type ContactThread = {

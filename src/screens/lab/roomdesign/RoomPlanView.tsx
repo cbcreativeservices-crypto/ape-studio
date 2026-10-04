@@ -19,6 +19,7 @@
 import { memo, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Polyline, Rect, Text as SvgText } from 'react-native-svg';
+import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { fieldLevelColor, levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
@@ -53,8 +54,10 @@ export type PlanEditMode = 'room' | 'monitoring' | 'treatment' | 'none';
 export type PlanHandle = { id: string; px: number; py: number; r?: number };
 
 /** A reflection path being traced: the index into analysis.reflections and
- *  the fraction of the path the pulse has travelled. */
-export type Trace = { index: number; progress: number } | null;
+ *  the fraction of the path the pulse has travelled — a SharedValue, so the
+ *  pulse moves on the UI thread and the plan is not re-rendered per frame
+ *  (perf hunt 2026-10-03). */
+export type Trace = { index: number; progress: SharedValue<number> } | null;
 
 const WALL = '#8d919c';
 const WALL_SOFT = '#3b3e47';
@@ -836,23 +839,35 @@ function ReflectionPath({ r, T, lay, fs }: { r: Reflection; T: PlanTransform; la
   );
 }
 
-function TracePulse({ r, progress, T, lay }: { r: Reflection | undefined; progress: number; T: PlanTransform; lay: RoomDesign['layouts'][number] }) {
+const ACircle = Animated.createAnimatedComponent(Circle);
+
+function TracePulse({ r, progress, T, lay }: { r: Reflection | undefined; progress: SharedValue<number>; T: PlanTransform; lay: RoomDesign['layouts'][number] }) {
   if (!r) return null;
   const sp = lay.speakers.find((s) => s.role === r.speaker);
   if (!sp) return null;
   const a = T.toPx(sp);
   const p = T.toPx(r.point);
   const l = T.toPx(lay.listener);
-  const d1 = Math.hypot(p.x - a.x, p.y - a.y);
-  const d2 = Math.hypot(l.x - p.x, l.y - p.y);
-  const total = d1 + d2 || 1;
-  const t = Math.max(0, Math.min(1, progress)) * total;
-  const q = t <= d1 ? { x: a.x + ((p.x - a.x) * t) / (d1 || 1), y: a.y + ((p.y - a.y) * t) / (d1 || 1) } : { x: p.x + ((l.x - p.x) * (t - d1)) / (d2 || 1), y: p.y + ((l.y - p.y) * (t - d1)) / (d2 || 1) };
-  const col = levelColorForDb(r.levelDb, -24, 0);
+  return <TracePulseDot ax={a.x} ay={a.y} px={p.x} py={p.y} lx={l.x} ly={l.y} col={levelColorForDb(r.levelDb, -24, 0)} progress={progress} />;
+}
+
+/** The pulse itself: speaker → reflection point → ears, the same path maths
+ *  as before, evaluated per frame on the UI thread from `progress`. */
+function TracePulseDot({ ax, ay, px, py, lx, ly, col, progress }: { ax: number; ay: number; px: number; py: number; lx: number; ly: number; col: string; progress: SharedValue<number> }) {
+  const at = () => {
+    'worklet';
+    const d1 = Math.hypot(px - ax, py - ay);
+    const d2 = Math.hypot(lx - px, ly - py);
+    const total = d1 + d2 || 1;
+    const t = Math.max(0, Math.min(1, progress.value)) * total;
+    return t <= d1 ? { cx: ax + ((px - ax) * t) / (d1 || 1), cy: ay + ((py - ay) * t) / (d1 || 1) } : { cx: px + ((lx - px) * (t - d1)) / (d2 || 1), cy: py + ((ly - py) * (t - d1)) / (d2 || 1) };
+  };
+  const halo = useAnimatedProps(at);
+  const dot = useAnimatedProps(at);
   return (
     <G>
-      <Circle cx={q.x} cy={q.y} r={7} fill={col} opacity={0.25} />
-      <Circle cx={q.x} cy={q.y} r={3.5} fill={col} />
+      <ACircle animatedProps={halo} r={7} fill={col} opacity={0.25} />
+      <ACircle animatedProps={dot} r={3.5} fill={col} />
     </G>
   );
 }

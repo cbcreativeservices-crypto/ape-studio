@@ -18,7 +18,7 @@ import { colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
 import { CredentialBadge, type CredentialKind } from '../../components/CredentialBadge';
-import { fetchAchievementsHub, type HubData } from '../../features/achievements/api';
+import { fetchAchievementsHub, prefetchTrophyCase, type HubData } from '../../features/achievements/api';
 import { TROPHY_CASE_EMPTY } from '../../features/celebration/catalog';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { readingColumn } from '../../theme/readingColumn';
@@ -140,6 +140,9 @@ export function AchievementsHomeScreen() {
         {/* TOPICS */}
         <Pressable
           style={({ pressed }) => [styles.card, { borderColor: `${colors.amber}44` }, pressed && styles.cardPressed]}
+          // Press-IN warms the next screen's read (perf hunt 2026-10-03): with
+          // the hub's own answer still fresh it is shared, not re-fetched.
+          onPressIn={() => prefetchTrophyCase('topics')}
           onPress={() => navigation.navigate('Topics')}
           accessibilityRole="button"
           accessibilityLabel={`Topics, ${t?.earned ?? 0} of ${t?.total ?? 0} earned`}
@@ -166,6 +169,7 @@ export function AchievementsHomeScreen() {
         {/* CERTIFICATES */}
         <Pressable
           style={({ pressed }) => [styles.card, { borderColor: `${colors.cyan}44` }, pressed && styles.cardPressed]}
+          onPressIn={() => prefetchTrophyCase('certificate')}
           onPress={() => navigation.navigate('Certificates')}
           accessibilityRole="button"
           accessibilityLabel={`Certificates, ${c?.earned ?? 0} earned`}
@@ -192,6 +196,7 @@ export function AchievementsHomeScreen() {
         {/* PROGRAMS */}
         <Pressable
           style={({ pressed }) => [styles.card, { borderColor: `${colors.programPurple}44` }, pressed && styles.cardPressed]}
+          onPressIn={() => prefetchTrophyCase('program')}
           onPress={() => navigation.navigate('Programs')}
           accessibilityRole="button"
           accessibilityLabel={`Programs, ${p?.earned ?? 0} earned`}

@@ -56,15 +56,27 @@ const PATTERNS_UNREADABLE = 'Your saved patterns could not be read from this dev
 
 // Geometry per (pattern, STATE) — the science chain runs once per distinct
 // state; a rename or a note edit does not recompute the field.
+//
+// LEAST-RECENTLY-USED, and larger than any grid (perf hunt 2026-10-03): the
+// cache evicted the OLDEST INSERTED entry at 80, and the grid asks for every
+// card in the same order on every render — so with more than 80 saved
+// patterns every lookup missed, and each filter tap, favourite or compare
+// pick re-ran the science chain for the whole library (3–15 ms a pattern in
+// Node, several times that on a phone). A hit now moves to the back; the cap
+// covers a large library (a 96² field is ~37 kB).
+export const GEOM_CACHE_MAX = 240;
 const geomCache = new Map<string, PatternGeometry>();
 function geometryFor(p: SavedPattern): PatternGeometry {
   const key = `${p.id}:${JSON.stringify(p.state)}`;
   let g = geomCache.get(key);
-  if (!g) {
-    g = patternGeometry(p.state, ART_N);
-    if (geomCache.size > 80) geomCache.delete(geomCache.keys().next().value as string);
+  if (g) {
+    geomCache.delete(key);
     geomCache.set(key, g);
+    return g;
   }
+  g = patternGeometry(p.state, ART_N);
+  if (geomCache.size >= GEOM_CACHE_MAX) geomCache.delete(geomCache.keys().next().value as string);
+  geomCache.set(key, g);
   return g;
 }
 
@@ -88,13 +100,30 @@ export function GalleryScreen() {
   };
 
   // Artwork for every pattern, in one read (thumbnails show the colouring).
+  // An artwork that has not changed keeps its OBJECT (perf hunt 2026-10-03):
+  // every read parses fresh objects, and a new `artwork` prop defeats the
+  // memoised PatternFigure — every coloured thumbnail re-laid its paths and
+  // re-rendered its SVG on each arrival and each return to the gallery.
+  // Newest read still wins: only the identity of an EQUAL row is kept.
   const loadArt = useCallback(async () => {
     const list = await patternStore().loadArtworks();
-    setArtworks(Object.fromEntries(list.map((a) => [a.patternId, a])));
+    setArtworks((prev) => {
+      let same = Object.keys(prev).length === list.length;
+      const next: Record<string, Artwork> = {};
+      for (const a of list) {
+        const old = prev[a.patternId];
+        if (old && (old === a || JSON.stringify(old) === JSON.stringify(a))) next[a.patternId] = old;
+        else {
+          next[a.patternId] = a;
+          same = false;
+        }
+      }
+      return same ? prev : next;
+    });
   }, []);
-  useEffect(() => {
-    void loadArt();
-  }, [loadArt]);
+  // ONE read on arrival (perf hunt 2026-10-03): the focus effect below also
+  // runs on the first focus, so a separate mount effect read every artwork
+  // twice and re-rendered the grid twice before the learner could tap.
   // Coming back from a studio (SAVE there, or OPEN IN STUDIO from here): the
   // list and the artwork map re-read, so a fresh save is on the grid at once.
   useFocusEffect(

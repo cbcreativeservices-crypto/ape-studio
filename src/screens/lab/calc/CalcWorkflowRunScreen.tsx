@@ -129,6 +129,13 @@ export function CalcWorkflowRunScreen() {
   }, []);
   const runRef = useRef<WorkflowRun | null>(null);
   runRef.current = run;
+  /** The run object the store last answered "saved" for (perf hunt
+   *  2026-10-03). The 1 s autosave re-wrote an UNCHANGED run — after RESUME
+   *  (the draft it had just read) and after every step change / FINISH, whose
+   *  own save had already landed — each one a read, parse, stringify and
+   *  write of the whole drafts blob. Runs are replaced, never mutated, so the
+   *  same object means nothing new to save. Set only from a write result. */
+  const lastPersistedRef = useRef<WorkflowRun | null>(null);
   /** The draft the user said "Start over" to — deleted once the new run saves. */
   const abandonedDraftRef = useRef<string | null>(null);
   // The account this screen's run belongs to (night bug pass 3, 2026-10-01):
@@ -142,7 +149,11 @@ export function CalcWorkflowRunScreen() {
   useEffect(() => {
     let alive = true;
     void (async () => {
-      const list = await workflowStore.listWorkflows();
+      // Both reads at once (perf hunt 2026-10-03): the saved drafts were read
+      // only after the workflows list had landed — two storage round trips in
+      // a row before the first step could paint. Nothing below changes: the
+      // drafts are still consulted only once the workflow is found.
+      const [list, runs] = await Promise.all([workflowStore.listWorkflows(), workflowStore.listRuns()]);
       const found = list.find((w) => w.id === route.params.id) ?? WORKFLOW_TEMPLATES.find((w) => w.id === route.params.id);
       if (!found) {
         // notify: Alert.alert is a no-op on RN-web — the OK→goBack exit never
@@ -167,7 +178,6 @@ export function CalcWorkflowRunScreen() {
         steps: valid.steps.map(() => ({ inputs: {}, stale: false })),
       });
 
-      const runs = await workflowStore.listRuns();
       const draft = runs.find((r) => r.workflowId === valid.id && !r.completedAt);
       if (!alive) return;
       // A failed READ of the saved drafts is not "no saved progress" (hunt 6,
@@ -198,7 +208,11 @@ export function CalcWorkflowRunScreen() {
           'Resume previous progress?',
           'An unfinished run of this workflow was found.',
           'Resume',
-          () => setRun(draft),
+          () => {
+            // Just read from the store: already saved as it is.
+            lastPersistedRef.current = draft;
+            setRun(draft);
+          },
           {
             cancelText: 'Start over',
             onCancel: () => {
@@ -239,6 +253,7 @@ export function CalcWorkflowRunScreen() {
     const ok = r.completedAt
       ? await workflowStore.finishRun(r.id, storeGenRef.current)
       : await workflowStore.saveRun(r, storeGenRef.current);
+    if (ok) lastPersistedRef.current = r;
     // "Start over" was chosen: the old draft is retired now that the new run
     // has real progress saved in its place (see the resume prompt).
     const old = abandonedDraftRef.current;
@@ -264,7 +279,11 @@ export function CalcWorkflowRunScreen() {
   // draft) — a force-quit loses at most the last second of typing.
   useEffect(() => {
     if (!run || !limits.canResume) return;
-    const t = setTimeout(() => void persist(), 1000);
+    const t = setTimeout(() => {
+      // Already stored exactly as it is — nothing for the autosave to write.
+      if (runRef.current === lastPersistedRef.current) return;
+      void persist();
+    }, 1000);
     return () => clearTimeout(t);
   }, [run, limits.canResume, persist]);
 

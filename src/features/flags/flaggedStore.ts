@@ -22,6 +22,7 @@
  * entry. Term identity = glossary row id (uuid string).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSyncExternalStore } from 'react';
 import { createLocalStore, type LocalStore } from '../storage/localStore';
 
 // Storage key for the BOOKMARK list (renamed from "flagged" — user request
@@ -120,6 +121,21 @@ export function useTermList(kind: TermListKind): ReadonlySet<string> {
   return stores[kind].use();
 }
 
+/**
+ * ⚡ Live view of ONE term's membership (perf hunt 2026-10-03). A row that only
+ * needs "is THIS term in the list?" subscribes to a boolean, so React skips
+ * the re-render unless that term's answer changed. `useTermList` hands every
+ * subscriber the whole Set, which is a new object on every edit — one ✓
+ * tapped in a 60-row glossary list re-rendered all 60 rows' icon strips
+ * (four toggles and an SVG each) instead of the one that changed. Same store,
+ * same hydration (subscribe starts the read), same value — only who wakes up.
+ */
+export function useInTermList(kind: TermListKind, id: string): boolean {
+  const s = stores[kind];
+  const has = () => s.get().has(id);
+  return useSyncExternalStore(s.subscribe, has, has);
+}
+
 /* ---- PER-CONTEXT bookmark API (the 🔖 list) ----
  * Bookmarks are no longer one global list: each CONTEXT (the Glossary, or a
  * given topic) keeps its own bookmark set under `ape:bm:<ctx>`. The stores
@@ -166,17 +182,38 @@ export function removeBookmarks(ctx: string, ids: Iterable<string>): void {
  *  by the Glossary's two-level bookmark filter (user request 2026-07-24).
  *  A read-only scan: a key it cannot read is skipped, nothing is written. */
 export async function listBookmarkContexts(): Promise<{ ctx: string; count: number }[]> {
-  const keys = await AsyncStorage.getAllKeys();
+  const keys = (await AsyncStorage.getAllKeys()).filter((k) => k.startsWith('ape:bm:'));
   const out: { ctx: string; count: number }[] = [];
-  for (const k of keys) {
-    if (!k.startsWith('ape:bm:')) continue;
+  const take = (k: string, raw: string | null) => {
     try {
-      const raw = await AsyncStorage.getItem(k);
       const arr = raw ? (JSON.parse(raw) as string[]) : [];
       if (Array.isArray(arr) && arr.length > 0) out.push({ ctx: k.slice('ape:bm:'.length), count: arr.length });
     } catch {
       // skip corrupt entries
     }
+  };
+  // ⚡ ONE storage trip for every context (perf hunt 2026-10-03), not one
+  // awaited `getItem` per context in series while the bookmark popup's list
+  // switcher waits on the counts. If the batch read itself fails, fall back
+  // to the old per-key reads so one unreadable key is still only skipped.
+  let batch: readonly (readonly [string, string | null])[] | null = null;
+  try {
+    batch = keys.length ? await AsyncStorage.multiGet(keys) : [];
+  } catch {
+    batch = null;
+  }
+  if (batch) {
+    for (const [k, raw] of batch) take(k, raw);
+    return out;
+  }
+  for (const k of keys) {
+    let raw: string | null;
+    try {
+      raw = await AsyncStorage.getItem(k);
+    } catch {
+      continue; // skip unreadable entries
+    }
+    take(k, raw);
   }
   return out;
 }
@@ -184,6 +221,15 @@ export async function listBookmarkContexts(): Promise<{ ctx: string; count: numb
 /** Live view of one context's bookmark set (re-renders on change, any screen). */
 export function useBookmarks(ctx: string): ReadonlySet<string> {
   return bookmarkStore(ctx).use();
+}
+
+/** ⚡ One term's bookmark state in one context — the per-row twin of
+ *  `useBookmarks` (see `useInTermList`): only the row whose answer changed
+ *  re-renders. */
+export function useIsBookmarked(ctx: string, id: string): boolean {
+  const s = bookmarkStore(ctx);
+  const has = () => s.get().has(id);
+  return useSyncExternalStore(s.subscribe, has, has);
 }
 
 /* ---- "Show my Custom List on the Dashboard" toggle ----

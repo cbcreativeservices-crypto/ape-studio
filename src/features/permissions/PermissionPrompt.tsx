@@ -119,8 +119,13 @@ export function usePermissionFlow(cap: CapabilityKey, osRequest: () => Promise<'
     pendingRef.current = null;
     setVisible(false);
     if (!resolve) return; // already answered (a second tap)
-    if (always) await setAskMode(cap, 'always');
+    // ⚡ The OS ask does not wait on the disk write (perf hunt 2026-10-03):
+    // setAskMode records the choice in its in-memory cache synchronously
+    // (every later read sees it at once) and never rejects, so the storage
+    // write finishes beside the system dialog / mic start instead of in
+    // front of it.
     void runOs(resolve);
+    if (always) await setAskMode(cap, 'always');
   }, [always, cap, runOs]);
 
   const onDecline = useCallback(async () => {
@@ -128,8 +133,10 @@ export function usePermissionFlow(cap: CapabilityKey, osRequest: () => Promise<'
     pendingRef.current = null;
     setVisible(false);
     if (!resolve) return; // already answered (a second tap)
-    if (always) await setAskMode(cap, 'never'); // "don't ask again" while declining
+    // "don't ask again" while declining — the caller hears 'cancelled' at
+    // once; the write (cache set synchronously, never rejects) finishes after.
     resolve('cancelled');
+    if (always) await setAskMode(cap, 'never');
   }, [always, cap]);
 
   const promptProps = useMemo(

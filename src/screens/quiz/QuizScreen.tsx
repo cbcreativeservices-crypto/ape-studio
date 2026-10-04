@@ -22,7 +22,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   AppState,
-  Image,
   Platform,
   Pressable,
   ScrollView,
@@ -30,6 +29,11 @@ import {
   Text,
   View,
 } from 'react-native';
+// expo-image (perf hunt 2026-10-03): every figure in the paper is prefetched
+// into the memory/disk cache when the attempt opens, so the next question's
+// figure is on screen the moment the answer advances.
+import { Image } from 'expo-image';
+import { nextClockMs } from '../../features/assess/clockTick';
 import { AccessibilityInfo } from 'react-native';
 import { noteHighValueEvent } from '../../features/review/reviewPrompt';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -122,6 +126,9 @@ export function QuizScreen({ navigation, route }: Props) {
       try {
         const p = await startQuizAttempt(achievementId);
         if (!alive) return;
+        // Warm every figure in the paper now, not on the tap that reaches it.
+        const figures = [...new Set(p.questions.map((q) => q.media_url).filter((u): u is string => !!u))];
+        if (figures.length) Image.prefetch(figures, 'memory-disk').catch(() => {});
         // RESTORE WHAT WAS ALREADY ANSWERED (2026-09-17). The ATTEMPT already
         // survives a relaunch — `startQuizAttempt` keeps a client attempt id so
         // a crash rejoins the same attempt and the same served questions — but
@@ -185,8 +192,9 @@ export function QuizScreen({ navigation, route }: Props) {
         const result = await submitQuiz(args);
         // The server has it — drop the local copy so nothing can be restored
         // into a finished attempt.
-        await clearAttemptDraft(args.attemptId);
-        await clearQuizIntent(achievementId);
+        // Both clears in ONE storage round trip, not two (perf hunt
+        // 2026-10-03): the result screen waits on them. Neither can throw.
+        await Promise.all([clearAttemptDraft(args.attemptId), clearQuizIntent(achievementId)]);
         // Route per Code brief §2.2: genuine full pass → trophy loop first;
         // everything else (incl. practice, voided, timed_out) → Results (S7).
         // Both live on the ROOT stack (bottom nav hidden); pop the study
@@ -313,7 +321,7 @@ export function QuizScreen({ navigation, route }: Props) {
     setMsLeft(deadline - Date.now());
     const t = setInterval(() => {
       const left = deadline - Date.now();
-      setMsLeft(left);
+      setMsLeft((prev) => nextClockMs(prev, left)); // re-render only when the shown clock changes
       if (left <= 0) {
         clearInterval(t);
         void doSubmit(deadline);
@@ -664,7 +672,8 @@ export function QuizScreen({ navigation, route }: Props) {
           <Image
               source={{ uri: question.media_url }}
               style={styles.media}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
               accessible
               accessibilityRole="image"
               accessibilityLabel="Figure for this question"

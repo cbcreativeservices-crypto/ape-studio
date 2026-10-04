@@ -199,7 +199,12 @@ export function MyProfileView() {
       try {
         setLoading(true);
         setLoadErr(null);
-        const [t, mine, c, migrated] = await Promise.all([
+        // The old-profile draft is read ALONGSIDE the rest (perf hunt
+        // 2026-10-03): it was a further storage read chained after all four,
+        // holding the spinner for a member with no profile yet. It is a local
+        // read with no side effects, and it is still only OFFERED under the
+        // same conditions below.
+        const [t, mine, c, migrated, legacyDraft] = await Promise.all([
           fetchTaxonomy(),
           fetchMyCommunityProfile(),
           fetchMyCredentials().then(
@@ -207,6 +212,7 @@ export function MyProfileView() {
             () => ({ rows: [] as EarnedCredentialRow[], failed: true }),
           ),
           alreadyMigrated().catch(() => false),
+          buildLegacyDraft().catch(() => null),
         ]);
         if (!alive) return;
         if (mine.status === 'error') {
@@ -232,10 +238,7 @@ export function MyProfileView() {
         const blank =
           mine.status === 'none' ||
           (!mine.profile.displayName && !mine.profile.areas.length);
-        if (!migrated && blank) {
-          const draft = await buildLegacyDraft().catch(() => null);
-          if (alive) setLegacy(draft);
-        }
+        if (!migrated && blank) setLegacy(legacyDraft);
       } catch {
         if (alive) setLoadErr('Couldn’t load your community profile. Check your connection and try again.');
       } finally {

@@ -14,7 +14,7 @@
  * locked = greyed "NOT ENROLLED", untappable. Snap-to-center, side peek,
  * dot indicator. Tab bar visible (Home tab — now the app's opening tab).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
 import {
   AccessibilityInfo,
@@ -22,7 +22,6 @@ import {
   Alert,
   Dimensions,
   FlatList,
-  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -55,6 +54,7 @@ import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { useDefaultHomeGs, useHomeBundles, useHomeGs } from '../../features/home/homeCardsStore';
+import { prefetchCardArt } from '../../features/home/cardArtPrefetch';
 import { setBundleLoaded, useBundles } from '../../features/enrollment/enrolledBundlesStore';
 import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enrollment/enrollmentStore';
 import { BookIcon } from '../../components/BookIcon';
@@ -497,7 +497,10 @@ function cardImageUrl(key: string): string | null {
 // on screen. CardArt's force-cache keeps a warmed image usable across launches.
 let cardArtWarmed = false;
 const WARM_FIRST_KEYS = ['lab', 'tools', 'calculators', 'glossary', 'careerFinder', 'startHere'];
-function warmCardArt() {
+/** Exported for Splash (perf hunt 2026-10-03): a signed-in launch starts the
+ *  warm-up during the intro hold, so Home lands on cards already in memory.
+ *  Idempotent — Home's own call is then a no-op. */
+export function warmCardArt() {
   if (cardArtWarmed) return;
   cardArtWarmed = true;
   const first: string[] = [];
@@ -509,9 +512,12 @@ function warmCardArt() {
     seen.add(u);
     (WARM_FIRST_KEYS.includes(k) || k.startsWith('free') ? first : rest).push(u);
   }
-  first.forEach((u) => Image.prefetch(u).catch(() => {}));
+  // Into the cache CardArt actually READS (perf hunt 2026-10-03): RN's
+  // Image.prefetch filled a cache expo-image never looks at, so every card
+  // downloaded twice — see cardArtPrefetch.ts.
+  first.forEach((u) => prefetchCardArt(u));
   rest.forEach((u, i) => {
-    setTimeout(() => Image.prefetch(u).catch(() => {}), 3000 + i * 250);
+    setTimeout(() => prefetchCardArt(u), 3000 + i * 250);
   });
 }
 
@@ -1283,6 +1289,16 @@ function CourseCardView({
   );
 }
 
+/**
+ * ⚡ ONE SWIPE RE-RENDERED EVERY CARD (perf hunt 2026-10-03). The carousel's
+ * `extraData` carries the centred index, so each settle re-runs renderItem for
+ * every mounted cell — all ~30 cards with their art, gradients and captions —
+ * to move one shimmer. The card's props are the item plus stable callbacks, so
+ * memo lets only the shimmer (which reads the index) re-render. The card still
+ * re-renders on its own hooks (entitlement, tier, window size).
+ */
+const MemoCourseCardView = memo(CourseCardView);
+
 export function CourseSelectionScreen() {
   const insets = useSafeAreaInsets();
   // The one thing about the deck that genuinely depends on the LIVE window (the
@@ -1340,6 +1356,8 @@ export function CourseSelectionScreen() {
   const { commercialMode, entitlement, caps, resolved, setCommercialMode, setEntitlement, tierKnown } = useEntitlement();
   const upsell = useUpsellAllowed();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  /** Stable, so the memoised cards are not re-rendered by a fresh closure. */
+  const openUpgrade = useCallback(() => setUpgradeOpen(true), []);
   // Top-left "About" text button → the About popup (owner 2026-08-12).
   const [aboutOpen, setAboutOpen] = useState(false);
   // First-run "start here" cues (owner 2026-09-14): Explore breathes until first
@@ -1983,7 +2001,7 @@ export function CourseSelectionScreen() {
         getItemLayout={(_d, i) => ({ length: cd.w + CARD_GAP, offset: (cd.w + CARD_GAP) * i, index: i })}
         renderItem={({ item, index }) => (
           <View>
-            <CourseCardView
+            <MemoCourseCardView
               item={item}
               onOpenCourse={openCourse}
               onOpenGlossary={openGlossary}
@@ -1993,7 +2011,7 @@ export function CourseSelectionScreen() {
               onOpenCalculators={openCalculators}
               onOpenCareerFinder={openCareerFinder}
               onOpenPublic={openPublicCourse}
-              onLockedPress={() => setUpgradeOpen(true)}
+              onLockedPress={openUpgrade}
               onOpenMore={openMore}
               onOpenShowcase={setExploreArea}
               onOpenTopic={openTopic}

@@ -13,7 +13,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row, useStableShuffle } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
-import { ConnectorPhoto, GoalChips, LessonCard, StationTag, useVisitGoals } from './bits';
+import { ConnectorPhoto, GoalChips, LessonCard, StationTag, usePrefetchConnectorPhotos, useVisitGoals } from './bits';
 import { BenchCard } from './pagesA';
 import { CrossSectionView } from './art';
 import { PHOTO_ASPECT, SECTION_PHOTO } from './data/photos';
@@ -120,6 +120,7 @@ function JobQuiz({ entry, onSolved }: { entry: JobMatrixEntry; onSolved: () => v
 
 function PageJobsMatrix({ ctx }: { ctx: PageCtx }) {
   const [active, setActive] = useState<ConnectorId>(JOB_MATRIX[0].connector);
+  usePrefetchConnectorPhotos(JOB_MATRIX.map((e) => e.connector));
   const [solved, setSolved] = useState<ReadonlySet<ConnectorId>>(new Set());
   const entry = JOB_MATRIX.find((e) => e.connector === active)!;
   const goals = [{ label: 'Match all jobs on 3 connector families', hit: solved.size >= 3 }];

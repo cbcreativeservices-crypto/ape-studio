@@ -66,7 +66,7 @@
  *    useToolAutoStart; stops still route through the hook's debounced
  *    releaseMic — never ApeDsp.stop on handoff.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -681,7 +681,29 @@ function fracIndexForHz(hz: number, centers: number[]): number | null {
   return n - 1;
 }
 
-function PianoStrip({
+/** Same band axis? The piano reads ONLY `bands.centers` (key positions), and a
+ *  fresh frame arrives ~15×/s carrying a NEW centers array with the same
+ *  values — so compare by value, not by reference. */
+function sameCenters(a: DisplayBands | null, b: DisplayBands | null): boolean {
+  const ca = a?.centers;
+  const cb = b?.centers;
+  if (ca === cb) return true;
+  if (!ca || !cb || ca.length !== cb.length) return false;
+  for (let i = 0; i < ca.length; i++) if (ca[i] !== cb[i]) return false;
+  return true;
+}
+
+/** MEMOISED by band AXIS (perf hunt 2026-10-03). The keyboard is ~120 note
+ *  positions and ~70 SVG keys/lines that depend only on the band centres, the
+ *  detected note, the text scale and the gutter — but it sat inside RtaGlass,
+ *  which re-renders on every 15 Hz level frame, so the whole keyboard was
+ *  rebuilt and re-diffed ~15×/s while nothing on it moved. */
+const PianoStrip = memo(
+  PianoStripImpl,
+  (p, n) => p.highlightIdx === n.highlightIdx && p.ts === n.ts && p.gutter === n.gutter && sameCenters(p.bands, n.bands),
+);
+
+function PianoStripImpl({
   bands,
   highlightIdx,
   ts = 1,

@@ -5,7 +5,7 @@
  * steps, short per-step instructions, save. Deliberately a simple vertical
  * list — never a node editor.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -123,8 +123,13 @@ export function CalcWorkflowEditScreen() {
   }, [editingId]);
 
   const catalog = useMemo(listCalculators, []);
+  // The picker lists all ~160 calculators. Filter on a DEFERRED copy of the
+  // search (perf hunt 2026-10-03) so each keystroke lands in the box at once
+  // and the list catches up behind it, instead of the box waiting on a
+  // rebuild of every row.
+  const deferredSearch = useDeferredValue(search);
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = deferredSearch.trim().toLowerCase();
     if (!q) return catalog;
     return catalog.filter(
       (c) =>
@@ -132,17 +137,20 @@ export function CalcWorkflowEditScreen() {
         c.workspaceName.toLowerCase().includes(q) ||
         c.sectionTitle.toLowerCase().includes(q),
     );
-  }, [catalog, search]);
+  }, [catalog, deferredSearch]);
 
   const mutate = (fn: (s: WorkflowStep[]) => WorkflowStep[]) => {
     setSteps(fn);
     setDirty(true);
   };
-  const addStep = (c: CatalogEntry) => {
-    mutate((s) => [...s, { workspaceId: c.workspaceId, fnKey: c.fnKey }]);
+  // Stable (setters only) so the memoised picker rows below skip re-rendering
+  // while the name, description or search box is typed into.
+  const addStep = useCallback((c: CatalogEntry) => {
+    setSteps((s) => [...s, { workspaceId: c.workspaceId, fnKey: c.fnKey }]);
+    setDirty(true);
     setPickerOpen(false);
     setSearch('');
-  };
+  }, []);
   // By the step itself, not its index (night bug pass 2, 2026-10-01) — same
   // trap as ✕ below: a double-tapped ▲ carried index i twice, so the second
   // swap put the step straight back where it started.
@@ -347,18 +355,9 @@ export function CalcWorkflowEditScreen() {
               accessibilityLabel="Search calculators"
             />
             {filtered.map((c) => (
-              <Pressable
-                key={`${c.workspaceId}-${c.fnKey}`}
-                style={styles.pickRow}
-                onPress={() => addStep(c)}
-                accessibilityRole="button"
-                accessibilityLabel={`Add ${c.fnName} from ${c.workspaceName}`}
-              >
-                <Text style={styles.pickName}>{c.fnName}</Text>
-                <Text style={styles.pickWs}>{c.workspaceName} · {c.sectionTitle}</Text>
-              </Pressable>
+              <PickRow key={`${c.workspaceId}-${c.fnKey}`} c={c} onAdd={addStep} />
             ))}
-            {filtered.length === 0 ? <Text style={styles.caption}>No calculators match “{search.trim()}”.</Text> : null}
+            {filtered.length === 0 ? <Text style={styles.caption}>No calculators match “{deferredSearch.trim()}”.</Text> : null}
           </View>
         ) : null}
       </ScrollView>
@@ -366,6 +365,23 @@ export function CalcWorkflowEditScreen() {
     </View>
   );
 }
+
+/** One calculator in the ADD CALCULATOR picker — memoised (perf hunt
+ *  2026-10-03): ~160 of these are on screen while the picker is open, and every
+ *  keystroke in the name, description or search box re-rendered all of them. */
+const PickRow = memo(function PickRow({ c, onAdd }: { c: CatalogEntry; onAdd: (c: CatalogEntry) => void }) {
+  return (
+    <Pressable
+      style={styles.pickRow}
+      onPress={() => onAdd(c)}
+      accessibilityRole="button"
+      accessibilityLabel={`Add ${c.fnName} from ${c.workspaceName}`}
+    >
+      <Text style={styles.pickName}>{c.fnName}</Text>
+      <Text style={styles.pickWs}>{c.workspaceName} · {c.sectionTitle}</Text>
+    </Pressable>
+  );
+});
 
 function StepBtn({ label, a11y, onPress, disabled, danger }: { label: string; a11y: string; onPress: () => void; disabled?: boolean; danger?: boolean }) {
   return (

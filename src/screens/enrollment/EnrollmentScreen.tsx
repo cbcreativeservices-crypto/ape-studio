@@ -14,7 +14,7 @@
  * FOLLOW-UPS: "Continue"/"Study" open the study Dashboard (not the exact topic);
  * drag uses an estimated row height (no gesture lib).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { ActivityIndicator, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
@@ -306,6 +306,61 @@ const enrollUi = {
   openSubject: null as number | null,
   openField: null as number | null,
 };
+
+/**
+ * One browse add/remove topic row (perf hunt 2026-10-03). Memoised: its props
+ * are primitives plus one stable handler, so a tap on one topic re-renders
+ * that row only. The press rules live in the parent's `onTopicRowPress`.
+ */
+const TopicAddRow = memo(function TopicAddRow({
+  gs,
+  name,
+  on,
+  started,
+  coreLocked,
+  locked,
+  onRowPress,
+}: {
+  gs: number;
+  name: string;
+  on: boolean;
+  started: boolean;
+  coreLocked: boolean;
+  locked: boolean;
+  onRowPress: (gs: number, locked: boolean, coreLocked: boolean) => void;
+}) {
+  return (
+    <View style={styles.topicRow}>
+      <Pressable
+        style={styles.topicRowMain}
+        onPress={() => onRowPress(gs, locked, coreLocked)}
+        accessibilityRole="button"
+        accessibilityState={{ selected: on }}
+        aria-pressed={on}
+        accessibilityLabel={on ? `Remove ${name}` : `Add ${name}`}
+      >
+        <Text style={[styles.topicCheck, on && styles.topicCheckOn]}>{on ? '✓' : '+'}</Text>
+        <Text style={[styles.topicName, on && styles.topicNameOn]} numberOfLines={1}>
+          {name}
+        </Text>
+        {started ? <Text style={styles.inProgress}>(in progress)</Text> : null}
+      </Pressable>
+      {/* Explicit remove-from-enrollment icon — hidden for required cores until
+          they are completed (user request 2026-07-22). */}
+      {on && !locked ? (
+        <Pressable
+          style={styles.topicRemove}
+          onPress={() => removeTopic(gs)}
+          hitSlop={6}
+          accessibilityRole="button"
+          accessibilityLabel={`Remove ${name} from enrollment`}
+        >
+          <Text style={styles.topicRemoveText}>✕</Text>
+        </Pressable>
+      ) : null}
+    </View>
+  );
+});
 
 export function EnrollmentView({
   showBrand = true,
@@ -1169,6 +1224,28 @@ export function EnrollmentView({
   );
   // One add/remove topic row (shared by every browse tab). Ungated — free users
   // build their list too (user request 2026-07-22).
+  //
+  // PERF (2026-10-03): the row is a memoised <TopicAddRow> with STABLE press
+  // handlers, so tapping one topic re-renders that row, not all ~170 in the
+  // Topics A–Z tab. Every rule below is unchanged; only where it lives moved.
+  const onTopicRowPress = useCallback((gs: number, locked: boolean, coreLocked: boolean) => {
+    if (locked) {
+      notify(
+        'This topic stays',
+        coreLocked
+          ? 'Required co-requisites stay in your list until you complete them.'
+          : 'This topic is always part of your list.',
+      );
+      return;
+    }
+    // The row toggles (＋ ⇄ ✓), so a double tap added the topic and
+    // removed it again (bug pass 2 2026-09-30). A repeat on the SAME
+    // row inside BULK_REPEAT_MS is ignored; other rows stay quick.
+    const now = Date.now();
+    if (lastRowTap.current.gs === gs && now - lastRowTap.current.at < BULK_REPEAT_MS) return;
+    lastRowTap.current = { gs, at: now };
+    toggleTopic(gs);
+  }, []);
   const topicAddRow = (gs: number, label?: string) => {
     const on = enrolledGs.has(gs);
     // Any study progress → "(in progress)" so the user still sees it here after
@@ -1181,52 +1258,16 @@ export function EnrollmentView({
     // the ✕ was hidden but the row itself still toggled (bug hunt 2026-09-29).
     const locked = on && (coreLocked || isFreeEnrollGs(gs));
     return (
-      <View key={gs} style={styles.topicRow}>
-        <Pressable
-          style={styles.topicRowMain}
-          onPress={() => {
-            if (locked) {
-              notify(
-                'This topic stays',
-                coreLocked
-                  ? 'Required co-requisites stay in your list until you complete them.'
-                  : 'This topic is always part of your list.',
-              );
-              return;
-            }
-            // The row toggles (＋ ⇄ ✓), so a double tap added the topic and
-            // removed it again (bug pass 2 2026-09-30). A repeat on the SAME
-            // row inside BULK_REPEAT_MS is ignored; other rows stay quick.
-            const now = Date.now();
-            if (lastRowTap.current.gs === gs && now - lastRowTap.current.at < BULK_REPEAT_MS) return;
-            lastRowTap.current = { gs, at: now };
-            toggleTopic(gs);
-          }}
-          accessibilityRole="button"
-          accessibilityState={{ selected: on }}
-          aria-pressed={on}
-          accessibilityLabel={on ? `Remove ${label ?? nameFor(gs)}` : `Add ${label ?? nameFor(gs)}`}
-        >
-          <Text style={[styles.topicCheck, on && styles.topicCheckOn]}>{on ? '✓' : '+'}</Text>
-          <Text style={[styles.topicName, on && styles.topicNameOn]} numberOfLines={1}>
-            {label ?? nameFor(gs)}
-          </Text>
-          {started ? <Text style={styles.inProgress}>(in progress)</Text> : null}
-        </Pressable>
-        {/* Explicit remove-from-enrollment icon — hidden for required cores until
-            they are completed (user request 2026-07-22). */}
-        {on && !locked ? (
-          <Pressable
-            style={styles.topicRemove}
-            onPress={() => removeTopic(gs)}
-            hitSlop={6}
-            accessibilityRole="button"
-            accessibilityLabel={`Remove ${label ?? nameFor(gs)} from enrollment`}
-          >
-            <Text style={styles.topicRemoveText}>✕</Text>
-          </Pressable>
-        ) : null}
-      </View>
+      <TopicAddRow
+        key={gs}
+        gs={gs}
+        name={label ?? nameFor(gs)}
+        on={on}
+        started={started}
+        coreLocked={coreLocked}
+        locked={locked}
+        onRowPress={onTopicRowPress}
+      />
     );
   };
 

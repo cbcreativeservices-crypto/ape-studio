@@ -20,7 +20,8 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GlassButton } from '../../../components/GlassButton';
 import { useMemberGate } from '../../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
-import { TUBE_FAMILY_META, searchTubes, type TubeRef } from './tubeRefs';
+import { Image } from 'expo-image';
+import { TUBE_FAMILY_META, fetchTubePageUri, searchTubes, type TubeRef } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -62,6 +63,17 @@ export function TubeReferenceScreen() {
       return;
     }
     navigation.navigate('TubeCard', { id: r.id });
+  };
+
+  // Warm the card on touch-down (perf hunt 2026-10-03): the signed URL is
+  // fetched and the image starts downloading while the finger is still on the
+  // row, and the viewer reuses that same URL — about one server round trip
+  // (plus part of the download) sooner on screen. Members only; best-effort.
+  const warmTube = (r: TubeRef) => {
+    if (gate !== 'open') return;
+    void fetchTubePageUri(r.stem, 1).then((u) => {
+      if (u) Image.prefetch(u, 'memory-disk').catch(() => {});
+    });
   };
 
   return (
@@ -134,6 +146,7 @@ export function TubeReferenceScreen() {
                   key={r.id}
                   style={[styles.row, !unlocked && styles.rowLocked]}
                   onPress={() => openTube(r)}
+                  onPressIn={() => warmTube(r)}
                   accessibilityRole="button"
                   accessibilityLabel={`${r.short} — ${r.role}${unlocked ? '' : ' (Academy membership required)'}`}
                 >

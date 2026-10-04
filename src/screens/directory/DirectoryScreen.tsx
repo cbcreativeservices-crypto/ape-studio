@@ -10,7 +10,7 @@
  * showBrand=false (the pager already shows the logo up top). The old standalone
  * `Directory` modal route that wrapped it was unreachable and removed 2026-09-10.
  */
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -83,8 +83,14 @@ function QrArt() {
  * DirectoryView — the scrollable "Get Discovered" body WITHOUT a screen header.
  * Embedded as the 4th page of the Awards pager (showBrand off — the pager shows
  * the logo up top). `showBrand` is kept for a header-less host that needs it.
+ *
+ * Memoized (perf hunt 2026-10-03): the Awards pager's renderItem re-runs for
+ * every page whenever its `idx` changes — every tab tap and every page a swipe
+ * crosses — and this page re-rendered its whole body (sample-certificate
+ * image, QR, copy) each time with nothing changed. Its only prop is a
+ * constant; context (membership) and its own state still re-render it.
  */
-export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
+export const DirectoryView = memo(function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
   // Only registered users (any account, paid or not) can set up a profile
@@ -342,7 +348,7 @@ export function DirectoryView({ showBrand = true }: { showBrand?: boolean }) {
     />
     </>
   );
-}
+});
 
 const styles = StyleSheet.create({
   scroll: { padding: 20, gap: 16, ...readingColumn },

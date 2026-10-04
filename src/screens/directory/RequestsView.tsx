@@ -578,7 +578,13 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     if (!thread) return;
     const id = thread.id;
     const seq = ++loadSeq.current;
-    const r = await fetchThreadMessages(id);
+    // Allowance rides along with the messages so the count is right after
+    // every send, and a failure leaves it null (= unknown = allowed).
+    // IN PARALLEL (perf hunt 2026-10-03): it was read only after the messages
+    // landed — a second full round trip on every open and after every SEND,
+    // with the cap notes and SEND's caps a beat behind the conversation. The
+    // allowance is still applied only alongside a good message read.
+    const [r, a] = await Promise.all([fetchThreadMessages(id), fetchContactAllowance(id)]);
     if (openId.current !== id || seq !== loadSeq.current) return;
     if (!r.ok) {
       setErr(r.error);
@@ -586,9 +592,7 @@ function ThreadSheet({ thread, onClose }: { thread: ContactThread | null; onClos
     }
     setErr(null);
     setMsgs(r.rows);
-    // Allowance rides along with the messages so the count is right after
-    // every send, and a failure leaves it null (= unknown = allowed).
-    const a = await fetchContactAllowance(id);
+    // Same fence as above (no await between, so it still holds).
     if (openId.current === id && seq === loadSeq.current) setAllow(a);
   }, [thread]);
 

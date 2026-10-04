@@ -255,6 +255,12 @@ let advisoryFiredThisSession = false;
 let approachingFiredToday = false;
 let reachedFiredToday = false;
 let lastPersistMs = 0;
+/** `${generation}|${indexEpoch}|${date}` once that date is known to be in the
+ *  stored index — persistDay then skips the index read-modify-write. */
+let indexedKey = '';
+/** Bumped when the stored index is removed (deleteExposureHistory), so a
+ *  flush in flight across the delete cannot mark today as still indexed. */
+let indexEpoch = 0;
 
 let timer: ReturnType<typeof setInterval> | null = null;
 let appActive = true;
@@ -434,10 +440,18 @@ async function persistDay(force = false): Promise<void> {
     return;
   }
   const gen = generation;
+  const epoch = indexEpoch;
   const d = day;
+  const key = `${gen}|${epoch}|${d.date}`;
   try {
     await AsyncStorage.setItem(DAY_KEY(d.date), JSON.stringify(d));
     if (gen !== generation) return;
+    // Perf (hunt 2026-10-03): the index only ever needs TODAY added once.
+    // This read-modify-write used to run on every 15 s flush for the whole
+    // listening session — a second storage read + JSON parse each time for an
+    // answer already known. Remembered per generation + index epoch + date, so
+    // resetLocal (generation) and deleteExposureHistory (epoch) both forget it.
+    if (indexedKey === key) return;
     // The index is read-modify-write too: a read that fails writes nothing.
     const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
     if (gen !== generation) return;
@@ -448,6 +462,7 @@ async function persistDay(force = false): Promise<void> {
       idx.sort();
       await AsyncStorage.setItem(INDEX_KEY, JSON.stringify(idx));
     }
+    if (gen === generation && epoch === indexEpoch) indexedKey = key;
   } catch {
     /* persistence is best-effort; live monitoring continues */
   }
@@ -554,6 +569,12 @@ function readSources(): { active: boolean; db: number | null; rt: RouteKey; meas
 function tick(): void {
   const settings = cfg();
   if (!settings.enabled || !day) return;
+  // What the subscribers last saw — a quiet tick that changes none of it does
+  // not emit (see the end of the quiet branch).
+  const prevDay = day;
+  const prevSounding = sounding;
+  const prevDb = currentDb;
+  const prevSession = session;
   rollDayIfNeeded();
   const now = Date.now();
 
@@ -682,6 +703,12 @@ function tick(): void {
     currentDb = null;
     // End the session after the configured quiet gap (short pauses don't reset).
     if (session && now - session.lastActiveMs > settings.sessionGapMinutes * 60000) closeSession(now);
+    // Perf (hunt 2026-10-03): a quiet tick after a quiet tick changed nothing a
+    // subscriber can show — same day, same session, still silent, no level —
+    // yet it emitted every second for as long as the output gate was on, and
+    // each emit re-rendered the hub's dosimeter chip (and the whole Exposure
+    // screen) with an identical snapshot. Anything that DID change still emits.
+    if (!prevSounding && prevDb === null && day === prevDay && session === prevSession) return;
   }
   emitState();
 }
@@ -905,6 +932,9 @@ export async function deleteExposureToday(): Promise<boolean> {
  */
 export async function deleteExposureHistory(): Promise<boolean> {
   let ok = true;
+  // The stored index is going away: forget "today is indexed" before AND after
+  // the removal, so no flush overlapping it can skip re-adding today.
+  indexEpoch++;
   try {
     const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
     const idx = rawIdx ? (JSON.parse(rawIdx) as string[]) : [];
@@ -912,6 +942,8 @@ export async function deleteExposureHistory(): Promise<boolean> {
     await AsyncStorage.removeItem(INDEX_KEY);
   } catch {
     ok = false;
+  } finally {
+    indexEpoch++;
   }
   if (!(await deleteExposureToday())) ok = false;
   return ok;

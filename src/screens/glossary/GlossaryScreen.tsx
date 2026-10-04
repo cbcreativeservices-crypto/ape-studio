@@ -15,7 +15,7 @@
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
-import { AppState, BackHandler, FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
+import { AppState, BackHandler, FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextStyle } from 'react-native';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 /**
  * ⛔ DimModal, NOT react-native's Modal (bug hunt 2026-09-30, pass 2). The
@@ -32,6 +32,10 @@ import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
 import { LinearGradient } from 'expo-linear-gradient';
+// Term illustrations are remote (Supabase storage): expo-image keeps them in a
+// memory + disk cache, so re-expanding a term or opening its viewer does not
+// download the picture again (perf hunt 2026-10-03).
+import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -377,6 +381,7 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
         return stored.map((r) => ({
           id: r.id,
           term: r.term,
+          termLower: r.term.toLowerCase(),
           definition: '',
           plain_english: null,
           achievement_id: r.achievement_id,
@@ -389,6 +394,7 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
       return terms.map((r) => ({
         id: r.id,
         term: r.term,
+        termLower: r.term.toLowerCase(),
         definition: '',
         plain_english: null,
         achievement_id: r.achievement_id,
@@ -555,6 +561,10 @@ type Entry = {
   /** Spoken by the TTS speaker (Feature 2) — falls back to definition when unauthored. */
   plain_english: string | null;
   achievement_id: string | null;
+  /** `term.toLowerCase()`, computed ONCE when the corpus loads (perf hunt
+   *  2026-10-03): search used to lower-case all ~31,858 terms on every
+   *  keystroke. Optional so an entry built anywhere else still searches. */
+  termLower?: string;
 };
 
 /** Feature-2 utterance: the term, then a definition. DEFAULT = the first
@@ -591,6 +601,20 @@ const normPhrase = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").repl
  *  "bipolar", "linear" finds "nonlinearity", etc. */
 const SUBSTRING_MIN_LEN = 5;
 
+/** [a-z0-9] — a character inside a search token (see searchRank). */
+const isWordChar = (c: number) => (c >= 97 && c <= 122) || (c >= 48 && c <= 57);
+/** Is the query one token's worth of [a-z0-9]? Cached per query string, since
+ *  searchRank asks it once per term. */
+let wordyQ = '';
+let wordyQAns = false;
+function queryIsWordy(q: string): boolean {
+  if (q !== wordyQ) {
+    wordyQ = q;
+    wordyQAns = /^[a-z0-9]+$/.test(q);
+  }
+  return wordyQAns;
+}
+
 /**
  * Search relevance rank for a term against a lowercased query (lower = better;
  * 99 = no match, excluded). Tiers:
@@ -602,8 +626,16 @@ function searchRank(termLower: string, q: string): number {
   if (termLower === q) return 0;
   if (termLower.startsWith(q)) return 1;
   // Word-boundary prefix: any token (split on non-alphanumerics) starting with q.
-  const words = termLower.split(/[^a-z0-9]+/);
-  for (const w of words) if (w.startsWith(q)) return 2;
+  // PERF (2026-10-03): the same answer as splitting the term into words, with
+  // no per-term regex split or word array — this runs for every term on every
+  // keystroke. A token is a run of [a-z0-9], so only an all-[a-z0-9] query can
+  // start one, and it does exactly where q sits after a non-[a-z0-9] character
+  // (position 0 is the startsWith case above).
+  if (queryIsWordy(q)) {
+    for (let i = termLower.indexOf(q, 1); i !== -1; i = termLower.indexOf(q, i + 1)) {
+      if (!isWordChar(termLower.charCodeAt(i - 1))) return 2;
+    }
+  }
   // Mid-word substring only for longer queries (short acronyms stay clean).
   if (q.length >= SUBSTRING_MIN_LEN && termLower.includes(q)) return 3;
   return 99;
@@ -839,6 +871,11 @@ const LINK_BLUE = '#9fbede';
 // taps feel slow/unresponsive. This turns it off. (Valid RN prop; RN 0.86's
 // type defs omit it, so it's spread untyped.)
 const NO_TOUCH_DELAY = { delaysContentTouches: false } as Record<string, unknown>;
+// FlatList `strictMode` (perf hunt 2026-10-03): memoizes the row renderer it
+// wraps renderItem in, so a mounted row re-renders only when renderItem or
+// extraData actually changed. A real RN 0.86 FlatList prop its type defs omit,
+// so it is spread untyped like the one above.
+const STRICT_ROWS = { strictMode: true } as Record<string, unknown>;
 
 /** One labeled category inside an expanded term (mirrors flashcard levels). */
 function DetailSection({ label, text }: { label: string; text: string | null }) {
@@ -2149,6 +2186,36 @@ ${COPY.glossaryFreeAllowance}`,
             if (alive && keyStuck) setLoadError(true);
             return;
           }
+          // Full corpus — session-cached (owner 2026-08-10): downloads once per
+          // app session, so re-focusing the Glossary is instant instead of
+          // re-paging ~22.7k rows every visit.
+          //
+          // ⛔ SAY SO WHEN THE CACHE IS GONE (owner 2026-09-22 freeze report).
+          // On a re-focus `loading` is already false, so a dropped cache re-paged
+          // the whole corpus with the OLD list still on screen and nothing
+          // responding — the app looked frozen rather than busy. This is a
+          // no-op on the normal cache hit, which is the common path.
+          //
+          // PERF (2026-10-03): STARTED FIRST, AND PAINTED THE MOMENT IT LANDS.
+          // It used to start only after the lock check AND the topic-list read
+          // had both come back — two server round trips (the topic read alone
+          // may take its full 10 s deadline on a bad link) in front of the
+          // device copy, which on a cold open is a local read. The load now
+          // overlaps both; the list still waits for the LOCK decision (so a
+          // reader out of lookups never sees it drawn before the lock), but no
+          // longer for the topic chip.
+          if (alive && corpusNeedsLoad(table)) setLoading(true);
+          let lockDecided!: () => void;
+          const lockKnown = new Promise<void>((resolve) => (lockDecided = resolve));
+          const corpus = Promise.all([loadAllEntries(table), lockKnown]).then(([all]) => {
+            if (!alive) return;
+            setEntries(all);
+            refreshOfflineStats();
+            setLoading(false); // keyReady is true on this path
+          });
+          // Awaited at the end of this block (its failure lands in the catch);
+          // this only stops it reading as unhandled while the reads below run.
+          corpus.catch(() => {});
           // GLOSSARY LOCK (owner 2026-09-10): detect whether a capped user is out
           // of weekly lookups → show the lock card. The corpus STILL loads so the
           // lock sits over a real, dimmed glossary ("full screen lock over a
@@ -2165,12 +2232,13 @@ ${COPY.glossaryFreeAllowance}`,
           } else {
             setLocked(false); // member / dev / pre-resolve is never locked
           }
+          lockDecided();
           // Owner 2026-09-03: the `courses` fetch is gone. It read the archived
           // v1 college catalog on every Glossary mount to feed a filter chip that
           // was removed in July, and a term-chooser label that was wrong for
           // 23,187 of the 26,847 entries.
-          // ⛔ BOUNDED (full-app run 2, 2026-10-01). The corpus load below waits
-          // on this, so a STALLED topic read (not a failed one) held the whole
+          // ⛔ BOUNDED (full-app run 2, 2026-10-01). The corpus load used to wait
+          // on this (it no longer does — perf hunt 2026-10-03), so a STALLED topic read (not a failed one) held the whole
           // Glossary on its loading card — the device copy included, which is
           // the cruise-ship case it exists for. A stall now just leaves the
           // topic chip empty for this visit, as a failed read already did.
@@ -2201,19 +2269,8 @@ ${COPY.glossaryFreeAllowance}`,
               .sort((a, b) => a.name.localeCompare(b.name)),
           );
 
-          // Full corpus — session-cached (owner 2026-08-10): downloads once per
-          // app session, so re-focusing the Glossary is instant instead of
-          // re-paging ~22.7k rows every visit.
-          //
-          // ⛔ SAY SO WHEN THE CACHE IS GONE (owner 2026-09-22 freeze report).
-          // On a re-focus `loading` is already false, so a dropped cache re-paged
-          // the whole corpus with the OLD list still on screen and nothing
-          // responding — the app looked frozen rather than busy. This is a
-          // no-op on the normal cache hit, which is the common path.
-          if (alive && corpusNeedsLoad(table)) setLoading(true);
-          const all = await loadAllEntries(table);
-          if (alive) setEntries(all);
-          if (alive) refreshOfflineStats();
+          // The corpus started above; a failed load still ends in the error card.
+          await corpus;
         } catch (e) {
           console.warn('[glossary] load failed:', (e as Error).message);
           if (alive) setLoadError(true);
@@ -2339,7 +2396,16 @@ ${COPY.glossaryFreeAllowance}`,
               : 'Recent';
 
   // Feature 1: the cross-link index — computed ONCE per corpus load.
-  const termIndex = useMemo(() => (entries.length ? buildTermIndex(entries) : null), [entries]);
+  // PERF (2026-10-03): built from a DEFERRED copy of `entries`. The index walks
+  // every term with three regexes (~65 ms in an interpreter, more on a phone)
+  // and only expanded definitions read it — but as a plain memo it ran inside
+  // the very render that first draws the list, holding the list off screen.
+  // Deferred, the list paints first and the index lands in the next pass.
+  const indexEntries = useDeferredValue(entries);
+  const termIndex = useMemo(
+    () => (indexEntries.length ? buildTermIndex(indexEntries) : null),
+    [indexEntries],
+  );
   const entryById = useMemo(() => new Map(entries.map((e) => [e.id, e])), [entries]);
 
   // --- Sharing (owner spec 2026-08-06) --------------------------------------
@@ -2863,7 +2929,7 @@ ${COPY.glossaryFreeAllowance}`,
       // → substring, ties A–Z. Keeps the L-word you typed at the top instead of
       // burying it under every term that merely contains the letters.
       list = list
-        .map((e) => ({ e, r: searchRank(e.term.toLowerCase(), q) }))
+        .map((e) => ({ e, r: searchRank(e.termLower ?? e.term.toLowerCase(), q) }))
         .filter((x) => x.r < 99)
         .sort((a, b) => a.r - b.r || a.e.term.localeCompare(b.e.term))
         .map((x) => x.e);
@@ -3164,7 +3230,7 @@ ${COPY.glossaryFreeAllowance}`,
     return () => clearTimeout(t);
     // NOTE: cardView is intentionally NOT a dep — toggling views preserves the
     // focused term's position instead of resetting to the top (Booth 2026-07-09c).
-  }, [filter, selTopicId, search]);
+  }, [filter, selTopicId, deferredSearch]);
 
   // Justify a list-mode term to the very top (just below the filters). Fires a
   // few staggered attempts so it survives a card→list layout switch, where the
@@ -3178,6 +3244,250 @@ ${COPY.glossaryFreeAllowance}`,
     setTimeout(go, 120);
     setTimeout(go, 320);
   };
+
+  // ── The main list's row renderer (perf hunt 2026-10-03) ─────────────────
+  // It was an inline arrow, and FlatList without `strictMode` re-wraps
+  // renderItem every render anyway — so EVERY parent render (each keystroke in
+  // search, each dictation partial, the search field's settle-to-green, a popup
+  // scroll) re-rendered every mounted row: icons, SVG glyphs, highlighted text.
+  // Now it is memoized on exactly what a row reads, the list runs in
+  // strictMode, and the search highlight follows `deferredSearch` (the same
+  // query `visible` was filtered by) — so a keystroke repaints the field at
+  // once and the rows only when the results themselves change.
+  const scrollTermToTopRef = useRef(scrollTermToTop);
+  scrollTermToTopRef.current = scrollTermToTop;
+  const renderEntryRow = useCallback(
+    ({ item }: { item: Entry }) => {
+      // Ask for this row's definition the first time it is drawn.
+      if (!item.definition) queueDefinition(item.id);
+      // List view expands INLINE; card view stays compact and opens the
+      // popup overlay instead (below).
+      const expanded = !cardView && expandedIds.has(item.id);
+      const d = details[item.id];
+      const mediaUrl = mediaById[item.id];
+      // Active search query → highlight its occurrences GREEN in the term
+      // and definition so the reader spots it (owner 2026-08-01).
+      const hq = deferredSearch.trim();
+      return (
+        <Pressable
+          style={cardView ? styles.cardItem : [styles.entry, expanded && styles.entryExpanded]}
+          onPress={() => {
+            if (cardView) {
+              openPopupRoot(item.id); // card tap = popup trail root
+              return;
+            }
+            const willExpand = !expandedIds.has(item.id);
+            toggleExpand(item.id);
+            // List mode: justify the just-opened term to the top, right
+            // below the filters, moving earlier terms out of the way
+            // (Booth 2026-07-09b). Scrolling afterward is unaffected.
+            if (willExpand) scrollTermToTopRef.current(item.id);
+          }}
+          // Demoted from a button (QA night 2026-09-01): this row wraps
+          // real buttons — the links toggle, bookmark/star holds, speak,
+          // share, media and (expanded) suggest-a-correction. As a button
+          // it was invalid nesting on web and its label swallowed those
+          // controls for screen readers. Semantics live on the term text;
+          // its tap bubbles here (the ratified accordion pattern).
+          accessible={false}
+        >
+          <View style={styles.entryHeader}>
+            <View style={styles.entryTermWrap}>
+              <Text
+                accessibilityRole="button"
+                accessibilityState={{ expanded }}
+                aria-expanded={expanded}
+                style={[
+                  styles.term,
+                  { flexShrink: 1 },
+                  cardView && styles.cardTerm,
+                  expanded && styles.termExpanded,
+                  // An equation/calculator term IS purple (owner 2026-08-07):
+                  // every glossary term a Calc Lab workspace covers — so
+                  // purple always implies a real calculator link.
+                  isCalcBackedTerm(item.term) ? styles.termEquation : null,
+                ]}
+              >
+                {highlightNodes(item.term, hq)}
+              </Text>
+              {/* Danger flag sits right next to the term (Booth 2026-07-15). */}
+              {isHazardTerm(item.term) ? <CautionBadge iconOnly /> : null}
+              {/* Media icon (user request 2026-07-18) — a term with art
+                  shows a framed-image glyph; tap → media popup. */}
+              {mediaUrl ? (
+                <Pressable
+                  onPress={() => setMediaPopup(mediaUrl)}
+                  hitSlop={14}
+                  accessibilityRole="button"
+                  accessibilityLabel={`View ${item.term} image`}
+                >
+                  <MediaGlyph />
+                </Pressable>
+              ) : null}
+            </View>
+            <View style={styles.entryActions}>
+              {/* The links toggle moved to the ONE "Glossary Links" button in
+                  the count row (owner 2026-09-14) — no longer per-term. */}
+              <SpeakButton text={speakTextFor(item, ttsBeg)} size={19} />
+              {/* Share this term + definition (Booth 2026-07-18) — the
+                  familiar box-with-up-arrow share glyph. */}
+              <Pressable
+                onPress={() => void shareTerm(item)}
+                hitSlop={14}
+                accessibilityRole="button"
+                accessibilityLabel={`Share ${item.term}`}
+              >
+                <ShareIcon size={18} color={colors.textMuted} />
+              </Pressable>
+              {/* Hold-to-confirm (user request 2026-07-17): holding the
+                  bookmark shows what it does before you commit. */}
+              <HoldHintPressable
+                onPress={() => toggleFav(item.id)}
+                hint={bookmarks.has(item.id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks'}
+                selected={bookmarks.has(item.id)}
+                accessibilityLabel={bookmarks.has(item.id) ? 'Remove bookmark' : 'Bookmark term'}
+              >
+                {/* Bookmark glyph sized down further vs the other row
+                    icons (share 18 / speak 19 / star 19) — user request
+                    2026-07-22. */}
+                <BookmarkIcon
+                  color={bookmarks.has(item.id) ? colors.purple : colors.textMuted}
+                  filled={bookmarks.has(item.id)}
+                  size={15}
+                />
+              </HoldHintPressable>
+              {/* ★ Custom list toggle (user request 2026-07-18) — was
+                  missing from the glossary row. */}
+              <HoldHintPressable
+                onPress={() => toggleTermList('starred', item.id)}
+                hint={starred.has(item.id) ? 'Removes from Custom list' : 'Adds to Custom list'}
+                selected={starred.has(item.id)}
+                accessibilityLabel={starred.has(item.id) ? 'Remove from custom list' : 'Add to custom list'}
+              >
+                <DeckIcon
+                  color={starred.has(item.id) ? colors.blue : colors.textMuted}
+                  size={19}
+                  fill={starred.has(item.id) ? 'rgba(47,155,255,0.22)' : 'none'}
+                />
+              </HoldHintPressable>
+              {/* The +/- expand toggle was removed (user request
+                  2026-07-23) — tapping the term row already shows/hides it. */}
+            </View>
+          </View>
+          {/* When expanded, the term's media image sits right after the
+              term for identification (user request 2026-07-18). */}
+          {expanded && mediaUrl ? (
+            <ExpoImage accessible
+              source={{ uri: mediaUrl }}
+              style={styles.inlineMedia}
+              contentFit="contain"
+              cachePolicy="memory-disk"
+              transition={120}
+              accessibilityRole="image"
+              accessibilityLabel="Illustration for this term"
+            />
+          ) : null}
+          {expanded ? (
+            // Feature 1: cross-links live in the EXPANDED definition
+            // (collapsed rows stay plain — the row tap owns them).
+            // BEG order (Booth 2026-07-11): plain-English on top.
+            <>
+              <LinkedText
+                text={ttsBeg ? item.plain_english || item.definition : item.definition}
+                style={[styles.definition, ttsBeg && styles.definitionBeg]}
+                selfId={item.id}
+                index={termIndex}
+                onLink={onLinkPress}
+                onOpenCalc={onOpenCalc}
+                highlight={hq}
+                linksOn={linksOn}
+              />
+              <ShortReadNote kind={shortRead[item.id]} />
+            </>
+          ) : (
+            /**
+             * COLLAPSED ROW — clamped for a CAPPED reader (bug hunt
+             * 2026-09-13, owner ruling the same night).
+             *
+             * This row used to print the COMPLETE definition with
+             * `numberOfLines={cardView ? 2 : undefined}` — unclamped in
+             * LIST view, which is the default. A guest could scroll all
+             * 26,855 definitions in full and spend NONE of their weekly
+             * fourteen, because the allowance is charged in toggleExpand
+             * and nothing here opened anything. The 14/week was therefore
+             * metering the EXPANDED breakdown only, while About, the
+             * paywall, the upgrade sheet and the Auth guest line all said
+             * "Free use includes 14 definitions a week".
+             *
+             * The owner's call was to make the app match the copy rather
+             * than the copy match the accident: a preview identifies the
+             * term, and reading it spends a lookup. The coach toast
+             * ("Tap a term to expand … the complete definition") is true
+             * for the first time.
+             *
+             * Gated on `capped`, NOT on cardView: that is
+             * `commercialMode && resolved && !isMember`, the same
+             * predicate gateDefinitionOpen charges against — so members
+             * and dev keep full collapsed definitions, and nothing clamps
+             * before entitlement resolves.
+             */
+            <Text
+              style={[styles.definition, ttsBeg && styles.definitionBeg]}
+              numberOfLines={collapsedDefinitionLines(cardView, capped)}
+            >
+              {highlightNodes(ttsBeg ? item.plain_english || item.definition : item.definition, hq)}
+            </Text>
+          )}
+
+          {/* In the Equations & Formulas view, surface the term's symbolic
+              formula (and its plain-language form) right on the row. */}
+          {filter === 'equations' && formulaById[item.id] ? (
+            <View style={styles.formulaWrap}>
+              <Text style={styles.formulaSymbolic}>{formulaById[item.id].symbolic}</Text>
+              {formulaById[item.id].words ? (
+                <Text style={styles.formulaWords}>{formulaById[item.id].words}</Text>
+              ) : null}
+            </View>
+          ) : null}
+
+          {expanded &&
+            (d ? (
+              <TermDetails
+                d={d}
+                term={item.term}
+                selfId={item.id}
+                index={termIndex}
+                onLink={onLinkPress}
+                definition={item.definition}
+                begFirst={ttsBeg}
+                mistakesReadable={isMember}
+                mistakesLockLine={mistakesLockLine}
+                onLabAction={onLabAction}
+                onOpenCalc={onOpenCalc}
+                linksOn={linksOn}
+              />
+            ) : detailErrs[item.id] ? (
+              // [72]: a failed detail fetch — say so and give a retry, not
+              // a "Loading…" that never resolves.
+              <Pressable
+                onPress={() => retryDetails(item.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`Couldn't load details for ${item.term}. Tap to retry.`}
+                style={styles.detailRetryHit}
+              >
+                <Text style={styles.detailError}>Couldn’t load details — tap to retry</Text>
+              </Pressable>
+            ) : (
+              <Text style={styles.detailLoading}>Loading…</Text>
+            ))}
+        </Pressable>
+      );
+    },
+    // `defRev`: definitions merge INTO the entry objects, so the bump is the
+    // only signal that a row's text changed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [queueDefinition, cardView, expandedIds, details, mediaById, deferredSearch, openPopupRoot, toggleExpand, ttsBeg, shareTerm, toggleFav, bookmarks, starred, termIndex, onLinkPress, onOpenCalc, linksOn, shortRead, capped, filter, formulaById, isMember, mistakesLockLine, onLabAction, detailErrs, retryDetails, defRev],
+  );
 
   // Help for this screen (internal-help pass, owner 2026-09-08).
   const glossaryHelp = useScreenHelp({
@@ -3208,8 +3518,8 @@ ${COPY.glossaryFreeAllowance}`,
   // clamp — leave it out and a guest's rows keep rendering full definitions for
   // the rest of the session, which is the exact hole this clamp closes.
   const rowExtraData = useMemo(
-    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
-    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, search, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
+    () => [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, deferredSearch, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
+    [expandedIds, focusedId, details, cardView, ttsBeg, termIndex, mediaById, filter, formulaById, deferredSearch, detailErrs, linksOn, bookmarks, starred, isMember, capped, shortRead, defRev, mistakesLockLine],
   );
 
   // GLOSSARY LOCK (owner 2026-09-10): a full-screen lock card over the DIMMED
@@ -3663,230 +3973,10 @@ ${COPY.glossaryFreeAllowance}`,
             )
           }
           extraData={rowExtraData}
-          renderItem={({ item }) => {
-            // Ask for this row's definition the first time it is drawn.
-            if (!item.definition) queueDefinition(item.id);
-            // List view expands INLINE; card view stays compact and opens the
-            // popup overlay instead (below).
-            const expanded = !cardView && expandedIds.has(item.id);
-            const d = details[item.id];
-            const mediaUrl = mediaById[item.id];
-            // Active search query → highlight its occurrences GREEN in the term
-            // and definition so the reader spots it (owner 2026-08-01).
-            const hq = search.trim();
-            return (
-              <Pressable
-                style={cardView ? styles.cardItem : [styles.entry, expanded && styles.entryExpanded]}
-                onPress={() => {
-                  if (cardView) {
-                    openPopupRoot(item.id); // card tap = popup trail root
-                    return;
-                  }
-                  const willExpand = !expandedIds.has(item.id);
-                  toggleExpand(item.id);
-                  // List mode: justify the just-opened term to the top, right
-                  // below the filters, moving earlier terms out of the way
-                  // (Booth 2026-07-09b). Scrolling afterward is unaffected.
-                  if (willExpand) scrollTermToTop(item.id);
-                }}
-                // Demoted from a button (QA night 2026-09-01): this row wraps
-                // real buttons — the links toggle, bookmark/star holds, speak,
-                // share, media and (expanded) suggest-a-correction. As a button
-                // it was invalid nesting on web and its label swallowed those
-                // controls for screen readers. Semantics live on the term text;
-                // its tap bubbles here (the ratified accordion pattern).
-                accessible={false}
-              >
-                <View style={styles.entryHeader}>
-                  <View style={styles.entryTermWrap}>
-                    <Text
-                      accessibilityRole="button"
-                      accessibilityState={{ expanded }}
-                      aria-expanded={expanded}
-                      style={[
-                        styles.term,
-                        { flexShrink: 1 },
-                        cardView && styles.cardTerm,
-                        expanded && styles.termExpanded,
-                        // An equation/calculator term IS purple (owner 2026-08-07):
-                        // every glossary term a Calc Lab workspace covers — so
-                        // purple always implies a real calculator link.
-                        isCalcBackedTerm(item.term) ? styles.termEquation : null,
-                      ]}
-                    >
-                      {highlightNodes(item.term, hq)}
-                    </Text>
-                    {/* Danger flag sits right next to the term (Booth 2026-07-15). */}
-                    {isHazardTerm(item.term) ? <CautionBadge iconOnly /> : null}
-                    {/* Media icon (user request 2026-07-18) — a term with art
-                        shows a framed-image glyph; tap → media popup. */}
-                    {mediaUrl ? (
-                      <Pressable
-                        onPress={() => setMediaPopup(mediaUrl)}
-                        hitSlop={14}
-                        accessibilityRole="button"
-                        accessibilityLabel={`View ${item.term} image`}
-                      >
-                        <MediaGlyph />
-                      </Pressable>
-                    ) : null}
-                  </View>
-                  <View style={styles.entryActions}>
-                    {/* The links toggle moved to the ONE "Glossary Links" button in
-                        the count row (owner 2026-09-14) — no longer per-term. */}
-                    <SpeakButton text={speakTextFor(item, ttsBeg)} size={19} />
-                    {/* Share this term + definition (Booth 2026-07-18) — the
-                        familiar box-with-up-arrow share glyph. */}
-                    <Pressable
-                      onPress={() => void shareTerm(item)}
-                      hitSlop={14}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Share ${item.term}`}
-                    >
-                      <ShareIcon size={18} color={colors.textMuted} />
-                    </Pressable>
-                    {/* Hold-to-confirm (user request 2026-07-17): holding the
-                        bookmark shows what it does before you commit. */}
-                    <HoldHintPressable
-                      onPress={() => toggleFav(item.id)}
-                      hint={bookmarks.has(item.id) ? 'Removes from Bookmarks' : 'Adds to Bookmarks'}
-                      selected={bookmarks.has(item.id)}
-                      accessibilityLabel={bookmarks.has(item.id) ? 'Remove bookmark' : 'Bookmark term'}
-                    >
-                      {/* Bookmark glyph sized down further vs the other row
-                          icons (share 18 / speak 19 / star 19) — user request
-                          2026-07-22. */}
-                      <BookmarkIcon
-                        color={bookmarks.has(item.id) ? colors.purple : colors.textMuted}
-                        filled={bookmarks.has(item.id)}
-                        size={15}
-                      />
-                    </HoldHintPressable>
-                    {/* ★ Custom list toggle (user request 2026-07-18) — was
-                        missing from the glossary row. */}
-                    <HoldHintPressable
-                      onPress={() => toggleTermList('starred', item.id)}
-                      hint={starred.has(item.id) ? 'Removes from Custom list' : 'Adds to Custom list'}
-                      selected={starred.has(item.id)}
-                      accessibilityLabel={starred.has(item.id) ? 'Remove from custom list' : 'Add to custom list'}
-                    >
-                      <DeckIcon
-                        color={starred.has(item.id) ? colors.blue : colors.textMuted}
-                        size={19}
-                        fill={starred.has(item.id) ? 'rgba(47,155,255,0.22)' : 'none'}
-                      />
-                    </HoldHintPressable>
-                    {/* The +/- expand toggle was removed (user request
-                        2026-07-23) — tapping the term row already shows/hides it. */}
-                  </View>
-                </View>
-                {/* When expanded, the term's media image sits right after the
-                    term for identification (user request 2026-07-18). */}
-                {expanded && mediaUrl ? (
-                  <Image accessible
-                    source={{ uri: mediaUrl }}
-                    style={styles.inlineMedia}
-                    resizeMode="contain"
-                    accessibilityRole="image"
-                    accessibilityLabel="Illustration for this term"
-                  />
-                ) : null}
-                {expanded ? (
-                  // Feature 1: cross-links live in the EXPANDED definition
-                  // (collapsed rows stay plain — the row tap owns them).
-                  // BEG order (Booth 2026-07-11): plain-English on top.
-                  <>
-                    <LinkedText
-                      text={ttsBeg ? item.plain_english || item.definition : item.definition}
-                      style={[styles.definition, ttsBeg && styles.definitionBeg]}
-                      selfId={item.id}
-                      index={termIndex}
-                      onLink={onLinkPress}
-                      onOpenCalc={onOpenCalc}
-                      highlight={hq}
-                      linksOn={linksOn}
-                    />
-                    <ShortReadNote kind={shortRead[item.id]} />
-                  </>
-                ) : (
-                  /**
-                   * COLLAPSED ROW — clamped for a CAPPED reader (bug hunt
-                   * 2026-09-13, owner ruling the same night).
-                   *
-                   * This row used to print the COMPLETE definition with
-                   * `numberOfLines={cardView ? 2 : undefined}` — unclamped in
-                   * LIST view, which is the default. A guest could scroll all
-                   * 26,855 definitions in full and spend NONE of their weekly
-                   * fourteen, because the allowance is charged in toggleExpand
-                   * and nothing here opened anything. The 14/week was therefore
-                   * metering the EXPANDED breakdown only, while About, the
-                   * paywall, the upgrade sheet and the Auth guest line all said
-                   * "Free use includes 14 definitions a week".
-                   *
-                   * The owner's call was to make the app match the copy rather
-                   * than the copy match the accident: a preview identifies the
-                   * term, and reading it spends a lookup. The coach toast
-                   * ("Tap a term to expand … the complete definition") is true
-                   * for the first time.
-                   *
-                   * Gated on `capped`, NOT on cardView: that is
-                   * `commercialMode && resolved && !isMember`, the same
-                   * predicate gateDefinitionOpen charges against — so members
-                   * and dev keep full collapsed definitions, and nothing clamps
-                   * before entitlement resolves.
-                   */
-                  <Text
-                    style={[styles.definition, ttsBeg && styles.definitionBeg]}
-                    numberOfLines={collapsedDefinitionLines(cardView, capped)}
-                  >
-                    {highlightNodes(ttsBeg ? item.plain_english || item.definition : item.definition, hq)}
-                  </Text>
-                )}
-
-                {/* In the Equations & Formulas view, surface the term's symbolic
-                    formula (and its plain-language form) right on the row. */}
-                {filter === 'equations' && formulaById[item.id] ? (
-                  <View style={styles.formulaWrap}>
-                    <Text style={styles.formulaSymbolic}>{formulaById[item.id].symbolic}</Text>
-                    {formulaById[item.id].words ? (
-                      <Text style={styles.formulaWords}>{formulaById[item.id].words}</Text>
-                    ) : null}
-                  </View>
-                ) : null}
-
-                {expanded &&
-                  (d ? (
-                    <TermDetails
-                      d={d}
-                      term={item.term}
-                      selfId={item.id}
-                      index={termIndex}
-                      onLink={onLinkPress}
-                      definition={item.definition}
-                      begFirst={ttsBeg}
-                      mistakesReadable={isMember}
-                      mistakesLockLine={mistakesLockLine}
-                      onLabAction={onLabAction}
-                      onOpenCalc={onOpenCalc}
-                      linksOn={linksOn}
-                    />
-                  ) : detailErrs[item.id] ? (
-                    // [72]: a failed detail fetch — say so and give a retry, not
-                    // a "Loading…" that never resolves.
-                    <Pressable
-                      onPress={() => retryDetails(item.id)}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Couldn't load details for ${item.term}. Tap to retry.`}
-                      style={styles.detailRetryHit}
-                    >
-                      <Text style={styles.detailError}>Couldn’t load details — tap to retry</Text>
-                    </Pressable>
-                  ) : (
-                    <Text style={styles.detailLoading}>Loading…</Text>
-                  ))}
-              </Pressable>
-            );
-          }}
+          renderItem={renderEntryRow}
+          // With a memoized renderItem, strictMode lets each mounted row skip
+          // a parent render that changed nothing it shows (perf hunt 2026-10-03).
+          {...STRICT_ROWS}
         />
 
         {/* Term popup — card taps AND cross-link hops land here (Feature 1).
@@ -3970,10 +4060,12 @@ ${COPY.glossaryFreeAllowance}`,
                       </View>
                       {/* Media image right after the term (user request 2026-07-18). */}
                       {mediaById[item.id] ? (
-                        <Image accessible
+                        <ExpoImage accessible
                     source={{ uri: mediaById[item.id] }}
                     style={styles.inlineMedia}
-                    resizeMode="contain"
+                    contentFit="contain"
+                    cachePolicy="memory-disk"
+                    transition={120}
                     accessibilityRole="image"
                     accessibilityLabel={`Illustration for ${item.term}`}
                   />
@@ -4165,10 +4257,11 @@ ${COPY.glossaryFreeAllowance}`,
       <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={!!mediaPopup} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setMediaPopup(null)}>
         <Pressable style={styles.mediaBackdrop} onPress={() => setMediaPopup(null)} accessibilityRole="button" accessibilityLabel="Close image">
           {mediaPopup ? (
-            <Image accessible
+            <ExpoImage accessible
               source={{ uri: mediaPopup }}
               style={styles.mediaFull}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
               accessibilityRole="image"
               accessibilityLabel="Enlarged term illustration"
             />

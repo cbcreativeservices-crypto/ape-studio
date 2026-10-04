@@ -290,6 +290,13 @@ export function sessionStems(): Record<TrackId, Mono> {
   return raw;
 }
 
+/** True when the stems are already synthesized (perf hunt 2026-10-03): the
+ *  lab pre-renders a page's mixes in the background ONLY then — a cold
+ *  synthesis is one long synchronous block and stays on the learner's press. */
+export function sessionStemsWarm(): boolean {
+  return stemsCache !== null;
+}
+
 /** Drop the memoized stems (~15.4 MB of Float32Array). Wired to the mixing lab
  *  screens through retainSessionStems() below — call this directly only from a
  *  test or a deliberate one-off.

@@ -15,7 +15,7 @@
  * live rms SharedValue. Geometry + scale are exported so the ToolsHub SPL tile
  * shares the identical face.
  */
-import { type ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle, useFrameCallback, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle, G, Image as SvgImage, Line, Path, Text as SvgText } from 'react-native-svg';
@@ -280,8 +280,16 @@ export type SkinnedVuProps = {
 /** The skinned analogue VU. The needle integrates the live rms on the UI thread
  *  (rise tc 0.20 s, fall 0.45 s) and rotates about the DEEP scale centre via
  *  useAnimatedStyle, clipped to the face window; the PEAK lamp lights when the
- *  true peak crosses −3 dBFS. */
-export function SkinnedVu({ width, height, live, live0Db, ref0Spl, glass = false, running = true, fit = 'contain' }: SkinnedVuProps) {
+ *  true peak crosses −3 dBFS.
+ *
+ *  MEMOISED (perf hunt 2026-10-03). The SPL screen mirrors the meter frame
+ *  into React state ~20×/s for its TEXT readouts, and every one of those
+ *  re-renders re-reconciled this whole SVG (the 1586×992 skin image, the
+ *  printed scale, the RANGE scale) although none of its props had changed —
+ *  the needle and lamp move on SharedValues, never on a render. Every prop is
+ *  a number, a string, a boolean or the screen's memoised `live` object, so a
+ *  shallow compare skips all of it until RANGE/size/running really change. */
+export const SkinnedVu = memo(function SkinnedVu({ width, height, live, live0Db, ref0Spl, glass = false, running = true, fit = 'contain' }: SkinnedVuProps) {
   const vuVal = useSharedValue(0);
   const vuVel = useSharedValue(0);
   const lampT = useSharedValue(0);
@@ -372,4 +380,4 @@ export function SkinnedVu({ width, height, live, live0Db, ref0Spl, glass = false
       {glass ? <VuGlass width={width} height={height} par={par} /> : null}
     </View>
   );
-}
+});

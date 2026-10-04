@@ -259,6 +259,12 @@ export class LabAudioPlayer {
     if (this.disposed) return 'network';
     const token = ++this.playToken;
     const pooled = this.pool.has(keyOf(labKey, assetKey));
+    // The clip's fetch starts NOW, beside the audio-mode wait below (perf hunt
+    // 2026-10-03): the first ▶ used to wait for the mode, THEN the signed URL,
+    // THEN the player — two waits in a row where one will do. Loading is not
+    // sound: nothing plays until the fenced start below, and `load` shares
+    // this in-flight job, so the note is still fetched once.
+    this.preload(labKey, [assetKey]);
     // ⛔ SAFETY — the fence (startFenced): the gate was passed BEFORE the
     // awaits below. Shake-to-mute, the idle lock, backgrounding, a newer
     // play()/stop()/dispose(), or leaving the app with "Mute audio when I

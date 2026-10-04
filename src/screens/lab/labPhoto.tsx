@@ -16,7 +16,10 @@
  * bucket filenames; an absent LabPhotoLightbox just makes the tile non-tappable.
  */
 import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
-import { Image, Pressable, StyleSheet, Text, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
+// expo-image (perf hunt 2026-10-03): memory + disk cache and off-thread decode,
+// so a photo seen once paints at once on every later page and lightbox.
+import { Image } from 'expo-image';
 import { Modal } from '../../components/DimModal';
 import { SUPABASE_URL } from '../../lib/env';
 import { CARD_MAX_W } from '../../theme/readingColumn';
@@ -72,7 +75,8 @@ export function LabPhotoLightbox({ children }: { children: ReactNode }) {
               <Image accessible
                 source={{ uri: target.url }}
                 style={styles.lbImage}
-                resizeMode="contain"
+                contentFit="contain"
+                cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
                 accessibilityRole="image"
                 accessibilityLabel={target.caption ?? 'Lab photograph'}
@@ -126,7 +130,8 @@ export function LabPhoto({
       <Image accessible
         source={{ uri: url }}
         style={styles.photo}
-        resizeMode="contain"
+        contentFit="contain"
+        cachePolicy="memory-disk"
         accessibilityIgnoresInvertColors
         accessibilityLabel={accessibilityLabel ?? caption ?? 'reference photo'}
       />

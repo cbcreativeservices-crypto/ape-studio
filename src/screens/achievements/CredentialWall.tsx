@@ -12,7 +12,13 @@
  */
 import { useCallback, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+// expo-image, not RN Image (perf hunt 2026-10-03): the course-cards bucket
+// serves `Cache-Control: no-cache`, so RN's loader re-validated every row's art
+// on each visit (and again for the popup's copy of the same file); expo-image's
+// memory + disk cache keys on the URL, decodes off the JS thread, and the popup
+// art is then the row's already-decoded image. See components/CardArt.
+import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
@@ -24,7 +30,13 @@ import { TrophyModal } from '../../components/TrophyModal';
 import { credentialArtFor } from '../../features/credentials/credentialArt';
 import { exportCertificate, isAvailable as certificateExportAvailable } from '../../features/credentials/certificatePdf';
 import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
-import { fetchEarnedCredentialsByType, fetchNearestCredential, type NearestCredentialResult } from '../../features/achievements/api';
+// The SHARED NEXT UP read (perf hunt 2026-10-03): joins the hub's press-in
+// prefetch instead of starting the same reads again. Same answer, same throws.
+import {
+  fetchEarnedCredentialsByType,
+  fetchNearestCredentialShared as fetchNearestCredential,
+  type NearestCredentialResult,
+} from '../../features/achievements/api';
 import type { EarnedCredentialRow } from '../../features/credentials/api';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -191,7 +203,9 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
                   <Image
                     source={art}
                     style={styles.artImg}
-                    resizeMode="contain"
+                    contentFit="contain"
+                    cachePolicy="memory-disk"
+                    recyclingKey={c.slug ?? undefined}
                     onError={() => c.slug && markArtFailed(c.slug)}
                     accessibilityIgnoresInvertColors
                   />
@@ -233,7 +247,8 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
           <Image accessible
             source={credentialArtFor(open.slug)!}
             style={styles.artImg}
-            resizeMode="contain"
+            contentFit="contain"
+            cachePolicy="memory-disk"
             onError={() => open.slug && markArtFailed(open.slug)}
             accessibilityRole="image"
             accessibilityLabel={open.name}

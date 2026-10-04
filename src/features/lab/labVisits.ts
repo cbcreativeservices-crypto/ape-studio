@@ -185,7 +185,15 @@ export function useLabVisits(labId: string): ReadonlySet<string> {
   const read = () => new Set(visits[labId] ?? []);
   const [v, setV] = useState<ReadonlySet<string>>(read);
   useEffect(() => {
-    const l = () => setV(read());
+    // Same visits ⇒ the SAME Set, so React skips the render (perf hunt
+    // 2026-10-03): a visit marked in any lab re-rendered every mounted hub.
+    const l = () =>
+      setV((prev) => {
+        const next = read();
+        if (prev.size !== next.size) return next;
+        for (const u of next) if (!prev.has(u)) return next;
+        return prev;
+      });
     listeners.add(l);
     // `live`: a hydrate that lands after this effect was replaced (a new key)
     // or unmounted must not write the OLD key's value (pattern hunt P2/P11,

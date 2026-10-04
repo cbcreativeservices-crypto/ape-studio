@@ -1156,7 +1156,19 @@ export function DashboardScreen() {
       // Defer the refetch until the landing transition has finished (owner
       // 2026-08-17): kicking off the fetch + full re-render mid-transition was
       // janking the arrival. Content (cached or live) is already on screen.
-      const task = InteractionManager.runAfterInteractions(() => void load());
+      //
+      // ⚡ A LOAD THAT STARTED AFTER THIS FOCUS ALREADY ANSWERS IT (perf hunt
+      // 2026-10-03). On the first open the enrollment effect below starts a
+      // load in the same commit; this deferred one then started a SECOND after
+      // the transition, and newest-wins threw the first away — so a cold
+      // Study tab sat on its spinner for the transition PLUS a whole fetch.
+      // Any load begun since this focus read the state as it is now, so it is
+      // at least as fresh as this one would be; newest-wins is untouched.
+      const ticketAtFocus = loadTicketRef.current;
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (loadTicketRef.current !== ticketAtFocus) return;
+        void load();
+      });
       return () => task.cancel();
     }, [load]),
   );

@@ -17,7 +17,7 @@ import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { getConnector } from '../cable/data/registry';
 import type { ConnectorId, ConnectorRecord } from '../cable/cableTypes';
 import { CARRIED_LABELS } from './labels';
-import { ConceptList, ConnectorPhoto, GoalChips, LessonCard, StationTag, useVisitGoals } from './bits';
+import { ConceptList, ConnectorPhoto, GoalChips, LessonCard, StationTag, usePrefetchConnectorPhotos, useVisitGoals } from './bits';
 import { ExplodedCable } from './art';
 import { ANATOMY_PHOTO, PHOTO_ASPECT } from './data/photos';
 import { LabPhoto } from '../kit/LabPhoto';
@@ -247,6 +247,7 @@ function PageSamePlug({ ctx }: { ctx: PageCtx }) {
 function PageBenchAnalog({ ctx }: { ctx: PageCtx }) {
   const group = BENCH_GROUPS[0];
   const bench = useBench(ctx, group.ids, 4);
+  usePrefetchConnectorPhotos(group.ids);
   return (
     <View style={{ gap: 10 }}>
       <StationTag>STATION 2 · IDENTIFICATION BENCH — ANALOG</StationTag>
@@ -263,6 +264,7 @@ function PageBenchAnalog({ ctx }: { ctx: PageCtx }) {
 function PageBenchSpeaker({ ctx }: { ctx: PageCtx }) {
   const group = BENCH_GROUPS[1];
   const bench = useBench(ctx, group.ids, 3);
+  usePrefetchConnectorPhotos(group.ids);
   return (
     <View style={{ gap: 10 }}>
       <StationTag>STATION 2 · IDENTIFICATION BENCH — LOUDSPEAKER</StationTag>

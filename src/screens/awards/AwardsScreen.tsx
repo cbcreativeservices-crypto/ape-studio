@@ -13,7 +13,7 @@
  * expand/collapse. The ✕ glyph appears only inside the full-screen art viewer.
  */
 import { COPY } from '../../lib/copy';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { HelpKey } from '../../components/HelpKey';
@@ -403,8 +403,17 @@ function CredentialRow({
   );
 }
 
-/** One full-width award page (its own vertical scroll). */
-function AwardPageView({
+/** Chooser rows are keyed by credential name, as the mapped rows were. */
+const credNameKey = (c: { name: string }) => c.name;
+
+/** One full-width award page (its own vertical scroll).
+ *  Memoized (perf hunt 2026-10-03): the pager's renderItem re-runs for EVERY
+ *  page whenever `idx` changes — each tab tap, and on every page a swipe
+ *  passes (onViewableItemsChanged) — so both award pages re-rendered their
+ *  whole tier stacks mid-swipe. Its props are stable now (`awardPage()` returns
+ *  the module constant, `setPicker` is a setter, `summaryForTier` is a
+ *  callback that changes only with the picks). */
+const AwardPageView = memo(function AwardPageView({
   page,
   onBuild,
   summaryForTier,
@@ -450,7 +459,7 @@ function AwardPageView({
       </ScrollView>
     </View>
   );
-}
+});
 
 export function AwardsScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
@@ -683,6 +692,11 @@ export function AwardsScreen({ navigation, route }: Props) {
     }
     setDetail({ kind: 'certificate', id: c.id, slug: c.slug, name: c.name, topics: c.specializationTopics, electives: [] });
   };
+  // Latest-closure refs for the picker rows (perf hunt 2026-10-03): the rows'
+  // renderItem stays stable across unrelated re-renders, and a tap still
+  // runs the CURRENT openCert / openProg (which read `hasAccount`).
+  const openCertRef = useRef(openCert);
+  openCertRef.current = openCert;
   const openProg = (p: (typeof programPathsAZ)[number]) => {
     setProgramPath(p.name);
     if (hasAccount) {
@@ -691,6 +705,47 @@ export function AwardsScreen({ navigation, route }: Props) {
     }
     setDetail({ kind: 'program', id: p.id, slug: p.slug, name: p.name, topics: p.requiredTopics, electives: p.electiveChooseOne });
   };
+  const openProgRef = useRef(openProg);
+  openProgRef.current = openProg;
+  /**
+   * THE CHOOSERS ARE VIRTUALIZED (perf hunt 2026-10-03). Each was a ScrollView
+   * mapping EVERY credential — 128 specialization certificates — to a row with
+   * its own remote CardArt, so opening the chooser mounted 128 rows and fired
+   * 128 image requests at once, and every tap (which sets the pick AND opens
+   * the popup) re-rendered all of them before the popup could appear. A
+   * FlatList mounts the first screenful, loads art as rows scroll in, and a
+   * tap re-renders only the rows on screen. Same rows, same order, same copy.
+   */
+  const renderCertRow = useCallback(
+    ({ item: c }: { item: (typeof specCertsAZ)[number] }) => (
+      <CredentialRow
+        slug={c.slug}
+        name={c.name}
+        accent={AMBER}
+        selected={specCert === c.name}
+        onPress={() => openCertRef.current(c)}
+      />
+    ),
+    [specCert],
+  );
+  const renderProgRow = useCallback(
+    ({ item: p }: { item: (typeof programPathsAZ)[number] }) => (
+      <CredentialRow
+        slug={p.slug}
+        name={p.name}
+        meta={`${COREQ_TOPIC_GS.length + p.requiredTopics.length} required topics${p.electiveChooseOne.length ? ' + 1 elective' : ''}`}
+        accent={PURPLE}
+        selected={programPath === p.name}
+        onPress={() => openProgRef.current(p)}
+      />
+    ),
+    [programPath],
+  );
+  const pickerListStyle = useMemo(
+    () => [styles.pickerScroll, { paddingBottom: insets.bottom + 28 }],
+    [insets.bottom],
+  );
+
   // Swipe pager (2026-09-15): the open credential's neighbours in the A–Z list
   // + a step handler. Stepping goes through openCert / openProg, so the open
   // credential stays the recorded pick for its level (same invariant a row tap
@@ -739,11 +794,14 @@ export function AwardsScreen({ navigation, route }: Props) {
   // read "Topic gs3081" (QA night 2026-08-31).
   const nameForGs = (gs: number) => officialTopicName(gs, v3TopicNames.get(gs));
 
-  const summaryForTier = (tier: AwardTier): string | undefined => {
-    if (tier.builder === 'specializations') return specCert ? `Certificate: ${specCert}` : undefined;
-    if (tier.builder === 'programs') return programPath ? `Path: ${programPath}` : undefined;
-    return undefined;
-  };
+  const summaryForTier = useCallback(
+    (tier: AwardTier): string | undefined => {
+      if (tier.builder === 'specializations') return specCert ? `Certificate: ${specCert}` : undefined;
+      if (tier.builder === 'programs') return programPath ? `Path: ${programPath}` : undefined;
+      return undefined;
+    },
+    [specCert, programPath],
+  );
 
   // ENROLL (user request 2026-07-22): add the award's topics to the enrollment
   // list, close the picker, and jump to the Enrollment page for EVERYONE. A free
@@ -1043,41 +1101,41 @@ export function AwardsScreen({ navigation, route }: Props) {
             noun="certificates"
             onBack={() => setPicker(null)}
           />
-          <ScrollView contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 28 }]}>
-            {/* Required core — stated ONCE for all certificates (user request
-                2026-07-18) instead of repeated on every award. */}
-            <View style={styles.coreBanner}>
-              <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY CERTIFICATE</Text>
-              <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
-            </View>
+          <FlatList
+            data={specCertsAZ}
+            keyExtractor={credNameKey}
+            renderItem={renderCertRow}
+            contentContainerStyle={pickerListStyle}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={7}
+            ListHeaderComponent={
+              <View style={styles.pickerHead}>
+                {/* Required core — stated ONCE for all certificates (user request
+                    2026-07-18) instead of repeated on every award. */}
+                <View style={styles.coreBanner}>
+                  <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY CERTIFICATE</Text>
+                  <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
+                </View>
 
-            {specCertsAZ.length === 0 ? (
-              <>
-                <Text style={styles.awardsEmpty}>
-                  {v3Loaded
-                    ? 'Specialization certificates aren’t available right now. Check your connection and retry.'
-                    : 'Loading certificates…'}
-                </Text>
-                {v3Loaded ? (
-                  <View style={styles.awardsRetry}>
-                    <StudioButton label="Retry" variant="secondary" small onPress={loadV3} />
-                  </View>
+                {specCertsAZ.length === 0 ? (
+                  <>
+                    <Text style={styles.awardsEmpty}>
+                      {v3Loaded
+                        ? 'Specialization certificates aren’t available right now. Check your connection and retry.'
+                        : 'Loading certificates…'}
+                    </Text>
+                    {v3Loaded ? (
+                      <View style={styles.awardsRetry}>
+                        <StudioButton label="Retry" variant="secondary" small onPress={loadV3} />
+                      </View>
+                    ) : null}
+                  </>
                 ) : null}
-              </>
-            ) : null}
 
-            {/* Flat rows (2026-09-15): tap → CredentialDetailModal. */}
-            {specCertsAZ.map((c) => (
-              <CredentialRow
-                key={c.name}
-                slug={c.slug}
-                name={c.name}
-                accent={AMBER}
-                selected={specCert === c.name}
-                onPress={() => openCert(c)}
-              />
-            ))}
-          </ScrollView>
+              </View>
+            }
+          />
           {/* No bottom DONE (2026-09-15): it duplicated the screen exit and
               read as an item-level close. The single exit is ‹ BACK, above. */}
         </View>
@@ -1138,43 +1196,43 @@ export function AwardsScreen({ navigation, route }: Props) {
             noun="program paths"
             onBack={() => setPicker(null)}
           />
-          <ScrollView contentContainerStyle={[styles.pickerScroll, { paddingBottom: insets.bottom + 28 }]}>
-            {/* Required core — stated ONCE for all programs (user request
-                2026-07-18) instead of repeated on every award. */}
-            <View style={styles.coreBanner}>
-              <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY PROGRAM</Text>
-              <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
-            </View>
+          {/* Rows: renderProgRow — the meta line keeps the per-program total
+              (core + required) it always had. */}
+          <FlatList
+            data={programPathsAZ}
+            keyExtractor={credNameKey}
+            renderItem={renderProgRow}
+            contentContainerStyle={pickerListStyle}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={7}
+            ListHeaderComponent={
+              <View style={styles.pickerHead}>
+                {/* Required core — stated ONCE for all programs (user request
+                    2026-07-18) instead of repeated on every award. */}
+                <View style={styles.coreBanner}>
+                  <Text style={styles.coreBannerHead}>REQUIRED CORE · EVERY PROGRAM</Text>
+                  <Text style={styles.coreBannerText}>{COREQ_TOPIC_GS.map((gs) => nameForGs(gs)).join('  ·  ')}</Text>
+                </View>
 
-            {programPathsAZ.length === 0 ? (
-              <>
-                <Text style={styles.awardsEmpty}>
-                  {v3Loaded
-                    ? 'Program paths aren’t available right now. Check your connection and retry.'
-                    : 'Loading program paths…'}
-                </Text>
-                {v3Loaded ? (
-                  <View style={styles.awardsRetry}>
-                    <StudioButton label="Retry" variant="secondary" small onPress={loadV3} />
-                  </View>
+                {programPathsAZ.length === 0 ? (
+                  <>
+                    <Text style={styles.awardsEmpty}>
+                      {v3Loaded
+                        ? 'Program paths aren’t available right now. Check your connection and retry.'
+                        : 'Loading program paths…'}
+                    </Text>
+                    {v3Loaded ? (
+                      <View style={styles.awardsRetry}>
+                        <StudioButton label="Retry" variant="secondary" small onPress={loadV3} />
+                      </View>
+                    ) : null}
+                  </>
                 ) : null}
-              </>
-            ) : null}
 
-            {/* Flat rows (2026-09-15): tap → CredentialDetailModal. The meta
-                line keeps the per-program total (core + required) it always had. */}
-            {programPathsAZ.map((p) => (
-              <CredentialRow
-                key={p.name}
-                slug={p.slug}
-                name={p.name}
-                meta={`${COREQ_TOPIC_GS.length + p.requiredTopics.length} required topics${p.electiveChooseOne.length ? ' + 1 elective' : ''}`}
-                accent={PURPLE}
-                selected={programPath === p.name}
-                onPress={() => openProg(p)}
-              />
-            ))}
-          </ScrollView>
+              </View>
+            }
+          />
           {/* No bottom DONE — see the certificate chooser above. */}
         </View>
         <CredentialDetailModal
@@ -1378,6 +1436,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   pickerScroll: { paddingHorizontal: 18, paddingTop: 10, gap: 6, ...readingColumn },
+  // The chooser's list header (core banner + loading / empty state) keeps the
+  // 6 pt rhythm the ScrollView's gap gave those blocks.
+  pickerHead: { gap: 6 },
   pickerGroup: { marginTop: 10, gap: 2 },
   pickerGroupHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amberLabel, marginBottom: 4 },
   pickerRow: { flexDirection: 'row', gap: 11, alignItems: 'center', paddingVertical: 7 },

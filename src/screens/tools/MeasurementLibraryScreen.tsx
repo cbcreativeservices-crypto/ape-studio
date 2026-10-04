@@ -715,6 +715,13 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
       <FlatList
         data={all}
         keyExtractor={(m) => m.id}
+        // Perf (hunt 2026-10-03): the defaults (windowSize 21) kept mounting
+        // rows ten screens past the fold until all ~200 stored records were
+        // built, competing with the first scroll. One screenful first, then
+        // small batches inside a ~3-screen band either side.
+        initialNumToRender={10}
+        maxToRenderPerBatch={8}
+        windowSize={7}
         contentContainerStyle={styles.scroll}
         renderItem={({ item }) => (
           <Row

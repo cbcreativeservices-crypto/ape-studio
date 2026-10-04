@@ -328,6 +328,37 @@ export async function fetchEnrollmentDashboard(
   gsList: number[],
   opts?: { allowMissingUser?: boolean },
 ): Promise<DashboardData> {
+  /**
+   * ⚡ THE READS THAT DO NOT NEED THE ACCOUNT START AT ONCE (perf hunt
+   * 2026-10-03). This was a five-round-trip waterfall — users row → method
+   * configs → topics → term counts → progress — on every Study-tab open, every
+   * focus and every study write. The gs → topic lookup is public content (the
+   * guest path reads it as anon) and needs nothing from the users row, so it
+   * goes out alongside it; the term counts and the progress reads both need
+   * only the topic ids, so they go out together below. The method configs
+   * still wait for the users row: study_methods has no anon grant, and on a
+   * cold start the first reads can leave before the token is attached (the
+   * cold-start auth race) — sent early, a member could get NO configs. Errors
+   * keep their old ORDER (each started read is awaited in the sequence it used
+   * to run), so the same failure surfaces as before; `settle` only stops a
+   * read whose result is never reached from becoming an unhandled rejection.
+   * Query builders are lazy — `.then` is what sends them.
+   */
+  const settle = <T,>(p: PromiseLike<T>): Promise<T> => {
+    const started = Promise.resolve(p);
+    started.catch(() => {});
+    return started;
+  };
+  const achP =
+    gsList.length > 0
+      ? settle(
+          supabase
+            .from('achievements')
+            .select('id, sequence_in_course, name, applicable_methods, is_prerequisite, icon_url, global_sequence')
+            .in('global_sequence', gsList),
+        )
+      : null;
+
   // Own users row (absent for a guest → progress stays empty).
   let userId = 'local';
   let nickname: string | null = null;
@@ -375,6 +406,7 @@ export async function fetchEnrollmentDashboard(
   // — the method panels render from the static METHOD_ORDER regardless, and the
   // free topics' gates are display-only. On any error configs stay empty (an authed
   // user always has the grant, so their result is unchanged).
+  // (The topic lookup is already in flight, so this read overlaps it.)
   const { data: cfg, error: cfgErr } = await supabase
     .from('study_methods')
     .select('key, name, sequence, min_engagement_seconds, requires_accuracy, accuracy_threshold, required_passes')
@@ -393,13 +425,12 @@ export async function fetchEnrollmentDashboard(
     methodConfigs,
     itemCountByTopic: new Map(),
   };
-  if (gsList.length === 0) return empty;
+  if (gsList.length === 0 || !achP) return empty;
 
   // Resolve gs → achievements (cross-course). Dedupe by gs; keep enrollment order.
-  const { data: achRows, error: achErr } = await supabase
-    .from('achievements')
-    .select('id, sequence_in_course, name, applicable_methods, is_prerequisite, icon_url, global_sequence')
-    .in('global_sequence', gsList);
+  // (Sent at the top, alongside the users row — see THE READS THAT DO NOT NEED
+  // THE ACCOUNT.)
+  const { data: achRows, error: achErr } = await achP;
   if (achErr) throw achErr;
   const byGs = new Map<number, Topic>();
   for (const a of (achRows ?? []) as any[]) {
@@ -422,27 +453,37 @@ export async function fetchEnrollmentDashboard(
   let methodRows: MethodProgressRow[] = [];
 
   const nameById = new Map<string, string>(topics.map((t) => [t.id, t.name]));
-  const itemCountByTopic = await resolveItemCounts(topicIds, nameById);
+  // The term counts and the progress reads need only the topic ids, so they
+  // go out TOGETHER; the counts are still awaited first, so a counts failure
+  // surfaces exactly as it did when it ran alone.
+  const countsP = settle(resolveItemCounts(topicIds, nameById));
+  const progressP =
+    userId !== 'local'
+      ? settle(
+          Promise.all([
+            supabase
+              .from('student_achievement_progress')
+              .select('achievement_id, status, best_genuine_score, quiz_attempts, lockout_until, date_earned')
+              .eq('user_id', userId)
+              .in('achievement_id', topicIds),
+            supabase
+              .from('student_method_progress')
+              .select(
+                'achievement_id, method_key, completion_pct, engagement_seconds, answered_count, correct_count, item_states, trial_passed',
+              )
+              .eq('user_id', userId)
+              .in('achievement_id', topicIds),
+          ]),
+        )
+      : null;
+  const itemCountByTopic = await countsP;
 
-  if (userId !== 'local') {
+  if (progressP) {
     // Errors THROWN, not read as empty: supabase-js resolves `{ data: null,
     // error }`, so dropping `error` turned an outage into an authoritative
     // "nothing studied" that the Dashboard rendered and cached. Throwing lets
     // its silent refresh keep the good data already on screen.
-    const [{ data: prog, error: progErr }, { data: mRows, error: mErr }] = await Promise.all([
-      supabase
-        .from('student_achievement_progress')
-        .select('achievement_id, status, best_genuine_score, quiz_attempts, lockout_until, date_earned')
-        .eq('user_id', userId)
-        .in('achievement_id', topicIds),
-      supabase
-        .from('student_method_progress')
-        .select(
-          'achievement_id, method_key, completion_pct, engagement_seconds, answered_count, correct_count, item_states, trial_passed',
-        )
-        .eq('user_id', userId)
-        .in('achievement_id', topicIds),
-    ]);
+    const [{ data: prog, error: progErr }, { data: mRows, error: mErr }] = await progressP;
     if (progErr) throw progErr;
     if (mErr) throw mErr;
     for (const p of (prog ?? []) as TopicProgress[]) progressByTopic.set(p.achievement_id, p);

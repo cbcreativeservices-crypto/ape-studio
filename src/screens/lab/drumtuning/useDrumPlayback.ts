@@ -27,6 +27,8 @@ import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { startFenced } from '../../../features/audio/startFenced';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
+import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
+import { getLabPreview } from '../../../features/lab/labPreviewStore';
 import { envelopeDb, overview, sustainT60, toStereo, type Overview, type RenderResult } from './drumEngine';
 import { StepHostContext } from './steps';
 
@@ -89,6 +91,14 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
    *  still in flight never touches `pending` — the newer press or the stop
    *  owns it — and a stop cancels a press at ANY stage, the gate included. */
   const playTokRef = useRef(0);
+  /** ▶ loads in flight (perf hunt 2026-10-03): a PRELOAD never starts while
+   *  one runs — it would bump `seqRef` and supersede the press's own load, and
+   *  the press would fail silently. Counted in `load` itself, so it is exact
+   *  whatever ends the press (■, a fader, a failed write). */
+  const pressLoadsRef = useRef(0);
+  /** The in-flight PRELOAD (below): a ▶ for the same key waits for it rather
+   *  than writing the same clip a second time. */
+  const preloadRef = useRef<{ key: string; p: Promise<boolean> } | null>(null);
 
   // The playhead.
   const progress = useSharedValue(0);
@@ -165,12 +175,34 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
     return () => clearTimeout(t);
   }, [key, draw, renderNow]);
 
-  const load = useCallback(async (): Promise<boolean> => {
+  // PRELOAD THE CLIP (perf hunt 2026-10-03): the picture's render IS the
+  // sound, so once the controls have settled and the picture is drawn, the
+  // WAV is written and the player loaded ahead of the press — ▶ STRIKE then
+  // sounds at once instead of paying the encode + file write + player load on
+  // the tap. Silent (no status, no announcement), never plays, and only once
+  // the learner has already switched sound on this session (no audio-session
+  // change before the gate), never in a preview, never off-screen, never
+  // while a press is loading.
+  useEffect(() => {
+    if (!draw || !rendered || rendered.key !== keyRef.current) return;
+    const t = setTimeout(() => preloadRef2.current(), 250);
+    return () => clearTimeout(t);
+  }, [rendered, draw]);
+
+  const loadBody = useCallback(async (quiet: boolean): Promise<boolean> => {
+    // A PRELOAD of this very key is already writing the clip: let it land
+    // (or fail) first; the check below then finds it loaded and returns at
+    // once. A key change or a ■ in the meantime bumps `seqRef`, which voids
+    // the preload exactly as it voids any other load.
+    const inflight = preloadRef.current;
+    if (!quiet && inflight && inflight.key === keyRef.current) await inflight.p.catch(() => false);
     const my = ++seqRef.current;
     const k = keyRef.current;
     if (loadedKeyRef.current === k && playerRef.current) return true;
-    setStatus('rendering');
-    AccessibilityInfo.announceForAccessibility?.('Rendering the drum.');
+    if (!quiet) {
+      setStatus('rendering');
+      AccessibilityInfo.announceForAccessibility?.('Rendering the drum.');
+    }
     await new Promise((r) => setTimeout(r, 0));
     if (!aliveRef.current || my !== seqRef.current) return false;
     const r = renderNow();
@@ -192,6 +224,31 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
     setStatus('ready');
     return true;
   }, [renderNow]);
+  /** The load; `quiet` = a PRELOAD (no status, no announcement). */
+  const load = useCallback(async (quiet = false): Promise<boolean> => {
+    if (!quiet) pressLoadsRef.current++;
+    try {
+      return await loadBody(quiet);
+    } finally {
+      if (!quiet) pressLoadsRef.current--;
+    }
+  }, [loadBody]);
+
+  const preload = useCallback(() => {
+    if (!aliveRef.current || !focusedRef.current || hiddenRef.current) return;
+    if (pressLoadsRef.current > 0) return;
+    if (!isAudioOutputEnabled() || getLabPreview().active) return;
+    const k = keyRef.current;
+    if (loadedKeyRef.current === k && playerRef.current) return;
+    if (preloadRef.current?.key === k) return;
+    const entry = { key: k, p: load(true).catch(() => false) };
+    preloadRef.current = entry;
+    void entry.p.then(() => {
+      if (preloadRef.current === entry) preloadRef.current = null;
+    });
+  }, [load]);
+  const preloadRef2 = useRef(preload);
+  preloadRef2.current = preload;
 
   const play = useCallback((): Promise<boolean> => {
     const t = ++playTokRef.current;
@@ -269,6 +326,8 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
   useEffect(() => {
     if (hidden) stop();
   }, [hidden, stop]);
+  const hiddenRef = useRef(hidden);
+  hiddenRef.current = hidden;
 
   return useMemo(() => ({ status, measure: renderNow, play, stop, playing, pending, rendered, progress }), [status, renderNow, play, stop, playing, pending, rendered, progress]);
 }

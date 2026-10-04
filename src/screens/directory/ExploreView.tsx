@@ -11,8 +11,8 @@
  * the About paragraph: free-text search over a personal description is exactly
  * how you fish for the characteristics that are not allowed to be filters.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../theme/tokens';
 import { cardColumn } from '../../theme/readingColumn';
 import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryButton, SelfReportedNote } from './directoryBits';
@@ -22,6 +22,7 @@ import { Banner, Chip, ChipWrap, EmptyState, Eyebrow, Helper, Loading, PrimaryBu
 import { COUNTRY_CODE_LENGTH, toCountryCode } from './MyProfileView';
 import {
   fetchTaxonomy,
+  prefetchPublicProfile,
   searchDirectory,
   type DirectoryCard,
   type DirectoryFilters,
@@ -35,11 +36,169 @@ const WORK_PREFS: { key: WorkPref; label: string }[] = [
   { key: 'either', label: 'Either' },
 ];
 
+/**
+ * One result card. Module-level + memoized (perf hunt 2026-10-03): the cards
+ * were inline in ExploreView, so EVERY keystroke in the search box — which
+ * updates `q` straight away, ahead of the 350 ms debounce — re-rendered every
+ * card on screen (30 per page, more after "Show more"). Markup is unchanged.
+ *
+ * Press-IN starts the member's profile read (prefetchPublicProfile), so the
+ * sheet that opens on release usually has its answer already in flight — or
+ * landed — instead of starting the round trip after the finger lifts.
+ */
+const MemberCard = memo(function MemberCard({
+  r,
+  onOpen,
+}: {
+  r: DirectoryCard;
+  onOpen: (token: string, name?: string) => void;
+}) {
+  return (
+    <Pressable
+      onPressIn={() => prefetchPublicProfile(r.publicToken)}
+      onPress={() => onOpen(r.publicToken, r.displayName)}
+      style={({ pressed }) => [st.card, pressed && st.cardPressed]}
+      accessibilityRole="button"
+      accessibilityLabel={[
+        r.displayName,
+        r.primaryArea,
+        r.roles.join(', '),
+        r.credentialCount ? `${r.credentialCount} verified credentials` : null,
+        r.contactEnabled ? 'open to contact' : null,
+      ]
+        .filter(Boolean)
+        .join('. ')}
+      accessibilityHint="Opens their profile"
+    >
+      <View style={{ flex: 1 }}>
+        <Text style={st.cardName}>{r.displayName}</Text>
+        {r.primaryArea ? <Text style={st.cardArea}>{r.primaryArea}</Text> : null}
+        {r.specialties.length ? (
+          <Text style={st.cardSpecs} numberOfLines={2}>
+            {r.specialties.slice(0, 4).join(' · ')}
+          </Text>
+        ) : null}
+        <Text style={st.cardMeta}>
+          {[
+            r.roles.join(' · ') || null,
+            r.countryCode,
+            r.workPref === 'remote' ? 'Remote' : r.workPref === 'local' ? 'Local' : null,
+            r.credentialCount ? `${r.credentialCount} verified` : null,
+          ]
+            .filter(Boolean)
+            .join('  ·  ')}
+        </Text>
+      </View>
+      <Text style={st.chev}>›</Text>
+    </Pressable>
+  );
+});
+
+/**
+ * The filter chips. Module-level + memoized for the same reason as MemberCard
+ * (perf hunt 2026-10-03): with FILTERS open, each keystroke in the search box
+ * re-rendered every chip — up to 200 specialties once an area is picked. Its
+ * props only change when the filters or the taxonomy do. `setF` is React's
+ * stable setter, and every write is a functional update so none reads a stale
+ * `f` (the country box and the work chips used to spread the render's `f`).
+ */
+const FilterPanel = memo(function FilterPanel({
+  tax,
+  f,
+  setF,
+}: {
+  tax: Taxonomy;
+  f: DirectoryFilters;
+  setF: Dispatch<SetStateAction<DirectoryFilters>>;
+}) {
+  const toggle = (key: 'areas' | 'specialties' | 'roles' | 'openTo', slug: string) =>
+    setF((prev) => {
+      const cur = prev[key] ?? [];
+      const next = cur.includes(slug) ? cur.filter((x) => x !== slug) : [...cur, slug];
+      return { ...prev, [key]: next.length ? next : undefined };
+    });
+
+  const specialtyPool = useMemo(
+    () =>
+      tax.specialties.filter(
+        (s) => !f.areas?.length || s.areas.some((a) => f.areas?.includes(a)),
+      ),
+    [tax, f.areas],
+  );
+
+  return (
+    <View>
+      <Eyebrow>AREA</Eyebrow>
+      <ChipWrap>
+        {tax.areas.map((a) => (
+          <Chip key={a.slug} label={a.label} on={f.areas?.includes(a.slug)} onPress={() => toggle('areas', a.slug)} />
+        ))}
+      </ChipWrap>
+
+      <Eyebrow>SPECIALTY</Eyebrow>
+      {f.areas?.length ? null : <Helper>Pick an area to narrow this list.</Helper>}
+      <ChipWrap>
+        {specialtyPool.slice(0, f.areas?.length ? 200 : 24).map((s) => (
+          <Chip
+            key={s.slug}
+            label={s.label}
+            on={f.specialties?.includes(s.slug)}
+            onPress={() => toggle('specialties', s.slug)}
+          />
+        ))}
+      </ChipWrap>
+
+      <Eyebrow>HOW THEY’RE INVOLVED</Eyebrow>
+      <ChipWrap>
+        {tax.roles.map((r) => (
+          <Chip key={r.slug} label={r.label} on={f.roles?.includes(r.slug)} onPress={() => toggle('roles', r.slug)} />
+        ))}
+      </ChipWrap>
+
+      <Eyebrow>OPEN TO</Eyebrow>
+      <ChipWrap>
+        {tax.openTo.map((o) => (
+          <Chip key={o.slug} label={o.label} on={f.openTo?.includes(o.slug)} onPress={() => toggle('openTo', o.slug)} />
+        ))}
+      </ChipWrap>
+
+      <Eyebrow>WHERE</Eyebrow>
+      <TextInput
+        style={st.input}
+        value={f.country ?? ''}
+        onChangeText={(t) => setF((prev) => ({ ...prev, country: toCountryCode(t) || undefined }))}
+        placeholder="Country code, e.g. US"
+        placeholderTextColor={colors.textMuted}
+        autoCapitalize="characters"
+        maxLength={COUNTRY_CODE_LENGTH}
+        accessibilityLabel="Filter by country code"
+      />
+      <ChipWrap>
+        {WORK_PREFS.map((w) => (
+          <Chip
+            key={w.key}
+            label={w.label}
+            on={f.workPref === w.key}
+            onPress={() => setF((prev) => ({ ...prev, workPref: prev.workPref === w.key ? undefined : w.key }))}
+          />
+        ))}
+      </ChipWrap>
+    </View>
+  );
+});
+
 export function ExploreView({
   onOpenMember,
   hiddenTokens,
+  active = true,
 }: {
-  onOpenMember: (token: string) => void;
+  onOpenMember: (token: string, name?: string) => void;
+  /** False while another Directory tab is showing (perf hunt 2026-10-03). The
+   *  host keeps Explore MOUNTED across tab switches so the list, the search
+   *  text and the filters are still there on return; coming back re-runs the
+   *  current search in the background (the list stays up meanwhile), so a
+   *  member blocked from Requests still drops out of it. */
+  active?: boolean;
   /** Tokens blocked in THIS session. The server drops them from the next
    *  search, but the results already on screen were fetched before the block —
    *  without this a just-blocked member stayed listed and re-openable until the
@@ -165,6 +324,19 @@ export function ExploreView({
     void run(f);
   }, [f, run]);
 
+  // Back on this tab (see `active`): refresh the current search behind the
+  // list already on screen. Not on mount — the effect above has just run it.
+  const fRef = useRef(f);
+  fRef.current = f;
+  const wasActive = useRef(active);
+  useEffect(() => {
+    if (active && !wasActive.current) void run(fRef.current);
+    // Hidden now, not unmounted: a search box that still holds focus would
+    // keep the keyboard up over the next tab (unmounting used to drop it).
+    if (!active && wasActive.current) Keyboard.dismiss();
+    wasActive.current = active;
+  }, [active, run]);
+
   // Debounce the text box so a search does not fire per keystroke.
   useEffect(() => {
     // Same text ⇒ same filters object (bug hunt 2026-09-30, pass 2). This ran
@@ -186,13 +358,6 @@ export function ExploreView({
     [f],
   );
 
-  const toggle = (key: 'areas' | 'specialties' | 'roles' | 'openTo', slug: string) =>
-    setF((prev) => {
-      const cur = prev[key] ?? [];
-      const next = cur.includes(slug) ? cur.filter((x) => x !== slug) : [...cur, slug];
-      return { ...prev, [key]: next.length ? next : undefined };
-    });
-
   // [77]: hide anyone blocked since this result set was fetched, and keep the
   // "N members" tally honest about what is actually listed.
   const visibleRows = useMemo(
@@ -203,14 +368,6 @@ export function ExploreView({
   // it after a shifted window (see loadMore).
   const visibleTotal = ended ? visibleRows.length : Math.max(0, total - (rows.length - visibleRows.length));
   const hasMore = !ended && rows.length < total;
-
-  const specialtyPool = useMemo(
-    () =>
-      (tax?.specialties ?? []).filter(
-        (s) => !f.areas?.length || s.areas.some((a) => f.areas?.includes(a)),
-      ),
-    [tax, f.areas],
-  );
 
   return (
     <ScrollView contentContainerStyle={st.body} keyboardShouldPersistTaps="handled">
@@ -264,65 +421,7 @@ export function ExploreView({
         </View>
       ) : null}
 
-      {showFilters && tax ? (
-        <View>
-          <Eyebrow>AREA</Eyebrow>
-          <ChipWrap>
-            {tax.areas.map((a) => (
-              <Chip key={a.slug} label={a.label} on={f.areas?.includes(a.slug)} onPress={() => toggle('areas', a.slug)} />
-            ))}
-          </ChipWrap>
-
-          <Eyebrow>SPECIALTY</Eyebrow>
-          {f.areas?.length ? null : <Helper>Pick an area to narrow this list.</Helper>}
-          <ChipWrap>
-            {specialtyPool.slice(0, f.areas?.length ? 200 : 24).map((s) => (
-              <Chip
-                key={s.slug}
-                label={s.label}
-                on={f.specialties?.includes(s.slug)}
-                onPress={() => toggle('specialties', s.slug)}
-              />
-            ))}
-          </ChipWrap>
-
-          <Eyebrow>HOW THEY’RE INVOLVED</Eyebrow>
-          <ChipWrap>
-            {tax.roles.map((r) => (
-              <Chip key={r.slug} label={r.label} on={f.roles?.includes(r.slug)} onPress={() => toggle('roles', r.slug)} />
-            ))}
-          </ChipWrap>
-
-          <Eyebrow>OPEN TO</Eyebrow>
-          <ChipWrap>
-            {tax.openTo.map((o) => (
-              <Chip key={o.slug} label={o.label} on={f.openTo?.includes(o.slug)} onPress={() => toggle('openTo', o.slug)} />
-            ))}
-          </ChipWrap>
-
-          <Eyebrow>WHERE</Eyebrow>
-          <TextInput
-            style={st.input}
-            value={f.country ?? ''}
-            onChangeText={(t) => setF({ ...f, country: toCountryCode(t) || undefined })}
-            placeholder="Country code, e.g. US"
-            placeholderTextColor={colors.textMuted}
-            autoCapitalize="characters"
-            maxLength={COUNTRY_CODE_LENGTH}
-            accessibilityLabel="Filter by country code"
-          />
-          <ChipWrap>
-            {WORK_PREFS.map((w) => (
-              <Chip
-                key={w.key}
-                label={w.label}
-                on={f.workPref === w.key}
-                onPress={() => setF({ ...f, workPref: f.workPref === w.key ? undefined : w.key })}
-              />
-            ))}
-          </ChipWrap>
-        </View>
-      ) : null}
+      {showFilters && tax ? <FilterPanel tax={tax} f={f} setF={setF} /> : null}
 
       {/* A failed search needs a way BACK, not just a notice: the only other way
           to re-run one was to change a filter (network audit 2026-09-11). */}
@@ -333,9 +432,16 @@ export function ExploreView({
         </>
       ) : null}
 
-      {busy ? (
+      {/* KEEP THE LIST UP WHILE A NEW SEARCH IS OUT (perf hunt 2026-10-03).
+          Every pause in typing, every chip tap and every return to this tab
+          swapped the whole list for a spinner until the new answer landed —
+          the screen blinked empty on each refinement. Now the spinner is only
+          for "nothing to show yet"; otherwise the last results stay on screen
+          and the count line says a search is running. A failed search still
+          clears the rows (run()), so an error never sits over stale results. */}
+      {busy && visibleRows.length === 0 ? (
         <Loading label="Searching the directory…" />
-      ) : err ? null : visibleRows.length === 0 ? (
+      ) : !busy && err ? null : !busy && visibleRows.length === 0 ? (
         <EmptyState
           title="No members match yet"
           lines={[
@@ -346,50 +452,19 @@ export function ExploreView({
       ) : (
         <>
           <Text style={st.count} accessibilityRole="header">
-            {hasMore
-              ? `Showing ${visibleRows.length} of ${visibleTotal} members`
-              : `${visibleTotal} ${visibleTotal === 1 ? 'member' : 'members'}`}
+            {busy
+              ? 'Searching the directory…'
+              : hasMore
+                ? `Showing ${visibleRows.length} of ${visibleTotal} members`
+                : `${visibleTotal} ${visibleTotal === 1 ? 'member' : 'members'}`}
           </Text>
           {visibleRows.map((r) => (
-            <Pressable
-              key={r.publicToken}
-              onPress={() => onOpenMember(r.publicToken)}
-              style={({ pressed }) => [st.card, pressed && st.cardPressed]}
-              accessibilityRole="button"
-              accessibilityLabel={[
-                r.displayName,
-                r.primaryArea,
-                r.roles.join(', '),
-                r.credentialCount ? `${r.credentialCount} verified credentials` : null,
-                r.contactEnabled ? 'open to contact' : null,
-              ]
-                .filter(Boolean)
-                .join('. ')}
-              accessibilityHint="Opens their profile"
-            >
-              <View style={{ flex: 1 }}>
-                <Text style={st.cardName}>{r.displayName}</Text>
-                {r.primaryArea ? <Text style={st.cardArea}>{r.primaryArea}</Text> : null}
-                {r.specialties.length ? (
-                  <Text style={st.cardSpecs} numberOfLines={2}>
-                    {r.specialties.slice(0, 4).join(' · ')}
-                  </Text>
-                ) : null}
-                <Text style={st.cardMeta}>
-                  {[
-                    r.roles.join(' · ') || null,
-                    r.countryCode,
-                    r.workPref === 'remote' ? 'Remote' : r.workPref === 'local' ? 'Local' : null,
-                    r.credentialCount ? `${r.credentialCount} verified` : null,
-                  ]
-                    .filter(Boolean)
-                    .join('  ·  ')}
-                </Text>
-              </View>
-              <Text style={st.chev}>›</Text>
-            </Pressable>
+            <MemberCard key={r.publicToken} r={r} onOpen={onOpenMember} />
           ))}
-          {hasMore ? (
+          {/* Not while a new search is out: run() has already reset `page` for
+              the NEW filters, so a page fetched now would be appended to the
+              old list. */}
+          {hasMore && !busy ? (
             <View style={st.moreWrap}>
               {moreErr ? <Banner tone="warn">{moreErr}</Banner> : null}
               <PrimaryButton

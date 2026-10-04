@@ -22,6 +22,7 @@ import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { armFence, startFenced } from '../../../features/audio/startFenced';
+import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
@@ -35,6 +36,7 @@ import {
   matchGainDb,
   soloActiveIn,
   renderMix,
+  sessionStemsWarm,
   type MixSettings,
   type RenderedMix,
   type SharedVerb,
@@ -351,6 +353,10 @@ export interface MixPlayback {
 
 /** Armed: a settled console edit re-renders and replays after this pause. */
 const REPLAY_MS = 350;
+/** Quiet pre-render after a page opens or the console settles (perf hunt
+ *  2026-10-03) — past the page turn and past REPLAY_MS, so an armed replay
+ *  always goes first. */
+const PRERENDER_MS = 900;
 
 /** Decide → render → listen. Renders ALL variants of the set on first play
  *  (so A/B switching is instant afterwards), with real measurements. */
@@ -508,7 +514,28 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     };
   }, [signature]);
 
-  const renderAll = useCallback(async () => {
+  // PRE-RENDER WHILE THE LEARNER READS (perf hunt 2026-10-03). The first ▶ on
+  // every page waited for the whole set to render, encode and load (~0.5–2 s
+  // on a phone, the RENDERING banner). Once the page has settled, the set is
+  // rendered and loaded quietly — the same renderAll, so a ▶ pressed meanwhile
+  // simply joins it (the double-tap guard returns, the render plays the
+  // queued `pendingRef` when it lands) and a console edit retires it (the
+  // generation bump above). NEVER plays on its own: nothing is queued.
+  // Only when the stems are already warm (a cold synthesis is one long block
+  // and stays on the press), the screen is in front and sound output is on —
+  // the tuning lab's preload rule (no audio-session work before the learner
+  // has enabled sound).
+  useEffect(() => {
+    if (!sessionStemsWarm()) return;
+    const t = setTimeout(() => {
+      if (!aliveRef.current || !focusedRef.current || !isAudioOutputEnabled()) return;
+      if (idsRef.current.length > 0 || renderingSigRef.current !== null) return;
+      void renderAllRef.current(true);
+    }, PRERENDER_MS);
+    return () => clearTimeout(t);
+  }, [signature]);
+
+  const renderAll = useCallback(async (quiet = false) => {
     // Synchronous double-tap guard (see the ref declarations above). MUST run
     // before the first await, and MUST be a ref — a useState flag is not
     // visible to the second tap until React has re-rendered.
@@ -519,7 +546,8 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     const current = () => aliveRef.current && my === renderSeqRef.current;
     try {
       setStatus('rendering');
-      AccessibilityInfo.announceForAccessibility?.('Rendering the mix.');
+      // A quiet pre-render says nothing — the learner did not ask for it.
+      if (!quiet) AccessibilityInfo.announceForAccessibility?.('Rendering the mix.');
       // Yield a frame so the RENDERING state paints before the DSP burst.
       await new Promise((r) => setTimeout(r, 30));
       if (!current()) return;

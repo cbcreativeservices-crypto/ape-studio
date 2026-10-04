@@ -20,7 +20,6 @@ import {
   AccessibilityInfo,
   ActivityIndicator,
   AppState,
-  Image,
   Platform,
   Pressable,
   ScrollView,
@@ -28,6 +27,11 @@ import {
   Text,
   View,
 } from 'react-native';
+// expo-image (perf hunt 2026-10-03): every figure in the paper is prefetched
+// into the memory/disk cache when the attempt opens, so the next question's
+// figure is on screen the moment the answer advances.
+import { Image } from 'expo-image';
+import { nextClockMs } from '../../features/assess/clockTick';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
@@ -192,6 +196,9 @@ export function FinalExamScreen({ navigation, route }: Props) {
       try {
         const p = await startFinalExam(awardType, awardId);
         if (!alive) return;
+        // Warm every figure in the paper now, not on the tap that reaches it.
+        const figures = [...new Set(p.items.map((q) => q.media_url).filter((u): u is string => !!u))];
+        if (figures.length) Image.prefetch(figures, 'memory-disk').catch(() => {});
         // RESTORE WHAT WAS ALREADY ANSWERED (2026-09-17) — see attemptDraft.
         // This does NOT pause the exam: the deadline still runs from the
         // server's `started_at`, so a relaunch buys no time, and choosing
@@ -268,8 +275,9 @@ export function FinalExamScreen({ navigation, route }: Props) {
         retryFinishMsRef.current = null;
         // The server has it — the local copy has done its job and must not be
         // restorable into anything.
-        await clearAttemptDraft(args.attemptId);
-        await clearExamIntent(awardType, awardId);
+        // Both clears in ONE storage round trip, not two (perf hunt
+        // 2026-10-03): the result screen waits on them. Neither can throw.
+        await Promise.all([clearAttemptDraft(args.attemptId), clearExamIntent(awardType, awardId)]);
         // REPLACE the exam with its result rather than popToTop()+navigate
         // (launch audit 2026-09-09). FinalExam/FinalExamResult live on the ROOT
         // stack whose first route is Splash, so popToTop() popped to Splash and
@@ -390,7 +398,7 @@ export function FinalExamScreen({ navigation, route }: Props) {
     setMsLeft(deadline - Date.now());
     const t = setInterval(() => {
       const left = deadline - Date.now();
-      setMsLeft(left);
+      setMsLeft((prev) => nextClockMs(prev, left)); // re-render only when the shown clock changes
       // A11Y (2026-09-18, pass 5 · W5): the quiz warns at one minute; the exam,
       // which is the graded one, did not. The clock is a visual-only readout —
       // a screen-reader user's first notice of the deadline was the forced
@@ -805,7 +813,8 @@ export function FinalExamScreen({ navigation, route }: Props) {
           <Image
               source={{ uri: question.media_url }}
               style={styles.media}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
               accessible
               accessibilityRole="image"
               accessibilityLabel="Figure for this exam question"

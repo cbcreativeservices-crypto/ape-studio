@@ -20,6 +20,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { COMING_SOON, SECTION_META, WORKSPACES } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
 import { workflowStore } from './workflowStore';
+import { useCalcSectionOpen } from './calcPrefs';
 import type { Workflow } from './workflowModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useTier } from '../../../features/commercial/useTier';
@@ -33,6 +34,11 @@ export function CalcLabScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const chain = useChainValue();
+  // Warm the calculators' section open/closed preference while the learner is
+  // still on the hub (perf hunt 2026-10-03): the first calculator they open
+  // then paints its WHY / EXAMPLE / MISTAKES sections already in the state
+  // they left them, instead of all-open and snapping shut a moment later.
+  useCalcSectionOpen();
   // Tablet (owner 2026-09-29): three calculator plates a row in the centred
   // card column instead of two ~490 pt plates. Phones keep two.
   const tablet = useIsTablet();

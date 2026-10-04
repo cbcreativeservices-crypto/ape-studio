@@ -13,7 +13,7 @@ import { CheckQuestion } from '../../foundations/bits';
 import type { ConnectorId } from '../cableTypes';
 import { getConnector } from '../data/registry';
 import { L06_CHECKS, L06_GROUPS, L06_INKS, L06_LEAD, L06_LESSON, L06_STRIPS } from '../data/lesson06';
-import { ConnectorCard, InkLegend, RecognitionStrip } from './connectorCard';
+import { ConnectorCard, InkLegend, RecognitionStrip, usePrefetchConnectorImages } from './connectorCard';
 import {
   CheckDoneBanner,
   DetailCard,
@@ -36,6 +36,8 @@ export function Lesson06Body() {
   }, []);
 
   const rec = getConnector(connId);
+  // Every chip's photo is warmed on mount, so a tap paints at once (perf hunt 2026-10-03).
+  usePrefetchConnectorImages(L06_GROUPS.flatMap((g) => g.connectors.map((c) => c.id)));
   /** Recognition-tier record surfaced view-only (sweep 2026-08-15):
    *  identify + purpose only — never assessed. */
   const opticalcon = getConnector('opticalcon_style');

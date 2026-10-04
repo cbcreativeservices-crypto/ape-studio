@@ -18,12 +18,26 @@ const KEYS: Record<CalcSection, string> = {
   mistakes: 'ape:calc:sec:mistakes',
 };
 
+/** The last open-state this session read or set (perf hunt 2026-10-03). Every
+ *  calculator opened with all three sections OPEN and then, once the storage
+ *  read landed a frame or more later, snapped the user's collapsed ones shut —
+ *  a visible jump of the whole lower page on every open. The next calculator
+ *  now starts from what the last one knew; the read below still runs on every
+ *  mount and still has the last word, so nothing it decides changes. */
+let lastKnownOpen: Record<CalcSection, boolean> | null = null;
+
+/** Account wipe (registered in resetAllLocalStores): the departing account's
+ *  collapsed sections are not the next account's starting state. */
+export function resetCalcSectionPrefs(): void {
+  lastKnownOpen = null;
+}
+
 /** Open-state (default true) for each explanation section, persisted per user. */
 export function useCalcSectionOpen(): {
   open: Record<CalcSection, boolean>;
   toggle: (k: CalcSection) => void;
 } {
-  const [open, setOpen] = useState<Record<CalcSection, boolean>>({ why: true, example: true, mistakes: true });
+  const [open, setOpen] = useState<Record<CalcSection, boolean>>(() => lastKnownOpen ?? { why: true, example: true, mistakes: true });
   // Sections the user tapped before the stored read landed (evening hunt 2,
   // 2026-10-02): the late read used to flip them back to the OLD stored state
   // while the tap's own write had already stored the new one — the screen and
@@ -38,11 +52,15 @@ export function useCalcSectionOpen(): {
         if (!alive) return;
         const map = Object.fromEntries(rows) as Record<string, string | null>;
         const t = touchedRef.current;
-        setOpen((o) => ({
-          why: t.has('why') ? o.why : map[KEYS.why] !== '0',
-          example: t.has('example') ? o.example : map[KEYS.example] !== '0',
-          mistakes: t.has('mistakes') ? o.mistakes : map[KEYS.mistakes] !== '0',
-        }));
+        setOpen((o) => {
+          const read = {
+            why: t.has('why') ? o.why : map[KEYS.why] !== '0',
+            example: t.has('example') ? o.example : map[KEYS.example] !== '0',
+            mistakes: t.has('mistakes') ? o.mistakes : map[KEYS.mistakes] !== '0',
+          };
+          lastKnownOpen = read;
+          return read;
+        });
       } catch {
         // storage unavailable (e.g. web/offline) — keep the open-by-default state
       }
@@ -56,6 +74,7 @@ export function useCalcSectionOpen(): {
     touchedRef.current.add(k);
     setOpen((o) => {
       const next = { ...o, [k]: !o[k] };
+      lastKnownOpen = next;
       const reportRefused = armSaveFailureReport(); // the user's tap: a refusal is told
       void AsyncStorage.setItem(KEYS[k], next[k] ? '1' : '0').catch(() => reportRefused());
       return next;

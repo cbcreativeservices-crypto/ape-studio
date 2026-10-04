@@ -484,7 +484,12 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     if (!running || !config.pollGr) return;
     const id = setInterval(() => {
       const g = ApeDsp.fxGrStatus();
-      if (g) setGrDb(g[config.pollGr!]);
+      // Skip a re-render of this whole lab for a move the meter and the
+      // 0.1 dB readout cannot show (perf hunt 2026-10-03).
+      if (g) {
+        const v = g[config.pollGr!];
+        setGrDb((prev) => (Math.abs(prev - v) < 0.05 ? prev : v));
+      }
     }, GR_POLL_MS);
     return () => clearInterval(id);
   }, [running, config.pollGr]);

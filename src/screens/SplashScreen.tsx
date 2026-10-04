@@ -16,6 +16,7 @@ import type { RootStackParamList } from '../navigation/types';
 import { clearPendingLink } from '../navigation/pendingLink';
 import { splashBase } from '../navigation/splashRoute';
 import { safeSessionResult } from '../lib/getSessionSafe';
+import { warmCardArt } from './courses/CourseSelectionScreen';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Splash'>;
 
@@ -42,6 +43,17 @@ export function SplashScreen({ navigation }: Props) {
     // when a STORED session's refresh could not reach the server (hunt 8,
     // 2026-10-03) — see splashRoute.ts.
     const sessionSafe = safeSessionResult(supabase.auth.getSession(), 'Splash');
+    // ⚡ WARM HOME DURING THE HOLD (perf hunt 2026-10-03). A signed-in launch
+    // lands on Home, whose carousel art used to start loading only once Home
+    // had mounted — after the 2.5 s hold — so the first cards sat on their
+    // dark fallback. Started once the session read answers (so it never
+    // competes with a token refresh) and only for the Main route; a guest's
+    // next screen is the login, not Home. Idempotent, best-effort.
+    void sessionSafe
+      .then((read) => {
+        if (!cancelled && splashBase(read) === 'Main') warmCardArt();
+      })
+      .catch(() => {});
     const timer = setTimeout(async () => {
       const read = await sessionSafe;
       if (cancelled) return;

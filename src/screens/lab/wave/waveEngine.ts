@@ -200,6 +200,95 @@ export function fieldAt(
   return { re, im };
 }
 
+/**
+ * THE SAME FIELD, PREPARED ONCE PER PICTURE (perf hunt 2026-10-03). The heat
+ * map asks fieldAt for every cell of a ≤176×140 grid (×2.2 in FULL SCREEN),
+ * and fieldAt re-derives per cell what only depends on the source: the speed
+ * of sound, 10^(level/20), the delay phase and the speaker's coverage wedge.
+ * A FREQ fader tick or a source drag rebuilt the map in ~100 ms in Node —
+ * several hundred on a phone, so the fader lagged the finger.
+ *
+ * `prepareField` hoists exactly those constants; `fieldDbPrepared` then runs
+ * the per-cell arithmetic in the SAME order (((10^(L/20)·g)·D)/r, k·r + the
+ * delay phase, pol·amp·cos/sin, 20·log10 of the magnitude), so every cell is
+ * bit-identical to fieldDb(fieldAt(…)) — pinned in
+ * test/perfLabsB_20261003.test.ts.
+ */
+export type FieldPrep = {
+  k: number;
+  n: number;
+  ix: Float64Array;
+  iy: Float64Array;
+  /** 10^(level/20) · image gain. */
+  pg: Float64Array;
+  /** Delay phase 2π·f·(delay/1000). */
+  off: Float64Array;
+  pol: Float64Array;
+  /** Directional (speaker) terms: aim, half-angle and the edge divisor; NaN aim = omni. */
+  aim: Float64Array;
+  half: Float64Array;
+  div: Float64Array;
+};
+
+export function prepareField(scene: WaveScene, freq: number, images: ImageSource[][]): FieldPrep {
+  const c = speedOfSound(scene.tempC);
+  const k = (2 * Math.PI * freq) / c;
+  const terms: ImageSource[] = [];
+  for (const imgSet of images) for (const img of imgSet) if (!img.parent.muted) terms.push(img);
+  const n = terms.length;
+  const prep: FieldPrep = {
+    k, n,
+    ix: new Float64Array(n), iy: new Float64Array(n), pg: new Float64Array(n), off: new Float64Array(n), pol: new Float64Array(n),
+    aim: new Float64Array(n), half: new Float64Array(n), div: new Float64Array(n),
+  };
+  terms.forEach((img, i) => {
+    const s = img.parent;
+    prep.ix[i] = img.x;
+    prep.iy[i] = img.y;
+    prep.pg[i] = Math.pow(10, s.levelDb / 20) * img.gain;
+    prep.off[i] = 2 * Math.PI * freq * (s.delayMs / 1000);
+    prep.pol[i] = s.polarity;
+    if (s.kind === 'point' || s.kind === 'sub') {
+      prep.aim[i] = NaN;
+    } else {
+      // directivityGain's constants, computed the same way.
+      prep.aim[i] = ((s.aimDeg ?? 0) * Math.PI) / 180;
+      const nominal = ((s.coverageDeg ?? 90) * Math.PI) / 360;
+      const half = nominal * Math.max(0.45, Math.min(2.4, Math.sqrt(1000 / Math.max(60, freq))));
+      prep.half[i] = half;
+      prep.div[i] = half * 0.55 + 1e-6;
+    }
+  });
+  return prep;
+}
+
+/** fieldDb(fieldAt(scene, x, y, freq, images)) from a prepared field. */
+export function fieldDbPrepared(f: FieldPrep, x: number, y: number): number {
+  let re = 0;
+  let im = 0;
+  for (let i = 0; i < f.n; i++) {
+    const dx = x - f.ix[i];
+    const dy = y - f.iy[i];
+    const r = Math.max(0.15, Math.hypot(dx, dy));
+    const aim = f.aim[i];
+    let dir = 1;
+    if (aim === aim) {
+      const ang = Math.atan2(dx, dy);
+      let d = Math.abs(ang - aim);
+      if (d > Math.PI) d = 2 * Math.PI - d;
+      const half = f.half[i];
+      const edge = Math.exp(-Math.pow(Math.max(0, d - half) / f.div[i], 2));
+      dir = Math.max(0.25, edge);
+    }
+    const amp = (f.pg[i] * dir) / r;
+    const phase = f.k * r + f.off[i];
+    const pol = f.pol[i];
+    re += pol * amp * Math.cos(phase);
+    im += pol * amp * Math.sin(phase);
+  }
+  return 20 * Math.log10(Math.max(1e-6, Math.hypot(re, im)));
+}
+
 /** dB magnitude of the field relative to a 1 m free-field single source. */
 export function fieldDb(t: FieldTerm): number {
   return 20 * Math.log10(Math.max(1e-6, Math.hypot(t.re, t.im)));

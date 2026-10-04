@@ -25,7 +25,7 @@
  *  - Capture starts only on the explicit START press; the hook stops capture
  *    on unmount (§18: no DSP behind a closed screen).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { AccessibilityInfo, Animated, BackHandler, Pressable, ScrollView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { fitValue } from '../../theme/legibility';
@@ -135,8 +135,13 @@ const NOMINAL_OFFSET = 100;
  *  the needle at 0 VU; MAX + the current level are printed inside the glass. */
 /** Tall LED PEAK/AVERAGE meter down the RIGHT side (owner 2026-07-30): spans
  *  from the top of the VU all the way down past the controls, ending above the
- *  circle meter. Its own phase clock; reads the same live SharedValues. */
-function SideLed({
+ *  circle meter. Its own phase clock; reads the same live SharedValues.
+ *
+ *  MEMOISED (perf hunt 2026-10-03): the screen re-renders ~20×/s for its text
+ *  readouts (setDisplayMeter), and each one re-reconciled this whole Skia
+ *  LED stack although every prop here is unchanged between frames — the bar
+ *  itself moves on `live`'s SharedValues, never on a render. */
+const SideLed = memo(function SideLed({
   viz,
   live,
   ledW,
@@ -179,7 +184,7 @@ function SideLed({
       stack={stack}
     />
   );
-}
+});
 
 /** BELOW the VU (owner 2026-07-30): LEFT the round "Noise'o'Meter" dB-SPL gauge
  *  (colored loudness arc + control-room sweet-spot band + ballistic needle),

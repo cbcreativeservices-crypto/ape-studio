@@ -43,7 +43,7 @@ import {
   PrincipleBanner,
   lessonStyles as s,
 } from './bits';
-import { ConnectorCard, InkLegend } from './connectorCard';
+import { ConnectorCard, InkLegend, usePrefetchConnectorImages } from './connectorCard';
 
 export function Lesson07Body() {
   // ── (a) conductor-role explorer — the mains_wall record is the ONE source ──
@@ -57,6 +57,8 @@ export function Lesson07Body() {
   const group = POWER_GROUPS.find((g) => g.id === groupId) ?? POWER_GROUPS[0];
   const [connId, setConnId] = useState<ConnectorId>('mains_wall');
   const rec = getConnector(connId);
+  // Every chip's photo is warmed on mount, so a tap paints at once (perf hunt 2026-10-03).
+  usePrefetchConnectorImages([...POWER_GROUPS.flatMap((g) => g.connectors.map((e) => e.id)), ...QP_CONNECTORS.map((e) => e.id)]);
 
   const selectGroup = useCallback((g: L07Group) => {
     setGroupId(g.id);

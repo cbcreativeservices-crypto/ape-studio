@@ -130,7 +130,37 @@ export type V3Credential = { id: string; slug: string; name: string; topicsGs: n
 /** Active v3 PROGRAMS with their required (non-elective) member topics, ordered.
  *  REJECTS on any query/network failure; `[]` only when no active program with
  *  member topics genuinely exists. */
-export async function fetchV3ProgramsStrict(): Promise<V3Credential[]> {
+export function fetchV3ProgramsStrict(): Promise<V3Credential[]> {
+  if (!programsPromise) programsPromise = memoOnce(loadV3Programs, () => (programsPromise = null));
+  return programsPromise;
+}
+
+/**
+ * Session memos for the credential lists (perf hunt 2026-10-03), shaped
+ * exactly like `curriculumPromise`: Enrollments BROWSE waited on two
+ * sequential round trips each (~0.5–1.5 s) every time it opened, for a
+ * catalog that is static for the session. The first fetch is shared; a FAILED
+ * or EMPTY result is never cached, so Retry (and the next open) refetches.
+ * The two round trips inside each stay in order — the links query needs the
+ * active ids (program_topics holds 1016 rows, past PostgREST's 1000-row page,
+ * so it cannot be fetched unfiltered beside the first).
+ */
+let programsPromise: Promise<V3Credential[]> | null = null;
+let certsPromise: Promise<V3Credential[]> | null = null;
+function memoOnce(load: () => Promise<V3Credential[]>, forget: () => void): Promise<V3Credential[]> {
+  return load().then(
+    (list) => {
+      if (list.length === 0) forget();
+      return list;
+    },
+    (err) => {
+      forget(); // never cache a failure — Retry refetches
+      throw err;
+    },
+  );
+}
+
+async function loadV3Programs(): Promise<V3Credential[]> {
   const { data: progs, error: progsError } = await supabase
     .from('programs')
     .select('id, slug, name, sequence')
@@ -172,7 +202,12 @@ export function fetchV3Programs(): Promise<V3Credential[]> {
 /** Active v3 CERTIFICATES with their required member topics, ordered.
  *  REJECTS on any query/network failure; `[]` only when no active certificate
  *  with member topics genuinely exists. */
-export async function fetchV3CertsStrict(): Promise<V3Credential[]> {
+export function fetchV3CertsStrict(): Promise<V3Credential[]> {
+  if (!certsPromise) certsPromise = memoOnce(loadV3Certs, () => (certsPromise = null));
+  return certsPromise;
+}
+
+async function loadV3Certs(): Promise<V3Credential[]> {
   const { data: certs, error: certsError } = await supabase
     .from('certificates')
     .select('id, slug, name, sequence')

@@ -160,11 +160,38 @@ export function entryPoints(familyId: string, n = 3): Career[] {
 export function isRegulatedTitle(title: string): boolean {
   const t = title.trim().toLowerCase();
   if (!t) return false;
-  return all().some(
-    (c) =>
-      c.regulated &&
-      (c.title.toLowerCase() === t || c.alternates.some((a) => a.toLowerCase() === t)),
-  );
+  return careersTitled(t).some((c) => c.regulated);
+}
+
+/**
+ * Every career whose title OR an alternate title is exactly `lower` (already
+ * trimmed + lower-cased), in index order.
+ *
+ * ⚡ PERF (perf hunt 2026-10-03). `isRegulatedTitle` and
+ * `furtherEducationForTitle` each scanned all ~1,900 titles — lower-casing
+ * every title and alternate on every call — and the Results screen calls them
+ * about fifteen times per family card, on EVERY render: each keystroke in the
+ * beta-feedback note re-ran ~120 full scans (≈5 ms on a desktop, several
+ * times that on a phone). The title → careers map is built once, on first
+ * use, and a lookup is one Map read. Same matches, same order.
+ */
+let byTitle: Map<string, Career[]> | null = null;
+function careersTitled(lower: string): readonly Career[] {
+  if (!byTitle) {
+    const m = new Map<string, Career[]>();
+    for (const c of all()) {
+      // A title equal to one of its own alternates must still list the career
+      // once, as the old `title === t || alternates.some(...)` scan did.
+      const keys = new Set([c.title.toLowerCase(), ...c.alternates.map((a) => a.toLowerCase())]);
+      for (const k of keys) {
+        const list = m.get(k);
+        if (list) list.push(c);
+        else m.set(k, [c]);
+      }
+    }
+    byTitle = m;
+  }
+  return byTitle.get(lower) ?? [];
 }
 
 /**
@@ -175,8 +202,7 @@ export function isRegulatedTitle(title: string): boolean {
 export function furtherEducationForTitle(title: string): string | null {
   const t = title.trim().toLowerCase();
   if (!t) return null;
-  for (const c of all()) {
-    if (c.title.toLowerCase() !== t && !c.alternates.some((a) => a.toLowerCase() === t)) continue;
+  for (const c of careersTitled(t)) {
     const note = furtherEducation(c);
     if (note) return note;
   }

@@ -54,7 +54,10 @@ const src = (f: string) => readFileSync(new URL(`../src/screens/lab/calc/${f}`, 
 describe('H6-1 — the runner says when the saved drafts could not be read', () => {
   it('a failed listRuns() read is told, never treated as "no saved progress"', () => {
     const s = src('CalcWorkflowRunScreen.tsx');
-    const at = s.indexOf('await workflowStore.listRuns()');
+    // The drafts are read alongside the workflows list (perf hunt 2026-10-03,
+    // Promise.all) — so the check is located from where `runs` is first used.
+    assert.match(s, /workflowStore\.listRuns\(\)/, 'the runner reads the drafts');
+    const at = s.indexOf('const draft = runs.find(');
     assert.ok(at > 0, 'the runner reads the drafts');
     const after = s.slice(at, at + 1600);
     assert.match(after, /workflowListUnreadable\(runs\)/, 'the unreadable stand-in is checked');

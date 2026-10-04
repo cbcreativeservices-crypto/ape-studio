@@ -10,11 +10,14 @@
  * mount points.
  */
 import { useEffect, useState } from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+// expo-image (perf hunt 2026-10-03): memory + disk cache and off-thread decode,
+// so a photo seen once paints at once on every later page and lightbox.
+import { Image } from 'expo-image';
 import { connectorImages } from '../connectorImages';
 import { colors, fonts } from '../../../../theme/tokens';
 import { CONNECTOR_INKS, CONNECTOR_INK_LABELS, type ConnectorInk } from '../connectorInks';
-import type { ConnectorRecord, PinoutVariant } from '../cableTypes';
+import type { ConnectorId, ConnectorRecord, PinoutVariant } from '../cableTypes';
 
 const CONFIDENCE_LABEL = {
   standard: 'STANDARD',
@@ -77,6 +80,23 @@ function Pinout({ v }: { v: PinoutVariant }) {
   );
 }
 
+/**
+ * Warm the photos of every connector a chip row can switch to (perf hunt
+ * 2026-10-03). The card used to fetch a photo only when its chip was tapped,
+ * so each tap showed an empty frame while the image downloaded. Prefetched
+ * into expo-image's memory + disk cache once the lesson mounts; the set is a
+ * lesson's own chip row (a handful of small webp files), never the whole
+ * catalog. Best-effort: a failure only means the old on-tap load.
+ */
+export function usePrefetchConnectorImages(ids: readonly ConnectorId[]): void {
+  const key = ids.join('|');
+  useEffect(() => {
+    const urls = ids.flatMap((id) => connectorImages(id).map((im) => im.url));
+    if (urls.length) Image.prefetch(urls, 'memory-disk').catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+}
+
 export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
   const hazard = rec.safety.level === 'mains' || rec.safety.level === 'speaker';
   // Glossary term photos (owner ruling 2026-08-16) — one image, or a labeled
@@ -84,6 +104,8 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
   // nothing for unmapped connectors; never a placeholder.
   const images = connectorImages(rec.id);
   const [imgIdx, setImgIdx] = useState(0);
+  // The MALE / FEMALE / CABLE chips switch instantly: all views are warmed.
+  usePrefetchConnectorImages([rec.id]);
   useEffect(() => setImgIdx(0), [rec.id]); // reset gallery when the card switches connectors
   const active = images[Math.min(imgIdx, images.length - 1)];
   return (
@@ -97,7 +119,8 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
           <Image accessible
           source={{ uri: active.url }}
           style={styles.image}
-          resizeMode="contain"
+          contentFit="contain"
+          cachePolicy="memory-disk"
           accessibilityRole="image"
           accessibilityLabel={active.label ?? 'Connector photograph'}
         />
@@ -205,6 +228,7 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
 export function RecognitionStrip({ rec, title }: { rec: ConnectorRecord[]; title?: string }) {
   const [sel, setSel] = useState(rec[0]?.id ?? null);
   const selected = rec.find((r) => r.id === sel);
+  usePrefetchConnectorImages(rec.map((r) => r.id));
   if (!rec.length) return null;
   return (
     <View style={{ gap: 7 }}>

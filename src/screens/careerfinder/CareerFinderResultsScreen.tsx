@@ -86,12 +86,18 @@ export function CareerFinderResultsScreen() {
     });
   };
 
-  const FamilyCard = ({ item, size, why }: { item: FamilyScore; size: 'large' | 'compact'; why?: string }) => {
+  // A render FUNCTION, not an inline component (perf hunt 2026-10-03). As an
+  // arrow component declared in here and used as a JSX tag, every render of
+  // this screen minted a NEW component type, so React unmounted and rebuilt every
+  // family card — chips, examples, buttons — on each keystroke in the feedback
+  // note and on every SAVE / feedback tap. Called as a function, the cards are
+  // ordinary elements that React updates in place.
+  const familyCard = ({ item, size, why }: { item: FamilyScore; size: 'large' | 'compact'; why?: string }) => {
     const f = item.family;
     const meta = familyMetaOf(f.id);
     const saved = rec.saved.includes(f.id);
     return (
-      <Card tone={size === 'large' ? 'raised' : 'plain'} style={{ gap: 8 }}>
+      <Card key={f.id} tone={size === 'large' ? 'raised' : 'plain'} style={{ gap: 8 }}>
         <View style={styles.cardTop}>
           <RankBadge rank={item.rank} />
           <Text style={[styles.famName, size === 'compact' && { fontSize: 16, lineHeight: 21 }]} accessibilityRole="header">{f.name}</Text>
@@ -157,7 +163,7 @@ export function CareerFinderResultsScreen() {
       <Lead>{weak ? 'Nothing stood out strongly yet, so these are the families nearest to your answers — not matches. Exploring one will teach you more than the questions did.' : RESULTS_LEAD}</Lead>
 
       <SectionLabel tone="green">{weak ? 'CLOSEST TO YOUR ANSWERS' : 'STRONGEST MATCHES'}</SectionLabel>
-      {top2.map((t) => <FamilyCard key={t.family.id} item={t} size="large" why={explainFamily(t.family, result.dims, { rank: t.rank })} />)}
+      {top2.map((t) => familyCard({ item: t, size: 'large', why: explainFamily(t.family, result.dims, { rank: t.rank }) }))}
 
       <Card>
         <View style={styles.profileHead}>
@@ -190,13 +196,13 @@ export function CareerFinderResultsScreen() {
       </Card>
 
       <SectionLabel>{weak ? 'NEXT CLOSEST' : 'OTHER PROMISING DIRECTIONS'}</SectionLabel>
-      {rest.map((t) => <FamilyCard key={t.family.id} item={t} size="compact" />)}
+      {rest.map((t) => familyCard({ item: t, size: 'compact' }))}
 
       {result.surprise ? (
         <>
           <SectionLabel tone="cyan">ONE YOU MAY NOT HAVE CONSIDERED</SectionLabel>
           <Body>Same strongest interest, a different corner of the audio world. Many of these families are unfamiliar even to people who work in audio — that is part of why the index exists.</Body>
-          <FamilyCard item={result.surprise} size="compact" why={lead ? `Shares your strongest interest, ${DIMENSIONS[lead.code].label}, in a field none of your top five touch.` : undefined} />
+          {familyCard({ item: result.surprise, size: 'compact', why: lead ? `Shares your strongest interest, ${DIMENSIONS[lead.code].label}, in a field none of your top five touch.` : undefined })}
         </>
       ) : null}
 

@@ -48,6 +48,7 @@ import { resetGenCapSession } from '../tools/genCapSession';
 import { resetLocal as resetSoundSystemsProgress } from '../soundsystems/progress';
 import { resetLocal as resetRoomDesigns } from '../roomdesign/roomDesignStore';
 import { resetCalcWorkflowStore } from '../../screens/lab/calc/workflowStore';
+import { resetCalcSectionPrefs } from '../../screens/lab/calc/calcPrefs';
 import { resetLabClipMemory } from '../lab/labClipBuffer';
 
 /**
@@ -347,6 +348,9 @@ export function resetAllLocalStores(): void {
   // Calculator workflows: the departing user's favourites, recents and saved
   // runs. Fenced, so a write queued before the wipe cannot re-create them.
   resetCalcWorkflowStore();
+  // Calculator section open/closed memory (perf hunt 2026-10-03): the next
+  // account starts from its own stored state, never the departing one's.
+  resetCalcSectionPrefs();
   // Decoded lab-audio clips (labClipBuffer, 2026-10-01): public teaching
   // assets, identical for every user — dropped from memory anyway so nothing
   // the departing session loaded outlives it. The raw WAVs in the cache

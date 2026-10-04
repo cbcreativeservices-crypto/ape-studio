@@ -26,6 +26,11 @@ const MIC_IMAGE_FILES: Partial<Record<MicKind, string>> = {
   contact: 'contact-microphone.webp',
 };
 
+/** Every mapped mic photo URL — the lab warms them all on open (12 small webp). */
+export function allMicImageUrls(): string[] {
+  return Object.values(MIC_IMAGE_FILES).map((file) => `${SUPABASE_URL}/storage/v1/object/public/glossary-images/${file}`);
+}
+
 /** Public bucket URL for a mic kind's photo, or null (caller falls back to MicArt). */
 export function micImageUrl(kind: MicKind): string | null {
   const file = MIC_IMAGE_FILES[kind];

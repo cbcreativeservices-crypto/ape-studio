@@ -178,10 +178,17 @@ export function SettingsScreen({ navigation }: Props) {
 
   // M12 (2026-09-07): prefs load, retryable and error-aware.
   const reloadPrefs = useCallback(async () => {
+    // ⚡ The server prefs read goes out BESIDE the device read (perf hunt
+    // 2026-10-03), not behind it: it needs nothing from the stored settings.
+    // Results are still applied in the old order; the no-op catch only stops a
+    // read that is never reached (the device read threw) from being an
+    // unhandled rejection.
+    const prefsP = fetchNotificationPrefs();
+    prefsP.catch(() => {});
     try {
       const loaded = await loadLocalSettings();
       showStored(loaded);
-      const p = await fetchNotificationPrefs();
+      const p = await prefsP;
       setPrefs(p);
       if (p) void setPhoneNotificationsEnabled(p.push_enabled, loaded);
     } catch {

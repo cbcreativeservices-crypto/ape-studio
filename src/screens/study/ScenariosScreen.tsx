@@ -15,7 +15,11 @@
  * (Booth 2026-07-26).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+// expo-image + a prefetch of every figure in the homework (perf hunt
+// 2026-10-03): the next question's figure is already in the memory/disk cache
+// when Next lands, instead of starting its download on that tap.
+import { Image } from 'expo-image';
 import { screenReaderOn } from '../../features/settings/a11y';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -293,6 +297,14 @@ export function ScenariosScreen({ route }: Props) {
       if (!alive) return;
       setHw(h);
       setLoaded(true);
+      // Warm every image figure in all rounds; failures are silent (the
+      // <Image> still loads on its own when shown).
+      const figures = [
+        ...new Set(
+          (h?.rounds ?? []).flat().flatMap((q) => (q.media?.kind === 'image' ? [q.media.url] : [])),
+        ),
+      ];
+      if (figures.length) Image.prefetch(figures, 'memory-disk').catch(() => {});
     });
     return () => {
       alive = false;
@@ -694,7 +706,8 @@ export function ScenariosScreen({ route }: Props) {
           <Image accessible
               source={{ uri: item.media.url }}
               style={styles.mediaImage}
-              resizeMode="contain"
+              contentFit="contain"
+              cachePolicy="memory-disk"
               accessibilityRole="image"
               accessibilityLabel="Scenario figure"
             />

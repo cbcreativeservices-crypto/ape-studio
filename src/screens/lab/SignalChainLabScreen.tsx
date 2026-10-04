@@ -58,6 +58,10 @@ const ACTIVITY_MS = 500;
 // engine to report peak-since-last-read, which is a native change, not a
 // timer change.
 const GR_POLL_MS = 50;
+/** Below this a GR meter or readout cannot show the change (0.1 dB display). */
+const GR_EPS_DB = 0.05;
+const grMoved = (a: { comp: number; gate: number; limiter: number }, b: { comp: number; gate: number; limiter: number }) =>
+  Math.abs(a.comp - b.comp) >= GR_EPS_DB || Math.abs(a.gate - b.gate) >= GR_EPS_DB || Math.abs(a.limiter - b.limiter) >= GR_EPS_DB;
 const P = FX_PARAM;
 
 /** The chain modules in the FIXED canonical order (matches fx::Id routing). */
@@ -312,7 +316,11 @@ export function SignalChainLabScreen() {
     if (!running) return;
     const id = setInterval(() => {
       const g = ApeDsp.fxGrStatus();
-      if (g) setGr(g);
+      // Keep the SAME state object when nothing moved by a displayable amount
+      // (perf hunt 2026-10-03): fxGrStatus returns a fresh object every poll,
+      // so a quiet chain re-rendered this whole screen 20x a second for
+      // nothing. The meters read 0.1 dB; smaller moves are invisible.
+      if (g) setGr((prev) => (grMoved(prev, g) ? g : prev));
     }, GR_POLL_MS);
     return () => clearInterval(id);
   }, [running]);

@@ -36,6 +36,7 @@ import {
   probeGateway,
   readDefinitionOnce,
   sessionChargeUnanswered,
+  sessionDefinition,
   type DefinitionResult,
 } from './glossaryGateway';
 import { popupCard } from '../../theme/readingColumn';
@@ -63,6 +64,18 @@ const LOOKUP_DEADLINE_MS = 8000;
 function readOnce(id: string): Promise<DefinitionResult> {
   return readDefinitionOnce(id);
 }
+
+/**
+ * PERF (2026-10-03): which entry a chip's NAME resolved to, for this app
+ * session. Ids and term names are public and the same for every reader, so
+ * nothing tier- or identity-specific is kept here — no definition text. It
+ * lets a RE-OPEN of a term already read this session paint at once from the
+ * shared session read (below) instead of waiting on the by-name lookup again.
+ * `plainNull`: the lookup's own plain-English was empty, so the instant paint
+ * may show the session read's plain-English alone, exactly as the slow path
+ * would have ended up showing it.
+ */
+const NAME_HITS = new Map<string, { id: string; term: string; plainNull: boolean }>();
 
 export function GlossaryTermPopup({
   termName,
@@ -125,6 +138,16 @@ export function GlossaryTermPopup({
    */
   const [needsKey, setNeedsKey] = useState(false);
 
+  /**
+   * PERF (2026-10-03): warm the gateway probe while the host screen (a lab, a
+   * calculator) is open, so the FIRST term tap does not wait a round trip for
+   * it before its own lookup. One cached read per app session, never metered;
+   * a failed probe is not cached, exactly as when a tap asks.
+   */
+  useEffect(() => {
+    void probeGateway();
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     if (!termName) {
@@ -138,6 +161,21 @@ export function GlossaryTermPopup({
     }
     if (preloaded) {
       setRow({ id: 'preloaded', term: preloaded.term, definition: preloaded.definition, plain_english: preloaded.plain_english });
+      setNotFound(false);
+      setLoadError(false);
+      setNeedsKey(false);
+      setPartial(null);
+      setLoading(false);
+      return;
+    }
+    // A re-open of a term this session already read (here or in the Glossary —
+    // one shared cache): the slow path below would look the name up again and
+    // then answer from that same cache, so paint its end state now. The same
+    // session read, the same `readDefinitionOnce` rule — no lookup is spent.
+    const known = NAME_HITS.get(termName);
+    const paid = known ? sessionDefinition(known.id) : null;
+    if (known && paid?.definition && (known.plainNull || paid.plain_english)) {
+      setRow({ id: known.id, term: known.term, definition: paid.definition, plain_english: paid.plain_english ?? null });
       setNotFound(false);
       setLoadError(false);
       setNeedsKey(false);
@@ -188,6 +226,7 @@ export function GlossaryTermPopup({
         return;
       }
       setRow(hit);
+      NAME_HITS.set(termName, { id: hit.id, term: hit.term, plainNull: !hit.plain_english?.trim() });
       setLoading(false);
       /**
        * ⛔ 'absent' MAY ONLY HAVE BEEN A SLOW PROBE (hunt 7, 2026-10-03; the

@@ -80,6 +80,10 @@ export function useLabAudio(): UseLabAudio {
     async (labKey: string, assetKey: string): Promise<LabAudioPlayResult> => {
       const p = playerRef.current;
       if (!p) return 'network';
+      // Fetch while the gate decides (perf hunt 2026-10-03): the clip loads
+      // while the enable-audio popup is being read instead of after it. A
+      // preload only — nothing sounds until p.play() below, behind the fence.
+      p.preload(labKey, [assetKey]);
       // App-wide audio gate — shows the enable-audio popup on first use and
       // resolves true immediately once enabled. Declined → play nothing.
       const ok = await requestAudioOutput();

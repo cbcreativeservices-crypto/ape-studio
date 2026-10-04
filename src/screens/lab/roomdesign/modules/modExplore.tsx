@@ -8,6 +8,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../theme/tokens';
 import { fieldLevelColor } from '../../../../features/tools/levelColor';
 import { MAX_SAVED_DESIGNS } from '../../../../features/roomdesign/roomDesignStore';
@@ -60,7 +61,12 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   const [layers, setLayers] = useState<PlanLayers>({ triangle: true, boundaries: false, reflections: false, modes: true, dims: false, treatment: true });
   // The traced path is held by its KEY (speaker + surface), not its index:
   // the list re-sorts by delay on every drag (toddler pass 2, 2026-10-01).
-  const [traceState, setTraceState] = useState<{ key: string; progress: number } | null>(null);
+  // The pulse's travel is a SharedValue (perf hunt 2026-10-03): it was React
+  // state set on every frame for 1.7 s, so each TRACE press re-rendered this
+  // whole module and the entire plan SVG ~100 times. React state now changes
+  // once per press (which path); the frames move one dot on the UI side.
+  const [traceState, setTraceState] = useState<{ key: string } | null>(null);
+  const traceProgress = useSharedValue(0);
   const traceRaf = useRef<number | null>(null);
   useEffect(() => () => {
     if (traceRaf.current != null) cancelAnimationFrame(traceRaf.current);
@@ -94,14 +100,16 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
     setLayers((s) => (s.reflections ? s : { ...s, reflections: true }));
     if (traceRaf.current != null) cancelAnimationFrame(traceRaf.current);
     const t0 = Date.now();
+    traceProgress.value = 0;
+    setTraceState({ key });
     const step = () => {
       const p = (Date.now() - t0) / TRACE_MS;
       if (p >= 1) {
-        setTraceState({ key, progress: 1 });
+        traceProgress.value = 1;
         traceRaf.current = null;
         return;
       }
-      setTraceState({ key, progress: p });
+      traceProgress.value = p;
       traceRaf.current = requestAnimationFrame(step);
     };
     step();
@@ -110,7 +118,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
   // no longer drawn) drops the "Traced" line rather than naming another.
   const tracedIndex = traceState ? analysis.reflections.findIndex((r) => reflectionKey(r) === traceState.key) : -1;
   const traced = tracedIndex >= 0 && shown.includes(analysis.reflections[tracedIndex]) ? analysis.reflections[tracedIndex] : undefined;
-  const trace: Trace = traced && traceState ? { index: tracedIndex, progress: traceState.progress } : null;
+  const trace: Trace = traced && traceState ? { index: tracedIndex, progress: traceProgress } : null;
 
   const bezel: BezelItem[] = [
     { k: 'MODE', v: mode ? fmtHz(mode.f) : '—', flex: 1.1 },

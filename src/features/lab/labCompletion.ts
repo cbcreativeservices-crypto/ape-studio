@@ -286,6 +286,14 @@ export function useLabDone(labKey: string): boolean {
   return v;
 }
 
+/** `prev` when `next` holds exactly the same units (pure; exported for the
+ *  perf receipt). A fresh Set is still returned on any real change. */
+export function keepIfSameSet(prev: ReadonlySet<string>, next: ReadonlySet<string>): ReadonlySet<string> {
+  if (prev.size !== next.size) return next;
+  for (const u of next) if (!prev.has(u)) return next;
+  return prev;
+}
+
 /** Reactive cleared-unit set for a lab — hub homes tick the modules a user
  *  has already viewed/passed (design+learning pass 2026-08-31: both the
  *  Digital and Meter reviews independently flagged "11 rows, zero memory of
@@ -294,7 +302,11 @@ export function useLabClearedUnits(labKey: string): ReadonlySet<string> {
   const read = () => new Set(cleared[labKey] ?? []);
   const [v, setV] = useState<ReadonlySet<string>>(read);
   useEffect(() => {
-    const l = () => setV(read());
+    // Same units ⇒ the SAME Set, so React skips the render (perf hunt
+    // 2026-10-03): the mount-time hydrate and every unit banked in ANY lab
+    // re-rendered every mounted lab screen and hub — the whole page tree —
+    // with an identical copy.
+    const l = () => setV((prev) => keepIfSameSet(prev, read()));
     listeners.add(l);
     // `live`: a hydrate that lands after this effect was replaced (a new key)
     // or unmounted must not write the OLD key's value (pattern hunt P2/P11,
@@ -473,7 +485,13 @@ export function useLabCompletion(labKey: LabKey): { complete: boolean; cleared: 
   };
   const [snap, setSnap] = useState(read);
   useEffect(() => {
-    const l = () => setSnap(read());
+    // Unchanged progress keeps the same object, so React skips the render
+    // (perf hunt 2026-10-03 — see useLabClearedUnits).
+    const l = () =>
+      setSnap((prev) => {
+        const next = read();
+        return prev.complete === next.complete && prev.cleared === next.cleared && prev.total === next.total ? prev : next;
+      });
     listeners.add(l);
     // `live`: the same newest-wins rule as useLabDone (pattern hunt P2/P11,
     // 2026-10-02).

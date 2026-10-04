@@ -27,7 +27,11 @@ import { allAnswered, answerQuestion, completeCareerFinder, firstUnansweredIndex
 import { FinderShell, NavButton, ProgressBar } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
 
-const ADVANCE_MS = 450;
+// The beat between choosing an answer and the next question (perf hunt
+// 2026-10-03: was 450 ms). The ✓ and the highlighted row land on the tap
+// itself, so the beat only has to let the eye register the choice; 450 ms × 28
+// questions was ~12.6 s of waiting on a finished answer. Reduce Motion stays 0.
+const ADVANCE_MS = 300;
 const STEM = 'How would you feel about ';
 const MILESTONE: Record<number, string> = { 6: 'A quarter done', 13: 'Halfway — 14 to go', 20: 'Last seven' };
 

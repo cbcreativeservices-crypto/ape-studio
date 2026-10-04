@@ -8,7 +8,7 @@
  * necessary. It does not: this is reached from Profile, and from the old
  * Pro Registry routes, which still resolve here.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -22,6 +22,7 @@ import {
   blockMember,
   fetchPublicProfile,
   reportMember,
+  takePrefetchedPublicProfile,
   fetchContactAllowance,
   sendContactRequest,
   type ContactAllowance,
@@ -44,6 +45,13 @@ export function AudioCommunityDirectoryScreen() {
   const navigation = useNavigation();
   const [tab, setTab] = useState<Tab>('explore');
   const [memberToken, setMemberToken] = useState<string | null>(null);
+  /** The tapped card's display name, so the sheet's title is right from its
+   *  first frame instead of "MEMBER" until the profile read lands. */
+  const [memberSeedName, setMemberSeedName] = useState<string | undefined>(undefined);
+  const openMember = useCallback((token: string, name?: string) => {
+    setMemberSeedName(name);
+    setMemberToken(token);
+  }, []);
   // [77] (2026-09-07): members blocked during this visit. The block model is
   // "neither party sees the other", so a blocked member must leave the Explore
   // results immediately, not at the next search.
@@ -85,12 +93,22 @@ export function AudioCommunityDirectoryScreen() {
         ))}
       </View>
 
-      {tab === 'explore' ? <ExploreView onOpenMember={setMemberToken} hiddenTokens={blockedTokens} /> : null}
+      {/* Explore stays MOUNTED across tab switches (perf hunt 2026-10-03):
+          unmounting it threw away the results, the search text and the
+          filters, so every return from My Profile / Requests started over at
+          a spinner and a fresh search. Hidden with display:none, and told it
+          is inactive so it refreshes in the background when shown again.
+          My Profile and Requests still mount fresh — their reloads (and My
+          Profile's flush-on-leave) depend on it. */}
+      <View style={tab === 'explore' ? st.pane : st.paneHidden}>
+        <ExploreView onOpenMember={openMember} hiddenTokens={blockedTokens} active={tab === 'explore'} />
+      </View>
       {tab === 'profile' ? <MyProfileView /> : null}
       {tab === 'requests' ? <RequestsView /> : null}
 
       <MemberSheet
         token={memberToken}
+        seedName={memberSeedName}
         onClose={() => setMemberToken(null)}
         onBlocked={(t) => setBlockedTokens((prev) => (prev.includes(t) ? prev : [...prev, t]))}
       />
@@ -102,10 +120,13 @@ export function AudioCommunityDirectoryScreen() {
  *  block and report controls. This is the same projection the web page renders. */
 function MemberSheet({
   token,
+  seedName,
   onClose,
   onBlocked,
 }: {
   token: string | null;
+  /** The name on the card that was tapped — the title until the read lands. */
+  seedName?: string;
   onClose: () => void;
   /** [77]: tell the host a token was blocked so Explore drops it right away. */
   onBlocked?: (token: string) => void;
@@ -160,7 +181,9 @@ function MemberSheet({
     }
     setBusy(true);
     setSettled(false);
-    void fetchPublicProfile(token).then((d) => {
+    // The read Explore started on press-IN, when there is one (one-shot: a
+    // RETRY bumps reloadKey and finds none, so it always reads fresh).
+    void (takePrefetchedPublicProfile(token) ?? fetchPublicProfile(token)).then((d) => {
       if (!alive) return;
       setData(d);
       setBusy(false);
@@ -183,7 +206,7 @@ function MemberSheet({
         <View style={[st.sheet, { paddingBottom: 14 + insets.bottom }]}>
           <View style={st.sheetHead}>
             <Text accessibilityRole="header" style={st.sheetTitle}>
-              {p ? p.displayName.toUpperCase() : 'MEMBER'}
+              {p ? p.displayName.toUpperCase() : !settled && seedName ? seedName.toUpperCase() : 'MEMBER'}
             </Text>
             <Pressable
               onPress={onClose}
@@ -542,6 +565,8 @@ function ReportSheet({
 const st = StyleSheet.create({
   allowance: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 4 },
   root: { flex: 1, backgroundColor: colors.screenBg },
+  pane: { flex: 1 },
+  paneHidden: { display: 'none' },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10 },
   back: { width: 40, height: 44, alignItems: 'center', justifyContent: 'center' },
   backGlyph: { fontFamily: fonts.oswaldMedium, fontSize: 26, color: colors.textSub },

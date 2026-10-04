@@ -56,6 +56,18 @@ import { anchorOffset, baseSize, compaction, factorOf, fitFactor, isLandscape, t
  *  keeps it folded on the next display this session), never a relaunch. */
 let dockFoldedCache = false;
 
+/**
+ * The drawing at its zoomed size, called from a CHILD's render (perf hunt
+ * 2026-10-03). Called inline, `render(w, h)` ran on every render of the host
+ * page once full screen had been opened and closed (the body keeps its
+ * measured size) — every fader frame built the drawing twice, once for a
+ * Modal that was not even showing. As a child it runs only when the Modal
+ * renders its content: while open, and through its closing fade.
+ */
+function FullDrawing({ render, w, h }: { render: (w: number, h: number) => ReactNode; w: number; h: number }) {
+  return <StageInFullScreen.Provider value>{render(w, h)}</StageInFullScreen.Provider>;
+}
+
 export function StageFullScreen({
   visible,
   onClose,
@@ -321,7 +333,7 @@ export function StageFullScreen({
                   <StageAspectReport.Provider value={report}>
                     <StageGlassWidth.Provider value={glassW ?? 0}>
                       <StageTextScale.Provider value={textScale}>
-                        <StageInFullScreen.Provider value>{render(w, h)}</StageInFullScreen.Provider>
+                        <FullDrawing render={render} w={w} h={h} />
                       </StageTextScale.Provider>
                     </StageGlassWidth.Provider>
                   </StageAspectReport.Provider>

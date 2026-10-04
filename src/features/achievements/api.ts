@@ -24,6 +24,8 @@ import { fetchAwardProgress } from '../awards/api';
 import { topicImagePath } from '../../data/topicImages';
 
 import { myUserRowOrThrow } from '../account/myUserRow';
+import { withDeadline } from '../../lib/boundedCall';
+import { SESSION_TIMEOUT_MS } from '../../lib/getSessionSafe';
 export type TopicStatus = 'complete' | 'passed_incomplete' | 'unlocked' | 'locked';
 
 export type TopicAchievement = {
@@ -73,23 +75,112 @@ async function internalUserId(): Promise<string | null> {
   return row?.id ?? null;
 }
 
+/* ── SHARED READS (perf hunt 2026-10-03) ─────────────────────────────────
+ *
+ * The Trophy Case hub reads the topic overlay and the earned credentials;
+ * tapping TOPICS, CERTIFICATES or PROGRAMS then read them ALL AGAIN from
+ * scratch — and a Certificates wall read the earned credentials twice at once
+ * (its list + its NEXT UP slot). So every drill-in sat on a blank list for the
+ * same round trips the hub had just made.
+ *
+ * `shared()` lets callers reuse a read that is IN FLIGHT or that STARTED in
+ * the last RECENT_MS, for the SAME signed-in identity:
+ *  • keyed by the auth user id, so another account never sees this one's;
+ *  • a FAILED read is dropped at once, so Retry always goes to the server
+ *    (and a failure is never served as an answer — three faces unchanged);
+ *  • short: a drill-in a moment after the hub, never a cache that outlives a
+ *    quiz. Nothing in the Trophy Case can earn anything inside that window.
+ * The screens' own newest-load-wins tickets are untouched.
+ */
+const RECENT_MS = 8_000;
+type Slot<T> = { cur: { key: string; at: number; p: Promise<T> } | null };
+const topicSlot: Slot<TopicAchievementData> = { cur: null };
+const gallerySlot: Slot<GalleryEntry[]> = { cur: null };
+const credsSlot: Slot<EarnedCredentialRow[]> = { cur: null };
+const nearestSlots: Record<'certificate' | 'program', Slot<NearestCredentialResult>> = {
+  certificate: { cur: null },
+  program: { cur: null },
+};
+
+/** Whose reads these are: the auth uid, 'guest' with no session, or null when
+ *  the session itself could not be read (then nothing is shared). */
+async function identityKey(): Promise<string | null> {
+  try {
+    const { data } = await withDeadline(() => supabase.auth.getSession(), 'achievements identity', SESSION_TIMEOUT_MS);
+    return data.session?.user?.id ?? 'guest';
+  } catch {
+    return null;
+  }
+}
+
+async function shared<T>(slot: Slot<T>, read: () => Promise<T>): Promise<T> {
+  const key = await identityKey();
+  if (key == null) return read();
+  const hit = slot.cur;
+  if (hit && hit.key === key && Date.now() - hit.at < RECENT_MS) return hit.p;
+  const entry = { key, at: Date.now(), p: read() };
+  slot.cur = entry;
+  entry.p.catch(() => {
+    if (slot.cur === entry) slot.cur = null;
+  });
+  return entry.p;
+}
+
+/** The earned credentials, shared across this module's readers (see above). */
+function myCredentialsShared(): Promise<EarnedCredentialRow[]> {
+  return shared(credsSlot, fetchMyCredentials);
+}
+
+/**
+ * Warm the reads a Trophy Case drill-in is about to make — called on PRESS-IN
+ * of the hub's cards and the Topics screen's gallery link, so the next screen
+ * finds them in flight (or done). Fire-and-forget: a failure here is dropped
+ * and the screen's own read reports it.
+ */
+export function prefetchTrophyCase(target: 'topics' | 'certificate' | 'program' | 'gallery'): void {
+  const quiet = (p: Promise<unknown>) => void p.catch(() => {});
+  if (target === 'topics') quiet(fetchTopicAchievementsShared());
+  else if (target === 'gallery') quiet(fetchGalleryV3Shared());
+  else {
+    quiet(fetchEarnedCredentialsByType(target));
+    quiet(fetchNearestCredentialShared(target));
+  }
+}
+
 /**
  * The whole v3 topic curriculum grouped Field → Subject, overlaid with the
  * caller's per-topic status. A guest / unlinked account still gets the full
  * structure with every topic `locked` (an honest "nothing earned yet" grid).
  */
-export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
-  // STRICT curriculum (evening hunt 2026-10-02): the lenient read resolves `[]`
-  // on failure, which drew an empty Trophy Case — "0 / 0", no subjects — as a
-  // fact instead of reaching the screens' error + Retry.
-  const [fieldsRaw, userId] = await Promise.all([fetchV3CurriculumStrict(), internalUserId()]);
+export function fetchTopicAchievementsShared(): Promise<TopicAchievementData> {
+  return shared(topicSlot, fetchTopicAchievements);
+}
 
-  const statusById = new Map<string, { status: TopicStatus; dateEarned: string | null }>();
-  if (userId) {
+export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
+  /** The caller's progress rows, or null for a guest. Throws on a failed read
+   *  (see the ⛔ note below). */
+  const readMyProgressRows = async () => {
+    const userId = await internalUserId();
+    if (!userId) return null;
     const { data: prog, error } = await supabase
       .from('student_achievement_progress')
       .select('achievement_id, status, date_earned')
       .eq('user_id', userId);
+    if (error) throw error;
+    return (prog ?? []) as { achievement_id: string; status: string; date_earned: string | null }[];
+  };
+  // STRICT curriculum (evening hunt 2026-10-02): the lenient read resolves `[]`
+  // on failure, which drew an empty Trophy Case — "0 / 0", no subjects — as a
+  // fact instead of reaching the screens' error + Retry.
+  //
+  // The progress read rides ALONGSIDE the curriculum (perf hunt 2026-10-03):
+  // it used to wait for both the curriculum and the identity read, so a first
+  // open of the Trophy Case paid curriculum + progress in series. Now it is
+  // max(curriculum, identity → progress).
+  const [fieldsRaw, progRows] = await Promise.all([fetchV3CurriculumStrict(), readMyProgressRows()]);
+
+  const statusById = new Map<string, { status: TopicStatus; dateEarned: string | null }>();
+  if (progRows) {
     /**
      * ⛔ Surface the failure. supabase-js RESOLVES with `{ data: null, error }`
      * on an RLS denial or a PostgREST error, so dropping `error` left
@@ -105,8 +196,7 @@ export async function fetchTopicAchievements(): Promise<TopicAchievementData> {
      * below already throws for exactly this reason; this site was missed.
      * (overnight hunt 2026-09-23)
      */
-    if (error) throw error;
-    for (const p of (prog ?? []) as { achievement_id: string; status: string; date_earned: string | null }[]) {
+    for (const p of progRows) {
       statusById.set(p.achievement_id, {
         status: (p.status as TopicStatus) ?? 'locked',
         dateEarned: p.date_earned ?? null,
@@ -173,6 +263,10 @@ export type GalleryEntry = {
 
 /** Earned topic trophies, newest first — the chronological "everything earned"
  *  wall. v3-scoped (replaces the v1 `courses`-joined fetchGallery). */
+export function fetchGalleryV3Shared(): Promise<GalleryEntry[]> {
+  return shared(gallerySlot, fetchGalleryV3);
+}
+
 export async function fetchGalleryV3(): Promise<GalleryEntry[]> {
   const userId = await internalUserId();
   if (!userId) return [];
@@ -203,7 +297,7 @@ export async function fetchGalleryV3(): Promise<GalleryEntry[]> {
 export async function fetchEarnedCredentialsByType(
   type: 'certificate' | 'program',
 ): Promise<EarnedCredentialRow[]> {
-  const all = await fetchMyCredentials();
+  const all = await myCredentialsShared();
   return all.filter((c) => c.type === type);
 }
 
@@ -215,7 +309,7 @@ export type HubData = {
 
 /** Everything the Trophy Case hub needs, in one call (fans out internally). */
 export async function fetchAchievementsHub(): Promise<HubData> {
-  const [topicData, creds] = await Promise.all([fetchTopicAchievements(), fetchMyCredentials()]);
+  const [topicData, creds] = await Promise.all([fetchTopicAchievementsShared(), myCredentialsShared()]);
   const certs = creds.filter((c) => c.type === 'certificate');
   const progs = creds.filter((c) => c.type === 'program');
   return {
@@ -235,6 +329,10 @@ export type NearestCredentialResult =
   | { kind: 'all_earned' }
   | { kind: 'none_published' };
 
+export function fetchNearestCredentialShared(type: 'certificate' | 'program'): Promise<NearestCredentialResult> {
+  return shared(nearestSlots[type], () => fetchNearestCredential(type));
+}
+
 export async function fetchNearestCredential(
   type: 'certificate' | 'program',
 ): Promise<NearestCredentialResult> {
@@ -244,8 +342,8 @@ export async function fetchNearestCredential(
     // as "COMING SOON — No certificates available yet". So an outage read as a
     // product decision, and the caller's own error branch was unreachable.
     type === 'certificate' ? fetchV3CertsStrict() : fetchV3ProgramsStrict(),
-    fetchMyCredentials(),
-    fetchTopicAchievements(),
+    myCredentialsShared(),
+    fetchTopicAchievementsShared(),
   ]);
   if (catalog.length === 0) return { kind: 'none_published' };
 
