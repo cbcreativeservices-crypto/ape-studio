@@ -8,7 +8,7 @@
  * "OVER CEILING BY 0". The worked steps say the same thing in words.
  */
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { registerHooks } from 'node:module';
 import path from 'node:path';
 import { describe, it } from 'node:test';
@@ -93,4 +93,10 @@ describe('calcCeiling — OVER CEILING BY (owner ruling 2026-10-04)', () => {
       }
     }
   });
+});
+
+it('Loudness Normalization: over the ceiling also reads OVER CEILING BY (owner 2026-10-04)', () => {
+  const src = readFileSync(new URL('../src/screens/lab/calc/workspaces/loudness.ts', import.meta.url), 'utf8');
+  assert.doesNotMatch(src, /LIMITING NEEDED/);
+  assert.match(src, /over > 0 \? 'OVER CEILING BY' : 'HEADROOM TO CEILING'/);
 });

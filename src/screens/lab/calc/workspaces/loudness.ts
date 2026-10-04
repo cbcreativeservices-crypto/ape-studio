@@ -74,7 +74,7 @@ const LOUDNORM: Workspace = {
         return [
           { label: 'GAIN CHANGE', value: gain, quantity: 'db' },
           { label: 'RESULTING TRUE PEAK (dBTP)', value: newTP, quantity: 'number', chainable: false },
-          { label: over > 0 ? 'LIMITING NEEDED' : 'HEADROOM TO CEILING', value: Math.abs(over), quantity: 'db', chainable: false },
+          { label: over > 0 ? 'OVER CEILING BY' : 'HEADROOM TO CEILING', value: Math.abs(over), quantity: 'db', chainable: false },
         ];
       },
       table: () => ({
