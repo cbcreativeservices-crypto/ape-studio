@@ -1,0 +1,107 @@
+# Timbales — Miking Technique Research
+Lab: 1. Membranophones — Drums and Drumheads
+Sequence: After congas and bongos; before djembe. One instrument in this installment.
+Scope: Miking for studio and live sound. No audio examples.
+# Learning goals
+Identify head, rim, and shell playing; choose a shared or individual microphone arrangement; judge whether the cáscara shell pattern and mounted accessories are represented; prevent a microphone or cable entering the stick path; distinguish a quieter studio setup from a loud stage; and inspect mono summation and monitor interaction when several channels are open. [1–6]
+# Source first: what is being played?
+A traditional timbale pair is a pair of shallow single-headed drums on a stand. Players may strike heads and rims for drum tones and accents, and the metal shells for **cáscara** patterns. The pair often supports cowbells or blocks and perhaps a cymbal. The **head** sound is the membranophone part of this lesson. The shell and rim are solid-body contributions that need to be captured when the part uses them; cowbells, blocks, and cymbals are distinct idiophones and get their own lessons and cross-links. Latin Percussion's timbale models explicitly provide a cáscara surface, rims, a stand, and a bracket for bells. Ask the player which surfaces and mounted items occur in the entire musical passage before designing the miking. [1, 2]
+The smaller and larger drum can have very different level and tone. The arrangement, tuning, stick choice, room, and player determine whether the heads, rimshots, shell rhythm, or bells need independent control. Listen from the proposed microphone positions, inspect rattles and secure hardware with the player, and avoid changing a musical setup simply to fit a mic. The striking envelope can extend above both heads and around the outer shells and accessories. [1–4]
+# Choose a starting arrangement
+Approach
+Placement and intended result
+Main test and tradeoff
+One shared mic above the pair
+Shure proposes one microphone aiming down between the two top heads, just above them. Start only after identifying a safe stick clearance; aim or shift slightly if one drum or shell pattern is weak. [3]
+Minimal channel count and a coherent pair. Bell/cymbal pickup and spill may be too strong; “just above” is not a universal distance or clearance. Check the full musical phrase.
+One shared mic between/near shells
+An Ozomatli front-of-house engineer reports a D2 placed right between the timbale shells. Use this as a tested *case-specific* perspective on the shell area, then check whether the heads and rimshots remain usable. [4]
+Can favor cáscara, but an exact capsule direction and distance were not published. Do not infer that any arbitrary mic wedged between shells is safe, mechanically sound, or equivalent.
+One mic per drum
+Put a suitable compact directional mic outside the stick/rim path of each head, aimed to represent the required head and rim strokes; consider a lower or more sideward aim only if the shell part needs it. An arena percussion setup used one miniature instrument mic per timbale. [5]
+Separate level and placement control, with more channels, overlapping pickup, possible stand or clamp noise, and the need to check combined sound. The source confirms mic count, not its exact geometry.
+Main pair plus optional overhead or accessory spot
+A separate percussion overhead can cover bells/cymbals and the overall setup when the live PA or studio part requires it. A published tour used individual timbale mics alongside percussion overheads; another engineer account describes under-rim dynamics with an X/Y overhead pair. [5, 6]
+Every additional open mic captures overlapping sources and stage spill. Bring channels in only when they solve a documented coverage or control problem; check mono, accessory balance, and feedback.
+
+The shell-oriented and above-head starting points differ because they prioritize different sound-producing surfaces. Neither proves that all timbales require multiple mics. A player whose part is mostly heads and rimshots may favor a top-oriented pickup; a continuous cáscara may need a repositioned spot or a separate perspective; a loud bell can dominate a broad mic. These are hypotheses to test with the performer, not fixed frequency or balance laws. [1–6]
+# Placement choices and tone
+Head and rim emphasis. Start a directional mic above the heads but outside the entire stick arc, and aim for a balance of the two drums. Moving a mic toward one drum tends to raise that drum relative to the other. Closer positions generally raise direct sound relative to the room and nearby instruments, while changing the exact balance of head, rim, stick contact, and off-axis sources. Make one move at a time, then ask for head strokes, rimshots, and rolls at performance intensity. Avoid a microphone immediately above a common rimshot target. [3, 7]
+Shell pattern. Ask the player to show precisely where the sticks contact each shell. If a shared top mic loses that pattern, trial a sideward aim toward the active shell area or a separate safe mic lower between/near the shells. Keep the capsule, mount, and cable clear of shell strikes and tension hardware. The Audix tour account documents a between-shell mic, but does not give enough detail to mandate a particular pattern, distance, or frequency response. [1, 4]
+Accessories. Identify which mounted bell, block, or cymbal is in the actual part. Aim a head mic so a loud accessory is not unnecessarily on-axis; reposition only with the player's approval. If the accessory needs independent control, test an additional spot or overhead and reduce redundant open channels. The cowbell and other solid-body instruments belong in Idiophones; here they matter because their spill can overpower the timbale channel. Do not promise a cardioid null or an EQ move will remove a nearby ringing bell at every frequency. [1, 5, 8]
+Mic type. A compact dynamic can be useful for close stage placement; an appropriate condenser can be useful for a broader percussion view or a miniature mount. Use actual model specifications for pattern, physical clearance, mounting, powering, pad, and peak-SPL capability. A transducer class by itself does not guarantee “warmth,” isolation, resilience to every peak, or safety from a stick hit. The Audix and DPA live accounts demonstrate more than one practical hardware strategy. [4, 5]
+# Studio and live conditions
+Condition
+Start here
+Verify
+Quiet studio, limited channels
+A shared mic above the pair at a safe distance; move it until heads, rimshots, and cáscara have a usable relationship. [3]
+Hear the room and accessories. If a separate bell or shell part cannot be balanced, add only the spot that supplies needed control.
+Studio with extensive percussion
+Establish the timbale sound alone; then audition optional shell or percussion overhead channels and the other instruments together. [5, 6]
+Evaluate mono and stereo playback, duplicated bell/cymbal pickup, and the bleed among open mics.
+Loud stage with wedges
+Compact directional spots or a well-placed shared close mic, safely mounted and checked with the real PA. [4, 5, 8]
+Audience coverage, monitor positions, drum/cymbal spill, actual gain before feedback, and whether the overhead can remain out of an unnecessary wedge mix.
+Stage with many accessories
+Treat the whole player's setup as a moving performance zone; start with the essential drum channel(s), then add a separate accessory channel only if needed.
+Bells, blocks, or cymbals may be louder than the heads and may enter multiple mics. Check the sound of the entire passage with the player.
+
+A documented engineer technique does not transfer unchanged to every PA. Shure explains that feedback depends on the loudspeaker, microphone, room, and gain. Position speaker and mic using the *actual* polar pattern; a supercardioid's rear lobe differs from a cardioid's rear null. A percussion overhead that is useful for a recording or main PA may be unnecessary or problematic in a nearby stage wedge. Decide monitor feeds with the system operator and avoid deliberately generating feedback. [8]
+# Physical and electrical safety
+Stop the player before moving a stand, clamp, microphone, or cable. Have the player show the widest head, rim, shell, and accessory strikes as well as movement between instruments. Keep every mic and boom outside those paths. Use stable, properly rated stands and compatible clips only, secure clamps and cables with strain relief, and avoid putting any hardware where it might drop onto the player. Mount nothing to an instrument or venue structure without appropriate permission and hardware. Recheck after the full-intensity passage and after a changeover. A clip-on is not automatically safer: it can contact a stick, transfer vibration, or loosen a mount. [4, 5; these rigging steps are instructional safety inference]
+Set preamp gain and any mic/input pad based on the strongest real rimshot and bell, checking for distortion in the mic, preamp, and later stages. Follow the actual equipment manuals for power; mute or lower affected outputs and monitor feeds before cable or phantom changes. A pad after an overloaded microphone capsule cannot repair distortion already made there. Loud percussion soundchecks create human hearing exposure independently of the microphone's published SPL rating: minimize unnecessary repetitions and follow venue protection procedures and NIOSH guidance. [9, 10]
+# Multiple microphones: phase, image, and control
+With a pair of spots, each mic may hear both drums and the accessories at different times and levels. Begin with one mic at a realistic level; add the second, check the complete phrase in mono, and watch for thin drum tone, shifted attacks, or a bell that becomes surprisingly prominent. Move or re-aim the source mic and compare the available polarity switch when appropriate. Electrical polarity inversion is not a time-alignment control; no fixed “correct” polarity exists for all timbale rigs. Add any overhead, shell, or accessory mic one at a time and repeat the check. [11]
+In stereo, keep the pair's image appropriate for the musical arrangement and listener coverage. A mono PA or off-axis audience may need a shared or centered timbale feed even if separate mics exist; check the actual system rather than hard-panning the two drums by habit. [8, 11]
+# Guided practical exercise
+1.Map the performance. Identify heads, rimshot zones, shell-contact zones, bells, blocks, and cymbals. Ask the player for a complete passage with the quietest repeated cáscara and strongest accents. [1, 2]
+2.Set one shared mic. With the player stopped, place it above and between the heads at safe stick clearance. Confirm stand stability, gain/headroom, both drums, rimshots, cáscara, and bell spill. [3]
+3.Change one geometry variable. Compare higher/lower within the safe range, then top-oriented versus a safe shell-oriented aim. Note which element rises or falls; do not infer a universal distance from a one-off result. [3, 4]
+4.Try independent coverage. If the single mic cannot supply the required balance or isolation, use one mic per drum or a shell perspective, documenting why. Add any accessory/overhead mic only for a demonstrated need. Test every combination in mono. [4–6, 11]
+5.For live sound, verify with the PA. Under a qualified operator, set monitor routing and practical level, inspect stage spill and feedback margin, and re-check all sticks and cables at full movement. [8–10]
+6.Document the decision. Record the instrument and accessory layout, mic aim, approximate measured geometry, pattern, mounting, why it was chosen, and any remaining limitation.
+# Troubleshooting and assessment
+Observation
+Inspect
+First adjustment to test
+One drum dominates
+Shared aim and drummer dynamics.
+Shift/aim toward quieter drum, or use separate spots if necessary. [3]
+Cáscara vanishes beneath heads
+Is the mic aimed only at top heads; where is shell struck?
+Try a safe sideward/shell perspective and assess head tradeoff. [1, 4]
+Bell or cymbal overwhelms drum
+Accessory placement, mic aim, other open channels.
+Discuss accessory position with player; re-aim or add independent pickup only if justified. [1, 5]
+Sharp rimshot distorts
+Mic rating, pad location, preamp gain, actual peak.
+Reduce input gain or use the appropriate pre-capsule pad/model per manual; recheck strongest hits. [9]
+Full setup becomes thin in mono
+Overlapping timbale, shell, accessory, and overhead channels.
+Solo and reintroduce one at a time; move/aim before polarity comparison. [11]
+Mic or cable struck
+Full head, shell, and accessory stick paths.
+Stop, mute, secure and move the rig; repeat clearance check.
+
+Passing result: The learner names what makes each sound, safely demonstrates a shared position, compares it to a shell-oriented or separate-spot arrangement with the player, documents the effect on head/rim/cáscara/accessories, and checks any multi-mic setup in mono. A live exercise also requires qualified review of PA/monitor operation. No audio examples are included.
+# Critical source audit
+Agreement. Latin Percussion establishes the drum construction, cáscara surface and mounted accessory bracket. Shure gives one mic aimed down between the heads as a starting placement. Two actual touring accounts demonstrate different solutions: one mic between shells, and individual timbale mics together with percussion overheads. All support selecting placement based on the part and system rather than one model as a rule. [1–5]
+Different emphases. The Shure general guide emphasizes economical capture of the paired heads. Audix's FOH interview describes a shell-area mic in one band's specific live arrangement. DPA's case includes many open percussion channels on a large tour. An interview with several Latin engineers includes an under-rim-plus-X/Y-overhead approach for head and shell detail, but this is a studio preference, not a safe default for a crowded stage. [3–6]
+Direct contradiction. These sources do not provide comparable controlled tests showing one placement defeats another in the same setting. One manufacturer's product claims or an engineer's preferred model cannot establish a universal ideal. [3–6]
+Gaps. The tour cases do not report capsule-to-drum distances, exact aiming, or verified clearance, and none of the sources gives universal stick clearance, guaranteed live feedback margin, a numerical head-to-cáscara balance, or a fixed polarity for multiple channels. An app should present qualitative outcomes and require real-player and qualified-stage checks. [1–11]
+# Curriculum and app presentation
+This timbales installment concludes the named congas–bongos–timbales cluster in Membranophones; **djembe** follows in the agreed list. Shell/rim contributions are explained here as part of playing the timbales. Mounted cowbells, woodblocks, and cymbals cross-link to their Idiophones lessons. The Drum Overheads lesson contains the full Glyn Johns kit technique and is linked from the drum-kit overview; it is not a timbale-pair setup.
+Show an accurate top and side view of two single-headed shallow drums on their stand, with head, rim, shell-contact zones, actual accessory positions, sticks and movement arcs. Let learners choose shared top, safe shell-oriented, individual spots, or optional percussion overhead; indicate likely qualitative capture and bleed. Require an explicit safe-clearance check, full-phrase balance test, and mono check for multiple channels. Live mode shows monitor/PA positions and gain-before-feedback as an empirical system outcome, not a promised numeric result. No audio examples.
+# References
+[1] Latin Percussion, Tito Puente 14/15 timbales product documentation (single heads, cáscara, stand, bell bracket) and Prestige rim/shell descriptions.  Read source 1 <https://www.lpmusic.com/products/lp257-tito-puente-14-15-timbales/>  Read source 2 <https://www.lpmusic.com/products/lp1314-prestige-13-14-timbales/>
+[2] Latin Percussion, Pedrito Martinez timbales product description, rims and cáscara.  Read source <https://www.lpmusic.com/products/lp1415-pm-pedrito-14-15-steel-timbales/>
+[3] Shure, *Microphone Techniques for Recording*, timbales/congas/bongos table.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[4] Audix interview with Ozomatli FOH engineer Reiley Brinser, D2 between timbale shells.  Read source <https://audixusa.com/blogs/case-studies/reiley-brinser-mixes-the-multi-cultural-sound-of-ozomatli-with-audix>
+[5] DPA Microphones, Jonas Brothers touring percussion case, individual 4099s on two timbales and 4011 overheads for percussion.  Read source <https://www.dpamicrophones.com/news/2021/the-jonas-brothers-are-burnin-up-with-dpa/>
+[6] Dan Daley, “Recording Latin Percussion,” *Sound On Sound*, interviews with Latin engineers including Boris Milan.  Read source <https://www.soundonsound.com/techniques/recording-latin-percussion>
+[7] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[8] Shure, “How to Control Feedback in a Sound System” and *Microphone Techniques for Live Sound Reinforcement*.  Read source 1 <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>  Read source 2 <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[9] Shure, SM57 user guide (placement, maximum input context and proximity) and Yamaha, ZG01 phantom-power instructions as equipment-specific examples.  Read source 1 <https://www.shure.com/en-US/docs/guide/SM57>  Read source 2 <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>
+[10] CDC NIOSH, “Understand Noise Exposure.”  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[11] DPA Microphones, “Polarity, phase and delay.”  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>

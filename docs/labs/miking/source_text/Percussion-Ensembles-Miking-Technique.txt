@@ -1,0 +1,111 @@
+# Percussion Ensembles Miking Technique
+Pro Audio Training Academy • Ensembles and Voice Lab
+# Purpose and scope
+Capture or reinforce a percussion ensemble so that its rhythmic relationships, pitched parts and changes of texture remain intelligible. Choose the microphone arrangement around the musical balance and the required audience level. A useful setup may be a single microphone, a stereo main array, area microphones, individual spots, or a combination.
+This lesson covers groups using the instruments already in the Membranophones and Idiophones Labs: hand drums, concert drums, timpani, cymbals, small percussion and mallet instruments. It also covers one percussionist moving among several instruments. It supplies no audio examples. Refer to the individual instrument lessons for detailed placement; drum-kit overheads and the Glyn Johns technique remain in the drum-overhead lesson. That drum-kit geometry is not a general array prescription for an ensemble spread across a stage.
+# Learning outcomes
+Select a main pickup, area pickup or close-microphone approach and explain its musical purpose.
+Preserve the balance between soft details, pitched notes and loud accents across the complete piece.
+Identify tonal changes caused by distance, angle, room reflections and overlapping microphones.
+Plan live reinforcement around microphone coverage, loudspeaker rejection, headroom and performer movement.
+Document a repeatable setup and make a justified first change when it fails.
+# Understand the combined sound
+The ensemble is an extended source. A microphone that favors one cymbal or one end of a marimba can misrepresent the whole group. Check the complete score or set list: the quietest instrument, loudest accent, low notes, sustained rolls, instrument changes and walking routes all matter. A channel count based only on the number of players can miss essential sources.
+Close pickup changes the perspective and can favor local attack over the whole instrument. DPA explains that proximity, off-axis response, reflections and microphone or downstream overload must be evaluated together [1]. A directional microphone does not eliminate sound arriving through reflections. In this lesson, microphone sensitivity means electrical output per unit sound pressure; it does not by itself determine how much spill remains after channels are level matched.
+Instructor recommendation: rehearse the balance acoustically before placing microphones. Put quiet parts where the proposed main pickup can hear them, while keeping players' sightlines and normal technique. Moving a loud metal source away from a quiet shaker can be more effective than turning up a microphone that hears both. Agree on changes with the performers; do not substitute engineering convenience for the intended arrangement.
+# Plan before soundcheck
+Make a stage plot showing instruments, player positions, instrument changes, monitor wedges, mains and safe cable routes. Label each microphone by the source or area it serves. Note its model, polar pattern, power requirement, pad, height, distance, angle and routing. Plan enough input capacity for simultaneous sources rather than for an average moment in the piece.
+Set gain using the strongest passage the performers actually expect to play. Ask for both individual accents and the full ensemble. Check the microphone, external adapter or wireless transmitter, preamp and converter as applicable. A console input pad cannot repair distortion already produced upstream. Follow each device's specifications rather than assuming every dynamic or condenser has the same overload behavior [1].
+# Choose an arrangement
+Arrangement
+Useful when
+Main check
+One main microphone
+Mono documentation or a compact group with good acoustic balance
+Every essential instrument must remain audible
+Stereo main array
+Natural ensemble perspective in a suitable room
+Balance across width and depth plus mono summation
+Main array with limited spots
+The ensemble blends well but some parts need support
+Spots should clarify without pulling sources out of the main image
+Area microphones
+Players share stations or individual inputs are limited
+Coverage through every instrument change and overlap between areas
+Individual close microphones
+Loud live stages or production needing independent control
+Spill, local tonal bias, headroom and performer clearance
+
+Trial setup for teaching: for a compact group about 3 m wide, audition a main microphone or array roughly 2–3 m in front of the group, with capsules around 2–2.5 m above the floor. These are proposed classroom starting positions, not published optimum distances. Use suitably rated stands and keep overhead hardware out of reach. Adjust for room size, seating, source height and coverage; a wide or deep group may require a different approach entirely.
+Move the complete array to improve the ratio of direct sound to room sound and the balance between front and rear players. Raising it can change which surfaces and instruments dominate, but does not guarantee a better blend. Evaluate at a consistent, moderate monitoring level so a louder comparison does not automatically win.
+# Main stereo choices
+XY: use two matched cardioids with their acoustic centers as nearly coincident as practical, without touching. Start with a 90-degree angle and adjust coverage deliberately. XY uses level differences for stereo and minimizes arrival-time differences within the pair. AB: spaced microphones, commonly omnis, use arrival-time differences as well as level differences. Listen for a weak center and tonal changes when summed to mono. Shure describes these tradeoffs [2]; its broad ensemble spacing examples are not mandatory percussion dimensions.
+ORTF: use two cardioids with capsules 17 cm apart and microphone axes 110 degrees apart [3]. This is approximately 6.7 inches. Move the whole array to change coverage while retaining the defined geometry. Mid Side: place a forward-facing Mid microphone and a sideways figure-eight Side microphone nearly coincident. Decode Left = Mid + Side and Right = Mid − Side; balanced mono summation removes Side. Verify matrix polarity and channel routing [2].
+A wide image can make the spatial pattern of a percussion piece clear, but width is a production decision. Check whether quiet instruments at the edges become too soft. Keep a consistent audience or performer perspective when panning spots. Do not apply the 3 to 1 isolation guideline as a dimensioning rule for a stereo array intended to hear the same group.
+# Support individual sources
+Shure's recording guide gives a microphone above and between a pair of congas, bongos or timbales as one option. For mallet instruments it describes a pair above the instrument, approximately 18 inches high, with either spacing or a coincident arrangement [4]. Treat these as instrument-level starting approaches, not positions for an entire ensemble.
+Percussionist and recording engineer Rick Dior prefers greater distance for a large marimba in a good room, aiming for a complete, even image rather than exaggerating the low-to-high stereo spread. His personal guide suggests at least 8 feet when space allows [5]. This differs in intended perspective from Shure's closer pair; neither distance is a universal requirement. A marimba sharing a loud stage may need close reinforcement even if a more distant studio perspective is musically attractive.
+Recommendations for this lab:
+For hand-drum stations, compare one shared pickup with individual microphones. Test open tones, bass strokes and slaps on every drum. Keep hands and sticks clear; add lower-body support only if the musical role needs it.
+For marimba, vibraphone and other long keyboards, play low, middle and high registers at comparable dynamics. Reposition or redistribute microphones if some bars disappear. Compare attack with resonance, and listen for pedal, motor or frame noise where applicable. Never block resonator openings or touch vibrating bars.
+For concert bass drum and timpani, check whether the main array already supplies enough weight. Add support for a missing musical function; avoid making every low-frequency instrument artificially dominant.
+For cymbals, tambourine, triangle and bar chimes, test both accents and sustained or rolling gestures. A close microphone can overemphasize attack. Increase distance or change angle if the tone becomes harsh, while preserving the part's audibility.
+For shakers, maracas, claves and güiro, cover the actual movement envelope. A fixed capsule cannot follow an instrument swung out of its useful pickup area. Plan a station microphone and repeatable working position rather than asking for an unnaturally restricted performance.
+# One player with several stations
+Have the player demonstrate the complete choreography, including reaches, turns, pedal use and transitions. Place area microphones around useful playing zones, then add a dedicated microphone only for a source that remains inadequately covered. Confirm whether several stations sound simultaneously, as in a roll that continues while another instrument is struck.
+Instructor recommendation: compare one area microphone with two separately assigned areas. Solo each channel briefly to understand spill, then judge them together at their intended levels. Avoid covering the same loud cymbal equally with every area microphone. Label channels by station and provide clear mute or scene instructions for unused sources. Any scene changes must preserve the tails and overlaps intended by the piece.
+# Studio and live differences
+In a quiet studio or recital recording, the main array may establish the complete sound. Add spots from silence until the needed line becomes intelligible. Keep the ensemble's position in the stereo image consistent; use room microphones only when their decay helps the music. Dry, independently processed percussion production may instead call for closer sources and controlled room pickup. State that production goal before choosing placements.
+For live sound, first determine which parts already reach the audience adequately. Reinforce missing detail or balance rather than automatically amplifying every loud instrument. Main or area microphones may work on a quiet stage; stronger monitor or band levels may require closer directional pickup. Stereo reinforcement must also serve listeners away from the center: avoid placing an essential instrument only in one loudspeaker feed.
+Cardioids reject most strongly behind the capsule; supercardioids and hypercardioids have rear lobes and rejection regions off the rear axis. Use the actual model's polar diagrams to position monitors, and recheck after moving a microphone [6]. Shure's feedback guidance favors close source pickup, suitable loudspeaker placement and fewer unnecessary open microphones [7]. Turning up a distant microphone can also turn up the spill that caused the original masking.
+Lab procedure: establish useful reinforcement with moderate stage level, then check the loudest passage and the quietest transition. Lower gain immediately if ringing develops; revise placement and coverage before corrective EQ. Do not provoke sustained feedback as a teaching demonstration. Outdoor work needs suitable wind protection and weather protection that follow the equipment instructions. Secure stands and cables without interfering with player paths, pedals or instrument changes. Use hearing protection when exposure warrants it and keep ears away from close percussion strikes.
+# Overlap and timing
+When one strike reaches several microphones at different times, combining them can alter attack and tone. At an assumed sound speed of 343 m/s, a 1 m path difference corresponds to approximately 2.9 ms: 1 ÷ 343 seconds. This is an illustrative estimate, not a delay setting. Each player and instrument can have a different path difference, and reflected sound adds further arrivals.
+Compare the main pickup alone, each support channel, and their combination. First change position, angle or support level if the combination sounds worse. Polarity inversion changes signal sign; it does not remove arbitrary arrival-time differences. Do not automatically align every spot to one strike or to the nearest array capsule. Any deliberate delay requires evaluation across several sources, registers and listening positions. Preserve original tracks when testing timing changes for production.
+# Troubleshooting
+Symptom
+Possible cause
+First practical change
+Quiet percussion disappears
+Masking or poor coverage
+Check acoustic balance and microphone position before adding gain
+Pitched instrument has uneven notes
+Pickup favors one section of the bars
+Test the full register and revise coverage
+Metal accents are harsh
+Local attack or axis response dominates
+Increase distance or alter angle and reassess
+Blend becomes hollow with spots
+Overlap with different arrival times
+Reduce spots and compare positions and polarity
+Distortion on strong accents
+Overload somewhere in the chain
+Locate the clipping stage and correct it there
+Feedback begins in quiet passages
+Excessive reinforcement or open-channel pickup
+Lower gain then revise microphone and monitor geometry
+Clicks or rumbles follow movement
+Stand cable frame or mechanical noise
+Remove contact isolate the mount and secure cable slack
+
+# Teaching exercise and pass criterion
+1.Choose a compact ensemble with a hand-drum station, a mallet instrument and small percussion. Identify one quiet part, a sustained gesture, instrument changes and the strongest combined accent.
+2.Make a stage plot and complete the movement and stand-clearance check. Set initial gain and monitoring conservatively. Rehearse the intended musical balance.
+3.Establish one main mono or stereo pickup. Document placement and explain why each essential source remains audible. Check the stereo option in mono.
+4.Add no more than two support channels initially. Identify the specific musical problem each solves. Compare the main pickup alone and the complete arrangement at matched listening level.
+5.Adapt the arrangement for reinforcement. Place loudspeakers using the microphones' actual patterns. Check normal performance levels without deliberately inducing feedback; reassess every instrument transition.
+6.Explain and demonstrate the first appropriate change for masking, uneven register coverage, harsh metal tone, overload and movement noise. Record the final geometry and settings on the stage plot.
+Pass when the learner preserves the essential parts through loud and quiet passages, maintains headroom, demonstrates clear movement paths and explains the tradeoff between ensemble perspective and local control. The learner must identify which observations are placement dependent and which are electrical overload or routing problems. Physical performance and listening checks are exercises; this lesson includes no attached or linked audio examples.
+# Evidence audit and confidence
+Points of agreement: the relevant application guidance supports choosing pickup perspective for the source and purpose, and checking coverage rather than relying solely on a microphone model [1, 2, 4, 5]. Geometry and overlapping arrivals matter; reinforcement adds loudspeaker interaction [2, 6, 7]. No source establishes a universally best percussion-ensemble array.
+Different emphases: Shure supplies practical closer placements for individual percussion instruments [4]. Dior emphasizes a more distant complete marimba image in a suitable room [5]. These address different conditions and musical aims. DPA discusses tonal accuracy and isolation together [1]; the live feedback guide emphasizes system stability [7].
+Direct discrepancies: Shure's stereo article describes ORTF spacing as six inches [2]; SCHOEPS specifies 17 cm and 110 degrees [3]. The defined geometry is 17 cm, approximately 6.7 inches. Dior groups XY and ORTF under a coincident description [5]; XY is coincident, whereas ORTF is near-coincident. This lesson retains those distinctions.
+Gaps and uncertainty: the sources do not establish a controlled comparison covering every ensemble size, room, score and PA layout. The classroom distances, station workflow and exercise are instructor recommendations synthesized from the cited principles. Confidence is high in defined stereo geometry, polarity distinctions and rejection-pattern principles; moderate in these proposed starting arrangements; the actual best placement remains unverified until tested with the performers and room. Historical model lists are not current purchasing recommendations.
+# References
+[1] DPA Microphones, Eddy Bøgh Brixen. What is close miking and why use it. Application guidance on perspective, overload, reflections and off-axis response.  Read source <https://www.dpamicrophones.com/mic-university/audio-production/what-is-close-miking-why-use-it/>
+[2] Shure. Common Techniques for Stereo Miking. Stereo principles; ORTF spacing corrected using reference 3.  Read source <https://www.shure.com/en-US/insights/common-techniques-for-stereo-miking>
+[3] SCHOEPS. MSTC 74 ORTF Stereo Microphone. Defined geometry in technical specifications and product history.  Read source <https://schoeps.de/en/products/stereo/stereo-microphones/mstc-74.html>
+[4] Shure. Microphone Techniques for Recording. Printed page 20, percussion placement table.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[5] Rick Dior and Acoustic Barn Productions. Recommended Preamps and Microphones. First-person marimba practice; historical equipment list.  Read source <https://www.acousticbarn.com/rickspercussionsite/microphones.html>
+[6] Shure. Microphone Directionality and Polar Pattern Basics.  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[7] Shure. How to Control Feedback in a Sound System.  Read source <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>

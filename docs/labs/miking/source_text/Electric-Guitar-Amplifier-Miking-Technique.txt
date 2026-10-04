@@ -1,0 +1,91 @@
+# Electric Guitar Amplifier Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers microphones on electric-guitar amplifier speakers in studio and live settings. The learner will locate the actual speaker, change tone deliberately across its cone, compare close and room views, evaluate a second microphone or direct split, and protect hearing and electrical safety. The vibrating electric-guitar strings begin the signal, but the miking subject here is the air moved by the amplifier loudspeaker. Solid-state and valve amplifiers, combo and separate cabinets, and clean or distorted tones all use the same placement experiments. No audio examples are included.
+# Define the sound at the speaker
+Ask the guitarist to set the guitar, pedals, amp channel, cabinet and performance volume as they intend to play. The amplifier, speaker and cabinet are part of the sound. A microphone at the grille hears speaker and cabinet behavior; a dry guitar DI hears an earlier point in the chain. They are distinct sources for the mix. Confirm which speaker in a multi-speaker cabinet sounds best; the visible midpoint of a grille is not necessarily a speaker’s center.
+The dust cap is at the cone center, with the radiating cone extending to its surround. Position in front of the real speaker, without pushing the mic against the grille or speaker. Shure recommends a starting point near the border of dust cap and cone, then moving toward the center for more brightness or toward the edge for a smoother sound [1]. Sennheiser’s e 906 manual also describes the region between the dome and cone edge as a useful starting point [2]. These trends depend on the actual speaker, mic and playing tone.
+# A microphone-position map
+Placement change
+Likely tone to test
+Practical check
+Near dust-cap/cone boundary, close to grille
+Focused starting point [1, 2].
+Actual speaker center, clean and driven passages.
+Slide toward dust-cap center
+Brighter, more forward upper midrange [1, 2].
+Harshness with distortion, pick attack.
+Slide toward cone edge
+Smoother or darker local tone [1, 2].
+Loss of definition or excessive low-mid weight.
+Rotate slightly off axis
+A different high-frequency and off-axis balance.
+Mic-specific coloration, movement and bleed.
+Move back from grille
+More of speaker/cabinet and room, less isolation [3].
+Spill, reflections, phase with close mic.
+
+Shure’s PGA27 guide offers 1–6 inches (2–15 cm) as a general amplifier range, with center versus edge used for aggressive versus mellow sound [4]. This is a starting range, not a minimum distance or a limit. For a very close mic, use a stable stand or manufacturer-approved hanger; verify that the capsule, cable and stand cannot contact a moving cone or vibrating grille. Some flat side-address mics are designed to hang in front of an amp; point the correct face at the speaker and secure the cable according to that model’s instructions [2].
+# A reliable one-microphone procedure
+1.Verify the source and environment. Locate the driver, determine open- or closed-back cabinet, and note nearby drums, wedges, other amps and reflective walls. Keep the player’s normal tone settings and performance level while comparing positions. Do not change amplifier wiring to do a microphone exercise.
+2.Begin at the boundary. Place a suitable microphone a short distance from the grille near the dust-cap/cone boundary. A dynamic is common for close live work; a condenser or ribbon can be tried when its specifications, mounting and power conditions suit the actual level and environment [1, 3]. Set input gain with the loudest playing and leave headroom.
+3.Make small lateral moves. Compare center, boundary and outer cone using the same phrase at a matched monitoring level. With high-gain distortion, assess fizz, pick attack and midrange intelligibility in the full mix. A tiny move can matter more than changing the microphone model.
+4.Change angle and distance separately. If the chosen lateral point is too bright, compare a modest off-axis angle. Then try a little distance for cabinet integration. Monitor the amount of room and spill; a farther mic is a deliberate studio choice, not automatically better [3].
+5.Document the final geometry. Mark mic model, capsule orientation, speaker, lateral point, grille distance, angle and guitarist/amp settings. Recheck after the amp is moved or the guitarist changes channel or level.
+For stage use, one close mic on a stable, compact stand usually gives useful isolation and repeatability. Put its cable out of the guitarist’s feet and away from the amplifier’s hot vents. Never drape fabric over ventilation to reduce spill; change placement or use a purpose-designed, ventilated isolation arrangement if necessary.
+# Multi-speaker cabinets, two mics and room pickup
+A cabinet with two or four speakers does not guarantee that all drivers, positions or room reflections sound identical. Listen to candidates and choose one speaker first. A second close mic on the same or another driver can supply a different tonal view, as in Shure’s example of blending two mics [1]. Align capsules as an initial experiment where practical, solo each, then sum in mono at matched useful levels. If the blend loses body or changes unexpectedly, move a mic, adjust balance and compare polarity; a switch cannot correct every frequency-dependent or room interaction.
+An open-back cabinet can be sampled from behind for a different, often thicker or duller sound. Shure’s cited engineer uses a rear mic and polarity reversal with a front mic [1]. Treat this as his working example: rear and front acoustic paths differ, and the best polarity setting must be checked in mono with the actual cabinet and placement. Keep stands clear of tubes, ventilation, speaker terminals and performer traffic; do not reach inside the cabinet or chassis.
+A farther room mic can add spatial scale if the room is useful and stage bleed permits. Capture close mic alone first, then raise the room mic underneath. Listen in stereo and mono over the complete guitar part. The distance creates delay; no fixed “three-to-one” rule or automatic time alignment guarantees a better musical result. A dry DI or approved amp line/cabinet-simulated output can be retained for a separate purpose, but it is not equivalent to a microphone hearing the speaker. Know whether an output is speaker-level or line-level before connecting anything; use only the manufacturer-approved path and qualified help for uncertain connections.
+# Live sound and tonal approaches
+Clean and edge-of-breakup: Verify quiet notes, transients and the guitarist’s dynamic change. If close-center sounds brittle, slide outward. If the guitar disappears in the ensemble, compare boundary position before boosting EQ. The microphone captures the player’s actual amp at that setting, so check a full song section.
+High-gain distortion: The amplifier may already be compressed and rich in upper harmonics. Compare boundary and off-center positions for useful articulation without excessive fizz. A brighter microphone or EQ is not always the cure for a masked distorted guitar; check the part alongside bass, drums and other guitar.
+Low stage volume or isolated amp: The player and sound engineer must agree on monitoring and tone. A small amplifier at a workable level can still deliver a useful miked sound [3], but the choice must suit the player’s amp and musical response. If the amp is isolated away from the stage, confirm that the player hears an appropriate monitor mix and that the enclosure permits the amplifier’s required ventilation.
+For a loud stage, use the close mic and adjust PA level to supplement rather than duplicate excessive stage wash. Place mics to reject adjacent instruments using their actual polar patterns; moving a mic behind a grille does not guarantee isolation. If feedback or excessive spill develops, lower level safely and revisit geometry, open channels and amp placement.
+# Hearing and electrical safety
+Manage loudness at the source and exposure time. OSHA notes that workplace exposure over 85 dBA can damage hearing, and its 85 dBA eight-hour time-weighted average is a hearing-conservation action level, not a guarantee of safety at every duration [5]. Measure when levels are uncertain, keep personnel away from the close field during tests, and use suitable hearing protection when needed. Do not require the guitarist to play at a hazardous level merely to create an amplifier tone.
+Do not open an amplifier chassis, defeat a safety ground, alter speaker wiring or change an amp-to-cabinet connection for mic placement. Follow the exact amp manual for speaker load and approved direct-output modes. For example, Fender’s 65 Deluxe Reverb manual requires its speaker connected at the internal jack when the amp is on and specifies an 8-ohm load [6]; that instruction is model-specific and must not be generalized to every amp. If there is hum, damaged wiring, a hot smell, smoke or a suspected fault, stop using the equipment and involve a qualified technician. Verify condenser phantom power and any ribbon mic restrictions from each microphone manual before connection [7].
+# Tone goals and troubleshooting
+Symptom
+First question
+Test or response
+Excessive fizz or harshness
+Is mic near dust-cap center?
+Slide toward boundary or edge, then compare angle [1, 2].
+Dull or buried guitar
+Is mic near outer cone or pointed away?
+Shift toward boundary; check with band before EQ.
+Boomy close sound
+Is mic extremely close or is proximity effect prominent?
+Increase distance a little or try different pattern/position.
+Hollow two-mic blend
+Do arrivals or polarities interact?
+Solo and mono-sum; move, rebalance, then compare polarity.
+Room mic is washy
+Is room/bleed dominating?
+Reduce room feed or move closer; start from close mic.
+PA feedback or spill
+Are other mics open, or is amp aimed into a live mic?
+Lower level and revise source/mic geometry.
+Dangerous heat, cable or power issue
+Is equipment faulty or ventilation obstructed?
+Stop, keep clear and use qualified service [6].
+
+# Teaching exercise and pass criterion
+1.Locate the real driver without removing covers; document grille position and safe cable route. With a stable level, compare center, boundary and edge on clean and distorted passages.
+2.Compare close and modestly farther positions and describe direct tone, room and spill. Set gain with the loudest passage and verify quieter notes.
+3.Add a second mic only for a stated goal; listen to each alone and combined in mono. Explain why a rear mic or room mic changes phase relationships.
+4.State the amplifier’s model-specific speaker/load requirements from its manual, identify electrical stop conditions, and plan a hearing-safe soundcheck.
+Pass criterion: The learner can place one mic reproducibly, predict and verify lateral tonal changes, audit a multi-mic sum, and keep microphone work separate from hazardous amplifier servicing or speaker-wiring changes.
+# Evidence audit and limits
+Agreement: Shure and Sennheiser support a dust-cap/cone boundary starting point and the center-to-edge brightness trend [1, 2]. Shure also describes greater room contribution as distance increases [3].
+Different emphases: Shure’s engineer describes front/back and two-close-mic blends [1], while manufacturer user guides emphasize repeatable one-mic positions [2, 4]. These are different levels of complexity. A rear polarity reversal is an example to test, not a universal law. A Fender speaker-load instruction applies to the specified amp only [6].
+Gaps and confidence: No source establishes a universally best centimeter offset, microphone type, room distance, amp volume or polarity for every driver and guitarist. Confidence is high in the broad position trend and model-specific safety instructions, moderate in the predicted tonal result until tested with the actual speaker, gain setting, cabinet and mix.
+# References
+[1] Shure, “Miking Guitar Amps: Tips from Sound Pro John Mills.”  Read source <https://www.shure.com/en-US/insights/miking-guitar-amps-tips-from-sound-pro-john-mills>
+[2] Sennheiser, “e 906 Manual,” microphone positions.  Read source <https://www.sennheiser.com/globalassets/digizuite/40699-en-e906_manual_07_2020_en.pdf>
+[3] Shure, “How to Choose the Best Mics for the Guitar.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-the-guitar>
+[4] Shure, “PGA27 User Guide,” amplifier placement.  Read source <https://www.shure.com/en-US/docs/guide/PGA27>
+[5] OSHA, “Occupational Noise Exposure Overview.”  Read source <https://www.osha.gov/noise/>
+[6] Fender, “65 Deluxe Reverb Amplifier Manual.”  Read source <https://www.fmicassets.com/Damroot/Original/10001/021740_gamp_manual_all_revC.pdf>
+[7] Shure, “What Is Phantom Power and Why Do I Need It?”  Read source <https://www.shure.com/en-ASIA/insights/what-is-phantom-power-why-do-i-need-it>

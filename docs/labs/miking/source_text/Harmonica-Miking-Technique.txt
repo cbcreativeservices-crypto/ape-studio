@@ -1,0 +1,81 @@
+# Harmonica Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson compares a naturally miked harmonica with the intentional tone of a cupped, hand-held microphone and amplifier. The learner will place a stand microphone for the acoustic instrument, manage a live microphone and monitor, and mic an amplifier speaker when that is the sound source for the PA or recording. Diatonic and chromatic harmonicas can use these approaches; the player’s hand position, instrument movement, key changes and desired tone determine the final setup. No audio examples are included.
+# Begin with the actual sound source
+Air moving across free reeds produces the harmonica’s sound. With an open hand position, the engineer captures the instrument and its surrounding air. With a hand-held microphone, the player may enclose the harp and microphone in a variable hand chamber; the resulting tone changes with grip, hand opening, microphone and amplifier. Hohner explicitly describes fully enclosing harp and microphone for its amplified Rocket Amp model [1]. This is an artistic playing technique, not a universal instruction to cover any microphone grille.
+The engineer should ask whether the target is clean acoustic harmonica, close amplified harp through a PA, or the sound of a harmonica amplifier. Establish the sound with the player before making EQ changes. A neck holder used by a singer or guitarist keeps both hands free but limits cupped-hand techniques; plan the mic around the player’s actual singing and instrument positions. Confirm whether the player changes harmonicas and where they put down a live hand-held mic.
+# Three signal paths to compare
+Goal and source
+Starting microphone trial
+Main check
+Acoustic harmonica in a quiet studio
+Place a stand mic in front of the playing position with room for hand gestures and instrument motion; begin at a modest distance, then move by ear [2].
+Complete phrase, breath, hand wah, room and consistency across instruments.
+Acoustic harmonica on stage
+Bring a suitable stand mic closer to the instrument as spill and feedback require; leave room for the player’s hands [3].
+Monitor bleed, plosive wind and position changes at show level.
+Cupped harp into amplifier
+Player cups a suitable hand-held harp mic; connect it to its specified input. Mic the amplifier speaker if sending that tone to PA or recorder [3, 4, 5].
+Grip, amp tone, feedback, cable, actual speaker position and player’s hearing level.
+
+These are separate tone choices. A microphone on the amp hears the amplified system, including the speaker and any amp distortion. A mic in front of the harmonica hears an acoustic performance. Even a simultaneous “clean” acoustic mic can pick up the nearby amp and PA; compare each feed alone and summed, and mute unused open microphones.
+# Natural acoustic harmonica on a stand
+1.Listen and mark the working zone. Ask for low and high phrases, long notes, attacks, hand wah, breath changes and any harmonica swap. Note how far the instrument moves horizontally and toward the mic. Let the player stand or sit normally.
+2.Find a balanced position. Start with a stand microphone facing the playing zone at about mouth and hand height, just beyond the normal hand movement. A distance around 15–30 cm is a practical trial, not a published harmonica standard. In a quiet room, step farther back for a more integrated sound if room quality permits; move closer for detail or isolation. Aim slightly off the breath stream if bursts dominate. Compare several positions over the entire phrase at matched monitor level [2].
+3.Choose pickup for the room. A cardioid or other directional mic can help isolate a stage or ensemble; an omni can be considered in a controlled room when bleed is welcome. Read the actual polar pattern and off-axis response, not just the microphone category. A directional mic very close to the source may add proximity-effect low frequencies; do not assume an omni will solve unwanted room sound [2].
+4.Keep dynamics intact. Set gain on the loudest expected passage with headroom. Use a windscreen only if useful, and compare its effect. Avoid a high-pass setting that thins the player’s desired low register; test with the actual harmonicas. Never position a stand where it can strike the mouth, instrument, music stand or neck holder.
+For a player alternating singing and harmonica into one vocal mic, treat the two positions as two sources. Adjust stand height, perform at the actual distances, and set gain/monitor level for the louder of the two. If the balance or feedback margin cannot be made stable, use separate microphones or an agreed hand-off; mute the unused channel.
+# Close hand-held harmonica microphone
+Shure’s live-sound guide calls for a microphone very close to the harmonica for a full, bright sound and less leakage, and notes that it may be cupped in the hands [3]. A dedicated harp mic may be specifically shaped and wired for this use. For example, the Shure 520DX is a high-impedance omnidirectional dynamic mic with attached quarter-inch cable intended for a high-impedance input [4]; the Hohner and sE HB52 is a high-impedance omnidirectional dynamic mic with an XLR connector [5]. An XLR connector alone does not imply compatibility with a standard low-impedance console input or phantom power. Check the exact manual, cable and input before connecting.
+1.Ask the player to hold the harmonica and mic as they normally play, with a relaxed grip and an adjustable hand opening. Compare open, partly cupped and fully cupped phrases at matched output level. Record the desired hand position because the hand chamber is part of the sound [1, 3].
+2.Start microphone and amplifier controls low. Shure instructs users of the 520DX to lower the mic volume before plugging into an amp, then increase it while keeping distance from speakers. Set the amplifier and mic controls together for tone and sufficient headroom; expect the sound to change as those controls move [4].
+3.Walk the actual performance area with the amplifier and monitors running at planned levels. Keep the mic away from, and do not point it into, the amp or PA loudspeakers. Set the system so feedback does not arise even at the highest mic control position the player may use [4, 6]. Do not use a narrow EQ notch as a substitute for safe geometry or lower gain.
+Cupping distinction: Deliberate enclosure around a harp and a suitable harp mic is a recognized tonal practice [1, 3]. Covering the grille or rear ports of a directional vocal mic can degrade its rejection and increase feedback; Shure warns specifically about that case [6]. Test the actual model and full grip. A classic bullet mic such as the 520DX is omnidirectional, so do not place a floor wedge based on an assumed cardioid rear null [4].
+# Miking the harmonica amplifier speaker
+Once the player has set the amplified tone, locate the actual speaker behind the grille. With a suitable close dynamic mic on a stable stand, start near the boundary between dust cap and cone, about 2–5 cm from the grille cloth, then move toward the center for more bite or outward for a softer top end; Shure presents this as a practical amp-miking approach [7]. Other mic distances and rooms can be tried in a quiet studio [2]. The visible center of a cabinet is not always the speaker center. Keep the mic clear of the moving cone and cables out of walkways. If the amplifier has multiple speakers, choose one after listening.
+Set amplifier loudness for the player’s tone and safe onstage level, then add the speaker mic to the PA only as much as necessary. Position the amp so the player hears it without pointing it at the cupped microphone. Start with one speaker mic. If adding a room mic or a direct/preamp split, check each alone and the combined sound in mono over real phrases, then move, rebalance or omit a feed if phase interaction hollows the tone. A direct split does not replace miking the speaker when speaker coloration is central to the requested sound.
+# Tone goals and troubleshooting
+Symptom
+First question
+Test or response
+Acoustic tone too thin or breathy
+Is mic in the breath stream or too far off the main hand opening?
+Compare angle, distance and hand position over a full phrase.
+Hand wah disappears
+Is a fixed stand mic too far from the moving source, or is the player using a neck holder?
+Recheck normal playing motion; choose position or separate performance approach with player.
+Harp mic tone becomes nasal or dull
+Did grip, hand opening, mic control or amp setting change?
+Compare each factor at a sensible matched loudness [1, 4].
+Early feedback
+Is the hand-held mic near an amp, wedge or PA, or is a directional vocal grille covered?
+Reduce level immediately; move speaker or mic, reduce open mics and retest gradually [4, 6].
+Speaker mic sounds harsh
+Is it too near dust-cap center?
+Slide toward cone edge; verify actual speaker and compare [7].
+Hum or intermittent signal
+Are cable, connector, input impedance and amp power sound?
+Stop and check manufacturer wiring; use a qualified technician for electrical faults [4, 5].
+Clean and amplified feeds sound hollow
+Are multiple feeds arriving with different delays?
+Solo and mono-sum; move or rebalance before trying processing.
+
+# Teaching exercise and pass criterion
+1.Identify the free-reed sound source and compare open, partly cupped and fully cupped playing without changing the monitor level unnecessarily.
+2.Place one stand mic for an acoustic phrase, then compare a closer and farther position while documenting room, breath and hand movement.
+3.With player and instructor supervision, set a compatible harp mic and amplifier from low level, check the whole playing area and then mic the real speaker. Verify feedback margin without a deliberate loud howl.
+4.Explain why a cupped dedicated harp mic and a covered directional vocal grille can behave differently, and demonstrate a safe response to feedback.
+Pass criterion: The learner can select and test a natural acoustic or amplified harmonica path, explain where the microphone is hearing the sound, verify equipment compatibility, and protect hearing, cable paths and feedback margin.
+# Evidence audit and limits
+Agreement: Hohner and Shure support enclosure of harp and microphone as an amplified blues-tone technique [1, 3]. Shure’s general placement and amp guidance supports listening and repositioning before EQ [2, 7].
+Different emphasis: Shure’s live guide favors very close placement for isolation [3], while its recording guidance favors allowing distance when the room permits [2]. These address different environments. Shure’s warning against covering directional vocal grilles [6] applies to their rejection behavior; it does not negate a dedicated omnidirectional harp mic’s intended cupped use [4, 5].
+Gaps and confidence: No manufacturer source here establishes a universal acoustic stand distance, preferred amp volume, EQ curve or safe hearing level for every performer and venue. The 15–30 cm acoustic trial and 2–5 cm speaker trial are starting experiments, not required settings. Confidence is high for the cited device specifications and feedback principles, moderate for predicted tonal outcomes until tested with the actual player, instrument, mic, amp and room.
+# References
+[1] Hohner, “Rocket Amp.”  Read source <https://hohner.de/en/instruments/harmonicas/diatonic/progressive/rocket-amp>
+[2] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[3] Shure, “Microphone Techniques for Live Sound Reinforcement,” harmonica section.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[4] Shure, “520DX User Guide” and product specifications.  Read source 1 <https://pubs.shure.com/guide/520DX>  Read source 2 <https://www.shure.com/en-US/products/microphones/520dx>
+[5] Hohner and sE Electronics, “Harp Blaster HB52 User Manual.”  Read source <https://seelectronics.com/wp-content/uploads/2021/11/Hohner-sE-Harp-Blaster-HB52-Manual.pdf>
+[6] Shure, “How to Control Feedback in a Sound System.”  Read source <https://www.shure.com/en-IN/insights/how-to-control-feedback-in-a-sound-system>
+[7] Shure, “Miking Guitar Amps: Tips from Sound Pro John Mills.”  Read source <https://www.shure.com/en-US/insights/miking-guitar-amps-tips-from-sound-pro-john-mills>

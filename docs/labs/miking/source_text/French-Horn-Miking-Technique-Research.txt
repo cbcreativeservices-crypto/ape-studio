@@ -1,0 +1,90 @@
+# French Horn Miking Technique
+Pro Audio Training Academy   Aerophones Lab   French Horn   October 3, 2026
+# Scope and learning goals
+The concert horn (“French horn”) is a lip-excited brass aerophone with a rear-facing bell. This lesson teaches how to choose between the instrument-and-room sound and a more isolated direct pickup in the studio and live sound. The learner should preserve the player's intended open, stopped or muted timbre; accommodate the right hand inside the bell; check the actual room and ensemble; and maintain safe clearance and input headroom. No audio examples are included.
+# Understand the sound before touching a mic
+Yamaha explains that the horn's bell faces behind the player. Indoors, sound reaching the audience may include reflection from a rear wall; the wall material changes its tone. A listener directly behind the bell hears a more forceful brass quality, while a listener in front hears a softer perspective [1]. The room and placement are part of the result. A hard stage shell, absorptive curtain, low ceiling or nearby player can alter the balance, so walk to the actual audience and bell-side positions before placing a microphone.
+The player normally puts the right hand inside the bell, using it for support and tonal/pitch control, while the left operates the valves [1, 2]. Fully stopped passages change the tone and pitch relationship; Yamaha describes a keen metallic quality for hand-stopping, and notes that instrument-specific stop-valve practice may be involved [2]. Ask the musician to identify ordinary open-hand, hand-stopped, mute and “bells up” passages and to demonstrate them themselves. Do not reposition their hand or assume the written pitch can be inferred from a mic technique. A physical mute is different from hand-stopping and can project beyond the bell.
+# Two legitimate starting perspectives
+Integrated, audience-facing perspective: In a good acoustic space, begin by listening from in front of the player or at a section/main microphone position. The International Horn Society publishes engineer Frederik Rostrup's account of a horn-and-piano session using a main array and front-side spots; he argues that reflected sound is central to a familiar concert horn quality [3]. Yamaha independently describes rear-wall reflection as changing the audience-facing timbre [1]. These are strong reasons to audition a front or main view, not a rule that every horn must be miked from the front. The room may be too dry, reverberant or noisy.
+Direct bell-side perspective: Shure's live-sound guide lists a microphone aimed toward the bell as a natural horn pickup and cautions about large level fluctuations [4]. Its direct brass guidance says axis and distance influence brightness [5]. This side is useful for a featured line or a loud stage with spill, but it may emphasize brassy upper harmonics, hand/bell details and level changes that the audience-facing sound normally blends with the room. Shure does not prescribe a numeric bell distance for horn in that horn-specific entry; a general brass 1–2 ft range should be treated as a *comparison*, not a horn optimum [4, 5].
+# Studio: main pickup, spot and room
+1.Hear the room first. Seat or stand the musician as intended and keep their natural right-hand position. Ask for a soft phrase, strongest real accent, wide-register phrase and any stopped/muted change. Hear what a front audience position and a rear bell-side position actually sound like [1, 2].
+2.Build the main perspective. In a suitable room, start with an existing ensemble/main array or one microphone in front of the player at a distance that presents both horn and room. There is no universal front-mic distance in the retrieved sources. Rostrup's specific horn-and-piano session used a main array roughly 4 m from the piano and front horn spots, but that geometry belongs to that church and duo, not a template for a solo booth [3]. Move until the intended tone, articulation and room balance work.
+3.Add a spot only if needed. Try one safe spot from front/above or a rearward mic aimed toward, but not inserted into, the bell. Compare each at matched listening level. If a rear spot sounds too forceful, shift angle or distance, or rely more on the main mic instead of declaring the horn “harsh” [1, 3, 4]. Watch neighboring sources in a section; Royer documents orchestral horn-section spots alongside a main microphone in real sessions [6].
+4.Check the combination. Hear main and spot separately and together in mono at their intended balance. Arrival-time differences can color the result, particularly with room reflections; alter position/blend and judge music before applying delay or polarity changes. Keep the main array's ensemble image intact. Higher mic count is justified only by needed control.
+In an acoustically poor or very small room, the front view may be unhelpfully dull or boxy while a close bell view is overly direct. Audition the best safe compromise and document the room limitation. Do not add a reflective panel behind the player as an automatic fix: it can change the tone, increase spill or create a sharp early reflection. Let the actual instrument, player and room decide.
+# Live: quiet hall versus loud stage
+Quiet concert or orchestra: Start by listening to the main/section system. Add a horn spot only if the line is not adequately represented at audience position. A stand mic aimed toward the bell's normal zone can provide control, but its sightline and cables must avoid the player and neighboring chairs [4]. If a rear wall contributes the desired horn sound, do not erase that contribution with an unnecessarily loud direct spot [1, 3]. A horn section as a combined source is treated in Ensembles and Voice.
+Loud stage or featured amplified horn: A rear/bell-side directional mic or manufacturer-approved instrument mount can provide useful isolation. Shure describes close brass pickup as reducing leakage and feedback tendency compared with distance, not eliminating feedback [4, 5]. Aim the mic's polar pattern away from wedges and competing sources, then test with the full band at performance level [7]. A clip keeps relative position as the player turns; a fixed stand may offer a more open tone if the player remains in range.
+An instrument clip must be verified for this specific horn, bell rim and finish, with the player's permission. A general brass or trombone mounting instruction is not proof of horn compatibility. Confirm the maker's exact compatible clip and cushion. Do not attach to the detachable bell joint, valve linkage or hand-contact area; route the cable away from left-hand levers and right-hand bell access. Have the player fit/remove their actual mute and demonstrate any bells-up movement before finalizing. Check clip vibration and cable noise, mic capsule and wireless/console headroom. If no compatible mount exists, use a stand or another safe pickup rather than forcing a clamp.
+# Tone and placement trials
+Musical goal
+Controlled comparison
+Listen for
+Concert blend
+Main/section or front-facing view [1, 3].
+Horn plus room, body, neighboring instruments and articulation.
+More solo definition
+Front spot versus rear bell-side spot at matched level [3, 4].
+Focus without an unnaturally hard or close bell color.
+Loud live stage
+Safe rear stand versus verified clip [4, 5].
+Spill, monitor feedback, player movement and hand/mute clearance.
+Stopped passage
+Normal open-hand phrase versus actual stop/mute passage [2].
+Intentional color and level shift; preserve the player's technique.
+Bell rise or turn
+Full musical movement through intended mic zone.
+Level/tone stability and mechanical clearance.
+
+These are trials, not promises of a fixed timbre. Aim and monitoring level can change perceived brightness; compare like with like. DPA notes that close miking increases mechanical detail and that brass peaks may overload mic electronics [8]. Verify the entire chain at the musician's strongest normal accent. Avoid a severe gate that truncates a soft horn release; filter rumble only after confirming the lowest wanted notes.
+# Safety and care
+Give the musician full access to their right hand in the bell, left-hand valves, music stand and mute. A rear-side mic must not collide when the musician turns or raises the horn; leave a buffer around the whole expected movement. Use a stable stand, secure boom and routed cables clear of walkways and neighboring players. Never reach into the bell or alter the player's hand placement to fit a microphone [1, 2]. If a clamp is considered, confirm finish-safe contact and compatibility with the manufacturer and owner; do not load a detachable joint.
+Test strong attacks for capsule, wireless transmitter, preamp and converter overload without asking for nonmusical loudness [4, 8]. Loud rehearsals and stages also require exposure management for musicians and crew; follow NIOSH musician hearing guidance [9]. There is no universally safe bell distance for hearing, sound quality, feedback or equipment clearance.
+# Troubleshooting
+Symptom
+Diagnose
+First response
+Horn sounds like a hard direct brass source
+Is rear spot dominating desired reflected sound?
+Compare front/main view and spot balance [1, 3].
+Horn seems distant or lost
+Does main mic hear too much room or other players?
+Move/aim a safe spot and rebalance at audience position [4].
+Strong notes distort
+Capsule/wireless/preamp overload or room harshness?
+Solo chain stages, use proper pad/headroom [4, 8].
+Hand-stopped passage jumps in color/level
+Is it intentional source change?
+Hear player acoustically, then adjust spot balance only as needed [2].
+Mute or hand hits hardware
+Was actual insertion/removal path checked?
+Stop, reposition mic/clip, let player demonstrate.
+Feedback or spill
+Pattern points at wedge/adjacent brass?
+Re-aim or change stage geometry and retest full band [7].
+Main-plus-spot sounds hollow
+Arrival-time/room-reflection interaction?
+Hear each alone and mono blend; adjust position/balance.
+
+# Teaching exercise and pass criterion
+1.Student listens from front audience and rear bell-side positions as the player demonstrates soft, strong, open-hand and any stopped/muted passages. Explain why the right hand and room matter [1–3].
+2.In a suitable room, compare a main/front view and one safe direct spot at matched listening level; document tone, isolation and room contribution. Hear their mono blend, with no automatic delay/polarity intervention [3, 4, 6].
+3.At a live soundcheck, decide whether main pickup suffices. If a spot is needed, compare safe stand and a verified compatible clip where available. Test polar geometry, full band, player turns, bells up and actual mute, plus peak headroom [4, 7, 8].
+4.Present two context-specific choices and explain the tradeoff: one integrated acoustic horn perspective and one focused reinforced sound.
+Pass criterion: The student can place a mic without interfering with right hand, mute or movement; recognize how rear-wall reflection changes timbre; distinguish direct from audience-facing capture; verify strong-phrase headroom and justify the selected studio/live approach.
+# Evidence audit and limits
+Agreement: Yamaha and the International Horn Society describe the rear-facing bell and meaningful room/reflection contribution [1, 3]. Yamaha documents the right-hand role and stopped tone [1, 2]. Shure and DPA establish that direct pickup and microphone headroom matter in reinforcement and close miking [4, 8].
+Different emphases: The horn-society account advocates a front, reflected perspective for classical horn sound [3]; Shure's live guide recommends aiming a mic toward the bell for a practical natural live pickup [4]. These differ in artistic aim and acoustic context, rather than establishing one universal correct location. The horn-society article is one engineer's published session and argument, not a controlled proof that a reflection is always necessary. Royer's orchestral examples demonstrate spot-plus-main practice without establishing one distance [6].
+Important gaps: The retrieved sources do not give a reliable horn-specific numeric optimum, a universal wall treatment, a guaranteed clip fit or a maximum safe SPL for every microphone. Front and rear views depend on room, hand position, part, directivity, stage bleed and mic model. Confidence is high in instrument orientation/hand technique and the documented alternative applications; moderate in the comparative workflow; low in any universal tone prediction from a prescribed placement.
+# References
+[1] Yamaha, “The Structure of the Horn: Slightly Different from Other Brass Instruments.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/horn/mechanism/mechanism002.html>
+[2] Yamaha, “How to Play the Horn: Putting the Right Hand in the Bell.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/horn/play/play002.html>
+[3] Frederik Rostrup, “Acoustics: Recording the Horn,” International Horn Society.  Read source <https://www.hornsociety.org/home/ihs-news/1641-acoustics-recording-the-horn>
+[4] Shure, “Microphone Techniques for Live Sound Reinforcement,” French horn entry.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[5] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments/>
+[6] Royer Labs, “Recording Orchestra.”  Read source <https://royerlabs.com/recording-orchestra/>
+[7] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[8] DPA Microphones, “How to Mic Woodwinds and Brass.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-woodwinds-and-brass/>
+[9] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

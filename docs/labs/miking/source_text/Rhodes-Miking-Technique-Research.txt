@@ -1,0 +1,94 @@
+# Rhodes Electric Piano: Miking the Speaker
+Pro Audio Training Academy   Idiophones Lab   Rhodes   October 3, 2026
+# Scope and learning goals
+The Rhodes is an electromechanical tine piano. A hammer excites a tine coupled to a tonebar; a pickup senses that motion [1, 2]. The tine is a physical vibrating source, but the useful performance sound in this lesson comes from an amplified speaker, so we mic the speaker and hear the whole instrument–preamp–effects–amplifier–cabinet chain. This keeps Rhodes with the struck-solid-material instruments in our Idiophones Lab while cross-linking speaker miking principles. The student should identify the actual rig, capture its selected tone with one or more microphones, compare the direct path without confusing it with a mic, and safely operate in studio and live sound. Wurlitzer is next, separately. No audio examples are included.
+# Trace the real signal path
+Key → hammer → tine/tonebar → pickup → instrument controls/effects → amplifier → loudspeaker → room → microphone. Rhodes describes the tine, tonebar and pickups in its current instruments [1, 2]. Modern and vintage configurations differ. The passive Stage 61 provides a jack output for an amplifier, DI or preamp [3]. The MK8 has an active preamp, onboard effects and various outputs, including balanced XLR and unbalanced ¼-inch connections [1, 4]. A historical Stage or Suitcase, an external combo, two cabinets or a modern MK8 all require separate identification. Do not assume a speaker lives inside the keyboard or that a signal jack has the same level or function on every model.
+The Rhodes mechanism may be faintly audible acoustically nearby, but its mic-worthy amplified character is at the loudspeaker. Source tone includes player touch and sustain pedal, pickup/voicing condition, instrument EQ and drive, effects, amplifier settings, cabinet, and speaker level. Document the actual settings and test soft chords, hard accents, bass notes, top notes and sustained phrases. On an MK8, stereo Vari-Pan and effects may matter; if output to two speakers is used, test whether the rig presents two distinct channels [1]. If the player hears a fault such as one uneven note, do not move pickups or open the instrument as a miking fix; Rhodes warns that excessively close tine–pickup spacing can produce clanks, pitch effects or contact [4]. Refer repair to the owner or qualified technician.
+# One speaker, one microphone: a dependable starting workflow
+1.Find the actual loudspeaker cone. Locate it behind the grille by manufacturer markings, safe observation or the owner's guidance. Avoid blindly pressing the grille or touching the cone. Set the amp tone with the player first, at a usable performance volume, and identify whether the cabinet has one or several radiating speakers.
+2.Start close and off-center. With a mic suitable for the speaker level, trial about 2–15 cm (1–6 in) from the grille aimed near the transition between dust cap and cone. This range is general amplifier-miking guidance, not a Rhodes-specific prescription; Shure describes close amp positions and a dust-cap/cone boundary as one useful start [5–7]. Do not place the capsule against a moving cone, hot surface, vent or control panel.
+3.Move laterally first. Keeping distance and amp level similar, compare near-center, boundary and farther outward positions. Shure describes more brightness toward the speaker center and a mellower result toward the edge [5, 6]. The cone, grille, mic axis and multiple-speaker cabinet may change this, so judge the actual Rhodes chord and melody in context. For more amp and room contribution, move back deliberately, listening for added reflections and spill [6].
+4.Check levels and passage. Test soft and hard strikes and bass/top registers. Set preamp and recorder/console headroom for the strongest accents and any drive or effect surges. Listen for clean sustain and pedal release. Once placement is stable, secure stand and cable without touching the speaker or controls.
+A directional dynamic microphone is a practical live starting option; a condenser or ribbon may suit a controlled studio if rated for the sound level and handled per its manufacturer's instructions [6]. No mic type is inherently the "Rhodes mic." If a low-output passive instrument is sent to an amp, its input impedance and appropriate DI/preamp matter upstream, but that is a signal-path comparison rather than a microphone placement.
+# Two speakers, stereo modulation and multiple microphones
+If the player uses two speakers carrying different outputs, label left and right at the instrument/amp and verify by testing the actual effect. Place a comparable mic at each speaker, similar distance and orientation if the goal is to preserve their difference. Record or reinforce both only if stereo is useful for the production and audience coverage. Vari-Pan may move level between channels; hard panning and mono sum can change the perceived effect [1]. In a mono PA, audition the combined channels at typical listening positions; do not promise that a stereo motion heard at the keyboard will reach everyone.
+For a single speaker, two mics at different cone positions can offer contrasting tones [5]. Hear each alone, then the combination in mono. Different path lengths can change timbre when combined; move the mics or rebalance before applying polarity or delay without evidence. A more distant room mic is an optional studio perspective after a reliable close mic; it adds room reflections and may add spill. It is rarely a gain-before-feedback solution for a loud stage. A rear mic is possible on an open-back cabinet only if its physical/electrical design permits safe access; it can have a different polarity relationship to the front, which must be assessed by listening in the combined rig [5]. Never reach inside a powered cabinet.
+# Tone and approach trials
+Musical goal
+Controlled change
+Listen for
+Warm, rounded comping
+At fixed source settings, compare boundary and outward cone positions.
+Full chords without loss of note definition [5, 6].
+Bright articulation or "bark"
+Confirm player touch/drive, then trial slightly more central pickup.
+Attack that serves the mix without brittle upper mids or clipping.
+Amp and room character
+Compare close mic with a farther studio perspective at matched level.
+Useful space versus reflections and ensemble spill [6].
+Stereo movement
+Verify the two actual speaker channels; mic and monitor each separately.
+Intended motion in stereo and usable level/tone when summed to mono.
+Loud stage separation
+One close directional mic on needed cabinet; assess wedges and adjacent amps.
+Direct-to-spill ratio and gain before feedback.
+
+Do not attribute a different speaker, pedal, preamp or output setting to a mic-position change. Note the complete signal path for each trial.
+# Direct output: an informative companion, not miking
+With the player's permission, a properly matched direct output or DI can be used to compare pre-speaker and miked tone or to add definition in a controlled blend. Confirm the model's output type and level in its manual: for example, the MK8 manual describes balanced XLR outputs for mic-level inputs and ¼-inch outputs, while the passive Stage 61 is designed for an amplifier, DI or preamp [3, 4]. Do not assume an XLR connector means every instrument output is line level, or that a ¼-inch jack is a speaker output. Never connect an amplifier's speaker output to a normal mic input, interface input or DI unless a specifically rated device and instructions permit it.
+The direct signal lacks the loudspeaker and room by definition. If both direct and mic signals are used, listen to each alone and together, including mono, for attack and low-frequency changes from different arrival times. Choose the musical blend and preserve headroom. Do not automatically delay either feed or invert polarity based only on a diagram. A direct feed can help when live spill is severe, but it does not teach what the mic captures.
+# Studio application
+Set the keyboard and speaker where the player hears a workable sound, then audition the cabinet in the room. Start with one close mic; compare cone locations and note the settings. In a suitable room, a second mic farther back can communicate space. If the rig uses two speakers for a time-varying effect, check whether both need microphones or whether a mono version satisfies the arrangement. Capture an entire musical phrase with sustain pedal, full range and maximum accent. Avoid evaluating only an isolated note at the mic. Preserve a record of amp volume, EQ, effect and mic position for later revisions.
+For a full band, hear the mic in the arrangement and check drum/cymbal spill. Moderate amplifier volume and physical isolation can help mic clarity; avoid forcing a louder amp merely to improve a waveform. A direct feed may be an optional companion, but include speaker tone in the listening decision when the player relies on amp coloration. When moving an amp to isolate it, ensure the player still has safe monitoring and communication.
+# Live sound application
+Ask whether the amp is the player's monitor, the primary audience source, or both. Put one directional mic close to the chosen speaker and aim its actual rejection away from wedges and loud adjacent sources. Watch the amp's output level: excessive stage volume can mask others and make PA control difficult. If there are two distinct speaker channels and stereo reinforcement is requested, verify sound at off-axis audience locations and in mono. A mono feed or one cabinet mic may be more consistent across a wide venue; this is a production decision after listening, not a rule that stereo never works.
+Route the mic cable away from player feet, sustain pedal, instrument supports and amplifier ventilation. Shure's amp placement rules are transferable starting experiments, while speaker construction and Rhodes effects vary [5, 6]. At soundcheck, test the complete band, strongest piano attack, sustain, modulation and feedback margin. Distinguish amplifier distortion chosen by the player from overloaded microphone electronics or console input.
+# Safety and instrument care
+Use the instrument and amplifier with their manufacturer-approved power, cabling and ventilation. Do not bypass a protective earth, open a powered amp, handle an exposed speaker terminal, or change a speaker connection as part of microphone placement. Report hum, shocks, burning smell or intermittent power to the responsible technician and stop using suspect equipment. Keep microphones and metal stands away from amp vents, power connections and moving cones. A ribbon mic or any other fragile mic requires its specific handling and phantom-power precautions; follow its manual rather than a blanket claim about all ribbons.
+Rhodes keyboards and cabinets can be heavy; use the owner's approved stands and handling procedure. Keep the sustain pedal and feet clear of stands and cables. Control amplifier loudness and assess cumulative band/rehearsal hearing exposure using NIOSH guidance [8], rather than inferring a universal Rhodes SPL. Do not service the keyboard's pickup geometry to alter tone during this exercise [4].
+# Troubleshooting
+Symptom
+Determine the source
+First action
+Too bright or brittle
+Is amp tone/drive intentional? Is mic near cone center?
+Compare outward location at fixed settings [5, 6].
+Dull or indistinct
+Is mic far toward edge or amp EQ too dark?
+Compare boundary position and note articulation.
+One note clanks
+Audible from amp independent of mic?
+Stop and refer to owner/qualified service; no pickup adjustment [4].
+Comb-like tone on blend
+Does each mic/DI alone sound normal?
+Hear mono combination; change geometry and balance.
+Stereo effect disappears
+Does rig have two different signals and mono fold-down?
+Verify channels individually, wiring and audience/mono behavior [1].
+Feedback or heavy spill
+Are speakers/wedges in mic acceptance angle?
+Reposition amp/mic, aim rejection, reduce open channels.
+Clipping
+Which of instrument, amp, mic or preamp distorts?
+Check each stage and restore headroom without changing desired drive.
+
+# Teaching exercise and pass criterion
+1.Identify the actual Rhodes model, speaker configuration, output types and player-selected sound. Explain the physical tine and pickup path, and identify what the microphone hears [1–4].
+2.With one mic and unchanged amp settings, compare center, dust-cap/cone boundary and farther-out positions near the grille. Document mic type, exact placement, level, register balance and spill [5, 6].
+3.Compare a safe, more distant studio perspective if the room permits. If two speaker channels or two mics are used, audition each separately and sum to mono. Identify any effect lost or tonal change.
+4.With the correct output interface and player's approval, compare direct and miked signal individually and combined. Identify the speaker/room contribution; never treat an amplifier speaker output as an instrument DI output. On a live stage, check full-band level, feedback margin and audience coverage.
+Pass criterion: The student traces the signal and confirms the real cabinet, captures a defensible amp tone with safe one-mic placement, explains tone changes from cone location, preserves musical effects when needed, checks mono and gain structure, and uses correct electrical connections.
+# Evidence audit and limits
+Agreement: Rhodes describes tines, tonebars and pickups [1–4]. Shure documents speaker-cone position as a tone control and greater room contribution at farther distance [5, 6]. These speaker-placement observations transfer as experiments to a Rhodes amp; they are not claims that a guitar amp and Rhodes rig sound the same.
+Model variation: Rhodes Stage 61 is passive with a single jack output [3]; MK8 has active controls, effects and multiple output formats [1, 4]. Historical instruments, speakers and modifications vary. The actual manual and physical rig control signal routing. The terms "vibrato" and "Vari-Pan" are product labels; hear the output behavior rather than infer a pitch modulation or speaker count from the label alone.
+Evidence gap: Retrieved primary sources do not give a universally best Rhodes speaker mic, a fixed cabinet distance, an exact stereo speaker scheme for all Suitcase generations, or guaranteed direct-plus-mic alignment. The 2–15 cm close trial is based on general amplifier guidance [5–7]. Confidence is high for the instrument's tine/pickup path and model-specific MK8/Stage 61 outputs, moderate for speaker placement trends, and low for a particular rig's tone until auditioned.
+# References
+[1] Rhodes Music, “The Rhodes MK8,” keyboard, preamp and effects.  Read source <https://rhodesmusic.com/rhodes-mk8/>
+[2] Rhodes Music, “Rhodes V8 Manual,” physical Rhodes sound description, p. 7.  Read source <https://download.rhodesmusic.com/assets/RHODES-V8PRO/Rhodes%20V8%20Manual%20v3.pdf>
+[3] Rhodes Music, “Introducing the All-New Rhodes Stage 61,” passive outputs and amplification.  Read source <https://rhodesmusic.com/introducing-the-all-new-rhodes-stage-61/>
+[4] Rhodes Music, “MK8 User Manual,” connection overview and voicing cautions.  Read source <https://rhodesmusic.com/wp-content/uploads/2023/07/MK8-User-Guide.pdf>
+[5] Shure, “Miking Guitar Amps: Tips from Sound Pro John Mills.”  Read source <https://www.shure.com/en-US/insights/miking-guitar-amps-tips-from-sound-pro-john-mills>
+[6] Shure, “How to Choose the Best Mics for the Guitar,” amp placement.  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-the-guitar>
+[7] Shure, “PGA27 User Guide,” amplifier placement table.  Read source <https://www.shure.com/en-US/docs/guide/PGA27>
+[8] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

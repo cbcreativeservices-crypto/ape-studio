@@ -1,0 +1,112 @@
+# Concert Snare Drum — Miking Technique Research
+Lab: 1. Membranophones — Drums and Drumheads
+Sequence: After concert bass drum; before headed tambourine. One instrument in this installment.
+Scope: Orchestral and concert-band snare drum, for recording and live reinforcement. The drum-kit snare lesson is separate. No audio examples.
+# Learning goals
+Decide whether a concert snare needs a dedicated mic; capture single strokes, quiet details, and sustained rolls without distorting their musical balance; compare a broad perspective with a playing-head spot; evaluate an optional snare-side mic only if it earns a channel; protect the player and drum; and sum spots with ensemble microphones in mono. [1–7]
+# Start with music, instrument, and performer
+The concert snare has a batter head, a snare-side head, and snares whose material, tension, and response shape the sound. Drum shell, heads, tuning, and optional muffling also matter. Yamaha's concert-percussion teaching material distinguishes wire snares, which can give a more resonant wash, from cable or gut snares, which can give a more articulate character. Rolls may be a sustained musical phrase rather than a series of accented backbeats. Have the percussionist demonstrate the *actual* passage, including the softest strokes, buzz/multiple-bounce roll, accents, rim or special techniques if present, and any snare on/off changes. [1, 2]
+The player's choices and score define the intended tone. A close microphone can exaggerate stick transients, snare-wire rattle, mechanical throw-off, or one head region, while an ensemble pickup can integrate the sound more naturally. Do not retune the drum, tighten snares, change muffling, or ask the musician to strike a different region merely to satisfy a placement diagram. [1–4]
+# Decide whether a spot is needed
+An orchestra's main microphones and neighboring section mics may already capture enough concert snare. In a published account of Boston Pops live sound, engineer Christopher Colby specifically left the concert snare and bass drum without dedicated spots because their sound reached many other microphones; he used that bleed to preserve apparent distance. This is evidence that even amplified orchestras do not *always* need a concert-snare spot, not proof that one never helps. A quiet feature, dense score, poor room, outdoor venue, or amplified band may justify a closer channel. [3, 4]
+Ask: Can the listener hear roll shape, soft strokes, and accents in the full ensemble? Does bringing up a spot supply missing clarity while still locating the drum naturally? Does the spot pick up too much nearby cymbal, timpani, or monitor? Those answers determine the setup. [3, 4]
+# Placement options and evidence limits
+Approach
+Placement to trial
+What it reveals and what to check
+Main/section mics only
+Listen to the existing orchestra or concert-band pickup at intended level; create no new snare stand if articulation is sufficient. [3, 4]
+Natural ensemble distance and fewer open channels. Little isolated control over exposed details.
+Single broad playing-head spot
+In a quiet studio or compatible live setting, begin outside the entire stick path above and to one side of the drum, aiming across the batter head. Adjust distance with the player and room; there is no verified universal concert-snare height in these sources. [4–6; adaptation is instructional inference]
+More balanced drum/room perspective than an extremely close capsule, but more bleed and less live gain before feedback. Test quiet rolls and accents, not only a loud isolated hit.
+Single closer playing-head spot
+When isolation/control is needed, trial a directional mic just outside the rim and outside the full stick arc, angled across the head. Shure's **kit-snare** guide lists roughly 2.5–7.5 cm (1–3 in) above the rim; a separate Shure tutorial suggests about 10 cm (4 in) for a more complete snare view. Neither is a concert-snare safety clearance or mandatory distance. [5, 6]
+More direct detail and less room; potentially more attack, less integrated roll, and increased risk of stick contact. Use the actual player's approval and movement to set clearance.
+Optional lower/snare-side mic
+Only with a stable, unobstructed position below the drum, aim toward the snare-side head/wires as a second perspective. Shure describes the lower mic as giving extra snare-wire detail in a *kit* context. [5, 6]
+Evaluate the top alone first; under-drum geometry may be occupied by the stand, throw-off access, legs, cables, or neighboring percussion. Test both mics in mono and omit the lower channel if it adds more hiss/spill than useful character.
+Solo/room perspective
+In an isolated feature and suitable room, trial a mic farther out from the playing side or a room/main pair. [4; listening experiment]
+Captures roll and decay in context, but room reflection and other sources become prominent. More distance rarely improves isolation on a loud stage.
+
+The Shure distances come from snare-drum and drum-kit applications. They demonstrate a range of viable *trial* proximities, while the conductor, percussionist, and musical style decide whether a more distant concert-snare pickup is appropriate. Shure itself warns that stick clearance matters and the mic should not be struck. [5, 6]
+# Shape tone through placement, not assumptions
+Batter-head aim. Place the capsule where the musician can complete every technique without hitting a boom or bending around it. Aim from outside the rim across the head instead of directly above an active sticking area. A closer position emphasizes a smaller region of a large vibrating surface and has a greater direct-to-room ratio; backing away can reveal more of the overall shell/head/snare response but admits nearby percussion. Compare a soft roll, accented stroke, and decay at comparable levels. A mic with a directional pattern may also show proximity effect when close; this depends on model and actual angle. [5, 6]
+Snare-side option. The wires/cables are not merely noise: their response is part of concert-snare color. Yet the lower mic can favor rattle and other floor/stand sounds. Do not assume it makes every concert snare better or call a second mic mandatory for a complete sound. A kit-snare practice of brightening the bottom is a hypothesis for a concert snare, subject to the score and blend. [1, 5, 6]
+Mic type. Both suitable dynamic and condenser microphones can capture snare. Choose by actual frequency response, pattern, maximum sound pressure level, transient/overload behavior, powering, mount, and physical clearance. A manufacturer's blanket statement that all condensers handle less SPL than all dynamics is too broad; compare the specified capsule and preamp limits. A high maximum-SPL number does not state what sound level is safe for the player. [5, 7]
+Source tone belongs to the musician. Yamaha documents how shell, head, snare material, tuning, and muffling affect orchestral sound; changes require musical agreement and proper instrument handling. A dull roll or inconsistent wire response may originate in the instrument or technique, so first ask the player what the part should sound like. The engineer's job is to capture the intended result and identify a possible problem, not prescribe a fixed tuning or mute. [1, 2]
+# Recording and live reinforcement
+Setting
+First approach
+Key tradeoff
+Symphony/concert band recording
+Main array and existing section pickup, then a gentle playing-head spot only if details need it. [3, 4]
+Strong spot can pull the snare too close in the image and change ensemble depth.
+Exposed solo or overdub
+One broader mic outside stick path; compare with a closer top mic. Optional room pickup only in a helpful acoustic.
+Detail against the full roll, decay, and room sound; avoid “best” placement based on one accent.
+Amplified indoor/outdoor performance
+Determine whether the acoustically audible snare and bleed in section mics suffice. If not, add one directional playing-head spot with operator and musician. [3, 5, 8]
+Monitor and PA spill, feedback margin, weather, and stand traffic may favor closer stable geometry.
+
+Even live, the Boston Pops account demonstrates that *no spot* can be a deliberate choice. On a different stage with louder program material, a close spot may be required. Work with the actual PA operator; do not prescribe a fixed mic count, high-pass setting, gate, or EQ target for every hall and drum. [3, 8]
+# Polarity, timing, and mono summation
+With a top and bottom mic, bring up the top alone, then the lower channel at a useful level. Compare all stroke types, roll dynamics, and the resulting tone in mono. The two sides of a vibrating drum may present different initial pressure directions, while mic placement and acoustic travel time also affect the sum. Many kit-snare guides suggest trying electrical polarity inversion on the bottom channel; test it, but never mark it as universally correct. A polarity switch reverses electrical sign without undoing arrival-time differences at all frequencies. [5, 6, 9]
+Then evaluate the concert-snare spot(s) against main or section mics, which also hear the drum at different times. If definition disappears or the snare becomes unnaturally close, adjust level, location, or aim before applying timing or processing. Any alignment decision must consider spill from the other instruments and the desired ensemble image. Mono is especially relevant when the live PA or broadcast feed is summed. [4, 9]
+# Safety and setup discipline
+Have the player show the highest and widest stick motions, alternate grip/roll, stand access, snare throw-off changes, and path to adjacent percussion before placing anything. Stop playing and mute channels while moving hardware. Use stable stands and approved mounts; ensure nothing can pivot onto the drum or player. No clamp belongs on the instrument without model compatibility and owner approval. Keep cables clear of feet and moving stands. Check stage sightlines and avoid making the player adopt an unnatural posture. [5, 6; detailed clearance checks are instructional inference]
+Set gain with the strongest expected accent and the quietest intended roll. Check mic capsule, preamp, and any pad at the relevant stage for overload. In live sound, work with the system operator to test intended level and feedback behavior without deliberately provoking feedback. Observe NIOSH guidance for human noise exposure; mic maximum-SPL ratings are a separate specification. [7, 8]
+# Guided practical lab
+1.Observe a complete passage. Note playing style, soft roll, loud accents, snare on/off changes, snare material if known, neighboring instruments, full stick arc, and stand position. [1, 2]
+2.Audition existing pickup. Evaluate main and section microphones, or the unamplified drum in the venue. Decide if a dedicated channel will solve a musical problem. [3, 4]
+3.Trial one top spot. With player approval, position safely outside the stick path, first for an integrated view and then a closer directional view if needed. Change one variable at a time, using the same excerpt and realistic dynamics. [5, 6]
+4.Judge the ensemble. Blend the spot conservatively with the main pickup and check mono, perceived distance, roll continuity, other-percussion bleed, and headroom. [3, 4, 9]
+5.Optional lower mic. If available and valuable, test a secure snare-side position. Solo both, sum in mono, compare polarity, and remove the channel if no musical benefit justifies it. [5, 6, 9]
+6.Live verification. With PA/monitors at intended levels and a qualified operator, assess feedback margin, spill, physical access, and safe cable/stand layout. [8]
+7.Explain the decision. Document mic aim/distance, channels omitted or retained, gain and clearance checks, mono result, and context. No audio examples.
+# Troubleshooting and assessment
+Observation
+First check
+Change to trial
+Roll sounds like disconnected stick clicks
+Is the spot too close or loud relative to main/room? Is the musical roll itself different from expectation?
+Rebalance toward ensemble or back off safely; ask the player before suggesting instrument changes. [2–4]
+Quiet strokes vanish but accents dominate
+Input gain/headroom, room noise, source tone, ensemble masking.
+Preserve peak headroom, move for usable detail and discuss musical balance with operator and player.
+Too much wire rattle
+Lower channel level/aim or unintended snare buzz from other sources.
+Reduce/omit lower mic, check intended snare engagement with player. [1, 5]
+Tone becomes thin when two mics combine
+Each channel alone and the summed mono signal.
+Move/aim and compare polarity at real levels; no permanent preset inversion. [9]
+Spot sounds unnaturally in front of orchestra
+Spot/main level and mic distance.
+Lower spot or select a broader position; evaluate full score. [3, 4]
+Stick threatens mic or stand blocks player
+Entire playing and transition path, not just a static strike.
+Stop, mute, reposition or omit mic, and confirm with player. [5, 6]
+Feedback or heavy spill live
+Monitor/PA geometry, pattern, open channels, routing.
+Adjust with operator, reduce unnecessary open mics, check intended level. [8]
+
+Passing demonstration: The learner can justify a main-only or one-spot arrangement, safely capture rolls and accents at real dynamics, explain the value and limits of a bottom mic, compare any combined mics in mono, and distinguish studio from live constraints. No audio examples.
+# Critical source audit
+Agreement. Yamaha's percussion educators show that concert-snare rolls, heads, snares, and muffling determine tone; an orchestral engineer's case demonstrates that existing microphones may be sufficient. Orchestral recording guidance supports a main pickup with optional spots. Shure provides specific snare-mic geometries and the importance of protecting mics from stick strikes, though those geometries largely concern drum kits. [1–6]
+Different emphases. Colby's Boston Pops live approach needed no dedicated concert snare channel, while Shure's snare instructions focus on obtaining isolated attack and snare-wire detail. They address distinct musical and amplification contexts. Shure's SM57 guide lists 1–3 inches above the rim; its newer tutorial recommends about 4 inches from the snare for a fuller view. Both are examples, not an exact safe distance for a concert snare. [3, 5, 6]
+Direct tension. Shure's kit-oriented guidance says top and bottom microphones are invariably out of phase and generally favors inversion; its detailed recording guide says cancellations depend on mic location, while DPA separates polarity reversal from actual time/phase differences. The practical conclusion is to *compare* polarity in mono at intended levels rather than guarantee one switch position. [5, 6, 9]
+Gaps. The reviewed sources do not establish a universal concert-snare mic height, requirement for a lower mic, guaranteed roll timbre by distance, safe stick clearance for every player, or live gain-before-feedback number. The lesson makes these site and performer tests. [1–9]
+# Curriculum and app presentation
+Concert snare follows concert bass drum and precedes headed tambourine in Membranophones. Cross-link the existing *drum-kit snare* lesson for how close-mic conventions change with a kit, and later link percussion ensembles and complete bands. The drum-kit overview links to Drum Overheads for Glyn Johns; that technique is not a concert-snare prescription.
+Show a concert snare on its stand with batter head, underside snares, player's full stick arc, snare controls, one optional upper mic, an optional underside mic, and the ensemble main pickup. Branch first on “Is a spot needed?” and then let the learner compare qualitative articulation, roll continuity, spill, and mono summation. Require player-clearance and live feedback checks. No audio examples.
+# References
+[1] Jason Baker, Yamaha Music, “Enhance Snare Drum Performance with Instrument Selection, Preparation and Tuning.” Concert snare materials, heads, snares, muffling, tuning.  Read source <https://hub.yamaha.com/music-educators/instruments/perc/snare-drum-selection-prep-tuning/>
+[2] James Campbell, Yamaha Music, “Fix It: Snare Drum Rolls Teaching Tips.” Concert roll technique and musical goals.  Read source <https://hub.yamaha.com/music-educators/instruments/perc/snare-drum-rolls-pedagogy/>
+[3] Mix, “Sound Reinforcement for the Boston Pops: Miking the Orchestra,” engineer Christopher Colby's direct account of concert snare and bass drum through other mics.  Read source <https://www.mixonline.com/live-sound/sound-reinforcement-boston-pops-miking-orchestra-368908>
+[4] India Hooi, SoundGirls, “Recording an Orchestra.” Main-array/spot/ambient balance, image and dynamics.  Read source <https://soundgirls.org/recording-an-orchestra/>
+[5] Shure, “How to Mic a Snare Drum with a Shure SM57,” approximately 4-inch kit-snare example, top/bottom perspectives, stick safety.  Read source <https://www.shure.com/en-GB/insights/how-to-mic-a-snare-drum-with-a-shure-sm57>
+[6] Shure, SM57 user guide, 1–3-inch above-rim snare placement and optional bottom mic; *Microphone Techniques for Recording*, cancellation depends on mic locations.  Read source 1 <https://www.shure.com/en-US/docs/guide/SM57>  Read source 2 <https://content-files.shure.com/Pubs/microphone-techniques-for-studio-recording/microphonetechniques-recording-guide.pdf>
+[7] CDC NIOSH, “Understand Noise Exposure.”  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[8] Shure, “How to Control Feedback in a Sound System.”  Read source <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>
+[9] DPA Microphones, “Polarity, phase and delay.”  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>

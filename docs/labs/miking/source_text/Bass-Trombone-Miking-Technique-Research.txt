@@ -1,0 +1,97 @@
+# Bass Trombone Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Bass Trombone   October 3, 2026
+# Scope and learning goals
+This lesson treats the bass trombone as its own instrument after tenor trombone in the agreed sequence. It teaches one player and instrument at a time, with applications to studio recording and live sound. The student should preserve low-register body, articulation and ensemble role; compare microphone distance and axis; accommodate slide, valve and mute use; and verify physical clearance and signal-chain headroom. No audio examples are included.
+# What changes from tenor trombone
+Yamaha describes modern tenor and bass trombones as having the same nominal B-flat tubing length while the bass generally has a wider bore and larger bell [1]. Those physical differences support a fuller low-register character, but do not mean that every bass instrument has a lower basic tuning or that every phrase needs added bass EQ. Bore, bell, mouthpiece, player, register and musical context matter. Yamaha's product list also includes a bass model with a smaller bell, so confirm the actual horn [2].
+Many bass trombones use valve attachments, but configurations vary. Yamaha describes a double rotary example with F and G-flat attachments, and explains that engaging a valve changes slide-position relationships [3]. Do not assume every horn has two valves, the same tuning, or the same reachable notes. Have the player demonstrate the written low phrase with its actual trigger combinations and normal slide reach. Plan a cable route clear of the left-hand valve controls and the moving right-hand slide. The slide is precision tubing; Yamaha explains how very small bends can impair smooth travel [4].
+# First principles: what the microphone hears
+DPA's trumpet/trombone guide proposes a microphone 30–50 cm (12–20 in) from the bell, slightly off axis for a balanced direct sound [5]. Shure recommends starting around 1–2 ft (30–60 cm) for brass and explains that on-axis bell placement is brighter, off-axis softer in upper harmonics [6]. Its live-sound guide describes the same brass family with a bell mic 1–2 ft away or a suitable miniature bell mount [7]. None of these published ranges is bass-trombone-specific or a guaranteed safe clearance. Compare in context rather than copying the tenor lesson's result.
+Low notes require both fundamental and upper harmonics for their pitch and articulation to remain recognizable in a mix. A useful engineering check is to listen to the actual low phrase, consonant-like attacks and notes higher in the part at intended balance. Avoid setting a high-pass filter by an assumed universal lowest bass-trombone frequency: the score, instrument and valve configuration set the required range. Start without filtering; apply the least filtering needed for handling noise or stage rumble, then verify that the lowest wanted notes retain their musical weight. A bass-drum mic or proximity boost is not automatically a better bass-trombone choice.
+The physically safe zone takes priority over a numerical distance. With the player, map the slide's maximum *normal* extension for the passage, bell tilt and side movement, hand position on any triggers, seated/standing posture and mute path. Keep the complete stand, boom, capsule and cable outside this swept space with a buffer. Recheck after changing player, chair, stand or mute. Never push, restrain or try to service the slide [3, 4].
+# One microphone: controlled stand setup
+1.Hear the source acoustically. Ask the player for representative low sustained and articulated notes, a higher passage, strongest musical accent and all actual valve/mute changes. Choose what the bass line must do in the arrangement: blend beneath tenors, anchor chords or project a featured line.
+2.Clear the movement. The player shows full normal slide travel in the chosen posture and actual valve operation. Put a stable stand, boom and cable out of the whole movement envelope. A mic above or to a side of the swept slide may be possible, but verify the individual geometry; bell-to-mic distance alone is insufficient [3, 4].
+3.Trial a direct view. Begin roughly 30–50 cm from the bell, slightly off axis, *if the safe zone permits* [5]. Compare Shure's overlapping 1–2 ft region in the same way [6]. Follow a complete musical phrase while the bell moves. If no safe placement exists there, choose a different stand position, approved mount or ensemble microphone rather than intruding into the slide path.
+4.Compare tone without misleading level changes. At matched listening level, move the mic aim modestly toward bell center for clearer upper partials and attack, or toward the outer bell area for a softer direct view [5–7]. Recheck physical clearance after every move. The low note must remain intelligible and balanced with the other brass, not simply impressive in isolation.
+5.Verify peak behavior. Play the strongest real phrase at intended dynamics. Check mic capsule/electronics and input stages; DPA notes that strong brass can overload the mic itself before a preamp meter clips [5]. Use the chosen microphone's published limits and pad where appropriate. Then verify quiet endings and low-note decay.
+An appropriate dynamic, condenser or ribbon may serve different aesthetic choices if its response, headroom, handling and mounting fit the job. Follow the exact model's instructions, particularly for a ribbon's airflow and powering. Mic category and “bass” labeling do not prove a specific tonal result.
+# Studio approaches
+Solo or featured overdub: Use a safe direct mic as the reference. Compare the off-axis direct position with slightly farther placements in a room that supports the tone. DPA proposes about 3 m as a possible room perspective for trumpet or trombone in a sufficiently large room [5]. This is an optional trial, not a bass-specific prescription. At each position, hear the entire part: the lowest note, articulation, register transitions, valve changes and release. A room mic may add scale, but can also reproduce room modes or competing instruments.
+In a brass section: Hear the main/section pickup first. A bass trombone spot may help the low line speak, but too much isolated spot can make it seem detached from the section. Match the part's balance against tenor trombones and tuba/euphonium if present. When combining spot and section/room microphones, audition each alone and their combined mono sound; shift placement or balance if arrival-time differences thin the low register. Do not automatically invert polarity or time-align to a visual waveform without evaluating the musical result. Section layouts belong in Ensembles and Voice.
+Tone decisions: If a low note seems weak, check the player's actual note, mic position and room before boosting low EQ. If attacks disappear in dense music, a slightly more on-axis view may reveal upper harmonics and intelligibility without excessive bass boost. If the sound is honky, harsh or smeared, compare axis and microphone/input overload first. Do not confuse a resonant room with the instrument's low-frequency extension.
+# Live sound approaches
+For a quieter stage, an ensemble mic or safe stand mic may suffice. For more isolation, use a directional stand mic close enough to produce useful direct sound while preserving the slide's path; test with the actual band, wedges and PA. Shure notes that close brass miking reduces leakage and feedback tendency, while a farther view can sound fuller [7]. Reposition the mic, wedge or player as needed; directional patterns have different null locations [8]. Do not promise that any cardioid, supercardioid or clip is feedback-proof.
+A compatible bell-rim instrument mic follows the bell and can improve level consistency for a moving player. DPA's 4099 brass mounting guidance applies to trombone and suggests aiming between bell center and edge [9]. Verify that the clip fits the larger actual bell and finish, with the player's permission; a listed trombone application is not proof of every bass bell's fit. Mount to the manufacturer-approved stationary bell area, never the slide or valve linkage. Secure the cable away from both hands, trigger mechanisms, slide sweep and mute path. Test the full real phrase with trigger, mute and movement; listen for clip/bell vibration. DPA observes that an undamped clip can pick up bell vibration [10]. The maker says its 4099 can be used with mutes [9], but the player's exact mute and gooseneck still need physical clearance testing.
+Stage subs and risers can contribute low-frequency vibration to a stand mic [10]. Diagnose this separately from musical bass: test with the full PA, use a stable stand and isolation if needed, and apply filtering only after checking the lowest wanted notes. Set headroom for strong valve and non-valve passages. Manage hearing exposure for nearby players and crew on loud stages using NIOSH guidance [11].
+# Tone and placement comparisons
+Musical goal
+Starting trial
+Listen for
+Rounded low foundation
+Safe 30–50 cm, slightly off axis [5].
+Lowest written notes, clear attack and section blend.
+More definition
+Modest move toward bell axis at matched level [5–7].
+Upper harmonics and articulation without glare or overload.
+Open ensemble sound
+Section pickup or farther spot in a good room [5].
+Cohesion, room modes, spill and mono blend.
+Featured solo in studio
+Direct mic versus optional ~3 m room view [5].
+Scale and phrasing without losing pitch clarity.
+Mobile loud stage
+Safe stand versus approved bell clip [9].
+Movement, valve/cable clearance, handling and feedback.
+
+# Troubleshooting and safety decisions
+Symptom
+Check
+Safe first response
+Lowest notes vanish
+Filter corner, room cancellation, source and balance?
+Bypass filter, hear solo and ensemble; adjust placement before EQ.
+Low notes boom
+Room/riser resonance or proximity effect?
+Compare another safe position and stand isolation [10].
+Strong notes smear
+Capsule/electronics or preamp overloaded?
+Compare mic specifications/pad and input gain [5].
+Attack buried
+Mic too far off axis or masked by neighboring parts?
+Trial modest axis change or section balance [6, 7].
+Trigger/slide noise or snag
+Clip cable touching valve linkage or swept slide?
+Stop, reroute with player, retest all normal positions [3, 4].
+Mute collides with mount
+Exact mute and player hand path tested?
+Stop, reposition hardware; have player fit their mute [9].
+Feedback/spill
+Wedge, drums or PA in acceptance angle?
+Re-aim and change stage geometry; soundcheck fully [7, 8].
+Combined mics sound thin
+Arrival-time interference in spot plus section?
+Hear each alone and mono sum; adjust position/blend.
+
+# Teaching exercise and pass criterion
+1.Have the musician identify their instrument/valve configuration and play actual low, mid and strong passages, including the normal slide reach and mute if used. Student maps the complete movement envelope before placing hardware [1–4].
+2.Trial a safe direct mic in the published brass range. Compare off-axis with a modest centerward move at matched listening level, documenting low-note body, articulation, spill and moving-bell consistency [5–7].
+3.Compare the chosen mic alone and in section context. In a studio with a suitable room, optionally audition a distant view and its mono blend; in live sound, test a stand and only a verified compatible clip at full band level [5, 9].
+4.Set gain on real musical peaks, then test any filter with the lowest wanted notes. With player present, retest slide, trigger, mute, cable and stand clearance after the final placement.
+Pass criterion: The student explains bass versus tenor distinctions without assuming a different tuning or a universal bass boost, chooses a context-specific mic view, preserves the intended low phrase, verifies headroom and can demonstrate player-controlled clearance through actual valve/slide/mute use.
+# Evidence audit and limits
+Agreement: Yamaha supports the broader bore/bell bass distinction and variable valve arrangements [1–3]. DPA and Shure agree on a front-of-bell brass starting region around 30–60 cm, with axis affecting brightness [5–7]. Both live guidance and DPA's mount guide recognize a bell-mounted option [7, 9].
+Different emphases: DPA's approximately 3 m alternative is for a suitable studio room [5], whereas Shure's closer range is useful for live isolation [7]. Yamaha's broad same-range comparison [1] and its description of specific double-valve theoretical low-note capability [3] address different levels of detail; neither establishes the lowest note of the player's actual horn or the written part. No primary source retrieved here prescribes a unique bass-trombone mic distance, filter frequency or model.
+Reasoned applications and gaps: Testing the lowest required note before filtering, checking mono blends and mapping the slide/valve/cable envelope are engineering procedures inferred from the instrument and microphone behavior. Actual bell dimensions, clip compatibility, valve tuning, room acoustics, stage spill, mic maximum SPL and hearing exposure must be checked locally. Confidence is high for documented instrument differences and general brass starting positions, moderate for the comparative workflow, and low for any claimed universal bass-trombone tone from one placement.
+# References
+[1] Yamaha, “What’s the Difference Between Alto, Tenor and Bass Trombones?”  Read source <https://hub.yamaha.com/winds/brass/whats-the-difference-between-alto-tenor-and-bass-trombones/>
+[2] Yamaha, “Trombones,” product lineup.  Read source <https://usa.yamaha.com/products/musical_instruments/winds/trombones/>
+[3] Yamaha, “How to Play the Trombone: Playing a Tenorbass Trombone or Bass Trombone.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/trombone/play/play003.html>
+[4] Yamaha, “How a Trombone Is Made: The Slide Must Be Straight.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/trombone/manufacturing/>
+[5] DPA Microphones, “How to Mic a Trumpet and Trombone.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-trumpet-and-trombone/>
+[6] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments/>
+[7] Shure, “Microphone Techniques for Live Sound Reinforcement,” brass table.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[8] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[9] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” brass section.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[10] DPA Microphones, “Measuring How Vibrations Affect Microphones.”  Read source <https://www.dpamicrophones.com/mic-university/technology/measuring-how-vibrations-affect-microphones/>
+[11] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

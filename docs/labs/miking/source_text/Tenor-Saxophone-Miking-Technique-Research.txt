@@ -1,0 +1,92 @@
+# Tenor Saxophone Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Tenor Saxophone   October 4, 2026
+# Scope and learning goals
+This lesson teaches acoustic tenor saxophone microphone placement for studio and live sound. The learner will identify where the horn radiates, compare balanced, warm, bright and spacious perspectives, and adapt a stand or approved clip to the player's posture and movement. The result should be judged across the actual musical range, not on one held note. The lesson addresses spill, feedback, key noise, headroom and instrument safety. No audio examples are included.
+# Understand the tenor as a sound source
+The saxophone has a neck, body, bow, bell and distributed tone holes [1]. Tenor saxophone is a B-flat transposing instrument [2]. Its vibrating reed excites an air column; sound is radiated by open tone holes as well as by the upward-curving bell [3, 4]. Shure notes that upper notes with open holes may radiate strongly from the last open holes on the body [3]. A bell-only microphone therefore captures an intentional close perspective, not necessarily the tonal balance heard several feet away.
+Tenor's larger, lower-sitting body matters in practice. Shure's engineer Adam Hill suggests increasing mic distance as the horn grows to include its upper and lower sources [3]. Studio engineer Dave Martin describes a middle-body starting point, with the microphone somewhat lower for tenor than alto [5]. These are geometric starting ideas, not a promise that all tenors should be miked at one height. Ask the player to perform in normal seated or standing posture, including any lean, sway, bell movement and page turning. Listen to the quietest phrase, loudest accent, lowest used notes, upper register and articulated passages before choosing a pickup zone.
+# Choose a perspective for the musical aim
+Balanced stand microphone: Shure's traditional natural position is a few inches above the bell aimed at the sound holes [3]. Dave Martin describes beginning 8–15 inches from the sax, about 45 degrees off the bell and aimed toward the middle of the body [5]. Sweetwater also describes a broader 12–24-inch, body-directed starting view [5]. These are alternatives with different room and spill exposure. Move around the player's right-front side and adjust height until bell weight and body detail remain coherent through the passage. Do not mistake those published distances for a universal standard.
+Warm body perspective: Shure describes a few inches from the sound holes as warm and full but warns of fingering noise [3, 6]. Try a higher or less direct angle across the body, or move back, when the tone is useful but pads and keys become intrusive [5]. A directional microphone's off-axis response can change the result, so verify the actual microphone rather than assuming that rotation only reduces level.
+Bright direct perspective: A mic a few inches from and aimed into the bell is Shure's bright, lower-leakage starting approach [3, 6]. A close bell-mounted miniature mic can be punchy and isolated [3]. Such placement can help a loud live mix or an intentionally aggressive lead tone, but may overrepresent the bell, sound honky or change character by register [3–5]. Compare at matched listening level with a mixed-source placement before adding EQ.
+Open room perspective: In a good room, a farther stand position or a deliberately placed room microphone can reveal more of the whole horn and space [3, 5]. It also increases room contribution, spill and level variation if the player moves. A ribbon, dynamic or condenser can work; polar response, source level, room, movement and the mic's specifications matter more than a universal model choice [3, 5].
+# One stand microphone procedure
+1.Establish the playing envelope. Confirm seated or standing height, bell swing, right-hand access, strap, music stand, neighboring players and available floor space. Place a stable stand and dress its cable so neither impedes the player or creates a trip path. Keep the mic outside the key and bell movement path.
+2.Begin with a balanced view. Aim between the bell and sound-hole field. One documented trial is Shure's few-inches-above-bell position; another is Martin's farther, roughly 45-degree middle-body position [3, 5]. On a seated tenor, a position near elbow height can be a practical starting point, provided the capsule still hears the intended mix and does not block the score [5].
+3.Play the complete passage. Recheck low and high notes, soft dynamics, strong accents, articulation, vibrato and the player's normal movement. Shift the mic toward the body or farther away for a less bell-dominant image; shift toward the bell for focus and isolation. Each change also changes room, spill and feedback behavior [3–5].
+4.Set gain and check overload. Listen for overload in the capsule, preamp, wireless transmitter or converter on the strongest real accent; a clean console reading alone may not reveal clipping earlier in the chain. Follow the selected microphone's maximum SPL and power requirements. Use a high-pass filter only after comparing it against the lowest notes actually required; avoid an unverified fixed cutoff.
+# Studio applications
+Solo overdub: Begin with one balanced mic and refine distance, height and angle while the player hears the musical context. A closer mic may supply articulation and separation; more distance can integrate bell and holes when the room supports it. Compare body-directed and bell-directed trials at equal monitor level. If an overly close directional mic exaggerates bass through proximity effect, move it or change the pattern before committing to corrective EQ [4].
+Horn section or band: Balance the players acoustically and hear the ensemble or section mics first. Add a tenor spot only if a line needs definition or independent control. A close bell spot can sound detached from a more spacious section image. Audition each mic alone and the combined signal in mono; reposition, change level, or change the spot's contribution if arrival-time interactions hollow the tone. Do not apply polarity inversion or digital delay by habit without checking the full passage [3].
+Room and stereo choices: A room mic or stereo pair is optional when the room sounds good and separation permits [3, 5]. Shure documents over-the-shoulder and distant perspectives; a player's ear-side view is a creative option, not a guaranteed accurate audience sound [3]. If a room mic is added, establish the main mic's tone first and evaluate the blend in mono. Record enough sustained notes and rests to hear room decay and background noise.
+# Live sound applications
+For a relatively stationary tenor player, a stand mic aimed across the bell and body can preserve a balanced acoustic image. In a loud band, moving closer generally raises direct sound relative to spill, but can narrow the capture and emphasize the bell or keys. Place wedges, sidefills and nearby loud sources in relation to the actual mic pattern, check the manufacturer's polar chart, and sound-check at performance level. Feedback behavior cannot be predicted from a capsule's nominal pattern alone [3, 4, 6].
+For a mobile player, an approved horn clip maintains the mic-to-horn relationship. DPA specifically recommends angling its sax clip microphone between bell and keys for balanced alto, tenor and baritone pickup, rather than pointing directly down the bell [7]. Shure also describes aiming a bell-mounted mic toward upper sound holes [3]. A clipped mic does not capture every hole equally and does not eliminate feedback [4]. Verify the clip is compatible with this bell and finish; let the player approve installation and removal. Check gooseneck clearance, key travel, strap and right-hand access. Secure the cable with strain relief so movement cannot pull on the clip; never fasten a microphone to keys, rods, pads or an unapproved part.
+Compare a clip's stability and isolation with a stand mic's freer source balance. For wireless, verify the microphone-to-transmitter connector and powering, transmitter input headroom, RF operation and the filter's effect on the actual low line. DPA specifies a foam windscreen and shock mount for its 4099, and recommends an 80 Hz transmitter low cut for handling noise in that particular system [7]. That figure is not a universal tenor-sax filter prescription. Where a player alternates between a clip and stand mic, establish one active path at a time unless the two-mic blend has been deliberately checked [3].
+# Placement trials for the lesson
+Musical goal
+Starting trial
+Main tradeoff to hear
+Natural, coherent tenor
+Above bell toward holes or farther off-bell toward mid-body [3, 5].
+Bell weight and body detail versus room and spill.
+Warm and full
+Near sound holes, then angle or back off [3, 5].
+Body versus key and pad noise.
+Direct, bright lead
+Close bell view [3, 6].
+Focus and isolation versus honk or register imbalance.
+Mobile stage player
+Approved clip aimed between bell and keys [7].
+Consistency versus limited acoustic perspective.
+Spacious solo or section
+Main mic farther away, optional room or section pickup [3, 5].
+Depth versus spill, room color and phase.
+
+# Troubleshooting and safety
+Symptom
+Likely question
+First check or response
+High notes seem thin or abrupt
+Is a bell-only mic missing open-hole radiation?
+Compare mixed-source aim across actual high phrases [3, 4].
+Low notes seem boomy
+Is the bell view or directional proximity effect excessive?
+Move or re-aim; compare filter off before applying one [4].
+Mechanical clatter is prominent
+Is the capsule too close to keys and pads?
+Angle across the body or increase distance [3, 5].
+Tone changes when player sways
+Is the stand pickup zone too narrow?
+Re-aim, back off if feasible, or test approved clip.
+Clip touches the instrument or player
+Was fit and full movement not checked?
+Stop, remove/refit with the player, or use a stand.
+Feedback or heavy bleed
+How do mic pattern and monitor geometry interact?
+Reposition mic, player or monitor, then retest at show level.
+Strong notes distort
+Which gain stage is overloaded?
+Test capsule, transmitter, preamp and downstream path.
+Two microphones sound hollow
+Is their combined timing altering the tone?
+Listen separately and in mono; adjust position or balance.
+
+# Teaching exercise and pass criterion
+1.Identify the tenor's bell, bow, body, tone-hole field and normal performance posture. Ask for representative quiet, strong, low, high, sustained and articulated phrases, plus the movement used in the show or session [1–5].
+2.Compare at matched monitoring level a closer above-bell mixed-source trial, a farther off-bell middle-body trial, and a direct bell trial. Document tone, register consistency, key noise, room, spill and movement rather than choosing by one note [3, 5, 6].
+3.On a live stage, test the stand pickup with the band and monitors. If the player moves, install an approved clip with the player's consent and compare the between-bell-and-keys aim with a more bell-directed sound [3, 7]. Verify mounting, cable strain relief, power, transmitter gain and feedback.
+4.Check strongest accents for overload, the lowest required phrase with and without any high-pass filter, and mono compatibility if more than one microphone contributes.
+Pass criterion: The learner explains why bell-only capture differs from balanced saxophone capture, chooses and justifies a tenor-specific stand height and distance, demonstrates safe clip use when needed, and verifies tone across the part and real live-sound limits.
+# Evidence audit and limits
+Agreement: Shure, DPA and studio engineer Dave Martin describe the bell and tone holes as important sources and endorse a mixed-source starting view [3–5]. Shure and DPA both document a bell-directed alternative for greater focus and isolation and a between-bell-and-keys clip aim for balance [3, 7].
+Different emphases: Shure's traditional natural placement is close and above the bell [3, 6]. Martin starts farther from the tenor, approximately 45 degrees off the bell toward the middle body [5]. Sweetwater also gives a 12–24-inch broader-body starting position [5]. Those distances are not a factual contradiction; each trades acoustic integration against room and spill. Shure calls a close sound-hole view warm and full but notes mechanical noise; Sweetwater describes a higher, farther body view for a fuller, more balanced result [3, 5]. Test both with the actual instrument.
+Gaps and confidence: None of these sources proves a universally optimal mic, distance, EQ or high-pass cutoff, nor a fixed amount of room sound for every tenor, player and stage. There is strong support for distributed radiation and the need to balance bell and holes, moderate support for the comparative workflow, and low confidence in any universal tonal prediction. The clip, mic and wireless manufacturers' instructions govern fit, power, maximum SPL and handling.
+# References
+[1] Yamaha, “The Structure of the Saxophone: Learn the Names of the Parts.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/saxophone/mechanism/>
+[2] Yamaha, “How to Play the Saxophone: The Saxophone Is a Transposing Instrument.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play003.html>
+[3] Shure, “Choosing a Saxophone Microphone for Recording and Live Sound.”  Read source <https://www.shure.com/en-EU/insights/choosing-a-saxophone-microphone>
+[4] DPA Microphones, “How to Mic a Saxophone.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-saxophone/>
+[5] Sweetwater InSync, “How to Mic a Saxophone,” including Dave Martin interview.  Read source <https://www.sweetwater.com/insync/how-to-mic-a-saxophone/>
+[6] Shure, “Microphone Techniques for Live Sound Reinforcement,” saxophone entry.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[7] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” saxophone section.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>

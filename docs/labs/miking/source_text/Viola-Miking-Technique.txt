@@ -1,0 +1,81 @@
+# Viola Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers one acoustic viola, played with a bow or pizzicato, in a solo studio session, as an ensemble spot and on a live stage. Learners will choose a useful acoustic perspective, compare a stand microphone with an instrument-mounted miniature, control bleed and feedback, and protect the player's movement and instrument. Multiple violas and string-section main arrays belong in the Ensembles and Voice Lab. No audio examples are included.
+# Begin with the sound in the room
+The viola's strings drive its bridge and resonant body. At a distance, the ear receives a blend of body, string articulation and room; a capsule very close to one feature hears a more local perspective. DPA explicitly describes close miking as a practical compromise relative to the blended sound heard at a distance [1]. Viola tone and size vary by instrument and performer, so there is no single universal bridge or f-hole coordinate. Listen to the player in the intended room before placing a stand microphone; Shure recommends finding a balanced position by ear and changing placement before relying on EQ [2].
+Ask for the intended passage, including the low C string and upper A string, quiet and forceful bows, string changes and pizzicato if used. Note shoulder and chin-rest orientation, the player's natural sway, neighboring instruments, reflective surfaces and monitor locations. The sound that supports a viola inside a quartet may differ from the focused tone needed alongside amplified instruments. That is a practical arrangement choice rather than an absolute tonal rule.
+# Establish a stand microphone
+For a quiet studio solo, place a stable stand microphone in front of and somewhat above the player, aimed broadly toward the bridge and top, with its body, cable and stand well beyond the full bow arc. A practical teaching trial is about 0.5–1.2 m (1.5–4 ft) from the instrument. This is an audition range proposed for the exercise, not a manufacturer-defined standard; room, player movement and other sources determine the final distance. Listen at the exact working position. Use a little more distance if the room sounds useful and the localized bow sound is too prominent; move closer or choose a narrower pattern if separation is needed. DPA documents that a compact cardioid can aim at a selected viola region to emphasize timbre, bow or finger sounds, and that proximity effect can add low-frequency weight [1].
+View to audition
+Likely contribution
+Check before choosing
+Front and above at moderate distance
+Integrated body, articulation and room
+Spill, reflections, player sway and bow clearance
+Closer view toward bridge and top
+More definition and focused presence
+Bow scrape, narrow view of one string, proximity effect
+Shift across the top
+Different body resonance and color
+Uneven notes or excessive low-mid energy
+Approved instrument-mounted miniature
+Consistent distance as player turns
+Mount fit, localized color, handling noise and feedback
+
+Move only one position variable at a time, repeat the same phrase and compare at roughly matched playback level. A directional mic may reject some neighboring sources, but its off-axis response and rear/side pickup depend on the actual pattern. An omnidirectional mic avoids directional proximity effect and may integrate the room well when isolation is unnecessary; a close omni still hears adjacent players and monitors. Shure describes this pattern and proximity tradeoff in its microphone placement guidance [2, 3]. Do not infer an exact tonal change from a diagram alone.
+# Three musical applications
+Exposed classical viola: First listen for a complete instrument and a coherent room. Choose one stand mic; compare modest changes in height, angle and distance across the C and A strings. A second room perspective is optional when the space is useful. The spot should not make bow noise unnaturally prominent just because the capsule is close. Test the loudest passage for preamp or transmitter overload as well as quiet articulation. Set a high-pass filter only after confirming it does not remove useful viola body; no universal cutoff is prescribed.
+Overdub or dense production: A somewhat closer cardioid can improve separation and definition. Use DPA's selected-region approach deliberately: a bridgeward aim may emphasize attack, while a position that favors more body may help a thin arrangement [1]. These are audition hypotheses, not promises for every instrument. If one string dominates, change the mic angle or back away before applying narrow EQ. Compare the mic alone in the arrangement, not just in isolation.
+Chamber or orchestral spot: Establish the main pair or array and seating image first. Add a viola spot only to address an identifiable balance or articulation problem; bring it up gradually so one player does not leap forward unnaturally. Check the blend in stereo and mono, listen for nearby violins or cellos leaking into the spot, and examine whether the spot changes apparent distance or tone. Exact timing, spot level and section geometry are ensemble decisions cross-linked to that lab. Multiple close mics on a single viola are optional and can complicate phase and movement; stereo is not a default requirement.
+# Live viola and instrument-mounted options
+A stand mic can succeed in a quiet stage environment when the performer can remain in its working zone and monitor spill is controlled. In a louder ensemble, reducing source-to-mic distance can improve the usable viola level relative to stage spill and feedback, provided the sound remains acceptable. Place the microphone and wedges with the actual capsule pattern in mind; a supercardioid has a rear pickup lobe, so a wedge directly behind it is not automatically the best rejection point. Shure describes mic placement, directional rejection and gain before feedback as linked goals, and notes that every system has a feedback limit [3].
+DPA offers a supercardioid 4099 miniature and a VC4099 clip that fits viola, allowing the capsule to follow the instrument as the player moves. DPA warns that this narrow pickup requires careful position choice because it samples only part of the viola [1]. Neumann's MC 1 is another body clip explicitly listed for viola [4]. DPA's MHS6005 soft holder is a different design: it grips two strings between bridge and tailpiece and holds a compatible miniature above or below that string section [5]. These mounts are not interchangeable instructions. Use only a compatible manufacturer-approved mount after checking the particular viola, finish, chin rest, shoulder rest, bow path and player's consent. Never push a rigid clip against the bridge, f-hole edge or varnish, or clamp across the bowing length of a string.
+Have the performer complete full up- and down-bows, shift through positions, turn naturally and play both extreme strings while the mic and cable are mounted. Route cable with gentle strain relief so it cannot rub against clothing, the instrument, or a hand. Stop if the clip buzzes, slips, presses the finish, or interferes with playing. The mounted mic can improve positional consistency, yet it does not turn the viola into an isolated source; spill and feedback must still be checked with stage monitors active.
+If the performer uses an installed contact pickup, document that as a separate electrical path, not a microphone view of the airborne instrument. A pickup can be useful when acoustic gain before feedback is limited; its tone and required input depend on the actual system. Compare pickup and mic separately before blending them. If their combination loses body, examine balance, placement and mono summation, then polarity or timing as appropriate. Do not presume that polarity inversion alone fixes every frequency-dependent interaction.
+# Troubleshooting and safety
+Symptom
+Check first
+Audition a response
+Bow noise masks the note
+Capsule localized near bow or bridge
+Change angle or move outward/upward
+C string sounds thin
+Placement and high-pass filtering
+Reposition before adding bass EQ; reassess filter
+Low-mid sound is boomy
+Close directional mic or room resonance
+Back away/change angle; compare room positions
+One string is much louder
+Capsule sees a narrow part of the top
+Broaden view and replay both extremes
+Tone changes as player turns
+Stand mic working zone is too narrow
+Reposition stand or trial approved mounted mic
+Feedback starts with monitor
+Monitor enters pickup region or reflects
+Lower level; change geometry and open mics
+Clip rattles or cable scrapes
+Fit, strain relief, bow/body contact
+Stop; remount only with player approval
+Mic and pickup sound hollow together
+Timing or phase relationship
+Solo each; mono sum, rebalance and compare
+
+Secure stands and route cables clear of feet and bow. Do not touch a valuable instrument without the player's permission. Follow the microphone, mount and transmitter power instructions; turn down reinforcement before moving a live capsule. Monitor sound at a safe level. Feedback is a sound-system condition to resolve by reducing level and changing geometry, not by asking the musician to play through a squeal.
+# Teaching exercise and pass criterion
+1.Hear the viola unamplified from several front and side perspectives. Ask the player to perform low and high strings, quiet and strong bowing, then any pizzicato in the program. Mark the full bow and body-motion envelope.
+2.Compare the broad stand perspective with a closer bridge/top aim, changing one coordinate at a time. Describe low-string body, upper-string detail, bow noise, room, spill and movement at matched levels.
+3.Choose one solo studio position, one main-array-supporting spot and one live position. Explain the different pattern, distance, monitoring and clearance choices.
+4.If a compatible approved mount or installed pickup exists, compare it with the stand mic. Demonstrate safe cable routing, motion test, mono blend check and a response to feedback.
+Pass criterion: The learner obtains a repeatable viola perspective suited to the music, can explain its spill and tonal tradeoffs, and protects the musician and instrument throughout setup and performance.
+# Evidence audit and limits
+Agreement: DPA and Shure both stress listening and context rather than a fixed position [1, 2]. DPA directly supports close cardioid and mounted miniature approaches for viola, while Shure explains the general isolation, proximity and live feedback consequences [1, 3]. Manufacturer documentation explicitly identifies which mounts fit a viola [1, 4, 5].
+Different emphasis: DPA's 4011C selected-region approach intentionally colors the sound and may add low-frequency body through proximity effect; its mounted 4099 seeks practical isolation but samples a narrower area [1]. A room-integrating stand perspective favors the acoustic blend but gives less isolation. These are different goals, not a documented contradiction.
+Gaps and confidence: The sources do not establish one best distance, capsule, frequency setting or wedge position for all viola models and stages. The 0.5–1.2 m stand distance and tonal predictions in this lesson are starting trials inferred from acoustic principles, with moderate confidence until auditioned. Confidence is high in the manufacturers' stated mount compatibility, directional pattern and mechanical placement conditions. A stand mic above and ahead is a practical starting hypothesis, not a universal authority-backed viola prescription.
+# References
+[1] DPA Microphones, “How to mic a viola.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-viola/>
+[2] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[3] Shure, “Three Reasons Why Mic Placement Matters.”  Read source <https://www.shure.com/en-EU/insights/three-reasons-why-mic-placement-matters>
+[4] Neumann, “Miniature Clip Mic System MCM,” MC 1 high-strings clip and viola set.  Read source <https://www.neumann.com/en-hk/products/microphones/miniature-clip-mic-system-mcm?variant=008712>
+[5] DPA Microphones, “MHS6005 Lavalier Microphone Holder for String Instrument.”  Read source <https://www.dpamicrophones.com/accessories/instrument-clips/mhs6005?variant=134>

@@ -1,0 +1,86 @@
+# Acoustic Piano Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers acoustic grand, baby grand and upright pianos. It teaches choices between an integrated audience-like perspective and close separation, mono and stereo, bass and treble coverage, lid positions, live feedback control, and safe mounting. A baby grand is a smaller grand for placement purposes, but its scale and room interaction must be auditioned rather than assumed identical to a concert grand. Piano with singer, duo, rhythm section or orchestra is cross-linked to the Ensembles and Voice Lab. This lesson contains no audio examples.
+# What the microphone hears
+The hammer strikes strings; the bridge transfers vibration to the soundboard; the case and grand lid or upright panels shape radiation. The entire 88-key range spans fundamentals from A0 at 27.5 Hz to C8 near 4.19 kHz, with upper harmonics and attacks extending higher. A mic position favoring bass strings may miss upper articulation and vice versa. DPA describes the size, dynamic range and room interaction as reasons a large piano cannot be reduced to one fixed placement [1]. Ask the player for the actual piece, including low, middle and high passages; soft attacks, forte chords, pedaling and staccato. Listen to key, hammer, pedal, bench and room noises before setup.
+The piano's state comes first: tuning, voicing, unwanted mechanical rattles and pedal noise cannot be reliably solved by changing a mic. Ask the pianist or owner before moving a piano, changing lid position, removing an upright panel or placing anything inside. Never reach under a moving grand lid. The lid must be properly supported in its designed full- or short-stick position by someone familiar with the instrument before stands or mounts are adjusted. Nothing may contact strings, dampers, hammers, action or moving lid hardware.
+# Choose the perspective before the pattern
+Goal and location
+Starting technique
+Main tradeoff
+Solo grand in useful room
+Pair outside the piano, near lid opening [1]
+Integrated instrument and room; greater spill
+Direct contemporary grand
+Pair over low and high strings [2, 3]
+Register control and attack; more localized tone
+Grand in loud band or pit
+Close directional pair, approved internal mounts, shorter/closed lid [1, 3]
+Isolation; stronger mechanics and less room
+Quiet upright
+Pair over open top or listen behind rear soundboard [3]
+Different attack, body and room perspectives
+Live upright
+Close top pair or approved rear/front position [3]
+Spill, pedal noise and access constraints
+
+Begin with one microphone if channels, stage space or mono reinforcement demand simplicity: find a balanced perspective across the keyboard, then add a second only when it solves a real bass/treble or image problem. A stereo piano does not need to span hard left and right in a full-band mix. Listen to each channel alone and summed to mono. Shure warns that bass/treble spaced pairs can develop cancellations in mono [2]. A coincident X/Y pair offers a stable center and typically stronger mono compatibility; spaced pairs can sound more expansive but their time differences require a mono check [4].
+# Grand piano in a quiet studio
+Outside, integrated: With lid safely supported and the room worth hearing, start near the opening/curve outside the instrument and move until bass, middle and treble sound coherent. DPA gives a pair of omnis spaced 30 cm (12 in) just outside the piano as one starting setup for a solo or isolated grand [1]. Omni room pickup makes this a poor default beside drums or loud wedges. Another documented option is ORTF in the curve with a full-stick lid, which DPA describes as a direct, balanced perspective [4]. The ORTF geometry is a defined two-cardioid technique; preserve the chosen pair's designed angle/spacing rather than improvising one mic on bass and one on treble and calling it ORTF.
+Closer over strings: For definition, set two suitable microphones above bass and treble string regions, with secure clearance from lid and action. Shure describes a separated pair, and DPA lists an ORTF cardioid pair around 30 cm (12 in) above strings at mid frame, aimed down toward the pianist, as one specific setup [1, 3]. These are alternative geometries, not a combined placement recipe. Moving nearer the hammers emphasizes attack and mechanics; moving away softens the attack [3, 5]. Watch overlap in the middle register and avoid exaggerating the keyboard's apparent width. In a baby grand, reduced physical room inside the case may force a compact pair or an outside viewpoint; check actual clearance before lowering a lid.
+Room plus close: A main outside pair can define the instrument and space, while a close pair adds articulation if required. Bring the close signal in gradually. Check each mic by itself, then blend in stereo and mono; different arrival times can cause comb filtering, and phase/polarity inversion is not a universal cure. First change position, level or number of open mics. If piano and singer share a room, the close choice may be driven by vocal spill; defer dual-source placement and phase decisions to the Ensembles and Voice Lab.
+# Grand piano on stage or in a pit
+Short-stick or safely closed lid and low-profile microphones inside the grand can limit spill and increase gain before feedback, though the sound becomes more percussive and closer [1, 3, 5]. Try a bass/treble pair, a compact coincident pair, or an approved boundary pair on the underside of the lid. Shure describes an underside-lid boundary microphone as a live option [5]; DPA describes magnetic mounts on appropriate metal frame locations, not arbitrary attachment to wood or strings [1]. Verify magnet strength, compatibility with the finish and surrounding parts, cable routing, lid clearance and secure retention according to the mount maker and piano owner. Do not place unsecured metal hardware or loose cables in the instrument.
+A pair is useful for a broad keyboard, but one mic at a carefully chosen location can be adequate in a mono PA or limited-input setup. Shure documents a one-mic sound-hole option for live reinforcement [3], but it is a focused color, not a complete concert-hall representation. Close to the hammers gives more transient attack; farther away brings less mechanics [3, 5]. Check hard bass and treble chords at show level, monitor spill, any lid rattle and mic/cable movement. A directional capsule's rejection angle must be aimed relative to actual monitors; shortening the lid changes both tone and spill. Reduce level before moving a mic or lid and then retest gain before feedback.
+# Upright piano in studio and live sound
+The upright's strings, action and soundboard are oriented differently from a grand. Shure suggests opening the top and using a split pair, one for low and one for high registers, angled slightly toward the hammers [3]. This tends toward a direct, articulated view. Compare a farther top view for more body and less hammer noise. A mic or pair behind the rear soundboard can emphasize body and reduce direct key/action noise, but its quality depends strongly on wall spacing, room and piano construction; Shure expressly advises listening for the rear sweet spot [3]. Do not simply press the back against a wall and expect a usable mic space.
+If the owner approves removing an upright's front panel, a front-of-action placement can favor hammer attack; a lower front opening can pick up soundboard/strings but also feet and pedal thumps [2, 3]. Panel removal is not an operator default: leave the task to the owner or qualified technician and secure any removed part. On a live stage, a close top pair or safely mounted internal pair may be more workable than a room perspective. Choose the position by the desired bass/treble balance and spill, not by the assumption that every upright radiates identically. One mic is possible for mono reinforcement if it gives a usable full-range compromise.
+# Microphone choice and tone controls
+Condenser microphones are common for piano's wide dynamic and spectral range, but a capable dynamic can be useful in a noisy live environment; Shure documents both on upright and piano stage work [3, 5]. Pattern is more important than labels: omnis can integrate low frequencies and room without directional proximity effect, whereas directional patterns improve separation but may change low-frequency balance close to the source [1, 4]. Do not prescribe a single microphone model, polar pattern, stereo width or high-pass frequency for every piano. Place first, then consider modest filtering only after testing low fundamentals and mechanical rumble. If a pair sounds thin, check mono and spacing before boosting EQ. Keep gain headroom for fortissimo transients; DPA notes very high levels near hammers [1].
+# Troubleshooting and safety
+Symptom
+Check first
+Response to audition
+Too much hammer or key noise
+Mic close to hammers/action
+Move away or choose outer/rear perspective
+Bass booms or treble lacks detail
+Pair position and register balance
+Move/aim bass and treble views separately
+Hollow mono sum
+Interference between separated mics
+Compare each; narrow pair or change geometry
+Overwide piano image
+Bass/treble pair panned too far
+Reduce pan width; evaluate in full mix
+Excessive stage spill
+Open lid, distant or wide-pattern mic
+Close mic, short/closed lid, revise monitor geometry
+Feedback or lid rattle
+Monitor, lid/mount or hardware contact
+Reduce level, secure/relocate safely and retest
+Pedal thump
+Lower-front upright or floor coupling
+Reposition, isolate stand and inspect mechanism
+Uneven volume across range
+Mic sees one section only
+Compare low/middle/high passages and re-aim
+
+All hardware must clear the grand lid through its entire intended travel, the piano action, strings and damper travel. Confirm the owner approves magnets, clips, adhesives or panel access; do not tape to finished surfaces or put weights on a soundboard. Secure stands and isolate cables from pedals, bench and performer. Never alter a support stick or put hands beneath an unsecured lid. Piano tuning or action faults should be referred to a qualified piano technician.
+# Teaching exercise and pass criterion
+1.Have the pianist play low, middle and high phrases, sustain pedal, soft notes and fortissimo chords. Map lid position, room reflections, monitors and player movement.
+2.On a grand, compare an outside integrated perspective, a bass/treble close pair and a compact coincident pair when equipment allows. Check stereo and mono at matched level.
+3.On an upright, compare open-top low/high positions with a rear view and, only if permitted, a front-panel perspective. Note hammer and pedal noise.
+4.Choose quiet solo, loud stage and singer-with-piano approaches. Demonstrate a safe lid/panel/mount procedure and explain when an extra mic harms balance.
+Pass criterion: The learner can obtain a repeatable full-keyboard tone, choose a sensible stereo or mono image, adapt to live separation, and protect the instrument and performer.
+# Evidence audit and limits
+Agreement: DPA and Shure both distinguish integrated outside placement from closer, more isolated positions and document bass/treble pair options [1–3, 5]. Both describe changed attack near hammers and live benefits of lid control [1, 3, 5]. Shure supports top, rear and lower-front upright approaches [2, 3].
+Different emphases: DPA's solo grand omni pair favors room and whole-instrument perspective [1]; Shure's live guidance favors closer bass/treble coverage and lid isolation [3, 5]. The options solve different constraints. Spaced and coincident stereo trade width/room against mono interaction [4]; there is no direct factual contradiction.
+Gaps and confidence: No source determines one placement for all grands, baby grands, uprights, rooms or pianists. Exact spacing, lid state, spot level, filter and mount safety depend on the instrument and situation. Confidence is high in documented starting positions and mechanical clearance needs; moderate in tonal predictions until auditioned. A piano owner or technician must authorize access and mounting on a valuable instrument.
+# References
+[1] DPA Microphones, “How to mic a piano.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-piano/>
+[2] Shure, “Microphone Techniques for Recording,” grand and upright piano tables.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[3] Shure, “Miking the Rhythm Section,” grand and upright sections.  Read source <https://www.shure.com/es-LATAM/articulos/miking-the-rhythm-section>
+[4] DPA Microphones, “Stereo recording techniques and setups,” piano and stereo sections.  Read source <https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/>
+[5] Shure, “How to Choose The Right Piano Microphone.”  Read source <https://www.shure.com/en-IN/insights/how-to-choose-the-best-mic-for-the-pianist>

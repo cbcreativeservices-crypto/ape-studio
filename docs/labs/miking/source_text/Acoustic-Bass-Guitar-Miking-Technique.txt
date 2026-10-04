@@ -1,0 +1,84 @@
+# Acoustic Bass Guitar Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson concerns a bass guitar with an acoustic hollow body and soundboard, played horizontally, including acoustic-electric models. It is not the upright/double bass from the preceding two lessons and not an electric solid-body bass amplifier lesson. The learner will balance low-note pitch, body resonance and finger attack with one mic, choose a useful live pickup/mic arrangement, identify room and feedback problems, and preserve instrument and player safety. No audio examples are included.
+# Identify the instrument and signal paths
+Strings excite the bridge and top, while the body and sound opening help radiate sound. Acoustic bass guitars vary considerably in body size, scale, strings, pickup and acoustic projection. Martin's full-scale BC-16E, for example, has a spruce top, 34-inch scale and onboard E1 electronics with volume, tone and phase controls [1]. Taylor also offers a smaller GS Mini-e Bass with a pickup [2]. These examples establish variety; no single fret number or microphone distance transfers unchanged between them. Ask whether the musician uses a pick, fingertips, nails or percussive playing and whether the part includes the instrument's lowest notes.
+A microphone in the room captures airborne top, strings, opening and reflections. An installed undersaddle or other pickup supplies a separate electrical signal, with its own output and possible preamp. Some onboard systems also include an internal microphone, which is an actual mic but hears the inside of the body from a very different location. Label all paths correctly. A DI from a pickup is not a microphone hearing the instrument from outside. If an amplifier is used and its speaker tone matters, miking that speaker is another distinct path, cross-linked to the Electric Bass amplifier and direct lesson.
+# Establish one exterior mic in a controlled room
+There is limited authoritative acoustic-bass-guitar-specific placement guidance. DPA's acoustic-guitar guide proposes the region between fingerboard and sound hole to include low end and picked-string bite; Shure similarly suggests a neck/body position as a balanced guitar trial [3, 4]. Transfer these as starting experiments, then verify on the actual bass guitar. Begin with one mic roughly 20–45 cm (8–18 in) from the upper body/neck-joint or neck-to-hole region, with its axis angled to include top and strings without pointing straight into the opening. That range is a teaching trial, not a published bass-guitar standard. Play soft and hard notes across the whole range, including the lowest string, and change one coordinate at a time.
+Perspective
+Question to test
+Limitation
+Neck/body or neck-to-hole region
+Can pitch, attack and body be heard together?
+Too far toward neck may sound all string/finger.
+Move toward bridge/top
+Does soundboard/body fill out the note?
+Very close may favor one local top vibration.
+Move toward sound opening
+Is more low-mid body useful?
+A close hole view may boom or vary by note [3, 4].
+Move back and slightly off axis
+Does whole-instrument balance improve?
+Room modes, spill and movement become stronger.
+Close approved body clip
+Does isolation/mobility outweigh local color?
+Mount fit, finish and cable safety.
+
+The anticipated changes are listening prompts, not fixed tonal laws. For a directional mic, very close placement may increase bass through proximity effect; an omni avoids that mechanism but takes in more room and competing sources [3]. Set input gain with the loudest performance, including slap or body taps if actually used. Check the notes in the mix at consistent listening level; a strong isolated low end can become muddy with kick drum and room decay.
+# Studio tone concepts and room checks
+Natural acoustic duet or solo: In a quiet useful room, move back until attack and body integrate without losing pitch clarity. An omni can be worth comparing where spill and reflections are wanted; a cardioid can focus more on the bass where isolation is necessary [3]. Test several low notes from different pitch classes, because a room resonance may make one seem louder or longer. Reposition musician or microphone when a note is uneven rather than first imposing a large EQ correction.
+Focused rhythmic bass in a band: Try a closer directional view near upper body/bridge region for note articulation. If all finger or pick, include more top by changing aim or distance. If the sound hole dominates, angle away and compare the top. A bass guitar's acoustic volume may be modest next to drums or amps; isolation may be a performance and room decision rather than a mic model choice. In a loud tracking room, capture the installed pickup as a separate reliable path, even if the external mic is the preferred tone.
+Two mics or room: Establish one good mic before a second. A body/top view plus a string-definition or farther room view can give tonal options. Solo each, blend in mono at useful levels, and check full-range notes for cancellations. Move/rebalance a mic before trying polarity or time alignment. A distant room mic is an artistic choice only where room modes and bleed are controlled. Taylor's acoustic-guitar engineer describes a microphone near the upper bout, about 12 inches away, as *his* starting point, and recommends turning away from the sound hole when boom appears [5]; this supports experimentation, not a universal acoustic-bass-guitar coordinate.
+# Live sound and pickup blending
+An acoustic bass guitar with an installed pickup often needs that feed for dependable PA level on a loud stage. Use the pickup manufacturer's specified instrument input, preamp or DI, and establish the main PA sound at a workable monitor level. An external close directional or compatible clip mic can add acoustic character as gain before feedback allows. DPA notes that a close acoustic-guitar mic can offer isolation but may be a compromise in complete body timbre; it also warns that the guitar body can reflect PA or drum sound toward a mic [3]. Apply these observations as qualified analogies to the bass guitar and verify with the actual stage.
+If a body clip is considered, check that its adjustable range, contact surfaces and gooseneck clear the bass's thickness, finish, strings and player's hands. DPA specifies 35–122 mm body depth for its 4099G-style guitar clip [6], but this alone does not prove fit or safety on every acoustic bass guitar. Get owner consent, use the exact product instructions and strain-relieve the cable. A player moving around a stand mic may change tone and level; a properly fitted clip moves with the instrument but represents a more localized position.
+Mic and pickup may have different timing, phase response and tonal balance. Compare each alone, then sum in mono at musical levels. Reposition/rebalance the external mic before applying polarity or delay changes; no fixed setting suits every pickup. If the instrument or mic feeds back, reduce the offending channel/monitor level, change speaker/bass/mic geometry and open-mic count, then test any narrow filters by ear. Martin's example includes a phase control [1], but its function and effect are model specific; do not tell students to flip every pickup's switch as a universal feedback cure. A direct feed may carry essential low notes even if the mic is temporarily reduced.
+# Low-frequency and physical safety
+Do not assume that a mic with a larger diaphragm necessarily reproduces lower frequencies better. Check the mic's documented response, pattern, wind/handling behavior and the room. High-pass filtering can remove subsonic stand or handling noise, but preserve the instrument's actual lowest useful notes. Evaluate low notes over an appropriate monitor system; small speakers or headphones with limited bass response can make a good capture seem deficient. Avoid boosting sub-bass solely to compensate for monitoring limitations.
+Keep stand legs and cable clear of the player's feet and instrument. Do not insert a mic into the sound opening, lean a heavy boom against the body, clamp an unapproved edge, adjust the bridge or modify pickup wiring in a miking exercise. Follow electrical/phantom-power instructions for the actual devices. On a loud stage, reduce exposure at the source and use suitable hearing protection; OSHA's 85 dBA eight-hour time-weighted average is a hearing-conservation action level, not a guarantee at every duration [7].
+# Troubleshooting map
+Symptom
+First question
+Response to audition
+Low notes boom or vary greatly
+Is mic on hole or a room mode?
+Shift aim/player position; compare notes and room decay.
+Attack without body
+Is mic too far toward fretboard?
+Include more top/bridge region or back up.
+Body but poor pitch clarity
+Is mic overly close to opening/top?
+Move toward neck-to-hole blend and assess in mix.
+Mic/pickup blend sounds hollow
+Are acoustic/electrical paths interacting?
+Solo, mono-sum, move/rebalance, then test polarity/timing.
+Loud stage feedback
+Which pickup/mic/monitor path drives resonance?
+Lower offending path, revise geometry/open channels.
+Clip/stand causes contact noise
+Is hardware touching body or strings?
+Stop, refit approved mount or use stable stand.
+Lowest note seems absent
+Is mic, room, filter or monitor limiting it?
+Check full signal chain before EQ boost.
+
+# Teaching exercise and pass criterion
+1.Identify acoustic body, scale, pickup type, string range, playing style and room. Trace exterior mic, internal mic (if present), pickup, and amplifier speaker as distinct paths.
+2.With one exterior mic, compare neck-to-hole, bridge/top, holeward and broader positions on soft/strong passages across low/high notes. Document actual observed tone and room contribution.
+3.Select one quiet studio and one loud-stage approach, explaining pattern, position, pickup role, monitor geometry, safe stand/clip and cable route.
+4.If a second path is available, compare alone and in mono; demonstrate diagnosis of one boomy note and a safe response to feedback without unnecessary instrument modification.
+Pass criterion: The learner can deliver a repeatable airborne bass-guitar perspective with audible pitch and body, adapt to live isolation, correctly label pickup/mic paths, and audit low-frequency and physical safety.
+# Evidence audit and limits
+Agreement: Manufacturer examples confirm acoustic bass guitars with differing body/scale and onboard pickup features [1, 2]. DPA, Shure and Taylor agree in ordinary acoustic-guitar guidance that position and distance change the body/string/room balance [3, 4, 5].
+Different emphases: DPA favors a neck-to-hole starting region and offers a compatible close mounting approach [3, 6], while Taylor's engineer favors a slightly different upper-bout point about 12 inches away [5]. They describe personal or guitar-specific starting positions, not a contradiction. No primary source here establishes one as superior for acoustic bass guitar.
+Gaps and confidence: The cited miking guides address standard acoustic guitar; Shure's “acoustic bass” instructions elsewhere refer to upright bass and must not be copied here. The 20–45 cm range and tonal map are qualified inference, to be validated on the player's instrument and room. Confidence is high in the instrument/pickup distinction and general acoustic principles, moderate in position predictions, and low in any claim of a universal bass-guitar sweet spot.
+# References
+[1] Martin Guitar, “BC-16E Acoustic-Electric Bass Guitar,” specifications and electronics.  Read source <https://www.martinguitar.com/guitars/retired-models/10Y24BC16E-01.html>
+[2] Taylor Guitars, “GS Mini-e Bass.”  Read source <https://www.taylorguitars.com/guitars/acoustic/gs-mini-e-bass>
+[3] DPA Microphones, “How to Mic an Acoustic Guitar,” qualified analog for a horizontal acoustic bass guitar.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-an-acoustic-guitar/>
+[4] Shure, “How to Choose the Best Mics for the Guitar,” qualified acoustic-guitar analogy.  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-the-guitar>
+[5] Taylor Guitars, “An Introduction to Recording Acoustic Guitar,” Gabriel O'Brien's starting position.  Read source <https://woodandsteel.taylorguitars.com/issue/2020-issue-3/feature-story/an-introduction-to-recording-acoustic-guitar/>
+[6] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” 4099G fit.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[7] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

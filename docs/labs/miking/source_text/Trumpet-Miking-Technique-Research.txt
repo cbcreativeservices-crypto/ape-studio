@@ -1,0 +1,95 @@
+# Trumpet Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Trumpet   October 3, 2026
+# Scope and learning goals
+The trumpet is an aerophone: the player excites a standing air-column vibration with buzzing lips, and the bell strongly affects the directional sound heard outside the instrument [1–3]. This lesson teaches one-instrument miking in studio and live sound, with both open and muted playing. Students should use bell distance and angle intentionally, account for the player's movement and dynamics, preserve microphone and input headroom, and keep stands or clips clear of the performance. Flugelhorn is next as its own instrument. No audio examples are included.
+# Hear the player and instrument before placing a mic
+Listen from where the audience would hear the trumpet, and then from a candidate mic position. The player hears a different balance from behind the bell [2]. Ask for the actual musical part: quiet lyrical notes, strong high-register attacks, falls, shakes or other articulations, and mute changes if present. Watch how far the bell moves in normal playing and whether the player turns toward a rhythm section or conductor. A microphone fixed to a spot cannot preserve the same tone if the bell repeatedly moves on and off its axis.
+The bell produces a strongly directional high-frequency field. Shure describes a brighter and more defined sound on axis and softer, less biting high frequencies off axis [1]. DPA recommends 30–50 cm (about 1–1⅔ ft) from the bell, slightly off axis, for a balanced starting point; Shure suggests 1–2 ft (about 30–60 cm) [1, 2]. These overlapping guides are starting ranges, not exact rules. A closer, centered position can emphasize edge and breathing air at the bell; moving out can add room and neighboring sound. Do not assume that everything a listener calls “warm” is created by a mic's low-frequency boost; source, axis, room and overload should be assessed separately.
+The trumpet is capable of strong peaks. DPA warns that a microphone's own capsule/electronics can overload when close to brass, so a low preamp gain setting alone does not prove the mic is within its specification [2]. Verify microphone maximum SPL and any manufacturer-approved pad, and set the preamp/converter/PA chain for the loudest intended passage. Do not assign one universal trumpet SPL or prescribe a specific limiter threshold without measuring the actual situation.
+# One stand microphone: studio starting workflow
+1.Map the bell travel and room. Set a stand where the musician has unobstructed breathing, view of music/conductor, valve-hand clearance and room for mutes. If the bell is highly mobile, mark a comfortable playing zone rather than instructing the performer to hold a rigid pose that compromises technique.
+2.Start slightly off axis. Trial a mic with adequate headroom around 30–50 cm from the bell, its sensitive axis aimed toward the bell region but offset enough to avoid a straight bore-centered blast [1, 2]. Microphone angle and side-address orientation depend on the actual model; check its user guide. Keep stands out of the player's approach, slide/mute table and walk path.
+3.Compare at matched level. Have the player play a representative phrase at actual dynamics. Compare one modestly more centered position with one farther off axis; then compare a little more and less distance. Listen for core pitch, attack, high-register bite, breath/valve noise, room decay and spill. Change one variable at a time. Shure's off-axis trend and DPA's suggested range are guides, while the player's horn, room and microphone determine the result [1, 2].
+4.Check headroom and playback context. Play the strongest accent and softest ending, then judge in the arrangement and in mono. If a loud attack sounds smeared, identify whether the source itself, mic electronics, preamp or converter/console clips before changing EQ. A high-pass filter may remove stand rumble but should be checked against the desired low trumpet notes; a gate can mutilate decays or soft articulation.
+In a quiet, good-sounding studio, audition a more distant perspective after obtaining a reliable main mic. DPA proposes a several-meter trial in a sufficiently large room for a different, smoother room-integrated sound [2]. This is a room-dependent artistic option, not a stage starting distance. It increases reflections and spill. If using a distant mic with a close mic, audition each and their mono sum because timing differences can color the combined tone.
+# Live: stand mic and instrument-mounted mic
+Stand mic: The 30–60 cm starting region may work on a moderate-volume stage where the player can stay near the mic [1]. A loud stage often demands a closer directional pickup and careful monitor placement for gain before feedback, at the cost of more local bell tone. Test with the band playing at actual level. Aim the microphone's rejection according to its real polar pattern; a supercardioid has a rear pickup lobe unlike a cardioid's rear null [4]. Do not put a wedge directly in a sensitive lobe or merely point the mic toward the bell without checking where it rejects the monitor.
+Clip-on or instrument mount: For a roaming player or rapidly changing bell direction, an approved brass clip and miniature mic maintain a more consistent microphone-to-bell relationship. Shure lists horn clamps for trumpet, and DPA describes a clip whose gooseneck points between bell center and edge for a smoother sound [1, 5]. Confirm fit with the player's particular bell and finish, attach only to a maker-approved location, and leave room for mutes. Secure the cable without restraining valves or adding strain to the bell; check the microphone's power and wireless-adapter compatibility [5]. A clip's close viewpoint can sound different from a stand mic and may transmit handling or bell contact noise. Greater isolation and consistent distance are benefits to verify, not guarantees of feedback immunity.
+Compare both approaches with full band, monitors and PA. A single trumpet may be audible acoustically in a quiet venue; reinforce only as much as needed for balance. In a loud band, turning the trumpet channel up cannot fix a stand mic that the moving bell misses. Talk with the player about mic position and stage layout instead of asking for unnaturally forceful playing.
+# Muted trumpet is a different source setup
+A straight, cup, Harmon/wah, plunger or other mute changes tone, directionality, protrusion and the player's hand movement. The exact construction varies, so ask the player to demonstrate each mute used in the actual piece at musical level. A stand mic that safely clears an open bell may collide with a protruding mute, and a clip capsule may conflict with a cup or the player's plunger hand. DPA says its brass clip can be used with various mutes, but that product-specific statement does not prove that every mute, bell or clip combination clears on every player [5].
+Set a starting mic position for open horn, then play the entire mute-change passage and adjust only after checking clearance. For a close Harmon stem or plunger effect, use the emitted sound and movement the player intends rather than a fixed “inside the bell” rule; do not force a mic into or against a mute. If the sound is too nasal, determine whether that is the desired mute color before trying off-axis movement or EQ. The player should install and remove their own mute. Yamaha's pickup mute is a specialized mute with an internal microphone and modeled output, not an ordinary acoustic mute or a substitute for this external-miking lesson [6].
+# Tone and approach trials
+Musical aim
+First comparison
+Judge in the full phrase
+Focused solo
+30–50 cm slightly off axis, then small distance/angle changes.
+Core, clarity, high-note bite, player movement [1, 2].
+More edge or projection
+Slightly more on axis at fixed level, if mic headroom allows.
+Definition without upper-frequency harshness or overload.
+Softer blend
+Move somewhat off axis or compare a farther studio perspective.
+Whether pitch and articulation remain readable.
+Roaming live solo
+Stand mic versus approved bell clip at matched loudness.
+Consistency, handling noise, feedback margin and mute clearance [5].
+Muted color
+Record the exact mute and hand movement at normal distance and revised safe position.
+Intended mute sound, complete range, no collision.
+
+These are controlled comparisons rather than claims that “warm” always means farther away. A microphone can alter perspective, but it cannot substitute for the player's intended articulation or mute.
+# Studio application
+Solo overdub: Hear the real bell sound in the room, establish a balanced main mic, then compare on/off axis at matched level. Test the loudest upper-register accent and quietest held note. In a suitable room, a more distant mic can add depth; evaluate the room itself and summing with the main mic. Do not assume a particular large-diaphragm microphone is better for trumpet. DPA prioritizes mic headroom and warns that mic overload can be mistaken for the instrument's natural sound [2]. A dynamic, condenser or ribbon may be auditioned within its specifications, with model-specific handling and blast precautions.
+Horn in ensemble: Hear the main/section microphones first. A close trumpet spot can add definition or independent level, but can make the horn too isolated or collect adjacent horns. Position players and their bells with sightlines and musical blend in mind. Bring the spot up with the ensemble and check stereo and mono for tonal changes caused by spill and different arrival times. The horn-section arrangement and shared miking are treated more fully in Ensembles and Voice; this lesson remains one trumpet.
+# Live application
+Do a soundcheck with the real show dynamics and mutes, not only a polite middle-register phrase. Set input gain and headroom for peaks. Place the stand so a musician moving naturally stays within useful pickup; if that is impractical, compare a suitable clip. Check stage wedges and adjacent brass/drums against microphone pattern and adjust placement before aggressive EQ or gain. A cardioid's rear and a supercardioid's off-rear nulls are different [4]. Use as few open mics as the performance needs and listen from audience positions.
+The trumpet can be powerful acoustically. A PA channel should support intelligibility and balance, not require the horn to be continuously pointed into a hazardous close microphone. On a stage with a singer immediately nearby, consider horn orientation so the bell does not fire at the singer's ear or microphone. This is a practical layout decision, not a fixed distance rule; assess actual exposure and comfort.
+# Safety and care
+Secure weighted stands, avoid sharp mic/boom edges at face and bell height, and leave a clear route for player, instrument, mute table and cables. Never clamp a generic clip to delicate bell metal or finish without compatibility and owner approval. Do not obstruct valves, tuning slides or mute insertion; keep gooseneck and cable clear of hands [5]. Strong bell peaks can overload microphone electronics, preamps and monitoring chains; check spec, pad and gain at performance dynamics [2].
+For loud rehearsals or sustained horn sections, evaluate hearing exposure under NIOSH musician guidance [7]. Avoid placing a loud bell directly at another person's ear. If the player reports pain or discomfort, reduce exposure and reconfigure positions. Do not invent a universal safe trumpet distance or assume the input meter represents acoustic exposure. If using a ribbon mic, follow its own maximum SPL, blast and phantom-power/connection guidance; no blanket rule applies to all ribbon designs.
+# Troubleshooting
+Symptom
+Check
+First practical move
+Harsh or spitty tone
+Bell axis or mic overload?
+Compare off-axis at matched level; check mic headroom [1, 2].
+Sound vanishes as player turns
+Does bell leave stand mic axis?
+Adjust playing zone or trial approved clip [5].
+Mute sounds thin/strange
+Intended mute sound or mic/mute collision?
+Hear acoustically; reposition safely for that mute.
+Strong notes distort
+Which of capsule, preamp or converter clips?
+Use suitable mic/pad and reset gain; test loud passage [2].
+Distant mic sounds washy
+Room reflections or other instruments?
+Move main mic closer or improve room/placement.
+Two-mic blend loses body
+Different arrival times and spill?
+Hear each alone and mono sum; reposition/rebalance.
+Live feedback
+Is wedge in mic pickup/rear lobe?
+Improve mic, monitor and player geometry [4].
+
+# Teaching exercise and pass criterion
+1.Ask the player to perform the actual open and muted phrase. Mark natural bell movement, bell/mute clearance, loudest accent and quietest ending. Explain why the player's behind-bell experience differs from the audience view [2].
+2.Trial a suitable mic 30–50 cm slightly off axis, then compare a more direct and a more oblique view at matched gain. Note core, articulation, bright harmonics, room and overload [1, 2].
+3.In a good room, audition a farther perspective and mono combination. On a stage, compare a stand mic and approved clip if movement requires it; test monitors, adjacent sources and every mute [5].
+4.Document mic model/pattern, headroom check, placement, player's movement and reasons for the chosen studio and live configuration. Identify one layout adjustment before reaching for EQ or more player force.
+Pass criterion: The student maintains performance and mute clearance, captures low/high notes and dynamics without overload, uses axis/distance as intentional tone controls, checks the full arrangement, and can justify a safe live geometry.
+# Evidence audit and limits
+Agreement: Shure and DPA both recommend roughly 30–60 cm as a starting region and identify on-axis brightness versus a smoother off-axis view [1, 2]. Both address practical stage capture with suitable close/clip solutions [1, 2, 5]. DPA explicitly cautions about microphone overload on brass [2].
+Different emphasis: Shure presents 1–2 ft as a general practical start [1]; DPA narrows it to 30–50 cm slightly off axis, proposes a more distant studio perspective, and discusses a close back-of-bell option [2]. These are different artistic and acoustic contexts, not mutually exclusive prescriptions. DPA's high SPL ratings are for named DPA models, not every miniature mic [2].
+Evidence gaps: None of the cited sources supplies a universally optimal microphone, a fixed angle for all microphones, a safe distance for every mute, or guaranteed feedback margin. Actual player travel, mic polar/off-axis response, acoustics and monitors must be auditioned. Confidence is high for directionality, overlap of starting ranges and need for headroom; moderate for comparative workflows; low for exact tonal and feedback outcomes without the performer and room.
+# References
+[1] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments/>
+[2] DPA Microphones, “How to Mic a Trumpet and Trombone.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-trumpet-and-trombone/>
+[3] Yamaha, “How to Play the Trumpet: Techniques for Playing the Trumpet.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/trumpet/play/>
+[4] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[5] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” brass clip section.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[6] Yamaha, “SILENT Brass Pickup Mutes.”  Read source <https://usa.yamaha.com/products/musical_instruments/winds/silent_brass/pickup_mute/index.html>
+[7] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

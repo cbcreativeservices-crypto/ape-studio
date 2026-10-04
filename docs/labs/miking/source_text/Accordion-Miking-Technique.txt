@@ -1,0 +1,84 @@
+# Accordion Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson addresses acoustic piano, chromatic button and diatonic button accordions. The learner will identify the moving treble and bass sources; compare one stand microphone with separate side microphones; and evaluate approved instrument-mounted or built-in microphones for live sound. The emphasis is what each microphone hears, how bellows movement changes that sound, and how to protect the player and instrument. No audio examples are included.
+# Know the source before placing a microphone
+Air moved by the bellows excites reeds. On a piano accordion the right-hand keyboard is the treble side and left-hand buttons play bass accompaniment; other layouts vary [1, 2]. Both sides radiate, the instrument changes position as the bellows open and close, and key and bellows noises can enter close microphones [1]. The bellows are the air source, but pointing a microphone into a moving bellows gap is not a default way to capture the whole instrument.
+Ask the player which accordion and register settings will be used, whether bass notes and chords are essential to the arrangement, whether they will stand, sit or move, and how far the bellows and bass side travel. Watch a full passage with maximum bellows extension. Do not make the player constrain technique to fit a stand or clip. The instrument’s sound and apparent balance change with angle, distance and playing position [1].
+# Choose the pickup perspective
+Musical goal
+Starting trial
+Check across the passage
+Natural solo or sparse ensemble
+Start one stand mic roughly 30–60 cm from the instrument, toward a balanced listening position; move by ear [1, 3].
+Bass and treble balance, room, bellows travel and key noise.
+Detailed two-sided sound
+Aim one mic toward treble grille/keyboard side and a second toward bass-side sound outlets. Balance each side deliberately [1, 4].
+Full bellows cycle, mono sum, spill, low-note and register changes.
+Loud or mobile live performance
+Compare approved miniature external mics on each needed side or the instrument’s built-in mic system [1, 4, 5].
+Mount security, cable slack, feedback margin and player movement.
+Limited inputs or accompaniment-only role
+Prioritize the musically important side, often treble when another bass instrument carries the low part [1].
+Whether omitted bass buttons or chords are actually needed.
+
+The 30–60 cm range reflects Shure’s discussion of a one-to-two-foot integrated perspective, not a rule for every room [1]. Shure also tested about 30 cm from the treble keyboard, about 10–15 cm from a bellows-side view, and an 18-inch dynamic microphone facing the grille [1]. Each is an experiment, not a guaranteed neutral location. Position relative to the actual grille or sound outlet matters more than the keyboard’s visual center.
+# One stand microphone for an integrated sound
+1.Listen in the room first. Walk while the musician plays low bass, full chords, treble melody, quick articulation and both opening and closing strokes. Include the softest and loudest musical passage. Find a place where the parts combine before choosing a mic [1, 3].
+2.Place outside the movement envelope. Aim at the position the sounding instrument occupies over time, generally from in front and slightly toward the desired side. Shure’s one-mic trials included an SM57 about 46 cm from the grille and a condenser about 30 cm from the treble side [1]. Keep stands away from the player’s hands, straps, elbows and full bellows extension. Secure stand legs and cable out of travel paths.
+3.Adjust musical balance. A farther position can integrate the two sides and room; moving toward treble may favor melody, and moving toward bass may favor accompaniment. Close placement emphasizes the nearest surface [1]. Verify both bellows directions and register changes rather than judging a held note alone.
+4.Select pattern for the environment. Omni may integrate a multi-directional source in a quiet room, while a directional mic can help when room sound, adjacent instruments or PA spill is excessive [3]. Do not assume omni gives stage isolation, or that a cardioid close on the treble side hears the bass equally. Check the manufacturer’s actual polar pattern and off-axis response.
+A natural one-mic approach can be suitable for a quiet solo performance but may be difficult on a loud stage. If more gain is needed, bring the mic closer to the useful sound outlet and assess the resulting tonal compromise before adding processing. In a larger ensemble, listen to the main pickup first and add only the spot required; the full group setup belongs in the Ensembles Lab.
+# Two microphones for bass and treble
+AKG’s C 416III manual describes one microphone for bass and one for treble, including an alternative with a mic mounted on the bass side and a stand mic toward treble [4]. Shure tested separate condensers about 30 cm from the keyboard side and 10–15 cm from the bellows side; its accordionist preferred two external condensers for the character of his instrument in the studio [1]. These are different examples, not universal prescriptions for all instruments.
+First solo each microphone while the player plays the part associated with that side. Aim toward sound openings without obstructing keys or the bellows. Set gain so peaks do not clip. Then balance the microphones for the musical role: bass notes and chords may merit less pickup when a separate bass player is present [1]. Treat two channels as a balance decision, not an automatic hard stereo pair. If stereo width is wanted, set it to suit the performance and check the summed signal in mono. The moving sides change microphone-to-source distances, so a fixed phase correction or a calculated time delay cannot guarantee a consistent result over the phrase. Move or rebalance if the sum sounds hollow.
+Listen for reed tone versus valve, key and bellows noise before EQ. A close bass mic can emphasize mechanism noise or a particular outlet. A bass high-pass filter may clear handling or stage rumble, but set it only after testing the instrument’s lowest required notes. If the music is mainly treble melody, test whether one properly placed microphone gives a cleaner, simpler result.
+# Instrument-mounted and internal systems
+An external miniature can follow the moving source, helping a performer who walks or turns. AKG and DPA offer specific accordion mounting hardware; DPA’s A-CLIP is designed for a 4099 instrument mic, and AKG documents gooseneck placement and cable routing along a strap [4, 5]. Shure’s test also included a shoulder-strap mic and an instrument’s built-in condenser system; its player valued internal mics for live convenience [1]. Each system is a choice with its own tone, feedback and power requirements.
+Protect the instrument. Obtain the player’s consent before any mount. Use hardware explicitly compatible with the instrument and inspect where it bears weight. Do not improvise screws, drill holes, tape a grille, compress a strap, impede an air button or run a cable through the bellows. Manufacturer instructions may describe permanent screw or adhesive installation [4, 5]; leave irreversible installation to the owner or qualified accordion technician. Provide strain relief with enough slack for the full bellows cycle, and secure the cable away from the left hand, latches and sharp edges. Check the exact miniature microphone’s adapter, powering and bodypack compatibility; similar-looking connectors do not prove interchangeability.
+If internal microphones or electronic outputs are fitted, ask what they capture and how treble and bass outputs are routed. They may be a practical live choice but are not acoustically equivalent to microphones at a listening distance. Compare their tone and mechanical noise with the external view when possible. An electronic output without a microphone is a signal path for comparison, not itself a miking position.
+# Live sound and ensemble practice
+Start with the fewest open channels that deliver the desired balance. Keep the PA and monitor loudspeakers out of the selected microphone’s strongest pickup, using its actual pattern and the player’s full range of movement. Raise level gradually during a real performance passage, not by creating a loud feedback howl. If the bass side moves toward a monitor, evaluate that position separately. A closer instrument-mounted mic may improve direct sound relative to spill but also reveal more keys or bellows noise [1, 4].
+Coordinate stand locations with other musicians and stage traffic. For a seated player, check chair rotation and the lower bellows arc; for a standing player, check strap fit and cable pull. A clip or cable that catches during the bellows stroke is an immediate stop condition. Lower the channel and remove or reposition it with the player before continuing. Do not open or repair a powered microphone system or instrument electronics during performance.
+# Tone goals and troubleshooting
+Symptom
+Likely first question
+Test or response
+Treble dominates
+Is the mic close to the right-hand grille?
+Move back or add/rebalance bass pickup if the part needs it [1, 4].
+Bass changes level as bellows open
+Is a fixed stand mic losing the moving left side?
+Watch full travel; move, widen perspective or mount a bass-side mic.
+Harsh key or bellows noise
+Is a close mic aimed at mechanism or air stream?
+Shift aim or distance; compare an external integrated view [1, 4].
+Two mics sound hollow in mono
+Are their pickup paths changing with motion?
+Solo, sum and reposition or rebalance over full phrase.
+Stage feedback
+Did player move toward monitor, or are too many channels open?
+Lower level first; change geometry, close unused channels and retest.
+Rumble or thin bass
+Does filtering remove required notes, or does mic miss bass outlet?
+Bypass filter, verify low phrase, then adjust position and filter carefully.
+Cable catches bellows
+Is routing or slack inadequate?
+Stop playing and remove strain; re-route with player [4].
+
+# Teaching exercise and pass criterion
+1.Identify the treble and bass sound regions and trace the full bellows and hand movement without touching the instrument.
+2.Place one stand mic at a balanced listening position and compare nearer treble and farther integrated positions at matched monitor level.
+3.Add a bass-side mic only if its contribution matters. Check the two feeds separately and summed in mono on full opening and closing phrases.
+4.Evaluate an approved mount or internal system with the player, verifying cable slack, secure placement, electrical compatibility and stage feedback margin.
+Pass criterion: The learner can explain why one close microphone may miss a side, choose a setup matched to musical role and venue, verify the full moving performance, and keep the bellows, player and instrument safe.
+# Evidence audit and limits
+Agreement: Shure and AKG both recognize separate sides and two-mic options [1, 4]. Shure and Hohner establish the source’s bellows-driven reeds and moving bass/treble sections [1, 2].
+Different emphases: Shure’s listening test found an integrated one-to-two-foot viewpoint useful but documented closer and internal options; the participants did not unanimously prefer a single method [1]. AKG describes two microphones as its optimal C 416III method [4]. These are application and equipment-specific preferences, not contradictory physical claims.
+Gaps and confidence: The cited sources do not establish one best distance, grille location, EQ curve, phase setting or monitor placement for every accordion. Confidence is high in the two-sided radiation and movement, and moderate in expected tonal outcomes of specific placements until auditioned with the actual instrument, repertoire and room. Internal electronics and mounting accessories require model-specific instructions.
+# References
+[1] Shure, “Eight Ways to Mic an Accordion.”  Read source <https://www.shure.com/en-US/insights/eight-ways-to-mic-an-accordion>
+[2] Hohner, “Discover the Hohner XS,” instrument anatomy.  Read source <https://hohner.de/en/education/discover-the-hohner-xs>
+[3] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[4] AKG, “C 416III User Manual,” accordion section.  Read source <https://www.akg.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw4b067fd3/pdfs/C416_manual.pdf>
+[5] DPA Microphones, “How to Use the DPA Instrument Clips,” A-CLIP.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-use-the-dpa-instrument-clips/>

@@ -1,0 +1,86 @@
+# Bass Clarinet Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers the common B flat bass clarinet, including models with an extended low C. Learners will compare bell and tone-hole perspectives, select an appropriate studio or live position, and verify the low register, articulation, movement, spill and feedback. The straight soprano clarinet has its own lesson. No audio examples are included.
+# Understand the source and the difference from soprano clarinet
+The single reed drives an air column in a long instrument with a curved neck, tone holes along its body and a curved, typically upward-facing bell [1, 2]. The bell does not represent every note. DPA explicitly distinguishes bass clarinet from straight clarinet: the bass clarinet radiates a useful blend of bell and tone-hole sound, more like a saxophone in this respect [1]. Which area dominates in a particular close-mic position will change with fingering, register and the player's instrument angle. Test the complete part rather than finding a position on one held note.
+Some bass clarinets extend to written low C while others have a shorter range [2]. Ask which model and lowest actual note the player will use. A preset high-pass cutoff or an aim that loses the low extension can defeat the musical purpose. Reed/air noise, keys, thumps through the floor peg and room resonances are separate things to diagnose. The instrument's wooden or resin body does not dictate a fixed microphone model or EQ curve.
+Check the player seated and, where relevant, standing. Mark the bell opening, upper and lower hole groups, thumb and key travel, neck and mouthpiece, peg, chair and score. Do not place a boom where the musician, bell or adjacent player can hit it. Secure cables outside the chair/peg path and use a stable stand. Never use the instrument's neck, rods, pads or finish as an improvised mount.
+# Select a perspective for the task
+Setting and goal
+Starting comparison
+Main verification
+Solo in a good studio room
+One mic at a moderate distance in front of the body and bell region, then change height and lateral angle.
+Even low-to-high tone and room contribution.
+Detailed overdub
+One close mic favoring the tone-hole and bell blend; compare a bell-favoring angle separately.
+Key noise, breath/attack, low-note level.
+Chamber or orchestra
+Main pickup first; add a restrained spot if balance requires.
+Depth and mono sum with the main array.
+Loud stage or mobile player
+Close directional stand or a verified bass-clarinet-compatible clip.
+Full register, feedback, movement and mount clearance.
+
+DPA's 15–20 cm lower-hole instruction is for straight soprano clarinet, not a measured bass-clarinet prescription [1]. Use it as a conceptual reminder to hear the holes, then choose bass-clarinet distance by comparing the actual bell and hole contributions. Likewise, a saxophone clip instruction does not automatically fit every bass clarinet; verify the specified accessory and the musician's instrument [1, 3].
+# Single stand microphone comparisons
+Body and bell blend: Start with a smooth-response condenser or another suitable microphone on a stand in front of and slightly to the side of the instrument. Aim into the space spanning the lower body and bell rather than directly down the bell throat. Begin far enough away to hear the composite instrument, then move in gradually if room or spill requires it. This geometry is a practical inference from DPA's radiation description, not a published universal distance [1]. Perform low, middle and upper phrases at actual dynamics.
+Bell-favoring: Rotate or move toward the bell to assess low-note weight and isolation. Treat the result as one tonal option. If the low notes jump forward while higher passages thin out, move toward the keywork or increase distance. Keep a capsule, grille and cable clear of the bell and keys. An upturned bell may make a high stand position tempting; judge what it hears from the body as well.
+Tone-hole-favoring: Compare a view of the upper/lower key area from the player's front or side without crowding the fingers. It may reveal articulation and upper-register tone, but also key clicks and mechanical movement. A directional mic with narrow acceptance can make timbre vary as fingers and bell move; DPA warns that highly focused pickup can make woodwinds less natural [1, 3].
+More distant perspective: In a good room, step back or listen to the ensemble main microphones to allow different radiation areas to blend. This raises room tone and spill; on a loud stage it generally gives less gain before feedback. Match listening level when comparing positions so loudness alone does not decide the choice.
+# Studio procedure
+1.Map the real part. Ask the player for the lowest used note, loudest accent, soft passage, transitions across registers and any extended techniques if present. Observe instrument movement and the actual room response [1, 2].
+2.Compare three single-mic views. Try body/bell blend, bell-favoring and hole-favoring positions. Then compare more distance if isolation permits. Log which notes, key sounds, room resonances and attacks changed; keep monitoring level matched.
+3.Choose the least complicated setup that works. In a solo overdub, one well-placed mic often gives a coherent instrument. If adding a second close mic specifically for bell and keywork, listen separately and together in mono; moving either capsule changes timing and phase interaction. Do not assume a polarity switch alone fixes every cancellation.
+4.Set gain and processing against the whole passage. Leave headroom for the strongest notes and test the lowest extension before applying a high-pass filter. Remove floor or stand rumble with placement and isolation first. If the tone is boomy, compare position and proximity effect before cutting the musical low register.
+5.Integrate an ensemble spot. Hear the main array first. Add a spot only to meet a musical balance need. Bring it up cautiously, check mono and spatial depth, and avoid making the bass clarinet sound detached from nearby woodwinds.
+# Live reinforcement and instrument mounts
+For a stationary player, place a securely weighted stand so the mic hears both body and bell while staying outside the player's keywork and sightline. Move closer as needed for isolation, but check the entire range again. Put stage monitors relative to the actual directional pattern: cardioid rear rejection is different from a supercardioid's side nulls and rear pickup [4]. Establish feedback margin with the full band at working level; increase monitor sends deliberately.
+For mobility or crowded stages, DPA lists its 4099S clip category for saxophones and bass clarinet [3]. Use only a mount confirmed for the specific instrument and follow its instructions. Start with the capsule between the bell and keywork, then change the gooseneck angle while the musician plays the complete part. DPA's saxophone discussion recommends an angle between bell and keys on curved saxophones; applying that geometry to a bass clarinet is a testable starting inference, not a bass-clarinet measurement [1, 3]. Ask the player to approve location and fit. Keep pressure off fragile body sections, tenons, rods, pads and moving keys, and ensure the clip cannot rotate into hands or the bell. If no safe mount exists, use a stand. Follow manufacturer instructions for power adapters and wireless transmitter headroom [3].
+If strong low-frequency pickup creates feedback or masks the mix, check monitor geometry, room modes, gain and the instrument's role before changing filters. Preserve its required lowest notes. In a pit or seated ensemble, cables and stands must not obstruct chairs, feet, pegs, neighboring players or evacuation paths.
+# Tone goals and likely compromises
+Natural ensemble color: Let the main pair carry depth if it already hears the bass clarinet well. A broad-pattern spot can help blend in a quiet space, but adds room and spill [1].
+Intimate detail: A closer body-facing mic can articulate reed and keys, yet expose mechanism and alter note balance. Recheck with a moving player. Use a shock mount or stable stand if floor/peg vibration enters the mic; distinguish airborne low notes from mechanical thumps.
+Strong live isolation: A directional close stand or approved clip may give useful separation. Its close, selective view can exaggerate the bell or one hole region and respond to stage monitor placement. Re-test every register and the low extension at show level [1, 3, 4].
+# Troubleshooting and safety
+Symptom
+Check
+First response
+Low notes overwhelm high notes
+Mic pointed mainly into bell?
+Aim toward body/bell blend or increase distance [1].
+Lower extension is weak
+Aim excludes bell; filter too high?
+Play lowest required notes while repositioning and checking filter [1, 2].
+Keys and upper notes sound brittle
+Mic too close to keywork or narrow pattern?
+Shift angle or back away; compare matched level [1, 3].
+Floor thump enters channel
+Peg, stand or stage contact?
+Secure and isolate stand; inspect cable and player movement.
+Feedback or excessive spill
+Mic and wedge geometry, distance, gain?
+Lower level; change placement/pattern and retest [4].
+Clip restricts playing or damages finish
+Wrong fit, pressure or interference?
+Stop and remove with player; use stand [3].
+Multiple feeds sound hollow
+Arrival-time interaction.
+Listen individually and summed in mono; adjust placement or balance.
+
+# Teaching exercise and pass criterion
+1.Identify bell, tone-hole regions, reed and peg on the actual instrument. Confirm whether its part requires a low C extension [1, 2].
+2.Compare body/bell, bell-favoring, hole-favoring and more distant views at matched level over low, middle, high, soft, strong and articulated phrases. Record the changes [1].
+3.In a live setup, test one safe stand or compatible clip with the band and monitors. Confirm hands, keys, sightlines, peg, cable, adapter power and feedback margin [3, 4].
+4.If the instrument is part of an ensemble, compare main pickup alone and with a restrained spot in stereo and mono. Demonstrate that filtering preserves the lowest required note.
+Pass criterion: The learner explains why bass clarinet needs bell and tone-hole consideration, chooses defensible studio and live placements, verifies the full register and low extension, and protects the musician and instrument.
+# Evidence audit and limits
+Agreement: DPA explicitly treats bass clarinet as bell-and-hole radiation [1] and identifies a dedicated bass-clarinet clip category [3]. Yamaha documents models extending to low C [2]. These facts motivate full-range checking rather than a fixed position.
+Different emphases: DPA gives detailed straight-clarinet distances but only a qualitative bass-clarinet distinction [1]; its clip guidance groups bass clarinet with saxophones [3]. The studio geometry above translates those descriptions into comparison trials. The clip is a manufacturer-specific option and does not establish a universal mount.
+Gaps and confidence: No cited source establishes an optimal bass-clarinet stand distance, EQ cutoff or fixed bell-to-hole ratio for all notes. Confidence is high in the published source distinction and model range, moderate in the comparison workflow, and low in any universal placement or material-based tonal prediction. Final settings require the actual part, room, player and microphone.
+# References
+[1] DPA Microphones, “How to Mic a Clarinet,” bass clarinet note.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-clarinet/>
+[2] Yamaha, “YCL-622II,” bass clarinet model overview.  Read source <https://usa.yamaha.com/products/musical_instruments/winds/clarinets/ycl-622ii/index.html>
+[3] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[4] Shure, “Specialist Polar Patterns: Hypercardioid and Subcardioid.”  Read source <https://www.shure.com/en-US/insights/specialist-polar-patterns-hypercardioid-and-subcardioid>

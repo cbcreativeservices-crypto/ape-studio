@@ -1,0 +1,109 @@
+# Brass Saxophone and Mixed Horn Sections Miking Technique
+Pro Audio Training Academy Ensembles and Voice Lab Studio and Live Sound October 4, 2026
+# Scope and learning goals
+This lesson teaches microphone planning for trumpet, flugelhorn, trombone, French horn, tuba/euphonium, soprano/alto/tenor/baritone saxophones, and mixed horn sections. It focuses on miking technique rather than a fixed brand recipe: hear the player and ensemble first, choose the pickup pattern and placement that solve the musical problem, then verify tone, bleed, headroom, phase, feedback margin, and player movement. No audio examples are included.
+By the end, the learner can:
+distinguish bell-dominant brass radiation from the broader, multi-source radiation of saxophone;
+choose between a stand-mounted distant mic, a close dynamic/condenser, and a clip-on system;
+build a coherent section image while preserving individual control when required;
+adapt the same source for studio tracking, live reinforcement, and live multitrack capture;
+identify overload, key/valve noise, harshness, spill, monitor feedback, and unsafe stand or cable placement.
+# Start with the source, not the microphone
+Brass is powerful and highly directional. The bell axis, distance, and angle strongly change brightness and upper-harmonic emphasis. A microphone aimed directly into a trumpet or trombone bell usually gives a more immediate, bright, defined result; moving off-axis or farther away generally softens the bite and lets the instrument’s acoustic field develop. These are starting-point tendencies, not guarantees: player, mute, room, instrument, and microphone response all matter.
+Saxophone is different. Sound radiates from the bell and from open tone holes along the body; the bell is only part of the source. A bell-only mic can sound narrow or mid-forward, while a position that sees both body and bell can sound more balanced. The larger the saxophone, the more distance may be needed for one microphone to cover the relevant sources. Key noise and breath noise increase when a microphone is placed too close to mechanisms or the mouthpiece.
+Before placing a stand, have the player perform the loudest passage, the softest passage, and the highest and lowest register. Listen in the intended audience/recording position. Mark the player’s normal movement and bell direction. Do not assume a manufacturer’s suggested distance is a universal answer.
+# Individual starting approaches
+## Trumpet and flugelhorn
+For a natural studio or section sound, begin roughly 1–2 feet in front of the bell and move the microphone while the player performs. On-axis placement gives more brilliance and projection; a modest off-axis angle can reduce aggressive upper harmonics. A capable dynamic or condenser can work; engage a pad or set preamp gain conservatively if peaks overload the microphone or preamp. A close clip-on cardioid condenser gives isolation and movement freedom but can emphasize breath, key/valve handling, and a smaller “inside-the-bell” perspective.
+Flugelhorn generally has a darker, broader character than trumpet. Do not force the trumpet position or bright EQ onto it. Start slightly farther away or with a flatter microphone response, then adjust angle and distance before equalization.
+## Trombone and bass trombone
+The bell moves during playing and can point toward nearby microphones, so a stand-mounted microphone needs physical clearance and a placement that remains useful across slide positions. Start in front of and a little off the bell axis, then listen for balance between low fundamentals and upper bite. A close clip-on system improves isolation and freedom of movement but must not obstruct the slide or create a collision hazard. Bass trombone can produce substantial low-frequency energy; protect headroom and use a high-pass filter only when it does not remove the musical foundation.
+## French horn
+The bell faces backward. A main or front-side microphone can capture the reflected audience perspective; a rear bell-side microphone captures a more direct brass quality. Compare both rather than calling either universally natural. For isolation or live gain before feedback, a carefully aimed close microphone may be used, but listen for an overly direct tone. Coordinate the position with the player so the stand does not interfere with the right hand, music stand, chair, or movement. Cross-link the French Horn lesson for open, stopped and muted passages and the influence of rear-wall reflections.
+## Tuba and euphonium
+Their bells and low-frequency output need distance and headroom. A microphone too close to the bell can exaggerate low-mid buildup and mechanical noise. Start farther away than for a trumpet, use a robust microphone and pad when required, and check the loudest notes before advancing gain. In a section, a shared microphone can produce a more coherent low-brass image than separate close microphones; separate mics are useful when the arrangement, isolation, or reinforcement demands it.
+## Saxophones
+Use a stand-mounted condenser or dynamic when the player is relatively stationary and a clip-on microphone when movement, isolation, or stage consistency matters. A practical starting position is beside the bell on the player’s right-hand side or an over-the-shoulder position that sees a useful mixture of body and bell. Aiming only down the bell is a deliberate color choice, not a rule. Moving toward the body can add warmth and key noise; moving toward the bell can add focus and feedback resistance. Large baritone saxophones may need greater distance or a carefully chosen body/bell compromise.
+# Building a horn-section image
+## Section microphone
+For a studio section, one or two microphones placed at a useful distance can capture blend, room, and the players’ natural balance. Ask the section to arrange itself musically: stronger instruments farther from the microphone, weaker or darker instruments closer, and bells aimed consistently enough to avoid random hot spots. A spaced pair or coincident/near-coincident pair can provide stereo width, but check mono compatibility and phase before committing.
+## Individual section microphones
+Close-miking each player provides control for live reinforcement, cueing, and later balance changes. It also increases leakage differences, stand clutter, handling/valve/key noise, and the risk of a collection of unrelated tonal colors. Keep microphone families and placement logic reasonably consistent, but do not force identical positions on different instruments. Match polarity and time relationships when combining close microphones with a section or room pair.
+## Minimal versus expanded plans
+Minimal: one section microphone, or one mic for each principal player only. This favors blend and reduces phase and feedback complexity.
+Expanded: one close mic per player plus a section/room pair. This maximizes control but should be treated as a multi-microphone system: listen in mono, mute and unmute sources, and confirm that the room/section pair adds useful information instead of comb-filtered coloration.
+# Studio practice
+Start with the players in the room and the arrangement they will actually perform. Treat isolation as a musical decision, not an automatic improvement. If the room is good and the section already balances, a distant pair may be the most natural choice. If overdubs, heavy processing, or independent editing are required, use gobos or separate spaces while preserving sightlines and communication.
+Record a conservative level during the loudest passage. Brass peaks can exceed 140 dB SPL at very close distances; do not put a delicate microphone or preamp at risk by guessing. Engage pads only when needed, and verify that the pad is before the overloaded stage. Use shock isolation where stand vibration or foot noise is audible. Mark placement so a retake can reproduce the sound.
+# Live sound and live multitrack
+For PA reinforcement, the goal is enough level and intelligibility without changing the player’s natural balance or creating feedback. Close cardioid or supercardioid microphones often improve gain before feedback and rejection, while a more distant microphone can sound fuller but gives the PA more room and monitor sound to amplify. Put wedges in the appropriate rejection region of the chosen microphone; supercardioid/hypercardioid microphones have rear/side nulls that are not the same as a cardioid microphone’s rear null.
+Clip-on microphones reduce stand clutter and keep the source-to-mic geometry stable when players move. They are not automatically more natural: audition the clip position, protect the clip/cable from the instrument’s moving parts, and secure cable slack so it cannot catch a hand, slide, chair, or foot. Wireless systems require frequency coordination, fresh batteries, antenna planning, and a wired fallback when the production cannot tolerate a link failure.
+For live multitrack capture, select a recording tap before FOH channel EQ and dynamics when an unprocessed feed is required. An analog isolated split allows separate preamps; a digital stagebox may share headamp gain and pads, depending on the system. Agree who controls phantom power and shared gain and follow the manufacturers' splitter and grounding instructions. Never lift protective mains earth to cure hum. Capture audience/room microphones separately when needed and keep them out of monitor sends.
+# Studio versus live comparison
+Approach
+Studio benefit
+Live benefit
+Main caution
+Distant section mic/pair
+Natural blend and room perspective
+Useful for choir/orchestra-style reinforcement when level permits
+More spill, feedback exposure, and room dependence
+Individual stand mic
+Repeatable tone and flexible editing
+Simple to service and reposition
+Player movement changes tone; stand and cable clutter
+Clip-on mic
+Stable geometry and strong separation
+Freedom of movement and improved gain before feedback
+Close perspective, handling noise, attachment/cable hazards
+Close dynamic
+High SPL tolerance and controlled rejection
+Rugged, predictable stage choice
+Can sound narrow or aggressive if aimed directly at a bell
+Condenser at distance
+Detail, transient response, natural section image
+Works when stage level and feedback margin allow
+Phantom power, overload/headroom, and monitor spill
+
+# Troubleshooting
+Symptom
+Likely cause
+Response
+Trumpet or trombone is painfully bright
+Mic too close/on-axis or capsule response emphasizes upper mids
+Move back, angle off-axis, lower gain before EQ, then reassess
+Saxophone sounds hollow or midrange-only
+Mic hears mostly the bell and misses body/tone holes
+Move beside the bell/body or use a balanced over-shoulder position
+Horn section lacks blend
+Players/mics are at inconsistent distances or each close mic has a different color
+Rehearse the section balance, align placement logic, compare section mic versus close mics
+Feedback begins when monitors rise
+Mic is aimed toward a monitor or is too distant for the required gain
+Reposition monitor into the pattern’s rejection zone, reduce distance, lower stage level, then ring out conservatively
+Low brass is muddy
+Excessive proximity/room buildup or too much low-mid energy
+Increase distance, alter angle, use a measured high-pass/low-mid cut only after placement
+Level clips unexpectedly
+Close SPL peak exceeds mic/preamp headroom
+Engage the correct pad, reduce preamp gain, and retest the loudest passage
+Key, valve, or stand noise is intrusive
+Mic is too close to mechanism or is mechanically coupled
+Move a few inches/angle, use shock isolation, service clips, and preserve safe clearance
+
+# Teaching exercise and pass criterion
+1.Set up a trumpet, trombone, alto or tenor saxophone, and one low-brass source as a four-player section. Mark the audience/recording position and identify each player’s loudest passage.
+2.Make a minimal capture with one section microphone or stereo pair. Rehearse the musical balance before moving microphones.
+3.Make an expanded capture with individual microphones. Compare bell-axis, off-axis, and body/bell saxophone positions at matched monitoring level.
+4.For live sound, place monitors in the appropriate rejection regions, set conservative gain, and test the loudest passage. For studio work, compare a natural section perspective with closer isolated tracks.
+5.Check polarity and mono compatibility, listen for spill and mechanical noise, confirm headroom, and document the placement, microphone pattern, pad, stand height, cable path, and player movement.
+Pass when the learner can explain why each position was chosen, produce a balanced section without relying on corrective EQ to repair avoidable placement problems, and identify the first safe change for brightness, feedback, overload, spill, or movement noise. Set headroom with a loud passage, but do not deliberately provoke feedback. Keep ears away from bell axes, use suitable hearing protection when exposure warrants it, secure stand bases and preserve full slide and player clearance. Polarity inversion changes sign and does not correct every arrival-time difference; do not automatically time-align the section to a room pair.
+# Evidence audit and limits
+Shure’s guidance supports starting brass at roughly 1–2 feet from the bell, using angle and distance to shape brightness, and recognizing that saxophone radiates from both tone holes and bell. DPA documents the saxophone’s complex radiation, the tradeoff between omnidirectional natural pickup and directional isolation/proximity effect, and the need for high-SPL-capable microphones. Shure’s live-sound guidance supports directional-pattern and monitor-position decisions for feedback control. These sources describe starting points, not guarantees. The final choice must be verified with the actual player, instrument, room, PA, monitoring, and musical arrangement.
+# References
+[1] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments/>
+[2] Shure, “Choosing a Saxophone Microphone for Recording and Live Sound.”  Read source <https://www.shure.com/en-EU/insights/choosing-a-saxophone-microphone>
+[3] DPA Microphones, “How to mic a saxophone.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-saxophone/>
+[4] DPA Microphones, “How to mic woodwinds and brass.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-woodwinds-and-brass/>
+[5] Shure, “Microphone Techniques for Live Sound Reinforcement.”  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[6] Pro Audio Training Academy, “Rhythm Sections and Complete Bands Miking Technique,” for ensemble layout, bleed/phase, monitor strategy, and live multitrack routing.  

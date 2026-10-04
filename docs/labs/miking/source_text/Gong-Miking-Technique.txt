@@ -1,0 +1,94 @@
+# Gong Miking Technique
+Pro Audio Training Academy  •  Idiophones Lab  •  I12  •  Studio and live sound
+This lesson teaches students to choose a microphone perspective for a suspended gong, then adapt it to the actual instrument, player, room and reinforcement system. A large orchestral tam-tam is the main case; pitched and bossed gongs require an additional check of the struck area and tonal identity. The positions below are trials, not universal specifications. No audio examples are included.
+# Know the source before choosing a position
+The gong is a struck idiophone: the solid metal vibrates. Identify the exact instrument before placing a microphone. A Western orchestral tam-tam or symphonic gong may have a broad, complex bloom rather than a clearly specified note. A bossed or nipple gong has a raised central striking feature and may be used for a more pitch-centered sound. Do not assume all gongs behave identically; the Met describes a particular tuned Chinese luo, while Paiste describes its bossless symphonic gong and how mallet and striking point change its spectrum. [1–3]
+Have the performer show quiet strokes, forceful strikes, rolls or friction techniques if used, the intended decay, and whether they damp the instrument. Listen at a safe, ordinary audience position before choosing a target. Note the stand, clearance, nearby walls, stage monitors and how far the gong can swing. Paiste says its gong should hang free of the stand and that suspension cord needs periodic inspection. Leave the owner or venue technician responsible for the gong and its suspension. [2]
+# Select the microphone for the intended perspective
+Option
+What it can help reveal
+Constraint to check
+Directional condenser
+Detail, upper partials and a useful focus for a spot.
+Verify maximum SPL, pad, phantom supply and off-axis sound for the exact model.
+Moving-coil dynamic
+A robust, selectively aimed close or mid-distance stage pickup.
+Check whether its response reproduces the gong’s intended lower body and decay.
+Omnidirectional pressure microphone
+Room and low-frequency body in a suitable quiet space.
+Picks up more surrounding stage sound; generally less practical for loud monitoring.
+Ribbon or figure-eight
+An alternate tonal perspective and room pickup when its two lobes are useful.
+Rear pickup, stand position, wind sensitivity and manufacturer power/wiring instructions matter.
+
+No diaphragm size alone guarantees bass extension or a particular tone. Test the actual microphone at the intended distance; verify input and mic headroom with the strongest planned stroke. If a close directional microphone sounds artificially heavy in the lows, compare its distance and angle before assuming the gong itself is too bass-rich. Shure documents proximity effect for directional microphones. [4]
+# Four placement methods to compare
+Distances are from capsule to gong surface or to its general center region while at rest. They are proposed classroom starting ranges derived from the difference between source-focused and room-focused pickup; no cited gong manufacturer prescribes them. Move a microphone farther away if swing, mallet or player movement could reach it. A change in angle or distance also changes room pickup, so compare the same passage at a similar reproduced level.
+Method
+Initial trial and target
+Expected tradeoff
+A  Single front microphone
+Try 60–120 cm (2–4 ft) in front, facing the broad radiating surface at a height around the area being played. Place the stand outside the mallet path.
+A useful overall view; back away for more bloom and room, approach for more presence. Listen for tonal imbalance from one local area.
+B  Closer stage spot
+Try 30–60 cm (1–2 ft) from the face, offset to a clear outer portion of the face and aimed toward the played region. Do not put the capsule against the gong.
+More direct sound and possibly more usable level before feedback, but more local attack, swing variation and uneven partials.
+C  Stereo pair
+From an appropriate front listening position, compare a coincident XY cardioid pair with a single microphone; then try a wider near-coincident or spaced view only if it serves the music.
+Stereo may portray size and room. Spaced pairs can produce time differences and comb filtering in mono; verify width and mono sum.
+D  Front plus room
+Establish A or B first, then place a second mic or pair farther into a good-sounding room, securely and clear of traffic.
+Independent control of definition and decay; combined arrival times can change tone. Live use is often limited by spill and feedback.
+
+For a pitched bossed gong, first hear the player’s chosen stroke acoustically. Aim a microphone toward the boss from a safe offset and compare a broader front position. A very close center position may exaggerate mallet impact; it is not automatically the most faithful representation of the pitch. For a large tam-tam, compare a position that hears a broad area with an intentionally closer color before deciding what is “natural.”
+## A documented practitioner alternative
+In a firsthand account, Son Vo describes a custom multi-pattern condenser and a ribbon microphone at different heights in a sizable room, panned separately while recording particular Burmese bossed and Tibetan flat gongs. It shows an intentional blend of front detail and space, but the reported geometry and preamp gain are specific to that room, microphones and instruments. The article asserts that the ribbon’s pattern avoids phase issues; that is not a reliable general rule. Two differently positioned microphones still receive shared sound at different times. Verify the combined result in mono, adjust placement and balance, and document what changed. [5]
+# Studio and live sound decisions
+Studio or quiet hall
+Live stage or reinforcement
+Begin with a single clear main perspective, then consider XY, near-coincident stereo or a room layer if the room is part of the music. DPA describes XY as a coincident intensity-stereo technique and notes the mono behavior of M/S. [6]
+Use one directional microphone first when isolation and feedback matter. Keep it as close as practical without entering the mallet or swing path; retain enough stand clearance for normal performance. [4]
+Keep the whole rise and decay in the evaluation. Compare strong and soft passages before deciding on position and gain. A distant mic will hear more of the room.
+Put the most useful loudspeaker or wedge direction in an actual rejection zone of the chosen pattern; cardioid and super/hypercardioid rejection angles differ. Bring monitor sends up cautiously and stop if ringing begins. [4]
+When adding a spot to a main ensemble array, start with the main array and use only as much gong spot as needed. Check the blend through the whole phrase.
+A microphone that is useful in the house may feed little or no gong to the player’s wedge. Coordinate with the operator; another open mic increases spill and feedback risk. [4]
+
+Do not assume both faces of a gong yield interchangeable tonal results, or that the strongest point is always the center. A rear microphone can be an experiment if access and the instrument permit, but audition it rather than specifying it as the default. Never run a boom through the suspended gong’s travel or behind the player where it blocks exits.
+# Combining microphones without losing the gong
+Solo each microphone and listen to the blend at the intended relative level. Collapse stereo to mono, then compare the attack and sustained decay at several playing strengths. If the blend becomes hollow or loses lower body, adjust distance, angle or level; a polarity flip is a diagnostic comparison, not a cure for every time offset. If delay alignment is used in a production, label it as a mix decision and recheck the evolving decay and the ensemble context. XY and M/S are possible alternatives when stable mono behavior matters, but the gong may still interact with other ensemble microphones. [6]
+# Safety and troubleshooting
+Inspect stand rating, locks, feet, suspension cord and attachment with the owner or qualified crew before placement. A microphone stand must be separately stable; avoid attaching a microphone to the gong, rope or frame without manufacturer and owner approval. [2, 7]
+Mark a safe working area for the full swing and mallet arc. Route and secure cables away from the performer’s feet and cart or stand wheels. Elevated or suspended microphones require approved hardware and qualified venue rigging.
+Keep playback and monitor levels controlled. Set input gain during the strongest planned passage, then allow headroom. If ringing or distortion occurs, reduce the relevant level promptly and find the cause before continuing.
+What you hear
+First placement or setup test
+Harsh, narrow or clangy
+Move off the locally dominant struck area or farther back; check that the player’s mallet and stroke are the intended ones.
+Weak bloom or thin low body
+Compare a broader, modestly more distant front position; inspect the stand and nearby reflective surfaces; check high-pass settings.
+Muddy or overblown
+Compare less proximity effect and another room position; verify that the chosen gong and passage naturally have that decay.
+Repeated level changes as gong swings
+Move outside the swing envelope and aim at a wider region; do not restrain its movement to protect a mic.
+Hollow when a second mic opens
+Listen in mono, change second mic position or balance, then try polarity as a diagnostic.
+Live feedback or heavy spill
+Reduce send or output, revisit pattern and loudspeaker geometry, and use fewer open microphones.
+
+# Class exercise and observation sheet
+Use one instrument and one microphone, with an optional second microphone for the advanced comparison. The student records instrument type, diameter if known, mallet, playing passage, room, mic model and polar pattern, capsule distance, target, angle, stand clearance and player feedback. No supplied audio examples are needed.
+1. Ask the performer to demonstrate the whole intended dynamic range and damped or sustained endings. Confirm safe swing, mallet path and support hardware before any signal is raised.
+2. Try Method A. Hold target and angle steady while comparing two distances. Match playback or reinforcement level for judgment; note attack, body, shimmer, decay and surrounding sound.
+3. Return to the preferred distance and compare two safe targets or angles. If a bossed gong is used, compare the boss-focused view with a broader view.
+4. For a quiet setting, compare one mic to a safe XY pair or a front-plus-room setup; sum to mono and note whether attack or body changes. For live use, instead compare one safe directional position at two useful distances with monitor sends under operator control.
+5. Choose the position that meets the actual musical goal and performer’s clearance. Document a remaining compromise and the reason for it.
+Pass criterion: the student can identify the gong type and musical target, reproduce the chosen safe placement, explain the tonal change caused by one controlled adjustment, and confirm the full passage in the intended studio or live context.
+# Evidence audit and source notes
+Agreement: maker and performer accounts establish that gong construction, striking region and mallet alter the sound, so auditioning the actual instrument is essential. Shure and DPA support the general directional, distance, feedback and stereo principles. Differences: Son Vo’s multi-microphone room approach serves immersive recorded color; a single directional mic is a stronger initial live trial where feedback and spill dominate. Direct contradiction: Son Vo’s claim that a figure-eight ribbon prevents phase problems does not follow from microphone pattern alone; combine and test. Gap: the sources do not establish universal gong distances, front-versus-rear superiority, or one preferred microphone model. The numeric trials here are explicitly instructional proposals. [1–7]
+[1] Metropolitan Museum of Art, “Luo,” instrument classification and description. https://www.metmuseum.org/art/collection/search/500584
+[2] Paiste Gongs, “Support,” gong striking area, suspension and maintenance. https://paistegongs.com/support.php
+[3] Paiste, “Gongs,” Symphonic Gong construction and effects of stroke and mallet. https://www.paiste.com/en/products/gongs-und-orchstral-percussion/gong-1
+[4] Shure, “Microphone Techniques for Live Sound Reinforcement,” microphone patterns, proximity, rejection and gain before feedback. https://content-files.shure.com/Pubs/microphone-techniques-for-live-sound-reinforcement/microphone_techniques_for_live_sound_reinforcement_english.pdf
+[5] Son Vo, “Recording Gongs with Son Vo,” firsthand session account, Bodhisattva Trading Company (2017). https://bodhisattva.com/blogs/posts/recording-gongs-with-son-vo
+[6] DPA Microphones, “Stereo recording techniques and setups,” XY, M/S and near-coincident guidance. https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/
+[7] Meinl Percussion, “TMGS-3 Framed Gong Stand,” size range, locking system and free swing. https://meinlpercussion.com/en/products/tmgs-3-m5159.html

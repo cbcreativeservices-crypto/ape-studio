@@ -1,0 +1,85 @@
+# Full Orchestra Miking Technique
+Pro Audio Training Academy  •  Ensembles and Voice Lab  •  Studio and live sound
+This lesson treats a full orchestra as one acoustic ensemble with changing balances across the score. Students first establish a convincing main perspective, then add only the section or solo support that the production needs. The microphone plan changes for an acoustic hall recording, a broadcast feed, and live reinforcement. Specific heights and distances below are published examples or explicitly identified trials, never a universal setup. No audio examples are included.
+# Map the ensemble before moving a microphone
+Get the seating chart, score or cue list, hall restrictions, audience and camera positions, loudspeaker and monitor plan, and whether a choir or soloist joins the orchestra. Mark strings at the front, winds and brass farther back, percussion, harp, keyboards, and any offstage instruments as actually seated. Seating layouts vary; confirm sightlines with the conductor and stage manager. Listen from several positions through a quiet and a loud passage. Note whether the natural balance, audience perspective, and hall decay serve the production before choosing an array.
+The main pair or array is a perspective on the orchestra and room, not a separate microphone for each instrument. Moving it forward generally increases direct sound; moving back changes ensemble blend and hall contribution. Height can improve a clear view of rear sections, but also changes the relative string and room balance. These are listening comparisons, not guaranteed tonal outcomes. DPA places a published A-B orchestral example above or just behind the conductor at roughly 3–4 m; this is a worked hall example subject to sightlines, rigging and room, not a stand-height instruction. [1]
+# Choose the main perspective
+Approach
+What it can offer
+What to check
+Spaced A-B pair, often omnidirectional
+Broad orchestra and hall perspective; DPA describes 40–60 cm pair spacing as a typical example.
+Wide spacing can weaken the center and changes mono behavior. Compare height, distance, spacing and audience noise. [1]
+Near-coincident directional pair, such as ORTF
+Level and arrival-time differences create a stereo image with more directional room rejection than omnis.
+Check orchestra width, off-axis color, low-frequency balance at a distance and mono fold-down. [3]
+Coincident X-Y or Mid-Side
+A compact placement and relatively stable mono result; Mid-Side width can be set in the matrix.
+May give less spacious width than a well-chosen spaced array; listen for room and rear-section balance. [3]
+Three-microphone Decca Tree style
+A central perspective plus left and right coverage; one documented broadcast practice uses three omni microphones with support spots.
+Requires appropriate space, mounting and channel balance. Its name alone does not define the geometry or guarantee good results. [4]
+
+Begin by hearing only the main channels. Select a passage that exposes first and second violins, violas, cellos and basses, woodwinds, a brass entrance, and a strong percussion event. Listen for a stable center, lateral placement, depth, direct/reverberant balance and any dominant row. Make one physical adjustment at a time and document it. A conductor-area position is useful to test, while the best sounding microphone location may differ from the best seat for a person. [1]
+# Add section support as a controlled correction
+Support microphones should address a specific deficiency or production need: an inner line masked at the main pair, a solo, quiet harp or keyboard, detail for a broadcast close-up, or a separate live feed. In one DPA multitrack guide, directional section supports at about 1–1.5 m cover several musicians; this is a source-specific recording example, not a mandatory distance for every section. Set the main image before support. More microphones increase choice but also overlapping pickup and possible comb filtering. [2]
+Section
+Possible support view
+Audit before raising its fader
+Strings
+One or more section mics above or forward of desk groups, clear of bows, pages and conductor sightlines.
+A local desk should not become the whole section. Listen for bow noise, front-row bias and image shift.
+Woodwinds
+Small section views over the actual seating, or a solo spot when a passage requires it.
+Do not treat one flute or oboe as representing all winds; check bleed from nearby brass and strings.
+Brass
+Support groups from a safe angle and distance, allowing forte peaks.
+Avoid harsh direct bell dominance and overload; respect rear-row sightlines.
+Percussion and timpani
+A section view or a spot for exposed instruments when the main array lacks needed detail.
+Test mallet changes and strongest strokes; prevent stand contact and excessive transient level.
+Harp, piano, celesta, soloist
+Add only for the actual instrument and musical function, using its dedicated lab as needed.
+A close spot changes apparent depth and room balance; avoid chair, pedal and page movement.
+
+Outriggers outside the main array can help wide strings, but are additional perspectives that need mono and image checks, not automatic left/right “string microphones.” Room or audience microphones may be useful on a concert or broadcast feed, but their timing and level must be judged against the main image. Keep the room pair out of stage monitors and ordinary front-of-house reinforcement unless there is a specific, stable design reason.
+# Studio and broadcast workflow
+For a hall recording, first capture a complete musical result from a main pair or tree. Add named support channels only after a deficit is heard. Set input gain with a loud tutti, brass and percussion peak, leaving headroom; a quiet rehearsal passage cannot establish the peak. Record the full channels separately when available and maintain a channel map, orientation, polar patterns, height, horizontal position and any processing. Camera sightlines and stage resets may constrain a broadcast setup: a documented Vienna New Year’s Concert production uses a Decca Tree plus many support spots to provide close visual texture, and additional room/audience pickup for the broadcast. This is a practice example, not a prescription for channel count. [4]
+In the mix, restore the main channels first, then bring in a support at the minimum level that solves the stated need. Solo spots to diagnose noise, but judge their contribution with the orchestra. Listen in stereo and mono to each added path. A support sound reaches its close microphone before the distant main array: arrival-time differences can color the sum. Polarity reversal only tests one possible relationship. DPA describes room-dependent time alignment and specifically warns against a blind distance/speed-of-sound delay formula when players move. If alignment tools are available, compare measured or listened results against the unprocessed version, including musical depth and transients. [2]
+# Live reinforcement workflow
+Determine first whether the orchestra actually requires amplification for the audience. In an appropriate moderate acoustic venue it may not; large spaces, outdoor stages, amplified partners or broadcasts may require reinforcement. Shure notes that the distance that gives a natural instrument blend can be impractical on a live stage because of spill and acoustic feedback. For front-of-house sound, use closer section or solo pickup where needed, fewer open microphones where possible, and aim each directional microphone with the actual loudspeaker and monitor locations in mind. Distant room arrays can still serve the recording or stream on separate buses. [5]
+Build the live mix from the acoustic sound already in the room. Reinforce a quiet section or solo only as much as intelligibility and balance require. Check gain before feedback in rehearsal at realistic show levels, without prolonged ringing; lower the relevant send at the first onset and correct geometry, number of open channels and monitor spill. Keep a separate feed strategy for a stream, whose audience does not hear the unamplified orchestra directly. Plan talkback, conductor communication and cues through the production team. Do not assume a wide stereo array sent to a PA will provide the same image across audience seats; Shure limits the usual usefulness of live stereo pickup to appropriate stereo systems and relatively close groups. [5]
+# Safety and troubleshooting
+No student should fly a main array, attach equipment to venue structure, climb above the ensemble, or route a boom above players without the venue’s approved rigging plan and qualified crew. Verify rated hardware, attachment, secondary retention where required, cable strain relief, access and fall zones under local venue rules. OSHA guidance for overhead hoists emphasizes rated supporting structures and manufacturer requirements; it does not by itself authorize any particular microphone suspension. Ground-supported stands also need stable bases and protected traffic routes. Never block the conductor, players’ bows, breathing, music stands, exits or audience access. [6]
+Symptom
+First physical or operational check
+Strings too close, winds recessed
+Raise or move the main perspective only after listening to the actual seating and sightlines; compare one move at a time.
+Weak center or exaggerated width
+Reduce A-B spacing, add/check center if appropriate, or compare a coincident/near-coincident pair; confirm mono.
+Spot makes ensemble thin or distant
+Lower the spot and listen in mono; change placement or timing only with a before/after comparison.
+Brass/percussion peaks distort
+Check capsule and preamp overload, pad and gain at forte, before reaching for EQ.
+Feedback in live reinforcement
+Reduce affected send, check loudspeaker and mic orientation and active mic count; avoid a feedback demonstration.
+Audience or HVAC noise dominates
+Listen to the main versus room channels and consider a closer perspective only if the musical balance survives.
+
+# Class exercise and assessment
+1. Draw the actual seating chart and distinguish the acoustic audience, broadcast or recording, and reinforcement audiences. Mark speakers, monitors, conductor, paths and approved mounting locations.
+2. During rehearsal, place or observe one approved main pair. Document array type, capsule patterns, spacing, height and horizontal location. Hear quiet and loud score passages at safe levels; describe coverage, room and stereo/mono behavior.
+3. Change one main-array variable while holding the others steady, then compare at matched listening level. Restore the chosen setting and state the acoustic tradeoff.
+4. Add one justified section or solo support. Hear the main alone, support alone and sum in stereo and mono. Decide whether the spot solves a named need without changing depth or balance unacceptably.
+5. For a live exercise, build only the approved required front-of-house channels and check monitor/loudspeaker geometry under supervision. Keep a recording or stream array on its own route and record the gain/feedback constraints.
+Pass criterion: the student can explain why the main array defines the recording perspective, make and document one controlled placement comparison, add a support for a specific need, test mono interaction, distinguish hall capture from live reinforcement, and identify the approved rigging boundary. No audio examples are supplied.
+# Evidence audit and scope
+Agreement: DPA and Shure treat the main position, source-to-room balance and microphone count as consequential; DPA’s orchestral articles place the main perspective before spots. Most documented multitrack workflows add targeted section support, while a simpler main-only recording leaves more of the hall balance intact. Difference in application: DPA’s 3–4 m A-B hall example and 1–1.5 m section support are specific recording starting points; Shure’s live guidance favors closer pickup when feedback or spill governs. A documented Decca Tree plus spots demonstrates another valid broadcast practice. There is no direct contradiction once audience, room and production goal are distinguished. Gaps: none of these sources establishes universal heights, ideal spot count, equalization, or a one-size-fits-all delay for a particular orchestra and venue. [1–5]
+## Sources
+[1] DPA Microphones, Eddy Bøgh Brixen, “How to AB stereo mic an orchestra.” https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-ab-stereo-mic-an-orchestra/
+[2] DPA Microphones, “Multimiking a classical orchestra.” https://www.dpamicrophones.com/mic-university/audio-production/multimiking-a-classical-orchestra/
+[3] DPA Microphones, “Stereo recording techniques and setups.” https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/
+[4] SCHOEPS, “Microphone setup” for the Vienna New Year’s Concert, practitioner case study. https://schoeps.de/fileadmin/user_upload/user_upload/Downloads/Vortraege_Aufsaetze/Vortraege/SCHOEPS_NewYearsConcert24_Camerer_E_D_F.pdf
+[5] Shure, “Microphone Techniques for Live Sound Reinforcement,” pp. 11–13, 31–33. https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf
+[6] OSHA, “Clarification of safe working load when hoisting overhead loads above people,” August 29, 2013. https://www.osha.gov/laws-regs/standardinterpretations/2013-08-29

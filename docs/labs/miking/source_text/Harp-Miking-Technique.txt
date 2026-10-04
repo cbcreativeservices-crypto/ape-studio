@@ -1,0 +1,79 @@
+# Harp Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers concert pedal harp and smaller acoustic lever or Celtic harps as separate sizes of the same broad miking problem. Learners will locate a complete musical balance across registers, compare one microphone and stereo or multiple spot perspectives, and adapt the setup for a solo studio, ensemble spot or live stage. Player reach, pedals, instrument finish and cable routing govern all placement. Harp with other performers and orchestral main-array design are cross-linked to the Ensembles and Voice Lab. No audio examples are included.
+# Understand the source before placing a mic
+A full concert harp extends vertically across many strings, with vibrations carried through its soundboard and resonant body. The player's plucks, dampings and pedal changes are part of the performance, but an overly close mic can make mechanical or finger sounds distract from the music. DPA describes a complex sound field and observes that the full instrument and room can blend at roughly 2–3 m; this is a natural solo goal for a sufficiently good space, not a mandatory distance in every production [1]. A smaller lever harp will have a different scale and tonal balance; do not copy a concert-harp measurement without listening.
+Ask for the intended passages: low bass notes, high strings, sweeping glissandi, quiet plucks, strong accents and any pedal or lever changes. Stand where the microphones might go and listen. Identify the player's hands, head, sightline, pedals or levers, music stand, stage monitors and nearby instruments. A close soundboard view can represent only part of the harp and accentuate bass or low mids; DPA explicitly warns of this result when a cardioid points directly at the board [1].
+# Single-microphone starting points
+For a practical single stand mic, Shure recommends aiming toward the player at part of the soundboard from about 2 ft (60 cm) [2]. Use that as an accessible, relatively focused starting point. Move slightly in height and sideways while the player repeats full-register phrases; preserve hand and sightline clearance. On a solo concert harp in a useful room, compare a position around 2 m or farther, as DPA suggests for natural whole-instrument integration [1]. The farther mic includes more room and other players, so it may be unsuitable for a dense ensemble or live reinforcement.
+Perspective to compare
+Musical advantage
+Limitation to audit
+About 60 cm, toward player and part of soundboard [2]
+Defined, practical single view
+Can favor one register or board resonance
+Around 2 m or more for full pedal harp [1]
+Instrument and room integrate
+Room acoustics and spill become prominent
+High near pillar, looking down toward board [1]
+Spot detail without aiming at bass-heavy center
+More upper-register focus and image pull
+Close front of soundboard [1]
+Isolation and low-frequency output
+Boom, low-mid buildup and partial sound
+Approved internal sound-hole miniature [1]
+Concealment and close signal on stage
+Local coloration, mount and feedback limits
+
+Pattern affects the tradeoff. An omni can capture the room and broad harp sound without directional proximity effect, but it does not reject neighboring sources by pointing away. A cardioid may improve isolation and is useful as a spot, yet its close placement can exaggerate low frequencies. DPA recommends spaced omnis for one natural solo stereo approach, while also describing directional spots for crowded conditions [1]. Pattern alone does not guarantee the tone; listen at matched playback levels and reposition before defaulting to EQ.
+# Solo harp and stereo choices
+In a quiet, pleasing room, begin by moving the harp and listening position before committing to microphones. DPA suggests a spaced omnidirectional pair for a natural solo concert perspective, with about 2 m as a starting minimum from a full-height pedal harp and further adjustment for room balance [1]. Place the pair securely away from the player's movement and audience route, then test bass, treble and glissando. The exact pair spacing and height are audition choices, not specified by these sources as a universal recipe. Because spaced mics hear different arrival times, compare the mono sum and adjust placement if notes or registers hollow out. A coincident stereo microphone is another option when a stable stereo image and compact setup matter; Neumann lists large instruments including harp among its coincident stereo applications [3].
+Stereo does not require hard left and right mapping of the harp's bass and treble strings. DPA notes that much of a harp's register distribution is vertical and that two close spot microphones need not be panned apart [1]. A single natural mic may be stronger than a poorly balanced two-mic setup. If the room is small or unpleasant, move the instrument and microphone, control reflections where practical, or use a closer coherent perspective. Do not claim that extra reverberation or processing reconstructs a physical room that was not captured.
+# Ensemble spot and multiple microphones
+First establish the band's or orchestra's main image. A harp spot supplies missing articulation or balance and should be brought up only as much as required. DPA proposes a cardioid near the top of the pillar, pointing downward toward the soundboard, and warns it can bring the harp forward in the image [1]. If that perspective is too forward or bright, audition a slightly behind-and-above perspective on the side opposite the player's head, also described by DPA [1]. Keep both placements out of the player's reach and sightline. Shure's two-foot front position remains another practical start [2]; it serves a different separation goal than the distant solo pair.
+Two spots can separately support upper and lower registers when a single close mic misses part of the instrument. DPA reports a two-cardioid example around 30 cm from different board perspectives, with the upper spot favored in level, but that balance is one reported setup rather than a rule [1]. Solo each mic, audition both together in mono, adjust phase by position and level, and then blend with the main array. Do not add a second stand if it distracts the harpist or makes the image less stable.
+# Live harp and instrument-safe mounting
+On stage, close placement can improve harp level relative to spill, yet feedback still depends on monitor position, open microphones and room. DPA describes an omnidirectional miniature concealed at an existing harp sound hole and a small mic near the top of the pillar; the former offers close pickup while the latter admits more neighboring sound [1]. DPA also mentions a compatible 4099 with a guitar-style clip for demanding isolation [1]. These are model-specific examples, not permission to tape to finish, force a capsule into a sound hole, block an opening, or mount to an unapproved surface. Obtain the player's and instrument owner's approval; follow the current product and harp-maker instructions. Shure's recording booklet lists a taped miniature on the soundboard [2], whereas a reversible approved holder is preferable where finish risk is unknown. Treat direct attachment to valuable lacquer/finish as a specialist decision and do not improvise adhesive or foam in openings.
+Keep microphone, cable and stands clear of hands, strings, pedals, levers and feet; arrange strain relief so an accidental pull cannot transfer force to the instrument. Confirm the harp's stable position before placing any stand near it. Test the full performance and monitor mix at the expected level, starting with reinforcement reduced. If the harp includes an installed pickup, compare that electrical path separately from the acoustic mic and blend only where feedback margin and tone permit. Check mono summation, balance, and the pickup's stated preamp/input requirements.
+# Troubleshooting and safety
+Symptom
+Likely check
+Response to audition
+Bass or low mids boom
+Mic too close to board, directional proximity or room
+Move outward/upward, change room position
+Upper notes disappear
+Mic favors low board or is off axis
+Shift toward upper view or test a spot
+Pedal/finger noise dominates
+Close mic too near mechanical activity
+Increase distance or change viewing angle
+Stereo sum loses notes
+Unequal arrival times from two mics
+Compare mono; adjust pair geometry
+Spot makes harp unnaturally forward
+Spot too high in blend or too localized
+Reduce spot, reposition, reassess main image
+Feedback on stage
+Mic hears monitor/PA or board resonance
+Lower level, change geometry, reduce open mics
+Mount rubs or threatens finish
+Unapproved contact or cable strain
+Stop and use approved non-damaging method
+
+Never move a mic over the harp or player's head without a secure stand and controlled path. No stand foot or cable may obstruct pedals, chair or instrument movement. Work with the harpist when judging whether a resonance is musically desired; an isolated low note may be part of the intended sound, not automatically a fault. Do not place foam in sound holes or alter the harp unless its owner expressly requests an approved technique.
+# Teaching exercise and pass criterion
+1.Map the harp size, player reach, pedal or lever access and nearby sound sources. Ask for bass, treble and sweeping passages at realistic dynamics.
+2.Compare Shure's approximately 60 cm single-mic start with a more distant room perspective. Identify register balance, reflections, spill and mechanical noise.
+3.For a quiet solo, compare one mic with a safe stereo pair; listen in stereo and mono. For an ensemble, add a pillar-area spot gradually to the established main image.
+4.Plan a live close-mic position with approved mounting or a safe stand, monitor geometry and cable relief. Explain what would make you abandon an unsafe placement.
+Pass criterion: The learner can choose a musical balance across the harp's registers, explain distance and stereo tradeoffs, integrate an ensemble spot, and demonstrate instrument-safe live setup.
+# Evidence audit and limits
+Agreement: DPA and Shure provide useful stand perspectives for harp but at different distances [1, 2]. Both acknowledge close soundboard or miniature methods, and DPA explains how closeness can favor a limited region and low-mid boom [1]. Neumann confirms stereo pickup of harp is a valid option [3].
+Different emphasis: Shure's two-foot single mic is a practical close view [2]; DPA's roughly two-meter solo starting point targets a concert-hall-like integrated sound and room [1]. These do not prescribe the same sonic goal. DPA's spaced omni proposal and Neumann's coincident stereo option differ in imaging and mono behavior, so neither is universally superior.
+Gaps and confidence: No source gives a universal stereo spacing, high-pass cutoff, wedge position or mounting approval for every harp. Confidence is high in the directly published example placements and broad distance tradeoff; moderate in tonal predictions until tested with the specific harp, room and player. Direct taping and modification of sound holes need separate instrument-owner and maker approval.
+# References
+[1] DPA Microphones, “How to mic a harp.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-harp/>
+[2] Shure, “Microphone Techniques for Recording,” harp placement table.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[3] Neumann, “USM 69 i Stereo Microphone.”  Read source <https://www.neumann.com/en-ee/products/microphones/usm-69-i?variant=006974>

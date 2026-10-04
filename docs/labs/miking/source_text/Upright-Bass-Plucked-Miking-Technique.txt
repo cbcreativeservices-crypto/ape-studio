@@ -1,0 +1,82 @@
+# Plucked Upright Bass Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This is the pizzicato (plucked) upright/double-bass lesson. The learner will find a mic position that includes fundamental, body and finger attack; compare bridge, f-hole and broader perspectives; use a pickup intelligently on a loud stage; and protect the instrument and player. Bowed (arco) upright bass follows as a separate lesson. A four-string bass's open E1 is about 41 Hz, but instruments with low extensions or additional strings reach lower [1]. No audio examples are included.
+# Hear the whole instrument
+The strings initiate vibration through the bridge to the carved body; low fundamentals, harmonics, fingerboard sounds and room interaction arise from different places. DPA explicitly notes that a bass mic must capture low notes and high-frequency detail [1]. A mic near one f-hole can offer more level and body, but may overstate a local resonance. A bridge-oriented view can include pluck definition and body. At more distance the instrument integrates, while other players and room reflections rise. Listen in front of the bassist at the actual playing level, with the musician's usual position relative to the instrument and room.
+For teaching, ask for sustained low notes, higher walking lines, strong accents, soft notes and any slap technique the part uses. Set gain for peaks, not only the first gentle note. A low string can be masked by a room mode or stage rumble even when the microphone and preamp have sufficient bandwidth; diagnose source, room and monitoring before applying large low-frequency boosts.
+# A one-mic starting map
+Shure proposes a stand mic 15–30 cm (6–12 in) in front of the instrument above the bridge for a well-defined natural view, and another option a few inches from an f-hole for fullness [2]. DPA recommends the area under the bridge, between strings and top, for an instrument-mounted mic combining low end and plucked-string bite; aiming closer to an f-hole gives more output [1]. A stand mic in front of/above the bridge and a capsule mounted below it are different geometries. Choose one, then audition the others; do not treat their distances as interchangeable.
+Perspective
+What to listen for
+Likely constraint
+Front above bridge, 15–30 cm [2]
+Overall note, body and finger articulation.
+Player movement, room and neighboring sources.
+Close under bridge with approved mount [1]
+Low-end/body plus pluck bite.
+Local color, proximity effect and mounting clearance.
+Near an f-hole [1, 2]
+Greater output and low-mid body.
+Boom or uneven notes; investigate room and placement.
+Higher toward fingerboard
+Finger attack and pitch definition.
+Reduced body if too localized.
+Farther overall view
+Integrated instrument and space.
+Room modes, spill and limited stage gain.
+
+These are starting experiments, not fixed tonal guarantees. Keep the bassist's playing and listening level as consistent as practical; move one dimension at a time and document capsule, pattern, distance, angle and the bassist's position. A directional mic may develop proximity-effect bass boost when very close, whereas an omni has different proximity behavior and hears more room/bleed [1].
+# Studio approaches and tonal goals
+Natural jazz walking bass: Start with one mic in front of the bridge at a moderate distance, then compare a little higher toward fingerboard and lower toward the top. The aim is a consistent note sequence with audible pitch, body and pluck without one boom note. In a favorable isolated room, compare an omni for a broad picture; DPA recommends omni for full-instrument capture while noting that a directional mic can improve isolation [1]. Check the room's low-frequency decay and the position of bass and listener, not just the mic's frequency response.
+Focused ensemble bass: Move closer for isolation, using a directional mic with its rejection toward drums or another loud source. DPA notes that the bass's large surface can reflect incoming drum/PA sound into the front of the mic even when the mic points away from that source [1]. Reposition bassist, drummer, amp or mic if a polar-pattern adjustment alone fails. If the player slaps, check the full transient range and leave headroom; do not boost fundamental until the percussive and pitched components both work in the mix.
+Second microphone or room view: A separate close/far pair can offer attack and space, but a strong single-mic sound is the reference. Listen to each alone and sum in mono at useful levels. If body disappears or certain notes change unpredictably, move or rebalance a mic and then compare polarity/timing; acoustic paths and room responses prevent one setting from always being right. A distant room mic makes sense only when room and bleed add to the arrangement. Avoid an arbitrary three-to-one spacing rule as a substitute for listening.
+# Live sound: mic, pickup and monitors
+On a quiet stage, one stand mic can preserve a natural body sound. On a loud stage, a properly installed pickup often provides the dependable low-frequency main path, while a mic contributes acoustic detail only as gain before feedback allows. Shure describes retaining both paths for loud upright-bass work because the mic may not provide enough level or definition in that environment [3]. The pickup is not a microphone hearing airborne sound. Fishman's Full Circle is one example of an installed bass pickup for which an impedance-matching preamp is recommended and professional installation is recommended [4]. Use the actual pickup's manual for loading, wiring and output level.
+An approved instrument clip can move with the bass. DPA's BC4099 attaches to the two outer strings below the bridge on its specified system and carries a gooseneck toward the desired area [1, 5]. Shure's sound engineer warns against clipping a mic directly on the bridge, which can inhibit its vibration [3]. These statements are compatible: below-bridge string mounting is not clamping the bridge itself. Do not improvise a foam wedge, cable tie or clip in the bridge, f-hole or between delicate parts without a specific compatible mount, instrument-owner permission and an experienced technician where needed. Keep the capsule, gooseneck and cable clear of fingers, strings, bow path (if switching later) and the bassist's movement.
+Use directional-mic rejection thoughtfully; supercardioids have a rear lobe. Point wedges and bass amplifiers so they do not strongly excite the bass body or the live microphone. A resonant bass can feed back acoustically; if it does, reduce the offending level, adjust speaker/bass/mic geometry and open-mic count, and verify the pickup channel separately. High-pass filtering may remove subsonic rumble, but choose a setting by listening to the instrument's lowest notes and the mix. A broad bass cut to stop feedback may remove musical fundamentals; identify the narrow problem and its acoustic cause first.
+When combining pickup and mic, compare each alone and together in mono. The mic receives delayed airborne sound relative to the pickup, and electronics may add their own phase response. Try placement and balance first; then test polarity or timing adjustments if available. A polarity button cannot align all frequencies. Keep the channels separate for the sound engineer so a feedback-prone mic can be reduced without losing the whole bass.
+# Troubleshooting and physical safety
+Symptom
+First question
+Test or response
+Low notes boom unevenly
+Is mic on an f-hole or bass/room mode?
+Shift position, check multiple notes and room.
+All finger attack, little body
+Is capsule too high/close to fingerboard?
+Include bridge/top or a broader frontal view.
+Muddy with little pitch
+Is mic extremely close or room decaying slowly?
+Compare distance/pattern and room position.
+Drum bleed dominates
+Is bass reflecting kit sound toward mic?
+Reposition bass/drums/mic; use rejection and pickup.
+Pickup-mic blend becomes hollow
+Do timing/phase responses interact?
+Solo, mono-sum, move/rebalance, then test polarity/delay.
+Feedback on stage
+Which channel and speaker excite the body?
+Lower offending level, revise monitor/amp geometry.
+Mic mount touches bridge/strings improperly
+Is hardware interfering with playing or vibration?
+Stop and use a compatible mount with owner's approval.
+
+An upright bass can be valuable, heavy and unstable if leaned or bumped. Secure stands and cables away from the endpin and the bassist's feet; never set a mic stand where it can tip onto the instrument. Do not remove or reposition a bridge, soundpost, tailpiece or pickup as a miking exercise. Consult the owner and qualified luthier for a structural issue. If loud stage levels are present, manage exposure duration and use hearing protection as appropriate. OSHA identifies 85 dBA eight-hour time-weighted average as a hearing-conservation action level, not an all-duration safe threshold [6].
+# Teaching exercise and pass criterion
+1.Identify lowest available notes, player posture, pluck style, installed pickup, room and adjacent sources. Plan safe stand and cable routes.
+2.With one mic, compare front-above-bridge, a modest shift toward fingerboard, and a near-f-hole view. Include soft/strong notes across the range; record distance, pattern and actual tonal changes.
+3.Choose a studio position and a live position. Explain room, drum bleed, monitor location, proximity effect and why an approved clip may help player movement.
+4.If a pickup is available, compare mic and pickup alone and combined in mono. Demonstrate a safe response to an acoustic feedback note and distinguish clip-to-string below bridge from clamping the bridge.
+Pass criterion: The learner can obtain a balanced, repeatable pizzicato mic sound, preserve pitch and body across notes, adapt to stage isolation, check a mic/pickup sum, and protect the bass and player.
+# Evidence audit and limits
+Agreement: DPA and Shure both describe bridge-area and f-hole options and warn, in different ways, that close directional positions can favor low-frequency buildup [1, 2, 3]. Both allow a pickup/mic strategy for demanding live conditions [3, 4].
+Different emphases: Shure's front stand mic is 15–30 cm above the bridge [2]; DPA's below-bridge close mount is a distinct position [1]. Shure advises against clamping the bridge [3], while DPA's specified clip attaches to strings below it [5]. Neither is permission to mount arbitrary hardware on the bridge. No direct contradiction remains once the attachment points are distinguished.
+Gaps and confidence: No source establishes one perfect mic, bass note EQ, f-hole offset or pickup blend for every bass, bassist and room. Confidence is high in the documented placements and mounting cautions, moderate in predicted tone until the actual bass is heard. The bowed technique requires its own trial and follows next.
+# References
+[1] DPA Microphones, “How to Mic a Double Bass.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-double-bass/>
+[2] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments,” upright-bass placements.  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments>
+[3] Shure, “Miking the Rhythm Section,” acoustic upright bass.  Read source <https://www.shure.com/nl-NL/insights/miking-the-rhythm-section>
+[4] Fishman, “Full Circle Upright Bass Pickup,” installation and preamp.  Read source <https://fishman.com/dp/full-circle-upright-bass-pickup/>
+[5] DPA Microphones, “BC4099 Instrument Microphone Clip for Bass.”  Read source <https://www.dpamicrophones.com/accessories/instrument-clips/bc4099?variant=128>
+[6] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

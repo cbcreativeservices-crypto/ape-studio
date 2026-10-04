@@ -1,0 +1,88 @@
+# Background and Harmony Vocal Miking Technique
+Pro Audio Training Academy   Ensembles and Voice Lab   Studio and Live Sound   October 4, 2026
+# Scope and learning goals
+This lesson covers backing vocals, harmony parts, small vocal groups and ensemble-style background singing. The goal may be a tight, individually controllable stack, a natural group blend, or live reinforcement that follows a changing arrangement. Learners will choose between individual microphones, a shared microphone and area microphones; manage singer distance, consonants, phase, bleed and feedback; and rehearse the physical choreography that makes a shared microphone work. No audio examples are included.
+# Decide what the background part should sound like
+Before placing microphones, identify whether the backing vocals should sound like distinct people, a matched stack, a small choir or a single blended texture. A harmony singer may be quieter, brighter, breathier or more consonant-heavy than the lead. Do not force all singers to use the same distance or microphone if the musical goal is controlled separation. Conversely, several singers close to separate microphones can sound disconnected if they are not matched in tone, timing and room.
+Have the complete group sing the loudest chorus, quietest entrance, unison consonants, sustained vowels and any movement or choreography. Note who sings which part, who tends to dominate, which singers turn their heads, and whether the group also plays instruments. The microphone plan should be built around the arrangement and stage or room, not the number of microphone stands available.
+# Three basic approaches
+Approach
+Best fit
+Main tradeoff
+One microphone per singer
+Individual mix control and isolation
+More stands, channels, phase paths and visual clutter
+One shared microphone
+Natural blend, matching room and musical interaction
+Requires choreography and gives less individual control
+One or more area or choir microphones
+Group texture and larger ensemble
+More room, spill and feedback; less individual balance
+
+## Individual microphones
+Separate mics are useful when harmony entries, singers or effects need different levels. Keep capsules and singers far enough apart to limit cross-pickup. If several cardioid or supercardioid mics are close, check their spacing and off-axis response; two open microphones hearing the same singer from different distances can create comb filtering when mixed. Pan or route only when the production calls for it, and listen to the mono sum before committing to wide placement.
+For live handheld backing vocals, Shure describes a typical background distance of about 1.5–3 inches (4–8 cm), with greater distance for loud belting and closer distance for quiet phrases [1]. These are performance starting points, not a requirement to touch the grille. Teach singers to keep the capsule open and to move farther away for loud phrases rather than cupping or covering the microphone. Check handling noise and cable or stand movement.
+## Shared microphone
+A shared microphone can let singers create their own balance by stepping toward and away from the pickup pattern. Shure documents this approach in bluegrass, where the loudest singer backs away and the group uses coordinated movement and few or no monitors [2]. The technique requires rehearsal: singers need a known working zone, clear approach and exit paths, and enough room to avoid striking each other or instruments.
+Use a microphone and room that reward the shared sound. A large-diaphragm condenser or other suitable wide-range microphone can capture a natural group, while a directional pattern can reduce unwanted stage sound. The same microphone position may not serve a seated trio, a standing quartet and a singer who also plays guitar. Mark the floor or stand height and rehearse the real song, not only a sustained chord.
+## Area or choir microphones
+For a larger group, use the minimum number of microphones that gives the required coverage. Shure recommends placing choir microphones slightly above the singers and aiming toward the center row, then adjusting with the director while the group sings [3]. Area microphones capture multiple sources rather than one singer per channel, so the group must be balanced physically and musically. A condenser is often useful at the greater distance; cardioid, supercardioid or hypercardioid patterns trade room pickup for rejection and feedback margin [3, 4].
+The 3:1 rule is a starting spacing guideline: if a microphone is 1 unit from its nearest singer, a neighboring microphone should be at least 3 units from that singer to reduce the same voice arriving at multiple capsules. Shure explains that too-close multiple choir microphones can create comb filtering [3]. DPA notes that when two neighboring microphones both contribute significantly, a distance factor of 3 or more is needed, and a larger factor may be required with multiple neighboring directional microphones [4]. This is a geometry aid, not permission to place microphones too far away for the room or feedback conditions.
+# Studio background vocal stacks
+Tight individual stack: Record each singer or harmony line on an appropriate studio microphone at a repeatable mouth distance. Match stand height, pop-filter distance and room position when consistency is wanted. Give each singer the same reference track and enough headphone level to stay in tune without shouting. Record doubles separately when the production wants width; do not assume a stereo pair automatically creates a convincing double.
+Small group around one microphone: Place the singers around a suitable microphone or pair, then let them create balance by distance and dynamics. Shure's recording guide describes trained singers circling an omni microphone and changing their individual levels and timbres to create a blend [5]. This captures shared room and interaction, but a weak or dominant singer may be difficult to repair afterward. Use a quiet, flattering room and record a repeatable group arrangement.
+Two back-to-back cardioids: Shure also describes two cardioids positioned back to back as an alternative for a vocal ensemble [5]. Keep the rear and front pickup directions intentional, check the stereo and mono result, and avoid placing singers in an accidental null. This can provide more separation than an omni circle while retaining a group performance.
+# Live sound and monitors
+Live backing vocals need enough direct-to-stage ratio to compete with instruments while preserving feedback margin. Shure recommends tighter patterns such as supercardioid or hypercardioid in many choir reinforcement situations [3]. Monitor placement must follow the microphone's actual rejection angle. A cardioid often tolerates a monitor directly in front of the singer; a hypercardioid or supercardioid may reject best with the monitor slightly to one side, depending on the specific microphone [6].
+Do not send choir or backing-vocal microphone channels into the same choir monitor mix without a specific reason; Shure warns that this can create feedback [3]. Keep monitor levels low enough that the singers hear themselves and the band without filling the group microphones with monitor sound. In small rooms, mute and unmute the vocal channels during soundcheck to compare the natural group level with the reinforced level [3]. A group that already projects well may need less PA than expected.
+In-ear monitors can improve gain before feedback and reduce stage wash, but they require a comfortable, intelligible mix. If singers use handheld microphones, rehearse shared-mic choreography and microphone handoffs. If singers need continuous movement, a headset or earset can give more consistent mouth distance, but each position, windscreen, wireless system and monitor relationship must be checked.
+# Mic matching and vocal blend
+Matching microphones does not guarantee matching voices. Listen to the group in the room, then choose whether to match microphones for consistency or contrast them to keep parts distinct. Keep the same relative capsule angle and distance for singers whose blend should be uniform. If one singer has more sibilance or low-mid energy, solve the position and microphone match before relying on aggressive EQ.
+Pop filters and windscreens remain important for each close singer. Shared and area mics need a distance and angle that avoid direct plosive blasts from one singer dominating the group. Watch for consonants arriving at different times in a shared group; a close singer can make an “S” or “T” sound disproportionately prominent even when pitch and level are balanced.
+# Troubleshooting and safety
+Symptom
+Check first
+Response to audition
+One backing singer dominates
+Relative distance, delivery and capsule angle
+Rehearse distance or give individual control
+Harmony stack sounds phasey
+Multiple mics hear the same singer with different delay
+Solo, mono-sum and adjust spacing or arrangement
+Group sounds disconnected
+Too much individual close miking or mismatched rooms
+Match distance/room or try a shared/area mic
+Shared mic loses a singer
+Singer outside pattern or too far away
+Mark working zone and rehearse movement
+Consonants jump out
+Plosive/sibilant singer too close or on axis
+Pop filter, angle, distance and matched diction
+Choir feedback
+Too many open mics, monitor level or wrong null
+Mute unused channels, reduce monitors, change geometry
+Area mic is muddy
+Too far away or poor room/reflections
+Move closer/higher, improve room or use tighter pattern
+Live handheld sounds muffled
+Singer cups grille or covers rear ports
+Rehearse proper grip and keep grille clear
+
+Use stable stands and secure cables so singers can move without tripping. Maintain clear sightlines and enough space for instruments, stands and music folders. Reduce channel level before moving any live microphone. Do not ask singers to shout over unsafe monitor levels; adjust the system and arrangement. Keep headphone and monitor exposure comfortable during long studio sessions.
+# Teaching exercise and pass criterion
+1.Have a trio sing unison, three-part harmony, a quiet entrance and a loud chorus. Identify whether the goal is individual control, a matched stack or a shared blend.
+2.Compare individual close mics with one shared mic. Record or monitor the same passage, then inspect the mono sum for comb filtering and balance changes.
+3.For live sound, establish the polar-pattern null and monitor position, mute unused channels, and soundcheck with the full group and band active.
+4.Rehearse a shared-mic movement plan. Demonstrate how a singer backs away for a loud line, approaches for a quiet line, and keeps the microphone grille and cable safe.
+Pass criterion: The learner can choose a shared, individual or area approach that fits the musical goal, preserve blend and intelligibility, and operate the group safely with phase and feedback under control.
+# Evidence audit and limits
+Agreement: Shure and DPA agree that group miking requires attention to distance, microphone spacing, polar pattern and the desired blend [3–5]. Both support the 3:1 principle as a way to limit interference when multiple microphones cover a group [3, 4]. Shure and bluegrass engineers document choreography as a practical part of shared-microphone performance [2].
+Different emphasis: A shared microphone prioritizes interaction and self-balancing; individual microphones prioritize mix control and isolation. Area mics suit a larger group but capture more room and feedback risk. These are different objectives, not contradictions.
+Gaps and confidence: No source establishes one universal number of singers per mic, height, spacing, compressor setting or vocal microphone model for every group. Confidence is high in the documented spacing, pattern, monitor and choreography principles; moderate in predicted tone and blend until the specific singers, room and arrangement are auditioned.
+# References
+[1] Shure, “Vocal Miking Tips Recommendations.”  Read source <https://www.shure.com/en-US/insights/vocal-miking-tips-2>
+[2] Shure, “How to Mic a Bluegrass Band.”  Read source <https://www.shure.com/en-US/insights/how-to-mic-a-bluegrass-band>
+[3] Shure, “Of Mics and Monitors: Live Sound Reinforcement Tips for Choirs.”  Read source <https://www.shure.com/en-US/insights/of-mics-and-monitors-live-sound-reinforcement-tips-for-choirs>
+[4] DPA Microphones, “How to mic a choir.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-choir/>
+[5] Shure, “Microphone Techniques for Recording,” ensemble vocal techniques.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[6] Shure, “Vocal Miking Tips Recommendations,” live monitor placement by polar pattern.  Read source <https://www.shure.com/en-US/insights/vocal-miking-tips-2>

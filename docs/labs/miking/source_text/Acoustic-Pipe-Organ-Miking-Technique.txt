@@ -1,0 +1,85 @@
+# Acoustic Pipe Organ Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This extended Aerophones lesson covers acoustic pipe organs in worship spaces and concert halls. The learner will map pipe locations, evaluate a main microphone perspective, add division or room microphones only for a defined purpose, and distinguish recording or streaming from local sound reinforcement. The technique must preserve the organ’s full musical range while accounting for the room, other performers, the public and safe microphone installation. Electronic organs and Leslie speakers are covered in their separate lesson. No audio examples are included.
+# Map the instrument and room
+A pipe organ is a distributed source. A rank is a set of pipes; ranks are organized into divisions, and different groups may be placed in galleries, chambers, a façade or separate parts of a hall [1, 2]. Stops and combinations change which groups sound. The acoustic heard by a listener includes the pipework, direct arrivals, early reflections and reverberation. A microphone a few inches from one pipe or grille is therefore a view of that local source, not a representative sound of the entire organ.
+Meet the organist and venue staff before placing equipment. Ask for the relevant stop list and divisions, exposed versus enclosed pipework, antiphonal or remote ranks, pedal range, choir or instrumental participation, and any required service, concert or stream routing. Have the organist demonstrate soft solo stops, a bright reed or mixture, full registration, lowest required pedal notes and rapid changes. Note where a swell shutter opens and whether the room is occupied. The Organ Historical Society explains that stop pitch labels such as 16 and 32 feet refer to sounding pitch conventions, not always literal pipe lengths [3]. Verify the actual audible and reproduced low range rather than inferring it from a label.
+# Decide what the microphones need to deliver
+Delivery goal
+Starting perspective
+What to verify
+Solo organ recording
+One coherent main stereo pair at a balanced listener position, adjusted for pipe layout and room [1, 4].
+All divisions, pedal clarity, attack, decay, image and external noise.
+Organ with choir or instruments
+Start with the ensemble’s main pickup; add a modest organ spot only if required.
+Balance during accompaniment, spatial match, mono sum and bleed.
+Stream or broadcast of services
+Use a main room perspective for natural organ and ambience, with separate local pickup when independent control is needed [1, 5].
+Speech intelligibility, organ/choir scene levels, routing and spill from PA.
+Local PA reinforcement
+Establish whether amplification is necessary; if so, use more local pickup at main pipe groups and manage loudspeaker feedback [1].
+Direct-to-reverberant ratio, delay, coverage and safe level in the audience area.
+
+Shure notes that pipe organs are ordinarily recorded or broadcast rather than reinforced in the same room [1]. That is a common practice, not a ban: a particular venue may need sound reinforcement, assistive delivery or a broadcast feed. Avoid adding organ sound to the room PA simply because it has microphones. The choice depends on coverage and the sound the audience actually hears.
+# Find the main pair
+1.Walk and listen at safe, accessible floor positions. Have the organist repeat contrasting registrations and pedal phrases while the engineer compares positions along and across the listening area. Seek a balance of the different pipe locations and useful room decay. A reported Neumann user test moved microphones repeatedly before choosing a position about 35 feet from that particular organ; he found that low-register strength changed markedly over short moves [6]. This is a case study, not a placement distance for other organs.
+2.Choose a coherent stereo method. A coincident directional pair such as XY or an M/S array offers a clear center and robust mono compatibility; a near-coincident pair such as ORTF adds time and level differences; a spaced omni pair can give wider room and low-frequency pickup but warrants a mono check [4, 7]. Choose the pattern and geometry for the room, pipe spread and delivery format. Schoeps suggests omni to include room sound with organ, or wide cardioid when the room or bass balance is less favorable [7].
+3.Raise only as approved and necessary. A safe, stable stand at a modest height can move the pair out of nearby audience noise and change the direct/reflected balance. Do not infer that a higher position is always better. Compare the complete passage at matched monitoring level. A DPA installation used a pair above an aisle for its specific worship space; another used a very high overhead pair after on-site tests [5, 8]. Neither height is a general instruction.
+4.Test the extreme and the subtle. Set input gain with full organ and the most forceful expected attack, leaving headroom. Then check quiet stops and decay against HVAC, traffic and handling noise. Evaluate bass with the lowest relevant notes and the actual monitoring chain; do not reflexively high-pass away pedal fundamentals. Confirm the stereo center and summed mono sound before finalizing.
+A single microphone may be useful for a mono feed, speech-adjacent broadcast scene or a first location search, but it cannot represent spatial spread in stereo. A main pair can also serve as the organ portion of a combined choir or ensemble pickup when the musical balance and room allow it. That complete arrangement belongs in the Ensembles Lab.
+# Add local division microphones with a purpose
+Shure’s worship guide distinguishes a listener-perspective pair in the body of the room from microphones closer to each main pipe location when independent organ control or a less ambient sound is required [1]. Some organs have remote or antiphonal divisions, so one local spot may omit part of the instrument. Coordinate with the organist and organ technician to identify actual sound outlets before aiming.
+Place each local microphone far enough from an outlet to hear more than one pipe where practical, yet close enough to improve separation from choir, room and PA. This is a location experiment; there is no universal distance for a façade, grille or chamber. Solo each spot with the relevant stops. Check that it is not dominated by blower, mechanical action, swell-shutter noise or one loud rank. Do not place a microphone inside pipework, an organ chamber or behind a swell enclosure without venue and qualified technician authorization and a safe access plan.
+Bring spots up under the main pair only enough to solve the stated balance problem. Recheck stops on both sides, full registration, soft passages and mono sum. Distant mains and local spots have different arrival times and room content; polarity reversal or a fixed delay may improve one registration while worsening another. Move or rebalance first. If delay is used for a defined output system, measure and verify it at the relevant listener positions instead of assuming a distance formula settles the mix.
+# Streaming and live sound differences
+For a stream, the room pair can convey scale while close choir, speech and selected organ feeds provide independent control. DPA documents a service installation with a pair of omni room microphones and a separate ORTF pair aimed toward the altar, illustrating different roles for room and direct pickup [5]. Keep these feeds on separate channels and build scene levels for organ solo, choir accompaniment and speech. Room mics will also hear PA loudspeakers, congregation and ventilation. A quiet room pair that works in an empty rehearsal may behave differently during a full service.
+For local PA, reinforce only if the audience needs it. Localized division microphones can give more gain before feedback than a distant room pair, but they capture a narrower view. Position loudspeakers and microphone pickup to avoid a feedback loop, begin at low system level, and evaluate through the actual audience area. Do not send a distant room pair back into the same room PA at high gain. Hearing protection and appropriate level management are important during full-organ and PA tests; no deliberate loud feedback exercise is necessary.
+# Installation and preservation safety
+Venue and organ staff control access to lofts, galleries, chambers and historic fixtures. Use accessible floor stands whenever they meet the musical goal. Any suspended microphone, elevated stand, overhead cable run or work at height requires venue approval and competent personnel using the site’s rated supports, fall protection and cable practices. Never hang a microphone from organ pipes, façade ornament, sprinkler equipment, lighting, a casual ceiling hook or an unverified beam. Keep stands and cable routes clear of pew aisles, exits, wheelchair circulation, organ controls and performers. Do not move pipes, shutters or maintenance panels, and do not touch organ wiring or blower equipment. Stop if a placement cannot be achieved safely; choose a floor position or arrange a qualified installation later.
+# Tone goals and troubleshooting
+Symptom
+First question
+Trial or response
+Pedal notes vanish or boom
+Is position in a low-frequency room peak/null, or is filtering active?
+Compare nearby safe floor positions and verify filter, full passage and monitor [6].
+One division dominates
+Is a mic too close to that pipe group or aimed away from others?
+Map divisions, move main pair or add a restrained targeted spot [1].
+Sound is distant and indistinct
+Is room decay obscuring attacks?
+Move main pair cautiously closer or compare directional pattern [1, 7].
+Sound is dry or local
+Is a spot dominating the main pair?
+Restore room perspective and rebalance.
+Two feeds hollow in mono
+Are separated mics interacting?
+Solo, mono-sum and move or rebalance before processing.
+Blower or traffic audible
+Does noise originate in the room or local outlet?
+Identify source with organist; adjust position and schedule where possible.
+PA feedback or wash
+Are room microphones routed to local PA too loudly?
+Lower level immediately; revise routing and geometry [1].
+
+# Teaching exercise and pass criterion
+1.With an organist or authorized staff member, map the divisions and list registrations that expose each relevant pipe location, including the pedal part.
+2.Compare two safe, accessible main-pair positions over soft, bright and full registrations. Note image, pedal balance, attacks, room decay and noise.
+3.Compare main pair alone with one justified local spot, listening to the spot alone and the combined mono signal over the same passage.
+4.Propose separate stream and local-PA routing, marking which channels must not feed the house system at high level. Document a safe installation route or use a floor stand.
+Pass criterion: The learner can explain why the pipe organ is a distributed room instrument, choose and verify a main perspective, use a local spot only to solve a defined need, and stop any mounting plan that exceeds authorized access or safe support.
+# Evidence audit and limits
+Agreement: Shure, Schoeps and the cited DPA applications support room-aware pickup and the need to select position and pattern for the specific space [1, 5, 7, 8]. Shure explicitly separates listener-perspective capture from more local, independently controllable organ pickup [1].
+Different emphases: The Neumann account found one listener-area position after many trials [6], whereas DPA’s installed cases used elevated pairs chosen for their own rooms [5, 8]. These are compatible site-specific solutions. Schoeps favors omni when room sound is desirable and wide cardioid when the room or bass balance is less favorable [7].
+Gaps and confidence: These sources do not establish a universal distance, height, stereo width, EQ, low-cut frequency or number of spots. Confidence is high in the distributed-source and goal-based approach, moderate in predicted tonal consequences at a new venue. Room measurements, actual organ registration, venue rules and safe access must determine final installation.
+# References
+[1] Shure, “Audio Systems Guide for Houses of Worship,” organ section.  Read source <https://content-files.shure.com/Pubs/house-of-worship-audio-systems-guide-for-houses-of-worship/audio-systems-guide-for-houses-of-worship.pdf>
+[2] Organ Historical Society, “Ranks and Divisions.”  Read source <https://organhistoricalsociety.org/OrganHistory/works/works05.htm>
+[3] Organ Historical Society, “Pipes and Pitch.”  Read source <https://organhistoricalsociety.org/OrganHistory/works/works04.htm>
+[4] Shure, “Common Techniques for Stereo Miking.”  Read source <https://www.shure.com/en-US/insights/common-techniques-for-stereo-miking>
+[5] DPA Microphones, “Westminster Presbyterian Utilizes DPA for Live Streaming Services.”  Read source <https://www.dpamicrophones.com/news/2021/westminster-presbyterian-utilizes-dpa-for-live-streaming-services/>
+[6] Neumann, Ray Brubacher report on the Oakdale Emory organ.  Read source <https://www.neumann.com/globalassets/digizuite/10759-en-i-heard-the-organ-as-it-supposed-to-sound.pdf>
+[7] Schoeps, “CCM Microphones Manual,” suggested microphones for applications.  Read source <https://schoeps.de/fileadmin/user_upload/user_upload/Downloads/Bedienungsanleitungen/Schoeps_Manual_CCM_2016-01-26-V2_1457951234.pdf>
+[8] DPA Microphones, “DPA Enlightens Audio for Holland’s Petruskerk.”  Read source <https://www.dpamicrophones.com/news/2021/dpa-enlightens-audio-for-holland-s-petruskerk/>

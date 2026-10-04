@@ -1,0 +1,90 @@
+# Euphonium Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Euphonium   October 3, 2026
+# Scope and learning goals
+This lesson covers one euphonium in the studio and in live sound. The learner should identify its actual bell direction and playing posture, capture the player's intended roundness and melodic articulation, compare a natural ensemble view with a controlled spot, and protect the musician and instrument while checking microphone/input headroom. It follows tuba in the agreed list; soprano saxophone is next. No audio examples are included.
+# Identify this horn before miking it
+The euphonium is a lip-excited brass aerophone. Yamaha distinguishes its more conical tubing and larger bell from a baritone horn, describing a generally fuller, rounder sound [1]. They share B-flat nominal pitch, yet names can vary by country and some American bell-front euphoniums are informally called “baritones” [1, 2]. Ask the player for the actual model and show the bell direction rather than relying on the label. Euphoniums may have three, four or other valve configurations; compensating models add tubing [1]. The microphone does not fix an intonation or playing issue.
+Most concert setups place the bell upward, but Yamaha also makes a bell-front euphonium for forward projection [3]. A mic placed “in front of the player” has a different relationship to each bell. Hear the real instrument from an audience position and note whether its line is a lyric melody, inner harmony or low-register foundation. Ask for quiet and loud phrases, the lowest *required* note, tongued attacks, legato, higher notes, movement and any mute. Do not infer a fixed high-pass frequency from the word “euphonium.”
+# Documented starting positions and what they mean
+A euphonium-specific educational guide proposes about 2 ft (60 cm) above an upright bell, aimed toward its edge [4]. This is a reasonable open perspective to audition in a suitable room with clearance and little spill; it is not a universal optimum. Shure's guide, which includes euphonium among brass, suggests 1–2 ft (30–60 cm) from the bell generally and describes on-axis placement as brighter and off-axis as softer in upper harmonics [5]. These ranges overlap at their farther end, but the guide's geometry differs: “above” assumes a bell-up instrument, while bell-front requires a different stand orientation. Avoid measuring from the player's face or valve block.
+Shure says a farther brass mic can sound fuller but pick up more room and neighboring instruments, whereas closer pickup often offers a tighter sound and better isolation [5, 6]. A bell-up mic directly over the opening can emphasize a local direct sound; aim toward the edge and compare a little more off axis for a rounded view. Listen to actual low and high passages at matched playback level. A strong attack may still have significant upper harmonics; capture clarity without forcing a brittle sound. Published brass guidance does not prove any one mic model is ideal for euphonium.
+# One stand mic: safe controlled setup
+1.Establish posture and clearance. Have the player hold or support the horn as they really play. Locate the bell, valve hands (including a possible fourth-valve hand), tuning slides, music stand, sightline, seating, planned mute and normal bell tilt. Put the boom, mic and cable outside their full movement and stand-up path. Use a secure stand and an appropriately supported boom; never ask the player to hold the instrument at an uncomfortable angle for the mic.
+2.Try an open bell-up view. In a good room with low spill, put a suitable mic roughly 60 cm above the bell and aim toward an outer region, as the euphonium-specific guide suggests [4]. Verify clearance if the player rises or tilts. Compare an audience/section perspective before treating the spot as necessary.
+3.Try a closer controlled view. Compare a safe position in Shure's 30–60 cm from-bell starting region, slightly off axis [5, 6]. For a bell-front model, place the stand in the bell's actual forward direction, leaving player/traffic clearance [3]. Do not lower the microphone into a bell or assume the bell must sit directly under a dangling mic.
+4.Hear a complete phrase. At matched monitor level, compare low-note body, middle-register line, upper-register edge, attacks, valve noise, breath and room/spill. Recheck physical clearance whenever a mic moves. Set gain from the loudest actual musical passage; inspect microphone capsule/electronics, wireless stages if present and preamp/converter for overload [7]. A high-pass filter is optional for rumble, and must be judged against the lowest note the part needs.
+An appropriate dynamic, condenser or ribbon may be auditioned within its specifications. A larger diaphragm is not a guarantee of a round euphonium sound. Model-specific polar pattern, SPL capacity, airflow/handling and power rules matter. If using a ribbon, follow that manufacturer's protection instructions; an upward bell can direct airflow toward a mic placed very close to its opening.
+# Studio approaches
+Solo overdub: Choose the player and room before EQ. Start with the open above-bell comparison and a second, closer off-axis position. In a good room, a more distant main view may convey the size and phrase naturally, while a controlled spot supplies articulation if needed. In a dry, reflective or noisy room, a close mic may give useful isolation but more local bell and valve detail. Hear the line in its register and intended arrangement, not only a long held note.
+Ensemble: First listen to the main/section mics at musical balance. A euphonium countermelody may need a little spot focus while a supporting line may not. If a spot and main mic are both used, hear them alone and summed in mono for changes caused by different arrival times; adjust position or balance before automatic delay/polarity changes. A spot should support the ensemble image, not pull the instrument unnaturally forward. Full brass/wind-ensemble layout belongs in Ensembles and Voice.
+Two different tones: For a lyrical line, compare the more open edge-aimed position and room contribution [4]. For a dense score with masked articulation, compare the closer position and a modestly more central axis at matched level [5]. There is no fixed “warm” axis or distance; the player's sound, bell model and room determine the outcome.
+# Live sound approaches
+In a quiet hall, the ensemble or section mic may already carry the euphonium. If its melody needs reinforcement, use a stand aimed into the actual bell's normal zone while retaining comfortable sightlines and movement. On a louder stage, move closer if safe, use a directional mic and arrange wedges/neighboring sources around its rejection pattern [5, 8]. Test at performance level with the band; a mic that sounds good solo may be full of drums or at the edge of feedback.
+An instrument-mounted mic can help a moving player, but confirm a clip is explicitly compatible with the euphonium's bell size and finish. General brass clips advertised for trumpet or trombone may not fit. Obtain player/owner approval, follow the exact maker's clamp and power guidance, add strain relief, and keep cable away from valves, tuning slides, hands, mouthpiece, mute and possible bell-front shoulder position. Have the player demonstrate complete movement and actual mute insertion/removal. If compatibility cannot be confirmed, use a stand; do not improvise a clamp or tape on a valuable finish.
+Check monitor and subwoofer energy while the player is silent to distinguish stage vibration/spill from the instrument's low notes. If filtering is needed, recheck the lowest written phrase after changing it. Strong brass peaks can overload a mic stage even when a console meter has headroom [7]. Manage hearing exposure on loud stages according to NIOSH musician guidance [9].
+# Tone and approach comparisons
+Musical aim
+Controlled trial
+Listen for
+Rounded concert line
+About 2 ft above upright bell, aimed toward edge [4].
+Sustained body, room, soft endings and section blend.
+More isolation
+1–2 ft from actual bell, slightly off axis [5].
+Direct sound versus valve noise, spill and brightness.
+More articulation
+Modest move toward axis at matched level [5].
+Attacks without brittle upper register.
+Bell-front instrument
+Same concepts oriented to its forward bell [3].
+Projection, player movement and nearby performers.
+Loud mobile stage
+Safe stand versus model-compatible clip.
+Stable level, fit, handling, feedback and mute access.
+
+# Safety and troubleshooting
+Symptom
+Diagnose
+First response
+Line sounds thin or sharp
+Mic too central/close, input overload or player/room?
+Compare edge/off-axis at matched level; check gain stages [4, 5, 7].
+Melody disappears in ensemble
+Main pickup masks inner line?
+Trial a safe spot and musical balance before broad EQ.
+Low notes lose body
+High-pass corner or room cancellation?
+Bypass filter, test actual written low phrase, move mic/player.
+Bell hits hanging mic
+Posture, rising or bell tilt missed?
+Stop; let player steady horn and reposition boom.
+Clip contacts valve/mute
+Exact horn fit and path checked?
+Remove/reposition with player; choose stand if uncertain.
+Live feedback/spill
+Wedge/drums inside mic pickup region?
+Re-aim or change geometry; retest band [8].
+Main plus spot hollows tone
+Arrival-time interaction?
+Hear each alone and mono sum; change placement/blend.
+
+# Teaching exercise and pass criterion
+1.Student identifies actual euphonium versus a baritone label, bell orientation, valve configuration and musical role. Hear the player at soft/loud dynamics and with any mute [1–3].
+2.Compare the above-bell 2 ft edge aim for a bell-up model with a safe 1–2 ft closer trial. Use matched levels and describe register balance, articulation, valve detail, room and spill [4–6].
+3.In ensemble context, determine whether a spot is required; check its mono blend with the main mic. For a live version, test the full band and monitors, boom/clip clearance and actual mute movement [5, 8].
+4.Set peak gain on real musical loudness and compare low notes before/after any filter. Document the final distance, axis, player posture, stage geometry and clearance check [7].
+Pass criterion: The student chooses a mic position based on the real euphonium and part, demonstrates player-controlled clearance, preserves intended roundness and note clarity, verifies strong-phrase headroom, and explains the studio/live tradeoff.
+# Evidence audit and limits
+Agreement: Yamaha establishes the instrument's more conical euphonium character and variable bell/valve designs [1–3]. The euphonium-specific guide [4] and Shure's broader brass guide [5] both support a bell-oriented starting view, with an off-axis/edge comparison. Shure explains the live isolation versus distance tradeoff [5, 6].
+Different emphases: The educational guide specifically proposes about 2 ft above an upright bell [4], while Shure gives 1–2 ft from a brass bell without assuming orientation [5]. These are different setup contexts, not directly contradictory. Neither proves that “above” is right for a bell-front horn or that one distance is optimal in every room.
+Gaps: No retrieved source here establishes a euphonium-specific maximum SPL, universally compatible clip, correct filter frequency or single best transducer. The educational guide's exact 2 ft value is a practice recommendation rather than controlled comparative evidence. Confidence is high for Yamaha's instrument distinctions and the cited source recommendations, moderate for applying the comparative workflow, and low for guaranteed tonal outcomes.
+# References
+[1] Yamaha, “What’s the Difference Between Baritone Horn and Euphonium?”  Read source <https://hub.yamaha.com/winds/brass/whats-the-difference-between-baritone-horn-and-euphonium/>
+[2] Yamaha, “The Family of Saxhorn Instruments.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/tuba/structure/structure004.html>
+[3] Yamaha, “YEP-211 Euphonium,” bell-front model.  Read source <https://asia-oceania.yamaha.com/en/musical-instruments/brass-woodwinds/products/euphoniums/yep-211/>
+[4] Music Director’s Audio Toolkit, “Individual Instruments,” euphonium.  Read source <https://www.musicdirectorstoolkit.com/getting-started/individual-instruments>
+[5] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments/>
+[6] Shure, “Microphone Techniques for Live Sound Reinforcement,” brass table.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[7] DPA Microphones, “How to Mic Woodwinds and Brass.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-woodwinds-and-brass/>
+[8] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[9] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

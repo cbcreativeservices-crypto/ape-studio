@@ -1,0 +1,98 @@
+# Lead Vocal Miking Technique
+Pro Audio Training Academy   Ensembles and Voice Lab   Studio and Live Sound   October 4, 2026
+# Scope and learning goals
+This lesson covers male and female lead vocals across different ranges, timbres, registers and delivery styles. The useful variables are the individual singer, microphone, distance, room, performance and sound system; gender alone does not determine a microphone choice. Learners will set a studio vocal position, manage plosives and sibilance, compare microphone patterns and distances, and adapt a vocal microphone for live sound. No audio examples are included.
+# Start with the singer and the actual delivery
+A lead vocal may be intimate, breathy, classical, belted, shouted, rapped, whispered, heavily dynamic or rhythmically percussive. A low male voice, high female voice, mixed voice, falsetto or contralto may each have different spectral balance and peak level. These categories describe musical and physiological tendencies, not rules for microphone selection. Shure states that the microphone should complement the vocalist rather than be chosen by price or reputation [1]. Test the singer's quietest close phrase, strongest sustained note, consonant-heavy lyric, breathy line and loudest chorus.
+Before placement, remove avoidable problems: choose a quiet room, control strong reflections, provide a stable stand and give the singer a comfortable headphone mix. Do not monitor through loudspeakers during a close studio vocal take. Neumann specifically recommends closed-back headphones and turning off loudspeakers to prevent feedback [2]. A singer who cannot hear a useful balance may change distance, pitch or effort in ways that no microphone can repair.
+# Studio starting position
+Use a sturdy stand, shock mount where appropriate and a pop filter or suitable windscreen. Neumann gives a starting distance of 20–30 cm (8–12 in) from the mouth for its studio setup [2]. Shure gives 10–20 cm (4–8 in) as a common starting range [1]. These are starting ranges for different microphones and working styles, not a universal prescription. Keep the singer's mouth-to-capsule distance consistent enough that proximity, level and room tone do not change unpredictably.
+Aim toward the mouth at first, then move the capsule while the singer performs the real material. A slight downward, upward or off-axis angle can reduce plosive air, sibilance, nasal emphasis or harshness when the microphone has a smooth off-axis response. DPA documents that the mic can be angled substantially to change the balance, but the result depends strongly on the microphone's off-axis behavior [3]. Do not aim at the chest simply because a voice is low; test it only as a deliberate alternative and check music-stand reflections.
+Studio position
+Likely use
+Risk to check
+On axis, 10–20 cm
+Clear, direct lead vocal
+Plosives, sibilance and proximity buildup
+On axis, 20–30 cm
+More blended and stable room balance
+More room and lower direct-to-reflected ratio
+Slightly off axis or lower
+Can soften sibilance or harsh consonants
+Duller or less intelligible tone
+Above and angled down
+Can reduce breath and plosive emphasis
+Changed vowel balance; requires smooth off-axis mic
+Omnidirectional, close
+Open low-mid sound with less proximity effect
+More room and less isolation
+
+Cardioid microphones are common because they reduce room and neighboring-source pickup, but proximity effect increases low frequencies as distance decreases [1, 4]. Omnidirectional microphones can sound open and natural in a good room and do not have the same directional proximity effect; they are much more vulnerable to room sound and live feedback [4]. Figure-eight microphones reject the sides but hear front and rear, and their proximity effect can be strong [1]. Choose based on the singer, room and arrangement rather than a male-versus-female rule.
+# Microphone selection by voice and style
+Large-diaphragm condensers are common in controlled studio rooms because they can provide detail and wide bandwidth. A dynamic microphone may be the better choice for aggressive rock, heavy metal, rap or a singer whose high-frequency detail becomes hard or sibilant; Shure explicitly describes dynamic microphones as useful in these styles [1]. A ribbon or modern robust ribbon can smooth harsh highs for some singers, but its figure-eight pickup hears the room and rear sources [1]. Check the specific microphone's maximum SPL, handling, phantom-power requirements and polar pattern.
+Choose by auditioning the singer's actual performance. A microphone that flatters a low, dark voice may make a bright soprano or forceful belt too sharp; a microphone that softens a bright singer may make a breathy low voice indistinct. Record short matched phrases at matched level. Do not compensate for a poor placement by immediately applying large EQ boosts or cuts; move the source or microphone first.
+# Control plosives, sibilance and breath
+P and B consonants create bursts of air that can overload a close capsule. A pop filter breaks up the air before it reaches the microphone; Neumann recommends one and suggests angling it slightly rather than placing it parallel to the capsule [2]. A windscreen is useful for stage use, but a studio pop filter may preserve a more open top end depending on the model. Never “pop test” a microphone by blowing directly into it; use speech or singing.
+For sibilance, first try moving the mic slightly lower or off the direct line of the mouth, a position Shure recommends for pronounced S and T sounds [1]. Keep the singer's tone and diction natural. Excessive breath noise may respond to a small angle or greater distance; do not aim so far away that the room becomes the dominant source. If the singer moves, rehearse the working zone and use a physical visual marker if helpful.
+# Dynamics and gain
+Set preamp gain while the singer performs the loudest real passage, not while speaking quietly. Neumann recommends leaving approximately 10 dBFS of headroom above the highest peaks in its 24-bit setup guidance [2]. This is a practical digital recording target, not a requirement for every analog or live console. Never ask the singer to sing into clipping to “get a hotter signal.” Adjust headphone level independently from preamp gain, and check the first full take because performers often sing harder than during sound check.
+Compression may be useful for monitoring or later mixing, but it does not fix a mic that is too close, a poor room or a clipped preamp. If a compressor is inserted before recording, document its threshold, ratio, attack, release and gain reduction; preserve a clean path where possible. The singer's monitoring reverb should normally remain monitor-only unless an intentional printed effect is part of the production.
+# Live lead vocal microphone
+Live vocal microphones are designed for close use, handling noise and feedback control. DPA notes that stage vocals are often within 10 cm and can produce peaks above 135 dB in the direct field [3]. A singer should not be forced to place lips on a grille to be heard; extremely close placement can cause acoustic distortion and heavy proximity coloration [3]. Train a consistent hand position and keep the grille unobstructed. Do not cup the head of a directional microphone, because it changes the pattern and can reduce feedback resistance.
+Cardioid and supercardioid microphones reject different directions. Shure explains that a cardioid monitor is commonly placed directly in front of the singer, while a hypercardioid or supercardioid monitor is usually placed slightly to one side according to the microphone's null [4]. Always use the actual polar pattern and manufacturer response, not a memorized stage diagram. Test the microphone at performance distance with the monitor and backline active. A headset or earset may be appropriate when the singer must move freely, but the mouth-to-capsule position, wind protection and wireless power must be checked continuously [3].
+For live condenser vocal microphones, verify phantom power, cable integrity and the correct mixer input before the singer uses the mic. Neumann's KMS 104 is one example of a stage condenser with a tight cardioid pattern, high SPL capability, built-in pop protection and a low-cut characteristic intended to manage proximity [5]. The model is an example of design goals, not a universal recommendation.
+# Singer movement and special delivery
+Belting or shouted vocals: test maximum SPL and preamp headroom; a dynamic or high-SPL condenser may be useful. Maintain enough distance to avoid excessive proximity and plosives.
+Breathy or intimate vocals: a quiet condenser or suitable ribbon may reveal detail, but the room, mouth noise and breath become part of the capture. Use distance and angle deliberately.
+Rap and rhythmic delivery: consonants, plosives and rapid level changes may favor a controlled dynamic or close condenser. Keep the rhythm of movement consistent and allow headroom for emphatic syllables.
+Wide dynamic classical or theatrical singing: choose a room and distance that preserve the singer's natural level changes. A farther position can sound more integrated, but it requires a quiet room and stable performance area.
+Singer with guitar or piano: decide whether the vocal mic should prioritize isolation or a shared acoustic picture. Cardioid rejection can help, while figure-eight may reject the sides but hear the instrument behind the singer. Use the actual polar pattern and check the arrangement in mono.
+# Troubleshooting and safety
+Symptom
+Check first
+Response to audition
+Plosive pops
+Mouth too close or capsule on air path
+Pop filter, angle, distance and consonant technique
+Boomy low end
+Cardioid proximity effect or room corner
+Move back, change angle/pattern or control reflections
+Sibilance is harsh
+Mic directly on axis with S/T energy
+Lower or angle mic; audition another capsule
+Vocal sounds distant
+Mic too far or room reflections dominate
+Move closer or improve room control
+Level changes on every phrase
+Singer changes distance or angle
+Rehearse a working zone and mark position
+Feedback on stage
+Monitor is in a sensitive pickup direction
+Use the mic's actual null; lower level and change geometry
+Hand noise or muffled live mic
+Singer grips or cups the grille
+Demonstrate proper handle position and keep grille clear
+Take clips
+Loudest passage was not used for gain check
+Lower preamp/input; leave headroom and retest
+Headphone spill or feedback
+Open-back phones or loudspeakers on
+Use closed-back phones and mute speakers
+
+Use stable stands, secure cables and keep the singer's feet clear. Do not place headphones on a live microphone. Avoid excessive monitoring level; a comfortable headphone mix should not require dangerous volume. If a singer reports pain, ringing or hearing changes, stop the session and address level and exposure.
+# Teaching exercise and pass criterion
+1.Have each singer perform a quiet phrase, loud phrase, plosive-heavy phrase, sibilant phrase and the actual lead section. Do not label a voice by gender before listening.
+2.Compare two suitable microphones or patterns at matched distance and level. Test the same singer at 10–20 cm and 20–30 cm, then document proximity, room and consonant changes.
+3.Build a studio setup with pop filter, shock isolation, headphones and gain headroom. Build a live setup with a handheld or headset, monitor placement based on its polar pattern, and safe movement.
+4.Demonstrate responses to plosives, sibilance, breath, distance changes, feedback and a clipped peak without changing the singer's healthy technique.
+Pass criterion: The learner can choose and place a lead vocal microphone for the individual singer and style, maintain controlled distance and gain, and adapt the setup safely between studio and live sound.
+# Evidence audit and limits
+Agreement: Shure, Neumann and DPA all emphasize that the singer and context determine the best microphone and placement [1–5]. They agree that distance changes tone and level, plosives require air control, and directional patterns affect proximity, isolation and feedback.
+Different emphasis: Neumann's studio starting distance is 20–30 cm [2], while Shure gives 10–20 cm for many singers [1]. DPA offers about 10 cm as a common stage distance and warns about peaks and close-mouth distortion [3]. These are application-specific starting points, not contradictions. A live mic's close pattern and feedback design differs from a studio mic in a controlled room.
+Gaps and confidence: No source establishes a male-specific or female-specific microphone formula, universal distance, EQ or compressor setting. Confidence is high for the documented pop, distance, pattern, gain and monitor principles; moderate for predicted tonal results until the individual singer, microphone, room and delivery are auditioned.
+# References
+[1] Shure, “How to Record and Mix Vocals.”  Read source <https://www.shure.com/en-US/insights/how-to-record-and-mix-vocals>
+[2] Neumann, “Vocal Recording Setup: Mic Placement, Gain and Headphone Mix.”  Read source <https://www.neumann.com/en-us/knowledge-base/neumann-im-homestudio/homestudio-academy/recording-vocals-in-your-home-studio-part-1>
+[3] DPA Microphones, “How to mic the voice: technology and characteristics.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-the-voice-technology-and-characteristics/>
+[4] Shure, “Vocal Miking Tips Recommendations.”  Read source <https://www.shure.com/en-US/insights/vocal-miking-tips-2>
+[5] Neumann, “KMS 104 Stage Microphone.”  Read source <https://www.neumann.com/en-gb/products/microphones/kms-104/>

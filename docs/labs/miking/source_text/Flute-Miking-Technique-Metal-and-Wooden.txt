@@ -1,0 +1,97 @@
+# Flute Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Metal and Wooden Transverse Flutes   October 3, 2026
+# Scope and learning goals
+This lesson covers the common metal concert flute and wooden transverse flutes. The wooden examples include a modern keyed concert flute and a simple-system wooden flute when present. Learners compare microphone positions for a natural, intimate, airy or isolated sound in studio and live settings, then check wind noise, mechanical sound, movement, spill, feedback and safe mounting. Piccolo follows as a separate instrument lesson. No audio examples are included.
+# Understand where sound and air emerge
+The player sends an air jet across the edge of the embouchure hole; the resonating air column communicates through open tone holes and the end of the foot joint [1]. Shure describes flute sound as projecting from the embouchure and the first open fingerhole [2]. The dominant open-hole region shifts with fingering, so a microphone aimed at a single small part of the flute may change tone across the phrase. A capsule directly in the breath stream can capture strong wind turbulence as well as a player's intended breathy articulation [2, 3]. Listen for that distinction before trying to remove breath from the sound.
+The flute extends sideways from the player's face. Mark embouchure position, left and right hands, foot joint, music stand, head and instrument movement, and the direction in which the player blows. The mic must never interfere with breathing, fingering, balance or the view of the score. Ask for quiet and strong passages across the registers, short attacks, sustained tones and the actual movement the player will use.
+# Metal and wooden flutes
+Metal concert flute: A silver-colored flute can be plated, nickel-silver or solid silver; its appearance alone does not identify the metal [4]. The near-embouchure, above-and-behind and more distant approaches below apply to a transverse concert flute. Compare them against the actual player's articulation, air sound and key noise rather than assuming that a silver finish implies brightness.
+Modern wooden concert flute: Yamaha documents keyed grenadilla concert flutes with tone holes sized similarly to its metal concert flute [4, 5]. Their embouchure and open-hole behavior call for the same basic spatial miking tests. Material, wall thickness, headjoint, player and room can all influence the result; Yamaha itself describes variation even among flutes made of the same material [6]. A wooden flute need not automatically receive a closer mic, a darker mic or a treble boost. Compare positions while the musician plays representative phrases at normal dynamics.
+Simple-system wooden transverse flute: This is a different design, often with finger holes rather than the modern keywork; one maker describes a conical wooden body, embouchure and individually placed tone holes [7]. Verify the instrument's tuning, holes, keys if any, player posture and musical style. Do not assume a concert flute's key-noise problem will be identical, and do not place a clip over an open finger hole or delicate joint. Use the embouchure-and-open-hole principle as a starting point, then assess the actual instrument throughout its required notes.
+For any wooden instrument, ask the player and maker before attaching anything to the body or finish. Prefer a stand when clip fit or pressure is uncertain. This is a practical mounting precaution, not a claim that wood must sound a certain way.
+# Three useful stand microphone perspectives
+Close front between embouchure and left hand: DPA describes a 5–10 cm trial aimed halfway between the embouchure and the player's left hand [3]. Shure similarly recommends a position in the region between mouthpiece and first finger holes, while warning that too close to the mouth makes breath noise prominent [2, 8]. Position the capsule to hear the instrument without pointing directly into the air jet. Move a few centimeters and recheck upper and lower passages. This close view provides separation on a crowded stage or intimate detail in studio, but may expose air, lips and keys.
+Behind and slightly above the player's head: DPA gives this as a spot position aimed toward the finger holes and notes that several positions around the player's head can work in an overdub [3]. It may reduce the direct air blast and offer another tonal balance. Test the microphone pattern, the musician's head movement and proximity to other players. Never place a stand or boom where a turning head or flute can strike it.
+Front at head level with more distance: DPA suggests roughly a meter in front and vertically near head height as one overdub trial that reduces mechanical sounds [3]. This can integrate more of the instrument and room, but increases spill, room coloration and level changes with movement. It is a studio alternative when the room and separation support it, not a default live-sound distance.
+# One stand microphone procedure
+1.Hear and map the source. Ask the player to perform the complete passage naturally while you note embouchure air direction, changing open holes, head turn and flute swing. Check that the stand, boom and cable leave hands, sightline and path clear [1–3].
+2.Begin off the breath stream. Trial a mic near the space between embouchure and left hand, but angle it so the capsule is not in the direct air jet [2, 3]. On a quiet stage or in studio, compare a little more distance. Use a suitable windscreen if air noise remains intrusive, and listen for changes in desired detail [2, 8].
+3.Compare alternate views. In a controlled room, try the slightly above-and-behind-head position and a front head-level view around a meter away [3]. Match monitoring level before judging tone. Repeat low, high, soft, loud, tongued and legato phrases; a single sustained pitch is an inadequate test.
+4.Confirm the sound chain. Test the strongest accent for capsule, transmitter, preamp or converter overload. Apply a high-pass filter only if it removes unwanted rumble without altering the lowest required phrase. For multiple mics, hear them separately and together in mono before considering timing or polarity adjustments.
+# Studio applications
+Solo overdub: Start with one mic, then select distance and angle to preserve the intended breath, onset and body in the actual arrangement. A close view can highlight intimacy; a farther or rear/above-head view may soften key action and turbulent breath if the room is good [2, 3]. A low-noise condenser is often practical for a quiet passage, but its polar and off-axis response, room and position determine the final tone. A directional pattern can aid separation; an omni may have less wind/pop sensitivity in certain close placements, as DPA notes for its example microphone [3]. This is model- and geometry-dependent, not an all-omni guarantee.
+Wooden versus metal comparison: If the same musician changes flute during a session, keep the initial stand geometry and musical passage comparable before moving the mic. Document the specific instrument and player response. Change position to address observed air, finger or tonal balance, not an assumed material stereotype [4–7]. For a simple-system wooden flute, expect different hole and hand locations; re-map the position rather than copying a keyed-flute clip installation.
+Main and spot: In a chamber or orchestral recording, hear the ensemble/main pickup first. Add a flute spot only when clarity or balance requires it. DPA describes using a wider pattern or off-axis spot to integrate woodwinds, with subsequent level and placement matched to the main array [3]. A close spot can make flute unnaturally forward. Check the ensemble balance and mono sum before processing. The full multi-flute/woodwind layout belongs in the Ensembles Lab.
+# Live sound applications
+For a relatively stationary player, use a secure stand aimed near the embouchure-to-left-hand area but outside the direct breath stream. A closer position generally improves direct-to-spill ratio, yet it may magnify wind turbulence, movement and key details [2, 3]. Place monitors using the actual mic pickup pattern and check the full band at show level. Use a windscreen when it helps, but aim and distance remain the first controls for a direct air blast.
+For a moving player or a crowded stage, DPA describes a headset as a fixed mic-to-player solution, or its approved U-CLIP mounted around the flute end and aimed toward the keys [3]. A headset can follow head movement but may favor the embouchure perspective; a foot-end clip can favor keys and holes. Neither automatically reproduces the same balance as a stand mic. Test the entire register, breath, cable handling, feedback and the performer's movement. Verify the exact clip's compatibility with metal or wood and let the player approve installation. Do not compress wood, bridge a joint, cover holes, contact rods or pads, or place a mount where fingers must travel.
+Check wireless adapter and microphone power requirements, transmitter input headroom, strain relief and the lowest used phrase through any filter. Avoid assigning a fixed high-pass frequency to all concert or wooden flutes. If the performer switches between flutes, recheck aim, level and mount fit rather than assuming the second flute matches the first.
+# Guided placement comparisons
+Musical aim
+Starting trial
+Main thing to verify
+Detailed close sound
+5–10 cm, between embouchure and left hand, off air jet [3].
+Breath versus tone and key detail.
+Less direct breath
+Behind and slightly above head toward holes [3].
+Balance with head movement and spill.
+Open studio sound
+About a meter front at head level if room allows [3].
+Room, mechanical noise and consistency.
+Mobile live player
+Compatible headset or approved end-mounted clip [3].
+Register balance, mount safety and feedback.
+Wooden flute
+Begin with relevant transverse-flute geometry, then re-map holes [4–7].
+Actual timbre and fingering, not material assumptions.
+
+# Safety and troubleshooting
+Symptom
+Likely cause to check
+First response
+Large gusts or popping
+Capsule inside the player's air jet?
+Re-aim or move; add appropriate windscreen [2, 3].
+Breath sounds unnaturally absent
+Was desired expressive air removed by placement or processing?
+Compare untreated positions and full phrase.
+Notes change color sharply
+Mic too focused on one hole or embouchure?
+Compare more distance or a broader angle [1–3].
+Key or finger noise dominates
+Very close aim at mechanism or fingers?
+Back off or compare rear/front distant view [3].
+Flute disappears in loud band
+Spill masks a distant pickup?
+Move closer, adjust pattern and monitor geometry.
+Feedback with wedges
+Monitor enters mic acceptance region?
+Reposition source, mic or monitor and retest.
+Clip endangers instrument
+Fit, joint, finish or finger path unchecked?
+Stop; remove with player and use stand if uncertain.
+Two pickups sound hollow
+Arrival-time interaction?
+Hear each alone and summed in mono; move or rebalance.
+
+# Teaching exercise and pass criterion
+1.Identify embouchure, air-jet direction, tone holes, hands and motion on both a metal concert flute and an available wooden transverse flute. For wood, identify whether it is modern keyed or simple-system [1, 4, 5, 7].
+2.Compare close front, behind/above head and farther front positions at matched monitoring level using soft, strong, low, high, articulated and legato passages [2, 3]. Record breath, tone, keys, room and spill.
+3.For live sound, test one safe stand position with the band and monitors. If mobility requires a headset or approved clip, obtain the player's agreement and verify mount, cable, hand path, power, headroom and feedback [3].
+4.Repeat the relevant positions with the wooden flute. State what actually changed rather than predicting a material signature. Verify the lowest note after filtering and the mono sum if multiple microphones are used.
+Pass criterion: The learner explains distributed flute radiation and breath-stream effects, chooses an intentional studio and live position, distinguishes wooden design from material, protects the instrument and player, and verifies the chosen sound across the complete part.
+# Evidence audit and limits
+Agreement: Yamaha explains the embouchure and open-hole acoustic mechanism [1]. Shure and DPA agree that close flute placement needs attention to breath noise and that mic location strongly changes pickup [2, 3]. Both describe placement near the mouth-to-hand region [2, 3].
+Different emphases: Shure emphasizes a close mic for clear pickup in sound reinforcement [2, 8]. DPA also documents rear/above-head and roughly one-meter front approaches in a controlled overdub [3]. These differ by isolation, breath noise, player movement and room contribution. Yamaha describes a modern wooden concert flute, while a maker's simple-system wooden design shows that “wooden flute” does not specify one key layout or bore [5, 7].
+Gaps and confidence: No cited source establishes one optimal angle, mic model or equalization for every metal or wooden flute. Wood alone does not prove a fixed sound or placement. Confidence is high in the embouchure/open-hole and wind-noise principles, moderate in the comparative teaching workflow, and low in a universal material-based tonal prediction. Exact clip fit and powering follow the selected manufacturers' instructions.
+# References
+[1] Yamaha, “The Structure of the Flute: How Is the Sound Produced?”  Read source <https://www.yamaha.com/en/musical_instrument_guide/flute/mechanism/mechanism002.html>
+[2] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments,” flute section.  Read source <https://www.shure.com/en-GB/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments>
+[3] DPA Microphones, Mikkel Nymand, “How to Mic a Flute or Recorder.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-flute-or-recorder/>
+[4] Yamaha, “The Structure of the Flute: What Are Flutes Made Of?”  Read source <https://www.yamaha.com/en/musical_instrument_guide/flute/mechanism/mechanism004.html>
+[5] Yamaha, “YFL-894W,” wooden concert flute collection.  Read source <https://www.yamaha.com/en/about/experience/innovation-road/collection/detail/6017/>
+[6] Yamaha, “Choosing a Flute on the Basis of the Quality of the Material.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/flute/selection/>
+[7] Tim Adams, “Flute Design and Construction,” simple-system wooden Irish flute.  Read source <https://www.adams.se/flutemaker/design.html>
+[8] Shure, “Microphone Techniques for Live Sound Reinforcement,” flute entry.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>

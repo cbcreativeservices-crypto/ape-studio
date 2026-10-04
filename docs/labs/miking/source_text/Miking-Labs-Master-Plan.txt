@@ -1,0 +1,388 @@
+# Miking Labs Master Plan
+Complete curriculum scope • Seven labs • October 4, 2026
+## Purpose
+Teach how microphone choice, position and arrangement shape instrument, voice, event and environmental pickup. Compare studio, location and live approaches. Scientific and acoustical lessons prioritize valid, repeatable measurements. Direct electrical signals and contact sensors are supporting comparisons where relevant.
+## Seven lab structure
+1. Membranophones — Drums and Drumheads
+2. Idiophones — Cymbals, Solid-Body Percussion and Mallet Instruments
+3. Aerophones — Brass, Woodwinds and Free-Reed Instruments
+4. Chordophones — Strings, Guitars, Basses and Acoustic Pianos
+5. Ensembles and Voice — Individual Singers and Combined Sources
+6. Foley Field Recording and Scientific and Acoustical Recording
+7. Sports and Broadcasting
+## How to use the plan
+This plan consolidates the approved sources and later additions. Scope IDs identify topics, not finished lessons. Develop and deliver one source or application at a time; retain functional pairs and setups when they need to be taught together.
+Each lesson must be researched, audited and saved as a downloadable document before moving to the next. No audio examples are included. The plan sets teaching objectives; it does not substitute for the sourced placement instructions in individual lessons.
+## Decisions carried forward
+Cover the Glyn Johns technique within drum overheads in Lab 1. Ensemble lessons cross-reference that lesson.
+Include wooden flute alongside the common metal flute, and retain piccolo.
+Keep djembe in its original place; review existing coverage rather than create a duplicate.
+Add tonbak, tabla, gong, oud, sitar, veena, full orchestra, jazz combos and jazz big band.
+
+# Lab 1 • Membranophones
+Drums and drumheads: instruments whose sound originates primarily from a vibrating membrane.
+ID
+Lesson scope
+M01
+Kick / bass drum.
+M02
+Snare drum.
+M03
+Rack toms and floor toms.
+M04
+Congas, bongos and timbales; retain instrument-specific placement and playing clearance.
+M05
+Djembe.
+M06
+Timpani.
+M07
+Concert bass drum and concert snare.
+M08
+Headed tambourine; cross-link jingle pickup in Lab 2.
+M09
+Drum overheads, including the Glyn Johns technique and its relationship to the rest of the kit.
+M10
+Drum room microphones; room contribution and studio versus live usefulness.
+M11
+Complete drum-kit setups: minimal and extensive arrangements, overhead/close-mic balance and cymbal cross-links.
+M12
+Tonbak / tombak; a separate instrument lesson.
+M13
+Tabla: the complete pair, including dayan and bayan.
+## Amplified-source support module
+Include speaker-cabinet miking here as the requested teaching location for speaker-radiated electronic sounds, including organ through a Leslie rotary speaker. Distinguish this instructional placement from the acoustic classification of the original instrument. Cross-link guitar, bass, harmonica, Rhodes and Wurlitzer lessons; identify any direct electrical path separately.
+## Recurring teaching questions
+How do attack, body, resonance and membrane articulation change with microphone position? How do multiple microphones interact? What changes when isolation, monitors, player movement and reinforcement become priorities?
+
+# Lab 2 • Idiophones
+Cymbals, solid-body percussion and mallet instruments: sources whose sound originates primarily from vibrating solid material.
+ID
+Lesson scope
+I01
+Hi-hat, ride, crash, splash and China cymbals; individual pickup and drum-kit context.
+I02
+Cajón: wooden striking surface, bass opening and any internal snare contribution.
+I03
+Shakers, egg shakers and maracas.
+I04
+Headless tambourine and tambourine jingles; cross-link headed tambourine.
+I05
+Cowbell, claves, woodblocks and güiro.
+I06
+Triangle, finger cymbals and bar chimes.
+I07
+Vibraphone.
+I08
+Marimba.
+I09
+Xylophone.
+I10
+Glockenspiel.
+I11
+Rhodes and Wurlitzer electric pianos: vibrating tines/reeds, speaker miking and clearly identified electrical signal paths.
+I12
+Gong: distinguish orchestral tam-tam from pitched or bossed gong forms before choosing an approach.
+## Recurring teaching questions
+How should a microphone represent attack, sustained resonance, instrument width and player motion? When is one microphone sufficient? How can a placement preserve articulation without overemphasizing the nearest surface or bar?
+## Cross-links
+Cymbals connect to Lab 1 overheads and complete drum-kit arrangements.
+Tambourine connects membrane pickup with jingle pickup.
+Rhodes and Wurlitzer connect to the speaker-cabinet module and ensemble lessons; direct pickup remains a supplementary comparison.
+Gong and other percussion connect to percussion ensembles and full orchestra.
+
+# Lab 3 • Aerophones
+Brass, woodwinds and free-reed instruments: sources sounded through airflow.
+ID
+Lesson scope
+A01
+Trumpet and flugelhorn.
+A02
+Trombone and bass trombone.
+A03
+French horn.
+A04
+Tuba and euphonium.
+A05
+Soprano, alto, tenor and baritone saxophones; distinguish each instrument’s geometry and playing context.
+A06
+Flute: common metal flute and wooden flute. Identify the particular flute design before applying a technique.
+A07
+Piccolo.
+A08
+Clarinet and bass clarinet.
+A09
+Oboe and bassoon.
+A10
+Harmonica: acoustic pickup and amplified approaches.
+A11
+Accordion.
+A12
+Acoustic pipe organ as an extended topic; separate from organ through a Leslie speaker.
+## Recurring teaching questions
+Where does useful sound emerge across the instrument, rather than only at its visible opening? How do breath noise, key noise, player motion and level peaks affect microphone choice and position? Which studio perspectives remain workable with live monitors and nearby instruments?
+## Cross-links
+Individual brass and saxophone lessons support horn sections, jazz combos, jazz big band and orchestra.
+Woodwinds support mixed ensembles and orchestra.
+Amplified harmonica connects to speaker-cabinet miking; accordion connects to solo and ensemble reinforcement.
+Pipe organ extends the discussion of distributed sound sources, room acoustics and practical access.
+
+# Lab 4 • Chordophones
+Strings, guitars, basses and acoustic pianos: sources whose sound originates from vibrating strings, whether plucked, bowed or struck.
+ID
+Lesson scope
+C01
+Steel-string, twelve-string and nylon-string acoustic guitars.
+C02
+Electric guitar and guitar amplifiers.
+C03
+Resonator guitar / Dobro.
+C04
+Pedal steel and lap steel.
+C05
+Banjo, mandolin and ukulele.
+C06
+Upright bass: plucked and bowed.
+C07
+Acoustic bass guitar.
+C08
+Electric bass: fretted and fretless; amplifier miking with supporting direct comparisons.
+C09
+Violin / fiddle, viola and cello.
+C10
+Harp.
+C11
+Grand, baby grand and upright piano.
+C12
+Clavinet; distinguish string mechanism, amplification and direct electrical pickup.
+C13
+Oud.
+C14
+Sitar; include sympathetic-string contribution where present.
+C15
+Veena: Saraswati veena as the primary case; distinguish other forms, including Rudra veena, when reliable evidence supports coverage.
+## Recurring teaching questions
+How do microphone positions balance articulation, instrument body, resonances and mechanical noise? How does the desired perspective change for solo playing, a dense mix or reinforcement? What changes with bowing, plucking, striking, amplifier speakers and performer movement?
+## Cross-links
+Link amplifier-based instruments to the speaker module; link piano, guitar and bass to singer-accompanist and rhythm-section lessons. Bowed strings and harp connect to string ensembles and full orchestra. Oud, sitar and veena receive distinct research and placement guidance.
+
+# Lab 5 • Ensembles and Voice
+Individual singers and combined sources: microphone choices must support the musical balance, performers and intended listening perspective.
+ID
+Lesson scope
+E01
+Male and female lead vocals; compare range, timbre and delivery rather than assign fixed techniques by gender.
+E02
+Background and harmony vocals.
+E03
+Rap and rhythmic vocal delivery.
+E04
+Duets and small vocal groups.
+E05
+Choirs, choruses and a cappella groups.
+E06
+Children’s voices and choirs.
+E07
+Singer with guitar or piano.
+E08
+Acoustic duos and small groups.
+E09
+Rhythm sections and complete bands.
+E10
+Brass, saxophone and mixed horn sections.
+E11
+String quartets and larger string sections.
+E12
+Percussion ensembles.
+E13
+Mixed acoustic / classical ensembles.
+E14
+Full orchestra: dedicated coverage beyond the mixed-ensemble overview.
+E15
+Jazz combos: dedicated small-group coverage.
+E16
+Jazz big band: dedicated section, soloist and rhythm-section coverage.
+## Expanded ensemble objectives
+Full orchestra: seating and score planning, main microphone systems, Decca Tree, outriggers, section and soloist support, room contribution, timing and safe mounting. Jazz combos: shared-room spill, acoustic and amplified sources, sightlines and minimal versus extensive arrangements. Jazz big band: section versus individual pickup, row balance, brass peaks, soloist movement and live channel priorities.
+All ensemble lessons compare studio balance with live reinforcement, monitor placement and available isolation. Cross-reference individual-source lessons and the Lab 1 Glyn Johns coverage when relevant.
+
+# Lab 6 Foley and Field Recording
+First part of Foley Field Recording and Scientific and Acoustical Recording. Teach deliberate sound perspective, detail, space and movement. Foley is performed sound for picture; field recording captures sources in their location. The following entries are curriculum objectives, not universal placement recipes.
+## Foley techniques
+ID
+Application
+Miking techniques to develop
+F01
+Footsteps and surfaces
+Compare close detail with a more distant perspective; aim at the active footfall area; control floor and stand vibration; match changing surfaces and movement.
+F02
+Clothing and body movement
+Capture fabric, leather and small gestures; compare low-noise close pickup with boom pickup; separate intended texture from handling and performer noise.
+F03
+Props and object handling
+Keys, paper, doors, furniture and everyday objects; find the radiating area; compare aim and distance; preserve movement clearance and consistent perspective.
+F04
+Impacts liquids and textures
+Balance transient and sustained detail; verify headroom; protect microphones from splash and debris; use safe props and controlled actions.
+F05
+Foley perspective and multiple mics
+Compare mono detail, stereo coverage and close-plus-room pickup; check overlap and mono summation; relate acoustic perspective to the pictured action.
+## Field recording techniques
+ID
+Application
+Miking techniques to develop
+F06
+Natural and urban ambience
+Compare mono, XY, ORTF, spaced-pair and M/S pickup; choose width and perspective; document wind protection, surroundings and unwanted noise.
+F07
+Wildlife and distant sources
+Compare aimed directional and parabolic pickup; track a moving source from a permitted location; document background noise and frequency-dependent results.
+F08
+Moving sources and pass-bys
+Plan stationary or tracked coverage for people and vehicles; compare mono and stereo trajectories; keep microphones and crew outside active travel paths.
+F09
+Location speech and practical sounds
+Boom, handheld, lavalier and approved plant-mic comparisons; control wind, clothing and handling noise; compare camera-mounted with source-proximate pickup.
+F10
+Spatial and specialist field pickup
+Binaural, surround and Ambisonic orientation and coverage; optional hydrophone and contact-sensor comparisons with medium, mounting and signal paths identified.
+Field priorities: permissions, wildlife disturbance, changing weather, wind and handling isolation, safe access and repeatable position logs. Hydrophones sense underwater pressure; contact sensors capture mechanical vibration. Identify the measured medium before comparing either with airborne microphones.
+
+# Lab 6 Scientific and Acoustical Recording
+Second part of Lab 6. Define the measurement question, then choose positions that answer it. Field type, calibration, orientation and procedure affect the interpretation of measured data. [1, 2]
+ID
+Application
+Miking techniques to develop
+F11
+Measurement microphones and calibration
+Select appropriate response and field correction; verify capsule orientation, calibration data and compatible powering; perform and log acoustic checks before and after a session when required.
+F12
+Sound level and environmental noise
+Plan representative locations, heights, orientations and durations; document obstacles, weather and background; distinguish calibrated SPL results from uncalibrated waveform levels.
+F13
+Room acoustics and reverberation
+Select source and receiver positions for the intended room-acoustic method; compare multiple locations; capture usable impulse responses and decay data; identify noise-floor limits.
+F14
+Loudspeaker and sound system measurement
+On-axis and off-axis positions, listening-area sampling, near-field and boundary approaches where applicable; identify reference paths and timing; separate room effects from source response.
+F15
+Machinery and product sound
+Repeatable coordinates around safe demonstration sources; separate airborne and structure-borne paths; compare single points and spatial maps; avoid contact with moving or energized equipment.
+F16
+Scientific arrays and specialized sensors
+Introductory microphone-array localization, sound-intensity probes and acoustic imaging; use method-specific spacing, orientation and calibration. Optional bioacoustic, underwater and ultrasonic extensions require suitable transducers and bandwidth.
+## Scientific teaching requirements
+Log microphone and calibrator identity, calibration information, sensitivity and gain, position and orientation, source condition, environment and capture settings. Preserve relevant raw data; document analysis, processing and uncertainty. A single-frequency field check does not establish full system frequency response.
+Separate classroom comparisons from measurements to a named standard. Verify current method and equipment requirements before teaching compliance, exposure, sound-power or intensity conclusions. Relative comparisons need not support an absolute calibrated level claim.
+## Safe and repeatable exercises
+Use modest-level sources and logged positions. Change one variable, then repeat the original setup. Control excitation level and hearing exposure. No audio examples are included.
+## Cross links
+Link field speech to Lab 7 interviews, spatial pickup to Lab 5 ensembles, and measurement positions to the Sound Systems and Acoustics labs.
+
+# Lab 7 Sports and Broadcasting
+Teach intelligible speech, event detail and audience perspective under live production constraints. Organize the category into broadcast speech and sports sound pickup. Camera framing, microphone visibility, movement and venue access become part of the placement decision. [4, 5]
+## Broadcast speech techniques
+ID
+Application
+Miking techniques to develop
+B01
+Radio podcast and studio hosts
+Close desk or boom-mounted microphones; consistent mouth position, off-axis plosive control and proximity-effect comparisons; manage reflections and multiple open microphones.
+B02
+News anchors and seated interviews
+Visible or concealed lavaliers, desk microphones and overhead booms; compare head turns, desk reflections, clothing noise and framing clearance.
+B03
+Field reporters and handheld interviews
+Aim and handoff with one or more speakers; stabilize mouth-to-mic relationship; manage wind, handling and camera positions; compare omni and directional pickup.
+B04
+Boom and camera-mounted pickup
+Overhead or below-frame boom positions; cue between speakers; compare shotgun and compact directional microphones in the actual room; evaluate camera-to-source distance.
+B05
+Lavalier headset and concealed pickup
+Placement relative to mouth, costume and movement; cable strain relief and rubbing control; compare visible and concealed mounts with consent and model-compatible accessories.
+B06
+Panels press conferences and groups
+Individual microphones, shared coverage, lectern and boundary pickup; account for head turns and mic overlap; distinguish the microphone feeds from any supplied press feed.
+B07
+Voiceover narration and broadcast guests
+Match acoustic perspective and vocal delivery; compare close and more distant positions, pop protection and room pickup; cross-link individual vocal lessons.
+B08
+Broadcast audience and event space
+Dedicated ambience and audience-reaction microphones; mono, stereo and immersive coverage; avoid overemphasizing nearby spectators or PA loudspeakers.
+## Production context that affects miking
+Teach program, PA and monitor-feed distinctions; talkback, IFB and mix-minus as supporting routing concepts; microphone position remains the core task. Check what the performer hears and whether a microphone feeds the PA. Coordinate usable pickup with camera shots, lighting, operator access and wireless-system personnel.
+For every application, compare live continuity with controlled studio alternatives. Document a workable fallback if movement, wind, wardrobe, crowd noise or channel availability prevents the preferred approach.
+
+# Lab 7 Sports Event Techniques
+Separate commentary, athlete or official speech, action detail and crowd ambience. These feeds have different targets and should earn their positions independently. Sport-specific lessons verify current venue and governing-body restrictions before describing any installation.
+ID
+Application
+Miking techniques to develop
+B09
+Commentators and announce positions
+Headset boom, lip-oriented and stand-mounted microphone comparisons; stable mouth relationship, crowd rejection, plosive control and co-commentator spill.
+B10
+Sideline and post-event interviews
+Handheld, lavalier, headset and boom choices; movement and crowd noise; coordinate with camera operators and keep access and escape paths clear.
+B11
+Athletes coaches and officials
+Approved body-worn and headset pickup; mount security, perspiration, clothing and exertion; permission and sport-specific equipment rules; rehearsal under representative movement.
+B12
+Parabolic and tracked action pickup
+Set the capsule at the collector’s specified focus; track from approved positions; compare aim, handling, wind and off-target pickup. Evaluate spectral balance without promising a universal capture distance.
+B13
+Field and diamond sports
+Football, soccer, rugby, baseball and softball; compare perimeter shotguns, parabolic action pickup and fixed ambience; map coverage gaps and safe operator zones.
+B14
+Court racket and ice sports
+Basketball, volleyball, tennis, badminton and hockey; compare permitted perimeter, floor or approved structure-mounted pickup; isolate vibration and protect athletes from hardware.
+B15
+Track gymnastics and combat sports
+Cover starts, landings, apparatus, mats or ring areas from permitted locations; compare fixed detail and ambience; account for sudden peaks and unobstructed performance space.
+B16
+Motorsport equestrian and aquatic events
+Safe perimeter and pass-by positions, high peak levels and weather; approved remote mounts only. Underwater hydrophones are a separately identified optional extension.
+B17
+Crowd and complete sports coverage
+Stereo and immersive ambience; combine commentary, action and audience feeds; check polarity, arrival differences and mono/downmix results; plan minimal and extensive layouts.
+## Acceptance criteria
+A successful setup provides understandable speech, useful action detail and an intentional venue perspective at the required output. It remains workable through movement and changing conditions. Document coverage, peak headroom, mic overlap, camera constraints, weather protection and approved mounting. Keep equipment out of playing areas unless expressly approved and safely installed.
+
+# Research Framework for Labs 6 and 7
+The application lists are curriculum proposals. These sources establish useful foundations; every detailed lesson still requires application-specific research, verified geometry and a practical observation sheet. Manufacturer demonstrations describe particular equipment and conditions.
+## Points of agreement
+The field and sports sources emphasize microphone placement and protection against unwanted noise. The measurement sources tie microphone selection and geometry to the intended question. Teach a defined target, an appropriate microphone and a documented position before adding channels. [1–5]
+## Different approaches
+Foley practitioners select different microphones for different sounds. Broadcast pickup uses handheld, body-worn, boom and ambience approaches according to the task. Measurement pickup depends on the sound field and method. These choices support different objectives rather than one preferred universal technique. [1, 4–6]
+## Contradictions requiring scrutiny
+Klover’s FAQ suggests acoustic wavelength is less relevant than electromagnetic wavelength to parabolic behavior. Wildtronics’ technical discussion explicitly relates gain to wavelength and dish diameter. Teach that dependence; distinguish low-frequency sound reaching a capsule from useful directional gain supplied by the dish. Verify claims against model-specific data. Use Klover’s assembly guidance for its equipment, without promising a universal range. [7, 8]
+## Important gaps
+These overview sources do not establish universal distances, safe sport-specific mounting locations, a complete measurement-compliance procedure or reliable isolation for every venue. Detailed lessons must obtain those requirements from the applicable equipment, measurement method and venue. Confidence is high in the category structure and broad distinctions; specific setups remain to be researched.
+## Foundation sources
+1 NIST Importance of the Free Field Calibration of Microphones <https://www.nist.gov/publications/importance-free-field-calibration-microphones>
+2 Rational Acoustics IR Measurements Part 1 Pre Smaart Preparation <https://support.rationalacoustics.com/support/solutions/articles/150000191163-ir-measurements-part-1-pre-smaart-preparation>
+3 Rycote Nano Shield wind and handling isolation <https://www.rycote.com/nano-shield/>
+4 DPA Microphones for Broadcast <https://www.dpamicrophones.com/application/broadcast/>
+5 DPA Sports Broadcast <https://www.dpamicrophones.com/application/sports-broadcast/>
+6 NoiseFloor Foley services and microphone choices <https://noise-floor.com/foley/>
+7 Klover MiK FAQs model specific setup and limitations <https://www.kloverproducts.com/klover-mik/faqs>
+8 Wildtronics Accuracy Requirements in Parabolic Microphone Reflectors <https://wildtronics.com/parabolicaccuracy.html>
+
+# Lesson Development and Delivery
+## Required structure for every lesson
+1. Source and task: design, sound radiation, action or movement, and desired perspective. For measurement lessons, define the quantity and method.
+2. Microphone selection: useful types and polar patterns, relevant response, output and headroom; verify model-specific requirements.
+3. Core positions: clearly describe target, distance, angle and clearance. Present numbers as sourced starting points or explicitly labeled trials.
+4. Alternative approaches: compare closer and more distant perspectives, on-axis and off-axis pickup, and mono or stereo arrangements when useful.
+5. Studio and live comparison: room contribution, isolation, spill, monitor rejection, feedback margin, movement and practical channel priorities.
+6. Multiple microphones: explain overlap, polarity and timing checks where applicable; test the combined sound, not just isolated channels.
+7. Troubleshooting and safe setup: tonal problems, noise, clipping, secure stands, performer access, cable routing and appropriate listening levels.
+8. Teaching exercise: a repeatable placement comparison, student observation sheet and clear criteria for evaluating the result.
+9. Evidence audit: source links, supported practices, differing approaches, limitations and items requiring further verification.
+## Research and accuracy standard
+Use authoritative technical documentation, credible instrument specialists and documented practitioner methods. Check that a source applies to the actual instrument, microphone and situation. Distinguish a documented method from a proposed classroom experiment. Explain disagreements in terms of musical goal, room, player, microphone and reinforcement context. Do not invent quotes, source attribution, universal distances or unsupported safety claims.
+Audit instructions before delivery, particularly mounting, electrical interfaces, hearing exposure and feedback demonstrations. Verify specifications against the equipment in use; obtain qualified venue support for overhead or suspended mounting. Keep hands, bows, sticks and moving instrument parts clear of microphone hardware.
+## Production sequence
+Continue one lesson at a time in the seven-lab order, using scope IDs to keep coverage on track. Split grouped applications when their techniques require separate treatment. Save and provide each completed document before continuing. No audio examples.
+The supplemental queue through jazz big band has been delivered: tonbak, tabla, gong, oud, sitar, veena, full orchestra, jazz combos and jazz big band. Review djembe separately if needed. The new development queue starts at F01 and continues through Lab 6, then Lab 7 in the listed order.
+## Master-plan maintenance
+Use this document as the single scope reference. Track completed filenames and coverage gaps against each ID. Cross-links should point to actual delivered lessons. Place later additions within these seven labs.

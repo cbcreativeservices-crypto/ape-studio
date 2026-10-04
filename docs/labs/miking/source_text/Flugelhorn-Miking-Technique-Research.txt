@@ -1,0 +1,100 @@
+# Flugelhorn Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Flugelhorn   October 3, 2026
+# Scope and learning goals
+The flugelhorn is a lip-excited brass aerophone with a more strongly conical bore than a trumpet; Yamaha describes its characteristic sound as mellow and rounded [1, 2]. This lesson focuses on the particular flugelhorn and player, for studio and live miking. The learner should preserve the player's chosen softness and articulation, compare distance and axis without treating trumpet settings as automatic defaults, accommodate mutes and movement, and maintain microphone headroom and safe clearance. Flugelhorn follows trumpet in the agreed list; trombone is next. No audio examples are included.
+# Understand the instrument and passage
+Yamaha contrasts the flugelhorn's more conical tube and softer sound with the trumpet family [1, 2]. This is a source description, not proof that a particular flugelhorn always needs less off-axis placement, lower gain, or a darker microphone. Player touch, mouthpiece, register, dynamics and model all matter. Ask for the actual phrase at quiet and strong dynamics, sustained lyrical notes, articulated runs and mute changes. Hear the horn at an audience position before choosing a microphone position. Notice how the bell points and travels as the musician plays.
+The bell-directed sound and microphone axis still matter. Shure's broader brass guidance says on-axis pickup tends to be brighter and off-axis pickup has less high-frequency bite [3]. A teaching guide that names trumpet/flugelhorn together recommends a mic about 2–4 ft (60–120 cm) in front, aimed off axis or toward the bell edge [4]. Shure's general brass guide instead suggests starting about 1–2 ft (30–60 cm) [3]. These are not measurements of the flugelhorn's guaranteed optimum; they apply to different acoustic and reinforcement priorities. A more distant view can integrate player and room but raises spill, while a closer view can improve isolation and reveal local bell color. Test the actual horn in the actual space.
+Strong brass peaks can overload a microphone's capsule or internal electronics even when preamp meters look safe. DPA's guidance for trumpet and trombone warns about this mechanism [5]; transfer that headroom check, not its precise tone or SPL figure, to a flugelhorn. Confirm the microphone's published maximum SPL and approved pad if needed. Set gain from the player's strongest real accents, then verify soft notes and phrase endings.
+# Single stand mic: controlled starting experiment
+1.Establish playing space. Mark comfortable bell height, side-to-side travel, player/conductor sightlines, music stand, seating, hand and valve motion. Place the mic outside the player's movement and any mute insertion path. Ask the player to repeat a complete phrase at musical dynamics.
+2.Try a more open studio perspective. If the room sounds good and spill is low, start roughly 60–120 cm (2–4 ft) in front of the bell, aimed slightly across it or toward its outer edge. This is the flugelhorn-named guide's starting suggestion [4], not a mandatory studio distance. At matched monitor level, compare smaller angle changes and listen to the complete low/high range and sustain.
+3.Compare a closer view. Bring a suitable mic into roughly 30–60 cm (1–2 ft), again beginning slightly off axis, as a trial derived from Shure's general brass guidance [3]. Hear whether the closer placement adds focus, too much attack, air noise, or loss of room blend. The player may turn the horn during the phrase; repeat the full movement rather than judging a frozen note.
+4.Check the chain. Verify maximum accent at mic and input stages, then softest tail. Use a high-pass filter only if it removes unwanted stand/floor rumble without thinning the lowest wanted horn note. Do not gate a lyrical decay or use drastic EQ to create a missing source tone. If the tone changes markedly as the player moves, adjust the zone or consider a consistent instrument mount.
+A mic model with a smooth response and adequate headroom may suit this music, but no source establishes a universal “flugelhorn microphone.” Dynamics, condensers and ribbons can be compared within their specifications, with model-specific protection from air blasts, handling and power connections. A ribbon's suitability cannot be judged from transducer category alone.
+# Live sound: stand versus clip
+On a quiet stage the horn may be heard acoustically or through an ensemble mic. For reinforcement, begin with one directional stand mic at a distance the player can use naturally; move closer and improve source/monitor geometry as stage spill and feedback require. Confirm where the microphone pattern rejects a wedge: a cardioid and supercardioid have different rear behavior [6]. Test at full band level, and avoid asking the musician to aim rigidly at the mic if it harms breathing or phrasing.
+An instrument-mounted miniature mic can hold distance as the player moves. DPA's 4099 brass mounting guidance covers similar-size brass and suggests aiming between bell center and edge for a smooth view [7]. Shure also lists horn-clamp mics for brass [3]. However, a trumpet clip cannot automatically be assumed to fit a flugelhorn's wider/differently shaped bell. Verify the exact clip and instrument model, the manufacturer's clamping range and the player's permission. Leave clearance for valve hand, mute and bell rim; secure cable and wireless pack without pulling on the horn. Listen for clip vibration, valve noise and a changed close-mic color. A clip can improve distance consistency and isolation, but does not eliminate feedback or spill.
+Decision: Choose the stand mic when natural distance and player position are practical; choose a compatible clip when movement or loud neighboring sources make a stable stand distance impractical. The more open studio tone may require a quieter stage or a different ensemble layout. Confirm audience coverage, not only the onstage wedge.
+# Muted and switched-instrument passages
+Many players switch between trumpet and flugelhorn during a set. Do not assume the trumpet stand position and gain remain appropriate: confirm bell height, orientation, dynamic and playing level for each instrument at soundcheck. If one mic serves both, mark a usable location for each and assess the balance through representative phrases. If separate mics are available, close unused channels during the other instrument's passage. Use one arrangement that does not make an instrument change unsafe or slow.
+A flugelhorn mute, if specified, changes the sound source and may project beyond the bell. Have the player demonstrate the actual mute and install/remove it themselves. A mic or clip must clear the mute and the hands; do not press hardware against the bell or insert a microphone into a mute by default. Yamaha's SILENT Brass pickup mute for flugelhorn includes an internal microphone and processing and protrudes beyond the bell on specified models; it is a separate product and signal path, not the acoustic stand mic taught here [8]. Verify product compatibility and connections before using one.
+# Tone and approach trials
+Musical aim
+First comparison
+Listen for
+Rounded solo line
+2–4 ft, slightly off axis, then small aim changes [4].
+Sustained body, articulation and room contribution.
+Greater focus
+Compare 1–2 ft off axis at matched monitoring level [3].
+Clarity versus local bell edge, breathing/valve noise and spill.
+More definition
+Move modestly toward axis without changing player's source.
+Intelligible attacks without overload or losing mellow character.
+Mobile live player
+Stand mic versus approved brass clip, full phrase.
+Level consistency, handling noise, monitor rejection and fit [7].
+Trumpet-to-flugel switch
+Play both instruments through intended channel scheme.
+Correct levels, stage positions, mute clearance and unused-mic spill.
+
+The darker timbre is part of the player's instrument. A brighter placement may help it speak in a dense mix, but the lesson does not presume brightness is always desirable.
+# Studio application
+Solo overdub: Start with the player and instrument sounding right acoustically. In a good room, try the 2–4 ft off-axis view and compare Shure's closer range at matched level; judge complete phrases, sustained tails, articulation and room. A farther room mic can be an artistic second perspective after a reliable main mic. When blending two microphones, audition each alone and the mono sum for changes from different arrival times. Do not apply automatic delay or polarity inversion without hearing the result.
+Ensemble: Hear main/section microphones first. Add a flugelhorn spot only to gain the necessary musical focus or control; a solo bell may already be well represented. Place neighboring players so the flugelhorn's line is audible without excessive spot gain. Hear the spot with the ensemble in mono and at musical balance. A player doubling trumpet should get an explicit switching check rather than a generic “horn” setting. Larger horn-section miking belongs in Ensembles and Voice.
+# Live application
+Rehearse the loudest and softest real passages with stage monitors, full rhythm section and any trumpet switch. Aim the chosen mic at the musician's normal bell zone and set headroom for strong attacks. If a distant stand mic picks up drums or feeds back, move it closer or rearrange speakers/players, then reassess the flugelhorn's tone. If a clip is used, inspect the clamping fit and full mute path before the performance and test its wireless adapter/power requirements against the mic manufacturer's instructions [7].
+In a quiet hall, an ensemble pickup may suffice. In a loud stage, a closer directional mic or approved clip can give more control. A too-bright mix should be diagnosed at source, axis and input overload before large EQ cuts. Check wedges relative to polar nulls, and avoid direct bell aim at a nearby singer's ear. Assess actual stage exposure instead of relying on an assumed flugelhorn loudness.
+# Safety and instrument care
+Use a stable stand with secure boom and cable path, away from the player's face, mouthpiece, bell, valve hand, music stand and instrument-switch route. Do not clamp an unapproved mount to a valuable bell or finish. Confirm the clip, cushion, cable strain relief and mute compatibility with owner and manufacturer; no generic clamp is automatically suitable [7]. Keep stands out of the bell's travel as the musician turns. A pickup mute is a separate electrical device requiring its manual's connection and fit guidance [8].
+Strong brass attacks require suitable mic/circuit headroom; test the hardest passage without asking the player to exceed musical intent [5]. In loud rehearsals or amplified shows, manage hearing exposure for players and neighbors according to NIOSH musician guidance [9]. Do not infer a universal safe mic-to-bell distance or sound-pressure level from a brochure. If the musician reports pain or discomfort, lower exposure and adjust stage layout.
+# Troubleshooting
+Symptom
+Diagnose
+First response
+Tone loses roundness
+Is mic too on axis, source altered or input overloaded?
+Compare off-axis and original player settings [3–5].
+Soft line is masked
+Does closer mic improve direct sound without excessive edge?
+Compare 1–2 ft, then stage/source balance.
+Level changes as bell moves
+Does stand mic lose the normal playing zone?
+Re-aim, enlarge zone or trial compatible clip [7].
+Trumpet switch jumps in level
+Same mic/gain for two different instruments?
+Soundcheck both and plan channel/position.
+Mute hits mic or clip
+Was exact mute path tested?
+Stop, move hardware, confirm player clearance [8].
+Strong notes smear
+Mic electronics or console preamp overload?
+Check mic spec/pad and input stages [5].
+Live feedback or spill
+Is monitor/drum in mic acceptance angle?
+Reposition mic, horn and wedge according to pattern [6].
+Two mic blend loses body
+Does mono sum alter pitch color?
+Hear each alone; move or rebalance.
+
+# Teaching exercise and pass criterion
+1.Have the player demonstrate a full soft-to-strong flugelhorn passage, natural movement, and any mute or trumpet switch. Describe the conical-bore timbre as a source property, not an EQ preset [1, 2].
+2.In a suitable room, compare the 2–4 ft off-axis flugelhorn-named guide with the 1–2 ft closer brass trial at matched level. Note low/high balance, articulation, room and spill [3, 4].
+3.Repeat with full band and monitors in a live exercise; test a stand mic and only a verified compatible clip. Check mic electronics and input headroom on strong notes, mute clearance and channel switching [5, 7].
+4.If a second room/spot mic is used, hear each independently and in mono. Document the preferred studio and live choice and one layout adjustment before EQ or extra gain.
+Pass criterion: The student captures the player's intended rounded tone and musical articulation, explains the two documented distance concepts and their contexts, maintains instrument/mute clearance, verifies strong-note headroom, and chooses a workable live geometry.
+# Evidence audit and limits
+Agreement: Yamaha identifies the more conical bore and characteristic mellow tone [1, 2]. The flugelhorn-named guide and Shure's broader brass guide both start in front of the bell and allow off-axis capture [3, 4]. DPA's brass guidance supports checking microphone overload and careful compatible clip mounting [5, 7].
+Different emphasis: The specific audition/spot guide suggests 2–4 ft [4], while Shure's general brass reinforcement guidance suggests 1–2 ft [3]. These are different starting perspectives and stage/room priorities, not a direct factual contradiction. The farther distance is more vulnerable to bleed and room effects; the closer distance changes local bell tone. Do not claim either wins without listening. DPA's trumpet/trombone mic specifications do not establish flugelhorn-specific SPL or one correct clip fit [5, 7].
+Evidence gaps: There is little model-specific published flugelhorn microphone data in the retrieved primary sources. Exact tonal directionality, mute behavior, best mic type, safe clip clamping and feedback margin require the actual player, horn, mic and space. Confidence is high for bore/timbre distinction and the cited starting positions, moderate for the comparative miking workflow, and low for guaranteed tone or sound-pressure outcomes.
+# References
+[1] Yamaha, “The Origins of the Trumpet: The Trumpet Family,” cornet and flugelhorn.  Read source <https://www.yamaha.com/en/musical_instrument_guide/trumpet/structure/structure003.html>
+[2] Yamaha, “The Brass Family, Explained.”  Read source <https://hub.yamaha.com/winds/brass/the-brass-family-explained/>
+[3] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments/>
+[4] Music Director’s Audio Toolkit, “Individual Instrument Microphone Positioning,” trumpet/flugelhorn.  Read source <https://www.musicdirectorstoolkit.com/getting-started/individual-instruments>
+[5] DPA Microphones, “How to Mic a Trumpet and Trombone,” overload discussion.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-trumpet-and-trombone/>
+[6] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[7] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” brass clip section.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[8] Yamaha, “SILENT Brass Pickup Mute Features,” flugelhorn.  Read source <https://usa.yamaha.com/products/musical_instruments/winds/silent_brass/pickup_mute/features.html>
+[9] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

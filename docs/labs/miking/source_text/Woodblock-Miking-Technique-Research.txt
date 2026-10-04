@@ -1,0 +1,91 @@
+# Woodblock Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Woodblock   October 3, 2026
+# Scope and learning goals
+This lesson covers the acoustic woodblock: a solid-body percussion instrument whose vibrating body is struck by a beater. It is an idiophone. A single handheld block, a block on a stand, and a small set of blocks are included. Synthetic percussion blocks can be compared as alternate sources, but they are not automatically acoustically identical to a wooden block. Güiro follows next on the agreed list. Temple blocks are related, but their full family is not added as a new lesson here.
+Students should be able to free the instrument from muffling support, position one mic with a clear beater path, compare attack and resonance, and choose between a shared overhead and a spot in studio or live sound.
+# Source and playing setup
+The Percussive Arts Society (PAS) recommends rubber, plastic or hard-cord mallets for woodblocks, describes a common striking area just off the middle toward the opening, and advises leaving space under the block so it does not become muffled. Its guide suggests holding the block when practical, or supporting it appropriately with foam rather than laying it flat on thick carpet or towels [1]. These are educational starting points for conventional woodblocks; follow the particular manufacturer's and player's instructions, especially for unusual designs. First listen to the player's chosen mallet, stroke and support before moving a microphone.
+Woodblocks vary. Meinl sells medium and large Siam-oak blocks as a tonally matched pair, while other models have different hardwood tops [2, 3]. A maker's “fundamental” or “natural wooden sound” description is a product characterization, not a measured frequency response for a given room and mic. A synthetic percussion block may offer projection and weather resistance but should be auditioned as a different instrument [4]. Select the block and beater for the needed pulse and level; do not ask the player to strike dangerously hard just to improve input level.
+For an ordinary slotted woodblock, the opening and unimpeded support affect the audible result [1]. That does not imply a universal microphone rule that a capsule pointed directly into the slot is best. The microphone may hear a different balance of attack, body, room and other instruments from the slot side and striking side. Compare safely in the actual setup. Inspect for cracks and loose mounts before a powerful passage.
+# First decision: shared mic or spot
+A main ensemble mic or percussion overhead may already convey the woodblock at the right musical level. In a documented live setup, DPA reports that a compact cardioid overhead picked up various percussion instruments including a woodblock, cowbells and cymbals [5]. A spot gives an independent control when the block must be prominent or a broad mic hears too much competing sound. It also adds an open microphone and potentially more spill. Bring up existing area mics first, then decide what a spot would solve. On a loud stage, a shared overhead may not deliver the needed gain before feedback; on a quiet stage it may be entirely sufficient.
+# One-block microphone procedure
+1.Establish the acoustic sound. Ask for the real passage with the intended beater and mount or grip. Compare whether the block rings normally or is choked by its support. Identify the struck area, the block's opening and the beater's full approach and rebound.
+2.Place safely. In a controlled room, audition a cardioid condenser or dynamic mic around 25–50 cm (10–20 in.) from the block, positioned to hear its body and playing surface while remaining outside the full beater path. This is a reasoned audition range, not a woodblock-specific manufacturer rule. Shure's general beginner example puts a percussion mic at least 30 cm away [6]; a closer live spot may be workable only when clearance and isolation are confirmed. Use a stand with cable and boom secured so the performer can reach other instruments.
+3.Compare safe viewpoints. From a position that does not interfere with striking, compare a line of sight toward the playing surface with a line of sight more toward the opening. Adjust modestly in height, angle or distance. Listen to the whole pattern for attack, hollow resonance and bleed. Do not put the microphone into the slot or put its grille where a mallet can reach. Do not infer that the opening behaves exactly like a trumpet bell.
+4.Check strongest strokes and context. Set headroom for the loudest real hit. If the sound breaks up, distinguish cracked block, vibrating hardware, capsule/preamp overload and later clipping. A pad helps only the stage that overloads. High-pass may reduce stand vibration or room rumble, but confirm it does not remove useful wooden body. Check the block against all other microphones, not only solo.
+For a handheld block, watch the entire movement area and position the mic for the usual location rather than only one instant. A mic close to the block can hear movement-related level changes. For a mounted block, verify that a stand clamp does not shift or rattle under strong hits. Shure's general guidance recommends choosing placement by listening to the source [7].
+# Tone and coverage options
+Desired result
+Source and mic trial
+What to evaluate
+Crisp, focused pulse
+Audition the chosen mallet and striking area with a safe directional spot.
+Attack versus body, preamp headroom, adjacent clicks, beater clearance.
+Fuller woody knock
+Check unchoked support, compare block/mallet choices and a modestly wider mic position.
+Whether the fundamental remains clear without too much room.
+Integrated ensemble texture
+Try the main/percussion overhead alone first.
+Is the part audible in context, and would a spot improve control?
+Dense stage separation
+Try a secure directional spot nearer to the block than to cymbals or other instruments.
+Full-band direct-to-spill ratio and feedback margin.
+
+These are audition methods, not guarantees that a mic viewpoint produces the same brightness or pitch for every block. Instrument, support, stroke and room can dominate the result. A too-soft source in a loud ensemble may remain masked even when channel gain is raised.
+# Several blocks or a percussion station
+If two or three blocks are close together and played by one person, begin with one microphone aimed at their shared playing area. Play the highest and lowest blocks and all transitions; check whether each is within the useful pickup angle and whether the beater can clear the stand. If a wide set has unequal level, reposition the mic or blocks before adding channels. Multiple spots can provide separate balances, but cost channels, stands and bleed. With two or more mics capturing the same blocks, listen together and in mono for unwanted coloration caused by different arrival times. There is no requirement to assign one mic per block.
+At a multi-instrument station, confirm that the block remains accessible after the player moves to cowbell, tambourine or other percussion. Do not clip a mic to a wooden body without an appropriate mount and the player's permission: weight and pressure can change sound or obstruct the stroke. A purpose-built clamp on a separate mount is often easier to keep clear, but assess vibration transfer and stability.
+# Studio application
+Overdub: In a quiet room, a single spot often suffices. Compare positions around the block while retaining a clear beater path, level-matching for judgment. A farther mic may incorporate a pleasing room; a closer one may give stronger direct sound but exaggerate the impact and expose handling or mount noises. Start with source support and mallet choice before using EQ to invent a body that is not acoustically present. Mono is normally sufficient for one block. For a spread set or an ensemble, stereo can describe spatial placement if that serves the arrangement; check mono compatibility.
+Simultaneous ensemble: Evaluate the main mics first. Add a spot only when an independent woodblock level is required and the spot captures more useful woodblock than spill. Place competing percussion so the directional mic's low-sensitivity area faces the loudest intrusion where practical. Combine main and spot and check mono. If a strongly ringing block seems to vanish in the mix, test physical position and source level before aggressive high-frequency boosting.
+# Live application
+Quiet acoustic stage: An overhead or shared percussion-area microphone may capture the block in balance with neighboring instruments, as the DPA case demonstrates [5]. Keep its pickup area consistent through the set and avoid raising the channel so much that the wedge or backline dominates. A stand mic can be positioned for a handheld block at a predictable player station, leaving a generous mallet and hand path.
+Loud band or drum kit: A dedicated directional spot may improve isolation if the block is physically close enough to the mic and farther from competing sound. Verify the mic's actual polar pattern. Cardioid is least sensitive at its rear; supercardioid and hypercardioid patterns have rear lobes and different least-sensitive angles, so wedge position changes accordingly [8]. Soundcheck with the whole band and every instrument change. A mic attached to nearby hardware can transmit mechanical impacts; listen to the channel with the block silent while the rest of the kit plays. Mute an unused channel where appropriate. Lower nearby stage level or move the block if a clean spot cannot be obtained, instead of continuously increasing gain.
+# Safety and troubleshooting
+Keep microphones, booms, clamps and cables outside the entire mallet path, including rebound and a missed stroke. Secure mounted blocks against rotation and verify that stands will not fall into the player. Do not use a split or damaged block with unsafe fragments or loose hardware. Avoid placing a listener's or player's ear directly beside the block for repeated high-level demonstrations; assess total music exposure and use hearing protection where appropriate. NIOSH recommends monitoring exposure, managing volume and appropriate protection for musicians [9]. This is a whole-session hearing issue, not an invented fixed SPL for every woodblock.
+Observation
+Check first
+Source or miking response
+Dead, short tap
+Is the block resting on heavy material or gripped against its opening?
+Free the block using safe support [1], then audition mic placement.
+Bright click, little wooden body
+Is it the chosen beater/strike or a very close mic?
+Try an appropriate mallet, source support, then safe viewpoint/distance.
+Low buzz or rattle
+Is the mount, stand or nearby hardware vibrating?
+Tighten/relocate support, isolate vibration and recheck.
+One block in a set disappears
+Is it off axis, quieter or farther from the mic?
+Re-aim for the full set or adjust physical layout before adding a mic.
+Spot mostly hears cymbals
+How do distances and mic pattern compare?
+Reposition player/mic and use directional rejection; assess if spot is useful.
+Clipping on hard strokes
+Which stage distorts, or is the block cracked?
+Fix source defect or restore relevant electronic headroom.
+Feedback before useful level
+Are monitor/PA loudspeakers in a sensitive direction?
+Adjust geometry, stage level and open-mic count [8].
+
+# Teaching exercise and assessment
+1.With the same block and beater, compare a stable unchoked support with a deliberately muffling placement on thick material. Identify what changed in the acoustic source before adjusting the microphone.
+2.Mark mallet travel. Compare a spot around 30 cm and one around 50 cm from the block only where both clear the stroke. Try safe viewpoints toward the playing side and opening; report measured observations by ear rather than a universal angle rule.
+3.Compare main/overhead alone with main plus spot. Check the combined result in mono. Repeat across a small high/low pair if available and assess whether one mic covers both.
+4.Simulate a live stage: check mount stability, stage spill, wedge direction from the mic's polar plot, and the loudest stroke for overload. Fix one observed problem by changing source or geometry before channel gain.
+Pass criterion: The student recognizes muffled support, establishes a secure unobstructed setup, justifies a shared mic or spot, and distinguishes source tone, mount noise, electronic overload, spill and feedback.
+# Evidence audit and limits
+Agreement: PAS gives direct woodblock technique and support guidance [1]. Meinl documents woodblock sizes, materials and alternative synthetic blocks [2–4]. DPA describes a real percussion overhead capturing a woodblock [5]. Shure provides general microphone-placement and polar-pattern guidance [6–8]. NIOSH supports the hearing-exposure check [9].
+Different emphasis, no direct contradiction: PAS concentrates on acoustic playing and support; manufacturers describe particular products; DPA shows an area-mic deployment; Shure explains general mic behavior. No source located establishes a universal woodblock microphone distance or a fixed timbral effect of aiming into the opening. The 25–50 cm trial, angle comparison and spot-versus-overhead decision are reasoned exercises to test with the actual block and room. Confidence is high in the cited technique and broad pickup principles, moderate in the proposed workflow, and low in predicting exact tone without audition.
+Scope: This lesson is about acoustic woodblocks; a synthetic percussion block is mentioned for comparison, while temple blocks and electronic pads are not treated as a new lesson. No audio examples are included.
+# References
+[1] Percussive Arts Society, The PAS Educators' Companion, “Wood Blocks,” pp. 22–23 in PDF pagination.  Read source <https://pas.org/wp-content/uploads/2024/04/ECV02.pdf>
+[2] Meinl Percussion, “Wood Block, Siam Oak, Medium,” product description.  Read source <https://meinlpercussion.com/en/products/mwb1bk-m8582.html>
+[3] Meinl Percussion, “Professional Wood Block, Siam Oak, Large,” product description.  Read source <https://meinlpercussion.com/en/products/pmwb1-l-m8579.html>
+[4] Meinl Percussion, “Percussion Block, Low Pitch,” synthetic block description.  Read source <https://meinlpercussion.com/en/products/mpe4bk-m312049.html>
+[5] DPA Microphones, “Audio Veteran Relies on DPA for Live Sound and Recording Applications,” percussion overhead example, 2019.  Read source <https://www.dpamicrophones.com/news/2019/audio-veteran-relies-on-dpa-for-live-sound-and-recording-applications/>
+[6] Shure, “Home Recording Guide for Beginners,” general percussion example.  Read source <https://www.shure.com/en-GB/insights/home-recording-guide-for-beginners>
+[7] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[8] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[9] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

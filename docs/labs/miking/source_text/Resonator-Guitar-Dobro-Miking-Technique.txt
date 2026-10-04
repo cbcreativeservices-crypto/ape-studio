@@ -1,0 +1,79 @@
+# Resonator Guitar and Dobro Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson treats the acoustic sound of resonator guitars, including square-neck lap-style Dobro and round-neck instruments. The learner will identify the resonator system, find a balanced one-mic position, deliberately emphasize cone versus strings, adapt to a moving player and loud stage, and evaluate a pickup alongside a microphone. It covers miking, not instrument repair or pickup installation. No audio examples are included.
+# What makes this source different
+The strings excite a bridge and one or more metal resonator cones, which radiate through a coverplate and openings. A spider-bridge single-cone guitar, a biscuit-bridge single-cone guitar and a tricone do not present identical sound fields [1, 2]. The body material, sound ports, coverplate, player position, slide and picking hand also affect what a microphone hears. “Dobro” often refers to a spider-bridge lap-style resonator, but inspect the particular instrument instead of assuming every resonator is that design. It remains a chordophone: strings start the vibration.
+The microphone hears airborne sound from the complete instrument. A bridge or cone pickup supplies a different electrical path; it can be useful for separation and gain before feedback, but it is not itself a microphone. Shure’s account of a bluegrass touring setup describes Jerry Douglas using a direct Fishman pedal for Dobro and, when a mic is used, Shure KSM32 or KSM44A [3]. That is a real-world option, not a universal prescription.
+# One-microphone placement map
+Begin with a steady performance at the musician’s real playing posture. For a quiet studio, a practical experiment is a mic roughly 20–45 cm (8–18 in) from the instrument, facing the broad coverplate/upper-body area from slightly off the player's picking path. This range is a teaching trial, not a manufacturer-specified optimum. Locate the sound by listening around the instrument before committing to a spot. A cardioid condenser can reveal detail; a dynamic can provide a robust close option; choose the actual mic for sensitivity, pattern, stage level and desired tone.
+Acoustic region to compare
+Likely emphasis to test
+What to check
+Off-center coverplate / cone region
+Distinct resonator projection and metallic character.
+Avoid an overly sharp or narrow tone; keep the mic clear of hands and bar.
+Neck/body side and strings
+Pick and slide definition, with less direct cone emphasis.
+Thinness, finger noise and changing balance as the player moves.
+Sound ports or a broader, somewhat farther frontal view
+More combined instrument character.
+Room reflections, neighboring instruments and feedback risk.
+Very close on a localized spot
+Isolation and attack, especially on a stage.
+Mechanical noise, uneven notes and exaggerated local coloration.
+
+These are comparisons, not guarantees of brightness or warmth. Shure’s recording guide groups Dobro with other acoustic string instruments and provides broad placement ideas [4]; its ordinary flat-top guitar sound-hole illustration should not be transferred literally to an instrument with a resonator coverplate. Move the microphone a few centimeters at a time, then change distance, and have the musician play low/high strings, open and barred notes, quiet/loud passages and the actual musical part. Aiming straight into the visual center of the coverplate is one experiment, not an established universal sweet spot.
+# Playing posture and tone goals
+Square-neck lap style: The strings and coverplate face upward. Bring a boom from the side so the capsule has a clear view of the instrument without crossing the bar path or the picking hand. Confirm the player’s seated/standing support and full reach before tightening the stand. Do not position the mic where a steel bar, arm or instrument movement can strike it. For more resonator identity, compare the off-center cone/coverplate region; for a less pointed tone, include more of the body and string area by moving back or changing angle.
+Round-neck upright style: The instrument may face the room or be turned toward another performer. Aim at the actual projected sound, beginning between the resonator region and neck/body side, and watch how strumming or slide posture changes its orientation. A fixed close mic can sound quite different when the player turns; mark a comfortable playing zone and compare the full performance, not one held note.
+Bright, cutting part: A closer view of the resonator region may help a busy ensemble, but assess metallic edge and pick noise in the mix. Rounded, integrated part: Move back enough to hear several radiating regions, if the room and spill allow. Do not prescribe a frequency boost, cut or microphone solely from a genre label; match a specific tonal goal against the actual player and arrangement.
+# Studio approach: one mic, then an optional second view
+Record or monitor one reliable mic first. Check the room, reflective floor and adjacent instruments; moving an instrument or mic can alter both direct sound and reflections. If more flexibility is needed, add a second mic for a distinct purpose, such as a closer cone view plus a farther overall view, or strings/neck region plus coverplate. Keep each channel separate, listen alone and combined at useful matched levels, and check the blend in mono. Different path lengths can produce cancellations; reposition and rebalance before assuming a polarity switch is the cure. A distant second view may be mainly room and cannot be expected to supply isolation.
+If the instrument has a pickup, capture it separately when available. Compare the pickup alone, microphone alone and both together in mono; shift the mic or balance if the blend becomes hollow. Acoustic propagation and pickup electronics can give different timing and phase responses; no fixed delay or polarity setting suits every instrument. Label paths so a pickup or processed imaging pedal is not described as an acoustic microphone. Fishman offers different resophonic pickup products for spider and biscuit designs and recommends professional installation for a cone-mounted model [5]. Do not modify the resonator for a lesson.
+# Live sound: isolation, feedback and player movement
+In an acoustic ensemble on a quiet stage, a stand mic can preserve a broad instrument sound, provided the player maintains a workable distance. Shure describes both choreographed shared-mic bluegrass performance and individual close miking; the former depends heavily on room, monitors and performer movement, while closer positions can improve gain before feedback [3]. Soundcheck the full ensemble, including voices, banjo, cymbals and wedges. Choose a directional pattern and place its rejection toward the strongest competing source using that microphone’s actual polar pattern; supercardioid models have a rear pickup lobe, so a wedge directly behind may be a poor location.
+Where stand placement restricts movement, an instrument-mounted mic can move with the guitar. DPA explicitly lists its 4099G for guitar and Dobro and gives a body-depth fit of 35–122 mm for its clip [6]. Its general guitar suggestion is near the neck/body junction and toward a sound hole for output; a resonator lacks the same flat-top sound hole, so aim and mount only after checking the actual instrument and the clip instructions. Never attach to the delicate cone, obstruct the coverplate/sound ports, clamp an unsuitable edge or interfere with bar, hands and case handling. Obtain the owner’s consent before a clip contacts a finish. Secure a strain-relieved cable and keep stand bases outside foot traffic.
+On a loud stage, an existing, correctly installed pickup through the appropriate preamp/DI can carry the main PA level, with a microphone blended only as gain before feedback permits. A Fishman imaging pedal is one documented direct strategy for resophonic guitar [3, 7]; its modeled/imaged output is an electrical sound source, not a mic capsule hearing air. If feedback appears, reduce the channel/monitor level, identify the offending path, change instrument/monitor/mic geometry and open-mic count, and retest. A high-pass filter may remove unnecessary low rumble, but its setting is context dependent; avoid automatic steep filtering that strips body. With phantom power, follow the microphone and connected device manuals. Avoid placing the player or engineer in a loud monitor field during extended troubleshooting.
+# Troubleshooting and safety audit
+Symptom
+Check first
+Practical response
+Thin, all-pick sound
+Is mic dominated by strings/neck?
+Include more off-center resonator area or move back slightly.
+Piercing metallic tone
+Is mic extremely close to one coverplate region?
+Move off that spot, change angle or take a broader view.
+Tone changes while playing
+Does the guitar rotate or slide away?
+Work with the player's normal movement; use a suitable clip mic or pickup if needed.
+Hollow mic-plus-pickup blend
+Are arrival/phase responses conflicting?
+Compare each alone and in mono; move/rebalance, then test polarity or delay.
+Feedback or excessive spill
+Is a loudspeaker exciting instrument/mic?
+Lower level, reposition speaker/mic, narrow open channels, consider pickup-led mix.
+Rattle, unexpected buzz or loose hardware
+Does sound persist without the microphone?
+Stop the exercise and ask the owner or qualified repairer; do not tighten cone hardware.
+
+Do not open a coverplate or adjust a cone, bridge, spider screw or pickup to solve a microphone problem. National Reso-Phonic warns that the cone is delicate and instrument setup is model-specific [2]. Keep booms and clamps off the resonator hardware; check cable paths and stand stability. For loud stages, use measured levels and suitable hearing protection as needed; OSHA identifies 85 dBA eight-hour time-weighted average as its hearing-conservation action level, which is not a guarantee of safety at other exposures [8].
+# Teaching exercise and pass criterion
+1.Identify the player’s posture and visible resonator type without opening the instrument. Ask the musician to perform the intended part and define a safe mic/stand zone.
+2.Using one mic, compare an off-center resonator view, a neck/body view and a broader view; keep playing level and gain comparisons as consistent as practical. Describe actual observed changes rather than assumed ones.
+3.Choose one studio and one live position, documenting capsule, distance, angle, player movement, room/monitor placement and spill. Explain why they differ.
+4.If a pickup exists, compare microphone, pickup and mono blend, and identify the electrical path accurately. Demonstrate a safe response to feedback or a loose resonator component.
+Pass criterion: The learner can set a stable and playable mic position, justify a tonal choice by listening, check a multi-source blend in mono, and avoid unsafe contact with resonator hardware or hazardous stage levels.
+# Evidence audit and limits
+Direct support: Beard and National document resonator components and designs [1, 2]. Shure documents a working Dobro microphone/direct choice and the tradeoffs of shared versus close live miking [3]. DPA explicitly supports a model-specific Dobro clip [6]. Fishman documents specialized pickups and professional installation [5].
+Inferences to verify: The 20–45 cm trial and the regional tone descriptions are a structured listening method based on acoustic geometry, not a published universal Dobro standard. Shure’s general acoustic-guitar chart [4] and DPA’s flat-top guitar aim [6] do not establish a particular coverplate point. Instrument design, posture, room and player can reverse an expected tonal adjective. Confidence is high in the mechanical and signal-path distinctions, moderate in any predicted tonal change before listening to the actual guitar.
+# References
+[1] Beard Guitars, “Parts,” cone, coverplate, spider and biscuit components.  Read source <https://beardguitars.com/parts/>
+[2] National Reso-Phonic, “Tech FAQ,” resonator cone and setup cautions.  Read source <https://www.nationalguitars.com/tech>
+[3] Shure, “How to Mic a Bluegrass Band,” firsthand live-sound practices and Dobro path.  Read source <https://www.shure.com/en-US/insights/how-to-mic-a-bluegrass-band>
+[4] Shure, “Microphone Techniques for Recording,” acoustic guitar including Dobro.  Read source <https://content-files.shure.com/dievision/archive/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[5] Fishman, “Classic Series Active Resophonic Pickup,” fit and professional installation.  Read source <https://fishman.com/dp/classic-series-active-resophonic-pickup/>
+[6] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” guitar/Dobro clip.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[7] Fishman, “Jerry Douglas Signature Series Aura Imaging Pedal.”  Read source <https://fishman.com/dp/jerry-douglas-signature-series-aura-imaging-pedal/>
+[8] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

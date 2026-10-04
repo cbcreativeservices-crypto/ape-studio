@@ -1,0 +1,83 @@
+# Violin and Fiddle Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+Violin and fiddle are the same basic instrument named in different musical contexts. This lesson teaches an individual bowed violin's microphone placement for solo studio work, a live fiddle, and an orchestral or small-group spot. The learner will balance soundboard, strings, bow articulation and room while protecting bow motion and the instrument. Section-array and ensemble choreography are cross-linked to the Ensembles and Voice Lab. No audio examples are included.
+# Listen to a moving, complex source
+Vibrating strings drive the bridge and wooden top; the violin radiates sound in a complex, frequency-dependent pattern. DPA emphasizes that complexity and recommends experimenting rather than assuming one fixed sweet spot [1]. A microphone extremely near one string, bridge or f-hole hears a localized view that can overstate friction, rosin or body resonance. A little distance can integrate the instrument and room, but neighboring sources and reflections become more prominent. The player also moves the violin and bow, so check the real playing posture, full up-bow/down-bow length, highest/lowest notes and loudest/softest phrases.
+Ask the violinist for the intended sound. A classical soloist may prefer natural room and a balanced line; a fiddle lead beside banjo and drums may need more close-mic separation; a section spot should support a main array rather than make one player dominate. These are arrangement decisions, not inherent tonal distinctions between “violin” and “fiddle.”
+# Establish one stand microphone
+In a quiet room, begin with one mic in front and somewhat above the violin, looking toward the bridge/top region while remaining well outside the bow's full sweep. Neumann describes overhead aim from above as a usual string-instrument approach [2]. A practical solo trial is approximately 0.5–1.2 m (1.5–4 ft) from the instrument, adjusted to room and performance; this is a teaching range, not a sourced universal prescription. Shure offers a closer side view of a few inches for string reinforcement [3]. Compare these as different use cases, not as competing definitions of one position.
+Perspective
+Listen for
+Limitation
+Front/above bridge and top, moderate distance
+Integrated note, body and room.
+Spill, reflections, player movement.
+Shift toward bridge/string area
+Bow articulation and presence.
+Scratch/rosin noise and narrow tone.
+Shift toward f-hole/top
+More local output or body [1].
+Uneven resonance and possible dullness.
+Close side view [3]
+Useful stage separation.
+Local coloration, bow/stand clearance.
+Approved under-bridge miniature [1, 4]
+Consistency while player moves.
+Potential harshness and contact/cable noise.
+
+Have the player repeat a full phrase at stable musical dynamics. Change one coordinate at a time and monitor at roughly matched level. A directional mic's off-axis response and proximity effect matter when close; an omni may offer more even broad pickup in a good room, but less isolation [1]. Document capsule distance, height, lateral angle, pattern and the player's working zone rather than a fret or f-hole coordinate alone.
+# Studio tone goals
+Solo classical or exposed melody: Start with the more integrated front/above view and adjust to retain detail without an abrasive localized bow sound. Listen to quiet bow starts, changes of string, sustained notes, vibrato, pizzicato if used and the peak passage. Try a directional mic when the room is poor or other musicians are nearby; an omni when its room pickup is useful. DPA describes both pattern options, with directional mics better able to focus on the source and omnis suitable for fuller capture [1]. The choice is confirmed by listening in context.
+Close overdub: Bring the stand mic closer for definition if the arrangement requires it, but test all strings before committing. A position flattering the E string may make G-string body or certain notes uneven. If it sounds harsh, move back or change angle and height before automatically cutting the upper midrange. Keep stand bases away from the violinist's feet and bow; silence movement and jewelry noise where practical without changing technique.
+Main pair plus spot: For a chamber or orchestral recording, establish the ensemble image in the main microphones first. Add a violin spot only for a stated balance or articulation goal. Bring it up gradually, compare stereo image and mono sum, and watch for a nearby player leaking into the spot. A close spot can pull the first chair unnaturally forward; placement, level and time relationship to main array are musical judgments. The section lesson will cover seating and main microphone geometry. Two close mics on one solo violin are optional, not a requirement for stereo; the instrument is small and movement can shift the image.
+# Live fiddle: stand, clip and pickup
+A stand mic can work in a quiet acoustic group if the player stays in its working zone and monitors are restrained. Shure's bluegrass account describes shared-mic performance as requiring choreography and favorable acoustics, while individual close miking can improve gain before feedback but still suffers from floor monitors [5]. For a fiddle player moving to sing or solo, mark the microphone position and the bow-safe approach route. Cross-link shared-mic balance to the Ensembles and Voice Lab.
+An instrument-mounted miniature can keep the capsule near the violin as the player turns. DPA recommends a position under the bridge, between strings and top for soundboard and string bite, while warning that it can be perceived as harsh [1]. DPA's VC4099 clip is adjustable over a 35–55 mm body-depth range and its mounting guide suggests a player's left-side placement that avoids movement, with the mic aimed away from the head to reduce breath noise [4]. These are model-specific directions; confirm the instrument's dimensions, edge/finish, chin-rest and shoulder-rest clearance, and full bow reach. Another DPA miniature holder is designed to grip two strings between bridge and tailpiece [6]. Never improvise mounting to the bridge, f-hole edge, varnish or bowing string section.
+The f-holeward angle can yield more level but also change tone. DPA's mounting guide describes a somewhat duller character when aiming at the f-hole compared with a bridgeward orientation [4]. Treat that as one documented device/placement observation, not a universal spectral law. Check for cable rub against neck, clothes or chin rest, provide gentle strain relief, and ask the player to complete a full bow and position change before the mic is considered safe.
+If the violin has a professionally installed pickup, its electrical output can carry more dependable level on a loud stage, with a mic blended where feedback permits. The pickup is a separate signal path, not the airborne microphone sound. Compare pickup and mic alone and in mono combination; change geometry/balance, then test polarity/timing if the blend hollows. Use the pickup's stated input/preamp requirements. Place wedges/PA according to the mic's actual polar pattern and reduce level when feedback appears. DPA notes that the small soundboard can reflect neighboring sound toward the front of a microphone even when it faces away [1].
+# Troubleshooting and safety
+Symptom
+First question
+Response to audition
+Scratch or rosin dominates
+Is mic too close to bridge/bow area?
+Move outward/up/back; reassess the full phrase.
+Tone is dull or lacks detail
+Is mic too far, off axis or f-holeward?
+Adjust angle/position and check stage spill [4].
+One string is much brighter
+Is capsule localized to one region?
+Take a broader perspective; test all strings.
+Tone changes as player turns
+Does stand mic lose the soundboard view?
+Define working zone or test approved clip.
+Shared-mic solo disappears
+Is player outside pickup pattern?
+Rehearse choreography at safe bow clearance.
+Mic/pickup sum hollows
+Do path delays/filters interact?
+Solo, mono-sum, move/rebalance, then polarity/timing.
+Feedback or stage bleed
+Is monitor/PA entering mic or reflecting off body?
+Lower offending level, revise geometry and open mics.
+
+A violin is delicate and often valuable. No heavy mic or unapproved clamp may touch the bridge, soundpost region, varnish, tailpiece hardware or bow path. Follow the exact mount manual and owner's wishes; stop if a clip pinches, slips or buzzes. Keep stands stable and cables out of musician traffic. Follow mic power specifications. For loud stage work, control monitor exposure and use hearing protection where appropriate; OSHA's 85 dBA eight-hour time-weighted average is a hearing-conservation action level, not a guarantee of safety at other durations [7].
+# Teaching exercise and pass criterion
+1.Map the player's bow sweep, instrument rotation and full musical dynamic range. Identify nearby sources, room and monitoring before placing a stand.
+2.Compare an integrated front/above view, a somewhat closer bridge/top view and a side/clip view if safe. Assess low/high strings, quiet/loud bow, pizzicato if used and real player movement.
+3.Choose a solo studio and a live fiddle position, explaining pattern, room/spill, bow clearance, stand/clip fit and cable route. For an ensemble spot, state how it will support the main array.
+4.If a pickup or second mic exists, compare each alone and in mono sum. Demonstrate a safe response to feedback, harsh localized tone and a mic obstructing the bow.
+Pass criterion: The learner can set a repeatable musical violin tone, anticipate movement and localized coloration, adapt to studio/ensemble/live contexts, and keep microphone hardware clear of player and instrument.
+# Evidence audit and limits
+Agreement: DPA establishes the violin's complex radiation and a close under-bridge option with a harshness/isolation tradeoff [1]. Shure and Neumann document closer side and overhead approaches for differing contexts [2, 3]. Shure's live bluegrass source confirms the effect of room, player movement and wedges [5].
+Different emphases: DPA's under-bridge miniature serves close live isolation [1, 4], while an overhead/stand approach integrates more of the instrument and room [2]. DPA describes an f-hole aim as higher output but potentially duller than bridge aim for its clip setup [4]; that is a model-specific observation. No direct contradiction is established.
+Gaps and confidence: No source sets a universally best solo distance, mic type, section spot level or pickup blend for every violin and room. The 0.5–1.2 m range is a teaching trial, not a published violin-specific standard. Confidence is high in documented close-mount guidance and mechanical clearance needs, moderate in predicted tonal changes until auditioned with the player.
+# References
+[1] DPA Microphones, “How to Mic a Violin.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-violin/>
+[2] Neumann, “KM-A/D Applications,” overhead string mic approach.  Read source <https://www.neumann.com/en-us/km-a-d-applications>
+[3] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments,” violin side placement.  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments>
+[4] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” violin clip.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[5] Shure, “How to Mic a Bluegrass Band,” live shared and close approaches.  Read source <https://www.shure.com/en-US/insights/how-to-mic-a-bluegrass-band>
+[6] DPA Microphones, “MHS6005 Lavalier Microphone Holder for String Instrument.”  Read source <https://www.dpamicrophones.com/accessories/instrument-clips/mhs6005?variant=134>
+[7] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

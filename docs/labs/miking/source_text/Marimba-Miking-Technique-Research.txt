@@ -1,0 +1,91 @@
+# Marimba Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Marimba   October 3, 2026
+# Scope and learning goals
+The marimba is a pitched idiophone whose wooden or manufacturer-specific synthetic bars sound when struck; resonator tubes below the bars strengthen the sound [1–3]. This lesson emphasizes acoustic miking across the instrument's actual played range, including one-mic and two-mic methods in studio and live sound. The student should distinguish player-created tone from microphone balance, capture bass and treble without obstructing mallets, and protect the bars and support. Xylophone is next on the agreed list. No audio examples are included.
+# The source and its musical range
+Yamaha describes wooden tone plates arranged like piano keys and increasingly long and wide bars toward the lower register [1]. A resonator tube below each sounding bar helps the note develop; its length changes with pitch [2]. Modern models vary in keyboard material and size: Adams lists rosewood, padauk and synthetic options among its concert instruments [3]. Confirm the actual model, range and the excerpt played. A five-octave instrument carrying a bass-and-treble solo demands wider coverage than a part confined to a few neighboring notes.
+Mallet choice is a source change. Yamaha describes soft rubber and yarn-wrapped rubber heads as suited to marimba, with different attack and blend. It warns that overly hard mallets, especially on thin low-register bars, can damage the instrument [4]. The Percussive Arts Society (PAS) also publishes a performer perspective arguing that harder cord or rubber mallets can provide projection and other colors, sometimes even unconventional mallets on the author's own instrument [5]. These positions have different contexts, and a personal experiment does not authorize hard beaters on someone else's marimba. Follow the instrument maker's guidance and the owner/player's judgment; choose microphone and stage layout before asking for greater force or an unsuitable mallet.
+Listen to low notes, middle range, highest notes, soft and strong attacks, rolls and four-mallet chords where relevant. A roll can simulate sustain through repeated strikes, so the microphone must convey individual strokes and the resulting phrase. The player's stroke location, mallet and dynamic all affect tone [4, 5]. Do not diagnose a dull bass or hard treble from a single note or from the microphone view alone.
+# One microphone starting method
+1.Map the playing zone. Watch the whole passage from bass to treble, both hands' reach, mallet height and any movement along the keyboard. Place boom, capsule and cable outside the entire stroke arc and keep the player's score and line of sight clear. Secure the mic independently of the instrument unless a suitable approved mounting system is used.
+2.Audition overhead coverage. In a controlled room, start with a suitable directional condenser or another appropriate mic about 60–100 cm (2–3¼ ft) above the center of the *played* span, aimed downward so the relevant low and high bars are in useful pickup. This is a reasoned one-mic trial, not a published marimba prescription. Shure documents a two-mic example at about 45 cm (1½ ft) above the keyboard [6]. A wide five-octave part may need a wider position or two microphones; the player's mallet arc sets the minimum clearance.
+3.Compare the entire phrase. Play representative soft and strong notes in each register and full rolls/chords. At matched monitoring level, move the mic modestly in height or along the keyboard, then assess low-note fullness, high-note clarity, transient/wood noise, room and nearby instruments. A point close to the low bars can overrepresent them while losing the far end. Moving back tends to integrate the keyboard but increases room and spill; verify rather than assume a fixed outcome.
+4.Check headroom and decay. Set input levels from the strongest accents, then check the quietest passage. Avoid clipping at mic electronics, preamp, converter or live chain. Use a high-pass filter only if unwanted stand/footfall rumble can be removed without thinning the wanted bass register. A gate or severe compression can distort a roll's natural envelope. Fix audible stand and resonator rattles mechanically before EQ.
+An overhead approach listens to bars and the resonator system together in the room. A mic placed under a resonator opening may provide a more localized, colored sound or mechanical noise and should be auditioned as an optional effect, not asserted to be the universally natural marimba sound. Do not place hardware where it contacts tubes or can be struck by a player or cart.
+# Two microphone approaches
+Shure's *Microphone Techniques for Live Sound Reinforcement* lists the marimba with vibraphone and xylophone: two mics pointing downward about 45 cm above the instrument, either 60 cm apart, or grilles together at about 135° for a coincident pair [6]. These are published starting examples, not guaranteed placements for every keyboard length, performer and room. The two geometries are alternatives. In a live system, Shure also cautions that stereo has practical value only when system coverage makes it useful; relatively close placement helps gain before feedback [6].
+Spaced pair: Begin with one mic covering the lower played region and the other the higher, with overlap through the center. Shure's 60 cm separation may be too narrow to cover a widely played five-octave keyboard evenly; test the instrument's actual range and adjust spacing, height and aims. Audition each mic alone, both together, and summed to mono. Arrival-time differences can color notes heard by both mics, so listen before reaching for automatic time alignment or a polarity switch.
+Coincident pair: Set the capsules near one another and angle them to view the useful span; Shure's 135° is one example [6]. This can reduce time-of-arrival differences in mono and give a coherent stereo image, while offering less separate register control. The exact stereo width depends on mic polar patterns and placement. Do not force the mic bar or stands into the mallet path for an idealized angle. A near-coincident or wider stereo approach may also be tried in a suitable studio, but assess mono image and the whole keyboard.
+# Tone and approach trials
+Musical aim
+Source and microphone trial
+Listen for
+Rounded, blended solo
+Player uses approved softer or yarn-wrapped mallets; compare central overhead and wider studio view.
+Bass warmth, even melodic line, clear rolls and room decay.
+More articulated melody
+Audition another maker/owner-approved mallet or player touch at fixed mic position.
+Attack that reads without damaging bars or overloading input.
+Bass-and-treble solo
+Play both extremes and center with one mic, then compare pair.
+Complete range without bass dominance, weak high notes or a center dip.
+Quiet ensemble color
+Hear main/ensemble microphones before a marimba spot.
+Whether a spot adds marimba more than it adds adjacent spill.
+Loud stage passage
+Relocate instrument and directional mics; test full band at performance level.
+Needed direct-to-spill ratio, feedback margin and safe mallet clearance.
+
+The mallet maker's hardness designation is not a microphone EQ preset; actual touch and bar condition matter. Source, mic position, room and ensemble should be changed deliberately one at a time.
+# Studio application
+Solo overdub: Confirm the instrument is stable, bars and resonators seated, and the player has chosen safe mallets. Begin with a single central mic if the passage occupies a limited span; for a wide solo compare Shure's two-mic examples and a wider room perspective. Record the whole phrase and residual decay, not just a note struck near the mic. In a suitable room, a moderately distant stereo pair can present keyboard width and acoustic space, but moving back also adds reflections and environmental noise. Check mono compatibility and avoid a cartoonishly wide left-to-right image that weakens the middle.
+Ensemble session: Hear the main array first. Add one or two marimba spots when the part needs independent level or focus. Keep loud drums and amplified instruments out of the desired pickup as practical, while preserving sightlines. Listen to spots with the mains and in mono for changed attack or low-note body from different arrival times. Position, isolation and balance may be better solutions than extra EQ. On a wooden floor, footsteps and stand movement can enter a sensitive mic; use a stable support and correct the physical cause.
+# Live application
+In a quiet acoustic hall, an existing main or area mic may carry the marimba adequately. A louder stage generally requires the instrument and directional spot or pair positioned for useful direct sound. Shure's 45 cm two-mic setup is a published starting layout only where mallets and hands safely clear it [6]. Test the farthest low and high notes, the center and rolls with full band. A mic close to one register alone may make the instrument sound incomplete. If the room or PA is mono, sum and listen in mono at multiple audience positions before committing to a wide stereo pan.
+Aim the rejection of the actual mic away from wedges and loud neighbors. A cardioid's nominal rear null differs from the side nulls and rear lobe of supercardioid/hypercardioid designs [7]. Check stage geometry at soundcheck. If the player cannot hear the instrument without an excessive monitor send, address nearby source levels and monitor placement rather than relying on gain. Keep open mics to the number that serves the performance [6]. Avoid pushing the player to strike too hard to overcome a loud stage.
+# Safety and instrument care
+The wooden bars are valuable and can be damaged by unsuitable hard mallets [4]. Confirm the specific instrument's permitted beaters with its owner and maker, especially at the low end. Do not touch or clamp onto a bar, resonator or cord, and do not reposition tubes or tuning parts to fit a mic. Lock wheels and secure the frame per the maker's procedure; use stable stands with booms properly counterbalanced. Keep cables, stands and bodies out of mallet paths, foot travel and instrument movement. If a bar, cord or resonator is loose, stop and have the responsible player or technician inspect it. Set monitor and input headroom for sudden strong strokes. For sustained loud ensemble exposure, assess hearing risk using NIOSH music guidance [8]; do not infer a universal marimba SPL.
+# Troubleshooting
+Symptom
+Check
+First response
+Bass is weak
+Does mic view omit low bars or their resonators?
+Test low notes; alter angle/height or lower mic's coverage.
+High end disappears
+Are the high bars far off axis or masked?
+Play actual high passage; reposition, then consider a pair.
+Middle has a hole
+Do two spots leave weak overlap or cancel in mono?
+Hear each and both; adjust aiming, spacing and balance.
+Hard click dominates
+Is mallet/touch inappropriate or mic too close to attack?
+Confirm safe mallet with player, then audition distance/angle [4].
+Buzz or rattle
+Does it occur acoustically without PA?
+Inspect resonators, frame, bars and stand before processing.
+Roll sounds chopped
+Is a gate, compressor or monitor masking the strokes?
+Bypass processing and assess source and placement.
+Spill or feedback
+Are loud sources/speakers in mic pickup?
+Improve layout, pattern orientation and monitor level [6, 7].
+
+# Teaching exercise and assessment
+1.Identify instrument range and bar material, confirm approved mallets, and map a real phrase's full left-to-right travel. Explain why a low bar may be particularly vulnerable to an overly hard beater [1, 3, 4].
+2.Compare a safe central one-mic position at two heights. Then, if appropriate, set Shure's about 45 cm high, 60 cm spaced pair and a near-coincident pair. Play low, middle, high, rolls and strong accents at matched level [6].
+3.Listen to each mic alone and both combined in stereo and mono. Report range balance, room, transient, spill and any tonal change in summing. Change one position and repeat.
+4.With a simulated ensemble and monitors, compare main array alone with added spots. Identify one safer change in source placement or mic geometry before adding gain or asking for louder mallets.
+Pass criterion: The student protects the bars, maintains full mallet clearance, covers the actual musical range, distinguishes mallet/touch changes from mic changes, and chooses a defensible studio and live configuration.
+# Evidence audit and limits
+Agreement: Yamaha and Adams document bars, resonators, material and range variations [1–4]. Shure provides a two-mic starting geometry and live feedback principles [6, 7]. PAS discusses performer choices beyond one standard mallet sound [5].
+Different positions: Yamaha warns of damage from overly hard mallets, especially in the low range [4]. The PAS author discusses harder and even unconventional mallets in specialized practice on a personally owned instrument [5]. These differ in risk tolerance and artistic context. The lesson follows the conservative maker/owner limit for general teaching. No primary source retrieved establishes a universal one-mic height, a fixed frequency balance from an under-resonator mic, or a guaranteed two-mic geometry for all marimbas. The 60–100 cm one-mic trial is a reasoned exercise; Shure's 45/60 cm pair is a documented example. Confidence is high for construction and mallet damage caution, moderate for the comparative workflow, and low for exact tonal or feedback results without the instrument and space.
+# References
+[1] Yamaha, “The Structure of the Marimba What Kind of Instrument Is the Marimba?”  Read source <https://www.yamaha.com/en/musical_instrument_guide/marimba/mechanism/>
+[2] Yamaha, “The Structure of the Marimba Inside and Outside the Resonator Pipes.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/marimba/mechanism/mechanism002.html>
+[3] Adams, “Concert Series Marimba,” model materials and configurations.  Read source <https://www.adams-music.com/en/percussion/marimba/adams_concert_series_marimba>
+[4] Yamaha, “Choosing a Marimba Types of Mallets and Mallet Selection,” damage caution.  Read source <https://www.yamaha.com/en/musical_instrument_guide/marimba/selection/selection002.html>
+[5] Percussive Arts Society, “An Expansive View of Timbre for Marimba,” performer perspective.  Read source <https://pas.org/pas-blog/an-expansive-view-of-timbre-for-marimba/>
+[6] Shure, “Microphone Techniques for Live Sound Reinforcement,” pp. 30–33.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[7] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[8] CDC/NIOSH, “Turn It Down Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

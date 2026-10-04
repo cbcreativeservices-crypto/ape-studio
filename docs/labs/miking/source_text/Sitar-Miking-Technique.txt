@@ -1,0 +1,100 @@
+# Sitar Miking Technique
+Pro Audio Training Academy  •  Chordophones Lab  •  C14  •  Studio and live sound
+This lesson teaches students to place microphones for the particular sitar, performer and musical setting. It compares bridge and soundboard articulation with an integrated perspective, and covers studio capture and live reinforcement. Distances drawn from documented sessions are attributed; new classroom trials are labeled. The focus is acoustic microphones, with electrical pickups identified separately. No audio examples are included.
+# Identify the instrument and the sound to preserve
+A sitar is a plucked, fretted chordophone with a resonating body, bridge and long neck. Many modern sitars have melody, drone and sympathetic strings. The exact construction varies: the Met’s Murari Adhikari sitar has 7 melody and 13 sympathetic strings, while another historic Met sitar has no sympathetic strings. Do not promise a sympathetic-string sound that the instrument does not possess. Identify the main resonator, any second gourd, bridge and strings with the performer before moving a stand. [1, 2]
+The performer should demonstrate the intended passage: slow melodic opening, bends, strong attacks, repeated rhythmic figures, drone use, and sustained decays where applicable. Listen acoustically at a normal audience position; ask what part of the bridge buzz and ringing resonance is intentional. The bridge and sympathetic response are core tone contributors on many instruments, as Shure’s sitar account observes, but the relative strength of each component is a property of this instrument and player. [3]
+# Microphone types and source regions
+Area or microphone
+Useful question
+Limit to watch
+Lower bridge and adjacent face
+Does the pickup preserve melody articulation and lower body together?
+At short distance the nearest local attack may dominate.
+Upper neck or string area
+Does this add useful string character and sympathetic detail on this instrument?
+May emphasize fret, hand or pick noise while losing main body.
+Integrated front view
+Does a larger view represent bloom and decay better?
+Needs a quiet, good room and less competing spill.
+Cardioid condenser
+Can a focused mic give detail and useful rejection?
+Check off-axis sound, headroom and exact power requirements.
+Omnidirectional mic
+Can a quiet room and close position yield an open balance?
+More surrounding sound and often less practical monitor rejection.
+Ribbon or figure-eight
+Would smoother upper frequencies and useful room pickup suit this passage?
+Rear lobe, wind blasts, safe placement and model-specific phantom/wiring instructions.
+
+A small diaphragm microphone does not intrinsically lack low frequency response, and a ribbon does not intrinsically cure a harsh source. Compare measured response and actual tone at similar level. Select a stable stand rather than placing hardware on an antique, fragile gourd or bridge. Ask the player to approve the entire work area.
+# Documented approaches and classroom trials
+All distances in this section are approximate capsule-to-source ranges and only work if the full plucking motion, neck travel, instrument motion and player sightlines remain clear. The three sourced methods describe different rooms and goals; they are examples, not a ranking.
+Method
+Documented position or proposed trial
+Listen for
+A  One bridge and face microphone
+Classroom trial: start 25–45 cm (10–18 in) from the lower face, aimed across the bridge and adjacent soundboard rather than into one impact point. GE-OS documented an omni DPA 4041 about 20 cm from the soundboard, directed diagonally upward toward the jawari in a noisy hall. [4]
+Main line clarity, body, bridge buzz, sympathetic decay if present, and pickup of other sources.
+B  Two closer microphones
+Shure documents two KSM137 cardioids roughly 7–8 in (18–20 cm) from the instrument, one higher toward neck and one lower toward bridge/body, each angled at the body. Begin with the lower mic alone and add the higher only when its contribution is clear. [3]
+Separate high and low viewpoints; overlap and comb filtering when combined; hand and stand clearance.
+C  Integrated main position
+Classroom trial: try a single mic 60–100 cm (2–3.3 ft) in front, angled toward the lower body and neck as a unit in a quiet, suitable room. This is not a manufacturer sitar specification.
+Sympathetic bloom and room against loss of definition or more spill.
+D  Studio stereo
+Try a coincident XY cardioid pair from the safe C position, then compare it with one mic. A larger spatial design can be considered after a clear main sound is established. [5]
+Stereo size, stable center and mono fold-down.
+E  Multiple tonal layers
+IMRSV reports a sitar session with ribbon microphones around 40 cm and additional body, neck and room perspectives for an immersive project. Treat the complex setup as one specific artistic production. [6]
+Distinct contribution of each layer and changing arrival times; avoid adding channels only for channel count.
+
+The 20 cm GE-OS omni and the 18–20 cm Shure two-cardioid arrangement serve practical, relatively close pickup; an intentionally farther classroom view may better reflect the acoustic instrument in a good room. Changing pattern, microphone, target and room at once prevents a causal comparison. Re-create each approach in the same room only within its safe working envelope, compare the full phrase at matched listening level and record what changed. [3, 4]
+# Studio and live sound choices
+Studio or quiet hall
+Live reinforcement
+Build the sound with one microphone. If the room supports the music, compare C and D to A. Retain the musician’s intended bloom and quiet opening rather than judging only loud rhythmic strokes.
+Begin with one directional spot near the bridge and soundboard, at the safest practical distance. A close position may improve direct sound relative to other stage sources, but monitors and the sitar’s body still constrain gain before feedback. [3, 7]
+When tabla or other sources play together, evaluate the entire ensemble. GE-OS moved closer in a hall with passing traffic; their context explains the choice without proving it universal. [4]
+Inspect the selected microphone’s rejection angles and point the monitor into a useful rejection region. Cardioid and super/hypercardioid patterns differ. Bring sends up gradually; reduce level promptly if ringing starts. [7]
+Use a second high mic or room layer only when it adds the intended quality. Keep the main image coherent in mono.
+Keep the number of open microphones low. If one air mic cannot meet required stage level, an instrument pickup may serve as a separately labeled electrical path or blend; its installation and impedance must be checked for that device and instrument.
+
+# Multiple microphones and critical source audit
+Solo the bridge mic and any neck or room mic, then compare the intended blend in mono through slow and fast phrases. Listen for a hollow lower body, attack change or disappearing decay. Adjust position and balance before trying polarity reversal; a polarity switch cannot remove all timing differences. If a pickup and air mic are blended, assess their different tonal perspectives and relative timing rather than assuming their signals represent the same point on the instrument. DPA explains XY, near-coincident and M/S approaches and their differing mono behavior. [5]
+A studio session article describes “omnidirectional Schoeps MK 4” room microphones, but Schoeps identifies MK 4 as cardioid. Accordingly, do not teach the article’s pattern label as a verified equipment fact; confirm any specific model and polar pattern from its manufacturer before reproducing that array. The source still documents an intentionally layered sitar session with ribbons and multiple positions. [6, 8]
+# Safe setup and troubleshooting
+Have the seated player demonstrate the widest neck, hand and mizrab movement before any microphone is moved in. Keep booms, stands and cables away from the resonator, fragile top, pegs, bridge, legs and exits. Do not tape, clamp or load an instrument without owner consent and an approved attachment. Secure stands and cable routes; qualified crew must handle any elevated or suspended microphones. Set gain for the strongest intended passage with headroom, without making the monitor excessively loud.
+What you hear
+First check
+Weak body or small tone
+Compare a broader view of the lower face or more distance; ask whether the source itself is quiet.
+Too much bridge attack or buzz
+Aim off the local strike/bridge region or move back; retain the player’s intentional jawari character.
+Sympathetic decay disappears
+Confirm the instrument has sympathetic strings and that the player’s passage excites them; test a wider view and the room.
+Ringing or spill live
+Lower the relevant send/output; revisit speaker, mic pattern, safe distance and number of open mics.
+Combined sound loses body
+Hear each mic alone and together in mono; move or rebalance the support mic, then test polarity.
+Unwanted rattles
+Listen acoustically first and ask the player or technician to diagnose the instrument; do not adjust the bridge or hardware as a miking fix.
+
+# Class exercise and assessment
+Record the sitar type, presence of sympathetic strings and second gourd, player’s musical target, mic model and pattern, stand position, target, distance, angle, room, monitor location and clearance. A second microphone is optional; no supplied audio examples are needed.
+1. Hear the acoustic sitar and agree on three moments to assess: quiet melodic tone, strongest rhythmic stroke and a decay with sympathetic response if present.
+2. Place one safe lower-face microphone using A. Change distance once without changing aim. Compare both at similar listening loudness and note attack, body, buzz and decay.
+3. Restore the first distance and compare two safe targets. In a quiet room try C; on stage compare the nearest safe position and monitor geometry under the operator’s control.
+4. Add the upper microphone from B only if it improves the musical target. Solo and mono-sum; move or rebalance it if the combined sound weakens. Identify any electrical pickup separately.
+5. Document the chosen method and one compromise in the actual ensemble context, with the player’s assessment.
+Pass criterion: the student accurately describes this instrument’s strings and resonator, reproduces a safe microphone position, explains one controlled tonal change, and checks the intended studio or live blend without treating a source anecdote as a universal rule.
+# Evidence audit and source notes
+Agreement: source descriptions confirm that the bridge, body and sometimes sympathetic strings shape sitar tone; close documented approaches emphasize the bridge and face. Differences: Shure uses a two-cardioid setup, GE-OS one close omni in a traffic-affected hall, and IMRSV a many-microphone immersive design. No direct controlled comparison proves one universally best. Direct contradiction: IMRSV calls an MK 4 omni, while its maker calls it cardioid. Gaps: no cited sitar source establishes the far-distance classroom trial, a universal pickup mounting point or a fixed low-frequency EQ setting. [1–8]
+[1] The Metropolitan Museum of Art, “Sitar,” Murari Adhikari example with melody and sympathetic strings. https://www.metmuseum.org/art/collection/search/503529
+[2] The Metropolitan Museum of Art, “Sitar,” late 19th-century example without sympathetic strings. https://www.metmuseum.org/art/collection/search/502149
+[3] Shure, “Miking World Instruments with Alexander Duvel,” sitar section and KSM137 arrangement. https://www.shure.com/it-IT/articoli/miking-world-instruments-with-alexander-duvel
+[4] GE-OS Project update #07, “Recording lessons,” Greg Simmons session account (2011). https://www.fast-and-wide.com/faw-news/1019-recording-lessons-ge-os-tackles-the-tabla
+[5] DPA Microphones, “Stereo recording techniques and setups.” https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/
+[6] IMRSV Music Studios, “Recording at IMRSV with sitar player Arjun K. Verma” (2024); equipment-pattern label disputed. https://www.immersivemusicgroup.com/post/recording-at-imrsv-with-sitar-player-arjun-k-verma
+[7] Shure, “Microphone Techniques for Live Sound Reinforcement,” patterns and gain before feedback. https://content-files.shure.com/Pubs/microphone-techniques-for-live-sound-reinforcement/microphone_techniques_for_live_sound_reinforcement_english.pdf
+[8] Schoeps, “Cardioids,” MK 4 capsule identified as cardioid. https://schoeps.de/en/products/colette/capsules/cardioids.html

@@ -1,0 +1,145 @@
+# Tabla Miking Technique
+Pro Audio Training Academy • Membranophones Lab • M13 • October 4 2026
+# Purpose and teaching conclusion
+Mic the dayan and bayan as one musical instrument with two interacting sources. Preserve the player’s intended balance, distinct articulations, ringing tones and bayan pitch gestures. Begin with the simplest arrangement that meets that goal; use separate microphones when independent balance or isolation is needed, and stereo when spatial perspective is part of the musical objective.
+This lesson covers studio and live miking of the complete tabla pair. It follows tonbak in the supplemental sequence; gong is next. No audio examples are included.
+Evidence boundary: a documented tabla-specific close arrangement and a firsthand stage report are available. Neither establishes a universally best setup. The alternative distances and targets marked as classroom trials are proposed adaptations, not measured optimal tabla placements. Confidence is high in the instrument distinctions and cited microphone principles, moderate in applying any arrangement to an unfamiliar player, room and microphone.
+# Learning objectives
+Identify the smaller dayan and larger bayan and explain why their balance matters.
+Preserve both ringing and damped articulations, quiet passages and intentional bayan pitch changes.
+Compare shared mono pickup, two close microphones and a coincident stereo perspective.
+Explain microphone overlap and judge a two-channel combination in mono.
+Adapt placement, microphone count and monitor geometry to live requirements.
+# Understand the pair and the performance
+In this lesson, “tabla” follows common usage for the pair. The smaller drum is the dayan, also called dahini or tabla; the larger is the bayan. The Met’s collection record distinguishes the wooden cylindrical drum from the clay or metal kettle-shaped partner. Identify them by instrument, rather than assume that a microphone label such as “right” always describes the same viewpoint. [1]
+The Met’s instrument essay describes the compound heads and their applied tuning material, commonly spelled syahi or siyahi. It also explains the bayan’s off-center loading and the player’s pressure-based pitch changes. The practical implication is that hand movement across the bayan is musically necessary; a microphone must not force the player to abandon it. [2]
+Patranabis and colleagues studied nine strokes across five tablas and reported differences in their timbral features. The paper supports listening to several strokes and instruments rather than judging one note. It does not compare microphones or provide an optimal pickup position. Avoid turning its limited analysis into fixed EQ bands for all tabla playing. [3]
+Before setting a stand, have the player demonstrate their normal seating or platform arrangement, drum supports and strongest hand movements. Request a short repeated passage containing dayan ringing tones, damped strokes, bayan open tones, pressure changes, combined strokes and quiet finger work. Let the player choose and name representative bols; terminology and execution should follow the player’s practice. Hear this passage acoustically from a comfortable listening position.
+Agree on the role: featured soloist, classical accompanist, an acoustic ensemble or a dense amplified arrangement. Ask how prominent the bayan should be and whether fine articulations must carry over loud neighboring sources. Do not impose equal channel levels or a Western drum-kit tonal goal. Leave tuning and head treatment to the qualified player; the miking lesson does not instruct students to wet, heat, tape or alter the heads.
+# Documented practitioner approaches
+## Close condensers in the Shure session
+Shure’s account of Alexander Duvel at its Performance Listening Center specifies two KSM137 cardioid condensers, 3–4 inches from the drumheads, angled to improve separation. That is approximately 7.6–10.2 cm. The account identifies the challenge of relatively quiet tabla in a mix. It does not specify one mandatory head target or angle. [4]
+Use this as a documented close approach, subject to the player’s complete hand clearance. A student should not infer that a particular microphone purchase, exact angle or proximity to the rim is compulsory. If that distance obstructs playing, move the microphone and document the adaptation. The session report is a manufacturer-hosted demonstration, not an independent microphone comparison.
+## Dynamic microphones on a loud stage
+In a firsthand review, percussionist Doug Brush reports using an Audix D1 on the higher tabla drum and a D4 on the lower drum, with useful results among loud neighboring instruments. He emphasizes placement with their hypercardioid patterns. This demonstrates that dynamic microphones can be a workable tabla option; it does not prove superiority over condensers or supply a repeatable placement distance. [5]
+Teach the difference in priorities: one example uses close cardioid condensers, while the stage account values selective pickup and an appropriate tonal response. Compare the same musical passage at a similar reproduced level before deciding which approach fits the actual situation.
+# Select microphones and support hardware
+The following are instructional selection options. They are not purchase rankings.
+Option
+Reason to compare it
+Main check
+One cardioid condenser
+A simple shared perspective of both drums
+Off-axis balance between the pair and room spill
+Two cardioid condensers
+Separate tonal and level control
+Hand clearance and cross-pickup
+One or two directional dynamics
+Alternative response and practical stage pickup
+Quiet-stroke detail and required gain
+A coincident directional pair
+Studio stereo perspective
+Image stability and mono sound
+A pressure omni
+Quiet-room tonal comparison
+Room contribution and lack of directional rejection
+
+Check the actual model’s frequency response, polar plots, power and maximum input capability. A condenser’s electrical sensitivity alone does not predict feedback at the same useful reproduced level. A small diaphragm does not inherently mean inadequate bass response, and a large diaphragm is not a requirement for bayan. These are selection cautions: compare the complete response and placement instead of choosing by diaphragm size alone.
+DPA’s proximity explanation shows that pressure-gradient microphone bass balance depends on source geometry, distance and design. A pressure omni does not have that mechanism. Do not assume that every increase in bayan thickness is proximity effect; a different target or room resonance can also change the result. [6]
+Use low stands or suitably positioned booms that leave the player’s seating and exit route free. Stabilize the support and keep cables away from hands, knees and drum supports. Use instrument clips only when their attachment is approved for the specific instrument and accepted by the player. A conventional drum-kit hoop clip must not be assumed safe on tabla straps, skin or decorative shell. Confirm the correct powering adapter for any miniature microphone; do not connect it on the basis of connector appearance alone.
+# Placement methods and tonal comparisons
+Distances below are capsule-to-target starting ranges. Except for the cited Shure close distance, these are classroom proposals. Hand clearance takes priority over every number. Establish a safe initial position while the player is stationary, then verify it during the complete passage.
+## Method A One shared microphone
+For a quiet studio or restrained acoustic stage, try one cardioid microphone 30–50 cm above and in front of the area between the heads, aimed toward the pair. Approach from the audience side and keep the capsule and boom outside both hands’ full paths. This is a proposed starting perspective, not a manufacturer-specified tabla distance.
+Ask the player to alternate each drum and then play them together. If one dominates, move the capsule toward the weaker drum or adjust the viewing angle in small steps. A centered physical position does not guarantee an appropriate musical balance. Changing the microphone axis alone can place one drum further off-axis; compare moving the microphone with merely turning it.
+Keep this approach when the player’s full vocabulary and the required balance are represented. Its advantage is simplicity; its constraint is limited independent control. If both drums need different treatment or the shared perspective admits too much spill, try separate microphones rather than repeatedly asking the player to change their dynamics.
+## Method B One microphone per drum
+Use the Shure close arrangement as the sourced reference. For a less intrusive comparison, begin farther back at 15–25 cm from each head, then approach only as clearance and the sound permit. This farther starting range is the instructor’s adaptation. Position each microphone from a safe outer viewpoint, aiming across its intended head rather than obstructing the playing area.
+Test a target between the loaded area and the outer playing region, then compare another target selected with the player. Do not assume the black patch, rim or geometric center is the only useful source. On the bayan, verify that the microphone does not interfere with pressure movements or become blocked by the hand. On the dayan, compare ringing and damped strokes before choosing a position.
+Work on the main pickup for each drum first. Then hear both microphones together, because each will also hear some of the other drum. Angle and position them to reduce unwanted overlap while preserving useful tone. Adjust channel balance to the player’s intention. Start centered for mono evaluation; decide pan positions separately from the pickup technique.
+## Method C Coincident XY for a studio perspective
+DPA describes XY as two directional microphones with capsules close together, angled apart; a common cardioid arrangement has a 90-degree included angle. Keep the microphones from touching. This geometry is a general stereo method, not a tabla-specific distance recommendation. [7]
+As a classroom trial, place the pair 50–80 cm from the tabla set, with the array centered on the musical source and directed toward both drums. Check the audience-side viewpoint, image position and tonal balance. Adjust distance and axis before choosing a wider angle. This perspective is useful only if the room and intended mix justify stereo.
+The close-per-drum arrangement in Method B is not XY merely because it uses two microphones. Do not automatically spread the two drums hard left and right. A percussion pair can occupy a modest location within a larger ensemble; in solo work, room perspective may matter more than exaggerated drum separation. Check the mono fold-down and listen for changes in articulation and body.
+## Method D Main pickup plus a restrained room microphone
+In a suitable studio, test an additional room microphone roughly 1–2 m away, choosing its actual position by the room sound and performer clearance. This is an optional classroom trial. Add it softly to the successful main pickup and judge whether the space improves the intended perspective.
+If the room channel obscures rhythmic detail or makes the sound hollow in combination, change its level or location, or remove it. For live reinforcement, do not assume a room microphone should feed the PA or monitor mix. A separate capture-only room channel may serve a different purpose from the reinforcement microphones.
+# Combining microphones without losing the pair
+DPA distinguishes polarity inversion from a delay: inverting a channel reverses its sign and does not correct arrival-time differences. There is no universal requirement to invert one tabla microphone. [8]
+Use this proposed check whenever channels overlap:
+1.Identify the contribution and leakage of each channel alone.
+2.Combine the channels in mono at the intended balance, beginning with no additional processing.
+3.Have the player alternate dayan, bayan and combined strokes, including pitch gestures and quiet work.
+4.Compare polarity settings and small position changes. Keep the combination that preserves useful tone across the passage, rather than the setting that makes one isolated stroke loudest.
+5.Repeat with ordinary player movement. If a benefit depends on an unrealistically fixed posture, revise the setup or use fewer microphones.
+Do not regard equal distances, the 3 to 1 guideline or automatic waveform alignment as proof of a correct blend. For a two-drum source with shared pickup, the actual contribution of each drum to each channel matters. Polarity testing is a diagnostic comparison, not a substitute for microphone placement.
+# Studio and live sound adaptations
+## Studio
+Choose perspective by the intended musical role. Compare shared mono pickup with separate microphones before deciding more channels are necessary. Use XY or room support when useful space is wanted and the room supports it. Compare changes at similar listening loudness; louder is not automatically more accurate. Listen to the pair in the ensemble context and ask the player to confirm the dayan-to-bayan balance.
+Keep monitor loudspeaker spill out of the placement evaluation where practical. Use comfortable headphone levels, conservative input gain and the strongest intended passage to check overload through the signal path. Avoid starting with a gate or strong compression that could conceal quiet bols or reshape the player’s dynamic expression. Processing choices are secondary to establishing a representative pickup.
+## Live sound
+Shure’s pattern guidance distinguishes cardioid rear rejection from the rear-side rejection and rear pickup of supercardioid or hypercardioid microphones. The practical requirement is to check the model’s actual polar behavior before positioning monitors; a narrower front pattern is not automatic protection from feedback. [9]
+Start with the fewest microphones that achieve the required musical balance. Keep desired sources close enough for useful pickup and reduce stage sound reaching the microphones where the setup allows. Give the player only the monitoring level needed. If the stage is too loud to reveal quiet tabla articulations, discuss stage balance and source placement with the performers; raising gain alone does not resolve that situation.
+Begin with monitor sends down and raise them gradually under the operator’s control. If ringing develops, reduce the relevant send or output promptly before making placement corrections. Do not sustain feedback as a classroom demonstration. When two close microphones are used, check both channels with the complete monitor mix and normal playing movement. What succeeds in isolation may fail beside amplified sources.
+# Troubleshooting through microphone placement
+These are diagnostic trials, not prescribed EQ settings.
+Problem
+First placement or setup test
+Keep the change only if
+Bayan is weak
+Shift shared pickup toward bayan or adjust its individual channel and target
+Pitch gestures and the overall pair remain convincing
+Bayan is overly thick
+Compare more distance, another target or less room support
+Intended low tone is preserved
+Dayan is hard or overly clicky
+Compare a different head target, axis or greater distance
+Quiet and ringing articulations remain distinct
+Quiet bols disappear
+Check target, spill and any dynamics processing
+Details improve without overloading loud strokes
+Two-channel blend is hollow
+Test relative level, position and polarity in mono
+Several strokes improve, not just one
+Level changes during pitch gestures
+Check whether the hand blocks the capsule or the drum moves
+Player can perform naturally
+Distortion occurs
+Locate the overloaded stage and follow the microphone or interface manual
+The strongest passage is clean
+Live ringing or excessive spill
+Lower the relevant send, then revisit monitor and microphone geometry
+Required reinforcement remains stable
+
+If a high-pass filter is needed for rumble, choose it by listening to what it removes from the bayan as well as from the noise. Do not import a kick-drum cutoff or boost recipe. Intentional ringing tones and hand-pressure changes are not defects to eliminate merely because they complicate the mix.
+# Teaching exercise and pass criterion
+Allow approximately 45–60 minutes, adjusted to the students. Equipment: a tabla pair, a competent player, one or two microphones with appropriate supports, a console or interface, and comfortable monitoring. A supervised PA is optional for the live portion. Use live playing and written observations; no supplied audio examples are required.
+1.Identify each drum, the player’s musical role and the desired balance. Agree on a repeatable passage covering both drums and the main articulations.
+2.Establish the shared microphone trial, confirm hand clearance and check the strongest passage for distortion. Log model, pattern, target and distance.
+3.Compare two target positions without changing distance. Then compare distances without changing the target. Ask the player which best preserves their vocabulary.
+4.Establish the two-microphone approach if equipment permits. Compare it with the shared pickup at similar reproduced loudness, then perform the mono blend checks.
+5.If a pair is suitable for XY, compare its spatial perspective with the close arrangement. Identify why stereo is useful or why mono is sufficient.
+6.Test live monitoring at modest level with supervision. Check rejection geometry, movement and spill. If a PA is unavailable, submit a setup plan and mark reinforcement performance untested.
+7.Submit the preferred studio and live arrangements, reasons for the microphone count, remaining limitations and source versus trial distinctions.
+Pass criterion: the student maintains unobstructed playing, captures the intended pair balance and audible quiet articulations, and keeps the strongest passages clean. Multiple channels are checked in mono. The student explains a tonal change with the variable changed, rather than guessing its cause. Live suitability is demonstrated in the available conditions or explicitly marked untested.
+Position log: source identity; microphone model and pattern; target and capsule distance; axis and stand location; player posture and clearance; input setting or pad; dayan-to-bayan balance; quiet-stroke detail; pitch-gesture consistency; spill; mono result; monitor conditions; player comments; revision.
+# Evidence audit
+## Points of agreement within the relevant sources
+Instrument and acoustic sources distinguish the two drums and the importance of varied articulations. The two tabla-specific miking reports show that usable pickup is achievable with different microphone types. This supports testing the actual source and musical role; it does not establish agreement on one optimal model or distance. [1–5]
+## Points where most agree but emphasis differs
+The Shure session favors close cardioid condensers, while Brush’s stage report values dynamic pickup under loud neighboring sources. Stereo guidance describes spatial capture rather than independent per-drum control. Their priorities can coexist: select isolation, channel control or spatial perspective according to the job. [4, 5, 7]
+## Direct contradictions and qualifications
+The Met’s object record restricts “tabla” to the smaller drum, while its essay and the acoustic paper also use it for the pair. This is a naming difference; the lesson identifies each drum explicitly. The acoustic paper’s introductory description generalizes the loading as central, whereas the Met describes the bayan’s off-center loading. Use the actual head construction and the specific bayan description rather than transfer the dayan geometry to both drums. [1–3]
+## Important gaps
+The documented Shure setup gives distance and an isolation objective, but not a standardized target, measured rejection improvement or comprehensive comparison. Brush’s account is qualitative and lacks repeatable placement measurements. The academic study investigates timbre, not microphone optimization. None validates the alternative classroom distance ranges or a universal maximum usable monitor level. Retain these limits when teaching and document player feedback and equipment-specific results.
+# References
+[1] The Metropolitan Museum of Art. Tabla and Bhaya, object 1986.467.79a b. Construction and terminology.  Read source <https://www.metmuseum.org/art/collection/search/504453>
+[2] Allen Roda. Musical Instruments of the Indian Subcontinent. The Metropolitan Museum of Art, March 2009; Tabla vocabulary section.  Read source <https://www.metmuseum.org/essays/musical-instruments-of-the-indian-subcontinent>
+[3] Anirban Patranabis and colleagues. Harmonic and Timbre Analysis of Tabla Strokes. 2015 research manuscript; introduction and experimental procedure. Timbre evidence, not placement validation.  Read source <https://arxiv.org/pdf/1510.04880>
+[4] Davida Rochman. Miking World Instruments with Alexander Duvel. Shure, June 15 2015; Tabla section. Documented close condenser arrangement.  Read source <https://www.shure.com/pt-BR/insights/miking-world-instruments-with-alexander-duvel>
+[5] Doug Brush. Audix D Series Drum Microphones Impressive Isolation. Down Beat review reproduced by RecordingHacks. Firsthand stage experience; historical equipment examples, not purchase recommendations.  Read source <https://recordinghacks.com/reviews/audix-d-series-drum-microphones-impressive-isolation/>
+[6] DPA Microphones. Proximity effect in microphones explained. General source-dependent microphone behavior.  Read source <https://www.dpamicrophones.com/mic-university/background-knowledge/proximity-effect-in-microphones-explained/>
+[7] DPA Microphones. Stereo recording techniques and setups. XY section; general stereo geometry.  Read source <https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/>
+[8] DPA Microphones. Polarity phase and delay. Polarity inversion versus timing.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+[9] Shure. Microphone Directionality and Polar Pattern Basics. June 25 2026; cardioid and tighter patterns.  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+Sources reviewed October 4 2026. Manufacturer demonstrations and firsthand reports are identified separately from research. Proposed trial distances and teaching recommendations require evaluation with the actual instruments, player and equipment.

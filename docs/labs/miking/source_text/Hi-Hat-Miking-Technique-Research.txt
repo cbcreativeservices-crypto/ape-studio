@@ -1,0 +1,116 @@
+# Hi Hat Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Research checkpoint 4   October 3 2026
+This lesson teaches decisions and microphone placement for the acoustic hi-hat in a drum kit, for both live reinforcement and studio work. The top and bottom cymbals are idiophones: the vibrating metal produces the sound; the pedal and stand control their interaction. A dedicated hi-hat mic is optional. Begin with the whole kit and determine what extra contribution a hi-hat channel must provide. This lesson compares overhead and shared coverage with dedicated positions, the tonal effect of moving across the top cymbal, snare spill, air bursts, mechanical clearance, and microphone interaction. Published distances are starting points, subject to the actual drummer, instrument, microphone, and room. No audio examples are included. [1‑5]
+# Learning goals
+Learners should distinguish the hi-hat's top and bottom cymbals, the clutch and pedal mechanism, open and closed playing, foot chick, stick strike, and other cymbal spill. They should explain when existing kit microphones suffice; choose and safely mount a dedicated mic when needed; compare edgeward and bellward pickup without promising a universal equalization curve; aim a directional mic to reduce snare pickup; identify air-blast and strike hazards; check a hi-hat channel against snare and overhead microphones in mono; and justify a live or studio arrangement.
+# Start with the actual kit
+Listen to the hi-hat as the player performs the intended material: tightly closed strikes, partly open strokes, fully open washes, foot chicks, and any accents or brushes the song uses. Note the player's typical strike area and the travel of both cymbals; do not judge placement from an unplayed kit. Cymbal alloy, diameter, thickness, pairing, adjustment, touch, and the surrounding room affect the result. DPA describes the hi-hat as a pair of often dissimilar cymbals and explains that it radiates midrange and low-frequency content as well as high frequencies. Avoid teaching that it produces only treble. [1]
+Listen first to existing overheads or other kit microphones at the intended balance. Shure says overheads often provide enough hi-hat and that a separate mic may be unnecessary; DPA suggests a designated microphone when the hi-hat needs to be a distinct mix element. Both are valid conditional choices. For live work, also listen in the audience area with the band playing: an acoustically loud hi-hat may need little or no added PA level, while a stage with loud other sources or in-ear needs may call for more controllable pickup. Do not mistake the presence of an open input for a need to turn it up. [2‑5]
+# Safety and setup
+Protect hearing during repeated soundcheck and rehearsal. NIOSH's recommended occupational limit is 85 dBA as an eight-hour time-weighted average, with the recommended duration halved for each 3 dBA increase. This addresses cumulative human exposure. It is unrelated to a microphone's maximum SPL specification, and it does not establish a safe exposure merely because a microphone is undistorted. Limit unnecessary repeated loud playing and follow applicable venue procedures. [9]
+Ask the drummer to stop before positioning any microphone. Check the entire stick and brush path, the top cymbal's rocking motion, the cymbals' fully open and closed positions, the player's hand and forearm, the snare rim, neighboring cymbals, the hi-hat rod, clutch, pedal, and stand hardware. Mount from a stable stand or a manufacturer-approved accessory where appropriate. Leave ample clearance for the actual performance, not just an idle cymbal; no cited source gives one universally safe clearance. Do not clamp to a moving cymbal, obstruct the clutch or stand, or change the player's hi-hat height merely to force a published illustration. Secure cable slack away from feet, sticks, and walkways. [1, 6]
+Set the microphone and input according to their manuals. For a condenser, check its specified phantom-power requirement and the connected device's instructions. Mute or lower relevant outputs before plugging, unplugging, or changing phantom power, and verify that the mute covers monitor and auxiliary paths. Set gain with the loudest intended open and closed playing; investigate microphone or preamp overload before assuming that a low fader will cure it. A mic pad can protect a following stage only if the overloaded stage is downstream of that pad. Do not prescribe one pad or high-pass setting for all microphones. Yamaha's phantom advice is an equipment-specific example. [8]
+# Choosing whether and how to mic
+Approach
+Useful when
+Limits and checks
+Existing overheads or overall-kit mic
+The hi-hat already has a musical level and character in the kit image; fewer channels are desirable. [2, 3]
+Overhead location affects hi-hat and snare balance; check the entire kit, stage spill, and mono sum.
+Shared snare and hi-hat pickup
+A minimal live input count calls for one microphone to contribute both; Shure explicitly describes angling a snare mic somewhat toward the hi-hat. [4]
+Neither instrument is independently controllable. The snare microphone's main job and stick clearance still govern its position.
+Dedicated top-side hi-hat mic
+The arrangement needs distinct articulation, controlled level, foot chick, or a separate feed. [1‑5]
+Adds snare and other spill plus another arrival time; it is not automatically better than the overhead sound.
+Underneath perspective
+A practical stand or sightline may favor below-cymbal placement; DPA documents a specific 4099 mounting option. [1]
+DPA warns of reduced top-cymbal stick attack and changed warmth from below. Keep clear of pedal, rod, drummer, and air path. Treat as an alternative tone, not a required phase pair.
+
+Small-diaphragm condenser microphones are common examples for a dedicated channel: Shure gives a pencil condenser example, Sennheiser documents the e 914, LEWITT diagrams the LCT 040 MATCH, and Audix offers a hypercardioid SCX1HC. A suitable dynamic or other microphone can be tested if it meets the physical, tonal, and input needs. Transducer type alone does not determine how much snare spill is captured; consider pattern, off-axis frequency response, angle, distance, response, maximum input level, and physical size. Audix's preference for its own SCX1HC is a product recommendation, not evidence that one model is universally best. [3, 6, 7, 10]
+# Top-side placement and tonal exploration
+Reference or movement
+What its source actually proposes
+What to test on this kit
+Shure recording starting point
+If needed, place a mic within four inches of the hi-hat, away from the air puff at closure. Another Shure article suggests a pencil condenser roughly 10–15 cm away, pointing down near the far edge away from the snare. [2, 3]
+These are different starting suggestions, not a universal radius. Check sound, closure gust, stick path, and separation.
+DPA top-side starting point
+Put the mic 5–10 cm above the top cymbal and choose an angle that reduces direct snare pickup. [1]
+Keep the capsule away from the air blast and moving cymbal; compare at the intended gain and player dynamics.
+Sennheiser e 914 manual
+A few centimetres above the outer edge, aimed downward; avoid the strong air current near the closing edge. Its high-pass filter may remove unwanted low-frequency components. [6]
+This is model-specific guidance. Leave additional physical clearance as required and do not blindly reproduce the smallest possible gap.
+Move aim between edge and center
+DPA reports relatively lower-frequency content toward the edge and higher overtones toward the center; LEWITT recommends varying this aim for different tones. [1, 7]
+Compare an edgeward attack area, an intermediate area, and closer to bell at comparable level; results are complex and depend on strike, cymbal, and mic.
+
+The distance above the surface, horizontal aim on the top cymbal, and orientation of the capsule are separate choices. Moving the entire microphone toward the center also changes its distance from the snare and the drummer's strike, so one variable at a time is preferable when teaching cause and effect. DPA places the usual stick attack near where the drummer hits, often roughly 2–3 cm from the edge; that is a description of playing, not an instruction to put a microphone 2–3 cm from the rim. [1]
+An aim nearer the bell may reveal more high overtones on one set, but the sound can become harsh or less representative of the actual playing; an edgeward aim may sound lower or washier and can encounter closure air. These are testable tendencies, not guaranteed EQ bands or ideal placements. Start from a location outside the strike arc and gust. Do not position the capsule in the plane of the opening between the two cymbals. [1, 6, 7]
+# Spill, polar pattern, and interaction
+The hi-hat is near the snare and can reflect sound from the whole kit. DPA recommends placing and angling a directional mic so it has less direct exposure to the snare. Check the selected microphone's polar diagram at relevant frequencies: a cardioid's rear null and a supercardioid or hypercardioid's side-rear nulls are different; those tighter patterns retain a rear lobe. Rotating a microphone toward a theoretical null can also alter its hi-hat tone and proximity to moving hardware. Verify separation while the drummer plays the entire kit, rather than claiming that a pattern eliminates bleed. [1, 5, 10]
+The snare mic itself may capture the hi-hat. If excessive, consider the snare mic's safe aim and pattern, and the actual hi-hat playing level. LEWITT describes using a cardioid snare mic's rear rejection against hi-hat spill. Shure alternatively permits aiming the snare mic toward the hi-hat when shared capture is wanted. These approaches have different goals and cannot be applied simultaneously as one fixed rule. Any change to the player's cymbal spacing or instrument choice requires the player's agreement. [4, 11]
+A dedicated hi-hat mic and overheads hear both hi-hat and snare at different distances. Add the hat channel to the kit at intended level and compare mono and stereo or the live PA output for cancellation, excess wash, snare coloration, or a shifted image. Reposition or change balance first if the combination suffers. A polarity reversal is worth comparing but is not an automatic requirement or a remedy for every time offset; it reverses instantaneous electrical polarity rather than changing acoustic delay. DPA explains this distinction, and Shure documents close-mic and overhead interactions. Do not automatically time-align every channel or rely on a fixed 3:1 distance rule to solve all drum-kit interactions. [5, 12]
+# Live versus studio decisions
+Decision
+Studio context
+Live sound context
+Need for dedicated mic
+Overhead or room perspective may carry the hi-hat naturally; use a close channel when independent balance or articulation serves the production. [2, 3]
+Check acoustic level in the audience and any monitor or recording feeds; add the channel only where its contribution is needed. [4, 5]
+Placement tradeoff
+With a stopped take, compare tone at several safe positions and preserve an intentional kit image.
+Prioritize repeatable secure mounting, performer clearance, snare rejection, spill control, and adequate gain before feedback.
+Filtering and output
+High-pass filtering can reduce unnecessary low-frequency drum spill if it improves the combined kit; select by listening in context. [4, 6]
+A high-pass filter may reduce low-frequency leakage and air pops, but cannot correct a microphone sitting in the closure air stream. Avoid excessive high-frequency level and check monitors. [4, 6]
+Inputs and monitoring
+A spare channel can be retained for optional mix control; keep it quiet if it worsens the kit.
+Fewer open microphones simplify stage operation; a dedicated mic may serve in-ear monitors even if the front-of-house mix barely uses it.
+
+These are situational recommendations. A live stage can use spacious overheads, and a studio production can prefer close isolation. Do not create feedback deliberately to demonstrate a failure condition. Evaluate the system at normal working levels with a qualified operator. [4, 5]
+# Practical setup procedure
+1.Hear the acoustic kit and existing microphones with the actual song. Decide what additional hi-hat contribution is needed for the intended listener or feed.
+2.Choose existing-kit pickup, shared snare pickup, a dedicated top-side microphone, or a deliberately different underside perspective. Identify what control is gained and what spill is accepted.
+3.Ask the drummer to stop. Inspect the entire open/closed motion, strike arc, neighboring cymbals and drums, stand and pedal. Place a stable mic outside all paths and route its cable safely.
+4.If a dedicated top mic is chosen, start in an appropriate manufacturer-suggested region only when physical clearance permits. Aim down toward the top cymbal, away from the closure air stream; decide on the directional pattern from the actual mic and neighboring sources.
+5.Set power and gain by equipment instructions. Ask the player for the strongest intended closed, open, and foot-only passages. If air pops, distortion, or physical contact appears, stop and change position or setup.
+6.Compare a small number of safe positions and aims at comparable level: player's strike area, more edgeward, and more centerward if feasible. Note body, overtones, attack, wash, foot chick, and snare spill without claiming exact spectral changes.
+7.Add the channel to overheads and snare at intended levels. Check mono and the actual stereo/PA image, then secure the mount and repeat the full-motion clearance check.
+# Troubleshooting and assessment
+Observation
+First checks
+Low-frequency pop on closing
+Check whether the capsule lies in the air escaping between cymbals. Move it out of that stream; a filter may reduce residual low-frequency content but does not replace safe position. [1, 4, 6]
+Snare dominates the hat mic
+Assess distance and direct angle to snare, actual polar pattern, and hi-hat aim. Check whether overhead-only coverage is sufficient. [1, 3, 5]
+Hat seems harsh or wash dominates
+Compare centerward versus edgeward aim and greater safe distance, the drummer's open/closed playing, and the overhead contribution; do not prescribe a fixed corrective EQ. [1, 7]
+Hat or snare changes when channels combine
+Compare mono and intended outputs with hat channel added at working level; change position or balance and then audition polarity if needed. [5, 12]
+Stand, cable, or mic moves into playing path
+Stop playing, remount and reroute, and repeat full-motion clearance check.
+Hard strokes distort
+Inspect acoustic rattle, physical contact, microphone headroom, input clipping, and level structure in that order; a low fader after the clipping stage cannot repair it.
+
+Assessment scenario: present a kit with overhead and snare channels, an optional hi-hat mic, and a drummer alternating tight foot chicks, closed eighth notes, and open accents. Ask the learner to decide first whether a separate mic contributes anything; select a safe position and intended aim; identify the air stream, stick arc, snare direction, and mic pattern; predict qualitative tradeoffs; and test the combined kit in mono. A second scenario provides only a shared snare/hat mic and asks which source receives priority. Accept several defensible outcomes, but require the learner to explain how to verify them on the real kit.
+# Critical source audit
+Agreement: Shure and DPA both treat a separate hi-hat microphone as conditional on the desired kit balance. Shure, DPA, and Sennheiser describe top-side, downward pickup; all recognize the air burst as a problem near the closing edge. DPA and LEWITT say that moving between center and edge changes tone. [1‑7]
+Different emphases: Shure's guides give a within-four-inch region and a roughly 10–15 cm suggestion in different contexts; DPA proposes 5–10 cm above; Sennheiser's e 914 manual says a few centimetres above the outer edge. These are not identical geometries or microphones. DPA explicitly describes the underside as a distinct, less top-stick-focused perspective, whereas its own preferred top placement and LEWITT's guide emphasize top-side pickup. Use these as choices to test, never a single safe universal measurement. [1–3, 6, 7]
+Direct contradictions or overreach: The cited primary sources do not establish a direct factual contradiction about whether a hi-hat requires its own microphone. They express conditional preferences. Shure's suggested shared snare/hat aim and LEWITT's suggestion to turn the snare mic's rejection toward the hat are opposing choices for opposite goals; labeling either a universal best practice would be an error. Audix's claim that its SCX1HC is a leading choice is marketing, not comparative evidence of superiority. DPA's description of frequency regions is a useful qualitative tendency, not a measured response prediction for every cymbal, strike, and microphone. [1, 4, 7, 10, 11]
+Gaps: These sources do not establish a universally safe stick/cymbal clearance, ideal under-hat mic position and polarity, guaranteed dB of snare rejection, a fixed spectral curve for positions, or a numerical gain-before-feedback improvement in a particular venue. They do not justify a single permanent high-pass cutoff or claim that any close-mic SPL rating makes human exposure safe. A drummer and qualified sound practitioner should review any final placement graphic and live rig procedure before publication. [1, 4–10]
+# Proposed app presentation
+Show top and side views of the hi-hat pair, the player's actual stick arc, cymbal travel, closure air path, snare, overheads, and stand. Begin with the overhead contribution. The learner then chooses no dedicated mic, shared snare pickup, a top mic, or an optional under-hat perspective. When the mic moves, change written qualitative observations about attack, body, overtones, air pops, spill, phase interaction, and physical risk; no fabricated numeric response curves. Make unsafe placements visibly unavailable, ask the learner to check the full performance motion, and offer live audience versus studio playback contexts as text decisions. Include written assessment and diagrams without audio examples.
+# References
+[1] DPA Microphones, How to mic hi-hat and cymbals.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-hi-hat-cymbals/>
+[2] Shure, Microphone Techniques for Recording, hi-hats and overheads.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[3] Shure, Recording Drums Part 1, hi-hat placement.  Read source <https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique>
+[4] Shure, Microphone Techniques for Live Sound Reinforcement, hi-hat and shared mic techniques.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[5] DPA Microphones, How to mic a drum kit, hi-hat and overhead sections; Shure, Overhead Placement Techniques for Drum Miking.  Read source 1 <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-drum-kit/>  Read source 2 <https://www.shure.com/en-US/insights/using-stereo-overhead-miking-techniques-to-supplement-a-multi-miked-drum-setup>
+[6] Sennheiser, e 914 Instruction Manual, positioning the microphone on drums and percussion.  Read source <https://www.sennheiser.com/globalassets/digizuite/40715-en-e914_manual_07_2021_en.pdf>
+[7] LEWITT, LCT 040 MATCH Quickstart Guide, hi-hat placement.  Read source <https://www.lewitt-audio.com/download/quickstart-guide-lct-040-match-en-de-cn>
+[8] Yamaha, ZG01 Operating Panel, equipment-specific phantom precautions.  Read source <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>
+[9] CDC NIOSH, Understand Noise Exposure.  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[10] Audix, SCX1 and SCX1HC product information.  Read source <https://audixusa.com/products/scx1o>
+[11] LEWITT, How to record drums with only one microphone, snare rejection principle.  Read source <https://www.lewitt-audio.com/blog/record-drums-with-1-mic>
+[12] DPA Microphones, Polarity phase and delay.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>

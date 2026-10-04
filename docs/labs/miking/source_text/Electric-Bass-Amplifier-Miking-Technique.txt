@@ -1,0 +1,89 @@
+# Electric Bass Amplifier Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers fretted and fretless electric bass with an amplified loudspeaker, while comparing microphone and direct electrical paths. The miking subject is the cabinet speaker's airborne sound. The learner will choose a speaker/driver, change capsule position for tone, capture clean and driven playing, blend mic and DI in mono, and keep speaker/load and hearing safety explicit. A direct bass feed is taught as a comparison and practical live option, not called a microphone. No audio examples are included.
+# Trace the sound through the rig
+Vibrating strings begin the sound; a pickup and any active electronics produce an electrical signal that may pass through effects, preamp, power amplifier and cabinet. The cabinet's drivers and any horn radiate into the room. A pre-amp DI taken near the instrument, a post-amp-preamp DI, a speaker-simulated output and a microphone at the grille represent different circuit/acoustic points. They cannot be assumed interchangeable. The exact meaning of an amplifier's Pre/Post switch is model-specific: Ampeg's Venture series, for example, specifies which pad, compressor, EQ, drive circuit and loop are included in its post position [1]. Read the actual model's manual before labeling a path.
+The bassist's instrument, pickup selection, active/passive setting, effects, pluck style, amp EQ, cabinet and performance level all contribute. Have the player use the real song's quiet and strongest passages. Fretted playing may involve fingers, pick, slap or distortion; fretless playing may emphasize sustained slides, pitch articulation and fingerboard contact. These are performance variables to assess, not guarantees of one fixed fretted or fretless tone.
+# One-mic cabinet procedure
+Locate the actual loudspeaker behind the grille and identify whether the cabinet also has a horn or multiple driver sizes. Keep the microphone outside the grille, stable and clear of a moving cone. Begin with one directional mic close to a woofer's dust-cap/cone boundary, then shift toward center and edge while keeping distance and angle constant. Shure describes center as more bite/brightness and edge as warmer/darker on bass cabinets [2]. Its bass-specific article suggests 10–45 cm (4–18 in) as a distance range often worth trying for more breathing room, whereas a general amplifier guide gives 2–15 cm (1–6 in) [2, 3]. Compare both according to room and stage isolation; neither is a universal optimum. Set gain on the loudest playing and confirm that mic/preamp can handle the SPL without clipping; Shure advises checking mic low-frequency response and SPL handling [2].
+Change
+Expected local comparison
+Check in the song
+Close dust-cap/cone boundary
+Focused initial speaker sound.
+Fundamental, low-mid punch and note definition.
+Toward center
+More upper-mid attack/bite [2, 3].
+Slap/pick transients, distortion harshness, fretless articulation.
+Toward outer cone
+Smoother/darker local tone [2, 3].
+Whether bass loses pitch in ensemble.
+A little farther
+More driver/cabinet and room contribution.
+Drum spill, reflections and low-note consistency.
+Aim at horn, if present
+More upper-frequency content than a woofer trial.
+Hiss, string noise, crossover balance; horn is optional.
+
+Do not assume a 15-inch driver always has more useful bass or a 10-inch driver always has more attack. Shure describes that as a practical choice on some mixed-driver cabinets [4], not a rule independent of cabinet tuning, driver design, crossover and chosen mic. If a horn is unusually hissy or aggressive, leave it out of the mic view or assess it as a separate deliberate source. A cabinet grille midpoint may fall between drivers, yielding unpredictable cancellations. Listen to the chosen speaker at a safe level before placing the mic.
+# Tone approaches for fretted and fretless parts
+Fingerstyle or pick, clean: Compare boundary and edge for low-mid body, then move toward center only as needed for articulation. Assess the line with kick drum and harmony instruments. The microphone may supply cabinet character while a DI carries consistent fundamentals; do not boost sub-bass merely because the solo mic seems less deep than the room sound.
+Slap and pop: Test the strongest low-string thump and high pop. A center or smaller-driver view may add attack, but can also exaggerate clank or tweeter hiss [4]. Set input headroom for the pop, and evaluate both components at a matched monitoring level. If a DI is present, it may already provide transient detail; the mic can contribute cabinet body or a different texture.
+Driven or effects-heavy bass: If fuzz, octave or amp drive is integral, a pre-effect DI omits that treatment while the cabinet mic hears the processed speaker. Compare at the player's chosen stage volume. A closer center view may accentuate upper distortion; an outer-cone view may sit more smoothly. Label whether a post-processing electrical path retains effects and whether a speaker simulation is active.
+Fretless: Listen to sustained notes, slides, intonation detail and lower-register consistency. A mic position that flatters one plucked high note may leave the lower phrase muddy. Compare boundary, slightly centerward and modestly farther views during full musical phrases. A fretless tone is not inherently required to be darker or more mid-forward; ask the bassist what they want to hear.
+# DI routes and mic-plus-DI blend
+A dedicated instrument DI can accept the bass and feed THRU to the player's amplifier while its XLR goes to a console. Radial's J48 manual documents that routing and says the device needs 48 V phantom power; its pad is intended for high output sources [5]. Other DIs have different power and loading requirements, so follow their own manuals. A pre-amp DI can be valuable as a separate unaffected source, but if pedals are before the DI it is no longer dry. A line output from the bass amp may be pre or post selected effects/EQ; verify whether its level is mic or line and whether cabinet simulation is included [1].
+Start with mic alone and DI alone, then combine at musical levels and sum in mono. The acoustic speaker-to-mic path arrives after an electrical DI and its filters/amp stages differ. If low notes hollow out, adjust balance or mic position and audition polarity; time adjustment may help in a fixed studio arrangement, but no universal delay or polarity setting corrects every frequency. Shure explicitly recommends checking phase relationships among bass DI and microphones [2]. Record separate paths when possible. In live sound, the DI may carry the main low-frequency feed and the mic add cabinet texture, with the mix varying according to spill and stage level.
+If a DI has a low-cut filter, inspect its curve before engaging it on bass. Radial documents the J48's low-cut as approximately 6 dB down at 80 Hz [5]; that is not an automatic switch for a standard bass whose lowest E is about 41 Hz. Use a high-pass only for a diagnosed rumble/arrangement reason, checking the lowest performed notes and PA response. The bass instrument may be active and high output; watch DI and preamp overload before mistaking distortion for speaker tone.
+# Studio and live variations
+Studio: One close mic and DI give a reliable comparison. If the room is worthwhile, try a second farther mic after the close path is stable. Shure mentions close dynamic and farther condenser possibilities [2], but the latter hears room and may not improve the result. Solo channels and test the combined low end in mono. On a multi-driver cabinet, choose one actual driver first; two drivers, a horn and a room mic are separate acoustic arrivals. Do not expect a polarity button or fixed three-to-one spacing to solve all interactions.
+Live: A stable close mic reduces drum and wedge spill; keep stands and cables away from performer traffic and hot amp vents. The direct output is often more dependable when the stage is loud or cabinet spill is strong. Shure describes direct bass as standard live practice with the cabinet mic added when its character is desired [4]. Confirm what the player needs from stage amp and monitors. If feedback or too much stage bass occurs, lower the offending level and adjust amp/PA geometry; do not demand hazardous amp loudness merely to get a speaker mic tone. Some cabinets have rear ports or open backs; a front mic captures the actual local speaker/port balance, so identify the cabinet before treating the front grille as the entire sound.
+# Electrical, load and hearing safety
+Never patch a speaker output to a normal microphone input, mixer line input or ordinary instrument DI. Speaker outputs can carry high power; only equipment explicitly rated and wired for the model's speaker-level path may be used, with the manufacturer's instructions and qualified help. A line/DI XLR and a speaker jack may coexist on the same amp and have different functions [1]. Keep the intended cabinet connection and load intact while moving a mic. Use proper speaker cable for head-to-cabinet connections; never substitute an instrument cable or defeat a protective earth to solve hum.
+Ampeg states that its tube-output models generally require a speaker load, while some solid-state models and specifically named tube models have different provisions [6]. Those are Ampeg model-specific examples, not a rule to run any other amp disconnected. Read the actual amplifier's impedance/load and output instructions before soundcheck. Do not open a chassis, bypass interlocks or change wiring as part of this lab. Stop for smoke, shock, burning smell, damaged cable or an uncertain connector and involve a qualified technician. Radial recommends power off or all levels at zero while making/breaking DI connections to avoid harmful pops [5].
+Manage sound exposure at the source. Bass can carry substantial low-frequency energy while upper harmonics and other stage sources contribute to hearing risk. OSHA's 85 dBA eight-hour time-weighted average is a hearing-conservation action level, not a guarantee at all durations [7]. Measure when uncertain, keep soundchecks efficient and use appropriate hearing protection.
+# Troubleshooting map
+Symptom
+First question
+Test or response
+Bass mic is dull in the mix
+Is capsule near cone edge or off the actual driver?
+Move toward boundary; assess in band.
+Clank or fizz
+Is capsule near dust-cap center or horn?
+Shift outward or change angle; compare player tone.
+Hollow mic/DI blend
+Do paths differ in time/polarity/filtering?
+Solo, mono-sum, move/rebalance, then test polarity/timing.
+Low note unevenness
+Is it cabinet, room, mic position or monitor?
+Compare notes, move cabinet/mic, verify DI independently.
+DI distortion
+Is active bass or pedal overloading input?
+Check pad, output and meter per device manual [5].
+Stage spill dominates
+Is mic far from selected driver or near drums?
+Close position, choose pattern, use DI as needed.
+Speaker/load uncertainty
+Is jack speaker-level and load correct?
+Stop patching; consult exact amp manual/technician [6].
+
+# Teaching exercise and pass criterion
+1.Draw the actual path from strings to pickup, effects, DI tap, preamp, power amp, speaker and mic. Label which feeds are electrical and which hear air.
+2.Locate the driver without dismantling cabinet. With one mic, compare center, boundary and edge on the bassist's quiet/loud, low/high and style-specific passages; record capsule geometry and observations.
+3.Capture or monitor a correctly patched DI and mic alone and together in mono. Check phase, lowest notes, transient peaks and the user's desired cabinet character.
+4.Plan one studio and one live arrangement; identify mic/DI routing, stand and cable safety, hearing controls, and exact model's speaker load/output guidance before any connection change.
+Pass criterion: The learner can produce a repeatable bass-cab mic tone, make and audit a safe separate DI feed, adapt to fretted/fretless and live/studio contexts, and refuse unsafe speaker-output patching.
+# Evidence audit and limits
+Agreement: Shure describes DI, cabinet mics and phase checking as real bass practices [2, 4]. Shure's general amp placement supports center-to-edge tone changes [3]. Radial and Ampeg document distinct signal connectors and model-specific power/load rules [1, 5, 6].
+Different emphases: Shure's bass article suggests 10–45 cm for a cabinet with some breathing room [2], while its general amplifier guide starts at 2–15 cm [3]; their aims differ in room contribution and isolation. Its recording discussion values a miked amp when its character is wanted [2], while its live account favors direct sound as a dependable foundation [4]. An amp's Pre/Post DI content and speaker-free capability must be verified per model [1, 6].
+Gaps and confidence: No source makes a universal mic model, exact driver, cone offset, high-pass setting, DI polarity or mic-to-DI ratio best for all bass rigs. Confidence is high in documented connector/load distinctions and broad cone-position trend; moderate in tonal predictions before auditioning the actual cabinet and performance.
+# References
+[1] Ampeg, “Venture Series Bass Heads,” DI Pre/Post and output definitions.  Read source <https://ampeg.com/products/venture-bass-amplifiers/heads.html>
+[2] Shure, “Recording & Mixing Bass Guitar.”  Read source <https://www.shure.com/en-US/insights/recording-mixing-bass-guitar>
+[3] Shure, “PGA27 User Guide,” general amplifier mic placement.  Read source <https://www.shure.com/en-US/docs/guide/PGA27>
+[4] Shure, “Miking the Rhythm Section,” electric-bass cabinet and direct paths.  Read source <https://www.shure.com/nl-NL/insights/miking-the-rhythm-section>
+[5] Radial Engineering, “J48 User Guide,” DI routing and connections.  Read source <https://www.radialeng.com/wp-content/uploads/2026/03/J48-Manual-WEB-02-26.pdf>
+[6] Ampeg, “FAQs,” model-specific speaker load requirements.  Read source <https://ampeg.com/faq/>
+[7] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

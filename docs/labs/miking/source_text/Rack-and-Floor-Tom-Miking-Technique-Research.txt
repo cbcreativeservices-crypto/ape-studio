@@ -1,0 +1,109 @@
+# Rack and Floor Tom Miking Technique
+Pro Audio Training Academy   Membranophones Lab   Research checkpoint 3   October 3 2026
+This lesson teaches how to choose and position microphones for rack and floor toms in studios and live sound systems. It compares a kit-first overhead perspective, one microphone per drum, and shared microphones, then examines aiming, resonant heads, spill, mounting, and how the channels combine. Manufacturer distances are model-specific starting points. The actual player's motion and microphone instructions govern every setup. No audio examples are included.
+# Learning goals
+A learner should be able to identify top batter and lower resonant heads; explain how drum size, tuning, heads, damping, and playing shape the source; decide whether a tom needs its own mic; compare safe top-head positions and shared-mic coverage; select a mic by pattern, response, capability, and mount; distinguish a bottom-head perspective from a snare-bottom mic; check the relationship with overheads and other tom channels in mono; and justify a studio or live decision without treating one tone as universal.
+# Understand the source and the role of each tom
+Toms often form a set of pitches, with rack toms above the kick and floor toms beside the drummer, but arrangements, number, dimensions, and tuning vary. A two-head tom has a batter head and a lower resonant head; unlike a standard snare, it has no snare-wire assembly. The lower head therefore contributes resonance rather than a separate wire component. DPA describes this distinction and how the mic's position relative to the rim and center changes the balance of attack, overtones, and low-frequency body. These are tendencies to test on the actual instrument, not a frequency response guarantee. [1]
+Begin with the musical role: do the toms need to be an integrated part of a natural kit picture, prominent and individually controllable in a dense band, or something in between? DPA notes that overheads can carry the toms in some styles, whereas close mics serve a more separated pop or rock result. Shure also describes an overhead-led kit and individual tom mics when more control is useful. The word “jazz” or “rock” does not make a microphone compulsory. [1, 2, 3]
+Ask the drummer to play the actual tom passages, including full-strength hits, fills, rim hits if used, and nearby cymbals. Confirm that the drum, mounts, and heads are in working order. Tune and damp in consultation with the player and the separate Drum Tuning Lab; do not present microphone movement as a repair for mechanical rattle, an unwanted pitch bend, or a head that is not functioning as intended. [2, 3]
+# Safety and setup checks
+Protect hearing during repeated soundcheck. NIOSH's recommended occupational noise exposure limit is 85 dBA averaged over eight hours, with its recommended duration halved for each 3 dBA increase. This is about cumulative human exposure, not the instantaneous sound pressure at a close microphone or a mic's maximum-SPL rating. Limit needless repeated high-level playing and follow the venue's exposure and hearing-protection procedures. [9]
+Have the drummer stop before installing, moving, or removing a mic. Inspect the full stick path across every tom and nearby cymbal, plus any drum swing, stand adjustment, or pedal motion. Keep the capsule, body, clip, gooseneck, stand, and connector out of these paths. Verify that a rim clamp is approved for the microphone and hoop, grips securely, leaves the playing surface and tuning hardware usable, and does not impair drum vibration or mounting. Sennheiser documents its MZH 604 clamp for the e 904; Earthworks gives model-specific RM1 mount instructions for the DM20. Neither is a license to improvise incompatible mounts. [4, 5]
+Route cables so they cannot snag sticks, pedals, stand adjustments, or walking paths. In a floor-tom position, also check the player's leg and the lower head/stand area. Do not remove a resonant head, retune, tape, or otherwise alter the drum merely to match a lesson example; agree on instrument changes with the player. Shure's Beta 56A guide documents removing a bottom head for a specialized inside pickup, but doing so materially changes the drum. [6]
+Set input gain using typical and strongest intended strokes, leaving suitable headroom. Investigate distortion at the mic, input, mount, or drum hardware before reaching for tone controls. A fader after a clipped preamp cannot restore the waveform; a pad after an overloaded capsule cannot repair that mic distortion. Supply only the power the microphone requires. Before changing cable or phantom power, mute relevant outputs, lower monitoring, and follow the actual equipment manuals; Yamaha's ZG01 instructions are an equipment-specific example of phantom-off cable changes and gain-down/mute precautions. Check whether any mute covers all sends and monitors in the current rig. [10]
+# Choose the microphone and pattern
+Dynamic and condenser mics both have established tom uses. Examples include Shure's supercardioid dynamic Beta 56A and Sennheiser's compact cardioid dynamic e 904, as well as DPA's drum-mounted 4099 condenser and Earthworks' RM1-mounted DM20 condenser. Audix lists its D2 for rack toms and its D4 for larger rack or floor toms. These examples demonstrate different frequency responses, polar patterns, mounts, and physical sizes; they are not required purchases or a rack-versus-floor law. [4‑8]
+Shure's dynamic-versus-condenser article describes a preference for the weight and isolation of selected dynamics and the detail and discreet mounting of selected condensers. Treat this as product and placement advice, not proof that all dynamics have less detail or all condensers collect more spill. Bleed depends on angle, distance, pattern, frequency-dependent off-axis response, sensitivity relative to gain setting, and how loud neighboring cymbals are. DPA documents condenser tom mics designed for high SPL. Confirm the selected model's actual rating and input requirements, and never infer hearing safety from those specifications. [7, 8, 9]
+For live aiming, a cardioid's strongest rejection is usually behind its axis, while a supercardioid has a rear lobe and strongest rejection to the sides of the rear axis; hypercardioid patterns also have rear pickup. Read the actual polar plot at relevant frequencies. Audix calls the D4 hypercardioid; the Beta 56A guide places its supercardioid maximum rejection around 120 degrees toward the rear, not directly behind. Neither pattern removes a loud cymbal completely or prevents feedback by itself. [6, 8, 11]
+# Placement choices
+Approach
+Documented starting point
+What to check
+One mic on each top head
+Shure's Beta 56A guide gives 2.5–7.5 cm (1–3 in.) above tom heads, aimed at the top heads. Sennheiser's e 904 manual gives 3–5 cm over the drumhead with its rim clamp. [4, 6]
+Stick and cymbal clearance, head balance, other drum spill, mount security, and level on hard strokes.
+Change top-head aim
+DPA describes more higher-pitched attack near the rim and more low-frequency body and level toward the center. Sennheiser varies e 904 fundamental-to-overtone balance by angle, with 30–60 degrees as a balanced example for that model. [1, 4]
+Compare one parameter at a time at similar monitoring level; results depend on drum, mic, and which surface it faces.
+Low-profile clip-on top mic
+DPA documents a drum clip/gooseneck for its 4099; Earthworks suggests 1.5–3 in. above the head for its DM20 and instructs that its head remain angled rather than parallel to the head. [5, 7]
+Follow the chosen mount's instructions, complete stick path, vibration, cable strain, and cymbal travel.
+One mic shared by two nearby toms
+Shure documents a mic between a pair of toms; DPA describes a wide-cardioid or omni between drums as another option. [3, 6, 7]
+Can both drums be picked up at useful relative levels without unsafe placement or excessive snare/cymbal spill? One channel cannot independently change their balance later.
+No individual tom close mics
+DPA and Shure describe overhead-led approaches. [2, 3]
+Are the tom passages already clear and appropriately balanced in the entire kit and, for live work, in the audience area?
+Resonant-head perspective
+Earthworks documents a bottom mount for its DM20. Shure documents inside pickup after bottom-head removal for its Beta 56A. [5, 6]
+These are different physical setups. With an intact head, check bottom-head contribution and stands; never remove a head without player agreement.
+
+The distance from the rim, distance above the head, and direction of the microphone axis are separate variables. A visible grille is not always the acoustic center, so a millimeter-accurate illustrated result would overstate the evidence. Do not equate “closer to the center” with a guarantee of more low end in every configuration. Directional-mic proximity effect can also change apparent bass when the mic gets closer to a radiating surface. [1, 4, 6]
+Rack toms often lie under crash or ride cymbals; a floor tom may be nearer the drummer's leg and a lower cymbal. Physical placement can therefore matter more than assigning a microphone model by drum name. If one tom is substantially lower in pitch, a mic with suitable low-frequency response and room to position it may help; Audix markets D4 for larger rack and floor toms, but that does not make it compulsory. Reassess mic choice and mounting against the actual kit. [1, 8]
+# Setup procedure
+1.Hear the full kit and the actual tom passages at a sensible level. Decide what is missing from the existing overhead or overall-kit pickup.
+2.Choose overhead-led, one mic per tom, or a shared-mic plan. Identify the intended drum or drums for each channel before setting gains.
+3.Confirm the player's stroke and cymbal paths. Have the drummer stop. Mount a suitable mic and cable using a stable stand or approved clamp, with enough clearance for the whole performance.
+4.Start at a documented top-head region for the chosen model if it is safe. Set power and gain according to the actual equipment instructions; check the strongest intended strokes.
+5.Compare safe changes in distance, rim position, and angle one at a time. For a shared mic, compare the two toms' levels and tone independently, then as a musical fill.
+6.Hear each channel in the complete kit. Add tom channels to the overheads and other open mics at intended relative levels; check in mono for loss of useful body or unevenness and reassess position or polarity as warranted.
+7.Secure cables and mounts and have the player resume the full motion. Stop and remount if the position risks contact or drifts under playing.
+# Resonant heads and multiple microphones
+The bottom resonant head of a tom is not equivalent to the wire-bearing underside of a snare. A separate bottom mic can be explored for head resonance if it contributes to a specific aim and fits safely, but none of the cited documents establishes a universal distance, tonal curve, or required polarity setting for a top/bottom tom pair. Earthworks permits bottom mounting of its DM20 with its RM1. Shure's alternative of removing a lower head and miking inside is an alteration of the instrument, not a routine prerequisite. [1, 5, 6]
+When several tom close mics and overheads capture the same hits, their signals arrive at different times and with different off-axis pickup. Bring in one channel at a time, compare its contribution in mono and then in the intended stereo/PA layout, and investigate a tom that loses body in the combination. A console “phase” button ordinarily inverts polarity; it does not eliminate delay. Compare both settings, but keep the one that serves the full kit and reposition or omit a channel if needed. DPA distinguishes polarity from phase and delay; Shure emphasizes the close-mic/overhead relationship. Do not automatically invert all bottom tom mics or digitally align every mic to a single transient as a supposedly superior default. [3, 12]
+# Differences between studio and live sound
+Decision
+Studio tendency
+Live reinforcement tendency
+Role of overheads
+A useful overhead or room perspective can be the main kit sound; individual tom mics can add focus. [2, 3]
+Check what the acoustic kit already contributes to the room and audience before adding gain to tom channels.
+Amount of isolation
+More distant or shared perspectives may be desirable if bleed and room are part of the intended kit sound.
+Close directional pickup may improve the drum-to-stage-spill ratio when the band and cymbals are loud; pattern and position must still be tested. [1, 6]
+Channel count
+Individual mics allow more independent tom balance when needed; a shared mic preserves a single combined perspective.
+Fewer open mics can simplify operation, physical setup, and feedback management; individual mics can still be justified on a large or loud stage. [6, 7]
+Mounting
+Stopped-session comparisons allow careful movement with the player paused.
+Secure, repeatable mount and protected cable routing matter under vibration and changeover. [4, 5]
+
+These are conditional design choices, not genre rules. A wide or omni mic between toms may work in a controlled setup; on a loud stage it may also collect more surrounding sound or limit gain before feedback. Conversely, a cardioid or supercardioid mic can serve a quiet studio session. Check the actual stage, PA, open microphones, and room. Do not create feedback deliberately as a learning exercise. [6, 7, 11]
+# Troubleshooting and assessment
+Observation
+First checks
+Mic, mount, or cable can be struck or snagged
+Stop playing; move or remount and reroute. Recheck the entire fill and cymbal path. [4, 5]
+Excessive cymbal or snare spill
+Check safe mic height, aim, actual pattern and neighboring source levels; decide whether some spill belongs in the kit sound. [1, 6]
+Two toms on one mic are unequal
+Inspect drum positions, mic axis and pattern, source dynamics, and whether independent channels are needed. [3, 7]
+A close tom becomes thin with overheads
+Compare levels and polarity settings in mono, then position and arrival times; do not assume a switch solves all cancellation. [3, 12]
+Ring or buzz exists before reinforcement
+Ask the player to inspect tuning, head, damping, and hardware; avoid treating mic placement as a mechanical fix. [2]
+A hard stroke distorts
+Check mic and input headroom, physical contact and hardware noise, then model specifications and gain.
+
+Assessment scenario: show two rack toms and one floor tom with cymbals, the drummer's actual playing arcs, an overhead perspective, and a limited or ample input count. Ask the learner to justify zero tom channels, one shared channel for the rack pair with the floor tom left to the overheads, or three individual channels; place each selected microphone safely; choose an aim to test for body versus overtones; identify unwanted pickup; and explain a mono check with the overheads. A second scenario introduces a resonant-head microphone and asks why it is a distinct choice from a snare-bottom mic. Grade safety, source/pattern reasoning, physical feasibility, and the explanation of polarity versus timing. Accept more than one defensible tonal outcome.
+# Critical source audit
+Agreement: Shure, Sennheiser, and Earthworks give workable top-head starting regions for their own microphones. Shure and DPA support either individual close mics or fewer microphones according to the role of the toms. DPA and Sennheiser describe position or angle as a way to alter tonal balance. [1‑7]
+Different emphases: Shure's Beta 56A gives 1–3 inches above the heads; Sennheiser's e 904 gives 3–5 cm; Earthworks' DM20 gives 1.5–3 inches and model-specific angled orientation. These are not the same capsule or mount. DPA proposes a wide-cardioid or omni between toms, while Shure's live guide favors tight patterns for individual isolation and a wider pattern when a mic covers two toms. [4‑7, 11]
+Direct tensions or overreach: Shure's dynamic-versus-condenser article speaks as if mic transducer type determines spill and detail, while DPA demonstrates condensers intended for close tom use. Pickup depends on the complete mic response and its geometry, so do not teach the generalization as a physical law. DPA claims that any DPA mic can be placed within one centimeter of a drum head without overload; its same article notes multiple sensitivities of the 4099. The lesson cannot extend that marketing statement to other products or substitute it for the selected model's specifications and safe physical clearance. [7, 8]
+Gaps: the cited documents do not establish one universally safe clearance from sticks and cymbals, an ideal tom distance for every drum, a fixed bottom-mic polarity or distance, measured tonal outcomes for the proposed app controls, or human exposure from a mic's max-SPL rating. A drummer and qualified sound practitioner should check any final physical-setup instructions before publication. [1, 4‑9]
+# Proposed app presentation
+Begin with a labeled rack/floor tom kit and an overhead perspective. The learner first chooses whether the toms need individual reinforcement, then places a proposed mic or pair of mics only in illustrated regions clear of all sticks, cymbals, mounts, and legs. Controls change the visible mic position, aim, pattern, and number of open channels. Show the consequences as conditional written explanations about coverage, spill, phase interaction, and safe mounting; do not invent measured response curves. A studio/live switch changes the context and assessment. A bottom-head option must identify whether the head remains installed and whether the player has approved an instrument change. Use diagrams and written decisions without audio examples.
+# References
+[1] DPA Microphones, How to mic a drum kit, tom-toms section.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-drum-kit/>
+[2] Shure, Recording Drums Part 1, kit setup and tom approaches.  Read source <https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique>
+[3] Shure, Microphone Techniques for Recording, tom placement; and Overhead Placement Techniques for Drum Miking, kit and close-mic interaction.  Read source 1 <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>  Read source 2 <https://www.shure.com/en-US/insights/using-stereo-overhead-miking-techniques-to-supplement-a-multi-miked-drum-setup>
+[4] Sennheiser, e 904 Instruction Manual, 2019, drum placement and mount.  Read source <https://assets.sennheiser.com/global-downloads/file/11744/e904_Manual_01_2019_EN.pdf>
+[5] Earthworks Audio, DM20 Drum Microphone manual, RM1 mount and placement.  Read source <https://earthworksaudio.com/wp-content/uploads/2023/09/Earthworks_Audio_DM20_Sep2023.pdf>
+[6] Shure, Beta 56A User Guide, applications, polar pattern, and placement.  Read source <https://pubs.shure.com/view/guide/BETA56A/en-US.pdf>
+[7] DPA Microphones, How to mic tom-toms, shared mics, SPL, and 4099 mounting.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-tom-toms/>
+[8] Shure, Dynamic vs. Condenser Mics on Toms; Audix D2 and D4 product documentation.  Read source 1 <https://www.shure.com/en-GB/insights/dynamic-vs-condenser-mics-toms>  Read source 2 <https://audixusa.com/products/d2>  Read source 3 <https://audixusa.com/products/d4>
+[9] CDC NIOSH, Understand Noise Exposure.  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[10] Yamaha, ZG01 Operating Panel, equipment-specific phantom-power precautions.  Read source <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>
+[11] Shure, Microphone Techniques for Live Sound Reinforcement, pattern and drum-kit sections.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[12] DPA Microphones, Polarity, phase and delay.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>

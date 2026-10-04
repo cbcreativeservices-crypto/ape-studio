@@ -1,0 +1,103 @@
+# Splash Cymbal Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Splash cymbal   October 3 2026
+This lesson teaches how to mic an acoustic splash cymbal in a drum kit for studio and live sound. The splash is an idiophone: the cymbal itself vibrates after being struck. It commonly supplies a quick accent rather than a long sustained crash, although different models and combinations sound different. Begin with the splash as heard through the existing overhead and kit microphones. Add a separate microphone only when a specific musical or feed requirement warrants it and the placement is physically safe. The cited mic guides discuss cymbals and complete kits more often than individual splashes, so splash-specific placement advice here is identified as a conditional application, not a manufacturer-tested universal prescription. No audio examples are included. [1–5]
+# Learning goals
+The learner will describe the splash's attack and decay; distinguish a separately mounted splash from one in a stack or piggyback setup; identify the player's actual strike and cymbal travel; decide whether overheads give enough definition; compare a wider kit perspective, conditional top-side spot, and advanced underside option; consider studio and live outputs; and check spill, mono summing, hearing exposure, headroom, and physical safety.
+# Understand the sound and mounting
+Sabian calls splashes small cymbals used for short accents. Zildjian describes its A Splash as a brief, explosive splash and its K Splash as a quick attack with very short decay. Those examples establish a typical role, not a uniform spectral character: a darker K and brighter A are distinct models, and size, weight, construction, playing force, and any choke change the result. Ask the drummer to play the actual musical phrase, including soft accents, the hardest accent, quick repeated hits, and any bow or bell strokes. Hear the splash both alone and inside the complete kit. [1, 2]
+First identify how the splash is mounted. It may have its own stand or accessory arm; a player's setup may place it inverted above another cymbal or form a stack. Manufacturer artist and product examples show these are real arrangements. A stacked pair can be intentionally coupled to make one effect; do not assume that a microphone can isolate the top splash from the lower cymbal or reproduce a separately mounted splash's response. Check the manufacturer's mounting hardware instructions and ask the player before changing spacing, orientation, felts, tension, or instrument positions. [6, 7]
+Because the splash can sit among toms, crashes, and ride cymbals, its brief accent may be masked in a loud kit even while the acoustic instrument is bright nearby. More gain on a spot may also add neighboring drums and cymbals. Decide what is missing at each output before creating another open mic. This is a sound-system inference from the source's short role and the kit-miking guidance, not a measured law specific to splashes. [1–5]
+# Start with existing coverage
+Shure describes the common cymbal pickup in a drum kit as an overhead stereo pair, and advises starting with a coherent overhead picture before adding spots. DPA describes overheads either as primary kit microphones or as cymbal coverage supporting close drum mics; Audix publishes a four-mic kit with no dedicated splash channel. Listen at the actual mix level to see whether the splash accent is sufficiently audible and whether it is positioned naturally with the snare, toms, and nearby crashes. [3–5]
+If one side of an overhead pair misses the splash, examine the pair's aim and balance, then reassess the whole kit. A change toward a nearby splash may make a crash harsh or move the snare image. Shure documents the influence of overhead angle, focal point, distance, and stereo image. A closer overhead is still a broader kit or cymbal microphone; it should not be presented as an isolated splash spot. Test the summed channels in mono and the intended stereo layout. [3, 4]
+A dedicated mic can be justified for a sparse arrangement with an exposed splash accent, a cue that needs independent control, or a monitor or broadcast feed that lacks the accent. In a loud live room, the audience may already hear enough acoustic cymbal while the broadcast feed wants more. These are reasons to evaluate a spot, not proof it will help. The sources found here do not supply a specific splash-only spot mic recipe or recommended angle. [1–5]
+# Safety and hearing
+Have the drummer stop before moving a mic, clamp, stand, or cable. Map the stick arc at normal and hardest playing, the splash's swing and rebound, any hand choke, the movement of a cymbal below it, and the neighboring tom and crash paths. Keep the entire microphone, mount, connector, stand, and cable out of those paths. On a stacked or inverted setup, check which cymbals travel toward the proposed mic and which hardware moves with them. Repeat the check after every adjustment. [6–8]
+Zildjian's standard cymbal setup uses a sleeve and felts and advises free movement rather than overtightening the wing nut. For a specialty stack, follow that system's specific manufacturer instructions and the player's chosen effect; do not loosen a deliberately tensioned stack or tighten a freely moving splash to fit a microphone. Use a rated stable stand or mount. A clamp on a stand needs adequate support and secure cable routing; a mic should not be mounted onto a vibrating cymbal. No source here establishes a universal safe clearance. If the complete motion cannot be demonstrated safely, do not put the mic in that space. [6–8]
+Keep loud test repetitions purposeful. NIOSH's occupational recommendation is 85 dBA for an eight-hour workday, with allowable duration halved for each 3 dBA increase; this measures cumulative human exposure, not whether a microphone can handle a transient. Follow the venue's hearing procedures. Check microphone and preamp headroom on the strongest intended hit; follow model-specific power and pad instructions and mute relevant outputs when patching or changing phantom power. Verify ribbon microphone compatibility with its manual. [9, 10]
+# Approaches and tonal decisions
+Approach
+Source-supported use
+What to test
+Existing overheads
+Shure, DPA, and Audix document broader cymbal and kit coverage; no dedicated splash mic is required in those examples. [3–5]
+Does the short accent read at the intended level without making crashes or snare unbalanced? Check mono and stereo.
+Re-aim a wider cymbal or kit mic
+Shure explains changing overhead focal point and angle. This may help a splash inside a coherent kit image. [3]
+Compare the whole kit, nearby crash, and snare position; do not sacrifice them to recover one accent.
+Conditional top-side splash spot
+A compact directional mic aimed from a safe point toward the player's actual splash playing area may add independent control. This is an adaptation of general cymbal miking, not a cited splash-specific distance. [3, 4]
+Confirm the stick, choke, splash, and lower-cymbal paths. Hear the hit, tail, and neighboring spill.
+Advanced under-cymbal perspective
+DPA documents underhead cymbal mics, including live use in demanding stage contexts. This documents the approach for cymbals generally, not a universal splash rule. [4, 11]
+Confirm downward motion, hardware clearance, tom pickup, nearby cymbal spill, and summed sound.
+Wider room or kit perspective
+A room or more distant microphone can support the full kit's musical impact when the room is useful. It is not an isolated splash channel. [3, 4]
+Does the brief accent remain clear enough with room, other drums, and other instruments?
+
+Attack and tail. The small splash's short note makes the relationship between the first hit and decay particularly easy to change with a different balance of close and overhead channels. Listen to the entire note and a repeated pattern, not only the first transient. Do not promise that a given mic at a fixed point will sound brighter, more defined, or longer on every model. The player's cymbal and stroke matter. [1–4]
+A splash over a crash or in a stack. Treat the hardware and coupled sound as one arrangement to evaluate. The lower cymbal's attack, ring, or contact noise may be inseparable in a close channel. Moving a mic toward the small top cymbal can also put it in the stick path or lower cymbal's travel. If the musician wants the stack sound, judge the combination; if the lesson calls for an individual splash, use a separately mounted example. This is an inference about the cited mounting examples, subject to checking the actual setup. [6–8]
+Microphone and polar pattern. A compact directional condenser may be practical where there is room, but any selection must fit the actual source level, electrical supply, stage environment, and safe physical space. A directional mic can reduce some spill through aim, yet it also captures reflected and off-axis sound; no pattern makes a spot isolated. Consult the model's polar diagram, especially for rear pickup on supercardioid or hypercardioid designs. The document does not prescribe a brand. [3, 4, 11]
+# Relationship to other kit microphones
+An overhead, splash spot, tom mic, and nearby crash mic may all hear the same splash at different times. Add the spot to the actual mix and compare the accent in mono, then in stereo or the intended PA layout. Also listen to snare, toms, and crashes, which can enter the spot and change when channels combine. Reposition, rebalance, or omit a channel that makes the total kit worse. Shure emphasizes the interaction of close channels and overheads. [3]
+Electrical polarity reversal is a conditional listening test, not a fixed splash mic rule and not the same as making two arrival times equal. DPA distinguishes polarity, phase, and delay. A high-pass filter can reduce unwanted lower-frequency drum pickup only if it serves the chosen mic's role; it cannot create isolation or restore a mechanically unsafe placement. Check the real monitor sends and PA coverage; a brief cymbal accent does not justify an open microphone at every destination. [3, 12]
+# Studio and live choices
+Decision
+Studio
+Live sound
+Musical need
+A sparse exposed accent may warrant separate level control; a full kit may sound more natural from overheads alone. [1–5]
+Hear the acoustic splash at audience positions and identify whether FOH, in-ears, or broadcast needs an added channel.
+Perspective
+Compare overhead, conditional safe spot, and room contribution while preserving the kit picture.
+Consider wedge and neighboring instrument spill, secure repeatable mounting, stage sightlines, and feedback margin. [4, 11]
+Multiple channels
+Evaluate the spot with overhead and drum tracks in mono and stereo.
+Evaluate the complete system, monitor feeds, and audience coverage; use only useful gain.
+
+These are production priorities, not rigid separation between studio and stage. A studio can use an underside mic and a live show can use overheads if the actual system and player support the choice. [3, 4, 11]
+# Practical setup sequence
+1.Identify the exact splash model and mounting: independent, piggyback, inverted, or stack. Ask the player how it should move and what musical effect it produces.
+2.Hear the whole kit through the overheads. Name the issue, if any: missing short accent, weak monitor feed, poor stereo location, or another problem.
+3.Choose an overhead adjustment or a dedicated mic only for that issue. Stop the drummer and map all stick, hand, splash, lower-cymbal, and neighboring-drum motion.
+4.Secure the mic and cable outside every motion path. Follow the microphone and console instructions for power, pad, and gain.
+5.Check soft, hardest, and rapid repeated accents at safe monitoring level. Compare one safe aim or position change at a time for attack, decay, and spill.
+6.Combine the channel with all relevant open mics. Check mono and intended stereo, FOH, broadcast, and monitor outputs. Remove a spot that worsens the complete result.
+7.Stop the player again and inspect full clearance, stand stability, cable security, and the player's normal access before performance.
+# Troubleshooting and assessment
+Observation
+First checks
+Splash disappears in the kit
+Check whether the overhead covers its location, whether a nearby crash or snare masks it, and whether independent control is musically required. [3–5]
+Spot mostly hears tom or crash
+Re-aim or move from a safe location, assess polar behavior, or rely on broader kit mics. [3, 4]
+Accent sounds thin or changes on summing
+Compare overheads and spot in mono at working level; review level, placement, and conditional polarity. [3, 12]
+Hardest splash hit overloads
+Determine whether overload occurs in the capsule/electronics, preamp, or later path; follow model pad and gain guidance.
+Stack sounds unlike a separate splash
+Identify which cymbals are coupled and whether the musician wants the combined effect. Do not rearrange the instrument without agreement. [6, 7]
+Mic can contact stick, hand, splash, or lower cymbal
+Stop and remount. Recheck the full strong-hit and rebound sequence. [8]
+
+Assessment case: an eight-inch splash is mounted on an accessory arm between a rack tom and a crash, and a second splash is inverted above a ride. A learner must determine whether each is an individual cymbal or part of a coupled effect, explain whether overheads already carry each accent, propose only safe optional positions, and check the combined kit in mono. A live variation specifies that the audience hears the acoustic cymbal but the drummer's in-ears need the cue. Grade the decisions and full-motion check, not a memorized angle or distance.
+# Critical source audit
+Agreement. Sabian and Zildjian describe the splash as a short accent, though their models differ. Shure, DPA, and Audix establish the broad practice of capturing cymbals and the kit with overhead microphones before optional extra channels. [1–5]
+Different emphases. Shure's overhead discussion centers the integrated drum sound and stereo picture. DPA describes both overheads and under-cymbal options for more individual control in some contexts. Manufacturer examples demonstrate distinct mounting types, including a free splash and stacked effects; these are not identical physical sources. [3, 4, 6, 7, 11]
+Direct contradictions. No cited source establishes directly opposing universal rules for miking a splash. Different model descriptions such as bright and dark are model-dependent rather than a contradiction. The evidence does not justify saying that every splash must have a separate mic, that underhead is always better, or that a fixed top-side distance is safe and optimal. [1–5, 11]
+Important gaps. The sources do not provide a controlled comparison of splash-only spot positions, a universal safe mic clearance for inverted/stacked cymbals, numerical spectral changes by location, fixed polarity settings, or a guarantee of live gain before feedback. Our conditional top-side approach is an engineering starting suggestion that requires review with the musician and qualified sound practitioner. NIOSH guidance concerns occupational exposure, not mic overload. [1–12]
+# Proposed app presentation
+Begin with a selectable standalone splash, piggyback mount, or intentional stack, each showing its real hardware and a different motion envelope. First ask whether the overhead picture carries the cue. Let the learner compare broader overhead coverage and optional top-side or under-cymbal miking while seeing qualitative effects on accent, decay, spill, and combined kit image. Block a position that intersects any stick, choke, cymbal travel, or neighboring hardware. A studio/live selector changes the relevant outputs and wedges. Link to the Drum Overheads, Crash Cymbal, Ride Cymbal, and Drum Kit lessons. Use text and diagrams without audio examples.
+# References
+[1] Sabian, Cymbals 101, splash role.  Read source <https://sabian.com/cymbals-101/>
+[2] Zildjian, A Zildjian Splashes and K Splashes, examples of distinct models and their attack and decay.  Read source 1 <https://zildjian.com/products/a-zildjian-splashes>  Read source 2 <https://zildjian.com/products/k-zildjian-splashes>
+[3] Shure, Recording Drums Part 1; Using Stereo Overhead Miking Techniques to Supplement a Multi Miked Drum Setup.  Read source 1 <https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique>  Read source 2 <https://www.shure.com/en-US/insights/using-stereo-overhead-miking-techniques-to-supplement-a-multi-miked-drum-setup>
+[4] DPA Microphones, How to Mic a Drum Kit, overhead and underhead considerations.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-drum-kit/>
+[5] Audix, DPQUAD four-microphone drum kit setup.  Read source <https://audixusa.com/products/dpquad/>
+[6] Zildjian, Rafael Barata artist setup, inverted splash over crash; FX Stacks, stacked effect example.  Read source 1 <https://zildjian.com/blogs/artist/rafael-barata>  Read source 2 <https://zildjian.com/products/fx-stacks>
+[7] Meinl Cymbals, MC-CY2 accessory cymbal arm.  Read source <https://meinlcymbals.com/en/products/mc-cy2-m21095.html>
+[8] Zildjian, Drum Set Method Lesson Eleven, standard cymbal stand sleeve, felts and free movement.  Read source <https://ae.zildjian.com/wp-content/uploads/Zildjian_Drum_Method_Lesson_11.pdf>
+[9] CDC NIOSH, Understand Noise Exposure.  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[10] Shure, What Is Phantom Power and Why Do I Need It?  Read source <https://www.shure.com/en-us/insights/what-is-phantom-power-why-do-i-need-it>
+[11] DPA Microphones, The Killers Fall Tour, under-cymbal microphones and stage spill.  Read source <https://www.dpamicrophones.com/news/2022/dpa-microphones-creates-killer-audio-for-the-killers-fall-tour/>
+[12] DPA Microphones, Polarity Phase and Delay.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>

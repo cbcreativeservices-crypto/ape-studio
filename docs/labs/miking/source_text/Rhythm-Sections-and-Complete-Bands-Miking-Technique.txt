@@ -1,0 +1,122 @@
+# Rhythm Sections and Complete Bands Miking Technique
+Pro Audio Training Academy  Ensembles and Voice Lab  Studio and Live Sound  October 4, 2026
+# Scope and learning goals
+This lesson covers complete bands and rhythm sections: drums, bass, electric or acoustic guitars, keyboards, vocals, percussion, and additional instruments performing together. The aim is to make deliberate choices about ensemble image, isolation, bleed, monitor spill, phase, and gain before feedback. Students will learn full-band studio tracking, live multitrack capture, sound-reinforcement setups, minimal and expanded microphone arrangements, and how to decide when bleed is a problem or part of the sound. No audio examples are included.
+# Start with the band in the room
+Hear the band without microphones from the intended listener or control-room position. Ask for the loudest chorus, quietest verse, transitions, stops, and any featured instrument. A band’s physical arrangement is a mixing tool: move loud amplifiers, rotate cabinets, lower stage volume, change the drum orientation, or place quieter sources closer to the main pickup before reaching for processing.
+Decide whether the session is intended to be an ensemble performance or an isolation-heavy production. A live-in-the-room setup preserves eye contact, timing, dynamics, and interaction but accepts controlled bleed. An isolated setup provides more editing and processing control but may reduce the natural response between players. The right answer can be hybrid: keep drums, bass, and rhythm instruments live while isolating a vocal or featured amplifier.
+# Build the microphone plan from the rhythm section
+## Drums and overheads
+Start with the drum-overhead plan that matches the music, room, and desired image. Add close kick, snare, and tom microphones only when they provide useful control or reinforcement. Check polarity and the combined kit in mono before committing to EQ or heavy compression.
+The Glyn Johns Technique belongs in the Drum Overheads lesson. Use that lesson for the full overhead-and-side-microphone geometry, snare-distance measurement, optional kick and snare support, panning, and mono/phase checks. In a complete-band session, treat Glyn Johns as an optional advanced drum-kit branch—not as a universal full-band recipe. The same cross-link applies when a live or studio band uses a minimal drum arrangement and wants the overheads to carry most of the kit.
+## Bass
+Bass is often most stable through a DI, optionally combined with a miked amplifier. A DI provides a consistent low-frequency foundation and reduces amplifier spill into vocal and drum microphones. A microphone on the cabinet adds the cabinet’s character and room interaction but increases spill and phase decisions. If both paths are used, listen in mono and compare polarity and timing before blending.
+## Electric guitar and other amplifiers
+Close-mike guitar cabinets to control spill, then use amplifier placement and orientation to manage what enters other microphones. Aim the cabinet away from the vocal microphone and quieter acoustic sources. Gobos can reduce direct spill without making the room completely dead, but they change reflections and sightlines. Do not cover hot equipment or block ventilation with improvised blankets; use safe, approved isolation methods and keep cables and power accessible.
+## Vocals
+In a full-band room, a directional vocal microphone close to the singer usually gives the best direct-to-spill ratio. Put monitors or headphones where the microphone’s least-sensitive direction is useful, and avoid sending loud backing tracks into the vocal monitor. If the vocal must be replaced later, record a guide vocal for performance while protecting the final vocal microphone from unnecessary drum and amplifier spill.
+## Keyboards, electronic instruments, and acoustic sources
+Use line outputs or DI boxes for electronic keyboards and other instruments with a suitable electrical output. Keep powered speakers and amplifiers physically separated from open vocal and acoustic-instrument microphones. For acoustic piano, strings, brass, or percussion, choose between the natural ensemble pair and closer spots based on how much isolation the arrangement needs. Do not add microphones simply because inputs are available.
+# Studio approaches
+## Full-band tracking in one room
+Use this when interaction and performance energy are more important than complete separation. Place the rhythm section so the drummer can see the band and the main spill directions are intentional. Keep guitar and bass amps close enough to control their direct sound but orient them away from vocal microphones and the main room pair. Use headphones or low-volume, carefully placed monitors for singers and musicians who need a cue mix.
+Bleed is not automatically an error. It can make a band sound cohesive and can preserve the timing relationship that disappears when every part is overdubbed. The limitation is that processing one track also affects the other instruments contained in its spill. Commit to the sound only after listening to the complete mix, not by judging every microphone in isolation.
+## Isolation or hybrid tracking
+Use booths, gobos, amp rooms, DI paths, or overdubbed vocals when the arrangement needs aggressive editing, heavy compression, radically different effects, or replacement parts. Maintain eye contact and a useful cue mix so isolation does not remove the musicians’ ability to respond to one another. Keep the guide performance when it helps the band play naturally, but do not assume that a guide vocal full of drum spill can be cleanly converted into a final vocal later.
+## Minimal microphone arrangements
+A minimal setup may use a stereo room or overhead pair, kick support, one bass DI, one or two guitar microphones, and a vocal microphone. This can be musically convincing when the band balances itself and the room is suitable. It offers fewer correction options, so arrangement, player dynamics, and microphone position do more of the mixing.
+## Expanded microphone arrangements
+An expanded setup may include multiple drum microphones, bass DI plus cabinet microphone, separate guitar microphones, keyboards by DI, acoustic instrument spots, vocal microphones, room microphones, and audience microphones. More tracks do not automatically mean more control: they also increase phase relationships, crosstalk, setup time, and the number of channels that can feed back or become noisy.
+# Live sound and live multitrack
+Live sound reinforcement has three simultaneous goals: capture suitable sound from the desired source, reject unwanted stage sound, and achieve enough gain before feedback. Start with the minimum channels that produce a clear, stable front-of-house mix. Use directional microphones close to loud sources and keep monitors aimed at each microphone’s actual null. Cardioid, supercardioid, and hypercardioid patterns require different monitor angles.
+For live multitrack recording, a mic splitter can feed separate FOH and recording inputs. Confirm phantom-power and grounding practice with the splitter and console manufacturer; do not improvise a split with unsafe parallel wiring. Record audience or room microphones when the final production needs audience perspective, but keep them out of monitor sends and protect them from feedback.
+Soundcheck the loudest full-band passage, not only isolated instruments. Set the stage mix first: reduce excessive backline, adjust amp orientation, verify in-ear or wedge cue levels, and establish communication through talkback. Leave a stable operating margin rather than mixing on the edge of ringing.
+# Phase, bleed, and mono checks
+After the microphones are connected, listen to the drum kit, bass DI plus cabinet, guitar microphone pairs, room pair, and any acoustic source spots both alone and in the complete mix. Reverse polarity only when it produces a fuller, more coherent result; polarity reversal does not correct every time-of-arrival difference. Move microphones, change distance, reduce overlap, or choose a different array when physical timing is the problem.
+Check mono compatibility before committing to a stereo room or overhead picture. A band can sound wide in stereo but lose kick, bass, snare, or guitar body when summed. Do not time-align every microphone automatically: natural arrival differences can be part of the ensemble image, and unnecessary alignment may flatten depth.
+# Studio and live comparison
+Approach
+Studio benefit
+Live benefit
+Main caution
+Full-band room tracking
+Preserves interaction and performance energy
+Captures a coherent show or live multitrack
+Bleed limits processing and replacement
+Isolation or hybrid tracking
+More editing, compression, and effect control
+Useful for difficult stages or broadcast feeds
+Can reduce eye contact and natural response
+Minimal microphone plan
+Fewer phase relationships; arrangement does more work
+Fast setup and fewer feedback paths
+Less after-the-fact correction
+Expanded close-mic plan
+Independent level and detailed control
+Flexible multitrack and monitor sends
+More spill, phase, channels, and setup risk
+Bass DI plus cabinet mic
+Stable low end plus amplifier character
+DI improves gain before feedback
+Polarity and arrival-time check required
+Stereo room or overhead pair
+Natural image and depth
+Useful only with suitable stereo PA or recording path
+Mono collapse and feedback exposure
+Glyn Johns drum branch
+Coherent, room-aware drum image
+Advanced option when stage and PA allow
+Full geometry belongs in Drum Overheads lesson
+
+# Troubleshooting
+Symptom
+Likely cause
+Response to audition
+Vocal is buried in the band
+Stage volume or backline points at the vocal mic
+Reorient amps, lower stage level, move monitor, and improve vocal mic rejection
+Kick or bass disappears in mono
+Polarity or time interaction between drum, room, DI, and cabinet mics
+Mute-check, compare polarity, move microphones, and reassess the array
+Drum kit sounds hollow
+Overhead/close-mic timing or polarity conflict
+Check overhead geometry, snare distance, polarity, and mono before EQ
+Guitar mic contains too much drum spill
+Cabinet points toward the kit or microphone is too distant
+Reorient cabinet, move the microphone closer, or use a safe gobo
+Bass DI and cabinet sound blurry
+Arrival-time or polarity mismatch
+Compare each path, adjust placement or delay only after physical checks
+Live mix rings when the band gets loud
+Monitor spill, stage volume, or too many open mics
+Lower stage level, reposition monitors, close unused channels, and keep margin
+Room microphones make the mix muddy
+Room is too reflective or microphones are too close to loud sources
+Move or reduce room mics, use a more directional pattern, and filter only as needed
+Band loses energy in isolated tracking
+Musicians cannot see or hear one another well
+Improve sightlines, talkback, cue mixes, and guide performance before changing mics
+Over-compressed tracks bring up unwanted instruments
+Bleed is being turned up with the desired source
+Reduce spill at the source, use less compression, or accept the room image intentionally
+Setup is unsafe or difficult to service
+Stands, cables, power, or gobos block movement and ventilation
+Stop setup, clear paths, secure routes, and verify access before soundcheck
+
+# Teaching exercise and pass criterion
+1.Arrange a small band in a room and record a rehearsal with a minimal microphone plan. Document the physical orientation of every amplifier, monitor, and main microphone.
+2.Add only the microphones required for independent control. Compare the complete mix, not just soloed channels, and identify where bleed helps or limits the result.
+3.Build a bass DI-plus-cabinet pair and a drum overhead-plus-close-mic branch. Check polarity, mono summation, and timing before processing.
+4.For the advanced drum branch, open the Drum Overheads lesson and review the full Glyn Johns Technique procedure. Do not substitute an unverified geometry from memory.
+5.Run a live-style soundcheck at the loudest passage. Verify monitor nulls, talkback, cable paths, stand clearance, and a stable margin before feedback.
+Pass criterion: the learner can design a complete-band microphone plan from the musical objective; choose full-room, hybrid, minimal, or expanded tracking; explain the Glyn Johns cross-link without misapplying it; check bleed, polarity, phase, stereo and mono behavior; and operate a safe live or studio setup with clear stage routing and feedback margin.
+# Evidence audit and limits
+Shure’s live-sound publication identifies the three competing microphone goals of desired pickup, unwanted-sound rejection, and gain before feedback, and documents stereo techniques for small groups. Sound On Sound’s live-multitrack and full-band articles support the practical distinctions between splitter-based recording, controlled bleed, isolation, and preserving band interaction. The Drum Overheads lesson is the authoritative location for the full Glyn Johns geometry and checks. Exact microphone counts, placement, room treatment, monitor levels, and isolation methods remain dependent on the band, arrangement, venue, and equipment; no setup is a universal recipe.
+# References
+[1] Shure, “Microphone Techniques for Live Sound Reinforcement.”  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[2] Sound On Sound, “Live Multitrack Recording.”  Read source <https://www.soundonsound.com/techniques/live-multitrack-recording>
+[3] Sound On Sound, “Recording Loud Bands in the Studio.”  Read source <https://www.soundonsound.com/techniques/recording-loud-bands-studio>
+[4] Sound On Sound, “Recording Bands on Location.”  Read source <https://www.soundonsound.com/techniques/recording-bands-on-location>
+[5] Sound On Sound, “Working with Mic Bleed.”  Read source <https://www.soundonsound.com/techniques/working-mic-bleed>
+[6] Sound On Sound, “Session Notes: Reducing Spill.”  Read source <https://www.soundonsound.com/techniques/session-notes-reducing-spill>
+[7] Pro Audio Training Academy, “Drum Overheads Miking Technique,” including the full Glyn Johns Technique procedure.  

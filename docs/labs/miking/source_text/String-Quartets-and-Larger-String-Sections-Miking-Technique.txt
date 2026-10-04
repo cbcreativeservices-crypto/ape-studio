@@ -1,0 +1,108 @@
+# String Quartets and Larger String Sections Miking Technique
+Pro Audio Training Academy Ensembles and Voice Lab Studio and Live Sound October 4, 2026
+# Scope and learning goals
+This lesson covers two violins, viola and cello as a quartet, then larger violin, viola, cello and double-bass sections. The central decision is whether the microphones should capture the ensemble blending in the room or provide separate sources for reinforcement and production control. Neither approach is universally best. No audio examples are included.
+Learners will select and place a main array, add useful section or individual support, compare tone across bowing and plucking styles, check stereo and mono behavior, and adapt the plan to live sound. Cross-link the Chordophones Lab lessons on violin, viola, cello and bowed upright bass for detailed individual-source techniques.
+# Understand the ensemble first
+Bowed strings are extended radiating sources. The microphone hears the body, string and bow interaction, and room reflections in proportions that change with position. DPA describes violin radiation as complex and warns that close placement can favor attack and separation at the expense of the blended acoustic perspective [1]. A microphone does not reproduce human selective attention: a promising listening position must still be verified through the actual microphones.
+Seat the group as the players and musical director prefer. Preserve eye contact and conductor visibility. Ask for sustained soft notes, a strong ensemble accent, pizzicato, low cello or bass notes, and passages in which inner voices matter. Include tremolo, harmonics and muted strings if used. Record observations about balance before changing equipment; microphone placement cannot correct every performance or arrangement imbalance.
+For a quartet, start with a central pickup in front of and above the group, with a view across all four instruments. As an instructor-selected trial, approximately 1–2 m in front and 1.8–2.5 m above the floor can be practical when the room and stand permit. These figures are not a published optimum. Change height and distance separately while checking cello definition, first-violin dominance, inner voices and room decay. Moving closer generally increases direct sound but may privilege the front players; moving back exposes more room and can reduce clarity.
+# Main microphone choices
+Array
+Configuration
+Useful quality
+Check before choosing
+XY
+Two cardioids with capsules nearly coincident; 90 degrees is a trial angle
+Clear image with little interchannel arrival-time difference
+Width, edge-player tone and room balance
+ORTF
+Two cardioids 17 cm apart at 110 degrees between axes
+Combines level and time cues for width
+Mono summation and coverage of the whole group
+AB
+Two spaced microphones, commonly omnis
+Room depth and spaciousness
+Center stability, time differences and bass in mono
+Mid Side
+Nearly coincident forward Mid and sideways figure eight Side
+Adjustable width after decoding
+Correct matrix, polarity and rear room pickup
+
+XY, AB and Mid Side principles are summarized by Shure [4]. ORTF geometry is confirmed by SCHOEPS [5]: 17 cm is approximately 6.7 inches, not 6 inches. The angle between microphone axes is not the same as the stereo recording angle. Retain the defined ORTF geometry and move the complete array to improve coverage; changing capsule spacing creates a different near-coincident arrangement.
+For Mid Side, decode Left = Mid + Side and Right = Mid − Side with a suitable matrix or DAW routing. Balanced summation cancels Side and leaves Mid. Verify actual routing rather than assuming a mono button proves the matrix is correct. For XY and Mid Side, keep acoustic centers close without allowing capsules or mounts to touch.
+For AB, DPA's full-orchestra guide describes 40–60 cm as one starting range and explains why very wide spacing can weaken the center image [6]. Use that as a comparison, not a compulsory quartet spacing. Do not apply the 3 to 1 isolation guideline as a dimensioning rule for an intentional stereo array; the array is designed to hear the same ensemble in both channels.
+# Quartet studio approaches
+## Main array alone
+Build the sound with the pair before adding spots. Use a quiet room and low-noise microphones with suitable frequency response. Compare positions at similar listening level so louder does not automatically win. Check the whole group, not only the lead violin. Preserve the room decay if it serves the music; move the group or array if reflections smear entrances or make one register ring excessively.
+## Main array with limited support
+Add a cello or viola spot only when a musical line needs support. Begin with the spot muted, then raise it until the line is clearer without pulling it out of the ensemble. Pan support toward the instrument's perceived position in the main image. If a spot must dominate to work, reconsider array placement, player balance or the intended production style. DPA's orchestral approach explicitly builds the main image first and adds section support afterward [7].
+For a violin or viola stand mic, audition a position above and in front of the body, outside the bow path. For cello, audition a position in front of the bridge/body region and compare a broader view with one favoring an f-hole. Close directional placement can add proximity effect and local body resonances. Evaluate bow noise and low notes before EQ [2, 3]. These are audition positions, not instructions to attach hardware to the bridge or varnish.
+## Individual capture for production control
+Four close microphones can suit pop overdubs, effects or a loud accompanying band. Keep the room perspective as a separate option when useful. Expect more audible local bow/handling details and overlap between tracks. Avoid telling the quartet to abandon its normal seating merely to create isolated channels; change spacing with the players and explain the production goal. Use headphones only as needed, with modest cue level and a stop signal.
+# Larger string sections
+Begin with a seating map and the conductor's intended balance. A main pair or larger main array captures the whole group; support microphones cover musical sections rather than every player by default. DPA describes directional section microphones around 1–1.5 m from players and coverage of roughly three or four musicians in its orchestral example [7]. This is contextual guidance: section width, pattern, angle, rows and source level govern coverage.
+Aim area microphones across the assigned players and check front-to-back balance. Do not assume one stand per desk is necessary. Add a dedicated soloist microphone when a featured line needs independence. Double basses may need support for articulation, but verify whether the main pickup already supplies their low-frequency weight. Reassess section microphones after seating or stand-height changes.
+For a large scoring stage, a Decca Tree or main array with outriggers can be an advanced extension, requiring more channels and carefully tested coverage. It is not simply a quartet pair enlarged by a fixed ratio. This lesson's core exercise uses a main pair plus limited support; full orchestral arrays belong in the Mixed Acoustic and Classical Ensembles lesson.
+# Live reinforcement
+First determine how much reinforcement the audience actually needs. A quiet hall may need little or none; a band stage may require individual directional close mics. Move loud amplifiers, drums and loudspeaker coverage away from the strings where feasible. Placement and stage level should establish a usable operating margin before adding feedback EQ.
+Cardioid microphones have their strongest rejection behind; supercardioid and hypercardioid microphones have rear lobes and nulls off the rear axis. Place wedges using the actual microphone's polar diagram and verify the result with the player in position [8]. Clip-on geometry can remain stable during movement while its orientation to monitors changes. Acoustic reflections from the instrument can also reach the capsule, so a null aimed at a loud source does not guarantee silence [1, 3].
+Use an instrument-specific mount with player approval and follow its fitting instructions. Check the full bow sweep, left-hand travel, chair movement, cello endpin and cable slack. Do not use ordinary adhesive on varnish or let a cable pull on the instrument. A miniature microphone needs the specified wired adapter or compatible wireless input; an XLR-shaped adapter alone does not prove correct powering.
+Historical practice demonstrates the range of valid choices. Neumann's 1998 Kronos Quartet report describes stand-mounted microphones for house sound plus miniature microphones for effects and some monitor feed [9]. DPA's Natalie Merchant tour report describes instrument-mounted quartet microphones on stage [10]. These are production accounts, not universal recipes or independent brand comparisons. Do not copy their channel counts, positions or PA delay settings without testing the current venue.
+For concert capture alongside a PA, retain a separate recording mix when the system allows. Keep ambience channels out of the reinforcement path unless deliberately designed into it. Mono PA coverage may serve the audience more evenly than hard left/right section panning; a recording can still use a separate stereo image. Soundcheck the complete ensemble and accompaniment with the intended monitoring active.
+# Timing and tonal integration
+Listen to the main array alone, then add each spot in context. Check sustained notes and short attacks in stereo and mono. Polarity inversion changes sign; it cannot remove a frequency-dependent delay relationship. Lowering a spot, moving it or reducing redundant pickup may be better than electronically aligning everything.
+For a recording experiment, an estimated spot delay is the difference between main and spot source distances divided by sound speed. A 1 m path difference is about 2.9 ms at 343 m/s. This is a direct-path estimate for one source, not a whole-section solution: multiple players, reflections and movement change the relationships. DPA specifically warns against blindly setting orchestral support delay from distance alone and describes a room-dependent method [7]. Any delay trial must be judged against timbre, image and articulation; do not adjust live monitor latency as a substitute for recording alignment.
+# Troubleshooting
+Observation
+First checks
+Adjustment to audition
+Lead violin dominates
+Array distance, angle and seating
+Move the main array or rebalance with players
+Viola or cello vanishes
+Main coverage and arrangement
+Reposition first; add a low-level support mic if needed
+Bow scratch dominates
+Local close perspective
+Move or angle the mic and compare at matched level
+Cello sounds boomy
+F-hole emphasis, proximity and room modes
+Broaden the pickup before applying a low cut
+Center becomes weak
+AB spacing and panning
+Reduce spacing or audition another array
+Added spots hollow the sound
+Overlap, level and arrival times
+Lower spots; move them; test timing in context
+Feedback occurs as players move
+Monitor geometry and stage level
+Lower sends and correct placement before further EQ
+Clip or cable hits a bow
+Mount and cable route
+Stop, refit with the player, and repeat movement checks
+
+# Teaching exercise and pass criterion
+1.Sketch the seating, loudspeakers, paths and stands. Ask the quartet to demonstrate its range of playing techniques and approve equipment clearances.
+2.Build an XY or ORTF main pickup. Change array height and distance one at a time and document the audible effect on all four parts.
+3.If available, compare AB or Mid Side. Confirm geometry, decoding and mono behavior; do not include audio files in the lesson deliverables.
+4.Add one support mic. Demonstrate its effect muted, quietly supporting, and excessive, then explain the level that serves the ensemble.
+5.Adapt the plan for a quiet hall and a loud band stage. Check monitor routing and movement at conservative level, without deliberately provoking feedback.
+6.Extend the seating sketch to larger sections, assigning area microphones and a soloist spot only where justified.
+Pass when the learner can justify each microphone's role, preserve audible inner voices and cello/bass weight, explain a stereo choice and its mono limits, identify an unhelpful spot contribution, and leave safe bow, cable and stand clearances. Document microphone model/pattern, array dimensions, height, source distances, routing and changes made.
+# Evidence audit and source comparison
+Agreement: the reviewed application guidance treats placement as conditional, distinguishes close pickup from a blended perspective, and requires attention to pattern and source coverage [1–8].
+Different emphases: DPA's orchestral guides prioritize a main image with section support, while the touring accounts document closer individual pickup for specific amplification and effects needs [7, 9, 10]. These approaches serve different production goals.
+Direct discrepancy: Shure's stereo article approximates ORTF spacing as six inches. SCHOEPS specifies 17 cm, approximately 6.7 inches. This lesson uses the defined 17 cm and 110 degree arrangement [4, 5].
+Gaps and limits: these sources do not establish a universal quartet stand height, safe feedback threshold, filter frequency, mic count or best brand. The quartet trial distances, workflow and assessment above are instructor recommendations. Confidence is high in the array geometry and pattern principles; moderate in placement starting points, which require real-room testing. Historical vendor case studies document practice but do not prove product superiority.
+# References
+[1] DPA Microphones. How to mic a violin.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-violin/>
+[2] DPA Microphones. How to mic a viola.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-viola/>
+[3] DPA Microphones. How to mic a cello.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-cello/>
+[4] Shure. Common Techniques for Stereo Miking.  Read source <https://www.shure.com/en-US/insights/common-techniques-for-stereo-miking>
+[5] SCHOEPS. MSTC 74 ORTF Stereo Microphone.  Read source <https://schoeps.de/en/products/stereo/stereo-microphones/mstc-74.html>
+[6] DPA Microphones. How to AB stereo mic an orchestra.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-ab-stereo-mic-an-orchestra/>
+[7] DPA Microphones. Multimiking a classical orchestra.  Read source <https://www.dpamicrophones.com/mic-university/audio-production/multimiking-a-classical-orchestra/>
+[8] Shure. Microphone Directionality and Polar Pattern Basics.  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[9] Neumann. Kronos Quartet Finds the Perfect Microphones. May 1998 production report.  Read source <https://www.neumann.com/globalassets/digizuite/13909-en-kronos-quartet-finds-the-perfect-microphones.pdf>
+[10] DPA Microphones. DPA Microphones Is In Sync With Natalie Merchant. March 2015 production report.  Read source <https://www.dpamicrophones.com/news/2015/dpa-microphones-is-in-sync-with-natalie-merchant/>

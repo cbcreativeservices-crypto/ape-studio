@@ -1,0 +1,98 @@
+# Saraswati Veena Miking Technique
+Pro Audio Training Academy  •  Chordophones Lab  •  C15  •  Studio and live sound
+This lesson teaches microphone placement for an acoustic Saraswati veena in the player’s actual posture. It compares main-resonator body, bridge character, string attack and room perspective, then adapts the approach for live sound. Rudra veena and other forms are identified as different instruments requiring a new geometry check. All proposed distances are classroom trials, not prescribed manufacturer specifications. No audio examples are included.
+# Identify the veena and its playing position
+A Saraswati veena is a South Indian fretted, plucked instrument with a large main wooden resonator, soundboard, bridge, long neck, four melody strings and three open tala or drone strings in one Met example. Another Met record links its characteristic buzzing jawari to strings vibrating against a flat bridge. Confirm the actual instrument’s construction and the player’s intended buzz; it is not automatically a fault. The small neck-end gourd may serve as a physical support, and should not be treated as an interchangeable second main soundboard. [1–3]
+Ask the musician to sit and play in their normal posture before placing a stand. A specialist account describes the common horizontal posture with the large resonator at the player’s right, the neck supported to the left and the face angled partly toward the player. That is a reminder to inspect the actual face orientation, not an instruction to rotate the instrument for the microphone. Allow the plucking hand, tala-string gestures, left-hand bends and the full passage without contact with a boom. [4]
+Request a passage covering low and high melody, gamakas or bends, open drone strokes, quiet articulation, strongest attacks and full decay. Hear it unamplified. Agree on the goal: solo concert likeness, close definition in a mixed ensemble, or a deliberately intimate color. The performer’s assessment of intended bridge buzz, tala balance and note decay matters more than a preset EQ curve.
+# Sound radiation and what the evidence proves
+A 2021 numerical and experimental study related the Sarasvati veena’s extended bridge and resonator to its timbre. A 2024 study mapped sound radiation around a particular veena and found the top plate important in the measured harmonic radiation; measured patterns changed by frequency, direction and distance. The work supports comparing angles and listening positions around the main face. It does not establish a best musical microphone distance, a fixed angle for every veena, or a requirement to place microphones at its 25 cm measurement radius. [5, 6]
+Source view
+Possible contribution
+Caution
+Main soundboard and bridge region
+Melody articulation, body, characteristic bridge texture.
+A close mic may favor a local resonance or loud pick impact.
+Drone side of the face
+Tala articulation and a different balance of strings.
+One position may make the drone too prominent for the repertoire.
+Farther front or upper face
+A broader source, player and room blend.
+Nearby percussion, voices and reverberation enter more strongly.
+Small neck-end gourd
+A support structure or extra acoustic perspective on some examples.
+Do not assume it radiates like the main soundboard or obstruct the supporting knee.
+
+# Choose a microphone and a safe target
+One cardioid condenser on a stable stand is a useful initial air microphone for a quiet or moderate stage. Compare an omni only when the room and speaker geometry allow its broad pickup. A dynamic microphone is also plausible: engineer Girish Patro reports using moving-coil Shure SM7B and Audix OM2 for one veena sample session. That firsthand report does not provide repeatable placements or prove dynamics best. Do not copy his reported removal of windscreens or grille as an instruction; retain the model’s intended protective parts unless the manufacturer explicitly authorizes a change. [7]
+Check the actual polar pattern, frequency response, maximum SPL or pad, supply and mic support. Close directional microphones can add proximity bass. Avoid interpreting diaphragm diameter or “vocal microphone” as a fixed tonal outcome. Air microphones capture pressure in the room; a built-in pickup or contact sensor is a separate electrical vibration path that may be useful live but requires its own device and wiring instructions. A veena performer specifically distinguishes acoustic mic capture from electric-veena output. [8, 9]
+# Placement methods to compare
+Distances below measure capsule to the visible main soundboard or target region. They are proposed starting ranges for classroom comparisons; clearance and a truthful representation of the player take priority over every number. Move in small steps and compare the same passage at a similar listening loudness.
+Method
+Position trial
+Expected comparison
+A  Single main-face mic
+Try 35–60 cm (14–24 in) outside the player’s right-hand arc, aimed toward a broad area of the top plate between main bridge and adjacent body, rather than touching or staring at one bridge point.
+A starting blend of melody, body and bridge character. Ask the player if tala strokes and bends remain proportionate.
+B  More bridge articulation
+At the same distance, alter aim slightly toward the main bridge and plucking region without invading the hand’s path.
+More local onset, possibly excess pick click or buzz. Distinguish intended jawari from microphone emphasis.
+C  More integrated room view
+In a suitable quiet room, try 70–120 cm (2–4 ft) facing the main resonator at its actual playing angle.
+More ensemble and room, potentially a fuller integrated tone but less definition and more spill.
+D  Two microphones
+Keep A as the main sound. Add an optional safely placed support toward the drone side or use a coincident XY pair from a workable front position.
+Independent articulation or stereo space; overlapping pickup and mono interaction must be checked.
+E  Closer stage spot
+Try 20–35 cm (8–14 in) from a safe part of the main face with a directional mic only if A lacks separation or required gain.
+Greater direct contribution with more local color, movement sensitivity and possible proximity effect.
+
+For a rudra veena, identify its two large gourds, long connecting tube, bridge and player’s angled posture first; do not transfer Method A’s target to a nonexistent Saraswati-style main face. The Met documents this distinct layout. Any target or distance for rudra veena should be developed with that player in a separate trial, rather than asserted from the Saraswati veena evidence. [10]
+# Studio and live sound decisions
+Studio or quiet acoustic setting
+Live reinforcement
+Hear A before adding channels. Compare C if the room contributes musically. Include full melody and drone gestures; a single bass note does not represent the instrument.
+Start with one directional mic and the nearest safe main-face view that represents the music. Check the actual loudspeaker and wedge angles against the mic’s rejection pattern. [9]
+If adding D, solo and combine at intended levels in mono. Move the support mic if body or decay becomes hollow. A room layer belongs where the room sounds good.
+Use only monitor level the player needs. Reduce relevant send promptly at the first feedback ring, then inspect geometry and open channels. A second live mic must justify extra spill. [9]
+Document posture, instrument rotation and stand location for a repeatable session; never ask the player to sacrifice normal bends to hold a fixed angle.
+If an instrument has a built-in pickup, label it separately and test input impedance, power, level, balance and acoustic feedback in the actual rig; do not assume a direct signal exactly represents the air sound.
+
+# Multiple microphones and troubleshooting
+With two air microphones, solo each, combine in mono and listen to the attack, sustained melody and drone. Rebalance or move the second mic if the result weakens; a polarity flip is a diagnostic rather than a cure for all timing differences. With mic plus pickup, compare each path alone and together; electrical vibration and airborne sound differ in tone and timing. DPA’s stereo guide explains why coincident and spaced arrangements differ in mono behavior. [11]
+Problem
+First check
+Too much sharp bridge buzz
+Ask if buzz is intended; then move aim off the local bridge region or step back.
+Weak melody or thin body
+Change angle toward a broader top-plate view; confirm the source sounds that way acoustically.
+Drone strings overpower melody
+Shift target away from the tala side and reassess whole phrases.
+Player hits mic or must alter posture
+Stop and move stand or boom outside the full hand and knee envelope.
+Live feedback or excessive spill
+Lower monitor/house send, inspect pattern and speaker geometry, and reconsider microphone distance and open channels.
+Two sources combine hollow
+Listen in mono, change support position and balance, then compare polarity.
+
+# Safety and class exercise
+Do not tape or clip anything to a fragile bridge, carved body, soundboard, fret wax or neck-end support without owner consent and a product-approved attachment. Keep cables clear of crossed legs, audience routes, instrument support and exits. Stabilize low stands and use qualified riggers for suspended microphones. Set gain with the strongest planned strokes and leave headroom. Never sustain feedback to demonstrate a point.
+1. Record the instrument variant, normal posture, primary resonator and face orientation, musical goal, mic model/pattern, target, distance, angle, cable route and monitor locations.
+2. Listen acoustically and select a phrase with main melody, a bent note, tala stroke and a quiet decay. Ask the player which buzz and drone balance are intended.
+3. Try A. Hold aim and change distance once. Return, then hold distance and compare A with B. Match reproduced listening level for judgment and record tone and spill.
+4. In a quiet room compare A with C or a safe D. On stage compare A with E under the operator’s control, while leaving the instrument and posture unchanged.
+5. If two air paths or a pickup are used, hear each alone and combined in mono. Select the position that preserves musical detail and safe movement, and state the compromise.
+Pass criterion: the student identifies the actual veena form, safely reproduces a main-face position, explains one controlled tonal change, distinguishes air mic from pickup, and checks the result in the intended studio or live context. No supplied audio examples are required.
+# Evidence audit and source notes
+Agreement: museum and research sources identify the main resonator, top plate, bridge character and melody/drone strings as relevant. The radiation study and player-posture account both argue for checking the actual direction of the face. Difference in practice: an acoustic musician describes stand microphones for traditional veena, while a named engineer documents a particular dynamic-microphone session; neither establishes a preferred model or distance. No direct contradiction about air-mic placement was found in the cited evidence. Gaps: published controlled results do not compare musical microphone positions or live gain before feedback for several veenas. The classroom distances are proposals. The Rudra veena requires separate geometry. [1–11]
+[1] Metropolitan Museum of Art, “Saravatī Vīnā,” instrument construction and strings. https://www.metmuseum.org/art/collection/search/505701
+[2] Metropolitan Museum of Art, “Vina,” hollow neck, bridge jawari and tala strings. https://www.metmuseum.org/art/collection/search/506151
+[3] Metropolitan Museum of Art, “Ekadandi Vina,” Saraswati veena in Carnatic tradition. https://www.metmuseum.org/art/collection/search/505819
+[4] South Indian Veena specialist resource, “Positions for playing the Saraswati Veena,” translated by Sandhya Krishnakumar. https://southindianveena.net/holding.html
+[5] Chauhan, Singru and Vathsan, “The effect of the extended bridge on the Timbre of the Sarasvati Veena,” Journal of Measurements in Engineering 9 (2021). https://www.extrica.com/article/21712
+[6] Chauhan, Singru and Vathsan, “Sound radiation patterns of the Sarasvati Veena,” Journal of Measurements in Engineering 12 (2024). https://www.extrica.com/article/23505
+[7] Girish Patro, firsthand Saraswati Veena sample-session notes, Pianobook. https://www.pianobook.co.uk/packs/saraswati-veena/
+[8] E. Gayathri, “Saraswati Veena 11,” performer account of acoustic and electric capture. https://egayathri.blogspot.com/2020/04/veena-sutras-11.html
+[9] Shure, “Microphone Techniques for Live Sound Reinforcement,” polar patterns and feedback. https://content-files.shure.com/Pubs/microphone-techniques-for-live-sound-reinforcement/microphone_techniques_for_live_sound_reinforcement_english.pdf
+[10] Metropolitan Museum of Art, “Ranjanî vînâ,” two-gourd rudra veena. https://www.metmuseum.org/art/collection/search/500718
+[11] DPA Microphones, “Stereo recording techniques and setups.” https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/

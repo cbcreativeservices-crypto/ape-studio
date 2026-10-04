@@ -1,0 +1,110 @@
+# Kick Drum Miking Technique
+Pro Audio Training Academy  |  Membranophones Lab  |  Research checkpoint 1  |  October 3 2026
+This lesson plan teaches how to choose and position a microphone for a kick drum in a studio or live sound system. It addresses the actual drum, the required musical sound, safe placement, feedback and spill, and the way two microphone channels combine. The manufacturer positions below are documented starting points for particular products. They are neither mandatory positions nor exact predictions of how another microphone or drum will sound. The learner's goal is to justify a safe and useful choice in context.
+# Learning goals
+After the lesson, a learner should be able to identify the batter and resonant heads, distinguish beater articulation from resonance, select a microphone suited to the actual source level and operating conditions, compare internal and external placement, identify unwanted port-air noise, check a two-microphone blend in mono, and explain when a studio choice might differ from a live reinforcement choice. These outcomes should be assessed through reasoning and safe setup choices, with more than one acceptable tonal solution.
+# Understand the instrument first
+The beater strikes the batter head. The resonant head, air cavity, shell, tuning, and any internal damping influence the result. An opening in the resonant head allows an internal microphone to be placed through the port. With an intact front head, outside pickup is a normal option; an appropriately installed internal microphone is another possibility. Do not instruct users to cut a hole or alter the instrument merely to match a lesson diagram. Drum size, head construction, tuning, beater material, and player technique may change the tonal balance. DPA's description of jazz and rock configurations gives examples, not genre requirements. [1]
+Begin by asking what role the kick has in the performance: supportive pulse, defined attack, resonant acoustic note, or a combination. Hear the drum without reinforcement or optional processing at a sensible level. If its tuning or damping needs attention, agree on changes with the player and link to the separate Drum Tuning Lab. Microphone placement cannot substitute for a drum that does not make the desired sound acoustically. [10]
+# Safety and setup checks
+Protect hearing during repeated hits and soundcheck. NIOSH recommends an occupational exposure limit of 85 dBA averaged over eight hours; under that recommendation, each 3 dBA increase halves the permitted duration. This is a hearing-risk guideline and is unrelated to a microphone's maximum SPL rating. The meter or monitoring position should reflect actual human exposure, not a microphone positioned inside a drum. Reduce unnecessary volume and duration and use appropriate protection. [8]
+Have the drummer stop before moving a microphone. Use a stable stand or an approved mount. Keep a conventional microphone, stand, cable, and connector clear of both moving heads, the beater, the port edge, damping material, and the player's pedal action. Shure explicitly instructs users to keep its Beta 52A off the head and internal damping. A purpose-built boundary microphone is an exception only under its own instructions: the Beta 91A manual allows placement on a pillow or cushioning surface. Check its orientation and leave its grille unobstructed. Do not assume that laying any other microphone on a pillow is approved. [2, 4]
+Route and secure cables so they do not snag a pedal or walking path. If inserting a mic through a port, inspect the full assembly including the connector and cable, not just the capsule. Confirm the chosen microphone's power requirement. Before connecting, disconnecting, or switching phantom power, mute the relevant outputs and lower monitoring level; follow the actual equipment manual. Yamaha's ZG01 instructions, for example, call for phantom off during cable changes and mic gain down with the channel muted before switching phantom power. Verify that the mute actually covers every output in the specific setup. [9]
+Have the player produce both typical and strongest intended strokes. Set input gain with headroom and check the preamp or interface overload indication. A lowered channel fader does not undo earlier clipping. If unwanted distortion persists at appropriate gain, separately investigate microphone capability, input overload, port air blasts, unstable mounting, and drum hardware. Use a microphone or input pad only as permitted by its manual; attenuation placed after an overloaded capsule cannot restore its sound.
+# Microphone selection
+A purpose-designed dynamic kick microphone provides a common close-pickup option. Product examples differ: the Shure Beta 52A has a modified supercardioid pattern, while the Sennheiser e 902 and AKG D112 MkII are cardioid. These models have different shaped frequency responses and therefore cannot be treated as interchangeable neutral references. The microphone's polar pattern, maximum usable source level where specified, input requirements, physical size, and mounting can all matter. [2, 3, 7]
+A suitable high-SPL condenser is another established option. DPA recommends its flatter-response condenser approach as a way to represent the drum more neutrally. That is a particular tonal objective, not proof that condensers are universally superior. Check the complete microphone system's specifications and supply the power it requires. [1]
+A boundary condenser can provide low-profile internal pickup. Shure's Beta 91A is designed for kick use and has a documented 25 to 152 mm starting range from the batter head when placed inside on an appropriate cushioning surface. Its contour setting changes its tonal response. This mounting guidance belongs to that model and suitable equivalents, not to ordinary handheld or stand-mounted mics. [4]
+No microphone brand is required by the lesson. Do not assert that every dynamic is less detailed, that every condenser is flat, or that a large diaphragm guarantees better bass. Those claims do not follow from the compared documentation.
+# Placement choices
+Approach
+Documented starting point
+What the learner checks
+Inside near the batter head
+The Beta 52A guide lists 5 to 7.5 cm from that head, slightly off the beater line. [2]
+Stronger articulation is one expected tendency. Check clearance, total tone, and input overload.
+Inside farther from the batter head
+The same guide also lists 20 to 30 cm from that head if the drum and mic physically allow it. [2]
+Compare articulation and resonance on this drum, without assuming the result is always bassier.
+At the resonant-head or port area
+The e 902 manual describes a more resonant result there than close to the batter head. [3]
+Check room and kit spill, port-air noise, and the usable balance in context.
+Outside an intact resonant head
+DPA documents outside pickup for unported drums. [1]
+Move gradually while checking the head's contribution, surrounding kit sound, and any acoustic gain needed live.
+Internal boundary microphone
+The Beta 91A guide permits 25 to 152 mm from the batter head on cushioning. [4]
+Check surface, orientation, cable stability, and optional contour setting.
+
+These measurements are examples from specific manuals. They should be presented with their physical reference head, and should never override safe clearance. Microphone height, distance, and angle are separate variables. The acoustic center of a microphone may not be the visible end of its grille, so the app should not claim millimeter-accurate placement from a visual icon alone.
+Moving a microphone toward the batter/beater area often increases the emphasis of attack; moving toward the resonant head can reveal more of the drum's resonance. Shure and Sennheiser document these tendencies, while DPA cautions that the instrument and placement can produce exceptions. With a directional mic, proximity effect can also change low frequencies as the mic approaches a radiating surface. The type of mic and which surface it faces matter; avoid the oversimplified rule that every inward move means more low bass. [1, 2, 3, 11]
+Port airflow can cause a pop or wind-like burst. DPA suggests adjusting angle around the port; test that before assuming the sound is an electrical fault or prescribing EQ. Do not insert the microphone farther simply to hide the symptom if this creates a collision or narrows safe clearance. [1]
+# One microphone setup procedure
+1.Ask the player whether the resonant head is intact or ported and what sound they intend; confirm no instrument modification is needed.
+2.Select a microphone whose specifications and mount suit the source, position, and stage or studio conditions.
+3.Have the drummer stop. Mount the mic in an accessible documented starting region; check the entire physical clearance and cable path.
+4.Follow the equipment's power and connection procedure, then set a clean input level with enough margin for strong strokes.
+5.Compare beater-side and resonant-side directions only where the drum permits safe repositioning. Change one variable at a time.
+6.Listen to the channel alone, then in the entire kit and band. Keep comparison levels similar so louder does not win automatically.
+7.Keep the simplest position that gives a useful sound while satisfying clearance and live-system stability.
+Sennheiser specifically recommends turning its e 902 away from the beater strike when less attack is wanted. This provides a useful aiming experiment, with the result still checked on the actual drum. [3]
+# Differences between studio and live sound
+Question
+Studio
+Live reinforcement
+How much of the room to include
+An outside or more distant perspective may help when the room contributes usefully.
+Stage spill and available gain before feedback may favor close, directional pickup.
+How many microphones
+A second microphone can offer a complementary perspective if it improves the combined result.
+Start with the number of open microphones actually needed; extra channels add spill and possible acoustic interactions.
+What the kick must do
+Judge the part against bass and the desired overall kit perspective.
+First consider what acoustic kick the audience already hears and what the PA must add.
+How stable must mounting be
+Repeated trials can be practical when the performer stops.
+Stable, repeatable mounting and a protected cable route are especially important during a show.
+
+These are scenario-based teaching comparisons, not restrictions. An intact resonant head may be miked from outside on stage. An internal close mic may suit a studio session. For directional microphones, aim nulls according to the actual pattern: a cardioid generally rejects most strongly directly behind it, whereas a supercardioid has a rear pickup lobe and maximum rejection off the rear axis. Beta 52A's guide advises checking placement before a performance. [2, 11]
+Avoid promising that a kick-mic position alone prevents feedback. Stage monitors and PA locations, channel gain and equalization, room behavior, and open microphones also matter. Never ask users to deliberately create feedback as a lab exercise.
+# Adding a second kick microphone
+Shure describes a two-microphone method using a Beta 91A inside for an attack-related component and a Beta 52A near the port for additional low-frequency weight. The purpose is to blend different perspectives, not to assume that two are always better. Begin with each mic independently useful. When adding the second channel, hear the pair at the intended levels in mono, compare the two polarity states at a controlled level, and check the result with the rest of the kit. If the combination loses useful body or becomes uneven, adjust position and relative level, or omit the second mic. [5]
+Polarity inversion reverses the signal's sign. It does not remove a delay caused by sound reaching the microphones at different times. A 3 to 1 separation guideline may help reduce interacting pickup in some multi-mic setups, but it does not guarantee phase coherence for an inside/outside pair aimed at different drum surfaces. Teach the limits and have learners judge the combined sound. If advanced timing adjustments are introduced later, retain the untreated comparison and avoid presenting waveform alignment as a universally better sound. [6, 12]
+# Troubleshooting and assessment
+Observation
+First checks
+Sharp bursts at the port
+Microphone angle and position relative to escaping air; then physical clearance. [1]
+Weak or inconsistent sound when two channels are combined
+Relative levels, mono blend, both polarity states, positions, and the overhead or other open microphones. [5, 6]
+Distortion
+Determine whether it starts in the mic, preamp or interface, or at a rattling part of the drum or stand; lower gain where appropriate before changing tonal controls.
+Attractive solo sound but unclear band sound
+Reevaluate its role against the bass and the rest of the kit at comparable monitoring level.
+Unwanted kit or stage spill
+Reevaluate distance, aiming, actual polar pattern, and whether a second microphone is necessary. [11]
+Movement or contact risk
+Stop the drummer, remount and reroute; do not continue the exercise until clearance is restored.
+
+The learner's final task is to choose a one-microphone setup for a given drum and performance, describe an alternative position, and explain what would justify a second channel. Assess safe placement, correct power and level checks, musical reasoning, and an accurate explanation of polarity versus delay. A preferred brand, bass emphasis, or genre-specific preset is not part of the passing criteria.
+# Critical source audit
+Agreement where addressed: manufacturer placement guides support experimenting with position and generally associate beater-side placement with more attack; the combined-channel resources agree that multiple microphones must be evaluated together. The manuals make physical mounting and microphone orientation relevant to the result. [1-5]
+Differences in emphasis: Shure, AKG, and Sennheiser document workable shaped dynamic kick microphones. DPA promotes a flatter-response condenser for a more natural objective. Shure documents an internal boundary microphone and two-mic blend. These are distinct approaches serving different aims, not competing universal instructions. [1-5, 7]
+Direct tension: DPA describes sound pressure just outside a port as sometimes greater than sound pressure inside, while the Beta 52A guide labels its near-batter example the highest-SPL position within that manual's choices. Neither claim supports a general rule about every drum or every internal location. DPA's categorical assertion that dynamic mics cannot capture the true natural sound as its preferred condenser does is a manufacturer judgment without a controlled comparison in these materials. The course should teach measured capabilities and listening goals rather than that assertion. [1, 2]
+Gaps: these sources do not provide a universally optimal drum position, a predictable frequency response for all mic-and-drum combinations, a fixed mix balance, or a human hearing-safety limit from a microphone rating. Exact outcomes depend on the instrument, player, room, PA, and selected microphones. The Academy should have a drummer and qualified audio practitioner review physical setups and final instructions before publishing the interactive lab.
+# Proposed app presentation
+The learner first inspects an illustrated drum and selects an intact or already ported front head. The interface shows the two drumheads, beater path, permitted microphone regions, cable route, and collision zones. The learner chooses a microphone by properties rather than by brand, then varies one parameter at a time: position along the drum, aiming direction, polar pattern, and one versus two channels. A studio/live switch changes the scenario questions about spill, feedback margin, acoustic contribution, and mounting stability. The app labels tonal expectations as tendencies, not physical predictions or captured measurements.
+If the lab uses diagrams or visual indicators, validate them against the actual microphone orientation and instrument geometry. Do not show a directional microphone's rear as a universal rejection zone. Do not present a simulated frequency curve as empirical data. Use diagrams, guided decisions, and written explanations to teach the comparisons.
+# References
+[1] DPA Microphones, Bo Brinck, How to mic a kick bass drum.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-kick-drum/>
+[2] Shure, BETA52A User Guide, version 3.1 2023 I, placement, mounting and pickup.  Read source <https://pubs.shure.com/view/guide/BETA52A/en-US.pdf>
+[3] Sennheiser, e 902 Instruction Manual, 2019 edition, operation and specifications.  Read source <https://www.sennheiser.com/globalassets/digizuite/40681-en-e902_manual_01_2019_en.pdf>
+[4] Shure, BETA91A User Guide, version 3.1 2021 B, placement and contour.  Read source <https://pubs.shure.com/view/guide/BETA91A/en-US.pdf>
+[5] Shure, How to Get a Great Kick Drum Sound Using Two Shure Mics, June 25 2026.  Read source <https://www.shure.com/en-US/insights/how-to-get-a-great-kick-drum-sound-using-two-shure-mics>
+[6] DPA Microphones, Polarity phase and delay.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+[7] AKG, D112 MkII product documentation and specifications.  Read source <https://www.akg.com/D112MkII.html>
+[8] CDC NIOSH, Understand Noise Exposure, January 31 2024.  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[9] Yamaha, ZG01 Operating panel, phantom power precautions. This is an equipment-specific example; the actual console manual governs.  Read source <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>
+[10] Shure, Recording Drums Part 1 Setting up and Microphone Technique, November 6 2022.  Read source <https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique>
+[11] Shure, Microphone Techniques for Live Sound Reinforcement, polar patterns and unwanted-source rejection.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[12] DPA Microphones, 3 to 1 Rule, and Shure, Recording Drums Part 5 Phase Cancellation.  Read source 1 <https://www.dpamicrophones.com/dictionary/0-9/31-rule/>  Read source 2 <https://www.shure.com/en-GB/insights/recording-drums-part-5-phase-cancellation>

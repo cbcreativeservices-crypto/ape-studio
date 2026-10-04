@@ -1,0 +1,92 @@
+# Baritone Saxophone Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Baritone Saxophone   October 3, 2026
+# Scope and learning goals
+This lesson teaches acoustic baritone saxophone microphone placement for studio and live sound. Learners compare a balanced stand position, close bell and body views, an approved clip, and optional room pickup. They must hear the entire musical part, including its lowest required notes, and account for the baritone's large body, player movement, spill, feedback, gain staging and safe mounting. No audio examples are included.
+# Understand the source and its size
+The baritone is the largest and lowest-pitched of the four common saxophones; its bent neck extends a much larger conical air column [1]. Saxophone sound radiates from open tone holes as well as the bell [2, 3]. Shure notes that much of the sound of notes with open keys, particularly high notes, can emerge at the last open holes rather than the bell [3]. DPA specifically warns that one close horn-mounted capsule covers fewer holes on a large sax such as the baritone [2]. A bell-only microphone can be useful, but the tonal balance may change with register and fingering.
+Many modern baritones have an added low-A key, while instruments differ [1, 4]. Confirm the actual horn and score before assessing bass extension or applying a high-pass filter. Ask the player for lowest and highest used notes, soft and strong passages, short attacks, sustained notes, and any normal movement. Listen at a suitable audience or room position and then at the proposed mic position. No single location captures every radiating surface equally.
+# Placement perspectives and why they differ
+Balanced body and bell: DPA recommends a spot slightly to the player's right next to the bell as a starting point for a mixture of sources, while acknowledging that the bell may sound too midrange [2]. Shure lists a mic a few inches above the bell aimed toward the holes as a natural recording approach [3]. With baritone's extended body, a farther mic can integrate more of the instrument if the room and spill allow it. Studio engineer Dave Martin starts about 8–15 inches away, roughly 45 degrees off the bell toward the middle of the body; he notes that this middle-body position is lower on a baritone than on an alto [5]. Sweetwater gives another, broader 12–24-inch saxophone starting point [5]. Try these as distinct perspectives, not mandatory measurements.
+Closer body view: Shure calls a position a few inches from the sound holes warm and full, while warning that it captures fingering noise [3, 6]. On a baritone, aiming at one small key area can make particular notes or mechanical details disproportionate. Back off or angle the mic across the body if key and pad sounds overpower the tone. Check low and upper notes again after every move.
+Direct bell view: Shure describes a few-inches-into-bell aim as bright and resistant to leakage and feedback relative to more distant positions [3, 6]. It may provide the focused presence needed beside a loud rhythm section, but can overrepresent bell radiation, nasal midrange or one register [2, 3, 5]. A close directional mic can also gain bass through proximity effect [2]. Judge bell placement in the mix and compare with a body-inclusive view at matched listening level before reaching for large EQ changes.
+Room or distant view: Shure's engineer Adam Hill reports combining a baritone close mic with a more distant room mic in a suitable space while checking their interaction [3]. A distant or over-the-shoulder perspective is a creative studio choice when the room sounds good and spill is acceptable. It becomes less dependable when the player moves widely or the room introduces strong reflections. One well-positioned stand mic remains a valid complete setup.
+# One stand microphone procedure
+1.Map the player and instrument. Note seated or standing posture, bell height and swing, neck strap or harness, keys, low-A mechanism if present, music stand, breathing space and neighboring musicians. Position a stable mic stand and cable without blocking keys, score, sightline or the player's path. Never put a stand where it can strike the horn if the player turns.
+2.Trial a mixed-source angle. Begin to the player's right-front side with the mic aimed across bell and body rather than deep into the bell [2, 3]. Try the closer above-bell perspective, then a somewhat farther, lower mid-body perspective [3, 5]. A baritone's bell and middle tone holes may be widely separated from the capsule; adjust height and distance while listening through the actual register.
+3.Compare deliberate alternatives. Move toward the bell for focus and separation, toward body holes for more body and mechanical detail, or back for source integration and room [3, 5]. Keep each trial at matched monitoring level. Rotate a directional mic carefully because its off-axis coloration is model dependent.
+4.Confirm level and lowest line. Ask for the strongest real accents and the lowest notes the song uses. Check microphone capsule, any pad, transmitter, preamp and converter for overload. Bypass and re-engage any high-pass filter while the low phrase plays; remove handling or stage rumble without discarding wanted fundamentals. Do not infer a suitable cutoff solely from the instrument name.
+# Studio applications
+Solo feature: Start with a single mixed-source stand mic and use the room to determine the final distance. A condenser can offer detail in a quiet room; a dynamic may suit closer or more isolated pickup; a ribbon can offer a rounded upper character in a controlled setup [3, 5]. These are options rather than fixed genre rules. Verify the microphone's polar response, maximum SPL, power and handling requirements. Keep vulnerable ribbons out of direct air blasts and follow the maker's powering instructions.
+Close plus room: Establish a good close sound before adding room. Shure documents a baritone-specific close-plus-room practice [3]. Listen to each signal alone, then to their sum at intended balance and in mono. Different arrivals can thin some notes; try position and level changes before automatic polarity or delay changes. A room mic is most useful when it contributes a desirable space, not merely because a second track is available.
+Section or ensemble: First assess the section or main pair and the baritone's acoustic balance with other players. Use a baritone spot for definition, rhythmic attack or independent control if needed. Keep it subordinate when its close bell tone detaches from the ensemble image. If the baritone doubles a bass line, verify the exact low phrase through any filter or system crossover rather than assuming the PA or monitor should reproduce every sub-bass component.
+# Live sound applications
+Stationary player: A stand mic can hear more of the body and bell when the stage permits. As the band gets louder, a closer directional mic may improve direct-to-spill ratio, but the smaller pickup zone exposes level and timbre changes as the player moves. Aim the mic and monitor using the actual pickup pattern, not an assumed rear null. Test at performance volume with the real band, wedges and sidefills [2, 3, 6]. Keep stands and cables clear of the larger horn's travel.
+Moving player: Use an instrument-approved clip only after confirming the bell rim, finish and mount compatibility with the player. DPA recommends angling its sax clip between bell and keys on baritone, alto and tenor rather than pointing straight down the bell [7]. The clip offers consistent proximity and practical isolation but cannot represent all of the baritone's widely spaced holes [2]. Shure also documents aiming a bell-mounted mic toward upper holes [3]. Check the full key, strap or harness and gooseneck movement, secure cable strain relief, and let the player handle installation and removal. Do not fasten to rods, pads, keys or unapproved hardware.
+For a wireless clip, verify the manufacturer's connector, adapter, bias or phantom powering, transmitter headroom and RF operation. DPA recommends an 80 Hz transmitter low cut for handling noise with its 4099 system, and specifies a dedicated windscreen and shock mount [7]. On a baritone using very low notes, audition that filter against the actual part: the recommendation is specific to the system and may attenuate wanted low-frequency content. A clip is neither feedback-proof nor automatically the most natural sound. If a second stand mic is used for passages, establish a controlled switching or blending plan and test the sum [3].
+# Guided tone trials
+Musical aim
+Starting trial
+Listen for
+Coherent solo
+Off-bell toward body and bell, with distance chosen for room [2, 3, 5].
+Register continuity, low weight and room.
+Warm and full
+Near sound holes, then back off or angle [3, 6].
+Body against fingering and pad noise.
+Focused live part
+Closer bell aim [3, 6].
+Separation versus nasal or uneven tone.
+Mobile player
+Approved clip angled between bell and keys [7].
+Stable level, limited hole coverage and handling.
+Spacious feature
+Main pickup with optional distant room mic [3].
+Space, background noise and mono interaction.
+
+# Safety and troubleshooting
+Symptom
+Diagnose
+First response
+Upper notes lose body
+Does a close bell view miss open-hole radiation?
+Aim between bell and body; compare full phrase [2, 3].
+Low notes lose weight
+Was a filter set too high or the lowest note omitted from test?
+Compare filter bypassed using the exact low line [4, 7].
+Low notes become boomy
+Is a close directional mic adding proximity bass?
+Back off or re-aim; then reassess filter [2].
+Keys are too loud
+Is the capsule aimed at one key cluster?
+Increase distance or alter aim [3, 5].
+Tone shifts when player moves
+Is a stand pickup zone too tight?
+Widen the working zone or assess a suitable clip.
+Clip impedes horn or player
+Is mount or cable route unverified?
+Stop and refit with the player, or use a stand.
+Feedback or spill
+What enters the pickup pattern at show level?
+Change mic, monitor or player geometry and retest.
+Close and room sum sounds hollow
+Are arrivals combining poorly?
+Listen separately and in mono; move or rebalance [3].
+
+# Teaching exercise and pass criterion
+1.Have the player identify bell, key field, body and any low-A key. Record the actual seating or standing and movement envelope. Ask for soft, loud, low and high passages, plus the strongest attack [1, 4].
+2.Compare three matched-level stand positions: mixed bell and body from a moderate distance, closer to the tone holes, and bell directed. Note low and upper register, keys, room, spill and movement [2, 3, 5, 6].
+3.In a live setting, assess an approved clip between bell and keys against the stand position. Check full key travel, harness, cable, connector and input headroom with the player [2, 7].
+4.Test the lowest used line before and after any high-pass filter. If two mics contribute, evaluate each alone, their sum in mono, and the final balance in context.
+Pass criterion: The learner can explain why one close capsule cannot cover every source on a baritone, choose a balanced or intentionally direct perspective, protect instrument and player movement, and verify the lowest line, overload, spill and feedback before the setup is accepted.
+# Evidence audit and limits
+Agreement: Shure and DPA agree that saxophone sound comes from tone holes and bell, and that a balanced view is often useful [2, 3]. DPA explicitly identifies limited hole coverage as a baritone clip limitation [2]. Both document bell and body choices; DPA gives a specific between-bell-and-keys clip aim [7].
+Different emphases: Shure's traditional natural view is close above the bell [3, 6]. Martin's studio approach is farther, lower and aimed near the middle of the body [5]. These describe different working distances and goals rather than a universal winner. Shure's baritone close-plus-room example adds space, while a single mic may suit a less flattering room or greater isolation [3].
+Gaps and confidence: The sources do not prove a universal distance, microphone model, high-pass setting or clip fit for every baritone. Exact radiation depends on notes, horn construction, player, aim and room. Confidence is high in distributed radiation and the clip-coverage limitation, moderate in the comparative teaching workflow, and low in a tonal prediction for an unseen setup. Follow instrument and microphone manufacturers' instructions for mounts and electronics.
+# References
+[1] Yamaha, “What's the Difference Between Soprano, Alto, Tenor and Baritone Sax?”  Read source <https://hub.yamaha.com/winds/wood/whats-the-difference-between-soprano-alto-tenor-and-baritone-saxophones/>
+[2] DPA Microphones, “How to Mic a Saxophone.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-saxophone/>
+[3] Shure, “Choosing a Saxophone Microphone for Recording and Live Sound.”  Read source <https://www.shure.com/en-EU/insights/choosing-a-saxophone-microphone>
+[4] Yamaha, “How to Play the Saxophone: Saxophone Fingering,” low-A section.  Read source <https://www.yamaha.com/en/musical_instrument_guide/saxophone/play/play002.html>
+[5] Sweetwater InSync, “How to Mic a Saxophone,” including Dave Martin interview.  Read source <https://www.sweetwater.com/insync/how-to-mic-a-saxophone/>
+[6] Shure, “Microphone Techniques for Live Sound Reinforcement,” saxophone entry.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[7] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” saxophone and general sections.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>

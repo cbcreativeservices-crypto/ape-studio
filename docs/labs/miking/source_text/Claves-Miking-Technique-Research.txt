@@ -1,0 +1,87 @@
+# Claves Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Claves   October 3, 2026
+# Scope and learning goals
+Claves here means the acoustic instrument made of two struck pieces of wood or similar material. *Clave* also names a rhythmic organizing pattern; this lesson teaches microphone pickup of the instrument, not the theory of a clave rhythm. The two sticks are idiophones: their solid material vibrates when struck. Woodblock is next on the agreed list.
+Students should be able to identify the resonating and striking pieces, hear when a grip is muffling the instrument, set one mic to include the complete two-hand movement and usable decay, and adapt the position for a quiet overdub or a loud live stage while preventing collision and feedback.
+# Begin with the acoustic source
+The Percussive Arts Society (PAS) describes one clave held by the fingers as a striker, and the other cradled over curled fingers in the opposite hand so it can resonate rather than being squeezed into the palm. Its example strikes the supported piece near the middle with the edge of the other [1]. Follow the player's technique and musical tradition, but check whether excessive palm contact is choking the sound. A mic very near a muffled pair mostly gives a louder version of a muffled pair. Ask for the actual groove with light and strong strokes, not one isolated demonstration hit.
+Claves differ by construction. Meinl describes a solid hardwood classic pair and a larger hollowed-body variant with a different pitch character [2, 3]. Those are model descriptions, not proof that every hollow pair will sound a certain way at every microphone. The player may move both hands through a small or a surprisingly wide area, and the striking clave can pass in front of a microphone. Map that space before putting in a stand.
+The audible result combines a fast initial click and a short resonant woody component, depending on instrument and grip. To judge tone, listen for the supporting clave after the strike as well as for the attack. Close placement tends to favor direct sound over room and bleed; moving away can let the strike and body cohere at the cost of more room and competing sound. No single distance guarantees the balance.
+# One-microphone method
+1.Listen with the player. Ask for the intended pulse, tempo and loudest accent. Watch where the supported clave remains, where the striking hand approaches, and how the player changes position during the phrase. Give the hands unrestricted, comfortable movement.
+2.Set a safe starting point. In a reasonably quiet room, audition a stand-mounted small diaphragm condenser, or another suitable mic, approximately 30–60 cm (1–2 ft) from the center of the normal striking area and aimed at that area. Shure gives at least 30 cm as a broad beginner percussion example [4]; 30–60 cm is an audition range reasoned for moving hands, not a published claves-specific standard. Keep the stand and cable outside the striker's full path. A cardioid is useful when room noise or other instruments must be rejected; an omni may be tried in a quiet, suitable room when a broad pickup is more valuable than isolation [5].
+3.Compare attack and body. If the microphone hears a sharp click with little useful wood tone, first compare the player grip and a different pair, then try modestly more distance or another safe angle. If the sound lacks definition because the room or ensemble dominates, move closer without invading either hand's space or improve source separation. Changes in microphone angle may alter attack and spill; verify the particular mic and pair rather than applying a fixed on-axis rule.
+4.Set gain and recheck the full part. Use the strongest real accent for input headroom. A pad addresses overload in the mic or preamp stage where it occurs, not bleed. High-pass filtering may help low room/stand noise if the desirable woody body remains. Set monitor level so the player can perform without striking unnecessarily hard.
+At each placement, listen with both hands moving. If the performer changes their grip, miking angle or distance may need reassessment. Shure's general recording guidance emphasizes finding the source's balance by listening rather than placing a microphone by sight [6]. A single mono microphone is usually sufficient for one player and pair.
+# Tone and coverage options
+Intended result
+Starting trial
+Listen for and adjust
+Clear leading click
+A directional spot, safely in front of the usual strike area, with a pair and grip suited to the part.
+Excessive sharpness, too little resonant body, stand or hand noise.
+Rounded woody presence
+Check that the resting clave can resonate; compare a slightly farther position in a quiet room.
+Whether the beat stays defined against other instruments.
+Natural ensemble balance
+Hear the main/overhead percussion microphone first; add a spot only if the part needs control.
+Whether extra mic improves balance or mainly adds spill.
+Dense live stage
+Keep a directional spot close enough for useful direct-to-spill ratio, but entirely outside the striker path.
+Gain before feedback, monitor direction, adjacent cymbals, player clearance.
+
+There is no fixed translation from “wood,” “solid,” “hollow,” or mic type to the captured tone. PAS provides direct technique guidance [1]; instrument manufacturers document variants [2, 3]; the placement and tonal trials above are reasoned applications to confirm in the actual room.
+# Studio miking
+Quiet overdub: Choose the pair and rhythmic articulation first. In a controlled room, compare a moderate-distance spot to a somewhat closer safe position at matched monitoring level. A condenser can reveal the short decay and hand detail; a dynamic may also be suitable if its response and available preamp gain serve the part. Have the musician maintain their usual hand spacing and avoid forcing them to aim their performance at the capsule. Listen for room reflections, HVAC noise and the impact of grip. Assess the part in the full arrangement, where a prominent solo click may prove too strong.
+Simultaneous ensemble: Begin with the ensemble/main or percussion-area mic. If it gives a balanced clave pulse, an additional spot may be unnecessary. If the clave needs independent level, place a directional spot to favor the actual striking area while rejecting louder drums or cymbals as much as possible. Listen to both channels together and in mono: the same strike arrives at different times, and unwanted coloration can result. Adjust physical position, balance or the need for the spot rather than applying a mandatory polarity switch. A quiet, well-played pair may still be buried by a loud source sharing the same acoustic space.
+Multiple players: A pair of players or a spread percussion ensemble is a different source size from a single pair of claves. An area mic can cover them in a suitable room; spot separate performers only when control, distance and spill warrant it. Keep the image and rhythmic pattern clear without assuming each stick or hand needs its own microphone.
+# Live sound
+Use a predictable playing station that leaves the musician free to hold the supporting clave naturally and strike it safely. A directional stand microphone near the performance area can increase direct-to-spill ratio, but it must be checked against the full band and wedge level. Shure notes that directional placement improves signal-to-noise and gain before feedback by using the mic's rejection angles [7]. A cardioid's greatest rejection lies behind it; supercardioid and hypercardioid microphones have rear lobes and other null positions, so position the wedge according to the actual microphone pattern [5].
+If the player switches between claves and other hand percussion at one station, a shared mic may work when instrument positions and required levels are compatible. A wide area mic also hears more of the stage. An additional dedicated spot may be justified if the clave pulse is important and the other microphones cannot carry it. Ask the player to rehearse every instrument change and keep hardware out of the hand and walking paths. Mute unused channels where appropriate. For a singer who plays claves, check how much clave click enters the vocal mic; a second channel does not remove that vocal-mic spill.
+Where nearby cymbals or monitors dominate, increasing the clave channel also increases those sounds. Move the performer or mic, reduce stage volume, or choose a more projecting appropriate pair; if adequate separation is impossible, acknowledge the limitation. A windscreen helps outdoor wind at the capsule, not acoustic isolation. Do not mount a mic directly to a handheld clave without a purpose-built, safely secured setup that preserves the player's technique.
+# Safety and signal-path checks
+Avoid placing the mic between the two sticks, where a miss or follow-through could strike it or the player's hand. Stable boom and cable routing prevent a trip or pull-down. Set input headroom for the strongest stroke. Distinguish a harsh acoustic attack, a cracked instrument, a rattling stand and electronic clipping rather than treating them all with EQ. Verify phantom power and pad operation against the actual microphone and preamp. Monitor at a reasonable level; the task is to capture the existing instrument, not to make the player hit harder to satisfy a meter.
+# Troubleshooting
+Symptom
+Check
+First corrective action
+Dead, short tick
+Is the supported clave pressed against the palm or too many fingers?
+Have the player audition their usual less-muffled support, then reassess mic position [1].
+Click overwhelms body
+Is the mic extremely close, or is the pair/strike inherently sharp?
+Compare source and grip, then a little more distance or safe angle.
+Inconsistent level
+Does the strike area move toward and away from the capsule?
+Aim at the complete working zone or move back modestly.
+Cymbal/snare dominates
+Is direct clave sound too low relative to adjacent sources?
+Move player/mic and use pattern rejection; test full-band.
+Feedback before useful level
+Where are stage loudspeakers relative to mic nulls?
+Reposition, lower monitor spill, reduce unnecessary open mics [5, 7].
+Click or low thump with no resonant character
+Is the stand being touched, or is the mic in the hand path?
+Stop and clear the stand/cable; then check source and gain.
+Main plus spot becomes hollow
+Does summing the two channels change timbre?
+Compare in mono, move spot or change level/need for it.
+
+# Teaching exercise and assessment
+1.Have a percussionist play the same short phrase with their normal supported grip and a deliberately over-damped palm grip, then explain why changing the microphone cannot restore missing acoustic resonance. Use a comfortable demonstration and do not insist on a technique that causes pain.
+2.Mark both sticks' full motion. Compare one microphone near 30 cm and one near 60 cm from the normal striking area's center, maintaining safe clearance at both positions. Match monitoring levels and describe attack, decay, room and bleed.
+3.Compare a solid pair and a hollow-body pair if available. Describe the observed differences without assigning them universally to all examples of those designs.
+4.In a simulated band setup, compare an existing area mic with a directional spot, listen together and in mono, locate the stage wedge from the actual polar pattern, and fix one bleed or feedback problem by changing geometry.
+Pass criterion: The student identifies the supported resonator and striker, secures a mic outside both hands' full movement, distinguishes acoustic damping from mic positioning, and explains the live tradeoff between more direct sound and player clearance.
+# Evidence audit and limits
+Agreement: PAS explains the importance of a freely resonating supported clave and an appropriate strike [1]. Meinl establishes the existence of solid and hollowed product designs [2, 3]. Shure gives general percussion placement, listening-led positioning and pattern/feedback principles [4–7]. These sources support starting with the instrument and testing placement in context.
+Differences of emphasis, no direct contradiction: The PAS guide is about *how the instrument is played*; Shure guidance is about *how a microphone hears a source in its environment*. No authoritative source located specifies one universal claves microphone distance, angle or transducer type. The 30–60 cm trial and overhead-versus-spot workflow are reasoned teaching proposals rather than a measured standard. Confidence is high in the cited technique and general microphone facts, moderate in the proposed workflow, and low in predicting an exact tonal outcome before hearing the actual player and room.
+Scope: This covers the acoustic pair as an instrument. The clave rhythmic framework belongs in a separate musical lesson. No audio examples are included.
+# References
+[1] Percussive Arts Society, *The PAS Educators' Companion*, “Claves,” pp. 21–22 in PDF pagination, playing technique.  Read source <https://pas.org/wp-content/uploads/2024/04/ECV02.pdf>
+[2] Meinl Percussion, “Wood Clave, Classic, Hardwood,” solid-body product description.  Read source <https://meinlpercussion.com/en/products/cl1hw-m8619.html>
+[3] Meinl Percussion, “Wood Claves African, Hollowed Out Hardwood,” product description.  Read source <https://meinlpercussion.com/en/products/cl3hw-m8638.html>
+[4] Shure, “Home Recording Guide for Beginners,” general percussion starting point.  Read source <https://www.shure.com/en-GB/insights/home-recording-guide-for-beginners>
+[5] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[6] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[7] Shure, “Three Reasons Why Mic Placement Matters.”  Read source <https://www.shure.com/en-EU/insights/three-reasons-why-mic-placement-matters>

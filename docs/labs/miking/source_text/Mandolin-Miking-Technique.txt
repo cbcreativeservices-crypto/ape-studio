@@ -1,0 +1,81 @@
+# Mandolin Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers acoustic mandolin as one instrument in the Chordophones Lab. The learner will compare a neck/body blend with bridge/top and sound-opening perspectives, choose a studio or live position according to isolation and room, and assess chop, tremolo, single-note leads and player movement. F-hole and oval-hole designs are distinguished. A pickup is discussed as a separate electrical path. No audio examples are included.
+# Hear the actual instrument first
+Plucked strings drive the bridge and soundboard; the instrument's openings, body and performance shape the radiated sound. Eastman describes F-hole mandolins as often emphasizing treble attack and percussive chop, and oval-hole models as tending toward a different, more vocal character [1]. Those are maker descriptions of design tendencies, not a guarantee that every F-hole instrument is brighter than every oval-hole instrument. A-style and F-style name body outlines; the sound-opening type should be identified separately. Ask the player which instrument and playing style they will use, and listen from their normal front-facing performance position before placing a mic.
+A close microphone hears a small part of the top, strings, pick and opening. Moving back can integrate those elements, but it also increases room reflections and bleed. DPA states the core tradeoff as whole-instrument timbre against isolation [2]. A mic pointed directly into an f-hole or oval hole may overemphasize one local resonance, so treat it as an auditioned option rather than a universal starting point.
+# One-mic starting procedure
+DPA suggests the neck/body junction as an often useful mandolin position for a blend of strings, fingers and wood [2]. Begin there with a mic on a stable boom at a safe player distance. In a quiet room, approximately 30–40 cm (12–16 in) is a controlled trial derived from DPA's published two-omni stereo distance [2]; it is not a mandated one-mic distance. Then move the capsule toward the bridge/top or change the angle to compare attack, body and string noise. Play both chop and sustained notes at the player's real level. Set preamp gain on the strongest chops and tremolo accents, leaving headroom.
+Trial position
+What to evaluate
+Common limitation
+Neck/body junction, moderate distance [2]
+Balance of strings, pick and wood.
+Instrument motion changes level and tone.
+Toward bridge/top, off direct pick path
+Chop transient, upper-register definition and soundboard contribution.
+Too close may accentuate pick noise or a narrow top region.
+Slightly toward an f-hole or oval opening
+Different body resonance and projection.
+A direct, very close opening view can sound uneven or boomy.
+Broader front view farther back
+Overall instrument and room.
+More spill and less gain before feedback.
+Close directional or approved clip mic
+Isolation and mobility.
+Local coloration, handling/contact noise and fit constraints.
+
+The table gives tests, not fixed tone outcomes. Keep the phrase, pick strength and listening level as consistent as possible. Record the exact capsule-to-instrument distance, aim, pattern and player posture, because even small shifts can change a small instrument's balance. Never obstruct the picking arc or fretboard.
+# Studio tone goals and microphone patterns
+Natural solo or small ensemble: With a quiet, favorable room, try one accurate omni near the neck/body junction as DPA recommends [2]. The omni does not reject the room or nearby players; choose it because the environment is useful. A cardioid or wide cardioid can give more isolation when reflections or other instruments intrude. Compare a little more distance for a rounded whole-instrument sound, and retain close placement only if the musical detail remains balanced.
+Percussive bluegrass chop: Check the strongest offbeat chords, not only a lead phrase. If the mic exaggerates sharp pick transients, move away from the pick/bridge area or add some distance. If the chop lacks definition among banjo, guitar and bass, try a closer directional view at the neck/body or bridge/top region, then evaluate in the ensemble. Do not assume that EQ alone can rescue an unbalanced local mic perspective.
+Tremolo, melody and oval-hole mandolin: Listen for note continuity, low-course body and picking noise. An oval-hole instrument can project differently from an F-hole model [1]; use the same movement experiment rather than assigning a preset. A mic very near the opening can favor one resonance and obscure the overall shape, while a broader view may demand a quieter room. Try only the amount of distance that the arrangement and space permit.
+Stereo: DPA describes two omnis at 30–40 cm, coincident XY cardioids, and a spaced wide-cardioid option [2]. Stereo can convey more size or room on a featured instrument, but a mandolin is physically small; widening by spacing mics is a deliberate room/phase choice, not an automatic improvement. Check the pair in mono and while the player moves. If two mics are used as separate close tonal views, solo them, then blend in mono and reposition or rebalance when the sum loses body. Keep a reliable one-mic result as the reference.
+# Live sound: individual, clipped and shared-mic approaches
+A directional stand mic close enough to provide useful gain can work when the player maintains a clear working zone. Orient its actual rejection pattern toward competing sources and keep the boom out of picking and fret-hand movement. Shure's bluegrass engineers describe close miking as useful for gain before feedback, while noting that wedges and overlapping microphone fields can still color the sound and reduce isolation [3]. They report using a Shure KSM137 on mandolin or, in one rig, an AKG C535 [3]. These are field examples, not mandatory mic models.
+An instrument-mounted miniature can move with a player. DPA lists its 4099 for live mandolin work and specifies 35–55 mm body depth for its VC4099 clip and 35–122 mm for the GC4099 clip [2, 4]. Verify the actual instrument's depth and mount geometry, finish compatibility, musician consent and cable strain relief. Do not grip a fragile scroll, movable bridge, f-hole edge or vibrating soundboard unless the exact mount instructions permit it. Keep the capsule clear of pick and hands; a clip does not guarantee isolation or a good tone merely by being attached.
+In a quiet bluegrass ensemble, a shared front mic can let players balance solos by stepping in and out. Shure reports that this requires careful choreography and restrained stage monitoring and can become difficult in reflective or noisy venues [3]. Cross-link that ensemble practice to the Ensembles and Voice Lab. On a loud stage, a correctly installed pickup may provide a more controllable main PA path, with a mic blended only while gain before feedback allows. Label pickup and microphone feeds separately: a pickup is not a microphone hearing the mandolin's airborne sound. Compare each alone and together in mono, and check whether the blend becomes hollow or feedback prone.
+# Troubleshooting and safety
+Symptom
+First question
+Position or system test
+Chop is harsh or all pick
+Is mic too close to the pick/bridge?
+Shift toward neck/body blend or increase distance.
+Notes seem thin
+Is mic mainly hearing strings or a very small region?
+Include more of top/body and check low-course notes.
+One body note booms
+Is capsule aimed straight into an opening?
+Move off opening or back slightly; compare in context.
+Sound changes as player turns
+Does the mic lose its intended view?
+Mark a playing zone or test a safe compatible clip.
+Mic/pickup sum is hollow
+Are arrivals/phase responses interacting?
+Solo and mono-sum; move/rebalance, then audition polarity/delay.
+Feedback or excessive spill
+Is the monitor or another source reaching the mic?
+Reduce level, revise geometry, close unused mics.
+Stand or clip touches the player/instrument
+Is the setup obstructing performance or damaging finish?
+Stop and reset the hardware with musician's approval.
+
+The bridge (floating on many archtops) and soundboard are instrument parts, not mounting hardware. Do not move the bridge, adjust top/brace structure, insert anything into an opening or clamp a mic to a valuable finish to solve a placement issue. Use stable stands and safe cable routes; ask the owner before any contact mount. For loud monitoring, reduce exposure time/level and use suitable hearing protection. OSHA's 85 dBA eight-hour time-weighted average is a hearing-conservation action level, not a universal safe level for every duration [5]. Follow mic and pickup manufacturer instructions for phantom power and electrical connections.
+# Teaching exercise and pass criterion
+1.Identify body outline and sound-opening type separately. Have the musician play strongest chop, sustained lead and tremolo passages at their performance level.
+2.Compare a neck/body position, bridge/top view and broader front view using one mic. Note the actual changes in attack, body, string noise, room and spill.
+3.Choose a studio and live arrangement, documenting capsule, pattern, distance, angle, movement zone, nearby monitors and safe cable route.
+4.If a second mic or pickup is available, compare each path alone and in mono blend. Explain when a shared ensemble mic is practical and when individual close miking is needed.
+Pass criterion: The learner can place a safe, repeatable mic for the real part, justify a tonal choice by observed changes, select a pattern and distance for the environment, and evaluate a multi-source sum without confusing pickup with microphone.
+# Evidence audit and limits
+Agreement: DPA establishes a neck/body junction starting point and the whole-timbre/isolation tradeoff [2]. Shure's live engineers likewise emphasize source balance, microphone proximity and venue/monitor conditions [3]. Eastman documents the f-hole and oval-hole design contrast [1].
+Different emphases: DPA proposes omni in a good quiet room and directional or miniature approaches for isolation [2], while Shure's bluegrass practitioners give their particular stage mic selections [3]. These are context-dependent options, not opposing facts. Eastman's tonal descriptions are manufacturer tendencies and do not specify microphone positions [1].
+Gaps and confidence: No source establishes a universal placement, polar pattern or stereo width for every mandolin, musician and room. The 30–40 cm single-mic experiment extends DPA's documented two-omni distance, explicitly as a trial. Confidence is high in the cited options and clip fit ranges; moderate in tonal predictions until the actual mandolin is auditioned.
+# References
+[1] Eastman Guitars, “Mandolin,” educational overview of F-hole and oval-hole designs.  Read source <https://www.eastmanguitars.com/mandolin_educational>
+[2] DPA Microphones, “How to Mic the Mandolin/Mandola.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-the-mandolinmandola/>
+[3] Shure, “How to Mic a Bluegrass Band.”  Read source <https://www.shure.com/en-US/insights/how-to-mic-a-bluegrass-band>
+[4] DPA Microphones, “VC4099 Instrument Microphone Clip for Violin and Mandolin.”  Read source <https://www.dpamicrophones.com/accessories/instrument-clips/vc4099?variant=139>
+[5] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

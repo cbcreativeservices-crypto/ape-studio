@@ -1,0 +1,87 @@
+# Triangle Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Triangle   October 3, 2026
+# Scope and learning goals
+The triangle is a struck metal idiophone with a sustained, overtone-rich sound rather than a single fixed concert pitch [1, 2]. This lesson covers a handheld or mounted orchestral triangle in studio and live sound. Students will learn to identify the player's actual strike and damping motions, choose a mic position that hears both attack and decay, and adapt the setup when room, spill and feedback change. Finger cymbals are next on the agreed list. No audio examples are included.
+# Understand the sounding source
+Suspension comes first. The Percussive Arts Society (PAS) advises suspending the triangle freely by a clip and thin line; holding the metal directly damps its overtones [1, 3]. Inspect the primary line and a backup catch line, and keep the clamp from transferring unwanted vibration to a stand [3]. A held clip lets the player position and damp the instrument. A mounted clip may be needed for rapid instrument changes or two-beater passages, but audition the stand for sympathetic ringing [1, 4]. These are different performance choices: PAS describes mounted playing when needed; Grover's primer prefers playing handheld at eye level [2]. Coordinate with the player and the part rather than forcing one method.
+Beater and strike matter. PAS identifies the bottom horizontal bar and the side opposite the open corner as common striking areas, while advising against the open corner and its nearby side for ordinary playing [1, 4]. Different instruments respond differently, so the player should test positions and beater angles. Thinner beaters can suit quieter playing; heavier or graduated beaters often yield a fuller sonority, and a rod beater may articulate fast passages more clearly [1–3]. Rolls commonly alternate strokes between a closed corner's adjoining bars; watch the entire beater path [1, 4]. Do not ask a player to substitute a screwdriver or unrelated tool for a suitable triangle beater [1].
+The end of each note is performed. Letting the ring decay and closing fingers around the instrument to damp it are musically different actions. PAS describes gradual or rapid damping as the context requires [1]. Ask for the actual soft and strong attacks, rolls and cutoffs. A microphone needs to reveal the intended ring and the release without forcing changes in technique. No mic position can restore overtones already suppressed by a poor suspension.
+# A one mic starting method
+1.Map the motion before setting a stand. Have the performer play the complete passage in the intended handheld or mounted position. Note swing, strike side, roll, clip hand and damping fingers. Secure the support and keep the capsule, grille, stand and cable outside all of those paths.
+2.Listen in the room. From a safe point in front of and slightly to one side of the player, compare the physical sound of the attack and decay. In a controlled room, audition a small diaphragm condenser or another suitable mic roughly 30–60 cm (1–2 ft) from the instrument at or somewhat above its playing height. Aim toward the sounding bars as a whole, away from the beater's contact path. This range is a teaching trial, not a triangle-specific published prescription. Shure's general beginner advice gives a 30 cm gap for percussion [5]. Player movement and safe clearance override any number.
+3.Compare one variable at a time. Try a modest change in angle or distance, then listen at matched monitoring level to a light stroke, strong stroke, roll and cutoff. A closer placement may favor direct attack and lower the relative room or spill; farther away may integrate the sound and room, but can lose isolation. These are expected general acoustic tradeoffs to verify with this instrument. If the stroke sounds painfully sharp, first check beater and playing spot, then compare a safer off-axis or wider microphone view.
+4.Set the signal path. Choose a mic and preamp with enough headroom for the loudest intended stroke; check clipping through every stage, including any pad or downstream processor. Keep the natural decay audible. Use high-pass filtering only to remove unwanted low-frequency stand, footfall or stage rumble; listen for whether a filter alters the desired instrument. Avoid gating away the tail or damping gesture.
+The microphone's polar pattern affects how much room and neighboring sound enters, but no single transducer type is mandatory. A condenser may offer detailed transient and decay pickup; a suitably placed dynamic can work when stage handling, available gain or spill favor it. These are choices to audition, not guarantees from the label on the mic [6, 7].
+# Tone and approach trials
+Musical goal
+Source and microphone trial
+Listen for
+Bright, clear accent
+Let the player select a beater and strike point, then compare a safe, relatively direct spot.
+Attack clarity without an exaggerated metallic tick or clipped peak.
+Full sustained shimmer
+Confirm free suspension and natural decay; compare a slightly wider position in a suitable room.
+Overtones and duration without excessive room or other instruments.
+Soft, blended passage
+Try the player's lighter beater, touch and deliberate damping; set level from that passage.
+Soft strokes remain distinct without pushing gain into noise or feedback.
+Fast roll and cutoff
+Cover both adjacent roll bars and the damping hand's full motion.
+Smooth roll, clear ending and no stand or clip rattle.
+Loud ensemble or stage
+Compare existing ensemble pickup with a safe directional spot if independence is needed.
+Usable triangle-to-spill ratio across the actual arrangement.
+
+Beater mass, instrument construction, suspension and the player's strike can change the spectrum before the microphone is moved [1–4]. Do not present the table as fixed EQ recipes or universal predictions for every triangle.
+# Studio application
+Quiet solo or overdub: Keep the performer in a comfortable playing position and compare one moderate-distance spot with a wider viewpoint. A single microphone is often enough. A good sounding room and a deliberate distant or stereo image can be an artistic choice, but audition whether quiet details and damping remain legible. Capture the whole phrase, including pauses, to hear clip noises and the room during decay. Set gain with the strongest hit, then verify soft notes at the intended playback balance.
+Simultaneous ensemble: Hear the existing main pair or percussion overheads before adding a triangle spot. If the triangle needs independent level, move the player and mic for a usable direct-to-spill ratio while respecting sightlines and the conductor. The spot will also hear the ensemble; listen to the combined microphones and in mono for coloration or an unexpectedly weak attack. Change position or balance when the extra mic adds more spill than useful triangle. Do not claim that polarity inversion or a time offset always solves multiple-mic interaction; judge the actual combination.
+# Live application
+On a quiet stage, a shared percussion mic may give enough triangle. In a louder band, arrange a predictable playing station with the full strike and damping motion clear of the mic. A safe, closer directional spot can improve the ratio of triangle to stage sound, but do not put a capsule inside the triangle or in a beater's path merely to gain level. A mounted instrument may make the spot more repeatable, provided the mount is secure and does not rattle or ring. If the triangle is played in the hand, rehearse its full travel and allow more coverage.
+Aim the mic's rejection toward loud sources and wedges as practical. A cardioid has its deepest nominal rejection behind the mic, while supercardioid and hypercardioid patterns have rear pickup lobes and different null angles [6]. Check the actual microphone pattern and soundcheck with the complete ensemble and strongest triangle stroke. Limit the spot's presence in the player's monitor if it raises feedback or makes the attack uncomfortably sharp. When a delicate passage is buried by nearby drums, adjust stage layout, competing levels or musical balance before simply raising gain [7].
+# Safety and signal path checks
+Inspect the clip, clamp and both suspension lines before playing; a failed line can drop a heavy metal instrument [2, 3]. Secure stands and route cables away from hands, feet and walkways. Keep the mic, the player and anyone nearby out of the beater arc and any swinging triangle path. Do not ask for harder strikes simply to compensate for a bad signal-to-spill ratio. Check preamp and system headroom with the strongest stroke, and manage monitor level so a short transient does not become an unexpectedly high playback level. For prolonged loud ensemble exposure, assess and manage musician and crew hearing risk according to applicable practice; NIOSH specifically addresses music exposure [8]. No unmeasured triangle-specific sound level is assumed here.
+# Troubleshooting
+Symptom
+Check
+First response
+Dull, short ring
+Is the triangle touching a hand or thick support?
+Restore free suspension; inspect the line and playing grip [1–3].
+Sharp tick, little body
+Is the beater or strike point creating it, or is the mic too direct?
+Compare suitable beaters and playing spots, then safe mic angle/distance [1–4].
+Clip, stand or cable rattle
+Does it occur without the mic in use?
+Stabilize and isolate support; secure cable without damping the triangle [3, 4].
+Roll is uneven in level
+Does the instrument move away from the mic or do strokes differ?
+Rehearse roll and cover both bars from a safe position.
+Tail vanishes
+Is it damped, masked, gated or lost in room noise?
+Identify which stage causes loss; remove inappropriate gate or adjust source/layout.
+Spot mainly hears cymbals
+Is the triangle-to-spill ratio too low?
+Move player and mic, adjust pattern orientation or use main pickup only.
+Feedback before useful level
+Which monitor or speaker enters a sensitive mic angle?
+Correct geometry and monitor level; check actual polar pattern [6, 7].
+
+# Teaching exercise and assessment
+1.Compare a freely suspended triangle and a deliberately damped one, with the player demonstrating the intended strike, roll and cutoff. Explain which differences originate at the instrument [1, 3].
+2.With the same beater and playing force, compare safe mic views at approximately 30 and 60 cm in a controlled room. Level match, and report attack, ring, room, handling noise and spill. These distances are exercises, not target specifications.
+3.Hold the microphone steady and compare two appropriate beaters or two approved strike locations. Identify whether the brighter sound came from the player or the microphone.
+4.Hear a shared/main pickup alone, then add a spot during the full ensemble. Check mono combination, feedback margin and clearance from the beater. State one geometry or stage-level improvement before changing EQ or gain.
+Pass criterion: The student maintains free and safe suspension, keeps equipment clear of the entire gesture, distinguishes player-created tone from mic-created balance, and chooses a studio or live setup that passes the actual phrase and ensemble test.
+# Evidence audit and limits
+Agreement: PAS and Grover agree that free suspension and suitable beaters strongly affect tone [1–4]. PAS describes strike, roll and damping technique [1, 4]. Shure supplies general percussion starting distance and polar-pattern principles rather than a triangle-specific positioning standard [5–7].
+Different emphases: Grover's primer strongly favors handheld performance; PAS allows mounting for specific musical demands and cautions about stand resonance [2, 4]. The appropriate method depends on the passage and the player's technique. No retrieved primary source establishes one universal triangle microphone model, exact distance or fixed frequency response. The 30–60 cm trial and comparative mic angles are reasoned instructional tests. Confidence is high in suspension and performance mechanics, moderate in the general miking workflow, and low in any exact tonal outcome before audition.
+# References
+[1] Percussive Arts Society, Alexandros Fragiskatos, “The Triangle Simple Shape Complex Instrument,” Rhythm Scene, June 2019, pp. 12–13.  Read source <https://pas.org/wp-content/uploads/2024/04/1906.pdf>
+[2] Grover Pro Percussion, Neil Grover, “Percussion Primer Triangle.”  Read source <https://groverpro.com/docs/Tech-Talk/Primer_Triangle.pdf>
+[3] Percussive Arts Society, Educators Companion, Volume I, “Triangles and Triangle Accessories,” pp. 9–11.  Read source <https://pas.org/wp-content/uploads/2024/04/ECV01.pdf>
+[4] Percussive Arts Society, Educators Companion, Volume III, “Accessory Chops Developing Tone and Precision with Tambourine Triangle and Castanets,” pp. 58–59.  Read source <https://pas.org/wp-content/uploads/2024/04/ECV0356-60.pdf>
+[5] Shure, “Home Recording Guide for Beginners,” general percussion placement example.  Read source <https://www.shure.com/nl-NL/insights/home-recording-guide-for-beginners>
+[6] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[7] Shure, “Three Reasons Why Mic Placement Matters,” live placement and gain before feedback.  Read source <https://www.shure.com/en-EU/insights/three-reasons-why-mic-placement-matters>
+[8] CDC/NIOSH, “Turn It Down Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

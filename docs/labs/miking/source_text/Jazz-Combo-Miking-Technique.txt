@@ -1,0 +1,89 @@
+# Jazz Combo Miking Technique
+Pro Audio Training Academy  •  Ensembles and Voice Lab  •  Studio and live sound
+A jazz combo is a conversation among players, often with strong acoustic bleed. This lesson compares a shared ensemble perspective with selective close microphones for horns, piano or guitar, upright bass and drums. It shows how studio capture, a club PA and a separate stream call for different placement decisions. The listening exercise uses the actual group; no audio examples are supplied.
+# Hear the group and map its sound
+A combo may be a piano trio, horn with rhythm section, guitar group or singer with players. List the actual instruments, who leads each passage, how the band listens to one another, and where monitors and loudspeakers will stand. Observe the drummer’s brush and ride work, the bass player’s plucked and bowed passages if used, piano lid direction, horn movement, and amplifier level. Listen unamplified from a musically useful position before placing a microphone. Ask the players whether they need eye contact, an open room, their normal stage formation, or an isolating screen; never make the room layout impede the performance.
+Bleed is a property of simultaneous playing, not automatically a fault. A firsthand Neumann-hosted trio report describes moving musicians within the room, allowing leakage and playing without headphones to preserve their preferred interaction; that one guitar-and-bass trio is a case study, not a universal jazz method. Shure’s small-ensemble guidance also allows a stereo pair for a small group and closer individual microphones for a more controlled, forward presentation. [1, 2]
+# Choose the ensemble architecture
+Approach
+Useful conditions
+Tradeoff to test
+One main mono mic or stereo pair
+Balanced acoustic group in a helpful room, little PA or amplifier spill, and few requests for independent balance.
+Instrument position largely sets the balance; a drummer or horn can dominate, and live gain before feedback may be limited.
+Main pair with a few support mics
+A coherent room image exists but bass, piano or a solo needs definition.
+The same instrument arrives through multiple paths; listen in mono and raise support only as needed.
+Close microphones on sources
+Loud club, drums or amps close to soft sources, singer or PA monitors, or a need for separate stream control.
+Greater isolation and balance control but more local tone and less natural ensemble blend.
+Hybrid with room pair on a separate feed
+PA uses close mics while the recording or stream needs audience and space.
+Do not send the room pair to player monitors by default; keep routing and phase checks explicit.
+
+For a stereo room image, compare coincident X-Y or Mid-Side when mono predictability matters, near-coincident ORTF for a different width and room blend, or a spaced pair if the room and group balance justify it. The array’s angle and distance must cover the actual players; change one parameter at a time while monitoring. Spaced A-B can produce comb filtering when summed to mono; DPA describes this tradeoff and the more stable mono behavior of X-Y and correctly decoded Mid-Side. Do not assume a recording array sent to the house PA will deliver the same stereo image across every club seat. [3, 4]
+# Set the stage or studio before setting levels
+Start by relocating or turning the loudest acoustic and amplified sources, in agreement with the players. A guitar amp aimed away from a piano or bass microphone may reduce spill; a piano lid changes where it projects and what nearby microphones hear. Screens can improve separation but may change how the group hears itself and alter room tone. Have the band play a quiet passage, a full ensemble peak and a solo handoff; listen through each microphone alone, then in context. Document whether the main image can carry the song before adding an isolated channel. The Neumann trio case deliberately accepted spill, while a Shure-documented jazz group session turned a guitar amp away from drums for more separation. [1, 5]
+# Miking the sections as one ensemble
+Source
+Placement comparison
+Why it changes in the group
+Jazz drum kit
+Hear an overhead or pair as a kit view; add an outside kick and perhaps snare only if the arrangement needs them. Compare ride and brushes at performance strength.
+The ride, hi-hat and brush detail often carry time; overly close cymbal pickup can dominate the room mics. A closed-front jazz kick may need an exterior view. [6, 7]
+Upright bass
+Try a stand mic with safe clearance at the body/fingerboard area, listening for pitch and articulation as well as low end. A fitted pickup can be compared as a separately labeled electrical path.
+Bass may be masked by drums and piano, while proximity effect can exaggerate low mids. Check mic and pickup alone and combined; do not attach to the bridge without owner and maker approval. [1, 5, 8]
+Grand piano or guitar
+Piano: compare an outside perspective with closer low/high-string views if drums spill too much. Guitar: locate its acoustic source or mic its actual amp speaker.
+The piano lid and player orientation affect spill; a close amp mic hears speaker color, not the unplugged guitar. Keep stands clear of pedals, lid and hands. [5, 8]
+Saxophone or brass solo
+Sax: compare a view of body tone holes plus bell with a closer stand or instrument-mounted mic if mobility requires it. Brass: test off-axis and bell distance according to level and spill.
+A sax radiates beyond its bell, while loud brass can dominate a shared pair. Let the soloist move naturally without colliding with a stand. [9]
+Singer, if present
+Use an individual mic appropriate to delivery and monitor geometry, and keep the instrumental pair out of the vocal monitor by default.
+Vocal intelligibility and feedback can govern the club mix even when the instrumental blend sounds right acoustically. [4]
+
+Use the dedicated instrument lessons for detailed horn, piano, guitar, bass and drum positions. The ensemble exercise asks what each microphone adds to the band, not whether it sounds impressive in solo. For drum overheads, compare the established kit methods in the Membranophones Lab, including the Glyn Johns method where its geometry and musical balance suit the group; it is one option, not a jazz requirement.
+# Studio workflow
+Choose the ensemble-first route if the players and room establish the balance. Listen to the main view, then add a horn, bass or piano spot to correct a specific line. In a more separated session, capture each source with its neighbors audible enough to preserve cueing; decide consciously whether to use screens and headphones. A Neumann case used bass mic plus pickup; another Shure jazz session used guitar amp, trumpet and bass microphones in the same room. They show valid decisions for their rooms, not a ranked mic list. [1, 5]
+At a full-group peak, set gain for the loudest horn and drum events and leave headroom. When combining room pair, drum overheads and individual spots, check both channels in mono and stereo. Listen for hollow bass, vanishing ride, displaced horn or a widening image that collapses in mono. Lower or move an overlapping microphone before treating polarity reversal or time alignment as an automatic fix. If a room pair is kept, record it on separate tracks so the recording can be judged with and without it.
+# Live sound workflow
+In a club, the acoustic drum kit and horns may already fill the room. Reinforce only what the audience lacks and route monitors for player needs without flooding open microphones. Shure’s live-sound guidance explains that close pickup often provides the isolation and gain before feedback that a distant natural-tone position cannot. Aim directional mics with loudspeakers and monitor angles in mind; exact rejection varies by pattern and frequency. A bass pickup or electric-piano DI is a separate signal, not a microphone capture; if the amplified speaker tone matters, mike that speaker as a separate source. [4, 8]
+Build the front-of-house mix from the sound already in the room, while making a separate stream/recording balance for remote listeners who hear none of the direct acoustic instruments. Check the quiet solo and the full tune at actual show level. At the first feedback ring lower the affected send, then correct mic position, open-channel count and speaker/monitor geometry. Do not sustain feedback to demonstrate a point. A single shared main pair is a poor default for a loud monitored stage, though it can work in an unusually quiet, controlled setting.
+# Troubleshooting and safe practice
+Symptom
+First check
+Horn overwhelms the room image
+Change horn/player-to-pair relationship if the musicians agree; then reduce support mic or adjust the main view.
+Bass is muddy or disappears
+Hear mic, pickup and sum separately; reposition for articulation and inspect proximity/overlap with kick and piano.
+Ride too bright, brushes lost
+Rebalance or change drum overhead view before adding many close channels; check a full drum passage.
+Piano lost under drums
+Inspect lid and group geometry; compare a closer piano view without interfering with the pianist.
+Stereo sum becomes thin in mono
+Test the main pair and each support in mono; change positions or balance; verify Mid-Side decoding if used.
+Live feedback or uncontrolled spill
+Lower the affected monitor/house send and reconsider distance, pattern, speaker direction and open mics.
+
+Stabilize stands and isolate cable paths from players, audience, chair movement, piano pedals and bass endpin. Do not place a microphone in a horn bell or under a moving piano lid without ensuring safe clearance through the full performance. No improvised clip or adhesive belongs on a valuable acoustic instrument. Keep amplified sources and monitor levels within the venue’s sound-level practice and avoid dangerous feedback. Rig any elevated array through approved personnel and hardware.
+# Class exercise and assessment
+1. Draw the actual group, acoustic projection, room reflections, amplifier and loudspeaker directions, and player sightlines. Identify the main musical conversation and solo handoffs.
+2. Hear one complete chorus through a single approved main view. Note what is too loud or soft, the room contribution and whether the players can hear each other. Change one seating or microphone variable with player agreement.
+3. Add one justified support mic. Hear the main alone, support alone and the sum at matched listening level, then repeat in mono. State the audible advantage and cost of spill.
+4. Compare a drum-overhead-led kit capture with one extra close channel if needed, and a bass air mic with any existing pickup path. Never affix a device to the instrument as part of the exercise.
+5. Build an approved live mix from the actual acoustic sound in the room, and plan a separate recording/stream route. Check a quiet solo and loud chorus without provoking feedback.
+Pass criterion: the student chooses and explains a shared, supported or close-mic architecture; adjusts the ensemble safely; demonstrates an intentional change in balance; checks overlapping sources in mono; and distinguishes live PA needs from recording or streaming. No supplied audio examples are required.
+# Evidence audit and source notes
+Agreement: Shure and DPA treat positioning, spill and stereo/mono interaction as important; practitioner cases show musicians and room position shape the result. Variation: the Neumann trio deliberately embraced bleed, while the Shure jazz session sought some separation, and Shure’s live guidance favors closer pickup when feedback governs. These are different conditions rather than direct contradictions. The two case reports are firsthand accounts of particular sessions, not controlled comparisons. Gaps: no cited source establishes a universal jazz-combo microphone count, fixed group spacing, or a single ideal live PA recipe. Test the actual band and room. [1–9]
+## Sources
+[1] Bob Martin, “Recording the Steve Greene Trio,” Neumann-hosted firsthand report. https://www.neumann.com/globalassets/digizuite/17307-en-recording-the-steve-greene-trio.pdf
+[2] Shure, “Audio Systems Guide for Music Educators,” small-ensemble recording and sound reinforcement sections. https://content-files.shure.com/Pubs/education-audio-systems-for-music-educators/us_pro_audiomusiceducators_ea.pdf
+[3] DPA Microphones, “Stereo recording techniques and setups.” https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/
+[4] Shure, “Microphone Techniques for Live Sound Reinforcement,” ensemble and feedback sections. https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf
+[5] John Xepoleas, “Five Easy Pieces: Miking Drums with a Shure SM27,” firsthand jazz group session, Shure. https://www.shure.com/en-IN/insights/five-easy-pieces-miking-drums-with-a-shure-sm27
+[6] SCHOEPS, “Chris Allen: The Honest Capture of Jazz,” practitioner interview on drum overheads. https://schoeps.de/en/knowledge/user-reports/the-honest-capture-of-jazz.html
+[7] DPA Microphones, “How to mic a kick (bass) drum,” jazz drum comparison. https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-kick-drum/
+[8] Shure, “Miking the Rhythm Section,” live instrument approaches. https://www.shure.com/es-LATAM/articulos/miking-the-rhythm-section
+[9] Shure, “Choosing a Saxophone Microphone for Recording and Live Sound,” practitioner interviews. https://www.shure.com/en-eu/insights/choosing-a-saxophone-microphone/

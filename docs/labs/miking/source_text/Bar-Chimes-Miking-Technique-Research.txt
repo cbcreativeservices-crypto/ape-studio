@@ -1,0 +1,87 @@
+# Bar Chimes Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Bar Chimes   October 3, 2026
+# Scope and learning goals
+Bar chimes are suspended, graduated metal bars that sound when the player sweeps or strikes them. They are idiophones because the metal bars themselves vibrate. A mark tree is a particular bar-chime design; the term is also used more loosely, so identify the actual instrument. Percussive Arts Society (PAS) distinguishes the straight row of a mark tree from a circular set of outdoor wind chimes and from a bell tree [1]. This lesson covers a single or double row of freely hanging bars in studio and live sound. Students should capture the whole sweep, decay and intentional cutoff while keeping equipment clear of the swinging bars and hand. Vibraphone is next on the agreed list. No audio examples are included.
+# Source and performance before the microphone
+PAS describes a mark tree as graduated metal cylinders hanging from a wooden rail, played by moving the hand fluidly across them [1]. The succession of attacks and overlapping decays creates the familiar shimmering effect. The exact musical gesture matters: ask the player to demonstrate direction, starting and ending bar, speed, force, single-bar accents, repeated sweeps, and any intentional damping. Sound from a bar continues after the hand passes unless the player or a damper stops it. A mic aimed only at the beginning or end of a long row may give an uneven sweep.
+Inspect the actual model. Meinl documents single-row 27-bar and double-row 60-bar instruments; the latter includes a striker [2, 3]. Grover's Spectrasound Mark Tree describes individual bars suspended on filament from a hardwood rail, with provision for an optional damper [4]. Such examples establish possible layouts and accessories, not a universal bar count, suspension or material. Different bar lengths can produce different perceived pitches and colors within a model [3]. Do not promise chromatic notes or a standard tuning for a general bar-chime sweep. The frame, clamp and support can rattle; distinguish those mechanical noises from wanted metal decay.
+# One microphone starting procedure
+1.Mark the gesture and moving parts. Have the performer play the complete phrase with the final mount, hand or striker. Watch the full sweep, swinging bars, player reach and any damper. Place the mic, cable and stand outside the stroke and swing path, leaving space for bar motion after impact.
+2.Audition the entire row. In a quiet room, try a stand-mounted cardioid condenser or another suitable mic roughly 40–80 cm (16–32 in) from the center of the row, facing its length, at a height that captures the bars rather than only the wooden rail. This is a reasoned starting trial, not a bar-chime-specific published prescription. Shure's generic beginner percussion example begins with at least 30 cm [5]. A particularly wide instrument, fast swing or player's reach calls for more clearance.
+3.Compare a second view. Move modestly in angle or distance while replaying the same direction, speed and dynamic. Listen for the first versus last bars, upper shimmer, transient harshness, support noises, room and spill. A direct or close position can favor attacks and isolation; a wider view may integrate the sweep and decay if the room cooperates. Test those hypotheses with the actual instrument. If a double row sounds uneven, compare a different safe viewing angle or moderate distance before adding another mic.
+4.Set gain and processing from the phrase. Check the strongest strike and the densest sweep for clipping at mic, preamp, converter and live output. Verify the quiet tail at the intended level. Use high-pass filtering only to remove unwanted low rumble or support noise. Avoid a gate that truncates the chime decay, and avoid aggressive compression that makes the lingering tail or spill dominate.
+The attack can be very brief while the sound continues. A condenser is a practical detailed-pickup trial, not a requirement. If stage spill, handling or the available mic inventory favors a dynamic microphone, audition it across the full sweep and tail. Microphone pickup pattern and off-axis response affect how a wide row is covered [6, 7].
+# Tone and approach trials
+Musical goal
+Source and mic trial
+Verify
+Even rising or falling sweep
+Keep direction and speed consistent; face the whole row from a safe central view.
+First and last bars, peak and tail are musically balanced.
+Delicate shimmering effect
+Confirm free bar suspension; compare moderate and wider positions in a good room.
+Decay is audible without disproportionate room noise.
+Defined single accent
+Ask the player for the intended bar and hand or approved striker; compare direct view.
+Attack is clear, support does not rattle, adjacent bars behave as intended.
+Short stopped flourish
+Rehearse the intended damper or hand cutoff.
+The stop is controlled and is not an electronic gate artifact.
+Loud ensemble transition
+Compare main pickup with a directional spot and stage relocation.
+Useful chime-to-spill ratio without feedback or unsafe clearance.
+
+Compare one change at a time. A faster or stronger sweep changes the source and should not be misread as a microphone effect. The listed outcomes are listening questions rather than preset EQ curves.
+# Studio application
+Solo overdub: Use the same stand and hand or striker the performer will use for the take. Record a complete sweep in each direction, a soft and strong gesture, and the full decay. Compare a moderately close mono position with a wider position at matched listening level. A stereo pair can give a spatial sweep when the composition calls for it and the room supports it, but is not required for this instrument. Check stereo width and mono compatibility instead of assuming that a mic at each end will automatically create an even image.
+With an ensemble: Listen to the main or percussion overheads first. If they already carry the chimes at a usable balance, a separate mic may add little. Add a spot when independent control helps; place the instrument away from louder cymbals and amplifiers as practical. Listen to the spot with the main pickup, including in mono, for changes to the attack or tail caused by different arrival times. Position and balance are the first corrections. A close spot that hears mostly neighboring instruments does not become useful merely by increasing its fader.
+# Live application
+In a quieter ensemble, a shared percussion mic or existing overhead may cover the sweep. On a louder stage, a stand-mounted directional spot can improve direct-to-spill ratio if it remains safely outside hand and bar motion. Put the bar chimes in a consistent station and check both sweep directions during the full band soundcheck. A double row or wide assembly may require more distance for even coverage; any move closer for isolation must be checked across all bars. A separate mic at each end is an option for a deliberately wide or difficult setup, but raises open-mic count, spill and combined-mic complexity. Start with one and add only after hearing the reason.
+Keep wedges and nearby PA loudspeakers out of the mic's sensitive directions. Cardioid has deepest nominal rejection to the rear; supercardioid and hypercardioid patterns have rear lobes and off-axis nulls [6]. Check the actual pattern and monitor arrangement. The player's own monitor may not need much bar-chime signal, especially if the instrument is acoustically clear nearby. If the chimes are masked, change instrument location, competing stage level or arrangement before forcing excessive gain. Shure describes placement in live sound as a balance of useful signal, noise and gain before feedback [8].
+# Safety and signal checks
+Inspect the filament or cord supporting each bar, rail, clamp, stand and any damper before performance. A loose bar or overloaded accessory clamp can fall. Use hardware rated for the assembly and secure a stable stand; do not add an improvised overhanging load to a weak support. Leave hands clear of the microphone and bars free to swing without hitting the grille, stand or adjacent hardware. Route cables away from the playing position and foot traffic. Do not force louder or harder strikes just to compensate for stage spill. Set headroom for the strongest transient and avoid excessive monitor level. For sustained high ensemble exposure, follow music hearing-conservation guidance such as NIOSH's assessment and controls [9]; no bar-chime-specific level is assumed.
+# Troubleshooting
+Symptom
+Check
+First action
+Beginning or end of sweep disappears
+Is the mic too near one end or the player inconsistent?
+Compare full gesture; recenter or step back safely.
+Ring is short or uneven
+Do bars hit hardware or a damper unintentionally?
+Restore intended free travel and inspect suspension.
+Harsh single strike
+Is source technique or mic orientation emphasizing the attack?
+Compare intended hand/striker, force and safe mic view.
+Clank or buzz under sweep
+Is a bar, mount, clamp or stand loose?
+Stop and secure the mechanical problem before EQ.
+Tail is cut off
+Is the instrument damped, gated or masked?
+Identify source versus signal cause; restore natural decay if intended.
+Spot mostly hears cymbals
+Is the chime-to-spill ratio low?
+Reposition player and mic or use main pickup.
+Feedback before useful level
+Where do loudspeakers sit relative to mic nulls?
+Correct pattern geometry and monitor level; soundcheck full band [6, 8].
+
+# Teaching exercise and assessment
+1.Identify the instrument's row count, mounting, suspension and actual hand or striker path. Differentiate bar chimes from a bell tree and outdoor wind chimes [1–4].
+2.At a safe distance, compare a central mic view near 40 cm with another near 80 cm, if the instrument and motion allow. Level match. Listen to a slow sweep in both directions, one single accent and the decay. These numbers are teaching trials, not standards.
+3.Repeat the phrase with and without an intended hand or fitted damper, when the player permits. Explain which changes come from the source and which from the microphone. Never touch moving bars or the performer's hand to demonstrate damping.
+4.Compare ensemble main pickup alone with main plus spot, then assess the live setup with full band and wedges. State one safe source or geometric correction for masking or feedback before adding gain.
+Pass criterion: The student captures the entire musical gesture and tail, distinguishes source and mount faults from mic placement, maintains safe clearance, and can justify main versus spot coverage for both studio and stage.
+# Evidence audit and limits
+Agreement: PAS describes the mark tree's suspended graduated bars and sweeping hand motion [1]. Meinl and Grover document real single and double rows, mounting and optional accessories [2–4]. Shure supports listening before microphone placement, general percussion starting distance and polar-pattern planning [5–8].
+Differences and gaps: Makers emphasize different models and tonal descriptions, so model claims must remain attached to the model. No direct contradiction was identified. The retrieved primary sources do not provide a universal bar-chime-specific microphone, exact distance or angle. The 40–80 cm comparison, stereo option and live spot workflow are reasoned trials grounded in source geometry and general mic principles. Confidence is high in the instrument's construction and basic playing gesture, moderate in the comparative miking workflow, and low in an exact tonal prediction without the instrument, room and stage. This lesson concerns bar chimes, not orchestral tubular bells, hand chimes or the Decca Tree microphone array.
+# References
+[1] Percussive Arts Society, “The Land of Misfit Toys,” Educators Companion, Volume II, Mark Tree and Bell Tree sections.  Read source <https://pas.org/wp-content/uploads/2024/04/ECV02.pdf>
+[2] Meinl Percussion, “Mountable Series 27 Bars Chime Studio,” model description.  Read source <https://meinlpercussion.com/en/products/ch27st-m8535.html>
+[3] Meinl Percussion, “Artist Series 60 Bars Luis Conte Chime,” model description.  Read source <https://meinlpercussion.com/en/products/lc60hf-m8555.html>
+[4] Grover Pro Percussion, “Spectrasound 35 Bar Mark Tree,” construction and damper provision.  Read source <https://groverpro.com/product/spectrasound-35-bar-mark-tree-natural-aluminum>
+[5] Shure, “Home Recording Guide for Beginners,” general percussion placement example.  Read source <https://www.shure.com/nl-NL/insights/home-recording-guide-for-beginners>
+[6] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[7] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[8] Shure, “Three Reasons Why Mic Placement Matters,” live principles.  Read source <https://www.shure.com/en-EU/insights/three-reasons-why-mic-placement-matters>
+[9] CDC/NIOSH, “Turn It Down Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

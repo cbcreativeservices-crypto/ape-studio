@@ -1,0 +1,99 @@
+# Wurlitzer Electric Piano: Miking the Speakers
+Pro Audio Training Academy   Idiophones Lab   Wurlitzer   October 3, 2026
+# Scope and learning goals
+The Wurlitzer electric piano is a struck-reed instrument. Hammers excite steel reeds; a polarized electrostatic pickup senses their motion and an amplifier drives a speaker [1, 2]. This lesson emphasizes miking the actual speakers in the keyboard or an external amplifier, for studio and live sound. Students should identify the model and speakers before placement, compare one and two microphones, hear source noise and cabinet character accurately, and keep safe distance from vintage electrical parts. Wurlitzer follows Rhodes in the agreed Idiophones Lab order; the Aerophones Lab begins with trumpet and flugelhorn next. No audio examples are included.
+# Know which Wurlitzer is in front of you
+The 200 and 200A portable models are useful teaching examples, but Wurlitzer made other portable, console and student models with different cabinet and speaker arrangements [1, 3]. Vintage Vibe documents two small speakers on the 200, with 200A speakers often mounted to the lid; early transitional units and restored instruments can differ [3, 4]. Tropical Fish, an electric-piano restoration specialist, notes that the 200's speakers attach to the amplifier rail while the 200A lid-mounted speakers can contribute characteristic sound and, if loose, rattle [5]. Find the actual speaker grilles by observation and owner guidance. Do not lift the lid or touch internal wiring merely to locate a mic position.
+Map the full chain: key → hammer → reed → electrostatic pickup → preamp/controls → amplifier → speaker/cabinet → room → microphone [1, 2]. The instrument may make faint mechanical sound near the keys, but a microphone aimed at the cabinet captures the amplified sound. Ask the player for the normal volume, tone and tremolo/vibrato setting, pedal use, soft and hard attacks, low and high notes. The 200 and 200A use different amplifier and effect circuits, and individual condition or modification matters [5]. A bad note or electrical hum is not a mic-position puzzle until the source is checked.
+Two onboard speaker grilles do not prove stereo. Identify the signal feeding each speaker before choosing stereo panning. The 200-series instrument's built-in tremolo is a level modulation often labeled “vibrato,” not an instruction to create left-right motion [5]. If an external amplifier is used through an approved auxiliary output, the microphone source becomes that external speaker; its placement and tone must be evaluated separately.
+# One microphone on an onboard speaker
+Tropical Fish recommends a close dynamic microphone roughly 2.5 cm (1 in) away, off center and slightly angled as one approach to a Wurlitzer speaker, then repositioning by ear [6]. It is a practitioner method, not a universal target for every model or condition. Shure's general amplifier guidance says the speaker center tends to be brighter and an outward position mellower; greater distance brings in more room [7]. The 200/200A grilles, small oval speakers and lid/rail mounting can behave differently from a large guitar combo, so test rather than assuming a cone position gives a prescribed EQ curve.
+1.Hear the whole instrument first. Listen near the player and at an audience/room position. Check low and high registers, hardest chords, soft notes, pedal release and tremolo. If a speaker buzzes acoustically, ask the owner or technician to inspect it; do not loosen or tighten vintage hardware yourself.
+2.Position without contact. Place an appropriate directional dynamic mic just outside one confirmed speaker grille, perhaps starting at the documented roughly 2.5 cm and a modest off-center angle [6]. The capsule must not touch the case, grille, key travel, sheet-music rest or player. Test a slightly greater distance if grille hardware blocks the view or a lid vibrates the stand.
+3.Change one dimension. Compare left and right speaker locations, then small lateral and angle changes at matched level. If a direct close view is too sharp or noisy, aim farther off center or move back in a controlled room; if too indistinct, move toward the active grille or audition another mic. A condenser or ribbon can be a studio choice only when its sound-pressure, power and handling limits are respected [6, 7].
+4.Test phrase and headroom. Set gain for the strongest intended attack and tremolo peak; listen through note decay. Keep intended amplifier breakup distinct from mic/preamp overload. A noise gate can chop the musical tail or pump with tremolo. Use a high-pass filter only after judging the lowest wanted notes against floor/stand noise.
+If the cabinet has speakers facing the player, microphone access and audience spill differ from a forward-facing guitar amp. A small stand or low-profile mount can work if stable and independent of the vintage case. No source found establishes one best Wurlitzer microphone model or exact spot for all instruments.
+# Two microphones: two grilles or one close and one room
+With a 200/200A's two onboard speakers, two close mics can capture local cabinet differences or provide useful placement options. Do not assume this is a stereo keyboard. Audition each mic alone, then combine at matched gain in mono. If the microphones hear much of the same source at different arrival times, the blend can change tone; modify position or select the better single mic before automatically reversing polarity or adding delay. Pan only if there is a musical reason and audience/recording distribution warrants it.
+A close mic plus a distant room mic can represent cabinet and space in a studio. The farther mic collects room reflections, mechanical action and other instruments; compare it at musical level and sum to mono. A two-mic approach often costs more live feedback margin and may double stage spill. On a loud stage, one close mic on the best-sounding accessible speaker is a sensible first choice. If the source uses external speakers, identify whether they really carry different signal content, then document and test each speaker. The 200A tremolo is not automatically a stereo effect [5].
+# Tone and approach trials
+Musical aim
+Trial at fixed player settings
+Listen for
+Rounded and intimate
+Compare off-center close mic with slightly greater distance.
+Reed pitch/body, cabinet tone, action noise and room [6, 7].
+More bite or bark
+Compare another small speaker-grille position before adding EQ.
+Musical attack versus brittle high mids or amplifier overload.
+Preserve tremolo
+Play a sustained chord with effect on/off and at performance depth.
+Intended level pulse, steady noise floor and intact sustain [5].
+Wide studio picture
+Compare one close mic against close-plus-room and two-grille options.
+Helpful space and mono stability, not automatic stereo.
+Loud stage
+One directional close mic; move keyboard/monitors as practical.
+Useful gain before feedback, adequate playing/foot clearance.
+
+If a different auxiliary amplifier or speaker is introduced, it is a source change; document it separately from a microphone move. Keep the player involved in approving the tone and instrument level.
+# Direct output: comparison, with strict connector identification
+Tropical Fish and Vintage Vibe document usable auxiliary outputs on 200-series instruments, including a 200A aux-level adjustment, although student versions, old units and modifications vary [5, 6]. A direct auxiliary feed can be compared or blended with the mic, but it does not include the onboard speaker and cabinet character. Confirm the exact model, actual labeled jack, condition and output level with the owner/manual. A headphone, auxiliary, speaker or unfamiliar connector must not be treated as interchangeable.
+Never plug a speaker output directly into a mic input, line input or ordinary DI. A specifically rated load/speaker-interface device may provide an isolated route when installed according to its manufacturer and amplifier requirements; that is technician work outside this miking lab [6]. A vintage amplifier should be assessed by a qualified technician if its electrical state is uncertain. Do not alter wiring or defeat the protective earth to reduce hum. If combining aux and mic signals, hear each alone and the mono sum for arrival-time coloration, then choose a musical blend. A usable aux feed is an alternate electrical path, not “miking.”
+# Studio application
+Begin with the piano in a stable playing location and its built-in speakers at the player's agreed tone and level. Listen for speaker rasp, lid rattle, key clicks and pedal noise before placing a mic. The 200A lid can be part of the audible speaker/baffle character [5, 6]. Trial the close off-center mic, then move a few centimeters or compare the other grille. Capture entire phrases at realistic dynamics. If the room is worth hearing, compare a room mic while checking mono blend and nearby noise. For an external amp, repeat the speaker placement exercise on that cabinet; do not assume its output duplicates the onboard tone.
+In a full-band session, a close mic reduces but does not eliminate drum, cymbal or amp bleed. Reposition the piano and neighboring sources to improve separation without blocking the player. A direct aux comparison may give more control, but preserve the speaker mic if the cabinet is the sound the player chose. Check whether the headphone or aux connection changes built-in-speaker operation on that specific instrument; no universal rule is established here. Record the effect, tone, volume, mic position and output path for later repeatability.
+# Live sound application
+Identify whether the built-in speakers are sufficient for the player, audience or neither. One close directional mic at an accessible speaker can bring cabinet character to the PA; a verified aux feed may improve isolation when the stage is loud, but it changes the captured path. Test at band level, with the sustain pedal, hard accents and tremolo engaged. Watch feedback and monitor position relative to the microphone's real polar pattern. Speaker grilles close to the keys make stands and cables especially likely to interfere with hands, knees, pedal and sheet music.
+In a quiet hall, audience/main microphones may already hear the piano adequately. On a louder stage, choose mic placement and keyboard/monitor layout to favor direct sound. Two close microphones should earn their channels: check both in mono and audience coverage before panning. Do not turn up an aging speaker to a level that produces distress or rattle merely for microphone level. Correct the sound source and stage geometry before escalating gain.
+# Safety and instrument care
+Vintage Wurlitzers combine mains-powered amplifier components and an electrostatic pickup with high-voltage circuitry [1]. Keep the case closed during miking. Do not handle internal parts, speaker terminals, shielding or a damaged power cord. Stop using an instrument that shocks, smells hot, arcs or has suspect wiring; have a qualified technician inspect it. Unplugging alone is not a safe instruction to open or service electronics because stored charge may remain. Do not use a ground-lift adapter to chase hum. If a microphone stand contacts the instrument, move it rather than creating a path between metal hardware and faulty electronics.
+Check the piano's stand/legs, speaker grille and pedal position with the owner. Use stable, counterbalanced stands independent of the instrument; secure cables outside the pedal/foot path and provide access to controls and exits. Never clamp to a lid, grille or delicate vintage hardware without a maker-approved method. Limit stage volume and apply hearing-conservation practices for sustained loud exposure [8]; no universal Wurlitzer SPL can be inferred.
+# Troubleshooting
+Symptom
+Test the cause
+First response
+Too much click
+Is it in the speaker sound or only a close mic?
+Compare other grille, angle and distance; inspect source with player.
+Lid buzz or rattle
+Audible without PA at intended volume?
+Stop and refer to owner/technician [5].
+Weak low or high notes
+Does source differ between registers?
+Hear each grille and aux separately; do not diagnose solely by EQ.
+Tremolo pumps unnaturally
+Is gate/compressor responding to amplitude modulation?
+Bypass processing; confirm source depth [5].
+Two mics sound hollow
+Do they sum poorly in mono?
+Hear each alone; change geometry or use one.
+Hum or electrical concern
+Present at source/aux with all mics muted?
+Stop if unsafe; qualified technician, no ground defeat.
+Feedback or spill
+Does mic face wedges/nearby amp?
+Improve layout, aim and open-channel count.
+Amp breakup or clipping
+Which stage distorts, and is it musical?
+Ask player; restore mic/preamp headroom without erasing intended tone.
+
+# Teaching exercise and pass criterion
+1.Identify the model, actual speaker location/mounting, effect and verified output jacks. Explain the reed–electrostatic-pickup–amp–speaker–mic path [1–6].
+2.At a safe one-speaker position, compare the specialist's approximately 2.5 cm off-center, slightly angled start with two small changes. Play full range, soft/hard chords, sustained notes and tremolo at fixed source settings [6].
+3.Compare the second grille, each mic alone and both in mono. If the room permits, compare one room perspective. Document whether two microphones add value and whether they are truly capturing distinct signals.
+4.With owner/technician-confirmed aux connection, compare electrical output and speaker mic individually and together. State what the aux omits. In live context, test actual monitor and PA geometry without obstructing player or pedal.
+Pass criterion: The student identifies the real speaker and output path, uses a safe stable microphone placement, evaluates pitch, cabinet and tremolo across the phrase, checks mono and gain, and refuses unsafe electrical improvisation.
+# Evidence audit and limits
+Agreement: Wurlitzer service documentation and restoration specialists agree on struck reeds, electrostatic pickup, amplification and model-specific speakers [1–6]. Tropical Fish offers a concrete close/off-center mic starting method [6]. Shure's general amp guidance agrees that cone location and distance can change tone and room contribution [7].
+Model variation and difference in emphasis: Vintage Vibe distinguishes 200 amp-rail and 200A lid-mounted speakers, with early transitional cases [3–5]. Tropical Fish emphasizes the audible lid/baffle and a close dynamic mic; another mic or more distant perspective is a reasoned alternative, not a claim that the speaker is tonally neutral [5, 6]. The classic “vibrato” label describes an amplitude tremolo circuit on 200/200A [5].
+Evidence gap: No source establishes an optimal mic for all models, universal speaker-grille coordinate, safe direct-output level on every modified vintage unit, or guaranteed stereo result from two grilles. The 2.5 cm starting point is a documented practitioner's preference, subject to the actual grille and condition [6]. Confidence is high for 200/200A construction and electrostatic principle, moderate for the comparative mic procedure, and low for any exact tonal outcome without listening to the individual instrument.
+# References
+[1] Wurlitzer Company, “Electronic Pianos Series 200 and 200A Service Manual,” hosted by Vintage Vibe.  Read source <https://cdn.shopify.com/s/files/1/0666/2821/files/Wurlitzer_200_and_200A_Service_Manual.pdf>
+[2] Vintage Vibe, “Case Study: Wurlitzer Electric Piano Reeds.”  Read source <https://www.vintagevibe.com/blogs/news/wurlitzer-electric-piano-reeds-case-study>
+[3] Vintage Vibe, “Wurlitzer 200 Series Speakers,” model and mounting distinctions.  Read source <https://www.vintagevibe.com/products/vintage-vibe-wurlitzer-speakers-200-series>
+[4] Vintage Vibe, “Wurlitzer 200A Parts Diagrams,” model differences.  Read source <https://www.vintagevibe.com/blogs/news/wurlitzer-200a-parts-diagrams>
+[5] Tropical Fish Vintage, “What Is the Difference Between a Wurlitzer 200 and a Wurlitzer 200a?”  Read source <https://www.tropicalfishvintage.com/blog/2019/5/27/what-is-the-difference-between-a-wurlitzer-200-and-a-wurlitzer-200a>
+[6] Tropical Fish Vintage, “Techniques for Recording a Wurlitzer Electronic Keyboard.”  Read source <https://www.tropicalfishvintage.com/blog/2019/5/27/techniques-for-recording-a-wurlitzer-electronic-keyboard>
+[7] Shure, “How to Choose the Best Mics for the Guitar,” amplifier placement principles.  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-the-guitar>
+[8] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

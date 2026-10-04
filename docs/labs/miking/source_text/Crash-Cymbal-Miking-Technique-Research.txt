@@ -1,0 +1,98 @@
+# Crash Cymbal Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Crash cymbal   October 3 2026
+This lesson teaches miking an acoustic crash cymbal as part of a drum kit in a studio or live sound system. A crash is an idiophone: its metal body vibrates after a strike, producing a rapid attack and a decaying wash. The first decision is whether the existing overhead or kit microphones already represent the musical accent. A separate crash microphone is optional and should have a specific purpose. Every proposed position must pass a full-motion safety check with the player before use. No audio examples are included. [1–5]
+# Learning goals
+The learner will distinguish crash attack, body, and decay; recognize the player's strike and choke motions; assess a crash in overheads before adding a microphone; compare wider, top-side, and optional under-cymbal coverage; explain the effects of spill and multi-mic summing; set gain for the hardest intended accent; and make different studio and live decisions without inventing a universal distance, angle, or microphone model.
+# Understand the source
+Zildjian describes the outer crash area as the region that responds immediately to a strike. Its teaching material characterizes a typical crash as explosive with relatively quick decay while noting that models vary from thin and light to heavy and thick. The player's stick, strike force, technique, cymbal construction, stand setup, and whether the sound is choked affect what the microphone receives. Ask the player to demonstrate the actual passage: ordinary accents, repeated crashes, bell or bow taps if played, the hardest strike, and any immediate hand choke. Assess the attack and the full tail in the musical context. [1, 2]
+A crash can sit close to a snare, high tom, another crash, a ride, or a vocal mic. The overheads hear all these sources; a spot mic hears more than one source too. A cymbal's strike region is not a promise that a microphone pointed at one part captures only that part. A change in position changes the ratio of direct sound, neighboring kit sound, room sound, and reflections. Treat tonal descriptions as hypotheses to test with this player and kit. [3–5]
+# Begin with the kit picture
+Listen to the complete arrangement with the existing overheads and other open kit channels. Shure advises establishing a useful overhead balance before adding spots; DPA describes overheads serving either as the main kit pair or as cymbal support for close-miked drums. In a published four-microphone kit, Audix covers cymbals with overheads without separate crash channels. These sources support overhead-first as a practical starting method, not a rule that crash spots are forbidden. [3–5]
+For one crash that overwhelms the snare or another cymbal, first inspect the overhead aim, height, and balance in the context of the entire kit. Changes to one overhead can shift the snare image and other cymbals. With two overheads, compare the combined result in mono and verify where the snare, crashes, and toms sit in the intended stereo image. Moving a microphone solely to tame one crash may damage the kit picture; listen before committing. [3, 4]
+Consider a separate channel if a particular crash must be controlled independently for a production cue, in-ear or broadcast mix, an unusually wide kit, or a live stage where conventional overheads pick up too much of the surrounding system. DPA documents under-cymbal positions for individual cymbals in general guidance and a touring application using small under-cymbal mics to manage wedge spill. These are examples of achievable configurations, not comparative proof that underneath is inherently superior. [4, 6]
+# Safety before placement
+Stop the drummer before adjusting stands or cables. Watch and map the full arc of every stick and hand, the crash's maximum swing and rebound after the strongest intended strike, any hand choke, the neighboring cymbal swing, and access for the player. Place the capsule, body, clip, boom, connector, and cable outside every path. Repeat the check after any change. Never attach a microphone to the freely vibrating cymbal or clamp the cymbal to make room. Zildjian specifies sleeves and felts and advises against overtightening the wing nut so the cymbal can move freely. [2]
+Use stable stands and correctly rated mounts; keep a heavy boom from falling onto the player and route cables clear of feet and moving hardware. If a clamp is proposed for the *stand*, verify that the stand and clamp can carry it securely without altering the player's setup. An under-cymbal mic deserves a particularly careful check because the plate can flex downward or rock toward it. No source here establishes a universal safe gap in inches or centimeters. If the player cannot demonstrate clearance, choose another position. [2, 4]
+Repeated full-force soundchecks increase human noise exposure. NIOSH recommends 85 dBA as an eight-hour occupational exposure limit, with recommended exposure time halved for each 3 dBA increase. This concerns people, not a microphone's maximum SPL. Keep loud repetitions purposeful and follow local hearing protection procedures. Confirm the selected mic's power, maximum sound pressure, pad, and the preamp's input headroom. Mute relevant outputs before patching or changing phantom power, and follow the equipment manuals, especially with ribbon or unusual wiring. [7, 8]
+# Miking approaches and what they teach
+Approach
+Purpose and supporting practice
+What to test
+Existing overhead or minimal kit setup
+Start here for a cohesive kit image. Shure and DPA describe overheads as overall-kit or cymbal coverage; Audix shows a kit without individual crash spots. [3–5]
+Does each crash have the desired attack and decay in the complete kit? Check snare balance, stereo image, and mono sum.
+Adjust the crash-side overhead
+Change safe aim or height to alter relative pickup of the crash and other kit pieces. Shure discusses overhead angle and on-axis focal point. [3]
+Compare the entire kit at working levels. A fix for one crash can cause a worse snare or tom balance.
+Dedicated top-side crash mic
+For independent control, place a suitable mic at a safe point above or to the side, aimed toward the cymbal's playing area rather than directly into the stick and edge swing. This is a conditional teaching starting point, not a source-established distance. [1, 2, 4]
+Confirm the full strike/choke/swing, attack, tail, snare/tom spill, and headroom. Keep it only if it improves the needed feed.
+Dedicated under-cymbal mic
+DPA documents upward-facing underhead positions; a touring team reported using small mics under cymbals to manage wedge spill. [4, 6]
+Check actual lower travel, stand hardware, neighboring drum pickup, feedback margin, and the combined sound with overheads. Do not presume isolation.
+Room or more distant kit perspective
+When the room and production favor a wider kit sound, a farther microphone may support the collective impact and decay; its position is a room/kit choice, not an isolated crash mic. [3, 4]
+Hear the room contribution and other instruments, then decide whether it helps the arrangement.
+
+Attack and decay. A very near microphone may put a strong accent and neighboring spill into one channel, while a broader perspective captures more of the developing wash and kit balance. This is a qualitative placement test, not a measured claim that a particular spot always sounds “brighter” or “darker.” Let a complete crash ring out, then compare any choke passage separately. [1–4]
+Microphone selection. A condenser is common for overhead and cymbal coverage, and compact directional microphones appear in documented under-cymbal live applications. Select a mic by its polar behavior, physical clearance, overload capability, power requirements, and actual sound. Neither a directional pattern nor proximity removes bleed entirely. A supercardioid or hypercardioid also has a rear pickup region, so orient it using the manufacturer's polar information rather than assuming everything behind it is rejected. A ribbon mic requires particular attention to its mounting, handling, phantom compatibility, and any air movement, according to its own manual. [4, 6, 8]
+# Multiple microphones and the whole kit
+When a crash appears in overheads, a spot, tom mics, and a vocal mic, each channel receives it at a different time and from a different direction. Bring a spot into the intended kit mix and compare attack and decay in mono, then in the actual stereo or sound reinforcement layout. If the crash becomes thin, smeared, or exaggerated, adjust the position and balance or omit the spot. Check the snare and toms at the same time because their spill in the new channel can alter the kit. Shure describes these overhead and close-mic interactions. [3]
+Polarity reversal may change a particular combination, but electrical polarity reversal does not equal an acoustic delay correction. Do not teach a fixed polarity switch position or automatic sample alignment for every crash mic. Use a high-pass filter only if removing unwanted lower-frequency kit bleed improves the intended channel role; judge it within the full mix. Avoid sending unnecessary crash spot or overhead level to monitors or a PA side where it worsens feedback or coverage. [3, 4, 9]
+# Studio and live decisions
+Decision
+Studio
+Live sound
+Need for a spot
+Overheads often capture the crash as part of the kit; independent control may serve a production cue or a very unbalanced arrangement. [3–5]
+First hear the unamplified crash at audience positions. A spot can serve monitors or broadcast even when front of house needs little or none. [4, 6]
+Position and spill
+A safe broader or room perspective may make the crash and decay fit the kit; check other open tracks.
+Wedges, nearby vocal mics, other drums, sightlines, and rapid changeovers may favor a compact under-cymbal or restrained overhead approach when safely mounted. [4, 6]
+Gain and image
+Set for the strongest actual crash and compare summed kit channels in mono and stereo.
+Confirm headroom and the audience image, keep sends deliberate, and assess gain before feedback with the complete stage setup.
+
+Neither venue type dictates a microphone model or a fixed amount of top- versus under-cymbal pickup. The goal is a useful crash sound at every relevant output with safe clearance and acceptable spill. [3, 4, 6]
+# Practical setup procedure
+1.Identify each crash, the musical part it serves, the hardest strike, any taps, and any hand choke. Hear the existing overhead and kit balance first.
+2.Choose overhead-only coverage or state a specific reason for a spot. If changing overheads, assess the full kit, especially snare position and the other cymbals.
+3.Stop the player. Map full strike, choke, swing, and rebound paths at intended intensity. Mount and secure the microphone, boom or clamp, and cable outside all paths.
+4.Follow the mic and console manuals for power, pad, and input gain. Have the drummer play a short representative loud passage, including the largest crash, while monitoring at a safe level.
+5.Compare one safe change in mic aim or distance at a time. Hear the initial transient, body, decay, and neighboring kit spill; do not judge from a single light strike.
+6.Add the channel to all relevant open mics. Check mono, intended stereo or PA coverage, monitor sends, and any feedback concern. Rebalance, reposition, or omit a channel that does not help.
+7.Stop again to inspect mounts, cable slack, and all playing clearance. Record the successful setup for repeat use without turning it into a universal recipe.
+# Troubleshooting and assessment
+Observation
+First checks
+Crash overwhelms the kit
+Check the player's cymbal and dynamics, overhead focal point, mic balance, and other open channels. Avoid treating a later fader move as a placement cure. [1, 3]
+Initial hit lacks body or decay
+Compare the full crash in overheads; consider a safer broader perspective or reducing the spot's dominance. Check whether a choke is intentional.
+Loud crash clips
+Determine whether the capsule, mic electronics, preamp, or later path overloads; verify pad and gain with the strongest intended passage.
+Snare or tom dominates a crash spot
+Change safe aim/position and assess the actual pattern; the spot may be unnecessary. [3, 4]
+Crash changes oddly when mics combine
+Compare at working level in mono; review relative positions, level, and conditional polarity. Do not assume a fixed repair. [3, 9]
+Mic or cable can contact a stick, hand, or moving cymbal
+Stop the performance and remount outside the full-motion envelope. [2]
+
+Assessment case: a drummer plays two crashes, one beside a rack tom and one near the ride, on a small live stage with wedge monitors. Learners must justify an overhead-only or selective spot arrangement; draw the full swing and choke zones; identify where each crash is already heard; and check audience, in-ear, broadcast, and mono needs. A studio variant asks for a broad kit image with one unusually loud crash. Grade safe placement, source-supported reasoning, and the demonstrated comparison, not a brand or memorized distance.
+# Critical source audit
+Agreement. Shure, DPA, and Audix all show that overhead or wider kit microphones can capture cymbals, with optional additional channels to serve particular balances. Zildjian identifies the crash's outer striking area and the need for free movement on properly fitted stand hardware. [1–5]
+Different emphases. Shure's studio-oriented overhead discussion emphasizes the integrated kit and its stereo image. DPA describes both overheads and an underhead technique; its touring case reports a practical reason to use under-cymbal mics around wedges. These examples answer different production questions and do not rank every possible crash position. [3, 4, 6]
+Direct contradictions. The cited sources do not supply directly conflicting universal crash-placement rules. A claim that every crash needs a spot, that an underhead is always isolated, or that the rim has one guaranteed tone at the microphone would overstate this evidence. [1–6]
+Important gaps. These sources do not establish a universal crash spot distance, quantified safe swing clearance, measured response curves for every cymbal and mic position, a fixed polarity setting, or guaranteed gain before feedback. The lesson therefore asks for a player-specific motion check and a sound-practitioner review of the actual mounting and system. NIOSH occupational exposure guidance does not replace local exposure assessment. [1–9]
+# Proposed app presentation
+Show a top and side view with crash, bow, bell, neighboring tom, sticks, hands, stand, and a changeable full-motion envelope. Begin with a decision to hear the existing overheads. Then let the learner compare a wider overhead, a top-side spot, and an advanced underhead placement; label their qualitative changes to attack, decay, spill, and kit image without invented numeric frequency curves. Unsafe placements should be blocked when they intersect any player's stroke or cymbal travel. A studio/live selector changes the relevant feeds and wedge/PA considerations. Link to the Drum Overheads, Ride Cymbal, and Drum Kit lessons. Use text and diagrams without audio examples.
+# References
+[1] Zildjian, Frequently Asked Questions, crash area and cymbal design.  Read source <https://zildjian.com/pages/frequently-asked-questions>
+[2] Zildjian, Drum Set Method Lesson Eleven, crash cymbal, stand hardware, and strike.  Read source <https://ae.zildjian.com/wp-content/uploads/Zildjian_Drum_Method_Lesson_11.pdf>
+[3] Shure, Recording Drums Part 1; Using Stereo Overhead Miking Techniques to Supplement a Multi Miked Drum Setup.  Read source 1 <https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique>  Read source 2 <https://www.shure.com/en-US/insights/using-stereo-overhead-miking-techniques-to-supplement-a-multi-miked-drum-setup>
+[4] DPA Microphones, How to Mic a Drum Kit, including overhead and underhead approaches.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-drum-kit/>
+[5] Audix, DPQUAD, four-microphone kit and overhead coverage.  Read source <https://audixusa.com/products/dpquad/>
+[6] DPA Microphones, The Killers Fall Tour, under-cymbal microphones on stage.  Read source <https://www.dpamicrophones.com/news/2022/dpa-microphones-creates-killer-audio-for-the-killers-fall-tour/>
+[7] CDC NIOSH, Understand Noise Exposure.  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[8] Shure, What Is Phantom Power and Why Do I Need It?  Read source <https://www.shure.com/en-us/insights/what-is-phantom-power-why-do-i-need-it>
+[9] DPA Microphones, Polarity Phase and Delay.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>

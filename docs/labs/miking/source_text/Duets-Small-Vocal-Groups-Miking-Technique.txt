@@ -1,0 +1,121 @@
+# Duets and Small Vocal Group Miking Technique
+Pro Audio Training Academy  Ensembles and Voice Lab  Studio and Live Sound  October 4, 2026
+# Scope and learning goals
+This lesson covers duets, trios, quartets, and other small vocal groups singing together at the same time. The central decision is whether the desired result is a blended ensemble or separately controllable voices. Students will learn shared-microphone, stereo-pair, and individual-microphone approaches; how spacing, angle, distance, and arrangement affect balance; how to manage leakage, phase, plosives, and headphones; and how studio methods differ from live reinforcement. No audio examples are included.
+# Start with the musical and technical objective
+Before choosing a microphone, decide whether the voices should behave as one ensemble or as independent mix sources. A single microphone or stereo pair preserves interaction, blend, and room sound, but gives limited after-the-fact correction. Individual microphones provide level, pan, processing, and editing control, but add stands, bleed, phase interaction, and feedback risk. The arrangement, room, singer movement, and monitoring system are part of the microphone technique—not separate afterthoughts.
+Ask the singers to perform the loudest passage, the softest passage, unison lines, harmony, and any words with strong plosives or sibilance before final placement. Do not assume that two voices need identical microphones: choose a shared or matched approach only when the singers and musical goal support it.
+# Shared microphone approaches
+## One microphone for a duet or small group
+Place the singers in a semicircle in front of a cardioid or omni microphone when the room is suitable and a coherent blend is wanted. Keep mouths at comparable distances from the capsule; the singer closest to the microphone will otherwise dominate and may sound bass-heavy from proximity effect. A large-diaphragm condenser, a quiet small-diaphragm condenser, or another microphone with a suitable pattern may work; the pattern and room matter more than a model name.
+For a two-person duet, a bidirectional figure-eight microphone can put one singer in each lobe. This can be efficient when the voices are similar and the room is controlled, but the side nulls and strong proximity effect make position critical. Rotate or angle the microphone only while listening to both voices together. A figure-eight is normally a poor live-reinforcement choice because its rear lobe also hears stage sound and monitors.
+## Stereo pair for a small vocal ensemble
+In a good room, use a coincident XY or MS pair for a stable, compatible stereo image, or ORTF for a wider image with more directional separation. An A-B omni pair can sound natural and spacious when the room is excellent, but it captures more room, timing difference, and stage noise. Aim the pair at the group’s acoustic center and arrange the singers so the group fills the intended pickup angle rather than leaving one voice outside the array.
+Stereo techniques are recording choices first. In live sound, stereo pickup is useful only when the PA and monitoring plan can support it; otherwise a mono, narrower, more feedback-resistant arrangement is often safer.
+# Individual microphones for simultaneous singers
+Use one microphone per singer when the arrangement needs independent level, panning, effects, or correction. Start with each microphone aimed at its assigned singer and keep the singers from pointing their capsules directly at one another. Hypercardioid or supercardioid microphones can reduce crosstalk when the stage and monitor layout support their nulls; verify the exact polar-response diagram because the monitor-safe angle differs by pattern and model.
+Apply the 3:1 distance rule as a starting design for multiple open microphones: if a singer is about 1 foot from the assigned microphone, place the next microphone at least about 3 feet from that microphone, then listen and adjust. The rule reduces correlated leakage and comb filtering; it does not remove phase problems, guarantee isolation, or override the group’s required spacing. When close spacing is unavoidable, use fewer microphones, move them closer to the singers, use appropriate directional patterns, and check the combined sound in mono.
+## Studio comparison
+Studio perspective
+Typical setup
+Benefit
+Risk or check
+One-mic blend
+Cardioid or omni; semicircle; matched distance
+Natural interaction and coherent blend
+Limited individual control; room and distance determine tone
+Figure-eight duet
+One singer in each lobe
+Efficient two-voice capture; strong separation at side null
+Rear lobe, proximity effect, and movement are critical
+Stereo pair
+XY, MS, ORTF, or A-B aimed at group center
+Width and ensemble image
+Room quality, phase, and mono compatibility
+Individual close mics
+One directional mic per singer
+Independent level, pan, edits, and effects
+More bleed, stands, phase interaction, and headphone leakage
+Main pair plus spot
+Stereo pair for blend with low-level spot mics
+Natural ensemble plus limited correction
+Spots can sound detached; use sparingly and time/phase-check
+
+# Studio workflow and tone choices
+1.Have the singers stand or sit in the performance arrangement and sing the complete passage. Place the main microphone or pair first, then move the singers before adding more microphones.
+2.For a dry, controllable pop backing-vocal sound, use individual microphones with pop filters and consistent distance. Keep each singer’s monitor level low enough that the microphone does not capture loud headphone spill.
+3.For an intimate, unified duet, try one microphone or a figure-eight arrangement in a controlled room. Keep both singers on the same acoustic plane and rehearse small distance changes for dynamics.
+4.For an open, room-based group sound, use a stereo pair above or in front of the group and let the room provide the depth. Treat any spot microphones as support, not as a replacement for a balanced performance.
+5.Set preamp gain from the loudest singer and loudest passage, leaving conservative headroom. Do not rely on compression to repair a singer who repeatedly changes distance or to prevent clipping before the preamp.
+6.Use pop filters for studio condensers. A filter reduces plosive air; it does not make an unsafe or poorly aimed placement safe. Angle the capsule slightly off the strongest breath stream only when intelligibility remains clear.
+# Live sound reinforcement
+For live duets and small groups, begin with the minimum number of open microphones that achieves the required clarity. Directional handheld or stand microphones are common because they reject more stage sound and provide useful gain before feedback. Condenser choir or hanging microphones can work when the group is stationary and the system is designed for them, but they require phantom power, careful monitor placement, and enough distance from loud instruments.
+Keep loudspeakers and monitors out of the microphone’s most sensitive pickup direction. Cardioid microphones generally tolerate a monitor directly in front of the singer; hypercardioid microphones usually have a rear null that is offset, so the monitor may need to be slightly to one side. Confirm with the manufacturer’s polar plot and a controlled soundcheck. Never send a choir or ensemble microphone into the same monitor that can excite it.
+Teach each singer a repeatable live distance: remain close enough for speech intelligibility, move slightly away for a loud phrase, and return consistently. Do not allow singers to cover the grille, point a handheld capsule toward a monitor, or share a microphone by passing it while the channel is live. Use stable stands, secure cable paths, clear movement areas, and appropriate hearing protection during high-SPL checks.
+## Live choices by group
+Situation
+Starting approach
+Why
+Verify
+Two stationary singers
+Two directional vocal mics, or one shared mic if blend is the priority
+Independent control or simple natural blend
+Monitor angle, singer distance, crosstalk
+Moving duet
+One reliable handheld per singer or suitable headset
+Maintains level while performers move
+Handling noise, wireless coordination, feedback
+Small seated ensemble
+One or two overhead/stand condensers
+Fewer stands and a blended sound
+Stage volume, monitor spill, phantom power
+A cappella quartet
+Shared mic, stereo pair, or four close mics depending on goal
+Arrangement can be the primary balance control
+Phase, plosives, consonant clarity, room noise
+Backing vocal group beside a band
+Individual directional mics or a carefully placed group mic
+Rejects drums and amplifiers while preserving harmony
+Drum spill, monitor mix, 3:1 spacing
+
+# Troubleshooting
+Symptom
+Likely cause
+Response to audition
+One singer dominates a shared mic
+Unequal distance or off-axis angle
+Re-form the semicircle; match capsule distance before changing EQ
+Thin or hollow combined sound
+Timing/phase interaction between open mics
+Mute-check each mic, apply 3:1 as a starting point, move or reduce mics, and check mono
+Feedback when group sings
+Too many open channels, monitor spill, or wrong null placement
+Close unused mics, lower monitor level, reposition speakers, and confirm pattern nulls
+Plosives or breath bursts
+Capsule in direct breath path or singer too close
+Add a pop filter/windscreen, angle slightly, and rehearse controlled distance
+Harmony words disappear
+Group too far from mic, poor angle, or room masking
+Move the array closer/higher, improve arrangement, or add restrained spot support
+Individual mics sound detached
+Too close, too dry, or inconsistent distance
+Pull back carefully, add a common room/ensemble reference, and preserve shared ambience
+Live level changes after compression
+Heavy gain reduction restores level between phrases
+Reduce compression and stabilize microphone technique before increasing gain
+
+# Teaching exercise and pass criterion
+1.Set up a duet with one shared cardioid microphone. Have the singers form a semicircle, match distance, and sing unison and harmony. Move one singer 6 inches closer, then restore the arrangement and identify the level and tonal change.
+2.Capture the same passage with two individual directional microphones. Mute and unmute each channel, then listen in stereo and mono. Move one microphone until the combined sound is stable and intelligible.
+3.Try a stereo pair or figure-eight only when the room and microphone pattern are appropriate. Document the desired blend, singer positions, monitor locations, and the reason for the chosen approach.
+4.In a live-style test, raise monitors gradually while the singers perform the loudest passage. Stop at the first sign of ringing, then correct placement or level before continuing.
+Pass criterion: the learner can select a shared, stereo, or individual-microphone approach from the musical objective; place singers and microphones deliberately; explain the 3:1 rule and its limits; check mono compatibility and feedback paths; and produce a balanced, intelligible group sound without unsafe level chasing.
+# Evidence audit and limits
+The 3:1 guidance, overhead placement, directional-pattern considerations, monitor cautions, and minimum-microphone principle are supported by Shure’s choir and vocal-miking guidance. DPA provides useful published examples showing how distance, off-axis angle, and microphone count change available choir level, plus ORTF and A-B applications. AKG’s C414 manual documents shared-microphone, separate-hypercardioid, stereo, and overdub options. Exact distances, tone, and the best number of microphones remain performance-, room-, microphone-, and system-dependent; these are starting methods to audition, not universal prescriptions.
+# References
+[1] Shure, “Of Mics and Monitors: Live Sound Reinforcement Tips for Choirs.”  Read source <https://www.shure.com/en-US/insights/of-mics-and-monitors-live-sound-reinforcement-tips-for-choirs>
+[2] Shure, “Vocal Miking Tips Recommendations.”  Read source <https://www.shure.com/en-US/insights/vocal-miking-tips-2>
+[3] DPA Microphones, “How to Mic a Choir.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-choir/>
+[4] AKG, C414 XLS/C414 XLII Owner’s Manual, section 4.6.2 Choir/Backing Vocals.  Read source <https://www.akg.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw0d863e9c/pdfs/AKG_C414XLS_C414XLII_Manual.pdf>
+[5] Sound On Sound, “Q. How Do I Record a Vocal Duet?”  Read source <https://www.soundonsound.com/sound-advice/q-how-do-record-vocal-duet>
+[6] Shure, “Microphone Techniques for Recording.”  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>

@@ -1,0 +1,117 @@
+# Childrens Voices and Choirs Miking Technique
+Pro Audio Training Academy  Ensembles and Voice Lab  Studio and Live Sound  October 4, 2026
+# Scope and learning goals
+This lesson addresses children’s solo voices, children’s choirs, school ensembles, youth a cappella groups, and productions where young singers share a stage with instruments. The core miking principles are the same as for adult voices, but height, reach, movement, attention span, physical safety, hearing protection, and rapidly changing vocal strength require additional planning. Students will learn area, stereo, individual, handheld, and headset approaches, with separate studio and live-sound priorities. No audio examples are included.
+# Safety and safeguarding come first
+Children are not simply small adults on a stage. A microphone stand that is stable for an adult may be easy to pull over, and a cable that is harmless in a fixed studio may become a trip hazard during a school performance. A responsible adult or qualified crew member should control setup, access, wireless coordination, and changes to microphone placement. Keep performers supervised, use age-appropriate communication, and follow the venue’s child-safety and working-with-minors procedures.
+Protect hearing by reducing sound at the source before reaching for ear protection. The CDC recommends reducing children’s exposure to loud music and moving away from loud sources when possible; NIDCD notes that hearing protectors must be properly fitted without blocking important warning sounds. OSHA and NIOSH occupational limits are not child-specific performance targets, but they are useful reminders that level and duration both matter. Measure sound at the children’s ear locations and keep rehearsals and soundchecks as quiet and short as the production allows. Do not use a child’s discomfort, ringing ears, or inability to hear instructions as a normal part of soundcheck.
+Use low-volume monitor mixes, never point monitors directly into open choir microphones, and stop the group before moving a stand, boom, cable, or hanging microphone. Secure stands with appropriate bases, sandbags, or approved rigging; protect cable crossings with proper ramps; keep water, costumes, and moving scenery away from connectors and power. Do not attach a microphone, transmitter, cable, or headset in a way that restricts breathing, movement, or safe exit.
+# Start by observing the actual group
+Listen to the unamplified children’s choir from the audience or intended recording position. Young voices may vary widely in loudness, pitch range, diction, and confidence. A director or teacher can often obtain a better balance by changing section placement, riser height, or rehearsal instruction before the engineer adds gain.
+Test the loudest and softest passage, unison and harmony, consonant-heavy text, sustained vowels, movement, and any soloists. Mark the physical layout and microphone bases after the soundcheck. Treat every distance and coverage figure as a starting point; the right position depends on the children’s height, the number of rows, the room, the microphone pattern, and the PA.
+# Area and stereo approaches for children’s choirs
+## Area microphones
+One or more directional condenser microphones can cover a child choir from several feet away. Raise or lower the stand so the capsule aims toward mouths rather than the tops of heads. Because children may occupy a smaller vertical range than adults, a microphone placed too high can become dull and distant; a microphone placed too low can capture riser noise and point toward the front row only. Aim toward the acoustic center and listen from the audience position.
+For a wide choir, use the 3:1 rule as a starting design: if a microphone is about 2 feet from its nearest singer, place the next microphone about 6 feet away. Shure’s published choir guidance also describes roughly one microphone per 6–9 feet of lateral section width as a starting coverage estimate. Neither number guarantees even level. Change the group layout, reduce the number of microphones, or move the microphones when geometry makes the rule impossible.
+## Stereo main pair
+For a controlled studio or quiet concert capture, a stereo pair can preserve the children’s blend and the room. XY or MS offers coincident capsules and dependable mono compatibility. ORTF or another near-coincident pair can provide a wider image with useful directionality. A-B omni microphones may sound natural in a quiet, excellent room but capture more room noise, timing difference, and low-frequency energy, and are usually a poor live-reinforcement starting point.
+Choose the array and then adjust distance while evaluating direct sound, room sound, diction, and section balance on loudspeakers. Headphones do not reproduce the same perceived room width as loudspeakers. If the group does not fill the array’s acceptance angle, rearrange the singers or alter the array rather than equalizing the outer voices aggressively.
+# Individual, handheld, and headset microphones
+## Individual stand microphones
+Use individual microphones only when the production truly needs independent control of soloists, featured children, broadcast speech, or separate parts. Close miking can expose breath, mouth noise, inconsistent distance, and differences in diction. It also increases stands, crosstalk, feedback risk, and the number of channels that must be supervised. Use pop filters in the studio and keep capsules out of direct breath streams.
+## Handheld microphones
+Handheld microphones are appropriate only when the child can safely hold and aim one without blocking the grille, swinging the cable, or losing the performance. Teach a simple, repeatable distance and have an adult confirm that the microphone is not pointed at a monitor. For very young performers, a stable stand or area microphone may be safer and more consistent than a handheld.
+## Headset and lavalier microphones
+Headsets can keep a child’s mouth-to-microphone distance consistent during movement, but fitting must be comfortable, secure, and supervised by authorized adults. Use equipment designed for the performer and venue, keep cables and transmitters clear of the neck and costume, and provide an immediate way to mute or remove the system. A headset can improve intelligibility, but it does not eliminate feedback, clothing noise, breath noise, or the need for a suitable monitor plan. Lavalier microphones placed on clothing are often less consistent for singing than a properly positioned headset or area microphone, especially when the child turns or the costume moves.
+# Studio recording workflow
+1.Record a rehearsal pass with one stereo pair or a carefully placed area microphone. Do not start by giving every child a close microphone.
+2.Adjust the group’s rows, section spacing, and risers to achieve a natural balance before adding processing or extra channels.
+3.Move the main array in small increments while judging blend, diction, room tone, and noise on loudspeakers. Keep the room’s acoustic character intentional.
+4.Add restrained section spots only when the main pair cannot provide sufficient clarity or editorial flexibility. Keep the main pair as the natural reference.
+5.If featured soloists need independence, record them separately when the musical plan allows. Overdubbing can produce cleaner control than putting many close microphones into a small room, but it changes the group interaction and must be musically acceptable.
+6.Set gain from the loudest full-group passage and leave conservative headroom. Keep preamps, headphones, and monitors at levels that allow the children to hear instructions comfortably.
+7.Capture several short takes rather than forcing a long, loud rehearsal. Monitor room noise, HVAC, riser movement, page turns, and foot movement.
+8.Check mono compatibility. If the center becomes hollow or diction changes, correct spacing, angle, distance, or microphone count before using corrective processing.
+# Live sound reinforcement
+Live child-choir reinforcement is primarily a gain-before-feedback and supervision problem. Start with the minimum number of open choir microphones. Place them in front of the singers, slightly above mouth level, and aim toward the group. Keep loudspeakers and monitors outside the microphones’ sensitive pickup directions. Cardioid, supercardioid, and hypercardioid microphones have different null locations; use the actual manufacturer polar plot instead of assuming that every directional microphone accepts a monitor in the same place.
+Do not send choir microphones into the choir’s own monitors. Keep monitor volume low, and remember that a small or reverberant room may need little or no choir reinforcement. During soundcheck, compare the natural acoustic level with the reinforced level by muting and unmuting the choir channels. Test the loudest song section and any movement or costume change.
+Hanging microphones can reduce stands and trip hazards, but only approved rigging, strain relief, clearance, and vibration isolation make them appropriate. Never hang a microphone over children’s heads without a competent rigger and venue approval. Mark floor positions, protect cables, and keep access paths clear for teachers and emergency movement.
+# Studio and live comparison
+Approach
+Studio use
+Live use
+Main caution
+Stereo main pair
+Natural blend, room, and group interaction
+Broadcast or quiet reinforcement
+Limited section control and feedback margin
+Area microphones
+Practical coverage with moderate track count
+Efficient choir coverage
+Overlap, phase, monitor spill, and height changes
+Main pair plus section spots
+Natural base plus limited correction
+Support for a weak or distant section
+Spots can detach voices and increase open channels
+Individual stand mics
+Featured singers or separate parts
+Soloists and special productions
+Stands, cables, crosstalk, feedback, supervision
+Handheld
+Controlled solo takes or staged performance
+Only when the child can handle it safely
+Grille covering, pointing at monitors, cable movement
+Headset
+Consistent distance during movement
+Intelligibility for moving performers
+Fit, wireless coordination, clothing noise, feedback
+
+# Troubleshooting
+Symptom
+Likely cause
+Response to audition
+Front row dominates
+Array aimed too low or too close to front row
+Raise or angle the array toward the acoustic center and recheck diction
+Back row is dull or weak
+Microphone too high, too close to front, or aimed at heads
+Aim at mouths and back row; adjust height and group spacing
+Choir sounds like separate soloists
+Close spots too loud or too close
+Lower spots, move them back, and restore the main pair as reference
+Feedback begins during a sustained vowel
+Too many open mics, monitor spill, or wrong null placement
+Close unused channels, reduce monitor level, and reposition speakers
+Child cannot hear instructions
+Monitor or PA level too high, or poor stage position
+Reduce level, move the child away from loud sources, and check exposure
+Plosives or breath bursts
+Capsule in direct breath path or child too close
+Add a pop filter/windscreen, angle slightly, and establish distance
+Cable or stand becomes a hazard
+Layout changed after soundcheck or equipment is unsecured
+Stop the group, secure the route, and recheck the exit path
+Headset is noisy or uncomfortable
+Poor fit, clothing contact, or cable/transmitter placement
+Stop and refit under adult supervision; do not accept discomfort as normal
+Stereo image changes when spots move
+Spot arrival dominates localization
+Keep spots low, pan conservatively, and check the main pair in context
+
+# Teaching exercise and pass criterion
+1.Arrange a small children’s choir in two rows and begin with one stereo pair. Adjust height and distance while observing front-to-back balance and diction.
+2.Add two area microphones using the 3:1 rule as a starting point. Mute-check each channel, then listen in mono for comb filtering and in stereo for image stability.
+3.Perform the loudest passage while monitors remain at a conservative level. Confirm that no choir mic is routed into the choir monitor and identify each microphone’s monitor-safe direction.
+4.Compare a stable stand microphone with a supervised headset or handheld approach for a featured child only when the equipment and production make it appropriate. Check comfort, movement, cable safety, and intelligibility.
+5.Measure sound at the children’s listening locations during the rehearsal and document any level or duration changes made to protect hearing.
+Pass criterion: the learner can choose a safe area, stereo, individual, handheld, or headset approach for the actual children and production; position microphones at usable height; explain the 3:1 rule and its limits; verify monitor and feedback paths; and protect young performers from avoidable level, trip, rigging, and handling hazards.
+# Evidence audit and limits
+The choir-coverage, 3:1 spacing, directional-pattern, monitor, and minimum-microphone guidance is supported by Shure and DPA application guidance. AKG’s microphone manual documents shared, section, stereo, and separate-microphone approaches for choir and backing vocals. CDC and NIDCD guidance supports reducing children’s exposure to loud sound, moving away from loud sources, and using appropriately fitted hearing protection when exposure cannot be reduced. OSHA and NIOSH limits are occupational references, not child-specific performance targets; local regulations, venue policies, medical guidance, and responsible safeguarding procedures still govern the event. Exact microphone positions and sound levels must be evaluated for the actual children, room, PA, and production.
+# References
+[1] Shure, “Of Mics and Monitors: Live Sound Reinforcement Tips for Choirs.”  Read source <https://www.shure.com/en-US/insights/of-mics-and-monitors-live-sound-reinforcement-tips-for-choirs>
+[2] Shure, “Church Mic Basics: Selection and Placement.”  Read source <https://www.shure.com/en-us/insights/talkin-church-mic-basics-with-gino-sigismondi-mic-selection-and-placement>
+[3] DPA Microphones, “How to Mic a Choir.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-choir/>
+[4] AKG, C414 XLS/C414 XLII Owner’s Manual, section 4.6.2 Choir/Backing Vocals.  Read source <https://www.akg.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw0d863e9c/pdfs/AKG_C414XLS_C414XLII_Manual.pdf>
+[5] CDC, “Preventing Noise-Induced Hearing Loss in Children.”  Read source <https://www.cdc.gov/hearing-loss-children/about/preventing-noise-induced-hearing-loss.html>
+[6] NIDCD, “Protect Your Child’s Hearing.”  Read source <https://www.nidcd.nih.gov/health/protect-your-childs-hearing>
+[7] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise>

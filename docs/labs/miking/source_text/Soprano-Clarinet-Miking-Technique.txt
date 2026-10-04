@@ -1,0 +1,88 @@
+# Soprano Clarinet Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers the common straight soprano clarinet, especially B flat and A instruments. Bass clarinet follows in its own lesson because its bell and tone-hole balance differs [1]. Students will choose mic positions for natural ensemble sound, a focused solo, and live reinforcement; they will verify changes across registers, control key noise and spill, and protect the player and instrument. No audio examples are included.
+# Understand the source
+The player's breath sets a single reed vibrating against a mouthpiece and drives the air column [2]. Sound does not come exclusively from the bell. Open tone holes along the body radiate significantly, while the bell contributes particularly for low fingerings and to the overall tone. The effective radiating region changes as fingering and register change [1, 3]. A mic held very close to one small area can therefore give uneven tone from note to note.
+Before placing a stand, observe the angle of the instrument, the player's embouchure, the lower and upper joints, hands, bell, score, chair and any rocking or pivoting. Ask for the actual lowest and highest notes, a quiet sustained passage, strong attacks and key-heavy runs. Keep stands, clips and cables clear of fingers, keywork, pads, joints and the player's face. Never force a mount around a wooden body or bell.
+# Practical microphone perspectives
+Musical setting
+Starting position
+Listen for
+Solo in a controlled room
+One stand mic facing the lower-joint holes, about 15–20 cm away and approximately a third of the instrument length up from the bell [1].
+Balance between open holes and bell, key detail and movement.
+More open solo or chamber sound
+Back the mic away gradually or use a suitable main pair for the ensemble.
+Room quality, spill, blend and changing distance.
+Ensemble spot
+Main array first, with a restrained clarinet spot only when balance requires it [1].
+Spatial depth and mono combination with main pair.
+Loud stage or mobile player
+Directional close stand or verified clip aimed toward keys, rather than directly into bell [1, 4].
+Register consistency, feedback, mount and cable clearance.
+
+The 15–20 cm figure is DPA's published starting trial for straight clarinet, not a mandatory measured target [1]. Distance, player and mic pattern determine the final sound. A bell-only position may make some low notes disproportionately strong while losing tone-hole detail on other notes. In a quiet room, increasing distance can make the radiating parts blend, but it also raises the proportion of room and other players.
+# One stand microphone in the studio
+1.Map the complete part. Have the player perform low chalumeau passages, middle/clarion notes, upper register, quiet articulations and hard attacks. Note where the instrument points when they play naturally.
+2.Begin at the lower-joint tone holes. DPA advises a position around one third of the body length above the bell, 15–20 cm from the fingering holes [1]. Angle for a blend of holes and bell instead of putting the capsule directly into the bell. Check the whole passage, not just one note.
+3.Compare distance and pattern. Try some additional distance in a good room for an integrated tone. DPA favors an omni where isolation permits; it suggests wide cardioid or cardioid as separation becomes more important [1]. Audition a neutral mic with useful off-axis response. A narrow polar pattern is not inherently better if movement or distributed radiation makes it sound uneven.
+4.Assess musical intent. A closer view can reveal tongue attacks, breath and keys; farther placement may blend these with body and room. Choose the version that works in the arrangement at matched listening level. Avoid automatically boosting highs to manufacture clarity.
+5.Confirm gain and combined microphones. Check the loudest accent for preamp/converter headroom. With main/spot or room/close signals, listen individually and summed in mono; adjust position and spot level when the combination hollows or pulls the clarinet too far forward. Use a high-pass filter only after checking the lowest required notes.
+# Ensemble and room use
+In a natural chamber or orchestral setup, listen to the main pickup before adding a spot. The clarinet may already have the appropriate level and depth. For a section, DPA describes a shared spot between two clarinets at about head height, either pointing down from between them or set in front of the players and angled downward [1]. These are orchestral techniques contingent on seating, room, main pickup and sightlines; do not copy them as a universal single-clarinet close position.
+If a spot is necessary, begin at low level and confirm that clarinet attacks and timbre do not jump unnaturally ahead of neighboring woodwinds. Pan and balance with the main image; listen to the mono sum. Time alignment, if considered, must be checked by ear on the actual signals rather than imposed from a distance alone. The complete woodwind-section and orchestra setup belongs in the Ensembles Lab.
+# Live reinforcement and mobile players
+For a player who stays near a chair or mark, secure a directional mic on a stand near the lower-joint hole region. Use the closest position that preserves the intended note balance while keeping hands, score, bell travel and walking routes clear. A cardioid can reject some monitor sound from behind; a supercardioid has different side nulls and a rear pickup lobe, so place wedges for the selected microphone's measured polar pattern [5]. Test with the band and PA at working level, increasing monitor level gradually.
+For a moving player or crowded stage, DPA documents an instrument-mounted miniature on an approved universal clip near the bell, with the capsule directed back toward the keys rather than straight into the bell [1, 4]. Its mounting guidance also suggests extending the gooseneck and aiming toward the upper joint for a more even range [4]. These are two closely related starting angles, not guarantees of identical tone. Try the entire passage and choose the one with the best balance. Fit the clip only with the player's approval and the manufacturer's compatible instructions. Do not squeeze wood, bridge a joint, interfere with ring keys or touch rods and pads. Use a stand if the fit is uncertain. Secure the cable without obstructing fingers and verify phantom/wireless adapter power and transmitter headroom [4].
+Keep high-pass filtering conservative enough to preserve the low chalumeau part. If feedback appears, reduce the channel or monitor safely and recheck mic/monitor geometry and gain. Do not assume a bell-facing clip provides a consistent representation merely because it gives more isolation. A close directional mic may exaggerate the register changes it is supposed to capture [1, 4].
+# Miking goals and tradeoffs
+Natural and rounded: Use a moderate stand distance and a broad, smooth pattern where the room and bleed permit; test the low and high passages. DPA's omni preference in a controlled situation is a specific manufacturer recommendation, not a claim that every omni works in every room [1].
+Detailed and intimate: Move closer to the lower-joint hole region while still hearing the bell. Listen for key and finger noise, uneven notes, and the player's motion. If those become excessive, increase distance or change aim before applying processing.
+Separated live sound: Choose a close directional stand or compatible mounted mic, and assess the compromises in tonal balance, monitor rejection and performer movement. Do not aim only into the bell by default [1, 4].
+Wood versus plastic: Construction and the individual player influence what the microphone hears. Never prescribe a fixed EQ or position from body material alone. Some clarinets are wood and others are plastic or composite; fit, finish and mechanical clearance still need checking for each mount.
+# Troubleshooting and safety
+Symptom
+Likely issue
+First check
+Low notes boom while others disappear
+Bell-only or very near-bell aim.
+Compare aim toward lower-joint holes and a little more distance [1].
+Notes change color sharply
+One hole or a narrow pattern dominates.
+Play complete register and alter angle/distance [1, 4].
+Keys or fingers are louder than tone
+Capsule too close to moving mechanism.
+Back off or move off-axis without losing hole/bell blend.
+Too much room or neighboring players
+Stand is too distant for the venue.
+Safely close distance or select a suitable directional pattern [1].
+Live feedback
+Loudspeaker in pickup region or excessive gain.
+Reduce level; check actual polar pattern and monitor placement [5].
+Mount threatens instrument
+Clip pressure, joint, pad, rod or finger clearance.
+Stop; remove with player and use a stand if uncertain [4].
+Close and main pickups sound hollow
+Time-of-arrival interaction.
+Hear each alone and together in mono; move or rebalance.
+Low register disappears after filtering
+High-pass cutoff set without hearing the part.
+Recheck the lowest used notes and lower or bypass the filter.
+
+# Teaching exercise and pass criterion
+1.Label reed, upper and lower joints, tone-hole areas and bell on the player's actual clarinet; trace movement and verify the required range [1, 2].
+2.Compare DPA's lower-joint starting position with a more distant stand and a bell-facing trial at matched monitoring level. Document changes in low notes, high notes, keys, room and articulation [1].
+3.If live reinforcement is required, position the monitor relative to the selected mic pattern and test at working level. If using a clip, obtain the player's consent and verify exact fit, finger path, cable and power [4, 5].
+4.For an ensemble, compare main pickup alone with a cautiously blended spot and inspect mono summation before declaring the spot necessary.
+Pass criterion: The learner explains why a clarinet is not simply a bell source, selects a justified studio and live position, checks the full part, addresses spill and feedback, and protects the musician and instrument.
+# Evidence audit and limits
+Agreement: Yamaha identifies the single-reed source [2], while DPA gives a detailed lower-hole starting placement and states that both tone-hole and bell output matter [1]. DPA's two articles agree that a mounted mic aimed back from near the bell toward the holes can offer live separation [1, 4].
+Different emphases: DPA favors omni or broad patterns for a natural close/spot sound when the room permits, but also recommends a close directional mounted option when PA spill demands isolation [1, 4]. These choices respond to different environments. Shure's general woodwind guide cautions that excessive proximity to holes can emphasize key noise [3]; DPA's hole-facing position leaves enough distance to aim for a blend [1]. No direct contradiction requires treating either approach as universal.
+Gaps and confidence: The cited sources give starting positions, not a measured optimum for every B flat or A clarinet, player, register or room. The best clip location depends on the particular instrument and manufacturer's accessory. Confidence is high in the reed mechanism and published placement options, moderate in comparative tonal outcomes, and low in any universal material-based or numeric EQ rule.
+# References
+[1] DPA Microphones, “How to Mic a Clarinet.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-clarinet/>
+[2] Yamaha, “The Structure of the Clarinet: The Modern Clarinet.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/clarinet/mechanism/mechanism004.html>
+[3] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-GB/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments>
+[4] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[5] Shure, “Specialist Polar Patterns: Hypercardioid and Subcardioid.”  Read source <https://www.shure.com/en-US/insights/specialist-polar-patterns-hypercardioid-and-subcardioid>

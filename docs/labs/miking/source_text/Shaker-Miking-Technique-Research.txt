@@ -1,0 +1,79 @@
+# Handheld Shaker Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Standard handheld shaker   October 3, 2026
+# Scope and learning goals
+This lesson covers a standard handheld enclosed shaker played by moving its internal fill against its shell. An egg shaker and maracas have their own lessons next in the sequence. This is an idiophone: the rattling fill and shell supply the acoustic sound without a stretched drumhead. A handheld shaker is a moving source. The microphone hears both the instrument and changing distance and angle during every stroke. The goal is to choose a usable motion area, hear the intended rhythm and tone, and keep the microphone outside the player's path.
+By the end, a student should be able to (1) distinguish instrument and playing changes from microphone changes; (2) place one microphone for a natural studio sound or a more isolated live sound; (3) choose between a dedicated spot and shared percussion overhead; and (4) identify spill, uneven level, stand collision, and feedback before increasing gain.
+# The sound to capture
+The fill hits and rubs against the shell as the player changes direction. A stroke can emphasize an initial attack, a continuous swish, or two audible directions; that is a consequence of the actual instrument, fill, motion and grip, not a property to assume of every shaker. Different models have different fill, shell and output: Meinl sells softer studio and louder live versions of a hand shaker, illustrating why changing the instrument can solve a projection or harshness problem before changing microphones [1]. Ask for the actual part at its quietest and loudest and watch the entire playing arc. Do not position a microphone from an isolated single stroke when the performance uses a wider motion.
+The player's timing, stroke length, rotation and grip often change the balance of accent and wash. Have the musician play comfortably; do not require an unnatural stationary wrist to make a close microphone work. First listen at the intended audience or monitoring position, then use a microphone placement to retain that balance [2].
+# One microphone: placement procedure
+1.Establish the movement zone. Mark a comfortable playing location; ask the musician to play the complete figure and any big accents. Put a secure stand and cable outside that path, and keep clear of the face, hands and other instruments.
+2.Start in front of the working area. For a controlled studio setup, a small diaphragm condenser on a stand roughly 30–60 cm (1–2 ft) from the center of the playing arc is a practical audition range, not a prescribed optimum. Shure's general beginner guidance starts percussion at *at least* 30 cm; the further point here is an engineering trial for a moving source [3]. Point the capsule toward where most of the strokes occur, then monitor the actual part. A cardioid is a reasonable first choice where other sources or room sound need rejection. An omni can be considered in a quiet, good sounding room when a broad pickup and stable off-axis tone matter more than isolation; check the particular microphone's response [4].
+3.Adjust by listening. Move slightly farther back if the shaker jumps in level as it approaches the capsule, if individual clicks dominate, or if the player cannot move freely. Move closer if the room or other players overwhelm the shaker. Alter height and angle to change the balance of direct rattle, hand noise and neighboring instruments; the effect depends on the particular shaker and microphone. Avoid treating the cylinder's end, side or a specific degree of off-axis aim as a universally brighter or darker position.
+4.Set headroom with the loudest passage. Raise input gain only after checking that the microphone is receiving enough useful direct sound. A pad, where available, addresses microphone or preamp overload; it does not cure spill or feedback. Use a high-pass filter only after checking that it removes unwanted low-frequency handling or room rumble without thinning the intended sound.
+Distance is measured to the player's usual center, not to the closest point at one instant. If the musician steps, turns, or raises the instrument to another level, rehearse that change and reposition the spot or use a less restrictive area pickup. At very close range, both inverse-distance level changes and directional-mic off-axis changes become more conspicuous [4]. A single mono spot is usually sufficient; add a room microphone only if the room contributes a sound the arrangement needs, and assess its timing and mono compatibility with the spot.
+# Tone and approach options
+Aim
+Starting approach
+Listen for and revise
+Clear, present pulse
+One cardioid spot aimed at the middle of a repeatable motion arc; move closer as isolation requires.
+Attack dominating the wash, hand noises, varying level, drum or cymbal spill. Recheck the entire phrase.
+Softer, integrated texture
+Let the player choose a softer shaker and/or step the mic back in a controlled room.
+Whether the rhythm remains intelligible in the arrangement; room coloration or noise may rise.
+Broad acoustic perspective
+Use a suitable percussion area mic or the ensemble's existing main/overhead mic when balance permits.
+Relationship to the rest of the percussion; a new close spot may be unnecessary.
+Dense live stage
+Give the player a dedicated cardioid spot within a safe reach, with stage loudspeakers in the mic's low-sensitivity direction.
+Gain before feedback, bleed, monitor level, and whether the instrument itself projects enough.
+
+Changing a shaker's loudness or the musician's touch may do more than a bright microphone or equalizer. The terms “soft,” “present,” and “broad” describe intended results, not guaranteed sonic properties of a microphone model. Manufacturer examples show available sound and output choices [1]; the positional changes above are trials that must be confirmed by listening [2].
+# Studio and live differences
+Quiet overdub: Choose the room and shaker first. A stand-mounted condenser often exposes fine rhythmic detail, but no microphone type is mandatory. Compare the near spot with a more distant position at matched monitoring level. If the room is noisy, reduce the distance while preserving hand clearance. Use one mic for a single player unless stereo movement or room perspective is an explicit artistic goal. Check the shaker against the other parts, not only soloed.
+Simultaneous studio ensemble: Let the main or percussion mic establish the acoustic balance, then add a shaker spot only if its pulse needs independent control. A dedicated spot hears more neighboring sources than its solo audition suggests. If both spot and main mic are used, listen together and in mono for cancellation or strange emphasis; change position or balance if needed. Don't automatically apply a fixed distance rule to unrelated moving sources.
+Live sound: A shared overhead can work on a quiet stage, but it also picks up cymbals, monitors and backline. A dedicated mic for shakers and tambourine is documented in a DPA touring percussion rig [5]. The exact venue and performer differ, so it supports the approach, not a universal microphone model or distance. Keep the player in the mic's usable pickup area, position wedges and PA spill using the actual polar pattern, and soundcheck with the full band. Cardioid has strongest rear rejection; supercardioid and hypercardioid have rear lobes and different null directions, so do not simply put a wedge behind those patterns [4]. Lower or mute an unused channel when appropriate. A clip-on attached to another percussion instrument does not automatically provide stable pickup of a separately moving handheld shaker.
+Outdoor or high-spill stage: A windscreen can help with wind on the capsule, but it does not restore a weak acoustic signal. If close placement still cannot deliver adequate level before feedback, reduce stage volume, relocate the player, or select a louder shaker suitable for the part [1, 4]. Never solve a feedback problem by continually increasing channel gain. Secure boom, cable and power connection so the playing motion cannot pull the microphone down.
+# Mic choice and signal-path notes
+Small diaphragm condenser, large diaphragm condenser and moving-coil dynamic microphones can each work if their sensitivity, polar response and available gain suit the setting. A small diaphragm condenser is a useful detailed spot, while a robust cardioid dynamic can be sensible in a crowded live setup; neither is a rule. Read the microphone's side-address or end-address orientation rather than pointing its body by eye. Directional microphones may color sound as a moving source travels off axis, and proximity effect applies to directional mics at very close distances [4]. Avoid unnecessary extreme close placement to “add bass” to a shaker.
+An acoustic shaker needs a microphone to enter the PA or recorder. A wireless handheld or instrument transmitter changes how the microphone signal travels; it does not turn the shaker itself into an electronic source. Keep any transmitter pack, cable and clip away from the moving hand and from impacts against the shell. Phantom power is supplied only as specified for the microphone and its interface, never to an incompatible wireless output or improvised connection.
+# Troubleshooting and critical checks
+Symptom
+Check first
+Miking response
+One stroke much louder
+Does the shaker travel much closer on that stroke?
+Center or widen the working area; move the mic back slightly; rehearse the actual pattern.
+Too many sharp clicks
+Is this the selected instrument or very close pickup?
+Audition a different fill/output or a slightly more distant position; do not assume EQ will change the playing texture.
+Dull or missing offbeats
+Does the instrument leave the mic's main pickup area?
+Re-aim for the complete arc, use a broader practical pickup area, or constrain position only if comfortable for the player.
+Cymbals or monitors dominate
+Compare solo and full-band bleed; check polar orientation.
+Move mic/player, aim null toward the strongest unwanted source, consider a dedicated spot instead of a broad overhead.
+Feedback while adding level
+Verify channel and loudspeaker positions before adding gain.
+Reduce monitor spill and stage level; place the source closer within safe reach; check mic pattern [4].
+Low thumps or rattles
+Is a stand/cable struck or transmitted vibration present?
+Clear and secure the path; isolate stand vibration; use high-pass only if the useful body is preserved.
+
+# Teaching exercise and assessment
+1.Have the same player perform a full musical shaker pattern with two comfortably different stroke sizes. Mark the playing area and name the loudest and quietest gestures.
+2.Audition one cardioid spot from approximately 30 cm, then a more distant position around 60 cm, adjusting gain for comparison and keeping the stand outside the motion path. The numbers are exploratory positions, not instrument specifications. Describe attack, wash, movement in level, room pickup and bleed.
+3.With a quiet room or simulated ensemble, compare a dedicated spot and an existing overhead/main mic. Bring both up, then check mono; decide whether the spot adds needed control.
+4.For a live scenario, identify the microphone's actual null(s), place the wedge accordingly, rehearse the loudest pattern with the full band, and verify that feedback margin and player clearance remain adequate. Evaluate the result from the audience area and ask the player about comfort.
+Pass criterion: The student can explain a source-first decision, place one safe working mic for the whole movement, identify where studio and stage priorities differ, and correct one observed problem by changing the instrument, player position or mic position before reflexively increasing gain.
+# Evidence audit and limits
+Directly supported: Shure recommends listening before selecting placement, gives a general percussion distance starting point, and describes the isolation/feedback consequences of polar patterns [2–4]. DPA reports a real touring rig using a dedicated shaker/tambourine microphone [5]. Meinl identifies different handheld shaker outputs for studio and live use [1].
+Reasoned practice to test: The 30–60 cm audition range, aiming at the center of the motion arc, and using distance to smooth movement are practical applications of those principles, not measurements or manufacturer prescriptions for all shakers. Exact tone changes for end versus side and specific microphone models have not been established here. Room acoustics, player motion, shell/fill and spill determine the outcome. Document your chosen position after auditioning the actual part.
+Safety and scope: Keep stands and cables out of the performance path, secure overheads, and avoid escalating stage monitor level to overcome spill. This lesson addresses an acoustic handheld shaker; egg shaker, maracas and other idiophones follow as distinct lessons. No audio examples are included.
+# References
+[1] Meinl Percussion, Hand Percussion Crystal Shaker, Studio and Live product pages.  Read source 1 <https://meinlpercussion.com/en/products/sh26-l-s-m8769.html>  Read source 2 <https://meinlpercussion.com/en/products/sh26-l-l-m8771.html>
+[2] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[3] Shure, “Home Recording Guide For Beginners,” percussion placement example.  Read source <https://www.shure.com/nl-NL/insights/home-recording-guide-for-beginners>
+[4] Shure, “Microphone Directionality and Polar Pattern Basics” and “Three Reasons Why Mic Placement Matters.”  Read source 1 <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>  Read source 2 <https://www.shure.com/en-EU/insights/three-reasons-why-mic-placement-matters>
+[5] DPA Microphones, “The Jonas Brothers Are Burnin’ Up With DPA,” touring percussion mic deployment, 2021.  Read source <https://www.dpamicrophones.com/news/2021/the-jonas-brothers-are-burnin-up-with-dpa/>

@@ -1,0 +1,104 @@
+# Snare Drum Miking Technique
+Pro Audio Training Academy   Membranophones Lab   Research checkpoint 2   October 3 2026
+This lesson plan teaches microphone placement for an acoustic kit snare drum in a studio and a live sound system. It is about capturing the source, fitting the player's technique, controlling useful and unwanted pickup, and combining microphones when a second channel serves a purpose. Published dimensions below are starting positions for particular microphones, not mandatory clearances or predictions of every snare's sound. Do not include audio examples in the lab.
+# Learning goals
+After the lesson, a learner should be able to identify the batter head, lower resonant head, and snare wires; choose a safe top-mic location; explain how distance and aiming change tone, stick clearance, and bleed; decide when a lower mic is justified; check polarity and timing relationships without confusing them; and defend a studio or live setup in the context of the whole kit. Assess decisions and safe procedures rather than one supposedly correct tone.
+# Understand the instrument and performance
+A snare's batter head is struck from above; the lower head excites the wire assembly beneath it. The audible result also depends on shell, head tension, wire adjustment, damping, stick, rimshot or cross-stick technique, and the player's dynamics. DPA identifies the wires on the lower resonant head as a distinct part of the instrument's sound. [1] Ask the player about their playing area and techniques before placing a mic. Ask whether the snares are engaged for the passage. Drum tuning and mechanical adjustments belong with the player and the separate Drum Tuning Lab; a mic cannot reliably repair a rattling stand or an unsuitable source sound. [1, 2]
+A close snare mic captures a perspective, not a complete drum in isolation: hi-hat, toms, cymbals, and stage sound can enter it. Conversely, overheads or an overall kit mic may already carry enough snare. DPA describes using fewer microphones to capture the kit as a whole, or more close microphones for individual control, with the environment affecting the choice. Shure's recording guide similarly treats an added snare mic as optional in a more minimal setup. [1, 2]
+# Safety and setup checks
+Protect human hearing during repeated setup and performance. NIOSH's recommended occupational noise exposure limit is an eight-hour average of 85 dBA, with the recommended duration halved for each 3 dBA increase. This is a cumulative human-exposure guideline, not a snare strike limit and not a microphone maximum-SPL specification. Reduce needless soundcheck duration and level; follow the venue's hearing-protection and exposure procedures. Assess exposure at people, not with a snare microphone inches from a head. [9]
+Have the drummer stop before touching the microphone, mount, or cable. Confirm the full stick and rimshot path, including accents, fills, cross-stick, brushes if used, nearby hi-hat and tom travel, and the player's ability to set down or retrieve sticks. A manufacturer's example position is invalid if the actual player can hit it. Place a mic and mount outside the travel path; never promise that a protective grille or guard makes a bad position safe. Shure explicitly warns that the SM57 windscreen was not designed to be struck. [3] Check that any rim clamp fits the hoop and does not hinder its playing edge or drum setup; confirm a stand or clamp remains secure under vibration. Route and secure cables away from the player's hands, legs, pedals, and walking paths. Do not attach hardware to a drum or alter the instrument without the player's approval. Sennheiser documents a rim clamp for its e 904; that does not authorize improvised clamps for all microphones. [4]
+Choose a microphone whose published capability suits the source and any required phantom power. Have the drummer play typical and strongest intended strokes to set input gain with margin. Investigate distortion separately at capsule, input, contact points, and drum hardware. A downstream fader does not reverse a clipped input, and a downstream pad cannot fix an overloaded capsule. For changes to cable or phantom power, mute the relevant outputs, lower monitoring, and follow the actual console and microphone manuals; do not assume a mute button covers all sends or stage monitors. [5]
+# Microphone selection
+A cardioid dynamic microphone is a common close-miking choice. Shure documents the SM57 for snare; Audix identifies its i5 as a cardioid dynamic for stage and studio; Sennheiser documents its compact cardioid e 904 with a drum rim clamp. These are product examples, not required brands. Choose for the actual polar pattern, physical size, mounting, tonal response, input compatibility, and player's clearance. [3, 4, 6, 7]
+A condenser with adequate specified SPL capability and suitable mounting can also be used above or below the snare. DPA describes modern high-SPL condensers for drums and documents a real snare top/bottom setup with its 2011 F, specified there at 140 dB SPL. This refutes a blanket rule that all condensers are unsuitable at a snare, but does not establish that all condensers will handle any placement. Confirm the precise model's specification and power requirements; a microphone's high SPL rating is not a hearing-safety rating. [1, 8, 9]
+For directional mics, rejection depends on the actual frequency-dependent polar pattern. A cardioid commonly rejects most from behind; a supercardioid has a rear pickup lobe, so its strongest nulls are off that rear axis. Do not draw an all-purpose dead zone in the lab. [10]
+# Placement choices
+Approach
+Documented starting point
+Check on the actual kit
+One mic above the rim, aimed across the top head
+Shure's SM57 user guide gives 2.5–7.5 cm (1–3 in.) above the rim of the top head. Audix gives about 2 in. above the rim, aimed toward the center for its i5. [6, 7]
+Verify the player's stick and rimshot clearance, the amount of top-head attack and body, and hi-hat pickup.
+More distant top perspective
+Shure's 2026 SM57 article suggests about 4 in. away as a way to take in more of the drum. [3]
+Compare with the close position at similar monitoring levels; expect more surrounding kit pickup as distance increases, depending on geometry and pattern.
+Compact rim-mounted top mic
+Sennheiser's e 904 manual gives 3–5 cm over the drumhead with its approved rim clamp; it suggests experimenting with angle, including 30–60 degrees. [4]
+Check clamp stability and all playing clearances, then change angle while keeping the mount safe.
+Bottom mic as an additional perspective
+Sennheiser documents a second e 904 below the drum for the lower head and snares; DPA describes separate capture of the wire component. Neither source supplies a universal bottom distance. [1, 4]
+Confirm clearance from wires, strainer, stand, and hardware; compare what this channel contributes in the combined kit.
+No dedicated snare close mic
+DPA and Shure describe kit-first arrangements in which overhead or overall-kit microphones may carry much of the snare. [1, 2]
+Judge whether the existing kit image already gives the needed articulation and level before opening another channel.
+
+These product-specific positions differ. Shure's published SM57 manual allows 1–3 inches above the rim, while its newer article advocates roughly 4 inches from the drum for that model; Audix and Sennheiser give closer starts for their models. The references and aims differ, so teach them as experiments, not contradictory universal measurements. The actual safe distance must accommodate the drummer's stick path. [3, 4, 6, 7]
+Starting near the rim and aiming toward the center is a documented common approach. Adjust one variable at a time: rim location, height, angle, and orientation relative to the hi-hat. A more centered aim can change the balance of strike and resonance, and Sennheiser explicitly uses e 904 angle to vary the fundamental-to-overtone ratio. Avoid claiming a fixed amount of bass or attack for a given centimeter or angle. With directional microphones, proximity effect can also change low-frequency balance at short distances, and off-axis pickup is model dependent. [3, 4, 6]
+Hi-hat bleed is not automatically a defect. For separation, Shure's live guide recommends aiming the snare mic's rejection region toward the hi-hat; the same guide notes a shared snare/hi-hat perspective can be intentional when channel count is limited. First inspect which side and angle allow both useful snare pickup and safe stick clearance. A pattern's null is not a guarantee of silence, and moving a mic for isolation may alter the snare tone. [10]
+# One microphone setup procedure
+1.Ask the drummer about playing style, stick and rimshot paths, snare-wire setting, and intended sound; decide whether the overhead or overall-kit pickup needs support.
+2.Choose a compatible microphone and secure stand or approved clamp; let the player stop before mounting and adjusting it.
+3.Begin near the top rim using a documented position suitable for that microphone. Inspect the capsule, grille, body, clamp, and cable against all stroke and hardware travel.
+4.Connect and power the mic according to its equipment manuals. Have the player play typical and strongest intended strokes, then set input gain with sufficient margin.
+5.Compare safe height and aiming changes one at a time. Check snare articulation and body, wire contribution, hi-hat spill, and intended role in the complete kit at similar monitoring levels.
+6.Secure the selected position and cable route. Recheck clearance after the drummer resumes the full performance motion; stop and remount if anything can contact the mic.
+# Adding a bottom microphone
+The bottom channel is a choice for more independent control of the lower head and snare-wire sound, not a requirement. Place it where the mic and connector cannot touch wires, strainer, bottom head, stand, or feet. Avoid a fixed distance recommendation because the cited manuals do not establish one that applies to all drums. Secure its cable and verify that the two microphones are plugged into identifiable channels. Start with a useful single top mic, add the bottom at a modest level, and decide whether it improves the snare in the full kit. [1, 4]
+Top and bottom head motion can produce opposite initial polarity at the microphones; both Shure and Sennheiser suggest polarity inversion on a bottom channel in their examples. The mixer switch often labeled “phase” reverses electrical polarity, but does not remove different arrival times or make every frequency line up. Check both switch states with the two channels at the intended relative levels and hear their combination in mono, then include the overheads and other open drum mics. Select the useful result, move or omit a mic if needed, and do not teach automatic inversion as a law. Shure's longer technical guide explicitly says the result depends on microphone location; DPA distinguishes polarity from phase and delay. [2, 4, 11, 12]
+# Differences between studio and live sound
+Decision
+Studio tendency
+Live reinforcement tendency
+Kit perspective
+Overheads or a room/kit perspective may be the main picture; a snare spot mic is added for control when useful. [1, 2]
+First consider what the acoustic snare already contributes at the audience position and what reinforcement must add. This depends on venue and band level.
+Placement and spill
+More distance can include more of the drum and room when the space supports it; compare bleed as part of the drum sound.
+Closer placement and appropriate pattern/aiming may provide more useful snare relative to hi-hat, stage, and monitors; keep gain-before-feedback and stage stability in view. [3, 10]
+Channel count
+An additional bottom mic can be justified when its distinct wire perspective improves the whole kit.
+Start with the number of open microphones actually needed. A bottom channel may still be useful on some stages, but adds bleed, a cable, physical complexity, and a combining check. [1, 4]
+Mounting and changeover
+Paused sessions may permit more deliberate, safe position comparisons.
+Stable mounts, protected cable routes, repeatability, and player clearance matter during a show and fast changeover.
+
+These are scenario considerations, not restrictions. Shure's live guide even offers an intentional shared snare/hi-hat mic when a smaller channel count serves the performance. Do not promise feedback immunity from one snare-mic position: pattern, other open mics, monitors, system levels, and room all affect gain before feedback. Never make deliberate feedback a learner exercise. [10]
+# Troubleshooting and assessment
+Observation
+First checks
+Mic, clip, or cable is inside a stick/rimshot path
+Stop the drummer; remount and reroute before continuing. Check the full playing motion again. [3]
+Snare close channel is dominated by hi-hat
+Inspect aim and the microphone's actual pattern, choose a safe position relative to hi-hat, then decide how much bleed is musically acceptable. [10]
+Close snare lacks body when added to overheads
+Compare levels and both polarity states in mono; evaluate placement and arrival-time interaction without assuming one switch always cures it. [2, 11, 12]
+Added bottom mic makes the combined snare thin or inconsistent
+Recheck channel identity, relative level, both polarity states, locations, and the complete kit; omit it if it does not help. [4, 11]
+Snare sounds buzzy or rattly even before miking
+Ask the player to inspect wires, head, stand, and nearby hardware; solve source issues before prescribing a mic change. [1, 2]
+Strong strokes distort
+Determine whether the microphone, input stage, or vibrating/contacting hardware is responsible; set suitable gain, check overload indicators and specifications.
+
+Assessment scenario: show an illustrated snare beside a hi-hat and rack tom, a drummer's declared rimshot/cross-stick area, a cardioid or supercardioid microphone, and a studio or live context. Ask the learner to place one top mic safely, explain how a controlled angle or distance change might alter the tradeoff, and justify whether a bottom channel adds value. Require a mono combination check if two microphones are chosen. Grade source identification, physical clearance, level/power safety, pattern reasoning, and the distinction between polarity and delay; accept more than one defensible tonal solution.
+# Critical source audit
+Agreement: Shure, Sennheiser, and Audix document workable close top-head placements; DPA and Sennheiser document lower-mic use for wire/head perspective. Several sources require evaluating microphones as part of a kit rather than treating the snare close mic as a complete sound. [1–4, 6, 7]
+Different emphases: Shure's SM57 manual gives 1–3 inches above the rim; its 2026 article suggests about 4 inches for a fuller perspective and safer separation from sticks. Sennheiser's e 904 manual suggests 3–5 cm above the head with a rim clamp and angle exploration. These are examples with different geometry and aims. DPA's kit discussion and Shure's minimal-kit discussion show contexts in which one close mic or none is enough. [1–4, 6]
+Direct tensions: Shure's 2022 recording article calls two snare mics “by far the most common approach”; its 2026 article says the most common method is top miking and that some engineers add a bottom mic. Neither supplies a survey or a defined context, so the lesson should not claim a single popularity ranking. Shure's recording article also broadly says a condenser will not handle high SPL as well as a dynamic; DPA documents high-SPL condenser use on snare. Treat SPL handling as a property of the selected model and placement, not of an entire transducer class. Sennheiser's manual says a lower e 904 “must” be phase-reversed; Shure's 2026 article says inversion “usually” helps, and its technical guide says the effect changes with mic locations. The physics of polarity and delay supports teaching an inversion check in context rather than a mandatory setting. [1–4, 8, 11, 12]
+Gaps: none of these documents establishes one safe mic clearance for every drummer, a universal bottom-mic distance, a predictable frequency curve for every snare/mic pairing, a fixed studio/live recipe, or a hearing exposure limit from a microphone's max-SPL rating. Human review by a drummer and qualified sound practitioner is required before turning the illustrated positions into physical user instructions. [1–4, 9]
+# Proposed app presentation
+Start with labeled top head, lower head, wires, rim, stick/rimshot travel, hi-hat, stand, and microphone pickup direction. Have the learner choose a position and inspect a visual collision zone before exploring microphone height, rim location, aim, polar pattern, and whether a lower mic is warranted. A studio/live scenario switch changes the questions about room pickup, stage spill, available acoustic level, feedback margin, and mount stability. For two-mic decisions, show signal paths and a polarity switch separately from acoustic arrival time. Represent tonal outcomes as documented tendencies and discussion prompts, not measured curves or exact physical predictions. Use diagrams, written choices, and explanatory feedback; no audio examples.
+# References
+[1] DPA Microphones, How to mic a drum kit, snare drum, kit context, and overhead sections.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-drum-kit/>
+[2] Shure, Recording Drums: Part 1 - Setting up and Microphone Technique, November 6, 2022.  Read source <https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique>
+[3] Shure, How to Mic a Snare Drum with a Shure SM57, June 25, 2026.  Read source <https://www.shure.com/en-EU/insights/how-to-mic-a-snare-drum-with-a-shure-sm57>
+[4] Sennheiser, e 904 Instruction Manual, 2019 edition, drum placement, clamp, bottom-mic note, pattern.  Read source <https://assets.sennheiser.com/global-downloads/file/11744/e904_Manual_01_2019_EN.pdf>
+[5] Yamaha, ZG01 Operating Panel, phantom-power precautions; equipment-specific example.  Read source <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>
+[6] Shure, SM57 User Guide, suggested snare placement.  Read source <https://www.shure.com/en-US/docs/guide/SM57>
+[7] Audix, DP Elite 8 Spec Sheet, i5 snare starting position; and i5 product details.  Read source 1 <https://cdn.audixusa.com/media/downloadable/manual/AUDIX-AX-DP-Elite8-SpecSheet.pdf>  Read source 2 <https://audixusa.com/products/i5>
+[8] DPA Microphones, Miking Drums with DPA, May 26, 2020, example with 2011 F on snare top and bottom.  Read source <https://www.dpamicrophones.com/news/2020/miking-drums-with-dpa/>
+[9] CDC NIOSH, Understand Noise Exposure, occupational limit and 3 dBA exchange rate.  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[10] Shure, Microphone Techniques for Live Sound Reinforcement, polar-pattern and drum-kit sections.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[11] Shure, Microphone Techniques for Recording, snare and microphone phase sections.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[12] DPA Microphones, Polarity, phase and delay.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>

@@ -1,0 +1,122 @@
+# Singer With Guitar or Piano Miking Technique
+Pro Audio Training Academy  Ensembles and Voice Lab  Studio and Live Sound  October 4, 2026
+# Scope and learning goals
+This lesson covers a singer performing while accompanying themselves on acoustic guitar, acoustic-electric guitar, grand piano, upright piano, or an electronic keyboard feeding an amplifier or line input. The main problem is not simply finding a good vocal microphone and a good instrument microphone: the performer, instrument, room, movement, bleed, monitoring, and musical interaction form one miking system. Students will learn unified one-microphone approaches, separate microphones, DI and pickup combinations, piano isolation, phase checks, and live versus studio priorities. No audio examples are included.
+# Choose the relationship before choosing the microphones
+Decide whether the performance should sound like one coherent live event or two independently controllable sources. One microphone can preserve interaction, balance, and room, but the engineer cannot later change the vocal-to-instrument relationship. Separate microphones, a pickup, or a direct keyboard output provide more control, but bleed and phase interaction become part of the sound.
+Have the performer play and sing the complete arrangement, including the loudest chorus, quietest verse, changes in posture, and any foot movement or pedal use. Listen from the intended listener position. First correct the performer’s geometry and the instrument’s acoustic balance; do not try to solve a physically poor arrangement with EQ or compression.
+# Singer with acoustic guitar
+## One microphone
+A single microphone can be a musically strong choice for a controlled room and a stable performer. Place the microphone where the combined voice-and-guitar balance is right, then ask the performer to keep the relationship consistent. Moving toward the microphone makes both sources louder; turning the guitar or changing posture alters the balance. An omni microphone can sound open in a quiet room, while a directional microphone provides more room rejection but changes tone as the performer moves off-axis.
+## Two microphones
+With separate microphones, start with the vocal microphone close enough to obtain a strong direct vocal and aim its rejection toward the guitar. Shure describes approximately 4–8 inches as a practical vocal starting range, while a Shure SM4 guide lists 6–12 inches as a general acoustic-guitar starting range near the soundhole or twelfth fret. These are starting points, not required distances. Place the guitar microphone toward the bridge or around the 12th fret when a balanced, less boomy sound is needed; aiming directly into the soundhole often emphasizes low-mid energy.
+Use directional patterns deliberately. One useful arrangement is to orient the vocal microphone toward the mouth with its least-sensitive direction toward the guitar, while the guitar microphone’s least-sensitive direction faces the mouth. A figure-eight arrangement can exploit side rejection when the room and radiating sources make it practical, but the null is angle-dependent and not a guarantee of isolation. Check the actual polar pattern and off-axis tone of the microphone.
+The 3:1 rule is a useful starting design for reducing correlated bleed, not a promise that the tracks will be phase-perfect. If the vocal mic is about 1 foot from the mouth, try to keep the guitar microphone about 3 feet away from the vocal microphone, then listen. When the performer cannot maintain that spacing, accept the bleed as part of the performance, change the arrangement, or choose one coherent microphone instead of creating two unstable tracks.
+## Pickup and microphone blend
+For live sound, an acoustic guitar pickup or DI is usually more stable against feedback than a distant guitar microphone. A microphone can add air, body, and natural high-frequency detail; a pickup can supply consistent level and reduce monitor spill. Blend only after each source works on its own, and compare polarity and timing in mono. A pickup is not automatically natural, and a microphone is not automatically safe: the performer, guitar, room, and PA determine the result.
+# Singer with acoustic or upright piano
+## Studio approaches
+The singer and piano can be recorded as one acoustic performance with a stereo piano pair plus a vocal microphone, or with a more distant stereo setup that allows the room to blend the sources. A close piano pair provides control and reduces room and vocal spill, but it can sound more percussive and less like the listener’s perspective. A distant pair can sound natural when the room is good, but the vocal-to-piano balance becomes more dependent on placement and performance.
+For a grand piano, a pair over the treble and bass strings, an XY/MS/ORTF pair, or a single microphone aimed at the middle strings are all legitimate starting approaches. Shure notes that moving microphones farther from the hammers reduces attack and mechanical noise; AKG gives a close pop/rock starting range of roughly 8–16 inches above the strings, with one microphone toward treble and one toward bass. Do not treat any one height or lid position as universal. Open, short-stick, and closed-lid positions change tone, isolation, and spill.
+Place the vocal microphone so the piano’s strongest radiation is not aimed directly into its front or rear-sensitive region. If the singer is at the keyboard, a boom may be needed to keep the vocal capsule clear of the pianist’s head, music stand, and hands. Do not place a stand where the pianist can strike it or where the sustain pedal, bench, or emergency path is obstructed.
+For upright piano, sound can be taken from the front, above the open top, or from the rear depending on the desired tone and room. Rear placement may be useful for isolation but can emphasize soundboard energy and mechanical noise. Open panels only with the owner’s or venue’s approval, and secure all microphones so they cannot fall into the action or interfere with the instrument.
+## Live piano and voice
+Distant piano microphones are usually impractical for sound reinforcement because they require too much gain before feedback. Shure recommends placing piano microphones close to or inside the instrument for live use, commonly over the treble and bass strings or inside the lid. A compact instrument microphone or approved boundary/miniature solution can keep stands away from the singer, but the mounting method must not damage the piano or interfere with the lid and moving parts.
+If the piano is an electronic keyboard, use its line output or DI as the primary instrument path and keep the vocal microphone acoustically separated from the keyboard loudspeaker. If the keyboard uses an amplifier or powered speaker, treat that speaker as a sound source: place it behind the vocal microphone’s rejection zone when the pattern permits, keep it out of the instrument microphone’s pickup, and use the lowest useful stage volume.
+# Monitoring and performance geometry
+Place the performer so the vocal microphone, guitar or piano, monitor, and loudspeaker do not force the performer to twist or lean. Consistent posture is a tone-control tool. For cardioid vocal microphones, a monitor is generally placed directly behind the microphone; supercardioid and hypercardioid patterns have offset rear nulls, so the monitor may need to sit slightly to one side. Verify the manufacturer’s polar plot rather than guessing.
+Keep the vocal microphone out of the guitar’s soundhole axis when possible, and avoid pointing an acoustic-guitar microphone toward a loud monitor. Use in-ear monitoring or low-level side-fill when it meaningfully improves gain before feedback, but never increase level until ringing begins. Establish a safe maximum before the performance, leaving fader travel in reserve.
+# Studio workflow
+1.Hear the performer without microphones and decide whether the target is unified, intimate, roomy, or independently controllable.
+2.Start with one coherent microphone or a simple vocal-plus-instrument pair. Mark the performer’s position and rehearse the complete song.
+3.Change one variable at a time: microphone angle, distance, pattern, guitar position, piano lid, or room position.
+4.Listen to each track alone, the sum in stereo, and the sum in mono. Note hollow tone, image drift, low-mid buildup, vocal dullness, and mechanical noise.
+5.For acoustic-electric guitar, capture the pickup/DI only when it adds useful control; use a microphone for the acoustic information the pickup does not provide.
+6.For piano, choose the lid and microphone position with the singer’s spill in mind. A close piano setup may be less natural but more editable; a distant setup may be more natural but less separable.
+7.Set gain from the loudest vocal and instrument passages and leave conservative headroom. Record a short test before committing to a complete take.
+# Live sound workflow
+1.Start with a directional vocal microphone and the most stable instrument path available: pickup/DI or keyboard line output before a distant instrument microphone.
+2.Place the instrument microphone or piano microphones close enough to control feedback and away from monitor axes. Use a microphone only when it provides a clear musical benefit.
+3.Soundcheck the loudest song section with the performer in the exact performance position. Check vocal, instrument, and combined levels.
+4.Ring out only to a safe operating margin; do not chase the last few decibels. Reduce stage volume, move the monitor, change its angle, or alter the microphone pattern before adding more gain.
+5.Secure stands and cables, protect the guitar cable or DI connection, and keep the singer’s movement path clear. Stop the performer before moving any microphone or changing an instrument connection.
+# Studio and live comparison
+Approach
+Studio benefit
+Live benefit
+Main caution
+One microphone for voice and instrument
+Unified performance and room
+Simple, natural small-room reinforcement
+Little independent control; movement changes balance
+Separate vocal and guitar microphones
+Independent tone and editing
+Possible for quiet stages
+Bleed, phase, monitor spill, and stand geometry
+Guitar pickup or DI plus vocal mic
+Stable guitar track with vocal isolation
+Strong gain-before-feedback and consistent level
+Pickup tone may need acoustic microphone support
+Piano stereo pair plus vocal mic
+Detailed piano control and stereo image
+Close placement can reduce feedback
+Piano bleed and lid/stand safety must be checked
+Keyboard line output plus vocal mic
+Maximum separation and repeatability
+Lowest stage spill from the instrument
+Depends on keyboard output, DI, and monitoring system
+Shared distant room pair
+Natural interaction and perspective
+Rarely practical for reinforcement
+Room, feedback, and balance are difficult to control
+
+# Troubleshooting
+Symptom
+Likely cause
+Response to audition
+Vocal mic contains too much guitar
+Vocal mic points toward guitar or is too far away
+Move closer, use rejection direction, change angle, or accept a unified approach
+Guitar mic contains too much vocal
+Guitar mic is aimed at the mouth or too close to the performer
+Aim toward the guitar’s useful radiation, alter pattern, and check the combined sound
+Two tracks sound thin or hollow
+Correlated bleed and timing difference
+Change spacing or angle, reduce one mic, and check mono before processing
+Acoustic guitar feeds back
+Distant condenser, monitor axis, or resonant guitar body
+Use pickup/DI support, move monitor, reduce stage volume, and notch only after placement
+Piano is boomy under the vocal
+Microphone too close to bass strings, soundboard, or soundhole-like radiation
+Move toward the treble/center area, adjust lid, or use a controlled low cut
+Piano sounds too percussive
+Microphone too close to hammers
+Move farther from hammers or use a more blended room position
+Singer changes tone while playing
+Posture, guitar angle, or distance changes
+Mark positions, adjust stand geometry, and rehearse consistent movement
+Live mix rings after compression
+Compression restores level between phrases and reduces feedback margin
+Reduce compression, lower stage level, and regain stable acoustic gain
+Stand or cable interferes with performance
+Geometry was chosen without observing hands, pedals, or movement
+Stop, redesign the path, secure it, and retest the complete song
+
+# Teaching exercise and pass criterion
+1.Have a singer perform with acoustic guitar in a controlled room. Capture one pass with a single microphone, then a second with separate vocal and guitar microphones.
+2.Change only the vocal microphone’s angle and distance. Compare bleed, proximity effect, diction, and the combined sound in mono.
+3.Add the guitar pickup or DI if available. Blend it with the guitar microphone only after checking polarity, timing, and feedback behavior.
+4.Repeat with piano or keyboard: compare a close piano setup with a line/DI path, keeping the singer in the same performance position.
+5.Run a live-style check at the loudest passage. Identify the monitor-safe direction for each microphone and leave a stable margin before feedback.
+Pass criterion: the learner can choose a unified or independent capture strategy; position voice, guitar, or piano microphones from the actual performer and instrument; explain bleed and phase tradeoffs; use pickup, DI, or line outputs appropriately; and produce a stable studio or live result without unsafe stands, cables, feedback chasing, or unapproved piano access.
+# Evidence audit and limits
+Shure and AKG provide manufacturer starting points for vocal, acoustic-guitar, and piano distances and patterns, while Shure’s live guidance emphasizes close piano placement for feedback control and directional monitor geometry. Sound On Sound documents the practical difficulty of isolating a singer and acoustic guitar and the need to use polar patterns and placement rather than assuming figure-eight rejection is perfect. Exact distances, lid positions, pickup blends, and monitor locations remain dependent on the performer, room, instrument, microphone, and PA. These are audition procedures, not universal recipes.
+# References
+[1] Shure, “How to Record and Mix Vocals.”  Read source <https://www.shure.com/en-US/insights/how-to-record-and-mix-vocals>
+[2] Shure, “SM4 User Guide,” placement table for vocals and acoustic guitar.  Read source <https://www.shure.com/en-US/docs/guide/SM4>
+[3] Shure, “How to Choose the Right Piano Microphone.”  Read source <https://www.shure.com/en-IN/insights/how-to-choose-the-best-mic-for-the-pianist>
+[4] Shure, “Microphone Techniques for Recording.”  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[5] AKG, C314 Owner’s Manual, grand and upright piano placement.  Read source <https://www.akg.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwb5125d17/pdfs/AKG_C314_Manual.pdf>
+[6] Sound On Sound, “Studio SOS: Recording Guitar And Vocals Together.”  Read source <https://www.soundonsound.com/techniques/studio-sos-recording-guitar-vocals-together>
+[7] Sound On Sound, “Recording A Singing Guitarist.”  Read source <https://www.soundonsound.com/techniques/recording-singing-guitarist>
+[8] Sound On Sound, “Using Mics & DIs On Stage.”  Read source <https://www.soundonsound.com/techniques/using-mics-di-boxes-stage>

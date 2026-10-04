@@ -1,0 +1,101 @@
+# Bongos — Miking Technique Research
+Lab: 1. Membranophones — Drums and Drumheads
+Sequence: After congas; before timbales. This installment covers bongos alone.
+Scope: Microphone choices and placement for studio and live sound. No audio examples.
+# Learning goals
+Identify the smaller **macho** and larger **hembra**; choose and safely place one mic for the pair; explain when a second channel or miniature clip mic helps; evaluate the balance of strokes and the two drums; test mono summation if multiple mics are used; and revise the approach for PA, monitors, nearby instruments, and player movement. [1–5]
+# What the microphones must represent
+Bongos are a connected pair of small, open-bottom headed drums. The smaller macho and larger hembra normally provide contrasting registers; their exact tuning and musical balance vary by player and style. Listen to the player's actual part before placing a microphone: fast quiet finger work, open tones, muted touches, louder accents, and any movement to other percussion can demand different coverage. Ask which drum must be most prominent, how the player holds or mounts the pair, and whether the hands approach from the front, rear, or either side. Do not prescribe the player's orientation or alter tuning without consent. [1, 2]
+Compared with a conga pair, these two heads are small and close together, so a single mic between them is a particularly useful baseline. This is a practical inference from their geometry and Shure's paired-drum recommendation, not a guarantee that one mic balances every player. The open lower shells and the player's legs or stand affect their sound, but a mic beneath the pair is an optional alternate perspective, not a documented default substitute for capturing both playing heads. [1–3]
+# Four approaches to compare
+Arrangement
+Starting geometry
+What to inspect
+One directional mic for both
+Aim down between the two top heads, outside the entire finger and hand path. Shure specifies one mic between a pair, just above the heads, for bongos, congas, and timbales. Start at a physically safe clearance, then move and re-aim after hearing the full passage. [3]
+Does the macho's attack obscure the hembra's lower tone? Can the mic hear quiet touches? Move toward the weaker drum or back off for a more blended picture if spill and room permit.
+One figure-eight mic between drums
+Shure describes a bidirectional capsule between the two heads. Orient its two active lobes toward the sources being captured and verify where its side nulls and rear lobe actually face. [4]
+Its null can reject some unwanted side spill, but the rear lobe is fully active; stage monitors or another player behind a lobe may be a problem. This is a mic-pattern experiment, not a general feedback solution.
+Two mics for independent coverage
+In a controlled studio or a complex stage layout, give each head its own directional mic at a safe, comparable distance, or try a compact X/Y pair centered above the drums for stereo. Shure suggests X/Y between congas/bongos as another choice. [4]
+Individual spots allow separate levels but both mics hear both drums to some degree. X/Y gives an image of the pair rather than isolation. Check both solo channels and the combined mono result before choosing stereo width. [6]
+Compact mounted mic
+A compatible clip-on or small stand mic can follow a stationary bongo pair while using little stage space; an actual arena tour used a 4099 on the bongos. [5]
+Confirm the mounting hardware fits this specific instrument without damage; check resonance, vibration pickup, cable strain, all finger motions, and movement to neighboring percussion. A case study is evidence of use, not a required brand or position.
+
+Shure's phrase “just above” does not supply a safe number of inches. The player's hand arc and the mic's physical size determine minimum clearance. With stands, leave room for a seated player to change leg position and for a mounted pair to move on its stand. A shared mic at a greater distance can represent both drums more evenly in a quiet room but gathers more room and other instruments; a close mic can give more direct sound yet may favor one stroke or one drum. Treat these as hypotheses to test by moving the microphone one variable at a time. [3, 7]
+# Tone, balance, and mic choice
+Macho too dominant. Have the player demonstrate the intended dynamics first. Then shift the shared mic slightly toward the hembra or adjust its aim so the louder high head is less on-axis. A fixed central placement is only the starting point. If the player needs independent control in a dense band, try two spots. The resulting balance depends on pattern and actual playing; no numeric equalization prescription follows from head size alone. [1–4]
+Hembra lacks body. Listen in the room and check head tuning and mounting with the player. Try a modest change of shared-mic aim or distance, or an individual mic, while retaining the quiet macho touches. Do not assert that every bongo needs a bottom mic or a low-frequency boost. The open bottom matters acoustically, but an underside perspective can overrepresent shell/air resonance and miss hand detail; this latter prediction is a testable inference, not a bongo-specific manufacturer recipe. [1–3]
+Quiet strokes disappear. Position the mic to hear the whole pair without a hand shadowing or striking it, check gain and nearby spill, and consider a closer directional placement if safe. A mic choice should account for pickup pattern, on- and off-axis response, published maximum SPL, power needs, and physical size. A small diaphragm condenser, compact side-address condenser, or dynamic microphone can each work when positioned for the required direct sound. Do not teach “condenser equals natural” or “dynamic equals isolation” as universal laws. [3–5, 7]
+Overly sharp accents. Compare a slight off-axis aim or increased distance while checking whether fast soft strokes remain intelligible and the room still suits the part. Changing mic position is a demonstrable first step; a high-frequency cut is an optional later sound-system adjustment rather than the lesson's central miking solution. [7]
+# Studio and live decisions
+Setting
+Practical initial choice
+Constraint
+Quiet studio, one performer
+One mic between and above the heads; compare a little nearer and farther. A properly aimed figure-eight or X/Y pair may be explored for a different image. [3, 4]
+More distance and a bidirectional rear lobe bring more room into the capture. Evaluate the actual room and every stroke.
+Full band sharing the room
+Directional mic close enough for a useful direct-to-spill ratio, with safe hand clearance; use a second spot only for a real balance problem. [3, 7]
+The drum kit, vocal mics, cymbals, and adjacent percussion can dominate a distant bongo mic.
+Loud live stage
+Compact, stable directional pickup for the pair or separate spots if independent control is needed. Assess pickup nulls against the actual PA and wedges. [5, 8]
+Open channels, distance, speaker location, and monitor level affect feedback. A pattern label alone cannot guarantee gain before feedback.
+Seated or mobile player
+Coordinate mic stand and cable location with the player; test the full range of posture and motion.
+A fixed stand may not continue to cover moving drums. A clip may transfer vibration or obstruct the instrument; test with permission.
+
+Feedback is a loop involving microphone, loudspeaker, room, and gain. Shure recommends considering monitor placement relative to the microphone's actual pickup pattern. A figure-eight has two active lobes and side nulls; a supercardioid's rear response differs from a cardioid's. Sound-check at intended operating level with the system operator, and stop if feedback begins rather than deliberately provoking it. [8]
+# Mechanical, electrical, and hearing checks
+Before adjusting a mic near a player, ask them to stop. Keep the grille, body, clamp, boom, and cable out of every finger and palm stroke. Do not clamp to a rim or center block unless the mount is explicitly compatible and the owner agrees. Confirm stand or tripod stability, cable strain relief, and a trip-free route; check the setup again during vigorous playing. Avoid unsupported bottom or overhead mounts. Follow the actual mic and console manuals for powering, pad, and gain; mute or lower controlled feeds before connecting or changing phantom power. The microphone's peak-SPL tolerance does not tell us a human's safe exposure: limit unnecessary loud soundchecks and use hearing protection according to venue procedure and NIOSH guidance. [9, 10; mechanical steps are instructional safety inference]
+# Multi-mic and stereo checks
+A shared single mic avoids interaction between two bongo channels. With two mics, each typically picks up both heads at different levels and delays. Begin by hearing each alone; combine at intended level and sum to mono. If the high drum thins, the low drum loses weight, or the image jumps, first move or re-aim the mics. A polarity switch is a diagnostic comparison, not a guarantee of full-band alignment. If the bongo pair also appears in percussion overheads or vocal mics, include those channels at realistic levels in the check. A close X/Y pair minimizes the pair's intermic arrival differences, but does not eliminate interactions with other mics or the room. [4, 6]
+Stereo width should fit a compact two-drum source and the audience layout. In a mono PA or a wide room with uneven left/right coverage, a mono bongo image may communicate both drums more reliably. No fixed pan positions are required. [6, 8]
+# Guided practical lab
+1.Observe. Identify macho and hembra and ask the player for the complete performance, including quiet figures and strongest accents. Record whether they play seated, on a stand, or move among percussion. [1, 2]
+2.Place one mic. With the player stopped, aim a stable mic down between the heads, choosing a safe distance beyond all hand motion. Set gain for the loudest strokes with adequate input headroom, then verify the softest strokes. [3]
+3.Move deliberately. Compare central, slightly macho-facing, slightly hembra-facing, and a somewhat farther shared position, changing one factor at a time. Log the position, pattern, and effect on each drum and stroke. [3, 7]
+4.Compare an alternative. Where suitable, try a figure-eight between the drums, compact X/Y, or individual close spots. Map active lobes/nulls and inspect spill and mono sum. A live class must use the actual PA under a qualified operator's supervision. [4–6, 8]
+5.Finish safely. Have the player perform at realistic intensity; recheck clearance, mount, cable, balance, gain, and any monitor interaction. Write down why the chosen arrangement serves this musical part. [8–10]
+# Troubleshooting and assessment
+Symptom
+First question
+Adjustment to test
+Macho masks hembra
+Player dynamics, central aim, differing on-axis position?
+Re-aim toward hembra or use separate control. [1–4]
+Soft finger work is inaudible
+Too much distance or spill; gain set only by loud hits?
+Move safely closer, adjust orientation or pattern, verify headroom and soft passages. [3, 7]
+Hembra sounds thin only with second mic
+Does it happen in the combined mono channels?
+Move/aim one mic and compare polarity at real levels; check other open mics. [6]
+Stage feedback rises when mic opened
+Loudspeaker and monitor axes, open mic count, distance?
+Coordinate mic and speaker placement; use only necessary channels. [8]
+Mic or cable impedes hands or knees
+Was clearance checked during the complete passage?
+Stop and move the rig before repeating the check.
+
+Passing result: The learner identifies the two drums, safely places and documents a one-mic position, demonstrates an audible balance check across both and multiple stroke types, explains one alternate geometry and its tradeoff, and performs a mono check if a second microphone is used. On stage, a qualified operator confirms stable operation with the PA and monitors. No audio examples are part of the lesson.
+# Critical source audit
+Agreement. Meinl and LP identify the smaller high-register macho and larger lower-register hembra, with player-dependent tuning. Shure's drum guide recommends one mic down between a pair; a Shure product specialist also describes bidirectional and X/Y alternatives. A DPA touring account confirms a compact mic on bongos can function in a dense live percussion setup. These sources establish viable starting configurations, not relative rankings from a controlled comparative trial. [1–5]
+Different emphases. Shure's general paired-drum table favors a single above-head mic, while its Beta 181 product article promotes pattern and stereo experiments; the touring case uses a compact mounted mic. Those choices answer different isolation and imaging requirements and do not contradict one another. [3–5]
+Direct contradiction. The reviewed sources do not present opposing tested claims for a fixed bongo distance or a universally superior microphone. A product article's “huge stereo image” describes a creative possibility, not an objective requirement for a physically small pair. [4]
+Gaps. These sources do not specify a universally safe hand clearance, ideal distance or height for every player, numerical spectral effects of bottom placement, guaranteed feedback margin, or a fixed polarity relationship with other microphones. The lesson labels bottom-mic predictions as inference and requires real player and system checks. [1–10]
+# Curriculum and app presentation
+This bongos lesson follows congas and precedes timbales in Membranophones. The Drum Overheads lesson contains the full Glyn Johns method, and the Membranophones drum-kit overview should link there; this bongo lesson does not substitute for that kit setup. Cymbal techniques cross-link to Idiophones.
+Show an annotated top and side view: macho, hembra, membranes, open shell ends, center block, player hands and knees/stand, one shared mic, optional two spots, and a movable monitor. Let the learner choose quiet studio, band session, or loud stage and move a mic among documented starting regions. Qualitative text explains the likely balance, spill, and safety tradeoffs. Require a full-motion clearance and, with two mics, a mono check. Do not fabricate response curves or include audio examples.
+# References
+[1] Meinl Percussion, Bongos overview, macho, hembra, and open-bottom construction.  Read source <https://meinlpercussion.com/en/blog/bongos>
+[2] Latin Percussion, FAQ on player-dependent bongo tuning and Generation II instrument description.  Read source 1 <https://www.lpmusic.com/faq/>  Read source 2 <https://www.lpmusic.com/products/gen2-generation-ii-7-1-4-8-5-8-bongos/>
+[3] Shure, *Microphone Techniques for Drums*, paired congas/bongos/timbales placement table.  Read source <https://content-files.shure.com/Pubs/microphone-techniques-for-drums/microphone_techniques_for_drums_english.pdf>
+[4] Shure, “Product Spotlight: Beta 181,” manufacturer specialist's bidirectional and X/Y suggestions for congas/bongos.  Read source <https://www.shure.com/es-ES/articulos/product-spotlight-beta181>
+[5] DPA Microphones, Jonas Brothers touring percussion case, 4099 on bongos.  Read source <https://www.dpamicrophones.com/news/2021/the-jonas-brothers-are-burnin-up-with-dpa/>
+[6] DPA Microphones, “Polarity, phase and delay.”  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+[7] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[8] Shure, “How to Control Feedback in a Sound System” and *Microphone Techniques for Live Sound Reinforcement*.  Read source 1 <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>  Read source 2 <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[9] Yamaha, ZG01 operating panel, example of equipment-specific phantom-power precautions.  Read source <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>
+[10] CDC NIOSH, “Understand Noise Exposure.”  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>

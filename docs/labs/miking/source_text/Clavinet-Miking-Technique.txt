@@ -1,0 +1,90 @@
+# Clavinet Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 4, 2026
+# Scope and learning goals
+The Clavinet is an electro-mechanical keyboard instrument. Its strings and pickups create an electrical output; a microphone is only involved when that output is sent through a loudspeaker cabinet or amplifier. This lesson therefore teaches the two distinct capture paths: direct instrument output and a miked speaker or cabinet. Learners will compare those paths, document the preamp, effects and amplifier settings, and make safe choices for studio and live sound. No audio examples are included.
+# Understand the signal path
+In a Hohner Clavinet D6, a hammer presses a string against a pickup-facing surface and the instrument's magnetic pickups produce an electrical signal. The D6 manual identifies an “Output 100 mV” connection for an amplifier or other amplification and describes the instrument's volume control and optional expression pedal in that amplifier path [1]. The microphone does not capture the string or pickup directly. It captures sound only after an amplifier, powered speaker or other acoustic loudspeaker converts the electrical signal back into air pressure.
+Document the complete path before placing a microphone:
+Clavinet output → pedalboard or effects → amplifier input → amplifier and cabinet → loudspeaker → microphone → preamp or console.
+If the Clavinet feeds a DI or interface directly, that is an electrical recording or PA path and requires no microphone. If the player wants the sound of a guitar-style amplifier, rotary effect, fuzz, wah or a particular cabinet, record the direct signal and microphone as separate, phase-checkable paths when practical. Do not connect a microphone input or phantom power to the Clavinet output; use the appropriate line or instrument input/DI and follow the actual interface and amplifier specifications.
+# Establish the direct path first
+Set the Clavinet's output and the receiving input so the strongest hard playing and effects peaks have headroom. The D6 manual describes touch-controlled dynamics and separate instrument and amplifier volume controls [1]. Keep a clean direct track when the arrangement allows; it preserves the pickup's immediate percussive attack and makes later amplifier or re-amping choices possible. The direct signal may sound sharper or less spacious than the cabinet in the room, but it is often the most reliable live signal when stage volume is high.
+Use a suitable DI or high-impedance instrument input rather than guessing from connector shape. If the output is routed through pedals, place the DI at the chosen point in the chain and label whether it is before or after effects. A post-effects DI preserves those effects; a pre-effects DI supports later processing but does not document the sound the player was monitoring. If a stereo effect or two-channel cabinet is genuinely used, capture both channels deliberately and check mono compatibility.
+# Mic a Clavinet amplifier or speaker
+Treat the cabinet as an amplified instrument source. Start with a safe, stable stand and one close directional microphone aimed at one speaker. A dynamic or small condenser with suitable SPL handling is commonly practical; the exact model is secondary to the speaker, cabinet, amplifier setting and position. Shure's general amplifier guidance describes the basic tonal axis: on-axis toward the speaker center produces more bite, while moving toward the edge or angling off-axis softens the sound [2]. The same physical principle applies to a Clavinet speaker cabinet, but the result must be auditioned with its actual speaker and effects.
+Speaker perspective
+Tone to test
+Limitation
+Near center, on axis
+Bright attack and upper-mid definition
+Can become sharp or abrasive
+Toward cone edge
+Smoother, less pointed attack
+May lose desired percussive bite
+Off axis, same distance
+Softer high-frequency balance
+Position and pattern interact
+A little farther back
+More cabinet and room
+More spill and feedback risk
+Second mic or DI blend
+Direct clarity plus cabinet character
+Phase, timing and level interaction
+
+Keep the first microphone position repeatable and mark it. Move one coordinate at a time: center-to-edge, on-axis-to-angle, then distance. Do not move a close mic by sight alone; listen to a repeated riff and compare at matched level. If the cabinet has several speakers, choose one speaker and document it rather than placing the microphone between speakers, where multiple sources can produce an uneven result. If the cabinet is open back, audition front and rear only when the rear is safe and the room supports it; keep the rear mic away from walls and stage spill.
+# Studio approaches
+Direct Clavinet: Record a clean DI or interface input, with the effects point and input impedance documented. This gives a precise, low-spill source and can be re-amped or processed later. It does not include the acoustic coloration of the amplifier, speaker, room or microphone.
+One close mic: Start at the grille, aimed between the speaker center and edge. Move toward the center for more attack or toward the edge for a rounder sound. Check repeated low and high keyboard passages, muted or percussive techniques, wah sweeps and the strongest effects. Watch the microphone preamp and capsule headroom when fuzz or boost pedals are engaged.
+Mic plus direct: Align the direct and microphone tracks by listening in mono. A time difference can create comb filtering even when the cable polarity is correct. First adjust physical distance, track delay or blend; then test polarity if needed. Keep both tracks only when the combination improves the part in context. Do not assume that a polarity flip corrects all frequency-dependent timing differences.
+Room or second cabinet mic: Add room distance only when the room contributes something useful. A second cabinet microphone can supply a different speaker or angle, but each added mic increases spill and interaction. If two microphones are used, capture them separately, check mono, and document their distances. A close mic and room mic do not need to be panned hard apart to make the instrument feel larger.
+# Live sound approaches
+On a loud stage, send the direct Clavinet output to the PA and mic the amplifier only when the amplifier is part of the player's intended sound or must be heard in the room. The direct path usually gives more gain before feedback and less stage spill. If the cabinet is miked, place the microphone close, aim the rejection null away from the loudest monitor or source according to the microphone's actual polar pattern, and keep the amplifier volume controlled.
+Use a low-profile stand or an approved cabinet clip that cannot fall into the speaker or touch a hot tube amplifier. Secure the cable so the performer cannot trip and so cable movement cannot strike the grille or microphone. Mute or reduce the channel before moving the mic. Sound check the loudest keyboard register, hardest playing, effects boosts, and any monitor sends. If feedback starts, lower the offending monitor or channel, change geometry and retest; do not simply keep raising the Clavinet output.
+The direct and miked paths can be blended in a live console, but confirm polarity and timing in mono. If the amplifier is used as a monitor and a separate direct signal feeds the PA, manage the two acoustic sources so the microphone does not repeatedly capture the monitor. Never place a microphone in front of a cabinet without checking the cabinet's sound pressure, grille condition, amplifier heat and electrical safety.
+# Pickup, preamp and effects decisions
+The Clavinet's pickup selector and filtering controls are part of the source tone. Record or write down those settings, pedal order, amplifier channel, EQ, gain, cabinet speaker and microphone position. A direct signal before a distortion pedal is not interchangeable with a direct signal after the pedal. Likewise, a mic on a clean cabinet does not document the sound of a distorted cabinet.
+If the instrument has been modified, do not assume the original D6 wiring, output level or grounding. Ask a qualified technician to diagnose hum, intermittent output or unsafe power issues. Keep mains power, extension cords and amplifier ventilation clear. Do not open a powered amplifier or alter the instrument's wiring while connected. The microphone lesson is about acoustic capture; electrical repair belongs to a qualified technician.
+# Troubleshooting
+Symptom
+Check first
+Response to audition
+Direct signal is distorted
+Clavinet output, pedal boost or input gain
+Lower the offending stage; restore headroom
+Mic is too bright
+Capsule on speaker center or on axis
+Move toward edge or angle off axis
+Mic is dull or lacks attack
+Capsule too far off axis or at edge
+Move slightly toward center; compare distance
+DI and mic sound hollow
+Arrival time or polarity interaction
+Solo each, mono sum, adjust distance/delay and polarity
+Hum appears in direct path
+Power, cable, DI or modified wiring
+Stop and isolate safely; use qualified diagnosis
+Live feedback
+Monitor/PA enters mic or cabinet coupling
+Lower level, change geometry and use direct path as needed
+Mic position changes between takes
+Unmarked stand or unstable clip
+Mark position and secure cable/stand
+Cabinet sounds different in room
+Volume, wall distance or room reflections
+Reposition cabinet or mic; document the change
+
+# Teaching exercise and pass criterion
+1.Draw the actual Clavinet signal path from output through effects and amplifier to speaker, then identify where a direct signal and microphone signal are taken.
+2.Record or monitor the direct path while testing the instrument's filters, pickup selections, touch dynamics and effects levels.
+3.Place one microphone on a cabinet. Compare center, edge and off-axis positions at matched level. Describe attack, brightness, body, room and spill.
+4.Blend direct and microphone signals in mono. Demonstrate a safe response to distortion, hum, feedback and a moving or unstable microphone.
+Pass criterion: The learner can identify which part of the Clavinet chain is being captured, produce a repeatable direct or cabinet-miked tone, and maintain safe gain, placement and electrical practice.
+# Evidence audit and limits
+Agreement: The Hohner D6 manual documents the output-to-amplifier path, touch dynamics and volume controls [1]. Shure documents the general center-versus-edge and live amplifier-miking principles used here [2, 3].
+Different emphases: Direct capture is electrically clean and repeatable; a cabinet microphone captures speaker, amplifier and room coloration. Neither is inherently the correct Clavinet sound. Manufacturer guidance for guitar amplifiers transfers only as a starting acoustic principle; the Clavinet's speaker, effects and cabinet must be auditioned.
+Gaps and confidence: I found no authoritative manufacturer source prescribing one universal Clavinet microphone, distance or cabinet. Confidence is high in the D6 signal-path facts and general loudspeaker-placement principles, and moderate in predicted tone changes until the actual amplifier, speaker, room and effects are tested. Modified vintage instruments may differ from the original manual.
+# References
+[1] Hohner Clavinet D6 original manual archive, “Amplifier Connection” and “Volume Control and Switch.”  Read source <https://www.clavinet.com/clavinet_d6.pdf>
+[2] Shure, “Miking the Rhythm Section,” amplifier microphone placement principles.  Read source <https://www.shure.com/es-LATAM/articulos/miking-the-rhythm-section>
+[3] Shure, “SM57 User Guide,” amplifier placement and high SPL guidance.  Read source <https://www.shure.com/en-US/docs/guide/SM57>
+[4] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>

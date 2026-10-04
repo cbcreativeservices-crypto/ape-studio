@@ -1,0 +1,131 @@
+# Tonbak Miking Technique
+Pro Audio Training Academy • Membranophones Lab • M12 • October 4 2026
+# Purpose and evidence boundary
+Start with one microphone that preserves the player’s contrast between deep strokes, bright edge articulations and quieter finger work. Add microphones only to solve an identified tonal or spatial need. This lesson develops microphone placement for tonbak, also spelled tombak, in studio and live sound. It belongs after the completed original scope in the supplemental queue; tabla is next.
+Accuracy note: the research located reliable instrument documentation and manufacturer explanations of microphone behavior, but no authoritative tonbak-specific standard establishing an optimal microphone, distance or angle. The numbered placements below are instructor-designed trials, adapted from documented microphone principles. Their numerical ranges are not established tonbak specifications. Confidence is high in the cited general principles and moderate in the proposed placements until tested with the actual player and instrument.
+# Learning objectives
+Recognize the musical contrast between central and edge articulations before choosing a microphone position.
+Establish one practical pickup that lets the player perform normally.
+Change distance, target and angle deliberately, explaining the resulting tonal tradeoff.
+Decide whether a second microphone improves the result in mono and in the intended mix.
+Adapt the setup to live monitors, spill and performer movement without forcing a studio arrangement onto a stage.
+# Understand the instrument before positioning microphones
+The Metropolitan Museum of Art documents tombak as a single-headed Iranian goblet drum and identifies wood and skin in the cited example. Its collection also includes other material variants; inspect the instrument actually present rather than assume every tonbak has identical construction. [1, 2]
+A first-person maker account describes the contrast between the lower central stroke and higher edge stroke, as well as expressive changes through striking area, force and finger use. It concerns an experimental instrument and is useful for articulatory context, not proof of a microphone technique. [3]
+Ask the player to demonstrate their normal bass stroke, edge stroke, quiet finger passages, rolls and any intentional shell sounds. Let the player supply the terminology used in their tradition. Request both isolated gestures and an ordinary musical passage, at normal and strongest performance levels. Listen from a comfortable audience position before amplification. Write down what must remain audible and what belongs to the performance rather than treating every finger or contact sound as a fault.
+Have the player settle into their actual performance posture. Note the head orientation, open lower end, body support, hand paths and normal instrument movement. Do not reposition the drum solely to accommodate a microphone. An open lower end is a possible alternative pickup location, not a second drumhead and not a guaranteed source of usable bass.
+# Documented principles that guide the trials
+Source and distance: DPA’s close-miking guidance explains that position and microphone axis are part of tonal balancing and that nearby pickup involves a limited perspective of the instrument. Apply this principle by testing how much of the tonbak’s musical vocabulary one position represents. [4]
+Center and edge: DPA’s general drum mounting guide describes different balances when targeting the middle or edge of a head. This is evidence for comparing targets, not a tonbak recipe; its discussion and clamps concern a range of drums. [5]
+Proximity: a pressure-gradient microphone can change its low-frequency balance at close distance. DPA emphasizes that the effect depends on microphone design, source geometry and angle; a pressure omni does not exhibit this mechanism. Do not label every bass change “proximity effect,” because different parts of the instrument and the room can also contribute. [6]
+Combined pickup: DPA distinguishes polarity inversion from delay. Inverting a channel changes its sign; it does not remove a difference in arrival time. Two microphones on tonbak therefore require a combined-sound check rather than a mandatory polarity setting. [7]
+Live priorities: Shure’s reinforcement guide identifies desired pickup, rejection of unwanted sound and sufficient gain before feedback as simultaneous goals. Its hand-percussion examples are for timbales, congas and bongos, not tonbak. [8]
+# Choose microphones by the task
+Use available equipment before assuming a purchase is necessary. The following are selection recommendations, not rankings established by tonbak tests.
+Microphone option
+Useful trial
+What to verify
+Cardioid small-diaphragm condenser
+First comparison for detailed finger articulation
+Power, input headroom, response and pattern of the actual model
+Cardioid moving-coil dynamic
+Compact stage pickup or an alternative tonal character
+Quiet-stroke audibility and whether its response suits the player
+Pressure omni
+Quiet-room comparison for tonal balance
+Spill and room contribution; avoid making it the automatic monitor-fed stage choice
+Supercardioid or hypercardioid
+A stage requiring more selective pickup
+Rear pickup, actual rejection angles and movement tolerance
+
+A condenser does not inherently cause more feedback merely because its electrical sensitivity is higher. Compare microphones at the same useful reproduced instrument level. Pattern, response, placement and the acoustic loop matter. Use microphone and interface manuals to verify power and overload behavior; do not infer compatibility from connector shape. Miniature instrument microphones may require a specific adapter or powering interface. [4, 5, 8]
+Keep a stand-mounted microphone as the default when an appropriate attachment point has not been verified. A drum clamp that fits a tension hoop may not fit a tonbak. Do not clamp a delicate rim, skin or decorated shell on the strength of a generic drum illustration. Obtain player approval for any instrument-mounted system and follow its manufacturer’s instructions.
+# Placement trials for different tonal goals
+All distances in this section are proposed classroom starting ranges measured approximately from capsule to the identified target. They are subordinate to safe hand clearance. Angles refer to the microphone axis relative to the local head normal, not to the room floor. Keep the capsule and stand outside the complete playing envelope, including vigorous passages.
+## Trial A One microphone for a balanced starting perspective
+Place a cardioid microphone roughly 25–40 cm from the head, approached from the audience side where it does not intersect the hands. Start with its axis roughly 30–45 degrees from the head normal, directed toward a point between the center and rim. This geometry is a trial, not a required angle.
+Have the player perform the full gesture sequence. If one hand or edge dominates, move the capsule to a different viewpoint rather than simply turning it at the same location. Adjust the target and distance independently. Keep the setup only if bass strokes, edge definition and quiet finger work remain musically balanced. The objective is the player’s intended sound, which may differ from an engineer’s preference for brightness.
+## Trial B Closer pickup for isolation and articulation
+From the successful first position, try approximately 10–20 cm from the chosen head area if the player can complete every gesture comfortably. Approach from beside the playing envelope and compare center-biased with edge-biased targets. Do not move closer when the hand path makes that unsafe.
+The test is whether tighter pickup improves useful separation without making contact noise or one articulation dominate. If quieter strokes disappear, first check target and performance consistency. If the sound becomes overly thick, compare a greater distance or another microphone response before imposing a large bass cut. Treat the expected balance change as something to observe, not a promised result.
+## Trial C More distant pickup for a room-inclusive perspective
+In a suitable quiet studio, compare 60–100 cm from the instrument, selecting a viewpoint that covers the head and body without favoring one hand. Use the same passage and compensate playback level before judging tone. Choose this position only if the room contribution and articulation suit the intended arrangement.
+Try a pressure omni as a separate comparison if available. Distance and pattern changes are separate variables: do not change both and then claim one caused the difference. A room-inclusive perspective may be useful for solo performance but impractical beside loud sources or when feeding stage monitors.
+## Trial D Head microphone plus lower-opening support
+Retain the best head microphone. As an optional experiment, place a second microphone 15–30 cm outside the lower opening, on an independent support clear of the player’s legs and movement. Confirm that the opening is unobstructed by the setup. Begin outside the instrument; there is no need to insert a microphone or rest it against the shell.
+Listen to this channel alone, then introduce it quietly beneath the main pickup. It may contribute a useful resonance or may add excessive coloration, floor noise, spill or little worthwhile sound. Its role is support, not replacement of the articulatory pickup. Compare both polarity settings, small position changes and several playing gestures with both microphones centered. Remove it if the improvement is unreliable or disappears in the mix. No source found in this research validates this as a standard tonbak method.
+## Trial E Optional room or stereo perspective
+For solo tonbak in a good room, test a separate room pickup approximately 1–2 m away, choosing its position by the room sound. A coincident directional pair is an optional spatial comparison when stereo is actually required. The narrow source does not automatically benefit from two microphones. Evaluate stereo width, central focus and the mono fold-down; keep the simpler arrangement if extra channels add no useful perspective. These distances and the use of stereo are classroom proposals.
+# Two microphone checks
+Polarity, arrival time and tonal weighting interact when signals are combined. Use this practical evaluation based on the distinction in [7]:
+1.Hear each microphone alone at a comfortable level and identify its intended contribution.
+2.Combine the channels in mono. Introduce the support channel gradually while the player alternates bass, edge and roll gestures.
+3.Compare polarity settings without calling either one universally correct. Reposition if the combination becomes hollow or loses important articulation.
+4.Reduce the support level or remove the microphone if the useful balance is fragile when the instrument moves normally.
+5.Consider delay adjustment only for a measured, understood timing problem; do not align arbitrary waveform peaks and assume the whole instrument is corrected.
+The 3 to 1 rule is a spill-management guideline, not a guarantee that a head-and-opening pair will sum correctly. Shure describes it in relation to each microphone’s intended source and the relative level of leakage. A tonbak pair intentionally hears overlapping parts of one instrument, so judge the actual combination. [8]
+# Studio and live sound differences
+## Studio priorities
+Use the room-inclusive or close perspective that fits the musical role. Keep monitor loudspeakers out of the microphone comparison by using headphones at a comfortable level where appropriate. Compare positions at approximately matched listening loudness; the louder example should not win automatically. Add a room or support microphone only after the main microphone meets the tonal goal. Check the tonbak in the ensemble context as well as alone.
+## Live priorities
+Begin with one workable directional microphone and only the monitor level the player needs. Check the actual polar pattern when placing wedges and nearby sources. A cardioid’s rear rejection does not imply the same wedge location works for every tighter pattern. Shure’s BETA27 manual, for example, locates its supercardioid rejection toward the rear sides and warns against placing unwanted sources directly behind it. Verify the model being used rather than copy that example’s geometry to all microphones. [8, 9]
+Set input gain while the player demonstrates the strongest intended passage, leaving room for performance variation. Start with sends down and bring reinforcement up gradually under the sound operator’s control. If ringing develops, reduce the relevant send or output promptly and correct placement or system balance. Do not sustain feedback as a student demonstration. A second microphone must justify the additional spill and monitor interaction. Check the setup again when the player moves normally; a soundcheck posture that cannot be maintained is not a practical solution.
+# Troubleshooting through placement
+The following are proposed diagnostic tests. They do not assign universal EQ frequencies to tonbak.
+Problem heard
+First test
+Check before keeping the change
+Too much hard edge or finger contact
+Change the target or viewpoint; compare a greater distance
+Bass and quiet details still speak
+Weak lower stroke
+Compare target and distance; hear the unamplified drum again
+Distinguish source balance from microphone or room coloration
+Excessive resonance or thickness
+Move the microphone; compare less lower-opening support
+Avoid removing the instrument’s intended body
+Quiet rolls disappear
+Revisit position and spill before adding processing
+Player and engineer agree the quiet gestures remain identifiable
+Combined sound is hollow
+Test support level, polarity and position
+Check several gestures and normal movement in mono
+Clipping or distortion
+Reduce the overloaded stage and verify the microphone manual
+Loudest gestures are clean throughout the path
+Live ringing or excessive spill
+Lower the relevant send, then revisit microphone and monitor geometry
+Required audience level remains achievable without ringing
+
+Use a high-pass filter only after identifying unwanted low-frequency content and listening for damage to the intended bass stroke. Do not apply a fixed cutoff from another drum lesson. Avoid starting with a gate or strong compression: determine whether the pickup itself represents the intended quiet and loud gestures first. These are teaching recommendations, not instrument-specific processing standards.
+# Teaching exercise and pass criterion
+Allow approximately 45–60 minutes, adjusted to student experience. Use a player, a tonbak, one suitable microphone, a stand and an interface or console; a second microphone is optional. The exercise uses live playing and student observations. No supplied audio examples are required.
+1.Document the drum construction, player posture, musical role and desired balance. Agree on a repeatable sequence covering bass, edge, quiet articulation and the strongest intended passage.
+2.Establish Trial A, confirm clearance and set conservative gain. Note microphone model, pattern, target and approximate distance.
+3.Compare two targets at the same distance. Next compare two distances with the same target. Change one variable at a time and note normal movement.
+4.Compare reproduced tone at similar listening level. Ask the player which position best preserves their intended articulation and why.
+5.If a second microphone is available, perform the mono combination checks. State what it adds and whether the improvement survives ordinary movement.
+6.For the live portion, use a supervised PA at modest level. Confirm rejection geometry and useful monitor balance without deliberately inducing sustained feedback. If a PA is unavailable, complete a placement and routing plan and mark that part as untested.
+7.Submit a position log and a short recommendation for a solo studio setting and for the actual live situation.
+Pass criterion: the student demonstrates safe playing clearance, clean strongest strokes, recognizable quiet gestures, a reasoned tonal comparison and a viable microphone count. Any two-microphone result is checked in mono. Live suitability is demonstrated under the available conditions or explicitly marked untested. The student identifies which claims are sourced and which placements are proposed trials.
+Position log fields: microphone and pattern; target; approximate distance and axis; player posture; input gain or pad used; articulation balance; spill; second-microphone contribution; polarity result; monitoring conditions; player feedback; chosen revision.
+# Evidence audit
+## Points of agreement within the relevant sources
+Instrument documentation and the first-person maker account identify tonbak as an Iranian single-headed drum. Manufacturer microphone guidance supports deliberate placement comparisons and listening-based decisions. These are separate domains of agreement; museum records do not validate microphone distances. [1, 3–5, 8]
+## Points where most agree but emphasis differs
+The close-miking and reinforcement guidance share concern for selecting useful sound, but live guidance emphasizes rejection and feedback constraints. The more distant studio trial prioritizes room-inclusive musical perspective. These are different objectives, not evidence that one universal arrangement wins. [4, 8]
+## Direct contradictions and claims requiring qualification
+No direct contradiction about tonbak miking was found because the reviewed technical sources do not prescribe tonbak methods. DPA’s general drum guide suggests polarity changes in its snare and kick examples; its polarity article explains why inversion is distinct from time correction. Do not transfer a fixed inversion rule from those examples to tonbak. Likewise, “closer always produces more bass” is too broad: source geometry and microphone design matter. [5–7]
+## Important gaps
+The reviewed material does not establish comparative tonbak microphone measurements, optimal distances, standardized radiation patterns across gestures, a validated lower-opening arrangement or a tonbak-specific safe stage gain. Instrument variants and player technique remain material variables. Before presenting a trial as a proven recipe, obtain documented tests with representative players and equipment. The lesson is usable as an evidence-informed placement exercise, with these limitations retained.
+# References
+[1] The Metropolitan Museum of Art. Tombak, Iranian, object 89.4.304. Instrument identity, construction of this example and classification.  Read source <https://www.metmuseum.org/art/collection/search/500932>
+[2] The Metropolitan Museum of Art. Tombak, Iranian Persian, brass and parchment, object 89.4.332. Material variation; not miking evidence.  Read source <https://www.metmuseum.org/art/collection/search/500959>
+[3] Garland Magazine. My lockdown Tonbak A homemade industrial musical heritage, June 1 2023. First-person maker account; articulatory context with an experimental instrument.  Read source <https://garlandmag.com/article/tonbak/>
+[4] DPA Microphones. What is close miking and why use it. General close-pickup considerations; not tonbak-specific.  Read source <https://www.dpamicrophones.com/mic-university/audio-production/what-is-close-miking-why-use-it/>
+[5] DPA Microphones. How to mount the 4099 instrument microphone on various instruments. Drum targeting and equipment-specific mounting context.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[6] DPA Microphones. Proximity effect in microphones explained. Source dependence and microphone behavior.  Read source <https://www.dpamicrophones.com/mic-university/background-knowledge/proximity-effect-in-microphones-explained/>
+[7] DPA Microphones. Polarity phase and delay. Distinction between signal inversion and timing.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+[8] Shure. Microphone Techniques for Live Sound Reinforcement. Printed pages 4, 8–10, 17–21 and 30; general principles and hand-percussion examples.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[9] Shure. BETA27 user guide. Pages 4–6 in the retrieved PDF; model-specific rejection and setup information.  Read source <https://pubs.shure.com/view/guide/BETA27/en-US.pdf>
+Sources reviewed October 4 2026. Placement ranges and classroom exercises are explicitly proposed adaptations; no claim of manufacturer endorsement for tonbak is made.

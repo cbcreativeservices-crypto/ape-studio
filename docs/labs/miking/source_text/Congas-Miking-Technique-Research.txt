@@ -1,0 +1,106 @@
+# Congas — Miking Technique Research
+Lab: 1. Membranophones — Drums and Drumheads
+Place in sequence: After rack and floor toms; before bongos and timbales. One instrument family in this installment.
+Scope: Microphone placement and source capture for live sound and studio. No audio examples.
+# What the learner should be able to do
+Identify the head and open lower shell as different radiation regions; choose one mic for a pair or separate mics for each drum; explain how distance changes stroke balance, room pickup, spill, and feedback risk; protect the player's hands and posture; and compare summed multiple-mic signals before applying processing. [1–5]
+# Source and performance before the microphone
+Congas are headed hand drums. A player may use a pair or several sizes; names such as quinto, conga/segundo, and tumba vary with tradition and setup. The lesson should identify each actual drum with the player rather than assume that one fixed arrangement or register applies. Ask for the complete part, including open tones, bass/palm strokes, slaps, muted strokes, and quieter articulations. A mic position that flatters one stroke can overemphasize it or miss another. Check the head, tuning, shell hardware, stand stability, and rattles with the player before changing the pickup. [1, 2]
+The upper head gives access to hand attack and pitched tone. The open bottom contributes bass and interacts with the floor and any stand clearance. A bottom mic is an optional separate perspective, often boomier with less hand detail; it is not a replacement for evaluating the top sound. Never obstruct the open end or change the player's floor/stand setup without discussion. [2]
+# Decision table: practical starting geometries
+Arrangement
+Starting placement and aim
+What to evaluate and change
+One mic for a pair
+Aim a directional mic down between the two heads, above the playing plane and outside the player's hand path. Shure explicitly describes one mic just above the heads between a pair.
+Have the player play every stroke on both drums. Shift toward the quieter drum, raise for a more blended set, or add a second mic if one channel cannot balance them. “Just above” is not a universal clearance. [1]
+One mic per drum, moderate distance
+In a quiet studio, start roughly 6 in–2 ft (15–60 cm) from each head, then listen from closer to farther. Position outside the player's hands, generally over the head or near its far edge; aim to include head tone and hand detail.
+The cited engineer uses this broad range for a single conga and often backs off when multiple strokes need a balanced sound. Do not prescribe the entire range as equally suitable on a loud stage. [2]
+One mic per drum, close stage placement
+Put compact directional mics near the far-side rim, safely above the head and aimed across the playing area rather than straight into a single strike point. Start with the minimum workable clearance after watching the player.
+More direct sound and individual control may reduce nearby spill, but closer positioning can favor a particular slap or bass stroke and increase mic-strike risk. Adjust aim and clearance with the musician, then check monitors. [2, 3, 5]
+Pair or stereo perspective
+In a controlled room, place two mics to cover the pair or larger setup, and set their distance and aim so each drum and its articulations are balanced. A near-coincident pair is an option when stable center imaging matters.
+Listen to each mic alone and their sum in mono. Keep the natural left-right spread sensible for the arrangement and avoid a stereo image that loses a drum on mono playback. Stereo is an aesthetic choice, not a requirement. [2, 4]
+Optional lower-shell or room perspective
+On a stable raised setup, experiment with a mic near—not blocking—the bottom opening; in a good controlled room, a separate room mic can add distance.
+Solo and blend carefully. The lower mic can emphasize bass while reducing slap clarity; room pickup can also increase spill and feedback risk. Neither is a default live-sound prescription. [2, 4, 5]
+
+Distances are approximate reference points from specific sources, not standards. The player's striking arc, shell height, head diameter, adjacent instruments, stand, room, and monitor layout govern the final location. [1–5]
+# Tone changes the learner can predict
+More direct and isolated: Move a suitable directional mic nearer the head while staying outside all hand motions. The exact result depends on the strokes, off-axis response, and nearby sources. A close placement may make slaps very pronounced or produce a narrow bass-heavy view. Do not solve every tonal imbalance with EQ before moving the mic. [2, 3]
+More integrated and natural: Back off in a quiet, well-behaved room until open tones, slaps, and muted strokes have a useful balance. The greater distance also captures more room and surrounding performers. In live sound, that may limit gain before feedback; return to a closer directional position if needed. [2, 5]
+One louder drum: Aim or move a shared mic toward the quieter drum while keeping both heads in its useful pickup area. With individual mics, establish the player's actual dynamics first, then adjust distances and channel balance. Do not presume that identical drums or matched mics yield identical output. [1, 2]
+More bottom weight: Test a lower-shell mic only when the low-end character is wanted and the drum is stable and raised. Its signal can differ strongly in arrival time and tone from the top mic. Check the combined sound in mono, including polarity comparison, before deciding on blend. A polarity button does not guarantee that all frequencies align. [2, 4]
+# Mic and mounting choices
+A dynamic cardioid mic can be a practical close option amid a band, particularly when robust mounting and individual channels are needed. A small diaphragm condenser can cover hand articulation and an entire pair effectively in a controlled setting, provided its published maximum SPL and powering requirements fit the application. Neither technology is automatically “natural” or “isolating”: pickup pattern, distance, off-axis response, aim, and the room matter. Shure's shared-mic example is a placement, while a published touring case uses separate miniature clip-on mics for high and low congas; these are compatible choices for different conditions. [1–3]
+Use a stable boom or a mount expressly compatible with the drum and microphone. Get the player's consent before clipping anything to the shell or rim. Keep the capsule, stand, cable, and clamp clear of every hand stroke, wrist, knee, and any movement between instruments. Secure cables and stands so they do not shift into the player or create a trip hazard. Check the rig during the player's loudest, most animated passage, not only at rest. Do not route a cable into the bottom opening or compromise the drum's support. [3; placement safety is instructional inference]
+If a condenser needs phantom power, verify both microphone and connection path specifications before enabling it; mute or lower the channel during changes per the equipment manual. Avoid asserting that all condensers require the same power or that a dynamic microphone will always be harmed by correctly wired phantom power. Monitor hearing exposure and use appropriate protection and level management around loud amplified percussion. [6, 7]
+# Studio and live sound: different constraints
+Context
+Usable starting approach
+Main tradeoff
+Isolated studio performance
+One shared mic for a pair, or one mic per drum at a moderate distance; add room or lower-shell perspective only for a clear purpose.
+Distance can improve blend of varied strokes, but makes the room part of the sound. [1, 2]
+Band tracking in the same room
+More directional, closer individual mics or a carefully placed shared mic; listen to unwanted kit and amplifier spill.
+Improved direct-to-spill ratio can narrow the captured stroke balance. [2]
+Loud stage with wedges
+Close, stable directional mics, often one per drum for independent control; identify pickup nulls and monitor locations, and check achievable level with the actual PA.
+A distant or extra open mic can raise feedback risk. No fixed angle guarantees gain before feedback. [3, 5]
+Quiet acoustic stage
+A shared overhead-style position may suffice when the PA level, room, and neighboring instruments allow it.
+Evaluate real audience coverage and monitor need; preserve clearance for the player's full technique. [1, 5]
+
+Stage feedback is a system interaction among microphone, loudspeaker, room, and level. Position the monitors with respect to the *actual* microphone polar pattern; a supercardioid has a rear lobe and is not interchangeable with a cardioid when deciding where to put a wedge. For a loud stage, sound-check the performance-level passages and coordinate with the system operator rather than promising a universal safe gain setting. [5]
+# Multi-mic relationships and checks
+Two mics covering the same drums, or a top and bottom combination, capture overlapping sound at different times. Bring up one mic as a reference, then add the second at a useful level; listen to the blend in mono and across all the player's strokes. If the lows or attack thin out, move/aim a mic and compare its polarity switch as diagnostic steps. Keep whichever arrangement best represents the full part. Phase relationships vary with frequency, geometry, and room; a 180° polarity reversal is only one comparison, and automatic time alignment is not always musically preferable. Avoid claiming a fixed “three-to-one” spacing rule solves every shared-source pair. [4]
+For stereo, assess whether the conga set holds together when summed to mono or reproduced from a single side of the room. In live sound, use the least number of open mics that supplies the required control and coverage. A touring 4099-on-each-conga arrangement demonstrates a workable real case, not a mandate to use that brand or quantity. [3–5]
+# Guided lab procedure
+1.Consult and observe. Ask the player to identify each drum, demonstrate the complete passage and full reach, and show the preferred floor or stand arrangement. Correct mechanical noises at the source with permission. [2]
+2.Start with a shared mic for two drums. Aim between heads from above, safely outside the hand path. Set gain for the loudest strokes without overloading the mic, preamp, or subsequent input; check softer strokes too. [1]
+3.Compare positions. Change only one variable at a time: shift toward one drum, raise/back off for blend, then move closer for directness. Describe the effects on open tone, bass, slap, muted articulation, room, and spill. Log actual distances and aims. [1, 2]
+4.Try individual mics if needed. Aim one per drum without intruding on technique. Compare the solo channels, combined mono sound, and required level. In a loud stage simulation, include the actual PA and monitors under supervision. [2–5]
+5.Optional advanced perspective. If the raised drum and rig allow it, try a bottom or room mic; audition its contribution and phase relationship. Do not require either for a passing result. [2, 4]
+6.Finalize with the player. Confirm that all intended strokes are represented, mounts remain clear at performance intensity, and the live rig is stable with usable gain. Write down the position and why it was selected. [2, 5]
+# Troubleshooting and assessment
+Observation
+Inspect first
+Likely adjustment to test
+Slaps dominate, open tones disappear
+Does the close mic favor a small head region or only one stroke?
+Raise/back off or change aim; ask for the whole musical phrase again. [2]
+Low note overwhelms articulation
+Is the mic aimed toward the low head region or lower opening; is proximity adding weight?
+Reposition the main mic; reduce or remove the optional bottom mic before processing. [2]
+One conga is consistently buried
+Player dynamics, shared-mic aim, stand heights, and mic pattern.
+Shift shared mic, or use separate channels when needed. [1, 2]
+Hollow or thin combined sound
+Shared pickup at different arrival times.
+Compare solo, mono sum, mic movement, and polarity; judge the full performance. [4]
+Poor live level before feedback
+Monitor position, number of open channels, mic distance/pattern, PA/room.
+Re-aim or move monitor and mic with the system operator; close an unneeded channel. [5]
+Mic or cable struck
+Full hand path and player movement.
+Stop, mute, move/secure rig, and repeat the clearance check.
+
+Passing demonstration: The learner states why a shared or individual approach fits the setting, safely sets and documents at least two positions, describes how both drums and multiple stroke types change, and checks any multi-mic blend in mono. The live exercise additionally checks monitor interaction at operating level under a qualified supervisor. No audio examples are included in the teaching material.
+# Evidence audit and boundaries
+Shure explicitly proposes one mic aimed down between paired congas; engineer Eric Ferguson favors a flexible 6 in–2 ft single-drum range and more distance for a balanced variety of hand strokes; a touring engineer uses individual clip-on mics on high and low congas. These are different solutions to source balance and isolation, not contradictory universal rules. [1–3]
+The cited single-engineer preference for condensers during overdubs and dynamics near a drum set should be taught as a case-specific choice, not a property guaranteed by the transducer type. Likewise, a lower opening mic is an effect or supplemental perspective, not a default natural representation. The sources do not establish a universally safe hand clearance, ideal distance for every pair, numeric frequency response at each position, guaranteed gain before feedback, or one correct polarity. Have the player and a qualified sound practitioner review any final setup diagrams before use. [2, 4, 5]
+# Curriculum links
+This is the **congas** installment in Membranophones. Bongos and timbales each receive their own next lessons in the list order. The Membranophones drum-kit setup and overhead material will link to the **Glyn Johns technique** taught in Ensembles and Voice under rhythm sections and complete bands. Cymbal spot and overhead techniques cross-link to the Idiophones Lab. The ride cymbal research draft is deferred until the Idiophones sequence reaches ride.
+# Proposed app presentation
+Show a top and side diagram of two congas, head, open lower shell, performer hand paths, stand/floor, one shared mic, and optional two-mic positions. Let a learner select quiet studio, shared-stage, or loud live conditions, then move the virtual mic while textual prompts explain likely tradeoffs. The exercise should require a clearance and mono check before completing a setup. Show qualitative relationships only, with no invented numerical spectra and no audio examples.
+# References
+[1] Shure, *Microphone Techniques for Drums*, timbales/congas/bongos placement table.  Read source <https://content-files.shure.com/Pubs/microphone-techniques-for-drums/microphone_techniques_for_drums_english.pdf>
+[2] Eric Ferguson, “Our Friend the Conga,” *Recording Magazine*, engineer's detailed placement account.  Read source <https://www.recordingmag.com/resources/recording-info/mics-miking/our-friend-the-conga/>
+[3] Monitor engineer Jon Kooren and FOH engineer Brian Pomp, DPA touring case reported by *Sound & Video Contractor*, high and low conga spot mics.  Read source <https://www.svconline.com/the-wire/case-studies/the-jonas-brothers-are-burnin-up-with-dpa>
+[4] DPA Microphones, “Polarity, phase and delay.”  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+[5] Shure, “How to Control Feedback in a Sound System” and *Microphone Techniques for Live Sound Reinforcement*.  Read source 1 <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>  Read source 2 <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[6] Yamaha, ZG01 operating panel phantom-power precautions; follow the manual for the actual equipment used.  Read source <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>
+[7] CDC NIOSH, “Understand Noise Exposure.”  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>

@@ -1,0 +1,87 @@
+# Bowed Upright Bass Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers arco (bowed) upright/double bass as the second playing approach for the same instrument. The learner will choose a microphone view that preserves sustained pitch, low-frequency body and bow articulation without exaggerating scratch, manage the bow's physical sweep, and distinguish a solo or spot mic from a section's main ensemble image. It includes studio and live practices and optional pickup use. The preceding lesson covers pizzicato in depth. No audio examples are included.
+# What changes when the player bows
+The vibrating strings still drive the bridge and body, but the bow sustains energy and creates different transients and upper harmonics from finger plucks. The mic must represent the musical envelope throughout long notes, quiet entrances, crescendos, high positions and crossings among strings. A position selected only from plucked bass can put far too much emphasis on bow friction or insufficient definition on a soft arco phrase. Ask the player for the actual repertoire and playing posture, including bow type and full arm movement, before placing any boom or clip.
+DPA describes a below-bridge region between strings and top that includes bass body and bite for plucked or bowed playing [1]. Shure offers a stand mic 15–30 cm (6–12 in) in front above the bridge for a natural bass view, or a few inches from an f-hole for fullness [2]. These are different geometric experiments. The very low fundamental requires microphone and signal chain response, while the string harmonics, bow articulation and room define pitch clarity [1]. Avoid inferring that a large diaphragm automatically captures low frequencies better; check the actual mic specifications and position.
+# One-microphone placement map
+Start with a secure stand mic in front of the bass, around the bridge/top area, outside the bow's complete trajectory. Shure's 15–30 cm front-above-bridge range is one published baseline [2]. Have the player bow all strings, long and short strokes, at soft and loud dynamics and in high and low registers before deciding the exact spot. Small adjustments in height, lateral angle and distance can shift body-to-bow balance. A directed mic close to the bridge may give articulation but can make scrape or rosin noise prominent; a wider view may sound more integrated but hear more room and neighboring players.
+Perspective
+What to evaluate in arco
+Constraint
+Front above bridge, about 15–30 cm [2]
+Sustained body, note definition, bow articulation.
+Bow clearance, stand location and ensemble bleed.
+Lower/topward and near f-hole [1, 2]
+Additional body and output.
+Strong local resonance or room-mode boom.
+Higher toward fingerboard
+String articulation and changing pitch.
+Finger noise and less low-body contribution.
+Approved under-bridge miniature [1, 3]
+Stable body/bite balance during movement.
+Local coloration, cable contact and bow clearance.
+Broader frontal/room view
+Integrated instrument and space.
+Less separation, more hall and neighboring basses.
+
+The predicted changes are questions, not a guarantee. Document capsule-to-bass geometry and the player's bow clearance. A distant mic may capture a coherent instrument in a fine room; close placement is useful when spill or live gain demands it. A mic directly at an f-hole is an option to test, never a mandatory solution for bass weight.
+# Solo, chamber and orchestral section decisions
+Solo bowed bass: In a good quiet room, compare a more integrated front perspective with the close bridge-area view. An omni can capture the whole instrument and room without proximity-effect bass rise, while a cardioid can reduce unwanted room and ensemble energy; DPA describes those pattern tradeoffs for double bass [1]. Listen to pianissimo bow starts, sustained notes and the loudest passage. Set gain for headroom without losing quiet detail. If a one-mic sound is balanced, preserve it as the reference before adding anything.
+Chamber group: Position the bass and nearby players so the main ensemble mic hears a musical balance. A bass spot can add definition or level when needed, but it will also contain the other strings and the room. Orient a directional mic for useful rejection while considering that the large bass body reflects external sound toward the capsule [1]. Bring the spot into the mix gradually, check mono and listen for combing or image displacement relative to the main pair. The ensemble lesson will handle main-array geometry and larger string groups; the individual bass lesson supplies the spot-mic perspective.
+Orchestral bass section: First establish the section's balance in the main microphones and hall. A spot mic or several spots are support tools for the section, not automatically one close mic per player. The exact number and distance depend on seating, stage, room and desired mix. Neumann identifies its TLM 193 as a possible orchestral spot for low strings, and Schoeps describes directional spot capsules and discreet orchestra mounting [4, 5]; these establish that section spotting is a real practice, not a universal model prescription. Check whether added spot improves pitch, articulation and section coherence without isolating one player's bow noise or shifting the section's image. Section layout is cross-linked to the String Quartets and Larger String Sections lesson.
+# Studio combinations and mono compatibility
+When a close bass mic supplements a main pair or room mic, assess the two acoustic paths separately and together in mono. Their different arrival times and room contributions can alter low notes. Move or rebalance the spot first, then test polarity or time alignment only for a defined result; a polarity button cannot correct all phase differences. Avoid assuming that a closer spot must carry the low-frequency foundation. The main array may already provide it in the hall.
+For an overdub with a bass alone, a second view may add body or room, but do not place one mic at the f-hole and another at the bridge by rote. Compare full phrases, note-to-note consistency, bow direction changes and room decay. A close directional mic may show proximity effect [1]. High-pass filtering can remove handling or subsonic rumble; keep enough low fundamentals and musical body. Troubleshoot a boomy note by varying player and mic positions and checking the room before a large EQ cut.
+# Live reinforcement and approved miniature mounting
+For a quiet acoustic performance, a stand mic with comfortable bow clearance may be enough. For a loud stage, an approved miniature closer to the bass or an installed pickup can improve control, though both may present a more localized tone. DPA's BC4099 is designed to attach to the outer strings below the bridge and carry a gooseneck [3]. That is distinct from clamping on the bridge, which a Shure engineer cautions can impede vibration [6]. Neumann also offers a specific double-bass string clip for a miniature system [7]. Follow the actual product's fitting instructions and obtain the owner's approval; no arbitrary clip, foam or cable tie should press the bridge, soundpost area, strings in the bowing zone or varnish.
+Check the full bow arc, not only a stationary instrument. Keep the capsule, gooseneck, cable and stand away from bow hair, frog, tip, bowing arm, endpin and neighboring players. Provide strain relief without constraining the bass. Use the directional microphone's real pattern relative to wedges and PA; a supercardioid has a rear pickup lobe. If feedback appears, reduce level and adjust bass/monitor/mic geometry. DPA warns that the bass reflects PA or drum sound back into a mic even when it is aimed away from those sources [1].
+A pickup is a separate electrical path. It can help carry level on a loud stage, but its tone, bow response and required preamp depend on its design. If blending pickup and microphone, compare each alone and summed in mono across quiet and loud arco passages; change mic position and balance before assuming a polarity or delay setting will solve the blend. The pickup must be installed and connected according to its manufacturer; Fishman's Full Circle, for example, recommends professional installation and an impedance-matching preamp [8]. Do not alter bridge wheels or pickup hardware in a miking exercise.
+# Troubleshooting and physical safety
+Symptom
+First check
+Response to audition
+Excessive scratch/rosin
+Is capsule very close to bowing zone?
+Shift toward body/bridge integration or back slightly.
+Sustained notes lack pitch
+Is room/ensemble masking harmonics?
+Adjust angle/height or bring a directional spot closer.
+One low note booms
+Is mic on f-hole or a room mode?
+Move mic or player; compare several notes and room.
+Section spot isolates one player
+Is mic too close or poorly aimed?
+Move to hear intended group; lower spot in main-pair mix.
+Main/spot blend thins
+Are arrival paths interacting?
+Solo, mono-sum, move/rebalance, then test polarity/timing.
+Feedback on stage
+Which mic/pickup/monitor path is exciting body?
+Lower offending level, revise geometry and open channels.
+Bow touches stand or cable
+Did setup fail full-motion check?
+Stop and clear space with player before continuing.
+
+An upright bass can be damaged by a falling stand or disturbed bridge and soundpost. Secure stand bases away from the endpin and traffic, never lean equipment on the instrument, and do not adjust its bridge, strings or internal structure. Ask the owner and qualified luthier about an instrument fault. Manage PA/monitor loudness and exposure time; OSHA's 85 dBA eight-hour time-weighted average is a hearing-conservation action level, not an all-duration guarantee of safety [9].
+# Teaching exercise and pass criterion
+1.Ask for the performance's soft/loud arco range, high/low notes and full bow travel. Mark a stand/clip safe zone before energizing the system.
+2.Compare a front bridge-area mic, a slightly lower/topward view and a broader front view while the musician bows complete phrases. Describe sustained pitch, low body, scratch and room/bleed.
+3.Decide whether the mic is a solo capture, chamber spot, orchestral section support or live reinforcement source. State what the main array or pickup contributes in each case.
+4.If there is a second source, compare it alone and in mono sum. Check full bow clearance, mount approval and a safe response to feedback or a falling-stand risk.
+Pass criterion: The learner can produce a repeatable bowed-bass perspective over full dynamics, preserve player movement and instrument safety, and use a spot or pickup only for a stated musical and acoustic purpose.
+# Evidence audit and limits
+Agreement: DPA and Shure describe bridge-area and f-hole bass perspectives [1, 2]. DPA explicitly includes bowed playing for its below-bridge miniature location [1]. Both instrument makers and microphone manufacturers offer model-specific miniature mounting, while Shure cautions against clamping the bridge itself [3, 6, 7].
+Different emphases: Shure's stand mic 15–30 cm in front above bridge [2] and DPA's under-bridge clip [1] represent different compromises in integration, movement and isolation. Neumann/Schoeps show orchestral spot options [4, 5] but do not prescribe one position for every section. No direct contradiction is established when the methods' geometry and use case are kept distinct.
+Gaps and confidence: The sources do not set a universally best distance for arco, a fixed high-pass frequency, a room-spot balance or a pickup polarity. Predicted scratch/body changes are informed trials, not quantified laws. Confidence is high in documented options and clearance/mounting principles, moderate in tonal outcomes until tested with the actual bassist and room.
+# References
+[1] DPA Microphones, “How to Mic a Double Bass.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-double-bass/>
+[2] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments,” upright-bass placements.  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments>
+[3] DPA Microphones, “BC4099 Instrument Microphone Clip for Bass.”  Read source <https://www.dpamicrophones.com/accessories/instrument-clips/bc4099?variant=128>
+[4] Neumann, “TLM 193,” orchestral low-string spot use.  Read source <https://www.neumann.com/en-us/products/microphones/tlm-193>
+[5] Schoeps, “MK 4V,” orchestral spot application.  Read source <https://schoeps.de/en/products/colette/capsules/cardioids/mk-4v.html>
+[6] Shure, “Miking the Rhythm Section,” acoustic upright bass mounting caution.  Read source <https://www.shure.com/nl-NL/insights/miking-the-rhythm-section>
+[7] Neumann, “Miniature Clip Mic System MCM,” double-bass string clip.  Read source <https://www.neumann.com/en-gb/products/microphones/miniature-clip-mic-system-mcm>
+[8] Fishman, “Full Circle Upright Bass Pickup.”  Read source <https://fishman.com/dp/full-circle-upright-bass-pickup/>
+[9] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

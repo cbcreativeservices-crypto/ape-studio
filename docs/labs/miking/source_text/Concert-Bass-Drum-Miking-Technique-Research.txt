@@ -1,0 +1,111 @@
+# Concert Bass Drum — Miking Technique Research
+Lab: 1. Membranophones — Drums and Drumheads
+Sequence: After timpani; before concert snare. One instrument in this installment.
+Scope: Suspended orchestral/concert bass drum (gran cassa), for studio, concert recording, and live reinforcement. This is distinct from the drum-kit kick lesson. No audio examples.
+# Learning goals
+Identify the sound of a large, usually two-headed concert bass drum in the ensemble; choose whether the main array needs a spot; safely position a spot on the playing side without entering the mallet or damping path; compare attack and sustained low-frequency body; preserve headroom for powerful strikes; check multiple mics in mono; and adapt placement for amplified stages. [1–5]
+# Begin with instrument and performance
+The concert bass drum may be mounted on a wheeled, tilting stand, with a head on each side. A player can strike different head regions, use various mallets, play a roll, let the sound bloom, or damp one or both heads to suit the score. James Campbell's Yamaha teaching guide describes the middle region as a normal starting area, with outer and center regions producing different sustain and color; these are *player decisions*, not microphone positioning commands. The drum may face sideways into the ensemble, and its orientation influences the perceived directness. Learn the particular instrument, stage plan, playing side, damping hand, and score before positioning stands. [2, 3]
+A large hit can produce substantial low-frequency energy and a fast transient, even if the part has few notes. In orchestral recording, an ensemble main array can already carry much of the low end; a spot may primarily add definition. In live reinforcement, the balance is different because PA, monitors, neighboring instruments, and room modes affect how much of a spot can be used. Listen to the acoustic sound and main microphones before choosing a channel count. [1, 4]
+# Starting arrangements and documented placement
+Arrangement
+Placement to try
+Expected use and checks
+Main array alone
+Listen to the orchestra/main array before adding a spot. No bass-drum stand is necessary if the low body and attacks are already clear. [1, 4]
+Natural perspective and conductor's ensemble balance; limited individual control in dense passages.
+One playing-side spot
+The Decca-tradition guide describes a mic just above the concert bass drum, aimed diagonally down at the playing head, about 45 cm (18 in) away to capture mallet transient without crowding the beater. This is a published *example*, not a safety boundary. [1]
+Start with actual mallet and damping paths mapped. Blend gently with a main array whose omni mics already capture low-frequency body; assess all dynamics.
+More distant side/front perspective
+In a quiet studio or favorable hall, back a mic farther from the playing head to audition the whole drum and room as a single sound. [1, 4; trial inference]
+More room and other percussion; perhaps more perceived bloom, but less isolation and less live gain before feedback.
+Optional opposite-head spot
+If the player, instrument, and space allow, trial a second mic outside the resonant head to compare sustain/body with the playing-side articulation. This is an experiment, not a source-backed default distance or guaranteed “low end” channel.
+The opposite head can also be damped or accessed by the performer. Check both sides alone and together in mono; remove the channel if it adds little or compromises clearance.
+Live directional spot
+Begin with one stable playing-side directional mic, as near as safely useful, with the actual PA and monitors active. [1, 5]
+Prioritize repeatable coverage, physical access, and usable level; accept that a farther hall perspective may not be practical under amplification.
+
+The 45 cm passage follows the discussion of *concert bass drum* in the book. Its earlier 1 m-above-head passage is for timpani. Do not swap the two placements, and do not borrow in-the-shell, port, pillow, or foot-pedal recipes from a drum-kit kick unless that is actually the instrument and artistic intent. [1]
+# Tone, location, and microphone selection
+A spot is a supplement in a natural orchestra. With omni main microphones, the guide specifically expects low-frequency content from the main array and uses the closer bass-drum spot to give a distinct transient. Start with the spot low in the mix and listen for whether the drum stays in the same apparent space as the orchestra. An overly loud or narrow spot can shift its position unnaturally. [1, 4]
+Aim and distance change the balance. A safe above/diagonal playing-side angle can give attack without putting the capsule in the strike path. Moving closer generally increases direct drum pickup relative to the room and nearby sources, but makes the exact head region and mallet sound more prominent. Moving back may integrate the two heads and room better but increases bleed and reduces usable gain on a loud stage. The particular result is a hypothesis to test with rolls, large strokes, and damping in the intended space, not an invariant frequency curve. [1–4]
+Other head and surrounding space. A resonant-side mic, a side position, or an approved room mic can be tested for a featured solo in a quiet environment. These sound fields overlap with the main pickup and playing-side spot; adding channels does not necessarily improve the result. No reliable source in this research established a universal second-head location or a rule that one side always supplies bass while the other supplies attack. Treat such claims cautiously and keep the arrangement as simple as the performance allows. [1, 4; application inference]
+Pattern and hardware. The guide notes that a cardioid spot may be adequate when the main omni array already supplies low frequencies; it also allows an omni but cautions that adding it can change the ensemble image more. Choose the actual mic for response, pattern, peak SPL, powering, size, and stable mounting. A bass-drum-branded mic may have a shaped response designed for a modern kick; audition it against a neutral mic if orchestral realism matters. A condenser is not automatically too fragile, and a dynamic is not automatically the only safe option. [1, 5]
+Ribbon caution. The cited classical guide strongly warns against a ribbon microphone close to a bass drum because moving air can damage a delicate ribbon. A cautious lab avoids close or direct air-blast placement; if a ribbon is proposed at any distance, follow its own maker's guidance and evaluate air movement and rig stability. The book's absolute warning is a conservative practitioner position, not proof that all distant ribbon use is physically impossible. [1]
+# Studio and live differences
+Context
+First listening test
+Placement implication
+Classical orchestra recording
+Main array in context, then the single bass-drum spot if articulation needs help. [1, 4]
+Preserve low-frequency headroom and natural image; confirm the score's loudest hits.
+Isolated studio feature
+Compare one integrated mic with an above/diagonal spot; add a room or second-head perspective only if it reveals useful sustain.
+Quiet room can reward more distance; the drum stand, wall distance, and both heads affect the result.
+Amplified orchestra or concert band
+Assess one directional playing-side mic through the actual PA at intended operating level.
+Gain before feedback and stage spill favor more direct pickup, while mallet/damping movement sets the minimum safe clearance. [5]
+
+The source's possible suggestion of rotating the drum to point more toward the conductor is *not* an engineering shortcut. Yamaha percussion pedagogy explains why sideways head orientation often blends better, and the actual stand's manufacturer prescribes securing and angle-adjustment steps. Only the authorized player/crew should consider a musically appropriate orientation under the specific stand manual. Some stands require caster brakes, multiple people for mounting, and correctly tightened pivot holders; turning a clamped drum can damage the holder. [1–3]
+In live sound, locate the PA and monitors relative to the microphone's *actual* polar pattern, and check for low-frequency feedback and excessive bleed at planned level with the system operator. More mics or an added resonant-side mic can reduce usable gain. Wind protection may be needed outdoors, but any cover must be appropriate to the chosen microphone and position. Never intentionally drive the system into feedback to prove a placement. [5, 6]
+# Headroom, overlap, and mono
+Set the microphone, preamp, and any pad for the strongest realistic hit, not the average passage; leave headroom in the recorded or reinforced signal. A pad in the wrong stage of the chain cannot repair overload earlier in the path. The guide specifically notes that a powerful bass-drum hit may require a mic pad at its example distance. Also check the main-array input path, since it hears the same low-frequency energy. Do not equate microphone maximum-SPL ratings with safe hearing exposure. [1, 7]
+Bring up the main array alone, then the spot at intended level. Compare powerful single hits, quiet strokes, rolls, and the decay in mono and stereo. If adding a spot weakens body or gives a hollow transient, try position, level, and polarity comparisons; inversion is a diagnostic and cannot cancel acoustic travel time at all frequencies. If a second-head mic is used, check the two spots together, then against the main array. A fixed automatic polarity reversal for the far head is unjustified. Time alignment may help a particular blend, but can alter the main image and spill: decide by listening in the full ensemble. [4, 8]
+# Physical and hearing safety
+Before placing a mic, ask the performer to show the complete mallet arc and both-hand damping actions, including rolls, alternative mallets, and the back head. Stop playing and mute channels for stand adjustments. Never place a mic or boom where a mallet can hit it or where a hand must reach to damp the head. Route cables away from the player's feet, stand casters, and percussion traffic. Use a stable, appropriately rated stand and approved rigging; avoid clipping hardware to the drum without a compatible mount and the owner's permission. [2, 3; specific mic-clearance checks are instructional inference]
+Do not unlock, tilt, rotate, or lift the instrument to obtain a preferred microphone angle. The Yamaha CB-9000 stand manual, for example, says to lock four caster brakes and use at least two people when mounting, and to loosen the two wing bolts before angle adjustment, then secure the holders. Other models may differ: the equipment's own instructions and the percussion crew control this operation. A falling concert bass drum can cause severe injury. [3]
+Avoid excessive sound levels in soundcheck, rehearsal, and crew proximity. NIOSH exposure guidance concerns *people*; it is separate from a mic's SPL limit. Plan monitoring and hearing protection appropriate to duration and level. [7]
+# Guided practical lab
+1.Inspect the real setup. Confirm drum type, stand model, playing side, mallet/roll path, damping of both heads, likely peak dynamics, player access, and nearby percussion. Do not move the drum. [2, 3]
+2.Evaluate ensemble pickup. Listen to the main microphones with the full passage, including loud hits and decay. Describe what is missing before adding a spot. [1, 4]
+3.Place one safe spot. Try the above/diagonal playing-side example around 45 cm from the head only if the performer confirms complete clearance and the stand is secure. Check signal and peak headroom. [1, 3]
+4.Compare tone. With the same performance passage, adjust aim or distance one variable at a time. Identify changes in articulation, body, room, other instruments, and the perceived placement in the ensemble. [1, 4]
+5.Test an optional second view. If musically useful and physically feasible, compare a more distant or far-head position; first solo, then sum in mono at useful levels. Discard it if it adds bleed, phase problems, or risk. [4, 8]
+6.Check live conditions. With a qualified operator, use the actual PA and monitors to evaluate intended level, low-frequency feedback, bleed, cable routing, and full playing/damping movement. [5–7]
+7.Document the choice. Note position, measured distance/aim, pattern, stand clearances, gain/pad, main/spot balance, and why any optional mic was kept. No audio examples.
+# Troubleshooting and assessment
+Observation
+Check first
+Change to audition
+Loud hit clips although average is quiet
+Mic capsule, preamp, pad position, main array, and signal meter.
+Lower gain or apply a pad at the stage that overloads; leave headroom and recheck quiet material. [1]
+Sharp strike without low bloom
+Main-array/spot balance, very close aim, damping, room.
+Restore main contribution or move spot safely back; ask player about intended decay. [1, 2]
+Low thump without definition
+Spot aim and level; instrument's intended mallet and playing area.
+Trial the documented playing-side diagonal placement and gentle blend; do not alter the player's technique unilaterally. [1, 2]
+Body changes when channels sum
+Spot/main or two-head overlap and polarity.
+Reposition, rebalance, compare polarity and mono in full ensemble. [4, 8]
+Feedback or overpowering PA bass
+Mic/monitor geometry, open channels, gain, room.
+Work with operator on position/routing/appropriate filtering and reduce unneeded channels. [5]
+Boom obstructs roll or damping
+Full movement with the actual mallets and both hands.
+Stop, mute, reposition or omit the spot and repeat player clearance check.
+Drum stand moves or angle seems unsecured
+Model-specific casters and pivot locks.
+Stop work around the drum; have authorized percussion personnel follow the stand manual. [3]
+
+Passing demonstration: The learner justifies an unobstructed one-mic spot or main-only arrangement, shows headroom for the loudest hit, compares main plus spot in mono, and explains the live and safety differences. No audio examples.
+# Critical source audit
+Agreement. The classical-recording guide and orchestral engineer account support an ensemble main array with optional spots; the former specifically locates a single concert bass-drum spot above and diagonally toward the playing head. Yamaha's pedagogy establishes that strike area, damping, and drum orientation affect the musical result, while Yamaha's stand manual establishes real handling hazards. [1–4]
+Different emphases. The Decca-tradition guide emphasizes transient definition on top of main-array low end and warns that a raised spot can disturb the ensemble image. Yamaha's educational article emphasizes how sideways placement can warm/blend the instrument. These address recording balance and player placement respectively; neither authorizes an engineer to rotate a clamped stand. [1–3]
+Direct tension. The guide's strong “no ribbon” advice is a conservative close-drum protection rule. It should not be expanded to claim that a properly positioned *distant* ribbon could never capture the ensemble. Follow the actual ribbon maker's limits and avoid direct air pressure; the evidence here does not specify a universally safe ribbon distance. [1]
+Gaps. These sources provide no universal far-head microphone distance, invariant attack-to-bass split between heads, guaranteed polarity, stand clearance, numeric safe peak for a human ear, or fixed live feedback margin. The lesson treats such choices as site-specific tests, prioritizing musician and crew safety. [1–8]
+# Curriculum and app presentation
+This concert bass drum lesson follows timpani and precedes concert snare within Membranophones. Link the separate kick-drum lesson only to contrast foot-pedal drum-kit construction and miking. Cross-link the complete orchestral/percussion ensemble lessons when developed. The drum-kit overview points to Drum Overheads for Glyn Johns; it does not apply as a concert bass-drum recipe.
+Diagram the suspended two-headed drum, stand pivot and caster locks, mallet arc, both-head damping reach, one above/diagonal playing-side spot, and the main-array perspective. A live/studio selector should alter qualitative spill, room, and feedback tradeoffs. Require player-clearance and stand-safety checks before a learner can accept a position. No audio examples.
+# References
+[1] Caroline Haigh, John Dunkerley, and Mark Rogers, *Classical Recording: A Practical Guide in the Decca Tradition*, “Timpani and bass drums.” One bass-drum spot about 45 cm diagonally above the head; main-array low frequencies, headroom, image balance, and ribbon caution.  Read source <https://ebrary.net/300174/education/timpani_bass_drums>
+[2] James Campbell, Yamaha Music, “Fix It: Bass Drum Teaching Tips.” Player placement, strike region, mallet/damping decisions.  Read source <https://hub.yamaha.com/music-educators/instruments/perc/bass-drum-pedagogy/>
+[3] Yamaha, CB-9000 Series concert bass drum stand owner's manual. Lock four caster brakes, use two people for mounting, follow pivot-holder/wing-bolt angle procedure.  Read source <https://usa.yamaha.com/files/download/other_assets/6/330896/9000_Series_Concert_Bass_Drum_Stand_Owners_Manual.pdf>
+[4] India Hooi, SoundGirls, “Recording an Orchestra.” Main microphones, spots, ambient pickup, blend, and dynamics.  Read source <https://soundgirls.org/recording-an-orchestra/>
+[5] Shure, *Microphone Techniques for Live Sound Reinforcement*. Polar-pattern, spill, monitoring, and feedback principles (its kick-drum examples are **not** concert bass drum placements).  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[6] Shure, “How to Control Feedback in a Sound System.”  Read source <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>
+[7] CDC NIOSH, “Understand Noise Exposure.”  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[8] DPA Microphones, “Polarity, phase and delay.”  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>

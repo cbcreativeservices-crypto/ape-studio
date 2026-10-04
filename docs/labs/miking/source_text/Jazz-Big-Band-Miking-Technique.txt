@@ -1,0 +1,191 @@
+# Jazz Big Band Miking Technique
+Pro Audio Training Academy  •  Ensembles and Voice Lab  •  E16  •  Studio and live sound
+A big band microphone plan must preserve section blend while making solos and the rhythm section clear. This lesson compares section pickup, individual horn microphones, and a main ensemble perspective. Students learn to control row balance, brass peaks, spill and player movement, then adapt the plan for a studio, an acoustic concert or live reinforcement. Distances identified as classroom trials are proposed comparisons, not validated universal placements. No audio examples are included.
+# Plan from the score and the actual seating
+Obtain the seating chart, solo cues, instrument doubles, mutes, vocal features and rhythm-section needs. A common arrangement puts saxophones at the front, trombones behind them and trumpets farther back, with rhythm players to one side. Confirm the actual layout rather than imposing that arrangement. Note baritone sax, bass trombone, standing solos, trombone slide travel, mute changes and any flute or clarinet doubling. Mark conductor sightlines, risers, speaker and monitor locations, piano lid, amps and safe access routes.
+Listen to a quiet reed passage, a brass chord at full strength, a solo handoff and the strongest ensemble passage. A microphone close to the front row can make reeds prominent and the rear brass distant; a high forward perspective changes that relationship. Microphone orientation also changes the tone of off-axis players. The bandleader should establish the musical balance with the players first. The engineer then chooses which perspective or support preserves that balance for the intended listener.
+# Choose how much independent control is needed
+Architecture
+Useful purpose
+Main compromise
+Main pair plus rhythm and solo support
+A good room and a well-balanced band; a concert perspective with selective detail.
+Section balance depends strongly on seating and the main position; independent fixes are limited.
+Section microphones plus solo spots
+A practical middle ground when each horn section needs some control.
+Nearest players can dominate. One shared mic cannot independently balance all parts.
+One microphone per horn plus rhythm section
+Detailed balance, changing soloists, loud stages or production requirements.
+More spill paths, setup work and active channels; individual tone must still blend.
+Close sources for PA with a separate room or ensemble pair
+Simultaneous reinforcement and recording or stream.
+House and remote listeners need different balances; the room feed requires deliberate routing.
+
+Published big band sessions demonstrate more than one architecture. John Xepoleas documents a concert-hall session with a horn pair and solo/rhythm support. Freddie Breitberg documents an 18-piece studio group with individual horn spots and Mid-Side pickup within a horseshoe layout. Choose from the room and musical task, not a prescribed channel count. [1, 2]
+# Select microphones by the job
+Option
+What to compare
+Limit to verify
+Cardioid condenser
+Section detail, quieter reeds, piano and a main stereo view.
+Noise, peak handling, off-axis response, powering and spill from nearby brass.
+Moving-coil dynamic
+Close horn or amp pickup and manageable stage hardware.
+Frequency response and working distance; “dynamic” alone does not guarantee better isolation.
+Ribbon with figure-eight pattern
+A tonal alternative for horns and a side null directed toward an unwanted source.
+The rear lobe also hears sound. Check wind tolerance, mounting, preamp gain and model-specific power requirements.
+Instrument-mounted miniature
+A fixed relationship when a soloist stands or moves, and less stand clutter.
+Approved clip, clearance, cable strain relief, polar pattern, connector/adaptor and input headroom.
+Omni or wide pattern
+A more inclusive room/section perspective in controlled conditions.
+Broad pickup may limit useful reinforcement gain and bring more adjacent sections into the channel.
+
+Check the loudest trumpet and trombone attacks with the selected mic and preamp. A pad only solves overload in the stage of the signal path it affects; clipping at the capsule or microphone electronics cannot be repaired by reducing a later fader. Ribbons and condensers vary greatly in peak capability. A mic’s output sensitivity alone does not determine gain before feedback. Pattern, distance, open channels and loudspeaker interaction matter. [3, 4]
+# Core horn positions and controlled comparisons
+All distances below run from capsule to the stated target. Published ranges apply to the microphones and situation discussed by the source. Classroom trials are proposed starting points to refine by listening. Do not move musicians or instruments into awkward positions to satisfy a number.
+Target
+Position to test
+Tonal and practical check
+Individual trumpet or trombone
+DPA describes 30–50 cm from the bell, slightly off axis. Begin outside the direct bell line and aim toward the bell area. [5]
+Compare a small lateral or angular move at similar distance. Direct bell aim may emphasize brightness; keep the mic outside slide and mute travel.
+Ribbon on brass
+Royer describes 2–5 ft in front and about 6 in below the bell line for a solo horn; for a section, one R-121 per player at 1–2 ft or two players sharing one. [6]
+These are Royer examples. Compare body and attack while inspecting rear pickup and side nulls; do not generalize handling limits to every ribbon.
+Individual saxophone
+Classroom trial: 30–60 cm from a view encompassing body tone holes and bell, with aim above the bell rather than only down its opening.
+Test low and high notes, key noise and standing movement. Shure’s practitioner guide identifies tone holes plus bell as relevant sources. [7]
+Two neighboring horn players
+Classroom trial: put the capsule roughly 0.8–1.2 m from their combined target area and compare their individual passages at normal seating.
+Adjust distance and aim until one player does not dominate; protect slide and hand clearance. A solo may still need its own spot.
+Section or main horn pair
+Classroom trial: start roughly 2–3 m in front of the horn rows from an approved elevated view, then compare fore/aft position and height.
+Judge reeds versus rear brass, center image and room. Xepoleas used a pair about 10 ft in front in one hall; that case is not a fixed rule. [1]
+
+For shared or section pickup, assess every player in the intended coverage area. A nearer player and a player farther off axis are not acoustically equivalent. If one side is weak, inspect capsule aim, player distance and music-stand obstruction before increasing the whole section. A wider pickup pattern can improve coverage while admitting more spill; an extra mic gives control while adding another overlapping path.
+# Handle the rows and soloists
+Saxophones: preserve the internal reed blend, including baritone articulation. A bell-only perspective can misrepresent the section across the register. Check doubles separately because a sax position may be unsuitable for flute or clarinet. Trombones: leave clearance through full slide extension and when players stand or change mutes. Trumpets: allow peak headroom and test changes in bell direction, mutes and lead-player level. Do not increase the lead mic simply because it has the brightest solo sound; judge its place within the written section.
+For a section-plus-spots setup, agree on a solo location or use an approved instrument mic when movement requires it. Rehearse the handoff and return to the section. The solo is also entering section microphones, so hear the combined result. Avoid an abrupt change in timbre or location when bringing in the spot. Keep a cue list for features and doubles; a spare stand mic is only useful if the player can safely reach it.
+# Integrate the rhythm section
+Source
+Microphone priority
+Ensemble check
+Drums
+Establish overhead or kit balance, then add kick/snare or other close channels only as required.
+Ride, hi-hat and brushes must remain audible without overwhelming horns. Cross-reference the overhead lesson and its Glyn Johns coverage.
+Acoustic piano
+Compare a broad outside view with closer internal views when drums or brass spill masks the piano.
+DPA recommends closer, more directional placement and considers short-stick or closed-lid options for big band isolation. Keep hardware clear before moving the lid. [8]
+Upright bass
+Listen for pitch and attack in a safe body/fingerboard view, not only low-frequency level.
+A fitted pickup or DI can be a separately labeled support path. Check mic, pickup and sum; preserve clearance for endpin, hands and movement.
+Guitar or bass amplifier
+Mike the actual speaker, comparing cone position and angle from safe proximity.
+Turn or lower the amp with the player’s agreement if it floods horn/piano mics. DI is an electrical comparison, separate from speaker miking.
+Singer if featured
+Give the voice an appropriate individual mic and check the actual monitor geometry.
+A strong brass passage may reveal a different vocal spill/feedback limit from a quiet ballad.
+
+The rhythm section and band must be tested together. A piano or bass mic that sounds full alone can lose articulation beneath brass and drums. First compare target and angle, then working distance and pattern. Do not force a standardized close-mic count on the kit or piano just to fill available channels.
+# Studio and concert capture
+For a room-led sound, position the main pair or section view first. Choose X-Y or correctly decoded Mid-Side for a coincident perspective, ORTF for a near-coincident alternative, or spaced pickup when its room and width are useful. Check stereo and mono with the full band. These array names describe their own geometry; they do not determine the best distance to this band. Add rhythm or solo support for a stated need. [9]
+For more independent control, place and check each horn mic in the planned seating before building the group. Use screens only when they improve useful separation without spoiling sightlines or player cueing. Compare the band’s actual sound after every seating change. Breitberg’s horseshoe used figure-eight side rejection and two Mid-Side setups within the layout; it is an alternative studio concept requiring a room and rehearsal trial. His favorable phase descriptions do not prove that Mid-Side automatically resolves timing differences with all the individual spots. [2]
+Karl Winkler’s Airmen of Note report documents individual sax and trumpet microphones and the need to accommodate a large brass dynamic range. Its limited track count required combining some horn inputs during capture. Today’s teaching implication is to distinguish microphone count from recorded track count: a section submix commits balance decisions that cannot later be separated. Retain individual tracks when the actual system and project call for them. This report describes one session, not a required mic locker. [10]
+# Live reinforcement and channel priorities
+Start with the band’s acoustic sound at audience positions. In a suitable room, the brass and drums may need little reinforcement while bass, piano, vocals or a soft solo need support. Outdoors or with amplified partners, more channels may be necessary. Keep the main/room pair on a separate recording or stream route unless the PA design specifically needs it. Remote listeners do not hear the direct acoustic band that audience members hear.
+Work closer where needed for separation and useful gain. Place speakers and monitors relative to the actual mic rejection, including rear lobes of supercardioid and figure-eight patterns. Keep unnecessary microphones attenuated during irrelevant passages. Shure’s simplified acoustic-gain model predicts about 3 dB less margin when otherwise comparable open microphones double; this is a planning estimate, not a measured guarantee for an actual band. More channels need a musical justification. [4]
+When inputs are limited, prioritize the sources that need reinforcement, then exposed solos, then section correction. A dedicated trumpet mic may be less valuable than a piano mic if the trumpet is already clearly audible everywhere. Sound-check quiet reeds, brushes, vocals and solos as well as a brass peak. At the onset of feedback, lower the relevant send and correct geometry or open-channel contribution. Do not sustain feedback as a demonstration.
+# Check overlap and timing
+Hear each added mic alone, with its section, and with the main view in stereo and mono. A source arriving at a close spot earlier than the main pair may change timbre, transient shape and apparent depth. Lower or reposition support before assuming polarity reversal or delay solves every difference. A polarity reversal is a diagnostic; one delay cannot align every moving player, source and reflection. Do not time-align the left and right channels of an intentional spaced array merely to erase its stereo timing cues. [9]
+The 3-to-1 rule is a useful isolation heuristic for separate sources under its assumptions, not a layout rule for every stereo array. It reduces the audibility of duplicate pickup by making the unwanted path weaker. It cannot guarantee freedom from comb filtering in a reverberant room or with uneven musicians. Check the intended combined sound and preserve the band’s safe, workable seating. [4]
+# Troubleshooting and safe placement
+Problem
+First action
+One player dominates a shared section mic
+Compare player-to-capsule distances and off-axis angles; adjust the target or reconsider shared coverage.
+Trumpets are harsh or distort
+Distinguish overload from brightness. Check mic/preamp headroom and compare an off-axis bell view.
+Reeds disappear behind brass
+Revisit main height/position and sax coverage, then add support only for the missing balance.
+Solo spot makes tone hollow or image jump
+Listen with section and main in mono; reduce the spot, move it or revise the handoff cue.
+Piano or bass is masked
+Inspect nearby drums/amps, target articulation and working distance before adding more low-frequency level.
+Feedback starts during loud passages
+Reduce the affected send immediately; inspect monitor/speaker angles, open channels and changing bell direction.
+
+Use stable stands and protect cables from chair movement, pedals, slides, mute handling and access routes. Approved risers, suspended arrays and structural attachments belong to qualified venue crew; this lesson supplies no rigging specification. Confirm instrument-owner permission and a suitable manufacturer mount before attaching a mic. Set levels with the strongest planned passage and follow the venue’s hearing-exposure practice.
+For ribbons, follow the exact model manual for air blasts, transport and power. Royer warns against wind and cross-patching passive ribbon lines with phantom power present; its active models require power. Do not turn this into “all ribbons must never receive phantom” or “all ribbons tolerate it.” Mute affected outputs before connection changes and verify the microphone, cable and input requirements. [11]
+# Teaching exercise
+Run this comparison during an agreed rehearsal window. Use an approved section setup or a small subset of the actual band if a full band is unavailable; identify that limitation in the worksheet. The instructor manages PA level and any elevated equipment.
+1. Plan the band. Mark rows, soloists, doubles, mutes, rhythm sources and monitors. State whether the task is acoustic capture, PA, or both.
+2. Establish a reference. Listen acoustically, then through one chosen main/section view. Use quiet reeds, a brass peak and a solo handoff. Set headroom without prolonged high-level repetition.
+3. Compare one physical variable. Hold distance and change bell aim, or hold aim and change distance. Use the same passage and similar reproduced listening loudness. Document articulation, blend and spill.
+4. Compare shared and individual pickup. Hear two neighboring players through one shared mic, then a justified individual spot with the shared mic. Check stereo and mono, including standing or mute motion.
+5. Integrate rhythm and live routing. Add one necessary piano, bass or drum channel. Decide whether it solves an actual need; check what goes to PA, monitors and the remote feed.
+6. Select a final plan. Keep the smallest arrangement that meets the stated goal, record its limitations, and submit the observation sheet with a seating sketch.
+Pass criterion: the student explains section versus individual pickup, documents one repeatable tonal comparison, preserves safe player movement, checks brass peaks and combined mono behavior, and assigns channels according to the actual audience. A good result must preserve the written section blend as well as any solo. No audio examples are supplied.
+
+# Student observation sheet
+Name ____________________  Date ____________________  Band and room ____________________
+Goal and listener ___________________________________________________________________Reference passage and musical role ____________________________________________________Seating sketch attached __________  Instrument doubles and movement checked __________
+Record
+Position A
+Position B
+Target and players covered
+________________________
+________________________
+Mic model and polar pattern
+________________________
+________________________
+Capsule distance and height
+________________________
+________________________
+Aim or angle and mic orientation
+________________________
+________________________
+One variable changed
+________________________
+________________________
+Articulation and section blend
+________________________
+________________________
+Spill and room contribution
+________________________
+________________________
+Full peak and headroom check
+________________________
+________________________
+Mono result with support
+________________________
+________________________
+Player clearance and live margin
+________________________
+________________________
+
+Selected approach and reason _____________________________________________________________________________________________________________________________________________PA channels _______________________  Monitor sends _________________________________Recording or stream channels _________________________________________________________Remaining compromise ________________________________________________________________
+# Evidence audit
+## Points of agreement
+The cited technical guides and practitioner reports support checking player position, microphone pattern, level peaks and overlapping pickup. Big band cases demonstrate both independent horn spots and ensemble/section perspectives. Manufacturer guides provide usable starting positions, with listening and movement checks required. Confidence is high in those general principles; moderate in transferring a published starting position to a different room or microphone.
+## Where approaches differ
+Xepoleas used a hall horn pair with solo and rhythm support. Breitberg used individual ribbon spots in a horseshoe with Mid-Side pickup. Winkler used individual horn microphones and committed section submixes because of track limits. These choices address different rooms, tonal aims and available systems. Royer’s solo-brass range is farther than DPA’s bell range; neither is a universal optimum. [1, 2, 5, 6, 10]
+## Contradictions and claims requiring qualification
+No direct contradiction was found between these documented layouts once their contexts are retained. Broad claims that a mic type always isolates better, that a stereo system automatically makes all spots phase coherent, or that sensitivity alone causes feedback are not reliable teaching rules. The lesson uses actual pattern, geometry, headroom and combined listening checks instead. The reports are manufacturer-hosted practitioner accounts, not independent comparative trials.
+## Important gaps
+The sources do not establish one best channel count, shared-mic distance, array height, delay or gain-before-feedback figure for every big band. Classroom ranges in this lesson are trials. The actual venue, score, musicians and equipment must decide the final placement; structural rigging and specific equipment wiring require their own approved instructions.
+# Sources and related lessons
+Primary manufacturer guidance and documented practitioner accounts were checked October 4, 2026. Links identify the exact pages used; no audio or video demonstrations are part of this lesson.
+[1] John Xepoleas — Five Easy Pieces Miking Drums with a Shure SM27 <https://www.shure.com/en-GB/insights/five-easy-pieces-miking-drums-with-a-shure-sm27>Concert-hall big band example.
+[2] Shure — Wrapping up Big Band Recording With Shure Ribbons <https://www.shure.com/en-US/newsroom/wrapping-up-big-band-recording-with-shure-ribbons>Freddie Breitberg’s studio layout and microphone choices.
+[3] DPA — How to mic woodwinds and brass <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-woodwinds-and-brass/>Radiation, close perspective and overload.
+[4] Shure — Microphone Techniques for Live Sound Reinforcement <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>Patterns, feedback, multiple microphones and acoustic gain.
+[5] DPA — How to mic a trumpet and trombone <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-trumpet-and-trombone/>Bell distance and off-axis comparison.
+[6] Royer Labs — Recording Brass <https://royerlabs.com/recording-brass/>Royer solo and section starting positions.
+[7] Shure — Choosing a Saxophone Microphone for Recording and Live Sound <https://www.shure.com/en-EU/insights/choosing-a-saxophone-microphone>Practitioner approaches to bell, tone holes and movement.
+[8] DPA — How to mic a piano <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-piano/>Piano in a big band and live isolation choices.
+[9] DPA — Stereo recording techniques and setups <https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/>Array geometry and stereo/mono consequences.
+[10] Karl Winkler — Remembering Glenn Miller The US Air Force Band in the Studio <https://www.neumann.com/globalassets/digizuite/17333-en-remembering-glenn-miller.pdf>Neumann-hosted 1998 report of the Airmen of Note sessions.
+[11] Royer Labs — Ribbons Dos and Donts <https://royerlabs.com/ribbons-dos-and-donts/>Handling and power precautions by microphone type.
+Cross-reference these delivered lessons: Brass-Saxophone-and-Mixed-Horn-Sections-Miking-Technique.docx; Drum-Overheads-Miking-Technique-Research.docx including Glyn Johns; Acoustic-Piano-Miking-Technique.docx; Upright-Bass-Plucked-Miking-Technique.docx; Rhythm-Sections-and-Complete-Bands-Miking-Technique.docx; Jazz-Combo-Miking-Technique.docx. Individual trumpet, trombone and saxophone lessons supply further instrument-specific detail.

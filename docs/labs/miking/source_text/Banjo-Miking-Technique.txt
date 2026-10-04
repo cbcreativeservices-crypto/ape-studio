@@ -1,0 +1,83 @@
+# Banjo Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson centers on acoustic banjo miking for recording and live reinforcement. It covers common resonator and open-back five-string banjos, with placement principles that can be tested on tenor and other banjos rather than assumed identical. The learner will identify the string–bridge–head sound path, make deliberate choices between definition and whole-instrument tone, adapt to room and stage conditions, and keep the player's hands and instrument safe. No audio examples are included.
+# Identify the radiating source
+The strings initiate vibration; the bridge transfers it to the tensioned head, while the rim and other parts contribute. A resonator back reflects some sound toward the front, whereas an open-back instrument interacts differently with the player and surrounding space [1]. Thus the banjo belongs in the Chordophones Lab, even though its membrane is central to radiation; cross-link its head behavior with the Membranophones Lab. Do not treat it as an acoustic guitar with a sound hole. Listen to the player's actual instrument from the front and, for an open-back banjo where feasible, around the back before setting a mic.
+Head tension, bridge and picking technique influence tone, but changing setup is not a miking step. Ask whether the player uses fingerpicks, clawhammer, a mute or a resonator; have them play the full performance before deciding what the microphone should emphasize. Check that the head or bridge is stable without touching or adjusting them.
+# Start with one microphone
+DPA recommends the neck/body junction as an often useful banjo position that blends strings, fingers and resonating head [2]. Begin with a single mic facing that region at a playable distance; in a controlled room, compare roughly 30–40 cm (12–16 in), the distance DPA gives for a two-omni stereo experiment [2]. The one-mic use of that distance is a teaching trial, not a published requirement. Shure's live-sound guide describes about 1 ft (30 cm) from the bridge as another general banjo starting position [3]. Move between these *different regions* by ear rather than treating the two recommendations as the same coordinate.
+Region or change
+Tonal question
+Practical limit
+Neck meets pot, medium distance
+Is there a balanced mix of strings, fingers and head [2]?
+Neck joint varies by banjo; watch player movement.
+Toward bridge/head, medium distance
+Is note attack and head projection clearer [3]?
+Too close can overemphasize head or pick transients.
+More toward neck/strings
+Does articulation improve?
+The pot's body and head may recede.
+Farther frontal view
+Does the whole instrument and room feel more natural?
+Greater room, bleed and lower live gain before feedback.
+Near rim/back of open-back instrument
+Is a different body view useful?
+Player's body, reflections and spill can dominate; audition only.
+
+These predicted tendencies are listening questions. Do not claim a fixed “warm side” or “bright side” for every banjo. Change one coordinate at a time, keep the played phrase and gain comparison consistent, and listen in the actual ensemble. Avoid a boom directly in the player's picking or fretting path. Small banjo movements can change a fixed close mic's tonal balance.
+# Studio choices and tone concepts
+Natural solo banjo: In a quiet, suitable room, an omni can give a detailed and broad view; DPA suggests an omni near the neck/body junction when isolation is not needed [2]. An omni also hears the room and other players, so use it only when that contribution is wanted. Try a cardioid when the room or neighboring instruments need more control. Compare the same performance at similar monitoring level before naming a favorite.
+Forward bluegrass roll: Start at a medium distance where strings and head both register. If pick attack dominates, move off that local spot or back a little. If a dense ensemble masks the roll, bring the mic closer or aim somewhat more toward the head/bridge region and verify that low strings and sustain remain balanced. A strong banjo in a quiet bluegrass ensemble may need only modest reinforcement; a genre name alone does not mandate an aggressive EQ.
+Clawhammer/open-back: The instrument, right-hand stroke and open back may have different acoustic balance from a resonator bluegrass banjo. Compare front neck/pot and a slightly broader front perspective, then a rear/side view only if it is useful and practical. Avoid assuming that a mic behind the instrument will always capture deeper tone; the player's body can obstruct it.
+Two mics or stereo: Establish the one-mic result first. DPA gives two omnis at 30–40 cm as one stereo option and mentions cardioid XY and wider A/B alternatives [2]. An XY pair near a good central position can limit arrival-time differences between capsules, while a spaced pair offers a different width and phase behavior. With any arrangement, check the whole part in mono and verify that instrument motion does not make one side dominate. Two close mics on distinct regions can offer tonal control, but when summed they may thin or color the sound; move and rebalance rather than relying solely on a polarity switch. A distant room pair is useful only if the room and spill serve the piece.
+# Live sound: one player or a shared ensemble microphone
+For an individual stand mic, start at the front of the banjo near the neck/pot or bridge region, then approach only as much as gain before feedback and bleed require. Directional patterns can reject nearby instruments when oriented according to their real polar response. A tight pattern is not automatically natural: very close miking emphasizes a small region and may magnify playing noises. Shure's bluegrass engineers report that close miking can help gain before feedback, while floor monitors and overlapping microphones can still harm tone and isolation [4]. Recheck the player at their normal stage posture and during movement.
+An instrument-mounted miniature mic can follow player movement. DPA lists a 4099 miniature system and a compatible banjo clip [2, 5]. Fit only a manufacturer-approved mount to a suitable point, with the player's consent; keep it clear of strings, bridge, head, tailpiece motion and hands. Secure the cable with strain relief. Shure's guide describes a miniature mic attached near the strings between bridge and tailpiece as a specific close technique [3], but this should not become an instruction to clamp onto strings or valuable hardware without an approved mount and model-specific guidance. Audition the mounting position on the actual banjo.
+For a bluegrass group using one or two shared mics, performers may step toward the mic for a solo and back for balance. Shure describes this as requiring choreography, a favorable room and restrained monitoring [4]. Treat that setup as an ensemble technique and cross-link it to the Ensembles and Voice Lab. On a loud stage with wedges and drums, individual close mics or a pickup-equipped banjo may give more control. A pickup's electrical feed is a separate sound path; it does not replace learning what the acoustic microphone hears. If blending pickup and mic, compare each alone and combined in mono, and assess timing, polarity, and feedback behavior.
+Shure reports an engineer using a figure-eight ribbon on one banjo to smooth its attack, while noting that floor monitors would make that choice unsuitable for his setup [4]. This is a documented tonal approach, not a general live ribbon recommendation. A figure-eight also receives sound from the rear; inspect the actual pattern, monitors and room before using one. Never assume any ribbon tolerates phantom-power wiring faults, wind blasts or a particular SPL without its manual.
+# Troubleshooting and safety
+Symptom
+First check
+Response to audition
+Thin, all-fingers sound
+Is mic aimed mainly at neck or too close to picking?
+Include more head/pot and modest distance.
+Hard, papery head sound
+Is a close mic aimed at one head spot?
+Move toward neck/pot blend or step back.
+Banjo disappears in band
+Is room/bleed masking articulation?
+Bring a directional mic closer and verify with ensemble.
+Tone changes as player moves
+Is source rotating away from fixed capsule?
+Mark a working zone or test an approved clip mic.
+Two-mic blend loses body
+Are arrival times and balances interacting?
+Solo and mono-sum; move/rebalance before polarity tests.
+Feedback or excessive wedges
+Is monitor energy reaching live mic/instrument?
+Lower level, revise pattern/geometry/open channels.
+Buzz or bridge/head concern
+Does it persist acoustically with mic muted?
+Stop; ask owner or qualified banjo technician, not a mic-placement fix.
+
+Keep stands and cables out of performer traffic; never rest a mic or clip on the vibrating head, change head tension, disturb the bridge or tighten resonator hardware as part of this lesson. If a monitor or pickup system is used, manage stage levels and follow the relevant equipment instructions. A close banjo can be very loud: Shure's engineer reports measuring 105 dB near a particular banjo [4], which is a single anecdotal measurement, not a general level for every instrument. Measure exposure when needed, reduce duration and level, and use appropriate hearing protection; OSHA identifies 85 dBA over an eight-hour time-weighted average as a hearing-conservation action level, not a universal safe threshold [6].
+# Teaching exercise and pass criterion
+1.Trace the string–bridge–head path and identify resonator versus open-back construction without changing the instrument setup.
+2.With one mic, compare neck/pot, bridge/head and a broader front view while the player performs both quiet and strong passages. Record position, distance, pattern and observed tone.
+3.Choose a studio and a live placement, explaining room, isolation, movement, monitor and stand-clearance decisions. If using a clip, verify manufacturer compatibility and player consent.
+4.Add a second mic only for a stated goal; check each source alone and summed in mono. Demonstrate a safe response to feedback, unexpected buzz or hazardous stage level.
+Pass criterion: The learner can produce a reproducible, balanced one-mic banjo sound, explain tradeoffs of close and broad views, adapt to a stage, and keep hands, hardware and hearing safe.
+# Evidence audit and limits
+Agreement: Deering establishes the bridge-to-head acoustic mechanism [1]. DPA and Shure both treat banjo placement as a balance of strings and head, with distance and isolation dependent on context [2, 3, 4].
+Different emphases: DPA favors a neck/pot junction for a broad blend [2]; Shure's live booklet provides a bridge-oriented starting position [3]. Both are testable and reflect different tonal/operational goals. Shure's live engineer also describes a ribbon for one banjo but rules it out for his wedge setup [4]; this is a context difference, not a contradiction.
+Gaps and confidence: No cited source establishes a universal spot for every banjo, head tension, right-hand style, resonator, room or stage. Confidence is high in the source mechanism and documented example positions; moderate in predicted tonal adjectives until verified by listening. The one-mic 30–40 cm trial borrows DPA's published two-omni distance, explicitly as an experiment [2].
+# References
+[1] Deering Banjo Company, “Why Does a Banjo Sound Like a Banjo?”  Read source <https://www.deeringbanjos.com/blogs/deering-banjos-blog/why-does-a-banjo-sound-like-a-banjo>
+[2] DPA Microphones, “How to Mic a Banjo.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-banjo/>
+[3] Shure, “Microphone Techniques for Live Sound Reinforcement,” banjo placement chart.  Read source <https://content-files.shure.com/dievision/archive/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[4] Shure, “How to Mic a Bluegrass Band.”  Read source <https://www.shure.com/en-US/insights/how-to-mic-a-bluegrass-band>
+[5] DPA Microphones, “VC4099 Instrument Microphone Clip for Violin and Mandolin,” banjo compatibility.  Read source <https://www.dpamicrophones.com/accessories/instrument-clips/vc4099?variant=139>
+[6] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

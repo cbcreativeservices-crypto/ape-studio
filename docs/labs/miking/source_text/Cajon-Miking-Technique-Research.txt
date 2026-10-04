@@ -1,0 +1,105 @@
+# Cajon Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Cajon   October 3 2026
+This lesson teaches acoustic miking of a cajón for studio and live sound. A conventional box cajón is classified as a struck idiophone: the wooden playing surface and box vibrate, without a stretched drumhead. Internal wires or strings can add a snare effect, while a sound port contributes a different perspective on the box. This lesson covers a seated frontplate cajón first and explains why a front-facing port or a differently shaped model changes the setup. Begin by hearing the player's bass strokes, corner slaps, ghost notes, and optional brushes or accessories, then choose the simplest mic arrangement that carries those sounds. No audio examples are included. [1–4]
+# Learning goals
+The learner will identify the actual striking surface, internal snare mechanism, sound port, and performer movement; explain what a front microphone and a port microphone tend to emphasize; compare single-mic, two-mic, and wider ensemble perspectives; check air bursts at the port, gain and spill on stage, and the combined front/rear sound in mono; and make a placement that leaves the player seated and playing safely.
+# Source, design, and playing zones
+Grinnell College's instrument collection calls the cajón a box-drum idiophone, and the Hornbostel–Sachs classification defines idiophones by their sounding solid material rather than a stretched membrane. The drum-like bass and snare roles are useful descriptions of the *sounds*, but they do not make the wooden box a membranophone. A metal snare or string touching the frontplate adds a secondary buzz. [1, 2]
+On one Meinl example, center hits give the low thump and top-corner hits give a snare-like slap. Other models use adjustable strings, fixed wires, no snares, front-facing ports, or internal bass-reflex structures. Do not assume every cajón has a rear hole or that all players use the same hand positions. Inspect the particular model and ask the performer to play the complete dynamic range and patterns at the intended seated position. Do not retune, tape, or alter its snare mechanism without the player's agreement. [3–5]
+The frontplate radiates the hand attack and body sound. The port can provide a strong bass-oriented perspective, but it can also send an air pulse toward a microphone; Meinl even fits some models with a port pop filter for that reason. A mic pointed into a hole is not automatically the sound of the whole instrument. Acoustic output also changes when the player rocks or lifts the box, when the floor or wall affects the low sound, and when a second instrument occupies the same acoustic space. Check the actual performance rather than drawing a universal response curve. [3–6]
+# Choose a starting approach
+One front microphone. Begin at a position outside the player's hands and legs, aimed at the frontplate. Shure documents one front KSM137 about 6–7 inches away at a slight angle as part of a two-mic example. Paul White's Sound on Sound account places a front cardioid below the top edge, angled toward the center, at roughly 30–40 cm. These are *different practitioners' examples*, not two distances that must be averaged or a guarantee of the same sound. A single front mic can be enough when its bass/slap balance and spill work in the mix. [6, 7]
+One port microphone. If bass reinforcement is the priority or a front mic cannot be placed safely, evaluate the actual port. Meinl recommends a mic at the front-facing port on a specific Slaptop model. A rear-port mic may be useful in other layouts. Aim or offset the microphone to avoid a blast of air and excessive low-frequency concentration; test that change with the strongest bass strokes. Shure's example places a second mic just inside a rear hole, while White reports an angled mic about 20 cm away. Neither geometry is safe or optimal on every model, and a front-facing port changes the relevant side of the instrument. [4, 6–8]
+Front plus port. Use two channels when the front attack/snare and box low end require independent balance. Bring up each alone, then combine in mono with the player performing bass, slaps, ghost notes, and a complete pattern. Test mic position and relative level, then compare polarity in context. White recommends reversing one channel in his front/rear setup; that is a useful *example* of front/rear interaction, not an automatic switch rule for every cajón, mic pattern, and placement. Listen for losses in low end and attack in the whole mix. [6, 7, 9]
+Wider perspective. In a suitable studio room or acoustic ensemble, a single more distant mic can represent the whole instrument and the room. White discusses this for a solo cajón. Wider pickup also captures more guitar, voice, other percussion, audience, and PA; those relationships determine whether it serves the production. [7]
+Arrangement
+Likely strength
+Main check
+One frontplate mic
+Hand attack, slaps, and an integrated perspective on the box. [6, 7]
+Does the bass read? Keep the capsule outside both hands and legs.
+One sound-port mic
+Port and cavity contribution; may help low end. [4, 6–8]
+Find the actual port, avoid wind-like air bursts, check bass excess and spill.
+Front plus port
+Independent control of attack and low end. [6, 7]
+Check mono combination, polarity conditionally, cable clearance and two-channel spill.
+Wider ensemble mic
+Full cajón, room, and musical balance. [7]
+Room quality, bleed, feedback, and sufficient gain before spill.
+
+# Placement variables and tonal choices
+Frontplate position. A front mic facing the center can receive more of the lower center strikes; moving its aim upward or toward a corner may reveal slap and snare detail. Its distance also changes hand-to-body balance and room/ensemble pickup. These are starting hypotheses grounded in the instrument's playing regions and published setups; they require listening with the actual player. The performer may strike a larger area than expected, so an apparently clear spot can become a hand hazard during a flourish. [3, 6, 7]
+Port position. The hole may be at the rear, front, or another location. A mic deep in or directly across the port is especially vulnerable to air bursts and could emphasize a narrow resonance. Compare just outside, slightly off-axis, and farther back while preserving player clearance. If the model has a factory port filter, leave it as intended; do not block or modify the hole to solve a mic problem. The primary sources disagree in *starting geometry* but both caution that the port needs attention. [4, 6–8]
+Microphone and pattern. A cardioid condenser is documented on Shure's two-mic demonstration; a low-frequency dynamic instrument mic is another manufacturer-documented cajón option. Choose a microphone based on the desired tone, polar behavior, headroom, stage spill, physical profile, and its electrical requirements. A cardioid's less-sensitive rear side can help with an unwanted source, but off-axis pickup and reflections remain. A port windscreen may control turbulence if it suits the mic, yet changing position should be the first investigation. No model listed is mandatory. [6, 8, 10, 11]
+Instrument-mounted options. Meinl sells a padded clamp for a cajón sound port; Schlagwerk documents an adapter plate for a cajón body, and one bass-cajón setup shows a supported internal condenser. These are product-specific methods, not instructions to place any loose mic inside any cajón. Check mechanical compatibility, cable strain, interior wires, port airflow, seating and player motion; follow the accessory and instrument manuals and obtain the player's approval. A free-standing microphone is often simpler to inspect. [12–14]
+# Safety and setup integrity
+Have the player stop before moving a stand or port clamp. Keep front mic, grille, boom, and cable outside the complete right- and left-hand arcs, knees, ankles, any heel accessories, and any rocking or leaning motion. Never position a rigid mic where the player could land on it while sitting or standing. Check the weight and stability of a stand; route cable behind feet and away from the seating path. Do not fasten a clamp to thin wood or into a sound port unless that hardware is designed and compatible with this model. [12, 13]
+If using the rear port, verify that the performer can sit, play, stand up, and leave the stage without catching the mic or cable. Do not feed a microphone into the box where it can touch snare wires or become trapped by moving hardware. Protect the instrument's finish and the player's ability to play normally. No source establishes a universal safe clearance in centimeters. [3, 12–14]
+Repeated loud soundchecks can contribute to cumulative human exposure. NIOSH recommends 85 dBA as an eight-hour occupational limit, with recommended exposure time halved for each 3 dBA increase. That is a worker exposure criterion, not a mic overload threshold. Keep repetitions purposeful and follow venue hearing procedures. Follow device instructions for phantom power or a pad, mute relevant outputs while repatching, and set gain for the strongest actual bass and slap strokes. [15]
+# Studio and live sound
+Decision
+Studio
+Live sound
+Perspective
+A front mic or wider room mic may represent the instrument as a whole; a second port mic adds optional control. [6, 7]
+One practical front or port mic may suffice; check the acoustic cajón in the audience and the needs of FOH, monitors and broadcast.
+Bass and snare balance
+Test each strike type, then adjust placement and two-mic balance.
+Check low-frequency feedback and nearby vocal/guitar spill with the entire PA and monitor system active.
+Mounting
+Stands allow flexible comparison if they do not obstruct the performer.
+A compatible padded port clamp can reduce stage clutter, subject to the player's movement and instrument design. [12]
+Multiple mics
+Keep channels separate for later balance; hear their mono sum at intended levels. [7]
+Each open channel can increase spill and feedback opportunity; keep only channels that improve a relevant output.
+
+These priorities can cross over. A live broadcast may use two mics, and a studio may use one port mic if that best serves the piece. The port's *actual location* remains the first physical decision. [4, 6–8]
+# Practical setup procedure
+1.Identify the cajón model, frontplate, sound-port location, internal snare type, any installed pickup, and the player's seated posture. Listen to bass hits, slaps, ghost notes, brushes, and full patterns.
+2.State the needed sound at each output. Begin with one safe front or port microphone, or a wider mic when the room and ensemble allow it.
+3.With the performer stopped, place the mic and cable outside hand, leg, seating, and exit paths. For a port position, keep airflow and internal hardware in mind.
+4.Set gain using strongest actual playing while monitoring at a safe level. Compare frontplate center versus upper region, or port axis versus a slightly offset position, one change at a time.
+5.Add a second mic only for a defined bass/slap control need. Compare solo channels and their sum in mono; test position, level and polarity, then check the full ensemble.
+6.On stage, evaluate microphone spill, acoustic cajón, FOH and monitor sends, and feedback margin. Keep the useful channels and confirm cables and mounts remain secure when the player stands.
+# Troubleshooting and assessment
+Observation
+First checks
+Hollow or weak bass
+Listen to the center stroke and front/port balance; check whether two mics cancel in mono. Try relative position and polarity as a conditional test. [3, 7, 9]
+Port channel booms or makes air pops
+Offset or move the mic, check port filter and windscreen suitability, lower gain if input overloads, and verify the cajón's actual port design. [6–8]
+Corner slap or snare disappears
+Check front aim, performer technique, internal wire setting with consent, and whether a port-heavy balance hides the attack. [3, 6]
+Footsteps or chair motion enter mic
+Check stand and cable contact, clamp vibration, floor, and the player's movement. [12, 13]
+Vocals or guitar dominate
+Reconsider mic distance and pattern, ensemble layout and whether a second open mic is useful. [7, 11]
+Player can hit or catch mic
+Stop and remount, then repeat full playing and exit-motion checks.
+
+Assessment scenario: a player sits on a rear-port snare cajón while singing beside an acoustic guitarist on a small live stage. Learners must choose a safe initial mic, justify any front/rear pair, map both hand arcs and the exit path, test bass and slap balance in the full ensemble, and assess mono and feedback. A second scenario uses a front-port Slaptop model: learners must revise the port position instead of assuming the hole is behind the player. Grade safe reasoning and evidence-based comparisons, not a particular brand or memorized measurement.
+# Critical source audit
+Agreement. Grinnell classifies the cajón as an idiophone; Meinl's instrument descriptions and Shure's demonstration distinguish bass-oriented center strokes from upper or corner slap and internal snare effects. Shure and Sound on Sound both describe useful front and rear mic perspectives. Meinl documents airflow at the port and purpose-built mounting accessories. [1–8, 12]
+Different emphases. Shure's demonstrator places the front mic about 6–7 inches away and the rear mic just inside the hole; Paul White prefers a front mic about 30–40 cm away and an angled rear mic about 20 cm away. They are actual, different working examples. Meinl's Slaptop has a front-facing port, so a fixed “rear hole” diagram would be false for that model. [4, 6–8]
+Direct contradictions or overreach. White recommends flipping one mic's polarity in his two-mic arrangement, while the general phase literature treats the best combined result as context-dependent. We therefore teach learners to compare both polarities and move mics when needed, rather than prescribe a universal setting. Shure reports that an inside-port position reduced “woofiness” in one demonstration; Meinl documents that another port can produce troublesome air pops. These different results do not establish an always-better port placement. [6–9, 16]
+Important gaps. No source here establishes one universal front or port distance, a guaranteed bass-to-slap ratio, safe internal placement for all constructions, or a guaranteed live feedback margin. The final position must be checked with the seated player's complete movement, the specific cajón and accessory manuals, and the entire sound system. The NIOSH guidance concerns human exposure rather than mic survival. [1–16]
+# Proposed app presentation
+Use front and side views of a rear-port snare cajón and a front-port variant. Mark frontplate strike zones, internal wires, port airflow, hand paths, legs, seating and exit routes. Learners first choose a single front, port, or wider mic, then optionally add the second with a mono-sum comparison and polarity switch. Display qualitative changes in bass, slap, air-pop risk, spill, and feedback; do not invent a numeric spectral response. Block mic positions inside a hand arc or exit path and incompatible internal clamps. A studio/live selector changes room, ensemble, monitor and PA decisions. Link to the hand percussion and ensemble labs. Use text and diagrams without audio examples.
+# References
+[1] Grinnell College Musical Instrument Collection, Cajón entry and classification.  Read source <https://omeka-s.grinnell.edu/s/MusicalInstruments/item/3327>
+[2] University of Würzburg, Hornbostel Sachs classification of idiophones.  Read source <https://www.musikwissenschaft.uni-wuerzburg.de/musikinstrumente/organologie/systematiken/hornbostelsachs/hornbostelsachs-en/>
+[3] Meinl Percussion, Jam Cajon JC50BW, playing zones, fixed snares and rear port.  Read source <https://meinlpercussion.com/en/products/jc50bw-m15387.html>
+[4] Meinl Percussion, Slaptop Cajon AEVLPS, front-facing port and playing zones.  Read source <https://meinlpercussion.com/en/products/aevlps-m5939.html>
+[5] Meinl Percussion, Artisan Edition Buleria AEBLMY, adjustable strings and bass reflex system.  Read source <https://meinlpercussion.com/en/products/aeblmy-m15359.html>
+[6] Shure, Miking World Instruments with Alexander Duvel, cajón front and rear example.  Read source <https://www.shure.com/it-IT/articoli/miking-world-instruments-with-alexander-duvel>
+[7] Paul White, Recording the Cajon, Sound on Sound, firsthand studio placement examples.  Read source <https://www.soundonsound.com/techniques/recording-cajon>
+[8] Meinl Percussion, Artisan Edition Buleria, sound-port pop filter and airflow.  Read source <https://meinlpercussion.com/en/products/aeblmy-m15359.html>
+[9] DPA Microphones, Polarity Phase and Delay.  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+[10] Audix, FP7 drum microphone package and cajón use.  Read source <https://audixusa.com/products/fp7>
+[11] Lewitt, What Is a Cardioid Polar Pattern?  Read source <https://www.lewitt-audio.com/blog/cardioid-polar-pattern>
+[12] Meinl Percussion, MPMCC Cajón microphone port clamp.  Read source <https://meinlpercussion.com/en/products/mpmcc-m15350.html>
+[13] Schlagwerk, CMH10 microphone adapter plate for cajón.  Read source <https://www.schlagwerk.com/en/product/microphone-adapter-plate-for-cajon/>
+[14] Schlagwerk, BP40 bass cajón base plate and internal microphone example.  Read source <https://www.schlagwerk.com/en/product/base-plate/>
+[15] CDC NIOSH, Understand Noise Exposure.  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[16] Sound on Sound, Phase Demystified, front and rear polarity context.  Read source <https://www.soundonsound.com/techniques/phase-demystified>

@@ -1,0 +1,85 @@
+# Bassoon Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Studio and Live Sound   October 4, 2026
+# Scope and learning goals
+This lesson covers the standard bassoon in solo, chamber, orchestral and live reinforcement settings. Learners will locate its changing sound-radiation areas, compare a balanced stand position with bell and close-mount views, and verify low notes, key noise, spill, feedback and player safety. No audio examples are included.
+# Know the folded instrument and its radiating areas
+The bassoon is a double-reed instrument with a metal bocal leading to a long conical bore that descends into a double joint, turns through a U-shaped tube and ascends to the bell [1, 2]. Sound can leave open tone holes at different locations. Yamaha specifically states that the very lowest note, with all relevant holes covered, radiates from the bell, while the apparent source moves as the notes and open holes change [1]. A microphone aimed only into the upper bell can overrepresent that low note and miss the intended balance across the phrase.
+Observe the bassoonist with the actual seat strap or support, bocal, reed, thumb and finger paths, score, chair, bell height and instrument movement. The bocal is a delicate part of the instrument; keep stands and cables away from it. Ask for the lowest required note, a high passage, soft entries, accented notes and runs with moving keys. A placement cannot be judged from one pitch or one player's stationary pose.
+# Four useful perspectives
+Setting and goal
+Starting trial
+Verify
+Focused solo or spot
+DPA suggests a stand mic toward holes about one third of the visible length down from the bell, 15–20 cm from the fingering area [3].
+Note-to-note balance and key action.
+Natural room or ensemble
+Back off or rely on the main pickup; add a spot only when needed.
+Room tone, neighboring players and musical depth.
+Bell emphasis
+Compare a higher bell-facing view separately.
+Very lowest note versus the rest [1].
+High-spill live stage
+Secure close stand or approved clip near upper end aimed down toward keys [3, 4].
+Full register, feedback, clip clearance and cable.
+
+The DPA placement is a starting point for a particular close or spot application [3]. Shure also recommends a roughly one-foot distance from the holes for a balanced oboe or bassoon perspective and a near-bell position for a brighter, more isolated option [5]. Those numbers and tone descriptions depend on the mic, player and room. A bell-facing mic may help a bass note yet make an upper passage less consistent; listen to the actual music.
+# One microphone on a stand
+1.Map the source. Ask the musician to play the entire relevant range at musical dynamics. Note the first passages that move the radiating area and the position of the bell and keywork [1, 3].
+2.Begin with holes and bell in view. Trial DPA's 15–20 cm placement toward fingering holes, roughly a third of the instrument length down from the bell [3]. Aim so the capsule can hear the body and some bell contribution. Keep it outside the player's hands and instrument swing. Compare the very lowest note with middle and high passages.
+3.Compare a little farther and higher. In a good studio or quiet venue, step back for a more integrated instrument. Compare a higher view toward the bell, then return to the hole-facing position and listen at matched monitor level. Note changes in lowest-note strength, attacks, keys, room and spill [1, 5].
+4.Choose a pattern for the environment. DPA favors an omni where bleed and room allow it, with wide cardioid or cardioid for more separation [3]. A narrow pattern can overfocus one part of the large instrument and change tone when the player moves. Actual off-axis response matters as much as a pattern name.
+5.Check the chain and the complete phrase. Leave gain headroom for the loudest accent. Apply a high-pass filter only after checking the lowest required note; a useful bassoon low register must not be removed along with handling or room rumble. Avoid a fixed EQ recipe. Adjust mic placement and monitoring level before making broad tonal corrections.
+# Studio and ensemble practice
+Solo overdub: A single low-noise mic at a balanced stand position is a sound starting point in a quiet room. A close view can favor attack and separation but may expose keys, small position changes or bocal/reed detail. A more distant view blends multiple outlets and room. Document position relative to the player and bell for repeat takes. The type of microphone is less decisive than its frequency response, directionality, room and exact placement.
+Orchestra or chamber group: Hear the ensemble main pickup first. Bassoon may need no spot. DPA describes section spots between two bassoons around head height, either pointed down or positioned in front and angled downward [3]. These are ensemble choices, not prescribed single-instrument positions. If adding a spot, keep its level and spatial depth consistent with the ensemble, then listen to the spot and main pickups separately and summed in mono. If the result hollows, move or rebalance; do not assume a polarity switch or calculated delay always solves the interaction. The complete section belongs in the Ensembles Lab.
+Two close microphones: Only use a separate bell and body mic if the musical goal justifies the extra complexity. A bell feed and a body feed can change relative level note by note, especially on the lowest note. Check phase interaction and mono sum over the full passage, then prefer one coherent position if the combination remains unstable [1].
+# Live reinforcement and close mounts
+For a relatively stationary player, place a weighted stand near the sound-hole region, clear of the seat strap, hands, bocal, bell, normal playing and pivoting space, neighboring players and aisle. Moving closer improves direct sound compared with spill but can increase key noise and note-dependent balance. Recheck with the band at working level. Position wedges for the selected mic's actual polar pattern; supercardioid microphones have a rear pickup lobe and side rejection different from cardioid rear rejection [6]. Increase monitor sends gradually.
+DPA describes its U-CLIP for a very close position near the bassoon bell, directed downward toward keys rather than into the bell [3]. Its installation guidance also warns that a focused miniature mic can make oboe, clarinet and bassoon timbre uneven and recommends extending the gooseneck and aiming back toward the upper-joint key area [4]. Use only a verified compatible accessory with the player's agreement. Do not strap over an open hole, compress a joint, contact rods/pads or put a microphone where the reed, hands or bell can strike it. Never attach to the bocal as an improvised mount. Use a stand if safe fit cannot be established. Secure the cable and verify the exact manufacturer's powering and wireless adapter instructions [4].
+Stage placement is a musical compromise. The close clip may provide isolation yet overstate certain keys or miss bell energy on the lowest note. Test soft, loud, low and high passages, player movement and the actual monitor setup. If feedback develops, lower level safely and change geometry before raising a narrow EQ notch blindly.
+# Tone goals and troubleshooting
+Natural and integrated: A stand with some distance or a main ensemble pickup lets sound from several openings blend in the room. This is useful when the room and bleed are favorable [1, 3].
+Detailed and close: A nearer hole-facing position can clarify articulation but needs a key-noise and full-register check. DPA's 15–20 cm trial is one place to start [3].
+Strong lowest note: A bell-facing trial can capture more of the very lowest note, but compare all subsequent notes and avoid turning the whole part into a bell-only sound [1].
+Symptom
+Likely first question
+Response to test
+Lowest note overwhelms others
+Is mic aimed primarily into bell?
+Re-aim toward holes or back off; replay full phrase [1].
+Lowest note disappears
+Do aim and high-pass filter exclude bell/low range?
+Check full low passage and filter, then reposition [1].
+Tone shifts sharply note to note
+Narrow angle on one changing hole area?
+Increase distance or broaden aim/pattern [1, 3].
+Key action dominates
+Capsule too close to keys?
+Move off key path or back away [5].
+PA feedback or spill
+Monitor position, mic pattern or distance?
+Lower level and adjust geometry at show level [6].
+Clip threatens bocal or pads
+Wrong accessory or movement clearance?
+Stop, remove with player and use stand [4].
+Main plus spot sounds hollow
+Multiple arrival paths interacting?
+Compare alone and summed in mono; move or rebalance.
+
+# Teaching exercise and pass criterion
+1.Trace reed, bocal, folded bore, tone-hole groups and bell. Explain Yamaha's account of the lowest note and changing open-hole radiation [1, 2].
+2.Compare DPA's hole-facing start, a farther stand and a higher bell-facing position over the player's low, middle and high phrases at matched monitoring level [3, 5].
+3.For live reinforcement, verify one safe stand or manufacturer-approved mount, full register, cable, hands, seat strap, bocal and feedback margin with monitors [3, 4, 6].
+4.In an ensemble, compare mains alone to mains plus a restrained spot in stereo and mono. Confirm that any filter preserves the required low passage.
+Pass criterion: The learner explains bassoon radiation across the range, chooses and tests intentional studio and live positions, checks the lowest note without bell-only assumptions, and protects the player and instrument.
+# Evidence audit and limits
+Agreement: Yamaha describes the folded bore and note-dependent radiation, including bell-only output for the very lowest note [1, 2]. DPA and Shure give hole-facing perspectives and alternative near-bell views for different conditions [3, 5].
+Different emphases: DPA's 15–20 cm hole-facing start aims for a natural spot; Shure's roughly one-foot hole-facing position and closer bell trial target balance or isolation respectively [3, 5]. DPA describes a bell-mounted clip aimed down toward keys on loud stages [3, 4]. These are compatible choices for different environments, not universal standards.
+Gaps and confidence: The sources do not establish one mic distance, EQ setting, clip pressure or polar pattern for every bassoon, passage and venue. Confidence is high in the physical radiation description and the published starting options; moderate in predicted tonal outcomes without auditioning the actual setup. Verify the specific mount and player clearance in person.
+# References
+[1] Yamaha, “The Structure of the Bassoon: Unique Features of the Bassoon, and How to Play.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/bassoon/mechanism/mechanism004.html>
+[2] Yamaha, “The Structure of the Bassoon: What Kind of Musical Instrument Is a Bassoon?”  Read source <https://www.yamaha.com/en/musical_instrument_guide/bassoon/mechanism/>
+[3] DPA Microphones, “How to Mic a Bassoon.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-bassoon/>
+[4] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[5] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-GB/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments>
+[6] Shure, “Specialist Polar Patterns: Hypercardioid and Subcardioid.”  Read source <https://www.shure.com/en-US/insights/specialist-polar-patterns-hypercardioid-and-subcardioid>

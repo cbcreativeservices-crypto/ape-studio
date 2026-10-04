@@ -1,0 +1,112 @@
+# Choirs Choruses and A Cappella Group Miking Technique
+Pro Audio Training Academy  Ensembles and Voice Lab  Studio and Live Sound  October 4, 2026
+# Scope and learning goals
+This lesson covers small chamber choirs, larger choruses, a cappella groups, school and community ensembles, and vocal groups performing with instruments. The goal is to capture or reinforce a balanced ensemble rather than a pile of disconnected soloists. Students will learn area microphones, stereo main arrays, section spots, individual microphones, layout and distance rules, room and monitor decisions, and the different priorities of studio recording and live sound. No audio examples are included.
+# Begin with the ensemble as an acoustic instrument
+Before placing microphones, listen to the unamplified group from the intended audience or monitoring position. A choir’s natural balance depends on section strength, riser height, singer spacing, room reflections, conductor position, and the arrangement of the music. Ask the director to correct section balance and physical layout before trying to repair everything with faders.
+Record or reinforce a rehearsal passage that includes the loudest and softest dynamics, unison, divided harmony, consonant-heavy text, sustained vowels, and any soloists. Mark the exact stage layout. Microphone positions are starting points to audition, not universal distances: the best choice changes with the singers, room, microphone pattern, PA, and desired direct-to-reverberant ratio.
+# Main approaches
+## Area or choir microphones
+One or more directional condenser microphones can cover a section or a compact group from several feet away. Place the microphone slightly above mouth level and aim at the vocal area, not at the tops of heads. For a deep or tiered group, aiming toward the back row can help equalize distance, but verify the result from the audience position. Hanging microphones can reduce floor clutter, but their rigging, strain relief, clearance, and vibration isolation must be approved and secured by the responsible technician.
+Shure describes a common area-coverage starting point of roughly one microphone for each 6–9 feet of lateral section width, with placement adjusted to the group’s geometry. A smaller group may need fewer microphones; a wide group may need more. Use the fewest open channels that cover the ensemble naturally.
+## Stereo main pair
+For studio recording or a quiet concert capture, a stereo pair can preserve blend, room, and the relationship between sections. XY or MS gives coincident capsules and stable mono compatibility. ORTF or another near-coincident arrangement supplies useful time and level differences and can provide a wider image. A-B omnis can sound natural in a good room, but they capture more room, low-frequency energy, timing difference, and unwanted noise.
+Choose the array first, then move it toward or away from the group while evaluating the direct-to-diffuse balance on the intended loudspeaker system. Headphones can misrepresent room width and tonal balance; use loudspeaker monitoring when judging a loudspeaker-oriented recording. The group should fill the array’s intended acceptance angle rather than leaving an outer section far off-axis.
+## Main pair plus section spots
+A strong main pair should normally carry the ensemble. Low-level spots for soprano, alto, tenor, bass, or other sections can provide limited correction when the room, arrangement, or accompanying instruments make the main pair insufficient. Keep spots farther from the singers than a solo vocal microphone and above mouth level when practical. Spots that are too close, too bright, or too loud can turn a blended choir into separate soloists.
+When combining a main pair with spots, listen in mono and stereo, mute-check each source, and watch for image drift as spot levels change. A closer spot can dominate localization even when it is lower in level, so pan and automate conservatively. Do not assume polarity reversal or a plug-in delay will solve every timing problem; physical placement and musical balance come first.
+## Individual microphones
+One microphone per singer is usually unnecessary for a choir, but may be justified for featured soloists, broadcast speech, unusually independent parts, or a production that specifically requires individual control. It increases stands, bleed, headphone or monitor spill, editing decisions, and feedback risk. For a cappella groups, close individual mics can expose breath, mouth noise, consonant mismatch, and timing differences that a shared or stereo approach naturally blends.
+# Choir and chorus layout
+Arrange singers so the main array sees a coherent acoustic surface. Use risers or tiering when appropriate, keep section boundaries clear, and avoid hiding a quiet section behind a louder one. A semicircle or shallow arc can work for a small group; a broader chorus may need rows or sections aimed toward the array. Keep the conductor visible and do not place a stand where a singer, conductor, instrument, or stagehand can strike it.
+For multiple area microphones, apply the 3:1 rule as a starting design: if a microphone is about 2 feet from its nearest singer, the next microphone should be about 6 feet away. The purpose is to reduce correlated leakage and comb filtering, not to guarantee phase perfection. If the rule cannot be met, reduce microphone count, change the physical layout, move microphones closer or higher, and check the combined sound in mono.
+# A cappella considerations
+A cappella singing has no instrumental masking, so consonant timing, vowel matching, breath noise, beatboxing, vocal percussion, and mouth sounds are unusually exposed. A main stereo pair often preserves the unified musical image; close individual microphones provide control but may exaggerate small timing and tonal differences. Ask the group to maintain repeatable spacing and orientation, especially during choreography.
+If vocal percussion or a featured soloist needs definition, use a carefully placed spot microphone or separate performance position rather than turning every singer up. Keep the featured source acoustically compatible with the main group, and avoid using heavy processing to create a balance that the arrangement and microphone placement could provide more safely.
+# Studio recording workflow
+1.Place the singers in their performance layout and capture a rehearsal pass with the simplest credible stereo setup.
+2.Move the array in small increments while evaluating direct sound, room tone, section balance, consonant clarity, and stereo width on loudspeakers.
+3.Add section spots only if the main pair cannot meet the musical or editorial requirement. Keep the main pair as the reference and spot levels restrained.
+4.If the room is too dry, do not automatically close-mic every singer. Try a different room position, a more natural stereo distance, or carefully chosen ambience microphones; if the room is too live or noisy, move closer and use a directional pattern while accepting the change in blend.
+5.Set levels from the loudest full-ensemble passage with conservative headroom. Do not let a conductor’s count-in, applause, or sudden solo peak clip the preamp.
+6.Monitor room noise, HVAC, foot movement, riser vibration, page turns, and chair movement. Use low-cut filtering only when it removes unwanted low-frequency energy without damaging the ensemble’s fundamentals.
+7.Check mono compatibility before committing to a stereo arrangement. If the center collapses or the tone changes sharply, adjust spacing, angle, distance, or microphone choice.
+# Live sound reinforcement
+Live reinforcement is a gain-before-feedback problem as well as a musical balance problem. Begin with the fewest open choir microphones that cover the group. Place the microphones in front of the choir, slightly above the singers, and aim toward the vocal area. Keep loudspeakers and monitors outside the microphones’ most sensitive pickup directions. Follow the exact polar plot: a cardioid microphone generally has its strongest rear rejection, while a hypercardioid or supercardioid microphone has an offset rear null and may require the monitor to sit slightly to one side.
+Do not send choir microphones into choir monitors. Keep monitor levels as low as practical, and remember that a small or reverberant room may need little or no choir reinforcement. During soundcheck, compare the natural choir with the reinforced choir by muting and unmuting the channels. Test the loudest passage, not only a quiet rehearsal excerpt.
+Use hanging microphones only when the installation is mechanically secure, visually acceptable, clear of heads and rigging hazards, and supported by a system capable of safe access and maintenance. Use stable stands and protected cable paths for floor or boom microphones. Stop the ensemble before moving any microphone, and use hearing protection during high-SPL system checks.
+# Studio and live comparison
+Approach
+Studio advantage
+Live advantage
+Main limitation
+Stereo main pair
+Natural blend, room, and image
+Useful for broadcast or quiet reinforcement
+Limited section control and feedback margin
+Area microphones
+Section definition with moderate track count
+Practical coverage with fewer channels
+Overlap, phase, and monitor spill
+Main pair plus spots
+Natural base with limited correction
+Can support a weak or distant section
+Spots can detach sections or move image
+Individual microphones
+Maximum editing and level control
+Useful for featured singers or special production
+Many stands, bleed, feedback, and exposed artifacts
+A-B omni pair
+Spacious, natural room reproduction
+Rarely suitable for reinforcement
+High room, noise, and feedback exposure
+XY or MS pair
+Stable stereo and mono compatibility
+Safer than spaced omnis when stereo is needed
+May sound narrower or less spacious
+
+# Troubleshooting
+Symptom
+Likely cause
+Response to audition
+Outer sections are weak
+Array angle or group width does not match
+Widen the array or rearrange the group before adding level
+Choir sounds like separate soloists
+Spots too close or too loud
+Lower spots, move them back, and restore the main pair as the reference
+Hollow or swishing tone
+Overlapping microphones receiving the same voices at different times
+Apply 3:1 as a starting point, reduce mics, move sources, and check mono
+Feedback begins on a sustained vowel
+Too many open mics, monitor spill, or incorrect null placement
+Close unused channels, lower monitor level, reposition speakers, verify polar nulls
+Consonants are unclear
+Excessive distance, off-axis pickup, room masking, or weak section balance
+Improve arrangement and aim, move array modestly closer, or add restrained section support
+A cappella sounds harsh and exposed
+Close microphones exaggerate mouth noise, sibilance, and timing differences
+Increase distance, use a shared/stereo reference, and coach spacing before processing
+Low rumble or thumps
+Stands, risers, HVAC, foot movement, or handling
+Secure stands and cables, isolate vibration, and use a conservative low cut if appropriate
+Stereo image changes when spots move
+Spot arrival is earlier and dominates localization
+Keep spots low, pan conservatively, and compare with the main pair in context
+
+# Teaching exercise and pass criterion
+1.Arrange a small chorus in two rows and capture it with one stereo pair. Move the pair toward and away from the group and document direct sound, room sound, section balance, and stereo width.
+2.Add two area microphones and place them using the 3:1 rule as a starting point. Mute-check each channel, then listen in mono for comb filtering and in stereo for image stability.
+3.Add restrained section spots only where needed. Raise them until a section is clear, then lower them until the ensemble still sounds like one group.
+4.Run a live-style feedback check at the loudest musical passage. Confirm monitor placement, polar-pattern nulls, channel count, and safe soundcheck levels.
+5.Repeat the exercise with an a cappella passage and identify which details are improved or exposed by the closer microphones.
+Pass criterion: the learner can choose and justify a stereo, area, main-plus-spot, or individual-microphone approach; arrange the group for consistent coverage; apply the 3:1 rule with its limits; evaluate blend, room, phase, and mono compatibility; and set up live reinforcement without feedback-driven level chasing or unsafe microphone placement.
+# Evidence audit and limits
+Shure documents 3:1 spacing, overhead placement, directional-pattern choices, monitor cautions, and the practical value of using the minimum number of open choir microphones. DPA documents the different direct-to-diffuse and stereo consequences of AB, XY, ORTF, and microphone distance. AKG’s C414 manual documents stereo, shared, separate-hypercardioid, and overdub approaches for backing vocals and choirs. A Sound On Sound case study supports the practical conclusion that a main stereo pair generally preserves more natural choir blend than relying only on close section microphones, while spots can provide contingency control. Exact microphone count, distance, height, and tone remain dependent on the ensemble, room, arrangement, PA, and production goal.
+# References
+[1] Shure, “Of Mics and Monitors: Live Sound Reinforcement Tips for Choirs.”  Read source <https://www.shure.com/en-US/insights/of-mics-and-monitors-live-sound-reinforcement-tips-for-choirs>
+[2] Shure, “Church Mic Basics: Selection and Placement.”  Read source <https://www.shure.com/en-us/insights/talkin-church-mic-basics-with-gino-sigismondi-mic-selection-and-placement>
+[3] DPA Microphones, “How to Mic a Choir.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-choir/>
+[4] AKG, C414 XLS/C414 XLII Owner’s Manual, section 4.6.2 Choir/Backing Vocals.  Read source <https://www.akg.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw0d863e9c/pdfs/AKG_C414XLS_C414XLII_Manual.pdf>
+[5] Sound On Sound, “Session Notes: Recording A Choir.”  Read source <https://www.soundonsound.com/techniques/session-notes-recording-choir>
+[6] Sound On Sound, “Recording A Live Choral Performance.”  Read source <https://www.soundonsound.com/techniques/recording-live-choral-performance>

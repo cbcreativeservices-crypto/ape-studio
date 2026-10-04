@@ -1,0 +1,94 @@
+# Acoustic Guitar Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers steel-string six-string, twelve-string and nylon-string acoustic guitars. The learner will find a balanced one-mic position, deliberately change tone by moving the mic, compare stereo or two-position approaches, and adapt for live sound with musician movement and stage spill. It emphasizes the sound at the microphone rather than a fixed recipe or a particular model. Singer with guitar is cross-linked to the Ensembles and Voice Lab. No audio examples are included.
+# Know the vibrating source
+The strings excite the bridge and soundboard; the body and sound hole contribute radiated sound. A mic very close to the sound hole hears a local part of this source and can overemphasize low-mid body sound, while a mic nearer the fretboard/body junction usually gives a different balance of string articulation and body [1, 2, 3]. Sound varies with the instrument, player, pick or fingers, posture, room and mic angle. The guitar top can reflect PA or other instruments into a mic even when it is pointed away from them [2].
+Ask for the actual material: gentle fingerstyle, hard strumming, palm-muted notes, percussion on the body, capo positions and full dynamic range. Watch whether the player rocks, points the soundboard away or stands up. Check tuning, string condition and unwanted rattles with the musician first; a mic cannot fix a noisy instrument or force a player into an awkward posture.
+# A one-microphone position map
+Position or change
+Likely result to test
+Check before choosing
+Near 12th fret or neck-to-body area, 15–30 cm away
+Balanced starting view of strings and body [1, 2].
+Fret noise, movement, upper/lower string balance.
+Move toward or aim at sound hole
+More body and low-frequency energy or level [1, 2].
+Boom, low-mid buildup, breath/voice spill.
+Move toward bridge or lower bout
+A different mix of pick/string attack, bridge and soundboard; may become sharper or more percussive.
+Thinness, excessive pick or nail noise; compare by ear.
+Step back in a good room
+More integrated instrument and room, with less isolation [2, 4].
+Room reflections, other players and required PA gain.
+Move closer with directional mic
+Greater direct-to-spill ratio, often more proximity-effect bass [2, 4].
+Narrow local tone, bass buildup and hand clearance.
+
+Shure’s user guidance gives 6–12 inches (15–30 cm) near the 12th fret as a balanced starting position and closer to the sound hole for fullness [1]. DPA favors a position between fretboard and sound hole for a body-mounted mic, with angle adjustments toward the hole for more level [2]. These are adjacent but not identical geometries; the 12th fret and the body joint are not the same point on every guitar. Listen to the real guitar and musical part before choosing.
+# Step-by-step single-mic technique
+1.Establish a reference. Have the player perform a complete quiet and loud passage in normal position. Listen from the intended mic area. In a quiet studio, begin around 15–30 cm from the 12th fret or nearby body joint, depending on the instrument, capsule aimed between upper soundboard and nearby strings [1, 2]. Keep the stand and capsule out of strumming, fretting and sight lines.
+2.Move one variable at a time. Compare toward sound hole, toward bridge and slightly farther away at a reasonably matched monitoring level. Describe what changed in bass, articulation, string noise and room. Do not infer a result from a drawing alone; guitar geometry and mic response vary.
+3.Choose pattern and level. A cardioid or other directional mic can reduce unwanted side or rear sources when aimed correctly; an omni can be useful in a quiet room for a less position-sensitive, full view but captures more room and spill [2, 4]. A directional microphone’s proximity effect can add bass when very close. Set preamp gain for the loudest passage with headroom and verify soft notes above noise. Check a pad or high-pass filter only when there is a specific overload or rumble problem.
+4.Recheck the performance. The player may shift by several centimeters between sitting, standing, singing and changing dynamics. Test those movements, then mark a comfortable position. Reassess the sound when a capo or instrument changes.
+The mic’s address axis, not its physical shape, must face the intended region. For a side-address condenser, check the marked front and polar pattern. Use a secure stand and cable route; never lean a boom into the player’s face or instrument.
+# Differences among the three guitar types
+Steel-string six-string: A pick or strong strum can accentuate fast attacks and pick noise; fingerstyle may call for a closer or quieter-room placement to preserve detail. These are performance-dependent tendencies, not fixed EQ instructions. Begin at the balanced position, then move toward the sound hole only when the arrangement needs more body [1, 2].
+Twelve-string: Pairs of strings, including octave courses on the lower strings in common arrangements, add chime and layered overtones [5]. Test strums and sustained chords for upper-string brightness, doubled-string detail and tuning or sympathetic rattles. A mic near the fretboard may accentuate pick and course separation; moving back may integrate them. Do not automatically add treble or wide stereo merely because it has twelve strings; balance the complete instrument in the song.
+Nylon-string: Yamaha describes its generally softer, rounder character compared with a typical steel-string and the greater role of touch [6]. Test thumb, finger or nail attack, bass and treble lines and quiet decay. A controlled room and a low-noise mic/preamp help with soft passages; a nearer position may improve isolation but could overstate fret/finger noise. Avoid a bright position chosen solely to imitate steel strings. Flamenco technique may include intentional body percussion and more forceful attack, so verify the actual playing style before deciding on distance.
+Do not swap steel strings onto a guitar built for nylon; Yamaha notes structural differences related to string tension [6]. Instrument setup and repairs belong with the player or qualified technician, not the microphone lesson.
+# Stereo and two-position approaches
+A good mono microphone is often sufficient, especially in a dense arrangement or when the guitar is panned within a band [3]. For a solo feature in a good room, a coincident XY pair aimed toward the guitar offers a stable center and straightforward mono behavior; a near-coincident pair can provide more width; a spaced pair near neck and body gives separate tonal views but can change balance as the player moves [7]. Start with one coherent position before adding channels.
+For two tonal spots, use a neck-side mic and a body or bridge-side mic only if each has a defined contribution. Avoid aiming both into the sound hole. Solo each, combine at equal-loudness comparison, then listen in mono for comb filtering or loss of low end. Move or rebalance rather than assuming a polarity switch or calculated spacing rule guarantees coherence. Hard panning close spots can make the small instrument unnaturally wide and make movement conspicuous; choose width for the music. A farther room mic can convey space but should be checked with the close feed in mono and in the full mix.
+# Live sound, mounting and pickup comparison
+The stand position used in a quiet studio may capture too much stage spill or feed back at required PA level. Bring a directional mic closer to a useful soundboard region or use a manufacturer-approved guitar clip that maintains distance as the player moves. DPA describes a guitar clip aimed near the body/neck junction and a stage option below the fretboard pointed away from a monitor; it also warns that the guitar can reflect other sound toward the mic [2, 8]. Test full strumming and body clearance with the player and route the cable so it cannot snag fingers, strap or feet.
+An onboard pickup or undersaddle system is a separate electrical path. It may provide more stable gain before feedback on a loud stage, while a microphone can contribute acoustic detail. DPA describes blending pickup with an instrument-mounted mic as one option [8]. Compare pickup and mic alone, then together in mono, because their signal paths can interact. Verify any adapter, preamp power or DI with the equipment manuals. If feedback begins, lower the level first, then adjust microphone/loudspeaker geometry and open channels; do not try to solve severe feedback by adding gain or large EQ boosts.
+For a singer-guitarist, vocal and guitar microphones hear both sources. Aim for a useful balance and place directional nulls only after checking their actual patterns. Test singing and playing together, including head and guitar movement. The full two-source lesson is in Ensembles and Voice.
+# Tone goals and troubleshooting
+Symptom
+First question
+Test or response
+Boomy or boxy
+Is mic aimed into sound hole or too close with a directional pattern?
+Aim toward neck/body junction or step back; compare [1, 2].
+Thin guitar
+Is mic too neckward or off the soundboard?
+Move toward upper bout or hole incrementally; check in mix.
+Excessive pick, nail or fret noise
+Is capsule too close to picking hand or neck?
+Change angle and distance; confirm player intends those sounds.
+Twelve-string harshness
+Are octave courses or pick attack dominating?
+Back off or move away from sharp local view; check tuning [5].
+Nylon detail lost
+Are quiet notes masked by room noise or spill?
+Improve room/placement, then gain; preserve loud-passage headroom.
+Stereo becomes hollow in mono
+Are two mics hearing different arrival paths?
+Solo and mono-sum, move or rebalance [7].
+Live feedback
+Is mic too far away or aimed toward wedge/PA?
+Lower level, revise geometry or blend pickup [2, 8].
+Mic clip contacts finish
+Is mount unsuitable or over-tightened?
+Stop, remove with player and use compatible mount or stand.
+
+# Teaching exercise and pass criterion
+1.On each guitar type, compare neck/body junction, near-hole and a farther position using the same musical phrase and matched monitoring level. State the actual tonal differences heard without assuming the three instruments behave identically.
+2.Explain why a directional close mic can gain bass, and test a low passage before applying high-pass filtering.
+3.Make one mono capture first; add a second mic only for a defined tone or stereo goal, then check the sum in mono while the player moves naturally.
+4.For live sound, verify mic/monitor placement, any mount and cable route, and the pickup/mic blend at safe working level.
+Pass criterion: The learner chooses a repeatable mic position from actual listening, can explain body versus string emphasis and spill, audits mono and feedback, and keeps the guitar and performer clear of stands and clips.
+# Evidence audit and limits
+Agreement: Shure and DPA support the fretboard/body area as a useful starting point and report more bass or level toward the sound hole [1, 2, 3]. They agree that position and context govern the result, and DPA documents the tradeoff between natural distance and stage isolation [2].
+Different emphases: Shure’s stand-mic guide gives 15–30 cm [1], while DPA’s instrument-mounted discussion uses a different short-distance geometry and stage-specific clip positions [2, 8]. These are compatible starting trials for different setups, not universal coordinates. Yamaha’s descriptions of string types are broad tonal tendencies, not a mic-placement rule [6].
+Gaps and confidence: The sources do not establish one distance, stereo width, EQ setting or live gain margin for every guitar and room. Confidence is high in the placement trends and documented instrument differences; moderate in predicted tone of a particular mic and guitar until auditioned at real playing level. Twelve-string and nylon-specific miking comparisons remain less directly documented than general acoustic-guitar technique.
+# References
+[1] Shure, “PGA27 User Guide,” acoustic guitar applications.  Read source <https://www.shure.com/en-US/docs/guide/PGA27>
+[2] DPA Microphones, “How to Mic an Acoustic Guitar.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-an-acoustic-guitar/>
+[3] Shure, “How to Choose the Best Mics for the Guitar.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-the-guitar>
+[4] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[5] Martin Guitar, “HD12-28 12-String Acoustic Guitar.”  Read source <https://www.martinguitar.com/guitars/standard-series/HD12-28.html>
+[6] Yamaha, nylon- and steel-string guitar guides.  Read source 1 <https://hub.yamaha.com/guitars/g-acoustic/nylon-string-vs-steel-string-guitars/>  Read source 2 <https://www.yamaha.com/en/musical_instrument_guide/classical_guitar/mechanism/mechanism002.html>
+[7] Shure, “Common Techniques for Stereo Miking.”  Read source <https://www.shure.com/en-US/insights/common-techniques-for-stereo-miking>
+[8] DPA Microphones, “How to Mount the 4099,” guitar section.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>

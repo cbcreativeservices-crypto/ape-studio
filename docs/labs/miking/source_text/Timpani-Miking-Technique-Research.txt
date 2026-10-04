@@ -1,0 +1,109 @@
+# Timpani — Miking Technique Research
+Lab: 1. Membranophones — Drums and Drumheads
+Sequence: After djembe; before concert bass drum and concert snare. One instrument family in this installment.
+Scope: Miking for studio, concert recording, and live reinforcement. No audio examples.
+# Learning goals
+Identify how the tuned head, kettle, mallet, strike location, and pedal contribute to a timpani performance; choose between main-array pickup and one or more spots; place a shared spot without obstructing the player; explain how closer positions change detail, spill, and natural blend; test the spot against the ensemble in mono; and apply live feedback and physical-safety checks. [1–7]
+# The instrument, music, and working space
+Timpani are pitched, single-headed kettledrums. Tension changes the head's pitch, commonly with a foot pedal; a piece may call for multiple drums, rapid retuning, rolls, and passages ranging from very quiet to forceful. The performer may change mallets, strike area, and damping as part of the musical interpretation. Yamaha describes the normal strike region toward the player and near the rim, and notes that a center strike has a different partial balance and less sustained bass. Microphone placement must follow the *actual* player layout and score; German and international drum order may differ. [1–4]
+Ask the timpanist which drums, pedal changes, mallets, movement, and nearby instruments occur in the full passage. Listen in the room before adding a close microphone: in an orchestra, the main array often already captures the pitched low end and hall, while a spot supplies extra definition. A prominent timpani solo or amplified outdoor show may need more direct pickup. A spot is a control option, not a default recipe to overwhelm the main sound. [5–8]
+# Starting microphone arrangements
+Musical context
+Starting placement
+What to evaluate
+Natural orchestral blend
+Assess the timpani within the orchestra's main microphones first. Add no timpani spot if the instrument's pitch, articulation, and level already work. [5]
+Is the low note stable and musically placed, including softer passages and rolls? This method preserves the room and conductor's balance but offers less isolated control.
+Two drums, shared spot
+A documented classical-recording approach puts one mic between two timpani, about 1 m above the heads, to add attack/detail to low frequencies in the main array. Start there only if sightlines, playing arc, and stand stability permit. [6]
+Check both drums, every mallet/level and pedal change. Change height and aim for a natural shared balance; about 1 m is a published example, not a required clearance or universal sweet spot.
+Four drums, two shared spots
+The same source describes one spot per *pair* of four timpani. Arrange according to the player's real drum order rather than assuming a fixed left-to-right pitch map. [3, 6]
+Test the inner and outer drums and cross-pickup. Two spots are not automatically a stereo pair; label and blend them by the coverage actually achieved.
+Small orchestra, one spot
+Schoeps proposes one cardioid spot channel for timpani in an example small-orchestra package; its listed support-tube lengths specify hardware, not capsule-to-head distance. [7]
+Trial one safe location covering the set; compare with main microphones before adding channels.
+Amplified orchestra or more isolated control
+A documented live film-with-orchestra production used two DPA cardioid microphones for timpani. Neumann also reports a clip-microphone approach in a large outdoor vocal/orchestral production. Neither case establishes a universal placement or a requirement for one mic per drum. [8, 9]
+Confirm adequate coverage and usable level with the actual PA/monitors. Only use mounts explicitly compatible with the drums and approved by the owner and player.
+
+For an isolated timpani in a studio, a farther single mic or pair can include a pleasing room, while a closer spot can give individual attacks more weight. These are *trial perspectives*: the room and musical part decide the distance and whether stereo adds anything. Do not mistake the number of drums for a mandatory mic count. [5–8; application is instructional inference]
+# Aim, distance, and tone
+Integrated sound. A more distant position includes more of the drum set and room; it may better communicate the note's bloom and dynamic shape. It also captures adjacent brass, cymbals, and other percussion. When the ensemble is already recorded by a main array, first audition that image at intended level and use a spot only for missing articulation or balance. [5, 6]
+Shared spot. Put the capsule outside the entire stick and body movement, typically above/between the heads in the documented two-drum approach, and aim so one drum is not much louder merely because of geometry. Have the timpanist play the closest and farthest head, fast changes, rolls, and loudest strokes. Moving the mic slightly or changing its angle is preferable to instructing a player to alter normal stroke location. The published 1 m height is measured relative to the head and must be re-evaluated for stands, mallet reach, sightline, overhead obstructions, and the particular set. [3, 6]
+Closer/individual perspectives. When a solo or high spill warrants closer pickup, try a directional mic outside the player's strike zone, aimed toward the vibrating head without hovering over the normal mallet landing area. Nearer pickup can favor attack, a smaller portion of a large head, and less room; it need not contain the balanced pitch and sustain heard at a greater distance. Aiming near the rim is not an instruction to place hardware in the rim's playing region. Listen to the whole musical phrase and adjust. Do not turn a manufacturer product example into a distance rule. [2, 5, 8, 9; tonal expectation is a listening hypothesis]
+Mic choice. A cardioid condenser is well documented for spots in both small orchestras and amplified shows. Other microphones can work when their actual response, polar pattern, maximum SPL, powering, physical size, mounting, and input headroom suit the job. A directional pattern can reduce some spill but cannot remove all off-axis instruments; the useful rejection direction depends on the actual polar pattern and frequency. An omni or wider pattern can be appropriate in a good room if isolation is less important. [5, 7, 8]
+Do not “fix” technique with a mic. Mallet material and the player's strike area affect the timbre; pedal motion changes pitch. These are musical choices and instrument adjustments for the timpanist. Ask about unexpected pitch, buzzing, or mechanical noise, but do not retune, move, damp, touch the pedals, or request a different strike point without the player's involvement. [1–4]
+# Studio, concert recording, and live sound
+Setting
+Priority
+Practical constraint
+Concert hall or classical studio
+Establish a convincing main-array ensemble first; add shared or individual timpani spots sparingly when the score or balance needs them. [5, 6]
+Room acoustics and timing with the main array determine whether added definition improves the picture.
+Isolated overdub or solo feature
+Compare a single integrated perspective with closer coverage, and consider room microphones only if the space helps the music.
+Reflections, nearby stands, and overly close attack can mask the perceived pitch. Evaluate all planned notes, not one impact.
+Amplified indoor/outdoor ensemble
+Use a stable, directional spot configuration with sufficient gain before feedback and acceptable spill, chosen with the PA operator. Documented shows use two cardioids or compatible mounted mics, but site geometry varies. [8, 9]
+Monitor/PA pickup, stage bleed, wind outdoors, and visual/physical access can dictate a closer or lower-profile setup.
+
+Live sound requires an actual soundcheck at intended performance level. Orient each microphone and monitor from their *real* polar response and positions. Reduce unnecessary open channels and adjust placement or routing with the system operator if feedback occurs; do not promise a fixed distance or EQ setting will prevent it. Protect hearing during loud testing and rehearsals. [10, 11]
+# Combining microphones and checking mono
+A main array, a timpani spot, and any other percussion spots receive overlapping sounds with different arrival times. First listen to the main array alone, then introduce the timpani spot at its intended contribution. Compare repeated low notes, upper notes, and rolls in stereo and mono. If adding the spot changes pitch weight or makes the attack hollow, alter level, position, or aim and compare electrical polarity. Polarity inversion does not correct a time difference at every frequency. A delay applied to spots may help one relationship but can affect spill and the overall image; measure and listen within the complete ensemble rather than imposing a single numeric offset. [5, 12]
+With two timpani spots, inspect their mutual overlap and how both combine with the main array. Do not automatically pan them to hard left and right: their main job may be coverage and tonal control, and their audible placement should relate to the desired ensemble image. In a mono live PA, listen to the actual summed feed, not merely individual channel solos. [5, 8, 12; routing guidance is instructional inference]
+# Player, stand, electrical, and hearing safety
+Plan placement with the timpanist and stage manager before moving stands. Mark the full mallet sweep, body path around the set, pedal travel, and line of sight to conductor. Secure stands with appropriate bases and approved rigging; keep booms and cables out of walking and playing paths. No mic, clamp, or cable should touch a head, rim, pedal, linkage, or moving instrument. Stop performance and mute affected channels before making adjustments. If a stand cannot be safely placed, choose another perspective or omit that spot. [3, 9; detailed clearance checks are instructional inference]
+Set gain and any pad from the loudest expected passage while checking mic and input-stage limits; preserve headroom for sudden rolls and accents. Follow the equipment manuals for microphone power and connection changes. A microphone's maximum-SPL specification describes equipment capability, not safe sound exposure for people. Manage crew and performer hearing with appropriate levels and exposure controls. [11, 13]
+# Guided practical lab
+1.Map the performance. Confirm set size and order, normal strike zones, mallet changes, pedal changes, full arm movement, sightline, and score dynamics with the player. [1–4]
+2.Establish the main perspective. In an ensemble, evaluate the orchestral main microphones; in a solo setting, trial a stable integrated single-mic position. Record the current geometry and what is musically missing. [5]
+3.Trial one shared spot. Where useful and safe, compare a mic between a pair of drums from the published roughly 1 m-over-head starting point with modest changes in height/aim. Check both drums, near/far playing and quiet/loud passages. [6]
+4.Scale only as needed. For a four-drum set, compare two shared spots with one shared spot; for loud stages, consider more directional/compatible mounted coverage with the player and operator. Do not require two mics merely because the set has four drums. [6–9]
+5.Blend in context. Bring each spot into the intended main array or live system. Check attack, note bloom, overlap, mono sum, feedback margin, and any polarity comparison at realistic levels. [5, 10, 12]
+6.Document the decision. State set order, capsule aim and height, safe clearances, pattern, channel coverage, monitor position, and why each added mic contributes. No audio examples are included.
+# Troubleshooting and assessment
+Observation
+First check
+Change to try
+One drum dominates shared spot
+Actual drum order, distance, aim, and score usage.
+Reposition for the two drums and recheck entire phrase; add a second coverage channel only if justified. [3, 6]
+Attack is clear but pitch/bloom is thin
+Does the main array carry the low note? Is spot disproportionately loud or close?
+Lower the spot, move safely farther away, or rebalance main/spot; consult player on musical tone. [2, 5, 6]
+Ensemble gets muddy when spot is raised
+Room low end, bleed, and overlapping mic timing.
+Reduce spot, change placement/aim, then compare the summed result in mono. [5, 12]
+Feedback live
+Actual monitor/PA path, polar pattern, number of open channels.
+Work with operator on geometry, level, routing, and only then appropriate filtering. [10]
+Stand blocks playing or pedal/sightline
+Full performance movement, not a static pose.
+Stop, mute, move or eliminate stand, and repeat clearance check with player.
+Mechanical knock or unexpected pitch
+Whether mic hardware or cable contacts the instrument; player pedal movement.
+Stop and isolate contact; have the timpanist inspect the instrument. [1, 3]
+
+Passing demonstration: The learner safely justifies the number and position of microphones for a complete passage, compares a main-only view with a useful spot, covers each played drum, checks the combined signal in mono, and explains why the live arrangement may differ. No audio examples.
+# Critical source audit
+Agreement. Orchestral recording guidance places the main array at the heart of the sound and treats a timpani spot as an optional source of detail. Schoeps's small-orchestra example supports a single spot; the Decca-tradition book describes shared spots over pairs. Live-production reports show two cardioids or mounted microphones in larger reinforced settings. These are alternative coverage choices for different productions. [5–9]
+Scope and limitations. The book's approximately 1 m height concerns a shared *timpani* mic in an orchestral arrangement; it does not give a safety clearance or a live PA rule. Schoeps's support-tube measurements are component lengths, not capsule placement. The DPA and Neumann case studies identify microphone choices but do not supply a reproducible stand position for every drum. Yamaha's player-facing material establishes that the strike zone, mallets, pedals, and layout matter; it is not a microphone manual. [1–9]
+Inference marked. Predictions about closer attack, room/spill balance, safe placement checks, optional mono routing, and the choice to omit an unnecessary spot are general acoustic and operational reasoning to be tested on site. No source establishes an invariant timpani frequency curve, exact optimal spot angle, guaranteed polarity, universally safe boom location, or numerical gain before feedback. [5–13]
+# Curriculum and app presentation
+Timpani follows djembe in Membranophones and precedes concert bass drum and concert snare. Later percussion ensembles and mixed classical ensembles revisit ensemble balance. A drum-kit overview separately links to the Drum Overheads lesson containing Glyn Johns; that kit technique is not prescribed for timpani.
+Illustrate a two- and four-drum layout with editable actual player order, mallet/arm arcs, pedal zones, conductor sightline, main-array direction, and one-versus-two shared spots. Let learners compare broad qualitative changes in blend, articulation, spill, and safe access. Treat all illustrated distances as adjustable examples. No audio examples.
+# References
+[1] Yamaha, “Timpani,” instrument overview; pitched kettle and musical use.  Read source <https://www.yamaha.com/en/musical_instrument_guide/timpani/>
+[2] Yamaha, “Where does the player strike the head?” Effect of playing area on partials and sustain.  Read source <https://www.yamaha.com/en/musical_instrument_guide/timpani/play/play003.html>
+[3] Yamaha, “Where to place the timpani”; player layouts and pedal locations.  Read source <https://www.yamaha.com/en/musical_instrument_guide/timpani/play/play002.html>
+[4] Yamaha, “The mallet has an effect on the quality of sound” and “Construction of the timpani”; mallets and head-tension pedal.  Read source 1 <https://www.yamaha.com/en/musical_instrument_guide/timpani/play/play006.html>  Read source 2 <https://www.yamaha.com/en/musical_instrument_guide/timpani/mechanism/mechanism002.html>
+[5] India Hooi, “Recording an Orchestra,” SoundGirls; main array, spot mics including timpani, and balance.  Read source <https://soundgirls.org/recording-an-orchestra/>
+[6] Caroline Haigh, John Dunkerley, and Mark Rogers, *Classical Recording: A Practical Guide in the Decca Tradition*, timpani and bass drums section; excerpt describing one mic over two timpani and one per pair in a four-drum set.  Read source <https://ebrary.net/300174/education/timpani_bass_drums>
+[7] Schoeps, “Mozart” Orchestra Set, example of one cardioid timpani channel and listed support components.  Read source <https://schoeps.de/en/products/colette/sets/mozart-orchestra-set.html>
+[8] DPA Microphones, “DPA Microphones Provide Serious Results for ‘Joker Live in Concert,’” Phil Wright's amplified orchestra using two 4011 cardioids on timpani.  Read source <https://www.dpamicrophones.com/news/2022/dpa-microphones-provide-serious-results-for-joker-live-in-concert/>
+[9] Neumann, “Neumann's MCM Conquers the Big Stage,” live orchestra case.  Read source <https://newsroom.neumann.com/en-us/neumanns-mcm-conquers-the-big-stage-l2pxwx>
+[10] Shure, “How to Control Feedback in a Sound System.”  Read source <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>
+[11] CDC NIOSH, “Understand Noise Exposure.”  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[12] DPA Microphones, “Polarity, phase and delay.”  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+[13] Yamaha, ZG01 operating panel, example of equipment-specific phantom-power precautions.  Read source <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>

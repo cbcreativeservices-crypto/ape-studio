@@ -1,0 +1,89 @@
+# Xylophone Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Xylophone   October 4, 2026
+# Scope and learning goals
+The xylophone is a pitched idiophone sounded by struck bars, generally wood or an instrument-specific synthetic material, with resonators below [1]. This lesson teaches practical microphone decisions for solo, ensemble and live sound. The student should cover the actual played notes, control attack without sacrificing pitch, keep hardware clear of the player, and distinguish what the mallet changes from what the microphone changes. It follows vibraphone and marimba in our agreed order; glockenspiel is next. No audio examples are included.
+# Listen to the actual instrument first
+Yamaha characterizes xylophone as higher in range and brighter or more piercing than marimba. Both have bars and resonators; the tuning and spectrum of the bars differ [1]. These are useful family descriptions, not promises about a particular bar, room or microphone. Instruments vary by bar material and size [1, 2]. Ask which notes and techniques occur in the passage, then listen from the audience or room position to low, middle and high notes, single strokes, fast repeated notes and the loudest accent. The player may use different beaters for a specific musical color.
+Player-created tone comes first. Yamaha explains that mallet hardness affects brightness and attack: harder mallets often bring more upper-frequency articulation but can yield an unwanted click or wear [3]. Yamaha's instrument guide names hard rubber, selected resin and wood heads among possible xylophone mallets, while another Yamaha educator document cautions that some plastic mallets can damage bars [4, 5]. Those statements cannot be made into one universal material rule. Different bars, products and educational contexts matter. Use the specific maker's approved mallet guidance and the owner/player's judgment. Do not substitute a metal mallet: Yamaha explicitly warns that metallic mallets may damage or break xylophone bars [6]. If a requested brighter sound implies an unsuitable beater, change placement and balance instead.
+# One microphone: a compact and useful starting point
+1.Map the whole played span and mallet arc. An excerpt on a few adjacent bars may suit one microphone; a part that traverses the whole keyboard needs a wider view or a pair. Watch normal and forceful strokes, mallet changes and player movement. The boom, mic, stand and cable must not enter the mallet path or block sightlines.
+2.Try an overhead position. Begin with a suitable directional microphone roughly 45–75 cm (1½–2½ ft) above the center of the *played* notes, pointed down toward the bars, only if that affords full hand and mallet clearance. This one-mic range is a reasoned audition, not a source-prescribed xylophone height. Shure's published xylophone/marimba/vibraphone example uses a two-mic layout at about 45 cm (1½ ft) [7]. Move higher or to a safe off-axis position as needed.
+3.Play the passage. Compare low, middle and high notes, hard accents and soft figures at matched monitoring level. If the near end dominates, move or re-aim toward the missing register or raise the mic enough to blend coverage; check room pickup and neighboring spill as you do. A close position may emphasize mallet impact and one region, while farther placement may blend more bars and room. These are tendencies to test, not fixed acoustic outcomes.
+4.Set headroom. Set gain for the strongest strokes and then verify the quiet passage. Listen for distortion at the microphone/preamp/console as well as recorded clipping. A high-pass filter can remove stand or stage rumble, but audition it against the lowest wanted notes. Avoid a gate that truncates notes or breaks a quick phrase. An acoustic rattle calls for an instrument or stand check before processing.
+The xylophone may be relatively compact compared with a large marimba, but no fixed one-mic position guarantees full keyboard coverage. The player's part, microphone pattern and room determine whether one mic is enough. Miking below resonator openings can be auditioned for a deliberate local color; it may isolate a narrow part of the instrument or expose mechanical noise. Do not insert a microphone into a tube, attach it to a bar, or assume that an under-resonator signal represents the whole instrument.
+# Two microphones and stereo decisions
+Shure's live sound guide gives a specific starting geometry for xylophone, marimba and vibraphone: two microphones aimed downward about 45 cm above the instrument, either about 60 cm (2 ft) apart or angled about 135° with their grilles together [7]. Treat those as alternative geometries, check clearance, and adapt the aiming to the played range. Shure's guide also explains that live stereo is useful only if the sound system and audience coverage justify it, and close enough pickup matters for gain before feedback [7].
+Spaced pair: Aim one toward the lower played region, the other toward the higher region, with useful overlap at the center. Audition each separately, then both together in stereo and mono. Notes reaching both mics at different times can change timbre when summed; move the microphones, adjust level and recheck before applying polarity reversal or digital delay indiscriminately. A width that makes the low and high ends balance in headphones can be awkward for an audience spread across a mono or partially stereo PA.
+Coincident pair: Keep the capsules as close together as the mounting permits, angled across the relevant span. Shure illustrates about 135° [7]. This minimizes time-of-arrival differences between capsules and generally holds together more predictably in mono; width and tonal balance still depend on polar patterns and aiming. Never set an ideal diagram position in the player's striking area. If stereo is unnecessary on stage, a single well-placed mic may provide clearer control with less spill.
+# Tone and approach trials
+Musical aim
+First comparison
+Judge in the full phrase
+Clear articulated line
+Use approved beater and player touch; compare central overhead at two safe heights.
+Pitch definition versus excess click and room sound.
+Less brittle attack
+Confirm a permitted softer beater with player, then compare a modestly higher or less direct mic view.
+Does melody remain intelligible? Do not hide a problematic source with drastic EQ.
+Complete wide passage
+Hear low, middle and high notes with one mic, then compare a spaced or coincident pair.
+End-to-end balance and center coverage, including mono sum.
+Quiet orchestral color
+Hear main/ensemble pickup first; add a restrained xylophone spot if needed.
+Whether the spot adds the instrument more than unwanted nearby sources.
+Loud band or stage
+Reposition instrument and directional spot for separation.
+Useful level before feedback, neighbor spill, player access and mallet safety.
+
+Change one thing at a time. A brighter microphone or closer placement cannot restore a poorly chosen, unsafe mallet, and a darker microphone does not make a harmful mallet safe.
+# Studio application
+Solo or overdub: Begin with one overhead view for a restricted played range and compare Shure's two-mic starting ideas if the whole keyboard is active [7]. Listen from a normal performance distance first; a studio room pair farther away can add natural space if the room sounds good, but it also increases room and external noise. Make the comparison at matched playback level and include the loudest attack and quietest musical tail. A separate room microphone is an artistic option after a usable main pickup, with no universal distance. If combining close and distant microphones, evaluate the blend in mono because the arrival-time difference can change the attack and body.
+Ensemble: Listen to the main array or section microphones before adding a spot. A xylophone's bright articulation may already be present; a close spot may disproportionately add mallet contact and bleed from drums or brass. Bring the spot in at musical level, then check mono, center and ends of the phrase. If the instrument sounds harsh in the full arrangement, discuss safe beater/touch choices and microphone perspective with the player before heavy equalization. Keep recording levels clear of transient clipping.
+# Live sound application
+Choose an overhead directional microphone or safe pair according to stage level and required coverage. Test at performance level with nearby instruments and monitors on. Aim the microphone's actual rejection away from loud neighbors and loudspeakers: cardioid and supercardioid patterns have different null and rear pickup behavior [8]. Raising a mic may give a fuller keyboard perspective yet increase spill and reduce gain before feedback, so move incrementally. On a quiet stage the ensemble pickup may suffice; on a loud one, instrument relocation and closer directional pickup may be necessary.
+Shure's 45 cm geometry is a published starting example, not an instruction to put a stand in reach of the mallets [7]. Walk the full phrase with the performer before locking anything. If two channels are used, listen to each and their sum, including mono at audience locations. In a mono PA, avoid assuming a hard left/right recording pan translates to the room. Keep monitor send only as high as the player requires, and solve a feedback problem with mic/speaker/source geometry and channel count before adding gain or aggressive EQ [7, 8].
+# Safety and instrument care
+Get the maker/owner's permission for any change of beater. Never use metallic mallets on a xylophone under Yamaha's general care guidance [6]; even plastics cannot be given blanket approval across all models and teaching contexts [4, 5]. Stop if a bar, support cord, resonator or frame rattles or appears damaged and ask the player or technician to inspect it. Do not clamp a microphone to a bar or resonator, reposition tuning hardware, or put equipment on the bars. Yamaha advises protecting wooden bars from moisture and avoiding alcohol on their finishes [6].
+Use properly tightened, weighted stands and secure cable routes. Check the full arc of both mallets, the player's walk path, other stands and the instrument's transport route. Position the mic after the instrument is parked and secured under the maker's guidance. Use adequate headroom for sudden strikes. In a loud band or rehearsal, treat hearing exposure as a whole-stage issue and apply appropriate hearing conservation practice [9]; do not assign a universal xylophone sound-pressure value.
+# Troubleshooting
+Symptom
+Diagnose with the player
+First practical move
+Too much click, little pitch
+Is the beater appropriate? Is the mic near a struck bar?
+Confirm permitted mallet; compare safe higher/off-axis position [3–6].
+Low or high end weak
+Does aiming cover the actual passage?
+Play range extremes, then move/re-aim or compare a pair.
+Middle loses body in mono
+Do two mics overlap with arrival-time differences?
+Compare each alone and mono sum; change placement/balance.
+Unwanted rattle
+Does it occur without amplification?
+Have the player/technician inspect frame, cords and resonators [6].
+Feedback or heavy spill
+Where are monitors and neighbors relative to mic pattern?
+Improve stage geometry and aim; use fewer open mics [7, 8].
+Clipped accents
+Is any analog or digital stage overloaded?
+Reduce gain at the first overloaded stage and retest loud strokes.
+
+# Teaching exercise and pass criterion
+1.Identify the model/bar material and owner-approved mallets. Mark the passage's lowest and highest notes and the player's full striking arc. Explain why a microphone setting cannot make an unsuitable mallet safe [1, 4–6].
+2.With the performer, compare one safe central overhead position at two heights; test low, middle, high, soft, fast and loud figures. Document position, mic pattern, attack, pitch balance and clearance.
+3.If appropriate, compare Shure's roughly 45 cm high, 60 cm spaced example with a near-coincident pair at safe clearance. Hear each mic, both in stereo and the mono sum. State when a single mic is adequate [7].
+4.In ensemble context, hear main pickup alone and with a spot. In live context, include adjacent instruments and monitors at normal level. Choose a geometry that keeps intelligibility and workable gain without compromising the player's movement.
+Pass criterion: The student follows instrument-specific beater guidance, protects bars and player clearance, covers the played range, judges attack versus pitched tone, and can defend a studio and live setup after mono and ensemble checks.
+# Evidence audit and limits
+Well established: Yamaha describes xylophone bars, resonators and the brighter/higher character relative to marimba [1]. Shure explicitly includes xylophone in its two-mic live example [7]. Yamaha consistently warns against metallic mallets on xylophone bars [3, 6].
+Qualified or contested: Yamaha's mallet selection guide lists particular synthetic materials as suited to xylophone, whereas a Yamaha educator document warns against plastic mallets for certain teaching instruments [4, 5]. These differ in specificity and context; the lesson does not claim all plastics safe or all plastics unsafe. Verify the actual make, model, bar material and owner guidance. The 45–75 cm single-mic setup is a proposed listening exercise, not a source-derived specification. Shure's 45 cm/60 cm or 135° two-mic examples are documented, yet no retrieved source establishes that they are universally safe, optimal, or equally successful in all live systems. Exact tone, mono color and feedback margin require listening with the instrument, performer and room.
+# References
+[1] Yamaha, “What’s the Difference Between Marimba and Xylophone?”  Read source <https://hub.yamaha.com/drums/percussion/whats-the-difference-between-marimba-and-xylophone/>
+[2] Adams Musical Instruments, “Concert Xylophones,” model variants.  Read source <https://www.adams-music.com/en/percussion/xylophone>
+[3] Yamaha, “Deconstructing Mallets: Find the Best Mallets for Your Percussion Section.”  Read source <https://hub.yamaha.com/music-educators/instruments/perc/deconstructing-mallets/>
+[4] Yamaha, “Choosing a Marimba: Types of Mallets and Mallet Selection,” including xylophone mallet materials.  Read source <https://www.yamaha.com/en/musical_instrument_guide/marimba/selection/selection002.html>
+[5] Yamaha, “Educator Series: Percussion Practical Strategies,” xylophone mallet guidance.  Read source <https://au.yamaha.com/files/download/other_assets/4/319524/Percussion_Tips_Jenks.pdf>
+[6] Yamaha, “4 Steps in Caring for Mallet Percussion Instruments.”  Read source <https://hub.yamaha.com/music-educators/instruments/perc/care-for-mallet-instruments/>
+[7] Shure, “Microphone Techniques for Live Sound Reinforcement,” pp. 30–33.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[8] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[9] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

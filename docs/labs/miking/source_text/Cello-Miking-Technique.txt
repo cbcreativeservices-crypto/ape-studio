@@ -1,0 +1,83 @@
+# Cello Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson teaches miking one acoustic cello for bowed and pizzicato passages in solo studio, ensemble spot and live reinforcement settings. Learners will compare a stand microphone with a compatible mounted miniature, preserve low-string body and bow articulation, and protect the player, instrument and endpin area. String-section arrays and seating are cross-linked to the Ensembles and Voice Lab. No audio examples are included.
+# Hear the entire instrument first
+The cello's strings drive the bridge and body; the audible result includes string articulation, body resonance and room. Its lowest open string is C2, about 65 Hz, so a microphone and downstream path that cannot reproduce useful low frequencies may fail to convey that register [1]. Do not equate a specification's low-frequency limit with the final tone: placement, room and filters also matter. Listen to sustained low C and upper A, bow starts, loud and quiet strokes, shifts, vibrato and pizzicato if used. Ask where the cellist actually sits and sways, and map the bow, endpin, knees, music stand and neighboring performers before installing any stand.
+DPA notes that the cello offers several acoustic pickup regions and that sound from neighboring instruments or the PA can reflect from its large body into a mic [1]. A close microphone samples a smaller region and can improve separation, while a more distant view blends more of the instrument and room. The right balance depends on arrangement, stage level and acoustics. No f-hole is a universal "bass port" placement that always yields a natural full cello.
+# Build a stand-microphone baseline
+Start with one stand mic roughly a foot (30 cm) in front of the bridge area, at a height and lateral offset that leave the complete bow sweep clear. Shure describes this as a well-defined, balanced cello position while warning that isolation from other instruments is limited [2]. Its one-foot measurement is a starting point, not a rigid rule. Aim initially toward the bridge/top region rather than inserting a mic into the f-hole; listen to low and high strings, then vary distance, height and angle one at a time. For a solo in a good room, try a farther position to hear a more integrated sound; for an ensemble spot or louder stage, bring it nearer only as far as tone and safety permit.
+Perspective
+Useful result to test
+Principal limitation
+Stand, about 30 cm from bridge region [2]
+Defined, reasonably balanced cello
+Neighboring spill; bow and knee clearance
+Farther in front of cello
+Body and room integrate
+More room and ensemble pickup
+Closer directional mic
+Detail and some spill rejection
+Low-frequency proximity buildup, localized bow sound
+Approved below-bridge string mount [1, 3]
+Stable capsule position as player moves
+Clip fit, buzz, cable contact and colored local view
+Mounted mic aimed toward f-hole [1, 4]
+More output in DPA's setup
+Possible resonant or uneven tone; test feedback
+
+Choose pattern for the actual environment. An omni can be useful when a broad sound and room pickup are welcome; it has no directional proximity effect but offers little directional rejection. A cardioid or supercardioid can help separate sources, yet close directional placement may boost low frequencies and require careful angle choice. DPA explicitly describes those tradeoffs and notes that cello reflections can defeat simplistic assumptions about rejection [1]. Listen at comparable level, including the full dynamic range, and change geometry before assigning a corrective EQ curve.
+# Studio applications
+Exposed solo: Hear the cello naturally in the room, then audition the bridge-area stand baseline and a more distant alternative. Choose for musical body, articulation and room character across both low and high strings. A single microphone may be enough. If adding a room mic or a second perspective, record and compare each by itself and the mono sum; time differences can create frequency-dependent cancellations. Do not automatically flip polarity and assume the entire blend is fixed. Move the mics, adjust balance, and only then check polarity or timing. Monitor the softest bow onset and loudest note without unwanted noise or overload.
+Close overdub: A nearer stand position can favor a more present, defined cello in a dense arrangement. Check whether rosin and bow noise overwhelm the note, the C string becomes boomy, or pizzicato sounds mechanical. Move away or off-axis before defaulting to a drastic EQ cut. A high-pass filter may tame rumble and stage handling noise, but audition it against the low C rather than using a universal cutoff. The musical fundamental at about 65 Hz does not mean every reproduction system must be flat to 65 Hz; decide by the sound and application.
+Chamber or orchestral spot: Establish the main array and ensemble balance first. Add a cello spot only for a stated need, then raise it just enough to help. Check stereo placement and mono, and note whether a close spot pulls one chair forward or admits other strings. Seating, multiple players and main/spot timing belong to the Ensembles and Voice Lab. A second close cello mic is an option for a specific goal, not a default stereo technique.
+# Live reinforcement and mounted microphones
+On a quiet stage, a stand mic can work if the cellist remains in its pickup area and monitors do not dominate the mic. On a loud stage, a mounted miniature often holds the capsule position more consistently and may improve the cello-to-spill ratio. DPA describes fitting its cello clip to strings between the bridge and tailpiece, with the capsule brought toward the area between bridge and fingerboard [1, 4]. Its detailed 4099C guide says to attach the holder to the two outer strings, let it curve outward, and then position the gooseneck; its own tonal comparison favors a below-bridge view for natural sound and an f-hole aim for higher output [4]. Follow that sequence only for that compatible mount, with the exact current manual and the player's approval. The C-CLIP product description identifies the outer C and A strings below the bridge [3]. Neumann's MC 2 is a separate cello string clip, also designed for below-bridge mounting; its fit specification is a 0.6–2.3 mm string diameter [5]. Do not transpose one manufacturer's mechanics to another.
+Keep the capsule and gooseneck outside the bow and hand paths. Route its cable with gentle strain relief away from the endpin, chair, feet and moving body. Ask the player to perform full bow strokes, shifts, pizzicato and normal seated movement, then check for rattles and cable rub. Stop and remount if any piece buzzes, slips, presses delicate finish, obstructs a string or concerns the cellist. Avoid improvised clamps on bridge, top, f-hole edges or varnish. A close directional mic still receives PA and stage sound, sometimes via reflection from the cello body [1]; listen with monitors on and lower level or change geometry at the first sign of feedback.
+Some cellists use a professionally installed pickup. It is an electrical signal path distinct from the airborne mic. Use its required input or preamp, compare the pickup alone and blend only if the mic can operate at a useful gain before feedback. If the sum thins out, compare mono, balance and geometry before investigating polarity and time alignment. Do not describe the pickup signal as a microphone capture.
+# Troubleshooting and safe setup
+Symptom
+Check first
+Action to audition
+C string lacks weight
+Mic angle, distance, filter and room
+Move/re-aim; audition filter with low C
+C string booms on select notes
+Close directional proximity or room modes
+Back off, change height/room position
+Bow scrape obscures pitch
+Capsule too local to bow/bridge
+Back away or shift angle
+Pizzicato sounds thin
+Position favors bow detail
+Compare wider top view and distance
+String balance changes as player sways
+Stand mic working area too narrow
+Reposition or use approved mounted mic
+Clip buzz or cable thump
+Mount/cable contacts cello or chair
+Stop, remove and refit with consent
+Bleed or feedback rises
+Monitor or neighbor enters mic, including body reflection
+Lower level, reposition mic/monitor and reduce open mics
+Multiple paths sound hollow
+Different arrival times or pickup response
+Solo each, mono sum, rebalance and reposition
+
+Place a stable stand outside player traffic and mark a cable route clear of the endpin; never tug a cable across a cello. Ask permission before touching the instrument. Confirm capsule power and transmitter/adapter compatibility. Keep playback and stage monitoring at a sensible level. Any mic move around a live system begins with level reduced, followed by a gradual sound check.
+# Teaching exercise and pass criterion
+1.Map the cellist's seated motion, full bow travel, endpin and stand locations. Have the player perform C- and A-string passages at realistic dynamics, plus pizzicato if used.
+2.Compare the Shure bridge-area stand position with a farther view and a slightly closer view at matched monitor level. Record which part of tone, room and bleed changes.
+3.Design a solo studio position, a supporting ensemble spot and a live position. Explain pattern, distance, room, monitor, bow clearance and endpin safety for each.
+4.Where a compatible approved mount or pickup exists, compare it with the stand mic. Check the full performance movement, cable noise, mono blend and feedback response.
+Pass criterion: The learner produces a repeatable cello sound across registers and articulation, explains the tradeoff between body/room and isolation, and demonstrates mount, bow and cable safety.
+# Evidence audit and limits
+Agreement: Shure recommends a stand position about one foot from the bridge for a defined cello view but flags limited isolation [2]. DPA supports stand and compatible string-mounted microphones, describes pattern and proximity tradeoffs, and warns about reflective spill [1]. DPA and Neumann independently document below-bridge string mounts [3–5].
+Different emphases: Shure's position privileges a straightforward stand mic [2]; DPA emphasizes close mounting for stable live separation and offers f-holeward aiming for higher output [1, 4]. These are context-specific options, not a direct contradiction. The manufacturer's "natural" or "sweet spot" labels are product- and placement-specific judgments, not universal guarantees.
+Gaps and confidence: No source establishes a universally best solo distance, filter cutoff, f-hole angle, spot level or pickup blend. Confidence is high in documented mount fit and Shure's stated starting position, moderate in predicted tonal changes for an untested cello and room. Exact mic and wedge geometry requires a player-specific sound check.
+# References
+[1] DPA Microphones, “How to mic a cello.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-cello/>
+[2] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments>
+[3] DPA Microphones, “C-CLIP Microphone Clip for Cello.”  Read source <https://www.dpamicrophones.com/accessories/instrument-clips/c-clip?variant=129>
+[4] DPA Microphones, “How to mount the 4099 instrument microphone on various instruments,” cello section.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[5] Neumann, “MC 2 Strings Clip Cello.”  Read source <https://www.neumann.com/en-lv/products/microphone-accessories/mc-2>

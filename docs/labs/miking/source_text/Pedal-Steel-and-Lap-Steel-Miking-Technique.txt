@@ -1,0 +1,87 @@
+# Pedal Steel and Lap Steel Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers amplified pedal steel and electric lap steel as one grouped curriculum item. The principal acoustic miking source is their amplifier loudspeaker. The learner will trace the signal path, locate a speaker, change a microphone's position to shape tone, compare the mic with a properly provided direct path, and adapt the setup to studio and live sound. Acoustic hollow-neck lap steels are noted as an exception requiring acoustic-instrument placement experiments. No audio examples are included.
+# Follow the sound before placing a mic
+The vibrating strings are the origin. In a common magnetic-pickup system, the pickup turns string motion into an electrical signal, which may pass through a volume pedal, effects, amplifier and loudspeaker before becoming airborne sound. Carter Steel Guitars describes this pickup-to-volume-pedal-to-amplifier path for pedal steel [1]. The microphone hears the speaker and room; a DI or amp output represents the particular electrical tap point and may omit some speaker coloration. It is useful to ask the player which pickup/neck, volume pedal, effects and amplifier settings are part of the intended tone.
+Pedal steel's foot pedals and knee levers alter pitches mechanically. The player may also use a bar, fingerpicks and a volume pedal. None of these requires a mic aimed at the player's hands or under the instrument when the main sound comes from an amp. A lap steel may have no foot/knee pitch-changing mechanism, but the same speaker-miking principles apply if amplified. Pedal steel and lap steel are chordophones because their strings initiate the sound; electrical pickup and speaker form a subsequent signal path.
+# Establish a one-mic amplifier sound
+Locate the actual speaker cone, particularly if a cabinet has more than one speaker or its grille hides the driver. Confirm the amp is at a realistic playing level and the player will use the normal volume-pedal range. Put a suitable directional mic on a stable stand near the front grille, initially at the boundary between dust cap and cone. Shure's amp-miking guide recommends that boundary as a starting point, then reports brighter sound toward center and duller sound toward edge [2]. Shure's PGA27 user guide gives a general amplifier trial range of 2–15 cm (1–6 in) [3]. These are general amp practices to test with a steel amp and its speaker, not published steel-specific coordinates.
+Change one variable
+Expected comparison to audition
+Watch for
+Dust-cap/cone boundary, close to grille
+Focused initial speaker view [2].
+Balance of clean attack, sustain and upper-register clarity.
+Slide toward dust-cap center
+Brighter local speaker tone [2, 3].
+Excessive edge on bar attack or sharp high notes.
+Slide toward cone edge
+Smoother, less bright local tone [2, 3].
+Loss of definition in a full ensemble.
+Rotate off axis without changing position
+Different off-axis response of this microphone.
+Unexpected coloration; pattern/rejection changes.
+Increase distance
+More integrated speaker/cabinet and room contribution.
+Reflections, spill and reduced live isolation.
+
+Keep the mic clear of the grille and moving speaker, secure the cable, and document the speaker, capsule orientation, lateral point, angle and grille distance. Try quiet swells, quick picked attacks, sustained chords, low and high registers, and the actual effects. Set preamp gain on the loudest realistic passage. A steel's apparently smooth sustain can still be followed by a much louder attack or changed volume-pedal position. Compare at a similar monitoring level so louder does not masquerade as better tone.
+# Tonal concepts and microphone choices
+Clear, articulate clean steel: Start at the cap/cone boundary and assess whether harmonics and pitch movement read through the ensemble. If the sound is too hard, slide outward before broad EQ changes. A dynamic close mic is robust on a stage; a condenser can be tested for a different transient and off-axis presentation if its SPL rating, pad, mounting and spill suit the use. These are choices to audition, not a claim that a transducer type guarantees a tone.
+Rounder, less pointed steel: Compare the outer cone and a modestly farther view. Be careful that the instrument remains distinct beside keyboards and guitar. At a farther distance, the room and other sources become part of the result. Some players' tone depends on amp reverb, external effects and speaker response; a microphone at the grille includes what the speaker actually reproduces.
+Driven lap steel: The amp may be overdriven or played through pedals. Assess both picked attack and long slide notes. Bright center placement can accentuate upper harmonics or noise; off-center placement may yield a more usable balance. Keep the amp's settings stable during comparisons and ask the player to perform at stage intensity. A resonator/Dobro is a separate preceding lesson; this section concerns electric lap steel through a speaker.
+# Studio alternatives: second mic, room and direct path
+Capture one good close mic first. A second close mic can offer a different tonal region, and a farther room mic can add space when the room is useful. Shure documents a two-mic amplifier blend and a front/rear cabinet example [2]. Treat these as techniques to audition on the actual cabinet: a rear mic only applies to a cabinet with a meaningful open-back radiation path, and a polarity reversal is a test, not a universal fix. Solo each source, sum in mono, move or rebalance if the combined tone thins, and retain separate tracks when practical. Distance produces an arrival-time difference; neither a fixed spacing rule nor automatic alignment is guaranteed to improve a musical result.
+An instrument DI taken before the amp can preserve a dry path for a distinct purpose, but it will not automatically contain the player's amp reverb, EQ, power stage or speaker sound. If a split is needed, use an appropriate instrument-level splitter/DI and preserve the pickup's required loading; do not casually plug a passive pickup into several unknown parallel inputs. An amp's dedicated line or XLR output is a different path whose placement in the circuit and speaker simulation must be read from its exact manual. For example, Peavey's Nashville-Session 112/115 manual identifies its XLR as a *microphone-simulated direct interface*, while its effects-loop send and preamp output are separate functions [4]. A modeled “microphone” output is still electrical, not an actual mic hearing the speaker.
+When blending any direct path with a speaker mic, compare each alone and together in mono. The speaker sound reaches the mic later than an electrical tap; filtering, amp stages and the mic's position complicate the phase relationship. Move and rebalance first, then audition polarity or timing adjustments if available. Do not make a direct output mandatory merely because the amp offers one: if the task is teaching miking, demonstrate the acoustic mic result independently.
+# Live sound and stage layout
+A close mic on a stable low stand generally improves isolation from drums and wedges. Point the chosen mic's rejection region toward the loudest competing source based on its actual polar pattern; a supercardioid's rear lobe makes “put the monitor directly behind it” an unreliable rule. Keep the mic stand, cable and amplifier out of the volume-pedal and knee-lever working zone. Confirm the performer can reach pedals, bar and controls safely and that a tilted amp is mechanically stable. Peavey's Nashville-Session manual explicitly cautions against an overlong tilt foot that lets its cabinet fall when bumped [4].
+Coordinate amplifier and PA level so the player's stage monitoring and audience coverage both work. Raising a steel amp to force an attractive microphone tone can increase hearing exposure, mask other performers and make the mic bleed into nearby vocal channels. If the mic is too bright or lacks body, try a small move across the cone before heavy EQ; if there is feedback or excessive spill, lower levels and revise monitor/amp/mic geometry. A proper amp direct output may help where isolation is impossible, but its tone may differ from the speaker mic and should be identified as such.
+# Acoustic lap steel and other limits
+Some lap-style instruments, such as an acoustic hollow-neck guitar, project useful acoustic sound directly. If there is no amplifier speaker, do not apply speaker-cone coordinates to the instrument. Ask the player to perform normally, listen around the body and strings, and try a single mic at a safe working distance that covers the whole source without interfering with the bar or hands. A resonator-style lap guitar follows the separate Resonator Guitar and Dobro lesson. A magnetic pickup on an otherwise acoustic instrument can also create a second, different electrical path. This exception is included for classification clarity, not a full acoustic lap-steel lesson.
+# Electrical, hearing and physical safety
+Never connect a speaker output to a microphone preamp or ordinary DI input. Identify output type and level from the exact amplifier manual before patching. Use a suitable speaker cable, not a shielded instrument cable, for a separate speaker connection; Peavey's cited model manual states this explicitly [4]. Do not disconnect or substitute speakers, open an amplifier chassis, defeat a protective earth, change mains wiring or block ventilation for a miking exercise. Some amps permit speaker-free operation under specified conditions, while others require a connected load; Peavey's stated feature for one model must not be generalized [4]. Ask a qualified technician when the load or connector is uncertain. Stop for damaged cables, smoke, abnormal heat, repeated faults or electric shock symptoms.
+Control amplifier and monitor exposure at the source. OSHA's 85 dBA eight-hour time-weighted average is a hearing-conservation action level, not a guarantee that every exposure below it is safe [5]. Use reasonable soundcheck durations, measure when uncertain and provide hearing protection as appropriate. Do not put a microphone or stand where it can obstruct the performer's foot controls, tip into the speaker or become a trip hazard.
+# Troubleshooting map
+Symptom
+First question
+Test or response
+Upper notes sound sharp or brittle
+Is mic near dust-cap center?
+Move toward boundary/edge; compare actual playing [2].
+Steel loses definition
+Is mic too far toward outer cone or masked in mix?
+Shift toward boundary, then assess in full band.
+One note or passage clips
+Did volume pedal or picking level change?
+Set gain on loudest realistic performance.
+Mic-plus-direct sounds hollow
+Do path timing and filtering interact?
+Solo, mono-sum, move/rebalance, then test polarity/timing.
+DI differs from the amp
+At what circuit point is it tapped?
+Consult output manual; label preamp, simulated or dry path.
+Rattle or feedback on stage
+Is stand stable and amp/wedge aimed safely?
+Reduce level, secure geometry, then recheck.
+Uncertain speaker/load connection
+Is the jack speaker level and what load is required?
+Stop patching and consult model manual/qualified technician.
+
+# Teaching exercise and pass criterion
+1.Draw the player's real signal chain from strings through pickup, volume pedal, effects, amp and speaker. Mark every available direct tap and identify what it can omit.
+2.Locate the driver without dismantling the amp. Compare center, boundary and outer cone at steady player settings on a clean or driven passage appropriate to that player.
+3.Choose a close live position and a studio position. Record mic pattern, capsule location, stand/cable route, monitoring/spill and the player's pedal-clearance area.
+4.If a direct path is available, compare it to the mic and check their blend in mono. Read the exact model's output/load guidance before patching; demonstrate a safe stop if the connector is ambiguous.
+Pass criterion: The learner can produce a reproducible one-mic tone, explain the observed center-to-edge change, distinguish acoustic microphone from electrical output, assess a two-source blend, and maintain electrical, hearing and stage safety.
+# Evidence audit and limits
+Agreement: Shure's guidance describes center-to-edge speaker brightness and a practical one-mic starting region [2, 3]. Peavey and Carter establish the steel pickup/amp signal path and that distinct direct outputs exist [1, 4].
+Different emphases: Shure's sound engineer favors optional multi-mic tones [2], whereas manufacturer quick-start placement and an amp's built-in simulated direct output offer simpler alternatives [3, 4]. They are options for different constraints, not a direct contradiction. A Peavey model's speaker-free operation is specifically model dependent [4].
+Gaps and confidence: There is no sourced universal microphone, exact angle, polarity, distance or speaker position for every pedal steel, lap steel, cabinet and player. The amp placement trend is supported as general speaker practice; applying it to a particular steel rig is an informed experiment. Confidence is high in the signal-path and electrical cautions, moderate in predicted tonal outcomes until the actual rig is auditioned.
+# References
+[1] Carter Steel Guitars, “What's this part? – Pickups.”  Read source <https://www.steelguitar.com/maps/pickups.html>
+[2] Shure, “Miking Guitar Amps: Tips from Sound Pro John Mills.”  Read source <https://www.shure.com/en-US/insights/miking-guitar-amps-tips-from-sound-pro-john-mills>
+[3] Shure, “PGA27 User Guide,” amplifier placement.  Read source <https://www.shure.com/en-US/docs/guide/PGA27>
+[4] Peavey, “Nashville-Session 112 & 115 Amplifier Operating Manual.”  Read source <https://peavey.com/wp-content/uploads/2026/02/Nashville_Session112_115_OM.pdf>
+[5] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

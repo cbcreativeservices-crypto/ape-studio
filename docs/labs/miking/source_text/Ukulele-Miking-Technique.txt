@@ -1,0 +1,79 @@
+# Ukulele Miking Technique
+Pro Audio Training Academy   Chordophones Lab   Studio and Live Sound   October 3, 2026
+# Scope and learning goals
+This lesson covers acoustic ukulele miking, including common soprano, concert, tenor and baritone-sized instruments without assuming that their body dimensions or tuning make them acoustically identical. The learner will balance strings, top and sound opening, compare quiet-room and live-stage approaches, accommodate a moving singer-player, and distinguish an acoustic mic from a fitted pickup. No audio examples are included.
+# Listen before choosing a position
+Plucked or strummed strings excite the bridge and soundboard; the small body and sound opening help shape the radiated sound. A ukulele is a chordophone because strings start the vibration. Have the musician play the actual part with their usual fingertips or pick, posture, strap and singing position. Hear it from in front before setting a mic. Close positions can emphasize the string/pick area or a single part of the top; farther views integrate more instrument and room, but gain less separation. DPA describes the essential tradeoff as full timbre versus isolation or unwanted reverberation [1].
+The sound hole is not the whole instrument. Directly aiming from very close at the hole may favor a local low-mid resonance and underrepresent strings and top. Shure's acoustic-guitar guidance describes a neck/body junction perspective for balance and notes that proximity changes low-frequency response [2]. Applying that concept to a smaller ukulele is a placement experiment, not a ukulele-specific manufacturer rule. The neck joins a soprano body at a different geometric relation from a baritone; use the player's instrument, not a memorized guitar fret number.
+# Establish a reliable one-mic position
+DPA's ukulele guide recommends a spot that blends strings and fingers in a favorable room, with an omni when the room and other sources are suitable [1]. Start with a single mic in front of the upper body/neck-joint area, off the player's strumming arc and slightly away from a straight sound-hole axis. A practical quiet-room trial is approximately 20–40 cm (8–16 in), adjusted to the instrument, room and performer. This numeric range is a teaching experiment, not a distance specified by the cited ukulele guide. Compare three regions, changing one thing at a time while the musician repeats soft and strong strums and picked lines.
+Move or perspective
+What to evaluate
+Watch for
+Upper body / neck joint
+String definition plus some body; a balanced starting experiment.
+Thinness if too far toward fretboard, or moving-player changes.
+Toward bridge and top
+Strum attack and soundboard response.
+Pick/fingernail noise or a narrow, hard tone when too close.
+Toward, but not automatically into, sound hole
+Additional body and low-mid contribution.
+Excessive local resonance and reduced string clarity.
+Back for whole instrument
+Integrated top, strings and room.
+Reflections, spill and less live gain before feedback.
+Approved close clip mic
+Consistent position while player moves.
+Mount fit, contact noise and local coloration.
+
+These are questions to audition, not guaranteed tonal labels. Set preamp gain for the strongest performance and leave headroom. Note the exact capsule position, aim, pattern, distance and instrument size. If close placement becomes boomy with a directional mic, compare a little more distance or angle before aggressive EQ; proximity effect depends on pattern and mic design [2].
+# Studio tone goals
+Quiet, intimate solo: One omni or a well-placed directional mic can present the instrument naturally if the room is good. DPA suggests an omni in a quiet acoustic space and cardioids when isolation is needed [1]. Compare room, instrument and player noise at the intended distance. A broad position often gives a better picture of a small body than two extremely close local spots. Do not equate a condenser with a guaranteed sound; its pattern, response, placement and room matter.
+Rhythmic strum in an ensemble: Test whether the offbeat pattern remains clear without excessive fingernail/pick attack. If it is all transient, move away from the hand and include more body; if buried, try a closer directional view and reassess in the full mix. A high-pass filter can reduce unwanted rumble, but set it by ear with the ukulele's lowest notes and the arrangement, not from a preset or assumption that the instrument has no useful low content.
+Fingerpicked melody: Compare the neck-joint and top perspectives for note articulation and sustain. A very close string-focused mic can exaggerate squeaks, fret sounds or finger noise. Move a little back or across the instrument if those dominate. If the performer also sings, microphone spill is expected; cross-link detailed vocal/instrument balance to the Singer with Guitar or Piano lesson in Ensembles and Voice. Determine whether the priority is a coherent combined performance or individually controllable tracks before optimizing isolation.
+Stereo and two-mic options: DPA describes coincident XY cardioids and spaced wide cardioids as ukulele options [1]. A small instrument does not inherently need a wide stereo image. If using two mics, establish a dependable mono mic first, check the pair in mono and through the whole performance, and watch for movement-induced image shifts. With a second mic aimed at another local area or room, solo each path and blend at useful levels; reposition and rebalance if the sum thins. A polarity switch is a test, not a cure for all time-dependent interference.
+# Live sound: stand mic, clip and pickup
+On a controlled stage, a stand-mounted directional mic can begin near the upper-body/neck area and move closer only as needed for gain and separation. Use the chosen mic's actual polar pattern to reject a monitor or neighboring source; a tight supercardioid can still pick up from a rear lobe. Mark a comfortable playing zone and keep the boom outside the strumming hand, vocal mic and performer traffic. If feedback starts, reduce the offending channel or monitor level and change source/mic/speaker geometry before chasing many EQ notches.
+For greater movement, DPA describes miniature close mics and a 4099 supercardioid, with VC4099 fit at 35–55 mm body depth and GC4099 fit at 35–122 mm [1]. These are product-specific fit ranges, not permission to clamp any ukulele. Verify body depth, edge shape, finish and manufacturer's mount instructions, seek owner consent, keep the clip clear of strings and strumming, and strain-relieve the cable. The clip can preserve capsule-to-instrument geometry as the player moves, but it may not preserve the same tonal balance as a broader stand mic.
+An installed pickup can carry a more controllable signal on a loud stage. It is an electrical path and may sound different from a microphone capturing air around the instrument. If combining pickup and mic, compare each alone and then in mono; changes in timing and frequency response can make a blend thin or hollow. Use an appropriate input/preamp according to that pickup system's instructions. If the singer and ukulele share a mic, plan distance and choreography as an ensemble choice; avoid treating a vocal mic's accidental instrument bleed as a reliable dedicated ukulele mic.
+# Troubleshooting and safety
+Symptom
+First question
+Test or response
+Boomy or hollow body note
+Is mic close and aimed straight into hole?
+Move toward upper body/neck or back; compare lowest notes.
+Thin, all-string sound
+Is mic too near fretboard/hand?
+Include bridge/top and more whole body.
+Strum is harsh
+Is mic on the picking arc or very near bridge?
+Change aim/distance; check technique and gain.
+Tone varies with movement
+Is the instrument rotating from stand mic?
+Mark zone or try a properly fitted clip.
+Vocal bleed dominates
+Are singer and instrument mics facing one another?
+Revise geometry and pattern; decide whether bleed is acceptable.
+Mic/pickup blend thins
+Are arrival/phase responses interacting?
+Solo, mono-sum, reposition/rebalance, then test polarity/timing.
+Stage feedback
+Is a loudspeaker feeding mic or instrument?
+Reduce level, revise geometry, close unused channels.
+
+Do not press a mic against the instrument, insert it into the sound hole, attach a clip to an unsuitable finish or obstruct the player's fingers. Use a stable stand and safe cable route. Check phantom-power compatibility of every mic and connected device before patching. Manage monitor and PA levels to avoid prolonged hazardous exposure; OSHA's 85 dBA eight-hour time-weighted average is a hearing-conservation action level rather than an all-duration safe threshold [3].
+# Teaching exercise and pass criterion
+1.Identify instrument size, actual playing and vocal posture, pickup presence, room and stage noise. Make a safe stand position.
+2.With one mic, compare upper body/neck, bridge/top and angled sound-hole views through soft and strong passages. Record observed articulation, body, noise and room contribution.
+3.Choose a quiet studio view and a live reinforcement view. Explain microphone pattern, working distance, player movement, monitor rejection and cable route.
+4.If a second mic or pickup is present, compare each alone and combined in mono. Demonstrate safe clip fitting checks and a feedback response.
+Pass criterion: The learner can set a repeatable one-mic sound, explain why the chosen position suits the actual ukulele and performance, adapt to live isolation, and identify pickup and microphone as separate sources.
+# Evidence audit and limits
+Agreement: DPA explicitly frames ukulele miking around timbre versus isolation and offers omni, cardioid, XY, spaced and miniature options [1]. Shure's acoustic string guidance supports starting with one mic, testing distance and balancing a neck/body perspective, but is written for guitar [2].
+Different emphases: DPA's quiet-room omni and stage-oriented miniature options serve different acoustic conditions [1]. A direct sound-hole view sometimes increases body, yet can overemphasize a local resonance; no cited source makes it the universal optimum.
+Gaps and confidence: DPA does not publish a fixed one-mic ukulele distance or a guaranteed “sweet spot” coordinate [1]. The 20–40 cm trial and position table are structured inference to verify on the actual instrument. Confidence is high in cited pattern/mount fit options and the general isolation tradeoff; moderate in tonal predictions until auditioned with the performer and room.
+# References
+[1] DPA Microphones, “How to Mic the Ukulele.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-the-ukulele/>
+[2] Shure, “How to Choose the Best Mics for the Guitar,” acoustic placement and proximity principles used here as a qualified analogy.  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-the-guitar>
+[3] OSHA, “Occupational Noise Exposure.”  Read source <https://www.osha.gov/noise/>

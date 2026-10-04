@@ -1,0 +1,139 @@
+# Mixed Acoustic and Classical Ensembles Miking Technique
+Pro Audio Training Academy • Ensembles and Voice Lab
+# Purpose and scope
+Choose and position microphones so that a mixed ensemble retains its musical balance, tone and sense of space. Establish whether the task is natural ensemble capture, production with independent control, live reinforcement, or simultaneous reinforcement and recording. Each purpose can require a different balance between main microphones, section microphones and individual spots.
+This lesson covers chamber groups combining strings, winds, brass, piano, harp, bass and percussion, and extends to chamber or full orchestras with optional choir or soloist. It is the final item in the approved Ensembles and Voice list. Individual instrument lessons remain the references for detailed placement. The string-section, horn-section, percussion-ensemble and choir lessons supply more specialized coverage. No audio examples are included.
+# Learning outcomes
+Build a usable ensemble sound with a main microphone or array before adding support when the musical goal permits.
+Compare coincident, near-coincident and spaced main arrays without treating any as universally best.
+Explain a Decca Tree, its stereo routing and the purpose of optional outriggers.
+Add section or soloist microphones without creating an implausible perspective or unnecessary spill.
+Adapt pickup to the actual reinforcement requirement and document gain, movement, mounting and timing checks.
+# Start with the music and the room
+Obtain a seating plan, instrumentation, score or set list, expected dynamics and the conductor's priorities. Identify passages where a quiet instrument must carry a line against louder accompaniment. Listen from several sensible positions at safe levels while the players rehearse; a microphone position need not correspond to the best audience seat. DPA emphasizes balancing ensemble coverage and hall sound in its orchestral AB guidance [1].
+Instructor recommendation: resolve avoidable acoustic imbalance with the musicians before using spot gain. Consider instrument orientation, seating depth, reflective walls and the piano lid. Make changes with player and conductor approval, preserving sightlines, breathing, bowing, slides, pedals and instrument access. Evaluate quiet entrances, full-ensemble peaks, bass clarity and sustained notes; one loud excerpt cannot establish the whole setup.
+Define the desired perspective in plain language: blended and spacious, closer and more articulated, dry and individually controlled, or enough reinforcement to make missing detail audible. A close microphone may provide useful control while representing only part of an instrument's sound. DPA describes this tradeoff along with proximity effect, off-axis tone, reflections and overload [2]. A transducer category alone does not determine tone, spill or headroom; consult the actual model specifications.
+# Select the pickup strategy
+Strategy
+Practical purpose
+Principal tradeoff
+One main microphone
+Compact mono presentation or limited inputs
+Balance depends strongly on room and seating
+Main stereo array
+Blended ensemble perspective
+Limited independent control of internal balance
+Main array with section supports
+Natural main sound with targeted detail
+Overlap can change timbre and apparent distance
+Main array with soloist spots
+Support a featured part
+Too much spot level can detach the soloist from the group
+Predominantly close pickup
+Strong reinforcement or separate production control
+More channels, spill and local tonal bias
+
+For a compact chamber group, begin with a main array alone if the room and music allow it. Classroom trial recommendation: for a group about 3–4 m wide, audition the array roughly 1.5–3 m in front and 2–2.5 m above the floor, using suitable stands. These are proposed starting positions, not measurements establishing optimum placement. Check the whole ensemble at a consistent monitoring level, then change one placement variable at a time.
+For a full orchestra, DPA describes an AB pair above or just behind the podium at approximately 3–4 m height, with 40–60 cm spacing as one usual starting range [1]. These dimensions apply to that orchestral example, not every chamber group or stage. If a location cannot be reached and supported safely, choose another placement. Height can improve coverage across rows but also changes room pickup and perspective.
+# Compare main stereo arrays
+XY: place two matched cardioids with acoustic centers nearly coincident and without contact. A 90-degree included angle is a useful first trial. Adjust angle and overall position for width and edge-player coverage. It relies primarily on level differences and minimizes arrival-time differences within the pair [3]. A narrower perceived image is not automatically inferior if it serves the music.
+ORTF: use two cardioids with capsules 17 cm apart and axes 110 degrees apart [4]. The capsule spacing is approximately 6.7 inches. Keep the defined geometry when moving the complete array; changing it creates a different near-coincident arrangement. Check mono summation and the level of sources at the edges.
+AB: a spaced pair, commonly omnis, provides arrival-time differences and room pickup. Spacing, distance and height must be evaluated together. Greater width can weaken the central image, and the combination can change tone in mono [1, 3]. Do not use the 3 to 1 guideline for isolating separate sources as a compulsory spacing rule for a stereo main pair hearing the same ensemble.
+Mid Side: position a forward-facing Mid microphone and a sideways figure-eight Side microphone nearly coincident. Decode Left = Mid + Side and Right = Mid − Side. Changing Side level changes width; balanced mono summation removes Side [3]. Verify the matrix, polarity and orientation. Keep the raw Mid and Side channels clearly labeled if they are retained for later decoding.
+Choose by the result: internal balance, image stability, amount of room, tone in mono and compatibility with the intended playback. A coincident array can still capture room reflections. A stereo recording technique does not automatically provide useful stereo reinforcement to every seat in a venue.
+# Decca Tree and outriggers
+A conventional Decca Tree has three spaced omnis: Left and Right across the rear bar, with Center forward toward the ensemble in plan view. SCHOEPS illustrates a 2 m width and 1.5 m forward offset, while recommending geometry trials for each room [5]. Unlike ORTF, these dimensions are not a fixed standard.
+Route Left toward left, Right toward right, and Center equally to both stereo outputs. SCHOEPS gives a 4–5 dB reduction of Center in its example [5]. This is not a universal fader setting; pan law and summing matter. Retain separate channels for evaluation.
+Outriggers supplement width farther to the sides. Compatible sphere attachments can change an omni's frequency-dependent directivity [5]. Neither extra microphones nor attachments are compulsory. Follow the microphone manufacturer's fitting instructions.
+Instructor recommendations for evaluation: establish the three-microphone image before adding outriggers. Increase the Center contribution from silence until the middle is adequately represented, checking whether it becomes too narrow or brings forward sources too close. Add outriggers one at a time and check outer strings, center stability, low notes and mono tone. Choose panning for a coherent audience perspective rather than automatically assigning extreme width.
+Keep a record of the actual positions in three dimensions. A Decca Tree requires safe support for its span and forward reach. Use manufacturer-rated mounting equipment and qualified venue personnel for suspension or overhead rigging. Do not improvise a large array on an inadequately rated boom or treat ordinary signal cable as suspension hardware. The beginner exercise can use a pair; the Tree is an advanced extension when equipment and venue support permit it.
+# Section supports and soloist spots
+DPA's orchestral multimiking guide begins with the main pair and then considers section supports. It describes directional microphones around 1–1.5 m from players, covering approximately three or four musicians in its example [6]. Use that as context: pattern, rows, angles and unequal source distances determine real coverage. One microphone per desk is not an automatic requirement.
+Lab recommendations: add a support only for a defined problem. Begin with it muted, then raise it until a line is clearer while the main image remains credible. Pan it toward the source's position in the main pickup. Check neighboring instruments as well as the intended one. If the spot must dominate, reconsider seating, main placement or the production goal.
+Source or section
+What to check
+Placement decision to test
+Strings and harp
+Bow or pluck detail plus complete tonal body
+Broader section view versus closer local pickup
+Woodwinds
+Tone across the whole register and key noise
+Body and tone-hole coverage rather than bell-only assumptions
+Brass and French horn
+Attack direction reflections and level peaks
+Direct versus reflected perspective using the instrument lesson
+Piano
+Balance across registers lid reflections and masking
+Main-array contribution versus dedicated piano support
+Bass and low percussion
+Weight articulation and room buildup
+Add only the missing function and check summed low notes
+Choir or soloist
+Words timbre and balance against accompaniment
+Dedicated pickup with a believable distance from the ensemble
+
+For amplified acoustic instruments, agree on the amplifier level and orientation before placing nearby microphones. A direct signal may be a supplementary production channel; the miking task still concerns the sound radiating from the instrument or loudspeaker. Do not silently replace the acoustic goal with a pickup sound. For choir with orchestra, check the entire passage before assuming more choir gain will solve accompaniment masking.
+# Room microphones and production control
+Instructor recommendation: add separate ambience microphones only after establishing a usable direct ensemble image. Audition them at several positions for decay, early reflections, audience noise and low-frequency resonances. Bring them in from silence. More room signal can improve spaciousness or obscure entrances; document which result the music needs.
+When production requires independent processing or overdubs, closer pickup and a more controlled room may be appropriate. Plan isolation without blocking sightlines or changing the players' technique. Acoustic screens alter both spill and local reflections; verify their effect rather than assuming transparency. A main array can remain a useful reference even when close channels dominate the eventual production.
+# Timing and polarity
+When main, support and room microphones hear the same source, different arrival times can cause tonal changes when combined. For illustration, a 1 m path difference at an assumed sound speed of 343 m/s is about 2.9 ms: 1 ÷ 343 seconds. The relevant distance is the difference in paths from the source to the microphones, not simply the separation between microphones.
+DPA's multimiking article presents a room-specific Danish Radio method and explicitly warns against blindly assigning delays from distance alone [6]. It is not a general instruction to add a fixed percentage to every spot delay. One source's alignment may not suit another player, a moving performer or a reflection. Polarity inversion changes signal sign; it does not remove arbitrary arrival-time differences.
+Recommended check: compare main alone, support alone and the combination. First try a change in support level, placement or angle when the combination loses body or clarity. Test intentional delay across several sections, notes and dynamics, and preserve unaltered channels for production comparisons. Do not move microphones merely to make waveform peaks look identical.
+PA loudspeaker delay is a separate system-design task. Its purpose includes coverage and the relationship between amplified and acoustic arrivals at listener positions. It is not determined by the main-to-spot recording geometry. Any live input delay also affects monitor routing unless the system provides a separate path; verify the actual routing before applying it.
+# Live reinforcement and simultaneous capture
+Determine which parts already reach the audience with adequate clarity and balance. A quiet chamber event may need little reinforcement; a large venue or loud accompaniment may require close directional support. Shure's feedback guidance emphasizes source proximity, speaker placement and avoiding unnecessary open microphones [7]. A beautiful distant recording array may be unsuitable as the main PA feed.
+Use the actual polar diagrams to position monitors. Cardioids reject most strongly behind the capsule; supercardioids and hypercardioids have rear lobes and rejection regions off the rear axis [8]. Reflections and changing player or microphone orientation can reduce practical rejection. Recheck coverage and feedback margin after any move. Use only the monitor level and sources the performers need.
+Teaching procedure: start at conservative gain, check the full dynamic range and assess audience positions across the venue. Avoid assigning an essential line exclusively to one side of a stereo PA. Lower gain promptly if ringing develops, then revise geometry or stage level. Do not intentionally provoke sustained feedback. Hearing protection, clear access paths, stable stands and safe player movement remain part of the setup.
+For simultaneous recording and reinforcement, assign explicit roles: microphones for capture, microphones for PA, or microphones shared by both. An ambience or main recording pair need not feed the PA or wedges. A pre-EQ or pre-dynamics recording tap can preserve later mix choices, but verify where the tap actually occurs. Shared digital preamp gain changes affect all dependent feeds unless a documented compensation system intervenes. Agree on gain and phantom-power control, and use properly configured split equipment when independent feeds are required.
+# Troubleshooting
+Symptom
+Possible cause
+First practical change
+Front row dominates
+Main placement favors nearby sources
+Adjust array height or distance and rehearse balance
+Winds disappear during strings
+Coverage or musical masking
+Check seating and main balance then targeted support
+Soloist seems detached
+Excessively close or loud spot
+Reduce support and reassess perspective
+Middle is weak
+Main-array geometry or panning
+Check spacing and central contribution before adding more channels
+Low notes become hollow
+Overlapping paths or polarity issue
+Compare channels separately and reduce or reposition support
+Room obscures rhythm
+Too much reverberant pickup
+Move main pickup closer or reduce ambience contribution
+Accents distort
+Overload in microphone adapter preamp or converter
+Identify and correct the clipping stage
+PA rings before useful level
+Poor rejection or excessive open pickup
+Lower gain then revise source and speaker geometry
+
+# Teaching exercise and pass criterion
+1.Use a small mixed ensemble with at least two instrument families, a quiet featured passage and a loud combined passage. Obtain the musicians' intended balance and draw the seating and microphone plan.
+2.Complete the stand, cable and movement checks. Establish conservative gain using expected performance peaks. Label signal paths and power requirements.
+3.Build the sound with a main mono microphone or one stereo array. Document geometry, tonal balance, width and room contribution. Evaluate the stereo option in mono.
+4.Add at most two supports initially. Explain the musical reason for each and compare the main sound with the combined result at matched listening level. Test for local noise and changes in perspective.
+5.Adapt the setup for reinforcement. Decide which recording microphones should feed no speakers. Check rejection geometry, essential parts across audience positions and the complete dynamic range without provoking feedback.
+6.For the advanced extension, compare a safely supported Decca Tree with the pair. Establish Center routing and optionally add outriggers. State which result improves coverage and which compromises increase.
+Pass when the learner preserves essential parts and intended balance, maintains headroom and safe movement, explains each microphone's role, and identifies a justified first change for masking, overlap, overload or feedback. The learner must distinguish recording-array timing from loudspeaker delay and explain why setup dimensions remain conditional on the ensemble and room.
+# Evidence audit and confidence
+Points of agreement: the relevant guidance emphasizes selecting a pickup perspective and evaluating coverage, tone and room contribution [1, 2, 3, 5, 6]. The reinforcement sources identify loudspeaker interaction and rejection geometry as additional constraints [7, 8]. None establishes one best arrangement for every mixed ensemble.
+Different emphases: DPA's AB guide prioritizes a main pair, while SCHOEPS documents a three-microphone Tree with optional additional pickup [1, 5]. These are alternative production approaches. Their example heights and geometries serve different rooms and arrays; they should not be averaged into a supposed standard. Greater detail from supports can trade away the main array's unified perspective [6].
+Direct discrepancies and overstatements: Shure's stereo article gives ORTF spacing as six inches [3]; SCHOEPS specifies 17 cm and 110 degrees [4]. This lesson uses the defined 17 cm geometry. Claims that a particular array is automatically mono compatible are too broad for spaced setups: verify the actual summed signal. A room-specific time-alignment procedure does not establish a universal delay recipe [6].
+Gaps and uncertainty: these sources provide technical principles and application practice, not a controlled trial spanning every instrumentation, room, score and PA system. Classroom distances, channel limits and exercises here are instructor recommendations. Confidence is high in defined ORTF geometry, stereo routing and polarity distinctions; moderate in the proposed starting arrangements. The best final placement cannot be known before evaluating the actual performance and venue.
+# References
+[1] DPA Microphones, Eddy Bøgh Brixen. How to AB stereo mic an orchestra.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-ab-stereo-mic-an-orchestra/>
+[2] DPA Microphones, Eddy Bøgh Brixen. What is close miking and why use it.  Read source <https://www.dpamicrophones.com/mic-university/audio-production/what-is-close-miking-why-use-it/>
+[3] Shure. Common Techniques for Stereo Miking. ORTF spacing corrected using reference 4.  Read source <https://www.shure.com/en-US/insights/common-techniques-for-stereo-miking>
+[4] SCHOEPS. MSTC 74 ORTF Stereo Microphone. Defined capsule spacing and angle.  Read source <https://schoeps.de/en/products/stereo/stereo-microphones/mstc-74.html>
+[5] SCHOEPS. Surround recording brochure. Printed pages 12 and 13, Decca Tree geometry routing variants and mounting.  Read source <https://schoeps.de/fileadmin/user_upload/user_upload/Downloads/Kataloge_und_Broschueren/Anwenderbroschueren/SCHOEPS_surround-brochure.pdf>
+[6] DPA Microphones, Eddy Bøgh Brixen. Multimiking a classical orchestra. Section support and context-dependent alignment.  Read source <https://www.dpamicrophones.com/mic-university/audio-production/multimiking-a-classical-orchestra/>
+[7] Shure. How to Control Feedback in a Sound System.  Read source <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>
+[8] Shure. Microphone Directionality and Polar Pattern Basics.  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>

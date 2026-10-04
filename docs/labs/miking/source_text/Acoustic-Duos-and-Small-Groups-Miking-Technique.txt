@@ -1,0 +1,121 @@
+# Acoustic Duos and Small Groups Miking Technique
+Pro Audio Training Academy  Ensembles and Voice Lab  Studio and Live Sound  October 4, 2026
+# Scope and learning goals
+This lesson covers acoustic duos and small groups such as guitar and mandolin, voice and strings, folk trios, jazz duos, small string groups, acoustic piano trios, and other quiet ensembles whose sound is produced in the room. The objective is to capture a coherent musical picture while retaining enough control to solve real balance problems. Students will learn ensemble-first stereo miking, instrument spots, close versus distant approaches, DI support, phase and bleed checks, and the different constraints of studio recording and live sound. No audio examples are included.
+# Begin with the ensemble, not the channel count
+Listen to the unamplified group from the intended listener position before placing microphones. Ask the musicians to play the loudest and softest sections, unison and harmony, sustained notes, rhythmic passages, and any featured solos. Physical arrangement is part of the mix: move a loud instrument farther away, raise a quiet instrument, rotate a directional source, or change seating before adding equalization or compression.
+Choose between two broad goals. An ensemble-first approach treats the group as one acoustic instrument and preserves interaction, room, and natural balance. An individual-control approach uses spots or direct outputs so the engineer can adjust each source later. Neither is automatically more professional. The correct choice depends on the room, musicians, arrangement, audience perspective, and how much isolation the production actually needs.
+# Main stereo approaches
+## Coincident and near-coincident arrays
+XY and MS place capsules at the same or nearly the same acoustic point. They provide stable localization and generally behave well in mono. ORTF and related near-coincident methods use both angle and spacing to create a wider image with useful directionality. Aim the array at the acoustic center and arrange the musicians so the ensemble fills the intended pickup angle.
+## Spaced arrays and room pairs
+Spaced microphones can give a wide, warm room image, but timing differences may produce vague localization or tonal changes in mono. A-B omnis are appropriate only when the room is quiet and acoustically useful. For a small group in a reflective or noisy room, a closer cardioid or near-coincident pair may preserve clarity with less unwanted ambience.
+Shure’s live-sound guidance lists stereo techniques as useful for quartets and small instrument groups, while warning that usable gain before feedback generally requires relatively close placement. In a mono PA, do not create a wide stereo array simply because two microphones are available; use a mono or narrowly compatible approach when that is safer and clearer.
+# Instrument spots and layout
+Add spot microphones only when the main pair cannot provide adequate definition or balance. A spot should support the main image rather than become an unrelated close-up. Keep spot microphones out of the direct radiation path of other instruments when possible, and use directional patterns whose off-axis sound remains acceptable.
+Place performers so loud instruments do not point directly into a neighboring microphone. Keep high-frequency sources such as mandolin, violin, or cymbals from dominating a guitar or vocal microphone. Low instruments and upright bass often need more attention to room modes and floor vibration. Mark chairs, stands, and microphone bases so a second take or live interval returns to the same geometry.
+The 3:1 rule can be a useful starting point when multiple microphones cover adjacent sources: if a microphone is about 1 foot from its intended source, try to keep the next microphone about 3 feet away. It reduces correlated leakage and comb filtering but does not guarantee phase alignment or equal tone. When space makes the rule impossible, reduce the number of microphones, move sources, use a coherent stereo array, or accept the bleed as part of the ensemble sound.
+# Common acoustic group configurations
+## Guitar and mandolin or guitar and fiddle
+Start with a stereo pair or one microphone that captures the whole duo if the room and balance are good. If spots are needed, aim the guitar microphone near the 12th fret or bridge area rather than directly into the soundhole, and keep the mandolin or fiddle microphone out of the most aggressive bow or pick axis. Arrange the brighter instrument slightly farther away or off-axis when it dominates.
+## Voice and acoustic instrument
+Use the singer-with-guitar-or-piano lesson as a cross-reference. A single microphone can preserve an intentional live balance. Separate vocal and instrument microphones offer control but make bleed, phase, posture, and monitor placement part of the technique. A pickup or DI may provide stable reinforcement for acoustic-electric guitar; blend it with a microphone only after each path is useful on its own.
+## Small string group
+A main stereo pair usually gives a more convincing blend than close-miking every instrument. Add a low-level section or principal spot only when a line is masked or the room cannot provide enough definition. Keep the array high enough to see the group without blocking bows, stands, or the conductor’s sightline.
+## Acoustic piano trio or mixed small group
+Treat the piano as a large acoustic source that can mask quieter instruments. Use a close piano pair when separation is essential, or a more distant main pair when the room and natural balance are the priority. If the group includes amplified instruments, isolate or DI those sources so the acoustic pair does not have to carry an impossible balance.
+# Studio workflow
+1.Place the musicians in the performance arrangement and capture a rehearsal pass with the simplest credible stereo array.
+2.Move the array in small increments while judging direct-to-room balance, instrument blend, stereo width, and mono compatibility on loudspeakers.
+3.Change the physical group balance before adding spots. Ask the musicians to adjust chair position, instrument angle, dynamics, or distance.
+4.Add one spot at a time only for a clear musical reason. Keep the main pair as the reference and listen for image drift when spot levels change.
+5.Check polarity, phase correlation, and mono tone with all microphones active. Do not assume that a polarity switch or digital delay fixes poor geometry.
+6.Use DI or pickup signals only when they add controllability or useful definition. A direct signal may lack the acoustic interaction captured by the main pair.
+7.Set gain from the loudest complete passage and leave conservative headroom. Monitor chair noise, page turns, foot movement, HVAC, and room reflections.
+8.Record a short test, document microphone positions, and repeat the exact layout before a full take.
+# Live sound reinforcement
+Live reinforcement favors stable gain before feedback and manageable stage spill. Begin with close directional microphones, pickups, or DI paths where they provide a clear advantage. Use a stereo pair only when the PA is stereo, the group is small enough for useful coverage, and the placement provides adequate gain before feedback.
+Keep monitors and loudspeakers out of each microphone’s sensitive direction. Cardioid, supercardioid, and hypercardioid patterns have different null positions; consult the actual polar plot. Reduce monitor level and stage volume before adding aggressive EQ or feedback suppression. Never place a microphone stand where a performer, bow, instrument case, or stagehand can strike it, and stop the group before moving equipment.
+For acoustic-electric instruments, a pickup or DI often provides the stable foundation, with a carefully controlled microphone blended for natural detail when the stage permits. For instruments without pickups, use the closest practical microphone position that still sounds musically acceptable. In a small room, less reinforcement may sound more natural than trying to amplify every source.
+# Studio and live comparison
+Approach
+Studio benefit
+Live benefit
+Main caution
+Main stereo pair
+Natural blend, room, and interaction
+Useful for quiet groups or broadcast
+Limited individual control and feedback margin
+XY or MS pair
+Stable image and mono compatibility
+Safer than wide spaced arrays when stereo is needed
+May sound narrower or less spacious
+ORTF or near-coincident pair
+Wider image with useful directionality
+Can cover a small group if placed close enough
+Placement and mono check remain important
+A-B omni pair
+Spacious, natural room capture
+Rarely practical for reinforcement
+Room noise, timing difference, and feedback
+Main pair plus spots
+Natural base with limited correction
+Helps a weak or distant source
+Spots can detach the image and add open channels
+Individual close mics
+Maximum level and editing control
+Useful for featured instruments
+Bleed, phase, stands, and stage spill
+Pickup or DI support
+Stable source under a main acoustic pair
+Strong gain before feedback
+Direct tone may not match the acoustic image
+
+# Troubleshooting
+Symptom
+Likely cause
+Response to audition
+Group sounds disconnected
+Too many close spots or spots are too loud
+Lower spots, restore the main pair, and rebalance the players physically
+Mono mix becomes thin
+Timing and off-axis differences between microphones
+Change spacing or angle, reduce microphones, and check the array in mono
+One instrument dominates
+Instrument is too close, too loud, or aimed at the array
+Move the player, change angle, or adjust arrangement before EQ
+Outer player is weak
+Group does not fill the stereo acceptance angle
+Widen or move the array, or rearrange the ensemble
+Live feedback starts on a sustained note
+Monitor spill or insufficient gain-before-feedback
+Reduce stage volume, move the monitor, verify polar nulls, and use closer or DI support
+Acoustic guitar sounds boomy
+Mic aimed at soundhole or room mode is excited
+Move toward the 12th fret or bridge area and reassess distance
+Bright instrument sounds harsh
+On-axis pickup or excessive proximity
+Move off-axis, change height or distance, and keep off-axis tone in mind
+DI and microphone blend sounds hollow
+Polarity or arrival-time mismatch
+Mute-check each path, compare polarity, move the microphone, and use the smallest correction necessary
+Mechanical rumble or chair noise
+Stand, floor, or performer movement
+Isolate stands, secure cables, change chair position, and use a conservative low cut if appropriate
+
+# Teaching exercise and pass criterion
+1.Arrange an acoustic duo and capture it with one stereo pair. Move the array toward and away from the group and document blend, room, stereo width, and mono behavior.
+2.Add one spot microphone to the quieter instrument. Raise it until definition improves, then lower it until the group still sounds like one ensemble.
+3.Add a pickup or DI if an instrument provides one. Check polarity and mono compatibility before blending it with the microphone.
+4.Repeat the soundcheck at the loudest passage using a live monitor position. Identify the feedback-safe direction for each microphone and leave operating margin.
+5.Change the musicians’ physical arrangement before changing EQ, then document which change produced the most useful balance.
+Pass criterion: the learner can choose an ensemble-first or individual-control approach; select and place a stereo array; use spots, pickups, or DI paths for a stated purpose; explain 3:1 spacing and its limits; check phase and mono compatibility; and produce a stable studio or live small-group sound without unsafe stands, cables, or feedback chasing.
+# Evidence audit and limits
+Shure’s live-sound guide documents coincident, near-coincident, MS, and spaced techniques and identifies quartets and small instrument groups as appropriate stereo applications, while emphasizing close placement for live gain before feedback. Shure’s recording guide documents source-specific starting points for guitar and piano and notes the need to check phase in stereo and mono. DPA’s choir and ensemble guidance supports evaluating direct-to-diffuse balance, room contribution, and stereo-array geometry. Exact microphone counts, positions, and DI blends remain dependent on the musicians, instruments, room, PA, and production goal.
+# References
+[1] Shure, “Microphone Techniques for Live Sound Reinforcement.”  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[2] Shure, “Microphone Techniques for Recording.”  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[3] Shure, “How to Record and Mix Vocals.”  Read source <https://www.shure.com/en-US/insights/how-to-record-and-mix-vocals>
+[4] DPA Microphones, “How to Mic a Choir.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-choir/>
+[5] Sound On Sound, “Studio SOS: Recording Guitar And Vocals Together.”  Read source <https://www.soundonsound.com/techniques/studio-sos-recording-guitar-vocals-together>
+[6] Sound On Sound, “Using Mics and DIs on Stage.”  Read source <https://www.soundonsound.com/techniques/using-mics-di-boxes-stage>

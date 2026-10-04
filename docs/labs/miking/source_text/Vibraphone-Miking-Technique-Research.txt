@@ -1,0 +1,93 @@
+# Vibraphone Miking Technique
+Pro Audio Training Academy   Idiophones Lab   Vibraphone   October 3, 2026
+# Scope and learning goals
+The vibraphone is a struck, tuned metal-bar idiophone. Bars above resonator tubes sound when mallets strike them; a damper pedal controls sustain, and on motor-equipped models rotating fans alter the resonance [1, 2]. The motor requires electricity but does not make the acoustic bar an electrophone. This lesson teaches one-mic and two-mic coverage of the keyboard in studio and live sound, with attention to mallet attack, pedal technique, motor setting, noise and safe placement. Marimba is next on our list. No audio examples are included.
+# Hear the instrument before placing a mic
+Yamaha explains that a felt-covered damper touches the bars with the pedal released and moves away with the pedal depressed, allowing notes to sustain [1]. Motor-driven fans at the resonator openings produce the characteristic amplitude modulation; motor speed and on/off state can change what a microphone captures [1, 2]. Some models have an optional or absent motor [3]. Record or reinforce the setting the player actually intends. A motor left running when the music requires a still sound changes the source, not merely the recording.
+Percussive Arts Society (PAS) emphasizes that pedaling and hand damping govern which notes ring into the next harmony; mallet selection and touch shape the attack [4]. A microphone should capture the whole intended range and sustain without requiring the player to strike unnaturally hard. PAS also identifies frame rattles, pedal noise, damper-bar sound and bar transients as possible issues [4]. Ask the player to demonstrate low, middle and high notes, soft and strong strokes, chords, pedal changes, hand damping and both motor states if used. Diagnose audible mechanical problems before EQ or a gate.
+# One microphone starting method
+1.Map the player and keyboard. Mark the mallet arc over both rows of bars, extremes of the passage, pedal foot, resonators and any motor housing. Keep stands and cables clear of hands, mallets, pedal and adjustments. Do not block the player's view of the keys.
+2.Listen at a useful height. In a controlled room, try a stand-mounted directional condenser or another suitable mic approximately 45–75 cm (18–30 in) above the central playing region, angled to hear the full range. This is a reasoned one-mic trial, not a published one-mic vibraphone standard. Shure gives a documented two-mic example at about 45 cm above a vibraphone, marimba or xylophone [5]. The chosen position must clear the highest mallet motion; adapt distance and angle to the performer and instrument.
+3.Play the real phrase. At the intended dynamics, compare low and high bars, black and natural rows, isolated notes and dense chords. Check attack, body, sustain, motor modulation, pedal/mount noise, room, and spill. Shift height and orientation by small, safe increments; a single close point can make one register overprominent. Do not assume aiming at the resonator openings from underneath will give a complete natural instrument. If that sound is wanted, audition it as a deliberate alternative while keeping motor and pedal hardware clear.
+4.Set headroom and preserve decay. Check the strongest mallet stroke for mic, preamp and system clipping, then confirm quiet notes. Use a high-pass filter only when it removes unwanted floor or stand noise without thinning the wanted lower notes. A gate can chop the sustain or motor modulation. Compare any processing at matched level after source and placement are settled.
+Condenser mics are a common practical option for a detailed mallet instrument. A suitable dynamic can also work in a difficult live setup. Shure states that microphone type depends on source and physical setting, and that no one mic or placement is ideal for every application [5]. The performer and room decide the final choice.
+# Two microphone approaches
+Shure's live-sound guide gives a specific starting example for xylophone, marimba and vibraphone: two microphones aimed downward roughly 1½ ft (45 cm) above the instrument, either spaced about 2 ft (60 cm) apart or configured with grilles touching at about 135° for a coincident pair [5]. These are alternative layouts, not instructions to use both simultaneously. Shure suggests left-right panning for stereo, and also notes that stereo sound reinforcement is warranted only when the system and audience coverage make it useful [5].
+Spaced pair: Aim one mic toward the lower region and one toward the higher region, with meaningful overlap through the middle. Start near Shure's published dimensions, then check every octave and the crossover in level and tone. Pan appropriately for the audience or recording, and listen in mono for coloration when the same bar reaches both mics at different times. Widely spaced close spots can produce an uneven center or exaggerated width; adjust spacing, height and balance from the passage rather than relying on a formula.
+Coincident pair: Bring the capsules or grilles close, angle them according to the chosen mic pattern, and face the keyboard as a whole. Shure's 135° figure is an example, not a required angle for every pair [5]. A coincident arrangement can simplify mono compatibility but may produce a narrower image or less low-versus-high control. Make sure both mics remain clear of mallets and do not obscure the player.
+If the instrument is part of a larger acoustic ensemble, begin by hearing the ensemble mains. Add a vibraphone pair or one spot only for a clear musical need. More open microphones increase spill and can lower gain before feedback live [5].
+# Tone and source comparisons
+Desired sound
+Source and mic trial
+Verify
+Clear melodic line
+Ask for the player's chosen mallet and touch; compare an overhead position covering the played register.
+Notes are distinct without exaggerated hard attack.
+Rounded chords and long sustain
+Use intended pedal and hand damping, then compare moderate and wider mic views.
+Harmony and tail remain clear, motor state matches the music.
+Low and high balance
+Play each register and move one mic or adjust two-mic coverage.
+Similar musical presence across the actual part, without a weak center.
+Motor effect
+Compare motor off and intended speed with the same phrase.
+Audible modulation without unwanted mechanical noise [1, 2].
+Dry articulate passage
+Ask player for prescribed damping and pedal technique.
+Clean releases come from the player, not a gate [4].
+
+Harder and softer mallets, pedaling, hand damping, and motor speed are source choices. PAS presents a professional player's preference for a somewhat softer mallet to obtain full tone with less attack; that is a perspective, not a universal requirement [4].
+# Studio application
+Solo or overdub: Start with the instrument at performance height in a room suitable for its decay. Compare a single central mic and, if a stereo image matters, the spaced and coincident two-mic layouts. Keep the same performance phrase and monitor level for each comparison. Listen to the motor on and off if relevant, the pedal release, quiet chords and the decay in the room. If frame or pedal noise appears, inspect the instrument, floor contact, mic stand and playing action before trying to filter it. A wider room position can blend the keyboard and ambience but may lose detail or add reflections. Stereo width should serve the music and remain convincing in mono.
+Ensemble session: The mains may already provide a vibraphone image. A spot or pair can add clarity, but listen to the combination for changed note tone and extra spill. Record enough quiet time to identify motor, pedal and frame noise. If a shared floor or stand couples impacts into microphones, separate or isolate the support instead of tightening a gate around a sustained instrument.
+# Live application
+In a quiet hall, a main or area mic may be adequate. In a louder band, position the vibraphone away from competing loudspeakers and drums as practical, then place a safe directional mic or pair above the playing range. Shure's published 45 cm two-mic example is a useful starting point when the mallet arc permits it, not a demand to put mics in harm's way [5]. Listen to the complete keyboard at band level; bringing a mic closer can improve direct-to-spill ratio while changing register balance and increasing risk of a mallet strike.
+For stereo PA, consider whether listeners across the venue will hear both sides of the instrument. If they will not, a mono feed or modest stereo width may serve the audience more consistently. Aim rejection away from wedges where possible. A cardioid mic nominally rejects most at its rear, while tighter supercardioid and hypercardioid patterns have rear pickup lobes and different null directions [6]. Soundcheck the actual pattern, monitors and open-mic count. If gain before feedback is inadequate, improve source and speaker geometry or reduce stage level before boosting the vibraphone channel [5, 6].
+# Safety and electrical checks
+Secure booms, stereo bars and cables so they cannot fall onto tuned bars or block mallet travel. Route the player's pedal area free of mic legs and cable loops. Lock instrument wheels according to the maker's instructions and ensure the frame is stable before placing stands around it. If the motor is used, keep cables and hands away from rotating parts and pedals; follow the specific manufacturer's power supply and service instructions. Do not alter or bypass the motor's electrical protection, open its housing, or run cables through the player's feet. A motor fault or damaged lead belongs with a qualified technician, not an improvised audio fix. At loud rehearsal levels, assess musician and crew hearing exposure using applicable music hearing-conservation guidance [7]; no vibraphone-specific SPL is asserted.
+# Troubleshooting
+Symptom
+Check
+First action
+High or low notes weak
+Does mic coverage favor one register?
+Play full range; change height, angle or two-mic balance.
+Loud mallet click
+Is source touch or mallet too hard, or mic too close to strike?
+Ask player for intended sound and compare a safe wider view [4].
+Ring will not stop
+Is pedal or hand damping correct?
+Confirm player technique and damper adjustment before gating [1, 4].
+Notes die too quickly
+Is pedal up or damper rubbing the bars?
+Check intended pedaling and mechanical operation.
+Buzz, rattle or motor hum
+Does it persist in the room without audio chain?
+Inspect frame, motor, resonators and mounting; stop unsafe operation.
+Pedal thump
+Does stand/floor transmit pedal action?
+Stabilize and separate mechanical paths; filter only unwanted rumble.
+Pair sounds hollow in mono
+Does a played bar reach both mics at different times?
+Reposition, narrow or try coincident pair; listen in mono.
+Feedback or heavy drum spill
+Is the mic exposed to wedge/drums relative to vibes?
+Change geometry, reduce stage level or open mics [5, 6].
+
+# Teaching exercise and assessment
+1.Have a competent player demonstrate soft and strong notes across the played register, chords with pedal up/down, intentional hand damping and motor on/off if fitted. Identify which sounds are intentional and which are mechanical faults [1–4].
+2.Compare a safe one-mic position at two heights, then Shure's approximately 45 cm two-mic spaced and coincident examples where the player's motion permits [5]. Match level; report attack, full-range balance, sustain, room, spill and mono compatibility.
+3.In an ensemble setting, hear the mains alone, then add one spot or pair. Explain whether the extra channel improves the musical image and whether live feedback margin remains usable.
+4.Diagnose one simulated problem: weak high notes, pedal noise, motor noise or a cut-off tail. Give a source or placement correction before resorting to EQ and dynamics.
+Pass criterion: The student keeps mics and cables clear of mallet and pedal movement, distinguishes playing and motor choices from mic effects, covers the full musical range, and explains a defensible mono or stereo approach for both studio and live sound.
+# Evidence audit and limits
+Agreement: Yamaha establishes metal bars, resonators, motor fans and damper operation [1–3]. PAS stresses pedaling, mallet choices and potential mechanical noise [4]. Shure publishes a two-mic overhead example and general live principles [5, 6].
+Differences and gaps: The PAS player's softer-mallet preference is a personal artistic choice, while Shure's 45 cm pair is a practical published starting layout, not a guaranteed result for every vibraphone or player. Some vibraphones have no motor or an optional one [3]. No direct contradiction was identified. The proposed 45–75 cm one-mic trial, tone expectations and live mono decision are reasoned applications; they are not published vibraphone standards. Confidence is high in physical operation and Shure's stated example, moderate in the workflow, and low in exact timbre or feedback outcome without the room, instrument and PA.
+# References
+[1] Yamaha, “Reimagining the Vibraphone,” bars, resonators, damper and motor.  Read source <https://hub.yamaha.com/drums/percussion/concert-percussion-innovations-part-2-reimagining-the-vibraphone/>
+[2] Yamaha, “What’s the Difference Between Vibraphone Glockenspiel and Chimes?”  Read source <https://hub.yamaha.com/drums/percussion/whats-the-difference-between-vibraphone-glockenspiel-and-chimes/>
+[3] Yamaha, “YVRD 2700MS Specs,” optional motor example.  Read source <https://usa.yamaha.com/products/musical_instruments/percussion/vibraphones/yvrd-2700/specs.html>
+[4] Percussive Arts Society, Jerry Tachoir, “Learning the Vibraphone,” player technique and mechanical noise.  Read source <https://pas.org/pas-blog/learning-the-vibraphone-by-jerry-tachoir/>
+[5] Shure, “Microphone Techniques for Live Sound Reinforcement,” pp. 30–33, vibraphone and stereo placement.  Read source <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[6] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[7] CDC/NIOSH, “Turn It Down Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

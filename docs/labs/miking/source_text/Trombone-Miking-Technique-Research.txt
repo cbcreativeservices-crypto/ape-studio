@@ -1,0 +1,91 @@
+# Tenor Trombone Miking Technique
+Pro Audio Training Academy   Aerophones Lab   Tenor Trombone   October 4, 2026
+# Scope and learning goals
+The tenor trombone is a lip-excited brass aerophone. This lesson covers one tenor trombone and player in studio and live sound. The learner should capture the intended bright, round or blended tone while preserving the player's natural slide movement, establish safe microphone and cable clearance, and check headroom on actual loud passages. Bass trombone is the next separate instrument in the agreed sequence. No audio examples are included.
+# Understand the source before placement
+The player changes effective tube length by moving the slide; Yamaha describes seven slide positions, with the seventh the farthest extension [1]. Depending on the instrument and phrase, the bell also shifts as the player moves. Hear the player from a normal audience position and ask for a representative quiet phrase, strongest musical accent, low and high register, articulation, slide movement and any mute changes. A microphone must work for the passage, rather than a single held note.
+Bell direction and distance alter the result. DPA suggests 30–50 cm (about 12–20 in) from the bell, slightly off axis, as a balanced trumpet/trombone starting point; aiming centrally gives a brighter direct view [2]. Shure's general brass guidance suggests 1–2 ft (about 30–60 cm) and describes more on-axis sound as brighter and off-axis sound as softer in upper harmonics [3]. These overlapping ranges are trial points, not safety clearances or fixed settings. DPA also suggests a view about 3 m away in a sufficiently large, good-sounding studio room [2]. That distant view trades isolation for more room and ensemble blend.
+The trombone slide makes the physical setup unusually important. Yamaha describes a long, thin, precisely aligned slide whose smooth motion is sensitive to bending [4]. The stand, boom, capsule and cable must stay outside the entire slide sweep. Measure by watching this player's actual instrument in their normal posture, including outward slide reach, instrument tilt, music stand, seated/standing changes and mute handling. Do not infer clearance from a bell-to-mic number. The musician demonstrates their normal range; never force or grab the slide.
+# One stand microphone: a safe starting procedure
+1.Map the playing envelope first. With the player present, establish bell height and their normal standing/seated position. Have them gently demonstrate the greatest slide reach and movement expected in the passage, then any planned mute insertion. Put a stable stand and routed cable completely outside that space. Recheck after any stand, chair or player position change [1, 4].
+2.Start from a clear bell view. If there is space, trial a suitable mic around 30–50 cm from the bell, slightly off axis as DPA suggests [2]. One practical arrangement is above or to the side of the slide's sweep, aimed across the bell, but the exact side/height depends on the player and equipment. Confirm clearance across the actual phrase, including strong gestures.
+3.Compare axis at matched level. Move the aim incrementally toward the bell center for more edge and definition, or toward its edge/away from direct axis for a less piercing view [2, 3]. Recheck slide/mute clearance after every move. Avoid assuming that a darker captured tone is inherently more accurate.
+4.Check real dynamics and the signal chain. Set gain for the player's strongest musical accent; listen for capsule/electronics overload as well as preamp clipping. DPA notes that loud brass can distort inside the microphone before a console meter indicates clipping [2]. Consult the chosen model's maximum SPL, pad and power requirements. An optional high-pass filter should remove rumble without thinning desired low notes.
+A moving player's bell may drift off a narrowly aimed stand mic; give the musician a comfortable playing zone rather than requiring an unnatural posture. A directional dynamic or suitable high-headroom condenser can work; mic type alone does not determine tone. If comparing a ribbon, follow that exact model's handling, wind-blast and phantom-power instructions. No universal mic model is established by these sources.
+# Studio choices
+Focused overdub: Begin with one safe stand position near the documented brass ranges. Compare small changes in distance and axis at matched playback level through full phrases. A closer choice may improve direct sound and reduce room pickup; a slightly farther one can soften local bell emphasis if the room supports it [2, 3]. If the bell tone is harsh, first check axis and electronic overload before heavy EQ.
+Open room sound: In a suitable large room, audition DPA's roughly 3 m perspective, with a clear sightline and stand outside musician/traffic paths [2]. The musical result depends on room reflections and surrounding sources. Do not place a distant mic where it captures a bad room simply to reach a prescribed number. If adding it to a close mic, audition each alone and the combined mono signal; adjust position or balance if arrival-time differences hollow the tone. Delay or polarity changes should be judged by listening, not applied automatically.
+Horn section: Hear the section or ensemble mic before adding a spot; use a tenor spot only when the musical line needs it. A shared mic needs horn spacing and player movement rehearsed. Check the section plus spot in mono and at the intended ensemble level. Full horn-section layout belongs in Ensembles and Voice.
+# Live choices: stand or instrument mount
+For a relatively quiet stage, use a stand mic at a comfortable working position, then verify the loudest full-band passage. On a loud stage, moving closer often improves the direct-to-spill ratio, but close on-axis bell pickup can be sharp and a monitor can still feed back [3]. Aim the microphone's pickup and rejection pattern against the actual wedges and neighboring instruments; cardioid and supercardioid patterns have different rear response [5]. Do a real soundcheck rather than predicting gain-before-feedback from mic type.
+A compatible bell-rim clip microphone keeps its relation to the bell as the player moves. DPA's brass mount guidance includes trombone and recommends positioning its 4099 between the bell center and edge for a smoother sound [6]. Follow the particular clip manufacturer's fit and powering instructions; ask the player before attaching anything to the instrument. Mount only on the approved stationary bell area, never on the slide. Route and secure the cable so it cannot enter the slide path, snag the slide hand or disturb a trigger-equipped tenor. Test the complete slide sweep, bell movement, mute insertion/removal and transport path with the player. DPA says its 4099 can be used with mutes [6], but still verify the actual mute and attachment together. A clip improves relative distance consistency and often isolation; it does not guarantee feedback immunity.
+If the player uses a plunger or other hand-held mute, leave its hand and bell movements free. Have the musician fit/remove their own mute. Its sonic character and physical projection can require a fresh aim and headroom check. No mic belongs inside a bell or mute by default. In a quiet concert, section or main microphones may already give adequate reinforcement; use the least added pickup that meets the music.
+# Tone and approach trials
+Musical aim
+Initial comparison
+Listen for
+Balanced, present tenor
+30–50 cm, slightly off axis, with full slide clearance [2].
+Core, articulation, stable level and natural slide motion.
+More bite
+Move aim incrementally toward bell center; recheck clearance [2, 3].
+Definition versus glare, overload or sharp peaks.
+Softer blended tone
+Move aim toward bell edge or compare more distance in a good room [2, 3].
+Body, room, spill and intelligibility.
+Spacious solo
+Compare main mic with roughly 3 m room view when room permits [2].
+Reflections, musical depth and mono blend.
+Mobile, loud stage
+Compare safe stand location with compatible bell clip [6].
+Movement consistency, vibration, bleed, feedback and mute fit.
+
+These are audible comparisons, not promises that an angle produces the same timbre on every player or bell. Preserve the player's source tone and phrasing.
+# Safety and instrument care
+Slide collision: An apparently reasonable mic directly in front of the bell can intersect the lower slide's path. Test the entire actual sweep and leave a comfortable buffer; stand legs, boom, cables, wedge and nearby people count too. Yamaha's construction account makes clear that small slide distortions can impair motion [4]. If there is any doubt, stop and reposition the hardware with the musician. Never restrain, push or repair the player's slide.
+Stand/clip security: Weight the stand appropriately, tighten the boom and route cables against trips. Confirm permitted clip pressure and finish contact with player/manufacturer. A cable should have strain relief without limiting playing or crossing the slide. Keep microphones away from face, mouthpiece and mute path. Recheck after changing chairs, risers or stage plot.
+Sound levels: Loud brass can overload the microphone's electronics even with safe console meter readings [2]. Check the entire chain at musical peak level. On loud stages, manage hearing exposure for musicians and crew according to NIOSH guidance [7]; do not ask players to exceed their musical dynamics to “test the mic.” No single bell distance guarantees safe hearing exposure, mic headroom or slide clearance.
+# Troubleshooting
+Symptom
+Likely checks
+First response
+Thin or strident
+Axis too central? Capsule or preamp overload?
+Compare off-axis at matched level and inspect mic/input headroom [2, 3].
+Distant or muddy
+Poor room, too much spill, mic too far?
+Compare closer safe position and room/section balance.
+Level varies through a phrase
+Bell moves away from narrow stand pickup?
+Re-aim for normal motion or trial compatible clip [6].
+Buzz/rattle
+Clip touching mute/metal? Cable or stand vibration?
+Stop, check mounting and strain relief with player.
+Slide approaches hardware
+Has full sweep/tilt been tested after last move?
+Stop playing; move stand/clip/cable, retest complete path [1, 4].
+Feedback or competing instruments
+Wedge/source in mic pickup pattern?
+Change geometry and aim; retest with full band [5].
+Two mics lose body together
+Different arrival times?
+Hear each alone and mono sum; move or rebalance.
+
+# Teaching exercise and pass criterion
+1.Ask the player to describe the actual piece, mute use and playing posture; listen acoustically to quiet and strong representative phrases. With the player, map the full normal slide and bell movement before setting any mic [1, 4].
+2.Place one stand mic at a safe position near 30–50 cm, slightly off axis. Compare a small axis change, matching playback level. Describe tone, articulation and movement consistency [2, 3].
+3.Test the loudest musical accent for microphone and preamp headroom. Recheck slide, hands, mute and cable after every move. On a live stage, repeat with monitors and band; optionally compare an approved bell clip [2, 6].
+4.In a suitable studio, compare a room view and, if using two mics, their mono sum. Document placement, microphone model/pad, posture, exact clearance check, and why the chosen view serves the music.
+Pass criterion: The student can justify a tenor trombone mic position for tone and context, demonstrate full player-controlled slide/mute clearance, maintain musical movement, check strong-phrase headroom and distinguish studio from live priorities.
+# Evidence audit and limits
+Direct guidance: Yamaha establishes seven positions and the slide's precision [1, 4]. DPA and Shure give overlapping brass bell distances and axis effects [2, 3]. DPA separately documents an approximate 3 m studio option, microphone overload risks and its particular clip position [2, 6].
+Reasoned application: Mapping the swept slide volume, routing stand/cable outside it, and rechecking after every move are safety procedures inferred from the instrument's documented motion and fragile tolerances. They are deliberately stricter than a simple microphone distance recommendation. Mono evaluation of two mics and full-band feedback testing are engineering checks, not claims of a published tenor-specific optimum.
+Limits: No published range is a minimum safe slide clearance, and the exact bell axis, mic type, far-field room view, clipping threshold, mute fit and feedback margin vary with instrument, player, model and venue. Confidence is high in the documented slide geometry and source starting ranges, moderate in the comparison workflow, and low in any claim that one placement reliably delivers a specified tone across all tenor trombones.
+# References
+[1] Yamaha, “The Structure of the Trombone: How to Play the Scale.”  Read source <https://www.yamaha.com/en/musical_instrument_guide/trombone/mechanism/mechanism004.html>
+[2] DPA Microphones, “How to Mic a Trumpet and Trombone.”  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-trumpet-and-trombone/>
+[3] Shure, “How to Choose the Best Mics for Brass, Wind, and String Instruments.”  Read source <https://www.shure.com/en-US/insights/how-to-choose-the-best-mics-for-brass-wind-and-string-instruments/>
+[4] Yamaha, “How a Trombone Is Made: The Slide Must Be Straight—No Exceptions!”  Read source <https://www.yamaha.com/en/musical_instrument_guide/trombone/manufacturing/>
+[5] Shure, “Microphone Directionality and Polar Pattern Basics.”  Read source <https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics>
+[6] DPA Microphones, “How to Mount the 4099 Instrument Microphone on Various Instruments,” brass clip section.  Read source <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mount-the-4099-instrument-microphone-on-various-instruments/>
+[7] CDC/NIOSH, “Turn It Down: Reducing the Risk of Hearing Disorders Among Musicians.”  Read source <https://www.cdc.gov/niosh/bulletin/2015/musicians-hearing-loss.html>

@@ -1,0 +1,95 @@
+# Oud Miking Technique
+Pro Audio Training Academy  •  Chordophones Lab  •  C13  •  Studio and live sound
+This lesson develops an acoustic microphone position for a real oud and performance, then tests alternate tones and live reinforcement limits. The suggested starting ranges are classroom trials unless identified as a documented practitioner example. The focus is air microphones. A vibration pickup or direct path is named separately when it helps explain live choices. No audio examples are included.
+# Instrument and musical target
+The oud is a plucked, short-necked lute with a rounded bowl, wooden soundboard, bridge and decorative soundholes or rosettes; the player uses a plectrum often called a risha or mizrap. Its neck is normally fretless on contemporary instruments. The instrument, course count, string material, risha, tuning and performance style vary. Confirm them with the musician rather than copying a guitar diagram without checking geometry. Museum accounts describe the wooden face and bowl and note the plectrum articulation and microtonal playing. [1, 2]
+Ask for a representative phrase with low and high notes, quick risha attacks, tremolo or sustained notes, position changes and the loudest planned passage. Hear it acoustically at a normal listener position. Agree whether the target is an intimate solo sound, a natural ensemble perspective, an intentionally close percussive color, or intelligibility over a dense band. Ask how much finger movement and pick articulation belong in the sound. Leave tuning and any instrument modification to the player or qualified technician.
+# Source regions and microphone selection
+Listening area
+What to compare
+Check
+Neck and body junction
+A useful mix of string articulation and body, documented as an oud starting direction by engineers Fletcher and M Ozturk. [3]
+Do not aim so far toward the neck that finger noise dominates.
+Soundboard, bridge side
+More local face/bridge contribution and risha attack as a proposed comparison.
+Avoid the strumming hand, fragile top and stand contact.
+Main rosette or soundhole
+An intentionally cavity-centered color.
+Can overemphasize a local resonance; do not assume it represents the whole oud.
+Several feet in front
+A more integrated source and room when the space and spill allow.
+May lose definition or pick up neighboring instruments.
+
+A small diaphragm cardioid condenser gives a practical focused starting point; a larger diaphragm condenser may provide a different off-axis response, and an omni may be useful in a quiet room. These are options rather than inherent rankings. A moving-coil dynamic is a reasonable stage comparison if its response and available gain suit the passage. Choose for the complete frequency response, polar pattern, headroom and support geometry, not the capsule size alone. For any ribbon, verify its model-specific phantom, wiring, stand and air-blast limits. A directional microphone can develop proximity bass when moved close. [3–6]
+# Core positions and tonal alternatives
+The measurements below are capsule-to-instrument starting points. They are subordinate to the musician’s full risha motion, neck-hand travel and seated posture. Change only one variable at a time; compare at similar reproduced loudness.
+Approach
+Trial position
+What it teaches
+A  Natural single microphone
+Try 35–60 cm (14–24 in) from the oud’s front near the neck and body junction, aimed slightly across the upper face toward the rosette rather than straight into it.
+Compare balanced strings and body against room pickup. Fletcher describes approximately 1–2 ft from a similar region, and another oud engineer preferred at least about 18 in in a good room. [3]
+B  More body
+Keep distance similar, move the capsule toward the soundboard/bridge region or turn its axis modestly toward the rosette.
+Decide whether bass/body improves without making one cavity note bloom or losing articulation.
+C  More definition
+From A, compare a moderately closer but still clear position, e.g. 20–35 cm (8–14 in), aimed at the soundboard side of the junction.
+A classroom proposal for a crowded setting. Listen for pick click, finger noise, proximity bass and movement sensitivity.
+D  Wider perspective
+In a quiet and pleasing room, move the main microphone to about 70–120 cm (2–4 ft), retaining a clear front view.
+A proposed trial for integrated oud and room. Recheck quiet notes, direct/reverberant balance and bleed.
+E  Stereo or room support
+First solve A. Then try a coincident XY pair from a comparable safe position, or add a farther room microphone.
+Stereo width/space may help solo material. Check mono and interaction with the main pickup. The room support is documented as a practitioner suggestion. [4, 7]
+
+One documented oud engineer favors a small diaphragm microphone aimed toward the neck and body junction with some view of the body; another reports a small diaphragm model for attack and a more distant large diaphragm option for body, keeping roughly 18 in or more in a good room. These are personal production choices, not controlled comparisons. Another practitioner warns that a very close risha-side perspective can make attacks overly percussive, while excessive cavity pickup may emphasize a hum or bloom. [3]
+# Studio and live approaches
+Studio or quiet acoustic hall
+Live reinforcement
+Start with A and audition the whole phrase. Increase distance when an attractive room is part of the performance. If the oud is accompanied, check the microphone with the actual neighboring sources before adding stereo.
+Start with one directional air mic in a position that preserves hand clearance and minimizes speaker pickup. Move only as close as is useful: a close mic can magnify local attack and may still feed back through resonant instrument body.
+A far room mic can add natural space only when the room is desirable. Keep it off until the main tone works. Compare in mono and check the attack and lower body with both open.
+Aim a monitor toward an actual rejection direction of the mic model; cardioid rear null and super/hypercardioid rear-side nulls differ. Keep unneeded monitor sends low. [5]
+Ask the player whether risha texture and left-hand gestures sound faithful. Record the chosen position, chair location and orientation for repeatability.
+A pickup can be a fallback or blend for greater stage level, but it is an electrical vibration path, not an air microphone. A player’s account of the AKG C411 as a mic-like solution needs the product description: AKG calls it a condenser vibration pickup and specifies model-dependent powering. [8, 9]
+
+Oud performers disagree about amplified methods because stages differ. One reports successful concert use of air microphones even with horns and percussion; others prefer pickups when the band and monitor level are high. Do not teach either account as a universal impossibility or guarantee. Test the required audience and player level in the actual room, then choose the workable acoustic pickup and, if needed, a separately identified pickup path. [8]
+# Multiple microphones, phase and signal checks
+With two air microphones, solo each and then listen at the intended balance in mono. Small changes in position may alter attack, warmth and low notes because the same performance reaches the capsules at different times. A polarity switch is a diagnostic, not a general solution to a delay mismatch. If a pickup is blended with a mic, compare their individual tones and combined timing and polarity; its electrical path often represents the instrument differently from the air sound. Never assume applying 48 V to an unfamiliar connector is safe: consult the exact product and preamp or wireless adapter instructions. [5, 7, 9]
+# Safe setup and troubleshooting
+Bring the player into normal posture before placing a stand. Keep the microphone, boom and cable outside the risha arc, fingering area, pegbox travel, chair legs and exit. Do not tape or clip hardware to a delicate soundboard, rosette or finish without the owner’s consent and the product’s approved attachment method. Secure low stands against accidental movement; use qualified venue support for any suspended rig. Set gain with the strongest intended passage and leave headroom. If feedback begins, lower the relevant send or output promptly and correct position and monitor geometry rather than holding a sustained ring. [5]
+Problem
+First test
+Too much risha click
+Aim less directly at the picking region or move moderately farther away; confirm that the articulation is not musically intended.
+Thin or all strings
+Turn toward more of the face or move modestly toward the body while preserving clearance.
+Boomy low notes
+Move off the rosette axis; compare slightly more distance and inspect proximity effect or room resonance.
+Finger noise dominates
+Redirect from the neck toward the body and compare whole phrases, not a single note.
+Spill or feedback live
+Reduce monitor/house send, inspect mic polar pattern and speaker location, then refine distance and aim.
+Two paths sound hollow
+Check mono blend, balance, relative arrival time and polarity before EQ.
+
+# Class exercise and observation sheet
+With the oud player and one suitable microphone, note the instrument, musical role, risha, position, room, microphone model/pattern, distance, target, angle, performer comfort, loudest peak and monitor location. A second microphone is optional. No supplied audio examples are required.
+1. Listen to the unamplified passage and agree on the desired amount of body, risha articulation and finger movement.
+2. Set A with safe clearance. At similar reproduced loudness, compare two distances while holding aim steady; then compare two targets while holding distance steady.
+3. In a quiet room compare A with D or E. In live sound compare A with one closer safe position and inspect the monitor geometry at controlled level.
+4. If two air microphones or an approved pickup are used, hear each path alone and in mono combination. Record the final setup and any unresolved compromise.
+5. Ask the player and an independent listener whether the chosen pickup keeps both the quiet ornamentation and strongest passage intelligible in the actual ensemble.
+Pass criterion: the student can repeat a safe position, explain the tonal change caused by a controlled distance or target change, distinguish air microphone from vibration pickup, and show that the result remains useful in the studio or live context.
+# Evidence audit and source notes
+Agreement: museum descriptions support the oud’s bowl, wooden face and plucked construction; practitioner accounts repeatedly favor hearing the actual player and comparing the body/neck region. Most agree that close placement improves separation at a cost to integrated body and room, though preferred distances vary. Direct disagreement: live players report both successful microphone reinforcement and a preference for pickups on loud stages; neither experience establishes a universal rule. Important gap: no controlled oud-specific comparison establishes the classroom distances or one best microphone model. The C411 is a vibration pickup per AKG even when a performer colloquially calls it a mic. [1–9]
+[1] The Metropolitan Museum of Art, “The Lute,” discussion of the Arab ud and construction. https://www.metmuseum.org/pt/essays/the-lute
+[2] Museum of Fine Arts Boston, “Nahat Oud” (2024), player articulation, fretless neck and oud example. https://www.mfa.org/article/2024/nahat-oud
+[3] Fletcher, David, M Ozturk and other engineers, firsthand “Recording Oud” discussion (2007), ProSoundWeb forums. https://repforums.prosoundweb.com/index.php?topic=19243.0
+[4] Jody Stecher and contributors, firsthand oud discussion (2013), Mike’s Oud Forums. https://www.mikeouds.com/messageboard/viewthread.php?tid=13902
+[5] Shure, “Microphone Techniques for Live Sound Reinforcement,” polar rejection, proximity and feedback. https://content-files.shure.com/Pubs/microphone-techniques-for-live-sound-reinforcement/microphone_techniques_for_live_sound_reinforcement_english.pdf
+[6] DPA Microphones, “How to mic an acoustic guitar,” comparative plucked-string guidance; not an oud-specific prescription. https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-an-acoustic-guitar/
+[7] DPA Microphones, “Stereo recording techniques and setups.” https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/
+[8] Brian Prunka and other performing oud players, “Live Sound...” (2013), Mike’s Oud Forums. https://www.mikeouds.com/messageboard/viewthread.php?action=printable&tid=14024
+[9] AKG, C411 manual, vibration pickup principle and variant-specific connections. https://www.akg.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw6a6db746/pdfs/AKG_C411_Manual.pdf

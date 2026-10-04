@@ -1,0 +1,106 @@
+# Djembe — Miking Technique Research
+Lab: 1. Membranophones — Drums and Drumheads
+Sequence: After timbales; before timpani. One instrument in this installment.
+Scope: Miking approaches for studio and live sound. No audio examples.
+# Learning goals
+Explain the contrasting bass, open tone, and slap strokes; identify the head and lower opening as useful but different perspectives; make one safe microphone represent the intended part; add a lower mic only when its extra control earns a channel; assess polarity and timing by listening to both channels in mono; and change the approach for player movement, stage spill, and monitors. [1–6]
+# The instrument and the performer
+A djembe is a single-headed goblet-shaped hand drum with an open lower end. Playing can produce deep bass strokes, ringing open tones, and sharply articulated slaps; the exact response varies with drum size, head, tuning, performer, and room. Have the player demonstrate the entire phrase at realistic dynamics before choosing a mic position. Ask whether they stand, sit with the drum between their legs, hold/tilt it, or use a stand. Its bottom opening and distance from the floor can affect the low-frequency perspective, but do not alter how the player supports the instrument, prop it precariously, or obstruct the opening in the name of a recipe. [1–4]
+The principal question is whether one position already captures enough of the whole part. The lower opening can supply a stronger bass perspective when the performance calls for it. A second mic also captures overlapping sound with a different arrival time and can add spill or feedback risk. A strong top mic may already provide useful bass. [2–5]
+# Starting arrangements and evidence
+Approach
+Placement to try
+What it does and what to test
+One mic above/near the head
+From outside the player's full hand path, start at the head's outer region and aim partly across the head toward the center. A published engineer comparison used about 16 in (41 cm) from center, while another practical case begins much closer. These are examples, not clearance rules. [3, 4]
+Compare bass, open tone, slap, room, and unwanted sound. If the bass is adequate, a second mic is unnecessary. Do not assume every top mic sounds thin. [3]
+One more distant/front perspective
+In a quiet studio or acoustic setting, find a stable position farther from the head that includes more of the entire drum and room. [4, 6]
+The room and neighboring musicians become part of the pickup. In live reinforcement, usable gain and monitor spill may limit this choice. No single distance applies to every djembe.
+Top plus lower-opening mic
+Shure's Alexander Duvel describes a KSM137 about 2–4 in (5–10 cm) above the head at a 40–60° angle and another aimed at the lower opening about 2 in (5 cm) above the floor. A separate engineer trial used a top mic much farther back and a bottom mic about 8 in (20 cm) from the rim. Treat these as *different case examples*, conditioned on instrument height and safe clearance. [2, 3]
+Upper mic emphasizes hand detail; lower mic supplies a selectable bass perspective. First evaluate the top alone. Secure the lower stand/cable away from feet; do not block the opening or place a mic underneath a drum resting on the floor. Listen to the blend in mono.
+Lower-opening emphasis alone
+If bass is the only missing element in a larger arrangement, trial a lower mic as a focused supplement and compare it with the acoustic sound and any upper pickup. [2, 5]
+Often a narrower view with less hand articulation. Do not call it a universal one-mic “full djembe” solution. Stage monitors or the PA may make the extra low-frequency channel impractical.
+
+Shure's two-mic demonstration is a documented placement, not a mandate to put every djembe mic 2–4 inches over active hands or 2 inches off any floor. A producer's comparison reported unexpectedly substantial bass in an upper AKG C-451 EB position, while a live-sound practitioner describes a top-only mic as comparatively slap-heavy in his setting. This is a real difference in outcomes and contexts, not a reason to assert that either account is universally wrong. [2–4]
+# How aim and distance shape the result
+Head mic for detail. Aim so the part's open strokes and slaps remain intelligible without making one strike area overwhelmingly loud. Nearer positioning increases direct pickup relative to room sound, but can exaggerate contact and narrow the balance of the drum's different strokes. Backing off in a good room may integrate the sounds better, at the cost of more room and other sources. Adjust aim and distance one at a time while the player plays the *same full passage*. Do not equate a fixed angle with a fixed tone across drums and mic polar patterns. [2–4, 6]
+Lower mic for weight. Confirm that the bottom opening is genuinely clear in the player's chosen posture or stable stand. Aim toward, but do not obstruct, the opening; check low-frequency body as well as room reflections and foot or stand noise. The player may change tilt or height during performance, changing its relationship to a fixed low stand. Avoid mounting a mic to a loosely placed prop. If there is no safe, repeatable lower position, keep one well-placed top or front mic. [2, 3, 5]
+Mic selection. A suitable dynamic or condenser can serve above or below; actual polar pattern, response, maximum SPL, physical size, and stage mounting matter more than a transducer stereotype. A manufacturer lists a compact low-frequency-oriented dynamic as applicable to djembe, but that product page does not prescribe a universal location. A condenser choice must also meet its powering and peak input requirements. Do not infer that every condenser overloads, every dynamic is dull, or a microphone's maximum-SPL specification represents a human exposure limit. [2, 3, 7]
+# Studio and live applications
+Setting
+Sensible first test
+Main constraint
+Solo studio performance
+One stable upper/front mic with the entire phrase. Add a lower mic only for demonstrably useful bass control. [2, 3]
+Room sound and floor reflection influence the result; two mics require a blend and mono check.
+Ensemble in one room
+Start with one directional mic fairly close but outside all hand motion; decide whether the low opening needs independent coverage.
+More distance or a lower mic may bring in other percussion, bass instruments, and monitors. [4, 6]
+Loud amplified stage
+Work with the system operator on a stable directional top mic and test actual monitor/PA routing; add a lower mic if the desired bass cannot be captured and feedback margin permits. [4, 8]
+More open mics and low-frequency gain can challenge usable level. A close high mic and a low mic can also vary when the performer moves.
+Moving/tilting player
+Ask whether a fixed stand remains aligned throughout the performance.
+A freely played drum should not be immobilized to satisfy a mic diagram. Adjust coverage or select a compatible approved mount, then test full movement.
+
+Feedback is a system loop among microphone, loudspeaker, room, and gain. Point pickup and rejection regions with the actual mic pattern in mind; supercardioid and hypercardioid rear lobes differ from cardioid. A bottom mic near a floor wedge can hear the monitor as well as the drum. During soundcheck, check realistic intended levels under a qualified operator without intentionally provoking feedback. [8]
+# Mounting, power, and hearing safety
+Stop playing before moving any mic, stand, cable, or support. Map the complete hand, wrist, knee, leg, and drum-motion envelope; leave physical clearance for slaps and a tilted shell, and ensure no hardware can fall or pivot toward the player. Keep the lower mic and cable out of foot traffic and from under an unstable instrument. Confirm the stand's load rating and stable placement. Use a clip only if expressly compatible with that instrument and approved by its owner. Never require a performer to sit or stand unnaturally for the microphone. [2–4; rigging points are instructional inference]
+Set gain and any pad using the strongest expected bass and slap while checking both microphone and input stages for overload. Follow the actual equipment manuals for power and cable changes; mute or lower output and monitor feeds first. A pad located after a distorted capsule cannot undo its distortion. NIOSH human noise-exposure guidance is separate from the mic's peak SPL rating; manage loud rehearsals and use appropriate hearing protection. [7, 9, 10]
+# Two-mic summation and polarity
+The upper and lower microphones receive different parts of the sound field, at different times and with potentially different early pressure directions. Bring up the upper mic alone, then the lower at a musically useful level. Test bass, open tones, and slaps in mono, not just a single isolated stroke. If the blend loses body or changes attack, move or aim one mic, compare the polarity switch, and evaluate again with any ensemble mics. A 180° electrical polarity reversal is a diagnostic option; it is not automatically correct for every djembe, and it does not remove the acoustic travel-time difference or align all frequencies. Do not instruct learners to permanently reverse a channel based only on its being below the drum. [11]
+If a distant room mic is added in a studio, it too captures the same instrument at a different time. Assess its contribution at intended level in mono before deciding on panning or delay. An exposed solo djembe might welcome room perspective; a live mono PA might need one reliable focused feed. [6, 11]
+# Guided practical lab
+1.Ask and observe. Have the player demonstrate bass, open tone, slap, the complete pattern, and all postures or movement. Note whether the opening stays clear and how the drum is supported. [1–4]
+2.Start with one mic. Position an upper/front directional mic outside all motion. Set gain with the strongest playing, then assess the quieter articulation and bass. Log actual distance and aim. [2–4]
+3.Compare one variable. Move farther back within the room or angle the upper mic differently, preserving safe clearance. State changes to bass/slap balance, room, and spill, and decide if one mic is sufficient. [3, 4, 6]
+4.Add an optional low mic. Only if the opening and support permit, use a stable low stand aimed toward the opening. Listen to it alone, then blend with the upper mic and compare mono, position, and polarity across the entire phrase. [2, 3, 11]
+5.Check real context. In a studio, inspect room and other instrument pickup. For live sound, use the actual PA and monitors with a qualified operator, then recheck motion, stands, cables, feedback margin, and intended channel routing. [8–10]
+6.Document the result. Explain why the chosen geometry represents the part, what the lower mic contributes or why it was omitted, and any unresolved limitation.
+# Troubleshooting and assessment
+Observation
+First checks
+Adjustment to test
+Plenty of slap, weak bass
+Does the one upper position represent the bass in the room? Is the opening unobstructed?
+Re-aim or back off safely; if needed and possible, try a low mic and mono blend. [2–4]
+Bass drowns articulation
+Is the lower channel excessive or is the top aimed at one stroke?
+Lower or omit the low mic, re-aim upper mic, and reassess complete phrase.
+Bass vanishes when two mics combine
+Does each channel alone have body?
+Reposition/aim, then compare polarity at actual levels in mono. No mandatory inversion. [11]
+Low mic changes sound as player moves
+Does opening move relative to fixed capsule or floor?
+Reposition for reliable coverage or choose a one-mic approach; discuss stance with player. [2–4]
+Feedback or heavy spill live
+Monitor position, polar pattern, number of open mics, routing, gain.
+Work with the operator to change geometry or omit optional low mic. [8]
+Mic/stand/cable in player's path
+Full movement and support stability, not just rest position.
+Stop, mute, secure/reposition, then repeat clearance check.
+
+Passing demonstration: The learner safely captures a performance with one microphone, describes how all three stroke families are represented, tests an optional lower mic only when feasible, checks any two-channel blend in mono, and explains the live/room tradeoff. No audio examples are included.
+# Critical source audit
+Agreement. Meinl identifies bass, open tone, and slap as core djembe sounds. Shure demonstrates top plus bottom, and independent producer/practitioner accounts also describe those perspectives. All indicate that placement, the player, and bottom clearance influence the outcome. [1–5]
+Different emphases. Shure's example is very close to the head and lower opening; Randy Coppinger's comparison used a more distant top mic and bottom mic, while a live-sound practitioner describes top-only versus two-mic choices according to desired bass. Another performer/retailer studio example also uses top and bottom at yet another distance. These are context-specific geometries. [2–5]
+Direct tension. A live-sound account says a top-only approach yielded little bass in that setting, whereas Coppinger's comparison found a substantial bass response from one upper mic. Mic model, location, instrument, player, support, and setting differ, so the evidence does not establish a contradiction under identical conditions. The correct educational result is to test the single upper mic before requiring a second. [3, 4]
+Gaps. None of these demonstrations specifies a universal safe hand or foot clearance, ideal opening-to-floor distance for all drums, guaranteed polarity, a numerical tone curve, or reliable gain before feedback across different PA systems. The lesson explicitly treats published distances as examples and requires player and qualified-stage review. [1–11]
+# Curriculum and app presentation
+Djembe follows timbales in Membranophones and precedes timpani. This is one instrument lesson; later percussion ensembles in Ensembles and Voice address groups. The drum-kit overview links to the Drum Overheads lesson containing the full Glyn Johns technique; that is a separate kit method.
+Show a top/side djembe diagram with head, open lower end, player hands/knees/feet, instrument tilt, stand/floor, and safe mic regions. Offer one upper/front mic first, then an optional lower channel only when opening and support allow. The learner moves aim and distance and receives qualitative predictions rather than fabricated spectral values. Studio/live selection changes spill, room, and monitor prompts. Require a clearance check and a mono blend check before finishing. No audio examples.
+# References
+[1] Meinl Percussion, Headliner djembe product overview, bass, open tone and slap vocabulary.  Read source <https://meinlpercussion.com/en/products/hdj500nt-m7621.html>
+[2] Shure, “Miking World Instruments with Alexander Duvel,” djembe top and lower-opening example.  Read source <https://www.shure.com/en-EU/insights/miking-world-instruments-with-alexander-duvel>
+[3] Randy Coppinger, “Djembe Microphone Comparison,” first-hand upper/lower mic trial.  Read source <https://randycoppinger.com/2013/01/15/djembe-mic-comparison/>
+[4] Chris Huff, “Djembe Microphone Techniques,” first-hand live/worship practitioner account.  Read source <https://www.behindthemixer.com/djembe-microphone-techniques/>
+[5] X8 Drums, “How to Record a Djembe Drum,” first-hand field and studio setups.  Read source <https://www.x8drums.com/blog/how-to-record-a-djembe-drum-field-recording-and-studio-recording/>
+[6] Shure, “Microphone Choice and Placement Secrets for Recording.”  Read source <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+[7] Audix, D4 product documentation, djembe application and microphone specifications.  Read source <https://audixusa.com/products/d4>
+[8] Shure, “How to Control Feedback in a Sound System” and *Microphone Techniques for Live Sound Reinforcement*.  Read source 1 <https://www.shure.com/en-US/insights/how-to-control-feedback-in-a-sound-system>  Read source 2 <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[9] Yamaha, ZG01 operating panel, example of equipment-specific phantom-power precautions.  Read source <https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html>
+[10] CDC NIOSH, “Understand Noise Exposure.”  Read source <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[11] DPA Microphones, “Polarity, phase and delay.”  Read source <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
