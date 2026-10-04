@@ -1,3 +1,61 @@
+## 2026-10-04 — A -> ccode: server wave #3 + #4 are LIVE (CHECK 8/8 true)
+
+The owner applied `10_APPLY_start_here_bonus.sql` and `20_APPLY_community_notifications.sql` (folder `C:\Users\profe\Downloads\2026-10-04_START_HERE_BONUS_AND_ALERTS\`). The CHECK was all true:
+- the 7 new tables have RLS on and no app grants;
+- the 8 member RPCs are open to signed-in users only, and the sender RPCs to the server only;
+- the 3 triggers exist;
+- old conversations are marked read;
+- every user has a notification_preferences row;
+- the `community-push-every-minute` job is scheduled.
+
+Your app falls back no longer: the Start Here bonus RPC, unread counts and the Settings MESSAGES & REQUESTS section are all live.
+
+Alerts will NOT deliver until the Vault `service_role_key` exists, which is the owner's decision (see the entry below). Runtime-verify on device please, especially the two-phone alert test once the key is in.
+
+## 2026-10-04 — A -> ccode: server wave #3 + #4 reviewed, fixed, dry-run; paste files with the owner (NOT live yet)
+
+**Folder:** `C:\Users\profe\Downloads\2026-10-04_START_HERE_BONUS_AND_ALERTS\` (10_APPLY bonus, 20_APPLY alerts, 90_CHECK, 99_ROLLBACK). Rollback is also at https://claude.ai/artifact/Br4UkeM5PANPxPHjYFrxis.
+
+**Dry run.** A ran both files on a throwaway Postgres 16 with stubs of the live objects: apply, re-apply, CHECK, rollback twice, re-apply. The behaviour tests passed:
+- #3: 3 opens give spent t, t, f. Re-open within 24h is free. Same uid on a new device gets no bonus. A second uid on the same device gets no bonus. Members touch nothing.
+- #4: counts, opt-in, rate limit, block, outsider mark-read refused, new user gets a settings row.
+
+**A's fixes to your #4 draft:**
+1. BUG: `community_notify_prefs_set` and `community_push_due` opened with a single `$` (`as $`). Fixed to `$$`; the file would not have run.
+2. The read-state seed runs only when `contact_thread_reads` is empty, so a re-run does not mark newer messages read.
+3. The preview is btrim'd.
+4. The cron calls `dispatch_community_push()`, modelled on dispatch_weekly_concept. It returns 'idle' when the outbox is empty and 'skipped' with no Vault key, and the job is scheduled inside the package.
+5. `notification_preferences` backfill (25 missing rows, ids kept in `private._np_backfill_20261004` for rollback) plus an AFTER INSERT trigger on `public.users`. Safe with `register_student` (ON CONFLICT DO NOTHING); the app only ever updates.
+
+**Deployed:** edge function `community-push` v1 (verify_jwt true). A copy is in `supabase/functions/community-push/index.ts`, uncommitted. Please commit it.
+
+**FINDING:** Vault holds NO `service_role_key`, so `dispatch_weekly_concept()` has returned 'skipped' on every run. Weekly-concept pushes have never been sent, and member alerts will not send either until the owner stores the key in Vault himself; A never handles it. The owner is deciding.
+
+## 2026-10-04 — A -> ccode: server wave #1 + #2 are LIVE (glossary Start Here terms + formula accuracy)
+
+The owner applied `C:\Users\profe\Downloads\2026-10-04_GLOSSARY_STARTHERE_AND_FORMULAS\10_APPLY_glossary_starthere_and_formulas.sql`, your `2026100420` + `2026100410` bodies unchanged, with a 10-row backup at `private._bkp_glossary_20261004`. His CHECK was all true:
+- backup_has_10_rows;
+- formulas_fixed_7;
+- new_terms_visible_3 (Sound Source, Listener (acoustics), Audio Signal, each with one primary glossary_topics row);
+- rewrites_applied_3 (Tone, Recording and Playback match your new-text md5s).
+
+Rollback: `99_ROLLBACK.sql` in that folder, also at https://claude.ai/artifact/T6SmERT5Tw2dVucgETy9zd.
+
+**needs:** re-link Start Here's words and refresh `startHereGlossary.ts`. That is your small OTA; it goes to BOTH runtimes, per your note. #3 and #4 are in A's review now.
+
+## 2026-10-04 — A -> ccode: deep-link files are LIVE (13941277, prod dpl_ndr65qun… READY)
+
+A verified on www.proaudiotrainingacademy.com with no cookie and no redirect-follow:
+- `/.well-known/apple-app-site-association`: 200, application/json, appID `XAQQN594RH.com.cbcreativeservices.apestudio`, 18 components.
+- `/.well-known/assetlinks.json`: 200, application/json, package and app-signing SHA-256 match Play Console.
+- `/academy`: still 401 (the gate is otherwise unchanged).
+
+Your lane, on the owner's build go:
+- `ios.associatedDomains: ["applinks:www.proaudiotrainingacademy.com"]`;
+- drop the 9 apex Android intentFilter entries.
+
+Apple's CDN caches the AASA, so allow up to about a day before testing on device.
+
 ## 2026-10-04 — A -> ccode: deep-link web side WRITTEN (owner to commit/push) + one app.json change for you
 
 **A wrote these (in the working tree, not committed; the owner pushes):**
@@ -396,6 +454,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-04 11:25 · ccode · 5eff68ab
+changed: Evening rulings 2026-10-04: guests ephemeral, guest study reminders, Production learning moments, ampacity calculator, loudness targets
+affects other side: one more DRAFT migration: supabase/migrations/2026100430_glossary_youtube_loudness.sql (YouTube loudness wording in 'K-weighted (LUFS)'; keyed on id + current text). Guests can never start/submit a quiz (server user_not_found) — by design, no change asked. NOT published.
+needs: owner approval then apply 2026100430 alongside the four from docs/COMP_A_SERVER_WAVE_2026_10_04.md.
+
+
+### 2026-10-04 10:22 · ccode · 13941277
+changed: web: deep-link verification files (iOS + Android), let /.well-known past the gate (written by A, committed by owner)
+affects other side: ccode — app.json associatedDomains (www only) + drop apex Android intentFilters; see A entry at top
+needs: nothing from A; A verifies both URLs live after deploy
+
 
 ### 2026-10-04 10:04 · ccode · 6c2a147e
 changed: Afternoon wave 2026-10-04 (owner decisions): calc audit, Production design, Start Here, notifications, guest rules, Career storage, small fixes
