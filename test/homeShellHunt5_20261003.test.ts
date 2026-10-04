@@ -28,7 +28,8 @@ const gateKnown = (entitlement: 'anonymous' | 'free' | 'lapsed' | 'academy', res
 
 describe('Dashboard study gates — the central memberGateOf "known" rule', () => {
   it('the screen derives the gates from useMemberGate, not the raw provider tierKnown', () => {
-    assert.match(dash, /import \{ useMemberGate \} from '\.\.\/\.\.\/features\/commercial\/useTier';/);
+    // `useTier` joined the import for the topic-terms cache key (perf decisions 2026-10-04).
+    assert.match(dash, /import \{ useMemberGate(?:, useTier)? \} from '\.\.\/\.\.\/features\/commercial\/useTier';/);
     assert.match(dash, /const memberGate = useMemberGate\(\);\s*const tierKnown = memberGate === 'open' \|\| memberGate === 'locked';/);
     assert.doesNotMatch(dash, /const \{[^}]*\btierKnown\b[^}]*\} = useEntitlement\(\)/);
   });

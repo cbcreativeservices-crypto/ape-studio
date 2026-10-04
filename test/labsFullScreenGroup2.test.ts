@@ -119,7 +119,8 @@ test('Harmonograph: the machine reports its viewBox shape and never opens the vi
 });
 
 test('the seven labs are reachable in the web preview harness by name', () => {
-  const app = readFileSync(new URL('../App.tsx', import.meta.url), 'utf8');
+  // The harness moved out of App.tsx into src/dev/webPreviews.tsx (2026-10-04).
+  const app = readFileSync(new URL('../src/dev/webPreviews.tsx', import.meta.url), 'utf8');
   for (const key of ['NoiseLab', 'HarmonicLab', 'FmLab', 'ModularLab', 'BinauralLab', 'AutotuneLab', 'HarmonographLab', 'BassLab']) {
     assert.match(app, new RegExp(`\\n\\s+${key}: \\w+ as ComponentType,`), key);
   }

@@ -35,13 +35,15 @@ describe('registration', () => {
   });
   it('the navigator registers it through withMembershipPreview', () => {
     const nav = strip(read('src/navigation/RootNavigator.tsx'));
-    assert.match(nav, /import \{ MasteringLabScreen \} from '\.\.\/screens\/lab\/mastering\/MasteringLabScreen'/);
-    assert.match(nav, /MasteringLab: withMembershipPreview\(MasteringLabScreen\)/);
-    assert.match(nav, /<Stack\.Screen name="MasteringLab" component=\{MemberGated\.MasteringLab\} \/>/);
+    // Lazy since perf decision B (2026-10-04): the cached loader requires the
+    // screen on first visit and wraps it in withMembershipPreview once.
+    assert.match(nav, /MasteringLab: lazyScreen\(\(\) => withMembershipPreview\(require\('\.\.\/screens\/lab\/mastering\/MasteringLabScreen'\)\.MasteringLabScreen\)\)/);
+    assert.match(nav, /<Stack\.Screen name="MasteringLab" getComponent=\{MemberGated\.MasteringLab\} \/>/);
     assert.match(read('src/navigation/types.ts'), /MasteringLab: undefined;/);
   });
   it('the browser harness can open it by name', () => {
-    assert.match(read('App.tsx'), /MasteringLab: MasteringLabScreen as ComponentType/);
+    // The harness moved out of App.tsx into src/dev/webPreviews.tsx (2026-10-04).
+    assert.match(read('src/dev/webPreviews.tsx'), /MasteringLab: MasteringLabScreen as ComponentType/);
   });
   it('the lab menu draws it as a glass tile like its neighbours (catalog-driven)', () => {
     const menu = strip(read('src/screens/lab/EarLabScreen.tsx'));

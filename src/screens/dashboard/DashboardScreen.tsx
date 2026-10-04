@@ -130,7 +130,7 @@ import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { useTermsExempt } from '../../features/study/termsExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useMemberGate } from '../../features/commercial/useTier';
+import { useMemberGate, useTier } from '../../features/commercial/useTier';
 import { cardColumn, popupCard } from '../../theme/readingColumn';
 
 // Rack density (owner 2026-08-11): ONE knob scales every rack slot's height
@@ -745,6 +745,12 @@ export function DashboardScreen() {
   // non-member. 'checking' / 'unconfirmed' keep the member-favouring state.
   const memberGate = useMemberGate();
   const tierKnown = memberGate === 'open' || memberGate === 'locked';
+  // The tier the topic terms are cached under (perf decisions 2026-10-04):
+  // common_mistakes is membership-masked, so the session cache is keyed by it.
+  // A ref, so a tier landing mid-session never reloads the deck.
+  const tierForTerms = useTier();
+  const tierForTermsRef = useRef(tierForTerms);
+  tierForTermsRef.current = tierForTerms;
   // Membership gate (user request 2026-08-12): a free user may LOAD a locked/paid
   // topic into the Dashboard, but studying it raises the Academy upgrade sheet.
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -1501,7 +1507,7 @@ export function DashboardScreen() {
     setTermsError(false);
     setTermList(null);
     try {
-      const items = await fetchTopicItems(topicIdForTerms);
+      const items = await fetchTopicItems(topicIdForTerms, tierForTermsRef.current);
       if (termsReqRef.current !== req) return;
       setTermList(
         items

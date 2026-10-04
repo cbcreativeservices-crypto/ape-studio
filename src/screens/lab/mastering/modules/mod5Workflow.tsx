@@ -19,6 +19,8 @@ import { RENDER_BADGE, type ModuleProps } from './shared';
 /** The output trim that rides along with the EQ: the way a change usually
  *  arrives louder. Peak-safe through the lab's safety ceiling. */
 const EQ_TRIM_DB = 2;
+/** The LISTEN step's index in the steps below (pinned by test/perfDecisionsC_20261004). */
+const LISTEN_STEP = 2;
 
 export function Mod5Workflow({ onAnswered }: ModuleProps) {
   const [step, setStep] = useState(0);
@@ -36,7 +38,9 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
     ],
     [tilt],
   );
-  const pb = useMasterPlayback(variants, matched);
+  // LISTEN_STEP: the index of the step below whose display plays `pb` —
+  // landing there pre-renders quietly (perf decisions 2026-10-04).
+  const pb = useMasterPlayback(variants, matched, LISTEN_STEP);
   const shown = pb.active ?? pb.pending ?? 'eq';
   const m = pb.measured[shown];
   const mix = pb.measured.mix;
@@ -97,7 +101,7 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'A considered change, matched', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'eq' ? SAFETY_CEILING_DB : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'eq' ? SAFETY_CEILING_DB : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',

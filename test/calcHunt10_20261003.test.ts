@@ -74,7 +74,10 @@ describe('H10-2 — Saved Projects shows a loading face before the first read la
     const list = src.slice(src.indexOf('{!editing ? ('));
     const iLoad = list.indexOf('!loaded ?');
     const iUnread = list.indexOf('workflowListUnreadable(projects)');
-    const iEmpty = list.indexOf('projects.length === 0');
+    // FlatList since perf decisions 2026-10-04: the three faces are its
+    // ListEmptyComponent; the truly-empty face is the intro text.
+    assert.match(list, /<FlatList[\s\S]*?data=\{loaded \? projects : \[\]\}[\s\S]*?ListEmptyComponent=\{!loaded \?/);
+    const iEmpty = list.indexOf('A project stores a venue');
     assert.ok(iLoad >= 0, 'a loading face exists');
     assert.ok(iLoad < iUnread && iUnread < iEmpty, 'loading → unreadable → empty, in that order');
     assert.match(list.slice(iLoad, iUnread), /Loading your projects…/);

@@ -16,6 +16,8 @@ import { useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
 import { RENDER_BADGE, type ModuleProps } from './shared';
 
 const CEILING = -0.3;
+/** The LISTEN step's index in the steps below (pinned by test/perfDecisionsC_20261004). */
+const LISTEN_STEP = 2;
 
 export function Mod1What({ onAnswered }: ModuleProps) {
   const [stage, setStage] = useState(3);
@@ -31,7 +33,9 @@ export function Mod1What({ onAnswered }: ModuleProps) {
     ],
     [],
   );
-  const pb = useMasterPlayback(variants, matched);
+  // LISTEN_STEP: the index of the step below whose display plays `pb` —
+  // landing there pre-renders quietly (perf decisions 2026-10-04).
+  const pb = useMasterPlayback(variants, matched, LISTEN_STEP);
   const shown = pb.active ?? pb.pending ?? 'loud';
   const m = pb.measured[shown];
   const mix = pb.measured.mix;
@@ -99,7 +103,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Louder is not better', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={shown === 'loud' ? CEILING : null} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',

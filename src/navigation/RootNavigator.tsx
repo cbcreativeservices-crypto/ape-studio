@@ -15,149 +15,27 @@ import { NAV_FADE, NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './redu
 import { useNavOrientation } from './navOrientation'; // bug hunt 2026-09-29 — see that file
 import { SplashScreen } from '../screens/SplashScreen';
 import { AuthScreen } from '../screens/auth/AuthScreen';
-import { ResultsScreen } from '../screens/results/ResultsScreen';
-import { TrophyScreen } from '../screens/results/TrophyScreen';
-import { CelebrationScreen } from '../screens/results/CelebrationScreen';
-import { AwardProgressScreen } from '../screens/awards/AwardProgressScreen';
-import { FinalExamScreen } from '../screens/exam/FinalExamScreen';
-import { FinalExamResultScreen } from '../screens/exam/FinalExamResultScreen';
-import { SettingsScreen } from '../screens/settings/SettingsScreen';
-import { HelpScreen } from '../screens/help/HelpScreen';
-import { WeeklyConceptScreen } from '../screens/notifications/WeeklyConceptScreen';
-import { InstitutionalScreen } from '../screens/institutional/InstitutionalScreen';
-import { AboutScreen } from '../screens/about/AboutScreen';
-import { AwardsScreen } from '../screens/awards/AwardsScreen';
-import { AudioCommunityDirectoryScreen } from '../screens/directory/AudioCommunityDirectoryScreen';
-import { EmployerAdminScreen } from '../screens/admin/EmployerAdminScreen';
-import { ReportsAdminScreen } from '../screens/admin/ReportsAdminScreen';
-import { ToolsHubScreen } from '../screens/tools/ToolsHubScreen';
-import { ToolInfoScreen } from '../screens/tools/ToolInfoScreen';
-import { ToolLearnScreen } from '../screens/tools/ToolLearnScreen';
-import { ToolDemoScreen } from '../screens/tools/ToolDemoScreen';
-import { ConceptModuleScreen } from '../screens/tools/ConceptModuleScreen';
-import { MeasurementLibraryScreen } from '../screens/tools/MeasurementLibraryScreen';
-import { SplMeterScreen } from '../screens/tools/SplMeterScreen';
-import { RtaScreen } from '../screens/tools/RtaScreen';
-import { WaveformScreen } from '../screens/tools/WaveformScreen';
-import { SignalGenScreen } from '../screens/tools/SignalGenScreen';
-import { SpectrogramScreen } from '../screens/tools/SpectrogramScreen';
-import { Rt60Screen } from '../screens/tools/Rt60Screen';
-import { FrequencyCounterScreen } from '../screens/tools/FrequencyCounterScreen';
-import { MultiMeterScreen } from '../screens/tools/MultiMeterScreen';
-import { DspDebugScreen } from '../screens/tools/DspDebugScreen';
-import { AudioLearningScreen } from '../screens/lab/AudioLearningScreen';
-import { EarLabScreen } from '../screens/lab/EarLabScreen';
-import { LabCategoryScreen } from '../screens/lab/LabCategoryScreen';
-import { HarmonicLabScreen } from '../screens/lab/HarmonicLabScreen';
-import { OscillatorLabScreen } from '../screens/lab/OscillatorLabScreen';
-import { NoiseLabScreen } from '../screens/lab/NoiseLabScreen';
-import { HarmonographLabScreen } from '../screens/lab/HarmonographLabScreen';
-import {
-  EqLabScreen,
-  DelayLabScreen,
-  ReverbLabScreen,
-  ChorusLabScreen,
-  FlangerLabScreen,
-  PhaserLabScreen,
-  CompressionLabScreen,
-  GateLabScreen,
-  LimiterLabScreen,
-  DistortionLabScreen,
-  PhaseLabScreen,
-  StereoLabScreen,
-} from '../screens/lab/fxLabConfigs';
-import { SignalChainLabScreen } from '../screens/lab/SignalChainLabScreen';
-import { BassLabScreen } from '../screens/lab/BassLabScreen';
-import { AutotuneLabScreen } from '../screens/lab/AutotuneLabScreen';
-import { FmLabScreen } from '../screens/lab/FmLabScreen';
-import { BinauralLabScreen } from '../screens/lab/BinauralLabScreen';
-import { ModularLabScreen } from '../screens/lab/ModularLabScreen';
-import { MicPrinciplesLabScreen } from '../screens/lab/micspeaker/MicPrinciplesLabScreen';
-import { SpeakerCoverageLabScreen } from '../screens/lab/micspeaker/SpeakerCoverageLabScreen';
-import { VacuumTubeLabScreen } from '../screens/lab/tube/VacuumTubeLabScreen';
-import { TubeReferenceScreen } from '../screens/lab/tube/TubeReferenceScreen';
-import { TubeCardScreen } from '../screens/lab/tube/TubeCardScreen';
-import { CalcLabScreen } from '../screens/lab/calc/CalcLabScreen';
-import { CalcWorkspaceScreen } from '../screens/lab/calc/CalcWorkspaceScreen';
-import { CalcSymbolsKeyScreen } from '../screens/lab/calc/CalcSymbolsKeyScreen';
-import { CalcWorkflowsScreen } from '../screens/lab/calc/CalcWorkflowsScreen';
-import { CalcWorkflowEditScreen } from '../screens/lab/calc/CalcWorkflowEditScreen';
-import { CalcWorkflowRunScreen } from '../screens/lab/calc/CalcWorkflowRunScreen';
-import { CalcProjectsScreen } from '../screens/lab/calc/CalcProjectsScreen';
-import { CalcResultsScreen } from '../screens/lab/calc/CalcResultsScreen';
-import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
-import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
-import { CymaticsHomeScreen } from '../screens/lab/cymatics/CymaticsHomeScreen';
-import { ProductionLabScreen } from '../screens/lab/production/ProductionLabScreen';
-import { ProductionStageScreen } from '../screens/lab/production/ProductionStageScreen';
-import { ProductionActivityScreen } from '../screens/lab/production/ProductionActivityScreen';
-import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScreen';
-import { PlateStudioScreen } from '../screens/lab/cymatics/PlateStudioScreen';
-import { LiquidStudioScreen } from '../screens/lab/cymatics/LiquidStudioScreen';
-import { MembraneStudioScreen } from '../screens/lab/cymatics/MembraneStudioScreen';
-import { GalleryScreen } from '../screens/lab/cymatics/GalleryScreen';
-import { WaveLabHomeScreen } from '../screens/lab/wave/WaveLabHomeScreen';
-import { WaveModuleScreen } from '../screens/lab/wave/WaveModuleScreen';
-// Ear Training Lab (owner brief 2026-09-02) — home + generic module shell.
-import { EarTrainingLabScreen } from '../screens/lab/eartraining/EarTrainingLabScreen';
-import { EarModuleScreen } from '../screens/lab/eartraining/EarModuleScreen';
-// Amplifier Principles Lab (owner build spec 2026-09-02): home + module shell.
-import { AmpLabHomeScreen } from '../screens/lab/amp/AmpLabHomeScreen';
-import { AmpModuleScreen } from '../screens/lab/amp/AmpModuleScreen';
-// Tuning & Temperament Lab (owner build spec 2026-09-02): one paced screen.
-import { TuningLabScreen } from '../screens/lab/tuning/TuningLabScreen';
-// Sound Envelope & Transients Lab (owner brief 2026-09-02): visual, paged.
-import { EnvelopeLabScreen } from '../screens/lab/envelope/EnvelopeLabScreen';
-import { PatchbayLabScreen } from '../screens/lab/patchbay/PatchbayLabScreen';
-import { ConnectorSelectLabScreen } from '../screens/lab/connectorselect/ConnectorSelectLabScreen';
-import { SoundSystemsLabScreen } from '../screens/lab/soundsystems/SoundSystemsLabScreen';
-import { RoomDesignLabScreen } from '../screens/lab/roomdesign/RoomDesignLabScreen';
-import { StartHereScreen } from '../screens/startHere/StartHereScreen';
-import { StartHereTermsScreen } from '../screens/startHere/StartHereTermsScreen';
-import {
-  SoundSystemsBuildScreen,
-  SoundSystemsLearnScreen,
-  SoundSystemsOperateScreen,
-  SoundSystemsRouteScreen,
-  SoundSystemsTroubleshootScreen,
-} from '../screens/lab/soundsystems/modeScreens';
-import { BeginningMixingLabScreen } from '../screens/lab/mixing/BeginningMixingLabScreen';
-import { AdvancedMixingLabScreen } from '../screens/lab/mixing/AdvancedMixingLabScreen';
-// Mastering Lab: From Final Mix to Release (owner build order 2026-10-01).
-import { MasteringLabScreen } from '../screens/lab/mastering/MasteringLabScreen';
-// Drum Tuning Lab (owner spec 2026-10-01).
-import { DrumTuningLabScreen } from '../screens/lab/drumtuning/DrumTuningLabScreen';
-import { SpeechLabScreen } from '../screens/lab/speech/SpeechLabScreen';
-import { SmartProcessorsLabScreen } from '../screens/lab/deesser/SmartProcessorsLabScreen';
-import { DeEsserLabScreen } from '../screens/lab/deesser/DeEsserLabScreen';
-import { MeterLabHomeScreen } from '../screens/lab/meter/MeterLabHomeScreen';
-import { MeterModuleScreen } from '../screens/lab/meter/MeterModuleScreen';
-import { EqLabHomeScreen } from '../screens/lab/eq/EqLabHomeScreen';
-import { EqModuleScreen } from '../screens/lab/eq/EqModuleScreen';
-import { GainLabHomeScreen } from '../screens/lab/gain/GainLabHomeScreen';
-import { GainModuleScreen } from '../screens/lab/gain/GainModuleScreen';
-import { FoundationsCourseScreen } from '../screens/lab/foundations/FoundationsCourseScreen';
-import { FoundationsPlaygroundScreen } from '../screens/lab/foundations/FoundationsPlaygroundScreen';
-import { PublicGlossaryScreen } from '../screens/landing/PublicGlossaryScreen';
-import { PaywallScreen } from '../screens/commercial/PaywallScreen';
-import { AmplitudeLabScreen, withAmplitudeOrientation } from '../screens/lab/amplitude/AmplitudeOrientation';
 import { withMembershipPreview } from '../features/lab/withMembershipPreview';
-import { MicSelectLabScreen } from '../screens/lab/micselect/MicSelectLabScreen';
-import { CableLabScreen } from '../screens/lab/cable/CableLabScreen';
-import { CableInstallLabScreen } from '../screens/lab/cableinstall/CableInstallLabScreen';
-import { ExposureMonitorScreen } from '../screens/tools/ExposureMonitorScreen';
-// Audio Career Finder (owner brief 2026-09-03) — Career Discovery Lab, Beta.
-import { CareerFinderScreen } from '../screens/careerfinder/CareerFinderScreen';
-import { CareerFinderQuizScreen } from '../screens/careerfinder/CareerFinderQuizScreen';
-import { CareerFinderResultsScreen } from '../screens/careerfinder/CareerFinderResultsScreen';
-import { CareerFamilyScreen } from '../screens/careerfinder/CareerFamilyScreen';
-import { CareerFamilyListScreen } from '../screens/careerfinder/CareerFamilyListScreen';
-import { CareerFinderAboutScreen } from '../screens/careerfinder/CareerFinderAboutScreen';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './types';
 import { withKeepAwake } from '../features/tools/withKeepAwake';
+import { lazyScreen, type ScreenComponent } from './lazyScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// ── LAZY SCREENS (perf decision B, 2026-10-04) ────────────────────────────────
+// Only Splash, Auth and Main (the tab shell) are imported above: they are first
+// paint. Every other route is registered with `getComponent` and a
+// `lazyScreen` loader, so its module is evaluated the first time the route is
+// visited instead of before the first frame. Each loader runs ONCE and caches
+// the component it built — React Navigation calls getComponent on every render,
+// and a wrapper rebuilt per render would remount the screen (see lazyScreen.ts).
+// Route names, params, deep links and the membership wrappers are unchanged;
+// only WHEN the screen code loads has moved.
+/* eslint-disable @typescript-eslint/no-var-requires */
+/** withAmplitudeOrientation, loaded with the first gated screen (it pulls in Skia). */
+const orient = (C: ScreenComponent): ScreenComponent =>
+  (require('../screens/lab/amplitude/AmplitudeOrientation') as typeof import('../screens/lab/amplitude/AmplitudeOrientation')).withAmplitudeOrientation(C);
 
 // Amplitude color-language orientation gate (owner spec 2026-08-12): every
 // INTERACTIVE audio lab / tool / module screen funnels through the one-time
@@ -168,56 +46,107 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 // screens. Hubs, info/reference/records pages, calculators, and the
 // Foundations course itself (it OPENS with the orientation) stay ungated.
 const Gated = {
-  ToolDemo: withAmplitudeOrientation(ToolDemoScreen),
-  SplMeter: withKeepAwake(withAmplitudeOrientation(SplMeterScreen), 'spl'),
-  Rta: withKeepAwake(withAmplitudeOrientation(RtaScreen), 'rta'),
-  Waveform: withKeepAwake(withAmplitudeOrientation(WaveformScreen), 'waveform'),
-  SignalGen: withKeepAwake(withAmplitudeOrientation(SignalGenScreen), 'signalgen'),
-  Spectrogram: withKeepAwake(withAmplitudeOrientation(SpectrogramScreen), 'spectrogram'),
-  Rt60: withKeepAwake(withAmplitudeOrientation(Rt60Screen), 'rt60'),
-  FrequencyCounter: withKeepAwake(withAmplitudeOrientation(FrequencyCounterScreen), 'freqcounter'),
-  MultiMeter: withKeepAwake(withAmplitudeOrientation(MultiMeterScreen), 'multimeter'),
-  HarmonicLab: withAmplitudeOrientation(HarmonicLabScreen),
-  OscillatorLab: withAmplitudeOrientation(OscillatorLabScreen),
-  NoiseLab: withAmplitudeOrientation(NoiseLabScreen),
-  HarmonographLab: withAmplitudeOrientation(HarmonographLabScreen),
-  EqLab: withAmplitudeOrientation(EqLabScreen),
-  DelayLab: withAmplitudeOrientation(DelayLabScreen),
-  ReverbLab: withAmplitudeOrientation(ReverbLabScreen),
-  ChorusLab: withAmplitudeOrientation(ChorusLabScreen),
-  FlangerLab: withAmplitudeOrientation(FlangerLabScreen),
-  PhaserLab: withAmplitudeOrientation(PhaserLabScreen),
-  CompressionLab: withAmplitudeOrientation(CompressionLabScreen),
-  GateLab: withAmplitudeOrientation(GateLabScreen),
-  LimiterLab: withAmplitudeOrientation(LimiterLabScreen),
-  DistortionLab: withAmplitudeOrientation(DistortionLabScreen),
-  PhaseLab: withAmplitudeOrientation(PhaseLabScreen),
-  StereoLab: withAmplitudeOrientation(StereoLabScreen),
-  SignalChainLab: withAmplitudeOrientation(SignalChainLabScreen),
-  BassLab: withAmplitudeOrientation(BassLabScreen),
-  AutotuneLab: withAmplitudeOrientation(AutotuneLabScreen),
-  FmLab: withAmplitudeOrientation(FmLabScreen),
-  BinauralLab: withAmplitudeOrientation(BinauralLabScreen),
-  ModularLab: withAmplitudeOrientation(ModularLabScreen),
-  MicLab: withAmplitudeOrientation(MicPrinciplesLabScreen),
-  MicSelectLab: withAmplitudeOrientation(MicSelectLabScreen),
-  CableLab: withAmplitudeOrientation(CableLabScreen),
-  CableInstallLab: withAmplitudeOrientation(CableInstallLabScreen),
-  SpeakerLab: withAmplitudeOrientation(SpeakerCoverageLabScreen),
-  TubeLab: withAmplitudeOrientation(VacuumTubeLabScreen),
-  DigitalModule: withAmplitudeOrientation(DigitalModuleScreen),
-  CymaticsModule: withAmplitudeOrientation(CymaticsModuleScreen),
-  CymaticsPlateStudio: withAmplitudeOrientation(PlateStudioScreen),
-  CymaticsLiquidStudio: withAmplitudeOrientation(LiquidStudioScreen),
-  CymaticsMembraneStudio: withAmplitudeOrientation(MembraneStudioScreen),
-  CymaticsGallery: withAmplitudeOrientation(GalleryScreen),
-  ProductionStage: ProductionStageScreen,
-  ProductionActivity: ProductionActivityScreen,
-  WaveModule: withAmplitudeOrientation(WaveModuleScreen),
-  MeterModule: withAmplitudeOrientation(MeterModuleScreen),
-  EqModule: withAmplitudeOrientation(EqModuleScreen),
-  GainModule: withAmplitudeOrientation(GainModuleScreen),
-  FoundationsPlayground: withAmplitudeOrientation(FoundationsPlaygroundScreen),
+  ToolDemo: lazyScreen(() => orient(require('../screens/tools/ToolDemoScreen').ToolDemoScreen)),
+  SplMeter: lazyScreen(() => withKeepAwake(orient(require('../screens/tools/SplMeterScreen').SplMeterScreen), 'spl')),
+  Rta: lazyScreen(() => withKeepAwake(orient(require('../screens/tools/RtaScreen').RtaScreen), 'rta')),
+  Waveform: lazyScreen(() => withKeepAwake(orient(require('../screens/tools/WaveformScreen').WaveformScreen), 'waveform')),
+  SignalGen: lazyScreen(() => withKeepAwake(orient(require('../screens/tools/SignalGenScreen').SignalGenScreen), 'signalgen')),
+  Spectrogram: lazyScreen(() => withKeepAwake(orient(require('../screens/tools/SpectrogramScreen').SpectrogramScreen), 'spectrogram')),
+  Rt60: lazyScreen(() => withKeepAwake(orient(require('../screens/tools/Rt60Screen').Rt60Screen), 'rt60')),
+  FrequencyCounter: lazyScreen(() => withKeepAwake(orient(require('../screens/tools/FrequencyCounterScreen').FrequencyCounterScreen), 'freqcounter')),
+  MultiMeter: lazyScreen(() => withKeepAwake(orient(require('../screens/tools/MultiMeterScreen').MultiMeterScreen), 'multimeter')),
+  HarmonicLab: lazyScreen(() => orient(require('../screens/lab/HarmonicLabScreen').HarmonicLabScreen)),
+  OscillatorLab: lazyScreen(() => orient(require('../screens/lab/OscillatorLabScreen').OscillatorLabScreen)),
+  NoiseLab: lazyScreen(() => orient(require('../screens/lab/NoiseLabScreen').NoiseLabScreen)),
+  HarmonographLab: lazyScreen(() => orient(require('../screens/lab/HarmonographLabScreen').HarmonographLabScreen)),
+  EqLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').EqLabScreen)),
+  DelayLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').DelayLabScreen)),
+  ReverbLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').ReverbLabScreen)),
+  ChorusLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').ChorusLabScreen)),
+  FlangerLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').FlangerLabScreen)),
+  PhaserLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').PhaserLabScreen)),
+  CompressionLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').CompressionLabScreen)),
+  GateLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').GateLabScreen)),
+  LimiterLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').LimiterLabScreen)),
+  DistortionLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').DistortionLabScreen)),
+  PhaseLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').PhaseLabScreen)),
+  StereoLab: lazyScreen(() => orient(require('../screens/lab/fxLabConfigs').StereoLabScreen)),
+  SignalChainLab: lazyScreen(() => orient(require('../screens/lab/SignalChainLabScreen').SignalChainLabScreen)),
+  BassLab: lazyScreen(() => orient(require('../screens/lab/BassLabScreen').BassLabScreen)),
+  AutotuneLab: lazyScreen(() => orient(require('../screens/lab/AutotuneLabScreen').AutotuneLabScreen)),
+  FmLab: lazyScreen(() => orient(require('../screens/lab/FmLabScreen').FmLabScreen)),
+  BinauralLab: lazyScreen(() => orient(require('../screens/lab/BinauralLabScreen').BinauralLabScreen)),
+  ModularLab: lazyScreen(() => orient(require('../screens/lab/ModularLabScreen').ModularLabScreen)),
+  MicLab: lazyScreen(() => orient(require('../screens/lab/micspeaker/MicPrinciplesLabScreen').MicPrinciplesLabScreen)),
+  MicSelectLab: lazyScreen(() => orient(require('../screens/lab/micselect/MicSelectLabScreen').MicSelectLabScreen)),
+  CableLab: lazyScreen(() => orient(require('../screens/lab/cable/CableLabScreen').CableLabScreen)),
+  CableInstallLab: lazyScreen(() => orient(require('../screens/lab/cableinstall/CableInstallLabScreen').CableInstallLabScreen)),
+  SpeakerLab: lazyScreen(() => orient(require('../screens/lab/micspeaker/SpeakerCoverageLabScreen').SpeakerCoverageLabScreen)),
+  TubeLab: lazyScreen(() => orient(require('../screens/lab/tube/VacuumTubeLabScreen').VacuumTubeLabScreen)),
+  DigitalModule: lazyScreen(() => orient(require('../screens/lab/digital/DigitalModuleScreen').DigitalModuleScreen)),
+  CymaticsModule: lazyScreen(() => orient(require('../screens/lab/cymatics/CymaticsModuleScreen').CymaticsModuleScreen)),
+  CymaticsPlateStudio: lazyScreen(() => orient(require('../screens/lab/cymatics/PlateStudioScreen').PlateStudioScreen)),
+  CymaticsLiquidStudio: lazyScreen(() => orient(require('../screens/lab/cymatics/LiquidStudioScreen').LiquidStudioScreen)),
+  CymaticsMembraneStudio: lazyScreen(() => orient(require('../screens/lab/cymatics/MembraneStudioScreen').MembraneStudioScreen)),
+  CymaticsGallery: lazyScreen(() => orient(require('../screens/lab/cymatics/GalleryScreen').GalleryScreen)),
+  ProductionStage: lazyScreen(() => require('../screens/lab/production/ProductionStageScreen').ProductionStageScreen),
+  ProductionActivity: lazyScreen(() => require('../screens/lab/production/ProductionActivityScreen').ProductionActivityScreen),
+  WaveModule: lazyScreen(() => orient(require('../screens/lab/wave/WaveModuleScreen').WaveModuleScreen)),
+  MeterModule: lazyScreen(() => orient(require('../screens/lab/meter/MeterModuleScreen').MeterModuleScreen)),
+  EqModule: lazyScreen(() => orient(require('../screens/lab/eq/EqModuleScreen').EqModuleScreen)),
+  GainModule: lazyScreen(() => orient(require('../screens/lab/gain/GainModuleScreen').GainModuleScreen)),
+  FoundationsPlayground: lazyScreen(() => orient(require('../screens/lab/foundations/FoundationsPlaygroundScreen').FoundationsPlaygroundScreen)),
+} as const;
+
+// Every other route that is not part of first paint, loaded on first visit.
+// Plain screens (no wrapper); the gated ones are in Gated / MemberGated.
+const Lazy = {
+  Results: lazyScreen(() => require('../screens/results/ResultsScreen').ResultsScreen),
+  Trophy: lazyScreen(() => require('../screens/results/TrophyScreen').TrophyScreen),
+  Celebration: lazyScreen(() => require('../screens/results/CelebrationScreen').CelebrationScreen),
+  AwardProgress: lazyScreen(() => require('../screens/awards/AwardProgressScreen').AwardProgressScreen),
+  FinalExam: lazyScreen(() => require('../screens/exam/FinalExamScreen').FinalExamScreen),
+  FinalExamResult: lazyScreen(() => require('../screens/exam/FinalExamResultScreen').FinalExamResultScreen),
+  Settings: lazyScreen(() => require('../screens/settings/SettingsScreen').SettingsScreen),
+  Help: lazyScreen(() => require('../screens/help/HelpScreen').HelpScreen),
+  WeeklyConcept: lazyScreen(() => require('../screens/notifications/WeeklyConceptScreen').WeeklyConceptScreen),
+  Institutional: lazyScreen(() => require('../screens/institutional/InstitutionalScreen').InstitutionalScreen),
+  About: lazyScreen(() => require('../screens/about/AboutScreen').AboutScreen),
+  Awards: lazyScreen(() => require('../screens/awards/AwardsScreen').AwardsScreen),
+  AudioCommunityDirectory: lazyScreen(() => require('../screens/directory/AudioCommunityDirectoryScreen').AudioCommunityDirectoryScreen),
+  EmployerAdmin: lazyScreen(() => require('../screens/admin/EmployerAdminScreen').EmployerAdminScreen),
+  ReportsAdmin: lazyScreen(() => require('../screens/admin/ReportsAdminScreen').ReportsAdminScreen),
+  ToolsHub: lazyScreen(() => require('../screens/tools/ToolsHubScreen').ToolsHubScreen),
+  ToolInfo: lazyScreen(() => require('../screens/tools/ToolInfoScreen').ToolInfoScreen),
+  ToolLearn: lazyScreen(() => require('../screens/tools/ToolLearnScreen').ToolLearnScreen),
+  ConceptModule: lazyScreen(() => require('../screens/tools/ConceptModuleScreen').ConceptModuleScreen),
+  ToolLibrary: lazyScreen(() => require('../screens/tools/MeasurementLibraryScreen').MeasurementLibraryScreen),
+  ExposureMonitor: lazyScreen(() => require('../screens/tools/ExposureMonitorScreen').ExposureMonitorScreen),
+  DspDebug: lazyScreen(() => require('../screens/tools/DspDebugScreen').DspDebugScreen),
+  AudioLearning: lazyScreen(() => require('../screens/lab/AudioLearningScreen').AudioLearningScreen),
+  EarLab: lazyScreen(() => require('../screens/lab/EarLabScreen').EarLabScreen),
+  LabCategory: lazyScreen(() => require('../screens/lab/LabCategoryScreen').LabCategoryScreen),
+  CalcLab: lazyScreen(() => require('../screens/lab/calc/CalcLabScreen').CalcLabScreen),
+  CalcWorkspace: lazyScreen(() => require('../screens/lab/calc/CalcWorkspaceScreen').CalcWorkspaceScreen),
+  CalcSymbolsKey: lazyScreen(() => require('../screens/lab/calc/CalcSymbolsKeyScreen').CalcSymbolsKeyScreen),
+  CalcWorkflows: lazyScreen(() => require('../screens/lab/calc/CalcWorkflowsScreen').CalcWorkflowsScreen),
+  CalcWorkflowEdit: lazyScreen(() => require('../screens/lab/calc/CalcWorkflowEditScreen').CalcWorkflowEditScreen),
+  CalcWorkflowRun: lazyScreen(() => require('../screens/lab/calc/CalcWorkflowRunScreen').CalcWorkflowRunScreen),
+  CalcProjects: lazyScreen(() => require('../screens/lab/calc/CalcProjectsScreen').CalcProjectsScreen),
+  CalcResults: lazyScreen(() => require('../screens/lab/calc/CalcResultsScreen').CalcResultsScreen),
+  WaveLab: lazyScreen(() => require('../screens/lab/wave/WaveLabHomeScreen').WaveLabHomeScreen),
+  AmplitudeLab: lazyScreen(() => require('../screens/lab/amplitude/AmplitudeOrientation').AmplitudeLabScreen),
+  FoundationsCourse: lazyScreen(() => require('../screens/lab/foundations/FoundationsCourseScreen').FoundationsCourseScreen),
+  CareerFinder: lazyScreen(() => require('../screens/careerfinder/CareerFinderScreen').CareerFinderScreen),
+  CareerFinderQuiz: lazyScreen(() => require('../screens/careerfinder/CareerFinderQuizScreen').CareerFinderQuizScreen),
+  CareerFinderResults: lazyScreen(() => require('../screens/careerfinder/CareerFinderResultsScreen').CareerFinderResultsScreen),
+  CareerFamily: lazyScreen(() => require('../screens/careerfinder/CareerFamilyScreen').CareerFamilyScreen),
+  CareerFamilyList: lazyScreen(() => require('../screens/careerfinder/CareerFamilyListScreen').CareerFamilyListScreen),
+  CareerFinderAbout: lazyScreen(() => require('../screens/careerfinder/CareerFinderAboutScreen').CareerFinderAboutScreen),
+  StartHere: lazyScreen(() => require('../screens/startHere/StartHereScreen').StartHereScreen),
+  StartHereTerms: lazyScreen(() => require('../screens/startHere/StartHereTermsScreen').StartHereTermsScreen),
+  PublicGlossary: lazyScreen(() => require('../screens/landing/PublicGlossaryScreen').PublicGlossaryScreen),
+  Paywall: lazyScreen(() => require('../screens/commercial/PaywallScreen').PaywallScreen),
 } as const;
 
 // Members-only Training-Lab gate at the SCREEN (navigation bug hunt 2026-09-14,
@@ -230,21 +159,21 @@ const Gated = {
 // members-only rule from labCatalog. INVARIANT: any lab given a deep-link path
 // in linkPaths.ts that is members-only per labCatalog MUST be wrapped here too.
 const MemberGated = {
-  HarmonographLab: withMembershipPreview(Gated.HarmonographLab),
-  HarmonicLab: withMembershipPreview(Gated.HarmonicLab),
-  OscillatorLab: withMembershipPreview(Gated.OscillatorLab),
-  NoiseLab: withMembershipPreview(Gated.NoiseLab),
-  EqLab: withMembershipPreview(Gated.EqLab),
-  CompressionLab: withMembershipPreview(Gated.CompressionLab),
-  ReverbLab: withMembershipPreview(Gated.ReverbLab),
-  DelayLab: withMembershipPreview(Gated.DelayLab),
-  MicLab: withMembershipPreview(Gated.MicLab),
-  SpeakerLab: withMembershipPreview(Gated.SpeakerLab),
-  TubeLab: withMembershipPreview(Gated.TubeLab),
-  CableInstallLab: withMembershipPreview(Gated.CableInstallLab),
-  DigitalLab: withMembershipPreview(DigitalLabHomeScreen),
-  CymaticsLab: withMembershipPreview(CymaticsHomeScreen),
-  ProductionLab: withMembershipPreview(ProductionLabScreen),
+  HarmonographLab: lazyScreen(() => withMembershipPreview(Gated.HarmonographLab())),
+  HarmonicLab: lazyScreen(() => withMembershipPreview(Gated.HarmonicLab())),
+  OscillatorLab: lazyScreen(() => withMembershipPreview(Gated.OscillatorLab())),
+  NoiseLab: lazyScreen(() => withMembershipPreview(Gated.NoiseLab())),
+  EqLab: lazyScreen(() => withMembershipPreview(Gated.EqLab())),
+  CompressionLab: lazyScreen(() => withMembershipPreview(Gated.CompressionLab())),
+  ReverbLab: lazyScreen(() => withMembershipPreview(Gated.ReverbLab())),
+  DelayLab: lazyScreen(() => withMembershipPreview(Gated.DelayLab())),
+  MicLab: lazyScreen(() => withMembershipPreview(Gated.MicLab())),
+  SpeakerLab: lazyScreen(() => withMembershipPreview(Gated.SpeakerLab())),
+  TubeLab: lazyScreen(() => withMembershipPreview(Gated.TubeLab())),
+  CableInstallLab: lazyScreen(() => withMembershipPreview(Gated.CableInstallLab())),
+  DigitalLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/digital/DigitalLabHomeScreen').DigitalLabHomeScreen)),
+  CymaticsLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/cymatics/CymaticsHomeScreen').CymaticsHomeScreen)),
+  ProductionLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/production/ProductionLabScreen').ProductionLabScreen)),
 
   // ── THE CHILD ROUTES OF THE TWO FLAGSHIP LABS (2026-09-17) ────────────────
   //
@@ -261,13 +190,13 @@ const MemberGated = {
   // `membershipGating.test.ts` derives its set from catalog LEAVES, so it
   // structurally cannot see a child route. They are listed here by hand, and
   // the test's own second assertion still proves each one really wraps.
-  CymaticsModule: withMembershipPreview(withAmplitudeOrientation(CymaticsModuleScreen)),
-  CymaticsPlateStudio: withMembershipPreview(withAmplitudeOrientation(PlateStudioScreen)),
-  CymaticsLiquidStudio: withMembershipPreview(withAmplitudeOrientation(LiquidStudioScreen)),
-  CymaticsMembraneStudio: withMembershipPreview(withAmplitudeOrientation(MembraneStudioScreen)),
-  CymaticsGallery: withMembershipPreview(withAmplitudeOrientation(GalleryScreen)),
-  ProductionStage: withMembershipPreview(ProductionStageScreen),
-  ProductionActivity: withMembershipPreview(ProductionActivityScreen),
+  CymaticsModule: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/cymatics/CymaticsModuleScreen').CymaticsModuleScreen))),
+  CymaticsPlateStudio: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/cymatics/PlateStudioScreen').PlateStudioScreen))),
+  CymaticsLiquidStudio: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/cymatics/LiquidStudioScreen').LiquidStudioScreen))),
+  CymaticsMembraneStudio: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/cymatics/MembraneStudioScreen').MembraneStudioScreen))),
+  CymaticsGallery: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/cymatics/GalleryScreen').GalleryScreen))),
+  ProductionStage: lazyScreen(() => withMembershipPreview(require('../screens/lab/production/ProductionStageScreen').ProductionStageScreen)),
+  ProductionActivity: lazyScreen(() => withMembershipPreview(require('../screens/lab/production/ProductionActivityScreen').ProductionActivityScreen)),
 
   // ── THE PREDICATE IS NOT THE GATE EITHER (2026-09-17, pass 5) ──────────
   //
@@ -280,14 +209,14 @@ const MemberGated = {
   // different direction: the wrapper without the predicate gates nothing, and
   // the predicate without the wrapper is never consulted. Both halves are
   // needed, and `membershipGating.test.ts` now asserts both for every one.
-  DigitalModule: withMembershipPreview(withAmplitudeOrientation(DigitalModuleScreen)),
-  EqModule: withMembershipPreview(withAmplitudeOrientation(EqModuleScreen)),
-  GainModule: withMembershipPreview(withAmplitudeOrientation(GainModuleScreen)),
-  EarModule: withMembershipPreview(EarModuleScreen),
-  AmpModule: withMembershipPreview(AmpModuleScreen),
-  TubeReference: withMembershipPreview(TubeReferenceScreen),
-  TubeCard: withMembershipPreview(TubeCardScreen),
-  DeEsserLab: withMembershipPreview(DeEsserLabScreen),
+  DigitalModule: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/digital/DigitalModuleScreen').DigitalModuleScreen))),
+  EqModule: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/eq/EqModuleScreen').EqModuleScreen))),
+  GainModule: lazyScreen(() => withMembershipPreview(orient(require('../screens/lab/gain/GainModuleScreen').GainModuleScreen))),
+  EarModule: lazyScreen(() => withMembershipPreview(require('../screens/lab/eartraining/EarModuleScreen').EarModuleScreen)),
+  AmpModule: lazyScreen(() => withMembershipPreview(require('../screens/lab/amp/AmpModuleScreen').AmpModuleScreen)),
+  TubeReference: lazyScreen(() => withMembershipPreview(require('../screens/lab/tube/TubeReferenceScreen').TubeReferenceScreen)),
+  TubeCard: lazyScreen(() => withMembershipPreview(require('../screens/lab/tube/TubeCardScreen').TubeCardScreen)),
+  DeEsserLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/deesser/DeEsserLabScreen').DeEsserLabScreen)),
 
   // ── ADDED 2026-09-17, after a bug-hunt pass found the hole ────────────────
   //
@@ -302,54 +231,54 @@ const MemberGated = {
   // or in the `training` section, minus the alwaysFree Calculator Lab, diffed
   // against the components actually registered — rather than by eye, because
   // by eye is how 31 of them were missed.
-  AdvancedMixingLab: withMembershipPreview(AdvancedMixingLabScreen),
-  AmpLab: withMembershipPreview(AmpLabHomeScreen),
-  AutotuneLab: withMembershipPreview(Gated.AutotuneLab),
-  BassLab: withMembershipPreview(Gated.BassLab),
-  BeginningMixingLab: withMembershipPreview(BeginningMixingLabScreen),
+  AdvancedMixingLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/mixing/AdvancedMixingLabScreen').AdvancedMixingLabScreen)),
+  AmpLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/amp/AmpLabHomeScreen').AmpLabHomeScreen)),
+  AutotuneLab: lazyScreen(() => withMembershipPreview(Gated.AutotuneLab())),
+  BassLab: lazyScreen(() => withMembershipPreview(Gated.BassLab())),
+  BeginningMixingLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/mixing/BeginningMixingLabScreen').BeginningMixingLabScreen)),
   // Mastering Lab (2026-10-01): members-only via its catalog leaf in the
   // Mixing category; one route, so the predicate sees it directly.
-  MasteringLab: withMembershipPreview(MasteringLabScreen),
+  MasteringLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/mastering/MasteringLabScreen').MasteringLabScreen)),
   // Drum Tuning Lab (2026-10-01): members-only via its catalog leaf in the
   // Pitch & Tuning category; one route.
-  DrumTuningLab: withMembershipPreview(DrumTuningLabScreen),
-  BinauralLab: withMembershipPreview(Gated.BinauralLab),
-  CableLab: withMembershipPreview(Gated.CableLab),
-  ChorusLab: withMembershipPreview(Gated.ChorusLab),
-  ConnectorSelectLab: withMembershipPreview(ConnectorSelectLabScreen),
+  DrumTuningLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/drumtuning/DrumTuningLabScreen').DrumTuningLabScreen)),
+  BinauralLab: lazyScreen(() => withMembershipPreview(Gated.BinauralLab())),
+  CableLab: lazyScreen(() => withMembershipPreview(Gated.CableLab())),
+  ChorusLab: lazyScreen(() => withMembershipPreview(Gated.ChorusLab())),
+  ConnectorSelectLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/connectorselect/ConnectorSelectLabScreen').ConnectorSelectLabScreen)),
   // Sound Systems Lab (2026-09-25): the hub is the catalog row; its five mode
   // screens are children the catalog cannot see (MEMBER_ONLY_EXTRA_ROUTES).
-  SoundSystemsLab: withMembershipPreview(SoundSystemsLabScreen),
+  SoundSystemsLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/soundsystems/SoundSystemsLabScreen').SoundSystemsLabScreen)),
   // Room Design & Monitoring Lab (2026-10-01): members-only via its Acoustics
   // catalog leaf (`member: true`, the Speaker Placement precedent).
-  RoomDesignLab: withMembershipPreview(RoomDesignLabScreen),
-  SoundSystemsLearn: withMembershipPreview(SoundSystemsLearnScreen),
-  SoundSystemsBuild: withMembershipPreview(SoundSystemsBuildScreen),
-  SoundSystemsRoute: withMembershipPreview(SoundSystemsRouteScreen),
-  SoundSystemsOperate: withMembershipPreview(SoundSystemsOperateScreen),
-  SoundSystemsTroubleshoot: withMembershipPreview(SoundSystemsTroubleshootScreen),
-  DistortionLab: withMembershipPreview(Gated.DistortionLab),
-  EarTrainingLab: withMembershipPreview(EarTrainingLabScreen),
-  EnvelopeLab: withMembershipPreview(EnvelopeLabScreen),
-  EqLabHome: withMembershipPreview(EqLabHomeScreen),
-  FlangerLab: withMembershipPreview(Gated.FlangerLab),
-  FmLab: withMembershipPreview(Gated.FmLab),
-  FoundationsPlayground: withMembershipPreview(Gated.FoundationsPlayground),
-  GainLabHome: withMembershipPreview(GainLabHomeScreen),
-  GateLab: withMembershipPreview(Gated.GateLab),
-  LimiterLab: withMembershipPreview(Gated.LimiterLab),
-  MeterLab: withMembershipPreview(MeterLabHomeScreen),
-  MeterModule: withMembershipPreview(Gated.MeterModule),
-  MicSelectLab: withMembershipPreview(Gated.MicSelectLab),
-  ModularLab: withMembershipPreview(Gated.ModularLab),
-  PatchbayLab: withMembershipPreview(PatchbayLabScreen),
-  PhaseLab: withMembershipPreview(Gated.PhaseLab),
-  PhaserLab: withMembershipPreview(Gated.PhaserLab),
-  SignalChainLab: withMembershipPreview(Gated.SignalChainLab),
-  SmartProcessorsLab: withMembershipPreview(SmartProcessorsLabScreen),
-  SpeechLab: withMembershipPreview(SpeechLabScreen),
-  StereoLab: withMembershipPreview(Gated.StereoLab),
-  TuningLab: withMembershipPreview(TuningLabScreen),
+  RoomDesignLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/roomdesign/RoomDesignLabScreen').RoomDesignLabScreen)),
+  SoundSystemsLearn: lazyScreen(() => withMembershipPreview(require('../screens/lab/soundsystems/modeScreens').SoundSystemsLearnScreen)),
+  SoundSystemsBuild: lazyScreen(() => withMembershipPreview(require('../screens/lab/soundsystems/modeScreens').SoundSystemsBuildScreen)),
+  SoundSystemsRoute: lazyScreen(() => withMembershipPreview(require('../screens/lab/soundsystems/modeScreens').SoundSystemsRouteScreen)),
+  SoundSystemsOperate: lazyScreen(() => withMembershipPreview(require('../screens/lab/soundsystems/modeScreens').SoundSystemsOperateScreen)),
+  SoundSystemsTroubleshoot: lazyScreen(() => withMembershipPreview(require('../screens/lab/soundsystems/modeScreens').SoundSystemsTroubleshootScreen)),
+  DistortionLab: lazyScreen(() => withMembershipPreview(Gated.DistortionLab())),
+  EarTrainingLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/eartraining/EarTrainingLabScreen').EarTrainingLabScreen)),
+  EnvelopeLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/envelope/EnvelopeLabScreen').EnvelopeLabScreen)),
+  EqLabHome: lazyScreen(() => withMembershipPreview(require('../screens/lab/eq/EqLabHomeScreen').EqLabHomeScreen)),
+  FlangerLab: lazyScreen(() => withMembershipPreview(Gated.FlangerLab())),
+  FmLab: lazyScreen(() => withMembershipPreview(Gated.FmLab())),
+  FoundationsPlayground: lazyScreen(() => withMembershipPreview(Gated.FoundationsPlayground())),
+  GainLabHome: lazyScreen(() => withMembershipPreview(require('../screens/lab/gain/GainLabHomeScreen').GainLabHomeScreen)),
+  GateLab: lazyScreen(() => withMembershipPreview(Gated.GateLab())),
+  LimiterLab: lazyScreen(() => withMembershipPreview(Gated.LimiterLab())),
+  MeterLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/meter/MeterLabHomeScreen').MeterLabHomeScreen)),
+  MeterModule: lazyScreen(() => withMembershipPreview(Gated.MeterModule())),
+  MicSelectLab: lazyScreen(() => withMembershipPreview(Gated.MicSelectLab())),
+  ModularLab: lazyScreen(() => withMembershipPreview(Gated.ModularLab())),
+  PatchbayLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/patchbay/PatchbayLabScreen').PatchbayLabScreen)),
+  PhaseLab: lazyScreen(() => withMembershipPreview(Gated.PhaseLab())),
+  PhaserLab: lazyScreen(() => withMembershipPreview(Gated.PhaserLab())),
+  SignalChainLab: lazyScreen(() => withMembershipPreview(Gated.SignalChainLab())),
+  SmartProcessorsLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/deesser/SmartProcessorsLabScreen').SmartProcessorsLabScreen)),
+  SpeechLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/speech/SpeechLabScreen').SpeechLabScreen)),
+  StereoLab: lazyScreen(() => withMembershipPreview(Gated.StereoLab())),
+  TuningLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/tuning/TuningLabScreen').TuningLabScreen)),
 } as const;
 
 export function RootNavigator() {
@@ -434,26 +363,26 @@ export function RootNavigator() {
       <Stack.Screen name="Auth" component={AuthScreen} options={NAV_FADE} />
       <Stack.Screen name="Main" component={MainTabs} options={NAV_FADE} />
       {/* Reward loop — exits are explicit buttons/auto-advance, never a back gesture. */}
-      <Stack.Screen name="Results" component={ResultsScreen} options={{ gestureEnabled: false }} />
-      <Stack.Screen name="Trophy" component={TrophyScreen} options={{ gestureEnabled: false }} />
+      <Stack.Screen name="Results" getComponent={Lazy.Results} options={{ gestureEnabled: false }} />
+      <Stack.Screen name="Trophy" getComponent={Lazy.Trophy} options={{ gestureEnabled: false }} />
       {/* Celebrations replace the quiz-win trophy (owner 2026-09-17). Back is
           disabled for the same reason Trophy disables it: the attempt behind
           this screen is finished and returning to it is meaningless. */}
-      <Stack.Screen name="Celebration" component={CelebrationScreen} options={{ gestureEnabled: false }} />
+      <Stack.Screen name="Celebration" getComponent={Lazy.Celebration} options={{ gestureEnabled: false }} />
       {/* Final Exam (R6b capstone) — one sitting, no back gesture, no pause. */}
-      <Stack.Screen name="AwardProgress" component={AwardProgressScreen} options={swipe} />
-      <Stack.Screen name="FinalExam" component={FinalExamScreen} options={{ gestureEnabled: false }} />
-      <Stack.Screen name="FinalExamResult" component={FinalExamResultScreen} options={{ gestureEnabled: false }} />
+      <Stack.Screen name="AwardProgress" getComponent={Lazy.AwardProgress} options={swipe} />
+      <Stack.Screen name="FinalExam" getComponent={Lazy.FinalExam} options={{ gestureEnabled: false }} />
+      <Stack.Screen name="FinalExamResult" getComponent={Lazy.FinalExamResult} options={{ gestureEnabled: false }} />
       {/* S11 — modal, bottom nav hidden, exits via ✕ */}
-      <Stack.Screen name="Settings" component={SettingsScreen} options={{ presentation: 'modal' }} />
-      <Stack.Screen name="Help" component={HelpScreen} options={{ presentation: 'modal' }} />
-      <Stack.Screen name="WeeklyConcept" component={WeeklyConceptScreen} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="Settings" getComponent={Lazy.Settings} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="Help" getComponent={Lazy.Help} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="WeeklyConcept" getComponent={Lazy.WeeklyConcept} options={{ presentation: 'modal' }} />
       {/* Institutional Mode parked container (user request 2026-07-17). */}
-      <Stack.Screen name="Institutional" component={InstitutionalScreen} options={{ presentation: 'modal' }} />
-      <Stack.Screen name="About" component={AboutScreen} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="Institutional" getComponent={Lazy.Institutional} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="About" getComponent={Lazy.About} options={{ presentation: 'modal' }} />
       {/* Awards (Booth 2026-07-15) — Certificates/Diplomas/Hall of Fame, bottom
           nav hidden. An AREA-level destination (Dashboard ⇄ Certificates) → fade. */}
-      <Stack.Screen name="Awards" component={AwardsScreen} options={NAV_FADE} />
+      <Stack.Screen name="Awards" getComponent={Lazy.Awards} options={NAV_FADE} />
       {/* "Get Discovered" registry info is no longer a standalone route — it
           lives as the DirectoryView page inside the Awards pager. The old
           `Directory` modal route was unreachable and was removed 2026-09-10. */}
@@ -461,169 +390,169 @@ export function RootNavigator() {
           a modal: it has three destinations of its own and a member sheet on
           top, and a modal-in-modal is the black-screen trap this codebase has
           hit before. */}
-      <Stack.Screen name="AudioCommunityDirectory" component={AudioCommunityDirectoryScreen} />
-      <Stack.Screen name="EmployerAdmin" component={EmployerAdminScreen} />
-      <Stack.Screen name="ReportsAdmin" component={ReportsAdminScreen} />
+      <Stack.Screen name="AudioCommunityDirectory" getComponent={Lazy.AudioCommunityDirectory} />
+      <Stack.Screen name="EmployerAdmin" getComponent={Lazy.EmployerAdmin} />
+      <Stack.Screen name="ReportsAdmin" getComponent={Lazy.ReportsAdmin} />
       {/* Measurement & Analysis tools (Booth 2026-07-09v) — bottom nav hidden.
           The TOOLS AREA root (Dashboard ⇄ Tools) → fade; everything inside it
           pushes. */}
-      <Stack.Screen name="ToolsHub" component={ToolsHubScreen} options={NAV_FADE} />
-      <Stack.Screen name="ToolInfo" component={ToolInfoScreen} options={swipe} />
+      <Stack.Screen name="ToolsHub" getComponent={Lazy.ToolsHub} options={NAV_FADE} />
+      <Stack.Screen name="ToolInfo" getComponent={Lazy.ToolInfo} options={swipe} />
       {/* Phase-1 training layer (spec of record 2026-07-23): Learn/Demo per
           tool + Smaart concept modules. Academy-gated at content level. */}
-      <Stack.Screen name="ToolLearn" component={ToolLearnScreen} options={swipe} />
-      <Stack.Screen name="ToolDemo" component={Gated.ToolDemo} />
-      <Stack.Screen name="ConceptModule" component={ConceptModuleScreen} options={swipe} />
+      <Stack.Screen name="ToolLearn" getComponent={Lazy.ToolLearn} options={swipe} />
+      <Stack.Screen name="ToolDemo" getComponent={Gated.ToolDemo} />
+      <Stack.Screen name="ConceptModule" getComponent={Lazy.ConceptModule} options={swipe} />
       {/* Phase-2 saved-measurement library + A/B compare (spec §7/§8). */}
-      <Stack.Screen name="ToolLibrary" component={MeasurementLibraryScreen} options={swipe} />
+      <Stack.Screen name="ToolLibrary" getComponent={Lazy.ToolLibrary} options={swipe} />
       {/* LIVE measurement screens (engine build 2026-07-23) — each gates
           itself honestly via EngineGate when the engine isn't in the build. */}
-      <Stack.Screen name="SplMeter" component={Gated.SplMeter} />
-      <Stack.Screen name="Rta" component={Gated.Rta} />
-      <Stack.Screen name="WaveformLive" component={Gated.Waveform} />
-      <Stack.Screen name="SignalGen" component={Gated.SignalGen} />
-      <Stack.Screen name="SpectrogramLive" component={Gated.Spectrogram} />
-      <Stack.Screen name="Rt60Live" component={Gated.Rt60} />
+      <Stack.Screen name="SplMeter" getComponent={Gated.SplMeter} />
+      <Stack.Screen name="Rta" getComponent={Gated.Rta} />
+      <Stack.Screen name="WaveformLive" getComponent={Gated.Waveform} />
+      <Stack.Screen name="SignalGen" getComponent={Gated.SignalGen} />
+      <Stack.Screen name="SpectrogramLive" getComponent={Gated.Spectrogram} />
+      <Stack.Screen name="Rt60Live" getComponent={Gated.Rt60} />
       {/* Frequency Counter & Tuner tool (2026-07-18; tuner merged 2026-07-23). */}
-      <Stack.Screen name="FrequencyCounter" component={Gated.FrequencyCounter} />
+      <Stack.Screen name="FrequencyCounter" getComponent={Gated.FrequencyCounter} />
       {/* Pro Audio MultiMeter (Mono) — all-in-one live meter (owner 2026-07-29). */}
-      <Stack.Screen name="MultiMeter" component={Gated.MultiMeter} />
+      <Stack.Screen name="MultiMeter" getComponent={Gated.MultiMeter} />
       {/* Listening Exposure Monitor (owner 2026-08-12) — a POPUP (modal) opened
           from the ToolsHub dosimeter chip and the check-in panel; the ONLY
           places the user interacts with dosimeter readings/settings. UNGATED
           on purpose: hearing-safety info is never behind the orientation or a
           paywall. */}
-      <Stack.Screen name="ExposureMonitor" component={ExposureMonitorScreen} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="ExposureMonitor" getComponent={Lazy.ExposureMonitor} options={{ presentation: 'modal' }} />
       {/* Spike-0 dev-only debug (entry rendered only when __DEV__). */}
-      <Stack.Screen name="DspDebug" component={DspDebugScreen} />
+      <Stack.Screen name="DspDebug" getComponent={Lazy.DspDebug} />
       {/* Audio Learning Lab (v4 MASTER §13) — the pinned Home card opens the
           EarLab landing menu; HarmonicLab is the one live lab today. Bottom nav
           hidden like the other tool screens. */}
-      <Stack.Screen name="AudioLearning" component={AudioLearningScreen} options={swipe} />
-      <Stack.Screen name="EarLab" component={EarLabScreen} options={swipe} />
-      <Stack.Screen name="LabCategory" component={LabCategoryScreen} options={swipe} />
-      <Stack.Screen name="HarmonicLab" component={MemberGated.HarmonicLab} />
-      <Stack.Screen name="OscillatorLab" component={MemberGated.OscillatorLab} />
-      <Stack.Screen name="NoiseLab" component={MemberGated.NoiseLab} />
-      <Stack.Screen name="HarmonographLab" component={MemberGated.HarmonographLab} />
+      <Stack.Screen name="AudioLearning" getComponent={Lazy.AudioLearning} options={swipe} />
+      <Stack.Screen name="EarLab" getComponent={Lazy.EarLab} options={swipe} />
+      <Stack.Screen name="LabCategory" getComponent={Lazy.LabCategory} options={swipe} />
+      <Stack.Screen name="HarmonicLab" getComponent={MemberGated.HarmonicLab} />
+      <Stack.Screen name="OscillatorLab" getComponent={MemberGated.OscillatorLab} />
+      <Stack.Screen name="NoiseLab" getComponent={MemberGated.NoiseLab} />
+      <Stack.Screen name="HarmonographLab" getComponent={MemberGated.HarmonographLab} />
       {/* The 12 effect labs (native effects path, engineVersion 6). */}
-      <Stack.Screen name="EqLab" component={MemberGated.EqLab} />
-      <Stack.Screen name="DelayLab" component={MemberGated.DelayLab} />
-      <Stack.Screen name="ReverbLab" component={MemberGated.ReverbLab} />
-      <Stack.Screen name="ChorusLab" component={MemberGated.ChorusLab} />
-      <Stack.Screen name="FlangerLab" component={MemberGated.FlangerLab} />
-      <Stack.Screen name="PhaserLab" component={MemberGated.PhaserLab} />
-      <Stack.Screen name="CompressionLab" component={MemberGated.CompressionLab} />
-      <Stack.Screen name="GateLab" component={MemberGated.GateLab} />
-      <Stack.Screen name="LimiterLab" component={MemberGated.LimiterLab} />
-      <Stack.Screen name="DistortionLab" component={MemberGated.DistortionLab} />
-      <Stack.Screen name="PhaseLab" component={MemberGated.PhaseLab} />
-      <Stack.Screen name="StereoLab" component={MemberGated.StereoLab} />
-      <Stack.Screen name="SignalChainLab" component={MemberGated.SignalChainLab} />
+      <Stack.Screen name="EqLab" getComponent={MemberGated.EqLab} />
+      <Stack.Screen name="DelayLab" getComponent={MemberGated.DelayLab} />
+      <Stack.Screen name="ReverbLab" getComponent={MemberGated.ReverbLab} />
+      <Stack.Screen name="ChorusLab" getComponent={MemberGated.ChorusLab} />
+      <Stack.Screen name="FlangerLab" getComponent={MemberGated.FlangerLab} />
+      <Stack.Screen name="PhaserLab" getComponent={MemberGated.PhaserLab} />
+      <Stack.Screen name="CompressionLab" getComponent={MemberGated.CompressionLab} />
+      <Stack.Screen name="GateLab" getComponent={MemberGated.GateLab} />
+      <Stack.Screen name="LimiterLab" getComponent={MemberGated.LimiterLab} />
+      <Stack.Screen name="DistortionLab" getComponent={MemberGated.DistortionLab} />
+      <Stack.Screen name="PhaseLab" getComponent={MemberGated.PhaseLab} />
+      <Stack.Screen name="StereoLab" getComponent={MemberGated.StereoLab} />
+      <Stack.Screen name="SignalChainLab" getComponent={MemberGated.SignalChainLab} />
       {/* Expansion labs (owner 2026-07-26). */}
-      <Stack.Screen name="BassLab" component={MemberGated.BassLab} />
-      <Stack.Screen name="AutotuneLab" component={MemberGated.AutotuneLab} />
-      <Stack.Screen name="FmLab" component={MemberGated.FmLab} />
-      <Stack.Screen name="BinauralLab" component={MemberGated.BinauralLab} />
-      <Stack.Screen name="ModularLab" component={MemberGated.ModularLab} />
-      <Stack.Screen name="MicLab" component={MemberGated.MicLab} />
+      <Stack.Screen name="BassLab" getComponent={MemberGated.BassLab} />
+      <Stack.Screen name="AutotuneLab" getComponent={MemberGated.AutotuneLab} />
+      <Stack.Screen name="FmLab" getComponent={MemberGated.FmLab} />
+      <Stack.Screen name="BinauralLab" getComponent={MemberGated.BinauralLab} />
+      <Stack.Screen name="ModularLab" getComponent={MemberGated.ModularLab} />
+      <Stack.Screen name="MicLab" getComponent={MemberGated.MicLab} />
       {/* Microphone Selection Lab (owner spec 2026-08-12) — selection &
           characteristics, no audio/engine dependency. */}
-      <Stack.Screen name="MicSelectLab" component={MemberGated.MicSelectLab} />
-      <Stack.Screen name="CableLab" component={MemberGated.CableLab} />
-      <Stack.Screen name="CableInstallLab" component={MemberGated.CableInstallLab} />
-      <Stack.Screen name="SpeakerLab" component={MemberGated.SpeakerLab} />
-      <Stack.Screen name="TubeLab" component={MemberGated.TubeLab} />
-      <Stack.Screen name="TubeReference" component={MemberGated.TubeReference} options={swipe} />
-      <Stack.Screen name="TubeCard" component={MemberGated.TubeCard} options={swipe} />
-      <Stack.Screen name="CalcLab" component={CalcLabScreen} />
-      <Stack.Screen name="CalcWorkspace" component={CalcWorkspaceScreen} />
-      <Stack.Screen name="CalcSymbolsKey" component={CalcSymbolsKeyScreen} />
-      <Stack.Screen name="CalcWorkflows" component={CalcWorkflowsScreen} />
-      <Stack.Screen name="CalcWorkflowEdit" component={CalcWorkflowEditScreen} />
-      <Stack.Screen name="CalcWorkflowRun" component={CalcWorkflowRunScreen} />
-      <Stack.Screen name="CalcProjects" component={CalcProjectsScreen} />
-      <Stack.Screen name="CalcResults" component={CalcResultsScreen} />
-      <Stack.Screen name="DigitalLab" component={MemberGated.DigitalLab} />
-      <Stack.Screen name="DigitalModule" component={MemberGated.DigitalModule} />
-      <Stack.Screen name="CymaticsLab" component={MemberGated.CymaticsLab} />
+      <Stack.Screen name="MicSelectLab" getComponent={MemberGated.MicSelectLab} />
+      <Stack.Screen name="CableLab" getComponent={MemberGated.CableLab} />
+      <Stack.Screen name="CableInstallLab" getComponent={MemberGated.CableInstallLab} />
+      <Stack.Screen name="SpeakerLab" getComponent={MemberGated.SpeakerLab} />
+      <Stack.Screen name="TubeLab" getComponent={MemberGated.TubeLab} />
+      <Stack.Screen name="TubeReference" getComponent={MemberGated.TubeReference} options={swipe} />
+      <Stack.Screen name="TubeCard" getComponent={MemberGated.TubeCard} options={swipe} />
+      <Stack.Screen name="CalcLab" getComponent={Lazy.CalcLab} />
+      <Stack.Screen name="CalcWorkspace" getComponent={Lazy.CalcWorkspace} />
+      <Stack.Screen name="CalcSymbolsKey" getComponent={Lazy.CalcSymbolsKey} />
+      <Stack.Screen name="CalcWorkflows" getComponent={Lazy.CalcWorkflows} />
+      <Stack.Screen name="CalcWorkflowEdit" getComponent={Lazy.CalcWorkflowEdit} />
+      <Stack.Screen name="CalcWorkflowRun" getComponent={Lazy.CalcWorkflowRun} />
+      <Stack.Screen name="CalcProjects" getComponent={Lazy.CalcProjects} />
+      <Stack.Screen name="CalcResults" getComponent={Lazy.CalcResults} />
+      <Stack.Screen name="DigitalLab" getComponent={MemberGated.DigitalLab} />
+      <Stack.Screen name="DigitalModule" getComponent={MemberGated.DigitalModule} />
+      <Stack.Screen name="CymaticsLab" getComponent={MemberGated.CymaticsLab} />
       {/* Both production labs share one screen; the route just fixes the param.
           Named entries exist so each lab can be linked to on its own. */}
       <Stack.Screen
         name="PreProdLab"
-        component={MemberGated.ProductionLab}
+        getComponent={MemberGated.ProductionLab}
         initialParams={{ lab: 'preprod' }}
       />
       <Stack.Screen
         name="PostProdLab"
-        component={MemberGated.ProductionLab}
+        getComponent={MemberGated.ProductionLab}
         initialParams={{ lab: 'postprod' }}
       />
-      <Stack.Screen name="ProductionLab" component={MemberGated.ProductionLab} />
-      <Stack.Screen name="ProductionStage" component={MemberGated.ProductionStage} />
-      <Stack.Screen name="ProductionActivity" component={MemberGated.ProductionActivity} />
-      <Stack.Screen name="CymaticsModule" component={MemberGated.CymaticsModule} />
-      <Stack.Screen name="CymaticsPlateStudio" component={MemberGated.CymaticsPlateStudio} />
-      <Stack.Screen name="CymaticsLiquidStudio" component={MemberGated.CymaticsLiquidStudio} />
-      <Stack.Screen name="CymaticsMembraneStudio" component={MemberGated.CymaticsMembraneStudio} />
-      <Stack.Screen name="CymaticsGallery" component={MemberGated.CymaticsGallery} />
-      <Stack.Screen name="WaveLab" component={WaveLabHomeScreen} />
-      <Stack.Screen name="WaveModule" component={Gated.WaveModule} />
-      <Stack.Screen name="EarTrainingLab" component={MemberGated.EarTrainingLab} />
-      <Stack.Screen name="EarModule" component={MemberGated.EarModule} />
-      <Stack.Screen name="AmpLab" component={MemberGated.AmpLab} />
-      <Stack.Screen name="AmpModule" component={MemberGated.AmpModule} />
-      <Stack.Screen name="TuningLab" component={MemberGated.TuningLab} />
-      <Stack.Screen name="EnvelopeLab" component={MemberGated.EnvelopeLab} />
-      <Stack.Screen name="PatchbayLab" component={MemberGated.PatchbayLab} />
-      <Stack.Screen name="ConnectorSelectLab" component={MemberGated.ConnectorSelectLab} />
-      <Stack.Screen name="SoundSystemsLab" component={MemberGated.SoundSystemsLab} />
-      <Stack.Screen name="RoomDesignLab" component={MemberGated.RoomDesignLab} />
-      <Stack.Screen name="SoundSystemsLearn" component={MemberGated.SoundSystemsLearn} />
-      <Stack.Screen name="SoundSystemsBuild" component={MemberGated.SoundSystemsBuild} />
-      <Stack.Screen name="SoundSystemsRoute" component={MemberGated.SoundSystemsRoute} />
-      <Stack.Screen name="SoundSystemsOperate" component={MemberGated.SoundSystemsOperate} />
-      <Stack.Screen name="SoundSystemsTroubleshoot" component={MemberGated.SoundSystemsTroubleshoot} />
-      <Stack.Screen name="BeginningMixingLab" component={MemberGated.BeginningMixingLab} />
-      <Stack.Screen name="AdvancedMixingLab" component={MemberGated.AdvancedMixingLab} />
-      <Stack.Screen name="MasteringLab" component={MemberGated.MasteringLab} />
-      <Stack.Screen name="DrumTuningLab" component={MemberGated.DrumTuningLab} />
-      <Stack.Screen name="SpeechLab" component={MemberGated.SpeechLab} />
-      <Stack.Screen name="SmartProcessorsLab" component={MemberGated.SmartProcessorsLab} />
-      <Stack.Screen name="DeEsserLab" component={MemberGated.DeEsserLab} />
-      <Stack.Screen name="MeterLab" component={MemberGated.MeterLab} />
-      <Stack.Screen name="MeterModule" component={MemberGated.MeterModule} />
-      <Stack.Screen name="EqLabHome" component={MemberGated.EqLabHome} />
-      <Stack.Screen name="EqModule" component={MemberGated.EqModule} />
-      <Stack.Screen name="GainLabHome" component={MemberGated.GainLabHome} />
-      <Stack.Screen name="GainModule" component={MemberGated.GainModule} />
+      <Stack.Screen name="ProductionLab" getComponent={MemberGated.ProductionLab} />
+      <Stack.Screen name="ProductionStage" getComponent={MemberGated.ProductionStage} />
+      <Stack.Screen name="ProductionActivity" getComponent={MemberGated.ProductionActivity} />
+      <Stack.Screen name="CymaticsModule" getComponent={MemberGated.CymaticsModule} />
+      <Stack.Screen name="CymaticsPlateStudio" getComponent={MemberGated.CymaticsPlateStudio} />
+      <Stack.Screen name="CymaticsLiquidStudio" getComponent={MemberGated.CymaticsLiquidStudio} />
+      <Stack.Screen name="CymaticsMembraneStudio" getComponent={MemberGated.CymaticsMembraneStudio} />
+      <Stack.Screen name="CymaticsGallery" getComponent={MemberGated.CymaticsGallery} />
+      <Stack.Screen name="WaveLab" getComponent={Lazy.WaveLab} />
+      <Stack.Screen name="WaveModule" getComponent={Gated.WaveModule} />
+      <Stack.Screen name="EarTrainingLab" getComponent={MemberGated.EarTrainingLab} />
+      <Stack.Screen name="EarModule" getComponent={MemberGated.EarModule} />
+      <Stack.Screen name="AmpLab" getComponent={MemberGated.AmpLab} />
+      <Stack.Screen name="AmpModule" getComponent={MemberGated.AmpModule} />
+      <Stack.Screen name="TuningLab" getComponent={MemberGated.TuningLab} />
+      <Stack.Screen name="EnvelopeLab" getComponent={MemberGated.EnvelopeLab} />
+      <Stack.Screen name="PatchbayLab" getComponent={MemberGated.PatchbayLab} />
+      <Stack.Screen name="ConnectorSelectLab" getComponent={MemberGated.ConnectorSelectLab} />
+      <Stack.Screen name="SoundSystemsLab" getComponent={MemberGated.SoundSystemsLab} />
+      <Stack.Screen name="RoomDesignLab" getComponent={MemberGated.RoomDesignLab} />
+      <Stack.Screen name="SoundSystemsLearn" getComponent={MemberGated.SoundSystemsLearn} />
+      <Stack.Screen name="SoundSystemsBuild" getComponent={MemberGated.SoundSystemsBuild} />
+      <Stack.Screen name="SoundSystemsRoute" getComponent={MemberGated.SoundSystemsRoute} />
+      <Stack.Screen name="SoundSystemsOperate" getComponent={MemberGated.SoundSystemsOperate} />
+      <Stack.Screen name="SoundSystemsTroubleshoot" getComponent={MemberGated.SoundSystemsTroubleshoot} />
+      <Stack.Screen name="BeginningMixingLab" getComponent={MemberGated.BeginningMixingLab} />
+      <Stack.Screen name="AdvancedMixingLab" getComponent={MemberGated.AdvancedMixingLab} />
+      <Stack.Screen name="MasteringLab" getComponent={MemberGated.MasteringLab} />
+      <Stack.Screen name="DrumTuningLab" getComponent={MemberGated.DrumTuningLab} />
+      <Stack.Screen name="SpeechLab" getComponent={MemberGated.SpeechLab} />
+      <Stack.Screen name="SmartProcessorsLab" getComponent={MemberGated.SmartProcessorsLab} />
+      <Stack.Screen name="DeEsserLab" getComponent={MemberGated.DeEsserLab} />
+      <Stack.Screen name="MeterLab" getComponent={MemberGated.MeterLab} />
+      <Stack.Screen name="MeterModule" getComponent={MemberGated.MeterModule} />
+      <Stack.Screen name="EqLabHome" getComponent={MemberGated.EqLabHome} />
+      <Stack.Screen name="EqModule" getComponent={MemberGated.EqModule} />
+      <Stack.Screen name="GainLabHome" getComponent={MemberGated.GainLabHome} />
+      <Stack.Screen name="GainModule" getComponent={MemberGated.GainModule} />
       {/* Understanding Level & Amplitude — the first lab in Audio Fundamentals
           (owner 2026-08-12). UNGATED: it IS the orientation, so it must never
           be wrapped in withAmplitudeOrientation (that would gate it behind
           itself). */}
-      <Stack.Screen name="AmplitudeLab" component={AmplitudeLabScreen} options={swipe} />
+      <Stack.Screen name="AmplitudeLab" getComponent={Lazy.AmplitudeLab} options={swipe} />
       {/* Foundations of Sound — the Ear Lab's first module (course + sandbox). */}
-      <Stack.Screen name="FoundationsCourse" component={FoundationsCourseScreen} />
-      <Stack.Screen name="FoundationsPlayground" component={MemberGated.FoundationsPlayground} />
+      <Stack.Screen name="FoundationsCourse" getComponent={Lazy.FoundationsCourse} />
+      <Stack.Screen name="FoundationsPlayground" getComponent={MemberGated.FoundationsPlayground} />
       {/* Audio Career Finder (owner brief 2026-09-03). No audio visualizer, so
           NOT behind the amplitude orientation; read-only pages take swipe-back,
           the questions do not (a stray swipe mid-answer is the one gesture
           that would surprise). */}
-      <Stack.Screen name="CareerFinder" component={CareerFinderScreen} options={swipe} />
-      <Stack.Screen name="CareerFinderQuiz" component={CareerFinderQuizScreen} />
-      <Stack.Screen name="CareerFinderResults" component={CareerFinderResultsScreen} options={swipe} />
-      <Stack.Screen name="CareerFamily" component={CareerFamilyScreen} options={swipe} />
-      <Stack.Screen name="CareerFamilyList" component={CareerFamilyListScreen} options={swipe} />
-      <Stack.Screen name="CareerFinderAbout" component={CareerFinderAboutScreen} options={swipe} />
+      <Stack.Screen name="CareerFinder" getComponent={Lazy.CareerFinder} options={swipe} />
+      <Stack.Screen name="CareerFinderQuiz" getComponent={Lazy.CareerFinderQuiz} />
+      <Stack.Screen name="CareerFinderResults" getComponent={Lazy.CareerFinderResults} options={swipe} />
+      <Stack.Screen name="CareerFamily" getComponent={Lazy.CareerFamily} options={swipe} />
+      <Stack.Screen name="CareerFamilyList" getComponent={Lazy.CareerFamilyList} options={swipe} />
+      <Stack.Screen name="CareerFinderAbout" getComponent={Lazy.CareerFinderAbout} options={swipe} />
       {/* Start Here (owner 2026-09-29): FREE for everyone, guests included —
           deliberately NOT wrapped in withMembershipPreview / MemberGated.
           No swipe-back: its rack pages carry full-width faders. */}
-      <Stack.Screen name="StartHere" component={StartHereScreen} />
-      <Stack.Screen name="StartHereTerms" component={StartHereTermsScreen} options={swipe} />
+      <Stack.Screen name="StartHere" getComponent={Lazy.StartHere} />
+      <Stack.Screen name="StartHereTerms" getComponent={Lazy.StartHereTerms} options={swipe} />
       {/* Anonymous public glossary (commercial browse path). */}
-      <Stack.Screen name="PublicGlossary" component={PublicGlossaryScreen} />
+      <Stack.Screen name="PublicGlossary" getComponent={Lazy.PublicGlossary} />
       {/* CM7: academy paywall (modal; UI only). */}
-      <Stack.Screen name="Paywall" component={PaywallScreen} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="Paywall" getComponent={Lazy.Paywall} options={{ presentation: 'modal' }} />
     </Stack.Navigator>
   );
 }

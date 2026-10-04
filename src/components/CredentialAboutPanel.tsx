@@ -9,13 +9,14 @@
  */
 import { StyleSheet, Text, View } from 'react-native';
 import { AboutPanel, type AboutSection } from './AboutPanel';
-import { credentialCopy } from '../data/credentialCopy';
+// Loaded on first use, not at start (perf decision B, 2026-10-04).
+import { credentialCopyLazy } from '../data/credentialCopyLazy';
 import { REQUIRES_LABEL } from '../data/careerRequirement';
 import { colors, fonts } from '../theme/tokens';
 
 /** Does this credential have copy? Callers decide layout before rendering. */
 export function hasCredentialAbout(slug: string | null | undefined): boolean {
-  return !!slug && credentialCopy(slug) != null;
+  return !!slug && credentialCopyLazy(slug) != null;
 }
 
 export function CredentialAboutPanel({
@@ -27,7 +28,7 @@ export function CredentialAboutPanel({
   accent?: string;
   maxHeight?: number;
 }) {
-  const copy = slug ? credentialCopy(slug) : null;
+  const copy = slug ? credentialCopyLazy(slug) : null;
   if (!copy) return null;
 
   const sections: AboutSection[] = [];

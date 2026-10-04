@@ -23,10 +23,21 @@
  * Every `term` string byte-matches a glossary `term` row (validated at
  * curation time) so taps can deep-link to the exact entry later.
  */
-// Metro bundles JSON imports natively; these ship in the app bundle so the
+// Metro bundles JSON natively; these ship in the app bundle so the
 // notifications work fully offline.
-import misunderstoodRaw from './curated/misunderstoodTerms.json';
-import oddRaw from './curated/oddTerms.json';
+//
+// LOADED ON FIRST USE, NOT AT START (perf decision B, 2026-10-04). The two
+// files are ~450 KB together, and the settings store imports this module at
+// boot only to ask "does each bucket have content?" — so the lists are
+// `require`d the first time they are actually read (the scheduler booking a
+// bucket the user switched ON; both are OFF by default), and the has-checks
+// are answered by the cheap index below. Same pattern as TopicAboutPanel.
+
+/** Cheap index: does each bucket have content? Answered WITHOUT loading the
+ *  JSON. test/perfDecisionsB_20261004.test.ts pins both flags to the real
+ *  files, so a list that is emptied (or filled) cannot leave them stale. */
+export const HAS_MISUNDERSTOOD_TERMS = true;
+export const HAS_ODD_TERMS = true;
 
 export type CuratedTermEntry = {
   /** EXACT glossary `term` string (byte-identical — future deep-link key). */
@@ -44,8 +55,21 @@ const clean = (raw: unknown): readonly CuratedTermEntry[] =>
       ) as CuratedTermEntry[])
     : [];
 
-export const MISUNDERSTOOD_TERMS: readonly CuratedTermEntry[] = clean(misunderstoodRaw);
-export const ODD_TERMS: readonly CuratedTermEntry[] = clean(oddRaw);
+/* eslint-disable @typescript-eslint/no-var-requires */
+let misunderstood: readonly CuratedTermEntry[] | null = null;
+let odd: readonly CuratedTermEntry[] | null = null;
+
+/** The MISUNDERSTOOD bucket, in play order — loaded once, on first call. */
+export function misunderstoodTerms(): readonly CuratedTermEntry[] {
+  if (!misunderstood) misunderstood = clean(require('./curated/misunderstoodTerms.json'));
+  return misunderstood;
+}
+
+/** The ODD bucket, in play order — loaded once, on first call. */
+export function oddTerms(): readonly CuratedTermEntry[] {
+  if (!odd) odd = clean(require('./curated/oddTerms.json'));
+  return odd;
+}
 
 /** Days since the Unix epoch in LOCAL time — the rotation key. Local, so the
  *  term flips at the user's midnight, not at UTC's. */

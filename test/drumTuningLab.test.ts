@@ -73,13 +73,15 @@ describe('registration', () => {
   });
   it('the navigator registers it through withMembershipPreview', () => {
     const nav = strip(read('src/navigation/RootNavigator.tsx'));
-    assert.match(nav, /import \{ DrumTuningLabScreen \} from '\.\.\/screens\/lab\/drumtuning\/DrumTuningLabScreen'/);
-    assert.match(nav, /DrumTuningLab: withMembershipPreview\(DrumTuningLabScreen\)/);
-    assert.match(nav, /<Stack\.Screen name="DrumTuningLab" component=\{MemberGated\.DrumTuningLab\} \/>/);
+    // Lazy since perf decision B (2026-10-04): the cached loader requires the
+    // screen on first visit and wraps it in withMembershipPreview once.
+    assert.match(nav, /DrumTuningLab: lazyScreen\(\(\) => withMembershipPreview\(require\('\.\.\/screens\/lab\/drumtuning\/DrumTuningLabScreen'\)\.DrumTuningLabScreen\)\)/);
+    assert.match(nav, /<Stack\.Screen name="DrumTuningLab" getComponent=\{MemberGated\.DrumTuningLab\} \/>/);
     assert.match(read('src/navigation/types.ts'), /DrumTuningLab: undefined;/);
   });
   it('the browser harness can open it by name; the wipe registry knows the store', () => {
-    assert.match(read('App.tsx'), /DrumTuningLab: DrumTuningLabScreen as ComponentType/);
+    // The harness moved out of App.tsx into src/dev/webPreviews.tsx (2026-10-04).
+    assert.match(read('src/dev/webPreviews.tsx'), /DrumTuningLab: DrumTuningLabScreen as ComponentType/);
     assert.match(read('test/accountWipeRegistry.test.ts'), /'screens\/lab\/drumtuning\/drumProgress\.ts'/);
   });
 });

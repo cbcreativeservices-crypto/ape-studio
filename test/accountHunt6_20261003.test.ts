@@ -54,7 +54,7 @@ const STUBS: Record<string, string> = {
     export function setLocalSettingsUnreadable() {}`),
   './a11y': mod(`export function applyA11yFromSettings() {} export function resetA11y() {}`),
   'audio/leaveAppMute': mod(`export const MUTE_ON_LEAVE_DEFAULT = true; export function setMuteOnLeave() {}`),
-  'notifications/curatedTermLists': mod(`export const MISUNDERSTOOD_TERMS = []; export const ODD_TERMS = [];`),
+  'notifications/curatedTermLists': mod(`export const HAS_MISUNDERSTOOD_TERMS = false; export const HAS_ODD_TERMS = false;`),
   'account/myUserRow': mod(`export async function myUserRow() { return null; }`),
   'storage/saveFailureNotice': mod(`export function reportUnhandledSaveFailure() {}`),
 };
@@ -66,7 +66,11 @@ const SCHED_STUBS: Record<string, string> = {
     async rpc() { return { data: null, error: null }; },
     from() { throw new Error('no table reads'); },
   };`),
-  'lib/getSessionSafe': mod(`export async function hasSafeSession() { return false; } export async function safeUser() { return null; }`),
+  // safeSessionResult: weeklyConcept reads the uid from the stored session
+  // since perf decisions A (2026-10-04); the stub answers "no session" like
+  // the two above.
+  'lib/getSessionSafe': mod(`export async function hasSafeSession() { return false; } export async function safeUser() { return null; }
+    export async function safeSessionResult() { return { result: { data: { session: null } }, timedOut: false }; }`),
   './push': mod(`
     const N = {
       SchedulableTriggerInputTypes: { DATE: 'date', DAILY: 'daily', WEEKLY: 'weekly', TIME_INTERVAL: 'timeInterval' },
@@ -79,7 +83,7 @@ const SCHED_STUBS: Record<string, string> = {
       async requestPermissionsAsync() { return { status: 'granted' }; },
     };
     export function getNotifications() { return N; }`),
-  './curatedTermLists': mod(`export const MISUNDERSTOOD_TERMS = []; export const ODD_TERMS = []; export function curatedEntryForDate() { return null; }`),
+  './curatedTermLists': mod(`export function misunderstoodTerms() { return []; } export function oddTerms() { return []; } export function curatedEntryForDate() { return null; }`),
   'commercial/memberStanding': mod(`export function memberStanding() { return 'member'; }`),
 };
 

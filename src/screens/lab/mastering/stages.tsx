@@ -113,7 +113,7 @@ export const WAVE_ASPECT = 360 / 200;
  * gain-reduction trace above, the ceiling marked, the playhead riding the
  * sounding clip (a SharedValue — never React state per frame).
  */
-export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing, pending, onTap }: {
+export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb, label, matchDb, progress, playing, pending, preparing, onTap }: {
   width: number;
   height: number;
   ov: Overview | null;
@@ -127,6 +127,9 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
   /** A version is queued (rendering): a tap on the glass cancels it, the
    *  same as the dock's STOP key; it used to queue the play again. */
   pending?: boolean;
+  /** A quiet pre-render is under way (useMasterPlayback `preparing`): the
+   *  glass says so honestly; a tap joins it and plays when it lands. */
+  preparing?: boolean;
   /** TAP-TO-TOGGLE (house rule, the tools' displays): a tap on the glass
    *  plays the shown version or stops it — in FULL SCREEN too, where the
    *  same render is drawn. The dock keys stay the named transport. */
@@ -156,7 +159,7 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
       onPress={onTap}
       disabled={!onTap}
       accessibilityRole={onTap ? 'button' : undefined}
-      accessibilityLabel={onTap ? (playing || pending ? `Stop ${label}` : `Play ${label}`) : undefined}
+      accessibilityLabel={onTap ? (playing || pending ? `Stop ${label}` : preparing ? `Preparing the audio. Play ${label} when ready` : `Play ${label}`) : undefined}
     >
       <Svg width={width} height={height} viewBox={`0 0 ${W} ${H}`}>
         {/* gain-reduction strip */}
@@ -189,7 +192,7 @@ export function WaveOverviewStage({ width, height, ov, grDb, maxGrDb, ceilingDb,
           const yB = mid - lo * half;
           return <Rect key={c} x={x0 + c * cw} y={yT} width={Math.max(0.8, cw)} height={Math.max(0.8, yB - yT)} fill={levelColor(ov.level[c])} />;
         }) : (
-          <SvgText x={(x0 + x1) / 2} y={mid + 4} fontSize={F2} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>press ▶ on a version — the render draws here</SvgText>
+          <SvgText x={(x0 + x1) / 2} y={mid + 4} fontSize={F2} fill={ink.dim} textAnchor="middle" fontFamily={fonts.barlowMedium}>{preparing ? 'preparing the audio… ▶ plays as soon as it is ready' : 'press ▶ on a version — the render draws here'}</SvgText>
         )}
         <Line x1={x0} y1={mid} x2={x1} y2={mid} stroke={MIDLINE_BLUE} strokeWidth={0.9} />
         {ceilY != null ? (

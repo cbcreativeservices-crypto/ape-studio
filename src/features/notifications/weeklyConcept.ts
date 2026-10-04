@@ -3,7 +3,8 @@
  * reads. Categories must match notification_concepts.category exactly.
  */
 import { supabase } from '../../lib/supabase';
-import { hasSafeSession, safeUser } from '../../lib/getSessionSafe';
+import { hasSafeSession, safeSessionResult } from '../../lib/getSessionSafe';
+import { sharedAppUserId } from '../account/appUserIdMemo';
 
 export const WEEKLY_CONCEPT_CATEGORIES = [
   'Acoustics',
@@ -99,26 +100,46 @@ export function timeToHhmm(raw: string): string {
  * Subscriptions use the AUTH uid; preferences use the APP id. Mixing them
  * matches zero rows and — for updates — fails SILENTLY.
  */
+/**
+ * The signed-in user from the STORED SESSION (perf decisions A, owner-approved
+ * 2026-10-04) — not `getUser()`, which was a round trip to the auth server
+ * before every write. RLS (`user_id = auth.uid()`) still authenticates the
+ * write itself. A read that did not come back (`timedOut`) is null, exactly
+ * what a failed `getUser()` gave here before: the write reports failure — it
+ * is never taken as a sign-out.
+ */
+async function sessionUser(): Promise<{ id?: string; is_anonymous?: boolean } | null> {
+  const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'weeklyConcept');
+  if (timedOut) return null;
+  return (result.data?.session as { user?: { id?: string; is_anonymous?: boolean } } | null)?.user ?? null;
+}
+
 async function authUserId(): Promise<string | null> {
-  const { data } = await safeUser(supabase.auth.getUser(), 'weeklyConcept');
+  const user = await sessionUser();
   // An anonymous device key (the glossary's) is not someone to subscribe: the
   // rows would be written against a uid the nightly purge deletes.
-  if (data.user?.is_anonymous === true) return null;
-  return data.user?.id ?? null;
+  if (user?.is_anonymous === true) return null;
+  return user?.id ?? null;
 }
 
 /** App id (public.users.id) — required for notification_preferences. */
 async function appUserId(): Promise<string | null> {
-  /* Scoped to the caller: an admin matches every row under `admin_all_users`,
-     and `maybeSingle` errors on more than one just as `single` does. */
-  const uid = (await safeUser(supabase.auth.getUser(), 'weeklyConcept')).data?.user?.id ?? null;
+  const uid = (await sessionUser())?.id ?? null;
   if (!uid) return null;
-  const { data, error } = await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle();
+  // ⚡ One users-row read per identity, shared with every other caller
+  // (features/account/appUserIdMemo). Scoped to the caller: an admin matches
+  // every row under `admin_all_users`, and `maybeSingle` errors on more than
+  // one just as `single` does.
+  const { id, error } = await sharedAppUserId(uid, async () => {
+    const { data, error: e } = await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle();
+    if (e) return { id: null, error: e.message || 'users row read failed' };
+    return { id: (data as { id: string } | null)?.id ?? null, error: null };
+  });
   if (error) {
-    console.warn('[weekly-concept] app user lookup failed:', error.message);
+    console.warn('[weekly-concept] app user lookup failed:', error);
     return null;
   }
-  return (data as { id: string } | null)?.id ?? null;
+  return id;
 }
 
 /**

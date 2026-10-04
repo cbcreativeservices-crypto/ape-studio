@@ -24,6 +24,8 @@ import { programmeIfRendered, useDrawProgramme, useMasterPlayback, type MasterVa
 import { MODEL_BADGE, RENDER_BADGE, type ModuleProps } from './shared';
 
 const CEILING = -1.0;
+/** The LISTEN step's index in the steps below (pinned by test/perfDecisionsC_20261004). */
+const LISTEN_STEP = 1;
 const METER_SIGNALS: readonly { id: SignalKey; name: string; blurb: string }[] = [
   { id: 'music', name: SIGNAL_LABELS.music, blurb: 'A full mix: peaks ride far above the average — the LUFS-vs-peak lesson.' },
   { id: 'speech', name: SIGNAL_LABELS.speech, blurb: 'Bursts and gaps: the integrated number sits well below the peaks.' },
@@ -75,7 +77,9 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
     ],
     [drive],
   );
-  const pb = useMasterPlayback(variants, matched);
+  // LISTEN_STEP: the index of the step below whose display plays `pb` —
+  // landing there pre-renders quietly (perf decisions 2026-10-04).
+  const pb = useMasterPlayback(variants, matched, LISTEN_STEP);
   const shown = pb.active ?? pb.pending ?? 'loud';
   const m = pb.measured[shown];
   const q = pb.measured.quiet;
@@ -162,7 +166,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           key: 'listen', title: 'Quieter and louder, matched', kind: 'LISTEN', layout: 'rack',
           rack: {
             render: (w, h) => (
-              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={CEILING} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
+              <WaveOverviewStage width={w} height={h} ov={m?.overview ?? null} grDb={m?.grDb} maxGrDb={m?.maxGrDb} ceilingDb={CEILING} label={variants.find((v) => v.id === shown)?.label ?? ''} matchDb={fresh ? m?.matchDb : undefined} progress={pb.progress} playing={pb.active != null} pending={pb.pending != null} preparing={pb.preparing} onTap={() => (pb.active || pb.pending ? pb.stop() : pb.play(shown))} />
             ),
             aspect: WAVE_ASPECT,
             size: 'L',

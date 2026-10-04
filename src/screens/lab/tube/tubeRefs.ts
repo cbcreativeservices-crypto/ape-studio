@@ -24,6 +24,7 @@ import { SUPABASE_URL } from '../../../lib/env';
 import { supabase } from '../../../lib/supabase';
 import { safeSessionResult } from '../../../lib/getSessionSafe';
 import { isRealAccount } from '../../../features/commercial/realAccount';
+import { registerLocalStoreReset } from '../../../features/storage/localStoreRegistry';
 
 export type TubeFamily = 'preamp' | 'power' | 'dht' | 'rectifier';
 
@@ -227,6 +228,18 @@ const TUBE_URL_TTL_MS = 90_000;
 type TubePageResult = Awaited<ReturnType<typeof fetchTubePage>>;
 const tubeUrlMemo = new Map<string, { url: string; at: number }>();
 const tubeUrlInflight = new Map<string, Promise<TubePageResult>>();
+/** Bumped by every account wipe: a fetch that lands after it is not memoised. */
+let tubeUrlGen = 0;
+
+/** The account wipe (perf decisions 2026-10-04): a signed URL is a member's
+ *  pass to a members-only asset — it must not outlive the sign-out that ended
+ *  the membership on this device, even for its 90 s. Registered with the wipe
+ *  registry the house way. */
+registerLocalStoreReset(() => {
+  tubeUrlGen++;
+  tubeUrlMemo.clear();
+  tubeUrlInflight.clear();
+});
 
 export function fetchTubePageCached(
   stem: string,
@@ -240,8 +253,10 @@ export function fetchTubePageCached(
     const pending = tubeUrlInflight.get(key);
     if (pending) return pending;
   }
+  const gen = tubeUrlGen;
   const p = fetchTubePage(stem, page)
     .then((r) => {
+      if (gen !== tubeUrlGen) return r;
       if (r.url) tubeUrlMemo.set(key, { url: r.url, at: Date.now() });
       else tubeUrlMemo.delete(key);
       return r;

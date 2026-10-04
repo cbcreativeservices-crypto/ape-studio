@@ -29,6 +29,7 @@ import type { Stereo } from '../../../features/ear/earDsp.ts';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { armFence, startFenced } from '../../../features/audio/startFenced';
+import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { LOOP_S, renderMix } from '../mixing/audio/mixAudio.ts';
@@ -59,6 +60,10 @@ export type MasterMeasured = Measure & {
 
 export type MasterPlayback = {
   status: 'idle' | 'rendering' | 'ready';
+  /** A quiet pre-render is under way with nothing queued (perf decisions
+   *  2026-10-04): the ▶ surfaces read "Preparing the audio…"; a ▶ pressed now
+   *  joins this render and plays when it lands. */
+  preparing: boolean;
   play: (id: string) => void;
   stop: () => void;
   active: string | null;
@@ -137,7 +142,17 @@ export function useDrawProgramme(onDrawn: () => void): { drawing: boolean; draw:
   return { drawing, draw };
 }
 
-export function useMasterPlayback(variants: readonly MasterVariant[], matched: boolean): MasterPlayback {
+/** Quiet pre-render after a LISTEN step settles (perf decisions 2026-10-04)
+ *  — past the page turn and past the 350 ms replay, so an armed replay
+ *  always goes first (the Mixing lab's PRERENDER_MS). */
+export const MASTER_PRERENDER_MS = 900;
+
+/**
+ * @param listenStep the module step (StepHostContext) whose display plays
+ *   these versions. Landing on it pre-renders quietly once the page has
+ *   settled; every other step (LEARN, PRACTICE…) never pays for the render.
+ */
+export function useMasterPlayback(variants: readonly MasterVariant[], matched: boolean, listenStep?: number): MasterPlayback {
   const { requestAudioOutput } = useAudioOutputGate();
   const [status, setStatus] = useState<MasterPlayback['status']>('idle');
   const [active, setActive] = useState<string | null>(null);
@@ -150,6 +165,10 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
   const aliveRef = useRef(true);
   const renderingSigRef = useRef<string | null>(null);
   const renderSeqRef = useRef(0);
+  /** The DSP of the last render that could not load yet (a quiet pre-render
+   *  with sound still off, or one cancelled by a step change after its DSP):
+   *  the next render of the SAME set only loads it. Dropped once loaded. */
+  const preparedRef = useRef<{ sig: string; ids: string[]; clips: Stereo[]; measuredNext: Record<string, MasterMeasured> } | null>(null);
   /** The settle-then-replay timer (below). STOP, a ▶ press, a mute and a
    *  leave all cancel it: during its 350 ms window nothing is active or
    *  pending, so the silenced/close paths would otherwise miss it and the
@@ -250,48 +269,69 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `matched` is part of `signature`
   }, [signature]);
 
-  const renderAll = useCallback(async () => {
+  const renderAll = useCallback(async (quiet = false) => {
     if (renderingSigRef.current === signature) return;
     renderingSigRef.current = signature;
     const my = ++renderSeqRef.current;
     const current = () => aliveRef.current && my === renderSeqRef.current;
     try {
       setStatus('rendering');
-      AccessibilityInfo.announceForAccessibility?.('Rendering the versions.');
+      // A quiet pre-render says nothing — the learner did not ask for it.
+      if (!quiet) AccessibilityInfo.announceForAccessibility?.('Rendering the versions.');
       await new Promise((r) => setTimeout(r, 30));
       if (!current()) return;
-      const base = programme();
-      await new Promise((r) => setTimeout(r, 0));
-      if (!current()) return;
-      const out: { id: string; stereo: Stereo; m: Measure; grDb: number[]; maxGrDb: number }[] = [];
-      for (const v of variants) {
-        const r = renderVersion(base, v.process);
-        const m = measure(r.out);
-        out.push({ id: v.id, stereo: r.out, m, grDb: r.grDb, maxGrDb: r.maxGrDb });
-        await new Promise((r2) => setTimeout(r2, 0));
+      let clips: Stereo[];
+      let ids: string[];
+      let measuredNext: Record<string, MasterMeasured>;
+      const prepared = preparedRef.current;
+      if (prepared && prepared.sig === signature) {
+        ({ clips, ids, measuredNext } = prepared);
+      } else {
+        const base = programme();
+        await new Promise((r) => setTimeout(r, 0));
         if (!current()) return;
-      }
-      // MATCHED LEVEL: per group, everyone down to the quietest.
-      const matchDb: Record<string, number> = {};
-      if (matched) {
-        const groups = new Map<string, Record<string, number>>();
+        const out: { id: string; stereo: Stereo; m: Measure; grDb: number[]; maxGrDb: number }[] = [];
         for (const v of variants) {
-          if (!v.matchGroup) continue;
-          const g = groups.get(v.matchGroup) ?? {};
-          g[v.id] = out.find((o) => o.id === v.id)!.m.lufs;
-          groups.set(v.matchGroup, g);
+          const r = renderVersion(base, v.process);
+          const m = measure(r.out);
+          out.push({ id: v.id, stereo: r.out, m, grDb: r.grDb, maxGrDb: r.maxGrDb });
+          await new Promise((r2) => setTimeout(r2, 0));
+          if (!current()) return;
         }
-        for (const g of groups.values()) Object.assign(matchDb, matchedGains(g));
+        // MATCHED LEVEL: per group, everyone down to the quietest.
+        const matchDb: Record<string, number> = {};
+        if (matched) {
+          const groups = new Map<string, Record<string, number>>();
+          for (const v of variants) {
+            if (!v.matchGroup) continue;
+            const g = groups.get(v.matchGroup) ?? {};
+            g[v.id] = out.find((o) => o.id === v.id)!.m.lufs;
+            groups.set(v.matchGroup, g);
+          }
+          for (const g of groups.values()) Object.assign(matchDb, matchedGains(g));
+        }
+        clips = [];
+        measuredNext = {};
+        for (const o of out) {
+          const g = matchDb[o.id] ?? 0;
+          const played = g ? applyGain(o.stereo, g) : o.stereo;
+          clips.push(played);
+          measuredNext[o.id] = { ...o.m, matchDb: g, overview: overview(played), grDb: o.grDb, maxGrDb: o.maxGrDb };
+          await new Promise((r2) => setTimeout(r2, 0));
+          if (!current()) return;
+        }
+        ids = out.map((o) => o.id);
+        preparedRef.current = { sig: signature, ids, clips, measuredNext };
       }
-      const clips: Stereo[] = [];
-      const measuredNext: Record<string, MasterMeasured> = {};
-      for (const o of out) {
-        const g = matchDb[o.id] ?? 0;
-        const played = g ? applyGain(o.stereo, g) : o.stereo;
-        clips.push(played);
-        measuredNext[o.id] = { ...o.m, matchDb: g, overview: overview(played), grDb: o.grDb, maxGrDb: o.maxGrDb };
-        await new Promise((r2) => setTimeout(r2, 0));
-        if (!current()) return;
+      // A quiet pre-render with sound still OFF and nothing queued: the DSP
+      // is done and drawn, but nothing touches the audio session before the
+      // learner switches sound on (the Drum / Mixing preload rule) — the
+      // first ▶ only loads what was prepared here.
+      if (pendingRef.current == null && !isAudioOutputEnabled()) {
+        setMeasuredKey(JSON.stringify(variants));
+        setMeasured(measuredNext);
+        setStatus('idle');
+        return;
       }
       if (!playerRef.current) {
         playerRef.current = new EarClipPlayer();
@@ -311,7 +351,8 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
         if (playerRef.current !== player) player.dispose();
         return;
       }
-      idsRef.current = out.map((o) => o.id);
+      idsRef.current = ids;
+      if (preparedRef.current?.sig === signature) preparedRef.current = null;
       setMeasuredKey(JSON.stringify(variants));
       setMeasured(measuredNext);
       setStatus('ready');
@@ -344,6 +385,29 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
   }, [signature, variants, matched]);
   const renderAllRef = useRef(renderAll);
   renderAllRef.current = renderAll;
+
+  // PRE-RENDER ON THE LISTEN STEP (perf decisions 2026-10-04). The first ▶ of
+  // a LISTEN step paid for the programme render (~0.5 s of synchronous JS)
+  // and the versions. Once the learner has LANDED on the listening step and
+  // the page has settled, the same renderAll runs quietly behind a visible
+  // "Preparing the audio…" (`preparing`): a ▶ pressed meanwhile joins it (the
+  // double-tap guard returns; the render plays the queued `pendingRef` when it
+  // lands); a step change or leaving the lab cancels it (below / aliveRef); a
+  // fader or MATCH change retires it (the generation bump above) and re-arms
+  // it here. NEVER plays on its own: nothing is queued. Any other step —
+  // LEARN, PRACTICE — never pays for it.
+  const host = useContext(StepHostContext);
+  const hostStep = host?.step;
+  useEffect(() => {
+    if (listenStep == null || hostStep !== listenStep) return;
+    const t = setTimeout(() => {
+      if (!aliveRef.current || !focusedRef.current) return;
+      if (idsRef.current.length > 0 || renderingSigRef.current !== null) return;
+      if (preparedRef.current?.sig === signature && !isAudioOutputEnabled()) return;
+      void renderAllRef.current(true);
+    }, MASTER_PRERENDER_MS);
+    return () => clearTimeout(t);
+  }, [signature, hostStep, listenStep]);
 
   const play = useCallback(
     (id: string) => {
@@ -391,16 +455,22 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
   // the reading or the PRACTICE deck used to leave a version playing with no
   // ■ STOP on screen. The renders and the measured card survive; only the
   // sound stops. No-op on the first mount (nothing is sounding yet).
-  const host = useContext(StepHostContext);
-  const hostStep = host?.step;
   const stepSeen = useRef(hostStep);
   useEffect(() => {
     if (stepSeen.current === hostStep) return;
     stepSeen.current = hostStep;
     stopAll();
+    // …and a render still under way (the quiet pre-render, or a ▶ that had
+    // not landed) is cancelled: it aborts at its next await. Work its DSP
+    // already finished stays in preparedRef for the next ▶ of the same set.
+    if (renderingSigRef.current !== null) {
+      renderSeqRef.current++;
+      renderingSigRef.current = null;
+      setStatus(idsRef.current.length > 0 ? 'ready' : 'idle');
+    }
   }, [hostStep, stopAll]);
 
   // ■ STOP is stopAll: a STOP pressed while a version is still rendering
   // must cancel that queued play too, not let it start a moment later.
-  return { status, play, stop: stopAll, active, pending, measured, current: measuredKey === variantsKey, heard, progress };
+  return { status, preparing: status === 'rendering' && pending == null, play, stop: stopAll, active, pending, measured, current: measuredKey === variantsKey, heard, progress };
 }

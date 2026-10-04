@@ -127,7 +127,9 @@ describe('H5-3 — a failed READ is never shown as "nothing saved"', () => {
     assert.ok(j > 0 && j < wf.indexOf("'Nothing saved yet"), 'My Workflows checks before "Nothing saved yet"');
     const pr = src('CalcProjectsScreen.tsx');
     const k = pr.indexOf('workflowListUnreadable(projects) ?');
-    assert.ok(k > 0 && k < pr.indexOf('projects.length === 0 ?'), 'Saved Projects checks before the empty intro');
+    // FlatList since perf decisions 2026-10-04: the empty intro is the last
+    // branch of ListEmptyComponent, after the unreadable check.
+    assert.ok(k > 0 && k < pr.indexOf('A project stores a venue'), 'Saved Projects checks before the empty intro');
     for (const s of [res, wf, pr]) assert.match(s, /could not be read from this device just now — they are not lost/);
   });
 });

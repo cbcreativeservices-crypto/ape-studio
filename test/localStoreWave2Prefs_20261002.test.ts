@@ -78,13 +78,15 @@ const PUSH = mod(`
   };
   export function getNotifications() { return N; }`);
 const CURATED = mod(`
-  export const MISUNDERSTOOD_TERMS = []; export const ODD_TERMS = [];
+  export const HAS_MISUNDERSTOOD_TERMS = false; export const HAS_ODD_TERMS = false;
+  export function misunderstoodTerms() { return []; } export function oddTerms() { return []; }
   export function curatedEntryForDate() { return null; }`);
 const MEMBER = mod(`export function memberStanding() { return 'member'; }`);
 const MY_ROW = mod(`export async function myUserRow() { return null; }`);
 const SESSION = mod(`
   export async function hasSafeSession() { return false; }
   export async function safeUser() { return null; }
+  export async function safeSessionResult() { return { result: { data: { session: null } }, timedOut: false }; }
   export const SESSION_TIMEOUT_MS = 1;`);
 const CONSTANTS = mod(`export default { expoConfig: { version: '9.9.9' } };`);
 const OPTIONAL = mod(`export function optionalModule(name) { return globalThis.__W2_OPTIONAL__?.[name] ?? null; }`);

@@ -89,7 +89,8 @@ describe('LISTEN pages', () => {
       assert.match(s, /<WaveOverviewStage[^\n]*onTap=\{\(\) => \(pb\.active \|\| pb\.pending \? pb\.stop\(\) : pb\.play\(shown\)\)\}/, f);
       assert.match(s, /<WaveOverviewStage[^\n]*pending=\{pb\.pending != null\}/, f);
     }
-    assert.match(strip(read(`${DIR}/stages.tsx`)), /accessibilityLabel=\{onTap \? \(playing \|\| pending \? `Stop \$\{label\}` : `Play \$\{label\}`\) : undefined\}/);
+    assert.match(strip(read(`${DIR}/stages.tsx`)), /accessibilityLabel=\{onTap \? \(playing \|\| pending \? `Stop \$\{label\}` : (?:preparing \? `[^`:]*` : )?`Play \$\{label\}`\) : undefined\}/);
+    // (perf decisions 2026-10-04: a quiet pre-render reads "Preparing the audio" — the STOP branch is unchanged.)
   });
   it('the MATCH-off volume warning never quotes a step measured for an earlier DRIVE / TILT setting', () => {
     // pb.measured survives a fader change (the waveform stays drawn) until the

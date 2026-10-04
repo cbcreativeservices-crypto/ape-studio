@@ -182,9 +182,11 @@ type EntitlementContextValue = {
    * Use `caps` for ladder content; use `isMember` for member-only extras.
    */
   isMember: boolean;
-  /** FALSE until the first server entitlement read has resolved. First paint
-   *  must stay neutral rather than showing the 'anonymous' rung to a member
-   *  (M6, 2026-09-07). */
+  /** FALSE until the first server entitlement read has resolved — or, since
+   *  2026-10-04 (perf decisions A), until this account's REMEMBERED tier
+   *  (lastTierCache, same uid) or a server answer has been applied, whichever
+   *  is first. First paint must stay neutral rather than showing the
+   *  'anonymous' rung to a member (M6, 2026-09-07). */
   resolved: boolean;
   /** DEV-ONLY overrides (persisted). No-ops outside __DEV__. */
   setCommercialMode: (on: boolean) => void;
@@ -360,6 +362,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
         if (current()) {
           setEntitlementState('anonymous');
           armExpiryRecheck(null);
+          // An applied answer is first paint's answer too (perf decisions A,
+          // 2026-10-04) — whichever read applies first (the boot path's or
+          // INITIAL_SESSION's), Home stops waiting on the other.
+          setResolved(true);
         }
         return true;
       }
@@ -394,6 +400,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       if (current()) {
         serverTierApplied.current = true;
         setEntitlementState(tier);
+        setResolved(true); // a server answer applied — first paint may proceed (see above)
         armExpiryRecheck(tier === 'academy' ? accessEndsAt(rows) : null);
         // REMEMBER IT, so a later boot with no network does not start this
         // member at 'anonymous' and lock them out of everything they paid for.
@@ -487,8 +494,10 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
       lastUid.current = uid;
       uidSeeded.current = true;
     };
-    // ⛔ BOUNDED. `resolved` has exactly ONE setter — the .finally() below —
-    // and a getSession() that HANGS runs neither .then, .catch nor .finally.
+    // ⛔ BOUNDED. `resolved`'s backstop setter is the .finally() below (it is
+    // also set earlier when a remembered tier or a server answer is applied —
+    // perf decisions A, 2026-10-04), and a getSession() that HANGS runs
+    // neither .then, .catch nor .finally.
     // The .catch under it names the consequence: CourseSelection gates first
     // paint on `resolved` and shows a bare spinner with no text, no Retry and
     // no timeout. A reject was handled; a stall was not, and a stall is the
@@ -548,6 +557,17 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
             lastUid.current === bootIdentity
           ) {
             setEntitlementState(remembered);
+            // ⚡ FIRST PAINT ON THE REMEMBERED TIER (perf decisions A, owner-
+            // approved 2026-10-04). Home waited on `resolved`, which flipped
+            // only after the network read below (bounded up to 15 s) even
+            // though this account's last confirmed tier was already applied.
+            // This is the state an offline boot already reaches; the read
+            // still runs and corrects the tier when it lands. `tierKnown`
+            // stays false — a remembered tier is not a known one — so every
+            // identity claim, purchase and member gate rule is unchanged.
+            // Accepted trade-off: a refunded member may see member content
+            // for about one round trip before it locks.
+            setResolved(true);
           }
         }
         // The session this read was for has since changed — the auth event for

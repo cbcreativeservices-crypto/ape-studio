@@ -29,7 +29,7 @@ registerHooks({
             from(table) {
               globalThis.__perfCalls = (globalThis.__perfCalls ?? 0) + 1;
               const b = { then(res, rej) { return Promise.resolve().then(() => globalThis.__perfFrom(table)).then(res, rej); } };
-              for (const m of ['select', 'eq', 'in', 'order']) b[m] = () => b;
+              for (const m of ['select', 'eq', 'in', 'order', 'range']) b[m] = () => b;
               return b;
             },
           };

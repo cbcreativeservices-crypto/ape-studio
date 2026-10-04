@@ -5,7 +5,8 @@
  * Writes: ONLY via the record_study_progress RPC (WM ruling: no table grants).
  */
 import { supabase } from '../../lib/supabase';
-import { hasSafeSession } from '../../lib/getSessionSafe';
+import { hasSafeSession, safeSessionResult } from '../../lib/getSessionSafe';
+import { cachedTopicItems, noteTopicAuthUid } from './topicItemsCache';
 import { withSessionRetry } from './sessionRetry';
 import { myUserId } from '../account/myUserRow';
 import { SUPABASE_URL } from '../../lib/env';
@@ -53,9 +54,27 @@ export type StudySnapshot = {
 /** True once the client has hydrated a persisted session — see sessionRetry. */
 const hasSession = async () => hasSafeSession(supabase.auth.getSession(), 'study/api');
 
-export async function fetchTopicItems(achievementId: string): Promise<GlossaryItem[]> {
-  return withSessionRetry(() => fetchTopicItemsOnce(achievementId), hasSession);
+/**
+ * A topic's study terms. `tier` is the screen's `useTier()`: with a KNOWN
+ * tier ('guest' | 'free' | 'member') the answer is kept for a short while in
+ * a session cache keyed by (auth uid, tier, achievementId) — topicItemsCache.ts
+ * (perf decisions 2026-10-04) — so Flashcards → Matching → Fill-in on one
+ * topic read it once. Without a tier, or with an unknown one, it is a plain
+ * read. Failures and empty answers are never cached.
+ */
+export async function fetchTopicItems(achievementId: string, tier?: string | null): Promise<GlossaryItem[]> {
+  const read = () => withSessionRetry(() => fetchTopicItemsOnce(achievementId), hasSession);
+  if (!tier || tier === 'unknown' || tier === 'preview') return read();
+  const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'study/topicItems');
+  const uid = timedOut ? null : (result.data.session?.user?.id ?? '');
+  return cachedTopicItems(uid, tier, achievementId, read);
 }
+
+// Any auth identity change drops the cached topic terms at once (the read
+// path also checks; this keeps a departed reader's rows out of memory).
+supabase.auth.onAuthStateChange((_e, session) => {
+  noteTopicAuthUid(session?.user?.id ?? '');
+});
 
 async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[]> {
   // v2.13 (backend handoff 2026-07-16): study fetch goes through the

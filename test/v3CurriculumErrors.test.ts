@@ -41,7 +41,7 @@ registerHooks({
               const b = {
                 then(res, rej) { return Promise.resolve().then(() => globalThis.__apeFrom(table)).then(res, rej); },
               };
-              for (const m of ['select', 'eq', 'in', 'order']) b[m] = () => b;
+              for (const m of ['select', 'eq', 'in', 'order', 'range']) b[m] = () => b;
               return b;
             },
           };

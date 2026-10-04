@@ -24,7 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { getNotifications } from './push';
 import { dayNameToDow } from './weeklyConcept';
-import { curatedEntryForDate, MISUNDERSTOOD_TERMS, ODD_TERMS, type CuratedTermEntry } from './curatedTermLists';
+import { curatedEntryForDate, misunderstoodTerms, oddTerms, type CuratedTermEntry } from './curatedTermLists';
 import { memberStanding } from '../commercial/memberStanding';
 // TYPE-ONLY — store.ts imports this module at runtime (the save funnel), so a
 // value import back would be a require cycle. App.tsx loads the settings and
@@ -511,11 +511,15 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
     const bookCurated = (
       on: boolean,
       key: 'notifyMisunderstood' | 'notifyOddTerm',
-      list: readonly CuratedTermEntry[],
+      // A loader, not the list: the ~225 KB bucket is read only when it is ON
+      // (perf decision B, 2026-10-04 — curatedTermLists.ts).
+      loadList: () => readonly CuratedTermEntry[],
       idPart: string,
       title: (e: CuratedTermEntry) => string,
     ) => {
-      if (!on || list.length === 0) return;
+      if (!on) return;
+      const list = loadList();
+      if (list.length === 0) return;
       const { hour, minute } = hhmm(s.notifyTime[key], key === 'notifyMisunderstood' ? '12:00' : '17:00');
       const first = new Date();
       first.setHours(hour, minute, 0, 0);
@@ -533,8 +537,8 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
       }
     };
     // NEW COPY (owner review): the two title shapes.
-    bookCurated(s.notifyMisunderstood, 'notifyMisunderstood', MISUNDERSTOOD_TERMS, 'misTerm', (e) => `Often misunderstood: ${e.term}`);
-    bookCurated(s.notifyOddTerm, 'notifyOddTerm', ODD_TERMS, 'oddTerm', (e) => `Odd term: ${e.term}`);
+    bookCurated(s.notifyMisunderstood, 'notifyMisunderstood', misunderstoodTerms, 'misTerm', (e) => `Often misunderstood: ${e.term}`);
+    bookCurated(s.notifyOddTerm, 'notifyOddTerm', oddTerms, 'oddTerm', (e) => `Odd term: ${e.term}`);
 
     // 6 · Weekly learning summary — repeating weekly (weekday 1 = Sunday).
     if (s.notifyWeeklySummary) {

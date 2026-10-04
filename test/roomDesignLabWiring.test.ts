@@ -38,11 +38,13 @@ describe('registration', () => {
   it('has a route type, a MemberGated registration and a Stack.Screen', () => {
     assert.match(read('src/navigation/types.ts'), /RoomDesignLab: undefined;/);
     const nav = read('src/navigation/RootNavigator.tsx');
-    assert.match(nav, /RoomDesignLab: withMembershipPreview\(RoomDesignLabScreen\)/);
-    assert.match(nav, /<Stack\.Screen name="RoomDesignLab" component=\{MemberGated\.RoomDesignLab\} \/>/);
+    // Lazy since perf decision B (2026-10-04): same wrapper, applied once on first visit.
+    assert.match(nav, /RoomDesignLab: lazyScreen\(\(\) => withMembershipPreview\(require\('\.\.\/screens\/lab\/roomdesign\/RoomDesignLabScreen'\)\.RoomDesignLabScreen\)\)/);
+    assert.match(nav, /<Stack\.Screen name="RoomDesignLab" getComponent=\{MemberGated\.RoomDesignLab\} \/>/);
   });
   it('is in the #labpreview harness', () => {
-    assert.match(read('App.tsx'), /RoomDesignLab: RoomDesignLabScreen as ComponentType/);
+    // The harness moved out of App.tsx into src/dev/webPreviews.tsx (2026-10-04).
+    assert.match(read('src/dev/webPreviews.tsx'), /RoomDesignLab: RoomDesignLabScreen as ComponentType/);
   });
   it('the saved-designs store is in the account wipe', () => {
     const wipe = read('src/features/account/clearLocalAccountData.ts');

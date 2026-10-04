@@ -6,7 +6,8 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { supabase } from '../../lib/supabase';
-import { safeUser } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
+import { sharedAppUserId } from '../account/appUserIdMemo';
 import { payloadFromUnknown, type WeeklyConceptPayload } from './weeklyConcept';
 
 // Type-only import — erased at runtime, never touches the native module.
@@ -104,16 +105,29 @@ export function flushLocalDestNav(go: (dest: string) => void): void {
  * Always resolve the app id before touching notification_preferences.
  */
 async function appUserId(): Promise<string | null> {
-  /* Scoped to the caller: an admin matches every row under `admin_all_users`,
-     and `maybeSingle` errors on more than one just as `single` does. */
-  const uid = (await safeUser(supabase.auth.getUser(), 'push')).data?.user?.id ?? null;
+  // ⚡ The uid from the STORED SESSION, not `getUser()` (perf decisions A,
+  // owner-approved 2026-10-04): that was a round trip to the auth server
+  // before the users-row read could start. RLS still authenticates the token
+  // save. A read that did not come back (`timedOut`) is null — what a failed
+  // `getUser()` gave before: "not saved", never a sign-out.
+  const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'push');
+  if (timedOut) return null;
+  const uid = (result.data?.session as { user?: { id?: string } } | null)?.user?.id ?? null;
   if (!uid) return null;
-  const { data, error } = await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle();
+  /* One users-row read per identity, shared with every other caller
+     (features/account/appUserIdMemo). Scoped to the caller: an admin matches
+     every row under `admin_all_users`, and `maybeSingle` errors on more than
+     one just as `single` does. */
+  const { id, error } = await sharedAppUserId(uid, async () => {
+    const { data, error: e } = await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle();
+    if (e) return { id: null, error: e.message || 'users row read failed' };
+    return { id: (data as { id: string } | null)?.id ?? null, error: null };
+  });
   if (error) {
-    console.warn('[push] app user lookup failed:', error.message);
+    console.warn('[push] app user lookup failed:', error);
     return null;
   }
-  return (data as { id: string } | null)?.id ?? null;
+  return id;
 }
 
 /**
@@ -178,7 +192,7 @@ async function registerAndSavePushTokenOnce(): Promise<{ token: string | null; s
   }
 
   // ⚡ THE ACCOUNT LOOKUP RUNS BESIDE THE TOKEN FETCH (perf hunt 2026-10-03).
-  // Both are network trips (Expo's push service; the auth server + users row)
+  // Both are network trips (Expo's push service; the users row)
   // and neither needs the other, but they ran one after the other while the
   // Weekly-concept and Phone-notifications switches waited. Started here, it
   // is awaited exactly where it was, so a throw still reaches the caller's

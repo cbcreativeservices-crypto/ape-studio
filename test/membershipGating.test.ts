@@ -40,11 +40,14 @@ const { LAB_CATEGORIES, isMemberOnlyLabRoute } = await import('../src/screens/la
 
 const NAV = readFileSync(new URL('../src/navigation/RootNavigator.tsx', import.meta.url), 'utf8');
 
-/** route name → the component expression it is registered with. */
+/** route name → the component expression it is registered with.
+ *  Lazy screens (perf decision B, 2026-10-04) register through
+ *  `getComponent={MemberGated.X}` — the same gated loader, loaded on first
+ *  visit — so both attribute forms are read. */
 function registrations(): Map<string, string> {
   const out = new Map<string, string>();
   for (const m of NAV.matchAll(
-    /<Stack\.Screen\s+name="(\w+)"[\s\S]{0,220}?component=\{([^}]+)\}/g,
+    /<Stack\.Screen\s+name="(\w+)"[\s\S]{0,220}?(?:component|getComponent)=\{([^}]+)\}/g,
   )) {
     out.set(m[1], m[2].trim());
   }

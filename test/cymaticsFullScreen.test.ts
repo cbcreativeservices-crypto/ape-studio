@@ -113,7 +113,8 @@ test('the Intro module wraps its live figures in ExpandableFigure with the badge
 });
 
 test('the cymatics screens can be opened in the browser harness by name', () => {
-  const app = readFileSync(new URL('../App.tsx', import.meta.url), 'utf8');
+  // The harness moved out of App.tsx into src/dev/webPreviews.tsx (2026-10-04).
+  const app = readFileSync(new URL('../src/dev/webPreviews.tsx', import.meta.url), 'utf8');
   for (const name of ['CymaticsPlateStudio', 'CymaticsModule', 'CymaticsLiquidStudio', 'CymaticsMembraneStudio', 'CymaticsGallery']) {
     assert.match(app, new RegExp(`^\\s*${name}: \\w+ as ComponentType,`, 'm'), `${name} is in LAB_PREVIEW_SCREENS`);
   }

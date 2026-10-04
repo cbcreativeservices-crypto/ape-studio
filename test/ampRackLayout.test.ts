@@ -204,7 +204,8 @@ describe('text and readouts', () => {
     assert.match(m3, /k: 'HANDOFF', v: taskSolved \? 'CLEAN' : tooHot \? 'OVERBIAS' : 'NOTCH'/);
   });
   test('the preview harness can open any amp module by id', () => {
-    const app = read('App.tsx');
+    // The harness moved out of App.tsx into src/dev/webPreviews.tsx (2026-10-04).
+    const app = read('src/dev/webPreviews.tsx');
     assert.match(app, /AmpModule: AmpModuleScreen as ComponentType/);
   });
 });

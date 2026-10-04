@@ -39,7 +39,7 @@ const STUBS: Record<string, string> = {
     export function setLocalSettingsUnreadable() {}`),
   './a11y': mod(`export function applyA11yFromSettings() {} export function resetA11y() {}`),
   'audio/leaveAppMute': mod(`export const MUTE_ON_LEAVE_DEFAULT = true; export function setMuteOnLeave() {}`),
-  'notifications/curatedTermLists': mod(`export const MISUNDERSTOOD_TERMS = []; export const ODD_TERMS = [];`),
+  'notifications/curatedTermLists': mod(`export const HAS_MISUNDERSTOOD_TERMS = false; export const HAS_ODD_TERMS = false;`),
   'account/myUserRow': mod(`export async function myUserRow() { return null; }`),
 };
 

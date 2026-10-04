@@ -82,7 +82,7 @@ import { markTermsExempt } from '../../features/study/termsExempt';
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
-import { useMemberGate } from '../../features/commercial/useTier';
+import { useMemberGate, useTier } from '../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED, type MemberGate } from '../../features/commercial/tier';
 import {
   loadLocalMethodStates,
@@ -369,6 +369,12 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // KNOWN non-member only (tier sweep 2026-10-03): a failed membership read
   // (`resolved`, no tier) was told "an Academy member feature" too.
   const memberGate = useMemberGate();
+  // The tier the topic terms are cached under (perf decisions 2026-10-04):
+  // common_mistakes is membership-masked, so the session cache is keyed by it.
+  // A ref, so a tier landing mid-session never reloads the deck.
+  const tierForTerms = useTier();
+  const tierForTermsRef = useRef(tierForTerms);
+  tierForTermsRef.current = tierForTerms;
   const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
   const flaggedMode = achievementId === FLAGGED_TOPIC_ID;
@@ -498,7 +504,7 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         // The list AFTER its read lands (final round C, 2026-10-03): a cold-start
         // tap read the empty placeholder and showed an empty deck.
         const [fetched, methodState, localStates, storedHidden, storedSections, storedShowMedia, storedShowLinks] = await Promise.all([
-          flaggedMode ? readTermList('starred').then((ids) => fetchGlossaryItemsByIds([...ids])) : fetchTopicItems(achievementId),
+          flaggedMode ? readTermList('starred').then((ids) => fetchGlossaryItemsByIds([...ids])) : fetchTopicItems(achievementId, tierForTermsRef.current),
           flaggedMode ? Promise.resolve(null) : fetchMethodState(achievementId, 'flashcards'),
           // Device-mirror for the resume merge — SIGNED-IN only (owner ruling
           // 2026-08-17): an account keeps its progress; a no-account guest is

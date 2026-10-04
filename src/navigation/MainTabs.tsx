@@ -9,12 +9,20 @@ import { CommonActions } from '@react-navigation/native';
 import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { TabBar } from '../components/nav/TabBar';
 import { StudyStack } from './StudyStack';
-import { AchievementsStack } from './AchievementsStack';
 import { CourseSelectionScreen } from '../screens/courses/CourseSelectionScreen';
-import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import type { MainTabParamList } from './types';
+import { lazyScreen } from './lazyScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
+
+// Lazy tabs (perf decision B, 2026-10-04): Home is the first paint and Study
+// holds the Dashboard, so both stay imported. Achievements and Profile load the
+// first time their tab is opened. One cached component each — see lazyScreen.ts.
+/* eslint-disable @typescript-eslint/no-var-requires */
+const LazyTab = {
+  Achievements: lazyScreen(() => require('./AchievementsStack').AchievementsStack),
+  Profile: lazyScreen(() => require('../screens/profile/ProfileScreen').ProfileScreen),
+} as const;
 
 /**
  * Guarded replacement for `popToTopOnBlur` (owner 2026-08-13). The built-in
@@ -89,10 +97,10 @@ export function MainTabs() {
       <Tab.Screen name="Study" component={StudyStack} listeners={resetToRootOnBlur('Dashboard')} />
       <Tab.Screen
         name="Achievements"
-        component={AchievementsStack}
+        getComponent={LazyTab.Achievements}
         listeners={resetToRootOnBlur('AchievementsHome')}
       />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Profile" getComponent={LazyTab.Profile} />
     </Tab.Navigator>
   );
 }

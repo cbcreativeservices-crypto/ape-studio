@@ -161,9 +161,13 @@ describe('Start Here — free by construction', () => {
   const nav = src('src/navigation/RootNavigator.tsx');
 
   it('is a plain, ungated route', () => {
-    assert.match(nav, /<Stack\.Screen name="StartHere" component=\{StartHereScreen\}/);
-    assert.match(nav, /<Stack\.Screen name="StartHereTerms" component=\{StartHereTermsScreen\}/);
-    assert.doesNotMatch(nav, /StartHere[A-Za-z]*: (withMembershipPreview|MemberGated)/);
+    // Lazy since perf decision B (2026-10-04): registered from the plain `Lazy`
+    // map, whose loader requires the bare screen — no wrapper of any kind.
+    assert.match(nav, /<Stack\.Screen name="StartHere" getComponent=\{Lazy\.StartHere\}/);
+    assert.match(nav, /<Stack\.Screen name="StartHereTerms" getComponent=\{Lazy\.StartHereTerms\}/);
+    assert.match(nav, /^\s*StartHere: lazyScreen\(\(\) => require\('\.\.\/screens\/startHere\/StartHereScreen'\)\.StartHereScreen\),$/m);
+    assert.match(nav, /^\s*StartHereTerms: lazyScreen\(\(\) => require\('\.\.\/screens\/startHere\/StartHereTermsScreen'\)\.StartHereTermsScreen\),$/m);
+    assert.doesNotMatch(nav, /StartHere[A-Za-z]*: (withMembershipPreview|MemberGated|lazyScreen\(\(\) => withMembershipPreview)/);
   });
 
   it('never gates, never credits, never reads membership', () => {

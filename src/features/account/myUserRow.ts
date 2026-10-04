@@ -24,14 +24,29 @@
  * `.from('users')…single()` anywhere in the app.
  */
 import { supabase } from '../../lib/supabase';
-import { safeUser, SESSION_TIMEOUT_MS } from '../../lib/getSessionSafe';
+import { safeSessionResult, SESSION_TIMEOUT_MS } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
+import { sharedAppUserId } from './appUserIdMemo';
 
-/** The auth uid, or null when the session has not hydrated yet. */
+/**
+ * The auth uid from the STORED SESSION, or null when there is none.
+ *
+ * ⚡ NOT `getUser()` (perf decisions A, owner-approved 2026-10-04): that is a
+ * round trip to the auth server on every call, made before the users-row read
+ * could even start. The stored session carries the same uid (the strict twin
+ * below has always read it this way); RLS on the users row still
+ * authenticates the request itself.
+ *
+ * A read that did not come back (`timedOut`: a stall, a rejection, an
+ * unreachable refresh) answers null — exactly what a failed `getUser()` gave
+ * these callers before. Null here is "no row read", never a sign-out: nothing
+ * in this module wipes or asserts an identity.
+ */
 async function authUid(): Promise<string | null> {
   try {
-    const { data } = await safeUser(supabase.auth.getUser(), 'myUserRow');
-    return data?.user?.id ?? null;
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'myUserRow');
+    if (timedOut) return null;
+    return result.data?.session?.user?.id ?? null;
   } catch {
     return null;
   }
@@ -80,6 +95,25 @@ export async function myUserRowOrThrow<T = Record<string, unknown>>(columns: str
 /** The caller's `public.users.id` — the surrogate key almost every progress
  *  table points at. NOT the same value as `auth.uid()`; see the two id spaces. */
 export async function myUserId(): Promise<string | null> {
-  const row = await myUserRow<{ id: string }>('id');
-  return row?.id ?? null;
+  const uid = await authUid();
+  if (!uid) return null;
+  // ⚡ One users-row read per identity, shared by parallel callers (see
+  // appUserIdMemo). Same answers as before: null for no row or any failure.
+  try {
+    const { id } = await sharedAppUserId(uid, readAppUserId(uid));
+    return id;
+  } catch {
+    return null;
+  }
+}
+
+/** The users-row id read every memo caller shares — scoped to `auth_id` (see
+ *  the header: never trust RLS to leave one row). Resolves an error as a
+ *  value so each caller keeps its own failure handling. */
+function readAppUserId(uid: string): () => Promise<{ id: string | null; error: string | null }> {
+  return async () => {
+    const { data, error } = await supabase.from('users').select('id').eq('auth_id', uid).maybeSingle();
+    if (error) return { id: null, error: error.message || 'users row read failed' };
+    return { id: (data as { id: string } | null)?.id ?? null, error: null };
+  };
 }

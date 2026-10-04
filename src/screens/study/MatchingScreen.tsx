@@ -53,6 +53,7 @@ import { useAnimationsAllowed } from '../../features/settings/a11y';
 import { orderByCredit } from '../../features/study/deckOrder';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { useTier } from '../../features/commercial/useTier';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Matching'>;
 
@@ -134,6 +135,12 @@ export function MatchingScreen({ navigation, route }: Props) {
   // mounted board. One-shot transitions, not a loop: Low-Light leaves them.
   const motionOk = useAnimationsAllowed();
   // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
+  // The tier the topic terms are cached under (perf decisions 2026-10-04):
+  // common_mistakes is membership-masked, so the session cache is keyed by it.
+  // A ref, so a tier landing mid-session never reloads the deck.
+  const tierForTerms = useTier();
+  const tierForTermsRef = useRef(tierForTerms);
+  tierForTermsRef.current = tierForTerms;
   const trial = useTimeTrial('matching', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -149,7 +156,7 @@ export function MatchingScreen({ navigation, route }: Props) {
     (async () => {
       try {
         const [fetched, methodState, localStates] = await Promise.all([
-          fetchTopicItems(achievementId),
+          fetchTopicItems(achievementId, tierForTermsRef.current),
           fetchMethodState(achievementId, 'matching'),
           // Device-mirror resume merge — SIGNED-IN only (flashcards ruling
           // 2026-08-17; ported QA night 2026-08-31).

@@ -55,6 +55,7 @@ import { StudyHeader } from './StudyHeader';
 import type { StudyStackParamList } from '../../navigation/types';
 import { orderByCredit, remainingCount } from '../../features/study/deckOrder';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { useTier } from '../../features/commercial/useTier';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'FillInBlank'>;
 
@@ -113,6 +114,12 @@ export function FillInBlankScreen({ navigation, route }: Props) {
   const { settings: pace, setEnabled, setPreset } = usePaceSettings('fill_in_blank');
   const running = useRunning('fill_in_blank');
   // Time trial (opt-in 15:00 challenge) — the readout switches to its HUD while live.
+  // The tier the topic terms are cached under (perf decisions 2026-10-04):
+  // common_mistakes is membership-masked, so the session cache is keyed by it.
+  // A ref, so a tier landing mid-session never reloads the deck.
+  const tierForTerms = useTier();
+  const tierForTermsRef = useRef(tierForTerms);
+  tierForTermsRef.current = tierForTerms;
   const trial = useTimeTrial('fill_in_blank', achievementId);
   const [timerOpen, setTimerOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -128,7 +135,7 @@ export function FillInBlankScreen({ navigation, route }: Props) {
     (async () => {
       try {
         const [fetched, methodState, localStates] = await Promise.all([
-          fetchTopicItems(achievementId),
+          fetchTopicItems(achievementId, tierForTermsRef.current),
           fetchMethodState(achievementId, 'fill_in_blank'),
           // Device-mirror resume merge — SIGNED-IN only (same ruling as the
           // flashcards fix 2026-08-17; QA night 2026-08-31 found FIB/Matching

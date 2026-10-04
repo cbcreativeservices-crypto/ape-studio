@@ -55,7 +55,7 @@ import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { CardArt } from '../../components/CardArt';
 import { colors, fonts } from '../../theme/tokens';
-import { credentialCopy } from '../../data/credentialCopy';
+import { credentialCopyLazy as credentialCopy } from '../../data/credentialCopyLazy';
 import { REQUIRES_LABEL } from '../../data/careerRequirement';
 import { credentialArtUrl, credentialEyebrow } from './CredentialThumb';
 

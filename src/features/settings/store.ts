@@ -151,10 +151,12 @@ export const COMMERCIAL_NOTIFY_ROWS: {
   // 1,095 entries each, so both rows render today; the guards stay as the
   // safety net, not as a description of the current state.
   // NEW COPY — owner review.
-  ...(MISUNDERSTOOD_TERMS.length > 0
+  // Asked of the cheap index, so the ~450 KB of lists is not loaded at boot
+  // just to answer it (perf decision B, 2026-10-04).
+  ...(HAS_MISUNDERSTOOD_TERMS
     ? [{ key: 'notifyMisunderstood' as const, label: 'Misunderstood term', hint: 'A commonly misunderstood term, set straight — daily.' }]
     : []),
-  ...(ODD_TERMS.length > 0
+  ...(HAS_ODD_TERMS
     ? [{ key: 'notifyOddTerm' as const, label: 'Odd term of the day', hint: 'A rare or odd audio term you may never have met.' }]
     : []),
 ];
@@ -181,7 +183,7 @@ export const NOTIFY_FREQ: Record<CommercialNotifyKey, { mode: NotifyFreqMode; la
 };
 
 // eslint-disable-next-line import/order -- leaf data module (no cycle; see localSchedule's cycle note)
-import { MISUNDERSTOOD_TERMS, ODD_TERMS } from '../notifications/curatedTermLists';
+import { HAS_MISUNDERSTOOD_TERMS, HAS_ODD_TERMS } from '../notifications/curatedTermLists';
 
 import { myUserRow } from '../account/myUserRow';
 const KEY = 'ape:settings';

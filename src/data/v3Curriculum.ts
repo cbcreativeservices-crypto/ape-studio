@@ -160,6 +160,30 @@ function memoOnce(load: () => Promise<V3Credential[]>, forget: () => void): Prom
   );
 }
 
+/**
+ * ⛔ PAGE A LINK TABLE (perf decisions 2026-10-04). PostgREST returns at most
+ * 1000 rows per request and says nothing when it stops there. program_topics
+ * holds 1016 rows and EVERY one belongs to an active program (read-only check
+ * on the live database, 2026-10-04), so the single `.in(program_id)` read
+ * silently dropped the last 16 links. Each page is a `.range(from, to)` over a
+ * TOTAL order (the caller orders by `seq`, then the unique `id`), so no row is
+ * skipped or repeated at a page edge; a page shorter than PAGE_ROWS is the
+ * last. Any page's error rejects the whole read — never a partial list.
+ */
+export const LINK_PAGE_ROWS = 1000;
+export async function readAllPages<T>(
+  page: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: { message: string } | null }>,
+): Promise<{ data: T[]; error: { message: string } | null }> {
+  const out: T[] = [];
+  for (let from = 0; ; from += LINK_PAGE_ROWS) {
+    const { data, error } = await page(from, from + LINK_PAGE_ROWS - 1);
+    if (error) return { data: [], error };
+    const rows = data ?? [];
+    out.push(...rows);
+    if (rows.length < LINK_PAGE_ROWS) return { data: out, error: null };
+  }
+}
+
 async function loadV3Programs(): Promise<V3Credential[]> {
   const { data: progs, error: progsError } = await supabase
     .from('programs')
@@ -169,11 +193,15 @@ async function loadV3Programs(): Promise<V3Credential[]> {
   if (progsError) throw new Error(`v3 programs read failed: ${progsError.message}`);
   if (!progs?.length) return [];
   const ids = (progs as any[]).map((p) => p.id);
-  const { data: links, error: linksError } = await supabase
-    .from('program_topics')
-    .select('program_id, gs, seq, is_elective')
-    .in('program_id', ids)
-    .order('seq');
+  const { data: links, error: linksError } = await readAllPages<any>((from, to) =>
+    supabase
+      .from('program_topics')
+      .select('program_id, gs, seq, is_elective')
+      .in('program_id', ids)
+      .order('seq')
+      .order('id')
+      .range(from, to),
+  );
   if (linksError) throw new Error(`v3 program topics read failed: ${linksError.message}`);
   const byProg = new Map<string, number[]>();
   const electivesByProg = new Map<string, number[]>();
@@ -216,11 +244,15 @@ async function loadV3Certs(): Promise<V3Credential[]> {
   if (certsError) throw new Error(`v3 certificates read failed: ${certsError.message}`);
   if (!certs?.length) return [];
   const ids = (certs as any[]).map((c) => c.id);
-  const { data: links, error: linksError } = await supabase
-    .from('certificate_topics')
-    .select('certificate_id, gs, seq, is_required')
-    .in('certificate_id', ids)
-    .order('seq');
+  const { data: links, error: linksError } = await readAllPages<any>((from, to) =>
+    supabase
+      .from('certificate_topics')
+      .select('certificate_id, gs, seq, is_required')
+      .in('certificate_id', ids)
+      .order('seq')
+      .order('id')
+      .range(from, to),
+  );
   if (linksError) throw new Error(`v3 certificate topics read failed: ${linksError.message}`);
   const byCert = new Map<string, number[]>();
   for (const l of (links ?? []) as any[]) {

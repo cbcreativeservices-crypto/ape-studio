@@ -8,15 +8,23 @@ import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import { NAV_PUSH, NAV_PUSH_REDUCED, useReduceMotionNav } from './reduceMotionNav';
 import { useNavOrientation } from './navOrientation'; // bug hunt 2026-09-29 — see that file
 import { DashboardScreen } from '../screens/dashboard/DashboardScreen';
-import { FlashcardsScreen } from '../screens/study/FlashcardsScreen';
-import { FillInBlankScreen } from '../screens/study/FillInBlankScreen';
-import { MatchingScreen } from '../screens/study/MatchingScreen';
-import { QuizScreen } from '../screens/quiz/QuizScreen';
-import { GlossaryScreen } from '../screens/glossary/GlossaryScreen';
-import { ScenariosScreen } from '../screens/study/ScenariosScreen';
 import type { StudyStackParamList } from './types';
+import { lazyScreen } from './lazyScreen';
 
 const Stack = createNativeStackNavigator<StudyStackParamList>();
+
+// Lazy screens (perf decision B, 2026-10-04): the Dashboard is the tab's first
+// paint and stays imported; each study method loads on first visit. One cached
+// component per route — see lazyScreen.ts.
+/* eslint-disable @typescript-eslint/no-var-requires */
+const Lazy = {
+  Flashcards: lazyScreen(() => require('../screens/study/FlashcardsScreen').FlashcardsScreen),
+  FillInBlank: lazyScreen(() => require('../screens/study/FillInBlankScreen').FillInBlankScreen),
+  Matching: lazyScreen(() => require('../screens/study/MatchingScreen').MatchingScreen),
+  Quiz: lazyScreen(() => require('../screens/quiz/QuizScreen').QuizScreen),
+  Glossary: lazyScreen(() => require('../screens/glossary/GlossaryScreen').GlossaryScreen),
+  Scenarios: lazyScreen(() => require('../screens/study/ScenariosScreen').ScenariosScreen),
+} as const;
 
 export function StudyStack() {
   // Transition standard (owner 2026-08-16): opening a study method from the
@@ -46,10 +54,10 @@ export function StudyStack() {
       )}
     >
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
-      <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
-      <Stack.Screen name="FillInBlank" component={FillInBlankScreen} />
-      <Stack.Screen name="Matching" component={MatchingScreen} />
-      <Stack.Screen name="Quiz" component={QuizScreen} />
+      <Stack.Screen name="Flashcards" getComponent={Lazy.Flashcards} />
+      <Stack.Screen name="FillInBlank" getComponent={Lazy.FillInBlank} />
+      <Stack.Screen name="Matching" getComponent={Lazy.Matching} />
+      <Stack.Screen name="Quiz" getComponent={Lazy.Quiz} />
       {/* Glossary used to be the ONE screen in this stack with a fade
           transition. Two iOS reports point at exactly this route when it is
           reached from Home's OPEN GLOSSARY (a cross-tab navigate that mounts
@@ -58,8 +66,8 @@ export function StudyStack() {
           with no JS error, no server error, and the corpus fully loaded.
           Every other Study screen uses the stack's default push and works on
           the same iPad, so the Glossary now does too (owner re-tests). */}
-      <Stack.Screen name="Glossary" component={GlossaryScreen} />
-      <Stack.Screen name="Scenarios" component={ScenariosScreen} />
+      <Stack.Screen name="Glossary" getComponent={Lazy.Glossary} />
+      <Stack.Screen name="Scenarios" getComponent={Lazy.Scenarios} />
     </Stack.Navigator>
   );
 }

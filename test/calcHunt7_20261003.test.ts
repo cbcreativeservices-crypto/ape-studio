@@ -161,6 +161,9 @@ describe('H7-6 — the saved lists have a LOADING face', () => {
     const s = src('CalcResultsScreen.tsx');
     assert.match(s, /if \(ticket === loadTicket\.current\) setResults\(list\);\s*if \(ticket === loadTicket\.current\) setLoaded\(true\);/);
     assert.match(s, /\{!loaded \? \(\s*<Text style=\{styles\.caption\}>Loading saved results…<\/Text>\s*\) : workflowListUnreadable\(results\)/);
+    // FlatList since perf decisions 2026-10-04: the faces are its empty face,
+    // and no row is drawn before the first read lands.
+    assert.match(s, /<FlatList\s+data=\{loaded \? results : \[\]\}[\s\S]*?ListEmptyComponent=\{!loaded \?/);
   });
   it('My Workflows says it is loading until the first read lands', () => {
     const s = src('CalcWorkflowsScreen.tsx');

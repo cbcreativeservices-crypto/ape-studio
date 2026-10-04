@@ -3,7 +3,7 @@
  * Loads the locked type families, wraps the app in a dark navigation theme +
  * safe-area provider, and renders the RootNavigator. Dark theme, portrait-only.
  */
-import { useEffect, type ComponentType } from 'react';
+import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import { AppState, Dimensions, Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -15,196 +15,6 @@ import { setMeasurementFailureReporter } from './src/features/tools/measure/meas
 import { setSaveFailurePresenter } from './src/features/storage/saveFailureNotice';
 import { notify } from './src/lib/confirm';
 import { RootErrorBoundary } from './src/components/RootErrorBoundary';
-import { Spl3dGaugePreview } from './src/screens/tools/Spl3dGaugePreview';
-import { PatchbayPreview } from './src/screens/lab/patchbay/PatchbayPreview';
-import { BeginningMixingLabScreen } from './src/screens/lab/mixing/BeginningMixingLabScreen';
-import { AdvancedMixingLabScreen } from './src/screens/lab/mixing/AdvancedMixingLabScreen';
-import { ConnectorSelectLabScreen } from './src/screens/lab/connectorselect/ConnectorSelectLabScreen';
-import { ToolPreview } from './src/screens/tools/ToolPreview';
-import { MicPrinciplesLabScreen } from './src/screens/lab/micspeaker/MicPrinciplesLabScreen';
-import { SpeakerCoverageLabScreen } from './src/screens/lab/micspeaker/SpeakerCoverageLabScreen';
-import { VacuumTubeLabScreen } from './src/screens/lab/tube/VacuumTubeLabScreen';
-// The two window-width-driven screens (2026-09-13). Both size their carousel
-// from the live window, and NEITHER had a harness of any kind - so the iPad
-// layout of the FIRST screen a store reviewer sees could not be looked at.
-// ToolPreview renders full-bleed at the viewport width, so `resize_window` on
-// the browser is what actually exercises the width path (see previewWidth.ts).
-import { CourseSelectionScreen } from './src/screens/courses/CourseSelectionScreen';
-import { AwardsScreen } from './src/screens/awards/AwardsScreen';
-import { MultiMeterScreen } from './src/screens/tools/MultiMeterScreen';
-import { FrequencyCounterScreen } from './src/screens/tools/FrequencyCounterScreen';
-import { WaveformScreen } from './src/screens/tools/WaveformScreen';
-import { RtaScreen } from './src/screens/tools/RtaScreen';
-import { SpectrogramScreen } from './src/screens/tools/SpectrogramScreen';
-import { ToolsHubScreen } from './src/screens/tools/ToolsHubScreen';
-import { ToolDemoPreview } from './src/screens/tools/ToolDemoPreview';
-import { CalcWorkspaceScreen } from './src/screens/lab/calc/CalcWorkspaceScreen';
-import { EqModuleScreen } from './src/screens/lab/eq/EqModuleScreen';
-import { CompressionLabScreen, GateLabScreen, StereoLabScreen } from './src/screens/lab/fxLabConfigs';
-import { GrLadderPreview } from './src/screens/lab/GrLadderPreview';
-import { CalcLabScreen } from './src/screens/lab/calc/CalcLabScreen';
-import { CableInstallLabScreen } from './src/screens/lab/cableinstall/CableInstallLabScreen';
-import { CableArtPreview } from './src/screens/lab/cableinstall/CableArtPreview';
-// Audio Career Finder (owner brief 2026-09-03) — `#careerfinderpreview` runs
-// the whole six-screen flow in the browser harness.
-import { CareerFinderScreen } from './src/screens/careerfinder/CareerFinderScreen';
-import { CareerFinderQuizScreen } from './src/screens/careerfinder/CareerFinderQuizScreen';
-import { CareerFinderResultsScreen } from './src/screens/careerfinder/CareerFinderResultsScreen';
-import { CareerFamilyScreen } from './src/screens/careerfinder/CareerFamilyScreen';
-import { CareerFamilyListScreen } from './src/screens/careerfinder/CareerFamilyListScreen';
-import { CareerFinderAboutScreen } from './src/screens/careerfinder/CareerFinderAboutScreen';
-// Sound Systems Lab (2026-09-25) — `#soundsystemspreview` walks the hub and
-// all five modes in the browser harness.
-import { SoundSystemsLabScreen } from './src/screens/lab/soundsystems/SoundSystemsLabScreen';
-import { StartHereScreen } from './src/screens/startHere/StartHereScreen';
-import { StartHereTermsScreen } from './src/screens/startHere/StartHereTermsScreen';
-import { PlateStudioScreen } from './src/screens/lab/cymatics/PlateStudioScreen';
-import { TuningLabScreen } from './src/screens/lab/tuning/TuningLabScreen';
-import { DigitalModuleScreen } from './src/screens/lab/digital/DigitalModuleScreen';
-import { GainModuleScreen } from './src/screens/lab/gain/GainModuleScreen';
-import { CymaticsModuleScreen } from './src/screens/lab/cymatics/CymaticsModuleScreen';
-import { LiquidStudioScreen } from './src/screens/lab/cymatics/LiquidStudioScreen';
-import { MembraneStudioScreen } from './src/screens/lab/cymatics/MembraneStudioScreen';
-import { GalleryScreen as CymaticsGalleryScreen } from './src/screens/lab/cymatics/GalleryScreen';
-// `#labpreview/<Screen>/<id>` (2026-09-25 legibility pass): any lab screen in
-// the browser harness by name, so a display can be measured without walking
-// Home → OPEN LABS (the app root sometimes rendered blank in the preview).
-import { DeEsserLabScreen } from './src/screens/lab/deesser/DeEsserLabScreen';
-import { SpeechLabScreen } from './src/screens/lab/speech/SpeechLabScreen';
-import { PatchbayLabScreen } from './src/screens/lab/patchbay/PatchbayLabScreen';
-import { EarTrainingLabScreen } from './src/screens/lab/eartraining/EarTrainingLabScreen';
-import { EarModuleScreen } from './src/screens/lab/eartraining/EarModuleScreen';
-import { WaveLabHomeScreen } from './src/screens/lab/wave/WaveLabHomeScreen';
-import { WaveModuleScreen } from './src/screens/lab/wave/WaveModuleScreen';
-import { MeterLabHomeScreen } from './src/screens/lab/meter/MeterLabHomeScreen';
-import { MeterModuleScreen } from './src/screens/lab/meter/MeterModuleScreen';
-import { FoundationsCourseScreen } from './src/screens/lab/foundations/FoundationsCourseScreen';
-import { FoundationsPlaygroundScreen } from './src/screens/lab/foundations/FoundationsPlaygroundScreen';
-import { AmpLabHomeScreen } from './src/screens/lab/amp/AmpLabHomeScreen';
-import { AmpModuleScreen } from './src/screens/lab/amp/AmpModuleScreen';
-import { OscillatorLabScreen } from './src/screens/lab/OscillatorLabScreen';
-// Full-screen build, group 2 (2026-09-30): the seven single-page rack labs.
-import { NoiseLabScreen } from './src/screens/lab/NoiseLabScreen';
-import { HarmonicLabScreen } from './src/screens/lab/HarmonicLabScreen';
-import { FmLabScreen } from './src/screens/lab/FmLabScreen';
-import { ModularLabScreen } from './src/screens/lab/ModularLabScreen';
-import { BinauralLabScreen } from './src/screens/lab/BinauralLabScreen';
-import { AutotuneLabScreen } from './src/screens/lab/AutotuneLabScreen';
-import { HarmonographLabScreen } from './src/screens/lab/HarmonographLabScreen';
-import { EnvelopeLabScreen } from './src/screens/lab/envelope/EnvelopeLabScreen';
-import { BassLabScreen } from './src/screens/lab/BassLabScreen';
-import { EqLabScreen } from './src/screens/lab/fxLabConfigs';
-// Lab navigation migration WP5 (2026-10-01): the two stepped cable / mic
-// labs by name, so the shared strip can be walked in the browser harness.
-import { CableLabScreen } from './src/screens/lab/cable/CableLabScreen';
-import { MicSelectLabScreen } from './src/screens/lab/micselect/MicSelectLabScreen';
-// Mastering Lab (2026-10-01): `#labpreview/MasteringLab` walks all eight modules.
-import { MasteringLabScreen } from './src/screens/lab/mastering/MasteringLabScreen';
-// Drum Tuning Lab (2026-10-01): `#labpreview/DrumTuningLab` walks all seven chapters.
-import { DrumTuningLabScreen } from './src/screens/lab/drumtuning/DrumTuningLabScreen';
-// Room Design & Monitoring Lab (2026-10-01): SVG plan + side views, so the
-// whole lab measures in the browser harness (`#labpreview/RoomDesignLab`).
-import { RoomDesignLabScreen } from './src/screens/lab/roomdesign/RoomDesignLabScreen';
-
-const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
-  RoomDesignLab: RoomDesignLabScreen as ComponentType,
-  DeEsserLab: DeEsserLabScreen as ComponentType,
-  SpeechLab: SpeechLabScreen as ComponentType,
-  // Full-screen pass group 6 (2026-09-30): the patchbay, the connectors
-  // lab and the ear-training trial shell, by name.
-  PatchbayLab: PatchbayLabScreen as ComponentType,
-  ConnectorSelectLab: ConnectorSelectLabScreen as ComponentType,
-  EarTrainingLab: EarTrainingLabScreen as ComponentType,
-  EarModule: EarModuleScreen as ComponentType,
-  WaveLab: WaveLabHomeScreen as ComponentType,
-  WaveModule: WaveModuleScreen as ComponentType,
-  MeterLab: MeterLabHomeScreen as ComponentType,
-  MeterModule: MeterModuleScreen as ComponentType,
-  FoundationsCourse: FoundationsCourseScreen as ComponentType,
-  FoundationsPlayground: FoundationsPlaygroundScreen as ComponentType,
-  AmpLab: AmpLabHomeScreen as ComponentType,
-  AmpModule: AmpModuleScreen as ComponentType,
-  OscillatorLab: OscillatorLabScreen as ComponentType,
-  NoiseLab: NoiseLabScreen as ComponentType,
-  HarmonicLab: HarmonicLabScreen as ComponentType,
-  FmLab: FmLabScreen as ComponentType,
-  ModularLab: ModularLabScreen as ComponentType,
-  BinauralLab: BinauralLabScreen as ComponentType,
-  AutotuneLab: AutotuneLabScreen as ComponentType,
-  HarmonographLab: HarmonographLabScreen as ComponentType,
-  EnvelopeLab: EnvelopeLabScreen as ComponentType,
-  BassLab: BassLabScreen as ComponentType,
-  EqLab: EqLabScreen as ComponentType,
-  EqModule: EqModuleScreen as ComponentType,
-  MicPrinciples: MicPrinciplesLabScreen as ComponentType,
-  // Full-screen build group 4 (2026-09-30): the coverage maps and the tube lab, by name.
-  SpeakerCoverage: SpeakerCoverageLabScreen as ComponentType,
-  VacuumTube: VacuumTubeLabScreen as ComponentType,
-  CableInstallLab: CableInstallLabScreen as ComponentType,
-  CableLab: CableLabScreen as ComponentType,
-  MicSelect: MicSelectLabScreen as ComponentType,
-  SoundSystemsLab: SoundSystemsLabScreen as ComponentType,
-  CenterLockTuner: CenterLockTuner as ComponentType,
-  AuthScreen: AuthScreen as ComponentType,
-  // The two live tools with the 2026-09-29 full screen (member-gated routes).
-  RtaScreen: RtaScreen as ComponentType,
-  SpectrogramScreen: SpectrogramScreen as ComponentType,
-  SoundSystemsLearn: SoundSystemsLearnScreen as ComponentType,
-  SoundSystemsBuild: SoundSystemsBuildScreen as ComponentType,
-  SoundSystemsRoute: SoundSystemsRouteScreen as ComponentType,
-  SoundSystemsOperate: SoundSystemsOperateScreen as ComponentType,
-  SoundSystemsTroubleshoot: SoundSystemsTroubleshootScreen as ComponentType,
-  CompressionLab: CompressionLabScreen as ComponentType,
-  GateLab: GateLabScreen as ComponentType,
-  StereoLab: StereoLabScreen as ComponentType,
-  // Start Here (2026-09-29): the free beginner experience + its words.
-  StartHere: StartHereScreen as ComponentType,
-  StartHereTerms: StartHereTermsScreen as ComponentType,
-  // Cymatics Chladni plate (TestFlight build 32 fix pass): the dock and the
-  // bezel can be measured here; the plate itself needs Skia (native only).
-  CymaticsPlateStudio: PlateStudioScreen as ComponentType,
-  // Tuning & Temperament (TestFlight build 32 rack rebuild, 2026-09-30).
-  TuningLab: TuningLabScreen as ComponentType,
-  // The rest of the Cymatics Lab (full-screen pass 2026-09-30): the rack
-  // modules by id (CymaticsModule/nodes|change|harmony|systems), the Liquid
-  // and Membrane studios and the Gallery art board. The Skia studios show
-  // their dock and bezel here; the drawing itself is native-only.
-  CymaticsModule: CymaticsModuleScreen as ComponentType,
-  CymaticsLiquidStudio: LiquidStudioScreen as ComponentType,
-  CymaticsMembraneStudio: MembraneStudioScreen as ComponentType,
-  CymaticsGallery: CymaticsGalleryScreen as ComponentType,
-  // Full-screen build, group 3 (2026-09-30): Digital Audio + Gain Staging
-  // module pages (`/<id>`). The Digital Skia scenes need CanvasKit (native
-  // only); the rack chrome and the Gain chain columns measure here.
-  DigitalModule: DigitalModuleScreen as ComponentType,
-  GainModule: GainModuleScreen as ComponentType,
-  MasteringLab: MasteringLabScreen as ComponentType,
-  DrumTuningLab: DrumTuningLabScreen as ComponentType,
-};
-/** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
- *  screen registered as a sibling so in-lab navigation (a home → a module)
- *  works. `<id>` becomes `{ id }` for module screens. */
-function labPreviewFromHash(hash: string): { name: string; component: ComponentType; initialParams?: Record<string, unknown>; screens: { name: string; component: ComponentType }[] } | null {
-  if (!hash.startsWith('#labpreview/')) return null;
-  const [name, id] = hash.slice('#labpreview/'.length).split('/');
-  const component = LAB_PREVIEW_SCREENS[name];
-  if (!component) return null;
-  return {
-    name,
-    component,
-    initialParams: id ? { id } : undefined,
-    screens: Object.entries(LAB_PREVIEW_SCREENS)
-      .filter(([n]) => n !== name)
-      .map(([n, c]) => ({ name: n, component: c })),
-  };
-}
-import {
-  SoundSystemsBuildScreen,
-  SoundSystemsLearnScreen,
-  SoundSystemsOperateScreen,
-  SoundSystemsRouteScreen,
-  SoundSystemsTroubleshootScreen,
-} from './src/screens/lab/soundsystems/modeScreens';
 import { navigationRef } from './src/navigation/navigationRef';
 import { linking } from './src/navigation/linking';
 import { attachLinkCapture, pendingLinkUrl, setPendingLink } from './src/navigation/pendingLink';
@@ -221,12 +31,7 @@ import {
 } from './src/features/notifications/push';
 import { syncLocalNotificationsThrottled } from './src/features/notifications/localSchedule';
 import { loadLocalSettings } from './src/features/settings/store';
-import { NotifySchedulePreview } from './src/features/settings/NotifySchedulePreview';
-import { SettingsPreview } from './src/screens/settings/SettingsPreview';
-import { HelpPreview } from './src/screens/help/HelpPreview';
-import { SamplerPreview } from './src/features/intro/SamplerPreview';
 import { FirstRunCoordinator } from './src/features/intro/FirstRunCoordinator';
-import { ProfilePreview } from './src/screens/profile/ProfilePreview';
 import { LabPreviewOverlay } from './src/features/lab/LabPreviewOverlay';
 import { endLabPreview, getLabPreview } from './src/features/lab/labPreviewStore';
 import { EntitlementProvider } from './src/features/commercial/EntitlementProvider';
@@ -249,8 +54,6 @@ import { lockPortrait } from './src/lib/screenOrientationSafe';
 import { isTabletDisplay } from './src/theme/useIsTablet';
 import { initTelemetry, trackScreen, wrapRoot } from './src/features/telemetry/telemetry';
 import { colors, fontAssets } from './src/theme/tokens';
-import { CenterLockTuner } from './src/screens/tools/CenterLockTuner';
-import { AuthScreen } from './src/screens/auth/AuthScreen';
 
 // Crash reporting + anonymous analytics (owner-approved 2026-09-16), booted
 // FIRST so a failure anywhere below is already caught. Privacy contract +
@@ -523,200 +326,15 @@ function App() {
     return <View style={{ flex: 1, backgroundColor: colors.splashBg }} />;
   }
 
-  // DEV + WEB ONLY: `localhost:8090/#gaugepreview` renders the standalone 3D-gauge
-  // layout harness (all three modes, demo data) so Claude can see + iterate the
-  // gauge in the browser — the real gauge only draws while the native engine
-  // runs, which never happens on web. Inert on device and in release builds.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash === '#gaugepreview') {
-    return (
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <Spl3dGaugePreview />
-      </SafeAreaProvider>
-    );
-  }
-
-  // DEV + WEB ONLY: `localhost:8090/#patchbaypreview` — the Patchbay lab's core
-  // visual gallery (all configurations, interactive jacks) for browser design
-  // iteration. SVG + RN Animated only, so the web render is faithful.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#patchbaypreview')) {
-    return (
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <PatchbayPreview />
-      </SafeAreaProvider>
-    );
-  }
-
-  // DEV + WEB ONLY: `localhost:8090/#notifyschedulepreview` renders the
-  // notification schedule modal (all three modes, at phone widths). It lives
-  // behind login inside Settings, so without this it cannot be seen in the
-  // browser — which is how a stepper layout overflow shipped unnoticed.
-  // startsWith, not equality: the harness takes `/mode/width` suffixes.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#notifyschedulepreview')) {
-    return (
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <NotifySchedulePreview />
-      </SafeAreaProvider>
-    );
-  }
-
-  // DEV + WEB ONLY: `#profilepreview/<width>` — Profile is behind login too.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#profilepreview')) {
-    return (
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <ProfilePreview />
-      </SafeAreaProvider>
-    );
-  }
-
-  // DEV + WEB ONLY: `#helppreview/<width>` — the Help hub is gated behind
-  // HELP_HUB_ENABLED until its copy is ratified; review it here meanwhile.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#helppreview')) {
-    return (
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <HelpPreview />
-      </SafeAreaProvider>
-    );
-  }
-
-  // DEV + WEB ONLY: `#settingspreview/<width>` — the Settings screen is behind
-  // login, so this is the only way to review its layout in the browser.
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#settingspreview')) {
-    return (
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <SettingsPreview />
-      </SafeAreaProvider>
-    );
-  }
-
-  // DEV + WEB ONLY: `#samplerpreview/<width>` — the first-run sampler screen
-  // (plan §2.1) only runs on a brand-new first launch, so this is the only way
-  // to review it in the browser. SamplerPreview brings its own SafeAreaProvider.
-  // DEV harness for the GR ladder's FILL — the web preview has no audio engine,
-  // so every ladder in the real labs renders honestly dark and the one thing
-  // worth checking cannot be seen on the surface we can drive (2026-09-11).
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#grladderpreview')) {
-    return (
-      <>
-        <StatusBar style="light" />
-        <GrLadderPreview />
-      </>
-    );
-  }
-
-  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && window.location.hash.startsWith('#samplerpreview')) {
-    return (
-      <>
-        <StatusBar style="light" />
-        <SamplerPreview />
-      </>
-    );
-  }
-
-  // DEV + WEB ONLY: `localhost:8090/#<tool>preview` renders a real (Skia-free
-  // SVG) tool screen in a minimal navigator with the ape-dsp SIM overlay, so the
-  // tool can be seen + iterated in the browser. Outside RootNavigator, so it
-  // skips AmplitudeOrientation's web-Skia throw.
-  const toolPreview: { name: string; component: ComponentType; initialParams?: Record<string, unknown>; screens?: { name: string; component: ComponentType }[] } | null =
-    __DEV__ && Platform.OS === 'web' && typeof window !== 'undefined'
-      ? window.location.hash === '#careerfinderpreview'
-        ? {
-            name: 'CareerFinder',
-            component: CareerFinderScreen as ComponentType,
-            screens: [
-              { name: 'CareerFinderQuiz', component: CareerFinderQuizScreen as ComponentType },
-              { name: 'CareerFinderResults', component: CareerFinderResultsScreen as ComponentType },
-              { name: 'CareerFamily', component: CareerFamilyScreen as ComponentType },
-              { name: 'CareerFamilyList', component: CareerFamilyListScreen as ComponentType },
-              { name: 'CareerFinderAbout', component: CareerFinderAboutScreen as ComponentType },
-            ],
-          }
-      : window.location.hash === '#soundsystemspreview'
-        // Sound Systems Lab (owner GO 2026-09-25): the hub plus its five mode
-        // screens, so the whole lab can be walked in the browser harness.
-        ? {
-            name: 'SoundSystemsLab',
-            component: SoundSystemsLabScreen as ComponentType,
-            screens: [
-              { name: 'SoundSystemsLearn', component: SoundSystemsLearnScreen as ComponentType },
-              { name: 'SoundSystemsBuild', component: SoundSystemsBuildScreen as ComponentType },
-              { name: 'SoundSystemsRoute', component: SoundSystemsRouteScreen as ComponentType },
-              { name: 'SoundSystemsOperate', component: SoundSystemsOperateScreen as ComponentType },
-              { name: 'SoundSystemsTroubleshoot', component: SoundSystemsTroubleshootScreen as ComponentType },
-            ],
-          }
-      : window.location.hash === '#multimeterpreview'
-        ? { name: 'MultiMeter', component: MultiMeterScreen as ComponentType }
-        : window.location.hash === '#hzcounterpreview'
-          ? { name: 'FrequencyCounter', component: FrequencyCounterScreen as ComponentType }
-        : window.location.hash === '#mixinglabpreview'
-          ? { name: 'BeginningMixingLab', component: BeginningMixingLabScreen as ComponentType }
-        : window.location.hash === '#advmixingpreview'
-          ? { name: 'AdvancedMixingLab', component: AdvancedMixingLabScreen as ComponentType }
-        : window.location.hash === '#connectorselectpreview'
-          ? { name: 'ConnectorSelectLab', component: ConnectorSelectLabScreen as ComponentType }
-        : window.location.hash === '#waveformpreview'
-          ? { name: 'WaveformLive', component: WaveformScreen as ComponentType }
-          : window.location.hash === '#rtapreview'
-            ? { name: 'Rta', component: RtaScreen as ComponentType }
-            : window.location.hash === '#toolshubpreview'
-              ? { name: 'ToolsHub', component: ToolsHubScreen as ComponentType }
-              : window.location.hash === '#calcworkspacepreview'
-                ? { name: 'CalcWorkspace', component: CalcWorkspaceScreen as ComponentType, initialParams: { id: 'wave' } }
-              : window.location.hash === '#stereolabpreview'
-                // WIDTH is one of only two effect faders with an honest home
-                // (100% = the image as recorded) — the double-tap harness.
-                ? { name: 'StereoLab', component: StereoLabScreen as ComponentType }
-              : window.location.hash === '#gatelabpreview'
-                ? { name: 'GateLab', component: GateLabScreen as ComponentType }
-              : window.location.hash === '#complabpreview'
-                // The compressor — a dynamics lab, for the GR-meter pass
-                // (2026-09-11). Gate/limiter share the same screen + config
-                // shape, so this one exercises all three.
-                ? { name: 'CompressionLab', component: CompressionLabScreen as ComponentType }
-              : window.location.hash === '#eqmodulepreview'
-                // A RackUnit lab with a bound ParamLane — the gear design pass's
-                // browser harness for the dock fader (2026-09-11).
-                ? { name: 'EqModule', component: EqModuleScreen as ComponentType, initialParams: { id: 'parametric' } }
-                : window.location.hash === '#calclabpreview'
-                  ? { name: 'CalcLab', component: CalcLabScreen as ComponentType }
-                  : window.location.hash === '#cableinstallpreview'
-                    ? { name: 'CableInstallLab', component: CableInstallLabScreen as ComponentType }
-                    : window.location.hash === '#cableartpreview'
-                      ? { name: 'CableArt', component: CableArtPreview as ComponentType }
-                      : window.location.hash === '#micprinciplespreview'
-                        ? { name: 'MicPrinciples', component: MicPrinciplesLabScreen as ComponentType }
-                      : window.location.hash.startsWith('#tooldemopreview')
-                        // The member-only tool DEMOS, ungated (the gate lives in
-                        // ToolDemoScreen, not the components) — design pass 2026-09-13.
-                        ? { name: 'ToolDemoPreview', component: ToolDemoPreview as ComponentType }
-                      : window.location.hash === '#homepreview'
-                        // The Home deck - proportional card width against a FIXED
-                        // card height, which is how it rendered LANDSCAPE cards at
-                        // iPad width. Resize the browser to see it.
-                        ? { name: 'CourseSelection', component: CourseSelectionScreen as ComponentType }
-                      : window.location.hash === '#awardspreview'
-                        // The Awards pager - page width, getItemLayout and the
-                        // settle-index maths all read the window width.
-                        ? {
-                            name: 'Awards',
-                            component: AwardsScreen as ComponentType,
-                            initialParams: { category: 'specialization' },
-                          }
-                        : labPreviewFromHash(window.location.hash)
-      : null;
-  if (toolPreview) {
-    return (
-      <SafeAreaProvider>
-        <StatusBar style="light" />
-        <ToolPreview name={toolPreview.name} component={toolPreview.component} initialParams={toolPreview.initialParams} screens={toolPreview.screens} />
-      </SafeAreaProvider>
-    );
+  // DEV + WEB ONLY: the browser preview harness (`#labpreview/<Screen>`,
+  // `#rtapreview`, `#careerfinderpreview`, …). It lives in src/dev/webPreviews
+  // and is REQUIRED here, inside the guard, so its ~80 lab and tool screens are
+  // never evaluated on a phone or at app start (perf decision B, 2026-10-04).
+  if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { renderWebPreview } = require('./src/dev/webPreviews') as typeof import('./src/dev/webPreviews');
+    const preview = renderWebPreview(window.location.hash);
+    if (preview) return preview;
   }
 
   return (

@@ -349,7 +349,10 @@ export function PlaybackStatus({ versions, active, pending, rendering, matched, 
 }) {
   const name = (id: string | null) => versions.find((v) => v.id === id)?.label ?? '';
   let text: string;
-  if (rendering) text = `rendering ${name(pending)} — real DSP on the whole programme, one moment…`;
+  // A quiet pre-render (nothing queued) is named honestly: the learner did
+  // not press anything yet (perf decisions 2026-10-04).
+  if (rendering && !pending) text = 'preparing the audio… — ▶ plays as soon as it is ready';
+  else if (rendering) text = `rendering ${name(pending)} — real DSP on the whole programme, one moment…`;
   else if (active) text = `sounding ${name(active)} · ${matchDb ? `played at ${matchDb.toFixed(1)} dB · matched` : matched ? 'played as rendered · matched' : 'UNMATCHED — as rendered'}`;
   else text = `stopped · press ${labels ?? 'a ▶ key'} in the dock${matched ? '' : ` — MATCH is OFF: unmatched, ${loud} plays at its full level`}`;
   return (

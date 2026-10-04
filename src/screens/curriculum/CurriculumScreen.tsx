@@ -10,7 +10,7 @@
  *
  * Rendered ONLY as page 1 of the Awards swipe pager.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../theme/tokens';
@@ -107,7 +107,10 @@ function TopicRow({ gs, name, onView }: { gs: number; name: string; onView: () =
  * WITHOUT a screen header. Rendered as page 1 of the Awards pager. `showBrand`
  * draws the logo/intro block (off in the pager, which shows the logo up top).
  */
-export function CurriculumView({
+// Memoised (perf decisions 2026-10-04): the Awards pager re-renders on every
+// page change; its props here are stable (goToPage, a boolean), so a page
+// that is not the one changing is not rebuilt.
+export const CurriculumView = memo(function CurriculumView({
   showBrand = true,
   onOpenCategory,
   onScreen = true,
@@ -658,7 +661,7 @@ export function CurriculumView({
     <AboutHomeSheet visible={aboutSheet} onClose={() => setAboutSheet(false)} />
     </>
   );
-}
+});
 
 const styles = StyleSheet.create({
   scroll: { padding: 20, gap: 20, ...readingColumn },

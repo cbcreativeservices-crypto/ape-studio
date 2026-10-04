@@ -8,7 +8,7 @@
  * write back into a project.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -313,38 +313,48 @@ export function CalcProjectsScreen() {
         )}
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
-        {!editing ? (
-          !loaded ? (
+      {!editing ? (
+        // A FlatList, not ScrollView + map (perf decisions 2026-10-04): the
+        // saved list has no upper bound, and only the cards on screen are
+        // built. The three faces — loading / unreadable / truly empty — are
+        // the list's empty face, word for word as before; newest-load-wins is
+        // unchanged (loadTicket above). The editor below stays a ScrollView.
+        <FlatList
+          data={loaded ? projects : []}
+          keyExtractor={(p) => p.id}
+          contentContainerStyle={[styles.scroll, cardColumn]}
+          keyboardShouldPersistTaps="handled"
+          ListEmptyComponent={!loaded ? (
             <Text style={styles.caption}>Loading your projects…</Text>
           ) : workflowListUnreadable(projects) ? (
             // A failed READ is not an empty list (hunt 5, 2026-10-03).
             <Text style={styles.caption}>
               Your saved projects could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.
             </Text>
-          ) : projects.length === 0 ? (
+          ) : (
             <Text style={styles.caption}>
               A project stores a venue or rig’s values — room dimensions, temperature, listener
               distance, impedance, target SPL — so any workflow can pull them in with one tap.
             </Text>
-          ) : (
-            projects.map((p) => (
-              <View key={p.id} style={styles.card}>
-                <Text style={styles.cardName}>{p.name}</Text>
-                {p.notes ? <Text style={styles.caption}>{p.notes}</Text> : null}
-                <Text style={styles.valueLine}>
-                  {p.values.length === 0
-                    ? 'no values yet'
-                    : p.values.map((v) => `${v.label}`).join(' · ')}
-                </Text>
-                <View style={styles.actionRow}>
-                  <ActionBtn label="EDIT" onPress={() => openEdit(p)} />
-                  <ActionBtn label="DELETE" destructive onPress={() => removeProject(p)} />
-                </View>
+          )}
+          renderItem={({ item: p }) => (
+            <View style={styles.card}>
+              <Text style={styles.cardName}>{p.name}</Text>
+              {p.notes ? <Text style={styles.caption}>{p.notes}</Text> : null}
+              <Text style={styles.valueLine}>
+                {p.values.length === 0
+                  ? 'no values yet'
+                  : p.values.map((v) => `${v.label}`).join(' · ')}
+              </Text>
+              <View style={styles.actionRow}>
+                <ActionBtn label="EDIT" onPress={() => openEdit(p)} />
+                <ActionBtn label="DELETE" destructive onPress={() => removeProject(p)} />
               </View>
-            ))
-          )
-        ) : (
+            </View>
+          )}
+        />
+      ) : (
+        <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
           <>
             <Text style={styles.fieldLabel}>PROJECT NAME</Text>
             <TextInput
@@ -440,8 +450,8 @@ export function CalcProjectsScreen() {
               project value to inputs of the SAME kind — a power never fills a voltage.
             </Text>
           </>
-        )}
-      </ScrollView>
+        </ScrollView>
+      )}
     </View>
   );
 }

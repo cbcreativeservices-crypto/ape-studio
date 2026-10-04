@@ -362,7 +362,10 @@ const TopicAddRow = memo(function TopicAddRow({
   );
 });
 
-export function EnrollmentView({
+// Memoised (perf decisions 2026-10-04): the Awards pager re-renders on every
+// page change; its props here are stable (goToPage, a boolean), so a page
+// that is not the one changing is not rebuilt.
+export const EnrollmentView = memo(function EnrollmentView({
   showBrand = true,
   onOpenCategory,
   onScreen = true,
@@ -2854,7 +2857,7 @@ export function EnrollmentView({
       />
     </View>
   );
-}
+});
 
 /** How far the three co-requisite rows indent, and therefore how wide the
  *  gutter their lock sits in is. One constant so the two can never disagree. */

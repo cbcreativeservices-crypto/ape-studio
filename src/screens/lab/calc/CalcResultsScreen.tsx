@@ -8,7 +8,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -107,8 +107,17 @@ export function CalcResultsScreen() {
         <AccuracyNote compact variant="calc" />
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
-        {!loaded ? (
+      {/* A FlatList, not ScrollView + map (perf decisions 2026-10-04): the saved
+          list has no upper bound, and only the cards on screen are built. The
+          three faces — loading / unreadable / truly empty — are the list's
+          empty face, word for word as before; newest-load-wins is unchanged
+          (loadTicket above). */}
+      <FlatList
+        data={loaded ? results : []}
+        keyExtractor={(r) => r.id}
+        extraData={openId}
+        contentContainerStyle={[styles.scroll, cardColumn]}
+        ListEmptyComponent={!loaded ? (
           <Text style={styles.caption}>Loading saved results…</Text>
         ) : workflowListUnreadable(results) ? (
           // A failed READ is not an empty list (hunt 5, 2026-10-03): it said
@@ -116,46 +125,45 @@ export function CalcResultsScreen() {
           <Text style={styles.caption}>
             Your saved results could not be read from this device just now — they are not lost, and nothing is written over them. Leave this screen and come back to try again.
           </Text>
-        ) : results.length === 0 ? (
+        ) : (
           <Text style={styles.caption}>
             Nothing saved yet — finish a workflow run and tap SAVE RESULT on its summary.
           </Text>
-        ) : (
-          results.map((r) => {
-            const open = openId === r.id;
-            return (
-              <View key={r.id} style={styles.card}>
-                <Pressable
-                  onPress={() => setOpenId(open ? null : r.id)}
-                  accessibilityRole="button"
-                  accessibilityState={{ expanded: open }}
-                  aria-expanded={open}
-                  accessibilityLabel={`${r.workflowName}, ${fmtRunDate(r.completedAt)}`}
-                >
-                  <View style={styles.cardHead}>
-                    <Text style={styles.cardName}>{open ? '▾ ' : '▸ '}{r.workflowName}</Text>
-                    <Text style={styles.cardDate}>{fmtRunDate(r.completedAt)}</Text>
-                  </View>
-                  {r.projectName ? <Text style={styles.caption}>Project: {r.projectName}</Text> : null}
-                </Pressable>
-
-                {open ? (
-                  <>
-                    {/* Shared professional report card — captured for SHARE AS
-                        IMAGE; every interactive control stays outside it. */}
-                    <ReportCard ref={shareRef} report={buildReportFromSummary(r)} />
-                    <View style={styles.actionRow}>
-                      <ActionBtn label="SHARE AS TEXT" onPress={() => Share.share({ message: summaryToText(r) }).catch(() => {})} />
-                      {shareImage.isAvailable() ? <ActionBtn label="SHARE AS IMAGE" onPress={() => void shareAsImage()} /> : null}
-                      <ActionBtn label="DELETE" destructive onPress={() => remove(r)} />
-                    </View>
-                  </>
-                ) : null}
-              </View>
-            );
-          })
         )}
-      </ScrollView>
+        renderItem={({ item: r }) => {
+          const open = openId === r.id;
+          return (
+            <View style={styles.card}>
+              <Pressable
+                onPress={() => setOpenId(open ? null : r.id)}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: open }}
+                aria-expanded={open}
+                accessibilityLabel={`${r.workflowName}, ${fmtRunDate(r.completedAt)}`}
+              >
+                <View style={styles.cardHead}>
+                  <Text style={styles.cardName}>{open ? '▾ ' : '▸ '}{r.workflowName}</Text>
+                  <Text style={styles.cardDate}>{fmtRunDate(r.completedAt)}</Text>
+                </View>
+                {r.projectName ? <Text style={styles.caption}>Project: {r.projectName}</Text> : null}
+              </Pressable>
+
+              {open ? (
+                <>
+                  {/* Shared professional report card — captured for SHARE AS
+                      IMAGE; every interactive control stays outside it. */}
+                  <ReportCard ref={shareRef} report={buildReportFromSummary(r)} />
+                  <View style={styles.actionRow}>
+                    <ActionBtn label="SHARE AS TEXT" onPress={() => Share.share({ message: summaryToText(r) }).catch(() => {})} />
+                    {shareImage.isAvailable() ? <ActionBtn label="SHARE AS IMAGE" onPress={() => void shareAsImage()} /> : null}
+                    <ActionBtn label="DELETE" destructive onPress={() => remove(r)} />
+                  </View>
+                </>
+              ) : null}
+            </View>
+          );
+        }}
+      />
     </View>
   );
 }

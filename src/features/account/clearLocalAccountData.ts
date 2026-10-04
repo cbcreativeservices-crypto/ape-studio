@@ -50,6 +50,7 @@ import { resetLocal as resetRoomDesigns } from '../roomdesign/roomDesignStore';
 import { resetCalcWorkflowStore } from '../../screens/lab/calc/workflowStore';
 import { resetCalcSectionPrefs } from '../../screens/lab/calc/calcPrefs';
 import { resetLabClipMemory } from '../lab/labClipBuffer';
+import { resetAppUserIdMemo } from './appUserIdMemo';
 
 /**
  * Keys that MUST survive an account wipe: device-hardware calibration (per
@@ -361,4 +362,8 @@ export function resetAllLocalStores(): void {
   // signed-out session cannot linger with partial data" — and nothing called
   // it (guard G2, 2026-10-02).
   resetTaxonomyCache();
+  // The remembered users.id (perf decisions A, 2026-10-04): keyed by the auth
+  // uid already, and dropped here too so nothing of the departing identity —
+  // not even a read still in flight — outlives the wipe.
+  resetAppUserIdMemo();
 }
