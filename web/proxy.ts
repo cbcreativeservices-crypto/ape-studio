@@ -182,6 +182,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(target, 308);
   }
 
+  // App-link verification files (owner 2026-10-04): Apple and Google fetch
+  // these with no cookie and do not follow redirects, so they must answer 200
+  // even while the site is gated. They hold only public identifiers.
+  if (request.nextUrl.pathname.startsWith("/.well-known/")) return NextResponse.next();
+
   // Gate turned off (launch), or inside a temporary unlock window -> public.
   // Evaluated per request so the window can expire on a warm instance.
   if (!gateActive()) return NextResponse.next();
