@@ -12,7 +12,7 @@ import { colors } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
-import { markLabUnit, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
@@ -92,6 +92,8 @@ export function GainModuleScreen() {
     (navigation as { setParams: (p: { id: GainModuleId }) => void }).setParams({ id: GAIN_MODULES[i].id });
   };
   const banked = useLabClearedUnits('af_gain_staging');
+  // A failed read of the banked units is said, never shown as all left (owner 2026-10-03, "do 2").
+  const progressUnreadable = useLabCompletionUnreadable();
   const nav = useLabNav({
     units: GAIN_MODULES.map((m) => ({ id: m.id, title: m.title, done: banked.has(m.id) })),
     index: idx,
@@ -106,6 +108,7 @@ export function GainModuleScreen() {
       labTitle="Gain Staging Lab"
       units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title }))}
       cleared={banked}
+      unreadable={progressUnreadable}
       mode="credit"
       onJump={(id) => goToModule(GAIN_MODULES.findIndex((m) => m.id === id))}
       onPracticeAgain={() => goToModule(0)}

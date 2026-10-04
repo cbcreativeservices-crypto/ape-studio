@@ -15,7 +15,8 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { AMP_MODULES, type AmpModuleId } from '../../../features/amp/ampContent';
 import { ampEndModel } from '../../../features/amp/ampEnd';
-import { resetAmpProgress, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
+import { isAmpProgressUnreadable, resetAmpProgress, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
+import { ProgressLoadingNote, ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabEndLink, LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -94,6 +95,11 @@ export function AmpLabHomeScreen() {
     navigation.navigate('AmpModule', { id });
   };
 
+  // THREE FACES (owner 2026-10-03, "do 2"; D51): still reading → a quiet
+  // line, never "0 of N modules complete"; the read FAILED → the shared note
+  // where the count would be, never "not started"; only a read that landed
+  // says how many are done. The module map stays open either way.
+  const unreadable = !!progress && isAmpProgressUnreadable(progress);
   const built = AMP_MODULES.filter((m) => BUILT_MODULE_IDS.includes(m.id));
   const endModel = ampEndModel(progress ?? { modules: {} }, built);
   const doneCount = built.filter((m) => progress?.modules[m.id]?.done).length;
@@ -129,6 +135,7 @@ export function AmpLabHomeScreen() {
           labTitle="Amplifier Principles Lab"
           units={endModel.units}
           cleared={endModel.cleared}
+          unreadable={unreadable}
           mode="progress"
           onJump={(id) => open(id === 'final' ? 'apply' : (id as AmpModuleId))}
           onPracticeAgain={() => open(built[0]?.id ?? AMP_MODULES[0].id)}
@@ -142,6 +149,11 @@ export function AmpLabHomeScreen() {
           where does the extra output energy come from? Every screen answers it with a live, synchronized
           model you can push, break, and fix.
         </Text>
+        {unreadable ? (
+          <ProgressUnreadableNote />
+        ) : !progress ? (
+          <ProgressLoadingNote />
+        ) : (
         <View style={styles.progressRow}>
           <Text style={styles.progressText}>{doneCount} of {built.length} modules complete</Text>
           {progress?.final ? (
@@ -150,15 +162,16 @@ export function AmpLabHomeScreen() {
             </Text>
           ) : null}
         </View>
+        )}
         {resumeTarget ? (
           <Pressable
             style={styles.resumeBtn}
             onPress={() => navigation.navigate('AmpModule', { id: resumeTarget })}
             accessibilityRole="button"
-            accessibilityLabel={`${doneCount ? 'Resume' : 'Start'} at module ${AMP_MODULES.find((m) => m.id === resumeTarget)?.num}`}
+            accessibilityLabel={`${doneCount ? 'Resume' : unreadable ? 'Open' : 'Start'} at module ${AMP_MODULES.find((m) => m.id === resumeTarget)?.num}`}
           >
             <Text style={styles.resumeText}>
-              {doneCount ? 'RESUME' : 'START'} · MODULE {AMP_MODULES.find((m) => m.id === resumeTarget)?.num} ›
+              {doneCount ? 'RESUME' : unreadable ? 'OPEN' : 'START'} · MODULE {AMP_MODULES.find((m) => m.id === resumeTarget)?.num} ›
             </Text>
           </Pressable>
         ) : null}

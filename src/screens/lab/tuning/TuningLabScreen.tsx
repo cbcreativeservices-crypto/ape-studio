@@ -21,7 +21,8 @@ import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced
 import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { C4_ET } from '../../../features/tuning/tuningMath';
 import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuningAudio';
-import { holdTuningProgress, loadTuningProgress, saveTuningProgress, setTuningChapterCount, type TuningProgress } from '../../../features/tuning/tuningProgress';
+import { holdTuningProgress, isTuningProgressUnreadable, loadTuningProgress, saveTuningProgress, setTuningChapterCount, type TuningProgress } from '../../../features/tuning/tuningProgress';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { peekSessionWork } from '../../../features/lab/sessionCarry';
 import { CHAPTERS, CHAPTER_COUNT } from './chapters';
 import type { LabCtx } from './labCtx';
@@ -69,6 +70,10 @@ export function TuningLabScreen() {
     AccessibilityInfo.announceForAccessibility(soundLine);
   }, [soundLine]);
   const [progress, setProgress] = useState<TuningProgress | null>(null);
+  /** The stored chapters could NOT BE READ (owner 2026-10-03, "do 2"): the
+   *  strip's ticks and the what's-left list are a stand-in, so the shared
+   *  note says so — never "not started". Every chapter stays open. */
+  const [unreadable, setUnreadable] = useState(false);
   // Every save builds on the NEWEST progress (bug hunt 2026-09-30, the
   // PagedLab pattern): a chapter's late callback (SHOW ME finishing after
   // CONTINUE) spread its render-time copy and reverted lastChapter / mathView.
@@ -148,6 +153,7 @@ export function TuningLabScreen() {
         else for (const c of early) holdTuningProgress({ done: c });
       }
       progressRef.current = p;
+      setUnreadable(!guestRef.current && isTuningProgressUnreadable());
       setProgress(p);
       setMathView(p.mathView);
       const built = CHAPTERS.map((c) => c.index);
@@ -278,10 +284,12 @@ export function TuningLabScreen() {
         }
       />
       <LabNavBar nav={nav} />
+      {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
 
       {ending ? (
         <LabEndScreen
           labTitle="Tuning & Temperament Lab"
+          unreadable={unreadable}
           units={CHAPTERS.map((c) => ({ id: String(c.index), label: c.title }))}
           cleared={endCleared}
           mode="progress"
@@ -346,6 +354,7 @@ const styles = StyleSheet.create({
   mathBtnText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.2 },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
   rackFill: { flex: 1 },
+  unreadable: { marginHorizontal: 12, marginBottom: 6 },
   accuracyNote: { marginBottom: 10, alignSelf: 'flex-start' },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
   objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },

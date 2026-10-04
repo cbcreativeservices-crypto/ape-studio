@@ -31,6 +31,12 @@ const EMPTY: TuningProgress = { completed: [], lastChapter: 0, done: false, math
  *  Not account state: the next lab mount re-reads and clears it. */
 const storage = { readFailed: false };
 
+/** True while the last read of storage FAILED (owner 2026-10-03, "do 2"): the
+ *  lab says so instead of showing every chapter unstarted. Read-only. */
+export function isTuningProgressUnreadable(): boolean {
+  return storage.readFailed;
+}
+
 export async function loadTuningProgress(): Promise<TuningProgress> {
   let raw: string | null;
   try {

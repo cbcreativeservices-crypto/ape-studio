@@ -62,9 +62,41 @@ export type OutputVal =
       /** Offer "SEND →" into the calculation chain (default true). */
       chainable?: boolean;
     }
-  | { label: string; text: string };
+  | {
+      label: string;
+      text: string;
+      /** REFUSAL (owner 2026-10-03, "do 1"): this row says the inputs have no
+       *  answer — a ratio below 1:1, a reflection shorter than the direct path,
+       *  no time to average. An output set carrying one is a REFUSAL: it costs a
+       *  capped account nothing (like an error) and feeds no workflow step.
+       *  Mark ONLY "no answer exists" rows — a genuine answer in words
+       *  (room-mode fundamentals, "no listed gauge passes") stays unmarked. */
+      refusal?: true;
+    };
 
-export type CalcTable = { title?: string; cols: string[]; rows: string[][] };
+/** A row that refuses the inputs (see `refusal` above). */
+export function isRefusalRow(o: OutputVal): o is Extract<OutputVal, { text: string }> {
+  return 'text' in o && o.refusal === true;
+}
+
+/** The refusal rows of a result — all a capped account sees of a refused one. */
+export function refusalRows(outputs: readonly OutputVal[]): Extract<OutputVal, { text: string }>[] {
+  return outputs.filter(isRefusalRow);
+}
+
+/** An output set is a REFUSAL when any row refuses the inputs. */
+export function isRefused(outputs: readonly OutputVal[]): boolean {
+  return outputs.some(isRefusalRow);
+}
+
+/** Whether revealing this result spends a capped account's weekly calculation:
+ *  an error or a refusal reveals no answer, so it costs nothing (bug pass
+ *  2026-09-30; refusals owner 2026-10-03, "do 1"). */
+export function costsACalculation(r: { computeError: boolean; refused?: boolean }): boolean {
+  return !r.computeError && r.refused !== true;
+}
+
+export type CalcTable ={ title?: string; cols: string[]; rows: string[][] };
 
 export type CalcFunction = {
   key: string;

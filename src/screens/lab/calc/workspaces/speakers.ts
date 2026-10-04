@@ -326,7 +326,7 @@ const WS_IMPEDANCE: Workspace = {
       note: 'Parallel branches all see the amplifier’s full voltage — lower impedances draw a bigger power share.',
       compute: (v) => {
         const zs = impedances(v.zlist);
-        if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").' }];
+        if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").', refusal: true }];
         const ztot = 1 / zs.reduce((s, z) => s + 1 / z, 0);
         const shares = zs.map((z) => (ztot / z) * 100);
         const out: ReturnType<Workspace['functions'][number]['compute']> = [
@@ -367,7 +367,7 @@ const WS_IMPEDANCE: Workspace = {
       note: 'Series speakers share the amplifier’s current; the amp delivers LESS total power into the raised load.',
       compute: (v) => {
         const zs = impedances(v.zlist);
-        if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").' }];
+        if (zs.length < 1) return [{ label: 'INPUT', text: 'Enter at least one impedance (e.g. "8, 8").', refusal: true }];
         const ztot = zs.reduce((s, z) => s + z, 0);
         return [
           { label: 'TOTAL SERIES IMPEDANCE', value: ztot, quantity: 'impedance' },
@@ -397,7 +397,7 @@ const WS_IMPEDANCE: Workspace = {
       compute: (v) => {
         const zs = impedances(v.z4);
         if (zs.length !== 4) {
-          return [{ label: 'INPUT', text: `This wiring needs exactly FOUR impedances (you entered ${zs.length}). Example: "8, 8, 8, 8".` }];
+          return [{ label: 'INPUT', text: `This wiring needs exactly FOUR impedances (you entered ${zs.length}). Example: "8, 8, 8, 8".`, refusal: true }];
         }
         const [z1, z2, z3, z4] = zs as [number, number, number, number];
         const pairA = (z1 * z2) / (z1 + z2);
@@ -801,7 +801,7 @@ const WS_CV70: Workspace = {
       keySymbols: ['Σ', '≥', '×', 'x²', '/'],
       compute: (v) => {
         const taps = arr(v.taps).filter((t) => t > 0);
-        if (taps.length < 1) return [{ label: 'INPUT', text: 'Enter at least one tap wattage (e.g. "10, 10, 10").' }];
+        if (taps.length < 1) return [{ label: 'INPUT', text: 'Enter at least one tap wattage (e.g. "10, 10, 10").', refusal: true }];
         const load = taps.reduce((s, t) => s + t, 0);
         const prated = n(v.prated);
         const vline = n(v.vline);

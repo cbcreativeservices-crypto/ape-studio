@@ -14,7 +14,7 @@ import { colors } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
-import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
@@ -117,6 +117,8 @@ export function EqModuleScreen() {
   const guest = useLabEndGuest();
   const { resolved } = useEntitlement();
   const visited = useLabVisits('eq');
+  // A failed read of the visits is said, never shown as all left (owner 2026-10-03, "do 2").
+  const progressUnreadable = useLabVisitsUnreadable();
   // Wait for `resolved` (the Room Design rule): before it a guest reads as a
   // member, so a guest's first module was SAVED to the device (night pass 2,
   // 2026-10-01). The effect re-runs when the tier lands.
@@ -137,6 +139,7 @@ export function EqModuleScreen() {
       labTitle="EQ Lab"
       units={EQ_MODULES.map((m) => ({ id: m.id, label: m.title }))}
       cleared={visited}
+      unreadable={progressUnreadable}
       mode="progress"
       onJump={(id) => goToModule(EQ_MODULES.findIndex((m) => m.id === id))}
       onPracticeAgain={() => goToModule(0)}

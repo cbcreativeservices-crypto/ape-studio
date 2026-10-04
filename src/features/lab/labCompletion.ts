@@ -135,6 +135,11 @@ let completionGen = 0;
 /** A unit (or a `sent`) was recorded while the read had failed, so persist()
  *  wrote nothing: the next successful read writes it (evening pass 2). */
 let unsaved = false;
+/** The last device read THREW (owner 2026-10-03, "do 2"): until a read
+ *  succeeds, the cleared units in memory are this session's only — not the
+ *  learner's record — and the hubs say so instead of showing no ticks. Only
+ *  a successful read (or the account wipe) clears it. Read-only state. */
+let lastReadFailed = false;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -178,6 +183,7 @@ function hydrate(): Promise<void> {
         // writes nothing — and read again on the next call (full run 2,
         // 2026-10-01). Units recorded meanwhile live in memory and are merged
         // with what the next read finds.
+        lastReadFailed = true;
         hydrating = null;
         emit();
         return;
@@ -195,6 +201,7 @@ function hydrate(): Promise<void> {
         // corrupt → keep defaults (nothing cleared)
       }
       hydrated = true;
+      lastReadFailed = false;
       // Units (and a server `sent`) shown while the read had failed were never
       // written; they are now, merged with what was stored — or a unit the
       // screen showed as cleared was gone on the next launch.
@@ -423,10 +430,39 @@ export function resetLocal(): void {
   // A read that was out lands nowhere; the next caller reads the swept key.
   hydrating = null;
   unsaved = false;
+  lastReadFailed = false;
   cleared = {};
   sent = new Set<string>();
   afComplete = false;
   emit();
+}
+
+/** True while the stored lab units could NOT BE READ (owner 2026-10-03, "do
+ *  2"): what the hubs show is this session's units on an empty copy. */
+export function isLabCompletionUnreadable(): boolean {
+  return !hydrated && lastReadFailed;
+}
+
+/** Reactive form of isLabCompletionUnreadable for the lab hubs. Mounting it
+ *  reads again (hydrate retries after a failure), so leaving a lab and coming
+ *  back is the retry the note promises. */
+export function useLabCompletionUnreadable(): boolean {
+  const [v, setV] = useState(isLabCompletionUnreadable);
+  useEffect(() => {
+    const l = () => setV(isLabCompletionUnreadable());
+    listeners.add(l);
+    // Not keyed (no key to go stale), but the same unmount guard; hydrate
+    // never rejects — a failed read resolves with the flag set.
+    let live = true;
+    void hydrate().finally(() => {
+      if (live) l();
+    });
+    return () => {
+      live = false;
+      listeners.delete(l);
+    };
+  }, []);
+  return v;
 }
 
 /** Live lab progress for a screen: {complete, cleared, total}. */

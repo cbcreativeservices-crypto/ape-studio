@@ -12,7 +12,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
-import { markLabUnit, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { ScrollLockProvider } from '../LabShell';
@@ -128,6 +128,8 @@ export function WaveModuleScreen() {
     (navigation as { setParams: (p: { id: WaveModuleId }) => void }).setParams({ id: WAVE_MODULES[i].id });
   };
   const banked = useLabClearedUnits('af_wave_physics');
+  // A failed read of the banked units is said, never shown as all left (owner 2026-10-03, "do 2").
+  const progressUnreadable = useLabCompletionUnreadable();
   const nav = useLabNav({
     units: WAVE_MODULES.map((m) => ({ id: m.id, title: m.title, done: banked.has(m.id) })),
     index: idx,
@@ -142,6 +144,7 @@ export function WaveModuleScreen() {
       labTitle="Wave Physics Laboratory"
       units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title }))}
       cleared={banked}
+      unreadable={progressUnreadable}
       mode="credit"
       onJump={(id) => goToModule(WAVE_MODULES.findIndex((m) => m.id === id))}
       onPracticeAgain={() => goToModule(0)}

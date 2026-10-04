@@ -19,7 +19,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ShareIcon } from '../../../components/ShareIcon';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import type { CalcValues, FieldDef, OutputVal, Workspace } from './calcTypes';
+import { costsACalculation, refusalRows, type CalcValues, type FieldDef, type OutputVal, type Workspace } from './calcTypes';
 import { chainFits, fmtCarried, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
@@ -107,7 +107,7 @@ export function CalcWorkspaceScreen() {
   const values: CalcValues | null = useMemo(() => buildValues(fields, raw, unitIdx), [fields, raw, unitIdx]);
 
   // Compute once per (function, values) — NOT on every keystroke's re-render.
-  const { outputs, steps, table, computeError, negativeField, inputError } = useMemo(() => runCompute(fn, values, fields), [fn, values, fields]);
+  const { outputs, steps, table, computeError, negativeField, inputError, refused } = useMemo(() => runCompute(fn, values, fields), [fn, values, fields]);
 
   // ---- Capped-calc gate (owner 2026-08-13): FREE/LAPSED accounts get 5
   // calculation OUTPUTS per rolling week (server-enforced via calc_consume;
@@ -208,7 +208,8 @@ export function CalcWorkspaceScreen() {
     capped && usage ? `${usage.used} / ${usage.limit} free calculations this week` : null;
 
   const runCappedCalc = async () => {
-    if (!values || consuming || consumingRef.current || consumedSigs.has(inputSig)) return;
+    // A refusal or an error is never charged (owner 2026-10-03, "do 1").
+    if (!values || !costsACalculation({ computeError, refused }) || consuming || consumingRef.current || consumedSigs.has(inputSig)) return;
     consumingRef.current = true;
     setConsuming(true);
     // ⛔ try/finally, not a bare sequence (2026-09-23 hunt). consumeCalc is now
@@ -364,6 +365,23 @@ export function CalcWorkspaceScreen() {
                     ? `⚠ ${inputError}`
                     : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
               </Text>
+            ) : refused && (capped || tierPending) ? (
+              // A REFUSAL costs nothing either (owner 2026-10-03, "do 1"): "not
+              // a compressor ratio", "not a reflection" reveal no answer, so a
+              // capped account (or one whose tier is still unknown) reads the
+              // refusal's own words without spending a calculation — and ONLY
+              // those words: a supporting figure beside them (a cable's
+              // resistance, a port's acoustic length) is not shown, so a
+              // refusal never leaks a number for free. Members see the whole
+              // result below.
+              <View style={{ gap: 8 }}>
+                {refusalRows(outputs).map((o, oi) => (
+                  <Text key={`${o.label}#${oi}`} style={styles.resultNote}>
+                    <Text style={styles.resultLabel}>{o.label}  </Text>
+                    {o.text}
+                  </Text>
+                ))}
+              </View>
             ) : tierPending ? (
               <Text style={styles.resultPlaceholder}>
                 {tierReadFailed && tierUnconfirmed
@@ -402,7 +420,7 @@ export function CalcWorkspaceScreen() {
                         >
                           <Text style={styles.resultValue}>{formatOut(o, 0)}</Text>
                         </Pressable>
-                        {o.chainable !== false && Number.isFinite(o.value) ? (
+                        {o.chainable !== false && Number.isFinite(o.value) && !refused ? (
                           <Pressable accessibilityRole="button"
                             hitSlop={{ top: 9, bottom: 9 }}
                             style={styles.sendBtn}

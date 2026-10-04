@@ -32,7 +32,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
-import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
@@ -872,6 +872,8 @@ export function VacuumTubeLabScreen() {
   const guest = useLabEndGuest();
   const { resolved: entResolved } = useEntitlement();
   const visited = useLabVisits('tube');
+  // A failed read of the visits is said, never shown as all left (owner 2026-10-03, "do 2").
+  const progressUnreadable = useLabVisitsUnreadable();
   useEffect(() => {
     // Wait for the tier (bug hunt 2026-09-30): the provider boots at
     // 'anonymous'-but-unresolved, so a cold-start guest's first section was
@@ -928,6 +930,7 @@ export function VacuumTubeLabScreen() {
             labTitle="Vacuum Tube Fundamentals"
             units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
             cleared={visited}
+            unreadable={progressUnreadable}
             mode="progress"
             noun="section"
             onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}

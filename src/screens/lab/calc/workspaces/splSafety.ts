@@ -740,7 +740,7 @@ const WS_DOSE: Workspace = {
                 },
               ]
             : [];
-        if (!(tt > 0)) return [...check, { label: 'NO TIME TO AVERAGE', text: LEQ_NO_TIME }];
+        if (!(tt > 0)) return [...check, { label: 'NO TIME TO AVERAGE', text: LEQ_NO_TIME, refusal: true }];
         return [
           ...check,
           { label: 'Leq OVER THE INTERVALS', value: 10 * Math.log10(e / tt), quantity: 'spl' },

@@ -561,7 +561,7 @@ const WS_COMB: Workspace = {
           return [
             { label: 'EQUIVALENT DELAY', value: 0, quantity: 'time', unit: 'ms' },
             { label: 'PATH DIFFERENCE', value: 0, quantity: 'length', chainable: false },
-            { label: 'COMB FILTERING', text: NO_COMB_SAME_PATH },
+            { label: 'COMB FILTERING', text: NO_COMB_SAME_PATH, refusal: true },
           ];
         }
         return [

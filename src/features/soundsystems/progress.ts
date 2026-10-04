@@ -174,6 +174,18 @@ export function getSoundSystemsProgress(): SoundSystemsProgress {
   return view();
 }
 
+/** True while the stored record could not be READ (owner 2026-10-03, "do 2"):
+ *  the hub's counts are this session's work on an empty copy, not the
+ *  learner's record. Read-only. */
+export function isSoundSystemsProgressUnreadable(): boolean {
+  return store.isUnreadable();
+}
+const unreadableSnap = () => store.isUnreadable();
+/** Reactive form of isSoundSystemsProgressUnreadable. */
+export function useSoundSystemsProgressUnreadable(): boolean {
+  return useSyncExternalStore(store.subscribe, unreadableSnap, unreadableSnap);
+}
+
 /** Reactive snapshot (a fresh object per change so React re-renders). */
 export function useSoundSystemsProgress(): SoundSystemsProgress {
   return useSyncExternalStore(subscribe, view, view);

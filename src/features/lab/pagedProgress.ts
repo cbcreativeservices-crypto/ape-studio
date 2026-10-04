@@ -48,6 +48,13 @@ function parsePaged(raw: string | null): PagedProgress {
  *  learner's stored pages. */
 const unreadable = new Set<string>();
 
+/** True while this lab's last load FAILED to read (owner 2026-10-03, "do 2"):
+ *  the copy the screen holds is a stand-in, so the lab says so instead of
+ *  showing every page unstarted. Read-only — changes nothing that is written. */
+export function isPagedProgressUnreadable(labId: string): boolean {
+  return unreadable.has(labId);
+}
+
 export async function loadPagedProgress(labId: string): Promise<PagedProgress> {
   let raw: string | null;
   try {

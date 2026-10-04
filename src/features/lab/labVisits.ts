@@ -40,6 +40,10 @@ let visitsGen = 0;
 /** A visit was recorded while the read had failed, so persist() wrote
  *  nothing: the next successful read writes it (evening pass 2). */
 let unsaved = false;
+/** The last device read THREW (owner 2026-10-03, "do 2"): until a read
+ *  succeeds, the visits in memory are this session's only and the hubs say
+ *  so. Only a successful read (or the account wipe) clears it. */
+let lastReadFailed = false;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -81,7 +85,9 @@ function hydrate(): Promise<void> {
         // The READ failed (not "nothing visited"): stay unhydrated so
         // persist() cannot write this session's visits over the stored ones;
         // the next call reads again and merges (full run 2, 2026-10-01).
+        lastReadFailed = true;
         hydrating = null;
+        emit();
         return;
       }
       try {
@@ -99,6 +105,7 @@ function hydrate(): Promise<void> {
         // corrupt/absent → nothing visited
       }
       hydrated = true;
+      lastReadFailed = false;
       // A visit shown while the read had failed was never written; it is now,
       // merged with what was stored — or it was gone on the next launch.
       if (unsaved) persist();
@@ -196,6 +203,32 @@ export function useLabVisits(labId: string): ReadonlySet<string> {
   return v;
 }
 
+/** True while the stored visits could NOT BE READ (owner 2026-10-03, "do 2"). */
+export function isLabVisitsUnreadable(): boolean {
+  return !hydrated && lastReadFailed;
+}
+
+/** Reactive form of isLabVisitsUnreadable for the lab hubs (mounting it reads
+ *  again — the retry the note promises). */
+export function useLabVisitsUnreadable(): boolean {
+  const [v, setV] = useState(isLabVisitsUnreadable);
+  useEffect(() => {
+    const l = () => setV(isLabVisitsUnreadable());
+    listeners.add(l);
+    // Not keyed (no key to go stale), but the same unmount guard; hydrate
+    // never rejects — a failed read resolves with the flag set.
+    let live = true;
+    void hydrate().finally(() => {
+      if (live) l();
+    });
+    return () => {
+      live = false;
+      listeners.delete(l);
+    };
+  }, []);
+  return v;
+}
+
 /** Account switch: drop the in-memory cache (the key itself is removed by
  *  clearLocalAccountData's `ape:*` sweep). */
 export function resetLocal(): void {
@@ -203,6 +236,7 @@ export function resetLocal(): void {
   // A read that was out lands nowhere; the next caller reads the swept key.
   hydrating = null;
   unsaved = false;
+  lastReadFailed = false;
   visits = {};
   emit();
 }

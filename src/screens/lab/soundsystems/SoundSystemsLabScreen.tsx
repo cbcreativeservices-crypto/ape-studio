@@ -21,10 +21,11 @@ import { HelpKey } from '../../../components/HelpKey';
 import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { confirmDialog } from '../../../lib/confirm';
-import { loadPagedProgress, savePagedProgress } from '../../../features/lab/pagedProgress';
-import { useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { isPagedProgressUnreadable, loadPagedProgress, savePagedProgress } from '../../../features/lab/pagedProgress';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { ProgressLoadingNote, ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { UNDERSTANDING_UNIT } from '../../../features/lab/understanding';
-import { useSoundSystemsProgress } from '../../../features/soundsystems/progress';
+import { useSoundSystemsProgress, useSoundSystemsProgressUnreadable } from '../../../features/soundsystems/progress';
 import { CAPSTONES } from '../../../features/soundsystems/capstones';
 import { FAULTS } from '../../../features/soundsystems/faults';
 import { SS_LEARN_ID, SS_MODES, SS_PAGE_COUNTS, type SsModeId } from './units';
@@ -62,6 +63,17 @@ export function SoundSystemsLabScreen() {
   const inPreview = useLabPreview().active;
   const learnUnits = useLabClearedUnits(SS_LEARN_ID);
   const [pages, setPages] = useState<Record<SsModeId, number>>({ learn: 0, build: 0, route: 0, operate: 0, troubleshoot: 0 });
+  // THREE FACES (owner 2026-10-03, "do 2"; D51): before the mode pages are
+  // read the counts are not "0 of N" but a quiet line; when ANY of this hub's
+  // records could not be read (a mode's pages, the faults / capstones /
+  // exercises record, the banked check) the shared note stands where the
+  // counts and WHAT IS LEFT would be — never "not started". Every mode stays
+  // open to practise.
+  const [pagesRead, setPagesRead] = useState<'pending' | 'ok' | 'failed'>('pending');
+  const recordUnreadable = useSoundSystemsProgressUnreadable();
+  const creditUnreadable = useLabCompletionUnreadable();
+  const unreadable = pagesRead === 'failed' || recordUnreadable || creditUnreadable;
+  const known = pagesRead === 'ok' && !unreadable;
 
   const refresh = useCallback(() => {
     let alive = true;
@@ -73,6 +85,7 @@ export function SoundSystemsLabScreen() {
         next[m.id] = all[i].completed.filter((p) => p < SS_PAGE_COUNTS[m.id]).length;
       });
       setPages(next);
+      setPagesRead(SS_MODES.some((m) => isPagedProgressUnreadable(m.labId)) ? 'failed' : 'ok');
     });
     return () => {
       alive = false;
@@ -134,23 +147,24 @@ export function SoundSystemsLabScreen() {
           Begin with an empty venue. Finish having designed, wired, routed, tested, tuned and troubleshot a complete live sound reinforcement system. Five modes, in any order — LEARN teaches, the other four make you do it.
         </Text>
 
+        {unreadable ? <ProgressUnreadableNote /> : pagesRead === 'pending' ? <ProgressLoadingNote /> : null}
         {SS_MODES.map((m) => {
           const row = rows.find((r) => r.id === m.id)!;
           return (
-            <Pressable key={m.id} onPress={() => go(m.route)} style={styles.card} accessibilityRole="button" accessibilityLabel={`${m.name} mode. ${m.blurb} ${row.done} of ${row.total} complete.`}>
+            <Pressable key={m.id} onPress={() => go(m.route)} style={styles.card} accessibilityRole="button" accessibilityLabel={`${m.name} mode. ${m.blurb}${known ? ` ${row.done} of ${row.total} complete.` : ''}`}>
               <View style={styles.cardGlyph}>
                 <GearGlyph kind={MODE_GLYPH[m.id]} size={54} />
               </View>
               <View style={{ flex: 1, gap: 3 }}>
                 <View style={styles.cardHead}>
                   <Text style={styles.cardTitle}>{m.title}</Text>
-                  <Text style={[styles.cardCount, row.done >= row.total && { color: colors.green }]}>
-                    {row.done}/{row.total}
+                  <Text style={[styles.cardCount, known && row.done >= row.total && { color: colors.green }]}>
+                    {known ? `${row.done}/${row.total}` : '—'}
                   </Text>
                 </View>
                 <Text style={styles.cardBlurb}>{m.blurb}</Text>
                 <View style={styles.bar}>
-                  <View style={[styles.barFill, { width: `${Math.round((row.done / row.total) * 100)}%` }]} />
+                  <View style={[styles.barFill, { width: known ? `${Math.round((row.done / row.total) * 100)}%` : '0%' }]} />
                 </View>
               </View>
               <Text style={styles.cardGo}>›</Text>
@@ -159,6 +173,9 @@ export function SoundSystemsLabScreen() {
         })}
 
         {/* WHAT IS LEFT — the lab's honest closing screen, always visible here. */}
+        {/* Unreadable: the note above stands for it — what is left cannot be
+            told from a record that could not be read; the modes stay open. */}
+        {unreadable ? null : (
         <View style={[styles.left, allDone && styles.leftDone]}>
           <Text style={styles.leftTitle}>{allDone ? 'SOUND SYSTEMS LAB — COMPLETE' : 'WHAT IS LEFT'}</Text>
           {allDone ? (
@@ -207,6 +224,7 @@ export function SoundSystemsLabScreen() {
             </>
           )}
         </View>
+        )}
 
         <Pressable onPress={reset} style={styles.resetRow} accessibilityRole="button" accessibilityLabel="Start a fresh practice run in every mode">
           <Text style={styles.resetText}>START OVER (PRACTICE)</Text>

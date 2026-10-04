@@ -73,7 +73,7 @@ const STEREOMIC: Workspace = {
           return [
             { label: 'PATH DIFFERENCE', value: 0, quantity: 'length', unit: 'cm' },
             { label: 'ARRIVAL DELAY Δt', value: 0, quantity: 'time', unit: 'ms' },
-            { label: 'MONO COMB FILTERING', text: NO_ARRIVAL_DIFFERENCE },
+            { label: 'MONO COMB FILTERING', text: NO_ARRIVAL_DIFFERENCE, refusal: true },
           ];
         }
         return [

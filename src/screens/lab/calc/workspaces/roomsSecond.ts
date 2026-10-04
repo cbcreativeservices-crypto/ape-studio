@@ -338,7 +338,7 @@ const REFLECTION: Workspace = {
         // No |…| (calc follow-up 2026-10-03): a reflected path SHORTER than the
         // direct one is impossible, and the absolute value answered it anyway.
         const shorter = reflectionShorter(n(v.dDirect), n(v.dReflected));
-        if (shorter) return [{ label: 'NOT A REFLECTION', text: shorter }];
+        if (shorter) return [{ label: 'NOT A REFLECTION', text: shorter, refusal: true }];
         const dd = n(v.dReflected) - n(v.dDirect);
         const dt = dd / c;
         // Equal paths: the copy arrives in step — no comb, not a "—" null.
@@ -346,7 +346,7 @@ const REFLECTION: Workspace = {
           return [
             { label: 'PATH DIFFERENCE', value: 0, quantity: 'length' },
             { label: 'ARRIVAL DELAY', value: 0, quantity: 'time', unit: 'ms' },
-            { label: 'COMB FILTERING', text: NO_PATH_DIFFERENCE },
+            { label: 'COMB FILTERING', text: NO_PATH_DIFFERENCE, refusal: true },
           ];
         }
         return [

@@ -37,6 +37,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { retainSessionStems } from '../mixing/audio/mixAudio';
 import { MASTERING_MODULES, PROJECT_QC, masteringModuleById, scenariosForModule, type MasteringModuleId } from './masteringContent';
@@ -114,6 +115,10 @@ export function MasteringLabScreen() {
    *  retry timer; a few tries, then the empty copy lands as before. */
   const [readRetry, setReadRetry] = useState(0);
   const readRetriesRef = useRef(0);
+  /** The three retries ran out and the empty copy landed (owner 2026-10-03,
+   *  "do 2"): no ✓ and no "credited" is a stand-in, not the learner's record
+   *  — the shared note says so. Every module stays open. */
+  const [progressUnreadable, setProgressUnreadable] = useState(false);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
@@ -174,6 +179,7 @@ export function MasteringLabScreen() {
         return;
       }
       readRetriesRef.current = 0;
+      setProgressUnreadable(!wasBlocked && masteringReadFailed(s));
       loadedBlockedRef.current = wasBlocked;
       const stored = MASTERING_MODULES.filter((x) => s.modules[x.id]?.done).map((x) => x.id);
       if (reread) {
@@ -483,6 +489,7 @@ export function MasteringLabScreen() {
         labTitle={`${MASTERING_LAB_TITLE}: ${SUBTITLE}`}
         units={MASTERING_MODULES.map((x) => ({ id: x.id, label: x.title, detail: x.id === 'project' ? 'Four track decisions + the QC checklist' : `${scenariosForModule(x.id).length} decisions on the PRACTICE step` }))}
         cleared={cleared}
+        unreadable={masteringReadFailed(endState)}
         mode="progress"
         onJump={(id) => openModule(id as MasteringModuleId, jumpStep(id as MasteringModuleId))}
         onPracticeAgain={() => openModule('what', 0)}
@@ -501,6 +508,7 @@ export function MasteringLabScreen() {
           right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
         />
         <LabNavBar nav={nav} />
+        {progressUnreadable && !end ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {end ?? (
           <View style={styles.body}>
             <StepHostContext.Provider value={host}>
@@ -522,6 +530,7 @@ export function MasteringLabScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   body: { flex: 1 },
+  unreadable: { marginHorizontal: 12, marginBottom: 6 },
   scroll: { paddingHorizontal: 16, paddingTop: 8, gap: 10 },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, gap: 2 },
   objectiveLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },

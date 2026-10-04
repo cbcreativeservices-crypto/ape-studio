@@ -58,7 +58,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
-import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
@@ -2192,6 +2192,8 @@ export function FoundationsCourseScreen() {
    */
   const [ending, setEnding] = useState(false);
   const banked = useLabClearedUnits(FOUNDATIONS_LAB_KEY);
+  // A failed read of the banked units is said, never shown as all left (owner 2026-10-03, "do 2").
+  const progressUnreadable = useLabCompletionUnreadable();
   const finish = useCallback(() => {
     tone.stop();
     setEnding(true);
@@ -2322,6 +2324,7 @@ export function FoundationsCourseScreen() {
           labTitle="Foundations of Sound"
           units={STEPS.map((st, i) => ({ id: String(i), label: st.title }))}
           cleared={banked}
+          unreadable={progressUnreadable}
           mode="credit"
           onJump={(id) => goTo(Number(id))}
           onPracticeAgain={() => goTo(0)}

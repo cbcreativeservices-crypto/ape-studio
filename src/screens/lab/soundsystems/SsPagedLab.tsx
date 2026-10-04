@@ -35,11 +35,12 @@ import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useAnimationsAllowed } from '../../../features/settings/a11y';
-import { heldPaged, holdPagedProgress, loadPagedProgress, savePagedProgress, withHeldPages, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { heldPaged, holdPagedProgress, isPagedProgressUnreadable, loadPagedProgress, savePagedProgress, withHeldPages, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabUnderstandingCheck } from '../../../components/LabUnderstandingCheck';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
-import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import type { PageCtx } from '../kit/PagedLab';
 import { LabEndScreen, type LabEndUnit } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from '../kit/LabNavBar';
@@ -103,11 +104,17 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [progress, setProgress] = useState<PagedProgress | null>(null);
+  /** This mode's saved pages could NOT BE READ (owner 2026-10-03, "do 2";
+   *  D51): the strip's ticks and the what's-left list are a stand-in — the
+   *  shared note says so, never "not started". Every page stays open. */
+  const [pagesUnreadable, setPagesUnreadable] = useState(false);
   const progressRef = useRef<PagedProgress | null>(null);
   const [page, setPage] = useState(0);
   // The what's-left end screen (owner 2026-09-29) — shown in place of the page.
   const [ending, setEnding] = useState(false);
   const bankedCheck = useLabClearedUnits(labId);
+  const creditUnreadable = useLabCompletionUnreadable();
+  const unreadable = pagesUnreadable || creditUnreadable;
   const [resetSeq, setResetSeq] = useState(0);
   const [dragLocked, setDragLocked] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
@@ -184,6 +191,7 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
       // same person's work (kit/PagedLab's 2026-10-01 rule).
       const loaded = noSaveRef.current ? { completed: [], lastPage: 0, done: false } : withHeldPages(p, heldPaged(labId));
       progressRef.current = loaded;
+      setPagesUnreadable(!noSaveRef.current && isPagedProgressUnreadable(labId));
       setProgress(loaded);
       if (navigatedRef.current) persist({ lastPage: pageRef.current });
       else setPage(Math.min(loaded.lastPage, pagesWithCheck.length - 1));
@@ -295,11 +303,13 @@ export function SsPagedLab({ labId, title, subtitle, pages, onPageDone }: {
             one on the header, the Cymatics host's placement. */}
         <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} right={rack && !ending ? <AccuracyNote compact /> : undefined} />
         <LabNavBar nav={nav} />
+        {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {ending ? (
           <LabEndScreen
             labTitle={title}
             units={endUnits}
             cleared={endCleared}
+            unreadable={unreadable}
             mode="progress"
             noun="page"
             onJump={(id) => goTo(Number(id))}
@@ -340,4 +350,5 @@ const styles = StyleSheet.create({
   accuracy: { marginTop: 6, marginBottom: 4, alignSelf: 'flex-start' },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
   rackFill: { flex: 1 },
+  unreadable: { marginHorizontal: 12, marginBottom: 6 },
 });

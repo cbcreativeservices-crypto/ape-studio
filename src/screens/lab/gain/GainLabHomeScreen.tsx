@@ -5,7 +5,8 @@
  * overloading one stage or starving the next. Mirrors the EQ Lab home.
  */
 import { useState } from 'react';
-import { useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabHeader } from '../kit/LabNavBar';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -41,6 +42,7 @@ export function GainLabHomeScreen() {
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<GainModuleId | null>(null);
   const clearedUnits = useLabClearedUnits('af_gain_staging');
+  const unreadable = useLabCompletionUnreadable();
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -51,6 +53,7 @@ export function GainLabHomeScreen() {
           labTitle="Gain Staging Lab"
           units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title }))}
           cleared={clearedUnits}
+          unreadable={unreadable}
           mode="credit"
           onJump={(id) => open(GAIN_MODULES.find((m) => m.id === id)?.id ?? GAIN_MODULES[0].id)}
           onPracticeAgain={() => open(GAIN_MODULES[0].id)}
@@ -74,6 +77,10 @@ export function GainLabHomeScreen() {
           propagate through the system.
         </Text>
 
+        {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
+            no ✓ on a row is a stand-in when the banked units could not be
+            read — said here, before the rows. Every module stays open. */}
+        {unreadable ? <ProgressUnreadableNote /> : null}
         {GAIN_SECTION_META.map((sec) => {
           const mods = GAIN_MODULES.filter((m) => m.section === sec.id);
           if (!mods.length) return null;

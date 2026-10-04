@@ -351,6 +351,7 @@ const DRIVER: Workspace = {
             {
               label: 'PHYSICAL PORT LENGTH',
               text: `No port length reaches ${fmt(n(v.fbTarget))} Hz — even a zero-length port of this area tunes to about ${fmt(fb0)} Hz, below the target. Use a larger port area or a smaller box.`,
+              refusal: true,
             },
             { label: 'EFFECTIVE (ACOUSTIC) LENGTH', value: leff, quantity: 'length', unit: 'cm', chainable: false },
           ];

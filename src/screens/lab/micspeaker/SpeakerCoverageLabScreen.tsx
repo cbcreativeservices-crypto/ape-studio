@@ -29,7 +29,7 @@ import { cardColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
-import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS } from './units';
@@ -586,6 +586,8 @@ export function SpeakerCoverageLabScreen() {
    */
   const [ending, setEnding] = useState(false);
   const banked = useLabClearedUnits(SPEAKER_COVERAGE_LAB_KEY);
+  // A failed read of the banked units is said, never shown as all left (owner 2026-10-03, "do 2").
+  const progressUnreadable = useLabCompletionUnreadable();
   const openSection = (i: number) => {
     setEnding(false);
     setSectionIdx(i);
@@ -615,6 +617,7 @@ export function SpeakerCoverageLabScreen() {
           labTitle="Speaker Placement & Coverage"
           units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
           cleared={banked}
+          unreadable={progressUnreadable}
           mode="credit"
           noun="section"
           onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}

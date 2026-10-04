@@ -41,6 +41,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { useGuestWording } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { DRUM_CHAPTERS, drumChapterById, scenariosForChapter, type DrumChapterId, type TuningNote } from './drumContent';
 import { deleteTuningNote, drumReadFailed, drumResumePoint,emptyDrumChapter, keepSessionNotes, resetDrumPractice, saveTuningNote, setDrumSaveBlocked, updateDrumProgress, withNote, type DrumProgressState } from './drumProgress';
@@ -119,6 +120,10 @@ export function DrumTuningLabScreen() {
    *  the retry timer; a few tries, then the empty copy lands as before. */
   const [readRetry, setReadRetry] = useState(0);
   const readRetriesRef = useRef(0);
+  /** The retries ran out and the empty copy landed (owner 2026-10-03, "do
+   *  2"): no ✓, no "credited", no answers is a stand-in, not the learner's
+   *  record — the shared note says so. Every chapter stays open. */
+  const [progressUnreadable, setProgressUnreadable] = useState(false);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(
     () => () => {
@@ -163,6 +168,7 @@ export function DrumTuningLabScreen() {
         return;
       }
       readRetriesRef.current = 0;
+      setProgressUnreadable(!wasBlocked && drumReadFailed(s));
       loadedBlockedRef.current = wasBlocked;
       setDoneIds((prev) => new Set([...(reread ? prev : []), ...DRUM_CHAPTERS.filter((x) => s.modules[x.id]?.done).map((x) => x.id)]));
       setInteractive((prev) => new Set([...prev, ...DRUM_CHAPTERS.filter((x) => s.modules[x.id]?.interactive).map((x) => x.id)]));
@@ -449,6 +455,7 @@ export function DrumTuningLabScreen() {
         labTitle={`${DRUM_LAB_TITLE}: ${SUBTITLE}`}
         units={DRUM_CHAPTERS.map((x) => ({ id: x.id, label: x.title, detail: x.credit }))}
         cleared={cleared}
+        unreadable={drumReadFailed(endState)}
         mode="progress"
         noun="chapter"
         onJump={(id) => openModule(id as DrumChapterId, 0)}
@@ -473,6 +480,7 @@ export function DrumTuningLabScreen() {
           right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
         />
         <LabNavBar nav={nav} />
+        {progressUnreadable && !end ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {end}
         {/* The chapter stays MOUNTED under the what's-left screen (toddler
             pass 2): FINISH ›, or "What's left" in CONTENTS from any step,
@@ -495,6 +503,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   body: { flex: 1 },
   gone: { display: 'none' },
+  unreadable: { marginHorizontal: 12, marginBottom: 6 },
   scroll: { paddingHorizontal: 16, paddingTop: 8, gap: 10 },
   objectiveLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.6, lineHeight: 14 },
   requirement: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, textAlign: 'center', lineHeight: 16 },

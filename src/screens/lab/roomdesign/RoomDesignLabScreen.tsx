@@ -33,7 +33,8 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useGuestWording } from '../../../features/commercial/useTier';
-import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { deleteRoomDesign, holdRoomDesignForSession, isRoomDesignStoreUnreadable, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
@@ -69,6 +70,10 @@ export function RoomDesignLabScreen() {
   // rule; the modules say "not signed in" to a KNOWN guest only.
   const wording = useGuestWording();
   const visited = useLabVisits(ROOM_LAB_ID);
+  // UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51): the
+  // strip's ticks and the what's-left list are a stand-in when the visits
+  // could not be read — the shared note says so. Every module stays open.
+  const visitsUnreadable = useLabVisitsUnreadable();
   // Repaired on the way in (toddler pass 2026-10-01): a damaged or
   // version-skewed record crashed analyze() on COMPARE or LOAD.
   // The hook hands back a fresh array on every render; held while its
@@ -182,11 +187,13 @@ export function RoomDesignLabScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         <LabHeader title={TITLE} subtitle={ending ? "What's left" : `${mod.num} · ${mod.title}`} right={<AccuracyNote compact detail="This lab models a room from the numbers you enter. It shows where problems are LIKELY, never what the room does — measure the real room with a calibrated analyzer and let the measurement have the last word." />} />
         <LabNavBar nav={nav} />
+        {visitsUnreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {ending ? (
           <LabEndScreen
             labTitle="Room Design & Monitoring Lab"
             units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title }))}
             cleared={visited}
+            unreadable={visitsUnreadable}
             mode="progress"
             noun="module"
             onJump={(id) => go(ROOM_MODULES.findIndex((m) => m.id === id))}
@@ -211,5 +218,6 @@ export function RoomDesignLabScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   rackFill: { flex: 1 },
+  unreadable: { marginHorizontal: 12, marginBottom: 6 },
   scroll: { padding: 16, paddingTop: 12, paddingBottom: 28 },
 });

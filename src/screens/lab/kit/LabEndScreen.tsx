@@ -40,6 +40,7 @@ import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
 import { endLead, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
 import { LabNextButton, claimLabLeave } from './LabNavBar';
+import { ProgressUnreadableNote } from './ProgressUnreadableNote';
 
 export type { LabEndUnit } from './labEnd';
 
@@ -69,6 +70,7 @@ export function LabEndScreen({
   bottomInset,
   extra,
   completeTitle,
+  unreadable,
 }: {
   labTitle: string;
   /** Every unit of the lab, in lab order (checks last). */
@@ -97,6 +99,11 @@ export function LabEndScreen({
   /** ADDITIVE: the title when nothing is left, for a host that is not a
    *  "lab" to its learner (Start Here reads YOU'RE READY). */
   completeTitle?: string;
+  /** The lab's saved progress could NOT BE READ (owner 2026-10-03, "do 2"):
+   *  `cleared` is a stand-in, not the learner's record. The shared note
+   *  replaces the lead line and the title never claims what is left or done;
+   *  every unit is still listed and opens (labs never block navigation). */
+  unreadable?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   // WORDING, not behaviour (tier sweep 2026-10-03): "You are not signed in"
@@ -111,7 +118,7 @@ export function LabEndScreen({
   // signing in before closing the app keeps the work (owner 2026-10-01).
   const inPreview = useLabPreview().active;
   const w = whatsLeft(units, cleared);
-  const title = w.complete && completeTitle ? completeTitle : endTitle(w);
+  const title = unreadable ? 'YOUR PROGRESS' : w.complete && completeTitle ? completeTitle : endTitle(w);
   const [showCredited, setShowCredited] = useState(false);
   // ONE exit (bug pass 2026-09-30): a double tap on DONE ran the host's
   // goBack() twice and popped a second screen (Amp, Tuning, Mic Selection,
@@ -155,14 +162,18 @@ export function LabEndScreen({
       contentContainerStyle={[styles.scroll, readingColumn, bottomInset && { paddingBottom: insets.bottom + 28 }]}
     >
       <Text style={styles.kicker}>{labTitle.toUpperCase()}</Text>
-      <Text style={[styles.title, w.complete && { color: colors.green }]} accessibilityRole="header">
+      <Text style={[styles.title, w.complete && !unreadable && { color: colors.green }]} accessibilityRole="header">
         {title}
       </Text>
-      <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen(), account })}</Text>
+      {unreadable ? (
+        <ProgressUnreadableNote />
+      ) : (
+        <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen(), account })}</Text>
+      )}
       {extra}
 
       {w.left.length > 0 ? (
-        <View style={styles.list} accessibilityLabel={`${w.left.length} still to do`}>
+        <View style={styles.list} accessibilityLabel={unreadable ? `${w.left.length} to open` : `${w.left.length} still to do`}>
           {w.left.map((r) => row(r, false))}
         </View>
       ) : null}

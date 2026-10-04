@@ -4,7 +4,8 @@
  * measure — this lab interprets. 11 module cards + a pointer to the tools.
  */
 import { useState } from 'react';
-import { useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabHeader } from '../kit/LabNavBar';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -29,6 +30,7 @@ export function MeterLabHomeScreen() {
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<string | null>(null);
   const clearedUnits = useLabClearedUnits('af_visual_analysis');
+  const unreadable = useLabCompletionUnreadable();
   /**
    * WHAT'S LEFT (owner 2026-09-29: "every lab ends with a 'what's left'
    * screen"). The module host now has PREV / NEXT and a FINISH on Module 11
@@ -56,6 +58,7 @@ export function MeterLabHomeScreen() {
           labTitle="Visual Audio Analysis Lab"
           units={METER_MODULES.map((m) => ({ id: m.id, label: m.title }))}
           cleared={clearedUnits}
+          unreadable={unreadable}
           mode="credit"
           onJump={(id) => open(METER_MODULES.find((m) => m.id === id)?.id ?? METER_MODULES[0].id)}
           onPracticeAgain={() => open(METER_MODULES[0].id)}
@@ -69,6 +72,10 @@ export function MeterLabHomeScreen() {
           phase, scope — tells a story to the engineer who can read it. The Academy’s measurement
           tools MEASURE; this lab teaches you to INTERPRET what they show.
         </Text>
+        {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
+            no ✓ on a row is a stand-in when the banked units could not be
+            read — said here, before the rows. Every module stays open. */}
+        {unreadable ? <ProgressUnreadableNote /> : null}
         {METER_MODULES.map((m) => (
           <ModuleAccordionRow
             key={m.id}

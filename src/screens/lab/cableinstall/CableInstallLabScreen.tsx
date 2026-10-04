@@ -50,7 +50,8 @@ import {
 } from './motion';
 import { CI_MYTHS } from './data/scenarios';
 import { CI_DIMS, CI_DIM_META, masteryBlocks, mergeDims, overallScore, weakestDim, type CiDimScores } from './engine/score';
-import { useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import {
   CI_FIELD_CHECK,
   CI_GOVERN_NOTE,
@@ -134,6 +135,15 @@ export function CableInstallLabScreen() {
 
   const { complete: labComplete, cleared, total } = useLabCompletion(LAB_KEY);
   const clearedUnits = useLabClearedUnits(LAB_KEY);
+  // UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51): the
+  // banked units (ape:labProgress) or this lab's run, scores and place
+  // (ape:ciStep / ape:ciState) could not be read — the intro and the
+  // what-is-left screen say so instead of a fresh "START LAB" / every stage
+  // left. Every stage stays open to practise. Read-only: nothing here writes.
+  const creditUnreadable = useLabCompletionUnreadable();
+  const [runReadFailed, setRunReadFailed] = useState(false);
+  // A guest's run is neither read nor kept, so only a learner's failed read counts.
+  const progressUnreadable = creditUnreadable || (runReadFailed && !noAccountRef.current);
 
   useEffect(() => {
     registerLabUnits(LAB_KEY, CI_LAB_UNITS);
@@ -179,6 +189,9 @@ export function CableInstallLabScreen() {
       } catch {
         if (alive) readRef.current = 'failed';
         return;
+      } finally {
+        // Said where the progress line would be (owner 2026-10-03, "do 2").
+        if (alive) setRunReadFailed(readRef.current === 'failed');
       }
       if (!alive) return;
       readRef.current = 'ok';
@@ -470,6 +483,7 @@ export function CableInstallLabScreen() {
               onStart={() => goTo(firstIncomplete <= CI_MODULES.length ? firstIncomplete : 1)}
               resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `RESUME — MODULE ${firstIncomplete}` : null}
               progressLine={`${cleared} of ${total} units complete`}
+              unreadable={progressUnreadable}
               onSources={() => setSourceIds(['nec', 'osha', 'bldg_fire', 'ada', 'tia568', 'tia569', 'tia606', 'tia607', 'bicsi_n1', 'bicsi_itsimm', 'bicsi_tdmm', 'avixa_f502_01', 'avixa_f502_02', 'avixa_f501_01', 'avixa_verify', 'aes48', 'iso14763', 'en50174', 'nema_tray', 'mfr_cable', 'mfr_support', 'firestop_listed', 'ufgs'])}
             />
           ) : step === COMPLETE_STEP ? (
@@ -496,6 +510,7 @@ export function CableInstallLabScreen() {
                   goTo(idx + 1);
                 }}
                 onRepeat={repeatLab}
+                unreadable={progressUnreadable}
                 saveState={ciSaveWording(ciSaveState({ endGuest, noAccount: noAccountRef.current, isMember }), wording.account)}
                 // In-flow buttons, not a popup — so a straight navigate (no
                 // afterDialogCloses wait). Paywall is a modal over the lab:
@@ -547,6 +562,7 @@ function IntroStage({
   onStart,
   resumeLabel,
   progressLine,
+  unreadable,
   onSources,
 }: {
   width: number;
@@ -556,6 +572,9 @@ function IntroStage({
   onStart: () => void;
   resumeLabel: string | null;
   progressLine: string;
+  /** The saved progress could not be read: the shared note stands where the
+   *  progress line would, never a fresh "not started" intro. */
+  unreadable: boolean;
   onSources: () => void;
 }) {
   return (
@@ -568,10 +587,10 @@ function IntroStage({
       </Text>
       <Text style={styles.governNote}>{CI_GOVERN_NOTE}</Text>
       <View style={{ gap: 10 }}>
-        <GlassButton label={resumeLabel ?? 'START LAB'} tint="green" height={48} fontSize={14} onPress={onStart} />
+        <GlassButton label={resumeLabel ?? (unreadable ? 'OPEN THE LAB' : 'START LAB')} tint="green" height={48} fontSize={14} onPress={onStart} />
         <GlassButton label="WHAT YOU’LL LEARN" tint="teal" height={44} fontSize={12.5} onPress={onToggleObjectives} />
       </View>
-      {started ? <Text style={styles.progressLine}>{progressLine}</Text> : null}
+      {unreadable ? <ProgressUnreadableNote /> : started ? <Text style={styles.progressLine}>{progressLine}</Text> : null}
       {showObjectives ? (
         <View style={styles.objectives}>
           {CI_OBJECTIVES.map((o) => (
@@ -676,6 +695,7 @@ function CompleteStage({
   saveState,
   onJoin,
   onSignIn,
+  unreadable,
 }: {
   dims: CiDimScores;
   /** Stages not yet completed THIS RUN. Empty = the run is finished.
@@ -694,6 +714,8 @@ function CompleteStage({
   onJoin: () => void;
   /** Guest only: an existing member signs in (Auth). */
   onSignIn: () => void;
+  /** The saved progress could not be read: the list is a stand-in. */
+  unreadable: boolean;
 }) {
   /**
    * Now that every stage is reachable at any time (owner 2026-09-20), a
@@ -722,9 +744,13 @@ function CompleteStage({
         </Text>
       ) : (
         <>
-          <Text style={styles.introLead}>
-            {ciLeftLead(saveState, { unbanked, replayOnly, total: CI_MODULES.length })}
-          </Text>
+          {unreadable ? (
+            <ProgressUnreadableNote />
+          ) : (
+            <Text style={styles.introLead}>
+              {ciLeftLead(saveState, { unbanked, replayOnly, total: CI_MODULES.length })}
+            </Text>
+          )}
           <View style={styles.leftList}>
             {outstanding.map((m) => (
               <Pressable

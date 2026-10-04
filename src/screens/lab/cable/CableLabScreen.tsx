@@ -24,7 +24,8 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { registerLabUnits, useLabClearedUnits, useLabCompletion } from '../../../features/lab/labCompletion';
+import { registerLabUnits, useLabClearedUnits, useLabCompletion, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { colors, fonts } from '../../../theme/tokens';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
@@ -60,6 +61,10 @@ export function CableLabScreen() {
   }, []);
   const { cleared, total } = useLabCompletion('af_cables');
   const clearedUnits = useLabClearedUnits('af_cables');
+  // UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51): when
+  // the banked units could not be read, "0/N UNITS" and the strip's empty
+  // ticks are a stand-in — the shared note stands there instead.
+  const unreadable = useLabCompletionUnreadable();
   // Lesson state that must outlive the one mounted lesson (bench / challenge
   // progress — bug hunt 2026-09-29). One object for the screen's lifetime.
   const [lessonState] = useState<Record<string, unknown>>(() => ({}));
@@ -148,10 +153,11 @@ export function CableLabScreen() {
           <Text style={styles.coreQ}>{CORE_QUESTION}</Text>
           <View style={styles.tagRow}>
             <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>
-            {total > 0 ? (
+            {total > 0 && !unreadable ? (
               <Text style={styles.progressText} accessibilityLabel={`${cleared} of ${total} lab units cleared`}>{`${cleared}/${total} UNITS`}</Text>
             ) : null}
           </View>
+          {unreadable ? <ProgressUnreadableNote /> : null}
           <Text style={styles.stepTitle}>{s.title}</Text>
           <Text style={styles.body}>{s.intro}</Text>
           <CableStepNavCtx.Provider value={goToLesson}>

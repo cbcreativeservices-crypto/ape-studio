@@ -15,8 +15,9 @@ import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EAR_MODULES } from '../../../features/ear/modules/registry';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import {
-  loadEarProgress, recentAccuracy, setEarSaveBlocked, type EarProgressState,
+  isEarProgressUnreadable, loadEarProgress, recentAccuracy, setEarSaveBlocked, type EarProgressState,
 } from '../../../features/ear/earProgress';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
@@ -50,6 +51,8 @@ export function EarTrainingLabScreen() {
     }, [resolved]),
   );
 
+  const unreadable = !!progress && isEarProgressUnreadable(progress);
+
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The shared lab header (kit/LabNavBar, 2026-09-30): ‹ leaves the lab.
@@ -71,8 +74,13 @@ export function EarTrainingLabScreen() {
           🎧 Headphones recommended throughout — modules note when they truly matter.
         </Text>
         <Text style={styles.sectionTitle}>MODULES</Text>
+        {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"): a
+            ladder handed out because storage could not be read shows no
+            levels, no accuracy and no ✓ — said here, before the rows. The
+            modules stay open to practise. */}
+        {unreadable ? <ProgressUnreadableNote /> : null}
         {EAR_MODULES.map((m) => {
-          const p = progress?.modules[m.id];
+          const p = unreadable ? undefined : progress?.modules[m.id];
           const acc = p ? recentAccuracy(p) : null;
           const stat = p
             ? `L${Math.min(p.level, m.levels)}${acc != null ? ` · ${Math.round(acc * 100)}%` : ''}`

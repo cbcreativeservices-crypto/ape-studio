@@ -4,7 +4,8 @@
  * concept the other modules isolate (owner 2026-08-01).
  */
 import { useState } from 'react';
-import { useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabHeader } from '../kit/LabNavBar';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -31,6 +32,7 @@ export function WaveLabHomeScreen() {
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<string | null>(null);
   const clearedUnits = useLabClearedUnits('af_wave_physics');
+  const unreadable = useLabCompletionUnreadable();
   /**
    * WHAT'S LEFT (owner 2026-10-02, "favor consistency"): the Meter hub's
    * SEE WHAT'S LEFT link, the same way — it swaps LabEndScreen in for the
@@ -52,6 +54,7 @@ export function WaveLabHomeScreen() {
           labTitle="Wave Physics Laboratory"
           units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title }))}
           cleared={clearedUnits}
+          unreadable={unreadable}
           mode="credit"
           onJump={(id) => open(WAVE_MODULES.find((m) => m.id === id)?.id ?? WAVE_MODULES[0].id)}
           onPracticeAgain={() => open(WAVE_MODULES[0].id)}
@@ -75,6 +78,10 @@ export function WaveLabHomeScreen() {
           preset of the same Room Builder engine.
         </Text>
         <Text style={styles.sectionTitle}>THE 15 MODULES</Text>
+        {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
+            no ✓ on a row is a stand-in when the banked units could not be
+            read — said here, before the rows. Every module stays open. */}
+        {unreadable ? <ProgressUnreadableNote /> : null}
         {modules.map((m) => (
           <ModuleAccordionRow
             key={m.id}

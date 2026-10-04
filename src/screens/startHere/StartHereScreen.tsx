@@ -34,7 +34,8 @@ import { colors, fonts } from '../../theme/tokens';
 import { readingColumn } from '../../theme/readingColumn';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useGuestWording } from '../../features/commercial/useTier';
-import { heldPaged, holdPagedProgress, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
+import { heldPaged, holdPagedProgress, isPagedProgressUnreadable, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../features/lab/pagedProgress';
+import { ProgressUnreadableNote } from '../lab/kit/ProgressUnreadableNote';
 import { useAnimationsAllowed } from '../../features/settings/a11y';
 import { confirmDialog } from '../../lib/confirm';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
@@ -98,6 +99,10 @@ export function StartHereScreen() {
   const navigatedRef = useRef(false);
   const [ending, setEnding] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+  /** The saved pages could NOT BE READ (owner 2026-10-03, "do 2"; D51): the
+   *  dots and the end list are a stand-in — the shared note says so, never
+   *  "not started". Every page stays open. */
+  const [pagesUnreadable, setPagesUnreadable] = useState(false);
 
   // Wait for `resolved` before restoring (bug pass 3 2026-09-30, the PagedLab
   // rule): a load that landed while the tier was still unknown saw
@@ -118,6 +123,7 @@ export function StartHereScreen() {
       const first = !loadedRef.current;
       loadedRef.current = true;
       loadedAsGuestRef.current = noAccountRef.current;
+      setPagesUnreadable(!noAccountRef.current && isPagedProgressUnreadable(START_HERE_ID));
       if (noAccountRef.current) {
         // guests: nothing restored — and a signed-in copy on screen goes.
         // Ticks made before the tier was known are a guest's work too: HELD
@@ -368,6 +374,7 @@ export function StartHereScreen() {
             labTitle={START_HERE_TITLE}
             units={endUnits}
             cleared={endCleared}
+            unreadable={pagesUnreadable}
             mode="progress"
             noun="part"
             completeTitle="YOU’RE READY"
@@ -412,6 +419,7 @@ export function StartHereScreen() {
               {page + 1}/{PAGES.length} {listOpen ? '▴' : '▾'}
             </Text>
           </Pressable>
+          {pagesUnreadable ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
           {listOpen ? (
             <ScrollView style={styles.listScroll} contentContainerStyle={[styles.list, readingColumn]}>
               {SECTIONS.map((s) => (
@@ -516,6 +524,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   wordsText: { color: colors.cyanBright, fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.2 },
+  unreadable: { marginHorizontal: 16, marginBottom: 6 },
   dots: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 16, paddingVertical: 6, flexWrap: 'wrap' },
   dot: { width: 11, height: 6, borderRadius: 3, backgroundColor: '#26262b' },
   dotGap: { marginLeft: 5 },

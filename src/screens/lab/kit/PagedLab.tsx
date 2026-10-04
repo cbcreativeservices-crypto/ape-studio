@@ -42,7 +42,9 @@ import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { useAnimationsAllowed } from '../../../features/settings/a11y';
-import { forgetHeldPaged, heldPaged, holdPagedProgress, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { forgetHeldPaged, heldPaged, holdPagedProgress, isPagedProgressUnreadable, loadPagedProgress, resetPagedProgress, savePagedProgress, type PagedProgress } from '../../../features/lab/pagedProgress';
+import { useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { ProgressUnreadableNote } from './ProgressUnreadableNote';
 import { confirmDialog } from '../../../lib/confirm';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 
@@ -153,6 +155,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [progress, setProgress] = useState<PagedProgress | null>(null);
+  /** This lab's saved pages could NOT BE READ (owner 2026-10-03, "do 2";
+   *  D51): the strip's ticks and the what's-left list are a stand-in, so the
+   *  shared note says so — never "not started". Every page stays open. */
+  const [pagesUnreadable, setPagesUnreadable] = useState(false);
   // Latest persisted state, so two writes in one tap (mark done + advance)
   // never clobber each other through a stale render closure.
   const progressRef = useRef<PagedProgress | null>(null);
@@ -184,6 +190,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const [ending, setEnding] = useState(false);
   const bankedPages = useLabClearedUnits(creditLabKey ?? labId);
   const bankedCheck = useLabClearedUnits(labId);
+  // The banked credit (Patchbay / Connector Select pages, a passed check)
+  // could not be read either — the same note, never a missing ✓ as "not done".
+  const creditUnreadable = useLabCompletionUnreadable();
+  const unreadable = pagesUnreadable || ((!!creditLabKey || !!check) && creditUnreadable);
   // Drag-vs-scroll lock (owner device pass 2026-09-11): the mixing console's
   // fader and pan pot live INSIDE this page scroller, and on device the native
   // scroll view steals a vertical gesture before any JS responder can argue -
@@ -257,6 +267,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         for (const i of fresh) if (i < pages.length) onPageDoneRef.current?.(i);
       }
       progressRef.current = next;
+      setPagesUnreadable(!guestRef.current && isPagedProgressUnreadable(labId));
       setProgress(next);
       if (!navigatedRef.current) setPage(Math.min(p.lastPage, pagesWithCheck.length - 1));
     });
@@ -410,11 +421,13 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
         <LabHeader title={ending ? 'Where you are' : def.title} subtitle={title} />
         <LabNavBar nav={nav} />
+        {unreadable && !ending ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
         {ending ? (
           <LabEndScreen
             labTitle={title}
             units={endUnits}
             cleared={endCleared}
+            unreadable={unreadable}
             mode={creditLabKey ? 'credit' : 'progress'}
             noun="page"
             onJump={(id) => goTo(Number(id))}
@@ -449,5 +462,6 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   subtitle: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, marginBottom: 2 },
   accuracy: { marginTop: 6, marginBottom: 4, alignSelf: 'flex-start' },
+  unreadable: { marginHorizontal: 12, marginBottom: 6 },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 10 },
 });

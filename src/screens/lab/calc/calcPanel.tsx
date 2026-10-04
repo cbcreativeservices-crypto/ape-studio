@@ -15,7 +15,7 @@
 import { memo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
-import type { CalcFunction, CalcTable, CalcValues, FieldDef, OutputVal } from './calcTypes';
+import { isRefused, type CalcFunction, type CalcTable, type CalcValues, type FieldDef, type OutputVal } from './calcTypes';
 import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, parseList, parseQuantity, unitsFor, wholeCount } from './calcUnits';
 
 
@@ -65,6 +65,11 @@ export type ComputeResult = {
   /** P16: the sentence for an input its field's declared domain refuses — a
    *  fraction in a whole-number count, or a value outside a ranged field. */
   inputError?: string | null;
+  /** The function answered with a REFUSAL row (calcTypes `refusal`, owner
+   *  2026-10-03): no answer exists for these inputs. Like computeError it costs
+   *  a capped account nothing and is never a value for a later workflow step —
+   *  but it carries the words saying why (see `refusalRows`). */
+  refused?: boolean;
 };
 
 /** Compute once, guarded — a throwing formula (or one whose every number is
@@ -96,6 +101,7 @@ export function runCompute(fn: CalcFunction | null, values: CalcValues | null, f
       steps: fn.steps ? fn.steps(values) : [],
       table: table && table.rows.length > 0 ? table : null,
       computeError: false,
+      refused: isRefused(outputs),
     };
   } catch {
     return { outputs: [], steps: [], table: null, computeError: true };

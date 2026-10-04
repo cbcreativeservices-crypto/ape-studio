@@ -83,7 +83,7 @@ const WS_COMPRESSOR: Workspace = {
         // gain reduction beside a confident INPUT ABOVE THRESHOLD; 0.5:1 raised
         // the output ABOVE the input. Say so, as thrForGr already does.
         if (!(r >= 1)) {
-          return [{ label: 'NOT A COMPRESSOR RATIO', text: ratioBelowOne(r) }];
+          return [{ label: 'NOT A COMPRESSOR RATIO', text: ratioBelowOne(r), refusal: true }];
         }
         const above = inp - thr;
         const out = above > 0 ? thr + above / r : inp;
@@ -182,6 +182,7 @@ const WS_COMPRESSOR: Workspace = {
             {
               label: 'NO THRESHOLD',
               text: `At ${fmt(r)}:1 the compressor makes no gain reduction, so no threshold produces ${fmt(gr)} dB — raise the ratio above 1:1 first.`,
+              refusal: true,
             },
           ];
         }

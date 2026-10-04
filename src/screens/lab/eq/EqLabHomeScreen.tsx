@@ -16,7 +16,7 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { EQ_MODULES, EQ_SECTION_META, type EqModuleId } from './modules/registry';
-import { useLabVisits } from '../../../features/lab/labVisits';
+import { useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -37,6 +37,9 @@ export function EqLabHomeScreen() {
    */
   const [ending, setEnding] = useState(false);
   const visited = useLabVisits('eq');
+  // The hub's rows carry no ticks; only WHAT'S LEFT shows progress — and
+  // says so when the visits could not be read (owner 2026-10-03, "do 2").
+  const visitsUnreadable = useLabVisitsUnreadable();
   const open = (id: EqModuleId) => {
     setEnding(false);
     navigation.navigate('EqModule', { id });
@@ -57,6 +60,7 @@ export function EqLabHomeScreen() {
           labTitle="EQ Lab"
           units={EQ_MODULES.map((m) => ({ id: m.id, label: m.title }))}
           cleared={visited}
+          unreadable={visitsUnreadable}
           mode="progress"
           onJump={(id) => open(EQ_MODULES.find((m) => m.id === id)?.id ?? EQ_MODULES[0].id)}
           onPracticeAgain={() => open(EQ_MODULES[0].id)}

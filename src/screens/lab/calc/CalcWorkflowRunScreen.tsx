@@ -35,7 +35,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useTier } from '../../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
-import type { CalcFunction, FieldDef, OutputVal, Workspace } from './calcTypes';
+import { refusalRows, type CalcFunction, type FieldDef, type OutputVal, type Workspace } from './calcTypes';
 import { chainFits, fmt, fmtCarried, parseQuantity, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
@@ -285,7 +285,11 @@ export function CalcWorkflowRunScreen() {
         unitSel[f.key] = b?.unitIdx ?? defaultUnitIdx(f);
         if (b && b.source.kind === 'prior-step') {
           // LIVE import: derive from the upstream step's CURRENT output.
-          const up = out[b.source.stepIndex];
+          // A REFUSED upstream step has no answer to pass on (owner 2026-10-03,
+          // "do 1"): a figure printed beside the refusal is not this step's
+          // input — the field reads honestly empty, as for an incomplete step.
+          const up0 = out[b.source.stepIndex];
+          const up = up0?.result.refused ? undefined : up0;
           const srcRef = b.source;
           const isNum = (x: OutputVal | undefined): x is Extract<OutputVal, { value: number }> => !!x && 'value' in x;
           // By label; else by position when the label carries an input that
@@ -311,7 +315,8 @@ export function CalcWorkflowRunScreen() {
       }
       const values = resolved ? buildValues(fields, effRaw, unitSel) : null;
       const result = runCompute(resolved?.fn ?? null, values, fields);
-      out.push({ resolved, fields, effRaw, result, complete: values != null && !result.computeError });
+      // A refused step is not complete — like an error, it is not counted.
+      out.push({ resolved, fields, effRaw, result, complete: values != null && !result.computeError && !result.refused });
     });
     return out;
   }, [workflow, run]);
@@ -488,9 +493,14 @@ export function CalcWorkflowRunScreen() {
         if (b?.source.kind === 'override') warnings.add(`${f.name} in step ${i + 1} was manually overridden.`);
       }
       if (c.result.computeError) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}) could not compute — check its inputs.`);
-      for (const o of c.result.outputs) {
-        if ('value' in o) results.push({ label: o.label, value: formatOutput(o, 4, 0), unit: '', step });
-        else results.push({ label: o.label, value: o.text, unit: '', step });
+      // A refused step reports its refusal, never a figure beside it as a result.
+      if (c.result.refused) {
+        for (const o of refusalRows(c.result.outputs)) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}): ${o.text}`);
+      } else {
+        for (const o of c.result.outputs) {
+          if ('value' in o) results.push({ label: o.label, value: formatOutput(o, 4, 0), unit: '', step });
+          else results.push({ label: o.label, value: o.text, unit: '', step });
+        }
       }
       if (c.resolved.ws.warnings) warnings.add(c.resolved.ws.warnings);
     });
@@ -735,6 +745,8 @@ export function CalcWorkflowRunScreen() {
                   const sources: { fromStep: number; label: string; index: number }[] = [];
                   if (f.quantity !== 'list') {
                     for (let k = 0; k < idx; k++) {
+                      // A refused step offers nothing to import (see the live import).
+                      if (computed[k]?.result.refused) continue;
                       (computed[k]?.result.outputs ?? []).forEach((o, oi) => {
                         // Honor `chainable: false` (Bug+Hater night J2-01): outputs like TRAVEL PER
         // MILLISECOND share a quantity with DISTANCE but are the wrong physical
@@ -811,6 +823,14 @@ export function CalcWorkflowRunScreen() {
                             ? `⚠ ${cur.result.inputError}`
                             : '⚠ These values don’t produce a valid result — check for zeros or reversed inputs.'}
                       </Text>
+                    ) : cur.result.refused ? (
+                      // The refusal's own words — the step stays incomplete.
+                      refusalRows(cur.result.outputs).map((o, oi) => (
+                        <Text key={`${o.label}#${oi}`} style={styles.resultNote}>
+                          <Text style={styles.resultLabel}>{o.label}  </Text>
+                          {o.text}
+                        </Text>
+                      ))
                     ) : (
                       <Text style={styles.caption}>Fill in the values above to calculate.</Text>
                     )

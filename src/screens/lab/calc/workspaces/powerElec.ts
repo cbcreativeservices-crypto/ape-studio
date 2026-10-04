@@ -270,7 +270,7 @@ const VDROP: Workspace = {
         if (vd > 0 && vd >= n(v.vsrc)) {
           return [
             { label: 'ROUND-TRIP RESISTANCE', value: R, quantity: 'impedance' },
-            { label: 'MODEL BREAKS DOWN', text: dropBreaksDown(n(v.current), R, n(v.vsrc)) },
+            { label: 'MODEL BREAKS DOWN', text: dropBreaksDown(n(v.current), R, n(v.vsrc)), refusal: true },
           ];
         }
         return [

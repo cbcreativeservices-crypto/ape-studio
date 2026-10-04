@@ -27,6 +27,22 @@ export function accountWhy(account: AccountWording): string {
   return account === 'unconfirmed' ? MEMBERSHIP_NOT_CONFIRMED : 'Still checking your account.';
 }
 
+/**
+ * THE ONE LINE a lab hub shows where progress / credit would be when the
+ * learner's saved progress could NOT BE READ (owner 2026-10-03, "do 2"; house
+ * rule D51: loading / UNREADABLE / truly empty are three faces). The house
+ * wording of the Enrollment / Room Design / Cymatics unreadable lines. A
+ * failed read is never shown as "not started" or 0 of N; the lab stays open
+ * (labs never block navigation) and every module can still be practised.
+ * Drawn by kit/ProgressUnreadableNote; test/labHubUnreadable_20261003.
+ */
+export const PROGRESS_UNREADABLE =
+  'Your saved progress could not be read from this device just now — it is not lost, and nothing is written over it. Leave this lab and come back to try again.';
+
+/** The quiet line while the saved progress is still being read, for a hub
+ *  that would otherwise flash "0 of N" before the read lands. */
+export const PROGRESS_LOADING = 'Reading your saved progress…';
+
 /** The credit line under MARK AS REVIEWED / ✓ REVIEWED (LabReviewButton,
  *  final round C 2026-10-03), in the end screen's words. null = the plain
  *  member line ("counts toward your Audio Fundamentals credit") is true. A

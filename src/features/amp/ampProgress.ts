@@ -66,6 +66,13 @@ export function setAmpSaveBlocked(blocked: boolean): void {
  *  overwrite every completed module and the best final with an empty copy. */
 const unreadable = new WeakSet<AmpProgressState>();
 
+/** True when this state is the empty stand-in from a read that FAILED (owner
+ *  2026-10-03, "do 2"): the hub says so instead of "0 of N modules complete".
+ *  Read-only — changes nothing that is written. */
+export function isAmpProgressUnreadable(s: AmpProgressState): boolean {
+  return unreadable.has(s);
+}
+
 export async function loadAmpProgress(): Promise<AmpProgressState> {
   if (saveBlocked) return { modules: {} };
   let raw: string | null;

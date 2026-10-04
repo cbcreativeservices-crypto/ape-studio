@@ -5,7 +5,8 @@
  * secondary tools → learning section.
  */
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useLabClearedUnits } from '../../../features/lab/labCompletion';
+import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
+import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabHeader } from '../kit/LabNavBar';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -57,6 +58,7 @@ export function DigitalLabHomeScreen() {
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<DigitalModuleId | null>(null);
   const clearedUnits = useLabClearedUnits('af_digital_audio');
+  const unreadable = useLabCompletionUnreadable();
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -71,6 +73,7 @@ export function DigitalLabHomeScreen() {
           labTitle="Digital Audio Sampling & Conversion Lab"
           units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title }))}
           cleared={clearedUnits}
+          unreadable={unreadable}
           mode="credit"
           onJump={(id) => open(DIGITAL_MODULES.find((m) => m.id === id)?.id ?? DIGITAL_MODULES[0].id)}
           onPracticeAgain={() => open(DIGITAL_MODULES[0].id)}
@@ -86,6 +89,10 @@ export function DigitalLabHomeScreen() {
           in eight connected modules. Take them in order, or jump straight to what you need.
         </Text>
         <Text style={styles.sectionTitle}>THE EIGHT MODULES</Text>
+        {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
+            no ✓ on a row is a stand-in when the banked units could not be
+            read — said here, before the rows. Every module stays open. */}
+        {unreadable ? <ProgressUnreadableNote /> : null}
         {DIGITAL_MODULES.map((m, i) => (
           <ModuleAccordionRow
             key={m.id}

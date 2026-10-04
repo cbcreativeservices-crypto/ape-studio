@@ -22,7 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Canvas, Line as SkLine, Path as SkPath, Skia, vec } from '@shopify/react-native-skia';
 import { GlassButton } from '../../../components/GlassButton';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
-import { markLabVisit, useLabVisits } from '../../../features/lab/labVisits';
+import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
@@ -1034,6 +1034,8 @@ export function MicSelectLabScreen() {
   const finish = useCallback(() => setEnding(true), []);
   const unEnd = useCallback(() => setEnding(false), []);
   const visited = useLabVisits('micselect');
+  // A failed read of the visits is said, never shown as all left (owner 2026-10-03, "do 2").
+  const progressUnreadable = useLabVisitsUnreadable();
   useEffect(() => {
     // Wait for the tier (bug hunt 2026-09-30 pass 2 — the Tube lab's fix): the
     // provider boots at 'anonymous'-but-unresolved, so a cold-start guest's
@@ -1076,6 +1078,7 @@ export function MicSelectLabScreen() {
           labTitle="Microphone Selection Lab"
           units={STEPS.map((st) => ({ id: st.key, label: st.title, detail: st.tag === 'OPTIONAL' ? 'Optional' : undefined }))}
           cleared={visited}
+          unreadable={progressUnreadable}
           mode="progress"
           noun="lesson"
           onJump={(id) => goTo(Math.max(0, STEPS.findIndex((st) => st.key === id)))}

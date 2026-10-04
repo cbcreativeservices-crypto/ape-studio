@@ -19,7 +19,7 @@ import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField } fro
 import { CYMATICS_MODULES, PLANNED_AREAS, type CymaticsModuleId } from './modules/registry';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
 import { goToCymatics } from './goToCymatics';
-import { useLabVisits } from '../../../features/lab/labVisits';
+import { useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -105,6 +105,9 @@ export function CymaticsHomeScreen() {
    */
   const [ending, setEnding] = useState(false);
   const visited = useLabVisits('cymatics');
+  // The hub's rows carry no ticks; only WHAT'S LEFT shows progress — and
+  // says so when the visits could not be read (owner 2026-10-03, "do 2").
+  const visitsUnreadable = useLabVisitsUnreadable();
   const open = (id: CymaticsModuleId) => {
     setEnding(false);
     go('CymaticsModule', { id });
@@ -123,6 +126,7 @@ export function CymaticsHomeScreen() {
           labTitle="Cymatics Lab: Sound Made Visible"
           units={CYMATICS_MODULES.map((m) => ({ id: m.id, label: m.title }))}
           cleared={visited}
+          unreadable={visitsUnreadable}
           mode="progress"
           onJump={(id) => open(CYMATICS_MODULES.find((m) => m.id === id)?.id ?? CYMATICS_MODULES[0].id)}
           onPracticeAgain={() => open(CYMATICS_MODULES[0].id)}

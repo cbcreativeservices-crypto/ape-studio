@@ -292,7 +292,7 @@ const WS_LEVEL: Workspace = {
         // At or below −100% (hunt 7, 2026-10-03; D53): −150% printed a
         // RESULTING AMPLITUDE RATIO of −0.5× — an amplitude that cannot exist —
         // beside LEVEL CHANGE "—". Said in words instead.
-        if (!(p > -100)) return [{ label: 'NO dB LEVEL', text: pctNoLevel(p) }];
+        if (!(p > -100)) return [{ label: 'NO dB LEVEL', text: pctNoLevel(p), refusal: true }];
         return [
           { label: 'LEVEL CHANGE', value: 20 * log10(1 + p / 100), quantity: 'db' },
           { label: 'RESULTING AMPLITUDE RATIO', value: 1 + p / 100, quantity: 'ratio', chainable: false },

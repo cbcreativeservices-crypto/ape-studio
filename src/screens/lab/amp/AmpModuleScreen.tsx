@@ -23,7 +23,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AMP_MODULES, ampModuleById, checksForModule } from '../../../features/amp/ampContent';
-import { emptyAmpModule, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
+import { emptyAmpModule, isAmpProgressUnreadable, setAmpSaveBlocked, updateAmpProgress, type AmpProgressState } from '../../../features/amp/ampProgress';
 import { ampEndModel } from '../../../features/amp/ampEnd';
 import { AMP_MODULE_COMPONENTS, BUILT_MODULE_IDS } from './modules';
 import { CheckCard, SectionTitle, TakeawayCard } from './kit';
@@ -273,6 +273,7 @@ export function AmpModuleScreen() {
         labTitle={LAB_TITLE}
         units={endUnits}
         cleared={cleared}
+        unreadable={isAmpProgressUnreadable(endState)}
         mode="progress"
         onJump={(id) => navigation.replace('AmpModule', { id: id === 'final' ? 'apply' : (id as typeof mod.id) })}
         onPracticeAgain={() => navigation.replace('AmpModule', { id: built[0]?.id ?? mod.id })}

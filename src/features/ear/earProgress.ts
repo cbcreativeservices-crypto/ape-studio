@@ -86,6 +86,13 @@ const guestLoads = new WeakMap<EarProgressState, number>();
  *  2026-10-03; hunt 6's drum/mastering rule). */
 const unreadLoads = new WeakSet<EarProgressState>();
 
+/** True when this state is the stand-in handed out because storage could not
+ *  be READ (owner 2026-10-03, "do 2"): the hub says so instead of showing
+ *  every module unstarted. Read-only — changes nothing that is written. */
+export function isEarProgressUnreadable(s: EarProgressState): boolean {
+  return unreadLoads.has(s);
+}
+
 export async function loadEarProgress(): Promise<EarProgressState> {
   if (saveBlocked) {
     const s: EarProgressState = { ...EMPTY, modules: {} };
