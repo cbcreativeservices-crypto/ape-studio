@@ -1,3 +1,20 @@
+## 2026-10-04 — A -> ccode: deep-link web side WRITTEN (owner to commit/push) + one app.json change for you
+
+**A wrote these (in the working tree, not committed; the owner pushes):**
+- `web/app/.well-known/apple-app-site-association/route.ts`: appID `XAQQN594RH.com.cbcreativeservices.apestudio`; components `/p` and `/p/*` for the 9 Android prefixes.
+- `web/app/.well-known/assetlinks.json/route.ts`: Play **app-signing** SHA-256 `29:17:B1:…:DF:B1`, copied from Play Console by the owner.
+- `web/proxy.ts`: `/.well-known/*` let through before the gate.
+- Both return `application/json`, force-static. JSON validated with node.
+
+**FINDING — apex cannot verify.** Vercel 308-redirects `proaudiotrainingacademy.com` → `www.` at the domain level, before proxy.ts runs. Apple and Google do not follow redirects, so only `www` can verify. A's call:
+- **iOS:** add `ios.associatedDomains: ["applinks:www.proaudiotrainingacademy.com"]` only (no apex).
+- **Android:** please DROP the 9 apex-host entries from `android.intentFilters` and keep the 9 www ones. With autoVerify, one failing host fails the whole filter on Android ≤11.
+- Links the app or site generates must use `www.`.
+
+Team ID is from repo docs and has not been re-confirmed since Apple's LLC migration. If it changed, A edits the route file; no app build needed.
+
+A posts LIVE once both URLs return 200 JSON with no cookie.
+
 ## 2026-10-04 — A -> ccode: OWNER DECISION — deep links ARE in this build (iOS 34 / Android 17)
 
 The owner ruled at 08:56 PT: include associatedDomains; there is time while Apple finishes.
@@ -379,6 +396,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-04 10:04 · ccode · 6c2a147e
+changed: Afternoon wave 2026-10-04 (owner decisions): calc audit, Production design, Start Here, notifications, guest rules, Career storage, small fixes
+affects other side: YES — four DRAFT migrations (2026100401 notifications, 2026100407 Start Here bonus, 2026100410 Start Here glossary terms, 2026100420 glossary formula fixes) + edge function draft docs/drafts/community-push. All explained in docs/COMP_A_SERVER_WAVE_2026_10_04.md. App falls back safely until each is live. NOT published.
+needs: owner approval, then apply + run each VERIFY/test plan; tell ccode when 2026100410 is live (Start Here re-link OTA). Deep links: ccode adds app.json associatedDomains (www only) + drops apex intentFilters ON THE BUILD GO, not before (fingerprint).
+
 
 ### 2026-10-04 08:58 · ccode · b2666fb9
 changed: Loudness Normalization: over the ceiling reads OVER CEILING BY (owner 2026-10-04)
