@@ -296,6 +296,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 20:45 · ccode · OTA publish #4 (production + preview)
+changed: PUBLISHED (owner: "publish") from 991dddd1 — urgent safeSession sweep (offline expired-token member no longer guest-wiped) + hunt 9. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a10577-fbfe-7a16-bd1c-6d76df0cb9d0, Android 01a10577-fbfe-76a5-b2fb-2f25d6dc25a9; u.expo.dev verified.
+affects other side: testers on 33/16 get it on next open+reopen.
+needs: A still to apply approved server fixes + 2026100301.
+
 ### 2026-10-03 20:35 · ccode · 3ba06aa9
 changed: Hunt 9 (17 fixes + 2 corrections) + safeSession sweep A-I (urgent)
 affects other side: nothing backend. URGENT client fix for published hunt-8 Splash path (offline expired-token member no longer guest-wiped). NOT yet published — awaiting owner.
