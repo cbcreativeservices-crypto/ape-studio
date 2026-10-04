@@ -26,6 +26,11 @@ export type BezelItem = {
   helpKey?: string;
   /** Tap action (PK-HOLD-style tap-to-reset cells). */
   onPress?: () => void;
+  /** `onPress` opens something OUTSIDE the rack (a Modal, a navigation): in
+   *  full screen the rack leaves full screen first and runs it once the
+   *  dismissal has finished (hunt 13, 2026-10-04 — like `help`). Opt-in: a
+   *  tap-to-reset cell stays in full screen. */
+  leavesFull?: boolean;
   /** Relative width of this cell (default 1). */
   flex?: number;
 };
@@ -177,4 +182,8 @@ export type DockParam =
       onPress: () => void;
       /** Border tint for the key — e.g. green for a replay/reset. */
       tint?: string;
+      /** `onPress` opens something OUTSIDE the rack (a Modal, a navigation):
+       *  in full screen the rack leaves full screen first (hunt 13,
+       *  2026-10-04). Opt-in: an in-rack action (replay, reset) stays put. */
+      leavesFull?: boolean;
     };

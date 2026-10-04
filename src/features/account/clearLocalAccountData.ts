@@ -163,7 +163,10 @@ function isOnboardingFlag(k: string): boolean {
     // modules as device-level, but the sweep took their keys, so every
     // returning learner got onboarding and the Explore ring again.
     k.startsWith('ape:onboarding:') ||
-    k === 'ape:homeAttract2'
+    k === 'ape:homeAttract2' ||
+    // Topic welcome "seen" flags are keyed per uid (hunt 13, 2026-10-04):
+    // safe across a switch, and sweeping them replayed every topic welcome.
+    k.startsWith('ape:welcome:seen:')
   );
 }
 

@@ -55,7 +55,16 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useMemberGate, useUpsellAllowed } from '../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 import { HelpDot, useScreenHelp } from '../../features/help/ScreenHelpSheet';
-import { getBookmarks, listBookmarkContexts, toggleBookmark, toggleTermList, useBookmarks, useTermList } from '../../features/flags/flaggedStore';
+import {
+  getBookmarks,
+  listBookmarkContexts,
+  toggleBookmark,
+  toggleTermList,
+  useBookmarks,
+  useBookmarksUnreadable,
+  useTermList,
+  useTermListUnreadable,
+} from '../../features/flags/flaggedStore';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { COPY } from '../../lib/copy';
@@ -435,6 +444,10 @@ function notifyShareUnreadable(err: ShareDefinitionUnreadable): void {
     'Couldn’t share this term',
     err.fault === 'limit-reached'
       ? `This week’s definition lookups are used up, so the full definition of “${err.term}” can’t be loaded to share.`
+      : err.fault === 'checking'
+      ? `Your account is still being checked, so the full definition of “${err.term}” can’t be loaded to share yet. Try again in a moment.`
+      : err.fault === 'unconfirmed'
+      ? `The full definition of “${err.term}” can’t be loaded to share. ${MEMBERSHIP_NOT_CONFIRMED}`
       : `The full definition of “${err.term}” couldn’t be loaded, so nothing was shared. Check your connection and try again.`,
   );
 }
@@ -867,6 +880,16 @@ const RETURN_TERM_KEY = 'ape:glossaryReturnTerm';
 /** The Recent views' face when the stored list could not be read (hunt 12, K2). */
 const RECENT_UNREADABLE =
   'Your recent terms couldn’t be read on this phone. Nothing has been removed — they’ll show again once the list can be read.';
+
+/** The Custom (★) and Bookmarks views' faces when the stored list could not be
+ *  read (hunt 13, K2 — the same pattern as RECENT_UNREADABLE). */
+const CUSTOM_UNREADABLE =
+  'Your custom list couldn’t be read on this phone. Nothing has been removed — it’ll show again once the list can be read.';
+const BOOKMARKS_UNREADABLE =
+  'Your bookmarks couldn’t be read on this phone. Nothing has been removed — they’ll show again once the list can be read.';
+/** The topic picker's face when its list could not be read (hunt 13, K2). */
+const TOPICS_UNREADABLE =
+  'The topic list couldn’t be loaded — check your connection and open the Glossary again.';
 
 /** Full record behind an expanded term (lazy-fetched on first tap). */
 type EntryDetail = {
@@ -1323,6 +1346,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
 
   const [entries, setEntries] = useState<Entry[]>([]);
   const [topics, setTopics] = useState<TopicRef[]>([]);
+  /** The latest topic-list read failed (hunt 13, K2) — see the focus effect. */
+  const [topicsUnreadable, setTopicsUnreadable] = useState(false);
   const [loading, setLoading] = useState(true);
   // Distinguish a failed corpus fetch from an empty glossary: offline on the
   // first open of a session used to render as "No results" with a blank count,
@@ -1842,6 +1867,13 @@ ${COPY.glossaryFreeAllowance}`,
   const bmBaseline = useRef<ReadonlySet<string>>(new Set());
   const bmBookmarks = useBookmarks(bmCtx);
   const pickedBookmarks = useBookmarks(termListModal?.bookmarkCtx ?? 'glossary');
+  // The stored copies could not be read (hunt 13, K2 — the Recent rule, hunt
+  // 12): the Custom / Bookmarks views say so rather than "No terms yet". The
+  // saved lists are untouched (the store never writes over an unread copy).
+  const starredUnreadable = useTermListUnreadable('starred');
+  const bookmarksUnreadable = useBookmarksUnreadable('glossary');
+  const bmUnreadable = useBookmarksUnreadable(bmCtx);
+  const pickedBookmarksUnreadable = useBookmarksUnreadable(termListModal?.bookmarkCtx ?? 'glossary');
   const topicsById = useMemo(() => new Map(topics.map((t) => [t.id, t.name])), [topics]);
   const ctxName = (ctx: string) =>
     ctx === 'glossary' ? 'Glossary' : ctx === 'flagged' ? 'My Custom List' : topicsById.get(ctx) ?? 'Topic';
@@ -2315,8 +2347,24 @@ ${COPY.glossaryFreeAllowance}`,
             ),
           ]);
           if (!alive) return;
+          /**
+           * ⛔ A FAILED TOPIC READ IS NOT "NO TOPICS" (hunt 13, 2026-10-04; K2).
+           * This runs on EVERY focus (back from Σ, a lab action, the Paywall),
+           * and a failed or stalled read wrote `[]` over the list an earlier
+           * focus had read: the picker went blank but for Equations, the chip
+           * dropped "Topic ✓" for a topic still filtering the list, and the
+           * duplicate-id union (topicIdsByName) fell back to one id — terms
+           * filed under the twin quietly vanished. A failed read keeps what
+           * is held; with nothing held the picker says the list is unread.
+           */
+          if (topicRows == null) {
+            setTopicsUnreadable(true);
+            await corpus;
+            return;
+          }
+          setTopicsUnreadable(false);
           setTopics(
-            ((topicRows ?? []) as { id: string; name: string; global_sequence: number }[])
+            (topicRows as { id: string; name: string; global_sequence: number }[])
               .map((t) => ({ id: t.id, name: t.name, course_id: '', sequence_in_course: t.global_sequence ?? 0 }))
               .sort((a, b) => a.name.localeCompare(b.name)),
           );
@@ -2765,6 +2813,8 @@ ${COPY.glossaryFreeAllowance}`,
   termIndexRef.current = termIndex;
   const isMemberRef = useRef(isMember);
   isMemberRef.current = isMember;
+  const memberGateRef = useRef(memberGate);
+  memberGateRef.current = memberGate;
   const bookmarksRef = useRef(bookmarks);
   bookmarksRef.current = bookmarks;
   const starredRef = useRef(starred);
@@ -2850,7 +2900,23 @@ ${COPY.glossaryFreeAllowance}`,
         if (gen !== readerGenRef.current) return null;
         if (r.state === 'ok') definition = r.row.definition?.trim() ? r.row.definition : null;
         else if (r.fault === 'not-deployed') definition = e.definition.trim() ? e.definition : null; // legacy table: full text
-        if (definition == null) throw shareDefinitionUnreadable(e.term, r.state === 'fault' ? r.fault : 'error');
+        /**
+         * ⛔ "LOOKUPS ARE USED UP" ONLY TO A KNOWN NON-MEMBER (hunt 13,
+         * 2026-10-04; K3/K6, owner 2026-10-03 #1). A term whose detail came
+         * from a free cross-link hop skips the open above and is read here;
+         * a refusal then told a reader whose membership is being checked, or
+         * could not be confirmed, that their week was used up — the words
+         * readViaGateway and the term popup already refuse to say to them.
+         */
+        const fault =
+          r.state === 'ok'
+            ? 'error'
+            : r.fault === 'limit-reached' && memberGateRef.current !== 'locked'
+              ? memberGateRef.current === 'checking'
+                ? 'checking'
+                : 'unconfirmed'
+              : r.fault;
+        if (definition == null) throw shareDefinitionUnreadable(e.term, fault);
       }
       const d = await getDetail(id);
       const purpose = [d?.purpose_function, d?.practical_application].filter(Boolean).join('\n\n') || null;
@@ -3131,7 +3197,9 @@ ${COPY.glossaryFreeAllowance}`,
           <Text style={styles.tlEmpty}>
             {loadError
               ? 'Your terms couldn’t be loaded. Nothing has been removed from this list — check your connection and open it again.'
-              : 'No bookmarks in this list yet — tap ⚑ on any term to add it.'}
+              : bmUnreadable
+                ? BOOKMARKS_UNREADABLE
+                : 'No bookmarks in this list yet — tap ⚑ on any term to add it.'}
           </Text>
         );
       }
@@ -3151,7 +3219,7 @@ ${COPY.glossaryFreeAllowance}`,
     // ctxName is a plain per-render closure over topicsById; it is covered by
     // bmSwitcherRows/topicsById upstream, so it is deliberately not a dep.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [bmCtx, openTermFromBm, switchBmCtx, topicsById],
+    [bmCtx, openTermFromBm, switchBmCtx, topicsById, bmUnreadable, loadError],
   );
 
   // Confirm-on-close (task 4): if ≥1 term was removed from the currently-shown
@@ -4005,6 +4073,11 @@ ${COPY.glossaryFreeAllowance}`,
             ) : filter === 'recent' && recentUnreadable && !search.trim() ? (
               // An unreadable Recent list is not an empty one (hunt 12, K2).
               <Text style={styles.empty}>{RECENT_UNREADABLE}</Text>
+            ) : filter === 'custom' && starredUnreadable && !search.trim() ? (
+              // …nor the Custom (★) list or the Bookmarks (hunt 13, K2).
+              <Text style={styles.empty}>{CUSTOM_UNREADABLE}</Text>
+            ) : filter === 'favorites' && bookmarksUnreadable && !search.trim() ? (
+              <Text style={styles.empty}>{BOOKMARKS_UNREADABLE}</Text>
             ) : (
               // Empty state as help (Pillar C): say what to do next, and turn a
               // genuinely missing term into a suggestion instead of a dead end.
@@ -4242,6 +4315,7 @@ ${COPY.glossaryFreeAllowance}`,
                   <Text style={styles.equationsRowText}>∑  Equations &amp; Formulas</Text>
                   <Text style={styles.equationsCount}>{equationCount}</Text>
                 </Pressable>
+                {topicsUnreadable && topicsAZ.length === 0 ? <Text style={styles.empty}>{TOPICS_UNREADABLE}</Text> : null}
                 {topicsAZ.map((t) => (
                   <Pressable
                     key={t.id}
@@ -4277,6 +4351,7 @@ ${COPY.glossaryFreeAllowance}`,
                   <Text style={styles.equationsRowText}>∑  Equations &amp; Formulas</Text>
                   <Text style={styles.equationsCount}>{equationCount}</Text>
                 </Pressable>
+                {topicsUnreadable && topicsAZ.length === 0 ? <Text style={styles.empty}>{TOPICS_UNREADABLE}</Text> : null}
                 {topicsAZ.map((t) => {
                   const active = selTopicId === t.id;
                   return (
@@ -4366,6 +4441,10 @@ ${COPY.glossaryFreeAllowance}`,
                     ? 'Your terms couldn’t be loaded. Nothing has been removed from this list — check your connection and open it again.'
                     : termListModal?.kind === 'recent' && recentUnreadable
                       ? RECENT_UNREADABLE
+                      : termListModal?.kind === 'starred' && starredUnreadable
+                      ? CUSTOM_UNREADABLE
+                      : termListModal?.kind === 'bookmark' && pickedBookmarksUnreadable
+                      ? BOOKMARKS_UNREADABLE
                       : termListModal?.kind === 'starred'
                       ? 'No terms yet — tap ★ on any term to build your custom list.'
                       : termListModal?.kind === 'recent'

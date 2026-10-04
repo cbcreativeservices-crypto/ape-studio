@@ -120,7 +120,9 @@ export function CareerFinderScreen() {
 
       {savedFamilies.length ? (
         <View style={{ gap: 8 }}>
-          <SectionLabel tone="green">SAVED FAMILIES</SectionLabel>
+          {/* Starred on an UNREADABLE record they live in memory only (hunt
+              13, 2026-10-04; K2) — never listed as "saved". */}
+          <SectionLabel tone="green">{saving ? 'SAVED FAMILIES' : 'STARRED FAMILIES — NOT SAVED ON THIS PHONE'}</SectionLabel>
           {savedFamilies.map((f) => (
             <Pressable key={f.id} style={styles.savedRow} onPress={() => navigation.navigate('CareerFamily', { id: f.id })} accessibilityRole="button" accessibilityLabel={`Open ${f.name}`}>
               <Text style={styles.savedName} numberOfLines={2}>{f.name}</Text>

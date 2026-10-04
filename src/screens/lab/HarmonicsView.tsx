@@ -1636,6 +1636,9 @@ export function HarmonicsView({
             k: 'THD',
             v: modelThd.pct != null ? `${modelThd.pct.toFixed(1)} %` : '—',
             onPress: () => setThdOpen(true),
+            // hunt 13: the breakdown sheet is a Modal — in full screen the
+            // rack leaves full screen first (never Modal over Modal).
+            leavesFull: true,
           },
           {
             k: 'CREST',

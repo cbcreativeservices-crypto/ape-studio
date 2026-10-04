@@ -13,7 +13,9 @@ it('Dashboard sign-out leaves Auth as the ROOT, never pushed over the old Main (
   // No sign-out path navigates (pushes) to Auth from the nested Study stack.
   assert.doesNotMatch(src, /signOutOrSay\(\s*\(\)\s*=>\s*\(navigation as any\)\.navigate\('Auth'\)/);
   // Both sign-out buttons (error state + stranded-session banner) reset the root.
-  assert.equal((src.match(/void signOutOrSay\(resetToLogin\);/g) ?? []).length, 2);
+  // Hunt 13: both buttons now go through ONE latched call (signOutOnce).
+  assert.equal((src.match(/useLatchedPress\(\(\) => signOutOrSay\(resetToLogin\)\)/g) ?? []).length, 1);
+  assert.equal((src.match(/signOutOnce\(\);/g) ?? []).length, 2);
   assert.match(src, /function resetToLogin\(\): void \{\s*if \(navigationRef\.isReady\(\)\) navigationRef\.reset\(\{ index: 0, routes: \[\{ name: 'Auth' as never \}\] \}\);/);
   assert.match(src, /import \{ navigationRef \} from '\.\.\/\.\.\/navigation\/navigationRef';/);
 });

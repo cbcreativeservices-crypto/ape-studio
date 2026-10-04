@@ -69,15 +69,21 @@ export type DetectInput = {
 export type DetectState = {
   /** Rolling narrowband-peak history for the feedback tracker. */
   peakHist: { tMs: number; hz: number; db: number }[];
-  /** clipRuns at the previous analysis — clip detection fires on the DELTA. */
-  lastClipRuns: number;
+  /** clipRuns at the previous analysis — clip detection fires on the DELTA.
+   *  null = no frame yet this run: the first frame is the BASELINE (hunt 13,
+   *  2026-10-04). The engine's counter is per CAPTURE, and a START that adopts
+   *  the warm stream (the SPL meter or RTA a moment ago, or this tool's own
+   *  STOP→START) inherits every clip run counted there — a fresh run counted
+   *  them all as new and lit "CLIPPING — clipped samples in the last moments"
+   *  over a clean signal. */
+  lastClipRuns: number | null;
   /** When the sustained ≥ −1 dBFS peak streak began (0 = no streak). */
   overloadSinceMs: number;
 };
 
 export const initialDetectState = (): DetectState => ({
   peakHist: [],
-  lastClipRuns: 0,
+  lastClipRuns: null,
   overloadSinceMs: 0,
 });
 
@@ -216,7 +222,10 @@ export function analyze(input: DetectInput, state: DetectState): { raw: Detectio
 
   // ---- Clipping (meter clip-run delta OR clipped waveform buckets) — red.
   if (meter) {
-    const delta = Math.max(0, meter.clipRuns - state.lastClipRuns);
+    // First frame of a run: baseline only. A counter BELOW the last one means
+    // a new capture restarted it, so every run it holds is new.
+    const last = state.lastClipRuns;
+    const delta = last == null ? 0 : meter.clipRuns < last ? meter.clipRuns : meter.clipRuns - last;
     next.lastClipRuns = meter.clipRuns;
     if (delta > 0 || input.waveClipped) {
       raw.push({

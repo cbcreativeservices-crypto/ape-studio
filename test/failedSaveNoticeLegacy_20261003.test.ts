@@ -378,7 +378,7 @@ const REPORTED: Record<string, number> = {
   'screens/lab/calc/workflowStore.ts': 1, // saveList: reports for ★ and ▲▼ only (report = true)
   'screens/lab/drumtuning/drumProgress.ts': 1, // progress + hand-off (notes say it on screen)
   'screens/lab/mastering/masteringProgress.ts': 2, // save + the hand-off
-  'screens/lab/meter/modules/modMeterC.tsx': 1, // solved questions
+  'screens/lab/meter/modules/modMeterC.tsx': 2, // solved questions; the guest sign-in carry (hunt 13)
   'screens/lab/mixing/kit.tsx': 2, // focal point + the hand-off
   'screens/lab/rack/RackUnit.tsx': 1, // hide the display
   'screens/study/FlashcardsScreen.tsx': 4, // hidden cards, sections, media, links

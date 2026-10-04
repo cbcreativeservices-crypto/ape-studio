@@ -136,6 +136,15 @@ export function useInTermList(kind: TermListKind, id: string): boolean {
   return useSyncExternalStore(s.subscribe, has, has);
 }
 
+/** Live "the stored copy of this list could NOT be read" (hunt 13). While it
+ *  is true, `useTermList` is this session's taps on an empty stand-in, not the
+ *  saved list — a screen says "could not be read, not lost", never "empty".
+ *  Subscribing starts the read, like `useTermList`. */
+export function useTermListUnreadable(kind: TermListKind): boolean {
+  const s = stores[kind];
+  return useSyncExternalStore(s.subscribe, s.isUnreadable, s.isUnreadable);
+}
+
 /* ---- PER-CONTEXT bookmark API (the 🔖 list) ----
  * Bookmarks are no longer one global list: each CONTEXT (the Glossary, or a
  * given topic) keeps its own bookmark set under `ape:bm:<ctx>`. The stores
@@ -221,6 +230,13 @@ export async function listBookmarkContexts(): Promise<{ ctx: string; count: numb
 /** Live view of one context's bookmark set (re-renders on change, any screen). */
 export function useBookmarks(ctx: string): ReadonlySet<string> {
   return bookmarkStore(ctx).use();
+}
+
+/** Live "this context's stored bookmarks could NOT be read" — the per-context
+ *  twin of `useTermListUnreadable` (hunt 13). */
+export function useBookmarksUnreadable(ctx: string): boolean {
+  const s = bookmarkStore(ctx);
+  return useSyncExternalStore(s.subscribe, s.isUnreadable, s.isUnreadable);
 }
 
 /** ⚡ One term's bookmark state in one context — the per-row twin of

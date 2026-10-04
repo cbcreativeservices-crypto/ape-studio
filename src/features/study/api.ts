@@ -5,11 +5,12 @@
  * Writes: ONLY via the record_study_progress RPC (WM ruling: no table grants).
  */
 import { supabase } from '../../lib/supabase';
-import { hasSafeSession, safeSessionResult } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { cachedTopicItems, noteTopicAuthUid } from './topicItemsCache';
 import { withSessionRetry } from './sessionRetry';
 import { myUserId } from '../account/myUserRow';
 import { SUPABASE_URL } from '../../lib/env';
+import { readAllPages } from '../../data/v3Curriculum';
 
 export type GlossaryItem = {
   id: string;
@@ -51,8 +52,13 @@ export type StudySnapshot = {
   duplicate_batch: boolean;
 };
 
-/** True once the client has hydrated a persisted session — see sessionRetry. */
-const hasSession = async () => hasSafeSession(supabase.auth.getSession(), 'study/api');
+/** True once the client has hydrated a persisted session — see sessionRetry.
+ *  'unknown' when the read stalled or the refresh could not reach the auth
+ *  server (hunt 13, K1): that is not a guest, and never "sign in". */
+const hasSession = async (): Promise<boolean | 'unknown'> => {
+  const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'study/api');
+  return timedOut ? 'unknown' : !!result.data.session;
+};
 
 /**
  * A topic's study terms. `tier` is the screen's `useTier()`: with a KNOWN
@@ -221,16 +227,41 @@ export async function fetchGlossaryItemsByIds(idList: string[]): Promise<Glossar
  * members, and for everyone on the two free topics (gs3060 / gs3970), so the
  * first row for a term is not always the most complete one.
  */
+/**
+ * ⛔ PAGED, IN CHUNKS (hunt 13, 2026-10-04 — the program_topics lesson).
+ * PostgREST returns at most 1000 rows per request and says nothing when it
+ * stops there, and this view returns a row PER TOPIC a term belongs to. The
+ * ★ deck has no size cap, so one `.in(all starred ids)` read past the page
+ * silently dropped the tail of a large deck — and long before that, ~700+ ids
+ * made one request URL the gateway refuses outright (HTTP 400, measured
+ * read-only against the live API): the whole ★ deck failed to open. Ids go out in chunks of
+ * STUDY_IDS_PER_READ, each chunk read with `readAllPages` over a TOTAL order
+ * (glossary_id, then achievement_id — unique per glossary_topics row, checked
+ * read-only on the live database), so no row is skipped or repeated at a page
+ * edge. Any chunk's or page's error throws: never a partial deck.
+ */
+export const STUDY_IDS_PER_READ = 150;
 async function fetchStudyRowsByIds(ids: string[]): Promise<Map<string, GlossaryItem>> {
-  const { data, error } = await supabase
-    .from('glossary_study_v')
-    .select(
-      'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes',
-    )
-    .in('glossary_id', ids);
-  if (error) throw error;
+  const unique = [...new Set(ids)];
+  const data: any[] = [];
+  for (let i = 0; i < unique.length; i += STUDY_IDS_PER_READ) {
+    const chunk = unique.slice(i, i + STUDY_IDS_PER_READ);
+    const { data: rows, error } = await readAllPages<any>((from, to) =>
+      supabase
+        .from('glossary_study_v')
+        .select(
+          'glossary_id, term, definition, plain_english, purpose_function, practical_application, scenario_contexts, related_terms, category, difficulty, common_mistakes',
+        )
+        .in('glossary_id', chunk)
+        .order('glossary_id')
+        .order('achievement_id')
+        .range(from, to),
+    );
+    if (error) throw error;
+    data.push(...rows);
+  }
   const byId = new Map<string, GlossaryItem>();
-  for (const g of (data ?? []) as any[]) {
+  for (const g of data) {
     const existing = byId.get(g.glossary_id);
     if (existing && !(g.common_mistakes?.length && !existing.common_mistakes?.length)) continue;
     byId.set(g.glossary_id, {
@@ -262,24 +293,32 @@ async function fetchStudyRowsByIds(ids: string[]): Promise<Map<string, GlossaryI
  */
 export async function fetchTopicMedia(glossaryIds: string[]): Promise<Record<string, string>> {
   if (glossaryIds.length === 0) return {};
-  try {
-    const { data, error } = await supabase
-      .from('glossary_media')
-      .select('glossary_id, media_type, url, sort_order')
-      .in('glossary_id', glossaryIds)
-      .order('sort_order');
-    if (error || !data) return {};
-    const out: Record<string, string> = {};
-    for (const m of data as { glossary_id: string; media_type: string | null; url: string | null }[]) {
-      if (!m.url || (m.media_type && m.media_type !== 'image')) continue;
-      if (!out[m.glossary_id]) {
-        out[m.glossary_id] = `${SUPABASE_URL}/storage/v1/object/public/${m.url}`;
+  const out: Record<string, string> = {};
+  // In chunks (hunt 13, 2026-10-04): a ★ deck of ~700+ terms put every id in
+  // ONE request URL and the gateway refused it (HTTP 400, measured read-only
+  // against the live API) — every card in the deck silently lost its image.
+  // A term's rows all sit in one chunk, so "first image per term" holds; a
+  // failed chunk costs only its own images (non-fatal, as before).
+  const unique = [...new Set(glossaryIds)];
+  for (let i = 0; i < unique.length; i += STUDY_IDS_PER_READ) {
+    try {
+      const { data, error } = await supabase
+        .from('glossary_media')
+        .select('glossary_id, media_type, url, sort_order')
+        .in('glossary_id', unique.slice(i, i + STUDY_IDS_PER_READ))
+        .order('sort_order');
+      if (error || !data) continue;
+      for (const m of data as { glossary_id: string; media_type: string | null; url: string | null }[]) {
+        if (!m.url || (m.media_type && m.media_type !== 'image')) continue;
+        if (!out[m.glossary_id]) {
+          out[m.glossary_id] = `${SUPABASE_URL}/storage/v1/object/public/${m.url}`;
+        }
       }
+    } catch {
+      /* non-fatal: this chunk's cards render text-only */
     }
-    return out;
-  } catch {
-    return {};
   }
+  return out;
 }
 
 /** Topic name(s) a glossary term belongs to (owner 2026-08-06) — for the

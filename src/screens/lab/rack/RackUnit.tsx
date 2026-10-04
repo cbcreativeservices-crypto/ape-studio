@@ -19,7 +19,7 @@
  * During any lane drag a DRAG TAG rides the glass bottom edge with the live
  * value (the Faceplate graft) — the value is never hidden under the finger.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -98,6 +98,21 @@ let stageCollapsedCache: boolean | null = null;
 /** How long full screen takes to leave before a sibling Modal may present
  *  (its fade is ~250 ms; see leaveFullThen). */
 export const FULL_DISMISS_MS = 350;
+
+/**
+ * ⛔ A GROUP TRAY'S LONG-PRESS IN FULL SCREEN (hunt 13, 2026-10-04). A
+ * 'group' tray renders the lab's own chips, and their long-press calls the
+ * lab's openLesson DIRECTLY — not the rack's `help` — so in full screen the
+ * lesson sheet (a sibling Modal) was asked for over the full-screen Modal:
+ * refused on iOS (the sheet's open flag then sticks — a dead ⓘ), drawn
+ * behind on Android. Binaural OBJ/SRC, Fx, Modular, Plate… Inside the
+ * full-screen tray this hands out leaveFullThen; everywhere else it is null
+ * and the press runs as before. LabChip routes its long-press through it.
+ */
+const RackLeaveFullContext = createContext<((fn: () => void) => void) | null>(null);
+export function useRackLeaveFull(): ((fn: () => void) => void) | null {
+  return useContext(RackLeaveFullContext);
+}
 
 export function RackUnit({
   stage,
@@ -323,6 +338,13 @@ export function RackUnit({
     () => (onHelp ? (helpKey?: string) => leaveFullThen(() => onHelp(helpKey)) : undefined),
     [onHelp, leaveFullThen],
   );
+  // A bezel cell / dock action that opens something OUTSIDE the rack (opt-in
+  // `leavesFull`, hunt 13, 2026-10-04) leaves full screen first, like `help`:
+  // Harmonics' THD cell opened its Modal behind / refused over full screen,
+  // and the Tube lab's REF key navigated underneath it.
+  const bezelItems = stage.bezel?.map((it) =>
+    it.leavesFull && it.onPress ? { ...it, onPress: () => leaveFullThen(it.onPress as () => void) } : it,
+  );
 
   const dockNode = (
     <View style={styles.dock}>
@@ -408,7 +430,7 @@ export function RackUnit({
                   value=""
                   variant="key"
                   frameTint={p.tint}
-                  onPress={p.onPress}
+                  onPress={p.leavesFull ? () => leaveFullThen(p.onPress) : p.onPress}
                   a11y={p.label}
                 />
               );
@@ -450,7 +472,14 @@ export function RackUnit({
   // dock ABOVE the open tray: the learner keeps the lane and keys while
   // choosing (owner 2026-09-26), and the dock drops back when it closes.
   const [fullTrayH, setFullTrayH] = useState(0);
-  const trayNodeFull = <DockTray param={trayRouted} onClose={closeTray} onHelp={help} bottomInset={0} dim={false} onCardLayout={setFullTrayH} />;
+  // A 'group' tray's content is the LAB's own (its chips call the lab's
+  // openLesson straight away), so in full screen it is handed the way out:
+  // useRackLeaveFull (hunt 13, 2026-10-04).
+  const trayNodeFull = (
+    <RackLeaveFullContext.Provider value={leaveFullThen}>
+      <DockTray param={trayRouted} onClose={closeTray} onHelp={help} bottomInset={0} dim={false} onCardLayout={setFullTrayH} />
+    </RackLeaveFullContext.Provider>
+  );
 
   return (
     <View style={[styles.root, { paddingBottom: bottom }]} onLayout={(e) => setRootH(Math.round(e.nativeEvent.layout.height))}>
@@ -480,7 +509,7 @@ export function RackUnit({
         </View>
         )}
         {stage.bezel?.length || stage.onGuide ? (
-          <BezelReadouts items={stage.bezel ?? []} onGuide={stage.onGuide} onHelp={help} />
+          <BezelReadouts items={bezelItems ?? []} onGuide={stage.onGuide} onHelp={help} />
         ) : null}
         {stage.badge ? (
           // Honesty badge: silk-screened on the FACEPLATE under the unit —
@@ -605,7 +634,7 @@ export function RackUnit({
           controls={dockNode}
           overlay={trayNodeFull}
           overlayLift={trayParam ? fullTrayH + 6 : 0}
-          readouts={stage.bezel?.length ? <BezelReadouts items={stage.bezel} onHelp={help} /> : undefined}
+          readouts={bezelItems?.length ? <BezelReadouts items={bezelItems} onHelp={help} /> : undefined}
         />
       ) : null}
     </View>

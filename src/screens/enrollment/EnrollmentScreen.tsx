@@ -77,7 +77,7 @@ import {
   useHomeBundles,
   useHomeGs,
 } from '../../features/home/homeCardsStore';
-import { FLAGGED_TOPIC_ID, setCustomOnDashboard, useCustomOnDashboard, useTermList } from '../../features/flags/flaggedStore';
+import { FLAGGED_TOPIC_ID, readTermList, setCustomOnDashboard, useCustomOnDashboard } from '../../features/flags/flaggedStore';
 import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { fetchGlossaryItemsByIds } from '../../features/study/api';
 import { useLastStudyLocation } from '../../features/study/lastStudyLocation';
@@ -1083,7 +1083,6 @@ export const EnrollmentView = memo(function EnrollmentView({
 
   // Whether the user's "My Custom List" rides the Dashboard as a current topic.
   const customOnDash = useCustomOnDashboard();
-  const starred = useTermList('starred');
 
   // SEE & EDIT → a term-list popup of the custom list (like a flashcards filter's
   // held list); the TermSelectIcons row lets the user edit membership inline.
@@ -1093,15 +1092,25 @@ export const EnrollmentView = memo(function EnrollmentView({
   // "MY CUSTOM LIST · 0" and "No terms yet" to somebody whose list is not
   // empty — a false count stated as fact about their own saved work.
   const [customListFailed, setCustomListFailed] = useState(false);
+  /** Newest open wins: a slow read from an earlier open never fills this one. */
+  const customListTicket = useRef(0);
   const openCustomList = async () => {
+    const ticket = ++customListTicket.current;
     setCustomListOpen(true);
     setCustomListRows(null);
     setCustomListFailed(false);
     try {
-      const items = await fetchGlossaryItemsByIds([...starred]);
+      // The list AFTER its read lands (hunt 13, K2 — Flashcards' final round C
+      // fix, never ported here): `useTermList` is the empty placeholder until
+      // the ★ list hydrates and stays empty when that read FAILED, so a cold
+      // SEE & EDIT read "MY CUSTOM LIST · 0 — No terms yet" over a saved list.
+      // readTermList waits for the read and throws when it is unreadable.
+      const ids = await readTermList('starred');
+      const items = await fetchGlossaryItemsByIds([...ids]);
+      if (ticket !== customListTicket.current) return;
       setCustomListRows(items.map((i) => ({ id: i.id, term: i.term })));
     } catch {
-      setCustomListFailed(true);
+      if (ticket === customListTicket.current) setCustomListFailed(true);
     }
   };
 

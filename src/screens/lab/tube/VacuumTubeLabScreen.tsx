@@ -124,7 +124,9 @@ function tailParams(p: SectionProps, usesElectron: boolean): DockParam[] {
       helpKey: 'electron_view',
     });
   }
-  out.push({ kind: 'action', id: 'tuberef', label: 'TUBE REF ›', onPress: p.openReference });
+  // leavesFull (hunt 13): in full screen the rack steps out of full screen
+  // first, so the Tube Reference never opens UNDER the full-screen Modal.
+  out.push({ kind: 'action', id: 'tuberef', label: 'TUBE REF ›', onPress: p.openReference, leavesFull: true });
   return out;
 }
 

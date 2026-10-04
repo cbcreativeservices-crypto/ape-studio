@@ -64,7 +64,8 @@ test('the term popup charges a term once per session and names the missing devic
   const popup = read('src/features/glossary/GlossaryTermPopup.tsx');
   assert.match(popup, /const full = await readOnce\(hit\.id\);/);
   assert.ok(!/await fetchDefinitionViaGateway\(/.test(popup), 'the popup calls the metered read directly again');
-  assert.match(popup, /classifyGatewayError\(error\) === 'denied'\) setNeedsKey\(true\)/);
+  // Hunt 13: the key is named only to a reader known to have no session.
+  assert.match(popup, /classifyGatewayError\(error\) === 'denied'\) \{[\s\S]{0,1400}?else setNeedsKey\(true\);/);
   // The "only the opening" note is cleared for each new term, not only on close.
   const fetchBranch = popup.slice(popup.indexOf('setLoading(true);'));
   assert.match(fetchBranch.slice(0, 400), /setPartial\(null\);/);

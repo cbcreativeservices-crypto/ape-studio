@@ -14,7 +14,9 @@ test('Dashboard sign-out only navigates once the sign-out really happened', () =
   assert.match(d, /if \(error\) \{\s*consumeIntentionalSignOut\(\);/);
   // Full run 1 (2026-10-01): the callback now RESETS the root to Auth instead
   // of pushing it (homeShellFullRun1_20261001) — still only after signOutOrSay.
-  assert.equal((d.match(/signOutOrSay\(resetToLogin\)/g) ?? []).length, 2);
+  // Hunt 13: both sign-out buttons share ONE latched call (signOutOnce).
+  assert.equal((d.match(/signOutOrSay\(resetToLogin\)/g) ?? []).length, 1);
+  assert.equal((d.match(/signOutOnce\(\);/g) ?? []).length, 2);
   assert.doesNotMatch(d, /\.signOut\(\)\s*\.catch\(\(\) => \{\}\)\s*\.then/);
 });
 

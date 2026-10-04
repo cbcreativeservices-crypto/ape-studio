@@ -180,8 +180,13 @@ export function WaveformScreen({ navigation }: Props) {
   // Clip-overrun display baseline (owner 2026-08-01): tapping the CLIP OVERRUNS
   // readout zeroes the shown count by recording the current native total as a
   // baseline; the display shows (total − baseline). The native counter keeps
-  // running (it resets to 0 on each capture start, when we also zero the base).
-  const [clipBase, setClipBase] = useState(0);
+  // running (it resets to 0 on each capture start — see the baseline below).
+  // null = no live frame yet this run: the first one is the baseline (hunt 13,
+  // 2026-10-04). The counter is per CAPTURE, not per screen — a START that
+  // adopts the warm stream (the SPL meter a moment ago, or this screen's own
+  // STOP→START) carries every run counted there, and a zero base showed them
+  // as this run's red CLIP OVERRUNS and saved them into the record.
+  const [clipBase, setClipBase] = useState<number | null>(null);
   // COLORS toggle (owner 2026-08-05, items 6/7): MIDI level colours on the
   // trace, persisted per user, first-ever default ON.
   const [colorsOn, setColorsOn] = useColorModePref();
@@ -272,7 +277,14 @@ export function WaveformScreen({ navigation }: Props) {
 
   // Clip-overrun display count + latch (item 4). Green 0 until the first real
   // overrun, then red until reset.
-  const clipShown = meter ? Math.max(0, meter.clipRuns - clipBase) : 0;
+  const clipShown = meter && clipBase != null ? Math.max(0, meter.clipRuns - clipBase) : 0;
+  useEffect(() => {
+    if (!meter) return;
+    // Baseline on the run's first live frame; a counter BELOW the base means a
+    // new capture restarted it, so every run it holds is new.
+    if (clipBase == null) setClipBase(meter.clipRuns);
+    else if (meter.clipRuns < clipBase) setClipBase(0);
+  }, [meter, clipBase]);
   useEffect(() => {
     if (clipShown > 0) setHasClipped(true);
   }, [clipShown]);
@@ -318,7 +330,7 @@ export function WaveformScreen({ navigation }: Props) {
     // and flashes the whole screen like a strobe after every STOP→START. It is
     // cleared only once we are actually running (below), so the frozen viewer
     // stays up and seamlessly goes live.
-    setClipBase(0); // native clip counter restarts at 0 on capture start
+    setClipBase(null); // baseline on the first live frame — a warm stream keeps its count
     setHasClipped(false); // fresh capture = fresh clip latch
     // Release the STOP freeze so the viewer goes live again. (A freeze the user
     // set deliberately with the FREEZE control is theirs to clear.)

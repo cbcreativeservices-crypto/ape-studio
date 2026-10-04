@@ -119,7 +119,8 @@ import { TermSelectIcons } from '../../features/flags/TermSelectIcons';
 import { consumeDevPreview } from '../../features/dev/devPreview';
 import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { devBypass } from '../../config/devMode';
-import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
+import { IntroSheet, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
+import { useLatchedPress } from '../../lib/latch';
 import { CoachMark } from '../../components/CoachMark';
 import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
@@ -709,6 +710,14 @@ export function DashboardScreen() {
    */
   const afterPopupCloses = useModalHandoff();
   /**
+   * ONE SIGN-OUT AT A TIME (hunt 13, 2026-10-04; catalog K11). signOutOrSay
+   * first flushes the offline queues for up to 15 s with nothing on screen —
+   * and offline is exactly when there is work to flush — so a second tap on
+   * Sign Out / Back to Login ran a second flush and raised a second "Sign out
+   * anyway?", which surfaced over the login screen once the first was answered.
+   */
+  const signOutOnce = useLatchedPress(() => signOutOrSay(resetToLogin));
+  /**
    * ONE STUDY SCREEN PER TAP (hunt 12, 2026-10-04; catalog K11). Two
    * DIFFERENT study switches mashed together (Flashcards + Homework, both
    * lit) each ran `navigate` — RN's stack ignores a repeat of the focused
@@ -867,9 +876,21 @@ export function DashboardScreen() {
   const deckPrefsRef = useRef<DeckPrefs>(deckPrefs);
   deckPrefsRef.current = deckPrefs;
   const [deckOpen, setDeckOpen] = useState(false);
+  /**
+   * ⛔ THE INTRO IS ONE OF THIS SCREEN'S POPUPS TOO (hunt 13, 2026-10-04;
+   * catalog K10). It was a self-contained <ScreenIntroOverlay> — a Modal this
+   * screen could not see — so on a first Dashboard visit STUDY NOW's
+   * study-access sheet, the celebration popup, the credential push and the
+   * offline-replay notices all opened beside it. iOS refuses the second
+   * presentation, so the sheet never appeared and `upgradeOpen` stayed true:
+   * every LOCKED tap after that did nothing. Owned here, it gates them all.
+   * Only drawn once there is a deck (the loading / error faces never drew it).
+   */
+  const dashIntro = useScreenIntro('dashboard');
+  const dashIntroUp = dashIntro.visible && data != null;
   /** Any of this screen's own popups open — read inside load() (stable callback). */
   const popupOpenRef = useRef(false);
-  popupOpenRef.current = termsOpen || trophyOpen || deckOpen || upgradeOpen;
+  popupOpenRef.current = termsOpen || trophyOpen || deckOpen || upgradeOpen || dashIntroUp;
 
   // Learning intros (user request 2026-07-18): a COURSE intro before beginning
   // a course and a TOPIC intro before beginning each topic. Auto-shown once
@@ -1414,7 +1435,10 @@ export function DashboardScreen() {
         // study method: the sheet is a Modal, so it opened OVER whatever had
         // come forward. The method tap answers with the same sheet anyway.
         afterPopupCloses(() => {
-          if (navigation.isFocused()) setUpgradeOpen(true);
+          // …and never beside another popup (hunt 13): the first-visit intro
+          // is up exactly when STUDY NOW brings a new learner here. Skipped,
+          // not lost — the 🔒 notice and every LOCKED switch open it on a tap.
+          if (navigation.isFocused() && !popupOpenRef.current) setUpgradeOpen(true);
         });
       }
       return;
@@ -1735,7 +1759,7 @@ export function DashboardScreen() {
                 'This signs you out of this device and returns to the login screen. Your saved progress stays with your account.',
                 'Sign out',
                 () => {
-                  void signOutOrSay(resetToLogin);
+                  signOutOnce();
                 },
               )
             }
@@ -2008,7 +2032,7 @@ export function DashboardScreen() {
             the first and leave nothing tappable ("couldn't press any
             buttons"). ScreenIntroOverlay learned the same lesson. The
             celebration is not lost — it waits until the learner is here. */}
-        {isFocused && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !jogActive && pendingCelebration ? (
+        {isFocused && !dashIntroUp && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !jogActive && pendingCelebration ? (
           <View style={styles.celebrationSlot}>
             <Celebration
               def={celebration(pendingCelebration.id)}
@@ -2046,7 +2070,7 @@ export function DashboardScreen() {
                 variant="secondary"
                 small
                 onPress={() => {
-                  void signOutOrSay(resetToLogin);
+                  signOutOnce();
                 }}
               />
             </View>
@@ -2852,8 +2876,9 @@ export function DashboardScreen() {
         <CoachMark text="Use the rotary dial to spin directly to any topic" bottom={18} />
       ) : null}
 
-      {/* Method-cards intro placeholder (Booth 2026-07-18). */}
-      <ScreenIntroOverlay introKey="dashboard" />
+      {/* Method-cards intro (Booth 2026-07-18) — owned by this screen so its
+          other popups can wait for it (hunt 13; see dashIntro). */}
+      {dashIntro.visible ? <IntroSheet introKey="dashboard" onDismiss={dashIntro.dismiss} /> : null}
 
       {/* Topic / course learning intro (user request 2026-07-18) — shown before
           the student begins; content fills in as topics/courses are developed. */}

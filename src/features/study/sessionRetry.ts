@@ -53,13 +53,23 @@ export function isAuthDenial(e: unknown): boolean {
  */
 export async function withSessionRetry<T>(
   read: () => Promise<T>,
-  hasSession: () => Promise<boolean>,
+  hasSession: () => Promise<boolean | 'unknown'>,
 ): Promise<T> {
   try {
     return await read();
   } catch (e) {
     if (!isAuthDenial(e)) throw e;
-    if (!(await hasSession())) {
+    const known = await hasSession();
+    /**
+     * ⛔ AN UNKNOWN SESSION IS NOT A GUEST (hunt 13, 2026-10-04 — catalog K1).
+     * The session read stalled, or the token refresh could not reach the auth
+     * server: the call went out as `anon` for a member whose session is still
+     * stored. "Sign in to study this topic" is false advice to them (and
+     * signing out is what would lose that session). A retry without a token
+     * changes nothing, so say only that it could not load.
+     */
+    if (known === 'unknown') throw new StudyLoadError('unknown', e);
+    if (!known) {
       // Really is a guest on a topic that is not free. Not a network fault,
       // and not something a retry can change.
       throw new StudyLoadError('signed-out', e);

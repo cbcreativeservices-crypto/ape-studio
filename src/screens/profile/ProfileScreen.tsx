@@ -54,8 +54,8 @@ import { LowLightRow } from '../../features/settings/LowLightLayer';
 import { useLowLight } from '../../features/settings/lowLight';
 import { AudioOutputRow } from '../../features/audio/AudioOutputRow';
 import { DevVisualIndex } from '../../features/dev/DevVisualIndex';
-import { useTermList } from '../../features/flags/flaggedStore';
-import { useBundles } from '../../features/enrollment/enrolledBundlesStore';
+import { useTermList, useTermListUnreadable } from '../../features/flags/flaggedStore';
+import { useBundles, useBundlesHydrated } from '../../features/enrollment/enrolledBundlesStore';
 import { useEnrollmentProgress } from '../../features/enrollment/enrollmentProgress';
 import {
   fetchV3Certs,
@@ -287,6 +287,7 @@ export function ProfileScreen() {
   // "Terms learned" — the self-assessed KNOWN list (client-side; no server metric
   // exists while the backend is frozen).
   const known = useTermList('known');
+  const knownUnreadable = useTermListUnreadable('known');
   // Earned credentials (runbook item 3, 2026-08-29). Read-only, RLS-scoped.
   const [credentials, setCredentials] = useState<EarnedCredentialRow[]>([]);
   const [credsFailed, setCredsFailed] = useState(false);
@@ -402,6 +403,8 @@ export function ProfileScreen() {
   // 2026-08-07): every cert/program bundle the user enrolled, with live topic
   // progress. Replaces the separately-picked Awards goal (ape:specCert/…).
   const bundles = useBundles();
+  /** The stored bundles have been READ — `useBundles()` is `[]` until then. */
+  const bundlesRead = useBundlesHydrated();
   const certBundles = useMemo(() => bundles.filter((b) => b.kind === 'cert'), [bundles]);
   const programBundles = useMemo(() => bundles.filter((b) => b.kind === 'program'), [bundles]);
   const bundleGs = useMemo(
@@ -409,8 +412,15 @@ export function ProfileScreen() {
     [certBundles, programBundles],
   );
   const bundleProg = useEnrollmentProgress(bundleGs);
+  /** null = this bundle's progress is not read (renders "—", hunt 13). The map
+   *  is EMPTY until the read lands and stays empty when it fails (offline), so
+   *  counting it said "0 of 12 topics complete" over finished work — the same
+   *  unread-is-not-zero rule as Enrollment's pctText / requirementSummary. */
   const bundleDone = useCallback(
-    (topics: number[]) => topics.filter((gs) => bundleProg.get(gs)?.status === 'complete').length,
+    (topics: number[]): number | null => {
+      if (topics.some((gs) => !bundleProg.has(gs))) return null;
+      return topics.filter((gs) => bundleProg.get(gs)?.status === 'complete').length;
+    },
     [bundleProg],
   );
 
@@ -996,9 +1006,9 @@ export function ProfileScreen() {
                the big picture. */
             summary={
               goalCount
-                ? `${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}${showBigPicture ? ` · ${profile?.overallPct ?? 0}%` : ''}`
+                ? `${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}${showBigPicture ? ` · ${profile ? `${profile.overallPct}%` : '—'}` : ''}`
                 : showBigPicture
-                  ? `${profile?.overallPct ?? 0}%`
+                  ? (profile ? `${profile.overallPct}%` : '—')
                   : ''
             }
           >
@@ -1018,8 +1028,11 @@ export function ProfileScreen() {
                     printed once it is known — a denominator of 0 would render
                     "0 of 0", which reads as a broken curriculum. */}
                 <Text style={styles.rowHint}>
-                  {(profile?.overallPct ?? 0) > 0
-                    ? `${profile?.overallPct ?? 0}% complete${
+                  {/* Unread is not "Not started yet" (hunt 13): "—". */}
+                  {!profile
+                    ? '—'
+                    : profile.overallPct > 0
+                    ? `${profile.overallPct}% complete${
                         profile?.topicTotal
                           ? ` · ${profile.completeCount} of ${profile.topicTotal} topics`
                           : ''
@@ -1035,7 +1048,7 @@ export function ProfileScreen() {
               <View
                 style={styles.progressTrack}
                 accessibilityRole="adjustable"
-                accessibilityValue={{ min: 0, max: 100, now: pctClamped, text: `${pctClamped}% complete` }}
+                accessibilityValue={{ min: 0, max: 100, now: pctClamped, text: profile ? `${pctClamped}% complete` : 'Progress not loaded' }}
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={pctClamped}
@@ -1070,6 +1083,10 @@ export function ProfileScreen() {
                   }
                 />
               ))
+            ) : !bundlesRead ? (
+              /* Not read (still loading, or the read failed) is not "none
+                 started" (hunt 13): true in both cases, never a false empty. */
+              <Text style={styles.rowHint}>Your certificates haven’t loaded yet.</Text>
             ) : (
               <Text style={styles.rowHint}>
                 No certificates started yet — enrol from Study, and your progress appears here.
@@ -1096,6 +1113,8 @@ export function ProfileScreen() {
                   }
                 />
               ))
+            ) : !bundlesRead ? (
+              <Text style={styles.rowHint}>Your programs haven’t loaded yet.</Text>
             ) : (
               <Text style={styles.rowHint}>
                 No programs started yet — enrol from Study, and your progress appears here.
@@ -1227,8 +1246,10 @@ export function ProfileScreen() {
             {/* "Quizzes passed" and "Study streak" REMOVED (design review
                 2026-08-30): both were literal em-dashes with no backend, which
                 made the two real numbers beside them look broken too. */}
-            <StatRow label="Terms learned" value={String(known.size)} />
-            <StatRow label="Topics completed" value={String(profile?.completeCount ?? 0)} last />
+            {/* Unread is not zero (hunt 13): an unreadable "known" list or a
+                profile that has not loaded / could not load shows "—". */}
+            <StatRow label="Terms learned" value={knownUnreadable ? '—' : String(known.size)} />
+            <StatRow label="Topics completed" value={profile ? String(profile.completeCount) : '—'} last />
             {/* [43] (2026-09-07): gated on albumAchievements, not completionRecords.
                 This row opens the Achievements hub, which the ladder grants to
                 'free' (albumAchievements: true) and which the bottom tab already

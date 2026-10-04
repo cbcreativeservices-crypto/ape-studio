@@ -107,7 +107,8 @@ describe('H12-3 Pro Registry: a failed name read is not "Add your Registry name"
 
   it('an empty name is checked with the strict (throwing) read before it is called missing', () => {
     assert.match(src, /import \{ fetchMyQrToken, fetchMyRegistryName \} from '\.\.\/\.\.\/features\/profile\/api';/);
-    assert.match(src, /if \(name \|\| !accountConfirmed\) return;\s*\n\s*try \{\s*\n\s*await fetchMyRegistryName\(\);\s*\n\s*\} catch \{\s*\n\s*if \(alive\) setNameUnread\(true\);/);
+    // Hunt 13 keeps the strict read and also shows a name it returns.
+    assert.match(src, /if \(name \|\| !accountConfirmed\) return;\s*\n\s*try \{[\s\S]*?await fetchMyRegistryName\(\);[\s\S]*?\} catch \{\s*\n\s*if \(alive\) setNameUnread\(true\);/);
   });
 
   it('the tile says it could not load the name, and only a genuine none asks to add one', () => {

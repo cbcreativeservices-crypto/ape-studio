@@ -41,6 +41,7 @@ import {
 } from './glossaryGateway';
 import { popupCard } from '../../theme/readingColumn';
 import { softDeadline } from '../../lib/boundedCall';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 
 type Row = { id: string; term: string; definition: string | null; plain_english: string | null };
 
@@ -219,8 +220,24 @@ export function GlossaryTermPopup({
       if (cancelled) return;
       const hit = (data && data[0]) as Row | undefined;
       if (!hit) {
-        if (error && classifyGatewayError(error) === 'denied') setNeedsKey(true);
-        else if (error) setLoadError(true);
+        if (error && classifyGatewayError(error) === 'denied') {
+          /**
+           * ⛔ A 42501 IS ONLY "NO DEVICE ID" WHEN THERE IS NO SESSION (hunt 13,
+           * 2026-10-04; K1/K6). The browse view is granted to every signed-in
+           * reader — an account or a device key — so a refusal reaches one only
+           * when the request went out WITHOUT their token: an expired token
+           * whose refresh could not reach the server, or a stalled keychain
+           * read. That reader was told to "allow its temporary device ID" — a
+           * signed-in member sent to a consent they never need. Ask who is
+           * here: a session that is present or unknown is the connection
+           * failure the error line describes; only a known no-session reader
+           * needs the key.
+           */
+          const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'glossary term popup');
+          if (cancelled) return;
+          if (result.data.session || timedOut) setLoadError(true);
+          else setNeedsKey(true);
+        } else if (error) setLoadError(true);
         else setNotFound(true);
         setLoading(false);
         return;

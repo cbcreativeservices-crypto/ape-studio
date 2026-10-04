@@ -28,6 +28,25 @@ function qrdN(v: number | number[]): number {
   return N;
 }
 
+/** The mass-law product m·f (kg/m² × Hz) at which TL = 20·log₁₀(m·f) − 47
+ *  reaches 0 dB: 10^(47/20) ≈ 224. Below it the formula goes NEGATIVE — a wall
+ *  that makes sound louder — so the mass law no longer applies (calc hunt 13,
+ *  2026-10-04, D53): a 2 kg/m² panel at 63 Hz printed TRANSMISSION LOSS
+ *  "−0.98 dB", a 1 kg/m² blanket at 125 Hz "−5.1 dB". */
+const MASS_LAW_ZERO_MF = Math.pow(10, 47 / 20);
+const massLawTl = (m: number, f: number) => 20 * Math.log10(m * f) - 47;
+/** Words for a mass/frequency pair below the mass law's 0 dB point, else null.
+ *  Names only the inputs and the model's limit, never a computed TL. */
+export function massLawBelowZero(m: number, f: number): string | null {
+  if (!(m * f < MASS_LAW_ZERO_MF)) return null;
+  return (
+    `A ${fmt(m)} kg/m² panel at ${fmt(f)} Hz is outside the mass law: m × f = ${fmt(m * f)} is below about ` +
+    `${fmt(MASS_LAW_ZERO_MF, 3)}, where the formula drops under 0 dB — and no wall makes sound louder. A panel ` +
+    'this light at this frequency gives little isolation, set by its stiffness and its own resonance rather ' +
+    'than its mass. Use a heavier panel or a higher frequency, or measure it.'
+  );
+}
+
 const EYRING: Workspace = {
   id: 'eyring',
   name: 'Eyring & Millington RT',
@@ -378,16 +397,20 @@ const TRANSMISSION: Workspace = {
       compute: (v) => {
         const m = n(v.mass);
         const f = n(v.f);
-        const tl = 20 * Math.log10(m * f) - 47;
+        const outside = massLawBelowZero(m, f);
+        if (outside) return [{ label: 'OUTSIDE THE MASS LAW', text: outside, refusal: true }];
+        const tl = massLawTl(m, f);
         return [
           { label: 'TRANSMISSION LOSS', value: tl, quantity: 'db' },
-          { label: 'TL ONE OCTAVE UP', value: 20 * Math.log10(m * f * 2) - 47, quantity: 'db', chainable: false },
+          { label: 'TL ONE OCTAVE UP', value: massLawTl(m, f * 2), quantity: 'db', chainable: false },
         ];
       },
       steps: (v) => {
         const m = n(v.mass);
         const f = n(v.f);
-        const tl = 20 * Math.log10(m * f) - 47;
+        const outside = massLawBelowZero(m, f);
+        if (outside) return [outside];
+        const tl = massLawTl(m, f);
         return [
           `TL = 20·log₁₀(${fmt(m)} × ${fmt(f)}) − 47 = ${fmt(tl)} dB.`,
           `Mass law adds ~6 dB per octave and ~6 dB per doubling of mass — so isolation is always weakest in the bass.`,
@@ -397,7 +420,9 @@ const TRANSMISSION: Workspace = {
         const m = n(v.mass);
         const rows = [125, 250, 500, 1000, 2000, 4000].map((f) => [
           f >= 1000 ? `${f / 1000} kHz` : `${f} Hz`,
-          `${fmt(20 * Math.log10(m * f) - 47)} dB`,
+          // A band below the mass law's 0 dB point is said in words, never a
+          // negative TL (calc hunt 13, see MASS_LAW_ZERO_MF).
+          massLawBelowZero(m, f) ? 'below the mass law' : `${fmt(massLawTl(m, f))} dB`,
         ]);
         return { title: 'MASS-LAW TL BY BAND', cols: ['Frequency', 'TL'], rows };
       },

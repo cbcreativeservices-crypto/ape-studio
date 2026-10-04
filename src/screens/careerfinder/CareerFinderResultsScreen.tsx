@@ -22,7 +22,7 @@ import { familyFieldOf, familyMetaOf, furtherEducationForTitle, isRegulatedTitle
 import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { LAB_FOR_DIMENSION } from '../../features/careerfinder/labsForDimension';
-import { getCareerFinder, resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, type FeedbackAnswer } from '../../features/careerfinder/store';
+import { getCareerFinder, resetCareerFinder, setCareerFinderFeedback, setQuestionIndex, toggleSavedFamily, useCareerFinder, useCareerFinderSaving, type FeedbackAnswer } from '../../features/careerfinder/store';
 import { confirmReset } from './CareerFinderScreen';
 import { BetaPill, Body, Card, CountTag, CtaButton, DimChip, DimensionSpectrum, FinderShell, Lead, RankBadge, SectionLabel, TextLink } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -33,6 +33,7 @@ export const RESULTS_NOTE = 'These are possibilities to explore — not limits o
 export function CareerFinderResultsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const rec = useCareerFinder();
+  const saving = useCareerFinderSaving();
   const result = useMemo(() => computeResult(rec.responses, familyFieldOf), [rec.responses]);
   const strongestCodes = result.strongest.map((d) => d.code);
   const [note, setNote] = useState(rec.feedback?.note ?? '');
@@ -148,7 +149,10 @@ export function CareerFinderResultsScreen() {
             <Text style={[styles.actText, { color: colors.green }]}>EXPLORE FAMILY ›</Text>
           </Pressable>
           <Pressable onPress={() => toggleSavedFamily(f.id)} style={[styles.actBtn, saved && styles.actSaved]} accessibilityRole="button" accessibilityState={{ selected: saved }} aria-pressed={saved} accessibilityLabel={saved ? `Remove ${f.name} from saved` : `Save ${f.name}`}>
-            <Text style={[styles.actText, saved && { color: colors.amber }]}>{saved ? '★ SAVED' : '☆ SAVE'}</Text>
+            {/* ★ SAVED only when it was (hunt 13, 2026-10-04; K2): on an
+                UNREADABLE record the store keeps the ★ in memory and writes
+                nothing (`saving` false), so "SAVED" was untrue. */}
+            <Text style={[styles.actText, saved && { color: colors.amber }]}>{saved ? (saving ? '★ SAVED' : '★ NOT SAVED') : '☆ SAVE'}</Text>
           </Pressable>
         </View>
       </Card>

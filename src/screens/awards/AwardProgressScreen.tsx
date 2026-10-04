@@ -75,7 +75,19 @@ export function AwardProgressScreen({ navigation, route }: Props) {
   const haveProgress = useRef(false);
   const load = useCallback(async () => {
     setFailed(false);
-    const p = await fetchAwardProgress(awardType, awardId);
+    // ⛔ A REJECTED READ IS A FAILED READ (hunt 13, 2026-10-04; K2).
+    // fetchAwardProgress RE-THROWS a rejected award_required_topics call (the
+    // client's deadline) for a signed-in learner. Uncaught here, load()
+    // rejected: the focus effect never reached setLoading(false), so a first
+    // open on a slow connection spun forever with no Retry (and a pull-to-
+    // refresh stayed "refreshing"), as an unhandled rejection. It now takes
+    // the same keep / retry path as any other failed read.
+    let p: AwardProgress | null;
+    try {
+      p = await fetchAwardProgress(awardType, awardId);
+    } catch {
+      p = null;
+    }
     if (p == null) {
       // No account is the COMMON null here (guests 401 on the student read) --
       // blaming "your connection" was misleading (QA night 2026-08-31).

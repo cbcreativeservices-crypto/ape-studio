@@ -54,7 +54,11 @@ describe('Dashboard — a non-member landing on a members topic gets the centred
     assert.match(landing, /studyMethodLocked\(\{ resolved: tierKnown, entitlement, displayedGs: topics\[i\]\.global_sequence, freeGs: FREE_ENROLL_GS \}\)/);
   });
   it('waits for the Explore / credential popup to finish closing, and respects Low-Light', () => {
-    assert.match(landing, /afterPopupCloses\(\(\) => \{\s*if \(navigation\.isFocused\(\)\) setUpgradeOpen\(true\);\s*\}\)/);
+    // Hunt 13: …and never beside another popup (the first-visit intro).
+    assert.match(
+      landing,
+      /afterPopupCloses\(\(\) => \{\s*(?:\/\/[^\n]*\n\s*)*if \(navigation\.isFocused\(\) && !popupOpenRef\.current\) setUpgradeOpen\(true\);\s*\}\)/,
+    );
     assert.match(landing, /!areOverlaysSuppressed\(\)/);
   });
   it('only for a numeric focus (a real topic request), after the param is cleared', () => {

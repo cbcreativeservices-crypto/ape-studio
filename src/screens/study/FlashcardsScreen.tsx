@@ -447,6 +447,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // (Booth 2026-07-18 fix — the popup used to intersect with the current deck,
   // hiding terms tagged in other topics). id → term.
   const [listMembers, setListMembers] = useState<Record<string, string>>({});
+  /** The off-deck name read for the open list (hunt 13, K2): still under way,
+   *  or FAILED — neither is "No terms in this set". */
+  const [listFetch, setListFetch] = useState<'loading' | 'failed' | null>(null);
   // Tap a highlighted glossary term inside a definition → its own full-screen
   // definition; closing returns to the exact card position (Booth 2026-07-18).
   const [linkedTerm, setLinkedTerm] = useState<GlossaryItem | null>(null);
@@ -789,13 +792,18 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   // When a global-list popup opens, fetch names for members that aren't in the
   // current deck so the FULL cross-topic list renders.
   useEffect(() => {
-    if (!globalListIds || globalListIds.size === 0) return;
-    const missing = [...globalListIds].filter((id) => !itemsById.has(id) && !listMembers[id]);
-    if (missing.length === 0) return;
+    const missing = globalListIds ? [...globalListIds].filter((id) => !itemsById.has(id) && !listMembers[id]) : [];
+    if (missing.length === 0) {
+      setListFetch(null);
+      return;
+    }
     let cancelled = false;
+    setListFetch('loading');
     fetchGlossaryItemsByIds(missing)
       .then((rows) => {
-        if (cancelled || rows.length === 0) return;
+        if (cancelled) return;
+        setListFetch(null);
+        if (rows.length === 0) return;
         setListMembers((prev) => {
           const next = { ...prev };
           for (const r of rows) next[r.id] = r.term;
@@ -803,7 +811,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
         });
       })
       .catch(() => {
-        /* offline / fetch error → those rows just stay hidden */
+        // ⛔ A FAILED READ IS NOT AN EMPTY LIST (hunt 13, K2). Offline, a
+        // ★ / bookmark / known list whose terms all sat in other topics read
+        // "No terms in this set." — the learner's saved list, reported gone.
+        if (!cancelled) setListFetch('failed');
       });
     return () => {
       cancelled = true;
@@ -1993,6 +2004,11 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             <Text style={styles.tlTitle}>
               {termList?.title} · {termListRows.length}
             </Text>
+            {globalListIds && listFetch === 'failed' ? (
+              <Text style={styles.tlEmpty}>
+                Some terms in this list could not be loaded. Check your connection and open it again.
+              </Text>
+            ) : null}
             {termListRows.length > 0 ? (
               <FlatList
                 style={{ flexGrow: 0 }}
@@ -2029,7 +2045,9 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                   </View>
                 )}
               />
-            ) : (
+            ) : globalListIds && listFetch === 'loading' ? (
+              <Text style={styles.tlEmpty}>Loading…</Text>
+            ) : globalListIds && listFetch === 'failed' ? null : (
               <Text style={styles.tlEmpty}>No terms in this set.</Text>
             )}
             <Pressable accessibilityRole="button" style={styles.tlClose} onPress={() => setTermList(null)}>

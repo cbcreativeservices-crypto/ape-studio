@@ -148,7 +148,11 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
         // THROWS on a failed or unknown read; only its null is "none".
         if (name || !accountConfirmed) return;
         try {
-          await fetchMyRegistryName();
+          // A name THIS read finds is shown (hunt 13, 2026-10-04): the first
+          // read failed, this one answered — "Add your Registry name" over a
+          // name the server just returned was the same untrue face.
+          const remote = await fetchMyRegistryName();
+          if (alive && remote) setRegistryName(remote);
         } catch {
           if (alive) setNameUnread(true);
         }

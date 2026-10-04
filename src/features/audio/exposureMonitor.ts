@@ -323,6 +323,8 @@ export function resetLocal(): void {
   approachingFiredToday = false;
   reachedFiredToday = false;
   lastPersistMs = 0;
+  if (tellTimer) clearTimeout(tellTimer); // the emit below tells them instead
+  tellTimer = null;
   emitState();
   void hydrate(); // re-seed a fresh day from the (now cleared) storage
 }
@@ -522,11 +524,36 @@ function rollDayIfNeeded(): void {
  * "Today" (the history listed yesterday twice), and the first tick then rolled
  * first and filed last night's session under today. Called by the tick and by
  * every read of the snapshot or history; a no-op while nothing is stale.
+ *
+ * Returns true when it changed what a subscriber shows (hunt 13, 2026-10-04).
  */
-function settleIdle(): void {
-  if (!day) return;
+function settleIdle(): boolean {
+  if (!day) return false;
+  const prevDay = day;
+  const prevSession = session;
   if (session && Date.now() - session.lastActiveMs > cfg().sessionGapMinutes * 60000) closeSession(session.lastActiveMs);
   rollDayIfNeeded();
+  return day !== prevDay || session !== prevSession;
+}
+
+/**
+ * A settle made by a READ is told to every subscriber (hunt 13, 2026-10-04).
+ * The hub's dosimeter chip and the Exposure screen keep the snapshot in state
+ * and refresh only on an emit — and a read settles first, so the tick that
+ * follows sees nothing new and (quiet-tick rule) emits nothing. Opening the
+ * monitor the next morning rolled the day silently: back on the hub the chip
+ * went on showing yesterday's dose and time as today's (red rim at 100 %)
+ * until sound played again. Deferred, never emitted inside the read: the read
+ * may be a render (useState's initial value), and a subscriber's setState
+ * there would update another component mid-render.
+ */
+let tellTimer: ReturnType<typeof setTimeout> | null = null;
+function settleAndTell(): void {
+  if (!settleIdle() || tellTimer) return;
+  tellTimer = setTimeout(() => {
+    tellTimer = null;
+    emitState();
+  }, 0);
 }
 
 /** The single ear-exposure estimate for this tick — the LOUDER of what the app
@@ -799,7 +826,7 @@ export function initExposureMonitor(subscribeOutput: (cb: () => void) => void): 
 // ── Public API ───────────────────────────────────────────────────────────────
 
 export function getExposureSnapshot(): ExposureSnapshot {
-  settleIdle(); // never yesterday's figures (or a long-ended session) as today's
+  settleAndTell(); // never yesterday's figures (or a long-ended session) as today's
   const settings = cfg();
   const d = day;
   const avg = d && d.activeSec > 0 ? Math.round(10 * Math.log10(d.energySum / d.activeSec) * 10) / 10 : null;
@@ -878,7 +905,7 @@ export function updateExposureSettings(patch: Partial<ExposureSettings>): Promis
  * its own; it no longer collapses the whole history to today.
  */
 export async function getExposureHistory(strict = false): Promise<DayRecord[]> {
-  settleIdle(); // the in-memory day added below is TODAY's, never a stale one
+  settleAndTell(); // the in-memory day added below is TODAY's, never a stale one
   try {
     const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
     const parsedIdx: unknown = rawIdx ? JSON.parse(rawIdx) : [];

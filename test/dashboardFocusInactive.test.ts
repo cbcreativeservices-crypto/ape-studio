@@ -47,7 +47,8 @@ test('only the newest load may land, and the cache is written after the stale ch
 });
 
 test('a self-opening celebration waits until the Dashboard is in front and nothing else is open', () => {
-  assert.match(src, /isFocused && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !jogActive && pendingCelebration/);
+  // Hunt 13: …and not over the first-visit intro (dashIntroUp).
+  assert.match(src, /isFocused && !dashIntroUp && !termsOpen && !trophyOpen && !deckOpen && !upgradeOpen && !jogActive && pendingCelebration/);
 });
 
 test('STUDY NOW for a topic removed from the deck restores it', () => {

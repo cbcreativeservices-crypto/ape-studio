@@ -25,7 +25,7 @@ import { notify } from '../../lib/confirm';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
 import { computeResult, explainFamily } from '../../features/careerfinder/scoring';
 import { CAREER_INDEX_VERSION, CENTRALITY, careersInFamily, centralitySplit, entryPoints, familyFieldOf, familyView, type Career } from '../../features/careerfinder/careerIndex';
-import { answeredCount, toggleSavedFamily, useCareerFinder } from '../../features/careerfinder/store';
+import { answeredCount, toggleSavedFamily, useCareerFinder, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { educationChip } from '../../features/careerfinder/educationNote';
 import { Body, Card, CentralityChip, CtaButton, DimChip, FinderShell, Lead, LinkRow, SaveStar, SectionLabel, TextLink } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -55,6 +55,7 @@ export function CareerFamilyScreen() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [allTopics, setAllTopics] = useState(false);
   const saved = rec.saved.includes(params.id);
+  const saving = useCareerFinderSaving();
 
   // Live topic names (gs → official name, never "Topic gsN") + the enrollment
   // list for the + / ✓ affordance, exactly the Explore tree's gesture.
@@ -157,6 +158,10 @@ export function CareerFamilyScreen() {
       headerRight={<SaveStar saved={saved} onPress={() => toggleSavedFamily(fam.id)} name={fam.name} />}
     >
       {rank != null && rank <= 5 ? <Text style={styles.rankLine}>RANKED #{rank} FOR YOU</Text> : rank != null && rank <= 10 ? <Text style={[styles.rankLine, { color: colors.textMuted }]}>IN YOUR TOP TEN</Text> : null}
+      {/* The ★ on an UNREADABLE record is kept in memory only (hunt 13,
+          2026-10-04; K2): the store writes nothing over a record it could not
+          read, so the filled star must not pass for a saved family. */}
+      {saved && !saving ? <Text style={[styles.rankLine, { color: colors.amber }]}>STARRED — NOT SAVED ON THIS PHONE</Text> : null}
       <Lead>{fam.description}</Lead>
 
       {result ? (

@@ -211,7 +211,6 @@ const ALLOW: Record<string, string> = {
   'src/screens/courses/CourseSelectionScreen.tsx#load': 'read-only RETRY load (P2)',
   'src/screens/curriculum/CurriculumScreen.tsx#loadCurriculum': 'read-only RETRY load (P2)',
   'src/screens/directory/ExploreView.tsx#loadTax': 'read-only RETRY load (P2)',
-  'src/screens/enrollment/EnrollmentScreen.tsx#openCustomList': 'read-only list fetch into the same sheet',
   'src/screens/glossary/GlossaryScreen.tsx#reloadCorpus': 'read-only reload (P2)',
   'src/screens/glossary/GlossaryScreen.tsx#shareTerm':
     'the metered read is de-duplicated by gatewayInFlightRef; the share sheet is one state slot',

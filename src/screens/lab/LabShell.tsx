@@ -30,7 +30,7 @@ import { CoachMark } from '../../components/CoachMark';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { colors, fonts } from '../../theme/tokens';
 import { ScrollLockCtx, ScrollLockProvider, useScrollLock } from './scrollLock';
-import { RackUnit } from './rack/RackUnit';
+import { RackUnit, useRackLeaveFull } from './rack/RackUnit';
 import { readingColumn } from '../../theme/readingColumn';
 import { LabHeader } from './kit/LabNavBar';
 import type { DockParam, RackStage } from './rack/rackTypes';
@@ -98,11 +98,14 @@ export function LabChip({
   /** Show a tiny ðŸ“· to signal "long-press to see a photo" (owner 2026-08-18). */
   photoHint?: boolean;
 }) {
+  // In a full-screen rack tray, a lesson/photo long-press leaves full screen
+  // first — a sibling Modal over it is refused on iOS (hunt 13, 2026-10-04).
+  const leaveFull = useRackLeaveFull();
   return (
     <Pressable
       style={[styles.chip, selected && styles.chipSelected]}
       onPress={onPress}
-      onLongPress={onLongPress}
+      onLongPress={onLongPress && leaveFull ? () => leaveFull(onLongPress) : onLongPress}
       delayLongPress={350}
       // 44pt effective target (design pass 2026-08-31): the chip draws ~33pt.
       hitSlop={{ top: 6, bottom: 6 }}

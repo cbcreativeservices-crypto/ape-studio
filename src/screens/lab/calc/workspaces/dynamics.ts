@@ -177,6 +177,11 @@ const WS_COMPRESSOR: Workspace = {
         // 2026-09-30). This returned ±∞ rows, which the NaN-only rule in
         // runCompute now turns into a bare "check for zeros" error that hid
         // the steps' own "raise the ratio first" answer.
+        // Below 1:1 is not a compressor ratio at all (calc hunt 13, 2026-10-04):
+        // 0.5:1 was told it "makes no gain reduction" — an expander RAISES the
+        // level — and the steps said "At 1:1" for a 0.5 the learner typed.
+        // Same words as outFromRatio.
+        if (!(r >= 1)) return [{ label: 'NOT A COMPRESSOR RATIO', text: ratioBelowOne(r), refusal: true }];
         if (!(r > 1)) {
           return [
             {
@@ -197,6 +202,7 @@ const WS_COMPRESSOR: Workspace = {
         const inp = n(v.inLvl);
         const r = n(v.ratio);
         const gr = n(v.targetGr);
+        if (!(r >= 1)) return [ratioBelowOne(r)];
         if (r <= 1) {
           return [`At 1:1 the compressor makes no gain reduction, so no threshold produces ${fmt(gr)} dB — raise the ratio first.`];
         }

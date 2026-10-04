@@ -21,6 +21,8 @@ import type {
   ValueMap,
 } from './types';
 import { newProjectId, valueKey } from './types';
+import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 export const PROJECT_KEYS: Record<LabKind, string> = {
   preprod: 'ape:production:preprod:v1',
@@ -112,6 +114,49 @@ export function newProject(lab: LabKind, pathway: PathwayId, name: string): Prod
   };
 }
 
+// ── the sign-in hand-off (owner ruling 2026-10-01; hunt 13) ─────────────────
+// The projects are written for everyone, but a guest's FIRST sign-in wipes
+// this device's `ape:*` keys — every project planned or repaired as a guest in
+// this app session was gone the moment they signed in (the Cymatics gallery's
+// hunt-12 fix; Room Design's saved designs). What a guest writes here is held
+// by the shared ledger (`guestOnly`: an account's own writes need no carrying)
+// and merged back after the wipe. A project deleted again is let go of too.
+const CARRY_KEY = 'production:projects';
+export type HeldProjects = Partial<Record<LabKind, ProductionProject[]>>;
+
+/** Pure: the held projects after one written project, or a removal. */
+export function withHeldProject(
+  prev: HeldProjects | undefined,
+  change: { project?: ProductionProject; drop?: { lab: LabKind; id: string } },
+): HeldProjects {
+  const next: HeldProjects = { ...(prev ?? {}) };
+  if (change.project) {
+    const p = change.project;
+    next[p.lab] = [p, ...(next[p.lab] ?? []).filter((x) => x.id !== p.id)];
+  }
+  if (change.drop) {
+    const { lab, id } = change.drop;
+    next[lab] = (next[lab] ?? []).filter((x) => x.id !== id);
+  }
+  return next;
+}
+
+function holdProject(change: Parameters<typeof withHeldProject>[1]): void {
+  holdSessionWork<HeldProjects>(CARRY_KEY, (prev) => withHeldProject(prev, change), { guestOnly: true });
+}
+
+/** Pure: the stored list plus the held rows — by id, the newer `updatedAt`
+ *  wins; a held row the list lacks is added (newest first). */
+export function mergeHeldProjects(stored: ProductionProject[], held: ProductionProject[]): ProductionProject[] {
+  const out = [...stored];
+  for (const h of [...held].reverse()) {
+    const i = out.findIndex((x) => x.id === h.id);
+    if (i < 0) out.unshift(h);
+    else if (h.updatedAt >= out[i].updatedAt) out[i] = h;
+  }
+  return out;
+}
+
 // ── list persistence (patternStore's shape) ──────────────────────────────────
 
 /** Storage itself could not be read (night pass 2, 2026-10-01). Distinct from
@@ -186,6 +231,9 @@ export type ProjectStore = {
   /** Record an accepted blocker. Refuses an unattributed or unexplained one. */
   acceptCondition(lab: LabKind, id: string, c: AcceptedCondition): Promise<ProductionProject | null>;
   clearCondition(lab: LabKind, id: string, ruleId: string): Promise<ProductionProject | null>;
+  /** The sign-in hand-off's writer: a guest session's projects join this
+   *  device's lists after the sign-in wipe. Never over an unreadable list. */
+  carryIn(held: HeldProjects): Promise<boolean>;
 };
 
 export function createProjectStore(kv: KeyValueStore): ProjectStore {
@@ -235,6 +283,7 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
       const next = { ...fn(all[i]), updatedAt: Date.now() };
       all[i] = next;
       const ok = await write(lab, all);
+      if (ok) holdProject({ project: next });
       return ok ? next : null;
     });
   }
@@ -260,7 +309,9 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         const row = { ...p, updatedAt: Date.now() };
         if (i >= 0) all[i] = row;
         else all.unshift(row);
-        return write(p.lab, all);
+        const ok = await write(p.lab, all);
+        if (ok) holdProject({ project: row });
+        return ok;
       });
     },
     rename(lab, id, name) {
@@ -274,7 +325,10 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
     remove(lab, id) {
       return serialize(lab, async () => {
         const all = await list(lab).catch(() => null);
-        return all ? write(lab, all.filter((p) => p.id !== id)) : false;
+        if (!all) return false;
+        const ok = await write(lab, all.filter((p) => p.id !== id));
+        if (ok) holdProject({ drop: { lab, id } });
+        return ok;
       });
     },
     duplicate(lab, id) {
@@ -295,7 +349,9 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         acceptedConditions: src.acceptedConditions.map((c) => ({ ...c })),
       };
       all.unshift(copy);
-      return (await write(lab, all)) ? copy : null;
+      if (!(await write(lab, all))) return null;
+      holdProject({ project: copy });
+      return copy;
       });
     },
     setValue(lab, id, stageId, fieldId, value) {
@@ -327,6 +383,25 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         ...p,
         acceptedConditions: p.acceptedConditions.filter((x) => x.ruleId !== ruleId),
       }));
+    },
+    // Each lab on its own write chain; never over a list that could not be
+    // read (that lab's held rows are refused, the other lab still lands).
+    async carryIn(held) {
+      let ok = true;
+      for (const lab of ['preprod', 'postprod'] as const) {
+        const rows = held[lab] ?? [];
+        if (!rows.length) continue;
+        const landed = await serialize(lab, async () => {
+          const all = await list(lab).catch(() => null);
+          if (!all) return false;
+          return write(lab, mergeHeldProjects(all, rows));
+        });
+        if (!landed) ok = false;
+      }
+      // No screen is saving these (the Room Design / gallery carry rule): a
+      // refused write is told with the shared notice.
+      if (!ok) reportUnhandledSaveFailure();
+      return ok;
     },
   };
 }
@@ -363,6 +438,10 @@ export function projectStore(): ProjectStore {
   }
   return defaultStore;
 }
+
+// The ledger's writer (see CARRY_KEY): registered at module load, like every
+// lab store's.
+registerSessionCarry<HeldProjects>(CARRY_KEY, (held) => projectStore().carryIn(held));
 
 /** Screen hook: the list for one lab, plus a reload. */
 export function useProductionProjects(lab: LabKind) {

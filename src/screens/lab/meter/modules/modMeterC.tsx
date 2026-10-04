@@ -27,6 +27,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { reportUnhandledSaveFailure } from '../../../../features/storage/saveFailureNotice';
 import { registerLocalStoreReset } from '../../../../features/storage/localStoreRegistry';
 import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
+import { holdSessionWork, registerSessionCarry } from '../../../../features/lab/sessionCarry';
 import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
 import { MythReality, dstyles } from '../../digital/bits';
@@ -726,6 +727,34 @@ export function resetLocal(): void {
 // stored ape:detectiveSolved key is taken by the wipe's ape:* sweep either way.
 registerLocalStoreReset(resetLocal);
 
+/* ── the sign-in hand-off (owner ruling 2026-10-01; hunt 13) ────────────────
+   The solved set is written for everyone, but a guest's FIRST sign-in wipes
+   this device's `ape:*` keys: a guest at 27 of 28 who signed in came back to
+   0 of 28 (the Cymatics ticks and gallery were carried; this was not). What a
+   guest solves in this app session is held by the shared ledger (`guestOnly`:
+   an account's own solves need no carrying) and added back after the wipe —
+   a union, never over a set that could not be read. */
+const CARRY_KEY = 'meter:detectiveSolved';
+registerSessionCarry<string[]>(CARRY_KEY, async (held) => {
+  const gen = solvedGen;
+  const stored = await readSolved();
+  if (gen !== solvedGen || !stored) return false;
+  const all = new Set([...stored, ...held]);
+  if (all.size === stored.length) return true;
+  try {
+    await AsyncStorage.setItem(SOLVED_KEY, JSON.stringify([...all]));
+  } catch {
+    // No screen is saving this (the Room Design carry rule): told.
+    if (gen === solvedGen) reportUnhandledSaveFailure();
+    return false;
+  }
+  if (gen === solvedGen && solvedCache) held.forEach((k) => solvedCache!.add(k));
+  return true;
+});
+function holdSolved(key: string): void {
+  holdSessionWork<string[]>(CARRY_KEY, (prev) => (prev?.includes(key) ? prev : [...(prev ?? []), key]), { guestOnly: true });
+}
+
 // Options de-cued (learning pass 2026-08-31): the correct answer was
 // systematically the LONGEST and carried its own definition -- a length cue
 // the shuffle cannot fix. Correct options now match distractor register; the
@@ -1169,6 +1198,7 @@ export function DetectiveModule(p: MeterModuleProps) {
     solvedRef.current.add(`${idx}-${step}`);
     setSolvedN(solvedRef.current.size);
     persistSolved(solvedRef.current);
+    holdSolved(`${idx}-${step}`);
     if (solvedRef.current.size >= n * qCount) markLabUnit('af_signal_detective', PASS_UNIT);
   };
   const goCase = (next: number) => {
