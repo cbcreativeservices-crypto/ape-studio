@@ -73,7 +73,7 @@ See memory `project_next_build_queue`:
 - Ampacity: check against a printed 2023 NEC. The values were verified against 2020 reproductions; "unchanged in 2023" rests on knowledge.
 
 ## 6. Process notes
-- **Hunt process:** `known_issue_catalog` K1–K12 (copied into docs/bughunt/ if needed). Rules: receipts that fail on HEAD; R2 proof; ratchets only shrink.
+- **Hunt process:** docs/bughunt/KNOWN_ISSUE_CATALOG_2026_10_04.md (K1–K12), docs/bughunt/TODDLER_HUNT_RULES_2026_10.md, agent rules docs/bughunt/AGENT_WAVE_RULES_2026_10_04.md, RN research docs/bughunt/RN_RESEARCH_2026_10_04.md. Rules: receipts that fail on HEAD; R2 proof; ratchets only shrink.
 - **Python on this machine defaults to cp1252:** always open files with `encoding='utf-8', newline=''`.
 - **Publish recipe:**
   1. fingerprint check (it must match e8e3455b / 22976b0e);
