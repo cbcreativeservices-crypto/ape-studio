@@ -151,7 +151,7 @@ export function Ch4Whole({ onAnswered, onInteractive, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="one hit of the tom; the green mark is where it has died away." prompt="SET a relationship, ▶ STRIKE, compare — then say which rang longest." />
-              <DrumStatus playing={pb.playing} pending={pb.pending} rendering={pb.status === 'rendering'} idle={`stopped · heard ${heard.size} of 3 relationships · SET one, press ▶ STRIKE`} label="the strike" />
+              <DrumStatus playing={pb.playing} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} idle={`stopped · heard ${heard.size} of 3 relationships · SET one, press ▶ STRIKE`} label="the strike" />
               <Feedback tone="info">{`${relInfo.label}: ${relInfo.tends}`}</Feedback>
               {allHeard ? (
                 <Card tone="accent">

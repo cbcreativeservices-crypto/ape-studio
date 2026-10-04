@@ -15,6 +15,7 @@ import { EarClipPlayer } from '../ear/earPlayer';
 import { isAudioOutputEnabled } from '../audio/audioOutputStore';
 import { ByteLru } from '../audio/clipLru';
 import { startFenced } from '../audio/startFenced';
+import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../modules/ape-dsp';
 import { clipSeconds } from './tuningRender';
 import { clipKeyOf, wavBytes } from './tuningClipCache';
 
@@ -49,6 +50,11 @@ export type PlayerStatus = {
   /** ADDITIVE (2026-09-11): the clip currently being SYNTHESISED, if any.
    *  Optional so the existing `{ playing, label }` literals still typecheck. */
   rendering?: string | null;
+  /** ADDITIVE (K8, hunt 11 2026-10-04): the learner's play could not sound —
+   *  its clip failed to load (a WAV write refused: disk full, cache cleared).
+   *  It used to clear to "stopped" with no word. The shared
+   *  AUDIO_UNAVAILABLE_MESSAGE; cleared by the next play. */
+  error?: string | null;
 };
 
 export class TuningPlayer {
@@ -192,7 +198,12 @@ export class TuningPlayer {
       await this.play(make(), label);
     } catch {
       // A failed clip load (e.g. a file write) must not become an unhandled
-      // rejection: callers fire this with `void`. Nothing sounds; status clears.
+      // rejection: callers fire this with `void`. Nothing sounds — and the
+      // learner is told so (K8), unless STOP or a newer press took over
+      // (play() took exactly one token; anything later moved it on).
+      if (this.token === my + 1) {
+        this.set({ playing: false, label: null, rendering: null, error: AUDIO_UNAVAILABLE_MESSAGE });
+      }
     } finally {
       this.busy = false;
       if (this.status.rendering === label) this.set({ ...this.status, rendering: null });
@@ -249,7 +260,7 @@ export class TuningPlayer {
     this.stopTimer = null;
     this.ear.stop();
     this.voice?.stop();
-    if (this.status.playing || this.status.rendering) this.set({ playing: false, label: null, rendering: null });
+    if (this.status.playing || this.status.rendering || this.status.error) this.set({ playing: false, label: null, rendering: null });
   }
 
   dispose(): void {

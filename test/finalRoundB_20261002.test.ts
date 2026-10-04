@@ -189,7 +189,9 @@ describe('6 · Requests: Block / Report success clears the old banner', () => {
   const src = strip(read('src/screens/directory/RequestsView.tsx'));
   it('BLOCK', () => {
     const m = between(src, 'function ThreadModeration(', 'const OutgoingCard');
-    assert.match(m, /blockThread\(t\.id, true\)\.then\(\(r\) => \{\s*if \(!r\.ok\) return onError\(r\.error\);\s*onError\(null\);\s*return onReload\(\);\s*\}\)/);
+    // Hunt 11 (2026-10-04): a block that went through also tells the host
+    // (onBlocked) so the kept-mounted Explore list drops the member.
+    assert.match(m, /blockThread\(t\.id, true\)\.then\(\(r\) => \{\s*if \(!r\.ok\) return onError\(r\.error\);\s*onBlocked\(t\);\s*onError\(null\);\s*return onReload\(\);\s*\}\)/);
   });
   it('REPORT', () => {
     const m = between(src, 'function ReportLink(', 'await onDone();');

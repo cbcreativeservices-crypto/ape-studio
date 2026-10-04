@@ -186,7 +186,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ QUIETER or ▶ LOUDER" />
+              <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ QUIETER or ▶ LOUDER" />
               <Body>DRIVE pushes the mix into a peak limiter whose ceiling is {CEILING} dBFS. QUIETER is the same limiter with no drive. With MATCH LEVEL on, both are played at the loudness of the quieter one: the louder render is attenuated by the difference between the two loudness estimates, in LU (1 LU = 1 dB), a BS.1770-style K-weighted estimate, so what remains is the dynamics. The gain-reduction strip shows where the limiter worked; TRUE PK shows what a sample-peak ceiling lets through between samples.</Body>
               <Card tone="warn">
                 <Point title="Before you switch MATCH off">{unmatchedWarning(current ? q?.lufs : undefined, current ? l?.lufs : undefined, 'LOUDER')} Unmatched, nothing replays by itself after a DRIVE change — you press ▶ each time.</Point>

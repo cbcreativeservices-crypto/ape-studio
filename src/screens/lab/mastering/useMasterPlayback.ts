@@ -60,6 +60,11 @@ export type MasterMeasured = Measure & {
 
 export type MasterPlayback = {
   status: 'idle' | 'rendering' | 'ready';
+  /** A PRESSED ▶ could not load its versions (the WAV write or the player
+   *  failed — hunt 11, K8): the status line says AUDIO_UNAVAILABLE_MESSAGE
+   *  instead of "stopped", as if nothing had been pressed. Cleared by the
+   *  next ▶ or ■. A quiet pre-render with nothing queued never sets it. */
+  failed: boolean;
   /** A quiet pre-render is under way with nothing queued (perf decisions
    *  2026-10-04): the ▶ surfaces read "Preparing the audio…"; a ▶ pressed now
    *  joins this render and plays when it lands. */
@@ -157,6 +162,7 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
   const [status, setStatus] = useState<MasterPlayback['status']>('idle');
   const [active, setActive] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
   const [measured, setMeasured] = useState<Record<string, MasterMeasured>>({});
   const [heard, setHeard] = useState<string[]>([]);
   const playerRef = useRef<EarClipPlayer | null>(null);
@@ -374,6 +380,10 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
       // the queued play stuck (night pass 2, 2026-10-01). Back to idle: the
       // next ▶ renders afresh.
       if (current()) {
+        // A ▶ that was waiting on this render is told (K8, hunt 11): the
+        // status line used to fall back to "stopped" without a word. A quiet
+        // pre-render with nothing queued stays quiet — the next ▶ retries.
+        if (pendingRef.current != null) setFailed(true);
         idsRef.current = [];
         pendingRef.current = null;
         setPending(null);
@@ -411,6 +421,7 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
 
   const play = useCallback(
     (id: string) => {
+      setFailed(false);
       cancelReplay();
       void (async () => {
         if (!(await requestAudioOutput())) return;
@@ -446,6 +457,7 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
     cancelReplay();
     pendingRef.current = null;
     setPending(null);
+    setFailed(false);
     stop();
   }, [stop, cancelReplay]);
   useStopWhenSilenced(active != null || pending != null, stopAll);
@@ -472,5 +484,5 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
 
   // ■ STOP is stopAll: a STOP pressed while a version is still rendering
   // must cancel that queued play too, not let it start a moment later.
-  return { status, preparing: status === 'rendering' && pending == null, play, stop: stopAll, active, pending, measured, current: measuredKey === variantsKey, heard, progress };
+  return { status, failed, preparing: status === 'rendering' && pending == null, play, stop: stopAll, active, pending, measured, current: measuredKey === variantsKey, heard, progress };
 }

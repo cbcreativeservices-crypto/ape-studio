@@ -152,7 +152,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="the snare side on; the wires hang under the bottom head; the stick's height is the stroke; B and S are the two heads' pitches." prompt="Ride STRAINER and strike softly, then hard." />
-              <DrumStatus playing={sn.playing} pending={sn.pending} rendering={sn.status === 'rendering'} idle="stopped · ride STRAINER or BOTTOM, then ▶ STRIKE; try a soft STROKE" label="the snare" />
+              <DrumStatus playing={sn.playing} pending={sn.pending} failed={sn.failed} rendering={sn.status === 'rendering'} idle="stopped · ride STRAINER or BOTTOM, then ▶ STRIKE; try a soft STROKE" label="the snare" />
               <Card>
                 <Point title="Sensitivity">The wires only rattle while the snare-side head moves them past the strainer's threshold. A tight strainer loses the ghost notes and, wound hard, chokes the whole drum; a loose one buzzes at everything, including the toms.</Point>
                 <Point title="The snare-side head">It is 2–3 mil — a sixteenth of a turn moves it. Even it like any head, tight, commonly well above the batter, and let the snare beds do their job. Move BOTTOM (the snare-side head) and hear the wire response and the body change.</Point>
@@ -203,7 +203,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="the bass drum side on, pedal on the right; the beater swings in when you strike." prompt="Set FRONT and PILLOW, ▶ STRIKE." />
-              <DrumStatus playing={kick.playing} pending={kick.pending} rendering={kick.status === 'rendering'} idle="stopped · set FRONT and PILLOW, then ▶ STRIKE" label="the bass drum" />
+              <DrumStatus playing={kick.playing} pending={kick.pending} failed={kick.failed} rendering={kick.status === 'rendering'} idle="stopped · set FRONT and PILLOW, then ▶ STRIKE" label="the bass drum" />
               <Card>
                 <Point title="Front head and pillow">FRONT decides how much the two heads couple: closed is the longest note, a port lets some of the air out (and a microphone in), no front head is the shortest note — the batter alone. PILLOW shortens the decay and takes the overtones first; SUSTAIN is measured from each render.</Point>
                 <Point title="Beater, low end, pitch">A harder stroke is louder, with more click and a deeper bend. A felt beater gives a thump, plastic or wood a click — this model plays the click. A lower batter gives more low end but a slower, flappier response under fast playing.</Point>
@@ -247,7 +247,7 @@ export function Ch5Types({ onAnswered, onInteractive, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="your hit against the goal; the shaded zone is where the green died-away mark has to land." prompt="Tap GOAL on the bezel to pick one, tune and damp, ▶ STRIKE, then ✓ CHECK." />
-              <DrumStatus playing={g.playing} pending={g.pending} rendering={g.status === 'rendering'} idle="stopped · tap GOAL on the bezel, tune and damp, ▶ STRIKE, then ✓ CHECK" label="the strike" />
+              <DrumStatus playing={g.playing} pending={g.pending} failed={g.failed} rendering={g.status === 'rendering'} idle="stopped · tap GOAL on the bezel, tune and damp, ▶ STRIKE, then ✓ CHECK" label="the strike" />
               <Feedback tone="info">{`${goalInfo.label}. ${goalInfo.start} ${goalInfo.hint}`}</Feedback>
               {verdict ? <Feedback tone={verdict.met ? 'ok' : 'warn'}>{`${verdict.met ? 'Goal met. ' : 'Not yet. '}${verdict.lines.join(' ')}`}</Feedback> : null}
               <Card>

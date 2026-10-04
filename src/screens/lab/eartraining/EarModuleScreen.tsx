@@ -20,6 +20,7 @@ import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnBlur } from '../../../features/audio/useStopOnBlur';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
+import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import { isStereo } from '../../../features/ear/earDsp';
 import { earModuleById } from '../../../features/ear/modules/registry';
 import type { EarTrial } from '../../../features/ear/earTypes';
@@ -146,6 +147,13 @@ export function EarModuleScreen() {
   const answeredRef = useRef(false);
   const playReqRef = useRef(false);
   const playingNowRef = useRef<number | null>(null);
+  /** The trial's clips could NOT be loaded (K8, hunt 11 2026-10-04): a WAV
+   *  write failing (disk full, cache cleared) used to be swallowed, and ▶
+   *  then lit ■ over silence — or over the PREVIOUS trial's player, whose
+   *  file load() had already deleted. Now the learner is told, and ▶ tries
+   *  the load again before it asks for sound. */
+  const loadFailedRef = useRef(false);
+  const [clipError, setClipError] = useState<string | null>(null);
   // Shake-to-mute / idle lock / background silence the clip from outside;
   // put the chip back to ▶ with them (see useStopWhenSilenced).
   useStopWhenSilenced(playing != null, () => {
@@ -271,13 +279,17 @@ export function EarModuleScreen() {
         if (!t) return;
         lastKeyRef.current = trialKey(t);
         setPlays(t.clips.map(() => 0));
+        let loadOk = true;
         try {
           await player()?.load(t.clips.map((c) => c.buf));
         } catch {
-          // A failed load must never wedge the screen — the trial still shows;
-          // the play chips will retry the pipeline on the next trial.
+          // A failed load must never wedge the screen — the trial still shows,
+          // the learner is TOLD (AUDIO_UNAVAILABLE_MESSAGE), and ▶ retries it.
+          loadOk = false;
         }
         if (!aliveRef.current) return;
+        loadFailedRef.current = !loadOk;
+        setClipError(loadOk ? null : AUDIO_UNAVAILABLE_MESSAGE);
         answeredRef.current = false;
         setTrial(t);
         setPhase('answering');
@@ -346,6 +358,24 @@ export function EarModuleScreen() {
       playReqRef.current = true;
       let okOut = false;
       try {
+        // The trial's load failed: try it again BEFORE the gate ask, so a
+        // play still starts synchronously after the gate's answer. A load
+        // never sounds. Still failing → the shared message, and no ■.
+        if (loadFailedRef.current) {
+          if (busyRef.current) return;
+          busyRef.current = true;
+          try {
+            await player()?.load(trial.clips.map((c) => c.buf));
+            loadFailedRef.current = false;
+            if (aliveRef.current) setClipError(null);
+          } catch {
+            if (aliveRef.current) setClipError(AUDIO_UNAVAILABLE_MESSAGE);
+            return;
+          } finally {
+            busyRef.current = false;
+          }
+          if (!aliveRef.current) return;
+        }
         okOut = await requestAudioOutput();
       } finally {
         playReqRef.current = false;
@@ -606,6 +636,11 @@ export function EarModuleScreen() {
                 </Text>
                 <Text style={styles.question}>{trial.question}</Text>
                 {transport}
+                {clipError ? (
+                  <Text style={styles.clipError} accessibilityRole="alert">
+                    {clipError}
+                  </Text>
+                ) : null}
 
                 <View style={styles.answerWrap}>
                   {trial.answers.map((a, i) => {
@@ -753,6 +788,7 @@ const styles = StyleSheet.create({
   clipText: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 17 },
   clipTextActive: { color: colors.green },
   capText: { color: colors.textMuted, fontFamily: fonts.barlowCondensedRegular, fontSize: 10.5, marginTop: 1 },
+  clipError: { color: '#ff6b5e', fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   answerWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   answerChip: {
     minHeight: 44, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline,

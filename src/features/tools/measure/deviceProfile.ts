@@ -223,7 +223,10 @@ export async function setCrowdsourceConsent(on: boolean): Promise<void> {
     // Never thrown from a consent write — but the user's answer not being
     // kept is told (owner 2026-10-03).
     reportRefused();
-    return;
+    // A WITHDRAWAL still empties the queue (hunt 11, 2026-10-04): returning
+    // here left the stored '1' AND every queued contribution, so the next
+    // drain uploaded what the user had just said no to.
+    if (on) return;
   }
   try {
     if (!on) await clearContributionQueue();

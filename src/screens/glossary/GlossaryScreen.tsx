@@ -105,7 +105,7 @@ import {
 import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { softDeadline } from '../../lib/boundedCall';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { isCalcBackedTerm, calcLinkForTerm } from '../lab/calc/calcGlossaryLinks';
@@ -1424,16 +1424,33 @@ export function GlossaryScreen({ route, navigation }: Props) {
     let alive = true;
     void probeGateway().then((g) => alive && setGateway(g));
     void readConsent().then((c) => alive && setConsent(c));
-    void safeSession(supabase.auth.getSession(), 'Glossary')
-      .then(({ data }) => {
+    /**
+     * ⛔ "COULDN'T READ THE SESSION" IS NOT A DIFFERENT READER (hunt 11,
+     * 2026-10-04; K1). A stalled read, or an expired token whose refresh could
+     * not reach the server (AuthRetryableFetchError — the session stays
+     * STORED), read as no session, and `readerUid` went to null. The
+     * reader-change effect took that as a sign-out: it blanked every
+     * definition and detail on screen, forgot the session's fallback charges,
+     * stopped SAVE ALL and dropped reads in flight — and did it all again when
+     * the token refreshed and the same uid came back. Unknown leaves the
+     * reader as it was. (`hasSession` keeps its old answer: the device-key
+     * machine fails open on it, the same as mintDeviceKey's own unknown.)
+     */
+    void safeSessionResult(supabase.auth.getSession(), 'Glossary')
+      .then(({ result: { data }, timedOut }) => {
         if (!alive) return;
         setHasSession(!!data.session);
+        if (timedOut) return;
         setReaderUid(data.session?.user?.id ?? null);
       })
       .catch(() => alive && setHasSession(false));
     // The key can appear (minted here) or vanish (purged after 7 days, or the
     // user signed in) while this screen is mounted.
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      // Every new listener is handed INITIAL_SESSION, and auth-js sends it as
+      // NULL whenever its session read ERRORS (the expired-token-offline case
+      // above) — not a sign-out. The read above answers that question safely.
+      if (event === 'INITIAL_SESSION' && !session) return;
       setHasSession(!!session);
       setReaderUid(session?.user?.id ?? null);
     });

@@ -410,6 +410,13 @@ function hydrate(): Promise<void> {
 /** Drop days beyond retention. Best-effort; an index that cannot be read
  *  writes nothing. */
 async function pruneOldDays(gen: number): Promise<void> {
+  // The prune REWRITES the index from its own earlier read (hunt 11,
+  // 2026-10-04). A flush that added today between that read and this write
+  // had its "today is indexed" remembered, and the prune's write then dropped
+  // today — so the day-index cache skipped every later re-add and the day
+  // never reached the history list (it used to heal on the next flush).
+  // Forget it before AND after, like deleteExposureHistory.
+  indexEpoch++;
   try {
     const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
     if (gen !== generation || !rawIdx) return;
@@ -424,6 +431,8 @@ async function pruneOldDays(gen: number): Promise<void> {
     }
   } catch {
     /* best-effort */
+  } finally {
+    indexEpoch++;
   }
 }
 
@@ -659,7 +668,12 @@ function tick(): void {
     // Advisory: sustained elevated level (≥88 dBA for 5 min), once/session.
     if (lvl >= 88) {
       elevatedSec += dt;
-      if (settings.advisoryWarnings && !advisoryFiredThisSession && elevatedSec >= 300) {
+      // Held in Low-Light like the dose warnings below (hunt 11, 2026-10-04):
+      // ExposureCheckin drops every check-in while overlays are suppressed, so
+      // the once-a-session latch was spent on an advisory nobody saw — a loud
+      // show worked in Low-Light never got it. Still loud when the mode turns
+      // off → it fires then.
+      if (settings.advisoryWarnings && !advisoryFiredThisSession && elevatedSec >= 300 && !areOverlaysSuppressed()) {
         advisoryFiredThisSession = true;
         d.warnings += 1;
         emitCheckin('advisory');

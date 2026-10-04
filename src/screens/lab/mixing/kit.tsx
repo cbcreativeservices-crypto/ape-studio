@@ -25,6 +25,7 @@ import { armFence, startFenced } from '../../../features/audio/startFenced';
 import { isAudioOutputEnabled } from '../../../features/audio/audioOutputStore';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { EarClipPlayer } from '../../../features/ear/earPlayer';
+import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
 import { GearButton, GearFader, GearKnob, ScribbleStrip, StripFrame } from '../kit/gear';
 import type { PageCtx } from '../kit/PagedLab';
@@ -358,6 +359,10 @@ export interface MixPlayback {
   measured: Record<string, { peakDb: number; rmsDb: number }>;
   /** Ids that have been listened to (for listening-goal chips). */
   heard: readonly string[];
+  /** The variant whose requested play could not sound because its clips
+   *  failed to load (K8, hunt 11 2026-10-04) — its row shows the shared
+   *  AUDIO_UNAVAILABLE_MESSAGE. Cleared by the next press or a good render. */
+  failed: string | null;
 }
 
 /** Armed: a settled console edit re-renders and replays after this pause. */
@@ -376,6 +381,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   const [pending, setPending] = useState<string | null>(null);
   const [measured, setMeasured] = useState<Record<string, { peakDb: number; rmsDb: number }>>({});
   const [heard, setHeard] = useState<string[]>([]);
+  const [failed, setFailed] = useState<string | null>(null);
   const playerRef = useRef<EarClipPlayer | null>(null);
   const idsRef = useRef<string[]>([]);
   const pendingRef = useRef<string | null>(null);
@@ -488,6 +494,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     setPending(null);
     setMeasured({});
     setHeard([]);
+    setFailed(null);
     idsRef.current = [];
     pendingRef.current = null;
     // Retire any render still in flight for the OLD set: bumping the generation
@@ -621,6 +628,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       }
       idsRef.current = out.map((o) => o.id);
       setMeasured(Object.fromEntries(out.map((o) => [o.id, { peakDb: o.mix.peakDb, rmsDb: o.mix.rmsDb }])));
+      setFailed(null);
       setStatus('ready');
       const want = pendingRef.current;
       pendingRef.current = null;
@@ -644,7 +652,11 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       // rejection and left the page reading RENDERING with the queued play
       // stuck (night pass 3, 2026-10-01 — the Mastering lab's fix). Back to
       // idle: the next ▶ renders afresh.
+      // …and a play the learner ASKED for is told it could not sound (K8,
+      // hunt 11 2026-10-04) — it used to drop back to ▶ with no word. A
+      // quiet pre-render nobody asked for stays quiet.
       if (current()) {
+        if (pendingRef.current) setFailed(pendingRef.current);
         idsRef.current = [];
         pendingRef.current = null;
         setPending(null);
@@ -665,6 +677,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   const play = useCallback(
     (id: string) => {
       cancelReplay();
+      setFailed(null);
       void (async () => {
         if (!(await requestAudioOutput())) return;
         if (!aliveRef.current || !focusedRef.current) return;
@@ -708,7 +721,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   // blur (owner 2026-09-29; see the focus note above).
   useStopOnClose(stopAll);
 
-  return { status, play, stop, active, pending, measured, heard };
+  return { status, play, stop, active, pending, measured, heard, failed };
 }
 
 /** A/B(/C…) comparison row driven by useMixPlayback. The RENDERING banner
@@ -716,6 +729,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
  *  button itself carries the pending state (design pass 4). */
 export function AbPlayer({ pb, variants, note }: { pb: MixPlayback; variants: readonly MixVariant[]; note?: string }) {
   const pendingHere = pb.pending != null && variants.some((v) => v.id === pb.pending);
+  const failedHere = pb.failed != null && variants.some((v) => v.id === pb.failed);
   return (
     <View style={styles.ab}>
       <Row>
@@ -737,6 +751,11 @@ export function AbPlayer({ pb, variants, note }: { pb: MixPlayback; variants: re
       {pb.status === 'rendering' && pendingHere ? (
         <Text style={styles.rendering} accessibilityLiveRegion="polite">
           RENDERING THE MIX — real DSP, one moment…
+        </Text>
+      ) : null}
+      {failedHere ? (
+        <Text style={styles.unavailable} accessibilityRole="alert">
+          {AUDIO_UNAVAILABLE_MESSAGE}
         </Text>
       ) : null}
       {note ? <Text style={styles.abNote}>{note}</Text> : null}
@@ -955,6 +974,7 @@ const styles = StyleSheet.create({
   ab: { gap: 8 },
   abNote: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   rendering: { color: colors.amber, fontFamily: fonts.mono, fontSize: 11.5 },
+  unavailable: { color: '#ff6b5e', fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   console: { gap: 8, paddingVertical: 4 },
   consoleCue: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1.4, marginBottom: 2 },
   // The stepper-column strip styles left with the stepper column itself —

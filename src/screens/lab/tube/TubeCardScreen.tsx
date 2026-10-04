@@ -365,7 +365,9 @@ export function TubeCardScreen() {
         }
       })
       .catch(() => {
-        if (alive) setFailed(true);
+        if (!alive) return;
+        setFailReason('network'); // never an earlier page's 'auth' / 'missing'
+        setFailed(true);
       });
     return () => {
       alive = false;
@@ -534,7 +536,14 @@ export function TubeCardScreen() {
               contentFit="contain"
               cachePolicy="memory-disk"
               onLoad={() => setLoaded(true)}
-              onError={() => setFailed(true)}
+              // The URL was granted, so this is the download failing — a
+              // connection problem. The reason left over from an EARLIER
+              // page's refusal ('auth' / 'missing') used to show here, telling
+              // a member to sign in (hunt 11, 2026-10-04; K6).
+              onError={() => {
+                setFailReason('network');
+                setFailed(true);
+              }}
               accessibilityLabel={`${tube.short} reference card, page ${page} of ${pageCount} — ${tube.role}`}
             />
           </Animated.View>

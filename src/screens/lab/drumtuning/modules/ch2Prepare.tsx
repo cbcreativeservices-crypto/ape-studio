@@ -312,7 +312,7 @@ export function Ch2Prepare({ onInteractive }: ChapterProps) {
           well: (
             <>
               <Landing looking="the same head brought up two ways; SPREAD is the gap in cents between its highest and lowest lug." prompt="Ride STEP and ▶ STRIKE at each one, then flip to RANDOM and strike again." />
-              <DrumStatus playing={knownStrike.playing} pending={knownStrike.pending} rendering={knownStrike.status === 'rendering'} idle="stopped · ride STEP, press ▶ STRIKE; flip EVEN STEPS / RANDOM" label="the floor tom" />
+              <DrumStatus playing={knownStrike.playing} pending={knownStrike.pending} failed={knownStrike.failed} rendering={knownStrike.status === 'rendering'} idle="stopped · ride STEP, press ▶ STRIKE; flip EVEN STEPS / RANDOM" label="the floor tom" />
               <Card>
                 <Point title="Even steps vs random turns">From finger-tight (SPREAD 0), EVEN STEPS raise the head as one colour and the pitch climbs clean. RANDOM applies the same eight moves as big turns on single rods: the map goes mottled hundreds of cents apart and the strike warbles — and big turns on one rod are also the way hoops go out of round.</Point>
                 <Point title="When a drum is a mess, do not chase it">Back every rod off to finger-tight and come up again in the pattern, an eighth or a quarter of a turn at a time. It is faster than hunting one lug, and it finds hardware faults on the way.</Point>

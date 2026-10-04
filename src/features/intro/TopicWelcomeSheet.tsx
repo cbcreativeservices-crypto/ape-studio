@@ -30,7 +30,7 @@ import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
-import { safeUser } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { Modal } from '../../components/DimModal';
 import { colors, fonts } from '../../theme/tokens';
@@ -45,12 +45,25 @@ function seenKey(uid: string, topicId: string): string {
 
 type Copy = { title: string; body: string };
 
-async function currentUid(): Promise<string> {
+/**
+ * Whose seen-flag to read, or null when the session read did not answer.
+ *
+ * ⛔ AN UNANSWERED READ IS NOT A GUEST (hunt 11, 2026-10-04; catalog K1). This
+ * used `getUser()` — a round trip to the auth server — and answered 'guest'
+ * whenever it stalled (5 s) or failed. A member on a weak connection then
+ * read the GUEST flag, which is never set for them, and was shown a welcome
+ * they had already dismissed (and the dismiss filed it under 'guest'). The
+ * stored session carries the same uid without a round trip; a read that did
+ * not answer (`timedOut`) shows nothing — the welcome is never more than a
+ * nicety, and the next visit asks again.
+ */
+async function currentUid(): Promise<string | null> {
   try {
-    const { data } = await safeUser(supabase.auth.getUser(), 'TopicWelcomeSheet');
-    return data.user?.id ?? 'guest';
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'TopicWelcomeSheet');
+    if (timedOut) return null;
+    return result.data.session?.user?.id ?? 'guest';
   } catch {
-    return 'guest';
+    return null;
   }
 }
 
@@ -89,7 +102,7 @@ export function TopicWelcomeSheet({ topicId, enabled = true }: { topicId: string
     let alive = true;
     void (async () => {
       const uid = await currentUid();
-      if (!alive) return;
+      if (!alive || uid == null) return;
       uidRef.current = uid;
       // Seen check FIRST — the returning-learner path costs one storage read.
       let seen = false;

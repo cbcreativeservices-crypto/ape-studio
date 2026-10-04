@@ -242,6 +242,17 @@ export const P_REF_PA = 2e-5;
 /** The SPL of exactly 1 Pa: 20·log10(1 Pa / 20 µPa) = 93.979 dB SPL. */
 export const SPL_OF_1_PA = 20 * Math.log10(1 / P_REF_PA);
 
+/** Where a space-like separator (space, _, no-break spaces, ') may stand in a
+ *  number: between three-digit groups of the whole part (first group 1–3
+ *  digits, never led by 0 — "0 500" is no grouped number), or between
+ *  three-digit groups of the fraction counted from the point (ISO 80000:
+ *  "0.000 001"). Anything else is refused by parseQuantity. */
+const SPACE_SEP = "[\\s_\\u00a0\\u202f']";
+const SPACE_SEP_ANY = new RegExp(SPACE_SEP);
+const GROUPED_BY_SPACES = new RegExp(
+  `^[+-]?(?:[1-9]\\d{0,2}(?:${SPACE_SEP}\\d{3})+|\\d*)(?:[.,](?:(?:\\d{3}${SPACE_SEP})+\\d{1,3}|\\d*))?(?:[eE][+-]?\\d+)?$`,
+);
+
 /**
  * Parse ONE typed quantity, strictly. Returns null for anything it cannot read
  * with certainty — the caller then shows no result at all.
@@ -267,13 +278,21 @@ export const SPL_OF_1_PA = 20 * Math.log10(1 / P_REF_PA);
  *   "10,5"        → null     decimal comma or a typo'd group? do not guess
  *   "0,500"       → null     a decimal comma (0.5) — never a thousands group
  *   "12abc"       → null     parseFloat said 12
+ *   "10 000"      → 10000    a space / _ / ' that is REAL grouping (three digits)
+ *   "5'10"        → null     5 ft 10 in? 510? do not guess (hunt 11)
  *   ""            → null
  */
 export function parseQuantity(raw: string): number | null {
-  // Spaces, underscores and narrow no-break spaces are all used as grouping
-  // separators by real keyboards and real paste sources; none of them can mean
-  // anything else inside a number, so they are simply removed.
-  const t = raw.replace(/[\s_\u00a0\u202f']/g, '');
+  // Spaces, underscores, narrow no-break spaces and the Swiss apostrophe are all
+  // used as grouping separators by real keyboards and real paste sources — but
+  // only as REAL grouping, three digits a group, exactly as the comma rule below
+  // demands (calc hunt 11, 2026-10-04). Stripped wherever they stood, "5'10"
+  // (five feet ten, as people write a height or a distance) came back as 510,
+  // and "1 5" or "12 34" as 15 and 1234 — a confident wrong number with nothing
+  // on screen to say so. Leading/trailing blanks are only padding.
+  const trimmed = raw.trim();
+  if (SPACE_SEP_ANY.test(trimmed) && !GROUPED_BY_SPACES.test(trimmed)) return null;
+  const t = trimmed.replace(/[\s_\u00a0\u202f']/g, '');
   if (t === '') return null;
 
   const dots = (t.match(/\./g) ?? []).length;

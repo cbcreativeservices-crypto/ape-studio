@@ -113,6 +113,12 @@ export function StudyAreaExplore({
   // catalog (an inactive/unknown slug is skipped, never shown).
   const list = useMemo<CredentialDetail[]>(() => {
     if (!area || !catalog) return [];
+    // A HALF-DEAD catalog is not a short list (hunt 11, 2026-10-04): with one
+    // half's read failed (lenient []), the picker listed only the other half's
+    // credentials as if that were the whole area — or, with a lone survivor,
+    // opened it straight away. Nothing resolvable → the fallback, which has
+    // its own loading / unreadable / retry faces.
+    if (isDeadCatalog(catalog)) return [];
     const bySlug = new Map<string, CredentialDetail>();
     for (const c of catalog.certs) bySlug.set(c.slug, { kind: 'certificate', id: c.id, slug: c.slug, name: c.name, topics: c.topicsGs, electives: [] });
     for (const p of catalog.programs) bySlug.set(p.slug, { kind: 'program', id: p.id, slug: p.slug, name: p.name, topics: p.topicsGs, electives: p.electivesGs ?? [] });

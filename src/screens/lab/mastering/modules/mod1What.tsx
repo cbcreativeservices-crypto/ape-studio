@@ -123,7 +123,7 @@ export function Mod1What({ onAnswered }: ModuleProps) {
           },
           well: (
             <>
-              <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ MIX or ▶ LOUDER" />
+              <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ MIX or ▶ LOUDER" />
               <Body>
                 Play THE MIX, then LOUDER: the same mix driven 8 dB into a peak limiter with its ceiling at {CEILING} dBFS. With MATCH LEVEL on, both play at the loudness of the quieter one — the louder version is turned DOWN by the difference between the two loudness estimates, in LU (1 LU = 1 dB), attenuation only, so nothing clips.
               </Body>

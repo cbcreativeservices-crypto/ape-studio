@@ -200,6 +200,13 @@ export function readableError(message: string | undefined): string {
   // fail the same way.
   if (m.includes('contact_requests_one_pending'))
     return 'You already sent this member a request. Wait for their answer under Requests.';
+  // The REVERSE pending request (server security fix, live 2026-10-04):
+  // contact_request_send now refuses when THEY already asked YOU — "this member
+  // has already sent you a request — answer it in your inbox". It matched
+  // nothing here and read "Something went wrong on our side… try again", and
+  // trying again can only fail the same way. The app's inbox is Requests.
+  if (m.includes('already sent you a request'))
+    return 'This member has already sent you a request. Answer it under Requests.';
   if (m.includes('primary area')) return 'Choose one primary area before publishing.';
   if (m.includes('display name')) return 'Add a public display name before publishing.';
   if (m.includes('how i am involved')) return 'Choose at least one “How I’m Involved” option.';
@@ -260,8 +267,11 @@ export function readableError(message: string | undefined): string {
   // raw Postgres exception text — lowercase, no full stop, no next step
   // ("your account is restricted", "sign in first"). Name the reachable ones
   // and never pass the server string through.
+  // Not only a SEND (hunt 11, 2026-10-04): the live security fixes raise this
+  // from publish, Show in search, Open to contact and accept/decline too, and
+  // "you cannot send this" was untrue under a switch or a DECLINE button.
   if (m.includes('your account is restricted'))
-    return 'Your community access is restricted, so you cannot send this. See the notice on your Profile for the reason.';
+    return 'Your community access is restricted, so this can’t be done. See the notice on your Profile for the reason.';
   if (m.includes('this conversation is closed'))
     return 'This conversation is closed. Nothing you have already sent was removed.';
   if (m.includes('this conversation is not open'))

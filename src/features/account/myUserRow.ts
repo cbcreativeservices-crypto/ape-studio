@@ -81,9 +81,20 @@ export async function myUserRow<T = Record<string, unknown>>(columns: string): P
  * used the forgiving read and turned a network blip into "Academy Member".
  */
 export async function myUserRowOrThrow<T = Record<string, unknown>>(columns: string): Promise<T | null> {
-  const { data: s } = await withDeadline(() => supabase.auth.getSession(), 'users row session', SESSION_TIMEOUT_MS);
-  const uid = s.session?.user?.id ?? null;
-  if (!uid) return null;
+  const got = await withDeadline(() => supabase.auth.getSession(), 'users row session', SESSION_TIMEOUT_MS);
+  const uid = got.data.session?.user?.id ?? null;
+  if (!uid) {
+    // ⛔ AN EXPIRED TOKEN ON A DEAD CONNECTION IS NOT "NO SESSION" (hunt 11,
+    // 2026-10-04 — the hunt-7 case this strict read missed). auth-js answers
+    // it FAST as `{ session: null, error: AuthRetryableFetchError }` with the
+    // session still stored; read as null it was the guest answer this
+    // function exists to refuse: Trophy Case "0 / 166", "earned nothing"
+    // (and a celebration baseline of nothing), "Academy Member" on a printed
+    // certificate. Unknown THROWS, like the stall above.
+    const err = (got as { error?: { name?: unknown } | null }).error;
+    if (err && err.name === 'AuthRetryableFetchError') throw new Error('users row session unreadable');
+    return null;
+  }
   const { data, error } = await withDeadline(
     async () => await supabase.from('users').select(columns).eq('auth_id', uid).maybeSingle(),
     'users row read',

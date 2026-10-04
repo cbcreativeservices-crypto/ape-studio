@@ -44,10 +44,13 @@ export function useAcademyStats(): AcademyStats {
   const [stats, setStats] = useState<AcademyStats>(EMPTY);
   useEffect(() => {
     let alive = true;
+    // Newest answer wins (hunt 11, 2026-10-04): a slow storage read that lands
+    // AFTER the server row must not paint the older cached figures over it.
+    let freshLanded = false;
     // 1) Instant paint from cache.
     void AsyncStorage.getItem(CACHE_KEY)
       .then((raw) => {
-        if (!alive || !raw) return;
+        if (!alive || !raw || freshLanded) return;
         try {
           const cached = coerce(JSON.parse(raw));
           if (cached) setStats(cached);
@@ -68,6 +71,7 @@ export function useAcademyStats(): AcademyStats {
         const row = Array.isArray(data) ? data[0] : data;
         const fresh = coerce(row as Record<string, unknown>);
         if (fresh) {
+          freshLanded = true;
           setStats(fresh);
           // Silent on purpose: an instant-paint cache of a server row, refetched every open.
           void AsyncStorage.setItem(CACHE_KEY, JSON.stringify(fresh)).catch(() => {});

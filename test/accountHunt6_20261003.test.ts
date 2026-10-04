@@ -140,7 +140,8 @@ test('Settings screen: every row save passes the shown copy until its load lands
   assert.equal((s.match(/saveLocalSettings\(next, unreadShown\(\)\)/g) ?? []).length, 3);
   assert.match(s, /localLoaded\.current \? undefined : DEFAULT_LOCAL_SETTINGS/);
   assert.match(s, /const showStored = \(s: LocalSettings\) => \{\s*setLocal\(s\);\s*localLoaded\.current = true;/);
-  assert.match(s, /const loaded = await loadLocalSettings\(\);\s*showStored\(loaded\);/);
+  // Hunt 11: only a load no tap overtook marks the screen loaded.
+  assert.match(s, /const loaded = await loadLocalSettings\(\);[\s\S]{0,200}?if \(savesMade\.current === savesBefore\) showStored\(loaded\);/);
 });
 
 const schedule = await import('../src/features/notifications/localSchedule.ts');

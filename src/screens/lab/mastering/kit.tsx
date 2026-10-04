@@ -13,6 +13,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState, type R
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColorForDb } from '../../../features/tools/levelColor';
+import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import type { BezelItem } from '../rack/rackTypes';
 import type { Scenario } from './masteringContent';
 
@@ -333,7 +334,7 @@ export function Checklist({ items, chosen, onToggle, reveal }: { items: readonly
 /** The LISTEN page's STATUS LINE (cognitive review 2026-10-01, finding 11):
  *  the dock keys are the only transport; the well reports what is sounding,
  *  at what gain, and whether it is matched. One sentence, live. */
-export function PlaybackStatus({ versions, active, pending, rendering, matched, matchDb, labels, loud = 'LOUDER' }: {
+export function PlaybackStatus({ versions, active, pending, rendering, matched, matchDb, failed = false, labels, loud = 'LOUDER' }: {
   versions: readonly { id: string; label: string }[];
   active: string | null;
   pending: string | null;
@@ -346,7 +347,18 @@ export function PlaybackStatus({ versions, active, pending, rendering, matched, 
   /** The version that plays louder unmatched (Module 5 has no LOUDER: it
    *  is WITH EQ — the stopped line used to name a version not on the page). */
   loud?: string;
+  /** A pressed ▶ could not load (useMasterPlayback `failed`, K8 hunt 11). */
+  failed?: boolean;
 }) {
+  // The shared words for a sound that could not start — never the plain
+  // "stopped" line, as if nothing had been pressed (K8, hunt 11).
+  if (failed && !rendering && !active) {
+    return (
+      <Text style={[styles.status, { color: colors.gold }]} accessibilityLiveRegion="polite">
+        {AUDIO_UNAVAILABLE_MESSAGE}
+      </Text>
+    );
+  }
   const name = (id: string | null) => versions.find((v) => v.id === id)?.label ?? '';
   let text: string;
   // A quiet pre-render (nothing queued) is named honestly: the learner did

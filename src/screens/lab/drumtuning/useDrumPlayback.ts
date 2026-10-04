@@ -54,6 +54,11 @@ export type DrumPlayback = {
   stop: () => void;
   playing: boolean;
   pending: boolean;
+  /** A PRESSED ▶ could not load its clip (the WAV write or the player
+   *  failed — hunt 11, K8): the status line says AUDIO_UNAVAILABLE_MESSAGE
+   *  instead of going back to "stopped" as if nothing had been pressed.
+   *  Cleared by the next ▶ or ■. A quiet preload never sets it. */
+  failed: boolean;
   rendered: DrumRendered | null;
   /** 0..1 position of the sounding clip, per frame (a SharedValue — never
    *  React state), for the playhead and the vibration view. */
@@ -75,6 +80,7 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
   const [status, setStatus] = useState<DrumPlayback['status']>('idle');
   const [playing, setPlaying] = useState(false);
   const [pending, setPending] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [rendered, setRendered] = useState<DrumRendered | null>(null);
   const playerRef = useRef<EarClipPlayer | null>(null);
   /** The key the player's loaded clip was rendered from. */
@@ -216,7 +222,13 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
     try {
       await player.load([toStereo(r.result.mono)]);
     } catch {
-      if (aliveRef.current && my === seqRef.current) setStatus('idle');
+      if (aliveRef.current && my === seqRef.current) {
+        setStatus('idle');
+        // A press that cannot load is SAID (K8, hunt 11): it used to drop
+        // back to "stopped" without a word. A quiet preload stays quiet —
+        // the press that follows retries and reports for itself.
+        if (!quiet) setFailed(true);
+      }
       return false;
     }
     if (!aliveRef.current || my !== seqRef.current) return false;
@@ -253,6 +265,7 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
   const play = useCallback((): Promise<boolean> => {
     const t = ++playTokRef.current;
     const current = () => aliveRef.current && t === playTokRef.current;
+    setFailed(false);
     // Resolves TRUE only when the clip actually started (toddler pass 3): a
     // page that counts a press as evidence ("lug tapped") counts it on this,
     // never on the press — a gate refused, a ■, a fader moved mid-render or a
@@ -300,6 +313,7 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
     playerRef.current?.stop();
     setPending(false);
     setPlaying(false);
+    setFailed(false);
     if (loadedKeyRef.current === keyRef.current && playerRef.current) setStatus('ready');
     else setStatus('idle');
   }, []);
@@ -329,5 +343,5 @@ export function useDrumPlayback(key: string, make: () => RenderResult, draw = tr
   const hiddenRef = useRef(hidden);
   hiddenRef.current = hidden;
 
-  return useMemo(() => ({ status, measure: renderNow, play, stop, playing, pending, rendered, progress }), [status, renderNow, play, stop, playing, pending, rendered, progress]);
+  return useMemo(() => ({ status, measure: renderNow, play, stop, playing, pending, failed, rendered, progress }), [status, renderNow, play, stop, playing, pending, failed, rendered, progress]);
 }

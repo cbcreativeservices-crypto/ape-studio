@@ -140,7 +140,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="the notes one head makes, lowest on the left; the tall bar is the pitch you hear." prompt="Ride TENSION, then ▶ STRIKE." />
-              <DrumStatus playing={tensionStrike.playing} pending={tensionStrike.pending} rendering={tensionStrike.status === 'rendering'} idle="stopped · ride TENSION, then press ▶ STRIKE" label="the strike" />
+              <DrumStatus playing={tensionStrike.playing} pending={tensionStrike.pending} failed={tensionStrike.failed} rendering={tensionStrike.status === 'rendering'} idle="stopped · ride TENSION, then press ▶ STRIKE" label="the strike" />
               <Card>
                 <Point title="Tension sets pitch">Pitch rises with the square root of tension: four times the tension is one octave up. A bigger or heavier head sits lower at the same tension.</Point>
                 <Point title="Not a harmonic series">The overtones sit at odd ratios (about 1 : 1.6 : 2.1 : 2.3), so a bare drumhead has no single clean pitch — tuning to an exact note is OPTIONAL. The aim is a useful resonant sound; NOTE only names it for reference.</Point>
@@ -199,7 +199,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="one hit, left to right in real time; the white line is how loud it is." prompt="▶ STRIKE, then change STRIKE and DAMPING and strike again." />
-              <DrumStatus playing={qual.playing} pending={qual.pending} rendering={qual.status === 'rendering'} idle="stopped · press ▶ STRIKE; ride STRIKE and DAMPING and press again" label="the strike" />
+              <DrumStatus playing={qual.playing} pending={qual.pending} failed={qual.failed} rendering={qual.status === 'rendering'} idle="stopped · press ▶ STRIKE; ride STRIKE and DAMPING and press again" label="the strike" />
               <Card>
                 <Point title="The four things a tuner listens for">PITCH is the note you hear first. OVERTONES are the notes above it (the share of the hit above three times the pitch). SUSTAIN is how long the note lasts — the time it takes to fall 60 dB, which the lab calls T60. BEND is how sharp the note starts before it glides down.</Point>
                 <Point title="What the controls do">A harder STRIKE is louder and stretches the head more, so it starts sharper and bends deeper. DAMPING shortens the note and takes the overtones first.</Point>
@@ -244,7 +244,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
           well: (
             <>
               <Landing looking="the drum from above; the coloured wedges are each rod's pitch (blue low, yellow even, red high)." prompt="Pick a ROD, ride TURN, ▶ TAP it, then ▶ STRIKE the drum." />
-              <DrumStatus playing={rod.playing || tap.playing} pending={rod.pending || tap.pending} rendering={rod.status === 'rendering' || tap.status === 'rendering'} idle="stopped · pick a ROD, ride TURN, then ▶ TAP that lug or ▶ STRIKE the drum" label={tap.playing || tap.pending ? `the tap at rod ${lug + 1}` : 'the strike'} />
+              <DrumStatus playing={rod.playing || tap.playing} pending={rod.pending || tap.pending} failed={rod.failed || tap.failed} rendering={rod.status === 'rendering' || tap.status === 'rendering'} idle="stopped · pick a ROD, ride TURN, then ▶ TAP that lug or ▶ STRIKE the drum" label={tap.playing || tap.pending ? `the tap at rod ${lug + 1}` : 'the strike'} />
               {turned === 0 ? <Feedback tone="info">Pick a ROD and ride TURN — watch the wedge and SPREAD change.</Feedback> : <Feedback tone={even.verdict === 'even' ? 'ok' : even.verdict === 'close' ? 'info' : 'warn'}>{even.message}</Feedback>}
               <Card>
                 <Point title="What one rod does">The tension near that rod changes, so its tap pitch moves. But the head's BALANCE changes too: an uneven head makes two slightly different notes at once, and you hear them beat as a slow warble. BEAT is their difference; SPREAD is the gap in cents (hundredths of a semitone) between the highest and lowest rod.</Point>

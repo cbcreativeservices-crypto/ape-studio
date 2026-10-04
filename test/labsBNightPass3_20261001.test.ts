@@ -22,7 +22,7 @@ test('mixing playback: the armed replay survives a fader drag (replayIdRef)', ()
 test('mixing playback: a failed render returns to idle instead of sticking on RENDERING', () => {
   const s = read('src/screens/lab/mixing/kit.tsx');
   const body = s.slice(s.indexOf('const renderAll = useCallback'), s.indexOf('const renderAllRef = useRef(renderAll)'));
-  assert.match(body, /\} catch \{[\s\S]*?if \(current\(\)\) \{\s*idsRef\.current = \[\];\s*pendingRef\.current = null;\s*setPending\(null\);\s*setStatus\('idle'\);/);
+  assert.match(body, /\} catch \{[\s\S]*?if \(current\(\)\) \{\s*(?:if \(pendingRef\.current\) setFailed\(pendingRef\.current\);\s*)?idsRef\.current = \[\];\s*pendingRef\.current = null;\s*setPending\(null\);\s*setStatus\('idle'\);/);
 });
 
 test('room design: a signed-in PREVIEW is never told "you are not signed in"', () => {

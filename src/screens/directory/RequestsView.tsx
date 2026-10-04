@@ -74,6 +74,7 @@ const IncomingCard = memo(function IncomingCard({
   onOpen,
   onReload,
   onError,
+  onBlocked,
   acting,
 }: {
   t: ContactThread;
@@ -82,6 +83,8 @@ const IncomingCard = memo(function IncomingCard({
   onReload: () => Promise<void>;
   /** null clears the banner (a Block / Report that went through). */
   onError: (e: string | null) => void;
+  /** The server blocked this thread's member — see RequestsView `onBlocked`. */
+  onBlocked: (t: ContactThread) => void;
   /** An accept/decline/withdraw is in flight — see `act`. */
   acting: boolean;
 }) {
@@ -101,7 +104,7 @@ const IncomingCard = memo(function IncomingCard({
       {t.status === 'accepted' ? (
         <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
       ) : null}
-      <ThreadModeration t={t} onReload={onReload} onError={onError} />
+      <ThreadModeration t={t} onReload={onReload} onError={onError} onBlocked={onBlocked} />
     </View>
   );
 });
@@ -117,11 +120,13 @@ function ThreadModeration({
   t,
   onReload,
   onError,
+  onBlocked,
 }: {
   t: ContactThread;
   onReload: () => Promise<void>;
   /** null clears the banner (a Block / Report that went through). */
   onError: (e: string | null) => void;
+  onBlocked: (t: ContactThread) => void;
 }) {
   return (
     <View style={st.row}>
@@ -144,6 +149,7 @@ function ThreadModeration({
             () =>
               void blockThread(t.id, true).then((r) => {
                 if (!r.ok) return onError(r.error);
+                onBlocked(t);
                 onError(null);
                 return onReload();
               }),
@@ -156,7 +162,7 @@ function ThreadModeration({
       >
         <Text style={st.linkText}>BLOCK</Text>
       </Pressable>
-      <ReportLink thread={t} onDone={onReload} onError={onError} />
+      <ReportLink thread={t} onDone={onReload} onError={onError} onBlocked={onBlocked} />
     </View>
   );
 }
@@ -168,6 +174,7 @@ const OutgoingCard = memo(function OutgoingCard({
   onOpen,
   onReload,
   onError,
+  onBlocked,
   acting,
 }: {
   t: ContactThread;
@@ -176,6 +183,7 @@ const OutgoingCard = memo(function OutgoingCard({
   onReload: () => Promise<void>;
   /** null clears the banner (a Block / Report that went through). */
   onError: (e: string | null) => void;
+  onBlocked: (t: ContactThread) => void;
   acting: boolean;
 }) {
   return (
@@ -191,14 +199,30 @@ const OutgoingCard = memo(function OutgoingCard({
         <>
           <PrimaryButton label={`OPEN CONVERSATION (${t.messageCount})`} onPress={() => onOpen(t)} />
           {/* Accepted = they can now write back — see ThreadModeration. */}
-          <ThreadModeration t={t} onReload={onReload} onError={onError} />
+          <ThreadModeration t={t} onReload={onReload} onError={onError} onBlocked={onBlocked} />
         </>
       ) : null}
     </View>
   );
 });
 
-export function RequestsView() {
+export function RequestsView({
+  onBlocked,
+}: {
+  /**
+   * A member was blocked from here (hunt 11, 2026-10-04). Explore stays
+   * MOUNTED across tab switches now and keeps its list up while it refreshes,
+   * so a member blocked in Requests stayed listed — and openable — in Explore
+   * until that search answered. The host hides the token at once, as it does
+   * for a block from the member sheet.
+   */
+  onBlocked?: (token: string) => void;
+} = {}) {
+  const onBlockedRef = useRef(onBlocked);
+  onBlockedRef.current = onBlocked;
+  const noteBlocked = useCallback((t: ContactThread) => {
+    if (t.otherToken) onBlockedRef.current?.(t.otherToken);
+  }, []);
   const [threads, setThreads] = useState<ContactThread[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   // [75] (2026-09-07): a FAILED load used to land on "No contact requests yet",
@@ -275,6 +299,7 @@ export function RequestsView() {
             onOpen={openThread}
             onReload={load}
             onError={setErr}
+            onBlocked={noteBlocked}
             acting={acting}
           />
         );
@@ -286,11 +311,12 @@ export function RequestsView() {
           onOpen={openThread}
           onReload={load}
           onError={setErr}
+          onBlocked={noteBlocked}
           acting={acting}
         />
       );
     },
-    [act, openThread, load, acting],
+    [act, openThread, load, acting, noteBlocked],
   );
 
   // Never loaded and the fetch failed → say so and offer a retry (not "none").
@@ -402,11 +428,13 @@ function ReportLink({
   thread,
   onDone,
   onError,
+  onBlocked,
 }: {
   thread: ContactThread;
   onDone: () => Promise<void>;
   /** null clears the banner (a Block / Report that went through). */
   onError: (e: string | null) => void;
+  onBlocked: (t: ContactThread) => void;
 }) {
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
@@ -496,6 +524,7 @@ function ReportLink({
                     const b2 = await blockThread(thread.id, true);
                     if (!b2.ok) onError(b2.error);
                     blocked = b2.ok;
+                    if (blocked) onBlocked(thread);
                   }
                   // Acknowledge it. A report that vanishes silently reads as
                   // one that was not received, and the person is left

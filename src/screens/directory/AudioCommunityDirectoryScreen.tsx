@@ -56,6 +56,13 @@ export function AudioCommunityDirectoryScreen() {
   // "neither party sees the other", so a blocked member must leave the Explore
   // results immediately, not at the next search.
   const [blockedTokens, setBlockedTokens] = useState<string[]>([]);
+  // From the member sheet AND from Requests (hunt 11, 2026-10-04): Explore is
+  // kept mounted with its last list up while it refreshes, so a block made in
+  // Requests must reach it too — see RequestsView `onBlocked`.
+  const markBlocked = useCallback(
+    (t: string) => setBlockedTokens((prev) => (prev.includes(t) ? prev : [...prev, t])),
+    [],
+  );
 
   return (
     <View style={[st.root, { paddingTop: insets.top }]}>
@@ -104,13 +111,13 @@ export function AudioCommunityDirectoryScreen() {
         <ExploreView onOpenMember={openMember} hiddenTokens={blockedTokens} active={tab === 'explore'} />
       </View>
       {tab === 'profile' ? <MyProfileView /> : null}
-      {tab === 'requests' ? <RequestsView /> : null}
+      {tab === 'requests' ? <RequestsView onBlocked={markBlocked} /> : null}
 
       <MemberSheet
         token={memberToken}
         seedName={memberSeedName}
         onClose={() => setMemberToken(null)}
-        onBlocked={(t) => setBlockedTokens((prev) => (prev.includes(t) ? prev : [...prev, t]))}
+        onBlocked={markBlocked}
       />
     </View>
   );

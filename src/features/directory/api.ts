@@ -496,6 +496,16 @@ export function takePrefetchedPublicProfile(token: string): Promise<PublicProfil
   return hit.p;
 }
 
+/** Account wipe (hunt 11, 2026-10-04): the prefetch is keyed by the MEMBER's
+ *  token only, but the answer depends on WHO asked — the block model hides
+ *  blocked members from each other server-side. A press-in that became a
+ *  scroll left an untaken read for up to 15 s, and a sign-out + sign-in in
+ *  that window handed the departing account's read to the next one. */
+export function resetProfilePrefetch(): void {
+  profilePrefetch.clear();
+}
+registerLocalStoreReset(resetProfilePrefetch);
+
 /* ── Contact ──────────────────────────────────────────────────────────── */
 
 export type ContactThread = {

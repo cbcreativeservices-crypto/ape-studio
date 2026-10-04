@@ -11,6 +11,7 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
+import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import { Body, Card, KeyButton } from '../mastering/kit';
 import type { DrumScenario } from './drumContent';
 
@@ -130,7 +131,16 @@ export function DrumScenarioDeck({ scenarios, onAnswered, keepOrder, intro }: {
 
 /** The HEAR page's STATUS LINE: the dock keys are the only transport; the
  *  well reports what is happening. One sentence, live. */
-export function DrumStatus({ playing, pending, rendering, idle, label }: { playing: boolean; pending: boolean; rendering: boolean; idle: string; label: string }) {
+export function DrumStatus({ playing, pending, rendering, idle, label, failed = false }: { playing: boolean; pending: boolean; rendering: boolean; idle: string; label: string; failed?: boolean }) {
+  // A pressed ▶ that could not load its clip says so in the shared words
+  // (K8, hunt 11) — never the plain "stopped" line, as if nothing happened.
+  if (failed && !rendering && !pending && !playing) {
+    return (
+      <Text style={[styles.status, { color: colors.gold }]} accessibilityLiveRegion="polite">
+        {AUDIO_UNAVAILABLE_MESSAGE}
+      </Text>
+    );
+  }
   const text = rendering || pending ? `making the sound… one moment` : playing ? `sounding ${label} · tap the display to stop` : idle;
   return (
     <Text style={styles.status} accessibilityLiveRegion="polite">

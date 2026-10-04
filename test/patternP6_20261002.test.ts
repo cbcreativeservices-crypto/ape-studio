@@ -253,7 +253,7 @@ describe('Settings: a save that recovered from a failed read shows what was writ
   });
   it('the screen refreshes its local state from it (all three setters)', () => {
     const s = read('screens/settings/SettingsScreen.tsx');
-    assert.equal((s.match(/void saveLocalSettings\(next, unreadShown\(\)\)\.then\(\(written\) => \{\s*if \(written\) setLocal\(written\);/g) ?? []).length, 3);
+    assert.equal((s.match(/void saveLocalSettings\(next, unreadShown\(\)\)\.then\(\(written\) => \{\s*if \(written\) showStored\(written\);/g) ?? []).length, 3); // hunt 11: a recovered copy also marks the screen loaded
   });
 });
 

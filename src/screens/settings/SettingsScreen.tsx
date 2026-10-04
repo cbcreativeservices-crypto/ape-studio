@@ -99,6 +99,12 @@ export function SettingsScreen({ navigation }: Props) {
     setLocal(s);
     localLoaded.current = true;
   };
+  /** Saves made from this screen (hunt 11, 2026-10-04). A load that a save
+   *  OVERTOOK answers that save's copy (store.ts: `lastWritten`), which is
+   *  still defaults + the tap until the save's own read has recovered — it is
+   *  not the stored record, so it must not mark the screen loaded: the next
+   *  tap would then write that stand-in WHOLE over every other setting. */
+  const savesMade = useRef(0);
   // The glossary's background save. Read once; the switch writes through.
   const [autoOffline, setAutoOfflineState] = useState(true);
   useEffect(() => {
@@ -186,8 +192,11 @@ export function SettingsScreen({ navigation }: Props) {
     const prefsP = fetchNotificationPrefs();
     prefsP.catch(() => {});
     try {
+      const savesBefore = savesMade.current;
       const loaded = await loadLocalSettings();
-      showStored(loaded);
+      // Overtaken by a tap (see `savesMade`): the screen already shows that
+      // tap, and its save answers the recovered record below.
+      if (savesMade.current === savesBefore) showStored(loaded);
       const p = await prefsP;
       setPrefs(p);
       if (p) void setPhoneNotificationsEnabled(p.push_enabled, loaded);
@@ -219,8 +228,10 @@ export function SettingsScreen({ navigation }: Props) {
       // read lays only this change over the stored record and answers that
       // copy: show it, so the untouched rows stop showing defaults (pattern
       // hunt wave 3, 2026-10-02).
+      savesMade.current += 1;
+      // The recovered copy IS the stored record: the screen is loaded now.
       void saveLocalSettings(next, unreadShown()).then((written) => {
-        if (written) setLocal(written);
+        if (written) showStored(written);
       });
       return next;
     });
@@ -230,8 +241,9 @@ export function SettingsScreen({ navigation }: Props) {
   const setFreq = useCallback((key: string, value: string) => {
     setLocal((prev) => {
       const next = { ...prev, notifyFreq: { ...prev.notifyFreq, [key]: value } };
+      savesMade.current += 1;
       void saveLocalSettings(next, unreadShown()).then((written) => {
-        if (written) setLocal(written); // a recovered read: show what was written
+        if (written) showStored(written); // a recovered read: show what was written
       });
       return next;
     });
@@ -240,8 +252,9 @@ export function SettingsScreen({ navigation }: Props) {
   const setTime = useCallback((key: string, value: string) => {
     setLocal((prev) => {
       const next = { ...prev, notifyTime: { ...prev.notifyTime, [key]: value } };
+      savesMade.current += 1;
       void saveLocalSettings(next, unreadShown()).then((written) => {
-        if (written) setLocal(written); // a recovered read: show what was written
+        if (written) showStored(written); // a recovered read: show what was written
       });
       return next;
     });

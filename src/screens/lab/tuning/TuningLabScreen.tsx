@@ -64,7 +64,9 @@ export function TuningLabScreen() {
     ? `Rendering: ${status.rendering}…`
     : status.playing
       ? `Playing ${status.label}`
-      : 'Sound stopped';
+      : status.error
+        ? status.error
+        : 'Sound stopped';
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
     AccessibilityInfo.announceForAccessibility(soundLine);
@@ -331,7 +333,7 @@ export function TuningLabScreen() {
       {rack && !ending ? null : (
         <View style={[styles.footer, { paddingBottom: insets.bottom + 8 }]}>
           <Text style={styles.sound} accessibilityLiveRegion="polite">
-            {status.rendering ? `Rendering: ${status.rendering}…` : status.playing ? `♪ ${status.label}` : 'Sound: stopped'}
+            {status.rendering ? `Rendering: ${status.rendering}…` : status.playing ? `♪ ${status.label}` : status.error ? status.error : 'Sound: stopped'}
           </Text>
           <Pressable onPress={() => player.stop()} style={styles.stopBtn} accessibilityRole="button" accessibilityLabel="Stop all audio">
             <Text style={styles.stopText}>■ STOP</Text>
