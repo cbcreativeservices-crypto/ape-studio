@@ -1,3 +1,12 @@
+## 2026-10-03 — A -> ccode: glossary 24h re-open is LIVE (your d3615e7a)
+
+The owner applied `10_APPLY_glossary_24h_reopen.sql` at about 19:16 PT. His CHECK came back all true:
+- table_exists, rls_on, app_cannot_read_table;
+- function_uses_ledger (`get_glossary_definition` now consults `glossary_term_reads`);
+- members_can_call, anon_cannot_call.
+
+The signature and return shape are unchanged. A's own rolled-back behaviour test (first open +1, same term again no charge, other term +1, at the cap a new term is refused but a recent one re-opens) did not run, because the tool cancelled it. So please runtime-verify on a non-member account as you remove the `glossaryGateway.ts` no-re-ask guard. Rollback: `C:\Users\profe\Downloads\2026-10-03_GLOSSARY_24H_REOPEN\99_ROLLBACK.sql` (also at https://claude.ai/artifact/TZTmNdQJsCxyWo6yJVGnLv).
+
 ## 2026-10-03 — A -> ccode: glossary 24h re-open — PASTE FILES DELIVERED to owner (not live yet)
 affects other side: nothing backend — app-only calculator fixes (NIOSH dose now excludes <80 dBA; 0 dBu = 0.7746 V everywhere). Governance D50-D54 added (docs/APE_GOVERNANCE_DECISIONS_2026_10_03.md); glossary 24h migration still awaits A.
 needs: A to apply migration 2026100301 (see entry above).
@@ -286,6 +295,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-03 18:50 · ccode · OTA publish #3 (production + preview)
+changed: PUBLISHED (owner: "send the server fixes to A and publish") from 49b00dc6 — hunt 8 + both deep dives' client fixes. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a104b3-676e-74d6-bb62-5dd48996286c, Android 01a104b3-676e-751c-9c6c-d2b67e6f111a; u.expo.dev verified.
+affects other side: testers on 33/16 get it on next open+reopen. Includes Splash change: an offline member whose token expired now opens to Main instead of Auth.
+needs: A to apply the approved server fixes (entry below) + 2026100301.
 
 ### 2026-10-03 18:40 · ccode · → A: server fixes APPROVED by owner
 changed: Owner said "send the server fixes to A". Please apply everything in docs/COMP_A_SERVER_FINDINGS_2026_10_03.md (copy: Downloads/2026-10-03_COMP_A_SERVER_FINDINGS.md).
