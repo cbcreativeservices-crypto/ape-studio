@@ -156,8 +156,10 @@ describe('sources and unknowns', () => {
     assert.deepEqual(missing, []);
   });
   it('every placeholder dim is named in the lesson’s unknowns', () => {
-    const text = lesson.unknowns.join(' ');
-    for (const [name, d] of Object.entries(KICK_DIMS)) if ('placeholder' in d && d.placeholder) assert.ok(text.includes(name), `${name} not listed`);
+    // Named in WORDS on screen; `dims` ties each line to its placeholders (review m11).
+    const dims = lesson.unknowns.flatMap((u) => u.dims);
+    for (const [name, d] of Object.entries(KICK_DIMS)) if ('placeholder' in d && d.placeholder) assert.ok(dims.includes(name), `${name} not listed`);
+    for (const u of lesson.unknowns) assert.doesNotMatch(u.text, /\((?:[a-z]+[A-Z][A-Za-z]*)(?:, [a-z]+[A-Z][A-Za-z]*)*\)/, `a code identifier in learner text: ${u.text}`);
   });
   it('readouts are measured only from sourced planes and lines, never a placeholder', () => {
     assert.deepEqual(m.surfaces.map((s) => s.id).sort(), ['batter', 'reso']);

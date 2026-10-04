@@ -177,7 +177,7 @@ describe('the page credit rule', () => {
     const none = new Set<string>();
     assert.equal(credit.pageComplete(M01_LESSON, 'instrument', {}, none), false);
     assert.equal(credit.pageComplete(M01_LESSON, 'instrument', { 'k.inst.1': false }, none), false, 'the interactive is still owed');
-    assert.equal(credit.pageComplete(M01_LESSON, 'instrument', { 'k.inst.1': false }, new Set(['regions'])), true, 'a first pick that was wrong still counts once the right one is reached');
+    assert.equal(credit.pageComplete(M01_LESSON, 'instrument', { 'k.inst.1': false, 'k.inst.2': true }, new Set(['regions'])), true, 'a first pick that was wrong still counts once the right one is reached');
     assert.equal(credit.pageComplete(M01_LESSON, 'microphone', { 'k.mic.1': true, 'k.mic.2': true }, none), false);
   });
   it('Sources has no requirement: it never banks on its own, only on NEXT / FINISH', () => {

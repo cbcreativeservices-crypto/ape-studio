@@ -48,7 +48,7 @@ export const MIC_TYPES: Record<string, MicType> = {
     mount: 'stand',
     examples: [
       { model: 'Sennheiser e 902', fact: '"Pick-up pattern cardioid"; Ø 60 × 128.5 mm; 440 g. No maximum SPL is printed.', src: 'SN-902-SPEC' },
-      { model: 'AKG D112 MkII', fact: '"Polar pattern Cardioid"; length 115 mm, diameter 70 mm; max SPL "> 160 dB (calculated)".', src: 'AKG-CUT' },
+      { model: 'AKG D112 MkII', fact: '"Polar pattern Cardioid"; length 115 mm, diameter 70 mm; max SPL "> 160 dB (calculated)" for 0.5 % THD.', src: 'AKG-CUT' },
     ],
     art: 'kickDynamic',
     blurb: 'A kick dynamic with a cardioid pattern. Needs no power. Shapes differ between models, so two cardioid kick mics are not interchangeable references.',
@@ -76,7 +76,7 @@ export const MIC_TYPES: Record<string, MicType> = {
   },
   sdc: {
     id: 'sdc',
-    label: 'Small-capsule condenser',
+    label: 'High-SPL condenser (kick)',
     short: 'CONDENSER',
     transducer: 'condenser',
     address: 'end',

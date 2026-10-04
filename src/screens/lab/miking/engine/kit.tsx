@@ -3,52 +3,86 @@
  * card, point and takeaway are the Mastering Lab's own (re-exported, not
  * copied — the drumtuning/kit.tsx precedent).
  *
- *   ProvenanceTag   SOURCED / TRIAL / ILLUSTRATIVE — colour never alone: the
- *                   word is always printed.
- *   TendencyNote    a zone's tendency, in words, with its source.
+ *   ProvenanceTag   SOURCED / TRIAL READING / ILLUSTRATIVE / IDEAL MODEL —
+ *                   colour never alone: the word is always printed.
+ *   HowToRead       what each evidence label means (page 1, before the scene).
+ *   ZoneCard        a zone in the source's words, with every LAB-DRAWN edge
+ *                   disclosed (review M5).
  *   MikingScenarioCard  one scenario, judged BY VALUE; reports once, when the
  *                   right option is reached, with whether the FIRST pick was
- *                   right (a retry is explained, never penalised).
+ *                   right (a retry is explained, never penalised). A wrong
+ *                   pick is answered with ITS OWN explanation (review M2).
+ *   PredictCard     an ungraded prediction asked BEFORE an activity (try
+ *                   before tell, review M1).
+ *   OrderTaskCard   put a procedure's steps in order (the one-mic setup).
+ *   SetupTaskCard   the final task: choose a setup (several pass) and the
+ *                   reasons for it; feedback checks the reasoning.
  *   SymptomCard     a troubleshooting row: observation → first checks.
- *   NowLine         the scene's live summary in words (a polite live region).
+ *   NowLine         the scene's live summary in words — a screen-reader live
+ *                   region only (the canvas strip shows the same facts to the
+ *                   eye; review M5 cut the sighted duplicate).
  */
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { Card } from '../../mastering/kit';
-import type { DocumentedZone, MikingScenario, Provenance, Symptom } from './model/types.ts';
+import type { DocumentedZone, OrderTask, Prediction, SetupTask, Symptom, WhyWrong } from './model/types.ts';
+import { labDrawnNotes, zoneEdgesByLab } from './geometry/zones.ts';
+import { gradeSetup, type SetupGrade } from './progress/setupGrade.ts';
 
 export { Body, Card, Point, SectionTitle, TakeawayCard, KeyButton } from '../../mastering/kit';
 
 const BLUE = '#6fa8ff';
 const AMBER = '#ffc64d';
 const GREY = '#aab0bd';
+const IDEAL = '#e8eaee';
 
-export function ProvenanceTag({ kind }: { kind: 'sourced' | 'trial' | 'illustrative' | 'unknown' }) {
-  const label = kind === 'sourced' ? 'SOURCED' : kind === 'trial' ? 'TRIAL' : kind === 'illustrative' ? 'ILLUSTRATIVE' : 'UNKNOWN';
-  const tone = kind === 'sourced' ? BLUE : kind === 'trial' ? AMBER : GREY;
+export type TagKind = 'sourced' | 'trial' | 'illustrative' | 'unknown' | 'ideal';
+
+export function ProvenanceTag({ kind, star }: { kind: TagKind; star?: boolean }) {
+  const label = kind === 'sourced' ? 'SOURCED' : kind === 'trial' ? 'TRIAL READING' : kind === 'illustrative' ? 'ILLUSTRATIVE' : kind === 'ideal' ? 'IDEAL MODEL' : 'UNKNOWN';
+  const tone = kind === 'sourced' ? BLUE : kind === 'trial' ? AMBER : kind === 'ideal' ? IDEAL : GREY;
+  const text = `${label}${star ? '*' : ''}`;
   return (
-    <Text style={[styles.tag, { color: tone, borderColor: tone, borderStyle: kind === 'trial' ? 'dashed' : 'solid' }]} accessibilityLabel={`${label.toLowerCase()} value`}>
-      {label}
+    <Text style={[styles.tag, { color: tone, borderColor: tone, borderStyle: kind === 'trial' ? 'dashed' : 'solid' }]} accessibilityLabel={`${label.toLowerCase()}${star ? ', some edges drawn by the lab' : ''}`}>
+      {text}
     </Text>
   );
 }
 
-export function provKind(p: Provenance): 'sourced' | 'trial' | 'illustrative' | 'unknown' {
-  return p.kind;
+/** The four evidence labels, each defined where the learner first meets them (review M4). */
+export function HowToRead() {
+  const rows: { kind: TagKind; text: string }[] = [
+    { kind: 'sourced', text: 'a number or a position from a named manual or article.' },
+    { kind: 'trial', text: 'the lab’s reading of words that give no number (“a few inches”).' },
+    { kind: 'illustrative', text: 'drawn so the picture makes sense; no source gives its size.' },
+    { kind: 'ideal', text: 'textbook physics — not a measurement of this drum or mic.' },
+  ];
+  return (
+    <View style={styles.read}>
+      <Text style={styles.readHead}>HOW TO READ THIS LAB</Text>
+      {rows.map((r) => (
+        <View key={r.kind} style={styles.readRow}>
+          <ProvenanceTag kind={r.kind} />
+          <Text style={styles.readText}>{r.text}</Text>
+        </View>
+      ))}
+    </View>
+  );
 }
 
-/** A documented zone in words: its band, the source's own words, the tendency. */
+/** A documented zone in words: the source's words, every lab-drawn edge, the tendency. */
 export function ZoneCard({ z }: { z: DocumentedZone }) {
+  const lab = labDrawnNotes(z);
+  const star = zoneEdgesByLab(z);
   return (
     <View style={[styles.zone, { borderLeftColor: z.kind === 'trial' ? AMBER : BLUE }]}>
       <View style={styles.zoneHead}>
-        <ProvenanceTag kind={z.kind} />
+        <ProvenanceTag kind={z.kind} star={star} />
         <Text style={styles.zoneLabel}>{z.label}</Text>
       </View>
-      <Text style={styles.zoneBand}>{z.band}</Text>
       <Text style={styles.quote}>“{z.quote}”</Text>
-      {z.bandProv ? <Text style={styles.small}>{`Band drawn by the lab: ${z.bandProv.kind === 'illustrative' ? z.bandProv.reason : z.bandProv.kind === 'trial' ? z.bandProv.note : ''}`}</Text> : null}
+      {lab.length ? <Text style={styles.small}>{`* Drawn by the lab, not the source: ${lab.join('; ')}.`}</Text> : null}
       <Text style={styles.tendency}>{`TENDENCY · ${z.tendency}`}</Text>
       <Text style={styles.small}>{`CHECK · ${z.checks.join(' · ')}`}</Text>
     </View>
@@ -60,7 +94,7 @@ function hashId(id: string): number {
   for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619);
   return h >>> 0;
 }
-function shuffled(n: number, seed: number): number[] {
+export function shuffled(n: number, seed: number): number[] {
   const a = Array.from({ length: n }, (_, i) => i);
   let s = seed >>> 0 || 1;
   for (let i = n - 1; i > 0; i--) {
@@ -71,7 +105,7 @@ function shuffled(n: number, seed: number): number[] {
   return a;
 }
 
-type Pickable = { id: string; prompt: string; options: readonly string[]; correct: string; explain: string };
+type Pickable = { id: string; prompt: string; options: readonly string[]; correct: string; explain: string; why?: WhyWrong };
 
 export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; onAnswered: (firstRight: boolean) => void; answered?: boolean }) {
   const order = useMemo(() => shuffled(s.options.length, hashId(s.id)), [s]);
@@ -80,6 +114,7 @@ export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; o
   const reported = useRef(!!answered);
   const firstWrong = useRef(false);
   const correct = picked === s.correct;
+  const whyOf = (o: string) => s.why?.[o] ?? 'Not the best fit here. Choose again.';
   return (
     <Card tone="accent">
       <Text style={styles.q}>{s.prompt}</Text>
@@ -104,7 +139,7 @@ export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; o
                   reported.current = true;
                   onAnswered(!firstWrong.current);
                 }
-                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : `${o}: not the best fit. Choose again.`);
+                AccessibilityInfo.announceForAccessibility?.(ok ? `Correct. ${s.explain}` : `Not this one. ${whyOf(o)} Choose again.`);
               }}
               style={[styles.opt, isRight && styles.optRight, isWrongPick && styles.optWrong, wasWrong && !isWrongPick && styles.optDim]}
               accessibilityRole="button"
@@ -117,15 +152,13 @@ export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; o
         })}
       </View>
       {picked != null ? (
-        <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>
-          {correct ? `✓ ${s.explain}` : `✗ "${picked}" is not the best fit here. Choose again; the explanation comes with the option that fits.`}
-        </Text>
+        <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>{correct ? `✓ ${s.explain}` : `✗ ${whyOf(picked)} Choose again.`}</Text>
       ) : null}
     </Card>
   );
 }
 
-export function ScenarioList({ items, answers, onAnswered }: { items: readonly MikingScenario[]; answers: Readonly<Record<string, boolean>>; onAnswered: (id: string, firstRight: boolean) => void }) {
+export function ScenarioList({ items, answers, onAnswered }: { items: readonly Pickable[]; answers: Readonly<Record<string, boolean>>; onAnswered: (id: string, firstRight: boolean) => void }) {
   return (
     <View style={{ gap: 10 }}>
       {items.map((s) => (
@@ -136,13 +169,194 @@ export function ScenarioList({ items, answers, onAnswered }: { items: readonly M
 }
 
 export function SymptomCard({ s, answered, onAnswered }: { s: Symptom; answered: boolean; onAnswered: (firstRight: boolean) => void }) {
-  return <MikingScenarioCard s={{ id: s.id, prompt: `OBSERVATION · ${s.observation}. What do you check first?`, options: s.options, correct: s.correct, explain: s.explain }} answered={answered} onAnswered={onAnswered} />;
+  return <MikingScenarioCard s={{ id: s.id, prompt: `OBSERVATION · ${s.observation}. What do you check first?`, options: s.options, correct: s.correct, explain: s.explain, why: s.why }} answered={answered} onAnswered={onAnswered} />;
 }
 
-/** The scene's live summary in words (blueprint §9). */
+/**
+ * PREDICT FIRST (ungraded). Before the activity the learner commits to a
+ * guess; afterwards the card collapses to one line and the page's own
+ * explanation appears once the learner has TRIED it (the page gates that).
+ */
+export function PredictCard({ p, value, onPick }: { p: Prediction; value: string | null; onPick: (o: string) => void }) {
+  if (value != null) {
+    return (
+      <Text style={styles.predicted} accessibilityRole="text">
+        {`YOUR PREDICTION · ${value}. ${p.after}`}
+      </Text>
+    );
+  }
+  return (
+    <View style={styles.predict}>
+      <Text style={styles.predictHead}>PREDICT FIRST · not graded</Text>
+      <Text style={styles.q}>{p.prompt}</Text>
+      <View style={styles.predictRow}>
+        {p.options.map((o) => (
+          <Pressable key={o} onPress={() => onPick(o)} style={styles.predictOpt} accessibilityRole="button" accessibilityLabel={`Predict: ${o}`}>
+            <Text style={styles.optText}>{o}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+/**
+ * PUT THE STEPS IN ORDER. The steps are shown shuffled; a tap on the step
+ * that comes next places it; a tap on any other step is answered with why it
+ * cannot come yet. Reports once, when every step is placed — first try right
+ * when no step was tapped early. A retry is never penalised.
+ */
+export function OrderTaskCard({ t, answered, onAnswered }: { t: OrderTask; answered: boolean; onAnswered: (firstRight: boolean) => void }) {
+  const order = useMemo(() => shuffled(t.steps.length, hashId(t.id)), [t]);
+  const [placed, setPlaced] = useState(answered ? t.steps.length : 0);
+  const [note, setNote] = useState<string | null>(null);
+  const early = useRef(false);
+  const reported = useRef(answered);
+  const done = placed >= t.steps.length;
+  return (
+    <Card tone="accent">
+      <Text style={styles.q}>{t.prompt}</Text>
+      {placed > 0 ? (
+        <View style={{ gap: 4 }}>
+          {t.steps.slice(0, placed).map((st, i) => (
+            <Text key={st.text} style={styles.placed}>{`${i + 1}. ${st.text}`}</Text>
+          ))}
+        </View>
+      ) : null}
+      {!done ? (
+        <View style={{ gap: 6 }}>
+          {order
+            .filter((i) => i >= placed)
+            .map((i) => {
+              const st = t.steps[i];
+              return (
+                <Pressable
+                  key={st.text}
+                  onPress={() => {
+                    if (i === placed) {
+                      const next = placed + 1;
+                      setPlaced(next);
+                      setNote(null);
+                      AccessibilityInfo.announceForAccessibility?.(`Step ${next} placed.`);
+                      if (next >= t.steps.length && !reported.current) {
+                        reported.current = true;
+                        onAnswered(!early.current);
+                      }
+                    } else {
+                      early.current = true;
+                      setNote(`Not yet: ${st.early}`);
+                      AccessibilityInfo.announceForAccessibility?.(`Not yet. ${st.early}`);
+                    }
+                  }}
+                  style={styles.opt}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Place next: ${st.text}`}
+                >
+                  <Text style={styles.optText}>{st.text}</Text>
+                </Pressable>
+              );
+            })}
+        </View>
+      ) : null}
+      {note ? <Text style={[styles.explain, { color: colors.gold }]}>{`✗ ${note}`}</Text> : null}
+      {done ? <Text style={[styles.explain, { color: colors.green }]}>{`✓ ${t.explain}`}</Text> : null}
+    </Card>
+  );
+}
+
+/**
+ * THE FINAL TASK (lesson L89): a brief; choose ONE setup (several pass), then
+ * tick the reasons that justify it. CHECK grades the reasoning, never a
+ * single fixed answer. Reports once, on the first passing check.
+ */
+export function SetupTaskCard({ t, answered, onAnswered }: { t: SetupTask; answered: boolean; onAnswered: (firstRight: boolean) => void }) {
+  const [setupId, setSetupId] = useState<string | null>(null);
+  const [reasons, setReasons] = useState<ReadonlySet<string>>(() => new Set());
+  const [result, setResult] = useState<SetupGrade | null>(null);
+  const tries = useRef(0);
+  const reported = useRef(answered);
+  const toggle = (id: string) => {
+    setResult(null);
+    setReasons((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  };
+  return (
+    <Card tone="accent">
+      <Text style={styles.brief}>{t.brief}</Text>
+      {answered && !result ? <Text style={[styles.explain, { color: colors.green }]}>✓ Done before — try another setup for practice if you like.</Text> : null}
+      <Text style={styles.stepHead}>1 · CHOOSE A SETUP</Text>
+      <View style={{ gap: 6 }}>
+        {t.setups.map((s) => {
+          const on = setupId === s.id;
+          return (
+            <Pressable
+              key={s.id}
+              onPress={() => {
+                setSetupId(s.id);
+                setResult(null);
+              }}
+              style={[styles.opt, on && styles.optOn]}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: on }}
+              accessibilityLabel={s.label}
+            >
+              <Text style={[styles.optText, on && { color: colors.amber }]}>{`${on ? '● ' : '○ '}${s.label}`}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Text style={styles.stepHead}>2 · TICK EVERY REASON THAT JUSTIFIES IT</Text>
+      <View style={{ gap: 6 }}>
+        {t.reasons.map((r) => {
+          const on = reasons.has(r.id);
+          return (
+            <Pressable key={r.id} onPress={() => toggle(r.id)} style={[styles.opt, on && styles.optOn]} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={r.label}>
+              <Text style={[styles.optText, on && { color: colors.amber }]}>{`${on ? '☑ ' : '☐ '}${r.label}`}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+      <Pressable
+        onPress={() => {
+          const g = gradeSetup(t, setupId, reasons);
+          setResult(g);
+          if (setupId) tries.current += 1;
+          if (g.pass && !reported.current) {
+            reported.current = true;
+            onAnswered(tries.current === 1);
+          }
+          AccessibilityInfo.announceForAccessibility?.(g.pass ? `Passes. ${t.explain}` : g.lines.filter((l) => !l.ok).map((l) => l.text).join(' '));
+        }}
+        style={styles.check}
+        accessibilityRole="button"
+        accessibilityLabel="Check my setup and reasons"
+      >
+        <Text style={styles.checkText}>CHECK MY REASONING</Text>
+      </Pressable>
+      {result ? (
+        <View style={{ gap: 4 }}>
+          {result.lines.map((l) => (
+            <Text key={l.text} style={[styles.explain, { color: l.ok ? colors.green : colors.gold }]}>{`${l.ok ? '✓' : '✗'} ${l.text}`}</Text>
+          ))}
+          {result.pass ? <Text style={[styles.explain, { color: colors.green }]}>{`✓ ${t.explain}`}</Text> : null}
+        </View>
+      ) : null}
+    </Card>
+  );
+}
+
+/**
+ * The scene's live summary in words (blueprint §9) — for a screen reader
+ * only. The canvas strip and the bezel already show these facts to the eye;
+ * printing them a third time in the well was the duplication review M5 cut.
+ */
 export function NowLine({ text }: { text: string }) {
   return (
-    <Text style={styles.now} accessibilityLiveRegion="polite">
+    <Text style={styles.srOnly} accessibilityLiveRegion="polite" accessibilityLabel={`Now: ${text}`}>
       {`NOW · ${text}`}
     </Text>
   );
@@ -151,7 +365,7 @@ export function NowLine({ text }: { text: string }) {
 export function Landing({ looking, prompt }: { looking: string; prompt: string }) {
   return (
     <View style={{ gap: 3 }}>
-      <Text style={styles.landing}>{`YOU ARE LOOKING AT: ${looking}`}</Text>
+      <Text style={styles.landing}>{looking}</Text>
       <Text style={styles.prompt}>{prompt}</Text>
     </View>
   );
@@ -167,10 +381,13 @@ export function Note({ children, tone = 'info' }: { children: ReactNode; tone?: 
 
 const styles = StyleSheet.create({
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, borderWidth: 1, borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1, alignSelf: 'flex-start', overflow: 'hidden' },
+  read: { gap: 6, borderWidth: 1, borderColor: colors.hairline, borderRadius: 8, padding: 10, backgroundColor: '#0e0e11' },
+  readHead: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.4 },
+  readRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  readText: { flex: 1, color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 17 },
   zone: { borderLeftWidth: 3, paddingLeft: 10, gap: 4 },
   zoneHead: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   zoneLabel: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 18, flexShrink: 1 },
-  zoneBand: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.6, lineHeight: 16 },
   quote: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13, lineHeight: 18 },
   tendency: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
   small: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
@@ -179,9 +396,20 @@ const styles = StyleSheet.create({
   optRight: { borderColor: colors.green, backgroundColor: '#0f1d14' },
   optWrong: { borderColor: colors.red },
   optDim: { opacity: 0.55 },
+  optOn: { borderColor: colors.amber, backgroundColor: '#1d1709' },
   optText: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 },
   explain: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
-  now: { color: colors.cyanBright, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
+  placed: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
+  brief: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 19 },
+  stepHead: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2, marginTop: 4 },
+  check: { minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: colors.amber, marginTop: 4 },
+  checkText: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 13, letterSpacing: 1.2 },
+  predict: { gap: 6, borderWidth: 1, borderStyle: 'dashed', borderColor: colors.cyan, borderRadius: 8, padding: 10 },
+  predictHead: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2 },
+  predictRow: { gap: 6 },
+  predictOpt: { minHeight: 40, justifyContent: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013' },
+  predicted: { color: colors.cyanBright, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
+  srOnly: { position: 'absolute', width: 1, height: 1, opacity: 0, overflow: 'hidden' },
   landing: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2, lineHeight: 15 },
   prompt: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14.5, lineHeight: 19 },
   note: { borderLeftWidth: 2, borderLeftColor: colors.cyan, paddingLeft: 10, paddingVertical: 2 },

@@ -2,6 +2,12 @@
  * Pages 6–8 — TROUBLESHOOT, PRACTICE, SOURCES (blueprint §7 rows 6–8).
  * Document pages (no live display), so they are READ steps.
  *
+ * PRACTICE (reviews C1/C2/M12, 2026-10-04) is three steps: the one-mic setup
+ * IN ORDER plus a gain/headroom judgement; two setup BRIEFS where several
+ * setups pass and the reasons are what is checked (lesson L89: "more than one
+ * acceptable solution"), plus the second-channel card; and a short MIXED
+ * review reaching back to pages 3–5.
+ *
  * Practice's observation sheet is OPTIONAL (it needs a real drum) and never
  * gates credit. It is kept on this device for a signed-in account only;
  * "Saved on this device" comes only from a write that returned true (P6),
@@ -12,7 +18,7 @@ import { Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-nat
 import { colors, fonts } from '../../../../theme/tokens';
 import { useLatchedPress } from '../../../../lib/latch';
 import { PageSteps, type MikingStep } from '../engine/steps';
-import { Body, Card, KeyButton, Note, Point, ScenarioList, SymptomCard } from '../engine/kit';
+import { Body, Card, KeyButton, Note, OrderTaskCard, Point, ScenarioList, SetupTaskCard, SymptomCard } from '../engine/kit';
 import { saveObservation, useObservations } from '../engine/progress/observations';
 import type { PageProps } from './pageTypes';
 
@@ -50,16 +56,51 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
     setResult(ok ? 'saved' : 'failed');
     if (ok) setFields({});
   });
+  const order = lesson.orderTasks.filter((t) => t.page === 'practice');
+  const setups = lesson.setupTasks.filter((t) => t.page === 'practice');
+  const pick = (ids: string[]) => lesson.scenarios.filter((s) => ids.includes(s.id));
   const steps: MikingStep[] = [
     {
-      key: 'practice',
+      key: 'order',
+      title: 'Set up in order',
+      kind: 'PRACTICE',
+      layout: 'read',
+      body: (
+        <>
+          <Body>The lesson’s one-mic setup, as a sequence: put the steps in order. A step tapped too early is answered with why it cannot come yet.</Body>
+          {order.map((t) => (
+            <OrderTaskCard key={t.id} t={t} answered={t.id in answers} onAnswered={(ok) => onAnswered(t.id, ok)} />
+          ))}
+          <ScenarioList items={pick(['k.prac.gain'])} answers={answers} onAnswered={onAnswered} />
+          <Note tone="warn">Protect your hearing through all of this: keep levels and repetitions down during soundcheck, and use hearing protection.</Note>
+        </>
+      ),
+    },
+    {
+      key: 'setup',
       title: 'Your setup',
       kind: 'PRACTICE',
       layout: 'read',
       body: (
         <>
           <Body>{lesson.practice.task}</Body>
-          <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'practice')} answers={answers} onAnswered={onAnswered} />
+          <Body>Each brief accepts more than one setup. Choose one, then tick every reason that justifies it — the check reads your reasoning, not a single “right” position.</Body>
+          {setups.map((t) => (
+            <SetupTaskCard key={t.id} t={t} answered={t.id in answers} onAnswered={(ok) => onAnswered(t.id, ok)} />
+          ))}
+          <ScenarioList items={pick(['k.prac.3'])} answers={answers} onAnswered={onAnswered} />
+        </>
+      ),
+    },
+    {
+      key: 'mixed',
+      title: 'Mixed review',
+      kind: 'PRACTICE',
+      layout: 'read',
+      body: (
+        <>
+          <Body>Three cards from earlier pages, mixed: a reference head, a pattern’s null, and polarity versus delay.</Body>
+          <ScenarioList items={pick(['k.mix.1', 'k.mix.2', 'k.mix.3'])} answers={answers} onAnswered={onAnswered} />
           <Card>
             <Point title="OBSERVATION SHEET · OPTIONAL">For a real drum, with the drummer’s agreement and the drummer stopped while anything moves. Write tendencies in words — what you heard, not a promised result.</Point>
             {lesson.practice.fields.map((f) =>
@@ -68,7 +109,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
                   <Text style={styles.fieldLabel}>{f.label}</Text>
                   <View style={styles.chips}>
                     {(f.choices ?? []).map((c) => (
-                      <Pressable key={c} onPress={() => setFields((p) => ({ ...p, [f.id]: c }))} style={[styles.chip, fields[f.id] === c && styles.chipOn]} accessibilityRole="button" accessibilityState={{ selected: fields[f.id] === c }}>
+                      <Pressable key={c} onPress={() => setFields((p) => ({ ...p, [f.id]: c }))} style={[styles.chip, fields[f.id] === c && styles.chipOn]} accessibilityRole="button" accessibilityState={{ selected: fields[f.id] === c }} accessibilityLabel={`${f.label}: ${c}`}>
                         <Text style={[styles.chipText, fields[f.id] === c && { color: colors.amber }]}>{c}</Text>
                       </Pressable>
                     ))}
@@ -126,11 +167,11 @@ export function PSources({ lesson }: PageProps) {
           ))}
           <Text style={styles.head}>STILL UNKNOWN (drawn ILLUSTRATIVE, never a readout)</Text>
           {lesson.unknowns.map((u) => (
-            <Text key={u} style={styles.srcText}>{`• ${u}`}</Text>
+            <Text key={u.text} style={styles.srcText}>{`• ${u.text}`}</Text>
           ))}
-          <Text style={styles.head}>CORRECTIONS MADE TO THE LESSON TEXT</Text>
+          <Text style={styles.head}>WHERE THIS LAB DIFFERS FROM THE ORIGINAL LESSON, AND WHY</Text>
           {lesson.corrections.map((c) => (
-            <Text key={c.id} style={styles.srcText}>{`${c.id} · ${c.text}`}</Text>
+            <Text key={c.id} style={styles.srcText}>{`• ${c.text}`}</Text>
           ))}
           <Note>Manufacturer positions are documented starting points for particular products — not mandatory positions, and not predictions of another mic or drum. A drummer and a qualified practitioner should review real setups.</Note>
         </>

@@ -3,7 +3,7 @@
  * Returns a list of problems; [] = valid. Used by the tests and by the
  * registry (a lesson that fails is never marked ready). Pure.
  */
-import type { Lesson, MicBody, MicType, Dim } from './types.ts';
+import type { Lesson, MicBody, MicType, Dim, PageId } from './types.ts';
 import { PAGE_IDS } from './types.ts';
 import { checkAssembly, compileScene, pinToSurface } from '../geometry/collision.ts';
 import { inZone } from '../geometry/zones.ts';
@@ -37,7 +37,7 @@ export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>
   const dims: [string, Dim | undefined][] = [['yFloor', m.yFloor], ...m.parts.map((p) => [`${p.id}.clearance`, p.clearance] as [string, Dim | undefined])];
   for (const [name, d] of dims) {
     if (d && d.prov.kind === 'unknown' && !d.placeholder) out.push(`${name}: unknown dimension without the placeholder flag`);
-    if (d && d.placeholder && !lesson.unknowns.some((u) => u.includes(name.split('.')[0]))) out.push(`${name}: placeholder not listed in unknowns`);
+    if (d && d.placeholder && !lesson.unknowns.some((u) => u.dims.includes(name.split('.')[0]) || u.dims.includes(name.replace(/\.clearance$/, '')))) out.push(`${name}: placeholder not listed in unknowns`);
   }
 
   const zoneIds = new Set<string>();
@@ -85,11 +85,20 @@ export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>
     if (new Set(s.options).size !== s.options.length) out.push(`scenario ${s.id}: duplicate options`);
   }
   for (const s of lesson.symptoms) if (!s.options.includes(s.correct)) out.push(`symptom ${s.id}: correct is not an option`);
+  // A page's credited items: scenarios, order tasks and setup tasks.
+  const credited: { id: string; page: PageId }[] = [...lesson.scenarios, ...lesson.orderTasks, ...lesson.setupTasks];
+  for (const s of lesson.symptoms) {
+    for (const o of s.options) if (o !== s.correct && !s.why[o]) out.push(`symptom ${s.id}: no explanation for "${o}"`);
+  }
+  for (const s of lesson.scenarios) {
+    for (const o of s.options) if (o !== s.correct && !s.why[o]) out.push(`scenario ${s.id}: no explanation for "${o}"`);
+  }
+  for (const t of lesson.setupTasks) if (t.setups.filter((x) => x.ok).length < 2) out.push(`setup task ${t.id}: fewer than two acceptable setups`);
   for (const id of PAGE_IDS) {
     const pg = lesson.pages[id];
     if (!pg) continue;
     for (const sid of pg.credit.scenarios) {
-      const sc = lesson.scenarios.find((s) => s.id === sid);
+      const sc = credited.find((s) => s.id === sid);
       if (!sc) out.push(`page ${id}: credit scenario ${sid} missing`);
       else if (sc.page !== id) out.push(`page ${id}: credit scenario ${sid} belongs to page ${sc.page}`);
     }

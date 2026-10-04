@@ -5,17 +5,19 @@
  * to name it and see what it does; the PART fader steps through the sound
  * sources without a drag (the accessible path). FRONT HEAD switches ported /
  * intact — the drum as it is, never cut to match a diagram.
- * CHECK (read): one scenario.
+ * CHECK (read): hearing safety first (NIOSH, review C1), then two checks.
  * Credit: every sound source found (tapped or stepped to) + the check.
  */
 import { useEffect, useMemo, useState } from 'react';
+import { StyleSheet, Text } from 'react-native';
+import { colors, fonts } from '../../../../theme/tokens';
 import type { DockParam } from '../../rack/rackTypes';
 import type { ViewId } from '../engine/model/types.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
 import { sceneLabel } from '../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
-import { Body, Card, Landing, Note, Point, ProvenanceTag, ScenarioList } from '../engine/kit';
+import { Body, Card, HowToRead, Landing, Note, Point, ProvenanceTag, ScenarioList } from '../engine/kit';
 import type { PageProps } from './pageTypes';
 
 export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
@@ -95,7 +97,8 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
       },
       well: (
         <>
-          <Landing looking={`a ${model.name}, cut open, from the ${view === 'side' ? 'side' : 'top'}`} prompt="Tap a part — or step through PART — to find where the sound comes from." />
+          <HowToRead />
+          <Landing looking={`${view === 'side' ? 'Side' : 'Top'} view · the drum cut open`} prompt="Tap a part — or step through PART — to find where the sound comes from." />
           {shownPart ? (
             <Card>
               <Point title={shownPart.label.toUpperCase()}>{shownPart.role}</Point>
@@ -103,10 +106,11 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
               <ProvenanceTag kind={shownPart.prov.kind} />
             </Card>
           ) : (
-            <Note>The beater strikes the batter head. The resonant head, the air inside, the shell, the tuning and any damping all shape what you hear (L7).</Note>
+            <Note>The beater strikes the batter head. Both heads, the air inside, the shell, the tuning and any damping all shape what you hear.</Note>
           )}
-          <Body>{`Found: ${regions.map((r) => `${found.has(r.id) ? '✓' : '○'} ${r.label}`).join('   ')}`}</Body>
+          <Text style={styles.found} accessibilityLabel={`Sources: ${regions.map((r) => `${r.label} ${found.has(r.id) ? 'found' : 'not yet'}`).join(', ')}`}>{`Found: ${regions.map((r) => `${found.has(r.id) ? '✓' : '○'} ${r.label}`).join('   ')}`}</Text>
           {variant === 'intact' && !found.has('r.port') ? <Note tone="warn">The port is a source on a PORTED head — switch FRONT HEAD to see it.</Note> : null}
+          <Note>Before any mic: ask the player whether the front head is intact or ported, and what the kick should do — a supportive pulse, a defined attack, a resonant note, or a mix. Hear the drum without reinforcement. If its tuning or damping needs work, agree it with the player (the Drum Tuning Lab covers that): mic placement cannot fix a drum that does not make the wanted sound acoustically.</Note>
         </>
       ),
     },
@@ -117,7 +121,7 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
       layout: 'read',
       body: (
         <>
-          <Body>Ask the player first: is the front head intact or ported, and what should the kick do — a supportive pulse, a defined attack, a resonant note, or a mix? Hear the drum without reinforcement. If its tuning or damping needs work, agree it with the player (the Drum Tuning Lab covers that): mic placement cannot fix a drum that does not make the wanted sound acoustically (L8).</Body>
+          <Note tone="warn">Protect your hearing during repeated hits and soundcheck. NIOSH (the US National Institute for Occupational Safety and Health) recommends no more than 85 dBA averaged over an 8-hour day, and halving the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating, and a mic inside a drum is not a hearing meter. Keep levels and repetitions down, and use hearing protection.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'instrument')} answers={answers} onAnswered={onAnswered} />
         </>
       ),
@@ -125,3 +129,7 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
   ];
   return <PageSteps steps={steps} />;
 }
+
+const styles = StyleSheet.create({
+  found: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
+});

@@ -61,7 +61,7 @@ const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
 };
 
 /** Steps per page (the strip's count before a page reports its titles). */
-const STEP_COUNTS: Record<PageId, number> = { instrument: 2, microphone: 3, placement: 3, context: 3, twoMic: 3, troubleshoot: 1, practice: 1, sources: 1 };
+const STEP_COUNTS: Record<PageId, number> = { instrument: 2, microphone: 3, placement: 3, context: 3, twoMic: 3, troubleshoot: 1, practice: 3, sources: 1 };
 
 
 export function MikingLessonScreen() {
@@ -208,10 +208,22 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
     reset: { label: 'START OVER (PRACTICE)', run: confirmReset },
   });
 
+  // A review hint per page that never touches credit (review m7).
+  const firstTry = (id: PageId) => {
+    const ids = lesson.pages[id].credit.scenarios.filter((q) => q in answers);
+    if (!ids.length) return '';
+    const right = ids.filter((q) => answers[q]).length;
+    return ` First try: ${right} of ${ids.length} right${right < ids.length ? ' — worth a second look' : ''}.`;
+  };
   const c = content.credit;
   const answered = c.scenarios.filter((id) => id in answers).length;
   const standing = [c.scenarios.length ? `${answered} of ${c.scenarios.length} checks right` : '', c.interactive ? `activity ${interactiveDone.has(c.interactive) ? 'done' : 'not yet'}` : ''].filter(Boolean).join(', ');
-  const head = <Text style={styles.objective}>{`PAGE ${pageIdx + 1} GOAL · ${content.goal}`}</Text>;
+  const head = (
+    <Text style={styles.objective}>
+      <Text style={styles.objectiveKey}>{`Page ${pageIdx + 1} goal: `}</Text>
+      {content.goal}
+    </Text>
+  );
   const tail = (
     <>
       <TakeawayCard>{content.takeaway}</TakeawayCard>
@@ -244,7 +256,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
         {ending ? (
           <LabEndScreen
             labTitle={`Miking: ${lesson.title}`}
-            units={PAGE_IDS.map((id) => ({ id, label: lesson.pages[id].title, detail: lesson.pages[id].credit.note }))}
+            units={PAGE_IDS.map((id) => ({ id, label: lesson.pages[id].title, detail: `${lesson.pages[id].credit.note}${firstTry(id)}` }))}
             cleared={doneIds}
             unreadable={unreadable}
             mode="progress"
@@ -289,7 +301,9 @@ const styles = StyleSheet.create({
   gone: { display: 'none' },
   unreadable: { marginHorizontal: 12, marginBottom: 6 },
   scroll: { paddingHorizontal: 16, paddingTop: 8, gap: 10 },
-  objective: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.6, lineHeight: 14 },
+  // The goal is the page's point: readable sentence case at 13.5 pt (review m2).
+  objective: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 19 },
+  objectiveKey: { color: colors.amberLabel, fontFamily: fonts.barlowSemiBold },
   requirement: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, textAlign: 'center', lineHeight: 16 },
   missing: { padding: 20, gap: 12 },
   missingText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 21 },
