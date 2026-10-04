@@ -296,6 +296,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 23:10 · ccode · 7e3671b3
+changed: Hunt 10: 12 fixes + 2 corrections — incl. CRITICAL offline-member wipe in accountLocalSync
+affects other side: nothing backend. CRITICAL client fix: published build still wiped offline expired-token members via accountLocalSync. NOT yet published — recommending immediate publish to owner.
+needs: A still to apply approved server fixes + 2026100301.
+
+
 ### 2026-10-03 20:45 · ccode · OTA publish #4 (production + preview)
 changed: PUBLISHED (owner: "publish") from 991dddd1 — urgent safeSession sweep (offline expired-token member no longer guest-wiped) + hunt 9. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a10577-fbfe-7a16-bd1c-6d76df0cb9d0, Android 01a10577-fbfe-76a5-b2fb-2f25d6dc25a9; u.expo.dev verified.
 affects other side: testers on 33/16 get it on next open+reopen.
