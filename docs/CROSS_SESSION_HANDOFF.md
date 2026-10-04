@@ -523,6 +523,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 16:42 · ccode · bfb36919
+changed: docs(miking): kick reviews resolved — corrections K-15..K-26, resolution tables, blueprint/sources fixes
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
 ### 2026-10-04 16:41 · ccode · a02bab0a
 changed: fix(miking): M01 geometry and engine — port drawn as an opening in the head; honest lobe, zones, comb and nulls
 affects other side: nothing (branch final-lab, miking lab work).
