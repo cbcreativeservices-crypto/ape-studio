@@ -287,6 +287,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 18:15 · ccode · d44fcee4
+changed: Hunt 8 (16 fixes) + deep dives: completion (3) and community/employers (5)
+affects other side: YES, pending OWNER approval — server findings (3 HIGH security: employer code brute-force, banned users can republish, direct-write grants on community_profiles) in docs/COMP_A_SERVER_FINDINGS_2026_10_03.md. NOT applied. App changes NOT published.
+needs: owner go, then A to apply + still migration 2026100301.
+
+
 ### 2026-10-03 17:40 · ccode · OTA publish #2 (production + preview)
 changed: PUBLISHED (owner: "do 1-2 then publish") from dcb9b28f — hunt 7 + calc refusals free + lab hub unreadable faces. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a10463-8c04-76ee-b061-c47f39bd07e0, Android 01a10463-8c04-7d78-843a-8d080e36c2fa; u.expo.dev verified.
 affects other side: testers on 33/16 get it on next open+reopen; 32/15 get nothing.
