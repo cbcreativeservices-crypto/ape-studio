@@ -41,8 +41,13 @@ Consequences:
   - lab code that uses it cannot run on a phone until a build that carries it
     is installed. So that native build should come EARLY, on the owner's go.
 
-  Pending the owner's answer. The queued Reanimated 4.5.5 / Worklets 0.10.4
-  bump rides the same build.
+  **DECIDED 2026-10-04: added.** It is on branch `final-lab` (0c0e047d), with
+  the root view in `App.tsx`. The runtime fingerprint moved to android
+  53c750ae / ios be7c3c20. `audio-tools-engine` stays without it, so it can
+  still publish over the air to builds 33/16. New drags and pinch use Gesture
+  Handler `Gesture.*` with shared values; existing PanResponder code is left
+  alone. The queued Reanimated 4.5.5 / Worklets 0.10.4 bump rides the same
+  build.
 - Skia on the web preview runs through CanvasKit (WebAssembly). It is close to
   the phone, but it is NOT the native renderer. A web check is evidence about
   the drawing, never proof of phone performance.
