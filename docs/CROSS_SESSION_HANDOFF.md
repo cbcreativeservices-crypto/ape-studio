@@ -348,6 +348,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 00:58 · ccode · 7d26ca02
+changed: Start-up trim: sign-out clean-up resets self-register; members-only gate no longer loads the calc registry
+affects other side: nothing backend — app start-up only. NOT published.
+needs: still 2026100301 + bucket cache headers.
+
+
 ### 2026-10-04 · ccode · OTA publish #5 (production + preview)
 changed: PUBLISHED (owner: "publish") from a2b39a68:
 - hunt 10, including the CRITICAL accountLocalSync offline-wipe fix;
