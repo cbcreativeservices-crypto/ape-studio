@@ -348,6 +348,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 02:28 · ccode · f7fa7e1f
+changed: Wrap-up: 3 consistency fixes after hunt 13 (D52 / K2)
+affects other side: nothing — app code only. NOT published.
+needs: nothing
+
+
+### 2026-10-04 02:18 · ccode · db1ca27b
+changed: RN research pass: retire InteractionManager, drop no-op UIManager opt-ins, lazy SQLite opens
+affects other side: nothing — app code only. NOT published.
+needs: nothing
+
+
+### 2026-10-04 02:12 · ccode · 9255719b
+changed: Hunt 13: 32 fixes + 1 correction (final overnight round, 2026-10-04)
+affects other side: nothing server-side — app code only (study ★ deck reads now chunked to 150 ids, paged at 1000 rows). NOT published.
+needs: nothing
+
+
 ### 2026-10-04 01:51 · ccode · b5b323ce
 changed: Hunt 12: 27 fixes + 1 correction (catalog-guided deep pass, 10 areas)
 affects other side: nothing backend. NOT published.
@@ -4564,3 +4582,8 @@ needs: (1) the SDK inventory from docs/CCODE_SDK_PRIVACY_AUDIT_2026_09_13.md (bl
 changed: This era's applied DB changes are live and verified — beginner questions loaded (1,101), scenario answer-key exposure closed (anon revoke + member gate), perf pass (FK indexes + RLS initplan), device-attestation DB foundation (attest_nonces/attest_keys, RLS-forced). Backend/data/security/performance = GO.
 affects other side: device-attestation edge functions + client wiring are ccode's post-launch build (fail-open first); the attest DB tables are service-role only.
 needs: nothing right now — informational baseline.
+
+### 2026-10-04 02:35 · ccode · docs (overnight wrap)
+changed: Overnight hunts 11–13 + RN review + wrap-up done and pushed (through f7fa7e1f); session handoff docs/SESSION_HANDOFF_2026-10-04.md; AGENTS.md house helper runSoon; lessons appended. NOT published.
+affects other side: nothing server-side. At the next native build, Comp A should run a sandbox purchase/restore test if expo-iap is bumped to 5.8 (RN review B2).
+needs: nothing

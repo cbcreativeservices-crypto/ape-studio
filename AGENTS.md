@@ -20,4 +20,5 @@ Each one closes a bug class app-wide, and a ratchet test fails if you bypass it.
 - Calc physical references come from one shared constant (calcUnits.ts: `DBU_REF_V`, `P_REF_PA`). An impossible result (negative length, a gauge past 4/0, …) is refused or explained in words, never printed as a number (D53).
 - Decorative animation → `useDecorativeMotion()`. Value text → `fitValue()` (≥ 9 pt). Calc fields → a sign/range class; counts → `snapWhole`.
 - Supabase calls are bounded at the client (src/lib/supabase.ts). Do not create another client.
+- "Later, off the render path" → `runSoon()` (src/lib/afterInteractions.ts): a real macrotask, or `{ idleTimeoutMs }` for pre-warming. Never `InteractionManager` (a same-tick microtask stub in RN 0.86, removed in SDK 58; ratchet). Never open a SQLite database at module scope — open on first use.
 Run the tests with `node --test --test-timeout=120000 "test/**/*.test.ts"`. Never edit package.json scripts (fingerprint risk). Catalog: docs/bughunt/PATTERN_CATALOG_2026_10_02.md.

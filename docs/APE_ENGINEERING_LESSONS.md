@@ -819,3 +819,10 @@ process is running.
   placeholder answer.
 - **Keep one constant per physical reference.** 0 dBu was 0.775 in three workspaces and 0.7746 in two;
   94 dB SPL was "1 Pa" in one and exact in another. Shared constants stop that drift.
+
+## 2026-10-04 (overnight hunts 11–13, RN review)
+- **A deprecated API can lie about timing.** In RN 0.86 bridgeless, `InteractionManager.runAfterInteractions` is a stub on `setImmediate`, which is shimmed with `queueMicrotask`: it ran BEFORE the render step and waited for nothing. Three sites (the OTA reload "off the render path", JogWheel pre-warm, ToolsHub previews) had comments promising a wait that never happened. Read the library source, not the docs page. House helper: `runSoon`.
+- **PostgREST `.in()` has a URL ceiling.** 600 ids → 200, 800 ids → HTTP 400 (measured against the live API). Any id list a user can grow (★ list, bookmarks) must be chunked (150) AND paged (1000 rows).
+- **guestOnly session holds refuse removals once the account is settled**, so a delete after sign-in can be undone by a re-flush of the carry. Each carried store now keeps a "deleted since" set; a shared fix in holdSessionWork is a candidate.
+- **A tier that is not settled must not drive a destructive align.** The Glossary aligned its offline store to 'free' on an unconfirmed member and wiped their saved definitions. Settled = gate 'open' or 'locked'.
+- **Python on this machine defaults to cp1252.** A default-encoding read/write round-trips bytes but writes any NEW non-ASCII character as cp1252 (an em dash became byte 0x97 in LabShell.tsx). Always `encoding='utf-8', newline=''` — or the Edit tool.
