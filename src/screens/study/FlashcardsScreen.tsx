@@ -102,6 +102,7 @@ import {
 } from '../../features/study/SessionTimer';
 import { setLastStudyLocation } from '../../features/study/lastStudyLocation';
 import { StudyHeader } from './StudyHeader';
+import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { safeGoBack } from '../../lib/safeGoBack';
 
@@ -1501,6 +1502,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
           title="FLASHCARDS"
           subtitle={`Topic · ${topicName}`}
         />
+        {/* A known guest (only the two free topics open for them): progress
+            here is not saved or carried (owner 2026-10-04). Waits for the T1
+            intro and the topic welcome (K10). */}
+        <GuestStartReminder activity="study:flashcards" kind="study" hold={!introsSettled} />
 
         <View style={styles.ledRow}>
           <View style={{ flex: 1 }}>

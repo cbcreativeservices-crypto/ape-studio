@@ -232,6 +232,10 @@ export type ProjectStore = {
   /** Record an accepted blocker. Refuses an unattributed or unexplained one. */
   acceptCondition(lab: LabKind, id: string, c: AcceptedCondition): Promise<ProductionProject | null>;
   clearCondition(lab: LabKind, id: string, ruleId: string): Promise<ProductionProject | null>;
+  /** After a packet export SUCCEEDED: record the revision it printed (never
+   *  lowers a stored one). Null when the write did not land — the caller then
+   *  must not claim the number (2026-10-04, owner ruling 3). */
+  recordExport(lab: LabKind, id: string, revision: number): Promise<ProductionProject | null>;
   /** The sign-in hand-off's writer: a guest session's projects join this
    *  device's lists after the sign-in wipe. Never over an unreadable list. */
   carryIn(held: HeldProjects): Promise<boolean>;
@@ -349,7 +353,10 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         revision: 0,
         values: { ...src.values },
         na: { ...src.na },
-        acceptedConditions: src.acceptedConditions.map((c) => ({ ...c })),
+        // NOT copied (2026-10-04, owner ruling 4): an acceptance is a named
+        // person's decision about ONE job. A copy that inherited it would
+        // carry someone's sign-off onto work they never saw.
+        acceptedConditions: [],
       };
       all.unshift(copy);
       if (!(await write(lab, all))) return null;
@@ -389,6 +396,10 @@ export function createProjectStore(kv: KeyValueStore): ProjectStore {
         ...p,
         acceptedConditions: p.acceptedConditions.filter((x) => x.ruleId !== ruleId),
       }));
+    },
+    recordExport(lab, id, revision) {
+      if (!Number.isInteger(revision) || revision < 1) return Promise.resolve(null);
+      return mutate(lab, id, (p) => ({ ...p, revision: Math.max(p.revision, revision) }));
     },
     // Each lab on its own write chain; never over a list that could not be
     // read (that lab's held rows are refused, the other lab still lands).

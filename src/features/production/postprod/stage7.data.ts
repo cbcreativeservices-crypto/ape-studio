@@ -652,6 +652,17 @@ export const STAGE7_FINISH: StageDef = {
       fixHint: "Re-verify the timing against the final master, and re-verify it again after any further revision.",
       needsLogic: true,
       logicIntent: "Fire when access_timing_checked is earlier_version or no, while access_deliverables includes captions, audio_desc or transcript."
+    },
+    {
+      ruleId: "finish-access-none-unconfirmed",
+      watches: ["finish.finish_type", "finish.access_deliverables"],
+      severity: "info",
+      kind: "legal",
+      title: "No access services on a programme or broadcast finish — confirm that in writing",
+      detail: "Programmes for broadcast and on-demand services often carry captioning and audio-description duties. In the US the FCC's captioning rules (47 CFR 79.1) and the CVAA apply to much television and online video; in the EU the European Accessibility Act covers access to audiovisual services; in the UK Ofcom sets access-service requirements for broadcasters. Whether any of them applies to this programme is the distributor's call, not a guess made in the edit suite.",
+      fixHint: "Ask the distributor or commissioner which access services they require, and keep their answer in writing with the delivery notes. If they confirm none, record who said so.",
+      needsLogic: true,
+      logicIntent: "Fire when finish_type is program_finish or broadcast and access_deliverables is exactly none (none ticked on its own). Advisory only."
     }
   ],
   activity: {

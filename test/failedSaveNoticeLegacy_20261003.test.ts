@@ -391,7 +391,7 @@ const REPORTED: Record<string, number> = {
  */
 const SILENT: Record<string, { count: number; why: string }> = {
   'components/StudyFsOverlay.tsx': { count: 1, why: 'B: the full-screen guide counter the app keeps; a lost count shows the guide once more' },
-  'features/account/accountLocalSync.ts': { count: 1, why: 'B: the ape:localUserId identity marker, part of the wipe; a lost one re-checks on the next auth event' },
+  'features/account/accountLocalSync.ts': { count: 2, why: 'B: the ape:localUserId identity marker, part of the wipe (account sync + the guest launch wipe, guestEphemeral 2026-10-04 — moved from AuthScreen’s retired Finder write-back, net zero); a lost one re-checks on the next auth event' },
   'features/account/clearLocalAccountData.ts': { count: 1, why: 'B: the account wipe itself (multiRemove of the departing account’s keys)' },
   'features/account/deviceIdentity.ts': { count: 1, why: 'B: the generated device id; the in-memory id serves this run' },
   'features/assess/attemptDraft.ts': {
@@ -434,7 +434,7 @@ const SILENT: Record<string, { count: number; why: string }> = {
   'features/tools/measure/measurementsBackend.ts': { count: 1, why: 'B: setting a damaged library aside (housekeeping)' },
   'features/tools/measure/measurementStore.ts': { count: 1, why: 'B: freeing the legacy key after the SQLite migration (kept and logged when it fails)' },
   'lib/coachMark.ts': { count: 2, why: 'B: the coach-mark retire counters; a lost count shows the hint once more' },
-  'screens/auth/AuthScreen.tsx': { count: 2, why: 'B: inside the Guest Mode total wipe — the finder record carried across it and the no-account identity marker' },
+  'screens/auth/AuthScreen.tsx': { count: 1, why: 'B: inside the Guest Mode total wipe — the no-account identity marker (the Finder write-back is gone, guestEphemeral 2026-10-04)' },
   'screens/awards/AwardsScreen.tsx': { count: 2, why: 'B: the RE-write on every open once the tier resolves (usually the value already stored); the pick’s own write reports' },
   'screens/dashboard/DashboardScreen.tsx': { count: 1, why: 'B: the learn-intro seen-flags' },
   'screens/glossary/GlossaryScreen.tsx': { count: 3, why: 'B: the one-shot return-to-term hand-off the app sets and clears itself' },

@@ -56,6 +56,7 @@ import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTria
 import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { StudyHeader } from './StudyHeader';
+import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
 
@@ -674,6 +675,8 @@ export function ScenariosScreen({ route }: Props) {
           onOpenTimer={() => setTimerOpen(true)}
           hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
         />
+        {/* A known guest: progress here is not saved or carried (owner 2026-10-04). */}
+        <GuestStartReminder activity="study:scenarios" kind="study" style={{ alignSelf: 'stretch' }} />
         <View style={{ alignSelf: 'stretch' }}>
           <LedMeterWell
             filled={Math.round((answeredAll / Math.max(1, totalAll)) * 21)}

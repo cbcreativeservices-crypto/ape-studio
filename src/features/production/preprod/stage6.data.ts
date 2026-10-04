@@ -256,7 +256,7 @@ export const STAGE6_READINESS: StageDef = {
           label: "Rigging inspection and sign-off",
           kind: "status",
           showWhen: { field: "people.rigging_required", notEquals: ["no"] },
-          help: "Approved means the certified rigger named in stage 3 has inspected and signed off everything that is flown. Only that person can approve it; this training does not qualify anyone to.",
+          help: "Approved means the certified rigger named in stage 3 has inspected and signed off everything that is flown or held up by a ground-supported structure. Only that person can approve it; this training does not qualify anyone to.",
           required: false,
           onlyFor: [
             "live"
@@ -266,8 +266,8 @@ export const STAGE6_READINESS: StageDef = {
           fieldId: "power_signoff",
           label: "Temporary power test and sign-off",
           kind: "status",
-          showWhen: { field: "people.power_source", notEquals: ["existing_outlets", "house_distro", "generator_direct"] },
-          help: "Approved means the licensed or certified electrician from stage 3 has tested and signed off the tie-in, distribution or generator connection. Not required for wall outlets, venue power or a generator used directly.",
+          showWhen: { field: "people.power_source", notEquals: ["existing_outlets"] },
+          help: "Approved means the licensed or certified electrician named in stage 3 has tested and signed off the connection. It must be in place before a tie-in, temporary distribution or a generator feeding distribution is switched on. With venue-provided distribution it is optional here, and worth asking for: the signer is the venue's electrician, and a temporary system is expected to be inspected, tested and certified whoever connects it (BS 7909 in the UK; in the US, NEC Articles 520, 525 and 590 cover event and temporary power, and ANSI E1.19 covers ground-fault protection). With a small generator used directly, ask whoever supplies it to confirm it is earthed (grounded) as its maker requires and that its outlets have ground-fault protection (GFCI or RCD). This training does not qualify anyone to do either.",
           required: false
         },
         {
@@ -422,10 +422,10 @@ export const STAGE6_READINESS: StageDef = {
         },
         {
           fieldId: "freeze_date",
-          showWhen: { field: "change_freeze", equals: ["frozen"] },
+          showWhen: { field: "change_freeze", notEquals: ["not_applicable"] },
           label: "Freeze date",
           kind: "date",
-          help: "The date after which nothing is updated. Any test done before it was a test of a different system.",
+          help: "The date after which nothing is updated. Not frozen yet? Set the date it will be — straight after the last full test. Any test done before the freeze was a test of a different system.",
           required: false
         },
         {

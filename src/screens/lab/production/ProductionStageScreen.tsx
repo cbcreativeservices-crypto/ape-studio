@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
-import { labHiddenKeys, resolveLab, resolveStage } from '../../../features/production/schema';
+import { hiddenNoteText, labHiddenKeys, resolveLab, resolveStage } from '../../../features/production/schema';
 import type { NoticeDef } from '../../../features/production/schema';
 import { StageSignalBadge } from './ReadinessMeter';
 import { readStage } from '../../../features/production/readiness';
@@ -32,7 +32,7 @@ type R = RouteProp<RootStackParamList, 'ProductionStage'>;
 export function ProductionStageScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
-  const { lab, projectId, stageId } = useRoute<R>().params;
+  const { lab, projectId, stageId, focus } = useRoute<R>().params;
 
   const [project, setProject] = useState<ProductionProject | null>(null);
   /**
@@ -100,7 +100,35 @@ export function ProductionStageScreen() {
   }, [stage, project, hidden]);
   /** So the summary at the top can jump to the list at the bottom. */
   const scrollRef = useRef<ScrollView>(null);
-  const blockerCount = report ? report.findings.filter((f) => f.severity === 'blocker').length : 0;
+
+  /**
+   * TAKE ME THERE (2026-10-04, owner ruling 2). WHAT'S LEFT opens a stage at
+   * its open item: `focus` is that question's fieldId, or 'findings'. The
+   * position comes from layout — a section's y in the scroll content plus the
+   * question's y in its section — and the jump happens ONCE per arrival, as
+   * soon as both are known. Not animated (no motion the learner did not ask
+   * for); the question is marked with an amber edge so it is easy to find.
+   */
+  const sectionY = useRef(new Map<string, number>());
+  const fieldY = useRef(new Map<string, { sectionId: string; y: number }>());
+  const findingsY = useRef<number | null>(null);
+  const focusedFor = useRef<string | null>(null);
+  const arrival = `${stageId}|${focus ?? ''}`;
+  const tryFocus = useCallback(() => {
+    if (!focus || focusedFor.current === arrival) return;
+    let y: number | undefined;
+    if (focus === 'findings') y = findingsY.current ?? undefined;
+    else {
+      const f = fieldY.current.get(focus);
+      const s = f ? sectionY.current.get(f.sectionId) : undefined;
+      if (f && s !== undefined) y = s + f.y;
+    }
+    if (y === undefined) return;
+    focusedFor.current = arrival;
+    scrollRef.current?.scrollTo({ y: Math.max(0, y - 12), animated: false });
+  }, [focus, arrival]);
+
+  const blockerCount =report ? report.findings.filter((f) => f.severity === 'blocker').length : 0;
 
   /**
    * A write that did not land, said out loud.
@@ -300,41 +328,72 @@ export function ProductionStageScreen() {
           ) : null}
 
           {stage.sections.map((section) => (
-            <View key={section.sectionId} style={styles.section}>
+            <View
+              key={section.sectionId}
+              style={styles.section}
+              onLayout={(e) => {
+                sectionY.current.set(section.sectionId, e.nativeEvent.layout.y);
+                tryFocus();
+              }}
+            >
               <Text style={styles.sectionTitle}>{section.title}</Text>
               {section.intro ? <Text style={styles.sectionIntro}>{section.intro}</Text> : null}
               {section.notices.map((n, i) => (
                 <Notice key={`${section.sectionId}-${i}`} notice={n} />
               ))}
               {/* Said, not silent (2026-10-04): a question that vanished
-                  must not look like a question that was lost. */}
+                  must not look like a question that was lost — and the note
+                  names the question and the answer that hid it (owner
+                  ruling 2026-10-04), so the decision is the lesson. */}
               {section.hiddenCount ? (
-                <Text style={styles.hiddenNote}>
-                  {section.hiddenCount === 1
-                    ? 'One question here is hidden because an earlier answer means it does not apply. If that answer changes, it comes back with anything you wrote in it.'
-                    : `${section.hiddenCount} questions here are hidden because an earlier answer means they do not apply. If that answer changes, they come back with anything you wrote in them.`}
-                </Text>
+                section.hiddenBecause ? (
+                  section.hiddenBecause.map((r, i) => (
+                    <Text key={`h${i}`} style={styles.hiddenNote}>
+                      {hiddenNoteText(r)}
+                    </Text>
+                  ))
+                ) : (
+                  <Text style={styles.hiddenNote}>
+                    {section.hiddenCount === 1
+                      ? 'One question here is hidden because an earlier answer means it does not apply. If that answer changes, it comes back with anything you wrote in it.'
+                      : `${section.hiddenCount} questions here are hidden because an earlier answer means they do not apply. If that answer changes, they come back with anything you wrote in them.`}
+                  </Text>
+                )
               ) : null}
               {section.fields.map((field) => {
                 const key = valueKey(stage.stageId, field.fieldId);
                 const fieldState = report.fields.find((f) => f.fieldId === field.fieldId)?.state ?? 'missing';
                 return (
-                  <FieldRow
+                  <View
                     key={field.fieldId}
-                    field={field}
-                    value={project.values[key]}
-                    naReason={project.na[key]}
-                    state={fieldState}
-                    onChange={(v) => void setValue(field.fieldId, v)}
-                    onSetNa={(reason) => void setNa(field.fieldId, reason)}
-                  />
+                    style={field.fieldId === focus ? styles.focused : undefined}
+                    onLayout={(e) => {
+                      fieldY.current.set(field.fieldId, { sectionId: section.sectionId, y: e.nativeEvent.layout.y });
+                      if (field.fieldId === focus) tryFocus();
+                    }}
+                  >
+                    <FieldRow
+                      field={field}
+                      value={project.values[key]}
+                      naReason={project.na[key]}
+                      state={fieldState}
+                      onChange={(v) => void setValue(field.fieldId, v)}
+                      onSetNa={(reason) => void setNa(field.fieldId, reason)}
+                    />
+                  </View>
                 );
               })}
             </View>
           ))}
 
           {report.findings.length > 0 ? (
-            <View style={styles.findings}>
+            <View
+              style={styles.findings}
+              onLayout={(e) => {
+                findingsY.current = e.nativeEvent.layout.y;
+                if (focus === 'findings') tryFocus();
+              }}
+            >
               <Text style={styles.findingsHead}>WHAT THIS PLAN IS STILL MISSING</Text>
               {report.findings.map((f) => (
                 <View
@@ -465,6 +524,8 @@ const styles = StyleSheet.create({
   findingDetail: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
   findingHint: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18, color: colors.textSecondary, marginTop: 5 },
 
+  /** The question WHAT'S LEFT sent the learner to. */
+  focused: { borderLeftWidth: 2, borderLeftColor: colors.amber, paddingLeft: 9 },
   hiddenNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, fontStyle: 'italic', marginBottom: 10 },
   leftLink: {
     marginTop: 14,

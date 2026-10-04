@@ -79,8 +79,13 @@ test('the account wipe sweeps again after the SQLite clear, closing the re-persi
   const second = fn.lastIndexOf('await sweepApeKeys(opts);');
   assert.ok(first >= 0 && sqlite > first && second > sqlite);
   // The sweep itself keeps every rule (KEEP list, onboarding flags, exam drafts).
+  // (guestEphemeral 2026-10-04: the rules moved into keepsThroughWipe, which
+  // the sweep applies to every key; the rules themselves are unchanged for an
+  // account wipe and proven behaviourally in test/guestEphemeral_20261004.)
   const sweep = wipe.slice(wipe.indexOf('async function sweepApeKeys'), wipe.indexOf('export function resetAllLocalStores'));
-  assert.match(sweep, /KEEP\.has\(k\)/);
-  assert.match(sweep, /isOnboardingFlag\(k\)/);
-  assert.match(sweep, /ape:attemptDraft:/);
+  assert.match(sweep, /keys\.filter\(\(k\) => !keepsThroughWipe\(k, opts\)\)/);
+  const rules = wipe.slice(wipe.indexOf('export function keepsThroughWipe'), wipe.indexOf('async function sweepApeKeys'));
+  assert.match(rules, /KEEP\.has\(k\)/);
+  assert.match(rules, /isOnboardingFlag\(k\)/);
+  assert.match(rules, /ape:attemptDraft:/);
 });

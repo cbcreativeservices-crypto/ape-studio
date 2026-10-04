@@ -422,8 +422,9 @@ const SAFE_ON_FAILED_READ: Record<string, string> = {
     'the DEV web-preview tier (__DEV__ && web only): a failed read restores no pinned tier; release builds and devices never run it',
   'screens/auth/AuthScreen.tsx#AuthScreen':
     'the DEV web-preview tier kept across the auto-guest wipe: a failed read restores no tier (dev + web only)',
-  'screens/auth/AuthScreen.tsx#enterGuest':
-    'the Career Finder record read BEFORE the guest wipe: a failed read rejects into enterGuest’s own catch, which stops Guest Mode before anything is wiped (wave 2) — the rejection path is the refusal',
+  // (screens/auth/AuthScreen.tsx#enterGuest left the list 2026-10-04,
+  // guestEphemeral: the Career Finder record read is gone — guest data is
+  // always deleted, Career Finder included.)
 };
 
 /** Files migrated onto the shared safe store on 2026-10-02 — a ratchet

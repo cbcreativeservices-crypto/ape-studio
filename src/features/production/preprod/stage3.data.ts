@@ -112,7 +112,7 @@ export const STAGE3_PEOPLE: StageDef = {
           fieldId: "rigging_required",
           label: "Is anything flown or rigged?",
           kind: "choice",
-          help: "Loudspeakers, lighting, truss, screens or anything else hung above people. If yes, a certified rigger must design and sign off the rigging. This lab does not qualify anyone to rig.",
+          help: "Loudspeakers, lighting, truss, screens or anything else hung above people. Ground-supported structures count too: a truss tower, goalpost or ground-supported roof holding loudspeakers, lights or screens is a temporary structure that qualified people design and put up (in the US, ANSI E1.21 covers these at outdoor events) — answer Yes for those. If yes, a certified rigger must design and sign off the rigging. This lab does not qualify anyone to rig.",
           required: {
             music: false,
             podcast: false,
@@ -141,7 +141,7 @@ export const STAGE3_PEOPLE: StageDef = {
           showWhen: { field: "rigging_required", notEquals: ["no"] },
           label: "Certified rigger",
           kind: "text",
-          help: "Rigging is certified work: venues, unions and insurers require a recognised certification and state which they accept. Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
+          help: "Rigging is certified work: venues, unions and insurers require a recognised certification and state which they accept. That includes ground-supported towers and roofs (ANSI E1.21 in the US). Name the qualified person and confirm it before the day. This app does not qualify anyone to rig.",
           required: false,
           onlyFor: [
             "live"
@@ -151,7 +151,7 @@ export const STAGE3_PEOPLE: StageDef = {
           fieldId: "power_source",
           label: "How is the audio system powered?",
           kind: "choice",
-          help: "Existing wall outlets are one thing. Tying into a building's supply, running temporary distribution or connecting a generator through distribution is licensed electrical work.",
+          help: "Existing wall outlets are one thing. Tying into a building's supply, running temporary distribution or connecting a generator through distribution is licensed electrical work. Wall outlets still need a plan: a circuit should carry no more than 80% of its breaker's rating as a continuous load (in the US, NEC 210.20(A)) — about 1,440 W on a 15 A, 120 V circuit, which a few powered speakers and an amplifier rack can pass. Find out which outlets share a circuit, and keep audio off circuits that also feed lighting dimmers, which can put a buzz into the sound system. Voltages and rules differ by country.",
           required: {
             music: false,
             podcast: false,
@@ -189,7 +189,7 @@ export const STAGE3_PEOPLE: StageDef = {
           label: "Licensed electrician or certified entertainment electrician",
           kind: "text",
           showWhen: { field: "power_source", notEquals: ["existing_outlets"] },
-          help: "Tie-ins, temporary distribution and generators must be connected and signed off by a licensed or certified electrician, as your country, venue and insurer require. This training does not qualify anyone to do it.",
+          help: "Tie-ins, temporary distribution and generators must be connected and signed off by a licensed or certified electrician, as your country, venue and insurer require. With venue-provided distribution this is the venue's electrician — name them, so you know who to ask. This training does not qualify anyone to do it.",
           required: false
         },
         {

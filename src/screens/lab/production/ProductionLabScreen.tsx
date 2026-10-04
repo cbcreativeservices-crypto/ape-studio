@@ -17,7 +17,7 @@
  */
 import { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -27,7 +27,7 @@ import { confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { resolveLab } from '../../../features/production/schema';
-import { readProject } from '../../../features/production/readiness';
+import { nextOutstanding, projectLeftItems, readProject } from '../../../features/production/readiness';
 import { buildPacketHtml } from '../../../features/production/packet';
 import { createProjectStore, newProject, projectStore } from '../../../features/production/projectStore';
 import type { Finding, PathwayId, ProductionProject } from '../../../features/production/types';
@@ -150,8 +150,8 @@ export function ProductionLabScreen() {
     );
   }, [project, lab, reload]);
 
-  const { report } = useMemo(() => {
-    if (!project) return { report: null };
+  const { report, next } = useMemo(() => {
+    if (!project) return { report: null, next: null };
     const authored = def.outline
       .map((o) => authoredStage(lab, o.stageId))
       .filter((s): s is NonNullable<typeof s> => Boolean(s));
@@ -163,17 +163,26 @@ export function ProductionLabScreen() {
     // A report that cannot be worked out is UNREAD, not zero (K2): the rows
     // then show "—" rather than a 0% that says the work is gone.
     try {
-      return { report: readProject(resolved, project) };
+      const r = readProject(resolved, project);
+      // NEXT OUTSTANDING (2026-10-04 review): the first item of the packet's
+      // own WHAT'S LEFT — a blocker before a gap — so the two never disagree.
+      return { report: r, next: nextOutstanding(projectLeftItems(resolved, r, project)) };
     } catch {
-      return { report: null };
+      return { report: null, next: null };
     }
   }, [project, def, lab]);
 
   // Duplicate (2026-10-04, design review #5): `projectStore.duplicate` was
   // reachable from no screen. One run at a time; the copy opens only once it
   // is on disk, and a refused write says so.
+  //
+  // Accepted conditions are NOT copied (owner ruling 4, 2026-10-04): an
+  // acceptance is a named person's decision about one job. When the original
+  // had any, the copy says so in one line, under its name.
+  const [dupNote, setDupNote] = useState<{ id: string; text: string } | null>(null);
   const duplicate = useLatchedPress(async () => {
     if (!project) return;
+    const hadConditions = project.acceptedConditions.length > 0;
     const copy = await projectStore().duplicate(lab, project.id);
     if (!copy) {
       notify('Not duplicated', 'A copy of this project could not be saved on this device. The original is unchanged.');
@@ -182,6 +191,7 @@ export function ProductionLabScreen() {
     setNameDraft(null);
     await reload();
     setOpenId(copy.id);
+    setDupNote(hadConditions ? { id: copy.id, text: 'Accepted conditions were not copied — review them on this project.' } : null);
   });
 
   /** Where this project was last worked on, if that stage still exists. */
@@ -382,6 +392,7 @@ export function ProductionLabScreen() {
                 <Text style={styles.deleteText}>DELETE</Text>
               </Pressable>
             </View>
+            {dupNote && dupNote.id === project.id ? <Text style={styles.sectionIntro}>{dupNote.text}</Text> : null}
 
             {/* PICK UP WHERE YOU LEFT OFF (2026-10-04, design review #5). The
                 stage comes from the same write that saved the last answer, so
@@ -399,6 +410,34 @@ export function ProductionLabScreen() {
                   <Text style={styles.resumeKicker}>PICK UP WHERE YOU LEFT OFF</Text>
                   <Text style={styles.resumeTitle}>{`Stage ${resume.num} · ${resume.title}`}</Text>
                   <Text style={styles.resumeNote}>{`You last answered a question here · project last changed ${localDay(project.updatedAt)}`}</Text>
+                </View>
+                <Text style={styles.pathwayGo}>›</Text>
+              </Pressable>
+            ) : null}
+
+            {/* NEXT OUTSTANDING (2026-10-04 review): where the plan most needs
+                you, beside where you were. Not offered while the projects
+                could not be re-read — it would point at an old copy. */}
+            {next && !readFailed ? (
+              <Pressable
+                style={styles.nextRow}
+                onPress={() =>
+                  navigation.navigate('ProductionStage', {
+                    lab,
+                    projectId: project.id,
+                    stageId: next.stageId,
+                    focus: next.item.fieldId ?? 'findings',
+                  })
+                }
+                accessibilityRole="button"
+                accessibilityLabel={`Next outstanding: ${next.item.text}. Stage ${next.num}, ${next.title}.`}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.resumeKicker, next.item.kind === 'blocker' && { color: colors.red }]}>
+                    {next.item.kind === 'blocker' ? 'NEXT OUTSTANDING · BLOCKER' : 'NEXT OUTSTANDING'}
+                  </Text>
+                  <Text style={styles.resumeTitle}>{next.item.text}</Text>
+                  <Text style={styles.resumeNote}>{`Stage ${next.num} · ${next.title}`}</Text>
                 </View>
                 <Text style={styles.pathwayGo}>›</Text>
               </Pressable>
@@ -622,6 +661,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,198,77,.45)',
     backgroundColor: 'rgba(255,198,77,.07)',
+    borderRadius: 9,
+    paddingVertical: 11,
+    paddingHorizontal: 12,
+    minHeight: 48,
+  },
+  nextRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    backgroundColor: '#121215',
     borderRadius: 9,
     paddingVertical: 11,
     paddingHorizontal: 12,

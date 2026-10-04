@@ -25,7 +25,7 @@ import type {
 import { isAnswered, valueKey } from './types';
 import type { ResolvedStage } from './schema';
 import { labHiddenKeys, stageFields } from './schema';
-import { evaluateStage } from './rules';
+import { evaluateStage, unansweredRequired } from './rules';
 
 export type FieldReadiness = {
   fieldId: string;
@@ -123,7 +123,9 @@ export function readStage(
 
   let state: ReadinessState;
   if (blockers.length) state = 'conflict';
-  else if (denom > 0 && numer === 0) state = 'missing';
+  // "Not started" only when NOTHING is decided (2026-10-04 review): optional
+  // answers given before any required one are a stage under way, not missing.
+  else if (denom > 0 && numer === 0) state = answeredAll > 0 ? 'attention' : 'missing';
   else if (numer < denom) state = 'attention';
   else if (findings.some((f) => f.severity === 'attention')) state = 'attention';
   else if (fields.length > 0 && fieldStates.every((f) => f.state === 'na')) state = 'na';
@@ -241,10 +243,24 @@ function capWhileBlocked(score: number, blocked: boolean): number {
 export type StageSignal = {
   /** 0..100, or null when the stage's data could not be read. */
   pct: number | null;
-  /** What the screen prints: "64%" or "—". */
+  /** What the screen leads with: "64%", "BLOCKED" while a blocker is open, or "—". */
   text: string;
   /** The readiness state the colour and the word come from; null when unread. */
   state: ReadinessState | null;
+};
+
+/**
+ * ONE VOCABULARY for a stage's state (2026-10-04 review): the stage list, the
+ * stage header badge, what a screen reader hears and the packet's stage line
+ * all use these words. (A FIELD's state keeps READINESS_LABEL, the owner's
+ * five-state wording for answers.)
+ */
+export const STAGE_WORD: Record<ReadinessState, string> = {
+  complete: 'Complete',
+  attention: 'Under way',
+  missing: 'Not started',
+  conflict: 'Blocked',
+  na: 'Not applicable',
 };
 
 export function stageSignal(sr: StageReadiness | null | undefined): StageSignal {
@@ -253,8 +269,10 @@ export function stageSignal(sr: StageReadiness | null | undefined): StageSignal 
   const penalty = Math.min(0.2, attention * 0.02, sr.progress * 0.4);
   let pct = Math.max(0, Math.min(100, Math.round((sr.progress - penalty) * 100)));
   if (sr.state !== 'complete' && sr.state !== 'na') pct = Math.min(pct, BLOCKED_CEILING);
-  pct = capWhileBlocked(pct, sr.blockers.length > 0);
-  return { pct, text: `${pct}%`, state: sr.state };
+  const blocked = sr.blockers.length > 0;
+  pct = capWhileBlocked(pct, blocked);
+  // A blocked stage LEADS with the block, not with a near-finished 99.
+  return { pct, text: blocked ? 'BLOCKED' : `${pct}%`, state: sr.state };
 }
 
 /** One stage's outstanding work, for the packet's WHAT'S LEFT list. */
@@ -296,6 +314,69 @@ export function stageLeftLine(s: StageLeft): string {
   if (s.blockers > 0) parts.push(`${s.blockers} blocker${s.blockers === 1 ? '' : 's'}`);
   if (s.attention > 0) parts.push(`${s.attention} thing${s.attention === 1 ? '' : 's'} to look at`);
   return parts.join(' · ');
+}
+
+/** One open item in WHAT'S LEFT: a question, a blocker or a finding, by name. */
+export type LeftItem = {
+  kind: 'blocker' | 'required' | 'finding';
+  /** The question's label, or the finding's title — what the learner reads. */
+  text: string;
+  /** The field to land on in its stage, when there is one. */
+  fieldId?: string;
+};
+
+export type StageLeftItems = {
+  stageId: string;
+  num: number;
+  title: string;
+  /** Blockers first, then the open required questions, then the findings. */
+  items: LeftItem[];
+};
+
+/**
+ * WHAT'S LEFT as the ACTUAL open items (2026-10-04, owner ruling: "list the
+ * actual open items, not counts"). Every unanswered required question by its
+ * label, every unresolved blocker and every attention finding by its title,
+ * grouped by the stage it belongs to. Stages holding a blocker come first and,
+ * inside a stage, blockers lead — a blocker cannot be outscored, so it is
+ * never listed below a plain gap.
+ *
+ * Same membership as `projectLeft`: info notes and accepted conditions are not
+ * "left", and an empty list means nothing required, blocking or flagged is
+ * outstanding. A question hidden by an earlier answer is never listed: the
+ * resolved stages no longer carry it.
+ */
+export function projectLeftItems(
+  stages: ResolvedStage[],
+  report: ReadinessReport,
+  project: ProductionProject,
+): StageLeftItems[] {
+  const groups: (StageLeftItems & { blocked: boolean })[] = [];
+  for (const sr of report.stages) {
+    const stage = stages.find((s) => s.stageId === sr.stageId);
+    if (!stage) continue;
+    const labelOf = new Map(stageFields(stage).map((f) => [f.fieldId, f.label]));
+    const items: LeftItem[] = [
+      ...sr.blockers.map((f) => ({ kind: 'blocker' as const, text: f.title, ...(f.fieldIds[0] ? { fieldId: f.fieldIds[0] } : {}) })),
+      ...unansweredRequired(stage, project).map((fieldId) => ({ kind: 'required' as const, text: labelOf.get(fieldId) ?? fieldId, fieldId })),
+      ...sr.findings
+        .filter((f) => f.severity === 'attention')
+        .map((f) => ({ kind: 'finding' as const, text: f.title, ...(f.fieldIds[0] ? { fieldId: f.fieldIds[0] } : {}) })),
+    ];
+    if (items.length) groups.push({ stageId: sr.stageId, num: sr.num, title: sr.title, items, blocked: sr.blockers.length > 0 });
+  }
+  return [...groups.filter((g) => g.blocked), ...groups.filter((g) => !g.blocked)].map((g) => ({
+    stageId: g.stageId,
+    num: g.num,
+    title: g.title,
+    items: g.items,
+  }));
+}
+
+/** The first open item, for "next outstanding" on the lab home; null when none. */
+export function nextOutstanding(left: StageLeftItems[]): { stageId: string; num: number; title: string; item: LeftItem } | null {
+  const g = left[0];
+  return g && g.items[0] ? { stageId: g.stageId, num: g.num, title: g.title, item: g.items[0] } : null;
 }
 
 /**

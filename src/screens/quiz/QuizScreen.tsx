@@ -62,6 +62,8 @@ import { parseSubmitError } from '../../features/finalExam/api';
 import { QUIZ_SUBMIT_ERROR_COPY } from '../../features/quiz/api';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { useGuestWording, useTier } from '../../features/commercial/useTier';
+import { GUEST_QUIZ_START_REFUSED, remindAsGuest } from '../../features/lab/guestReminderRules';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Quiz'>;
 
@@ -76,6 +78,8 @@ function fmtClock(msLeft: number): string {
 export function QuizScreen({ navigation, route }: Props) {
   const { achievementId, topicName } = route.params;
   const insets = useSafeAreaInsets();
+  // A KNOWN guest only (D52): see GUEST_QUIZ_START_REFUSED.
+  const quizAsGuest = remindAsGuest(useTier(), useGuestWording().guest);
 
   const [payload, setPayload] = useState<AttemptPayload | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
@@ -569,7 +573,11 @@ export function QuizScreen({ navigation, route }: Props) {
     const canRetryStart = startErrorCode === 'offline' || startErrorCode === 'unknown';
     return (
       <View style={styles.center}>
-        <Text style={styles.errorText}>{startError}</Text>
+        <Text style={styles.errorText}>
+          {/* A known guest has no account row: "we could not find your
+              account record… sign out and back in" is not true of them. */}
+          {startErrorCode === 'user_not_found' && quizAsGuest ? GUEST_QUIZ_START_REFUSED : startError}
+        </Text>
         <View style={{ width: 200, gap: 10 }}>
           {canRetryStart && (
             <StudioButton

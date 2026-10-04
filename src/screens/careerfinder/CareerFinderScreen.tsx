@@ -18,7 +18,7 @@ import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
 import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderFace, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { BetaPill, Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
 import { confirmDialog } from '../../lib/confirm';
-import { useUpsellAllowed } from '../../features/commercial/useTier';
+import { useGuestWording, useUpsellAllowed } from '../../features/commercial/useTier';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -29,6 +29,10 @@ export const FINDER_INTRO = {
   body: `Rate ${QUESTION_COUNT} activities. In about five minutes you’ll have five career families worth exploring, and a place in the Academy to start on each.`,
   trust: 'Free. No account. Your answers stay on this phone.',
   howTo: 'You’ll answer for activities, not job titles. Answer for enjoyment only — whether you would be good at it, or could do it today, does not matter here. If you don’t know what an activity is like, say so: that is a useful answer, never a low score.',
+  /** A KNOWN guest (owner ruling 2026-10-04: guest data is always deleted,
+   *  Career Finder included — and signing in starts the account fresh, so
+   *  only signing in FIRST keeps answers). */
+  guestTrust: 'Free. You’re not signed in, so your answers are erased when you close the app. Sign in first to keep them.',
   scope: 'This is a career-exploration tool. It does not measure your worth, guarantee success or determine what you are capable of learning. No percentages, no verdicts, no talent scores — possibilities to explore, with a place to start learning for each.',
 };
 
@@ -49,6 +53,9 @@ export function CareerFinderScreen() {
   // read has actually produced the tier, so a member whose read failed is
   // never marketed to.
   const upsell = useUpsellAllowed();
+  // A known guest is never told their answers "stay on this phone": the next
+  // launch (or Guest Mode) erases them. Never a maybe-member (D52).
+  const guest = useGuestWording().guest;
   const rec = useCareerFinder();
   // Three faces (K2, 2026-10-04 — on the house store): 'loading' says so,
   // 'unreadable' offers the questions with "not saved" wording below, and
@@ -101,7 +108,7 @@ export function CareerFinderScreen() {
       ) : inProgress ? (
         <View style={styles.actions}>
           <CtaButton label={`CONTINUE · QUESTION ${Math.min(QUESTION_COUNT, resumeAt + 1)} OF ${QUESTION_COUNT}`} tone="green" onPress={start} a11y={`Continue at question ${resumeAt + 1} of ${QUESTION_COUNT}`} />
-          <Text style={styles.note}>{answered} of {QUESTION_COUNT} answered · {saving ? 'saved on this phone' : 'not saved on this phone'}{allAnswered(rec) ? ' · all answered' : ''}</Text>
+          <Text style={styles.note}>{answered} of {QUESTION_COUNT} answered · {saving ? (guest ? 'kept until you close the app' : 'saved on this phone') : 'not saved on this phone'}{allAnswered(rec) ? ' · all answered' : ''}</Text>
         </View>
       ) : (
         <View style={styles.actions}>
@@ -111,7 +118,7 @@ export function CareerFinderScreen() {
               go" was untrue — and answers given before may still be on the
               phone. Same wording rule as the in-progress note above. */}
           <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={saving ? `Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.` : `Begins the ${QUESTION_COUNT} questions. Your answers could not be saved on this phone.`} />
-          <Text style={styles.note}>{saving ? (upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.') : 'Your saved answers could not be read on this phone, so answers you give now are not being saved.'}</Text>
+          <Text style={styles.note}>{saving ? (guest ? FINDER_INTRO.guestTrust : upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.') : 'Your saved answers could not be read on this phone, so answers you give now are not being saved.'}</Text>
         </View>
       )}
 

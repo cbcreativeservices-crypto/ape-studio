@@ -217,6 +217,10 @@ export type ResolvedSection = Omit<SectionDef, 'fields' | 'onlyFor' | 'notices'>
   /** Questions in this section hidden by an earlier answer (they come back
    *  with their answers if that answer changes). Drives the screen's note. */
   hiddenCount?: number;
+  /** Which answered question hid them, and with which answer — one entry per
+   *  controlling question, in field order. Absent when it cannot be named
+   *  (a stage resolved on its own whose condition names another stage). */
+  hiddenBecause?: HiddenBecause[];
 };
 
 export type ResolvedStage = Omit<StageDef, 'sections' | 'rules' | 'notices'> & {
@@ -279,8 +283,19 @@ function answerPasses(rule: ShowWhen, raw: FieldValue | undefined): boolean {
  * With no `values` nothing is hidden (previews and tests resolve everything).
  */
 export function hiddenKeys(stages: StageDef[], pathway: PathwayId, values: ValueMap | undefined): Set<string> {
-  const hidden = new Set<string>();
-  if (!values) return hidden;
+  return new Set(hiddenReasons(stages, pathway, values).keys());
+}
+
+/**
+ * As `hiddenKeys`, with WHY: each hidden value key → the key of the answered
+ * question that hid it. For a chain (a question hidden because its own
+ * controller is hidden) that is the root — the answer the learner actually
+ * gave, which is the one they can change to bring the question back
+ * (2026-10-04, owner ruling: the note names the question and the answer).
+ */
+export function hiddenReasons(stages: StageDef[], pathway: PathwayId, values: ValueMap | undefined): Map<string, string> {
+  const because = new Map<string, string>();
+  if (!values) return because;
   type Node = { stageId: string; field: FieldDef; section: SectionDef };
   const nodes = new Map<string, Node>();
   for (const st of stages) {
@@ -294,12 +309,13 @@ export function hiddenKeys(stages: StageDef[], pathway: PathwayId, values: Value
   }
   const memo = new Map<string, boolean>();
   const visiting = new Set<string>();
-  const passes = (rule: ShowWhen | undefined, stageId: string): boolean => {
-    if (!rule) return true;
+  /** null when the condition passes; otherwise the key of the answer that hid it. */
+  const blockedBy = (rule: ShowWhen | undefined, stageId: string): string | null => {
+    if (!rule) return null;
     const ck = showWhenKey(stageId, rule.field);
-    // A hidden controller hides its dependants.
-    if (nodes.has(ck) && !visible(ck)) return false;
-    return answerPasses(rule, values[ck]);
+    // A hidden controller hides its dependants — for the controller's reason.
+    if (nodes.has(ck) && !visible(ck)) return because.get(ck) ?? ck;
+    return answerPasses(rule, values[ck]) ? null : ck;
   };
   const visible = (key: string): boolean => {
     const known = memo.get(key);
@@ -310,13 +326,37 @@ export function hiddenKeys(stages: StageDef[], pathway: PathwayId, values: Value
     // never hide anything, so a field met again mid-walk reads as visible.
     if (visiting.has(key)) return true;
     visiting.add(key);
-    const ok = passes(n.section.showWhen, n.stageId) && passes(n.field.showWhen, n.stageId);
+    const why = blockedBy(n.section.showWhen, n.stageId) ?? blockedBy(n.field.showWhen, n.stageId);
     visiting.delete(key);
-    memo.set(key, ok);
-    return ok;
+    if (why !== null) because.set(key, why);
+    memo.set(key, why === null);
+    return why === null;
   };
-  for (const key of nodes.keys()) if (!visible(key)) hidden.add(key);
-  return hidden;
+  for (const key of nodes.keys()) visible(key);
+  // Insertion order follows the walk; keep the authored field order instead.
+  return new Map([...nodes.keys()].filter((k) => because.has(k)).map((k) => [k, because.get(k)!]));
+}
+
+/**
+ * Why some questions in a section are hidden: the question that was answered,
+ * the answer given, and how many questions it hid. `stageNum` is set only when
+ * that question lives in another stage.
+ */
+export type HiddenBecause = { count: number; question: string; answer: string; stageNum?: number };
+
+/**
+ * The note under a section with hidden questions (2026-10-04, owner ruling:
+ * "Hidden because you answered 'No' to 'Will anything be flown?'"). Naming the
+ * question and the answer turns a vanished question into a lesson about the
+ * decision that removed it — and tells the learner which answer brings it back.
+ */
+export function hiddenNoteText(r: HiddenBecause): string {
+  const where = r.stageNum !== undefined ? ` in stage ${r.stageNum}` : '';
+  const q = `“${r.question}”${where}`;
+  const stop = where || !/[?.!]$/.test(r.question) ? '.' : '';
+  return r.count === 1
+    ? `One question is hidden because you answered “${r.answer}” to ${q}${stop} If that answer changes, it comes back with anything you wrote in it.`
+    : `${r.count} questions are hidden because you answered “${r.answer}” to ${q}${stop} If that answer changes, they come back with anything you wrote in them.`;
 }
 
 /** Every hidden key across already-resolved stages (the lab-wide set rules read). */
@@ -336,28 +376,59 @@ export function labHiddenKeys(stages: ResolvedStage[]): Set<string> {
  * home. Screens pass it; `resolveLab` does it for a whole lab at once.
  */
 export function resolveStage(stage: StageDef, pathway: PathwayId, values?: ValueMap, lab?: StageDef[]): ResolvedStage {
-  return resolveWith(stage, pathway, hiddenKeys(lab ?? [stage], pathway, values));
+  const stages = lab ?? [stage];
+  return resolveWith(stage, pathway, hiddenReasons(stages, pathway, values), describer(stages, pathway, values));
 }
 
 /** Resolve a whole lab against one set of answers (one visibility pass). */
 export function resolveLab(stages: StageDef[], pathway: PathwayId, values?: ValueMap): ResolvedStage[] {
-  const hidden = hiddenKeys(stages, pathway, values);
-  return stages.map((s) => resolveWith(s, pathway, hidden));
+  const hidden = hiddenReasons(stages, pathway, values);
+  const describe = describer(stages, pathway, values);
+  return stages.map((s) => resolveWith(s, pathway, hidden, describe));
 }
 
-function resolveWith(stage: StageDef, pathway: PathwayId, hiddenSet: Set<string>): ResolvedStage {
+/** Names a controlling question and the answer it holds, for the hidden note. */
+type Describe = (controllerKey: string, fromStageId: string) => Omit<HiddenBecause, 'count'> | null;
+
+function describer(stages: StageDef[], pathway: PathwayId, values: ValueMap | undefined): Describe {
+  const byKey = new Map<string, { field: FieldDef; stageId: string; stageNum: number }>();
+  for (const st of stages) {
+    for (const sec of st.sections) for (const f of sec.fields) byKey.set(valueKey(st.stageId, f.fieldId), { field: f, stageId: st.stageId, stageNum: st.num });
+  }
+  return (ck, from) => {
+    const n = byKey.get(ck);
+    if (!n || !values) return null;
+    const raw = values[ck];
+    const picked = (Array.isArray(raw) ? raw : [raw]).filter((v): v is string => typeof v === 'string' && v.trim() !== '');
+    if (!picked.length) return null;
+    const answer = picked
+      .map((v) => (n.field.kind === 'status' ? v : n.field.options?.find((o) => o.value === v)?.label ?? v))
+      .join(', ');
+    return {
+      question: n.field.labelBy?.[pathway] ?? n.field.label,
+      answer,
+      ...(n.stageId !== from ? { stageNum: n.stageNum } : {}),
+    };
+  };
+}
+
+function resolveWith(stage: StageDef, pathway: PathwayId, hiddenMap: Map<string, string>, describe: Describe): ResolvedStage {
   const sections: ResolvedSection[] = [];
   const hidden: string[] = [];
   for (const s of stage.sections) {
     if (!appliesTo(s.onlyFor, pathway)) continue;
     const fields: ResolvedField[] = [];
     let hiddenCount = 0;
+    /** controller key → how many of this section's questions it hid, in order. */
+    const byController = new Map<string, number>();
     for (const f of s.fields) {
       if (!appliesTo(f.onlyFor, pathway)) continue;
       const key = valueKey(stage.stageId, f.fieldId);
-      if (hiddenSet.has(key)) {
+      const why = hiddenMap.get(key);
+      if (why !== undefined) {
         hidden.push(key);
         hiddenCount++;
+        byController.set(why, (byController.get(why) ?? 0) + 1);
         continue;
       }
       const { required, labelBy, helpBy, onlyFor, ...rest } = f;
@@ -372,6 +443,13 @@ function resolveWith(stage: StageDef, pathway: PathwayId, hiddenSet: Set<string>
     // A section whose own condition hid every field it has on this pathway is
     // not drawn at all (its notices go with it).
     if (s.showWhen && fields.length === 0 && hiddenCount > 0) continue;
+    // Name every controlling answer, or none (the screen then says it plainly
+    // without naming one) — never a note that explains only some of them.
+    const reasons = [...byController].map(([ck, count]) => {
+      const d = describe(ck, stage.stageId);
+      return d ? { count, ...d } : null;
+    });
+    const hiddenBecause = reasons.length && reasons.every((r) => r !== null) ? (reasons as HiddenBecause[]) : undefined;
     sections.push({
       sectionId: s.sectionId,
       title: s.title,
@@ -379,6 +457,7 @@ function resolveWith(stage: StageDef, pathway: PathwayId, hiddenSet: Set<string>
       fields,
       notices: (s.notices ?? []).filter((n) => appliesTo(n.onlyFor, pathway)),
       hiddenCount,
+      ...(hiddenBecause ? { hiddenBecause } : {}),
     });
   }
   return {

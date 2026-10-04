@@ -233,7 +233,10 @@ describe('sessionCarry — the shared hand-off', () => {
 
   it('accountLocalSync: the ledger learns each identity at the event and settles after the wipe', () => {
     const s = read('src/features/account/accountLocalSync.ts');
-    assert.match(s, /noteSessionIdentity\(identity\);\s*chain = chain\.then\(\(\) => syncLocalToIdentity\(identity\)\)\.catch\(\(\) => \{\}\);\s*chain = chain\.then\(\(\) => settleSessionCarry\(\)\)\.catch\(\(\) => \{\}\);/);
+    // (guestEphemeral 2026-10-04: a launch confirmed to be a guest runs the
+    // guest launch wipe in the sync's place — same queue, same order, the
+    // hand-off still settles after it.)
+    assert.match(s, /noteSessionIdentity\(identity\);[\s\S]{0,400}?chain = chain\.then\(\(\) => \(guestLaunch \? wipeGuestLaunch\(\) : syncLocalToIdentity\(identity\)\)\)\.catch\(\(\) => \{\}\);\s*chain = chain\.then\(\(\) => settleSessionCarry\(\)\)\.catch\(\(\) => \{\}\);/);
     const auth = read('src/screens/auth/AuthScreen.tsx');
     assert.match(auth, /await clearLocalAccountData\(\{ total: true \}\);[\s\S]{0,300}restartGuestSession\(\);/);
   });

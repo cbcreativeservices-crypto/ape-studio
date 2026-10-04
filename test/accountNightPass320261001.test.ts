@@ -47,17 +47,21 @@ test('Guest Mode signs out with nothing left in flight, and a refusal changes no
   assert.doesNotMatch(guest, /supabase\.auth\.signOut\(/);
 });
 
-test('Account -> Guest: the Finder record is read before the sign-out, and the guest wipe waits for the sync', () => {
+test('Account -> Guest: the guest wipe waits for the sync (and keeps no Finder record, owner 2026-10-04)', () => {
   const guest = body(auth, 'const enterGuest = async', 'const onCreateAccount');
-  const read1 = guest.indexOf("const finderRecord = await AsyncStorage.getItem('ape:careerfinder:v1');");
-  assert.ok(read1 > 0 && read1 < guest.indexOf('await signOutLocalRefusing('));
+  // guestEphemeral 2026-10-04 (deliberate change): "guest data is ALWAYS
+  // deleted, Career Finder included" — no read before, no write-back after.
+  assert.ok(!guest.includes('ape:careerfinder:v1'));
   const queued = guest.slice(guest.indexOf('await runAfterAccountSync(async () => {'));
-  assert.match(queued, /await clearLocalAccountData\(\{ total: true \}\);\s*[\s\S]*?if \(finderRecord\) await AsyncStorage\.setItem\('ape:careerfinder:v1', finderRecord\);[\s\S]*?resetAllLocalStores\(\);[\s\S]*?await AsyncStorage\.setItem\('ape:localUserId', ''\);\s*\}\);/);
+  assert.match(queued, /await clearLocalAccountData\(\{ total: true \}\);\s*[\s\S]*?resetAllLocalStores\(\);[\s\S]*?await AsyncStorage\.setItem\('ape:localUserId', ''\);\s*\}\);/);
+  // The launch's own guest wipe is claimed before the queue, so a late one
+  // can never run after the guest is in.
+  assert.ok(guest.indexOf('claimGuestLaunchWipe();') > 0 && guest.indexOf('claimGuestLaunchWipe();') < guest.indexOf('await runAfterAccountSync('));
   // One module-level queue shared by the auth-event syncs and Guest Mode.
   assert.match(sync, /^let chain: Promise<void> = Promise\.resolve\(\);/m);
   assert.match(sync, /export function runAfterAccountSync<T>/);
   assert.match(sync, /softDeadline\(\(\) => prev, undefined, 'accountSync\/wait', waitMs\)\.then\(fn\)/);
-  assert.match(sync, /chain = chain\.then\(\(\) => syncLocalToIdentity\(identity\)\)\.catch\(\(\) => \{\}\);/);
+  assert.match(sync, /chain = chain\.then\(\(\) => \(guestLaunch \? wipeGuestLaunch\(\) : syncLocalToIdentity\(identity\)\)\)\.catch\(\(\) => \{\}\);/);
   assert.equal((sync.match(/let chain/g) ?? []).length, 1);
 });
 

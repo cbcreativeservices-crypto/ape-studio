@@ -38,12 +38,13 @@ import { notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { resolveLab } from '../../../features/production/schema';
-import { projectLeft, readProject, stageLeftLine } from '../../../features/production/readiness';
+import { projectLeftItems, readProject, type LeftItem } from '../../../features/production/readiness';
 import {
   buildPacketModel,
   emptyText,
   exportPacketPdf,
   isPdfAvailable,
+  nextRevision,
   type PacketBody,
   type PacketNotice,
 } from '../../../features/production/packet';
@@ -96,18 +97,41 @@ export function ProductionPacketScreen() {
         .filter((s): s is NonNullable<typeof s> => Boolean(s));
       const stages = resolveLab(authored, project.pathway, project.values);
       const report = readProject(stages, project);
-      return { stages, report, model: buildPacketModel({ project, stages, report }), left: projectLeft(report) };
+      return { stages, report, model: buildPacketModel({ project, stages, report }), left: projectLeftItems(stages, report, project) };
     } catch {
       return null; // unreadable, never an empty packet
     }
   }, [project, def, lab]);
 
+  /** Said only from the revision write's result (owner ruling 3, 2026-10-04). */
+  const [exportNote, setExportNote] = useState<string | null>(null);
+
   // One export at a time (the house latch): a double tap printed twice and iOS
   // refused the second share sheet.
+  //
+  // REVISION (owner ruling 3, 2026-10-04): each export prints the NEXT
+  // revision number. It is recorded only after the export succeeded, through
+  // the store's write — and the new number appears on this screen only from
+  // that write's result. A failed export changes nothing; a failed write is
+  // said out loud, because the PDF already carries the number.
   const share = useLatchedPress(async () => {
     if (!project || !built) return;
-    const res = await exportPacketPdf({ project, stages: built.stages, report: built.report });
-    if (res.ok) return;
+    setExportNote(null);
+    const printed = nextRevision(project);
+    const res = await exportPacketPdf({ project: printed, stages: built.stages, report: built.report });
+    if (res.ok) {
+      const saved = await projectStore().recordExport(lab, project.id, printed.revision);
+      if (saved) {
+        setProject(saved);
+        setExportNote(`This export is revision ${saved.revision}. The next one will be revision ${saved.revision + 1}.`);
+      } else {
+        notify(
+          'Revision number not saved',
+          `The PDF was made as revision ${printed.revision}, but this device could not save that number, so the next export will be revision ${printed.revision} again.`,
+        );
+      }
+      return;
+    }
     notify(
       'Packet not shared',
       res.reason === 'needs_build'
@@ -166,13 +190,19 @@ export function ProductionPacketScreen() {
             </Text>
             <Text style={styles.docSub}>{`${built.model.projectName} · ${PATHWAY_LABEL[project.pathway]}`}</Text>
 
-            <View style={[styles.verdict, { borderColor: verdictTint(built.model.verdict) }]}>
-              <Text style={[styles.verdictText, { color: verdictTint(built.model.verdict) }]}>
+            {/* A stale copy's verdict is muted along with its words: the
+                colour of a verdict that could not be re-read says nothing. */}
+            <View style={[styles.verdict, { borderColor: stale ? colors.textMuted : verdictTint(built.model.verdict) }]}>
+              <Text style={[styles.verdictText, { color: stale ? colors.textMuted : verdictTint(built.model.verdict) }]}>
                 {stale ? 'Could not be re-read just now' : built.model.verdictLine}
               </Text>
             </View>
 
-            {/* ── WHAT'S LEFT ─────────────────────────────────────────────── */}
+            {/* ── WHAT'S LEFT (owner ruling 2, 2026-10-04) ─────────────────
+                The ACTUAL open items, not counts: each blocker and finding by
+                its title, each open required question by its label, grouped
+                by stage, stages with a blocker first and blockers first inside
+                a stage. Every item opens its stage at that question. */}
             <Text style={styles.h2} accessibilityRole="header">
               WHAT’S LEFT
             </Text>
@@ -182,34 +212,48 @@ export function ProductionPacketScreen() {
                 it, and nothing is flagged for you to look at. Any notes printed below are for information.
               </Text>
             ) : (
-              built.left.map((s) => (
-                <Pressable
-                  key={s.stageId}
-                  style={styles.leftRow}
-                  onPress={() => navigation.navigate('ProductionStage', { lab, projectId: project.id, stageId: s.stageId })}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Stage ${s.num}, ${s.title}: ${stageLeftLine(s)}. Open the stage.`}
-                >
-                  <Text style={styles.leftNum}>{s.num}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.leftTitle}>{s.title}</Text>
-                    <Text style={[styles.leftLine, s.blockers > 0 && { color: colors.red }]}>{stageLeftLine(s)}</Text>
-                  </View>
-                  <Text style={styles.go}>›</Text>
-                </Pressable>
+              built.left.map((g) => (
+                <View key={g.stageId} style={styles.leftGroup}>
+                  <Text style={styles.leftStage} accessibilityRole="header">{`STAGE ${g.num} · ${g.title.toUpperCase()}`}</Text>
+                  {g.items.map((it, i) => (
+                    <Pressable
+                      key={`${it.kind}${i}`}
+                      style={[styles.leftRow, it.kind === 'blocker' && styles.leftRowBlocker]}
+                      onPress={() =>
+                        navigation.navigate('ProductionStage', {
+                          lab,
+                          projectId: project.id,
+                          stageId: g.stageId,
+                          focus: it.fieldId ?? 'findings',
+                        })
+                      }
+                      accessibilityRole="button"
+                      accessibilityLabel={`${LEFT_KIND[it.kind]}: ${it.text}. Stage ${g.num}, ${g.title}. Open it.`}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.leftKind, it.kind === 'blocker' && { color: colors.red }]}>{LEFT_KIND[it.kind].toUpperCase()}</Text>
+                        <Text style={styles.leftTitle}>{it.text}</Text>
+                      </View>
+                      <Text style={styles.go}>›</Text>
+                    </Pressable>
+                  ))}
+                </View>
               ))
             )}
 
             {/* ── SHARE, behind the honesty gate ──────────────────────────── */}
             {isPdfAvailable() ? (
-              <Pressable
-                style={styles.shareBtn}
-                onPress={share}
-                accessibilityRole="button"
-                accessibilityLabel={`Share the ${def?.packetName ?? 'packet'} as a PDF`}
-              >
-                <Text style={styles.shareText}>SHARE AS PDF</Text>
-              </Pressable>
+              <>
+                <Pressable
+                  style={styles.shareBtn}
+                  onPress={share}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Share the ${def?.packetName ?? 'packet'} as a PDF, as revision ${project.revision + 1}`}
+                >
+                  <Text style={styles.shareText}>SHARE AS PDF</Text>
+                </Pressable>
+                {exportNote ? <Text style={styles.para}>{exportNote}</Text> : null}
+              </>
             ) : (
               <Text style={styles.para}>Printing to PDF isn’t available on this device. This screen is the whole packet.</Text>
             )}
@@ -285,6 +329,13 @@ export function ProductionPacketScreen() {
     </View>
   );
 }
+
+/** What each WHAT'S LEFT item is, in plain words. */
+const LEFT_KIND: Record<LeftItem['kind'], string> = {
+  blocker: 'Blocker',
+  required: 'Required question',
+  finding: 'To look at',
+};
 
 function verdictTint(v: 'ready' | 'ready_with_conditions' | 'not_ready'): string {
   return v === 'ready' ? colors.green : v === 'ready_with_conditions' ? colors.amber : colors.red;
@@ -372,6 +423,8 @@ const styles = StyleSheet.create({
   h2: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.1, color: colors.amberLabel, marginTop: 18, marginBottom: 8 },
   para: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 19, color: colors.textSub, marginBottom: 6 },
 
+  leftGroup: { marginBottom: 8 },
+  leftStage: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, color: colors.textMuted, marginBottom: 5 },
   leftRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -380,14 +433,14 @@ const styles = StyleSheet.create({
     borderColor: colors.hairline,
     borderRadius: 9,
     backgroundColor: '#121215',
-    paddingVertical: 10,
+    paddingVertical: 9,
     paddingHorizontal: 12,
-    marginBottom: 7,
+    marginBottom: 6,
     minHeight: 48,
   },
-  leftNum: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: colors.textMuted, width: 15 },
-  leftTitle: { fontFamily: fonts.barlowSemiBold, fontSize: 14, color: colors.textPrimary },
-  leftLine: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  leftRowBlocker: { borderColor: 'rgba(255,75,58,.55)' },
+  leftKind: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.8, color: colors.textMuted },
+  leftTitle: { fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 19, color: colors.textPrimary },
   go: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.amber },
 
   shareBtn: {

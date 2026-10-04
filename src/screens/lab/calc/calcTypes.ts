@@ -161,6 +161,11 @@ export type Workspace = {
   mistakes: string[];
   /** Standards/model honesty block (rendered as an amber-ruled note). */
   warnings?: string;
+  /** A workspace-specific line shown at the top of the ✓ VERIFIED sheet — a
+   *  code-table calculator says there that the figure is for learning and
+   *  planning and that the work follows local code and a licensed electrician
+   *  (owner 2026-10-04, ampacity). */
+  accuracyDetail?: string;
   /** Glossary terms this workspace's variables map to. */
   glossary: string[];
   fields: FieldDef[];

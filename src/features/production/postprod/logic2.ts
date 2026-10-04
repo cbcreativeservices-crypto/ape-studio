@@ -347,6 +347,13 @@ registerRuleLogic({
     if (!timed) return false;
     return ['earlier_version', 'no'].includes(str(ctx.get('finish', 'access_timing_checked')));
   },
+
+  // Advisory (2026-10-04, owner ruling: show every learning moment). "None"
+  // ticked beside a real deliverable is a contradiction the form keeps in view;
+  // this fires only on a plain "None required".
+  'finish-access-none-unconfirmed': (ctx) =>
+    ['program_finish', 'broadcast'].includes(str(ctx.get('finish', 'finish_type'))) &&
+    many(ctx.get('finish', 'access_deliverables')).join() === 'none',
 });
 
 // ── stage 8 · deliver ────────────────────────────────────────────────────────

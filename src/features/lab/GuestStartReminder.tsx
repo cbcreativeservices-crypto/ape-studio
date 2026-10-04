@@ -39,11 +39,16 @@ import {
 export function GuestStartReminder({
   activity,
   kind = 'credit',
+  hold = false,
   style,
 }: {
   /** One id per activity (a lab key / route): the reminder shows once for it. */
   activity: string;
   kind?: GuestReminderKind;
+  /** The host's own popup is up or owed (an intro, a topic welcome): the
+   *  reminder waits — still owed — until it lifts, so two never present
+   *  together (K10). */
+  hold?: boolean;
   style?: StyleProp<ViewStyle>;
 }) {
   const navigation = useNavigation();
@@ -60,7 +65,7 @@ export function GuestStartReminder({
   };
 
   useEffect(() => {
-    if (!asGuest || !focused || suppressed) return;
+    if (!asGuest || !focused || suppressed || hold) return;
     // AFTER THE PUSH (LabShell's audio-gate rule, 2026-09-27): a popup
     // presented mid-push can stick half-presented on iOS, and UIKit then
     // refuses every later presentation — the lab's ▶, ?, ⓘ all dead. Wait for
@@ -95,7 +100,7 @@ export function GuestStartReminder({
     // `signIn` reads the live navigation object; re-running for it would
     // only be refused by the once-rule.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asGuest, focused, suppressed, activity, kind]);
+  }, [asGuest, focused, suppressed, hold, activity, kind]);
 
   if (!asGuest || !suppressed) return null;
   return (

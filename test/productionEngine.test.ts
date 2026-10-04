@@ -1687,7 +1687,8 @@ describe('Post-Production — the authored content', () => {
     const rules = POSTPROD_STAGES.flatMap((s) => s.rules);
     assert.equal(POSTPROD_STAGES.length, 8, 'eight stages carry the spec’s twenty-eight');
     assert.equal(fields.length, 187);
-    assert.equal(rules.length, 135);
+    // 136 since 2026-10-04: the access-services advisory (owner ruling 1).
+    assert.equal(rules.length, 136);
     assert.equal(rules.filter((r) => r.severity === 'blocker').length, 17);
     assert.equal(POSTPROD_STAGES.filter((s) => s.activity).length, 8, 'one exercise per stage');
   });

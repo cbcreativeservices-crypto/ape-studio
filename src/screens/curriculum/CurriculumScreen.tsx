@@ -44,7 +44,7 @@ import { FAMILY_COUNT } from '../../features/careerfinder/families';
 import { computeResult } from '../../features/careerfinder/scoring';
 import { useCareerFinder, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { readingColumn } from '../../theme/readingColumn';
-import { useUpsellAllowed } from '../../features/commercial/useTier';
+import { useGuestWording, useUpsellAllowed } from '../../features/commercial/useTier';
 
 /**
  * What the Academy sets out to do.
@@ -170,6 +170,8 @@ export const CurriculumView = memo(function CurriculumView({
   const finderRec = useCareerFinder();
   // "Your answers are saved" only when they are (final round A, 2026-10-02).
   const finderSaving = useCareerFinderSaving();
+  // A guest's answers are erased at close (owner 2026-10-04) — never "saved".
+  const finderGuest = useGuestWording().guest;
   const finder = useMemo((): { blurb: string; pill: string; a11y: string; route: 'CareerFinder' | 'CareerFinderResults' | 'CareerFinderQuiz' } => {
     const answered = QUESTIONS.filter((q) => q.id in finderRec.responses).length;
     if (finderRec.completed && answered > 0) {
@@ -181,10 +183,10 @@ export const CurriculumView = memo(function CurriculumView({
         : { blurb: 'Your results are ready.', pill: 'RESULTS ›', a11y: 'Audio Career Finder, Beta. Opens your results.', route: 'CareerFinderResults' };
     }
     if (answered > 0) {
-      return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. ${finderSaving ? 'Your answers are saved.' : 'Your answers could not be saved on this phone.'}`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
+      return { blurb: `You’re at question ${Math.min(QUESTION_COUNT, finderRec.index + 1)} of ${QUESTION_COUNT}. ${finderSaving ? (finderGuest ? 'Your answers are kept until you close the app.' : 'Your answers are saved.') : 'Your answers could not be saved on this phone.'}`, pill: 'CONTINUE ›', a11y: `Audio Career Finder, Beta. Continue at question ${finderRec.index + 1} of ${QUESTION_COUNT}.`, route: 'CareerFinderQuiz' };
     }
     return { blurb: `Which kinds of audio work would you enjoy? ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. About five minutes.`, pill: 'START ›', a11y: `Audio Career Finder, Beta. ${QUESTION_COUNT} questions, ${FAMILY_COUNT} career families, ${fmt(CAREER_COUNT)} ways to work in audio. ${upsell ? 'Free, ' : ''}about five minutes.`, route: 'CareerFinder' };
-  }, [finderRec, finderSaving, upsell]);
+  }, [finderRec, finderSaving, finderGuest, upsell]);
 
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired v2 matrix.
   const [v3Subjects, setV3Subjects] = useState<{ order: number; name: string; field: string; topics: { gs: number; name: string }[] }[]>([]);

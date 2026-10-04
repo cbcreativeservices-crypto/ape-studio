@@ -277,7 +277,8 @@ describe('2. the guest save reminder before they begin', () => {
     assert.match(s, /confirmDialog\(GUEST_REMINDER_TITLE, guestReminderBody\(kind, sessionCarryOpen\(\)\), GUEST_REMINDER_SIGN_IN, signIn, \{\s*cancelText: GUEST_REMINDER_CONTINUE,\s*\}\);/);
     assert.doesNotMatch(s, /from 'react-native'[^;]*\bModal\b|Alert\.alert/);
     // Never auto-appears in Low-Light (checked at effect time AND at show time).
-    assert.match(s, /if \(!asGuest \|\| !focused \|\| suppressed\) return;/);
+    // (+ `hold`, guestEphemeral 2026-10-04: a host's own intro waits it out.)
+    assert.match(s, /if \(!asGuest \|\| !focused \|\| suppressed \|\| hold\) return;/);
     assert.match(s, /if \(areOverlaysSuppressed\(\)\) return;\s*\/\/[^\n]*\n\s*if \(!claimGuestReminder\(activity\)\) return;/);
     // …after the native push ends (iOS refuses a presentation mid-push).
     assert.match(s, /addListener\?\.\('transitionEnd'/);

@@ -52,6 +52,7 @@ import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
+import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { orderByCredit, remainingCount } from '../../features/study/deckOrder';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -510,6 +511,8 @@ export function FillInBlankScreen({ navigation, route }: Props) {
           onOpenTimer={() => setTimerOpen(true)}
           hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
         />
+        {/* A known guest: progress here is not saved or carried (owner 2026-10-04). */}
+        <GuestStartReminder activity="study:fill_in_blank" kind="study" />
         {/* LED + compact item count (Booth 2026-07-08: count lives up here,
             never floating over the answer grid). */}
         <View style={styles.ledRow}>

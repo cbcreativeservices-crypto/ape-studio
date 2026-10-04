@@ -36,7 +36,7 @@ import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
 import { colors, fonts, spacing } from '../../theme/tokens';
 import { POPUP_MAX_W } from '../../theme/readingColumn';
 import { clearLocalAccountData, resetAllLocalStores } from '../../features/account/clearLocalAccountData';
-import { runAfterAccountSync } from '../../features/account/accountLocalSync';
+import { claimGuestLaunchWipe, runAfterAccountSync } from '../../features/account/accountLocalSync';
 import { restartGuestSession } from '../../features/lab/sessionCarry';
 import { getDeviceId } from '../../features/account/deviceIdentity';
 import { claimThisDevice, getActiveDeviceId } from '../../features/account/singleDevice';
@@ -63,7 +63,6 @@ import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { AppWelcomeOverlay } from '../../features/intro/AppWelcomeOverlay';
 import * as Crypto from 'expo-crypto';
 import { suggestPassword } from '../../features/auth/suggestPassword';
-import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientation';
 import type { RootStackParamList } from '../../navigation/types';
 import { consumePendingLink } from '../../navigation/pendingLink';
 import { navigateToPath } from '../../navigation/linking';
@@ -267,15 +266,9 @@ export function AuthScreen({ navigation }: Props) {
     try {
     // Guest entry signs out to establish the anon session — NOT a session loss.
     // Mark it so SessionExpiryGuard doesn't bounce the guest back to login.
-    // The Career Finder record (see below) is read BEFORE the sign-out (night
-    // bug pass 3, 2026-10-01): signing an ACCOUNT out emits SIGNED_OUT, whose
-    // identity sync sweeps every `ape:*` key — read after it, the record was
-    // already gone, or not, depending on which got to storage first.
-    // A read that FAILED (throws) stops Guest Mode here, in the catch below,
-    // on purpose (wave 2, 2026-10-02): read as "no record", the total wipe
-    // would delete the Finder record it promised to keep. Nothing is wiped
-    // yet, and trying again reads again.
-    const finderRecord = await AsyncStorage.getItem('ape:careerfinder:v1');
+    // (The Career Finder record is no longer kept across this wipe — owner
+    // ruling 2026-10-04: "guest data is ALWAYS deleted, Career Finder
+    // included". See GUEST_KEEP in clearLocalAccountData.)
     markIntentionalSignOut();
     // scope 'local' (bug pass 2, 2026-09-30): leaving THIS device for Guest
     // Mode must not revoke the account's other sessions (the website).
@@ -322,33 +315,23 @@ export function AuthScreen({ navigation }: Props) {
     // can't open a locked topic a prior account had enrolled). Unlike a plain
     // sign-out, entering Guest Mode is never a temporary detour back to the same
     // account, so clearing here can't lose a returning user's data.
-    // TOTAL wipe (owner ruling 2026-09-01): a no-account guest is remembered in
-    // NO way — app settings and the onboarding/coach flags go too. Nothing is
-    // stored about a person until they make an account.
-    // ONE exception (owner brief 2026-09-03, more specific and more recent than
-    // the total-wipe ruling): the Audio Career Finder is a free, NO-ACCOUNT,
-    // device-local lab whose copy promises "Your answers stay on this phone" —
-    // so its record survives a guest re-entry. An ACCOUNT switch still starts
-    // the next person fresh (this is the guest path only). Bug+Hater night B1-02.
+    // TOTAL wipe (owner rulings 2026-10-04, replacing 2026-09-01/09-03): every
+    // guest work key goes, Career Finder included; only the glossary and
+    // calculator meters, the device id and the device-level onboarding/intro
+    // "seen" flags stay (GUEST_KEEP in clearLocalAccountData). Since the
+    // onboarding flags now stay, the amplitude-orientation flag is no longer
+    // reset here (it was, B-154, only because this wipe removed its key).
     // QUEUED BEHIND THE SIGN-OUT'S OWN WIPE (night bug pass 3, 2026-10-01):
-    // the SIGNED_OUT identity sync and this total wipe ran side by side, and
-    // the sync's sweep landing late deleted the record written back here.
+    // the SIGNED_OUT identity sync and this total wipe must not interleave.
+    // And this launch's guest wipe is claimed here: one that answers late must
+    // never run after the guest is in (accountLocalSync).
+    claimGuestLaunchWipe();
     await runAfterAccountSync(async () => {
       await clearLocalAccountData({ total: true });
       // A fresh guest session: no lab work held before this start is ever
       // carried into an account signed into later (features/lab/sessionCarry).
       restartGuestSession();
-      // Written back BEFORE the store reset (bug pass 3, 2026-09-30): the reset
-      // emits, a mounted Finder screen re-subscribes and re-hydrates at once, and
-      // in the old order it read the just-wiped key — loaded EMPTY, marked itself
-      // hydrated, and the guest's next answer overwrote the saved record.
-      if (finderRecord) await AsyncStorage.setItem('ape:careerfinder:v1', finderRecord);
       resetAllLocalStores();
-      // The amplitude-orientation flag is a device-level onboarding flag that an
-      // ACCOUNT switch deliberately keeps, so resetAllLocalStores() leaves its
-      // in-memory `done` alone — but the total wipe above just removed its key,
-      // and a guest must see the gate NOW, not only after a relaunch (B-154).
-      resetAmplitudeOrientation();
       // Write the no-account marker so the next boot's sync sees the SAME
       // identity instead of null→'' and wiping again (QA night 2026-09-01).
       await AsyncStorage.setItem('ape:localUserId', '');

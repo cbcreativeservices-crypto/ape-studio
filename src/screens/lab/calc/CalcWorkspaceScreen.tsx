@@ -320,7 +320,7 @@ export function CalcWorkspaceScreen() {
           <Text style={styles.title}>{ws.name.toUpperCase()}</Text>
           <Text style={styles.subtitle}>{ws.tagline}</Text>
         </View>
-        <AccuracyNote compact variant="calc" />
+        <AccuracyNote compact variant="calc" detail={ws.accuracyDetail} />
       </View>
 
       {/* ── PINNED RESULT STAGE (calc rack, owner 2026-08-23) ────────────────

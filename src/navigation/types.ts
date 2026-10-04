@@ -306,6 +306,9 @@ export type RootStackParamList = {
     lab: import('../features/production/types').LabKind;
     projectId: string;
     stageId: string;
+    /** Optional (2026-10-04, WHAT'S LEFT): a fieldId to scroll to, or
+     *  'findings' for the stage's list of findings. */
+    focus?: string;
   };
   ProductionActivity: {
     lab: import('../features/production/types').LabKind;

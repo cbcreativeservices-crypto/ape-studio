@@ -316,8 +316,7 @@ export const STAGE6_MIX: StageDef = {
           fieldId: "automation_checked",
           label: "Automation checked for",
           kind: "multiChoice",
-          showWhen: { field: "automation_used", notEquals: ["none"] },
-          help: "The specific faults that survive a mix and appear in the printed master.",
+          help: "The specific faults that survive a mix and appear in the printed master. Even when nothing was automated on purpose, check for unintended written data — a fader touched in write mode, or automation that came in with a template or an imported session.",
           options: [
             { value: "jumps", label: "Abrupt jumps" },
             { value: "stray", label: "Unintended written data" },

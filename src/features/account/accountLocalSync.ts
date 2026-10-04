@@ -66,6 +66,51 @@ async function syncLocalToIdentity(identity: string): Promise<void> {
 }
 
 /**
+ * ⛔ THE GUEST LAUNCH WIPE (owner ruling 2026-10-04: "the app should open
+ * with no user work if in guest mode"). A launch whose session read CONFIRMS
+ * no account — never a stalled or failed read (K1: an unknown session is not
+ * a guest, and a member whose read stalled is never wiped) — runs the guest
+ * (`total`) wipe once, whatever the marker says — normally inside the Splash
+ * hold, and always before Guest Mode can let the guest in (that entry waits
+ * on this queue). Stores already read are reset in memory with it.
+ * The same-identity guard below would otherwise skip it ('' → ''), and every
+ * work key a guest left last launch (labs, study, Career Finder, Production,
+ * Cymatics, notes, bookmarks, the ★ list) would be read back in.
+ *
+ * ONE PER LAUNCH, AND NEVER AFTER GUEST MODE HAS STARTED: Guest Mode entry
+ * claims it too (AuthScreen) and runs the same wipe itself, so a launch read
+ * that answers late can never wipe work done after that entry. Work can only
+ * be carried after the launch decision (sessionCarry settles on this same
+ * queue, after the wipe), so a wipe never races a carry.
+ */
+let launchWipeClaimed = false;
+
+/** Claim this launch's guest wipe: true only for the first caller. */
+export function claimGuestLaunchWipe(): boolean {
+  if (launchWipeClaimed) return false;
+  launchWipeClaimed = true;
+  return true;
+}
+
+/** Tests only: a fresh launch. */
+export function __resetGuestLaunchWipeForTests(): void {
+  launchWipeClaimed = false;
+  chain = Promise.resolve();
+}
+
+/** The guest wipe: everything but GUEST_KEEP, the in-memory stores, then the
+ *  no-account marker (so the next event sees the same identity). */
+async function wipeGuestLaunch(): Promise<void> {
+  await clearLocalAccountData({ total: true });
+  resetAllLocalStores();
+  try {
+    await AsyncStorage.setItem(LOCAL_USER_ID_KEY, '');
+  } catch {
+    // best-effort — the next launch decides again
+  }
+}
+
+/**
  * The one queue every identity wipe runs on (moved to module scope, night bug
  * pass 3, 2026-10-01, so Guest Mode's own wipe can join it — see below).
  */
@@ -115,7 +160,8 @@ export function useAccountLocalSync(): void {
     /** This launch has settled whose device this is (see the re-read below). */
     let decided = false;
     type AnySession = { user?: { id?: string; is_anonymous?: boolean | null } } | null | undefined;
-    const settle = (session: AnySession) => {
+    /** `launch`: this is the launch's own answer (INITIAL_SESSION). */
+    const settle = (session: AnySession, launch = false) => {
       decided = true;
       // ⚠️ An ANONYMOUS session maps to the GUEST identity (''), not to its
       // own uid. The glossary's temporary device key would otherwise read as
@@ -131,7 +177,11 @@ export function useAccountLocalSync(): void {
       // its first account only AFTER this sign-in's wipe has run — or the
       // wipe would delete it.
       noteSessionIdentity(identity);
-      chain = chain.then(() => syncLocalToIdentity(identity)).catch(() => {});
+      // A launch CONFIRMED to have no account is a known guest: the guest
+      // launch wipe (claimed now, in event order, so Guest Mode entry and a
+      // later answer cannot both run it).
+      const guestLaunch = launch && identity === '' && claimGuestLaunchWipe();
+      chain = chain.then(() => (guestLaunch ? wipeGuestLaunch() : syncLocalToIdentity(identity))).catch(() => {});
       chain = chain.then(() => settleSessionCarry()).catch(() => {});
     };
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
@@ -165,12 +215,12 @@ export function useAccountLocalSync(): void {
           void safeSessionResult(supabase.auth.getSession(), 'accountLocalSync/initial')
             .then(({ result, timedOut }) => {
               if (timedOut || mine !== events) return;
-              settle(result.data.session as AnySession);
+              settle(result.data.session as AnySession, true);
             })
             .catch(() => {});
           return;
         }
-        settle(session);
+        settle(session, event === 'INITIAL_SESSION');
         return;
       }
       // The refresh that gets through once the network is back is the first

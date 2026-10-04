@@ -357,6 +357,13 @@ const V: [string, string, Record<string, unknown>, Record<string, number> | stri
   ['vdrop', 'drop', { awg: 18, len: 100, current: 50, vsrc: 12, condTemp: 20 }, 'R'],
   ['vdrop', 'gaugeFor', { len: 30, current: 20, vsrc: 120, pct: 3, condTemp: 75 }, { 'REQUIRED AREA (mm²)': rhoCu(75) * 60 * 20 / 3.6 * 1e6, 'DROP-LIMITED AWG (CHECK AMPACITY)': Math.floor(awgFromA(rhoCu(75) * 60 * 20 / 3.6)) }],
   ['vdrop', 'gaugeFor', { len: 1, current: 0.001, vsrc: 48, pct: 3, condTemp: 20 }, 'T:Any gauge up to 40 AWG'],
+  // ── ampacity (NEC 2023 Table 310.16 copper; added 2026-10-04, receipt calcAmpacity)
+  ['ampacity', 'awg', { awg: 12, insul: 90, term: 60, ambient: 40, ccc: 6 }, { 'CORRECTED AMPACITY': 30 * 0.91 * 0.8, 'ALLOWABLE AMPACITY': 20, 'MAX CONTINUOUS LOAD (80%)': 16 }],
+  ['ampacity', 'awg', { awg: 12, insul: 90, term: 60, ambient: 95, ccc: 3 }, 'R'],
+  ['ampacity', 'kcmil', { kcmil: 500, insul: 90, term: 75, ambient: 45, ccc: 9 }, { 'CORRECTED AMPACITY': 430 * 0.87 * 0.7, 'TERMINATION LIMIT (75 °C TERMINALS)': 380 }],
+  ['ampacity', 'kcmil', { kcmil: 450, insul: 90, term: 75, ambient: 30, ccc: 3 }, 'R'],
+  ['ampacity', 'factors', { insul: 90, ambient: 50, ccc: 25 }, { 'COMBINED FACTOR': 0.82 * 0.45 }],
+  ['ampacity', 'factors', { insul: 60, ambient: 58, ccc: 3 }, 'R'],
   // ── rackheat
   ['rackheat', 'heatLoad', { watts: 800, mains: 120, dTempF: 10 }, { 'MAINS CURRENT': 800 / 120, 'HEAT OUTPUT (BTU/hr)': 800 * BTU, 'COOLING AIRFLOW (CFM)': 800 * BTU / 10.8 }],
   ['rackheat', 'heatLoad', { watts: 1, mains: 230, dTempF: 1 }, { 'HEAT OUTPUT (BTU/hr)': BTU }],

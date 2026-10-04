@@ -23,6 +23,29 @@ export function ceilingMargin(margin: number): { label: 'MARGIN TO CEILING' | 'O
   return m < 0 ? { label: 'OVER CEILING BY', value: -m } : { label: 'MARGIN TO CEILING', value: m };
 }
 
+/** COMMON LOUDNESS TARGETS — verified 2026-10-04 against each publisher (owner
+ *  ruling: "use your recommendations"). The old table lumped Spotify, Amazon
+ *  and YouTube together at −1 dBTP, gave Apple Music a −1 dBTP ceiling Apple
+ *  does not publish, and called streaming playback levels "targets" — a
+ *  platform's level is where it TURNS PLAYBACK TO, not a mastering requirement.
+ *  Only published tolerances are given; where a platform publishes nothing,
+ *  the row says so. */
+const PLAYBACK = 'Playback level — loud tracks are turned down; not a mastering requirement';
+export const LOUDNESS_TARGETS: readonly { who: string; loudness: string; truePeak: string; kind: string; source: string }[] = [
+  { who: 'Spotify', loudness: '−14 LUFS (Normal; Loud −11, Quiet −19)', truePeak: 'Below −1 dBTP; below −2 dBTP for masters louder than −14 LUFS', kind: PLAYBACK, source: 'Spotify for Artists, “Loudness normalization” (read 2026-10-04)' },
+  { who: 'Apple Music', loudness: '−16 LUFS (Sound Check)', truePeak: 'Not published', kind: PLAYBACK, source: 'Apple, 2022 (as reported); Sound Check' },
+  { who: 'YouTube', loudness: 'About −14 LUFS', truePeak: 'Not published', kind: PLAYBACK, source: 'Measured by engineers; YouTube publishes no figure' },
+  { who: 'Amazon Music', loudness: '−14 LUFS', truePeak: '−2 dBTP advised', kind: PLAYBACK, source: 'Distributor guidance; no public Amazon spec found (2026-10-04)' },
+  { who: 'TIDAL', loudness: '−14 LUFS (album normalization)', truePeak: 'Not published', kind: PLAYBACK, source: 'TIDAL, as reported (normalization on by default)' },
+  { who: 'Broadcast — EBU R 128', loudness: '−23 LUFS ±0.5 LU (±1 LU live)', truePeak: 'Max −1 dBTP', kind: 'Delivery requirement', source: 'EBU R 128 (2020)' },
+  { who: 'Broadcast — ATSC A/85 (US)', loudness: '−24 LKFS ±2 dB', truePeak: '−2 dBTP recommended', kind: 'Delivery requirement (CALM Act)', source: 'ATSC A/85:2013' },
+  { who: 'Apple Podcasts', loudness: '−16 LKFS ±1 dB', truePeak: 'Max −1 dBFS true peak', kind: 'Delivery recommendation', source: 'Apple Podcasts, “Audio requirements” (read 2026-10-04)' },
+  { who: 'AES TD1008 streaming', loudness: '−16 LUFS music; −18 LUFS speech', truePeak: '—', kind: 'Distribution recommendation', source: 'AES TD1008 (2021)' },
+];
+/** The one-line honesty note under the table. */
+export const LOUDNESS_TARGETS_NOTE =
+  'As published by each platform; they change — check the platform’s current spec. A streaming platform’s level is where it turns playback to, not a mastering requirement: a louder master is simply turned down. Broadcast figures are delivery requirements.';
+
 const LOUDNORM: Workspace = {
   id: 'loudnorm',
   name: 'Loudness Normalization',
@@ -52,7 +75,7 @@ const LOUDNORM: Workspace = {
   glossary: ['LUFS', 'True Peak', 'Loudness', 'Dynamic Range', 'Gain Staging'],
   fields: [
     { key: 'measured', name: 'MEASURED LOUDNESS (LUFS)', quantity: 'number', signed: true, placeholder: '-9', help: 'Your program’s integrated loudness, in LUFS.' },
-    { key: 'target', name: 'TARGET LOUDNESS (LUFS)', quantity: 'number', signed: true, placeholder: '-14', help: 'The platform’s loudness target, in LUFS.' },
+    { key: 'target', name: 'TARGET LOUDNESS (LUFS)', quantity: 'number', signed: true, placeholder: '-14', help: 'The level to match, in LUFS — a streaming platform’s playback level or a broadcast delivery spec (see the table under the result).' },
     { key: 'truePeak', name: 'CURRENT TRUE PEAK (dBTP)', quantity: 'number', signed: true, placeholder: '-0.5', help: 'Your master’s measured true-peak level, in dBTP.' },
     { key: 'ceiling', name: 'TRUE-PEAK CEILING (dBTP)', quantity: 'number', signed: true, placeholder: '-1', help: 'The maximum true peak you’ll allow, in dBTP.' },
   ],
@@ -77,15 +100,11 @@ const LOUDNORM: Workspace = {
           { label: over > 0 ? 'OVER CEILING BY' : 'HEADROOM TO CEILING', value: Math.abs(over), quantity: 'db', chainable: false },
         ];
       },
+      note: LOUDNESS_TARGETS_NOTE,
       table: () => ({
         title: 'COMMON LOUDNESS TARGETS',
-        cols: ['Platform', 'Target (LUFS)', 'Ceiling (dBTP)'],
-        rows: [
-          ['Spotify / Amazon / YouTube', '−14', '−1'],
-          ['Apple Music', '−16', '−1'],
-          ['Broadcast (EBU R128)', '−23', '−1'],
-          ['Broadcast (ATSC A/85)', '−24', '−2'],
-        ],
+        cols: ['Platform / standard', 'Loudness', 'True peak', 'What it is', 'Source'],
+        rows: LOUDNESS_TARGETS.map((r) => [r.who, r.loudness, r.truePeak, r.kind, r.source]),
       }),
       steps: (v) => {
         const gain = n(v.target) - n(v.measured);

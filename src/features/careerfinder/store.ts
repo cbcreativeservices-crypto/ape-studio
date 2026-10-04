@@ -27,8 +27,9 @@
  * NO MIGRATION NEEDED, ON PURPOSE: the record has only ever lived under this
  * one key (git history: 29660a03 → today), in this one shape. The store reads
  * the same key through the same `clean()`, so every existing answer, ★,
- * result and note loads untouched — and AuthScreen's Guest Mode keeps the
- * record across its total wipe by that same key name.
+ * result and note loads untouched. A GUEST's record is not kept (owner ruling
+ * 2026-10-04: "guest data is ALWAYS deleted, Career Finder included"): Guest
+ * Mode entry and a known guest's launch both wipe it with the rest.
  */
 import { useSyncExternalStore } from 'react';
 import { createLocalStore } from '../storage/localStore';

@@ -11,10 +11,10 @@
  */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
-import { READINESS_LABEL, VERDICT_LABEL } from '../../../features/production/types';
-import type { Finding, LabKind, ReadinessState } from '../../../features/production/types';
+import { VERDICT_LABEL } from '../../../features/production/types';
+import type { Finding, LabKind } from '../../../features/production/types';
 import type { ReadinessReport, StageReadiness } from '../../../features/production/readiness';
-import { stageSignal } from '../../../features/production/readiness';
+import { STAGE_WORD, stageSignal } from '../../../features/production/readiness';
 import { fitValue } from '../../../theme/legibility';
 import { STATE_TINT } from './FieldRow';
 
@@ -131,7 +131,16 @@ export function ReadinessMeter({
 export function stageSignalLabel(stage: StageReadiness | null, unreadable?: boolean): string {
   const sig = stageSignal(unreadable ? null : stage);
   if (sig.pct === null || !stage) return 'progress could not be read just now';
-  return `${sig.pct} percent, ${READINESS_LABEL[stage.state]}, ${stage.answeredRequired} of ${stage.totalRequired} required decisions, ${stage.answeredAll} of ${stage.totalAll} questions answered`;
+  const counts = `${stage.answeredRequired} of ${stage.totalRequired} required decisions, ${stage.answeredAll} of ${stage.totalAll} questions answered`;
+  // A blocked stage is SAID blocked first, as it is drawn (2026-10-04).
+  if (stage.blockers.length > 0) return `Blocked, ${blockerCount(stage)}, ${counts}`;
+  return `${sig.pct} percent, ${STAGE_WORD[stage.state]}, ${counts}`;
+}
+
+/** "1 blocker open" / "2 blockers open". */
+function blockerCount(stage: StageReadiness): string {
+  const n = stage.blockers.length;
+  return `${n} blocker${n === 1 ? '' : 's'} open`;
 }
 
 /**
@@ -172,7 +181,9 @@ export function StageProgressRow({
         <Text style={styles.stageSub}>
           {sig.state && stage ? (
             <>
-              <Text style={{ color: tint }}>{READINESS_LABEL[sig.state]}</Text>
+              <Text style={{ color: tint }}>
+                {stage.blockers.length > 0 ? blockerCount(stage) : STAGE_WORD[sig.state]}
+              </Text>
               {` · ${stage.answeredRequired} of ${stage.totalRequired} required · ${stage.answeredAll} of ${stage.totalAll} answered`}
             </>
           ) : (
@@ -203,19 +214,16 @@ export function StageSignalBadge({ stage }: { stage: StageReadiness | null }) {
       <Text style={[styles.badgePct, { color: tint }]} {...fitValue(18)}>
         {sig.text}
       </Text>
-      {sig.state ? <Text style={[styles.badgeWord, { color: tint }]}>{BADGE_WORD[sig.state]}</Text> : null}
+      {/* The same words as the stage list (STAGE_WORD). Blocked already leads
+          with BLOCKED, so its second line says how many. */}
+      {sig.state && stage ? (
+        <Text style={[styles.badgeWord, { color: tint }]} {...fitValue(9.5)}>
+          {(stage.blockers.length > 0 ? blockerCount(stage) : STAGE_WORD[sig.state]).toUpperCase()}
+        </Text>
+      ) : null}
     </View>
   );
 }
-
-/** The header has room for one short word; the full state is in its label. */
-const BADGE_WORD: Record<ReadinessState, string> = {
-  complete: 'COMPLETE',
-  attention: 'UNDER WAY',
-  missing: 'NOT STARTED',
-  conflict: 'BLOCKED',
-  na: 'N/A',
-};
 
 const styles = StyleSheet.create({
   stageMid: { flex: 1, gap: 2 },

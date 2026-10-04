@@ -137,7 +137,14 @@ import { useScenarioExempt } from '../../features/study/scenarioExempt';
 import { useTermsExempt } from '../../features/study/termsExempt';
 import { loadAllLocalMethodStates, mergeItemStates } from '../../features/study/localProgress';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useMemberGate, useTier } from '../../features/commercial/useTier';
+import { useGuestWording, useMemberGate, useTier } from '../../features/commercial/useTier';
+import {
+  GUEST_QUIZ_BODY,
+  GUEST_QUIZ_NOT_NOW,
+  GUEST_REMINDER_SIGN_IN,
+  GUEST_REMINDER_TITLE,
+  remindAsGuest,
+} from '../../features/lab/guestReminderRules';
 import { cardColumn, popupCard } from '../../theme/readingColumn';
 
 // Rack density (owner 2026-08-11): ONE knob scales every rack slot's height
@@ -781,6 +788,11 @@ export function DashboardScreen() {
   const tierForTerms = useTier();
   const tierForTermsRef = useRef(tierForTerms);
   tierForTermsRef.current = tierForTerms;
+  // A KNOWN guest only (tier 'guest' AND guest wording — never a pending or
+  // unconfirmed member, D52): the topic quiz needs an account (owner
+  // 2026-10-04; see GUEST_QUIZ_BODY).
+  const guestWording = useGuestWording();
+  const quizAsGuest = remindAsGuest(tierForTerms, guestWording.guest);
   // Membership gate (user request 2026-08-12): a free user may LOAD a locked/paid
   // topic into the Dashboard, but studying it raises the Academy upgrade sheet.
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -2618,6 +2630,20 @@ export function DashboardScreen() {
                       onPress={() => {
                         if (actMembershipLocked) {
                           setUpgradeOpen(true);
+                          return;
+                        }
+                        // A KNOWN GUEST CANNOT SIT A QUIZ (owner 2026-10-04):
+                        // the server grades and records it on an account and
+                        // refuses anyone without one. Told so here, every
+                        // time, instead of BEGIN leading to a refusal.
+                        if (quizAsGuest) {
+                          confirmDialog(
+                            GUEST_REMINDER_TITLE,
+                            GUEST_QUIZ_BODY,
+                            GUEST_REMINDER_SIGN_IN,
+                            () => (navigation as any).navigate('Auth'),
+                            { cancelText: GUEST_QUIZ_NOT_NOW },
+                          );
                           return;
                         }
                         // Not over a study screen another switch just opened.

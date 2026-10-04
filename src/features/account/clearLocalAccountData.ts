@@ -63,8 +63,9 @@ const KEEP: ReadonlySet<string> = new Set<string>([
   //
   // Keeping it is now safe: every queued row records the user it belongs to and
   // `replayExamSubmissions` submits only the current session's rows, so it can
-  // no longer be credited to whoever signs in next. A guest `total` wipe still
-  // removes it below — a guest cannot sit a graded exam in the first place.
+  // no longer be credited to whoever signs in next. The guest `total` wipe
+  // keeps it too since 2026-10-04 (see GUEST_KEEP): a guest can never create
+  // one, so whatever is here is an account's.
   'ape:finalExamQueue',
   'ape:finalExamQueue:damaged', // its quarantine copy, for the same reason
   // THE FREE-TIER GLOSSARY METER (2026-09-17, bug-hunt pass 5).
@@ -171,6 +172,51 @@ function isOnboardingFlag(k: string): boolean {
 }
 
 /**
+ * ⛔ WHAT A GUEST KEEPS (owner rulings 2026-10-04). "Guest data is ALWAYS
+ * deleted, Career Finder included. The ONLY guest data that survives is the
+ * usage tracking for the glossary and calculator meters, plus the device id
+ * they key on." The guest (`total`) wipe — Guest Mode entry and the launch
+ * wipe of a known guest (accountLocalSync) — keeps exactly:
+ *   • the two meters: `ape:glossaryUsageLocal`, `ape:calc:usageLocal`;
+ *   • the device id the glossary meter is keyed on: `ape:deviceId`;
+ *   • the device-level onboarding / intro "seen" family (isOnboardingFlag and
+ *     `ape:homeFirstOpenDone`) — "those are not work" (ruling 2);
+ *   • device hardware calibration (`ape:splCalOffset`, governance R1: the
+ *     physical mic, not a person) and the dev-only overrides;
+ *   • an ACCOUNT's unsent graded work (`ape:finalExamQueue*`,
+ *     `ape:attemptDraft:*`). A guest can never create these (the server
+ *     refuses every attempt start without an account row), so they are never
+ *     guest data; each row names its owner and only that account can submit
+ *     it. The launch wipe runs for a member who signed out and relaunched, and
+ *     must not throw their offline exam away.
+ * Everything else under `ape:*` goes — display preferences included (the big-
+ * picture totals, keep-glossary-offline, hide-the-display): the 2026-09-01
+ * ruling already took a guest's settings, and the KEEP list kept these only
+ * for account switches.
+ */
+const GUEST_KEEP: ReadonlySet<string> = new Set<string>([
+  'ape:glossaryUsageLocal',
+  'ape:calc:usageLocal',
+  'ape:deviceId',
+  'ape:homeFirstOpenDone',
+  'ape:splCalOffset',
+  'ape:finalExamQueue',
+  'ape:finalExamQueue:damaged',
+  'ape:dev:commercialMode',
+  'ape:dev:entitlement',
+  'ape:devSuppressPopups',
+]);
+
+/** Does this key survive the wipe? Pure — exported for the receipts. */
+export function keepsThroughWipe(k: string, opts?: { total?: boolean }): boolean {
+  if (!k.startsWith('ape:')) return true; // never ours to touch (sb-* auth, libraries)
+  // The in-progress exam/quiz answer draft: see the note in sweepApeKeys.
+  if (k.startsWith('ape:attemptDraft:')) return true;
+  if (isOnboardingFlag(k)) return true;
+  return opts?.total === true ? GUEST_KEEP.has(k) : KEEP.has(k);
+}
+
+/**
  * Remove all device-local USER data from AsyncStorage. Only touches keys under
  * the `ape:` namespace (leaves the Supabase `sb-*` auth session and any other
  * library keys alone) and preserves the KEEP allowlist + onboarding flags.
@@ -201,44 +247,22 @@ export async function clearLocalAccountData(opts?: { total?: boolean }): Promise
 async function sweepApeKeys(opts?: { total?: boolean }): Promise<void> {
   try {
     const keys = await AsyncStorage.getAllKeys();
-    // `total` = a NO-ACCOUNT GUEST entry (owner ruling 2026-09-01): "a guest is
-    // always wiped 100% clean — that includes ALL app settings. Once an account
-    // is made, then we begin to remember anything about the user. We break that
-    // promise if we allow anything to be stored." So a guest also loses the
-    // onboarding/coach flags that an ACCOUNT switch deliberately keeps (the
-    // 2026-08-13 fix, which exists so signing out doesn't replay every intro —
-    // that fix still stands for account users). The KEEP allowlist survives
-    // either way: it is device hardware calibration, the install id the
-    // single-device login needs, and dev-only overrides — never user memory.
-    const toRemove = keys.filter(
-      (k) =>
-        k.startsWith('ape:') &&
-        /**
-         * ⛔ THE IN-PROGRESS EXAM ANSWER DRAFT SURVIVES, FOR THE SAME REASON
-         * THE EXAM QUEUE DOES (bug pass 1, 2026-09-20).
-         *
-         * `ape:attemptDraft:<attemptId>` was swept by the blanket `ape:*`
-         * rule. `SingleDeviceGuard` runs this wipe within about a second of a
-         * second device signing in, from any screen — including mid-exam. The
-         * SERVER attempt stays `in_progress` with `started_at` unchanged, so
-         * the learner rejoins the same sitting with zero answers and an
-         * already-expired clock, and the screen force-submits an empty paper
-         * that is scored and recorded as a real attempt.
-         *
-         * Keeping it is safe for the same reason the queue is: the key carries
-         * the ATTEMPT ID, and `submit_final_exam` raises `not_owner` for an
-         * attempt that is not the caller's — so a draft cannot be credited to
-         * whoever signs in next. A guest `total` wipe still removes it below;
-         * a guest cannot sit a graded exam.
-         */
-        !(k.startsWith('ape:attemptDraft:') && opts?.total !== true) &&
-        // A guest is wiped 100% clean, so `total` overrides the exam-queue
-        // entries too — but never the hardware calibration, the install id,
-        // the dev overrides, or THE GLOSSARY METER, which is a rate limit
-        // rather than user memory and whose whole purpose is to survive this.
-        !(KEEP.has(k) && !(opts?.total === true && k.startsWith('ape:finalExamQueue'))) &&
-        (opts?.total === true || !isOnboardingFlag(k)),
-    );
+    // `total` = a NO-ACCOUNT GUEST wipe: Guest Mode entry, and the launch wipe
+    // of a known guest. What it keeps is GUEST_KEEP above (owner rulings
+    // 2026-10-04, which replace the 2026-09-01 "onboarding flags go too" and
+    // the 2026-09-03 Career Finder exception). An ACCOUNT switch keeps KEEP.
+    //
+    // ⛔ THE IN-PROGRESS EXAM ANSWER DRAFT SURVIVES EITHER WAY (bug pass 1,
+    // 2026-09-20). `ape:attemptDraft:<attemptId>` was swept by the blanket
+    // `ape:*` rule. `SingleDeviceGuard` runs this wipe within about a second
+    // of a second device signing in, from any screen — including mid-exam.
+    // The SERVER attempt stays `in_progress` with `started_at` unchanged, so
+    // the learner rejoined the same sitting with zero answers and an
+    // already-expired clock, and the screen force-submitted an empty paper.
+    // Keeping it is safe: the key carries the ATTEMPT ID, and the submit RPCs
+    // raise `not_owner` for an attempt that is not the caller's — so a draft
+    // cannot be credited to whoever signs in next.
+    const toRemove = keys.filter((k) => !keepsThroughWipe(k, opts));
     if (toRemove.length > 0) {
       await AsyncStorage.multiRemove(toRemove);
     }

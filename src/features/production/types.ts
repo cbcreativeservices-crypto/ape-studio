@@ -95,7 +95,12 @@ export type ProductionProject = {
   acceptedConditions: AcceptedCondition[];
   /** Set when the project was seeded by an activity or the capstone. */
   scenarioId?: string;
-  /** Document-control revision, incremented when a packet is exported. */
+  /**
+   * Document-control revision: 0 until the first packet export, then raised by
+   * one on each export — recorded by `projectStore.recordExport` only after
+   * the export succeeded and only from that write's result (2026-10-04). A
+   * duplicate starts again at 0.
+   */
   revision: number;
   /**
    * The stage the user last answered something in (2026-10-04, design review

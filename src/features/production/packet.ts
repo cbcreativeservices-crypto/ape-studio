@@ -16,10 +16,11 @@
  */
 import { optionalModule } from '../tools/capture/optionalModule';
 import type { ProductionProject } from './types';
-import { READINESS_LABEL, VERDICT_LABEL, valueKey } from './types';
+import { VERDICT_LABEL, valueKey } from './types';
 import type { NoticeDef, ResolvedStage, ResolvedField } from './schema';
 import { STATUS_OPTIONS } from './schema';
 import type { ReadinessReport } from './readiness';
+import { STAGE_WORD } from './readiness';
 import { localDay } from '../../lib/localDate';
 
 type PrintLib = {
@@ -157,7 +158,8 @@ const CSS = `
 function controlRows(d: DocControl): [string, string][] {
   const rows: [string, string][] = [
     ['Project', d.projectName],
-    ['Revision', `${d.revision}`],
+    // 0 is a packet never exported; each export prints the next number.
+    ['Revision', d.revision > 0 ? `${d.revision}` : '0 — not exported yet'],
     ['Revision date', d.revisionDate],
     ['Prepared by', d.author],
     ['Status', d.approvalStatus],
@@ -204,7 +206,7 @@ export type PacketStage = {
   stageId: string;
   num: number;
   title: string;
-  /** "Needs attention — 3 of 7 required decisions", or null when unread. */
+  /** "Under way — 3 of 7 required decisions" (the stage list's own words), or null when unread. */
   status: string | null;
   notices: PacketNotice[];
   sections: PacketSection[];
@@ -269,7 +271,7 @@ export function buildPacketModel(input: PacketInput): PacketModel {
         num: stage.num,
         title: stage.title,
         status: sr
-          ? `${READINESS_LABEL[sr.state]} — ${sr.answeredRequired} of ${sr.totalRequired} required decisions`
+          ? `${STAGE_WORD[sr.state]} — ${sr.answeredRequired} of ${sr.totalRequired} required decisions`
           : null,
         notices: stage.notices.map((n) => ({ kind: n.kind, text: n.text })),
         sections: stage.sections.map((section) => ({
@@ -384,6 +386,17 @@ export function buildPacketHtml(input: PacketInput): string {
   return `<!doctype html><html><head><meta charset="utf-8"/><title>${escapeHtml(
     m.title,
   )}</title><style>${CSS}</style></head><body>${parts.join('\n')}</body></html>`;
+}
+
+/**
+ * The project as the NEXT export prints it (2026-10-04, owner ruling 3): one
+ * revision higher, dated today. Nothing is stored here — the screen records
+ * the number with `projectStore().recordExport` only after the export
+ * succeeded, and shows it only from that write's result, so a revision is
+ * never claimed that was not both shared and saved.
+ */
+export function nextRevision(project: ProductionProject, now: number = Date.now()): ProductionProject {
+  return { ...project, revision: project.revision + 1, updatedAt: now };
 }
 
 export type PacketResult =

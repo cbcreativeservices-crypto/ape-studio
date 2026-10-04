@@ -8,6 +8,7 @@
  */
 import type { Workspace } from '../calcTypes';
 import { ALPHA_CU_20C, BTU_PER_HR_PER_W, CU_TEMP_RANGE, awgAreaM2, fmt, fmtInt, rhoCopper, snapWhole } from '../calcUnits';
+import { AMPACITY_CALC_NAME } from './ampacity';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -336,9 +337,9 @@ const VDROP: Workspace = {
       note:
         'Voltage-drop sizing only — this is NOT an ampacity calculation. It gives the smallest ' +
         'conductor that stays inside your drop budget; it does not check whether that conductor ' +
-        'can safely or legally carry the current. Size for ampacity FIRST from the applicable ' +
-        'code (NEC Table 310.16 / IEC 60364-5-52), including bundling, ambient-temperature and ' +
-        'conduit-fill derating, then use this result only to go THICKER if the drop demands it. ' +
+        `can safely or legally carry the current. Size for ampacity FIRST with the ${AMPACITY_CALC_NAME} ` +
+        '(NEC Table 310.16 with its ambient, bundling and terminal limits; outside the US, your local ' +
+        'code, e.g. IEC 60364-5-52), then use this result only to go THICKER if the drop demands it. ' +
         'Whichever is larger wins.',
       compute: (v) => {
         const vdMax = (n(v.vsrc) * n(v.pct)) / 100;
@@ -364,7 +365,7 @@ const VDROP: Workspace = {
           awg > AWG_FINEST && Number.isFinite(awg)
             ? {
                 label: 'DROP-LIMITED AWG (CHECK AMPACITY)',
-                text: `Any gauge up to ${AWG_FINEST} AWG (the finest this calculator covers) keeps the drop inside the budget — the drop does not limit this run. Size it by ampacity.`,
+                text: `Any gauge up to ${AWG_FINEST} AWG (the finest this calculator covers) keeps the drop inside the budget — the drop does not limit this run. Size it with the ${AMPACITY_CALC_NAME}.`,
               }
             : awg >= 0 || !Number.isFinite(awg)
             ? { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: awg, quantity: 'number', chainable: false }
@@ -398,7 +399,7 @@ const VDROP: Workspace = {
             : name
             ? `That is about ${fmt(awgReal)} AWG — so on DROP ALONE, ${name} or thicker (a LOWER gauge number).`
             : `That is thicker than 4/0 AWG, past the end of the AWG scale — so on DROP ALONE, a conductor of at least ${fmt(A * 1e6)} mm² (kcmil sizes).`,
-          'Now check ampacity against the applicable code table for this circuit and its derating, and use whichever conductor is LARGER. Drop sizing alone can return a conductor that cannot legally or safely carry the current.',
+          `Now check ampacity with the ${AMPACITY_CALC_NAME} (or your local code table) for this circuit and its derating, and use whichever conductor is LARGER. Drop sizing alone can return a conductor that cannot legally or safely carry the current.`,
         ];
       },
     },

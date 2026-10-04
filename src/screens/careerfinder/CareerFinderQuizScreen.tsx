@@ -26,6 +26,7 @@ import { ANSWERS, QUESTIONS, QUESTION_COUNT, type Response } from '../../feature
 import { allAnswered, answerQuestion, completeCareerFinder, firstUnansweredIndex, setQuestionIndex, useCareerFinder, useCareerFinderFace, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { FinderShell, NavButton, ProgressBar } from './kit';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { useGuestWording } from '../../features/commercial/useTier';
 
 // The beat between choosing an answer and the next question (perf hunt
 // 2026-10-03: was 450 ms). The ✓ and the highlighted row land on the tap
@@ -46,6 +47,8 @@ export function CareerFinderQuizScreen() {
   // The back label promises a save only when one happens (final round A,
   // 2026-10-02): an unreadable record is never written over.
   const saving = useCareerFinderSaving();
+  // A guest's answers are erased at close (owner 2026-10-04) — never "saved".
+  const guest = useGuestWording().guest;
   const scrollRef = useRef<ScrollView>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fade = useRef(new Animated.Value(1)).current;
@@ -139,7 +142,7 @@ export function CareerFinderQuizScreen() {
       kicker="CAREER DISCOVERY LAB"
       title={`Question ${index + 1} of ${QUESTION_COUNT}`}
       onBack={() => safeGoBack(navigation)}
-      backLabel={saving ? 'Leave the questions. Your answers are saved.' : 'Leave the questions. Your answers could not be saved on this phone.'}
+      backLabel={saving ? (guest ? 'Leave the questions. Your answers are kept until you close the app.' : 'Leave the questions. Your answers are saved.') : 'Leave the questions. Your answers could not be saved on this phone.'}
       scrollRef={scrollRef}
       footer={
         <>

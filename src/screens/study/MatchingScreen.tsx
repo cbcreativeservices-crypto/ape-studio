@@ -48,6 +48,7 @@ import { PaceTimerBar } from '../../features/study/PaceTimerBar';
 import { PaceTimerModal } from '../../features/study/PaceTimerModal';
 import { registerTrialAnswer, useTimeTrial } from '../../features/study/timeTrial';
 import { StudyHeader } from './StudyHeader';
+import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { useAnimationsAllowed } from '../../features/settings/a11y';
 import { orderByCredit } from '../../features/study/deckOrder';
@@ -573,6 +574,8 @@ export function MatchingScreen({ navigation, route }: Props) {
           onOpenTimer={() => setTimerOpen(true)}
           hideTimerButton={!!(pace.enabled || trial.active || trial.result)}
         />
+        {/* A known guest: progress here is not saved or carried (owner 2026-10-04). */}
+        <GuestStartReminder activity="study:matching" kind="study" />
         <View style={styles.ledRow}>
           <View style={{ flex: 1 }}>
             <LedMeterWell filled={segmentsForPct(displayPct)} pct={displayPctLabel} label="Matching progress" />

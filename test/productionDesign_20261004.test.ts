@@ -132,11 +132,14 @@ describe('#1 the conditions behave', () => {
   });
 
   it('multi-choice notEquals: "none" alone hides; "none" beside a real answer keeps the question', () => {
-    const mix = LABS.postprod.stages.find((s: Any) => s.stageId === 'mix')!;
-    const shows = (used: string[]) => fieldsOf(resolveStage(mix, 'music', { 'mix.automation_used': used })).includes('automation_checked');
+    // (automation_checked was the example until 2026-10-04, when the owner's
+    // "show every learning moment" ruling un-gated it — stray automation is
+    // worth checking even when nothing was automated on purpose.)
+    const finish = LABS.postprod.stages.find((s: Any) => s.stageId === 'finish')!;
+    const shows = (needed: string[]) => fieldsOf(resolveStage(finish, 'music', { 'finish.access_deliverables': needed })).includes('access_status');
     assert.equal(shows(['none']), false);
-    assert.equal(shows(['volume', 'none']), true);
-    assert.equal(shows(['volume']), true);
+    assert.equal(shows(['captions', 'none']), true);
+    assert.equal(shows(['captions']), true);
   });
 
   it('a plain "watched field is empty" rule never reports a hidden field as missing', () => {

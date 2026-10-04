@@ -36,17 +36,25 @@ test('the meter is in the KEEP set', () => {
   assert.ok(SRC.includes(`'${METER}'`), 'the glossary meter key is no longer named in this file at all');
 });
 
-test('⛔ the `total` exemption does NOT name the glossary meter', () => {
-  // Find the filter predicate that decides what gets removed.
-  const m = SRC.match(/!\(KEEP\.has\(k\) && !\(opts\?\.total === true && [^)]*\)\)/);
-  assert.ok(m, 'could not find the total-wipe exemption — this test needs updating to match the new shape');
+// guestEphemeral 2026-10-04: the `total` branch is now its own allowlist,
+// GUEST_KEEP (owner ruling: a guest keeps ONLY the glossary and calculator
+// meters, the device id, and the onboarding family). The meter must be ON it.
+// The behavioural proof (keepsThroughWipe) is test/guestEphemeral_20261004.
+const GUEST_KEEP_SRC = SRC.match(/const GUEST_KEEP[^=]*= new Set<string>\(\[([\s\S]*?)\]\)/);
+
+test('⛔ the guest (`total`) allowlist names the glossary meter', () => {
+  assert.ok(GUEST_KEEP_SRC, 'could not find GUEST_KEEP — this test needs updating to match the new shape');
   assert.ok(
-    !m[0].includes('glossaryUsageLocal'),
-    `Guest Mode passes { total: true }, so naming the meter here hands out unlimited free definitions.\nFound: ${m[0]}`,
+    GUEST_KEEP_SRC[1].includes(`'${METER}'`),
+    'Guest Mode passes { total: true }, so leaving the meter off GUEST_KEEP hands out unlimited free definitions.',
   );
+  assert.match(SRC, /opts\?\.total === true \? GUEST_KEEP\.has\(k\) : KEEP\.has\(k\)/);
 });
 
-test('the exemption still covers the final-exam queue, which SHOULD be wiped for a guest', () => {
-  const m = SRC.match(/!\(KEEP\.has\(k\) && !\(opts\?\.total === true && [^)]*\)\)/);
-  assert.ok(m && m[0].includes('finalExamQueue'), 'a guest cannot sit a graded exam; its queue must still be wiped');
+test('the final-exam queue is kept for its ACCOUNT, not wiped as guest data (owner ruling 2026-10-04)', () => {
+  // Deliberately changed 2026-10-04: a guest can never create a queued exam
+  // (start_final_exam refuses without an account row), so whatever is queued
+  // belongs to an account — and the guest LAUNCH wipe runs for a member who
+  // signed out and relaunched, which must not throw their offline exam away.
+  assert.ok(GUEST_KEEP_SRC && GUEST_KEEP_SRC[1].includes("'ape:finalExamQueue'"));
 });

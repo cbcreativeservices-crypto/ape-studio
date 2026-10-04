@@ -111,9 +111,11 @@ describe('3. Career Finder store', () => {
     assert.equal((store as unknown as { isCareerFinderSaving: () => boolean }).isCareerFinderSaving(), false);
     store.resetLocal();
     const quiz = read('src/screens/careerfinder/CareerFinderQuizScreen.tsx');
-    assert.match(quiz, /backLabel=\{saving \? 'Leave the questions\. Your answers are saved\.' : 'Leave the questions\. Your answers could not be saved on this phone\.'\}/);
-    assert.match(read('src/screens/careerfinder/CareerFinderScreen.tsx'), /\{saving \? 'saved on this phone' : 'not saved on this phone'\}/);
-    assert.match(read('src/screens/curriculum/CurriculumScreen.tsx'), /\$\{finderSaving \? 'Your answers are saved\.' : 'Your answers could not be saved on this phone\.'\}/);
+    assert.match(quiz, /backLabel=\{saving \? \(guest \? 'Leave the questions\. Your answers are kept until you close the app\.' : 'Leave the questions\. Your answers are saved\.'\) : 'Leave the questions\. Your answers could not be saved on this phone\.'\}/);
+    // (guestEphemeral 2026-10-04: a known guest's answers are erased at the
+    // next launch, so they read "kept until you close the app" instead.)
+    assert.match(read('src/screens/careerfinder/CareerFinderScreen.tsx'), /\{saving \? \(guest \? 'kept until you close the app' : 'saved on this phone'\) : 'not saved on this phone'\}/);
+    assert.match(read('src/screens/curriculum/CurriculumScreen.tsx'), /\$\{finderSaving \? \(finderGuest \? 'Your answers are kept until you close the app\.' : 'Your answers are saved\.'\) : 'Your answers could not be saved on this phone\.'\}/);
   });
 });
 

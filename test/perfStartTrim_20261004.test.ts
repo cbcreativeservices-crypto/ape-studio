@@ -467,9 +467,9 @@ const COUNTS_AT_HEAD: Record<string, string> = {
   livesound: '1 Lab', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
   saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '3 Labs',
   visualization: '2 Labs', instruments: '2 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
-  calculators: '163 Calculators',
+  calculators: '166 Calculators', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
 };
-const TOTAL_AT_HEAD = 217;
+const TOTAL_AT_HEAD = 220; // was 217 before the ampacity calculator
 
 describe('3. the members-only gate decides exactly as before', () => {
   it('loading the catalog (what the gate does at start) does not load the calc registry', async () => {

@@ -28,7 +28,9 @@ test('a password-recovery sign-in runs the account-switch wipe', () => {
 });
 
 test('account-switch syncs run one at a time', () => {
-  assert.match(localSync, /chain = chain\.then\(\(\) => syncLocalToIdentity\(identity\)\)\.catch\(\(\) => \{\}\)/);
+  // (guestEphemeral 2026-10-04: a confirmed-guest launch runs the guest wipe
+  // in the sync's place, on the same queue.)
+  assert.match(localSync, /chain = chain\.then\(\(\) => \(guestLaunch \? wipeGuestLaunch\(\) : syncLocalToIdentity\(identity\)\)\)\.catch\(\(\) => \{\}\)/);
   assert.doesNotMatch(localSync, /void syncLocalToIdentity\(/);
 });
 

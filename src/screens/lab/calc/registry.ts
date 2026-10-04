@@ -17,6 +17,8 @@ import { WORKSPACES_ROOMS_MUSIC } from './workspaces/roomsMusic';
 import { WORKSPACES_ROOMS_SECOND } from './workspaces/roomsSecond';
 import { WORKSPACES_ROOMS_ADVANCED } from './workspaces/roomsAdvanced';
 import { WORKSPACES_POWER_ELEC } from './workspaces/powerElec';
+// Conductor ampacity, NEC 2023 (owner ruling 2026-10-04).
+import { WORKSPACES_AMPACITY } from './workspaces/ampacity';
 import { WORKSPACES_SPEAKERS_ADV } from './workspaces/speakersAdv';
 import { WORKSPACES_DIGITAL_ADV } from './workspaces/digitalAdv';
 import { WORKSPACES_MICS_RF } from './workspaces/micsRf';
@@ -34,6 +36,7 @@ export const WORKSPACES: Workspace[] = [
   ...WORKSPACES_ROOMS_SECOND,
   ...WORKSPACES_ROOMS_ADVANCED,
   ...WORKSPACES_POWER_ELEC,
+  ...WORKSPACES_AMPACITY,
   ...WORKSPACES_SPEAKERS_ADV,
   ...WORKSPACES_DIGITAL_ADV,
   ...WORKSPACES_MICS_RF,
@@ -55,7 +58,7 @@ export const SECTION_META: { id: CalcSectionId; title: string; note: string }[] 
   { id: 'music', title: 'MUSIC & PRODUCTION', note: 'Tempo, note values, pitch and cents.' },
   { id: 'rooms', title: 'ROOMS & ACOUSTICS', note: 'Modes, reverberation, treatment.' },
   { id: 'filters', title: 'FILTERS & EQ', note: 'Q, bandwidth, band edges.' },
-  { id: 'electronics', title: 'ELECTRONICS', note: 'Ohm’s law, dividers, reactance.' },
+  { id: 'electronics', title: 'ELECTRONICS', note: 'Ohm’s law, dividers, reactance, wire ampacity.' },
 ];
 
 /** Post-launch roadmap — now fully built (owner buildout 2026-08-07), so this
