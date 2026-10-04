@@ -16,6 +16,7 @@
 import { supabase } from '../../lib/supabase';
 import { withDeadline } from '../../lib/boundedCall';
 import { LIMITS, readableError } from './rules';
+import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 
 export { LIMITS, readableError };
 
@@ -82,6 +83,10 @@ export async function fetchTaxonomy(): Promise<Taxonomy | null> {
 export function resetTaxonomyCache(): void {
   taxonomyCache = null;
 }
+// Registered with the account wipe when this module is first evaluated (perf
+// start trim 2026-10-04) — the wipe no longer imports the directory API at app
+// start; a session that never opened the directory has no cache to drop.
+registerLocalStoreReset(resetTaxonomyCache);
 
 /* ── My community profile ─────────────────────────────────────────────── */
 

@@ -86,6 +86,26 @@ const EXEMPT: Record<string, string> = {
     'its module state is the shared glossary CATALOG cache plus a lazily-required component — reference data, identical for every user',
 };
 
+/**
+ * The exported resets a module hands to the wipe ITSELF, when it is first
+ * evaluated (perf start trim 2026-10-04): it imports `registerLocalStoreReset`
+ * from storage/localStoreRegistry and calls it at top level with one of its
+ * own exported functions. `resetAllLocalStores` runs every registered reset
+ * through `resetRegisteredLocalStores()` (asserted in G2 below), so such a
+ * reset is reached on every wipe once the module is loaded — and a module
+ * never loaded holds no memory, while its `ape:*` keys go in the sweep
+ * (behavioural proof: test/perfStartTrim_20261004.test.ts). This is the same
+ * guarantee as a wipe import, without loading the module at app start.
+ */
+function selfRegisteredResets(s: string): Set<string> {
+  const out = new Set<string>();
+  if (!/import \{[^}]*\bregisterLocalStoreReset\b[^}]*\} from '[^']*storage\/localStoreRegistry'/.test(s)) return out;
+  for (const m of s.matchAll(/^registerLocalStoreReset\((\w+)\);/gm)) {
+    if (new RegExp(`^export (?:async )?(?:function|const) ${m[1]}\\b`, 'm').test(s)) out.add(m[1]);
+  }
+  return out;
+}
+
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
@@ -128,6 +148,9 @@ describe('the account wipe reaches every store that holds user state', () => {
     for (const rel of stateful) {
       if (EXEMPT[rel]) continue;
       if (onSafeStore(rel)) continue;
+      // Registers its own exported reset with the wipe at first evaluation
+      // (perf start trim 2026-10-04) — reached by resetRegisteredLocalStores.
+      if (selfRegisteredResets(readFileSync(join(SRC, rel), 'utf8')).size > 0) continue;
       const base = (rel.split('/').pop() ?? '').replace(/\.tsx?$/, '');
       if (!imported.has(base)) missing.push(rel);
     }
@@ -217,17 +240,18 @@ describe('G2: every exported reset* is reached by the account wipe, or says why 
     aliases.set(mod, map);
   }
 
-  const exported: { rel: string; name: string; body: string; safe: boolean }[] = [];
+  const exported: { rel: string; name: string; body: string; safe: boolean; selfReg: boolean }[] = [];
   for (const p of walk(SRC)) {
     const rel = relative(SRC, p).split(sep).join('/');
     if (rel === 'features/account/clearLocalAccountData.ts') continue;
     if (rel === 'features/storage/localStore.ts') continue; // the helper's doc comment shows a resetLocal example
     const s = readFileSync(p, 'utf8');
     const safe = /from '[^']*storage\/localStore'/.test(s);
+    const selfRegistered = selfRegisteredResets(s);
     for (const m of s.matchAll(/export (?:async )?(?:function|const) (reset\w+)/g)) {
       const at = m.index ?? 0;
       const end = s.indexOf('\n}', at);
-      exported.push({ rel, name: m[1], body: s.slice(at, end < 0 ? s.length : end), safe });
+      exported.push({ rel, name: m[1], body: s.slice(at, end < 0 ? s.length : end), safe, selfReg: selfRegistered.has(m[1]) });
     }
   }
 
@@ -239,13 +263,14 @@ describe('G2: every exported reset* is reached by the account wipe, or says why 
 
   it('every reset* export is reached or listed with a reason', () => {
     const unreached: string[] = [];
-    for (const { rel, name, body, safe } of exported) {
+    for (const { rel, name, body, safe, selfReg } of exported) {
       const id = `${rel}#${name}`;
       if (RESET_NOT_FOR_THE_WIPE[id]) continue;
       const mod = rel.replace(/\.tsx?$/, '');
       const alias = aliases.get(mod)?.get(name);
       if (alias && calledInWipe.has(alias)) continue;
       if (safe && /\.reset\(\)/.test(body)) continue; // registered at creation
+      if (selfReg) continue; // registers ITSELF at first evaluation (see selfRegisteredResets)
       unreached.push(id);
     }
     assert.deepEqual(

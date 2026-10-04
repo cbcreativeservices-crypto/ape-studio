@@ -14,8 +14,31 @@
  * of their subject (§1.7: no dead links). Counts are computed, never hard-coded.
  */
 import type { RootStackParamList } from '../../navigation/types';
-import { WORKSPACES } from './calc/registry';
 import { computeLabRouteMembership } from './labMembership';
+
+/**
+ * The Calculator Laboratory's row count, worked out on first READ (perf start
+ * trim, owner 2026-10-04 "do … the members-only gate").
+ *
+ * withMembershipPreview sits in RootNavigator and reads this file at app start
+ * for two answers — is a route members-only, and what is the lab called. A
+ * static `import { WORKSPACES } from './calc/registry'` pulled every calculator
+ * workspace (17 modules, ~500 KB of formulas) into the first frame for one number that only
+ * the Lab landing and the Curriculum subtitle ever show. The registry is now
+ * `require`d the first time that number is asked for, and remembered: the same
+ * count, from the same registry, so nothing reads differently. The gate never
+ * touches it (labMembership reads routes, names and sections only).
+ */
+type CalcRegistryModule = typeof import('./calc/registry');
+let calcFunctionCountMemo: number | null = null;
+function calcFunctionCount(): number {
+  if (calcFunctionCountMemo === null) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { WORKSPACES } = require('./calc/registry') as CalcRegistryModule;
+    calcFunctionCountMemo = WORKSPACES.reduce((a, w) => a + w.functions.length, 0);
+  }
+  return calcFunctionCountMemo;
+}
 
 /** Which top-level section a category lives under: AUDIO FUNDAMENTALS is the
  *  required part (core labs free, deeper labs `member: true`), TRAINING LAB is
@@ -479,8 +502,11 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     kind: 'hub',
     route: 'CalcLab',
     // Count the CALCULATORS, not the workspaces (fix 2026-08-31: the row
-    // said "55 Calculators" over 163 ratified functions).
-    count: WORKSPACES.reduce((a, w) => a + w.functions.length, 0),
+    // said "55 Calculators" over 163 ratified functions). A getter, so the
+    // calc registry loads when the count is first shown, not at app start.
+    get count() {
+      return calcFunctionCount();
+    },
     countLabel: (n) => `${n} Calculators`,
     hubBlurb: 'SPL, dB, speaker power, delay, wavelength, room modes, cable loss, Ohm’s law, digital audio, coverage — chained.',
   },

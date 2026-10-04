@@ -25,6 +25,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { reportUnhandledSaveFailure } from '../../../../features/storage/saveFailureNotice';
+import { registerLocalStoreReset } from '../../../../features/storage/localStoreRegistry';
 import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
 import { LabChip, CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
@@ -705,14 +706,20 @@ function persistSolved(s: Set<string>): void {
       if (gen === solvedGen) reportUnhandledSaveFailure();
     });
 }
-/** Reset the in-memory solved set on account switch / guest entry (called by
- *  resetAllLocalStores — B-154). Without this the next person's SOLVED count
- *  started from the departing user's set until a relaunch; the store re-hydrates
- *  from the (now-cleared) key on the next mount. */
+/** Reset the in-memory solved set on account switch / guest entry (B-154).
+ *  Without this the next person's SOLVED count started from the departing
+ *  user's set until a relaunch; the store re-hydrates from the (now-cleared)
+ *  key on the next mount. */
 export function resetLocal(): void {
   solvedCache = null;
   solvedGen++;
 }
+// Registered with the account wipe the moment this module is first evaluated
+// (perf start trim 2026-10-04): the wipe no longer imports this screen module,
+// which dragged the meter engine and the guided lessons into app start. A
+// session that never opened the lab holds nothing here to reset, and the
+// stored ape:detectiveSolved key is taken by the wipe's ape:* sweep either way.
+registerLocalStoreReset(resetLocal);
 
 // Options de-cued (learning pass 2026-08-31): the correct answer was
 // systematically the LONGEST and carried its own definition -- a length cue

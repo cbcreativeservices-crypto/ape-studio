@@ -48,6 +48,7 @@ import { SESSION_TRACKS, type TrackId } from './engine/mixModel.ts';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createLocalStore } from '../../../features/storage/localStore';
+import { registerLocalStoreReset } from '../../../features/storage/localStoreRegistry';
 import { armSaveFailureReport } from '../../../features/storage/saveFailureNotice';
 
 const FOCAL_KEY = 'ape:mixing:focal';
@@ -178,6 +179,14 @@ const prioritiesStore = createLocalStore<readonly string[]>({
 /** Committed in THIS app run (never read from storage) — what a guest sees. */
 let prioritiesSession: string[] | null = null;
 const prioritiesListeners = new Set<() => void>();
+// Both commitments are registered with the account wipe the moment this module
+// is first evaluated (perf start trim 2026-10-04) — placed after everything
+// resetMixingCommitments touches. The wipe no longer imports this lab kit,
+// which pulled the mixing engine into app start. A session that never opened
+// a Mixing lab holds nothing here to reset (the import-time focal read runs on
+// first open, after any wipe), and ape:mixing:focal / ape:mixing:priorities
+// are taken by the wipe's ape:* sweep either way.
+registerLocalStoreReset(resetMixingCommitments);
 
 /** Pure: the list after toggling `id` — at most three. */
 function togglePriority(base: readonly string[], id: string, add: boolean): string[] {

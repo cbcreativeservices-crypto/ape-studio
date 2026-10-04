@@ -21,9 +21,11 @@
  * edge fn needs no account, so a signed-out learner loads them too.
  *
  * ACCOUNT WIPE: the cache holds shared, public, non-user content. The decoded
- * memory copies are dropped by resetLabClipMemory() (registered in
- * resetAllLocalStores); the disk copies are identical for every user and stay,
- * like the glossary catalog.
+ * memory copies are dropped by resetLabClipMemory(), registered with the wipe
+ * (localStoreRegistry) when this module is first evaluated — the wipe does not
+ * import it, so the decoder stays out of app start (perf start trim
+ * 2026-10-04); a session that never loaded a clip has no copies to drop. The
+ * disk copies are identical for every user and stay, like the glossary catalog.
  *
  * Nothing here plays audio. Playback stays behind the app-wide output gate
  * (renderRecorded.ts / useRecordedPlayback.ts → EarClipPlayer).
@@ -31,6 +33,7 @@
 import { Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { fetchLabAudio } from './labAudio';
+import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import {
   LabClipCache, LabClipError, base64ToBytes, bytesToBase64,
   type FetchedBytes, type LabClipBuffer, type LabClipDisk, type ResolveResult,
@@ -183,3 +186,4 @@ export function peekLabClipBuffer(labKey: string, assetKey: string): LabClipBuff
 export function resetLabClipMemory(): void {
   labClipCache.clearMemory();
 }
+registerLocalStoreReset(resetLabClipMemory);

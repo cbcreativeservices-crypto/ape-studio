@@ -14,6 +14,7 @@
 import { useSyncExternalStore } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
+import { registerLocalStoreReset } from '../storage/localStoreRegistry';
 import type { QuestionId, Response } from './questions';
 import { QUESTIONS, QUESTION_COUNT } from './questions';
 import { computeResult, type Responses } from './scoring';
@@ -313,3 +314,9 @@ export function resetLocal(): void {
   // does; storage was already wiped, so this lands an empty record.
   if (listeners.size > 0) void hydrateCareerFinder();
 }
+// Registered with the account wipe the moment this module is first evaluated
+// (perf start trim 2026-10-04): the wipe no longer imports it, so the 217 KB
+// career index stays out of app start. A session that never opened the Career
+// Finder holds nothing here to reset, and ape:careerfinder:v1 (and its
+// :damaged copy) is taken by the wipe's ape:* sweep either way.
+registerLocalStoreReset(resetLocal);

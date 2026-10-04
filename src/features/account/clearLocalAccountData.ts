@@ -17,7 +17,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { resetRegisteredLocalStores } from '../storage/localStoreRegistry';
-import { resetTaxonomyCache } from '../directory/api';
 import { resetLocal as resetPaceStore } from '../study/paceStore';
 import { resetLocal as resetLastStudyLocation } from '../study/lastStudyLocation';
 import { resetLocal as resetHomeCardsStore } from '../home/homeCardsStore';
@@ -35,21 +34,17 @@ import { clearQueuedSubmissions } from '../quiz/submissionQueueStorage';
 import { resetLocal as resetSettingsMirrors } from '../settings/store';
 import { resetLocal as resetPublicProfile } from '../profile/publicProfile';
 import { setChainValue } from '../../screens/lab/calc/chainStore';
-import { resetLocal as resetDetectiveSolved } from '../../screens/lab/meter/modules/modMeterC';
-import { resetLocal as resetCareerFinderStore } from '../careerfinder/store';
 import { resetSoundSafetyAck } from '../audio/soundSafetyAck';
 import { resetTimeTrials } from '../study/timeTrial';
 import { resetAskModeCache } from '../permissions/permissionStore';
 import { resetPopupSuppression } from '../dev/popupSuppressStore';
 import { resetLowLight } from '../settings/lowLight';
-import { resetMixingCommitments } from '../../screens/lab/mixing/kit';
 import { resetCelebrationsSeen } from '../celebration/celebrationSeen';
 import { resetGenCapSession } from '../tools/genCapSession';
 import { resetLocal as resetSoundSystemsProgress } from '../soundsystems/progress';
 import { resetLocal as resetRoomDesigns } from '../roomdesign/roomDesignStore';
 import { resetCalcWorkflowStore } from '../../screens/lab/calc/workflowStore';
 import { resetCalcSectionPrefs } from '../../screens/lab/calc/calcPrefs';
-import { resetLabClipMemory } from '../lab/labClipBuffer';
 import { resetAppUserIdMemo } from './appUserIdMemo';
 
 /**
@@ -262,6 +257,21 @@ export function resetAllLocalStores(): void {
   // migrated next. Nothing below needs a line for them — the hand-kept list
   // drifted every bug pass (2, then 9, then 3 missing), which is why the
   // registry exists (pattern catalog 2026-10-02, closer A2 / guard G2).
+  //
+  // ⛔ SELF-REGISTERED LAB AND FEATURE MODULES (perf start trim, owner
+  // 2026-10-04). Five resets used to be imported here, and importing them put
+  // whole screens in the app-start graph (the meter lab + guided lessons, the
+  // Mixing kit + engine, the Career Finder + its 217 KB index, the lab-clip
+  // decoder, the directory API). Each now calls registerLocalStoreReset when
+  // it is first EVALUATED, so this line runs it:
+  //   • modMeterC resetLocal        — Signal Detective solved set (B-154)
+  //   • kit resetMixingCommitments  — the Mixing focal point + priorities
+  //   • careerfinder resetLocal     — Career Finder answers/results/feedback
+  //   • labClipBuffer resetLabClipMemory — decoded public clips
+  //   • directory resetTaxonomyCache — the chip vocabulary (guard G2)
+  // A module never loaded this session has no memory to reset, and every key
+  // it owns is `ape:*`, so the sweep in clearLocalAccountData takes it.
+  // test/perfStartTrim_20261004.test.ts proves both halves behaviourally.
   resetRegisteredLocalStores();
   resetPaceStore();
   resetLastStudyLocation();
@@ -279,15 +289,11 @@ export function resetAllLocalStores(): void {
   // the next account inherited the departing user's attestation and skipped
   // the age gate (B-140).
   resetPublicProfile();
-  // Calc Lab chain value (in-memory only, never persisted) and the Signal
-  // Detective solved-set cache — both are USER working state, so the next
-  // person (account switch OR guest) must not inherit an armed "CHAIN ACTIVE"
-  // banner or the departing user's SOLVED count (B-154).
+  // Calc Lab chain value (in-memory only, never persisted) — USER working
+  // state, so the next person (account switch OR guest) must not inherit an
+  // armed "CHAIN ACTIVE" banner. (The Signal Detective solved set and the
+  // Career Finder record are self-registered — see the top of this function.)
   setChainValue(null);
-  resetDetectiveSolved();
-  // Career Finder answers, results, saved families and Beta feedback are the
-  // departing user's — the next person starts the questionnaire fresh.
-  resetCareerFinderStore();
   // Offline SQLite/in-memory queues carry NO user id — if not dropped here, a
   // departing user's queued study batches / quiz submissions would replay under
   // the NEXT user's session and be credited to the wrong account. Their local
@@ -319,10 +325,8 @@ export function resetAllLocalStores(): void {
   // The dim-and-silence mode itself, which is a different module from the
   // overlay suppression above and was missed for the same reason.
   resetLowLight();
-  // The Mixing labs echo the learner's own focal point and mix priorities back
-  // at them later in the lab. Left in memory, the next person was shown a
-  // stranger's answers as their own.
-  resetMixingCommitments();
+  // (The Mixing labs' focal point and mix priorities — a stranger's answers
+  // shown as the next person's own — are self-registered: see the top.)
   resetSoundSafetyAck();
   // ⚠️ HEARING SAFETY. The generator's output-cap unlock is a SAFETY gate: the
   // departing user confirmed a prompt accepting louder-than-capped output, and
@@ -352,16 +356,8 @@ export function resetAllLocalStores(): void {
   // Calculator section open/closed memory (perf hunt 2026-10-03): the next
   // account starts from its own stored state, never the departing one's.
   resetCalcSectionPrefs();
-  // Decoded lab-audio clips (labClipBuffer, 2026-10-01): public teaching
-  // assets, identical for every user — dropped from memory anyway so nothing
-  // the departing session loaded outlives it. The raw WAVs in the cache
-  // directory stay (shared reference data, like the glossary catalog).
-  resetLabClipMemory();
-  // The community directory taxonomy cache: reference data, but its own
-  // header says to drop it on an account switch "so a stale fetch from a
-  // signed-out session cannot linger with partial data" — and nothing called
-  // it (guard G2, 2026-10-02).
-  resetTaxonomyCache();
+  // (Decoded lab-audio clips and the community directory taxonomy cache are
+  // self-registered: see the top of this function.)
   // The remembered users.id (perf decisions A, 2026-10-04): keyed by the auth
   // uid already, and dropped here too so nothing of the departing identity —
   // not even a read still in flight — outlives the wipe.
