@@ -51,6 +51,7 @@ import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
 import { StageAspectReport, StageGlassWidth, StageInFullScreen, StageTextScale, type StageReport } from './stageAspect';
 import { anchorOffset, baseSize, compaction, factorOf, fitFactor, isLandscape, textScaleFor, wantsRotate, zoomSteps } from './stageFitMath';
+import { ScrollLockProvider } from '../scrollLock';
 
 /** The dock fold outlives one opening (a learner who folded it sideways
  *  keeps it folded on the next display this session), never a relaunch. */
@@ -249,6 +250,14 @@ export function StageFullScreen({
   // `overlayLift` px an open tray covers.
   const panX = w > bodyW;
   const panY = h > bodyH || overlayLift > 0;
+  // A drag that starts ON an object in the drawing (the Miking Labs' mic,
+  // 2026-10-04) locks the two scrollers for its duration — the contract the
+  // rack well already uses (scrollLock.ts). Additive: no stage calls it
+  // unless it asks, so every other lab's 1× and zoomed pan is unchanged.
+  const [dragLocked, setDragLocked] = useState(false);
+  useEffect(() => {
+    if (!visible) setDragLocked(false);
+  }, [visible]);
 
   const hintText = zoom > 1
     ? 'Drag to move around the drawing.'
@@ -318,7 +327,7 @@ export function StageFullScreen({
               // scroll even at 1×, so the whole drawing stays reachable while
               // choosing (QA 2026-09-26, D35.2 "the tray never veils").
               contentContainerStyle={[styles.vCenter, overlayLift > 0 ? { paddingBottom: overlayLift } : null]}
-              scrollEnabled={panY}
+              scrollEnabled={panY && !dragLocked}
               showsVerticalScrollIndicator={panY}
             >
               <ScrollView
@@ -326,10 +335,11 @@ export function StageFullScreen({
                 onContentSizeChange={(cw) => anchorScroll('x', cw)}
                 horizontal
                 contentContainerStyle={styles.center}
-                scrollEnabled={panX}
+                scrollEnabled={panX && !dragLocked}
                 showsHorizontalScrollIndicator={panX}
               >
                 <View ref={drawRef} style={{ width: w, height: h }} testID="stage-fullscreen-drawing" onStartShouldSetResponderCapture={noteTouch}>
+                  <ScrollLockProvider value={setDragLocked}>
                   <StageAspectReport.Provider value={report}>
                     <StageGlassWidth.Provider value={glassW ?? 0}>
                       <StageTextScale.Provider value={textScale}>
@@ -337,6 +347,7 @@ export function StageFullScreen({
                       </StageTextScale.Provider>
                     </StageGlassWidth.Provider>
                   </StageAspectReport.Provider>
+                  </ScrollLockProvider>
                 </View>
               </ScrollView>
             </ScrollView>

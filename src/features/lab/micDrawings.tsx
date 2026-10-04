@@ -307,3 +307,146 @@ export function CondenserMic({
     </Group>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3 · KICK-TYPE MICS (Miking Labs, 2026-10-04): an END-ADDRESS KICK DYNAMIC, a
+// SMALL-CAPSULE CONDENSER and a BOUNDARY PLATE. GENERIC silhouettes at the
+// overall sizes their cited examples document (docs/labs/miking/kick/
+// SOURCES.md §d) — never a brand's likeness. Same conventions as above: the
+// mic's FRONT (grille front; the element end of a boundary plate) sits at the
+// origin and the body extends toward +y; sizes are in the caller's units (the
+// Miking scenes draw in millimetres). These are the in-scene bodies; a later
+// art pass may enrich them, keeping the outline sizes.
+
+function buildKickDynamic(r: number, len: number) {
+  // Front grille: a shallow dome on a straight basket (≈ 40 % of the length),
+  // a dark collar ring, then a body tapering slightly to the XLR tail.
+  const gl = len * 0.4;
+  const dome = r * 0.28;
+  const grille: SkPathT = Skia.Path.Make();
+  grille.moveTo(-r, dome);
+  grille.quadTo(-r, 0, 0, 0);
+  grille.quadTo(r, 0, r, dome);
+  grille.lineTo(r, gl);
+  grille.lineTo(-r, gl);
+  grille.close();
+  const mesh: SkPathT = Skia.Path.Make();
+  for (let i = 1; i <= 5; i++) {
+    const yy = dome * 0.6 + ((gl - dome * 0.6) * i) / 6;
+    mesh.moveTo(-r * 0.96, yy);
+    mesh.lineTo(r * 0.96, yy);
+  }
+  for (let i = -3; i <= 3; i++) {
+    const xx = (i / 3.6) * r;
+    mesh.moveTo(xx, dome * (1 - Math.abs(xx) / r) * 0.5 + dome * 0.35);
+    mesh.lineTo(xx, gl - r * 0.04);
+  }
+  const collar: SkPathT = Skia.Path.Make();
+  collar.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 1.02, gl, r * 2.04, len * 0.07), r * 0.06, r * 0.06));
+  const bt = gl + len * 0.07;
+  const body: SkPathT = Skia.Path.Make();
+  body.moveTo(-r * 0.98, bt);
+  body.lineTo(-r * 0.78, len - r * 0.3);
+  body.quadTo(-r * 0.78, len, -r * 0.5, len);
+  body.lineTo(r * 0.5, len);
+  body.quadTo(r * 0.78, len, r * 0.78, len - r * 0.3);
+  body.lineTo(r * 0.98, bt);
+  body.close();
+  const band: SkPathT = Skia.Path.Make();
+  band.addRect(Skia.XYWHRect(-r * 0.9, bt + (len - bt) * 0.45, r * 1.8, len * 0.035));
+  return { grille, mesh, collar, body, band, gl };
+}
+
+/** END-ADDRESS KICK DYNAMIC: radius `r`, overall length `len`, front at the origin. */
+export function KickDynamicMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: number; len: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
+  const p = useMemo(() => buildKickDynamic(r, len), [r, len]);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Path path={p.body}>
+        <LinearGradient start={vec(-r, 0)} end={vec(r, 0)} colors={['#202227', '#5d616c', '#383a42', '#17181c']} positions={[0, 0.3, 0.6, 1]} />
+      </Path>
+      <Path path={p.band} color={ACCENT} opacity={0.45} />
+      <Path path={p.collar}>
+        <LinearGradient start={vec(-r, 0)} end={vec(r, 0)} colors={['#2a2b31', '#8d919c', '#26272d']} />
+      </Path>
+      <Path path={p.grille}>
+        <LinearGradient start={vec(-r, 0)} end={vec(r, p.gl)} colors={['#c3c7d0', '#7b7f89', '#34363d']} positions={[0, 0.42, 1]} />
+      </Path>
+      <Path path={p.mesh} color="#121318" style="stroke" strokeWidth={Math.max(0.4, r * 0.035)} opacity={0.55} />
+      <Path path={p.grille} style="stroke" strokeWidth={Math.max(0.4, r * 0.04)} color={tint ?? '#d8dbe3'} opacity={tint ? 0.95 : 0.4} />
+    </Group>
+  );
+}
+
+function buildSdc(r: number, len: number) {
+  const gl = len * 0.22;
+  const grille: SkPathT = Skia.Path.Make();
+  grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.86, 0, r * 1.72, gl), r * 0.3, r * 0.3));
+  const mesh: SkPathT = Skia.Path.Make();
+  for (let i = 1; i <= 3; i++) {
+    const yy = (gl * i) / 4;
+    mesh.moveTo(-r * 0.8, yy);
+    mesh.lineTo(r * 0.8, yy);
+  }
+  const body: SkPathT = Skia.Path.Make();
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, gl, r * 2, len - gl), r * 0.18, r * 0.18));
+  const ring: SkPathT = Skia.Path.Make();
+  ring.addRect(Skia.XYWHRect(-r, gl + len * 0.05, r * 2, len * 0.03));
+  return { grille, mesh, body, ring, gl };
+}
+
+/** SMALL-CAPSULE CONDENSER: radius `r`, length `len`, front at the origin. */
+export function SdcMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: number; len: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
+  const p = useMemo(() => buildSdc(r, len), [r, len]);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Path path={p.body}>
+        <LinearGradient start={vec(-r, 0)} end={vec(r, 0)} colors={[METAL_LO, METAL_HI, METAL_MID, '#2b2d34']} positions={[0, 0.28, 0.58, 1]} />
+      </Path>
+      <Path path={p.ring} color={ACCENT} opacity={0.45} />
+      <Path path={p.grille}>
+        <LinearGradient start={vec(-r, 0)} end={vec(r, p.gl)} colors={['#d2d5dd', '#868a94', '#3a3c44']} />
+      </Path>
+      <Path path={p.mesh} color="#121318" style="stroke" strokeWidth={Math.max(0.4, r * 0.04)} opacity={0.5} />
+      <Path path={p.grille} style="stroke" strokeWidth={Math.max(0.4, r * 0.05)} color={tint ?? '#d8dbe3'} opacity={tint ? 0.95 : 0.35} />
+    </Group>
+  );
+}
+
+function buildBoundary(len: number, cross: number) {
+  const plate: SkPathT = Skia.Path.Make();
+  plate.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross / 2, 0, cross, len), Math.min(cross, len) * 0.12, Math.min(cross, len) * 0.12));
+  // The grille field at the element end (front), then the connector boss.
+  const grille: SkPathT = Skia.Path.Make();
+  grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross * 0.38, len * 0.05, cross * 0.76, len * 0.42), cross * 0.08, cross * 0.08));
+  const holes: SkPathT = Skia.Path.Make();
+  for (let i = 1; i <= 4; i++) {
+    const yy = len * 0.05 + (len * 0.42 * i) / 5;
+    holes.moveTo(-cross * 0.34, yy);
+    holes.lineTo(cross * 0.34, yy);
+  }
+  const boss: SkPathT = Skia.Path.Make();
+  boss.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross * 0.18, len * 0.9, cross * 0.36, len * 0.1), cross * 0.04, cross * 0.04));
+  return { plate, grille, holes, boss };
+}
+
+/** BOUNDARY PLATE: `len` along its axis, `cross` = the visible cross size
+ *  (its height in a side view, its width from above); element end at the origin. */
+export function BoundaryMic({ len, cross, x = 0, y = 0, angleDeg = 0, tint }: { len: number; cross: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
+  const p = useMemo(() => buildBoundary(len, cross), [len, cross]);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Path path={p.plate}>
+        <LinearGradient start={vec(-cross / 2, 0)} end={vec(cross / 2, len)} colors={['#4a4d56', '#24262c', '#141519']} />
+      </Path>
+      {cross > 30 ? (
+        <>
+          <Path path={p.grille} color="#0e0f12" />
+          <Path path={p.holes} color="#7d818b" style="stroke" strokeWidth={Math.max(0.4, cross * 0.012)} opacity={0.6} />
+          <Path path={p.boss} color="#5b5f69" />
+        </>
+      ) : null}
+      <Path path={p.plate} style="stroke" strokeWidth={Math.max(0.4, Math.min(cross, len) * 0.03)} color={tint ?? '#9a9ea8'} opacity={tint ? 0.95 : 0.6} />
+    </Group>
+  );
+}

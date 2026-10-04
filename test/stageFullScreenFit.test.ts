@@ -160,8 +160,11 @@ describe('StageFullScreen wires the rules in', () => {
   test('pan follows overflow, not only the step', () => {
     assert.match(src, /const panX = w > bodyW;/);
     assert.match(src, /const panY = h > bodyH \|\| overlayLift > 0;/);
-    assert.match(src, /scrollEnabled=\{panY\}/);
-    assert.match(src, /scrollEnabled=\{panX\}/);
+    // …and a drag that starts ON an object in the drawing (the Miking Labs'
+    // mic, 2026-10-04) locks both scrollers for its duration (ScrollLock).
+    assert.match(src, /scrollEnabled=\{panY && !dragLocked\}/);
+    assert.match(src, /scrollEnabled=\{panX && !dragLocked\}/);
+    assert.match(src, /<ScrollLockProvider value=\{setDragLocked\}>/);
   });
 
   test('sideways: the readouts ride in the bar, the badge on one line in the foot row; the hint row is gone', () => {
