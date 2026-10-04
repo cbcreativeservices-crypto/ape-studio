@@ -377,6 +377,12 @@ export type RootStackParamList = {
    *  in sub-step mode; member-only via the catalog leaf (Instruments &
    *  Recording, training section). */
   DrumTuningLab: undefined;
+  /** Miking Labs (owner GO 2026-10-04): the hub lists the ready lessons of a
+   *  lab; the lesson host runs one lesson's eight pages. Silent labs — the
+   *  route names do not end in `Lab` (blueprint D9: kept out of the audio
+   *  exposure check-in). Members-only (catalog + MEMBER_ONLY_EXTRA_ROUTES). */
+  MikingHub: { lab?: import('../screens/lab/miking/engine/model/types').MikingLabId } | undefined;
+  MikingLesson: { id: string; page?: string };
   /** Speech & Voice Lab (owner brief 2026-09-02) — visual, paged. */
   SpeechLab: undefined;
   /** Smart Processors family hub (owner brief 2026-09-02) and its V1 member. */

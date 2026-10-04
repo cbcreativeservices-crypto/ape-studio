@@ -29,7 +29,7 @@ export function PTroubleshoot({ lesson, answers, onAnswered, onInteractive, inte
       layout: 'read',
       body: (
         <>
-          <Body>Each card is a row of the lesson’s troubleshooting table. Choose the FIRST things to check; a retry is free and explained.</Body>
+          <Body>Each card is a row of the lesson’s troubleshooting table. Choose the FIRST things to check; a retry is explained, never penalised.</Body>
           <Body>{`${lesson.symptoms.filter((s) => s.id in answers).length} of ${lesson.symptoms.length} answered.`}</Body>
           {lesson.symptoms.map((s) => (
             <SymptomCard key={s.id} s={s} answered={s.id in answers} onAnswered={(ok) => onAnswered(s.id, ok)} />

@@ -32,6 +32,7 @@ import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, useShare
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../theme/tokens';
+import { fitValue } from '../../../../../theme/legibility';
 import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
 import { useScrollLock } from '../../../scrollLock';
 import { BoundaryMic, KickDynamicMic, SdcMic } from '../../../../../features/lab/micDrawings';
@@ -83,6 +84,10 @@ export type PlacementSceneProps = SceneOptions & {
   baseXf?: ViewXform;
   /** A wider model box than the lesson's view (page 4's plan with a wedge). */
   boxOverride?: ViewBox;
+  /** The art's part labels (off where the drawing is too small for them). */
+  showLabels?: boolean;
+  /** The live readout strip (one per stacked pair is enough). */
+  showLive?: boolean;
   onCommit?: (slot: MicSlot) => void;
   accessibilityLabel: string;
 };
@@ -148,16 +153,13 @@ function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: 
   const s = m.surfaces.find((q) => q.id === z.refSurface)!;
   const a = s.point.x + s.normal.x * z.distance.min;
   const b = s.point.x + s.normal.x * z.distance.max;
-  const rIn = m.interior.rIn;
-  let v0 = -rIn;
-  let v1 = rIn;
-  if (z.radial) {
-    const line = m.lines.find((l) => l.id === z.radial!.line)!;
-    const c = view === 'side' ? line.point.y : line.point.z;
-    const max = z.radial.max ?? rIn;
-    v0 = c - max;
-    v1 = c + max;
-  }
+  // The DISTANCE band, across the interior (inside) or the head (outside).
+  // A radial condition ("slightly off-center", "on the edge") is not drawn
+  // as a region — both views are sections, so a band would mislead; it is
+  // READ (the bezel, the zone card) against the dashed reference line.
+  const span = z.side === 'inside' ? m.interior.rIn : (m.parts.find((p) => p.solid?.kind === 'tube')?.solid as { rOut?: number } | undefined)?.rOut ?? m.interior.rIn;
+  let v0 = -span;
+  let v1 = span;
   if (z.requires?.mount === 'surface') {
     const part = m.parts.find((p) => p.id === micType(z.requires!.micTypeIds![0]).surfacePartId);
     if (part?.solid?.kind === 'box') {
@@ -318,12 +320,12 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
     return p;
   }, [r.u0, r.u1, r.v0, r.v1]);
   const tone = z.kind === 'trial' ? AMBER : BLUE;
-  const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.3 : 0.1));
-  const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : 0.6));
+  const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.26 : 0.04));
+  const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : 0.45));
   return (
     <>
       <Path path={path} color={tone} opacity={fill} />
-      <Path path={path} style="stroke" strokeWidth={z.kind === 'trial' ? 3 : 3.5} color={tone} opacity={edge}>
+      <Path path={path} style="stroke" strokeWidth={z.kind === 'trial' ? 2.5 : 2.5} color={tone} opacity={edge}>
         {z.kind === 'trial' ? <DashPathEffect intervals={[14, 9]} /> : null}
       </Path>
     </>
@@ -332,17 +334,20 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
 
 /* ── RN labels over the canvas, following the same transform ─────────── */
 
-function SceneLabel({ xf, u, v, text, align, tone, scale }: { xf: SharedValue<ViewXform>; u: number; v: number; text: string; align: 'left' | 'center' | 'right'; tone?: string; scale: number }) {
-  const W = 220;
+function SceneLabel({ xf, u, v, text, align, tone, scale, maxX }: { xf: SharedValue<ViewXform>; u: number; v: number; text: string; align: 'left' | 'center' | 'right'; tone?: string; scale: number; maxX: number }) {
+  // Width from the text (Oswald ≈ 0.55 em per glyph), so a label can be kept
+  // wholly inside the canvas instead of running off its edge.
+  const W = Math.min(maxX - 4, Math.ceil(text.length * 9.5 * scale * 0.56) + 6);
   const style = useAnimatedStyle(() => {
     const x = xf.value.ox + u * xf.value.s;
     const y = xf.value.oy + v * xf.value.s;
-    return { transform: [{ translateX: align === 'left' ? x : align === 'right' ? x - W : x - W / 2 }, { translateY: y - 7 * scale }] };
+    const left = align === 'left' ? x : align === 'right' ? x - W : x - W / 2;
+    return { transform: [{ translateX: Math.max(2, Math.min(maxX - W - 2, left)) }, { translateY: y - 7 * scale }] };
   });
   const color = tone === 'illustrative' ? '#aab0bd' : tone === 'muted' ? colors.textMuted : colors.amberLabel;
   return (
     <Animated.View pointerEvents="none" style={[styles.label, { width: W }, style]}>
-      <Text style={[styles.labelText, { fontSize: 9.5 * scale, textAlign: align, color }]} numberOfLines={2}>
+      <Text style={[styles.labelText, { fontSize: 9.5 * scale, textAlign: align, color }]} {...fitValue(9.5 * scale)}>
         {text}
       </Text>
     </Animated.View>
@@ -372,6 +377,8 @@ function LiveReadout({ rig, slot, scale }: { rig: Rig; slot: MicSlot; scale: num
   return (
     <AnimatedTextInput
       editable={false}
+      multiline
+      scrollEnabled={false}
       pointerEvents="none"
       underlineColorAndroid="transparent"
       animatedProps={props}
@@ -392,7 +399,7 @@ export function PlacementScene(props: PlacementSceneProps) {
   return inFull ? <GestureHandlerRootView style={{ width: props.w, height: props.h }}>{body}</GestureHandlerRootView> : body;
 }
 
-function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, boxOverride, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
+function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
   const model = rig.lesson.model;
   const box = boxOverride ?? model.views[view]!;
   const base = useMemo(() => baseXf ?? fitXform(view, box, w, h, mini ? 2 : PAD), [baseXf, view, box, w, h, mini]);
@@ -604,18 +611,24 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       .filter((e): e is { id: string; path: ReturnType<typeof Skia.Path.Make> } => !!e.path);
   }, [showEnvelopes, model.envelopes, variant, view]);
   const hatchPath = useMemo(() => hatch(box), [box]);
-  const labels = useMemo(() => (mini ? [] : art.labels(view, variant)), [mini, art, view, variant]);
+  const labels = useMemo(() => (mini || !showLabels ? [] : art.labels(view, variant)), [mini, showLabels, art, view, variant]);
   const Instrument = art.Instrument;
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
     const part = model.parts.find((p) => p.id === highlight);
     const region = model.regions.find((r) => r.partId === highlight);
     const p = Skia.Path.Make();
-    if (region) p.addCircle(region.anchor.x, view === 'side' ? region.anchor.y : region.anchor.z, 46);
-    else if (part?.solid) {
-      const o = shapeOutline(part.solid, view);
+    const sol = part?.solid;
+    if (sol && (sol.kind === 'slab' || sol.kind === 'tube')) {
+      const r = sol.kind === 'slab' ? sol.r : sol.rOut;
+      p.addRRect(Skia.RRectXY(Skia.XYWHRect(sol.x0 - 14, -r - 14, sol.x1 - sol.x0 + 28, 2 * r + 28), 10, 10));
+      return p;
+    }
+    if (sol) {
+      const o = shapeOutline(sol, view);
       if (o) return o;
     }
+    if (region) p.addCircle(region.anchor.x, view === 'side' ? region.anchor.y : region.anchor.z, 70);
     return region ? p : null;
   }, [highlight, model, view]);
 
@@ -639,7 +652,14 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           ))}
           {highlightPath ? <Path path={highlightPath} style="stroke" strokeWidth={7} color={AMBER} /> : null}
           {pathsFrom ? <PathsOverlay rig={rig} view={view} from={pathsFrom} /> : null}
-          {wedge ? <WedgeGlyph at={wedge} view={view} aimAt={rig.mics[0]?.pose.p ?? wedge} /> : null}
+          {wedge ? (
+            <>
+              <Line p1={vec(rig.mics[0]?.pose.p.x ?? 0, vOf(view, rig.mics[0]?.pose.p ?? wedge))} p2={vec(wedge.x, vOf(view, wedge))} color={AMBER} strokeWidth={5} opacity={0.8}>
+                <DashPathEffect intervals={[30, 20]} />
+              </Line>
+              <WedgeGlyph at={wedge} view={view} aimAt={rig.mics[0]?.pose.p ?? wedge} />
+            </>
+          ) : null}
           {micsShown.map((m) => (
             <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
           ))}
@@ -652,12 +672,14 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         </Group>
       </Canvas>
       {labels.map((l) => (
-        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={textScale} />
+        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={textScale} maxX={w} />
       ))}
-      {!mini && interactive ? (
+      {!mini && interactive && showLive ? (
         <View pointerEvents="none" style={styles.liveWrap}>
           {micsShown.map((m) => (
-            <LiveReadout key={`live:${m.slot}`} rig={rig} slot={m.slot} scale={textScale} />
+            // Keyed by the commit count: a move made from React (a fader, a zone
+            // jump) re-seeds the text; a drag updates it on the UI thread.
+            <LiveReadout key={`live:${m.slot}:${rig.version}`} rig={rig} slot={m.slot} scale={textScale} />
           ))}
         </View>
       ) : null}

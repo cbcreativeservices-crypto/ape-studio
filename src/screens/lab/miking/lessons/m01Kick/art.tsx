@@ -122,9 +122,11 @@ export function KickArt({ view, variant }: { view: ViewId; variant: VariantId })
     const ped = pedalSide();
     const spurs = Skia.Path.Make();
     for (const s of G.spurs) {
-      if (v === 'side' && s.side < 0) continue; // the far spur hides behind the shell
-      spurs.moveTo(s.top.x, v === 'side' ? s.top.y : s.top.z);
-      spurs.lineTo(s.foot.x, v === 'side' ? s.foot.y : s.foot.z);
+      // Side view: the near spur is cut away with the near half of the shell,
+      // the far one is hidden behind the far wall — neither is drawn.
+      if (v === 'side') continue;
+      spurs.moveTo(s.top.x, s.top.z);
+      spurs.lineTo(s.foot.x, s.foot.z);
     }
     const footPlan = rrect(G.pedal.x0, -45, G.pedal.x1, 45, 10);
     return { R, L, rIn, wallTop, wallBot, interior, plyLines, hoops, rods, lugs, port, pillow, ped, spurs, footPlan };
@@ -228,15 +230,15 @@ export function kickLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'reso', text: variant === 'ported' ? 'FRONT HEAD (PORTED)' : 'FRONT HEAD (INTACT)', u: G.L + 10, v: -G.hoopOut - 70, align: 'center' },
   ];
   if (view === 'side') {
-    out.push({ id: 'beater', text: 'PEDAL & BEATER · ILLUSTRATIVE', u: -210, v: -160, align: 'center', tone: 'illustrative' });
+    out.push({ id: 'beater', text: 'PEDAL · ILLUSTRATIVE', u: -230, v: -170, align: 'center', tone: 'illustrative' });
     out.push({ id: 'pillow', text: 'PILLOW', u: 150, v: G.pillow.top + 50, align: 'center', tone: 'muted' });
-    out.push({ id: 'floor', text: 'FLOOR · ILLUSTRATIVE', u: 700, v: G.yFloor + 18, align: 'center', tone: 'illustrative' });
+    out.push({ id: 'floor', text: 'FLOOR · ILLUSTRATIVE', u: 680, v: G.yFloor - 24, align: 'center', tone: 'illustrative' });
   } else {
     out.push({ id: 'pedal', text: 'PEDAL · ILLUSTRATIVE', u: -230, v: 110, align: 'center', tone: 'illustrative' });
     out.push({ id: 'pillow', text: 'PILLOW (BELOW)', u: 150, v: 0, align: 'center', tone: 'muted' });
     out.push({ id: 'player', text: '← PLAYER', u: -300, v: -170, align: 'center', tone: 'muted' });
   }
-  if (variant === 'ported') out.push({ id: 'port', text: 'PORT · POSITION ILLUSTRATIVE', u: G.L + 120, v: view === 'side' ? PORT.y : PORT.z, align: 'left', tone: 'illustrative' });
+  if (variant === 'ported') out.push({ id: 'port', text: 'PORT · ILLUSTRATIVE', u: G.L + 30, v: (view === 'side' ? PORT.y : PORT.z) + G.portR + 40, align: 'left', tone: 'illustrative' });
   return out;
 }
 

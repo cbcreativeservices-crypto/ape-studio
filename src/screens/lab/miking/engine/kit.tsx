@@ -8,7 +8,7 @@
  *   TendencyNote    a zone's tendency, in words, with its source.
  *   MikingScenarioCard  one scenario, judged BY VALUE; reports once, when the
  *                   right option is reached, with whether the FIRST pick was
- *                   right (a retry is free and explained).
+ *                   right (a retry is explained, never penalised).
  *   SymptomCard     a troubleshooting row: observation → first checks.
  *   NowLine         the scene's live summary in words (a polite live region).
  */

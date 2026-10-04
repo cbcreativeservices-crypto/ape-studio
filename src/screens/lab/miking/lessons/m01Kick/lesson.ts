@@ -45,7 +45,7 @@ const pages: Record<PageId, PageContent> = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is free).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all six symptoms (a retry is explained, never penalised).' },
     takeaway: 'Check the physical cause first — angle, clearance, gain staging, levels and polarity — before reaching for tone controls.',
   },
   practice: {

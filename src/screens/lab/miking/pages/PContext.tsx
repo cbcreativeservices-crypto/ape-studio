@@ -28,14 +28,14 @@ import type { PageProps } from './pageTypes';
 
 const WEDGE_R = 700; // mm: the wedge's circle round the mic (illustrative)
 const NULL_TOL = 15; // deg: "in the null" tolerance (illustrative, ruling §16.4)
-const PLAN: ViewBox = { u0: -820, u1: 1260, v0: -900, v1: 900 };
+const PLAN: ViewBox = { u0: -900, u1: 1050, v0: -900, v1: 900 };
 const PATTERNS: { id: PatternId; label: string }[] = [
   { id: 'cardioid', label: 'cardioid (ideal)' },
   { id: 'supercardioid', label: 'supercardioid (ideal)' },
   { id: 'hypercardioid', label: 'hypercardioid (ideal)' },
 ];
 
-export function PContext({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, hidden }: PageProps) {
+export function PContext({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant }: PageProps) {
   const z = lesson.zones.find((q) => q.id === (variant === 'ported' ? 'b52.near' : 'dpa.outside')) ?? lesson.zones[0];
   const typeId = z.requires?.micTypeIds?.[0] ?? lesson.micTypeIds[0];
   const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId, pattern: 'supercardioid', pose: z.start }] });
@@ -55,7 +55,8 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const wedge: Vec3 = useMemo(() => {
     const ax = -Math.cos((pose.az * Math.PI) / 180);
     const az = Math.sin((pose.az * Math.PI) / 180);
-    const psi = Math.atan2(az, ax) + (phi * Math.PI) / 180;
+    // +φ swings the wedge toward +z, the player's right.
+    const psi = Math.atan2(az, ax) - (phi * Math.PI) / 180;
     return { x: pose.p.x + WEDGE_R * Math.cos(psi), y: pose.p.y, z: pose.p.z + WEDGE_R * Math.sin(psi) };
   }, [pose, phi]);
   const theta = arrivalAngle(pose, wedge);
@@ -74,7 +75,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       value: (phi + 180) / 360,
       home: 0.5,
       onChange: (v) => setPhi(Math.round(v * 360 - 180)),
-      format: () => `${Math.abs(phi)}° ${phi >= 0 ? 'to the right of' : 'to the left of'} the mic’s front axis (plan)`,
+      format: () => `${Math.abs(phi)}° off the mic’s front axis, toward the player’s ${phi >= 0 ? 'right' : 'left'} (plan)`,
       formatShort: () => `${phi}°`,
     },
     { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
@@ -82,7 +83,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       kind: 'options',
       id: 'pattern',
       label: 'PATTERN',
-      valueLabel: pattern.toUpperCase().slice(0, 10),
+      valueLabel: pattern === 'cardioid' ? 'CARDIOID' : pattern === 'supercardioid' ? 'SUPER' : 'HYPER',
       selectedId: pattern,
       onSelect: (id) => setPattern(id as PatternId),
       sticky: true,
@@ -140,6 +141,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
             interactive={false}
             boxOverride={view === 'top' ? PLAN : undefined}
             wedge={live && view === 'top' ? wedge : null}
+            showLabels={false}
             accessibilityLabel={label}
           />
         ),
@@ -150,7 +152,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       },
       well: (
         <>
-          <Landing looking={`the drum from above, the mic ${z.label.toLowerCase()}${live ? ', and a monitor wedge round it' : ''}`} prompt={live ? 'Move WEDGE ANGLE until the wedge sits in the pattern’s rejection.' : 'Studio: no wedge. Switch to LIVE to place one.'} />
+          <Landing looking={`the drum from above, a mic at a documented starting point (${z.label})${live ? ', and a monitor wedge round it' : ''}`} prompt={live ? 'Move WEDGE ANGLE until the wedge sits in the pattern’s rejection.' : 'Studio: no wedge. Switch to LIVE to place one.'} />
           {pattern === 'cardioid' ? (
             <Body>A cardioid rejects most directly behind the mic (180°).</Body>
           ) : (
@@ -168,6 +170,5 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       body: <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'context')} answers={answers} onAnswered={onAnswered} />,
     },
   ];
-  void hidden;
   return <PageSteps steps={steps} />;
 }

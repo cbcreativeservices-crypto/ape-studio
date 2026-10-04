@@ -81,7 +81,7 @@ export const KICK_MODEL: InstrumentModel = {
   parts,
   regions: [
     { id: 'r.strike', partId: 'kick.batter', label: 'beater strike', anchor: KICK_ANCHORS['pedal.beater.strike'], prov: D.strikeY.prov, note: 'The beater strikes the batter head: beater articulation (the attack) starts here.' },
-    { id: 'r.reso', partId: 'kick.resoPorted', label: 'resonant head', anchor: KICK_ANCHORS['bd.reso.center'], prov: D.L.prov, note: 'The front head, the air cavity and the shell carry the resonance.' },
+    { id: 'r.reso', partId: 'kick.reso', label: 'resonant head', anchor: KICK_ANCHORS['bd.reso.center'], prov: D.L.prov, note: 'The front head, the air cavity and the shell carry the resonance.' },
     { id: 'r.port', partId: 'kick.port', label: 'port', anchor: KICK_ANCHORS['bd.port.center'], prov: D.portY.prov, variants: ['ported'], note: 'Sound and moving air leave through the port — port air can pop a mic.' },
     { id: 'r.shell', partId: 'kick.shell', label: 'shell', anchor: { x: L / 2, y: -R, z: 0 }, prov: D.tShell.prov, note: 'The shell and its tuning shape how long the drum rings.' },
   ],
@@ -113,8 +113,8 @@ export const KICK_MODEL: InstrumentModel = {
   ],
   defaultVariant: 'ported',
   views: {
-    side: { u0: -470, u1: 960, v0: -330, v1: D.yFloor.mm + 22 },
-    top: { u0: -470, u1: 960, v0: -440, v1: 440 },
+    side: { u0: -400, u1: 900, v0: -330, v1: D.yFloor.mm + 22 },
+    top: { u0: -400, u1: 900, v0: -440, v1: 440 },
   },
   yFloor: D.yFloor,
   interior: { x0: 0, x1: L, rIn: R_IN, c: { x: 0, y: 0, z: 0 } },

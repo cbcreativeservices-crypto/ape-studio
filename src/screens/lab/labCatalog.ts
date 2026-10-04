@@ -15,6 +15,7 @@
  */
 import type { RootStackParamList } from '../../navigation/types';
 import { computeLabRouteMembership } from './labMembership';
+import { readyLabs } from './miking/data/registry';
 
 /**
  * The Calculator Laboratory's row count, worked out on first READ (perf start
@@ -430,6 +431,16 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // physics/technique labs stay separate.
       { name: 'Microphone Selection Lab', blurb: 'Read the specs, weigh the job, make a defensible choice — types, characteristics, patterns, and the Choose-the-Mic challenge.', route: 'MicSelectLab' },
     ],
+    // MIKING LABS (owner GO 2026-10-04, plan §6: "inside Training Labs, as a
+    // Miking Labs section in the Instruments & Recording area"). One row per
+    // lab that has a READY lesson (data/registry.ts) — no placeholder rows.
+    // Each opens the lab's hub; members-only (ruling: members + grayed preview).
+    families: [
+      {
+        name: 'Miking Labs',
+        labs: readyLabs().map((l) => ({ name: l.name, blurb: l.blurb, route: 'MikingHub' as const, params: { lab: l.id }, member: true })),
+      },
+    ],
   },
   // REMOVED 2026-09-17 (owner): the whole "Mixing & Production" category
   // (id 'mixing'). All three of its rows were placeholders — Mixing Principle,
@@ -646,6 +657,9 @@ const MEMBER_ONLY_EXTRA_ROUTES: Record<string, string> = {
   TubeReference: 'Tube Reference',
   TubeCard: 'Tube Reference',
   DeEsserLab: 'De-Esser & Sibilance Control',
+  // The Miking Labs lesson host (2026-10-04): the catalog names the hub
+  // (`MikingHub`); every lesson opens through this child route.
+  MikingLesson: 'Miking Labs',
 };
 
 /** True when EVERY catalog appearance of this screen route is members-only —

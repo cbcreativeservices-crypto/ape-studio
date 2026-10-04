@@ -398,6 +398,8 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   MeterLab: [true, 'Visual Audio Analysis'],
   MeterModule: [true, 'Signal Detective'],
   MicLab: [true, 'Microphone Principles'],
+  MikingHub: [true, 'Miking Lab 1: Drums'], // Miking Labs (2026-10-04): the catalog row
+  MikingLesson: [true, 'Miking Labs'], // the lesson host (MEMBER_ONLY_EXTRA_ROUTES)
   MicSelectLab: [true, 'Microphone Selection Lab'],
   ModularLab: [true, 'Modular Synth'],
   MultiMeter: [false, null],
@@ -466,10 +468,10 @@ const COUNTS_AT_HEAD: Record<string, string> = {
   sound: '4 Labs', acoustics: '3 Labs', signal: '9 Labs', mixingworkflow: '3 Labs', production: '2 Labs',
   livesound: '1 Lab', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
   saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '3 Labs',
-  visualization: '2 Labs', instruments: '2 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
+  visualization: '2 Labs', instruments: '3 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
   calculators: '166 Calculators', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
 };
-const TOTAL_AT_HEAD = 220; // was 217 before the ampacity calculator
+const TOTAL_AT_HEAD = 221; // was 217 before the ampacity calculator; +1 Miking Lab 1: Drums (2026-10-04)
 
 describe('3. the members-only gate decides exactly as before', () => {
   it('loading the catalog (what the gate does at start) does not load the calc registry', async () => {
@@ -493,7 +495,7 @@ describe('3. the members-only gate decides exactly as before', () => {
     const now: Record<string, [boolean, string | null]> = {};
     for (const r of Object.keys(GATE_AT_HEAD)) now[r] = [cat.isMemberOnlyLabRoute(r), cat.labRouteName(r) ?? null];
     assert.deepEqual(now, GATE_AT_HEAD);
-    assert.equal(Object.values(now).filter(([m]) => m).length, 73, '73 members-only routes (72 + ProductionPacket)');
+    assert.equal(Object.values(now).filter(([m]) => m).length, 75, '75 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson)');
   });
 
   it('GUARD: every route the catalog and the navigator name is in that comparison', () => {

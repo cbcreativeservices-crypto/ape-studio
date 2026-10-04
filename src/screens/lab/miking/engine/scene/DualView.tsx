@@ -23,7 +23,7 @@ export type DualViewProps = Omit<PlacementSceneProps, 'view' | 'baseXf' | 'mini'
   labelFor: (v: ViewId) => string;
 };
 
-const INSET = 0.3;
+const INSET = 0.27;
 
 export function DualView(props: DualViewProps) {
   const { rig, w, h, view, setView, labelFor } = props;
@@ -45,8 +45,7 @@ export function DualView(props: DualViewProps) {
       return (
         <View style={{ width: w, height: h }}>
           <PlacementScene {...props} view="side" w={w} h={pair.hSide} baseXf={pair.xf.side} accessibilityLabel={labelFor('side')} />
-          <View style={styles.rule} />
-          <PlacementScene {...props} view="top" w={w} h={pair.hTop} baseXf={pair.xf.top} accessibilityLabel={labelFor('top')} />
+          <PlacementScene {...props} view="top" w={w} h={pair.hTop} baseXf={pair.xf.top} showLive={false} accessibilityLabel={labelFor('top')} />
         </View>
       );
     }
@@ -54,7 +53,7 @@ export function DualView(props: DualViewProps) {
     return (
       <View style={{ width: w, height: h, flexDirection: 'row' }}>
         <PlacementScene {...props} view="side" w={half} h={h} accessibilityLabel={labelFor('side')} />
-        <PlacementScene {...props} view="top" w={w - half} h={h} accessibilityLabel={labelFor('top')} />
+        <PlacementScene {...props} view="top" w={w - half} h={h} showLive={false} accessibilityLabel={labelFor('top')} />
       </View>
     );
   }
@@ -84,7 +83,6 @@ export function DualView(props: DualViewProps) {
 }
 
 const styles = StyleSheet.create({
-  rule: { position: 'absolute', left: 0, right: 0, height: 0 },
   inset: { position: 'absolute', left: 4, bottom: 4, borderWidth: 1, borderColor: '#3a3a44', borderRadius: 6, backgroundColor: 'rgba(8,8,10,0.86)', overflow: 'hidden' },
   insetTag: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 1, textAlign: 'center' },
 });

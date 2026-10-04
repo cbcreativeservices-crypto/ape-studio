@@ -37,6 +37,7 @@ import { PAGE_IDS, type Lesson, type PageId, type VariantId } from './engine/mod
 import { StepHostContext, type StepHost } from './engine/steps';
 import { TakeawayCard } from './engine/kit';
 import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPlace, clearMikingPracticeRun, setMikingSaveBlocked, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
+import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
 import { lessonById } from './data/lessons';
 import { lessonArt } from './data/lessonArt';
 import type { LessonArt } from './engine/scene/sceneTypes.ts';
@@ -62,12 +63,6 @@ const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
 /** Steps per page (the strip's count before a page reports its titles). */
 const STEP_COUNTS: Record<PageId, number> = { instrument: 2, microphone: 3, placement: 3, context: 3, twoMic: 3, troubleshoot: 1, practice: 1, sources: 1 };
 
-/** A page's requirement is met (pure; tested). */
-export function pageComplete(lesson: Lesson, page: PageId, answers: Readonly<Record<string, boolean>>, interactive: ReadonlySet<string>): boolean {
-  const c = lesson.pages[page].credit;
-  if (c.scenarios.length === 0 && !c.interactive) return false; // banks on NEXT / FINISH
-  return c.scenarios.every((id) => id in answers) && (!c.interactive || interactive.has(c.interactive));
-}
 
 export function MikingLessonScreen() {
   const route = useRoute();
@@ -172,9 +167,8 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
     if (complete && !done) void bankPage(lesson.id, page);
   }, [complete, done, lesson.id, page]);
   const beforeAdvance = useCallback(() => {
-    const c = content.credit;
-    if (!done && (complete || (c.scenarios.length === 0 && !c.interactive))) void bankPage(lesson.id, page);
-  }, [content, done, complete, lesson.id, page]);
+    if (!done && (complete || banksOnNext(lesson, page))) void bankPage(lesson.id, page);
+  }, [lesson, done, complete, page]);
 
   const stepCount = stepTitles.length || STEP_COUNTS[page];
   const stepIdx = Math.min(step, Math.max(0, stepCount - 1));
