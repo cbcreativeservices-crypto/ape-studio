@@ -129,11 +129,13 @@ describe('the Glossary screen and the popup read through the session cache', () 
     const s = read('src/screens/glossary/GlossaryScreen.tsx');
     const i = s.indexOf('const readViaGateway = useCallback(');
     assert.ok(i >= 0);
-    const body = s.slice(i, i + 2600);
+    // To the end of the callback (hunt 12 grew it with a comment).
+    const body = s.slice(i, s.indexOf('const gatewayInFlightRef', i));
     assert.match(body, /await readDefinitionOnce\(id, isMember\)/);
     assert.ok(!/fetchDefinitionViaGateway\(/.test(body), 'the screen calls the metered read directly again');
-    // A cached answer is not a new charge, so it must not repeat the heads-up.
-    assert.match(body, /if \(fresh && typeof used === 'number'/);
+    // A cached answer is not a new charge, so it must not repeat the heads-up
+    // (and, since hunt 12, only a KNOWN non-member hears it at all).
+    assert.match(body, /if \(fresh && (meterKnown && )?typeof used === 'number'/);
   });
   it('the popup no longer keeps a cache of its own', () => {
     const p = read('src/features/glossary/GlossaryTermPopup.tsx');

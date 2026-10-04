@@ -15,7 +15,19 @@
  */
 import { supabase } from '../../lib/supabase';
 import { emitStudyProgress } from './sync';
-import { isOfflineError } from './sessionRetry';
+import { isAuthDenial, isOfflineError } from './sessionRetry';
+
+/**
+ * A call that never reached the server AS THIS LEARNER (hunt 12, 2026-10-04).
+ * `record_scenario_answer` holds no EXECUTE grant for `anon`, so a call that
+ * went out without a token — the session not hydrated yet, or a token refresh
+ * that could not reach the auth server (offline, a slow network past the
+ * client's bound, an auth 5xx) — is refused 42501. That is not the server
+ * refusing THIS answer: counted as a try, six answers in such a window gave
+ * up the oldest queued answer as "permanently failing" and discarded it.
+ * Like offline, it costs no try; the next drain with a session sends it.
+ */
+const notSentAsLearner = (e: unknown): boolean => isOfflineError(e) || isAuthDenial(e);
 import {
   drainScenarioQueue,
   pendingScenarioCount,
@@ -195,12 +207,12 @@ async function sendAnswer(achievementId: string, questionId: string, round: numb
     });
     if (error) {
       console.warn('[scenario] record_scenario_answer failed:', error.message);
-      return isOfflineError(error) ? 'offline' : false;
+      return notSentAsLearner(error) ? 'offline' : false;
     }
     return true;
   } catch (e) {
     console.warn('[scenario] record_scenario_answer threw:', (e as Error).message);
-    return isOfflineError(e) ? 'offline' : false;
+    return notSentAsLearner(e) ? 'offline' : false;
   }
 }
 
@@ -210,7 +222,7 @@ async function sendComplete(achievementId: string, round: number): Promise<numbe
       p_achievement_id: achievementId,
       p_round: round,
     });
-    if (error) return isOfflineError(error) ? 'offline' : null;
+    if (error) return notSentAsLearner(error) ? 'offline' : null;
     /**
      * ⛔ 0 IS "NOTHING WAS WRITTEN", NOT SUCCESS (bug pass 2026-09-30).
      *
@@ -226,7 +238,7 @@ async function sendComplete(achievementId: string, round: number): Promise<numbe
     emitStudyProgress(); // refresh any live Dashboard LED
     return n;
   } catch (e) {
-    return isOfflineError(e) ? 'offline' : null;
+    return notSentAsLearner(e) ? 'offline' : null;
   }
 }
 

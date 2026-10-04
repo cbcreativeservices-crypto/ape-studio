@@ -151,8 +151,18 @@ export async function loadPublicProfileChecked(): Promise<{ profile: PublicProfi
   // a guest or an offline read falls back to the device value.
   // A failed read throws (2026-10-01); here it falls back to the device value,
   // exactly as before.
-  const remote = await fetchMyRegistryName().catch(() => null);
-  noteSyncedRegistryName(remote);
+  let remoteRead = true;
+  const remote = await fetchMyRegistryName().catch(() => {
+    remoteRead = false;
+    return null;
+  });
+  // ⛔ A FAILED READ IS NOT "THE SERVER HOLDS NO NAME" (hunt 12, 2026-10-04).
+  // Noted as null, the very next keystroke in ANY field (savePublicProfile
+  // always queues the name sync) pushed the DEVICE copy — a stand-in that may
+  // be older than the server's (changed on another phone) — over the name the
+  // certificate and the QR verifier print. After a failed read only a name
+  // the person actually edits is sent.
+  noteSyncedRegistryName(remoteRead ? remote : local.registryName.trim() || null);
   if (remote) local = { ...local, registryName: remote };
   // The LISTING is server-truth, not a device preference: the public page's
   // existence — and its contents — must not depend on which phone you last
@@ -165,6 +175,13 @@ export async function loadPublicProfileChecked(): Promise<{ profile: PublicProfi
   // rather than assert a privacy state it did not verify.
   const read = await fetchMyRegistryListing();
   registryStateKnown = read.state !== 'unavailable';
+  // ⛔ AN UNREAD LISTING IS NOT PUBLISHED FROM THE DRAFT (hunt 12, 2026-10-04).
+  // savePublicProfile queues the listing sync on every keystroke while the
+  // draft says "listed", and that sync is `set_registry_listing(on: true)`.
+  // After a FAILED read the draft is a guess — a page unlisted from another
+  // phone read ON here — so one keystroke in the private email box put the
+  // page back up, public. Only an EDIT to the published fields is sent.
+  if (!registryStateKnown) lastSyncedListing = listingSig(local);
   if (read.state === 'listing') {
     const listing = read.listing;
     adultConfirmed = listing.adultConfirmed;
@@ -220,7 +237,8 @@ const REGISTRY_SYNC_IDLE_MS = 1200;
 let registrySyncTimer: ReturnType<typeof setTimeout> | null = null;
 let lastSyncedRegistryName: string | null = null;
 
-/** Call after a successful server read so an unchanged value never re-writes. */
+/** Call after a server read so an unchanged value never re-writes (after a
+ *  FAILED read, with the device value shown: it is not to be pushed unedited). */
 function noteSyncedRegistryName(v: string | null): void {
   lastSyncedRegistryName = v;
 }
@@ -283,10 +301,15 @@ const LISTING_SYNC_IDLE_MS = 1500;
 let listingSyncTimer: ReturnType<typeof setTimeout> | null = null;
 let lastSyncedListing = '';
 
+/** The PUBLISHED fields only — what a listing sync would send. */
+function listingSig(p: PublicProfile): string {
+  return JSON.stringify([p.bio, p.interests, p.primaryInterest]);
+}
+
 function queueListingSync(p: PublicProfile): void {
   // Compare only the PUBLISHED fields — a keystroke in the private email box
   // must not re-publish the profile.
-  const sig = JSON.stringify([p.bio, p.interests, p.primaryInterest]);
+  const sig = listingSig(p);
   if (sig === lastSyncedListing) return;
   if (listingSyncTimer) clearTimeout(listingSyncTimer);
   listingSyncTimer = setTimeout(() => {

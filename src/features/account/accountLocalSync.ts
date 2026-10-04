@@ -30,6 +30,17 @@ import { noteSessionIdentity, settleSessionCarry } from '../lab/sessionCarry';
  *  AFTER every clear rather than preserved through it. */
 const LOCAL_USER_ID_KEY = 'ape:localUserId';
 
+/** Whose data lives on this device: an account's uid, '' for no account, or
+ *  null when the marker is absent or could not be read. Read-only — for a
+ *  launch whose own session read could not tell (SessionExpiryGuard). */
+export async function readDeviceAccountMarker(): Promise<string | null> {
+  try {
+    return await AsyncStorage.getItem(LOCAL_USER_ID_KEY);
+  } catch {
+    return null;
+  }
+}
+
 /** The device's current IDENTITY = the signed-in user id, or '' for no-account
  *  (guest / signed-out). Wipe + reset only when it actually CHANGES. */
 async function syncLocalToIdentity(identity: string): Promise<void> {

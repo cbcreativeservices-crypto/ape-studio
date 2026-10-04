@@ -24,8 +24,13 @@
 import { parseQuantity } from '../calc/calcUnits';
 
 export function parseRoomNumber(raw: string): number | null {
-  // The same grouping characters parseQuantity drops.
-  const t = raw.replace(/[\s_  ']/g, '');
+  // The same grouping characters parseQuantity drops — but only where they
+  // really group (hunt 12, the hunt-11 parseQuantity rule): a stray one used
+  // to glue the digits around it, so "1 2,5" read 12.5 and "5'2,5" read 52.5,
+  // where parseQuantity refuses both. "1 234,5" still reads 1234.5.
+  const trimmed = raw.trim();
+  if (/[\s_  ']/.test(trimmed) && !/^[+-]?(?:[1-9]\d{0,2}(?:[\s_  ']\d{3})+|\d*)(?:[.,]\d*)?$/.test(trimmed)) return null;
+  const t = trimmed.replace(/[\s_  ']/g, '');
   // Exactly one comma and no dot: the decimal-pad shape.
   if (/^[+-]?\d*,\d+$/.test(t)) {
     // Also a valid thousands group → two realistic readings → do not guess.

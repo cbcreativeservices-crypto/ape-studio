@@ -53,6 +53,7 @@ const STUDIO_ROUTE: Record<StudioId, 'CymaticsPlateStudio' | 'CymaticsLiquidStud
 const STUDIO_TAG: Record<StudioId, string> = { plate: 'PLATE', liquid: 'DISH', membrane: 'DRUM' };
 /** A failed READ of the pattern list (hunt 4): said in BROWSE and in OPEN. */
 const PATTERNS_UNREADABLE = 'Your saved patterns could not be read from this device just now — they are not lost, and nothing is written over them. Leave the gallery and come back to try again.';
+const ART_UNREADABLE = 'Your colourings could not be read from this device just now, so the thumbnails may show without them — they are not lost. Leave the gallery and come back to try again.';
 
 // Geometry per (pattern, STATE) — the science chain runs once per distinct
 // state; a rename or a note edit does not recompute the field.
@@ -92,6 +93,7 @@ export function GalleryScreen() {
   const [selecting, setSelecting] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [artworks, setArtworks] = useState<Record<string, Artwork>>({});
+  const [artUnreadable, setArtUnreadable] = useState(false);
   const [lessonKey, setLessonKey] = useState<string | undefined>();
   const [lessonOpen, setLessonOpen] = useState(false);
   const help = (k?: string) => {
@@ -107,6 +109,15 @@ export function GalleryScreen() {
   // Newest read still wins: only the identity of an EQUAL row is kept.
   const loadArt = useCallback(async () => {
     const list = await patternStore().loadArtworks();
+    // An UNREADABLE artwork list is not "no colourings" (hunt 12, K2): it
+    // used to empty the map, so every thumbnail, the open preview and the
+    // export went out uncoloured without a word. The map keeps what it held
+    // and the gallery says the colourings could not be read.
+    if (patternsUnreadable(list)) {
+      setArtUnreadable(true);
+      return;
+    }
+    setArtUnreadable(false);
     setArtworks((prev) => {
       let same = Object.keys(prev).length === list.length;
       const next: Record<string, Artwork> = {};
@@ -433,6 +444,8 @@ export function GalleryScreen() {
               ) : visible.length === 0 ? (
                 <Text style={styles.caption}>No patterns match this filter.</Text>
               ) : (
+                <>
+                {artUnreadable ? <Text style={styles.caption}>{ART_UNREADABLE}</Text> : null}
                 <View style={styles.grid}>
                   {visible.map((p) => {
                     const g = geometryFor(p);
@@ -465,6 +478,7 @@ export function GalleryScreen() {
                     );
                   })}
                 </View>
+                </>
               )}
               <Pressable style={styles.lessonRow} onPress={() => help('gallery')} accessibilityRole="button" accessibilityLabel="Open the guided lesson">
                 <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — the gallery and the art studio</Text>
@@ -478,6 +492,7 @@ export function GalleryScreen() {
                 <PatternFigure geometry={currentGeom} artwork={currentArt} width={previewW} height={Math.round(previewW * Math.max(0.8, Math.min(1.2, currentGeom.aspect)))} />
                 <Text style={styles.badge}>{/^SIMULATION/i.test(current.badge) ? current.badge : `SIMULATION · ${current.badge}`}</Text>
               </View>
+              {artUnreadable && !currentArt ? <Text style={styles.caption}>{ART_UNREADABLE}</Text> : null}
               <View style={styles.chips}>
                 <LabChip label="Open in studio ›" selected={false} onPress={openInStudio} onLongPress={() => help('save_pattern')} />
                 <LabChip label="Colour ›" selected={false} onPress={openArt} onLongPress={() => help('art_fill')} />

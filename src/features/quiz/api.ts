@@ -244,6 +244,13 @@ export async function startQuizAttempt(achievementId: string): Promise<AttemptPa
       console.warn('[quiz] start denied before the session loaded; retrying once');
       ({ data, error } = await call());
     }
+    // ⛔ STILL REFUSED WHILE THE SESSION IS UNKNOWN (hunt 12, 2026-10-04): the
+    // token refresh did not reach the auth server, so the call went out as
+    // `anon` and the server could not see who this is. "We could not find your
+    // account record. Sign out and back in" is false advice for a member whose
+    // session is still stored — and signing out is the one thing that would
+    // lose it. Say the honest thing: it could not start; try again.
+    if (timedOut && error && error.message.includes('user_not_found')) throw new QuizStartFailure('unknown');
   }
   if (error) throw new QuizStartFailure(parseStartError(error.message));
   const payload = data as AttemptPayload;

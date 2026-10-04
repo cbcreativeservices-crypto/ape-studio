@@ -137,7 +137,8 @@ describe('Awards + Trophy Case', () => {
     assert.match(sh, /hit\.key === key && Date\.now\(\) - hit\.at < RECENT_MS/);
     assert.match(sh, /entry\.p\.catch\(\(\) => \{\s*if \(slot\.cur === entry\) slot\.cur = null;/);
     assert.match(ach, /const RECENT_MS = 8_000;/);
-    assert.match(ach, /return data\.session\?\.user\?\.id \?\? 'guest';/);
+    // Hunt 12: the identity read is the house safeSessionResult (unknown ≠ guest).
+    assert.match(ach, /return result\.data\?\.session\?\.user\?\.id \?\? 'guest';/);
     assert.match(ach, /return shared\(topicSlot, fetchTopicAchievements\);/);
     assert.match(ach, /return shared\(gallerySlot, fetchGalleryV3\);/);
     assert.match(ach, /return shared\(nearestSlots\[type\], \(\) => fetchNearestCredential\(type\)\);/);

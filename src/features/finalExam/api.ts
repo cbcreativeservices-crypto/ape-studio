@@ -25,7 +25,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Crypto from 'expo-crypto';
 import { supabase } from '../../lib/supabase';
-import { safeUser } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 import { trackEvent } from '../telemetry/telemetry';
 import { clearAttemptDraft } from '../assess/attemptDraft';
 import { registerLocalStoreReset } from '../storage/localStoreRegistry';
@@ -282,11 +282,32 @@ export async function startFinalExam(awardType: AwardType, awardId: string): Pro
       }
     }
   }
-  const { data, error } = await supabase.rpc('start_final_exam', {
-    p_award_type: awardType,
-    p_award_id: awardId,
-    p_client_attempt_id: intentId,
-  });
+  const call = () =>
+    supabase.rpc('start_final_exam', {
+      p_award_type: awardType,
+      p_award_id: awardId,
+      p_client_attempt_id: intentId,
+    });
+  let { data, error } = await call();
+  /**
+   * ⛔ `user_not_found` IS THE ANON CALL, NOT A MISSING ACCOUNT (hunt 12,
+   * 2026-10-04) — the quiz twin's 2026-09-20 retry, which this twin never
+   * received. `start_final_exam` opens with the same `users where auth_id =
+   * auth.uid()` lookup, so a call that went out without a token (the session
+   * still loading, or a token refresh that could not reach the auth server)
+   * told a member about to sit their graded capstone to "Sign out and back
+   * in" — and signing out is what would actually lose a stored session.
+   * Retry once with a real or unknown session; if it is still refused while
+   * the session is unknown, say only that it could not start.
+   */
+  if (error && error.message.includes('user_not_found')) {
+    const { result: got, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'finalExam/start');
+    if (timedOut || got.data.session) {
+      console.warn('[final-exam] start denied before the session loaded; retrying once');
+      ({ data, error } = await call());
+    }
+    if (timedOut && error && error.message.includes('user_not_found')) throw new ExamStartFailure('unknown');
+  }
   if (error) throw new ExamStartFailure(parseStartError(error.message));
   // Anonymous count only — award kind, never the award/attempt id.
   trackEvent('exam_start', { award: awardType });
@@ -465,11 +486,21 @@ type QueuedExam = SubmitArgs & { awardType: AwardType; awardId: string; userId?:
  *  graded exam never reached the queue at all while the screen sat on
  *  "Submitting…" with no controls. The `try/catch` covers a reject; it cannot
  *  cover a promise that never settles. Bounded, and a stall records the same
- *  null this function already documents as its unknown-owner answer. */
+ *  null this function already documents as its unknown-owner answer.
+ *
+ *  ⛔ FROM THE STORED SESSION, NOT `getUser()` (hunt 12, 2026-10-04). The
+ *  enqueue runs on the branch entered BECAUSE the network just failed, and
+ *  `getUser()` is a round trip to the auth server — so it failed there too and
+ *  nearly every offline-queued exam was stamped `null`, "belongs to whoever is
+ *  here": the owner stamp was missing in exactly the case it exists for. The
+ *  stored session carries the same auth uid with no network (perf decisions
+ *  A — myUserRow, push, weeklyConcept read it the same way). A read that did
+ *  not come back (`timedOut`) is still the documented unknown null. */
 async function currentUserId(): Promise<string | null> {
   try {
-    const { data } = await safeUser(supabase.auth.getUser(), 'finalExam/queue');
-    return data?.user?.id ?? null;
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'finalExam/queue');
+    if (timedOut) return null;
+    return (result.data?.session as { user?: { id?: string } } | null)?.user?.id ?? null;
   } catch {
     return null;
   }

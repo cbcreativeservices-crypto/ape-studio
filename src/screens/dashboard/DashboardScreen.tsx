@@ -86,7 +86,13 @@ import {
   type Topic,
 } from '../../features/dashboard/api';
 import { getDashboardCache, setDashboardCache } from '../../features/dashboard/dashboardCache';
-import { FREE_ENROLL_GS, ensureStudyTopic, useEnrollment } from '../../features/enrollment/enrollmentStore';
+import {
+  FREE_ENROLL_GS,
+  ensureStudyTopic,
+  getEnrollment,
+  useEnrollment,
+  useEnrollmentReadState,
+} from '../../features/enrollment/enrollmentStore';
 import { officialTopicName } from '../../data/officialTopicNames';
 import { Celebration } from '../../features/celebration/Celebration';
 import { celebration } from '../../features/celebration/catalog';
@@ -702,6 +708,21 @@ export function DashboardScreen() {
    * dropped on unmount: the shared useModalHandoff (pattern P5, 2026-10-02).
    */
   const afterPopupCloses = useModalHandoff();
+  /**
+   * ONE STUDY SCREEN PER TAP (hunt 12, 2026-10-04; catalog K11). Two
+   * DIFFERENT study switches mashed together (Flashcards + Homework, both
+   * lit) each ran `navigate` — RN's stack ignores a repeat of the focused
+   * route, not a different one — so two study screens stacked, the hidden
+   * one still running its session under the other. A second open inside
+   * 600 ms of the first is ignored (Start Here's claimOpen window).
+   */
+  const lastStudyOpenAt = useRef(0);
+  const claimStudyOpen = useCallback(() => {
+    const now = Date.now();
+    if (now - lastStudyOpenAt.current < 600) return false;
+    lastStudyOpenAt.current = now;
+    return true;
+  }, []);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
   /** No Supabase session at all (Guest Mode). Drives the red "progress isn't
@@ -760,6 +781,11 @@ export function DashboardScreen() {
   // enrolled topics (active + inactive; inactive dimmed) and the full study
   // machinery loads per topic. Available to ANY user with enrolled topics.
   const enrolled = useEnrollment();
+  // `enrolled` is [] while the stored list is being read AND after that read
+  // FAILED — neither is "nothing enrolled" (hunt 12; D51). Read inside load().
+  const enrollRead = useEnrollmentReadState();
+  const enrollReadRef = useRef(enrollRead);
+  enrollReadRef.current = enrollRead;
   // The dashboard is now driven by the user's ENROLLMENT (they manage it via the
   // "My Enrollments" screen); the COURSE ⇄ ENROLLMENT toggle was removed (user
   // request 2026-07-23). Falls back to the course/commercial fetch only when no
@@ -804,6 +830,34 @@ export function DashboardScreen() {
   // Whether the user's Custom List shows as a synthetic current-topic here
   // (toggled from the Enrollment screen). Device-local; default off.
   const customOnDashboard = useCustomOnDashboard();
+  /**
+   * ⛔ THE ★ LIST COULD NOT BE READ ≠ "0 TERMS" (hunt 12, 2026-10-04; catalog
+   * K2). `starred` is the empty placeholder before its read lands AND after
+   * that read FAILED, so the Custom List card said "0 TERMS · MY CUSTOM LIST"
+   * with its STUDY switch dead — a full list shown as an empty one, with no
+   * way on. Ask the stored list itself (`readTermList` rejects on a failed
+   * read, as the terms sheet and Flashcards already do); re-asked whenever the
+   * live list changes, so a recovered read clears it.
+   */
+  const [starredUnreadable, setStarredUnreadable] = useState(false);
+  useEffect(() => {
+    if (!customOnDashboard) return undefined;
+    let alive = true;
+    readTermList('starred').then(
+      () => {
+        if (alive) setStarredUnreadable(false);
+      },
+      () => {
+        if (alive) setStarredUnreadable(true);
+      },
+    );
+    return () => {
+      alive = false;
+    };
+  }, [customOnDashboard, starred]);
+  const starredCount = starredUnreadable
+    ? 'TERMS COULD NOT BE READ'
+    : `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`;
   const customOnDashboardRef = useRef(customOnDashboard);
   customOnDashboardRef.current = customOnDashboard;
   // Topic-deck ordering (owner 2026-08-01): default alphabetical; the Topic-Deck
@@ -1027,6 +1081,20 @@ export function DashboardScreen() {
       // it, even when its student record is missing or a fetch fails (owner
       // 2026-09-05).
       setGuest(isGuest);
+      /**
+       * ⛔ AN UNREADABLE ENROLLMENT LIST IS NOT "NOTHING ENROLLED" (hunt 12,
+       * 2026-10-04; catalog K2, D51). When the stored list could not be read,
+       * `enrolled` is the empty placeholder, and the empty-list fallback below
+       * painted the two FREE topics as the learner's whole deck — every
+       * enrolled topic gone, no word why — and cached it. Read again and say
+       * so: a silent refresh keeps the deck on screen, a cold screen shows the
+       * honest note with Retry, and the reload effect below lands the deck the
+       * moment a read succeeds.
+       */
+      if (enrollReadRef.current === 'unreadable') {
+        getEnrollment(); // asks the store to read again
+        throw new Error('enrollment_unreadable');
+      }
       // A guest also sees all their ACTIVE topics (locked included) so the paywall
       // is reachable; a guest with nothing enrolled falls back to the free topics.
       // allowMissingUser: this is the guest path AND the stranded-session
@@ -1148,6 +1216,9 @@ export function DashboardScreen() {
             // COMMERCIAL WORDING (2026-09-17). "Student record" is the retired
             // institutional vocabulary and means nothing to a customer.
             ? 'Your account setup is not finished yet — finish it to save your progress.'
+            : e?.message === 'enrollment_unreadable'
+              // The Enrollments screen's own words for the same state.
+              ? 'Your enrolled topics could not be read from this device just now — they are not lost, and nothing is written over them. Tap Retry.'
             // There is no pull-to-refresh on this screen — the Retry button is
             // the way back (the old text sent people looking for a gesture).
             : 'Could not load the dashboard. Check your connection and tap Retry.',
@@ -1215,9 +1286,12 @@ export function DashboardScreen() {
     if (viewModeRef.current !== 'enrollment') return;
     // Reload as the enrollment list is edited; an empty list simply falls back to
     // the course/commercial fetch inside load() (user request 2026-07-23).
+    // …and when the stored list's READ lands or fails (hunt 12): an empty or
+    // unreadable list has the same key as the placeholder, so a recovered
+    // read would otherwise never reload the deck.
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enrolledKey]);
+  }, [enrolledKey, enrollRead]);
 
   // Quiz-block glow pulse (quizPulse 2.4s ease-in-out infinite).
   // REDUCE MOTION (2026-09-05): this is the app's most visible looping
@@ -2038,7 +2112,7 @@ export function DashboardScreen() {
                   </Text>
                   <Text style={styles.topicMeta}>
                     {dispIsCustom
-                      ? `${starred.size} TERM${starred.size === 1 ? '' : 'S'}`
+                      ? starredCount
                       : // A standing requirement says WHY it is here (tester report
                         // 2026-09-25, John, build 30: "I enrolled in microphone
                         // course and it locked on the flash card screen for
@@ -2171,7 +2245,7 @@ export function DashboardScreen() {
               </View>
               <View style={styles.methodLeft}>
                 <Text style={styles.customCount}>
-                  {`${starred.size} TERM${starred.size === 1 ? '' : 'S'} · MY CUSTOM LIST`}
+                  {`${starredCount} · MY CUSTOM LIST`}
                 </Text>
               </View>
               <SwitchButton
@@ -2179,7 +2253,9 @@ export function DashboardScreen() {
                 variant="primary"
                 width={96}
                 height={RACK_QUIZ_SWITCH_H}
-                disabled={starred.size === 0}
+                // Unreadable is not empty: STUDY stays live, and Flashcards
+                // says "could not load" with its own Retry.
+                disabled={!starredUnreadable && starred.size === 0}
                 onPress={() => {
                   // Same gate as every other study method. Deliberately still
                   // PRESSABLE for a non-member rather than disabled: the sheet
@@ -2387,7 +2463,7 @@ export function DashboardScreen() {
                           return;
                         }
                         const routeName = STUDY_ROUTES[m.key];
-                        if (routeName) {
+                        if (routeName && claimStudyOpen()) {
                           navigation.navigate(routeName, { achievementId: dispTopic.id, topicName: dispTopic.name });
                         }
                       }}
@@ -2520,6 +2596,8 @@ export function DashboardScreen() {
                           setUpgradeOpen(true);
                           return;
                         }
+                        // Not over a study screen another switch just opened.
+                        if (!claimStudyOpen()) return;
                         // S3 (copy pass 2): the topic quiz runs the IDENTICAL
                         // machinery as the Final Exam — hard clock, 2-second
                         // grace, second app-switch voids, 15-minute lockout,

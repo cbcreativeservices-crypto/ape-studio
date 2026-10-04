@@ -16,7 +16,7 @@
  * The explanation shows on EVERY answer, right or wrong — it is the teaching
  * moment, and hiding it on a correct answer would punish knowing the answer.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { StudioButton } from './StudioButton';
 import type { UnderstandingQuestion } from '../features/lab/understanding';
@@ -66,6 +66,17 @@ export function LabUnderstandingCheck({
   /** The option currently picked per question, for showing feedback. */
   const [picked, setPicked] = useState<Record<string, string>>({});
   const [fired, setFired] = useState(!!passed);
+  // `passed` can turn true AFTER mount (shared hunt 12, 2026-10-04): the
+  // completion store and the paged progress are read asynchronously, and a
+  // tier read that lands late re-loads a member's real progress over the
+  // guest stand-in. Read once, a check the learner had passed stayed "answer
+  // all N" for the visit (LabShell's own note says the hook exists for this).
+  // Only ever towards passed — a right answer is never taken back.
+  useEffect(() => {
+    if (!passed) return;
+    setCorrect((prev) => (prev.size === questions.length && questions.every((q) => prev.has(q.id)) ? prev : new Set(questions.map((q) => q.id))));
+    setFired(true);
+  }, [passed, questions]);
 
   const remaining = questions.length - correct.size;
   const done = remaining === 0;

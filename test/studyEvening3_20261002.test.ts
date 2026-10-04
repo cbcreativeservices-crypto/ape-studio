@@ -81,11 +81,15 @@ test('scenario queue: a call the server REFUSES still clears after MAX_TRIES (po
 
 test('scenario homework: a send that never reached the server answers "offline", not false', () => {
   const s = src('features/study/scenarioHomework.ts');
-  assert.match(s, /import \{ isOfflineError \} from '\.\/sessionRetry';/);
+  // Hunt 12 (2026-10-04) widened "never reached the server" to include a call
+  // refused because it went out WITHOUT a token (isAuthDenial) — see
+  // studyHunt12_20261004. Offline is still part of it.
+  assert.match(s, /import \{ isAuthDenial, isOfflineError \} from '\.\/sessionRetry';/);
+  assert.match(s, /const notSentAsLearner = \(e: unknown\): boolean => isOfflineError\(e\) \|\| isAuthDenial\(e\);/);
   // Both raw senders classify their failure; the dispatcher passes it through.
   assert.match(s, /async function sendAnswer\([^)]*\): Promise<boolean \| 'offline'>/);
-  assert.match(s, /return isOfflineError\(error\) \? 'offline' : false;/);
-  assert.match(s, /return isOfflineError\(e\) \? 'offline' : false;/);
+  assert.match(s, /return notSentAsLearner\(error\) \? 'offline' : false;/);
+  assert.match(s, /return notSentAsLearner\(e\) \? 'offline' : false;/);
   assert.match(s, /if \(n === 'offline'\) return 'offline';/);
   // The live (non-queued) paths still treat only `true` as sent.
   assert.match(s, /\(await sendAnswer\(achievementId, questionId, round, correct\)\) === true/);

@@ -462,11 +462,30 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   // finishing, a console-edit replay) still never begins under another
   // screen: focusedRef stays the gate for starts.
   const focusedRef = useRef(true);
+  /** The generation of the QUIET pre-render in flight (0 = none). */
+  const quietSeqRef = useRef(0);
   useFocusEffect(
     useCallback(() => {
       focusedRef.current = true;
       return () => {
         focusedRef.current = false;
+        // A QUIET pre-render nobody asked for stops at blur (hunt 12,
+        // 2026-10-04; the Drum lab's preload rule "never off-screen"): the
+        // learner pushed the EQ Lab or the other mixing lab, and every variant
+        // went on rendering — full DSP per variant plus the WAV writes — under
+        // the lab now in front. Retired exactly as a console edit retires one
+        // (the generation bump); a ▶ that has JOINED it (pendingRef) keeps it.
+        if (
+          quietSeqRef.current !== 0 &&
+          quietSeqRef.current === renderSeqRef.current &&
+          renderingSigRef.current !== null &&
+          pendingRef.current == null
+        ) {
+          quietSeqRef.current = 0;
+          renderSeqRef.current++;
+          renderingSigRef.current = null;
+          setStatus('idle');
+        }
       };
     }, []),
   );
@@ -558,6 +577,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     if (renderingSigRef.current === signature) return;
     renderingSigRef.current = signature;
     const my = ++renderSeqRef.current;
+    quietSeqRef.current = quiet ? my : 0;
     /** Still the render this screen wants? (mounted AND not superseded) */
     const current = () => aliveRef.current && my === renderSeqRef.current;
     try {

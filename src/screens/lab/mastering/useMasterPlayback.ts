@@ -235,6 +235,16 @@ export function useMasterPlayback(variants: readonly MasterVariant[], matched: b
       focusedRef.current = true;
       return () => {
         focusedRef.current = false;
+        // A pushed screen covers the lab (hunt 12, consistent with Drum's
+        // preload, which never runs off-screen): a QUIET pre-render with
+        // nothing queued is cancelled — it would otherwise keep grinding the
+        // DSP under the screen on top. It aborts at its next await; work it
+        // already finished stays in preparedRef. A queued ▶ is left alone.
+        if (renderingSigRef.current !== null && pendingRef.current == null) {
+          renderSeqRef.current++;
+          renderingSigRef.current = null;
+          setStatus(idsRef.current.length > 0 ? 'ready' : 'idle');
+        }
       };
     }, []),
   );

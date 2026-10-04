@@ -12,6 +12,18 @@ import { DBU_REF_V, P_REF_PA, fmt, speedOfSoundAir } from '../calcUnits';
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 const DEG = Math.PI / 180;
 
+/** Speed of light in vacuum, m/s — exact by the SI definition of the metre. */
+const C_LIGHT = 299792458;
+/** The free-space path loss constant for d in metres and f in hertz:
+ *  FSPL = 20·log₁₀(d) + 20·log₁₀(f) + 20·log₁₀(4π/c), and −20·log₁₀(4π/c) =
+ *  147.552 dB. It was the rounded 147.56 (calc hunt 12, 2026-10-04, D53): every
+ *  path loss, received power and link margin came out 0.008 dB off, and the
+ *  steps showed a constant that is not the one the physics gives. */
+const FSPL_K_DB = -20 * Math.log10((4 * Math.PI) / C_LIGHT);
+/** The constant as the formula / steps text writes it ("147.55"). */
+const FSPL_K_TXT = fmt(FSPL_K_DB, 5);
+const fsplDb = (distM: number, fHz: number) => 20 * Math.log10(distM) + 20 * Math.log10(fHz) - FSPL_K_DB;
+
 /** Both mics hear the source at the same instant — the mono sum has no comb. */
 const NO_ARRIVAL_DIFFERENCE =
   'No path difference → no comb-filter nulls: the source reaches both mics at the same instant (dead centre, or no spacing), so summing them to mono simply adds the two in step.';
@@ -235,7 +247,7 @@ const RFLINK: Workspace = {
     'someone walks behind a wall. Higher bands (like today’s crowded UHF) lose more per metre, and ' +
     'antenna gain and cable loss are the levers you actually control.',
   example:
-    'A 550 MHz link at 50 m: FSPL = 20·log₁₀(50) + 20·log₁₀(550e6) − 147.56 ≈ 61.2 dB. With +10 dBm ' +
+    'A 550 MHz link at 50 m: FSPL = 20·log₁₀(50) + 20·log₁₀(550e6) − ' + FSPL_K_TXT + ' ≈ 61.2 dB. With +10 dBm ' +
     'TX, +2 dB each antenna, and a −95 dBm receiver: Prx ≈ −47.2 dBm → ≈ 47.8 dB of margin.',
   mistakes: [
     'Budgeting for line-of-sight only — bodies, walls, and trusses add loss the free-space number ignores; keep generous margin.',
@@ -243,7 +255,7 @@ const RFLINK: Workspace = {
     'Ignoring cable and connector loss on antenna runs — it comes straight off both transmit and receive sides of the budget.',
   ],
   warnings:
-    'Free-space (Friis) path loss only: FSPL(dB) = 20·log₁₀(d) + 20·log₁₀(f) − 147.56 (d in m, f in ' +
+    'Free-space (Friis) path loss only: FSPL(dB) = 20·log₁₀(d) + 20·log₁₀(f) − ' + FSPL_K_TXT + ' (d in m, f in ' +
     'Hz). Real environments add multipath, body and obstruction loss, and noise — always keep margin ' +
     'well above zero. Enter frequency in MHz; powers in dBm.',
   glossary: ['Radio Frequency', 'Wireless', 'Decibel', 'Antenna', 'Gain'],
@@ -260,26 +272,26 @@ const RFLINK: Workspace = {
       key: 'pathLoss',
       name: 'Free-space path loss',
       inputs: ['dist', 'freqMHz'],
-      formula: 'FSPL = 20·log₁₀(d) + 20·log₁₀(f) − 147.56',
+      formula: `FSPL = 20·log₁₀(d) + 20·log₁₀(f) − ${FSPL_K_TXT}`,
       plainFormula:
-        'The free-space path loss in dB equals twenty times the base-ten log of the distance, plus twenty times the base-ten log of the frequency, minus 147.56.',
+        'The free-space path loss in dB equals twenty times the base-ten log of the distance, plus twenty times the base-ten log of the frequency, minus ' + FSPL_K_TXT + '.',
       explain:
-        'Free-space (Friis) path loss — how much a radio signal weakens over a distance at a given frequency. Both distance and frequency raise the loss, so higher bands lose more per metre; 147.56 is the constant that makes it work with distance in metres and frequency in hertz. Walls and bodies add more on top.',
+        'Free-space (Friis) path loss — how much a radio signal weakens over a distance at a given frequency. Both distance and frequency raise the loss, so higher bands lose more per metre; ' + FSPL_K_TXT + ' is the constant that makes it work with distance in metres and frequency in hertz. Walls and bodies add more on top.',
       keySymbols: ['·', 'log₁₀', '−', 'f'],
       compute: (v) => {
         const f = n(v.freqMHz) * 1e6;
-        const fspl = 20 * Math.log10(n(v.dist)) + 20 * Math.log10(f) - 147.56;
+        const fspl = fsplDb(n(v.dist), f);
         return [
           { label: 'FREE-SPACE PATH LOSS', value: fspl, quantity: 'db' },
-          { label: 'WAVELENGTH', value: 299792458 / f, quantity: 'length', unit: 'cm', chainable: false },
+          { label: 'WAVELENGTH', value: C_LIGHT / f, quantity: 'length', unit: 'cm', chainable: false },
         ];
       },
       steps: (v) => {
         const f = n(v.freqMHz) * 1e6;
-        const fspl = 20 * Math.log10(n(v.dist)) + 20 * Math.log10(f) - 147.56;
+        const fspl = fsplDb(n(v.dist), f);
         return [
-          `FSPL = 20·log₁₀(${fmt(n(v.dist))}) + 20·log₁₀(${fmt(f)}) − 147.56 = ${fmt(fspl)} dB.`,
-          `RF wavelength = c/f = 3×10⁸ ÷ ${fmt(f)} ≈ ${fmt((299792458 / f) * 100)} cm — antenna-length territory.`,
+          `FSPL = 20·log₁₀(${fmt(n(v.dist))}) + 20·log₁₀(${fmt(f)}) − ${FSPL_K_TXT} = ${fmt(fspl)} dB.`,
+          `RF wavelength = c/f = 2.998×10⁸ ÷ ${fmt(f)} ≈ ${fmt((C_LIGHT / f) * 100)} cm — antenna-length territory.`,
         ];
       },
     },
@@ -295,7 +307,7 @@ const RFLINK: Workspace = {
       keySymbols: ['−'],
       compute: (v) => {
         const f = n(v.freqMHz) * 1e6;
-        const fspl = 20 * Math.log10(n(v.dist)) + 20 * Math.log10(f) - 147.56;
+        const fspl = fsplDb(n(v.dist), f);
         const prx = n(v.ptx) + n(v.gtx) + n(v.grx) - fspl;
         return [
           { label: 'RECEIVED POWER (dBm)', value: prx, quantity: 'number', chainable: false },
@@ -305,7 +317,7 @@ const RFLINK: Workspace = {
       },
       steps: (v) => {
         const f = n(v.freqMHz) * 1e6;
-        const fspl = 20 * Math.log10(n(v.dist)) + 20 * Math.log10(f) - 147.56;
+        const fspl = fsplDb(n(v.dist), f);
         const prx = n(v.ptx) + n(v.gtx) + n(v.grx) - fspl;
         const margin = prx - n(v.rxsens);
         return [

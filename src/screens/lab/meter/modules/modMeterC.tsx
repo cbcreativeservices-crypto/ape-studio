@@ -672,7 +672,12 @@ async function readSolved(): Promise<string[] | null> {
 }
 async function hydrateSolved(): Promise<Set<string>> {
   if (solvedCache) return solvedCache;
+  const gen = solvedGen;
   const stored = await readSolved();
+  // The account was wiped while this read was out (hunt 12, K4/K5): what it
+  // read is the departing user's set — never cached for the next person, and
+  // never handed to the screen.
+  if (gen !== solvedGen) return new Set();
   // An unreadable store is NOT cached as empty (full-app run 1, 2026-10-01):
   // the next mount reads again.
   if (!stored) return new Set();

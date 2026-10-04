@@ -20,7 +20,7 @@ import { BrandLogo } from '../../components/BrandLogo';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { loadPublicProfile } from '../../features/profile/publicProfile';
-import { fetchMyQrToken } from '../../features/profile/api';
+import { fetchMyQrToken, fetchMyRegistryName } from '../../features/profile/api';
 import { REGISTRY_BASE_URL } from '../../features/profile/registry';
 import { CredentialQr } from '../../components/CredentialQr';
 import { fetchMyCredentials } from '../../features/credentials/api';
@@ -129,11 +129,30 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
   const [qrFailed, setQrFailed] = useState(false);
   /** Earned (non-revoked) credentials; null = not known (guest, loading, failed). */
   const [credCount, setCredCount] = useState<number | null>(null);
+  /** No name on screen because the server copy could not be READ — see below. */
+  const [nameUnread, setNameUnread] = useState(false);
   useEffect(() => {
     // Neither promise carried a .catch — an AsyncStorage or RPC throw here was an
     // unhandled rejection that also froze the name at its empty default.
+    setNameUnread(false);
     void loadPublicProfile()
-      .then((p) => setRegistryName(p.registryName || p.name || ''))
+      .then(async (p) => {
+        if (!alive) return; // an older account state's answer
+        const name = p.registryName || p.name || '';
+        setRegistryName(name);
+        // ⛔ "NO NAME" ONLY WHEN THE SERVER SAID SO (hunt 12, 2026-10-04; K2).
+        // loadPublicProfile falls back to the device copy when the server
+        // read fails, and that copy is EMPTY after any sign-out (the account
+        // wipe) or reinstall — so a member with a Registry name, on a bad
+        // connection, was told "Add your Registry name". The strict read
+        // THROWS on a failed or unknown read; only its null is "none".
+        if (name || !accountConfirmed) return;
+        try {
+          await fetchMyRegistryName();
+        } catch {
+          if (alive) setNameUnread(true);
+        }
+      })
       .catch(() => {});
     // Drop the last account's QR before anything else (bug hunt 2026-09-30).
     // This view stays mounted across sign-out / sign-in, so the previous
@@ -257,7 +276,10 @@ export const DirectoryView = memo(function DirectoryView({ showBrand = true }: {
         // Falls back to a pending tile until the token loads.
         <View style={styles.registryBoxCol}>
           <CredentialQr token={qrToken} size={160} />
-          <Text style={styles.registryConfirmName}>{registryName || 'Add your Registry name — tap SET UP MY PROFILE below'}</Text>
+          <Text style={styles.registryConfirmName}>{registryName ||
+              (nameUnread
+                ? 'Couldn’t load your Registry name — check your connection.'
+                : 'Add your Registry name — tap SET UP MY PROFILE below')}</Text>
           {/* Listed as "User" until the first earned certificate/program, then
               "Graduate" (user request 2026-07-22). */}
           {credCount != null ? <Text style={styles.registryStatus}>{isGraduate ? 'GRADUATE' : 'USER'}</Text> : null}

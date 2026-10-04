@@ -100,8 +100,13 @@ export function CareerFinderScreen() {
         </View>
       ) : (
         <View style={styles.actions}>
-          <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={`Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.`} />
-          <Text style={styles.note}>{upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.'}</Text>
+          {/* An UNREADABLE record is not a fresh start (hunt 12, 2026-10-04;
+              K2): the store reads nothing it could not read and writes
+              nothing over it (`saving` false), so "Progress is saved as you
+              go" was untrue — and answers given before may still be on the
+              phone. Same wording rule as the in-progress note above. */}
+          <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={saving ? `Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.` : `Begins the ${QUESTION_COUNT} questions. Your answers could not be saved on this phone.`} />
+          <Text style={styles.note}>{saving ? (upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.') : 'Your saved answers could not be read on this phone, so answers you give now will not be saved.'}</Text>
         </View>
       )}
 

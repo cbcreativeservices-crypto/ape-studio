@@ -414,7 +414,15 @@ registerSessionCarry<HeldUnits>(CARRY_KEY, async (held) => {
 });
 
 function recordUnit(labKey: string, unitId: string): Promise<void> {
+  // The account it was earned under (shared hunt 12, 2026-10-04): a unit
+  // whose device read was still out when the account wipe ran belongs to the
+  // departing account. Recorded after the wipe it landed in the NEXT
+  // account's units — and a lab it completed fired mark_lab_complete for
+  // them. A guest's units are held by the ledger and replayed after the wipe
+  // (under the new generation), so nothing they earned is lost.
+  const gen = completionGen;
   return hydrate().then(() => {
+    if (gen !== completionGen) return;
     const set = cleared[labKey] ?? new Set<string>();
     if (set.has(unitId)) return; // already recorded — no-op
     set.add(unitId);

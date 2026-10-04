@@ -24,8 +24,7 @@ import { fetchAwardProgress } from '../awards/api';
 import { topicImagePath } from '../../data/topicImages';
 
 import { myUserRowOrThrow } from '../account/myUserRow';
-import { withDeadline } from '../../lib/boundedCall';
-import { SESSION_TIMEOUT_MS } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
 export type TopicStatus = 'complete' | 'passed_incomplete' | 'unlocked' | 'locked';
 
 export type TopicAchievement = {
@@ -103,11 +102,18 @@ const nearestSlots: Record<'certificate' | 'program', Slot<NearestCredentialResu
 };
 
 /** Whose reads these are: the auth uid, 'guest' with no session, or null when
- *  the session itself could not be read (then nothing is shared). */
+ *  the session itself could not be read (then nothing is shared).
+ *
+ *  ⛔ UNKNOWN IS NOT 'guest' (hunt 12, 2026-10-04 — K1, the house
+ *  `safeSessionResult`). The hand-rolled read here caught a stall or a
+ *  rejection, but an expired token on a dead connection RESOLVES as
+ *  `{ session: null, error: AuthRetryableFetchError }` with the session still
+ *  stored — and that keyed a signed-in member's reads as the GUEST's. */
 async function identityKey(): Promise<string | null> {
   try {
-    const { data } = await withDeadline(() => supabase.auth.getSession(), 'achievements identity', SESSION_TIMEOUT_MS);
-    return data.session?.user?.id ?? 'guest';
+    const { result, timedOut } = await safeSessionResult(supabase.auth.getSession(), 'achievements identity');
+    if (timedOut) return null;
+    return result.data?.session?.user?.id ?? 'guest';
   } catch {
     return null;
   }

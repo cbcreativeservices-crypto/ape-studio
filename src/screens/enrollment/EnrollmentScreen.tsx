@@ -839,6 +839,14 @@ export const EnrollmentView = memo(function EnrollmentView({
   );
   const prog = useEnrollmentProgress(allGs);
   const pctFor = (gs: number) => prog.get(gs)?.pct ?? 0;
+  /**
+   * The % as SHOWN (hunt 12, 2026-10-04). `prog` is EMPTY until the progress
+   * read lands — and stays empty when it fails (offline) — and `pctFor` reads a
+   * missing entry as 0, so an offline open printed "0%" on every row, "0 of 12
+   * complete" and "CONTINUE LEARNING · 0%" over work the learner had done. A
+   * failed read is not zero: an unread % shows a dash (the house "—").
+   */
+  const pctText = (gs: number) => (prog.has(gs) ? `${pctFor(gs)}%` : '—');
 
   const enrolledGs = useMemo(() => new Set(enrolled.map((e) => e.gs)), [enrolled]);
   // Topics currently ACTIVE (= loaded into the Dashboard study deck). Drives the
@@ -1581,7 +1589,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                 figure sat hard against LAB REQUIREMENTS with all the slack
                 pooled on the meter side. Centring in a slightly wider box
                 puts equal air either side. */}
-            <Text style={[styles.cardPct, styles.labPct]}>{labPct}%</Text>
+            <Text style={[styles.cardPct, styles.labPct]}>{pctText(e.gs)}</Text>
             {/* ⛔ ALWAYS FULL BLUE, NEVER DISABLED (owner 2026-09-19). It sits
                 where every other row carries LOADED / UNLOADED, and that chip
                 is a STATE — it dims, it toggles, it tells you where the topic
@@ -1674,7 +1682,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                     or expanded. The bare % was the only progress a collapsed
                     row carried, and a number is not a glance. */}
                 <LedMeter filled={segmentsForPct(pct)} segWidth={3} />
-                <Text style={styles.cardPct}>{pct}%</Text>
+                <Text style={styles.cardPct}>{pctText(e.gs)}</Text>
                 {/* Deck toggle right in the collapsed row (user request 2026-07-24):
                     add/remove from the study deck without expanding. Core-locked
                     topics stay on and can't be toggled. */}
@@ -1818,7 +1826,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                 <View style={!showActive && styles.dimMore}>
                   <LedMeter filled={segmentsForPct(pct)} segWidth={5} />
                 </View>
-                <Text style={[styles.cardPct, !showActive && styles.dimMore]}>{pct}%</Text>
+                <Text style={[styles.cardPct, !showActive && styles.dimMore]}>{pctText(e.gs)}</Text>
                 <View style={{ flex: 1 }} />
                 {/* Cores carry NO manual Home toggle — their slots are auto-
                     reserved/freed (user request 2026-07-22). And for launch
@@ -1877,6 +1885,8 @@ export const EnrollmentView = memo(function EnrollmentView({
    */
   const requirementSummary = (b: EnrolledBundle): string => {
     const all = requirementRows(b);
+    // Unread progress is not "0 complete" (hunt 12): the dash, as on the rows.
+    if (all.some((r) => !prog.has(r.gs))) return `— of ${all.length} complete`;
     const done = all.filter((r) => pctFor(r.gs) >= 100).length;
     return `${done} of ${all.length} complete`;
   };
@@ -2022,7 +2032,7 @@ export const EnrollmentView = memo(function EnrollmentView({
         {resume ? (
           <Pressable style={styles.continueBar} onPress={resumeLastOrDashboard} accessibilityRole="button" accessibilityLabel={`Continue ${nameFor(resume.gs)}`}>
             <View style={styles.continueText}>
-              <Text style={styles.continueEyebrow}>CONTINUE LEARNING · {resume.pct}%</Text>
+              <Text style={styles.continueEyebrow}>CONTINUE LEARNING · {pctText(resume.gs)}</Text>
               <Text style={styles.continueName} numberOfLines={1}>
                 Resume {nameFor(resume.gs)}
               </Text>
@@ -2036,7 +2046,7 @@ export const EnrollmentView = memo(function EnrollmentView({
             <LedMeter
               filled={segmentsForPct(resume.pct)}
               segWidth={3}
-              a11yLabel={`${resume.pct} percent complete`}
+              a11yLabel={prog.has(resume.gs) ? `${resume.pct} percent complete` : 'Progress not loaded'}
               // Without this the announced VALUE is re-derived from the segment
               // count while the label carries the real number — the same split
               // fixed in LedMeterWell. 12% announced as 14.

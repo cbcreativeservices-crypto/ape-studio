@@ -17,7 +17,8 @@
  */
 import { useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
-import { safeSession } from '../../lib/getSessionSafe';
+import { safeSessionResult } from '../../lib/getSessionSafe';
+import { readDeviceAccountMarker } from './accountLocalSync';
 import { navigationRef } from '../../navigation/navigationRef';
 import { consumeIntentionalSignOut } from '../auth/intentionalSignOut';
 import { isRealAccount } from '../commercial/realAccount';
@@ -27,14 +28,34 @@ export function SessionExpiryGuard() {
   // What KIND of session just went away. The SIGNED_OUT event carries no
   // session, so the answer has to be remembered from the last one that did.
   const wasRealAccount = useRef(false);
+  /** An auth event has carried a session — its answer outranks the boot read. */
+  const sessionSeen = useRef(false);
   useEffect(() => {
-    void safeSession(supabase.auth.getSession(), 'SessionExpiryGuard')
-      .then(({ data }) => {
-        wasRealAccount.current = isRealAccount(data.session);
+    void safeSessionResult(supabase.auth.getSession(), 'SessionExpiryGuard')
+      .then(async ({ result: { data }, timedOut }) => {
+        if (!timedOut) {
+          wasRealAccount.current = isRealAccount(data.session);
+          return;
+        }
+        // ⛔ A BOOT READ THAT COULD NOT TELL IS NOT "NO ACCOUNT" (hunt 12,
+        // 2026-10-04). A member's expired token on a dead connection answers
+        // `{ session: null, error: AuthRetryableFetchError }` with the session
+        // still stored — and INITIAL_SESSION is null too — so this stayed
+        // false, and when the stored refresh token was then found dead (a
+        // password changed elsewhere, a server revoke) the SIGNED_OUT left
+        // the member stranded, signed out, on a protected screen: the exact
+        // loss this guard exists to rescue. The device's account marker
+        // (accountLocalSync) says whose session that is: '' for a guest or a
+        // glossary device key, a uid for an account.
+        const marker = await readDeviceAccountMarker();
+        if (!sessionSeen.current) wasRealAccount.current = !!marker;
       })
       .catch(() => {});
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) wasRealAccount.current = isRealAccount(session);
+      if (session) {
+        sessionSeen.current = true;
+        wasRealAccount.current = isRealAccount(session);
+      }
       if (event !== 'SIGNED_OUT') return;
       // ⚠️ An expired ANONYMOUS session is not a session LOSS to rescue — it is
       // the glossary's temporary device key reaching its 7-day end, exactly as

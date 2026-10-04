@@ -22,6 +22,8 @@ import { DEFAULT_LIQUID, type LiquidSpec } from './faraday';
 import { DEFAULT_MEMBRANE, type MembraneSpec } from './membrane';
 import { DEFAULT_PLATE, type PlateSpec } from './plateModes';
 import { START_LEVEL_01 } from '../audio/startLevel';
+import { holdSessionWork, registerSessionCarry } from '../lab/sessionCarry';
+import { reportUnhandledSaveFailure } from '../storage/saveFailureNotice';
 
 export type StudioId = 'plate' | 'liquid' | 'membrane';
 
@@ -225,7 +227,61 @@ export type PatternStore = {
   loadArtworks(): Promise<Artwork[]>;
   saveArtwork(a: Artwork): Promise<boolean>;
   deleteArtwork(patternId: string): Promise<boolean>;
+  /** The sign-in hand-off's writer: a guest session's patterns and
+   *  colourings join this device's lists after the sign-in wipe. */
+  carryIn(held: HeldGallery): Promise<boolean>;
 };
+
+/* ── the sign-in hand-off (owner ruling 2026-10-01; hunt 12) ────────────────
+   The gallery writes for everyone, but a guest's FIRST sign-in wipes this
+   device's `ape:*` keys — every pattern saved and coloured as a guest in this
+   app session was gone from the gallery the moment they signed in (the
+   ticks in ExperimentWell and Room Design's saved designs were carried; the
+   gallery was not). What a guest saves here is held by the shared ledger
+   (`guestOnly`: an account's own saves need no carrying) and written back
+   after the wipe. A row deleted again in the session is let go of too. */
+const CARRY_KEY = 'cymatics:gallery';
+export type HeldGallery = { patterns: SavedPattern[]; artwork: Artwork[] };
+
+/** Pure: the held gallery after one saved pattern / colouring, or removals. */
+export function withHeldGallery(
+  prev: HeldGallery | undefined,
+  change: { pattern?: SavedPattern; artwork?: Artwork; dropPattern?: string; dropArtwork?: string },
+): HeldGallery {
+  let patterns = prev?.patterns ?? [];
+  let artwork = prev?.artwork ?? [];
+  if (change.pattern) patterns = [change.pattern, ...patterns.filter((p) => p.id !== change.pattern!.id)];
+  if (change.artwork) artwork = [...artwork.filter((a) => a.patternId !== change.artwork!.patternId), change.artwork];
+  if (change.dropPattern) {
+    patterns = patterns.filter((p) => p.id !== change.dropPattern);
+    artwork = artwork.filter((a) => a.patternId !== change.dropPattern);
+  }
+  if (change.dropArtwork) artwork = artwork.filter((a) => a.patternId !== change.dropArtwork);
+  return { patterns, artwork };
+}
+
+function holdGallery(change: Parameters<typeof withHeldGallery>[1]): void {
+  holdSessionWork<HeldGallery>(CARRY_KEY, (prev) => withHeldGallery(prev, change), { guestOnly: true });
+}
+
+/** Pure: the stored rows plus the held ones — by id, the newer `updatedAt`
+ *  wins; a held row the list lacks is added (patterns newest first). */
+export function mergeHeldGallery(patterns: SavedPattern[], artwork: Artwork[], held: HeldGallery): { patterns: SavedPattern[]; artwork: Artwork[] } {
+  const p = [...patterns];
+  for (const h of [...held.patterns].reverse()) {
+    const i = p.findIndex((x) => x.id === h.id);
+    if (i < 0) p.unshift(h);
+    else if (h.updatedAt >= p[i].updatedAt) p[i] = h;
+  }
+  const a = [...artwork];
+  for (const h of held.artwork) {
+    if (!p.some((x) => x.id === h.patternId)) continue; // never an orphan colouring
+    const i = a.findIndex((x) => x.patternId === h.patternId);
+    if (i < 0) a.push(h);
+    else if (h.updatedAt >= a[i].updatedAt) a[i] = h;
+  }
+  return { patterns: p, artwork: a };
+}
 
 /**
  * One collection, or `null` when it could not be READ (full-app run 1,
@@ -327,7 +383,9 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       const row = { ...p, updatedAt: Date.now() };
       if (i >= 0) list[i] = row;
       else list.unshift(row);
-      return saveList(kv, PATTERN_KEYS.patterns, list);
+      const ok = await saveList(kv, PATTERN_KEYS.patterns, list);
+      if (ok) holdGallery({ pattern: row });
+      return ok;
     }),
     deletePattern: (id) => serial(async () => {
       const read = await patternsRW();
@@ -335,6 +393,7 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       const ok = await saveList(kv, PATTERN_KEYS.patterns, read.filter((x) => x.id !== id));
       const arts = await artworksRW();
       if (arts) await saveList(kv, PATTERN_KEYS.artwork, arts.filter((a) => a.patternId !== id));
+      if (ok) holdGallery({ dropPattern: id });
       return ok;
     }),
     duplicatePattern: (id) => serial(async () => {
@@ -345,6 +404,7 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       const copy: SavedPattern = { ...src, id: newPatternId(), name: `${src.name} (copy)`, favourite: false, createdAt: now, updatedAt: now, state: JSON.parse(JSON.stringify(src.state)) };
       list.unshift(copy);
       const ok = await saveList(kv, PATTERN_KEYS.patterns, list);
+      if (ok) holdGallery({ pattern: copy });
       return ok ? copy : null;
     }),
     // On the write chain, and it THROWS when the list cannot be read (evening
@@ -366,12 +426,30 @@ export function createPatternStore(kv: KeyValueStore): PatternStore {
       const row = { ...a, updatedAt: Date.now() };
       if (i >= 0) list[i] = row;
       else list.push(row);
-      return saveList(kv, PATTERN_KEYS.artwork, list);
+      const ok = await saveList(kv, PATTERN_KEYS.artwork, list);
+      if (ok) holdGallery({ artwork: row });
+      return ok;
     }),
     deleteArtwork: (patternId) => serial(async () => {
       const list = await artworksRW();
       if (!list) return false;
-      return saveList(kv, PATTERN_KEYS.artwork, list.filter((a) => a.patternId !== patternId));
+      const ok = await saveList(kv, PATTERN_KEYS.artwork, list.filter((a) => a.patternId !== patternId));
+      if (ok) holdGallery({ dropArtwork: patternId });
+      return ok;
+    }),
+    // On the write chain; never over a list that could not be read.
+    carryIn: (held) => serial(async () => {
+      if (!held.patterns.length && !held.artwork.length) return true;
+      const pats = await patternsRW();
+      const arts = await artworksRW();
+      if (!pats || !arts) return false;
+      const next = mergeHeldGallery(pats, arts, held);
+      const okP = held.patterns.length ? await saveList(kv, PATTERN_KEYS.patterns, next.patterns) : true;
+      const okA = held.artwork.length ? await saveList(kv, PATTERN_KEYS.artwork, next.artwork) : true;
+      // No screen is saving these (the Room Design carry rule): a refused
+      // write is told with the shared notice.
+      if (!okP || !okA) reportUnhandledSaveFailure();
+      return okP && okA;
     }),
   };
 }
@@ -408,6 +486,10 @@ export function patternStore(): PatternStore {
   }
   return defaultStore;
 }
+
+// The ledger's writer (see CARRY_KEY): registered at module load, like every
+// lab store's.
+registerSessionCarry<HeldGallery>(CARRY_KEY, (held) => patternStore().carryIn(held));
 
 /** Gallery hook: the list, a reload, and write-through actions. */
 export function usePatterns() {

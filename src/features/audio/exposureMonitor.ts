@@ -512,6 +512,23 @@ function rollDayIfNeeded(): void {
   void persistDay(true);
 }
 
+/**
+ * Settle what only a TICK used to settle (hunt 12, 2026-10-04): a session
+ * past its quiet gap closes (ending at its last audible second, as on resume)
+ * into the day it belongs to, THEN the calendar day rolls. The poller only
+ * runs while output is on or the mic is capturing, and output re-mutes after
+ * 20 idle minutes — so the next morning, with the app still in memory, the
+ * Exposure screen and the hub chip showed YESTERDAY's dose and time as
+ * "Today" (the history listed yesterday twice), and the first tick then rolled
+ * first and filed last night's session under today. Called by the tick and by
+ * every read of the snapshot or history; a no-op while nothing is stale.
+ */
+function settleIdle(): void {
+  if (!day) return;
+  if (session && Date.now() - session.lastActiveMs > cfg().sessionGapMinutes * 60000) closeSession(session.lastActiveMs);
+  rollDayIfNeeded();
+}
+
 /** The single ear-exposure estimate for this tick — the LOUDER of what the app
  *  is PLAYING (estimated from the real source dBFS + the output reference) and
  *  what the mic is MEASURING while a tool monitors (dB SPL, measured when
@@ -584,7 +601,7 @@ function tick(): void {
   const prevSounding = sounding;
   const prevDb = currentDb;
   const prevSession = session;
-  rollDayIfNeeded();
+  settleIdle();
   const now = Date.now();
 
   // TTS status refresh (async — applies next tick; 1 s staleness is fine).
@@ -782,6 +799,7 @@ export function initExposureMonitor(subscribeOutput: (cb: () => void) => void): 
 // ── Public API ───────────────────────────────────────────────────────────────
 
 export function getExposureSnapshot(): ExposureSnapshot {
+  settleIdle(); // never yesterday's figures (or a long-ended session) as today's
   const settings = cfg();
   const d = day;
   const avg = d && d.activeSec > 0 ? Math.round(10 * Math.log10(d.energySum / d.activeSec) * 10) / 10 : null;
@@ -860,6 +878,7 @@ export function updateExposureSettings(patch: Partial<ExposureSettings>): Promis
  * its own; it no longer collapses the whole history to today.
  */
 export async function getExposureHistory(strict = false): Promise<DayRecord[]> {
+  settleIdle(); // the in-memory day added below is TODAY's, never a stale one
   try {
     const rawIdx = await AsyncStorage.getItem(INDEX_KEY);
     const parsedIdx: unknown = rawIdx ? JSON.parse(rawIdx) : [];

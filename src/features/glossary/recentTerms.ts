@@ -15,6 +15,7 @@
  * an open before the read is applied to the STORED list, and the account wipe
  * reaches the store without a hand entry.
  */
+import { useSyncExternalStore } from 'react';
 import { createLocalStore } from '../storage/localStore';
 
 export const RECENT_TERMS_KEY = 'ape:glossaryRecent';
@@ -43,4 +44,14 @@ export function getRecentTerms(): string[] {
 /** React: the live list. */
 export function useRecentTerms(): string[] {
   return store.use();
+}
+
+/**
+ * React: the stored list could NOT be read (hunt 12, 2026-10-04; K2 — a failed
+ * read is not an empty list). While true, `useRecentTerms` holds only this
+ * session's opens; the stored history is untouched (never written over) and
+ * is read again on the next open. The screen says so instead of "Nothing yet".
+ */
+export function useRecentTermsUnreadable(): boolean {
+  return useSyncExternalStore(store.subscribe, store.isUnreadable, store.isUnreadable);
 }

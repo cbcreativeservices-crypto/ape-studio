@@ -34,8 +34,13 @@ test('fetchMyRegistryName throws on a failed read instead of reporting "no name"
   assert.match(strict, /if \(error\) throw/);
   assert.match(strict, /withDeadline\(\(\) => supabase\.auth\.getSession\(\)/, 'a stalled session read must throw, not read as signed out');
   assert.match(strict, /\.eq\('auth_id', uid\)\.maybeSingle\(\)/);
-  // The best-effort caller keeps its old fallback rather than rejecting.
-  assert.match(read('src/features/profile/publicProfile.ts'), /await fetchMyRegistryName\(\)\.catch\(\(\) => null\)/);
+  // The best-effort caller keeps its old fallback rather than rejecting
+  // (hunt 12: it now also remembers that the read failed — see
+  // accountHunt12_20261004).
+  assert.match(
+    read('src/features/profile/publicProfile.ts'),
+    /await fetchMyRegistryName\(\)\.catch\(\(\) => \{\s*remoteRead = false;\s*return null;\s*\}\)/,
+  );
 });
 
 test('Paywall guest copy states the 2026-10-01 carry ruling truthfully', () => {

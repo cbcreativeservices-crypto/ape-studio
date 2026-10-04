@@ -136,7 +136,10 @@ export function ExportPanel({ subject, onHelp }: { subject: ExportSubject; onHel
   const doShare = () =>
     run(async () => {
       const ok = await shareImage.captureAndShare(cardRef.current, `${name} — Cymatics Lab`);
-      return ok ? 'Shared ✓' : 'Sharing as an image isn’t available on this device.';
+      // SHARE is only pressable where it IS available (avail.share), so a
+      // false here is a capture or share that FAILED (hunt 12, K6) — the
+      // doPrint rule: never "isn't available" for a failure.
+      return ok ? 'Shared ✓' : avail.share ? "Sharing didn't complete — try again." : 'Sharing as an image isn’t available on this device.';
     });
   const doSave = () =>
     run(async () => {

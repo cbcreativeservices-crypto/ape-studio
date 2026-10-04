@@ -31,6 +31,7 @@ import { Modal } from '../../components/DimModal';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { armSaveFailureReport } from '../../features/storage/saveFailureNotice';
+import { registerLocalStoreReset } from '../../features/storage/localStoreRegistry';
 import { LinearGradient } from 'expo-linear-gradient';
 // Term illustrations are remote (Supabase storage): expo-image keeps them in a
 // memory + disk cache, so re-expanding a term or opening its viewer does not
@@ -81,7 +82,7 @@ import {
   type CapMode,
 } from '../../features/glossary/glossaryCap';
 import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
-import { recordRecentTerm, useRecentTerms } from '../../features/glossary/recentTerms';
+import { recordRecentTerm, useRecentTerms, useRecentTermsUnreadable } from '../../features/glossary/recentTerms';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { GlossaryLockView } from '../../features/glossary/GlossaryLockView';
 import { GlossaryDeviceKeyView } from '../../features/glossary/GlossaryDeviceKeyView';
@@ -263,6 +264,23 @@ AppState.addEventListener('change', (st) => {
     MEDIA_CACHE = null;
     FORMULA_CACHE = null;
   }, CACHE_RELEASE_MS);
+});
+
+/**
+ * ⛔ THE CACHED CORPUS CARRIES THE LAST READER'S PAID TEXT — DROP IT AT THE
+ * ACCOUNT WIPE (hunt 12, 2026-10-04; K5). A metered read patches the full
+ * definition onto the cached entry object (see defRev), and the only thing that
+ * blanked it for the next person was the screen comparing its reader with
+ * ENTRIES_UID. Since hunt 11 a session read that STALLED or could not refresh
+ * leaves the reader unknown — right for the same person, but a different
+ * reader whose first read is unknown then kept the last reader's full text:
+ * shown in the collapsed rows and read aloud by their speakers, for nothing.
+ * The wipe runs on every account change; a corpus dropped here reloads from
+ * the device copy (terms only, definitions blank). A Glossary still mounted
+ * keeps its own list, and its reader-change effect blanks that one.
+ */
+registerLocalStoreReset(() => {
+  ENTRIES_CACHE = null;
 });
 
 /** The allowance heads-up (Option A, owner 2026-09-10): at 7 used → 7 left, and
@@ -846,6 +864,9 @@ type Filter = 'all' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
 // after they return as a member, to reopen the term they were last on, then
 // cleared (owner 2026-09-10).
 const RETURN_TERM_KEY = 'ape:glossaryReturnTerm';
+/** The Recent views' face when the stored list could not be read (hunt 12, K2). */
+const RECENT_UNREADABLE =
+  'Your recent terms couldn’t be read on this phone. Nothing has been removed — they’ll show again once the list can be read.';
 
 /** Full record behind an expanded term (lazy-fetched on first tap). */
 type EntryDetail = {
@@ -1802,6 +1823,9 @@ ${COPY.glossaryFreeAllowance}`,
   // the first 5 glossary opens app-wide (lib/coachMark.ts).
   const coach = useCoachMark('ape:coach:glossary', 2);
   const recent = useRecentTerms();
+  // Its stored copy could not be read (hunt 12, K2): the Recent views say so
+  // rather than "Nothing yet" — the history is still on the phone, unread.
+  const recentUnreadable = useRecentTermsUnreadable();
   // Held filter chip → internal list of just that set's terms, like Flashcards
   // (user request 2026-07-22). kind picks which set the rows come from.
   const [termListModal, setTermListModal] = useState<{ title: string; kind: 'bookmark' | 'starred' | 'recent'; bookmarkCtx?: string } | null>(null);
@@ -1880,7 +1904,18 @@ ${COPY.glossaryFreeAllowance}`,
           return next;
         });
         lastViewedTermRef.current = id;
-        if (fresh && typeof used === 'number' && typeof lim === 'number') warnUsage(used, lim);
+        /**
+         * ⛔ THE HEADS-UP IS FOR A KNOWN NON-MEMBER ONLY (hunt 12, 2026-10-04;
+         * K3, owner 2026-10-03 #1). The server sends the week's count with any
+         * read it metered, and this raised "Weekly glossary limit … Academy
+         * membership makes the glossary unlimited" off that count alone — to a
+         * learner whose membership is still being checked or could not be
+         * confirmed. The refusal below already refuses to say "limit reached"
+         * or sell to that reader; the heads-up now follows the same rule
+         * (`meterKnown`, exactly as the fallback meter, which only ever runs
+         * when `capped`).
+         */
+        if (fresh && meterKnown && typeof used === 'number' && typeof lim === 'number') warnUsage(used, lim);
         return true;
       }
       if (r.fault === 'limit-reached') {
@@ -3967,6 +4002,9 @@ ${COPY.glossaryFreeAllowance}`,
                   <StudioButton label="Retry" variant="secondary" small onPress={reloadCorpus} />
                 </View>
               </View>
+            ) : filter === 'recent' && recentUnreadable && !search.trim() ? (
+              // An unreadable Recent list is not an empty one (hunt 12, K2).
+              <Text style={styles.empty}>{RECENT_UNREADABLE}</Text>
             ) : (
               // Empty state as help (Pillar C): say what to do next, and turn a
               // genuinely missing term into a suggestion instead of a dead end.
@@ -4326,7 +4364,9 @@ ${COPY.glossaryFreeAllowance}`,
                 <Text style={styles.tlEmpty}>
                   {loadError
                     ? 'Your terms couldn’t be loaded. Nothing has been removed from this list — check your connection and open it again.'
-                    : termListModal?.kind === 'starred'
+                    : termListModal?.kind === 'recent' && recentUnreadable
+                      ? RECENT_UNREADABLE
+                      : termListModal?.kind === 'starred'
                       ? 'No terms yet — tap ★ on any term to build your custom list.'
                       : termListModal?.kind === 'recent'
                         ? 'Nothing yet — terms you open will appear here.'
