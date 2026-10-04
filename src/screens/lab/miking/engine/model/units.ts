@@ -1,0 +1,96 @@
+/**
+ * Display units (rulings §16.5 and §16.11): DUAL units everywhere, rounded to
+ * ≈ 5 mm and ≈ 5°, prefixed "≈" — the lesson forbids implying millimetre
+ * accuracy (Kick L39: the acoustic centre is not the grille front). Pure;
+ * worklets (the live readout formats on the UI thread).
+ *
+ *   fmtLen(62)   → "≈ 6 cm (2.4 in)"
+ *   fmtLen(65)   → "≈ 6.5 cm (2.6 in)"
+ *   fmtLen(1240) → "≈ 1.24 m (48.8 in)"
+ *   fmtAngle(12) → "≈ 10°"
+ */
+
+export const MM_PER_IN = 25.4;
+
+/** Round to the nearest 5 mm. */
+export function round5(mm: number): number {
+  'worklet';
+  const r = Math.round(mm / 5) * 5;
+  return r === 0 ? 0 : r; // no "-0"
+}
+
+function trimZero(s: string): string {
+  'worklet';
+  // No regex: worklets run this on the UI thread.
+  if (s.indexOf('.') < 0) return s;
+  let end = s.length;
+  while (end > 0 && s.charAt(end - 1) === '0') end--;
+  if (end > 0 && s.charAt(end - 1) === '.') end--;
+  return s.slice(0, end);
+}
+
+/** Metric part only, rounded to 5 mm: "6 cm", "6.5 cm", "1.24 m". */
+export function fmtMetric(mm: number): string {
+  'worklet';
+  const r = round5(mm);
+  const a = Math.abs(r);
+  if (a >= 1000) return `${trimZero((r / 1000).toFixed(3))} m`;
+  if (a >= 10) return `${trimZero((r / 10).toFixed(1))} cm`;
+  return `${r} mm`;
+}
+
+/** Imperial part, from the SAME rounded value: "2.4 in". */
+export function fmtImperial(mm: number): string {
+  'worklet';
+  const r = round5(mm);
+  return `${trimZero((r / MM_PER_IN).toFixed(1))} in`;
+}
+
+/** "≈ 6 cm (2.4 in)" — metric first (the lab's own unit; a citation keeps
+ *  the source's own unit first, written out in the lesson text). */
+export function fmtLen(mm: number): string {
+  'worklet';
+  if (!(mm === mm)) return 'not measured';
+  return `≈ ${fmtMetric(mm)} (${fmtImperial(mm)})`;
+}
+
+/** Round to the nearest 5°. */
+export function round5deg(deg: number): number {
+  'worklet';
+  const r = Math.round(deg / 5) * 5;
+  return r === 0 ? 0 : r;
+}
+
+export function fmtAngle(deg: number): string {
+  'worklet';
+  if (!(deg === deg)) return 'not measured';
+  return `≈ ${round5deg(deg)}°`;
+}
+
+/** A signed distance from a head, in words: "≈ 6 cm (2.4 in) inside". */
+export function fmtSigned(mm: number, plus: string, minus: string): string {
+  'worklet';
+  if (!(mm === mm)) return 'not measured';
+  const r = round5(mm);
+  if (r === 0) return 'at the head';
+  return `${fmtLen(Math.abs(mm))} ${r > 0 ? plus : minus}`;
+}
+
+/** Milliseconds, 2 decimals ("0.58 ms"); Hz to 3 significant figures. */
+export function fmtMs(ms: number): string {
+  'worklet';
+  return `${Math.abs(ms).toFixed(2)} ms`;
+}
+export function fmtHz(hz: number): string {
+  'worklet';
+  if (!(hz === hz)) return 'not measured';
+  if (hz >= 1000) return `${trimZero((hz / 1000).toFixed(2))} kHz`;
+  if (hz >= 100) return `${Math.round(hz)} Hz`;
+  return `${trimZero(hz.toFixed(1))} Hz`;
+}
+export function fmtDb(db: number): string {
+  'worklet';
+  if (db <= -59.5) return 'below −60 dB';
+  const r = Math.round(db * 10) / 10;
+  return `${r > 0 ? '+' : r < 0 ? '−' : ''}${Math.abs(r).toFixed(1)} dB`;
+}
