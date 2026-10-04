@@ -15,6 +15,7 @@
  * the account wipe lands nowhere (bug pass 2, 2026-09-30); the wipe reaches
  * the store without a hand entry.
  */
+import { useSyncExternalStore } from 'react';
 import { createLocalStore } from '../storage/localStore';
 
 export type BundleKind = 'cert' | 'program' | 'subject';
@@ -100,4 +101,15 @@ export function useBundles(): EnrolledBundle[] {
  *  credential" — an effect that writes from it must wait (hunt 6, 2026-10-03). */
 export function useBundlesHydrated(): boolean {
   return store.useHydrated();
+}
+
+/** The three faces of the stored bundles (wrap-up 2026-10-04), the twin of
+ *  `useEnrollmentReadState`: `useBundles()` is `[]` while the read is out AND
+ *  after it FAILED — neither is "no bundles". */
+export type BundlesReadState = 'loading' | 'unreadable' | 'read';
+function bundlesReadState(): BundlesReadState {
+  return store.isHydrated() ? 'read' : store.isUnreadable() ? 'unreadable' : 'loading';
+}
+export function useBundlesReadState(): BundlesReadState {
+  return useSyncExternalStore(store.subscribe, bundlesReadState, bundlesReadState);
 }

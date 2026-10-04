@@ -2651,6 +2651,18 @@ ${COPY.glossaryFreeAllowance}`,
   const defTier: 'member' | 'free' | null = resolved ? (isMember ? 'member' : 'free') : null;
   const defTierRef = useRef(defTier);
   defTierRef.current = defTier;
+  /**
+   * ⛔ THE DEVICE COPY IS RE-TAGGED ONLY ON A SETTLED TIER (wrap-up 2026-10-04).
+   * A member whose membership read FAILED with no remembered tier resolves as
+   * 'anonymous', so `defTier` reads 'free' — and the align below then DELETED
+   * the member's saved offline definitions (the ship-with-no-signal case the
+   * offline save exists for). Only an 'open' / 'locked' gate (a read produced
+   * the tier, or this account's remembered one) may align or save; while it is
+   * 'checking' / 'unconfirmed' the device copy is neither read nor touched and
+   * the rows come from the network alone (the server masks by real standing).
+   */
+  const defSettledRef = useRef(false);
+  defSettledRef.current = memberGate === 'open' || memberGate === 'locked';
   const ensureDefinitions = useCallback(
     (ids: string[]) => {
       // Nothing until we know whose text this is: the browse view answers a
@@ -2715,10 +2727,12 @@ ${COPY.glossaryFreeAllowance}`,
           // 1. THE DEVICE FIRST. On a ship with no signal this is the only step
           //    that runs, and it is why the glossary still works there.
           //    Only once the device copy is known to be THIS tier's text.
-          const diskOk = await alignDefinitionTier(table, tier).then(
-            () => true,
-            () => false,
-          );
+          const diskOk = defSettledRef.current
+            ? await alignDefinitionTier(table, tier).then(
+                () => true,
+                () => false,
+              )
+            : false;
           const stored = diskOk
             ? await loadStoredDefinitions(table, want).catch(() => new Map<string, string>())
             : new Map<string, string>();

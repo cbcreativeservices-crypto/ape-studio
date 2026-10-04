@@ -64,6 +64,7 @@ import {
   setBundleLoaded,
   useBundles,
   useBundlesHydrated,
+  useBundlesReadState,
   type BundleKind,
   type EnrolledBundle,
 } from '../../features/enrollment/enrolledBundlesStore';
@@ -406,7 +407,17 @@ export const EnrollmentView = memo(function EnrollmentView({
 
   const enrolled = useEnrollment();
   // An unread list is not "No topics yet" (D51, hunt 7 2026-10-03).
-  const enrollRead = useEnrollmentReadState();
+  const enrollTopicsRead = useEnrollmentReadState();
+  // …and the bundles are the other half of that list (wrap-up 2026-10-04): an
+  // unread bundle list is not "no bundles" either. The empty face below is
+  // honest only when BOTH have been read.
+  const bundlesReadState = useBundlesReadState();
+  const enrollRead =
+    enrollTopicsRead === 'unreadable' || bundlesReadState === 'unreadable'
+      ? 'unreadable'
+      : enrollTopicsRead === 'loading' || bundlesReadState === 'loading'
+        ? 'loading'
+        : 'read';
   // LIVE v3 curriculum (owner 2026-08-06) — replaces the retired bundled v2 matrix.
   /** LAB REQUIREMENTS sheet (owner 2026-09-20). */
   const [labReqOpen, setLabReqOpen] = useState(false);

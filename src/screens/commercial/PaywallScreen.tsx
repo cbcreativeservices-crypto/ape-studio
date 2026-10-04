@@ -18,6 +18,8 @@ import { COPY, pricingDeadlineActive } from '../../lib/copy';
 import { confirmDialog, notify } from '../../lib/confirm';
 import { colors, fonts } from '../../theme/tokens';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
+import { useMemberGate } from '../../features/commercial/useTier';
+import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 import { consumePendingLink } from '../../navigation/pendingLink';
 import { navigateToPath } from '../../navigation/linking';
 import {
@@ -49,6 +51,7 @@ const PLANS: Plan[] = [
 export function PaywallScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const { refreshEntitlement, isMember, resolved, tierKnown, tierReadFailed, entitlement } = useEntitlement();
+  const gate = useMemberGate();
   const [selected, setSelected] = useState<Plan['id']>('annual');
   const [busy, setBusy] = useState(false);
   // Whether in-app purchasing is usable in THIS build (native module present +
@@ -427,6 +430,38 @@ export function PaywallScreen({ navigation }: Props) {
               <Text style={styles.policyLink}>Privacy Policy</Text>
             </Pressable>
           </View>
+        </ScrollView>
+      </View>
+    );
+  }
+
+  // NO OFFER TO A MAYBE-MEMBER (wrap-up 2026-10-04, D52). Plans and prices are
+  // an offer, and an offer goes only to a KNOWN non-member ('locked') or a
+  // known guest (`tierKnown`). A member whose tier is only REMEMBERED (the
+  // provider's first paint, before the network read) or whose read failed was
+  // shown the plan cards and CONTINUE. Until the tier settles this is the
+  // house 'checking' / MEMBERSHIP_NOT_CONFIRMED face — never a sell, and no
+  // purchase control at all. Restore stays (Apple 3.1.1; it buys nothing).
+  if (!(tierKnown || gate === 'locked')) {
+    return (
+      <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
+        <Pressable
+          onPress={() => safeGoBack(navigation)}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+          style={styles.close}
+        >
+          <Text style={styles.closeGlyph}>✕</Text>
+        </Pressable>
+        <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 16 }]}>
+          <Text style={styles.eyebrow}>ACADEMY MEMBERSHIP</Text>
+          <Text style={styles.body}>
+            {gate === 'unconfirmed' || tierReadFailed ? MEMBERSHIP_NOT_CONFIRMED : 'Checking your account…'}
+          </Text>
+          <Pressable onPress={busy ? undefined : onRestore} accessibilityRole="button" hitSlop={8}>
+            <Text style={styles.restore}>Restore purchases</Text>
+          </Pressable>
         </ScrollView>
       </View>
     );

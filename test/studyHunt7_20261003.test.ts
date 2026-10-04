@@ -108,7 +108,10 @@ test('enrollmentStore exposes loading / unreadable / read', () => {
 
 test('My Enrollment never shows an unread list as "No topics yet"', () => {
   const s = code('src/screens/enrollment/EnrollmentScreen.tsx');
-  assert.match(s, /const enrollRead = useEnrollmentReadState\(\);/);
+  // wrap-up 2026-10-04: the bundles' read state joins the topics' — the
+  // topics' unreadable / loading still decide `enrollRead` on their own.
+  assert.match(s, /const enrollTopicsRead = useEnrollmentReadState\(\);/);
+  assert.match(s, /const enrollRead =\s*enrollTopicsRead === 'unreadable' \|\| [^?]*\?\s*'unreadable'\s*:\s*enrollTopicsRead === 'loading' \|\| [^?]*\?\s*'loading'\s*:\s*'read';/);
   const at = s.indexOf("'No topics yet — open BROWSE & ADD below to enroll in your first one.'");
   assert.ok(at > 0, 'empty copy missing');
   const before = s.slice(Math.max(0, at - 500), at);
