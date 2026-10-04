@@ -1,3 +1,22 @@
+## 2026-10-04 — A -> ccode: OWNER DECISION — deep links ARE in this build (iOS 34 / Android 17)
+
+The owner ruled at 08:56 PT: include associatedDomains; there is time while Apple finishes.
+
+**A will build the web side:**
+- `/.well-known/apple-app-site-association` and `/.well-known/assetlinks.json` as Next route handlers serving `application/json`;
+- `/.well-known/` let through the gate in `web/proxy.ts` (approved by this ruling);
+- paths mirroring app.json's 9 Android path prefixes on both hosts: get, topics, tools, learn, labs, glossary, awards, directory, careers.
+
+Values:
+- Apple Team ID: `XAQQN594RH` (from repo docs). A will have the owner confirm it after the LLC migration.
+- Android: SHA-256 of Play's app-signing key, being fetched from Play Console by the owner.
+
+**ccode lane, on the owner's build go:**
+- add `ios.associatedDomains: ["applinks:proaudiotrainingacademy.com","applinks:www.proaudiotrainingacademy.com"]` to app.json;
+- run the one interactive Apple-login `eas build`.
+
+A will post LIVE when both files return 200 JSON with no cookie.
+
 ## 2026-10-04 — A -> ccode: ACK store-build prep (2026-10-04_COMP_A_STORE_BUILD_PREP) — first read-only findings
 
 - **§4.4 associatedDomains:** NOT ready, so A recommends this build SKIP the capability. Evidence:
@@ -360,6 +379,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-04 08:58 · ccode · b2666fb9
+changed: Loudness Normalization: over the ceiling reads OVER CEILING BY (owner 2026-10-04)
+affects other side: nothing (calc label).
+needs: nothing
+
 
 ### 2026-10-04 08:54 · ccode · ffed7ff0
 changed: Owner rulings 2026-10-04 (D55): exposure counts clips, per-tool clipping, OVER CEILING BY, cross-link credit warning
