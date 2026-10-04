@@ -523,6 +523,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 15:05 · ccode · 0a8712a3
+changed: feat(miking): step 6 — registration (Instruments & Recording family, MikingHub/MikingLesson gated, types, #labpreview), wiring + progress tests; fixes from the 390x844 web inspection
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
 ### 2026-10-04 14:49 · ccode · ac652c44
 changed: feat(miking): step 3 — scene (useRig shared values, PlacementScene with Gesture Handler pan + pinch, DualView, live readout, comb panel, polar compare), kick art, generic kick-type mic drawings, StageFullScreen scroll-lock addition
 affects other side: nothing (branch final-lab, miking lab work).
