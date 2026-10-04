@@ -751,8 +751,8 @@ affects other side: client only. NOTE for A: every supabase-js request now has a
 needs: nothing
 
 
-### 2026-10-02 09:59 · ccode · b7005fdf
-changed: web: temporary public launch page at / (launch Mon Oct 12) + public /accessibility
+affects other side: nothing server-side (web page only).
+needs: nothing
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
 needs: <FILL — what you need from A, or "nothing">
 
