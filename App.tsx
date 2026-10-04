@@ -9,6 +9,7 @@ import { AppState, Dimensions, Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider, KeyboardToolbar } from './src/features/keyboard/keyboardControllerSafe';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { setMeasurementFailureReporter } from './src/features/tools/measure/measurementStore';
@@ -406,12 +407,17 @@ function App() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { renderWebPreview } = require('./src/dev/webPreviews') as typeof import('./src/dev/webPreviews');
     const preview = renderWebPreview(window.location.hash);
-    if (preview) return preview;
+    if (preview) return <GestureHandlerRootView style={{ flex: 1 }}>{preview}</GestureHandlerRootView>;
   }
 
   return (
-    // Last line of defence (QA night 2026-09-01): before this, ONE uncaught
-    // render error unmounted the whole app to a white screen with no way back.
+    // Gesture Handler's root (owner 2026-10-04, final lab): drags and pinch run
+    // on the UI thread. It must sit above every view that uses a gesture. A
+    // React Native <Modal> is a separate native root on Android, so a modal
+    // that holds a gesture needs its own GestureHandlerRootView inside.
+    <GestureHandlerRootView style={{ flex: 1 }}>
+    {/* Last line of defence (QA night 2026-09-01): before this, ONE uncaught
+        render error unmounted the whole app to a white screen with no way back. */}
     <RootErrorBoundary>
     <SafeAreaProvider>
       {/* Global keyboard handling (owner 2026-08-01): powers KeyboardAwareScrollView
@@ -531,6 +537,7 @@ function App() {
       </KeyboardProvider>
     </SafeAreaProvider>
     </RootErrorBoundary>
+    </GestureHandlerRootView>
   );
 }
 
