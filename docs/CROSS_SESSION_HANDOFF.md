@@ -287,6 +287,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 17:46 · ccode · 215d7f25
+changed: Owner 1-2: calc refusals cost nothing; lab hubs never "not started" on an unreadable read
+affects other side: nothing backend — calc refusals no longer call calc_consume (fewer server consumes for free users); app-only otherwise.
+needs: still A to apply migration 2026100301.
+
+
 ### 2026-10-03 16:53 · ccode · 3c9cb22f
 changed: Hunt 7: 20 fixes + 4 corrections (full-app toddler pass, 10 areas)
 affects other side: nothing backend — app-only. NOT published (owner has not said publish for hunt 7).
