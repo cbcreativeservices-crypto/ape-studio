@@ -4636,3 +4636,8 @@ needs: nothing
 changed: Wrote docs/COMP_A_STORE_BUILD_PREP_2026_10_04.md — what the next store build (iOS 34 / Android 17) will carry: Reanimated 4.5.5 / Worklets 0.10.4, expo-iap 5.8, expo-speech-recognition 57, supabase-js 2.117, the SignalGen unplug + iPad mic-stop native fixes, and all unpublished app code. NO BUILD STARTED — the owner starts it.
 affects other side: new runtime fingerprint after the build → publish to old + new runtimes until testers move. No new permissions expected (please confirm against the final app.json diff). Glossary cross-links now cost a lookup after a warning (owner ruling 2026-10-04) — update any review/support text saying they are free.
 needs: §4 of that doc — IAP sandbox test (buy/restore/refund/cancel), 16 KB + target-API check on upload, AASA/assetlinks live for associatedDomains (or say skip), release notes draft, TestFlight/internal groups ready.
+
+### 2026-10-04 16:05 · ccode · PUBLISHED (owner go)
+changed: OTA published at d0449070 (hunts 11-13, RN pass, wrap-up, D55 rulings, Loudness Normalization label). production: iOS group 22744e67 (update 01a107a7-761c-7031…), Android group 4bc9339f (01a107a7-761c-79ea…); preview: iOS 39acd79b, Android b4215b89. Runtimes e8e3455b / 22976b0e (builds 33/16) — fingerprints matched, no rollback pending, u.expo.dev serves both ids.
+affects other side: testers on 33/16 receive it on next launch(es). Glossary cross-links now cost a lookup after the reader confirms.
+needs: nothing
