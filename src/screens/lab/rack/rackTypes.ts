@@ -20,6 +20,10 @@ export const STAGE_HEIGHTS: Record<StageSize, number> = { S: 160, M: 200, L: 250
 export type BezelItem = {
   k: string;
   v: string;
+  /** Optional second value line in the unit style (e.g. the imperial
+   *  "(9.8 in)" under "≈ 25 cm"), so a dual-unit value fits its cell and the
+   *  cell keeps its key (D36 drops the key of a value too wide to fit). */
+  sub?: string;
   /** Value tint (e.g. levelColor ramp); default amber. */
   tint?: string;
   /** Long-press → this guided-lesson entry (via RackUnit.onHelp). */

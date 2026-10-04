@@ -226,8 +226,9 @@ export type ArtLabel = { id: string; text: string; u: number; v: number; align: 
 
 export function kickLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [
-    { id: 'batter', text: 'BATTER HEAD', u: -12, v: -G.hoopOut - 70, align: 'center' },
-    { id: 'reso', text: variant === 'ported' ? 'FRONT HEAD (PORTED)' : 'FRONT HEAD (INTACT)', u: G.L + 10, v: -G.hoopOut - 70, align: 'center' },
+    { id: 'batter', text: 'BATTER HEAD', u: 14, v: -G.hoopOut - 26, align: 'right' },
+    // Right-aligned to the front hoop: the top-right corner is the inset's.
+    { id: 'reso', text: variant === 'ported' ? 'FRONT HEAD (PORTED)' : 'FRONT HEAD (INTACT)', u: G.L + 30, v: -G.hoopOut - 26, align: 'right' },
   ];
   if (view === 'side') {
     out.push({ id: 'beater', text: 'PEDAL · ILLUSTRATIVE', u: -230, v: -170, align: 'center', tone: 'illustrative' });

@@ -17,12 +17,11 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { ViewId } from '../engine/model/types.ts';
-import type { Blocked } from '../engine/geometry/collision.ts';
 import { zonesAvailable } from '../engine/geometry/zones.ts';
-import { fmtAngle, fmtLen } from '../engine/model/units.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
-import { nowText, sceneLabel } from '../engine/scene/sceneWords.ts';
+import { nowText, readoutWords, sceneLabel } from '../engine/scene/sceneWords.ts';
+import { placementBezel } from '../engine/scene/readoutText.ts';
 import { placementParams, type AimAxis, type PosAxis } from '../engine/scene/placementDock.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Landing, Note, NowLine, ScenarioList, ZoneCard } from '../engine/kit';
@@ -43,7 +42,6 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const [view, setView] = useState<ViewId>('side');
   const [posAxis, setPosAxis] = useState<PosAxis>('x');
   const [aimAxis, setAimAxis] = useState<AimAxis>('el');
-  const [block, setBlock] = useState<Blocked>(null);
   const [visited, setVisited] = useState<ReadonlySet<string>>(() => new Set());
   const mic = rig.mics[0];
   const t = micType(mic.typeId);
@@ -56,7 +54,9 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     if (zone && zone.refSurface !== rig.surfaceId) rig.setSurfaceId(zone.refSurface);
   }, [zone, rig]);
   const r = rig.readouts('A');
-  const surfaceLabel = lesson.model.surfaces.find((s) => s.id === rig.surfaceId)?.label ?? '';
+  // What every readout PRINTS (bezel, NOW line, strip): the same pose, the
+  // same reference head and line, plus the stop reason (readoutText.ts).
+  const shown = rig.shown('A');
 
   // CREDIT: a clear resting pose inside a documented zone, counted on release.
   const lastVersion = useRef(-1);
@@ -71,7 +71,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
 
   const available = zonesAvailable(lesson.zones, variant, mic.typeId, t.mount);
   const params: DockParam[] = [
-    ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis, block, setBlock }),
+    ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis }),
     { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
     {
       kind: 'group',
@@ -109,18 +109,13 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       selectedId: zone?.id ?? null,
       onSelect: (id) => {
         const z = lesson.zones.find((q) => q.id === id);
-        if (z) setBlock(rig.jumpTo('A', z.start));
+        if (z) rig.jumpTo('A', z.start);
       },
       options: available.map((z) => ({ id: z.id, label: `${z.kind === 'trial' ? 'TRIAL · ' : ''}${z.label}`, blurb: `${z.band}. “${z.quote}”` })),
     },
   ];
 
-  const bezel: BezelItem[] = [
-    { k: `FROM ${surfaceLabel.replace('the ', '').toUpperCase()}`, v: fmtLen(Math.abs(r.distance)), flex: 1.5 },
-    { k: 'OFF BEATER LINE', v: fmtLen(r.radial), flex: 1.5 },
-    { k: 'AIM', v: t.mount === 'surface' ? 'FLAT' : fmtAngle(r.offAxis) },
-    { k: 'ZONE', v: r.blocked ? `✕ ${r.blocked.label.toUpperCase()}` : zone ? (zone.kind === 'trial' ? 'TRIAL' : 'SOURCED') : 'NONE', tint: r.blocked ? '#ff6b5e' : zone ? (zone.kind === 'trial' ? '#ffc64d' : '#6fa8ff') : undefined },
-  ];
+  const bezel: BezelItem[] = placementBezel(shown, readoutWords(rig, 'A'), zone, (id) => lesson.model.parts.find((p) => p.id === id)?.short ?? id);
 
   const labelFor = (v: ViewId) => sceneLabel(rig, v, ['A']);
   const steps: MikingStep[] = [
@@ -154,7 +149,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
         <>
           <Landing looking={`${t.label.toLowerCase()} on the ${lesson.model.name} (${variant === 'ported' ? 'ported' : 'intact'} front head)`} prompt="Drag the mic (or use POSITION and AIM). Drag the amber ring to turn it. Rest it in two different documented zones." />
           <NowLine text={nowText(rig, ['A'])} />
-          {r.blocked ? <Note tone="warn">{`It would touch the ${r.blocked.label} — the mic stops there. ${variant === 'intact' && t.mount === 'stand' ? 'With an intact head a stand-mounted mic cannot get inside: mic it from outside.' : ''}`}</Note> : null}
+          {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there. ${variant === 'intact' && t.mount === 'stand' ? 'With an intact head a stand-mounted mic cannot get inside: mic it from outside.' : ''}`}</Note> : null}
           {zone ? <ZoneCard z={zone} /> : <Body>{`Not in a documented zone. Zones for this mic and head: ${available.map((z) => z.label).join('; ') || 'none — try another mic type or front head'}.`}</Body>}
           <Body>{`Zones rested in, clear of every part: ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
           {mic.typeId === 'kickDynCard' ? <Note>An aiming experiment to try on a real drum: turn the mic away from where the beater strikes, and check whether the attack eases. (This was in Sennheiser’s 2019 e 902 manual; the current manual leaves it out — K-03.)</Note> : null}

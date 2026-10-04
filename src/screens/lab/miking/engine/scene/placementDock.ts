@@ -10,7 +10,6 @@
  */
 import type { DockParam } from '../../../rack/rackTypes';
 import type { MicPose, MicSlot } from '../model/types.ts';
-import type { Blocked } from '../geometry/collision.ts';
 import { fmtAngle, fmtLen } from '../model/units.ts';
 import { micType } from '../../data/micTypes.ts';
 import type { Rig } from './useRig.ts';
@@ -25,9 +24,9 @@ function axisRange(rig: Rig, a: PosAxis): [number, number] {
 }
 
 export function posWords(a: PosAxis, v: number): string {
-  if (a === 'x') return `${fmtLen(Math.abs(v))} ${v >= 0 ? 'past' : 'before'} the batter-head plane`;
-  if (a === 'y') return `${fmtLen(Math.abs(v))} ${v <= 0 ? 'above' : 'below'} the drum’s axis`;
-  return `${fmtLen(Math.abs(v))} to the player’s ${v >= 0 ? 'right' : 'left'}`;
+  if (a === 'x') return `${fmtLen(Math.abs(v))} ${v >= 0 ? 'past' : 'before'} batter`;
+  if (a === 'y') return `${fmtLen(Math.abs(v))} ${v <= 0 ? 'above' : 'below'} axis`;
+  return `${fmtLen(Math.abs(v))} to player’s ${v >= 0 ? 'right' : 'left'}`;
 }
 
 export function placementParams(opts: {
@@ -37,16 +36,17 @@ export function placementParams(opts: {
   setPosAxis: (a: PosAxis) => void;
   aimAxis: AimAxis;
   setAimAxis: (a: AimAxis) => void;
-  block: Blocked;
-  setBlock: (b: Blocked) => void;
 }): DockParam[] {
-  const { rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis, block, setBlock } = opts;
+  const { rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis } = opts;
   const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
   const pose: MicPose = m.pose;
   const surface = micType(m.typeId).mount === 'surface';
   const [lo, hi] = axisRange(rig, posAxis);
   const cur = pose.p[posAxis];
-  const why = block ? ` · ✕ ${block.label}` : '';
+  // The committed stop reason of THIS slot (the same one the strip and the
+  // bezel print), not a page-wide copy.
+  const block = rig.stop[slot];
+  const stopWord = block ? `✕ ${rig.lesson.model.parts.find((p) => p.id === block.partId)?.short ?? block.label}` : '';
   const out: DockParam[] = [
     {
       kind: 'fader',
@@ -55,9 +55,11 @@ export function placementParams(opts: {
       value: Math.min(1, Math.max(0, (cur - lo) / (hi - lo))),
       onChange: (v) => {
         const to: MicPose = { ...pose, p: { ...pose.p, [posAxis]: lo + v * (hi - lo) } };
-        setBlock(rig.moveTo(slot, to).blocked);
+        rig.moveTo(slot, to);
       },
-      format: () => `${posAxis === 'x' ? 'ALONG' : posAxis === 'y' ? 'HEIGHT' : 'ACROSS'} · ${posWords(posAxis, cur)}${why}`,
+      // Compact: the lane prints its value right-aligned beside the label, so a
+      // long line ran over "POSITION". The stop comes FIRST when there is one.
+      format: () => (stopWord ? `${stopWord} · ${fmtLen(Math.abs(cur))}` : posWords(posAxis, cur)),
       formatShort: () => (posAxis === 'x' ? 'ALONG' : posAxis === 'y' ? 'HEIGHT' : 'ACROSS'),
       chooser: {
         title: 'MOVE THE MIC',
@@ -82,9 +84,9 @@ export function placementParams(opts: {
       onChange: (v) => {
         const ang = Math.round((v * 2 - 1) * AIM_MAX);
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
-        setBlock(rig.moveTo(slot, to).blocked);
+        rig.moveTo(slot, to);
       },
-      format: () => `${aimAxis === 'az' ? (a >= 0 ? 'toward the player’s right' : 'toward the player’s left') : a >= 0 ? 'tilted up' : 'tilted down'} ${fmtAngle(Math.abs(a))}${why}`,
+      format: () => `${stopWord ? `${stopWord} · ` : ''}${aimAxis === 'az' ? (a >= 0 ? 'to the right' : 'to the left') : a >= 0 ? 'tilted up' : 'tilted down'} ${fmtAngle(Math.abs(a))}`,
       formatShort: () => fmtAngle(a),
       chooser: {
         title: 'TURN THE MIC',

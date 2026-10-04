@@ -10,6 +10,7 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
+import { fitValue } from '../../../theme/legibility';
 import type { BezelItem } from './rackTypes';
 
 export function BezelReadouts({
@@ -95,7 +96,7 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
       delayLongPress={350}
       disabled={!it.onPress && !it.helpKey}
       accessibilityRole={it.onPress ? 'button' : 'text'}
-      accessibilityLabel={`${it.k}: ${it.v}${it.helpKey ? ' — long-press for its lesson' : ''}`}
+      accessibilityLabel={`${it.k}: ${it.v}${it.sub ? ` ${it.sub}` : ''}${it.helpKey ? ' — long-press for its lesson' : ''}`}
       onLayout={(e) => setCellW(Math.round(e.nativeEvent.layout.width))}
     >
       {cropped ? null : (
@@ -129,6 +130,11 @@ function Cell({ it, first, onHelp }: { it: BezelItem; first: boolean; onHelp?: (
           {it.v}
         </Text>
       )}
+      {it.sub ? (
+        <Text style={[styles.v, styles.unit, it.tint ? { color: it.tint } : null]} {...fitValue(11)}>
+          {it.sub}
+        </Text>
+      ) : null}
     </Pressable>
   );
 }

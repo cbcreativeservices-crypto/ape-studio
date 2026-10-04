@@ -18,6 +18,7 @@ import { checkAssembly, compileScene, constrainMove, pinToSurface, type Blocked,
 import { deriveReadouts, type ReadoutCtx } from '../geometry/readouts.ts';
 import { micBodyOf } from '../model/validate.ts';
 import { micType } from '../../data/micTypes.ts';
+import { withStop } from './readoutText.ts';
 
 export type SurfacePin = { top: { min: Vec3; max: Vec3 }; halfWidth: number } | null;
 
@@ -52,6 +53,14 @@ export type Rig = {
   setPolarity: (slot: MicSlot, pol: 1 | -1) => void;
   setOn: (slot: MicSlot, on: boolean) => void;
   readouts: (slot: MicSlot) => Readouts;
+  /** The part that STOPPED the last move (a clear pose that a drag, a fader
+   *  or a zone jump could not take further), committed with the pose. The
+   *  live strip reads the same value from `blocked`; `shown()` folds it in so
+   *  every readout says "✕ <part>" together (readoutText.withStop). */
+  stop: Record<MicSlot, Blocked>;
+  /** The readouts as SHOWN (bezel, NOW line, canvas label): `readouts`
+   *  plus the stop reason. Credit keeps using `readouts` (real geometry). */
+  shown: (slot: MicSlot) => Readouts;
   /** Bumped by every commit — pages watch it for credit events. */
   version: number;
 };
@@ -92,6 +101,8 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const [surfaceId, setSurfaceId] = useState(lesson.model.surfaces[0]?.id ?? '');
   const [active, setActive] = useState<MicSlot>('A');
   const [version, setVersion] = useState(0);
+  const [stop, setStop] = useState<Record<MicSlot, Blocked>>({ A: null, B: null });
+  const setStopOf = useCallback((slot: MicSlot, b: Blocked) => setStop((prev) => (prev[slot] === b ? prev : { ...prev, [slot]: b })), []);
 
   const typeA = first('A').typeId;
   const typeB = first('B').typeId;
@@ -116,10 +127,11 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
       sv.value = r.pose;
       (slot === 'A' ? blockedA : blockedB).value = r.blocked;
       write(slot, r.pose);
+      setStopOf(slot, r.blocked);
       setVersion((v) => v + 1);
       return r;
     },
-    [poseA, poseB, blockedA, blockedB, pin, body, scene, bounds, write],
+    [poseA, poseB, blockedA, blockedB, pin, body, scene, bounds, write, setStopOf],
   );
 
   const jumpTo = useCallback(
@@ -133,18 +145,20 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
         sv.value = target;
         write(slot, target);
       }
+      setStopOf(slot, hit);
       setVersion((v) => v + 1);
       return hit;
     },
-    [poseA, poseB, blockedA, blockedB, pin, body, scene, write],
+    [poseA, poseB, blockedA, blockedB, pin, body, scene, write, setStopOf],
   );
 
   const commit = useCallback(
     (slot: MicSlot) => {
       write(slot, (slot === 'A' ? poseA : poseB).value);
+      setStopOf(slot, (slot === 'A' ? blockedA : blockedB).value);
       setVersion((v) => v + 1);
     },
-    [poseA, poseB, write],
+    [poseA, poseB, blockedA, blockedB, write, setStopOf],
   );
 
   /** A pose valid for a (new) type/variant: pinned, or the nearest clear
@@ -162,10 +176,12 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
         if (z) p = z.start;
       }
       sv.value = p;
-      (slot === 'A' ? blockedA : blockedB).value = checkAssembly(sc, p, b);
+      const hit = checkAssembly(sc, p, b);
+      (slot === 'A' ? blockedA : blockedB).value = hit;
+      setStopOf(slot, hit);
       return p;
     },
-    [poseA, poseB, blockedA, blockedB, lesson],
+    [poseA, poseB, blockedA, blockedB, lesson, setStopOf],
   );
 
   const setType = useCallback(
@@ -198,6 +214,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
     (slot: MicSlot) => deriveReadouts(ctx[slot], (mics.find((m) => m.slot === slot) ?? mics[0]).pose, surfaceId, lineId),
     [ctx, mics, surfaceId, lineId],
   );
+  const shown = useCallback((slot: MicSlot) => withStop(readouts(slot), stop[slot]), [readouts, stop]);
 
-  return { lesson, variant, setVariant, scene, bounds, mics, pose, blocked, body, pin, ctx, surfaceId, setSurfaceId, lineId, active, setActive, moveTo, jumpTo, commit, setType, setPattern, setPolarity, setOn, readouts, version };
+  return { lesson, variant, setVariant, scene, bounds, mics, pose, blocked, body, pin, ctx, surfaceId, setSurfaceId, lineId, active, setActive, moveTo, jumpTo, commit, setType, setPattern, setPolarity, setOn, readouts, stop, shown, version };
 }

@@ -25,10 +25,10 @@
  * so inside StageFullScreen the scene wraps itself in GestureHandlerRootView;
  * a drag that starts on a mic locks the full-screen scrollers (ScrollLock).
  */
-import { useCallback, useContext, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Canvas, Circle, DashPathEffect, Group, Line, Path, Skia, vec } from '@shopify/react-native-skia';
-import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../theme/tokens';
@@ -43,9 +43,10 @@ import { assembly, constrainMove, pinToSurface, type Blocked } from '../geometry
 import { deriveReadouts } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
 import { gain, isModelled } from '../physics/polar.ts';
-import { fmtAngle, fmtLen } from '../model/units.ts';
 import { micType } from '../../data/micTypes.ts';
 import type { Rig } from './useRig.ts';
+import { liveLine, withStop } from './readoutText.ts';
+import { refLabels } from './sceneWords.ts';
 import type { LessonArt } from './sceneTypes.ts';
 
 const BLUE = '#6fa8ff';
@@ -54,6 +55,8 @@ const RED = '#ff6b5e';
 const GREY = '#8a8f9c';
 const POLAR_R = 170; // mm: the drawn radius of an on-axis lobe (a drawing size, not a range)
 const MAX_ZOOM = 5;
+/** Below this fit scale (px per mm) the part labels would overlap: hidden. */
+const LABEL_MIN_S = 0.16;
 const PAD = 8;
 /** The aim ring sits this far behind the mic's tail, at this radius (screen px). */
 const RING_OFFSET_PX = 20;
@@ -358,22 +361,40 @@ function SceneLabel({ xf, u, v, text, align, tone, scale, maxX }: { xf: SharedVa
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-function LiveReadout({ rig, slot, scale }: { rig: Rig; slot: MicSlot; scale: number }) {
+/**
+ * WHY TWO PATHS (stale-readout fix, 2026-10-04). The native path is the
+ * Reanimated live-number idiom: an animated TextInput whose `text` prop is
+ * written on the UI thread (Reanimated 4.5.1's own PerformanceMonitor does
+ * exactly this; so do vizMeters/SplMeter here). React re-renders nothing
+ * during a drag (blueprint §5.1).
+ *
+ * On WEB that idiom only works for a single-line input: Reanimated's DOM
+ * updater (js-reanimated/index.ts, `updatePropsDOM`) writes `.value` only when
+ * the node is an `<input>`; any other node gets `setAttribute('text', …)`,
+ * which a `<textarea>` ignores. This strip is MULTILINE (it wraps at 390 pt),
+ * RN-web renders it as a `<textarea>`, and so it kept its first value forever:
+ * "A · ≈ 6 cm" over a bezel reading 25 cm. On web every worklet runs on the JS
+ * thread anyway, so the web path mirrors the same string into React state
+ * through a reaction — one string, one formatter (readoutText.liveLine), both
+ * platforms.
+ */
+function useLiveText(rig: Rig, slot: MicSlot) {
   const pose = rig.pose[slot];
   const blocked = rig.blocked[slot];
   const ctx = rig.ctx[slot];
   const surfaceId = rig.surfaceId;
   const lineId = rig.lineId;
-  const surfaceLabel = rig.lesson.model.surfaces.find((s) => s.id === surfaceId)?.label ?? '';
-  const lineLabel = rig.lesson.model.lines.find((l) => l.id === lineId)?.label ?? '';
-  const surface = rig.body[slot].mount === 'surface';
-  const props = useAnimatedProps(() => {
-    const r = deriveReadouts(ctx, pose.value, surfaceId, lineId);
-    const b = blocked.value as { label: string } | null;
-    const dist = `${slot} · ${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? 'from' : 'behind'} ${surfaceLabel} · ${fmtLen(r.radial)} off ${lineLabel}${surface ? '' : ` · aim ${fmtAngle(r.offAxis)}`}`;
-    const t = b ? `${dist} · ✕ ${b.label}` : dist;
-    return { text: t, defaultValue: t } as never;
-  });
+  const words = useMemo(
+    () => ({ slot, ...refLabels(rig), showAim: rig.body[slot].mount !== 'surface' }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [slot, rig.lesson, rig.surfaceId, rig.lineId, rig.body],
+  );
+  return useDerivedValue(() => liveLine(withStop(deriveReadouts(ctx, pose.value, surfaceId, lineId), blocked.value), words), [ctx, pose, blocked, surfaceId, lineId, words]);
+}
+
+function LiveReadoutNative({ rig, slot, scale }: { rig: Rig; slot: MicSlot; scale: number }) {
+  const text = useLiveText(rig, slot);
+  const props = useAnimatedProps(() => ({ text: text.value, defaultValue: text.value }) as never, [text]);
   return (
     <AnimatedTextInput
       editable={false}
@@ -389,6 +410,36 @@ function LiveReadout({ rig, slot, scale }: { rig: Rig; slot: MicSlot; scale: num
   );
 }
 
+function LiveReadoutWeb({ rig, slot, scale }: { rig: Rig; slot: MicSlot; scale: number }) {
+  const text = useLiveText(rig, slot);
+  const [shown, setShown] = useState(() => text.value);
+  useAnimatedReaction(
+    () => text.value,
+    (t, prev) => {
+      if (t !== prev) scheduleOnRN(setShown, t);
+    },
+    [text],
+  );
+  return (
+    <Text style={[styles.live, styles.liveWeb, { fontSize: Math.max(9, 9.5 * scale) }]} accessibilityElementsHidden importantForAccessibility="no">
+      {shown}
+    </Text>
+  );
+}
+
+const LiveReadout = Platform.OS === 'web' ? LiveReadoutWeb : LiveReadoutNative;
+
+/** Height (pt) of the live strip's band: 2 lines per mic on a phone-width
+ *  glass (a stop reason wraps the line), 1 on a wide one. Fixed per layout,
+ *  so the fit never jumps while a finger drags. DualView parks its inset
+ *  under the same band. */
+export function liveReserve(count: number, w: number, textScale: number): number {
+  if (!count) return 0;
+  const fs = Math.max(9, 9.5 * textScale);
+  const lines = w < 560 ? 2 : 1;
+  return Math.ceil(4 + count * (lines * fs * 1.25 + 6));
+}
+
 /* ── the scene ───────────────────────────────────────────────────────── */
 
 export function PlacementScene(props: PlacementSceneProps) {
@@ -402,12 +453,20 @@ export function PlacementScene(props: PlacementSceneProps) {
 function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
   const model = rig.lesson.model;
   const box = boxOverride ?? model.views[view]!;
-  const base = useMemo(() => baseXf ?? fitXform(view, box, w, h, mini ? 2 : PAD), [baseXf, view, box, w, h, mini]);
+  const textScale = useStageTextScale();
+  // The live strip owns a band at the top: the drawing is fitted BELOW it, so
+  // the strip never sits on the heads or their labels (layout pass 2026-10-04).
+  const liveCount = !mini && interactive && showLive ? rig.mics.filter((m) => slots.includes(m.slot) && m.on).length : 0;
+  const reserveTop = baseXf ? 0 : liveReserve(liveCount, w, textScale);
+  const base = useMemo(() => {
+    if (baseXf) return baseXf;
+    const f = fitXform(view, box, w, h - reserveTop, mini ? 2 : PAD);
+    return { ...f, oy: f.oy + reserveTop };
+  }, [baseXf, view, box, w, h, mini, reserveTop]);
   const xf = useSharedValue<ViewXform>(base);
   useEffect(() => {
     xf.value = base;
   }, [base, xf]);
-  const textScale = useStageTextScale();
   const lock = useScrollLock();
   const setLock = useCallback((v: boolean) => lock?.(v), [lock]);
   const variant: VariantId = rig.variant;
@@ -611,7 +670,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       .filter((e): e is { id: string; path: ReturnType<typeof Skia.Path.Make> } => !!e.path);
   }, [showEnvelopes, model.envelopes, variant, view]);
   const hatchPath = useMemo(() => hatch(box), [box]);
-  const labels = useMemo(() => (mini || !showLabels ? [] : art.labels(view, variant)), [mini, showLabels, art, view, variant]);
+  // Part labels only where the drawing is big enough to carry them (a short
+  // landscape glass drew them on top of each other); full screen always has them.
+  const labels = useMemo(() => (mini || !showLabels || base.s < LABEL_MIN_S ? [] : art.labels(view, variant)), [mini, showLabels, art, view, variant, base.s]);
   const Instrument = art.Instrument;
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
@@ -677,14 +738,14 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       {!mini && interactive && showLive ? (
         <View pointerEvents="none" style={styles.liveWrap}>
           {micsShown.map((m) => (
-            // Keyed by the commit count: a move made from React (a fader, a zone
-            // jump) re-seeds the text; a drag updates it on the UI thread.
-            <LiveReadout key={`live:${m.slot}:${rig.version}`} rig={rig} slot={m.slot} scale={textScale} />
+            // Driven by the pose shared value on every path (drag, fader, zone
+            // jump, type change): no remount needed (see useLiveText).
+            <LiveReadout key={`live:${m.slot}`} rig={rig} slot={m.slot} scale={textScale} />
           ))}
         </View>
       ) : null}
       {!mini ? (
-        <Text pointerEvents="none" style={[styles.viewTag, { fontSize: Math.max(9, 9 * textScale) }]}>
+        <Text pointerEvents="none" style={[styles.viewTag, { top: reserveTop + 3, fontSize: Math.max(9, 9 * textScale) }]}>
           {view === 'side' ? 'SIDE · CUTAWAY' : 'TOP · CUTAWAY'}
         </Text>
       ) : null}
@@ -742,6 +803,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     includeFontPadding: false,
   },
-  viewTag: { position: 'absolute', right: 6, bottom: 4, color: colors.textMuted, fontFamily: fonts.oswaldMedium, letterSpacing: 1.2 },
+  // Web: the backing hugs the words (a full-width band hid the head labels).
+  liveWeb: { alignSelf: 'flex-start', maxWidth: '100%' },
+  viewTag: { position: 'absolute', left: 6, color: colors.textMuted, fontFamily: fonts.oswaldMedium, letterSpacing: 1.2 },
 });
 

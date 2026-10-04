@@ -16,11 +16,11 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicSlot, ViewId } from '../engine/model/types.ts';
-import type { Blocked } from '../engine/geometry/collision.ts';
 import { dist } from '../engine/geometry/vec.ts';
 import { C20, EQUAL_PATH_MM, deltaTms, notchesHz, pathDiffMm } from '../engine/physics/twoMic.ts';
 import { threeToOneRatio } from '../engine/physics/levels.ts';
 import { fmtHz, fmtLen, fmtMs } from '../engine/model/units.ts';
+import { lenCell } from '../engine/scene/readoutText.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
 import { CombPanel } from '../engine/scene/CombPanel';
@@ -49,7 +49,6 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   const [slot, setSlot] = useState<MicSlot>('B');
   const [posAxis, setPosAxis] = useState<PosAxis>('x');
   const [aimAxis, setAimAxis] = useState<AimAxis>('el');
-  const [block, setBlock] = useState<Blocked>(null);
   const regions = model.regions.filter((r) => !r.variants || r.variants.includes(variant));
   const [srcId, setSrcId] = useState(regions[0]?.id ?? '');
   const src = (regions.find((r) => r.id === srcId) ?? regions[0]).anchor;
@@ -71,7 +70,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   }, [flips, moved, interactiveDone, onInteractive]);
 
   const params: DockParam[] = [
-    ...placementParams({ rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis, block, setBlock }),
+    ...placementParams({ rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis }),
     { kind: 'toggle', id: 'mic', label: `EDIT MIC ${slot}`, value: slot === 'B', onToggle: () => setSlot((s) => (s === 'A' ? 'B' : 'A')) },
     {
       kind: 'toggle',
@@ -94,11 +93,14 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       options: regions.map((r) => ({ id: r.id, label: r.label, blurb: `${r.note} An ideal point source for the path overlay.` })),
     },
   ];
+  // Δd and Δt are B MINUS A (twoMic.ts: Δd = |S − B| − |S − A|), signed, so
+  // the cell names both mics and never reads as one mic's distance.
+  const dCell = lenCell(dMm, true);
   const bezel: BezelItem[] = [
-    { k: 'PATH DIFF Δd', v: equal ? 'NONE' : fmtLen(Math.abs(dMm)), flex: 1.4 },
-    { k: 'DELAY Δt', v: equal ? '0 ms' : fmtMs(dt) },
+    { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
+    { k: 'DELAY Δt B−A', v: equal ? '0 ms' : `${dt > 0 ? '+' : '−'}${fmtMs(dt)}`, sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.25 },
     { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : fmtHz(first), flex: 1.2 },
-    { k: 'SPACING 3:1', v: Number.isFinite(ratio) ? `${ratio.toFixed(1)} : 1` : '—' },
+    { k: '3:1 RATIO', v: Number.isFinite(ratio) ? `${ratio.toFixed(1)} : 1` : '—' },
   ];
   const [wellW, setWellW] = useState(0);
   const label = useMemo(

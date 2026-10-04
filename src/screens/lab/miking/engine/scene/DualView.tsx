@@ -11,10 +11,10 @@
 import { useContext, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../../theme/tokens';
-import { StageInFullScreen } from '../../../rack/stageAspect';
+import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
 import type { ViewId } from '../model/types.ts';
 import { fitPair } from '../geometry/frame.ts';
-import { PlacementScene, type PlacementSceneProps } from './PlacementScene';
+import { PlacementScene, liveReserve, type PlacementSceneProps } from './PlacementScene';
 
 export type DualViewProps = Omit<PlacementSceneProps, 'view' | 'baseXf' | 'mini' | 'accessibilityLabel'> & {
   view: ViewId;
@@ -28,6 +28,7 @@ const INSET = 0.27;
 export function DualView(props: DualViewProps) {
   const { rig, w, h, view, setView, labelFor } = props;
   const inFull = useContext(StageInFullScreen);
+  const textScale = useStageTextScale();
   const box = rig.lesson.model.views;
   const other: ViewId = view === 'side' ? 'top' : 'side';
   const stacked = inFull && box.side && box.top;
@@ -61,15 +62,21 @@ export function DualView(props: DualViewProps) {
   const ob = box[other];
   const vb = box[view];
   const showInset = !!ob && !!vb;
-  const iw = Math.round(w * INSET);
-  const ih = ob ? Math.round(Math.min(h * 0.42, iw / ((ob.u1 - ob.u0) / (ob.v1 - ob.v0)))) : 0;
+  const iw = Math.round(Math.min(w * INSET, 150));
+  const ih = ob ? Math.round(Math.min(h * 0.34, iw / ((ob.u1 - ob.u0) / (ob.v1 - ob.v0)))) : 0;
+  // The inset sits TOP-RIGHT, under the live strip's band: both kick views
+  // are empty there (right of the front hoop, above the port), while the
+  // bottom-left — where it used to sit — holds the pedal, the beater and the
+  // player's keep-out (layout pass 2026-10-04).
+  const live = props.interactive !== false && props.showLive !== false ? rig.mics.filter((m) => (props.slots ?? ['A']).includes(m.slot) && m.on).length : 0;
+  const top = liveReserve(live, w, textScale) + 2;
   return (
     <View style={{ width: w, height: h }}>
       <PlacementScene {...props} view={view} w={w} h={h} accessibilityLabel={labelFor(view)} />
       {showInset ? (
         <Pressable
           onPress={() => setView(other)}
-          style={[styles.inset, { width: iw, height: ih + 14 }]}
+          style={[styles.inset, { width: iw, height: ih + 14, top }]}
           accessibilityRole="button"
           accessibilityLabel={`Show the ${other} view`}
           hitSlop={6}
@@ -83,6 +90,6 @@ export function DualView(props: DualViewProps) {
 }
 
 const styles = StyleSheet.create({
-  inset: { position: 'absolute', left: 4, bottom: 4, borderWidth: 1, borderColor: '#3a3a44', borderRadius: 6, backgroundColor: 'rgba(8,8,10,0.86)', overflow: 'hidden' },
+  inset: { position: 'absolute', right: 4, borderWidth: 1, borderColor: '#3a3a44', borderRadius: 6, backgroundColor: 'rgba(8,8,10,0.86)', overflow: 'hidden' },
   insetTag: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9, letterSpacing: 1, textAlign: 'center' },
 });

@@ -8,19 +8,35 @@ import { describeNow, describeScene, type MicDescription, type SceneDescription 
 import { PATTERN_LABELS } from '../physics/polar.ts';
 import { micType } from '../../data/micTypes.ts';
 import type { Rig } from './useRig.ts';
+import type { ReadoutWords } from './readoutText.ts';
+
+/** The reference head and line every readout names (one place). */
+export function refLabels(rig: Pick<Rig, 'lesson' | 'surfaceId' | 'lineId'>): { surfaceLabel: string; lineLabel: string } {
+  return {
+    surfaceLabel: rig.lesson.model.surfaces.find((s) => s.id === rig.surfaceId)?.label ?? 'the reference head',
+    lineLabel: rig.lesson.model.lines.find((l) => l.id === rig.lineId)?.label ?? 'the reference line',
+  };
+}
+
+/** The words a slot's readouts are printed with (strip, bezel). */
+export function readoutWords(rig: Rig, slot: MicSlot): ReadoutWords {
+  const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
+  return { slot, ...refLabels(rig), showAim: micType(m.typeId).mount !== 'surface' };
+}
 
 export function micWords(rig: Rig, slot: MicSlot): MicDescription {
   const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
   const t = micType(m.typeId);
-  const r = rig.readouts(slot);
+  // The readouts as SHOWN (with the stop reason): the same value the bezel
+  // and the live strip print (readoutText.ts).
+  const r = rig.shown(slot);
   const z = r.zoneId ? rig.lesson.zones.find((q) => q.id === r.zoneId) ?? null : null;
   return {
     slot,
     typeLabel: t.label.toLowerCase(),
     patternLabel: t.patterns.find((p) => p.id === m.pattern)?.label ?? PATTERN_LABELS[m.pattern],
     readouts: r,
-    surfaceLabel: rig.lesson.model.surfaces.find((s) => s.id === rig.surfaceId)?.label ?? 'the reference head',
-    lineLabel: rig.lesson.model.lines.find((l) => l.id === rig.lineId)?.label ?? 'the reference line',
+    ...refLabels(rig),
     zoneLabel: z ? `${z.label}, ${z.band}` : null,
     zoneKind: z ? z.kind : null,
     showAim: t.mount !== 'surface',
