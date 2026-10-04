@@ -13,7 +13,8 @@
  * simulate (measurement-tools §1.7).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, InteractionManager, PermissionsAndroid, Platform } from 'react-native';
+import { AppState, PermissionsAndroid, Platform } from 'react-native';
+import { runSoon } from '../../../lib/afterInteractions';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import {
   ApeDsp,
@@ -401,7 +402,7 @@ export function useToolAutoStart(state: EngineState, start: () => void, stop?: (
           start();
         }
       };
-      const task = InteractionManager.runAfterInteractions(fire);
+      const task = runSoon(fire);
       const fallback = setTimeout(fire, 1500);
       return () => {
         task.cancel();

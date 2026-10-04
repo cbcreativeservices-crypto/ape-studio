@@ -53,7 +53,7 @@ export type AutoUpdateOutcome = 'disabled' | 'none' | 'reloaded' | 'deferred' | 
  *
  * @param onPending subscribe to the native state; call back when an update is
  *   pending. Returns an unsubscribe.
- * @param settle run work off the render path (InteractionManager in the app).
+ * @param settle run work off the render path (runSoon — a real macrotask — in the app).
  */
 export function watchForPendingUpdate(deps: {
   isEnabled: boolean;

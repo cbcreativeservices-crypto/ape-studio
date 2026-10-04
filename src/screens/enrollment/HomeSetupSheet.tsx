@@ -19,7 +19,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent } from 'react-native';
+import { Animated, LayoutAnimation, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { Modal } from '../../components/DimModal';
 import { notify } from '../../lib/confirm';
@@ -43,9 +43,6 @@ const AMBER = colors.amber;
 const GRAY = '#54565c';
 const ROW_H = 64; // estimated editable-row height for the drag-to-reorder step
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 const FOUNDATIONS_LABEL = 'Audio Fundamentals & Advanced Training Labs';
 
 export function HomeSetupSheet({ visible, onClose, paid = true }: { visible: boolean; onClose: () => void; paid?: boolean }) {

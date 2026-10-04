@@ -15,12 +15,22 @@ export type StudyQueueRow = {
   events_json: string;
 };
 
-const db = SQLite.openDatabaseSync('ape-studio.db');
-// MIGRATION NOTE (owner debug audit 2026-08-21): this uses CREATE TABLE IF NOT
-// EXISTS only. Before EVER adding/renaming a column here, add a PRAGMA
-// user_version migration (ALTER TABLE on upgrade) — on an existing install
-// `IF NOT EXISTS` will NOT alter the table, so new-column inserts would throw.
-db.execSync(`CREATE TABLE IF NOT EXISTS study_queue (
+/**
+ * Opened on FIRST USE, not at module scope (RN research 2026-10-04, the same
+ * rule measurementsBackend.native.ts follows): this module is reachable from
+ * account teardown, and a database opened — or a DDL that throws — as a side
+ * effect of an import puts a native module on the boot path and takes the
+ * importer down with it.
+ */
+let handle: SQLite.SQLiteDatabase | null = null;
+function db(): SQLite.SQLiteDatabase {
+  if (handle) return handle;
+  const h = SQLite.openDatabaseSync('ape-studio.db');
+  // MIGRATION NOTE (owner debug audit 2026-08-21): this uses CREATE TABLE IF NOT
+  // EXISTS only. Before EVER adding/renaming a column here, add a PRAGMA
+  // user_version migration (ALTER TABLE on upgrade) — on an existing install
+  // `IF NOT EXISTS` will NOT alter the table, so new-column inserts would throw.
+  h.execSync(`CREATE TABLE IF NOT EXISTS study_queue (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   achievement_id TEXT NOT NULL,
   method_key TEXT NOT NULL,
@@ -29,19 +39,22 @@ db.execSync(`CREATE TABLE IF NOT EXISTS study_queue (
   events_json TEXT NOT NULL,
   created_at INTEGER NOT NULL
 );`);
+  handle = h;
+  return h;
+}
 
 export function insertQueuedBatch(
   row: Omit<StudyQueueRow, 'id'>,
   createdAt: number,
 ): void {
-  db.runSync(
+  db().runSync(
     'INSERT INTO study_queue (achievement_id, method_key, batch_id, active_seconds, events_json, created_at) VALUES (?,?,?,?,?,?)',
     [row.achievement_id, row.method_key, row.batch_id, row.active_seconds, row.events_json, createdAt],
   );
 }
 
 export function getQueuedBatches(): StudyQueueRow[] {
-  return db.getAllSync<StudyQueueRow>('SELECT * FROM study_queue ORDER BY id');
+  return db().getAllSync<StudyQueueRow>('SELECT * FROM study_queue ORDER BY id');
 }
 
 export function deleteQueuedBatches(ids: number[]): void {
@@ -53,12 +66,12 @@ export function deleteQueuedBatches(ids: number[]): void {
   // input (security pass 2026-09-11).
   const safe = ids.filter((id) => Number.isInteger(id));
   if (safe.length === 0) return; // empty IN () is invalid SQL — guard it
-  db.runSync(`DELETE FROM study_queue WHERE id IN (${safe.join(',')})`);
+  db().runSync(`DELETE FROM study_queue WHERE id IN (${safe.join(',')})`);
 }
 
 /** Drop the entire queue — called on account switch so one user's un-synced
  *  offline batches never replay under the next user's session (cross-account
  *  contamination). See clearLocalAccountData / resetAllLocalStores. */
 export function clearQueuedBatches(): void {
-  db.runSync('DELETE FROM study_queue');
+  db().runSync('DELETE FROM study_queue');
 }

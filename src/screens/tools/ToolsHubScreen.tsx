@@ -10,7 +10,8 @@ import { markToolNavigate, markToolTap } from '../../features/tools/devTiming';
 import { CoachMark } from '../../components/CoachMark';
 import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
-import { Animated, Easing, InteractionManager, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { runSoon } from '../../lib/afterInteractions';
+import { Animated, Easing, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { hapticsEnabled } from '../../features/settings/store';
@@ -1026,7 +1027,7 @@ export function ToolsHubScreen({ navigation }: Props) {
     };
     // Prefer "after the open transition"; a timeout GUARANTEES the displays
     // still appear even if no interaction handle ever resolves.
-    const handle = InteractionManager.runAfterInteractions(finish);
+    const handle = runSoon(finish, { idleTimeoutMs: 350 });
     const t = setTimeout(finish, 350);
     return () => {
       handle.cancel();

@@ -24,7 +24,6 @@ import {
   Animated,
   BackHandler,
   FlatList,
-  InteractionManager,
   PanResponder,
   Pressable,
   ScrollView,
@@ -121,6 +120,7 @@ import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { devBypass } from '../../config/devMode';
 import { IntroSheet, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
 import { useLatchedPress } from '../../lib/latch';
+import { runSoon } from '../../lib/afterInteractions';
 import { CoachMark } from '../../components/CoachMark';
 import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
@@ -1263,7 +1263,7 @@ export function DashboardScreen() {
       // Any load begun since this focus read the state as it is now, so it is
       // at least as fresh as this one would be; newest-wins is untouched.
       const ticketAtFocus = loadTicketRef.current;
-      const task = InteractionManager.runAfterInteractions(() => {
+      const task = runSoon(() => {
         if (loadTicketRef.current !== ticketAtFocus) return;
         void load();
       });

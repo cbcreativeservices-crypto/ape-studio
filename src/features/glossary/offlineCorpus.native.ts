@@ -26,19 +26,32 @@ import * as SQLite from 'expo-sqlite';
 
 export type OfflineTerm = { id: string; term: string; achievement_id: string | null };
 
-const db = SQLite.openDatabaseSync('ape-studio.db');
+/**
+ * Opened on FIRST USE, not at module scope (RN research 2026-10-04, the same
+ * rule measurementsBackend.native.ts follows): this module is reachable from
+ * account teardown, and a database opened — or a DDL that throws — as a side
+ * effect of an import puts a native module on the boot path and takes the
+ * importer down with it.
+ */
+let handle: SQLite.SQLiteDatabase | null = null;
+function db(): SQLite.SQLiteDatabase {
+  if (handle) return handle;
+  const h = SQLite.openDatabaseSync('ape-studio.db');
 
-db.execSync(`CREATE TABLE IF NOT EXISTS glossary_corpus (
+  h.execSync(`CREATE TABLE IF NOT EXISTS glossary_corpus (
   id TEXT PRIMARY KEY,
   term TEXT NOT NULL,
   achievement_id TEXT,
   definition TEXT,
   src TEXT NOT NULL
 );`);
-db.execSync(`CREATE TABLE IF NOT EXISTS glossary_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`);
-// Ordering the list by term is the single hottest read; without this the first
-// paint pays a full sort of 31,858 rows.
-db.execSync(`CREATE INDEX IF NOT EXISTS glossary_corpus_term ON glossary_corpus (term);`);
+  h.execSync(`CREATE TABLE IF NOT EXISTS glossary_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`);
+  // Ordering the list by term is the single hottest read; without this the first
+  // paint pays a full sort of 31,858 rows.
+  h.execSync(`CREATE INDEX IF NOT EXISTS glossary_corpus_term ON glossary_corpus (term);`);
+  handle = h;
+  return h;
+}
 
 /**
  * `src` is the view the rows came from — `glossary` or `glossary_browse_v`.
@@ -92,12 +105,12 @@ function serial<T>(run: () => Promise<T>): Promise<T> {
 export async function loadTerms(src: string): Promise<OfflineTerm[]> {
   const expected = Number(await getMeta(completeKey(src)));
   if (!expected) return [];
-  const have = await db.getFirstAsync<{ n: number }>(
+  const have = await db().getFirstAsync<{ n: number }>(
     'SELECT COUNT(*) AS n FROM glossary_corpus WHERE src = ?',
     [src],
   );
   if ((have?.n ?? 0) !== expected) return []; // partial — re-download
-  return (await db.getAllAsync<OfflineTerm>(
+  return (await db().getAllAsync<OfflineTerm>(
     'SELECT id, term, achievement_id FROM glossary_corpus WHERE src = ? ORDER BY term',
     [src],
   )) as OfflineTerm[];
@@ -133,7 +146,7 @@ async function saveTermsNow(src: string, rows: OfflineTerm[]): Promise<void> {
   // Clear the completeness marker FIRST. Between here and the last batch the
   // corpus is partial, and anything that reads it in that window must see
   // "nothing stored" rather than a truncated glossary.
-  await db.runAsync('DELETE FROM glossary_meta WHERE k = ?', [completeKey(src)]);
+  await db().runAsync('DELETE FROM glossary_meta WHERE k = ?', [completeKey(src)]);
   /**
    * A term removed upstream must disappear locally too — but the DEFINITIONS
    * already on the phone must survive (bug hunt 2026-09-30, pass 2).
@@ -151,14 +164,14 @@ async function saveTermsNow(src: string, rows: OfflineTerm[]): Promise<void> {
    * next run revives or drops the same way.
    */
   const parked = `${src}#stale`;
-  await db.runAsync('UPDATE glossary_corpus SET src = ? WHERE src = ?', [parked, src]);
+  await db().runAsync('UPDATE glossary_corpus SET src = ? WHERE src = ?', [parked, src]);
 
   for (let i = 0; i < rows.length; i += ROWS_PER_INSERT) {
     const batch = rows.slice(i, i + ROWS_PER_INSERT);
     const values = batch.map(() => '(?,?,?,NULL,?)').join(',');
     const params: (string | null)[] = [];
     for (const r of batch) params.push(r.id, r.term, r.achievement_id, src);
-    await db.runAsync(
+    await db().runAsync(
       // A definition survives only from THIS src's own rows (live or parked) —
       // `id` is the key across every src, and a row moved in from another src
       // must not carry text written for a different reader (pass 3).
@@ -177,7 +190,7 @@ async function saveTermsNow(src: string, rows: OfflineTerm[]): Promise<void> {
   }
 
   // Terms that are gone upstream.
-  await db.runAsync('DELETE FROM glossary_corpus WHERE src = ?', [parked]);
+  await db().runAsync('DELETE FROM glossary_corpus WHERE src = ?', [parked]);
   // Only now is the corpus whole.
   await setMeta(completeKey(src), String(rows.length));
 }
@@ -190,7 +203,7 @@ export async function loadDefinitions(src: string, ids: string[]): Promise<Map<s
   for (let i = 0; i < ids.length; i += 900) {
     const slice = ids.slice(i, i + 900);
     const marks = slice.map(() => '?').join(',');
-    const rows = (await db.getAllAsync<{ id: string; definition: string | null }>(
+    const rows = (await db().getAllAsync<{ id: string; definition: string | null }>(
       `SELECT id, definition FROM glossary_corpus WHERE src = ? AND definition IS NOT NULL AND id IN (${marks})`,
       [src, ...slice],
     )) as { id: string; definition: string | null }[];
@@ -210,8 +223,8 @@ export async function saveDefinitions(
 ): Promise<void> {
   const keep = rows.filter((r) => !!r.definition);
   if (!keep.length) return;
-  await serial(() => db.withTransactionAsync(async () => {
-    const stmt = await db.prepareAsync(
+  await serial(() => db().withTransactionAsync(async () => {
+    const stmt = await db().prepareAsync(
       'UPDATE glossary_corpus SET definition = ? WHERE id = ? AND src = ?',
     );
     try {
@@ -274,13 +287,13 @@ async function alignNow(src: string, tier: 'member' | 'free'): Promise<void> {
   // so a tier change in between had to clear those as well, or a free
   // reader's teasers came back as a new member's "saved" text (and the
   // reverse handed a member's full text to the next free reader).
-  await db.runAsync('UPDATE glossary_corpus SET definition = NULL WHERE src = ? OR src = ?', [src, `${src}#stale`]);
+  await db().runAsync('UPDATE glossary_corpus SET definition = NULL WHERE src = ? OR src = ?', [src, `${src}#stale`]);
   await setMeta(tierKey(src), tier);
 }
 
 /** How complete the offline copy is — drives the "available offline" readout. */
 export async function corpusStats(src: string): Promise<{ terms: number; definitions: number }> {
-  const r = await db.getFirstAsync<{ terms: number; definitions: number }>(
+  const r = await db().getFirstAsync<{ terms: number; definitions: number }>(
     'SELECT COUNT(*) AS terms, COUNT(definition) AS definitions FROM glossary_corpus WHERE src = ?',
     [src],
   );
@@ -291,7 +304,7 @@ export async function corpusStats(src: string): Promise<{ terms: number; definit
 export function idsMissingDefinitions(src: string, limit: number): Promise<string[]> {
   // Queued: mid-saveTerms the rows are parked and this would answer "none".
   return serial(async () => {
-    const rows = (await db.getAllAsync<{ id: string }>(
+    const rows = (await db().getAllAsync<{ id: string }>(
       'SELECT id FROM glossary_corpus WHERE src = ? AND definition IS NULL ORDER BY term LIMIT ?',
       [src, limit],
     )) as { id: string }[];
@@ -311,19 +324,19 @@ export function writesSettled(): Promise<void> {
 }
 
 export async function getMeta(k: string): Promise<string | null> {
-  const r = await db.getFirstAsync<{ v: string }>('SELECT v FROM glossary_meta WHERE k = ?', [k]);
+  const r = await db().getFirstAsync<{ v: string }>('SELECT v FROM glossary_meta WHERE k = ?', [k]);
   return r?.v ?? null;
 }
 
 export async function setMeta(k: string, v: string): Promise<void> {
-  await db.runAsync('INSERT OR REPLACE INTO glossary_meta (k, v) VALUES (?,?)', [k, v]);
+  await db().runAsync('INSERT OR REPLACE INTO glossary_meta (k, v) VALUES (?,?)', [k, v]);
 }
 
 /** Wipe the offline copy — used when the reader asks for the space back. */
 export async function clearCorpus(): Promise<void> {
   return serial(async () => {
-    await db.runAsync('DELETE FROM glossary_corpus');
-    await db.runAsync('DELETE FROM glossary_meta');
+    await db().runAsync('DELETE FROM glossary_corpus');
+    await db().runAsync('DELETE FROM glossary_meta');
   });
 }
 

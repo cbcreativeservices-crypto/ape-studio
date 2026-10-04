@@ -18,7 +18,7 @@
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { labProbe, useLabProbeLines } from '../../features/lab/labProbe';
-import { Animated, Easing, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent } from 'react-native';
+import { Animated, Easing, LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -43,9 +43,6 @@ import { markLabUnit, registerLabUnits, useLabDone } from '../../features/lab/la
 // keep importing from LabShell unchanged.
 export { ScrollLockProvider, useScrollLock };
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 // PRACTICE and TEST modes REMOVED app-wide (owner 2026-08-07): they only ever
 // led to "in development" placeholder screens — labs show LEARN + EXPLORE.
@@ -99,7 +96,7 @@ export function LabChip({
   photoHint?: boolean;
 }) {
   // In a full-screen rack tray, a lesson/photo long-press leaves full screen
-  // first � a sibling Modal over it is refused on iOS (hunt 13, 2026-10-04).
+  // first — a sibling Modal over it is refused on iOS (hunt 13, 2026-10-04).
   const leaveFull = useRackLeaveFull();
   return (
     <Pressable

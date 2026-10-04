@@ -12,7 +12,7 @@
  * an ART SLOT comment at the mount point.
  */
 import { useCallback, useRef, useState } from 'react';
-import { AccessibilityInfo, LayoutAnimation, Platform, StyleSheet, Text, UIManager, View } from 'react-native';
+import { AccessibilityInfo, LayoutAnimation, StyleSheet, Text, View } from 'react-native';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { CableSectionId } from '../cableTypes';
@@ -26,11 +26,6 @@ import {
 } from '../data/lesson02';
 import { CheckDoneBanner, DetailCard, Eyebrow, LessonBanner, OptionChip, lessonStyles as s, useReduceMotion } from './bits';
 
-// LayoutAnimation opt-in on old-architecture Android (house convention:
-// per-file, like LabShell/MatchingScreen; a no-op under the New Architecture).
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 export function Lesson02Body() {
   // ── term explorers (§5.2a) — one selection per group ───────────────────

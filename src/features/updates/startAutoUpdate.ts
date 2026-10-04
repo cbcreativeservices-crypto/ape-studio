@@ -5,7 +5,7 @@
  * module already checks on every launch; doing it again is what raced and
  * crashed the app. See the crash note in `autoUpdate.ts`.
  */
-import { InteractionManager } from 'react-native';
+import { runSoon } from '../../lib/afterInteractions';
 import * as Updates from 'expo-updates';
 import { watchForPendingUpdate } from './autoUpdate';
 
@@ -25,8 +25,10 @@ export function startAutoUpdate(): () => void {
       return () => sub.remove();
     },
     // Off the render path — the crash was a reload inside updateRendering.
+    // A real macrotask: InteractionManager here was a same-tick microtask
+    // that ran BEFORE the render step (RN research 2026-10-04).
     settle: (cb) => {
-      InteractionManager.runAfterInteractions(cb);
+      runSoon(cb);
     },
     reload: () => Updates.reloadAsync(),
     now: () => Date.now(),

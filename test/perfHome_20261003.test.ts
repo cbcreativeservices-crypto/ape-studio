@@ -142,7 +142,7 @@ test('[R2] a load begun after the focus answers it (no discarded first load)', (
   assert.match(src, /const ticketAtFocus = loadTicketRef\.current;/);
   assert.match(
     src,
-    /InteractionManager\.runAfterInteractions\(\(\) => \{\s*if \(loadTicketRef\.current !== ticketAtFocus\) return;\s*void load\(\);\s*\}\)/,
+    /runSoon\(\(\) => \{\s*if \(loadTicketRef\.current !== ticketAtFocus\) return;\s*void load\(\);\s*\}\)/,
   );
   // newest-wins itself is untouched.
   assert.match(src, /const ticket = \+\+loadTicketRef\.current;/);

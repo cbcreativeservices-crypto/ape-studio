@@ -32,7 +32,6 @@
  */
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  InteractionManager,
   PanResponder,
   Platform,
   Pressable,
@@ -42,6 +41,7 @@ import {
   View,
   type AccessibilityActionEvent,
 } from 'react-native';
+import { runSoon } from '../lib/afterInteractions';
 import Reanimated, {
   Easing as REasing,
   cancelAnimation,
@@ -727,7 +727,9 @@ export function JogOverlay({
   // new cache key).
   useEffect(() => {
     if (!SKIA_READY) return;
-    const task = InteractionManager.runAfterInteractions(() => prewarmJogRasters(size));
+    // Idle, not a microtask (InteractionManager never waited — RN research
+    // 2026-10-04); a 1 s ceiling keeps the first open warm.
+    const task = runSoon(() => prewarmJogRasters(size), { idleTimeoutMs: 1000 });
     return () => task.cancel();
   }, [size]);
 

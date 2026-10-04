@@ -15,11 +15,21 @@ export type QueuedSubmissionRow = {
   focus_loss_duration: number;
 };
 
-const db = SQLite.openDatabaseSync('ape-studio.db');
-// MIGRATION NOTE (owner debug audit 2026-08-21): CREATE TABLE IF NOT EXISTS only.
-// Before EVER changing this schema, add a PRAGMA user_version migration — an
-// existing install won't be ALTERed by IF NOT EXISTS, so new-column inserts throw.
-db.execSync(`CREATE TABLE IF NOT EXISTS quiz_submission_queue (
+/**
+ * Opened on FIRST USE, not at module scope (RN research 2026-10-04, the same
+ * rule measurementsBackend.native.ts follows): this module is reachable from
+ * account teardown, and a database opened — or a DDL that throws — as a side
+ * effect of an import puts a native module on the boot path and takes the
+ * importer down with it.
+ */
+let handle: SQLite.SQLiteDatabase | null = null;
+function db(): SQLite.SQLiteDatabase {
+  if (handle) return handle;
+  const h = SQLite.openDatabaseSync('ape-studio.db');
+  // MIGRATION NOTE (owner debug audit 2026-08-21): CREATE TABLE IF NOT EXISTS only.
+  // Before EVER changing this schema, add a PRAGMA user_version migration — an
+  // existing install won't be ALTERed by IF NOT EXISTS, so new-column inserts throw.
+  h.execSync(`CREATE TABLE IF NOT EXISTS quiz_submission_queue (
   attempt_id TEXT PRIMARY KEY,
   achievement_id TEXT NOT NULL,
   answers_json TEXT NOT NULL,
@@ -28,9 +38,12 @@ db.execSync(`CREATE TABLE IF NOT EXISTS quiz_submission_queue (
   focus_loss_duration INTEGER NOT NULL,
   created_at INTEGER NOT NULL
 );`);
+  handle = h;
+  return h;
+}
 
 export function upsertQueuedSubmission(row: QueuedSubmissionRow, createdAt: number): void {
-  db.runSync(
+  db().runSync(
     'INSERT OR REPLACE INTO quiz_submission_queue (attempt_id, achievement_id, answers_json, submitted_at, focus_loss_count, focus_loss_duration, created_at) VALUES (?,?,?,?,?,?,?)',
     [
       row.attempt_id,
@@ -45,17 +58,17 @@ export function upsertQueuedSubmission(row: QueuedSubmissionRow, createdAt: numb
 }
 
 export function getQueuedSubmissions(): QueuedSubmissionRow[] {
-  return db.getAllSync<QueuedSubmissionRow>(
+  return db().getAllSync<QueuedSubmissionRow>(
     'SELECT * FROM quiz_submission_queue ORDER BY created_at',
   );
 }
 
 export function deleteQueuedSubmission(attemptId: string): void {
-  db.runSync('DELETE FROM quiz_submission_queue WHERE attempt_id = ?', [attemptId]);
+  db().runSync('DELETE FROM quiz_submission_queue WHERE attempt_id = ?', [attemptId]);
 }
 
 /** Drop the entire queue — called on account switch so one user's un-synced
  *  offline quiz submissions never replay under the next user's session. */
 export function clearQueuedSubmissions(): void {
-  db.runSync('DELETE FROM quiz_submission_queue');
+  db().runSync('DELETE FROM quiz_submission_queue');
 }

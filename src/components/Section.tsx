@@ -13,17 +13,12 @@
  * matter most (or that the user is actively working in) open by default.
  */
 import { useCallback, useState, type ReactNode } from 'react';
-import { LayoutAnimation, Platform, Pressable, StyleSheet, Text, UIManager, View } from 'react-native';
+import { LayoutAnimation, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../theme/tokens';
 import { hapticsEnabled } from '../features/settings/store';
 import { animationsAllowed } from '../features/settings/a11y';
 import * as Haptics from 'expo-haptics';
 
-// Old-architecture Android needs this opt-in for LayoutAnimation. Guarded —
-// the API is absent on Fabric, where animations are on by default.
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 export function Section({
   title,

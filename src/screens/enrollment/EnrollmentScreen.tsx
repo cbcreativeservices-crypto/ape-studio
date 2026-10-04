@@ -16,7 +16,7 @@
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
-import { ActivityIndicator, Animated, LayoutAnimation, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, UIManager, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { ActivityIndicator, Animated, LayoutAnimation, PanResponder, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import { animationsAllowed } from '../../features/settings/a11y';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { useOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
@@ -106,9 +106,6 @@ const GREEN = '#37e05f';
 const BLUE = '#7fbfff';
 const GRAY = '#6b6b6b';
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 /** The deck load state as a framed text toggle (owner 2026-09-13): LOADED
  *  lights AMBER (blue until 2026-09-20 — it collided with this screen's STUDY

@@ -67,7 +67,7 @@ test('the native offline store serialises its writes and the missing-ids read', 
   const native = read('src/features/glossary/offlineCorpus.native.ts');
   assert.match(native, /function serial<T>\(run: \(\) => Promise<T>\): Promise<T> \{/);
   assert.match(native, /export async function saveTerms\(src: string, rows: OfflineTerm\[\]\): Promise<void> \{\s*return serial\(\(\) => saveTermsNow\(src, rows\)\);/);
-  assert.match(native, /await serial\(\(\) => db\.withTransactionAsync\(/);
+  assert.match(native, /await serial\(\(\) => db\(\)\.withTransactionAsync\(/);
   assert.match(body(native, 'export function idsMissingDefinitions', 300), /return serial\(async \(\) => \{/);
   assert.match(body(native, 'export async function alignDefinitionTier', 300), /await serial\(\(\) => alignNow\(src, tier\)\);/);
   assert.match(body(native, 'export async function clearCorpus', 200), /return serial\(/);
