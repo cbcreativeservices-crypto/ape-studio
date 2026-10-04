@@ -1,3 +1,17 @@
+## 2026-10-04 — A -> ccode: member alerts + weekly concept are SENDING-CAPABLE (Vault key in; auth fix deployed)
+
+- **Vault:** the owner stored `service_role_key` himself. A checked only its claims: role service_role, ref yjgolswjggmlpeowvtxr.
+- **The bug it exposed:** both functions compared the bearer to `Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")` by exact string. The runtime env key is NOT the legacy JWT now held in Vault, so the 18:50Z weekly-concept call returned 401 `{"error":"unauthorized"}`.
+- **Fix (A):** added `isServiceRoleJwt()`, which accepts a bearer whose JWT claims are role=service_role and ref=yjgolswjggmlpeowvtxr. The gateway (verify_jwt true) has already verified the signature. The exact-match check is kept as the first test.
+- **Deployed:**
+  - `on-weekly-concept` **v14**: the v13 deployed source plus this check only.
+  - `community-push` **v2**.
+- **Verified:**
+  - 19:00Z weekly-concept cron: 200 `{"sent":0,"message":"no subscriptions due"}`.
+  - Manual community-push call: 200 `{"due":0,"sent":0,"forgotten":0}`.
+
+**needs:** commit both repo files: `supabase/functions/on-weekly-concept/index.ts`, where A applied the same edit to the repo copy (please confirm repo == deployed v14), and `supabase/functions/community-push/index.ts`. Then run the two-phone alert test.
+
 ## 2026-10-04 — A -> ccode: server wave #3 + #4 are LIVE (CHECK 8/8 true)
 
 The owner applied `10_APPLY_start_here_bonus.sql` and `20_APPLY_community_notifications.sql` (folder `C:\Users\profe\Downloads\2026-10-04_START_HERE_BONUS_AND_ALERTS\`). The CHECK was all true:
@@ -454,6 +468,36 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-04 13:26 · ccode · 217d65b8
+changed: docs(miking): stage-1 plan, lesson surveys (Labs 1-5), source text copies
+affects other side: nothing (branch final-lab docs: miking-lab plan + lesson surveys).
+needs: nothing.
+
+
+### 2026-10-04 12:21 · ccode · 42055dee
+changed: docs: charter G1 decided — Gesture Handler on final-lab
+affects other side: nothing (doc).
+needs: nothing.
+
+
+### 2026-10-04 12:21 · ccode · 0c0e047d
+changed: Add react-native-gesture-handler ~2.32.0 + root view (final lab, owner go 2026-10-04)
+affects other side: on branch final-lab only (not audio-tools-engine). New native dependency = new runtime fingerprint (android 53c750ae, ios be7c3c20); this code ships only in the next store build. Store-build prep should expect it.
+needs: nothing now.
+
+
+### 2026-10-04 12:13 · ccode · 8a79f708
+changed: docs: visual charter — owner rulings on unknowns, G1 recommendation, Pixel device
+affects other side: nothing (app-side doc).
+needs: nothing.
+
+
+### 2026-10-04 12:04 · ccode · d10d289c
+changed: docs: lab visual charter for the final pre-launch lab (owner prompt 2026-10-04, adapted to the codebase)
+affects other side: nothing (app-side visual/motion standard for the final lab; no server impact).
+needs: nothing.
+
 
 ### 2026-10-04 11:44 · ccode · 30ff79f1
 changed: Docs: handoff 10-04B points at docs/bughunt process files

@@ -157,19 +157,33 @@ Each lab gets:
 Pixel until a build with it is installed. Engine work can start in the web
 preview.
 
-## 6. Decisions the owner makes (asked in chat 2026-10-04)
+## 6. Owner decisions (2026-10-04, in chat)
 
-- Audio: silent as the lessons say, or real recordings now or later?
-- Drawing approach: vector drawings only, or vector plus real photos
-  alongside?
-- Unsourced "trial" numbers: show them labelled as trials, or leave them out?
-- The ~40 source errors: fix them in the app text with a corrections log, or
-  revise the documents first?
-- Membership: which lessons are free?
-- Missing lessons M10, M11, the Leslie/speaker module and I04: who writes
-  them?
-- Human review: the lessons ask for a drummer and a qualified engineer to
-  check the physical setups before publishing. Who?
+- **Audio:** FULLY SILENT, always. No sound anywhere in the Miking Labs.
+  Computed visuals (arrival time, comb-filter notches, polar patterns) are
+  drawings, not sound, and stay in.
+- **Drawings:** vector drawings carry the teaching, with a real photo of each
+  instrument alongside. Comp C makes the photos in **pencil.dev** from prompts
+  Claude writes. The prompts must be complete enough that Comp C gets every
+  image right the first time: exact specs, size and format, layout, design
+  notes, and full context. Build on the cable-lab brief v2
+  (`docs/art/APE_LAB_PHOTO_BRIEF_v2_2026_09_25.md`) and the reasons the
+  2026-09-25 package was rejected. Images are touched only on the owner's go,
+  folder by folder.
+- **Trial numbers:** shown, clearly labelled as trial starting points, and
+  drawn apart from sourced zones.
+- **Source errors:** Claude fixes them in the app text and logs each one in
+  `docs/labs/miking/CORRECTIONS_LOG.md` (what, why, source), so the owner can
+  update the documents.
+- **Membership:** members only, with the existing grayed live preview for
+  non-members.
+- **Missing lessons** (M10, M11, the speaker-cabinet/Leslie module, I04):
+  the OWNER writes them, as with Labs 6–7. Claude builds them when they
+  arrive.
+- **Human check:** the OWNER reviews each lab's setups on a phone before it
+  is published, after Claude's AI reviews (audio expert, learning, visual).
+- **First step after go:** the engine plus Kick Drum (M01) end to end, then
+  owner review, then the remaining 92.
 
 ## 7. Decided by Claude, with reasons (the owner can overrule)
 
