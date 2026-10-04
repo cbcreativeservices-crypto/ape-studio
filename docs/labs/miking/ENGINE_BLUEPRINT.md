@@ -566,7 +566,7 @@ export function micGain(p: PatternId, pose: MicPose, src: Vec3): number // polar
 - **CombPanel** is a Skia graph, 20 Hz to 20 kHz on a log scale, −40 to +6 dB, with 256 points rebuilt in `useDerivedValue` from the live poses. It updates during the drag (plan line 116) with no React work. It carries the badge **IDEAL MODEL · not a measurement of this drum** (source line 97: no simulated curve presented as data).
 
 ### 6.3 Level and spacing (levels.ts)
-- `levelDiffDb(rA, rB) = 20·log10(rB / rA)`. Doubling the distance gives −6.02 dB.
+- `levelDiffDb(rA, rB) = 20·log10(rA / rB)` — the level at rB relative to rA. Doubling the distance gives −6.02 dB. (Sign corrected 2026-10-04, audio review m9; the code was already right.)
   - It is labelled "ideal point source, far field". At 5 cm from a 56 cm head the mic is in the near field and this does **not** hold. The page says so.
 - `threeToOneRatio(dAB, rA, rB) = dAB / max(rA, rB)`. This uses the plan's §7 definition (plan line 199): mic-to-mic distance at least 3× each mic's distance to its own source. `−20·log10(3) = −9.54 dB`.
 - The kick page shows it with the lesson's limit: **"3:1 is a spill guideline for mics on different sources. It does not guarantee phase coherence for an inside/outside pair on one drum"** (source line 72).
@@ -800,7 +800,7 @@ Settled by Claude on the owner's standing instruction ("resolve routine choices 
     - The mic reference point is the grille front, drawn with the acoustic-centre caveat.
 13. **Disagreements:**
     - D1: the label is "supercardioid", the spec field. The description's "modified supercardioid" goes in the sources.
-    - D2: use the Beta 52A guide's 120° wherever that mic is named. The generic supercardioid uses the ideal equation (≈126°), labelled ideal.
+    - D2: use the Beta 52A guide's 120° wherever that mic is named. The generic supercardioid uses the ideal equation (≈125°, 125.26°), labelled ideal. (Corrected 2026-10-04, audio review m8: the code, the lesson and SOURCES_SHARED all use 125.26°.)
     - D3: use the product data in mm.
     - D4: not used, since the default head is Remo.
 14. **Lesson fixes:** go in CORRECTIONS_LOG.md.

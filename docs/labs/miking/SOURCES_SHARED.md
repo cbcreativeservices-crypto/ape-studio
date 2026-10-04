@@ -72,7 +72,7 @@ mic is named (ruling §16.13 D2 in ENGINE_BLUEPRINT.md). The 2 older app copies 
 
 | Fact | Value | Source | Checked | Notes |
 |---|---|---|---|---|
-| Point source, free field | level difference = 20·log10(rB / rA); doubling the distance = −6.02 dB | MATH (inverse-distance law, from standard texts, not re-checked online) | test | Labelled "ideal point source, far field". A mic 5 cm from a 56 cm head is in the near field, where this does not hold; the page says so. |
+| Point source, free field | level at rB relative to rA = 20·log10(rA / rB); doubling the distance = −6.02 dB (sign corrected 2026-10-04, audio review m9) | MATH (inverse-distance law, from standard texts, not re-checked online) | test | Labelled "ideal point source, far field". A mic 5 cm from a 56 cm head is in the near field, where this does not hold; page 5 says so (notch depths illustrative only). |
 | 3:1 guideline | mic-to-mic distance ≥ 3 × each mic's distance to its own source; −20·log10(3) = −9.54 dB | DPA-31 / lesson ref [12]; MATH for the dB | content not re-audited | The lesson's limit is kept verbatim: it "does not guarantee phase coherence for an inside/outside pair". The calculator's stronger sentence is logged in CORRECTIONS_LOG.md (C-CALC-1). |
 
 ## 5. Simplifications register (shared)
