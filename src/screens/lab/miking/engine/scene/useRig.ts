@@ -86,8 +86,16 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const [variant, setVariantRaw] = useState<VariantId>(init.variant ?? lesson.model.defaultVariant);
   const scene = useMemo(() => compileScene(lesson.model, variant), [lesson, variant]);
   const bounds = useMemo(() => boundsOf(lesson), [lesson]);
+  // A surface mic STARTS on its surface, like every later move (a zone's
+  // start pose is a point in the zone; the plate rests on the pillow's top).
+  // Before this, page 5's boundary plate began floating at the drum's centre
+  // line until it was first moved.
   const [mics, setMics] = useState<MicState[]>(() =>
-    init.mics.map((m) => ({ slot: m.slot, typeId: m.typeId, pattern: m.pattern, pose: m.pose, polarity: m.polarity ?? 1, on: m.on ?? true })),
+    init.mics.map((m) => {
+      const pn = pinFor(lesson, m.typeId);
+      const pose = pn ? pinToSurface(m.pose, pn.top, micBodyOf(micType(m.typeId)), pn.halfWidth) : m.pose;
+      return { slot: m.slot, typeId: m.typeId, pattern: m.pattern, pose, polarity: m.polarity ?? 1, on: m.on ?? true };
+    }),
   );
   const micsRef = useRef(mics);
   micsRef.current = mics;

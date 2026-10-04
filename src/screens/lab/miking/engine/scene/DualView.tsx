@@ -33,13 +33,18 @@ export function DualView(props: DualViewProps) {
   const other: ViewId = view === 'side' ? 'top' : 'side';
   const stacked = inFull && box.side && box.top;
   const portrait = h >= w * 0.75;
+  // The live strip's band over the side view (the same band PlacementScene
+  // reserves on the glass): the pair is fitted below it.
+  const liveCount = props.interactive !== false && props.showLive !== false ? rig.mics.filter((m) => (props.slots ?? ['A']).includes(m.slot) && m.on).length : 0;
+  const band = liveReserve(liveCount, w, textScale);
   const pair = useMemo(() => {
     if (!stacked || !portrait) return null;
     const sh = box.side!.v1 - box.side!.v0;
     const th = box.top!.v1 - box.top!.v0;
-    const hSide = Math.round((h * sh) / (sh + th));
-    return { hSide, hTop: h - hSide, xf: fitPair(box.side!, box.top!, w, hSide, h - hSide, 8) };
-  }, [stacked, portrait, box, w, h]);
+    const hSide = Math.round(band + ((h - band) * sh) / (sh + th));
+    const xf = fitPair(box.side!, box.top!, w, hSide - band, h - hSide, 8);
+    return { hSide, hTop: h - hSide, xf: { side: { ...xf.side, oy: xf.side.oy + band }, top: xf.top } };
+  }, [stacked, portrait, box, w, h, band]);
 
   if (stacked) {
     if (pair) {
@@ -68,8 +73,7 @@ export function DualView(props: DualViewProps) {
   // are empty there (right of the front hoop, above the port), while the
   // bottom-left — where it used to sit — holds the pedal, the beater and the
   // player's keep-out (layout pass 2026-10-04).
-  const live = props.interactive !== false && props.showLive !== false ? rig.mics.filter((m) => (props.slots ?? ['A']).includes(m.slot) && m.on).length : 0;
-  const top = liveReserve(live, w, textScale) + 2;
+  const top = band + 2;
   return (
     <View style={{ width: w, height: h }}>
       <PlacementScene {...props} view={view} w={w} h={h} accessibilityLabel={labelFor(view)} />

@@ -75,7 +75,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       value: (phi + 180) / 360,
       home: 0.5,
       onChange: (v) => setPhi(Math.round(v * 360 - 180)),
-      format: () => `${Math.abs(phi)}° off the mic’s front axis, toward the player’s ${phi >= 0 ? 'right' : 'left'} (plan)`,
+      format: () => `${Math.abs(phi)}° ${phi >= 0 ? 'right' : 'left'} of the mic’s axis`,
       formatShort: () => `${phi}°`,
     },
     { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
@@ -93,10 +93,10 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
   ];
   const bezel: BezelItem[] = live
     ? [
-        { k: 'WEDGE OFF AXIS', v: `≈ ${Math.round(theta)}°`, flex: 1.3 },
-        { k: 'IDEAL PICKUP', v: fmtDb(pickup), flex: 1.2 },
-        { k: 'NULL', v: `≈ ${Math.round(nulls[0])}°` },
-        { k: 'IN REJECTION', v: inNull ? 'YES' : 'NO', tint: inNull ? '#5bff85' : undefined },
+        { k: 'WEDGE OFF AXIS', v: `≈ ${Math.round(theta)}°`, flex: 1.4 },
+        { k: 'PICKUP', v: fmtDb(pickup), sub: 'ideal model', flex: 1 },
+        { k: 'NULL', v: `≈ ${Math.round(nulls[0])}°`, flex: 0.85 },
+        { k: 'IN REJECTION', v: inNull ? 'YES' : 'NO', tint: inNull ? '#5bff85' : undefined, flex: 1.25 },
       ]
     : [
         { k: 'SCENARIO', v: 'STUDIO' },

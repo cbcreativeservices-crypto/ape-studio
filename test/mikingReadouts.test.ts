@@ -81,7 +81,7 @@ describe('one pose → one set of printed numbers', () => {
           assert.ok(now.includes(fmtLen(d)), `NOW "${now}" lacks ${fmtLen(d)}`);
           assert.equal(bezel[0].v, `≈ ${fmtMetric(d)}`);
           assert.equal(bezel[0].sub, `(${fmtImperial(d)})`);
-          assert.match(bezel[0].k, new RegExp(`^A (FROM|BEHIND) ${words.surfaceLabel.replace('the ', '').replace(' head', '').toUpperCase()}$`));
+          assert.match(bezel[0].k, new RegExp(`^(FROM|BEHIND) ${words.surfaceLabel.replace('the ', '').replace(' head', '').toUpperCase()}$`));
           assert.equal(bezel[0].k.includes('BEHIND'), r.distance < 0);
           assert.equal(strip.includes(' behind '), r.distance < 0);
 
@@ -104,7 +104,7 @@ describe('one pose → one set of printed numbers', () => {
           if (r.blocked) {
             assert.ok(strip.includes(`✕ ${r.blocked.label}`));
             assert.ok(now.includes(`Blocked by the ${r.blocked.label}`));
-            assert.equal(bezel[3].k, '✕ STOPPED BY');
+            assert.equal(bezel[3].k, '✕ STOPPED');
           } else {
             assert.ok(!strip.includes('✕'));
             assert.ok(!now.includes('Blocked'));

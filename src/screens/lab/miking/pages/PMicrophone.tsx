@@ -37,7 +37,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
         label: 'SOURCE ANGLE',
         value: angle / 180,
         onChange: (v) => setAngle(Math.round(v * 180)),
-        format: () => `${angle}° off the front axis · ideal pickup ${pickup}`,
+        format: () => `${angle}° off axis · ideal ${pickup}`,
         formatShort: () => `${angle}°`,
         home: 0,
       },

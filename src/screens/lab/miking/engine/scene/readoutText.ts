@@ -75,13 +75,15 @@ export function placementBezel(r: Readouts, w: ReadoutWords, zone: DocumentedZon
   const d = lenCell(Math.abs(r.distance));
   const off = lenCell(r.radial);
   return [
-    { k: `${w.slot} ${r.distance >= 0 ? 'FROM' : 'BEHIND'} ${shortRef(w.surfaceLabel)}`, v: d.v, sub: d.sub, flex: 1.3 },
+    // The slot letter lives in the strip ("A · …"); one mic per page-3 bezel,
+    // so the key spends its width on the head it is measured from.
+    { k: `${r.distance >= 0 ? 'FROM' : 'BEHIND'} ${shortRef(w.surfaceLabel)}`, v: d.v, sub: d.sub, flex: 1.4 },
     { k: `OFF ${lineRef(w.lineLabel)}`, v: off.v, sub: off.sub, flex: 1.5 },
     { k: 'AIM', v: w.showAim ? fmtAngle(r.offAxis) : 'FLAT', flex: 0.8 },
     // The stop names the PART (its short name), in red, with the ✕ in the
     // key — colour is never the only signal (charter §8).
     r.blocked
-      ? { k: '✕ STOPPED BY', v: partShort(r.blocked.partId).toUpperCase(), tint: ZONE_TINT.blocked, flex: 1.4 }
-      : { k: 'ZONE', v: zone ? (zone.kind === 'trial' ? 'TRIAL' : 'SOURCED') : 'NONE', sub: zone ? (zone.kind === 'trial' ? 'dashed band' : 'solid band') : undefined, tint: zone ? ZONE_TINT[zone.kind] : undefined, flex: 1.4 },
+      ? { k: '✕ STOPPED', v: partShort(r.blocked.partId).toUpperCase(), tint: ZONE_TINT.blocked, flex: 1.3 }
+      : { k: 'ZONE', v: zone ? (zone.kind === 'trial' ? 'TRIAL' : 'SOURCED') : 'NONE', sub: zone ? (zone.kind === 'trial' ? 'dashed band' : 'solid band') : undefined, tint: zone ? ZONE_TINT[zone.kind] : undefined, flex: 1.3 },
   ];
 }

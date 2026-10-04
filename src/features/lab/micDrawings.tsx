@@ -312,141 +312,248 @@ export function CondenserMic({
 // 3 · KICK-TYPE MICS (Miking Labs, 2026-10-04): an END-ADDRESS KICK DYNAMIC, a
 // SMALL-CAPSULE CONDENSER and a BOUNDARY PLATE. GENERIC silhouettes at the
 // overall sizes their cited examples document (docs/labs/miking/kick/
-// SOURCES.md §d) — never a brand's likeness. Same conventions as above: the
-// mic's FRONT (grille front; the element end of a boundary plate) sits at the
-// origin and the body extends toward +y; sizes are in the caller's units (the
-// Miking scenes draw in millimetres). These are the in-scene bodies; a later
-// art pass may enrich them, keeping the outline sizes.
+// SOURCES.md §d) — never a brand's likeness, no logos, no brand colours. Same
+// conventions as above: the mic's FRONT (grille front; the element end of a
+// boundary plate) sits at the origin and the body extends toward +y; sizes are
+// in the caller's units (the Miking scenes draw in millimetres).
+//
+// ART PASS (2026-10-04): mesh grilles clipped to their baskets, a chrome
+// joint ring, a tapered satin body, the XLR tail, a soft lift shadow and rim
+// light. LIGHT: in the Miking scenes a mic aimed at a head (−x) is turned so
+// its local +x points UP the screen, so the lit side is local +x and the
+// shadow falls toward local −x. Every outline stays inside the documented
+// envelope: width 2r (or `cross`), length `len` — the drawing never claims a
+// size the collision model does not use.
+
+/** Local-space light: lit at +x, shadow at −x (see the note above). */
+const LIT = (r: number) => ({ start: vec(r, 0), end: vec(-r, 0) });
+
+function crossHatch(x0: number, y0: number, x1: number, y1: number, step: number): SkPathT {
+  const p: SkPathT = Skia.Path.Make();
+  const w = x1 - x0;
+  const h = y1 - y0;
+  for (let d = -h; d < w; d += step) {
+    p.moveTo(x0 + d, y0);
+    p.lineTo(x0 + d + h, y1);
+    p.moveTo(x0 + d + h, y0);
+    p.lineTo(x0 + d, y1);
+  }
+  return p;
+}
 
 function buildKickDynamic(r: number, len: number) {
-  // Front grille: a shallow dome on a straight basket (≈ 40 % of the length),
-  // a dark collar ring, then a body tapering slightly to the XLR tail.
-  const gl = len * 0.4;
-  const dome = r * 0.28;
+  // A large domed basket (≈ 47 % of the length), a chrome joint ring, then a
+  // short body tapering to the XLR tail with a stand-adapter collar.
+  const gl = len * 0.47;
+  const sh = Math.min(gl * 0.7, r * 0.55); // where the dome meets the straight basket
   const grille: SkPathT = Skia.Path.Make();
-  grille.moveTo(-r, dome);
-  grille.quadTo(-r, 0, 0, 0);
-  grille.quadTo(r, 0, r, dome);
-  grille.lineTo(r, gl);
-  grille.lineTo(-r, gl);
+  grille.moveTo(-r * 0.97, gl);
+  grille.lineTo(-r, sh);
+  grille.cubicTo(-r, sh * 0.32, -r * 0.6, 0, 0, 0);
+  grille.cubicTo(r * 0.6, 0, r, sh * 0.32, r, sh);
+  grille.lineTo(r * 0.97, gl);
   grille.close();
-  const mesh: SkPathT = Skia.Path.Make();
-  for (let i = 1; i <= 5; i++) {
-    const yy = dome * 0.6 + ((gl - dome * 0.6) * i) / 6;
-    mesh.moveTo(-r * 0.96, yy);
-    mesh.lineTo(r * 0.96, yy);
-  }
-  for (let i = -3; i <= 3; i++) {
-    const xx = (i / 3.6) * r;
-    mesh.moveTo(xx, dome * (1 - Math.abs(xx) / r) * 0.5 + dome * 0.35);
-    mesh.lineTo(xx, gl - r * 0.04);
-  }
-  const collar: SkPathT = Skia.Path.Make();
-  collar.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 1.02, gl, r * 2.04, len * 0.07), r * 0.06, r * 0.06));
-  const bt = gl + len * 0.07;
+  const mesh = crossHatch(-r, 0, r, gl, Math.max(1.2, r * 0.13));
+  const ring: SkPathT = Skia.Path.Make();
+  ring.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, gl - r * 0.04, r * 2, r * 0.16), r * 0.05, r * 0.05));
+  const b0 = gl + r * 0.12;
+  const tailTop = len - r * 0.3;
   const body: SkPathT = Skia.Path.Make();
-  body.moveTo(-r * 0.98, bt);
-  body.lineTo(-r * 0.78, len - r * 0.3);
-  body.quadTo(-r * 0.78, len, -r * 0.5, len);
-  body.lineTo(r * 0.5, len);
-  body.quadTo(r * 0.78, len, r * 0.78, len - r * 0.3);
-  body.lineTo(r * 0.98, bt);
+  body.moveTo(-r * 0.94, b0);
+  body.cubicTo(-r * 0.92, b0 + (tailTop - b0) * 0.55, -r * 0.66, tailTop - r * 0.06, -r * 0.5, tailTop);
+  body.lineTo(r * 0.5, tailTop);
+  body.cubicTo(r * 0.66, tailTop - r * 0.06, r * 0.92, b0 + (tailTop - b0) * 0.55, r * 0.94, b0);
   body.close();
-  const band: SkPathT = Skia.Path.Make();
-  band.addRect(Skia.XYWHRect(-r * 0.9, bt + (len - bt) * 0.45, r * 1.8, len * 0.035));
-  return { grille, mesh, collar, body, band, gl };
+  const collar: SkPathT = Skia.Path.Make();
+  const cy = b0 + (tailTop - b0) * 0.42;
+  collar.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.86, cy, r * 1.72, r * 0.15), r * 0.04, r * 0.04));
+  const tail: SkPathT = Skia.Path.Make();
+  tail.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.4, tailTop - r * 0.02, r * 0.8, len - tailTop + r * 0.02), r * 0.09, r * 0.09));
+  const grooves: SkPathT = Skia.Path.Make();
+  for (const t of [0.35, 0.65]) {
+    const y = tailTop + (len - tailTop) * t;
+    grooves.moveTo(-r * 0.38, y);
+    grooves.lineTo(r * 0.38, y);
+  }
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addPath(grille);
+  shadow.addPath(body);
+  shadow.addPath(tail);
+  return { grille, mesh, ring, body, collar, tail, grooves, shadow, gl, sh, b0, tailTop };
 }
 
 /** END-ADDRESS KICK DYNAMIC: radius `r`, overall length `len`, front at the origin. */
 export function KickDynamicMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: number; len: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
   const p = useMemo(() => buildKickDynamic(r, len), [r, len]);
+  const lit = LIT(r);
+  const hair = Math.max(0.35, r * 0.022);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      {/* Lift shadow, falling away from the light. */}
+      <Group transform={[{ translateX: -r * 0.1 }, { translateY: r * 0.08 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.55}>
+          <BlurMask blur={r * 0.14} style="normal" />
+        </Path>
+      </Group>
+      {/* Body: dark satin, tapered; the stand-adapter collar; the XLR tail. */}
       <Path path={p.body}>
-        <LinearGradient start={vec(-r, 0)} end={vec(r, 0)} colors={['#202227', '#5d616c', '#383a42', '#17181c']} positions={[0, 0.3, 0.6, 1]} />
+        <LinearGradient start={lit.start} end={lit.end} colors={['#6a6f7a', '#3b3f48', '#23252b', '#121317']} positions={[0, 0.3, 0.65, 1]} />
       </Path>
-      <Path path={p.band} color={ACCENT} opacity={0.45} />
       <Path path={p.collar}>
-        <LinearGradient start={vec(-r, 0)} end={vec(r, 0)} colors={['#2a2b31', '#8d919c', '#26272d']} />
+        <LinearGradient start={lit.start} end={lit.end} colors={['#8f949f', '#454952', '#1c1d22']} />
       </Path>
+      <Path path={p.tail}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#9aa0ab', '#4f535c', '#1f2126']} />
+      </Path>
+      <Path path={p.grooves} style="stroke" strokeWidth={hair} color="#0d0e11" opacity={0.8} />
+      {/* Basket: a dark interior under a fine wire crosshatch, lit at the shoulder. */}
       <Path path={p.grille}>
-        <LinearGradient start={vec(-r, 0)} end={vec(r, p.gl)} colors={['#c3c7d0', '#7b7f89', '#34363d']} positions={[0, 0.42, 1]} />
+        <LinearGradient start={lit.start} end={lit.end} colors={['#9ba1ac', '#4c515b', '#1b1d22']} positions={[0, 0.45, 1]} />
       </Path>
-      <Path path={p.mesh} color="#121318" style="stroke" strokeWidth={Math.max(0.4, r * 0.035)} opacity={0.55} />
-      <Path path={p.grille} style="stroke" strokeWidth={Math.max(0.4, r * 0.04)} color={tint ?? '#d8dbe3'} opacity={tint ? 0.95 : 0.4} />
+      <Group clip={p.grille}>
+        <Path path={p.mesh} style="stroke" strokeWidth={Math.max(0.3, r * 0.03)} color="#0c0d10" opacity={0.75} />
+        <Circle cx={r * 0.45} cy={p.sh * 0.75} r={r * 0.45} color="#ffffff" opacity={0.18}>
+          <BlurMask blur={r * 0.3} style="normal" />
+        </Circle>
+      </Group>
+      <Path path={p.ring}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#f4f6fa', '#9aa0ab', '#3a3d45']} />
+      </Path>
+      {/* Edges: a crisp dark outline, and a rim light on the lit side. */}
+      <Path path={p.grille} style="stroke" strokeWidth={hair * 1.4} color="#08080a" opacity={0.9} />
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.4} color="#08080a" opacity={0.9} />
+      <Path path={p.grille} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.35} />
     </Group>
   );
 }
 
 function buildSdc(r: number, len: number) {
-  const gl = len * 0.22;
+  // A rounded mesh cap (≈ 24 % of the length), a chrome ring, a straight
+  // satin tube to the XLR end.
+  const gl = len * 0.24;
   const grille: SkPathT = Skia.Path.Make();
-  grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.86, 0, r * 1.72, gl), r * 0.3, r * 0.3));
-  const mesh: SkPathT = Skia.Path.Make();
-  for (let i = 1; i <= 3; i++) {
-    const yy = (gl * i) / 4;
-    mesh.moveTo(-r * 0.8, yy);
-    mesh.lineTo(r * 0.8, yy);
-  }
-  const body: SkPathT = Skia.Path.Make();
-  body.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, gl, r * 2, len - gl), r * 0.18, r * 0.18));
+  grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.93, 0, r * 1.86, gl), r * 0.42, r * 0.42));
+  const mesh = crossHatch(-r, 0, r, gl, Math.max(1, r * 0.16));
   const ring: SkPathT = Skia.Path.Make();
-  ring.addRect(Skia.XYWHRect(-r, gl + len * 0.05, r * 2, len * 0.03));
-  return { grille, mesh, body, ring, gl };
+  ring.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, gl - len * 0.01, r * 2, len * 0.05), r * 0.06, r * 0.06));
+  const body: SkPathT = Skia.Path.Make();
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.97, gl + len * 0.035, r * 1.94, len - gl - len * 0.035), r * 0.14, r * 0.14));
+  const grooves: SkPathT = Skia.Path.Make();
+  for (const t of [0.86, 0.9]) {
+    grooves.moveTo(-r * 0.95, len * t);
+    grooves.lineTo(r * 0.95, len * t);
+  }
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addPath(grille);
+  shadow.addPath(body);
+  return { grille, mesh, ring, body, grooves, shadow, gl };
 }
 
 /** SMALL-CAPSULE CONDENSER: radius `r`, length `len`, front at the origin. */
 export function SdcMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: number; len: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
   const p = useMemo(() => buildSdc(r, len), [r, len]);
+  const lit = LIT(r);
+  const hair = Math.max(0.35, r * 0.03);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Group transform={[{ translateX: -r * 0.12 }, { translateY: r * 0.1 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.5}>
+          <BlurMask blur={r * 0.18} style="normal" />
+        </Path>
+      </Group>
       <Path path={p.body}>
-        <LinearGradient start={vec(-r, 0)} end={vec(r, 0)} colors={[METAL_LO, METAL_HI, METAL_MID, '#2b2d34']} positions={[0, 0.28, 0.58, 1]} />
+        <LinearGradient start={lit.start} end={lit.end} colors={['#e6e9ef', METAL_HI, METAL_MID, '#2b2d34']} positions={[0, 0.22, 0.6, 1]} />
       </Path>
-      <Path path={p.ring} color={ACCENT} opacity={0.45} />
+      <Path path={p.grooves} style="stroke" strokeWidth={hair} color="#24262c" opacity={0.7} />
       <Path path={p.grille}>
-        <LinearGradient start={vec(-r, 0)} end={vec(r, p.gl)} colors={['#d2d5dd', '#868a94', '#3a3c44']} />
+        <LinearGradient start={lit.start} end={lit.end} colors={['#a9aeb8', '#575c66', '#1e2025']} />
       </Path>
-      <Path path={p.mesh} color="#121318" style="stroke" strokeWidth={Math.max(0.4, r * 0.04)} opacity={0.5} />
-      <Path path={p.grille} style="stroke" strokeWidth={Math.max(0.4, r * 0.05)} color={tint ?? '#d8dbe3'} opacity={tint ? 0.95 : 0.35} />
+      <Group clip={p.grille}>
+        <Path path={p.mesh} style="stroke" strokeWidth={Math.max(0.3, r * 0.035)} color="#0c0d10" opacity={0.7} />
+      </Group>
+      <Path path={p.ring}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#f4f6fa', '#9aa0ab', '#3a3d45']} />
+      </Path>
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.85} />
+      <Path path={p.grille} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.85} />
+      <Path path={p.grille} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.3} />
     </Group>
   );
 }
 
 function buildBoundary(len: number, cross: number) {
   const plate: SkPathT = Skia.Path.Make();
-  plate.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross / 2, 0, cross, len), Math.min(cross, len) * 0.12, Math.min(cross, len) * 0.12));
-  // The grille field at the element end (front), then the connector boss.
-  const grille: SkPathT = Skia.Path.Make();
-  grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross * 0.38, len * 0.05, cross * 0.76, len * 0.42), cross * 0.08, cross * 0.08));
-  const holes: SkPathT = Skia.Path.Make();
-  for (let i = 1; i <= 4; i++) {
-    const yy = len * 0.05 + (len * 0.42 * i) / 5;
-    holes.moveTo(-cross * 0.34, yy);
-    holes.lineTo(cross * 0.34, yy);
+  const profile = cross <= 40; // seen edge-on (the side view): a low wedge
+  if (profile) {
+    // Local +x is the plate's TOP face (away from the surface it rests on):
+    // a low nose at the element end, a flat top, a sloped rear to the cable.
+    const lo = -cross / 2;
+    const hi = cross / 2;
+    plate.moveTo(lo, 0);
+    plate.lineTo(lo + cross * 0.35, 0);
+    plate.cubicTo(hi - cross * 0.1, len * 0.04, hi, len * 0.12, hi, len * 0.2);
+    plate.lineTo(hi, len * 0.8);
+    plate.cubicTo(hi, len * 0.9, lo + cross * 0.55, len, lo + cross * 0.35, len);
+    plate.lineTo(lo, len);
+    plate.close();
+  } else {
+    plate.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross / 2, 0, cross, len), Math.min(cross, len) * 0.2, Math.min(cross, len) * 0.2));
   }
+  // The grille field near the element end; a perforated pattern in plan,
+  // a perforated edge band in profile.
+  const grille: SkPathT = Skia.Path.Make();
+  const holes: SkPathT = Skia.Path.Make();
+  if (profile) {
+    grille.addRect(Skia.XYWHRect(cross / 2 - cross * 0.16, len * 0.2, cross * 0.16, len * 0.32));
+    for (let yy = len * 0.22; yy < len * 0.5; yy += Math.max(1.6, len * 0.025)) holes.addCircle(cross / 2 - cross * 0.08, yy, Math.max(0.35, cross * 0.03));
+  } else {
+    grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross * 0.36, len * 0.07, cross * 0.72, len * 0.4), cross * 0.1, cross * 0.1));
+    const step = Math.max(2, cross * 0.06);
+    for (let yy = len * 0.07 + step * 0.7; yy < len * 0.47 - step * 0.4; yy += step) {
+      for (let xx = -cross * 0.36 + step * 0.7; xx < cross * 0.36 - step * 0.4; xx += step) holes.addCircle(xx, yy, Math.max(0.35, step * 0.24));
+    }
+  }
+  // The connector boss and a cable leaving the rear (ILLUSTRATIVE run).
   const boss: SkPathT = Skia.Path.Make();
-  boss.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross * 0.18, len * 0.9, cross * 0.36, len * 0.1), cross * 0.04, cross * 0.04));
-  return { plate, grille, holes, boss };
+  const cable: SkPathT = Skia.Path.Make();
+  if (profile) {
+    boss.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross / 2, len * 0.9, cross * 0.45, len * 0.1), cross * 0.08, cross * 0.08));
+    cable.moveTo(-cross / 2 + cross * 0.22, len);
+    cable.cubicTo(-cross / 2 + cross * 0.22, len + len * 0.12, -cross / 2 + cross * 0.05, len + len * 0.16, -cross / 2 + cross * 0.05, len + len * 0.3);
+  } else {
+    boss.addRRect(Skia.RRectXY(Skia.XYWHRect(-cross * 0.14, len * 0.88, cross * 0.28, len * 0.12), cross * 0.04, cross * 0.04));
+    cable.moveTo(0, len);
+    cable.cubicTo(0, len + len * 0.1, cross * 0.08, len + len * 0.16, cross * 0.08, len + len * 0.3);
+  }
+  return { plate, grille, holes, boss, cable, profile };
 }
 
 /** BOUNDARY PLATE: `len` along its axis, `cross` = the visible cross size
  *  (its height in a side view, its width from above); element end at the origin. */
 export function BoundaryMic({ len, cross, x = 0, y = 0, angleDeg = 0, tint }: { len: number; cross: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
   const p = useMemo(() => buildBoundary(len, cross), [len, cross]);
+  const hair = Math.max(0.35, Math.min(cross, len) * 0.025);
+  const lit = LIT(cross / 2);
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Group transform={[{ translateX: -cross * 0.06 }, { translateY: len * 0.03 }]}>
+        <Path path={p.plate} color="#000000" opacity={0.55}>
+          <BlurMask blur={Math.max(1, Math.min(cross, len) * 0.08)} style="normal" />
+        </Path>
+      </Group>
+      {/* The cable leaving the rear (its run is ILLUSTRATIVE). */}
+      <Path path={p.cable} style="stroke" strokeWidth={Math.max(1, Math.min(cross, 40) * 0.24)} strokeCap="round" color="#0e0f12" />
+      <Path path={p.cable} style="stroke" strokeWidth={Math.max(0.4, Math.min(cross, 40) * 0.08)} strokeCap="round" color="#4a4e57" />
       <Path path={p.plate}>
-        <LinearGradient start={vec(-cross / 2, 0)} end={vec(cross / 2, len)} colors={['#4a4d56', '#24262c', '#141519']} />
+        <LinearGradient start={lit.start} end={lit.end} colors={['#5d626d', '#30333b', '#1a1b20', '#0f1013']} positions={[0, 0.3, 0.7, 1]} />
       </Path>
-      {cross > 30 ? (
-        <>
-          <Path path={p.grille} color="#0e0f12" />
-          <Path path={p.holes} color="#7d818b" style="stroke" strokeWidth={Math.max(0.4, cross * 0.012)} opacity={0.6} />
-          <Path path={p.boss} color="#5b5f69" />
-        </>
-      ) : null}
-      <Path path={p.plate} style="stroke" strokeWidth={Math.max(0.4, Math.min(cross, len) * 0.03)} color={tint ?? '#9a9ea8'} opacity={tint ? 0.95 : 0.6} />
+      <Path path={p.grille} color="#0b0c0f" />
+      <Path path={p.holes} color="#9aa0ab" opacity={0.75} />
+      <Path path={p.boss}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#b6bbc5', '#5b5f69', '#25272d']} />
+      </Path>
+      <Path path={p.plate} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.9} />
+      <Path path={p.plate} style="stroke" strokeWidth={hair} color={tint ?? '#c9ced8'} opacity={tint ? 0.95 : 0.4} />
     </Group>
   );
 }

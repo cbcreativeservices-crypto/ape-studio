@@ -27,7 +27,7 @@
  */
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Canvas, Circle, DashPathEffect, Group, Line, Path, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import Animated, { useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -47,6 +47,7 @@ import { micType } from '../../data/micTypes.ts';
 import type { Rig } from './useRig.ts';
 import { liveLine, withStop } from './readoutText.ts';
 import { refLabels } from './sceneWords.ts';
+import { fitLabels, labelWidth } from './labelLayout.ts';
 import type { LessonArt } from './sceneTypes.ts';
 
 const BLUE = '#6fa8ff';
@@ -55,8 +56,9 @@ const RED = '#ff6b5e';
 const GREY = '#8a8f9c';
 const POLAR_R = 170; // mm: the drawn radius of an on-axis lobe (a drawing size, not a range)
 const MAX_ZOOM = 5;
-/** Below this fit scale (px per mm) the part labels would overlap: hidden. */
-const LABEL_MIN_S = 0.16;
+/** Below this fit scale (px per mm) no part label can sit by its part:
+ *  hidden. Above it, colliding labels are culled (fitLabels). */
+const LABEL_MIN_S = 0.12;
 const PAD = 8;
 /** The aim ring sits this far behind the mic's tail, at this radius (screen px). */
 const RING_OFFSET_PX = 20;
@@ -243,9 +245,34 @@ function outlineOf(len: number, cross: number) {
 
 /* ── per-mic overlays ────────────────────────────────────────────────── */
 
+/** The stand's static parts, built once (mm; translated to the foot). */
+const STAND_ART = (() => {
+  let made: { baseSide: ReturnType<typeof Skia.Path.Make>; hubSide: ReturnType<typeof Skia.Path.Make>; baseTop: ReturnType<typeof Skia.Path.Make> } | null = null;
+  return () => {
+    if (!made) {
+      const baseSide = Skia.Path.Make();
+      baseSide.addRRect(Skia.RRectXY(Skia.XYWHRect(-58, -11, 116, 11), 5, 5));
+      const hubSide = Skia.Path.Make();
+      hubSide.addRRect(Skia.RRectXY(Skia.XYWHRect(-13, -26, 26, 17), 4, 4));
+      const baseTop = Skia.Path.Make();
+      baseTop.addCircle(0, 0, 58);
+      made = { baseSide, hubSide, baseTop };
+    }
+    return made;
+  };
+})();
+
+/**
+ * The mic's mount, drawn from the SAME capsules the collision uses
+ * (`assembly`): boom and stand as satin tubes with a rim light, the clutch at
+ * the boom joint, a weighted base where the stand meets the floor (side
+ * view), and the cable taped along the boom. The base and the cable are
+ * drawing only (ILLUSTRATIVE): the collision keeps the tubes it always had.
+ */
 function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId }) {
   const scene = rig.scene;
   const body = rig.body[slot];
+  const art = STAND_ART();
   const path = useDerivedValue(() => {
     const p = Skia.Path.Make();
     if (body.mount !== 'stand') return p;
@@ -257,10 +284,70 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
     }
     return p;
   });
+  // The boom joint and the stand's foot, from the same capsules.
+  const geo = useDerivedValue(() => {
+    if (body.mount !== 'stand') return { jx: 0, jv: 0, fx: 0, fv: 0, joint: 0, stand: 0 };
+    const segs = assembly(scene, pose.value, body);
+    let jx = 0;
+    let jv = 0;
+    let fx = 0;
+    let fv = 0;
+    let joint = 0;
+    let stand = 0;
+    for (let i = 0; i < segs.length; i++) {
+      if (segs[i].piece === 'boom') {
+        jx = segs[i].b.x;
+        jv = vOf(view, segs[i].b);
+        joint = 1;
+      } else if (segs[i].piece === 'stand') {
+        fx = segs[i].b.x;
+        fv = vOf(view, segs[i].b);
+        stand = 1;
+      }
+    }
+    return { jx, jv, fx, fv, joint, stand };
+  });
+  const jx = useDerivedValue(() => geo.value.jx);
+  const jv = useDerivedValue(() => geo.value.jv);
+  const jOn = useDerivedValue(() => geo.value.joint);
+  const footXf = useDerivedValue(() => [{ translateX: geo.value.fx }, { translateY: geo.value.fv }]);
+  const footOn = useDerivedValue(() => geo.value.stand);
+  if (body.mount !== 'stand') return null;
   return (
     <>
-      <Path path={path} style="stroke" strokeWidth={16} strokeCap="round" color="#2a2c32" />
-      <Path path={path} style="stroke" strokeWidth={6} strokeCap="round" color="#7c818c" opacity={0.7} />
+      {/* The weighted base under the stand. */}
+      <Group transform={footXf} opacity={footOn}>
+        {view === 'side' ? (
+          <>
+            <Path path={art.baseSide}>
+              <LinearGradient start={vec(0, -11)} end={vec(0, 0)} colors={['#5b5f69', '#1d1e23']} />
+            </Path>
+            <Path path={art.hubSide} color="#2a2c32" />
+          </>
+        ) : (
+          <>
+            <Path path={art.baseTop} color="#1d1e23" opacity={0.75} />
+            <Path path={art.baseTop} style="stroke" strokeWidth={2.5} color="#4a4e57" opacity={0.8} />
+          </>
+        )}
+      </Group>
+      {/* Tubes: a dark edge, the satin body, a rim light toward the upper left. */}
+      <Path path={path} style="stroke" strokeWidth={17} strokeCap="round" color="#0b0c0f" />
+      <Path path={path} style="stroke" strokeWidth={12.5} strokeCap="round" color="#4d515b" />
+      <Group transform={[{ translateX: -1.6 }, { translateY: -2.2 }]}>
+        <Path path={path} style="stroke" strokeWidth={3.5} strokeCap="round" color="#d4d8e0" opacity={0.5} />
+      </Group>
+      {/* The cable, taped along the boom (its run is ILLUSTRATIVE). */}
+      <Group transform={[{ translateX: 0 }, { translateY: 9 }]}>
+        <Path path={path} style="stroke" strokeWidth={5} strokeCap="round" color="#0e0f12" />
+        <Path path={path} style="stroke" strokeWidth={1.6} strokeCap="round" color="#3d4049" />
+      </Group>
+      {/* The clutch at the boom joint. */}
+      <Group opacity={jOn}>
+        <Circle cx={jx} cy={jv} r={13} color="#16171b" />
+        <Circle cx={jx} cy={jv} r={13} style="stroke" strokeWidth={2.4} color="#8a8f99" />
+        <Circle cx={jx} cy={jv} r={4.5} color="#d4d8e0" />
+      </Group>
     </>
   );
 }
@@ -340,7 +427,7 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
 function SceneLabel({ xf, u, v, text, align, tone, scale, maxX }: { xf: SharedValue<ViewXform>; u: number; v: number; text: string; align: 'left' | 'center' | 'right'; tone?: string; scale: number; maxX: number }) {
   // Width from the text (Oswald ≈ 0.55 em per glyph), so a label can be kept
   // wholly inside the canvas instead of running off its edge.
-  const W = Math.min(maxX - 4, Math.ceil(text.length * 9.5 * scale * 0.56) + 6);
+  const W = labelWidth(text, scale, maxX);
   const style = useAnimatedStyle(() => {
     const x = xf.value.ox + u * xf.value.s;
     const y = xf.value.oy + v * xf.value.s;
@@ -437,7 +524,8 @@ export function liveReserve(count: number, w: number, textScale: number): number
   if (!count) return 0;
   const fs = Math.max(9, 9.5 * textScale);
   const lines = w < 560 ? 2 : 1;
-  return Math.ceil(4 + count * (lines * fs * 1.25 + 6));
+  // + 10: the head labels sit just above the view box, inside the fit's pad.
+  return Math.ceil(10 + count * (lines * fs * 1.25 + 6));
 }
 
 /* ── the scene ───────────────────────────────────────────────────────── */
@@ -457,7 +545,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   // The live strip owns a band at the top: the drawing is fitted BELOW it, so
   // the strip never sits on the heads or their labels (layout pass 2026-10-04).
   const liveCount = !mini && interactive && showLive ? rig.mics.filter((m) => slots.includes(m.slot) && m.on).length : 0;
-  const reserveTop = baseXf ? 0 : liveReserve(liveCount, w, textScale);
+  // (A caller that passes `baseXf` — DualView's full-screen pair — fits the
+  // same band itself, so the tag and the strip sit in it either way.)
+  const reserveTop = liveReserve(liveCount, w, textScale);
   const base = useMemo(() => {
     if (baseXf) return baseXf;
     const f = fitXform(view, box, w, h - reserveTop, mini ? 2 : PAD);
@@ -672,7 +762,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const hatchPath = useMemo(() => hatch(box), [box]);
   // Part labels only where the drawing is big enough to carry them (a short
   // landscape glass drew them on top of each other); full screen always has them.
-  const labels = useMemo(() => (mini || !showLabels || base.s < LABEL_MIN_S ? [] : art.labels(view, variant)), [mini, showLabels, art, view, variant, base.s]);
+  const labels = useMemo(
+    () => (mini || !showLabels || base.s < LABEL_MIN_S ? [] : fitLabels(art.labels(view, variant), base, textScale, w)),
+    [mini, showLabels, art, view, variant, base, textScale, w],
+  );
   const Instrument = art.Instrument;
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
@@ -745,7 +838,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         </View>
       ) : null}
       {!mini ? (
-        <Text pointerEvents="none" style={[styles.viewTag, { top: reserveTop + 3, fontSize: Math.max(9, 9 * textScale) }]}>
+        <Text pointerEvents="none" style={[styles.viewTag, { fontSize: Math.max(9, 9 * textScale) }]}>
           {view === 'side' ? 'SIDE · CUTAWAY' : 'TOP · CUTAWAY'}
         </Text>
       ) : null}
@@ -774,23 +867,70 @@ function WedgeGlyph({ at, view, aimAt }: { at: Vec3; view: ViewId; aimAt: Vec3 }
     }
     return p;
   }, [view]);
-  const grille = useMemo(() => {
-    const p = Skia.Path.Make();
-    if (view === 'top') p.addRRect(Skia.RRectXY(Skia.XYWHRect(120, -250, 28, 500), 8, 8));
-    return p;
+  // Seen from above, a floor wedge shows its short top panel (back, −x) and
+  // its large sloped baffle (front, +x, facing the mic) behind a perforated
+  // grille; a hand recess in the top. Generic: no brand, no claimed size.
+  const parts = useMemo(() => {
+    const grille = Skia.Path.Make();
+    const holes = Skia.Path.Make();
+    const recess = Skia.Path.Make();
+    const corners = Skia.Path.Make();
+    const driver = Skia.Path.Make();
+    if (view === 'top') {
+      grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-40, -258, 176, 516), 14, 14));
+      for (let x = -26; x < 128; x += 20) for (let z = -244; z < 250; z += 20) holes.addCircle(x, z, 4.2);
+      recess.addRRect(Skia.RRectXY(Skia.XYWHRect(-128, -70, 50, 140), 14, 14));
+      for (const [cx, cz] of [
+        [-150, -280],
+        [150, -280],
+        [-150, 280],
+        [150, 280],
+      ] as const)
+        corners.addRRect(Skia.RRectXY(Skia.XYWHRect(cx - 22, cz - 22, 44, 44), 9, 9));
+      driver.addCircle(48, -70, 118);
+    } else {
+      grille.moveTo(160, -128);
+      grille.lineTo(-52, -318);
+    }
+    return { grille, holes, recess, corners, driver };
   }, [view]);
   return (
     <Group transform={[{ translateX: u }, { translateY: v }, { rotate: view === 'top' ? ang : 0 }]}>
-      <Path path={cab} color="#24262c" />
-      <Path path={cab} style="stroke" strokeWidth={6} color="#5d616c" />
-      <Path path={grille} color="#0f1013" />
+      <Group transform={[{ translateX: 14 }, { translateY: 18 }]}>
+        <Path path={cab} color="#000" opacity={0.6}>
+          <BlurMask blur={22} style="normal" />
+        </Path>
+      </Group>
+      <Path path={cab}>
+        <LinearGradient start={vec(-150, -280)} end={vec(150, 280)} colors={['#3b3e46', '#24262c', '#15161a']} />
+      </Path>
+      {view === 'top' ? (
+        <>
+          <Path path={parts.grille} color="#0c0d10" />
+          <Path path={parts.driver} style="stroke" strokeWidth={5} color="#2a2c32" opacity={0.9} />
+          <Path path={parts.holes} color="#4a4e57" opacity={0.9} />
+          <Path path={parts.grille}>
+            <RadialGradient c={vec(-20, -200)} r={420} colors={['rgba(255,255,255,0.12)', 'rgba(255,255,255,0)']} />
+          </Path>
+          <Path path={parts.grille} style="stroke" strokeWidth={3} color="#5d616c" />
+          <Path path={parts.recess} color="#0e0f12" />
+          <Path path={parts.recess} style="stroke" strokeWidth={2} color="#4a4e57" />
+          <Path path={parts.corners} color="#101114" />
+          <Path path={parts.corners} style="stroke" strokeWidth={2} color="#6c717c" />
+        </>
+      ) : (
+        <Path path={parts.grille} style="stroke" strokeWidth={14} color="#0c0d10" />
+      )}
+      <Path path={cab} style="stroke" strokeWidth={4} color="#70747f" opacity={0.9} />
     </Group>
   );
 }
 
 const styles = StyleSheet.create({
   label: { position: 'absolute', left: 0, top: 0 },
-  labelText: { fontFamily: fonts.oswaldMedium, letterSpacing: 0.8 },
+  // A dark halo keeps a label legible where it crosses a boom or a hoop
+  // (the drawing stays visible around it — no opaque backing).
+  labelText: { fontFamily: fonts.oswaldMedium, letterSpacing: 0.8, textShadowColor: 'rgba(0,0,0,0.95)', textShadowRadius: 3, textShadowOffset: { width: 0, height: 0 } },
   liveWrap: { position: 'absolute', left: 4, right: 4, top: 4, gap: 2 },
   live: {
     color: '#e8eaee',
@@ -805,6 +945,6 @@ const styles = StyleSheet.create({
   },
   // Web: the backing hugs the words (a full-width band hid the head labels).
   liveWeb: { alignSelf: 'flex-start', maxWidth: '100%' },
-  viewTag: { position: 'absolute', left: 6, color: colors.textMuted, fontFamily: fonts.oswaldMedium, letterSpacing: 1.2 },
+  viewTag: { position: 'absolute', left: 6, bottom: 3, color: colors.textMuted, fontFamily: fonts.oswaldMedium, letterSpacing: 1.2 },
 });
 

@@ -4,242 +4,511 @@
  * v = y; top u = x, v = z. The scene puts it under one transform, so the
  * drawing, the labels and the hit areas stay aligned at every zoom.
  *
- * Both views are CUTAWAYS (the near half of the shell removed: the side view
- * is cut at z = 0, the top view at y = 0), so a mic inside the drum is seen.
- * Hidden edges — the offset port, the pillow under the top-view cut — are
- * dashed, the drafting convention. Parts whose geometry is unknown (pedal,
- * beater, pillow size, port position, floor, spurs) are drawn and tagged
- * ILLUSTRATIVE by the scene's labels.
+ * Both views are CUTAWAYS (the near half removed: the side view is cut at
+ * z = 0, the top view at y = 0), so a mic inside the drum is seen. What the
+ * cut leaves is drawn the way a section drawing shows it:
+ *   • CUT FACES (shell wall, hoop) — the 8 plies of a 7 mm shell (TAMA-SSC)
+ *     and the hoop's end grain, brightest, with a lacquer gloss on the outside;
+ *   • the FAR HALF seen through the cut — the shell's inner surface (its
+ *     grain lines bunch toward the edges, the way a cylinder foreshortens) and
+ *     the far half of each hoop, edge-on, darker;
+ *   • HIDDEN edges dashed (the offset port, which lies off both cut planes).
  *
- * Light from the upper left; palette from the visual standards. This is the
- * correctness pass; a later art pass may enrich the finish (charter §9).
+ * ART PASS (2026-10-04, polish): gradients for form, light from the upper
+ * left, rim highlights and soft contact shadows; a strict stroke hierarchy
+ * (cut faces 1.6, edges 1, detail 0.6 mm-equivalents). Rules kept:
+ *   • nothing here moves (D8) — every path is built ONCE per view and cached
+ *     at module scope (`built`), no per-render allocation;
+ *   • parts whose geometry is unknown (pedal, beater, pillow size, port
+ *     position, floor, spurs) stay where the model puts them and stay tagged
+ *     ILLUSTRATIVE by the labels;
+ *   • HARDWARE: Yamaha's RBB-2218 lists 10 tuning bolts (YMH-RC; read as per
+ *     head, owner to confirm) and the rod PHASE is a placeholder. A cutaway
+ *     shows only the rods at its silhouette (2 per head in each view; the
+ *     others are behind the far wall or removed with the near half), so they
+ *     are drawn at the silhouette and the count is stated in a label —
+ *     ILLUSTRATIVE positions, sourced count. Claw hooks: the purpose is
+ *     sourced (TAMA-SSC, YMH-HUB), the count is not (one per rod, convention).
+ *   • NOT drawn: a beater patch (no source), a port reinforcement ring (its
+ *     width is UNKNOWN and the port is hidden in both cuts), any brand mark.
+ *   • Head films are drawn ≈ 5 mm thick so they read at phone size (real
+ *     film is a fraction of a millimetre): a line weight, not a dimension.
  */
-import { useMemo } from 'react';
-import { Circle, DashPathEffect, Group, Line, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
-import { KICK_ANCHORS, KICK_GEOM as G } from './geometry.ts';
+import { KICK_ANCHORS, KICK_GEOM as G, silhouetteRods } from './geometry.ts';
 
 const PORT = KICK_ANCHORS['bd.port.center'];
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
-const WOOD = ['#3d2412', '#8a5a2b', '#b07c44', '#6b4220', '#2e1a0c'];
-const HOOP = ['#2a180a', '#6e4520', '#43290f'];
-const METAL = ['#3a3c44', '#c6cad4', '#6c707a'];
-const HEAD_COATED = '#ece7da';
-const HEAD_FRONT = '#30343e';
-const FELT = '#ddd5c2';
-const FABRIC = ['#3b4352', '#596476', '#2e3440'];
-const FLOOR = '#3a3b46';
-const HIDDEN = '#9aa3b5';
+/* ── palette (house tokens + material ramps, light from the upper left) ── */
+const AMBER = '#ffc64d';
+const INK = '#08080a';
+/** Ply cut face: alternating birch/maple tones across the 7 mm wall. */
+const PLY = ['#4a2a12', '#b98548', '#d9a766', '#9c6631', '#c48f52', '#8a5426', '#5c3417'];
+const PLY_LINE = '#2b170a';
+/** Natural lacquer on the outer veneer (a cosmetic finish, not a sourced colour). */
+const LACQUER_GLOSS = '#ffe2ae';
+/** Hoop: end grain on the cut, long grain on the far half. */
+const HOOP_CUT = ['#3a220e', '#9a6430', '#c48a4c', '#7a4a20', '#2f1b0a'];
+const HOOP_FAR = ['#1d1108', '#4a2c13', '#5e3a1b', '#2a180b'];
+/** The far inner wall of the shell (seen through the cut). */
+const CAVITY = ['#0a0806', '#241910', '#33251a', '#2a1e14', '#140e09', '#070605'];
+const CHROME = ['#3a3d45', '#eef1f6', '#9aa0ab', '#4a4e57', '#c8ccd4'];
+const CHROME_DARK = '#2a2c32';
+const HEAD_COATED = ['#fbf8f0', '#ece5d5', '#d6ccb7'];
+const HEAD_EBONY = ['#4a5060', '#272b33', '#15171c'];
+const FELT = ['#fffaf0', '#e7dfcb', '#a99f88'];
+const FABRIC = ['#5d6a84', '#414b60', '#2a313f'];
+const FLOOR = ['#202128', '#141519', '#0b0b0e'];
+const HIDDEN = '#b3bccd';
 
-function rect(x0: number, y0: number, x1: number, y1: number): SkPath {
-  const p = Skia.Path.Make();
+/* ── path helpers (build-time only) ── */
+const make = () => Skia.Path.Make();
+function rect(p: SkPath, x0: number, y0: number, x1: number, y1: number) {
   p.addRect(Skia.XYWHRect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0)));
   return p;
 }
-function rrect(x0: number, y0: number, x1: number, y1: number, r: number): SkPath {
-  const p = Skia.Path.Make();
+function rrect(p: SkPath, x0: number, y0: number, x1: number, y1: number, r: number) {
   p.addRRect(Skia.RRectXY(Skia.XYWHRect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0)), r, r));
   return p;
 }
-function lines(segs: [number, number, number, number][]): SkPath {
-  const p = Skia.Path.Make();
-  for (const [a, b, c, d] of segs) {
-    p.moveTo(a, b);
-    p.lineTo(c, d);
-  }
+function seg(p: SkPath, a: number, b: number, c: number, d: number) {
+  p.moveTo(a, b);
+  p.lineTo(c, d);
+  return p;
+}
+function oval(p: SkPath, cx: number, cy: number, rx: number, ry: number) {
+  p.addOval(Skia.XYWHRect(cx - rx, cy - ry, rx * 2, ry * 2));
   return p;
 }
 
-/** Plies drawn in a wall band (8-ply shell, TAMA-SSC). */
-function plies(x0: number, x1: number, v0: number, v1: number, n = 8): SkPath {
-  const segs: [number, number, number, number][] = [];
-  for (let i = 1; i < n; i++) {
-    const v = v0 + ((v1 - v0) * i) / n;
-    segs.push([x0, v, x1, v]);
+/* ── the hardware at a rod's silhouette (claw, T-rod, lug), both ends ── */
+type Hardware = { claws: SkPath; tees: SkPath; rods: SkPath; rodsHi: SkPath; lugsTop: SkPath; lugsBot: SkPath; nuts: SkPath };
+
+function buildHardware(view: ViewId): Hardware {
+  const h: Hardware = { claws: make(), tees: make(), rods: make(), rodsHi: make(), lugsTop: make(), lugsBot: make(), nuts: make() };
+  const ho = G.hoopOut;
+  const hi = G.hoopIn;
+  const rRod = ho + 10; // the rod clears the hoop's outside
+  const sides = new Set(silhouetteRods(view).map((r) => r.sgn));
+  for (const sgn of sides) {
+    const v = (rho: number) => sgn * rho;
+    for (const end of [0, 1] as const) {
+      // Batter end as drawn; the front end mirrored about the drum's middle.
+      const X = (x: number) => (end === 0 ? x : G.L - x);
+      const outer = G.hoopX.batter[0]; // the hoop's player-side face (−19)
+      // CLAW: a strap over the hoop, a lip pressing its outer face, an ear for the rod.
+      rrect(h.claws, X(outer - 4), v(ho + 1), X(4), v(ho + 5), 1.5);
+      rect(h.claws, X(outer - 4), v(hi + 3), X(outer), v(ho + 5));
+      rrect(h.claws, X(outer - 4), v(ho + 5), X(outer + 7), v(ho + 15), 2);
+      // T-ROD: handle outside the claw, rod to the lug.
+      rrect(h.tees, X(outer - 16), v(rRod - 7), X(outer - 9), v(rRod + 7), 2);
+      seg(h.rods, X(outer - 10), v(rRod), X(52), v(rRod));
+      seg(h.rodsHi, X(outer - 10), v(rRod) - sgn * 1.1, X(52), v(rRod) - sgn * 1.1);
+      // LUG on the shell (position along the shell illustrative).
+      rrect(sgn < 0 ? h.lugsTop : h.lugsBot, X(44), v(G.R), X(76), v(G.R + 24), 7);
+      oval(h.nuts, X(48), v(rRod), 3.2, 3.2);
+    }
   }
-  return lines(segs);
+  return h;
 }
 
-/** The beater + pedal (ILLUSTRATIVE), side view. */
-function pedalSide() {
+/* ── everything static, per view ── */
+type Built = ReturnType<typeof buildSide> | ReturnType<typeof buildTop>;
+const built: Partial<Record<ViewId, Built>> = {};
+
+function shellParts(view: ViewId) {
+  const { R, L, rIn } = G;
+  const hb = G.hoopX.batter;
+  const hr = G.hoopX.reso;
+  // Cut faces of the wall (top and bottom of the section), one path each.
+  const wallTop = rect(make(), 0, -R, L, -rIn);
+  const wallBot = rect(make(), 0, rIn, L, R);
+  // Ply seams: 8 plies → 7 seams per wall.
+  const plyLines = make();
+  for (let i = 1; i < 8; i++) {
+    const t = (G.tShell * i) / 8;
+    seg(plyLines, 0, -R + t, L, -R + t);
+    seg(plyLines, 0, R - t, L, R - t);
+  }
+  // The outer lacquer gloss and the inner edge.
+  const gloss = seg(seg(make(), 0, -R + 0.6, L, -R + 0.6), 0, R - 0.6, L, R - 0.6);
+  const innerEdge = seg(seg(make(), 0, -rIn, L, -rIn), 0, rIn, L, rIn);
+  const outerEdge = seg(seg(make(), 0, -R, L, -R), 0, R, L, R);
+  // The far inner wall, seen through the cut: grain lines at y = rIn·cos θ.
+  const cavity = rect(make(), 0, -rIn, L, rIn);
+  const grain = make();
+  const N = 14;
+  for (let k = 1; k < N; k++) {
+    const y = rIn * Math.cos((Math.PI * k) / N);
+    seg(grain, 0, y, L, y);
+  }
+  const endShadeB = rect(make(), 0, -rIn, 46, rIn);
+  const endShadeR = rect(make(), L - 46, -rIn, L, rIn);
+  // Hoops: the far half edge-on (outside the shell), and the two cut faces.
+  const hoopFar = make();
+  rect(hoopFar, hb[0], -G.hoopIn, 0, G.hoopIn);
+  rect(hoopFar, L, -G.hoopIn, hr[1], G.hoopIn);
+  const hoopCut = make();
+  for (const [x0, x1] of [hb, hr]) {
+    rrect(hoopCut, x0, -G.hoopOut, x1, -G.hoopIn, 2.5);
+    rrect(hoopCut, x0, G.hoopIn, x1, G.hoopOut, 2.5);
+  }
+  // Heads: films (drawn ≈ 5 mm), the batter coated, the front ebony.
+  const batter = rect(make(), -2.5, -R - 2, 2.5, R + 2);
+  const front = rect(make(), L - 2.5, -R - 2, L + 2.5, R + 2);
+  const frontSheen = seg(make(), L - 1.6, -R, L - 1.6, R);
+  // The port (hidden in both cuts): its extent along the head line.
+  const pc = view === 'side' ? PORT.y : PORT.z;
+  const port = seg(make(), L, pc - G.portR, L, pc + G.portR);
+  const portTicks = seg(seg(make(), L - 9, pc - G.portR, L + 9, pc - G.portR), L - 9, pc + G.portR, L + 9, pc + G.portR);
+  const hw = buildHardware(view);
+  return { wallTop, wallBot, plyLines, gloss, innerEdge, outerEdge, cavity, grain, endShadeB, endShadeR, hoopFar, hoopCut, batter, front, frontSheen, port, portTicks, hw };
+}
+
+function pillowSide(): SkPath {
+  const { x0, x1, top, bottom } = G.pillow;
+  const p = make();
+  // A cushion inside the model's box: soft ends, a gently uneven top.
+  p.moveTo(x0 + 12, bottom);
+  p.cubicTo(x0 + 2, bottom - 8, x0 + 2, top + 34, x0 + 20, top + 14);
+  p.cubicTo(x0 + 60, top + 1, x0 + 112, top + 10, (x0 + x1) / 2, top + 5);
+  p.cubicTo(x1 - 100, top + 1, x1 - 46, top + 4, x1 - 16, top + 16);
+  p.cubicTo(x1 - 2, top + 32, x1 - 2, bottom - 10, x1 - 12, bottom);
+  p.close();
+  return p;
+}
+
+function pedalSideParts() {
   const b = G.beater;
+  const yF = G.yFloor;
   const head = { x: b.axle.x + b.len * Math.cos(b.strikeAngle), y: b.axle.y + b.len * Math.sin(b.strikeAngle) };
   const rest = { x: b.axle.x + b.len * Math.cos(b.restAngle), y: b.axle.y + b.len * Math.sin(b.restAngle) };
-  const foot = Skia.Path.Make();
-  // Footboard: a tilted plate from the heel plate up toward the drum.
-  foot.moveTo(G.pedal.x0, G.yFloor - 8);
-  foot.lineTo(G.pedal.x1 - 30, G.pedal.top);
-  foot.lineTo(G.pedal.x1 - 20, G.pedal.top + 12);
-  foot.lineTo(G.pedal.x0 + 6, G.yFloor);
-  foot.close();
-  const frame = Skia.Path.Make();
-  frame.addRRect(Skia.RRectXY(Skia.XYWHRect(b.axle.x - 9, b.axle.y - 8, 18, G.yFloor - b.axle.y + 8), 6, 6));
-  const base = rect(G.pedal.x0 - 6, G.yFloor - 6, G.pedal.x1 + 10, G.yFloor);
-  return { head, rest, foot, frame, base };
+  const { x0, x1, top } = G.pedal;
+  const base = rrect(make(), x0 - 6, yF - 7, x1 + 12, yF, 2);
+  const board = make();
+  board.moveTo(x0 + 2, yF - 9);
+  board.lineTo(x1 - 32, top);
+  board.quadTo(x1 - 22, top - 2, x1 - 18, top + 8);
+  board.lineTo(x0 + 10, yF - 1);
+  board.close();
+  // Grip ribs across the footboard.
+  const ribs = make();
+  const dx = x1 - 32 - (x0 + 2);
+  const dy = top - (yF - 9);
+  const ln = Math.hypot(dx, dy);
+  const ux = dx / ln;
+  const uy = dy / ln;
+  for (let t = 40; t < ln - 30; t += 22) {
+    const px = x0 + 2 + ux * t;
+    const py = yF - 9 + uy * t;
+    seg(ribs, px - uy * 1.5, py + ux * 1.5, px + uy * 7, py - ux * 7);
+  }
+  const post = rrect(make(), b.axle.x - 10, b.axle.y - 4, b.axle.x + 10, yF - 6, 5);
+  const chain = seg(make(), x1 - 26, top + 4, b.axle.x + 15, b.axle.y + 6);
+  const shaft = seg(make(), b.axle.x, b.axle.y, head.x, head.y);
+  const shaftRest = seg(make(), b.axle.x, b.axle.y, rest.x, rest.y);
+  // The memory-lock collar on the shaft, a little below the head.
+  const k = 0.78;
+  const collar = { x: b.axle.x + (head.x - b.axle.x) * k, y: b.axle.y + (head.y - b.axle.y) * k };
+  return { head, rest, base, board, ribs, post, chain, shaft, shaftRest, collar };
 }
 
+function buildSide() {
+  const yF = G.yFloor;
+  const floor = rect(make(), -3000, yF, 4000, yF + 600);
+  const floorEdge = seg(make(), -3000, yF, 4000, yF);
+  const drumShadow = oval(make(), G.L / 2, yF + 2, G.L / 2 + 50, 9);
+  const pedalShadow = oval(make(), (G.pedal.x0 + G.pedal.x1) / 2, yF + 1, (G.pedal.x1 - G.pedal.x0) / 2 + 20, 6);
+  return { kind: 'side' as const, floor, floorEdge, drumShadow, pedalShadow, pillow: pillowSide(), pillowSeam: seg(make(), G.pillow.x0 + 26, (G.pillow.top + G.pillow.bottom) / 2 + 6, G.pillow.x1 - 26, (G.pillow.top + G.pillow.bottom) / 2 + 6), ped: pedalSideParts(), ...shellParts('side') };
+}
+
+function buildTop() {
+  const { x0, x1, halfW } = G.pillow;
+  const pillow = make();
+  // Seen from above (it lies below the cut): a cushion with rounded corners.
+  pillow.moveTo(x0 + 26, -halfW + 4);
+  pillow.cubicTo((x0 + x1) / 2, -halfW - 0, (x0 + x1) / 2, -halfW + 2, x1 - 24, -halfW + 6);
+  pillow.cubicTo(x1 - 2, -halfW + 14, x1 - 2, halfW - 14, x1 - 24, halfW - 6);
+  pillow.cubicTo((x0 + x1) / 2, halfW - 2, (x0 + x1) / 2, halfW, x0 + 26, halfW - 4);
+  pillow.cubicTo(x0 + 2, halfW - 16, x0 + 2, -halfW + 16, x0 + 26, -halfW + 4);
+  pillow.close();
+  const pillowSeam = seg(make(), x0 + 30, 0, x1 - 30, 0);
+  const shadow = rrect(make(), G.hoopX.batter[0] + 8, -G.hoopOut + 10, G.hoopX.reso[1] + 8, G.hoopOut + 10, 30);
+  // Spurs (count sourced; mount, angle and length ILLUSTRATIVE).
+  const spurLegs = make();
+  const spurBrackets = make();
+  const spurFeet = make();
+  for (const s of G.spurs) {
+    seg(spurLegs, s.top.x, s.top.z, s.foot.x, s.foot.z);
+    rrect(spurBrackets, s.top.x - 16, s.side * G.R, s.top.x + 16, s.side * (G.R + 14), 4);
+    oval(spurFeet, s.foot.x, s.foot.z, 11, 11);
+  }
+  // Pedal in plan.
+  const { x0: px0, x1: px1 } = G.pedal;
+  const board = rrect(make(), px0, -45, px1, 45, 10);
+  const ribs = make();
+  for (let x = px0 + 30; x < px1 - 20; x += 22) seg(ribs, x, -34, x, 34);
+  const ax = G.beater.axle.x;
+  const axleBar = seg(make(), ax, -54, ax, 54);
+  const shaft = seg(make(), ax, 0, -2 * G.beater.headR, 0);
+  const beaterHead = rrect(make(), -2 * G.beater.headR, -G.beater.headR, 0, G.beater.headR, 9);
+  return { kind: 'top' as const, pillow, pillowSeam, shadow, spurLegs, spurBrackets, spurFeet, board, ribs, axleBar, shaft, beaterHead, ...shellParts('top') };
+}
+
+function getBuilt(view: ViewId): Built {
+  return (built[view] ??= view === 'side' ? buildSide() : buildTop());
+}
+
+/* ── the drawing ── */
+
 export function KickArt({ view, variant }: { view: ViewId; variant: VariantId }) {
+  const g = getBuilt(view);
   const ported = variant === 'ported';
-  const g = useMemo(() => {
-    const v = view;
-    const R = G.R;
-    const L = G.L;
-    const rIn = G.rIn;
-    const hb = G.hoopX.batter;
-    const hr = G.hoopX.reso;
-    // Shell wall bands (cut faces) at ±(rIn..R).
-    const wallTop = rect(0, -R, L, -rIn);
-    const wallBot = rect(0, rIn, L, R);
-    const interior = rect(0, -rIn, L, rIn);
-    const plyLines = Skia.Path.Make();
-    plyLines.addPath(plies(0, L, -R, -rIn));
-    plyLines.addPath(plies(0, L, rIn, R));
-    const hoops = Skia.Path.Make();
-    for (const [x0, x1] of [hb, hr]) {
-      hoops.addPath(rrect(x0, -G.hoopOut, x1, -G.hoopIn, 2));
-      hoops.addPath(rrect(x0, G.hoopIn, x1, G.hoopOut, 2));
-    }
-    // Tension rods + lugs at the silhouette (|cos φ| > 0.8 in the side view,
-    // |sin φ| > 0.8 from above), hoop claw → lug.
-    const rodSegs: [number, number, number, number][] = [];
-    const lugs = Skia.Path.Make();
-    for (const phi of G.rodAngles) {
-      const a = (phi * Math.PI) / 180;
-      const c = v === 'side' ? Math.cos(a) : Math.sin(a);
-      if (Math.abs(c) < 0.8) continue;
-      const vv = (R + 14) * c;
-      rodSegs.push([hb[0] + 4, vv, 46, vv], [hr[1] - 4, vv, L - 46, vv]);
-      lugs.addPath(rrect(46, vv - 6, 70, vv + 6, 3));
-      lugs.addPath(rrect(L - 70, vv - 6, L - 46, vv + 6, 3));
-    }
-    const rods = lines(rodSegs);
-    // Port as a hidden edge on the front-head line.
-    const pc = v === 'side' ? PORT.y : PORT.z;
-    const port = lines([[L, pc - G.portR, L, pc + G.portR]]);
-    const pillow = rrect(G.pillow.x0, v === 'side' ? G.pillow.top : -G.pillow.halfW, G.pillow.x1, v === 'side' ? G.pillow.bottom : G.pillow.halfW, 26);
-    const ped = pedalSide();
-    const spurs = Skia.Path.Make();
-    for (const s of G.spurs) {
-      // Side view: the near spur is cut away with the near half of the shell,
-      // the far one is hidden behind the far wall — neither is drawn.
-      if (v === 'side') continue;
-      spurs.moveTo(s.top.x, s.top.z);
-      spurs.lineTo(s.foot.x, s.foot.z);
-    }
-    const footPlan = rrect(G.pedal.x0, -45, G.pedal.x1, 45, 10);
-    return { R, L, rIn, wallTop, wallBot, interior, plyLines, hoops, rods, lugs, port, pillow, ped, spurs, footPlan };
-  }, [view]);
-  const { R, L, rIn } = g;
-  const sideV = view === 'side';
+  const { R, L, rIn } = G;
+  const hw = g.hw;
   return (
     <Group>
-      {/* Floor (side view only; its height is a placeholder). */}
-      {sideV ? (
+      {g.kind === 'side' ? (
         <>
-          <Path path={rect(-400, G.yFloor, 900, G.yFloor + 30)}>
-            <LinearGradient start={vec(0, G.yFloor)} end={vec(0, G.yFloor + 30)} colors={['#23242b', '#0c0c0f']} />
+          {/* FLOOR (its height is a placeholder): a dark slab, a lit edge, contact shadows. */}
+          <Path path={g.floor}>
+            <LinearGradient start={vec(0, G.yFloor)} end={vec(0, G.yFloor + 60)} colors={FLOOR} />
           </Path>
-          <Line p1={vec(-400, G.yFloor)} p2={vec(900, G.yFloor)} color={FLOOR} strokeWidth={3} />
+          <Path path={g.drumShadow} color="#000" opacity={0.7}>
+            <BlurMask blur={8} style="normal" />
+          </Path>
+          <Path path={g.pedalShadow} color="#000" opacity={0.6}>
+            <BlurMask blur={6} style="normal" />
+          </Path>
+          <Path path={g.floorEdge} style="stroke" strokeWidth={2.5} color="#4a4c58" />
         </>
-      ) : null}
-      {/* Interior air — the cut-open drum, dark, lit faintly from the upper left. */}
-      <Path path={g.interior}>
-        <LinearGradient start={vec(0, -rIn)} end={vec(L, rIn)} colors={['#1b1712', '#0e0c0a']} />
-      </Path>
-      {/* Pillow: solid in the side cut; a hidden outline under the top cut. */}
-      {sideV ? (
-        <Path path={g.pillow}>
-          <LinearGradient start={vec(0, G.pillow.top)} end={vec(0, G.pillow.bottom)} colors={FABRIC} />
-        </Path>
       ) : (
-        <Path path={g.pillow} style="stroke" strokeWidth={3} color={HIDDEN} opacity={0.55}>
-          <DashPathEffect intervals={[14, 10]} />
+        <Path path={g.shadow} color="#000" opacity={0.55}>
+          <BlurMask blur={14} style="normal" />
         </Path>
       )}
-      {/* Shell walls (cut faces), plies, hoops, rods and lugs. */}
+
+      {/* FAR HALF of each hoop, edge-on (long grain, in shadow). */}
+      <Path path={g.hoopFar}>
+        <LinearGradient start={vec(G.hoopX.batter[0], 0)} end={vec(G.hoopX.batter[1], 0)} colors={HOOP_FAR} />
+      </Path>
+      <Path path={g.hoopFar} style="stroke" strokeWidth={1} color={INK} opacity={0.8} />
+
+      {/* The far inner wall through the cut: warm, dim, lit from the upper left. */}
+      <Path path={g.cavity}>
+        <LinearGradient start={vec(0, -rIn)} end={vec(0, rIn)} colors={CAVITY} positions={[0, 0.16, 0.38, 0.62, 0.86, 1]} />
+      </Path>
+      <Path path={g.cavity}>
+        <RadialGradient c={vec(L * 0.3, -rIn * 0.45)} r={L * 0.95} colors={['rgba(255,214,160,0.08)', 'rgba(255,214,160,0)']} />
+      </Path>
+      <Path path={g.grain} style="stroke" strokeWidth={0.9} color="#d9a766" opacity={0.12} />
+      <Path path={g.endShadeB}>
+        <LinearGradient start={vec(0, 0)} end={vec(46, 0)} colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0)']} />
+      </Path>
+      <Path path={g.endShadeR}>
+        <LinearGradient start={vec(L, 0)} end={vec(L - 46, 0)} colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0)']} />
+      </Path>
+
+      {/* PILLOW: solid in the side cut; seen from above (below the cut) in plan, dimmer. */}
+      {g.kind === 'side' ? (
+        <>
+          <Path path={g.pillow}>
+            <LinearGradient start={vec(0, G.pillow.top)} end={vec(0, G.pillow.bottom)} colors={FABRIC} />
+          </Path>
+          <Path path={g.pillow}>
+            <RadialGradient c={vec(G.pillow.x0 + 70, G.pillow.top + 20)} r={170} colors={['rgba(255,255,255,0.16)', 'rgba(255,255,255,0)']} />
+          </Path>
+          <Path path={g.pillowSeam} style="stroke" strokeWidth={1.4} color="#c9d2e4" opacity={0.35}>
+            <DashPathEffect intervals={[7, 6]} />
+          </Path>
+          <Path path={g.pillow} style="stroke" strokeWidth={1.2} color="#141821" opacity={0.9} />
+        </>
+      ) : (
+        <Group opacity={0.32}>
+          <Path path={g.pillow}>
+            <LinearGradient start={vec(0, -G.pillow.halfW)} end={vec(0, G.pillow.halfW)} colors={FABRIC} />
+          </Path>
+          <Path path={g.pillow}>
+            <RadialGradient c={vec(G.pillow.x0 + 60, -G.pillow.halfW + 50)} r={220} colors={['rgba(255,255,255,0.14)', 'rgba(255,255,255,0)']} />
+          </Path>
+          <Path path={g.pillowSeam} style="stroke" strokeWidth={1.4} color="#c9d2e4" opacity={0.3}>
+            <DashPathEffect intervals={[7, 6]} />
+          </Path>
+          <Path path={g.pillow} style="stroke" strokeWidth={1.2} color="#141821" />
+        </Group>
+      )}
+
+      {/* SHELL cut faces: 8 plies, the lacquer gloss outside, the inner edge. */}
       <Path path={g.wallTop}>
-        <LinearGradient start={vec(0, -R)} end={vec(0, -rIn)} colors={WOOD} />
+        <LinearGradient start={vec(0, -R)} end={vec(0, -rIn)} colors={PLY} />
       </Path>
       <Path path={g.wallBot}>
-        <LinearGradient start={vec(0, rIn)} end={vec(0, R)} colors={WOOD} />
+        <LinearGradient start={vec(0, R)} end={vec(0, rIn)} colors={PLY} />
       </Path>
-      <Path path={g.plyLines} style="stroke" strokeWidth={0.5} color="#24150a" opacity={0.6} />
-      <Path path={g.rods} style="stroke" strokeWidth={3.5} color={METAL[1]} opacity={0.8} />
-      <Path path={g.lugs}>
-        <LinearGradient start={vec(0, -R - 20)} end={vec(0, R + 20)} colors={METAL} />
+      <Path path={g.plyLines} style="stroke" strokeWidth={0.35} color={PLY_LINE} opacity={0.75} />
+      <Path path={g.outerEdge} style="stroke" strokeWidth={1.4} color="#140b05" />
+      <Path path={g.gloss} style="stroke" strokeWidth={1.1} color={LACQUER_GLOSS} opacity={0.6} />
+      <Path path={g.innerEdge} style="stroke" strokeWidth={1} color={INK} opacity={0.9} />
+
+      {/* HEADS: the coated batter film; the ebony front film with a sheen. */}
+      <Path path={g.batter}>
+        <LinearGradient start={vec(0, -R)} end={vec(0, R)} colors={HEAD_COATED} />
       </Path>
-      <Path path={g.hoops}>
-        <LinearGradient start={vec(0, -G.hoopOut)} end={vec(0, G.hoopOut)} colors={HOOP} />
+      <Path path={g.front}>
+        <LinearGradient start={vec(0, -R)} end={vec(0, R)} colors={HEAD_EBONY} />
       </Path>
-      {/* Heads: the coated batter head, the dark front head. */}
-      <Line p1={vec(0, -R)} p2={vec(0, R)} color={HEAD_COATED} strokeWidth={4} />
-      <Line p1={vec(L, -R)} p2={vec(L, R)} color={HEAD_FRONT} strokeWidth={4} />
-      <Line p1={vec(L, -R)} p2={vec(L, R)} color="#8d95a6" strokeWidth={1.2} opacity={0.6} />
+      <Path path={g.frontSheen} style="stroke" strokeWidth={1.2} color="#c3cbdb" opacity={0.75} />
+      <Path path={g.front} style="stroke" strokeWidth={0.8} color="#8d97ab" opacity={0.6} />
+
+      {/* HOOP cut faces (end grain), lit edge on top. */}
+      <Path path={g.hoopCut}>
+        <LinearGradient start={vec(G.hoopX.batter[0], 0)} end={vec(G.hoopX.batter[1], 0)} colors={HOOP_CUT} />
+      </Path>
+      <Path path={g.hoopCut} style="stroke" strokeWidth={1} color={INK} />
+
+      {/* HARDWARE at the silhouette: lugs, T-rods, claw hooks (count: label). */}
+      <Path path={hw.lugsTop}>
+        <LinearGradient start={vec(0, -R - 24)} end={vec(0, -R)} colors={CHROME} />
+      </Path>
+      <Path path={hw.lugsBot}>
+        <LinearGradient start={vec(0, R)} end={vec(0, R + 24)} colors={CHROME} />
+      </Path>
+      <Path path={hw.lugsTop} style="stroke" strokeWidth={0.8} color={INK} />
+      <Path path={hw.lugsBot} style="stroke" strokeWidth={0.8} color={INK} />
+      <Path path={hw.rods} style="stroke" strokeWidth={4.2} strokeCap="round" color={CHROME_DARK} />
+      <Path path={hw.rodsHi} style="stroke" strokeWidth={1.4} strokeCap="round" color="#d9dde5" opacity={0.85} />
+      <Path path={hw.nuts} color="#9aa0ab" />
+      <Path path={hw.claws}>
+        <LinearGradient start={vec(G.hoopX.batter[0] - 6, -G.hoopOut - 16)} end={vec(G.hoopX.batter[0] + 10, -G.hoopIn)} colors={['#f2f4f8', '#8f949f', '#3a3d45']} />
+      </Path>
+      <Path path={hw.claws} style="stroke" strokeWidth={0.8} color={INK} />
+      <Path path={hw.tees} color="#c6cad4" />
+      <Path path={hw.tees} style="stroke" strokeWidth={0.8} color={INK} />
+
+      {/* PORT: off both cut planes, so a HIDDEN edge (dashed), with end ticks. */}
       {ported ? (
-        <Path path={g.port} style="stroke" strokeWidth={6} color={HIDDEN}>
-          <DashPathEffect intervals={[10, 7]} />
-        </Path>
-      ) : null}
-      {/* Spurs (illustrative geometry). */}
-      <Path path={g.spurs} style="stroke" strokeWidth={9} strokeCap="round" color={METAL[2]} />
-      <Path path={g.spurs} style="stroke" strokeWidth={3} strokeCap="round" color={METAL[1]} opacity={0.6} />
-      {/* Pedal and beater (ILLUSTRATIVE): at the strike, with the rest
-          position ghosted. */}
-      {sideV ? (
         <>
-          <Path path={g.ped.base} color="#202227" />
-          <Path path={g.ped.foot}>
-            <LinearGradient start={vec(G.pedal.x0, G.yFloor)} end={vec(G.pedal.x1, G.pedal.top)} colors={['#1f2126', '#5b5f69', '#2a2c32']} />
+          <Path path={g.port} style="stroke" strokeWidth={7} color="#0d0e12" opacity={0.85} />
+          <Path path={g.port} style="stroke" strokeWidth={4} color={HIDDEN}>
+            <DashPathEffect intervals={[10, 7]} />
           </Path>
-          <Path path={g.ped.frame}>
-            <LinearGradient start={vec(G.beater.axle.x - 9, 0)} end={vec(G.beater.axle.x + 9, 0)} colors={METAL} />
+          <Path path={g.portTicks} style="stroke" strokeWidth={2} color={HIDDEN} opacity={0.9} />
+        </>
+      ) : null}
+
+      {g.kind === 'top' ? (
+        <>
+          {/* SPURS (count sourced; geometry ILLUSTRATIVE): bracket, leg, rubber foot. */}
+          <Path path={g.spurBrackets}>
+            <LinearGradient start={vec(0, -R - 14)} end={vec(0, R + 14)} colors={CHROME} />
           </Path>
-          <Line p1={vec(G.beater.axle.x, G.beater.axle.y)} p2={vec(g.ped.rest.x, g.ped.rest.y)} color={METAL[1]} strokeWidth={5} opacity={0.3} />
-          <Circle cx={g.ped.rest.x} cy={g.ped.rest.y} r={G.beater.headR} color={FELT} opacity={0.25} />
-          <Line p1={vec(G.beater.axle.x, G.beater.axle.y)} p2={vec(g.ped.head.x, g.ped.head.y)} color={METAL[1]} strokeWidth={6} />
-          <Circle cx={g.ped.head.x} cy={g.ped.head.y} r={G.beater.headR}>
-            <LinearGradient start={vec(g.ped.head.x - 30, g.ped.head.y - 30)} end={vec(g.ped.head.x + 30, g.ped.head.y + 30)} colors={['#f4efe2', FELT, '#9b937f']} />
-          </Circle>
-          <Circle cx={G.beater.axle.x} cy={G.beater.axle.y} r={12} color={METAL[0]} />
+          <Path path={g.spurLegs} style="stroke" strokeWidth={17} strokeCap="round" color={INK} opacity={0.9} />
+          <Path path={g.spurLegs} style="stroke" strokeWidth={13} strokeCap="round" color="#7d828d" />
+          <Path path={g.spurLegs} style="stroke" strokeWidth={4} strokeCap="round" color="#eef1f6" opacity={0.6} />
+          <Path path={g.spurFeet} color="#17181c" />
+          <Path path={g.spurFeet} style="stroke" strokeWidth={2} color="#555a64" />
+
+          {/* PEDAL in plan (ILLUSTRATIVE). */}
+          <Path path={g.board}>
+            <LinearGradient start={vec(G.pedal.x0, -45)} end={vec(G.pedal.x1, 45)} colors={['#6b707b', '#3a3d45', '#22242a']} />
+          </Path>
+          <Path path={g.ribs} style="stroke" strokeWidth={2} color="#15161a" opacity={0.7} />
+          <Path path={g.board} style="stroke" strokeWidth={1.2} color={INK} />
+          <Path path={g.axleBar} style="stroke" strokeWidth={9} strokeCap="round" color={CHROME_DARK} />
+          <Path path={g.axleBar} style="stroke" strokeWidth={3} strokeCap="round" color="#c6cad4" opacity={0.7} />
+          <Path path={g.shaft} style="stroke" strokeWidth={6} strokeCap="round" color={CHROME_DARK} />
+          <Path path={g.shaft} style="stroke" strokeWidth={2} strokeCap="round" color="#e4e7ed" opacity={0.8} />
+          <Path path={g.beaterHead}>
+            <LinearGradient start={vec(-2 * G.beater.headR, -G.beater.headR)} end={vec(0, G.beater.headR)} colors={FELT} />
+          </Path>
+          <Path path={g.beaterHead} style="stroke" strokeWidth={1.2} color="#6e6655" />
         </>
       ) : (
-        <>
-          <Path path={g.footPlan}>
-            <LinearGradient start={vec(G.pedal.x0, -45)} end={vec(G.pedal.x1, 45)} colors={['#5b5f69', '#2a2c32']} />
-          </Path>
-          <Line p1={vec(G.beater.axle.x, 0)} p2={vec(-G.beater.headR, 0)} color={METAL[1]} strokeWidth={6} />
-          <Circle cx={-G.beater.headR} cy={0} r={G.beater.headR} color={FELT} />
-        </>
+        <SidePedal ped={g.ped} />
       )}
-      {/* The beater line: where the beater meets the head, parallel to the axis. */}
-      <Line p1={vec(0, sideV ? G.strikeY : 0)} p2={vec(L, sideV ? G.strikeY : 0)} color="#ffc64d" strokeWidth={1.6} opacity={0.55}>
+
+      {/* The beater line: where the beater meets the head, parallel to the axis
+          (a readout REFERENCE — kept crisp, never under an effect). */}
+      <Line p1={vec(0, view === 'side' ? G.strikeY : 0)} p2={vec(L, view === 'side' ? G.strikeY : 0)} color={AMBER} strokeWidth={1.6} opacity={0.6}>
         <DashPathEffect intervals={[16, 10]} />
       </Line>
     </Group>
   );
 }
 
+function SidePedal({ ped }: { ped: ReturnType<typeof pedalSideParts> }) {
+  const b = G.beater;
+  return (
+    <>
+      {/* Base plate, footboard with grip ribs, the frame post and its cam. */}
+      <Path path={ped.base}>
+        <LinearGradient start={vec(0, G.yFloor - 7)} end={vec(0, G.yFloor)} colors={['#5b5f69', '#202227']} />
+      </Path>
+      <Path path={ped.board}>
+        <LinearGradient start={vec(G.pedal.x0, G.yFloor)} end={vec(G.pedal.x1, G.pedal.top)} colors={['#1f2126', '#6b707b', '#30323a']} />
+      </Path>
+      <Path path={ped.ribs} style="stroke" strokeWidth={2} strokeCap="round" color="#0f1013" opacity={0.75} />
+      <Path path={ped.board} style="stroke" strokeWidth={1.2} color={INK} />
+      <Circle cx={G.pedal.x0 + 8} cy={G.yFloor - 9} r={6} color="#9aa0ab" />
+      <Path path={ped.post}>
+        <LinearGradient start={vec(b.axle.x - 10, 0)} end={vec(b.axle.x + 10, 0)} colors={CHROME} />
+      </Path>
+      <Path path={ped.post} style="stroke" strokeWidth={1} color={INK} />
+      {/* Chain drive (ILLUSTRATIVE): links as a dashed heavy stroke. */}
+      <Path path={ped.chain} style="stroke" strokeWidth={5} color="#2a2c32" />
+      <Path path={ped.chain} style="stroke" strokeWidth={3.5} strokeCap="round" color="#a2a7b1">
+        <DashPathEffect intervals={[4, 3]} />
+      </Path>
+      <Circle cx={b.axle.x} cy={b.axle.y} r={17} color="#1b1c21" />
+      <Circle cx={b.axle.x} cy={b.axle.y} r={17} style="stroke" strokeWidth={2} color="#6c717c" />
+      <Circle cx={b.axle.x} cy={b.axle.y} r={6}>
+        <RadialGradient c={vec(b.axle.x - 2, b.axle.y - 2)} r={7} colors={['#f2f4f8', '#7d828d']} />
+      </Circle>
+
+      {/* The rest position, ghosted. */}
+      <Path path={ped.shaftRest} style="stroke" strokeWidth={5} strokeCap="round" color="#c6cad4" opacity={0.22} />
+      <Circle cx={ped.rest.x} cy={ped.rest.y} r={b.headR} color={FELT[1]} opacity={0.2} />
+
+      {/* Shaft, memory-lock collar and the felt head at the strike. */}
+      <Path path={ped.shaft} style="stroke" strokeWidth={6.5} strokeCap="round" color={CHROME_DARK} />
+      <Path path={ped.shaft} style="stroke" strokeWidth={2.2} strokeCap="round" color="#e4e7ed" opacity={0.85} />
+      <Circle cx={ped.collar.x} cy={ped.collar.y} r={7} color="#26282e" />
+      <Circle cx={ped.collar.x} cy={ped.collar.y} r={7} style="stroke" strokeWidth={1.2} color="#8a8f99" />
+      <Circle cx={ped.head.x} cy={ped.head.y} r={b.headR}>
+        <RadialGradient c={vec(ped.head.x - b.headR * 0.4, ped.head.y - b.headR * 0.45)} r={b.headR * 1.5} colors={FELT} />
+      </Circle>
+      <Circle cx={ped.head.x} cy={ped.head.y} r={b.headR} style="stroke" strokeWidth={1.2} color="#6e6655" />
+      <Circle cx={ped.head.x} cy={ped.head.y} r={b.headR * 0.32} color="#3a3d45" opacity={0.85} />
+    </>
+  );
+}
+
 /* ── labels and taps (mm, from the same anchors) ── */
-export type ArtLabel = { id: string; text: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
+export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
 
 export function kickLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [
-    { id: 'batter', text: 'BATTER HEAD', u: 14, v: -G.hoopOut - 26, align: 'right' },
+    { id: 'batter', text: 'BATTER HEAD', short: 'BATTER', u: 14, v: -G.hoopOut - 46, align: 'right' },
     // Right-aligned to the front hoop: the top-right corner is the inset's.
-    { id: 'reso', text: variant === 'ported' ? 'FRONT HEAD (PORTED)' : 'FRONT HEAD (INTACT)', u: G.L + 30, v: -G.hoopOut - 26, align: 'right' },
+    { id: 'reso', text: variant === 'ported' ? 'FRONT HEAD (PORTED)' : 'FRONT HEAD (INTACT)', short: 'FRONT', u: G.L + 30, v: -G.hoopOut - 46, align: 'right' },
   ];
   if (view === 'side') {
-    out.push({ id: 'beater', text: 'PEDAL · ILLUSTRATIVE', u: -230, v: -170, align: 'center', tone: 'illustrative' });
+    out.push({ id: 'beater', text: 'PEDAL · ILLUSTRATIVE', short: 'PEDAL · ILLUS.', u: -230, v: -170, align: 'center', tone: 'illustrative' });
     out.push({ id: 'pillow', text: 'PILLOW', u: 150, v: G.pillow.top + 50, align: 'center', tone: 'muted' });
-    out.push({ id: 'floor', text: 'FLOOR · ILLUSTRATIVE', u: 680, v: G.yFloor - 24, align: 'center', tone: 'illustrative' });
+    out.push({ id: 'floor', text: 'FLOOR · ILLUSTRATIVE', short: 'FLOOR · ILLUS.', u: 895, v: G.yFloor - 24, align: 'right', tone: 'illustrative' });
   } else {
-    out.push({ id: 'pedal', text: 'PEDAL · ILLUSTRATIVE', u: -230, v: 110, align: 'center', tone: 'illustrative' });
-    out.push({ id: 'pillow', text: 'PILLOW (BELOW)', u: 150, v: 0, align: 'center', tone: 'muted' });
+    out.push({ id: 'pedal', text: 'PEDAL · ILLUSTRATIVE', short: 'PEDAL · ILLUS.', u: -230, v: 110, align: 'center', tone: 'illustrative' });
+    // Low on the cushion: the mic zones sit over its middle.
+    out.push({ id: 'pillow', text: 'PILLOW (BELOW)', short: 'PILLOW', u: 150, v: G.pillow.halfW - 40, align: 'center', tone: 'muted' });
     out.push({ id: 'player', text: '← PLAYER', u: -300, v: -170, align: 'center', tone: 'muted' });
+    // The hardware's sourced COUNT, said in words (the cut shows only 2 per head).
+    out.push({ id: 'rods', text: '10 RODS PER HEAD · TO CONFIRM', short: '10 RODS/HEAD?', u: G.spurs[1].top.x + 40, v: G.hoopOut + 46, align: 'left', tone: 'illustrative' });
+    out.push({ id: 'spur', text: 'SPURS · ILLUSTRATIVE', short: 'SPURS · ILLUS.', u: G.spurs[1].foot.x + 30, v: G.spurs[1].foot.z + 2, align: 'left', tone: 'illustrative' });
   }
-  if (variant === 'ported') out.push({ id: 'port', text: 'PORT · ILLUSTRATIVE', u: G.L + 30, v: (view === 'side' ? PORT.y : PORT.z) + G.portR + 40, align: 'left', tone: 'illustrative' });
+  if (variant === 'ported') out.push({ id: 'port', text: 'PORT · ILLUSTRATIVE', short: 'PORT · ILLUS.', u: G.L + 30, v: (view === 'side' ? PORT.y : PORT.z) + G.portR + 40, align: 'left', tone: 'illustrative' });
   return out;
 }
 

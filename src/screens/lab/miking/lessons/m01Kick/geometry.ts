@@ -120,3 +120,20 @@ export const KICK_MODEL: InstrumentModel = {
   interior: { x0: 0, x1: L, rIn: R_IN, c: { x: 0, y: 0, z: 0 } },
   ports: { ported: { c: KICK_ANCHORS['bd.port.center'], r: portR }, intact: null },
 };
+
+/**
+ * Rods whose silhouette the cut leaves visible: side view = the far half
+ * (z ≤ 0) at the top/bottom silhouette; top view = the lower half (y ≥ 0) at
+ * the left/right silhouette. φ is measured from +y toward +z (geometry.ts).
+ */
+export function silhouetteRods(view: 'side' | 'top'): { phi: number; sgn: 1 | -1 }[] {
+  const out: { phi: number; sgn: 1 | -1 }[] = [];
+  for (const phi of KICK_GEOM.rodAngles) {
+    const a = phi * DEG;
+    const across = view === 'side' ? Math.cos(a) : Math.sin(a); // the projected axis
+    const depth = view === 'side' ? Math.sin(a) : -Math.cos(a); // > 0: removed with the near half
+    if (depth > 0.02 || Math.abs(across) < 0.94) continue;
+    out.push({ phi, sgn: across < 0 ? -1 : 1 });
+  }
+  return out;
+}

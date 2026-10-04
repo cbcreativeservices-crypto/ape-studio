@@ -523,6 +523,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 15:29 · ccode · b327f71c
+changed: fix(miking): readouts agree everywhere — web live strip, stop reason, labelled bezel, layout
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
 ### 2026-10-04 15:05 · ccode · 0a8712a3
 changed: feat(miking): step 6 — registration (Instruments & Recording family, MikingHub/MikingLesson gated, types, #labpreview), wiring + progress tests; fixes from the 390x844 web inspection
 affects other side: nothing (branch final-lab, miking lab work).

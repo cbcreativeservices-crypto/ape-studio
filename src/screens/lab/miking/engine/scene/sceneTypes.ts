@@ -7,7 +7,8 @@
 import type { ReactElement } from 'react';
 import type { VariantId, ViewId } from '../model/types.ts';
 
-export type ArtLabel = { id: string; text: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
+/** `short`: the words to fall back to where the full label would collide. */
+export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
 
 export type LessonArt = {
   /** The instrument (static; Skia elements in mm). */
