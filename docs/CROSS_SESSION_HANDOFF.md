@@ -523,6 +523,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 14:19 · ccode · 24c5871f
+changed: feat(miking): step 1 — pure engine (types, units, frame, sdf/collision, readouts, zones, polar, twoMic, levels, describe, validate) + geometry/physics tests
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
 ### 2026-10-04 14:04 · ccode · 3b1b30f6
 changed: docs(miking): engine blueprint, kick SOURCES + geometry proposal, rulings
 affects other side: nothing (branch final-lab, miking lab work).
