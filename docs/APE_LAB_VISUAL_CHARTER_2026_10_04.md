@@ -27,11 +27,22 @@ Consequences:
 - **Gestures use PanResponder plus the house finger rule** (`rack/laneFinger.ts`:
   follow the finger that grabbed, ignore a second finger). Pinch zoom does not
   exist. Full screen zooms in STEPS plus scroll (`rack/StageFullScreen.tsx`).
-- **G1 (owner decision).** Adding Gesture Handler is a native dependency. It
-  moves the runtime fingerprint, so the lab could ship only in a new store
-  build, never as an over-the-air update. The default is no new native
-  dependency. The queued Reanimated 4.5.5 / Worklets 0.10.4 bump also waits for
-  the next native build.
+- **G1, owner ruling 2026-10-04:** stay on the current touch system unless
+  the new one improves outcomes; the extra build does not matter. Claude's
+  recommendation: ADD `react-native-gesture-handler` ~2.32.0, the version
+  Expo 57 supports (`expo/bundledNativeModules.json`). Reasons:
+  - drags feed the animation directly on the UI thread, so they do not wait
+    on a busy JS thread;
+  - pinch zoom becomes possible in full screen;
+  - a drag inside a scroll can be resolved cleanly.
+
+  Costs:
+  - one root wrapper, which touches the whole app, so a full regression pass;
+  - lab code that uses it cannot run on a phone until a build that carries it
+    is installed. So that native build should come EARLY, on the owner's go.
+
+  Pending the owner's answer. The queued Reanimated 4.5.5 / Worklets 0.10.4
+  bump rides the same build.
 - Skia on the web preview runs through CanvasKit (WebAssembly). It is close to
   the phone, but it is NOT the native renderer. A web check is evidence about
   the drawing, never proof of phone performance.
@@ -199,10 +210,8 @@ runs through a crossing must not draw a dot or a T at that point.
 
 ## 11. Needed from the owner before or with the spec
 
-- **Reference material** for each piece of equipment and each system in the
-  lab: manuals, schematics, datasheets, and the standards to follow. Anything
-  the spec names without a reference goes into the UNKNOWN list.
-- **G1:** stay on PanResponder (ships over the air), or add Gesture Handler in
-  a native build (pinch zoom and richer gestures, but store build only).
-- **Device proof:** whether the Pixel will be connected, and how the owner
-  wants the lab to reach it before launch.
+- **Reference material:** ruled 2026-10-04. Anything without a reference is
+  marked UNKNOWN and is never invented.
+- **G1:** see §1.
+- **Device proof:** the Pixel is the device, signed in with the anorak full
+  membership account.
