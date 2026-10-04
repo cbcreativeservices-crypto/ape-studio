@@ -287,6 +287,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 17:40 · ccode · OTA publish #2 (production + preview)
+changed: PUBLISHED (owner: "do 1-2 then publish") from dcb9b28f — hunt 7 + calc refusals free + lab hub unreadable faces. Runtimes iOS e8e3455b / Android 22976b0e. production IDs: iOS 01a10463-8c04-76ee-b061-c47f39bd07e0, Android 01a10463-8c04-7d78-843a-8d080e36c2fa; u.expo.dev verified.
+affects other side: testers on 33/16 get it on next open+reopen; 32/15 get nothing.
+needs: still A to apply migration 2026100301.
+
 ### 2026-10-03 17:46 · ccode · 215d7f25
 changed: Owner 1-2: calc refusals cost nothing; lab hubs never "not started" on an unreadable read
 affects other side: nothing backend — calc refusals no longer call calc_consume (fewer server consumes for free users); app-only otherwise.
