@@ -348,6 +348,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 · ccode · OTA publish #5 (production + preview)
+changed: PUBLISHED (owner: "publish") from a2b39a68:
+- hunt 10, including the CRITICAL accountLocalSync offline-wipe fix;
+- the perf hunt;
+- the perf decisions (lazy screens, session identity, tier-first Home);
+- program_topics paging.
+Runtimes iOS e8e3455b / Android 22976b0e. Production IDs: iOS 01a105dc-00bc-7dd8-b308-5c137d0bd67c, Android 01a105dc-00bc-7d14-a772-2cd00485c02e. Verified on u.expo.dev.
+affects other side: testers on 33/16 get it on next open+reopen.
+needs: still 2026100301 + bucket cache headers.
+
 ### 2026-10-04 00:23 · ccode · a5d4614e
 changed: Perf decisions (owner 2026-10-04): session identity, tier-first Home, lazy screens, + program_topics paging bug
 affects other side: FYI A — program_topics (1016 rows) was being cut at PostgREST's 1000-row page; app now pages it. Consider whether other app reads of large tables need the same. NOT published.
