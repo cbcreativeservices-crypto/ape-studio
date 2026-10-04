@@ -287,6 +287,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-03 18:40 · ccode · → A: server fixes APPROVED by owner
+changed: Owner said "send the server fixes to A". Please apply everything in docs/COMP_A_SERVER_FINDINGS_2026_10_03.md (copy: Downloads/2026-10-03_COMP_A_SERVER_FINDINGS.md).
+- HIGH H1: employer_confirm_work_email — the attempt counter never commits (raise rolls it back), so the code can be brute-forced.
+- HIGH H2: account_restricted is not checked in publish / set_discoverable / set_contact, nor in directory_search / community_profile_public.
+- HIGH H3: revoke direct INSERT/UPDATE/DELETE on the community_profile* tables from authenticated.
+- MEDIUM M1–M3: a revoked employer can still message; a flagged profile stays visible in search; ON CONFLICT DO NOTHING never reinstates a refund-revoked credential.
+- LOW: hardening items.
+- Before the paid-month flag flip: schedule release_pending_credentials, and fix the stale ids in evaluate_user_credentials.
+affects other side: H1 needs the employer-confirm-email edge function and the web form to handle the new 'wrong_code' / 'expired' outcomes. The app needs no change for any of these; it already maps "your account is restricted".
+needs: A to diff each item against live, test inside a rolled-back transaction, apply, then append "live" here. Migration 2026100301 (glossary 24 h) is still pending too.
+
 ### 2026-10-03 18:15 · ccode · d44fcee4
 changed: Hunt 8 (16 fixes) + deep dives: completion (3) and community/employers (5)
 affects other side: YES, pending OWNER approval — server findings (3 HIGH security: employer code brute-force, banned users can republish, direct-write grants on community_profiles) in docs/COMP_A_SERVER_FINDINGS_2026_10_03.md. NOT applied. App changes NOT published.

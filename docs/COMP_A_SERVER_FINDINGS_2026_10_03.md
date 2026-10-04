@@ -1,7 +1,7 @@
 # Server findings from the 2026-10-03 deep dives: for Comp A
 
 **From:** ccode, 2026-10-03.
-**Status:** NOT applied. These are proposals only. **The owner decides** before A applies any of them.
+**Status:** OWNER APPROVED 2026-10-03 ("send the server fixes to A"). NOT yet applied — Comp A applies. Diff each against live first; rolled-back tests; then append "live" to CROSS_SESSION_HANDOFF.
 
 Every live check was read-only (SELECT / pg_get_functiondef on yjgolswjggmlpeowvtxr). Before applying anything, diff each item against the live function. Test each change inside a transaction that you roll back.
 
