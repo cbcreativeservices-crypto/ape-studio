@@ -348,6 +348,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 01:51 · ccode · b5b323ce
+changed: Hunt 12: 27 fixes + 1 correction (catalog-guided deep pass, 10 areas)
+affects other side: nothing backend. NOT published.
+needs: still 2026100301 + bucket cache headers.
+
+
 ### 2026-10-04 01:18 · ccode · 1c5a74c4
 changed: Hunt 11: 18 fixes + 2 corrections (catalog-guided deep pass, 10 areas)
 affects other side: nothing backend. App now words the live security refusals (reverse pending request, restricted). NOT published.
