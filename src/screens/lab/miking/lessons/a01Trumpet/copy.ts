@@ -1,0 +1,118 @@
+/**
+ * A01 TRUMPET AND FLUGELHORN — the shared pages' words (engine/model/
+ * copy.ts). Starting-points voice (owner ruling 2026-10-04): no sources,
+ * brands or badges. Every number is from trumpet/ or flugelhorn/ SOURCES.md
+ * or a named drawing default (CORRECTIONS_LOG A1-…).
+ */
+import type { LessonCopy } from '../../engine/model/copy.ts';
+
+export const A01_COPY: Partial<LessonCopy> = {
+  variantKey: 'HORN',
+  variantShort: { trumpet: 'trumpet', flugelhorn: 'flugelhorn' },
+  sceneSubject: { trumpet: 'a trumpet played standing, the bell level', flugelhorn: 'a flugelhorn played standing, the bell angled a little down' },
+  viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
+  axes: {
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Out along the bell toward the audience, or back toward the player (x). Distances are read from the bell rim’s centre.' },
+    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). The bell is at the player’s mouth height.' },
+    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z).' },
+  },
+  instrument: {
+    figureBadge: 'The trumpet and the flugelhorn, seen at an angle · every part named',
+    figureLabel: 'A trumpet and a flugelhorn.',
+    partsBadge: 'A horn played standing · tap a part to name it',
+    partsLooking: { side: 'Side view · from the player’s right', top: 'Top view · from above' },
+    partsIdle: 'The lips buzz in the mouthpiece; the tube shapes the note; the bell sends the sound out — the next page shows how. The valves change the tube’s length; the bell points wherever the player turns.',
+    variantNotes: { flugelhorn: 'FLUGELHORN: a wider, more conical tube and a larger bell, often held a little lower, the bell angled down. Switch HORN to see the trumpet.' },
+  },
+  placement: {
+    workedZone: { trumpet: 'tp.off', flugelhorn: 'fh.far' },
+    workedLine: 'This starting point also reads how far the mic is off {line}: the dashed line straight out of the bell.',
+    workedAim: 'Aim it toward the bell — the lab counts it while the mic points within about {tol}° of the bell. Distance, height and angle are separate things to try.',
+    workedClear: 'Clear of every part — the bell, the valve hands, the player’s head and body. Leave room for the bell to move as the player plays, and for every mute. Clearance comes first, before any number, and the player stops before a real mic moves.',
+    blocked: {},
+    reveal: 'Toward the axis tends to bring more brightness and bite; off to the side, a softer top; farther, more room and spill. Horns, players and rooms vary, so “it depends on this horn” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    typeNotes: {
+      instDynCard: 'Ideas to try with a dynamic: begin a little off the bell’s axis, then move one thing at a time — the angle toward or away from the axis, then the distance — and play the loudest accent and the softest ending each time.',
+      sdcCard: 'Ideas to try with a condenser: check it can take the horn’s peaks close up (or use a pad its maker allows); farther away it can carry the room as well as the horn.',
+      brClip: 'Ideas to try with a bell clip: keep the clip where it is made to go, then change only the capsule’s angle — between the bell’s centre and its edge — and check every mute.',
+    },
+    note: 'Clearance comes first: stop the player before moving a real mic. A mic, stand or cable where the bell, a mute, the valve hands or the player can reach it is in the wrong place, whatever the number says.',
+    availableLead: 'Starting points for this mic',
+    learn: {
+      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the bell rim’s centre. They are starting points, not rules. Move from there and listen: there is no single right answer, and every horn, player and room is different.',
+      separate: 'Distance and the angle off the bell’s axis are separate variables: change one at a time, and play the full phrase — quiet notes, the strongest accents and every mute — each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bell’s movement, every mute’s path, the valve hands and the player’s walk path.',
+      tendencies: 'On the axis tends to sound brighter and more defined; off to one side, softer, with less bite; farther, more room and spill. A directional mic close up also lifts the lows (proximity effect). These are tendencies, and horns vary.',
+    },
+  },
+  context: {
+    variant: 'trumpet',
+    zone: 'tp.off',
+    typeId: 'instDynCard',
+    patterns: [
+      { id: 'cardioid', label: 'cardioid', typeId: 'instDynCard' },
+      { id: 'supercardioid', label: 'supercardioid', typeId: 'instDynCard' },
+      { id: 'hypercardioid', label: 'hypercardioid', typeId: 'instDynCard' },
+    ],
+    micNoun: 'A dynamic',
+    shield: ['br.bell', 'br.bell1', 'br.bell2'],
+    azMax: 60,
+    elMax: 45,
+    aimBlurb: 'Swing the front up to 60° either way — it still faces the bell.',
+    plan: { u0: -900, u1: 2100, v0: -1350, v1: 1350 },
+    side: { u0: -900, u1: 2100, v0: -900, v1: 1650 },
+    target: 'wedge',
+    frontIds: [],
+    targetWord: 'wedge',
+    looking: 'Top view · mic in front of the bell',
+    prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the bell.',
+    activityDone: 'done — the wedge sat in a null by your aim or pattern',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). In front of the bell and aimed back at it, its rear faces the audience side — the wedge, down on the floor, sits below that line, so tilting the mic matters as much as turning it.',
+    shieldNote: 'The bell and the player reflect stage sound too, and the free-field pattern cannot show that. Listen with the monitors on.',
+    studioId: 'tp.ctx.studio',
+    studioPrompt: 'A studio overdub, one trumpet, a good quiet room: what is the mic’s job?',
+    studioNote: 'In the studio, one mic a little off the bell’s axis carries a balanced horn; a farther mic in a good room can add depth — check the pair in mono. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
+    learn: {
+      intro: 'These are scenario-based comparisons, not restrictions: the horn is the same — the room, the band and the monitors change.',
+      points: [
+        { title: 'PERSPECTIVE', text: 'Studio: a balanced main mic, and perhaps a farther view in a good room. Live: a closer directional mic or a bell clip for control against the band.' },
+        { title: 'SPILL AND FEEDBACK', text: 'Studio: the room and the neighbours. Live: monitors, the PA, the drums and the other horns. Aim the pattern’s rejection — and remember the bell beams forward, so the mic need not sit on top of it.' },
+        { title: 'MOVEMENT', text: 'Players move and turn. A stand mic has a working zone — agree it; a bell clip keeps one distance as the bell moves.' },
+        { title: 'THE LOUDEST NOTE', text: 'A trumpet’s peaks can overload a mic’s own capsule and electronics before the desk shows it. Check the mic’s rating and pad, then set gain on the strongest real accent.' },
+      ],
+      body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Some stage sound in a trumpet mic is normal; the question is how much the music can take.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+    },
+  },
+  twoMic: {
+    variant: 'trumpet',
+    A: { typeId: 'instDynCard', pattern: 'cardioid', zone: 'tp.off' },
+    B: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'tp.far' },
+    learn: [
+      'A second mic — a farther view in a good room, or the section’s mic — is a choice for a reason, not a requirement: get one reliable main mic first.',
+      'When it goes in: hear each mic alone, then the pair in MONO at the intended levels. Move or rebalance a mic first; check both polarity states at matched levels only after that — a polarity switch cannot line up every pitch.',
+    ],
+    warn: 'This simplified graph treats the bell as one point and both mics as hearing the same sound. Real mics at different distances hear different mixes of horn and room, so read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono, at matched levels.',
+  },
+  practice: {
+    gain: 'tp.prac.gain',
+    second: 'tp.prac.3',
+    mixed: ['tp.mix.1', 'tp.mix.2', 'tp.mix.3'],
+    mixedIntro: 'Three cards from earlier pages, mixed: where the highs go, a pattern’s null, and polarity versus delay.',
+  },
+  terms: {
+    instrument: 'the horn',
+    aimRef: 'the bell',
+    startIntro: 'This lesson is about putting a microphone on a trumpet — and on its close relative, the flugelhorn. First the horn itself: what it is, how the lips and the tube make its sound, where the sound leaves, and where the player stands. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
+    startNew: 'Good — NEXT takes you through the horn first. You can change how you started here at any time.',
+    refTitle: 'MEASURED FROM',
+    otherRef: 'Every starting point here is measured from the centre of the bell’s rim — the place the sound leaves. The same number from the player’s mouth or the valves would put the mic somewhere else.',
+    noAim: 'This starting point gives no aim, so the mic simply faces the bell. Distance, height and angle are still separate things to try.',
+    clipMount: 'Mount: a clip made for this bell, on the rim, with the player’s agreement — clear of mutes and the hands',
+    standMount: 'Mount: a weighted stand clear of the bell’s movement, the mutes, the valve hands and the player',
+    inPath: 'horn in path',
+    facing: 'facing the bell',
+    observation: 'For a real horn, with the player’s agreement, and the player stopped while anything moves. Write tendencies in words — what you heard, not a promised result.',
+  },
+};

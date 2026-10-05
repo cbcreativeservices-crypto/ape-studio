@@ -284,3 +284,6 @@ Object.assign(MIC_TYPES, MALLET_MIC_TYPES);
 /* Lab 2 cymbals (I01a–e): the stand-clip condenser. Appended so other lessons merge cleanly. */
 import { CYMBAL_MIC_TYPES } from '../lessons/shared/cymbals/cymbalMics.ts';
 Object.assign(MIC_TYPES, CYMBAL_MIC_TYPES);
+/* Lab 3 (winds): the brass bell clip. Appended so other lessons merge cleanly. */
+import { BRASS_MIC_TYPES } from '../lessons/shared/brass/brassMics.ts';
+Object.assign(MIC_TYPES, BRASS_MIC_TYPES);
