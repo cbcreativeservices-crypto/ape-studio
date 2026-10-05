@@ -1,0 +1,125 @@
+/**
+ * I05b CLAVES — the pages' words, through the family builder
+ * (smallperc/copy.ts). Starting-points voice; no source, brand or model names.
+ */
+import type { LessonCopy } from '../../engine/model/copy.ts';
+import { spCopy } from '../shared/smallperc/copy.ts';
+import { P0 } from '../shared/smallperc/geom.ts';
+
+export const CLV_COPY: LessonCopy = spCopy({
+  noun: 'claves',
+  the: 'the claves',
+  p: 'clv',
+  variantKey: 'PAIR',
+  variantShort: { solid: 'a solid pair', hollow: 'a hollowed pair' },
+  subject: { solid: 'a pair of solid hardwood claves, one cradled in the left hand, one struck from the right', hollow: 'a pair of hollowed claves, one cradled in the left hand, one struck from the right' },
+  origin: { solid: P0, hollow: P0 },
+  refWords: 'the middle of the striking area',
+  instrument: {
+    figureBadge: 'A pair of claves: one cradled, one striking',
+    figureLabel: 'Side view of a player’s hands: the left hand cradles a clave end-on over curled fingers, the right hand holds the second clave like a drumstick, its edge on the first one’s middle.',
+    partsBadge: 'Claves · tap a part to name it',
+    partsLooking: { side: 'Side view · the supported clave end-on', top: 'From above · the two claves crossing' },
+    partsIdle: 'Two sticks of hard wood: one rests over the curled fingers so it can ring, the other strikes its middle. The grip is part of the sound. The next page shows why.',
+    variantNotes: { hollow: 'HOLLOWED: a hollowed-out body gives a different pitch character — a model description, not a promise of a sound at the mic.' },
+  },
+  sound: {
+    subject: 'The supported clave along the page, drawn large, on its supports',
+    looking: { solid: 'The supported clave, drawn large', hollow: 'The supported clave, drawn large' },
+    cells: [
+      { k: 'STRIKER', at: ['STRIKES', 'REBOUNDS', 'AWAY', 'AWAY'], flex: 1 },
+      { k: 'CLAVE', at: ['STRUCK', 'BENDS', 'RINGING', 'RINGING'], flex: 1 },
+      { k: 'SOUND', at: ['CLICK', 'CLICK', 'WOODY RING', 'CLICK + RING'], flex: 1.2 },
+    ],
+    reveal: 'The strike in the middle drives the clave’s lowest bending shape — its middle and ends swing; two still points about a fifth of the way in from each end stay put. Supported near them, it rings; the hollow beneath rings with it.',
+    after: 'The fast click is the strike; the short woody ring is the clave and the hollow. Squeeze the supported clave into the palm and the ring is choked — a mic close to a choked pair only hears a louder choked pair.',
+    shapesNotes: ['The bend is the lowest shape of an ideal unclamped bar, drawn much larger than it moves; its next shape sits about 2.8 times higher — not a whole-number overtone, part of why a clave sounds like a click with a note.'],
+    coupledSubject: 'The supported clave, drawn large',
+    coupledNote: 'The grip is part of the instrument. A dead tick usually means the supported clave is pressed into the palm — a microphone cannot restore the missing resonance.',
+    silentNote: 'This lab never plays a sound and draws no frequency curve: how real claves sound depends on the wood, the pair, the grip and the player. The pictures show where the sound comes from and where it leaves.',
+    pair: {
+      title: 'Cradled or squeezed',
+      badge: 'A simplified picture: an ideal unclamped bar’s lowest bending shape · motion drawn much larger',
+      looking: 'The supported clave, drawn large',
+      prompt: 'Drag SWING to bend the clave, then switch GRIP. Watch the still points and the bend.',
+      key: 'GRIP',
+      rest: 'straight, at rest',
+      cells: ['GRIP', 'THE CLAVE', 'YOU HEAR'],
+      together: {
+        option: 'CRADLED (OVER CURLED FINGERS)',
+        blurb: 'Resting near its still points, over the hand’s hollow: it is able to bend and ring.',
+        short: 'CRADLED',
+        title: 'CRADLED',
+        card: 'Supported near its still points — where its lowest shape barely moves — the clave is able to bend and ring, and the hollow of the curled fingers rings with it: a click and a woody note.',
+        v0: 'CRADLED',
+        v1: 'LOOSE',
+        air: { plus: 'RINGS', minus: 'RINGS', rest: 'RINGS' },
+      },
+      opposed: {
+        option: 'SQUEEZED INTO THE PALM',
+        blurb: 'Pressed along its length into the palm: the bend is damped at once.',
+        short: 'SQUEEZED',
+        title: 'SQUEEZED',
+        card: 'Pressed into the palm along its length, the clave cannot bend: the ring is choked to a dead tick. No mic position puts back a resonance the grip took away.',
+        v0: 'SQUEEZED',
+        v1: 'DAMPED',
+        air: { plus: 'A DEAD TICK', minus: 'A DEAD TICK', rest: 'A DEAD TICK' },
+      },
+    },
+  },
+  setting: {
+    kitA11y: 'A percussion station from above: the clave player in the middle, other percussion beside them, a drum kit and an amp upstage, a singer’s microphone downstage.',
+    kitLanding: 'Tap anything around the clave player — or step through ITEM — to see what it means for a claves mic. There is nothing to answer yet.',
+    kitIdle: 'Claves are small and sharp; the player may switch to other hand percussion at the same station, or sing. Around them: cymbals, drums, amps and voices.',
+    leftHanded: 'Players cradle with either hand — check this player’s grip and both hands’ motion.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own monitor behind them, the audience and the PA.',
+    studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    studioIdle: 'No monitors. An area or main mic may already carry the claves — and the room is part of the sound.',
+    before: [
+      { title: 'THE GRIP FIRST', text: 'Is the supported clave cradled over curled fingers, or squeezed into the palm? A mic near a muffled pair hears a louder muffled pair. Follow the player’s technique — never insist on one that hurts.' },
+      { title: 'THE WHOLE GROOVE', text: 'Ask for the real groove with light and strong strokes — not one demonstration hit — and watch where the striker’s hand travels.' },
+      { title: 'NOT BETWEEN THE STICKS', text: 'A miss or a follow-through can strike a mic placed between the two claves — or the player’s hand. Keep the stand and cable outside both hands’ paths.' },
+    ],
+    planTitle: 'At the percussion station',
+  },
+  placement: {
+    workedZone: { solid: 'clv.front.solid', hollow: 'clv.front.hollow' },
+    workedAim: 'Face the striking area — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
+    reveal: 'Closer tends to favour the click and the direct sound over the room; farther lets the click and the body cohere — with more room and competing sound. Pairs and players vary, so “it depends” is fair too.',
+    typeNotes: { smallDynCard: 'A dynamic may also suit if its response and the available gain serve the part; a small condenser can show the short decay. Compare by ear.' },
+    note: 'Clearance comes first: stop the player before moving a real mic — never between the two claves. Watch PEAK meters for the strongest accent.',
+    learn: {
+      intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the striking area, aimed at it, is where we recommend you begin; a common minimum for percussion is about 30 cm. Starting points, not rules.',
+      separate: 'Distance, height and angle are separate variables: change one at a time, with both hands moving. If the player changes the grip, the mic may need reassessing.',
+      clearance: 'Clearance comes first: never between the sticks, outside the striker’s whole path. The hatched areas show roughly where to keep clear.',
+      tendencies: 'A sharp click with little wood? Compare the grip and the pair first, then a little more distance or another safe angle. Buried by the room? Closer — outside both hands. All tendencies to check by ear.',
+    },
+  },
+  context: {
+    variant: 'solid',
+    zone: 'clv.front.solid',
+    shield: ['clv.rest.solid'],
+    facing: 'the striking area',
+    studioPrompt: 'A studio session has no wedge to reject. The decision changes: does the main or percussion mic already carry the pulse?',
+    studioNote: 'Begin with the main or percussion-area mic; a spot only if the clave needs its own level — and checked with it in mono. Switch back to LIVE for the monitor exercise.',
+    points: [
+      { title: 'A PREDICTABLE STATION', text: 'A playing spot where the player can hold the supported clave naturally and strike it safely — and a directional stand mic near it, checked against the full band.' },
+      { title: 'SHARED OR DEDICATED', text: 'One mic can serve claves and other hand percussion when positions and levels suit; a spot is justified when the pulse matters and other mics miss it.' },
+      { title: 'A SINGER WITH CLAVES', text: 'The vocal mic hears the click too; a second channel does not remove that vocal-mic spill.' },
+      { title: 'NOT ENOUGH SEPARATION', text: 'Raising the clave channel raises the cymbals and monitors in it. Move the player or mic, lower the stage, or choose a more projecting pair — or say it cannot be done.' },
+    ],
+  },
+  twoMic: {
+    variant: 'solid',
+    A: 'clv.front.solid',
+    B: 'clv.above.solid',
+    learn: [
+      'A common situation: a clave spot and the main or percussion mic that hears it too. The same strike arrives at different times — unwanted colouring can result.',
+      'Listen to both channels together and in MONO; adjust the physical position, the balance or the need for the spot rather than reaching for a mandatory polarity switch.',
+    ],
+  },
+  facing: 'facing the striking area',
+  reference: 'striking area',
+  axis: 'the line to the striking area',
+});

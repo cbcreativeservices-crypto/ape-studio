@@ -1,0 +1,125 @@
+/**
+ * I03c MARACAS — the pages' words, through the family builder
+ * (smallperc/copy.ts). Starting-points voice; no source, brand or model names.
+ */
+import type { LessonCopy } from '../../engine/model/copy.ts';
+import { spCopy } from '../shared/smallperc/copy.ts';
+import { PM } from './model.ts';
+
+export const MAR_COPY: LessonCopy = spCopy({
+  noun: 'maraca',
+  the: 'the maracas',
+  p: 'mar',
+  variantKey: 'PLAYED',
+  variantShort: { pair: 'a pair', singer: 'by a singer at a vocal mic' },
+  subject: { pair: 'a pair of maracas, one in each hand, heads up', singer: 'a pair of maracas played by a singer at a vocal mic' },
+  origin: { pair: PM, singer: PM },
+  refWords: 'the midpoint between the heads (or the head a spot faces)',
+  instrument: {
+    figureBadge: 'A pair of maracas, heads up',
+    figureLabel: 'Side view of a player holding a pair of maracas by their handles, heads up, in front of the chest.',
+    partsBadge: 'Maracas · tap a part to name it',
+    partsLooking: { side: 'Side view · the player from the right', top: 'From above · the two heads' },
+    partsIdle: 'Two heads with seeds inside, each on a handle, one in each hand — the sound is made at the heads, and each arm can play its own part. The next page shows how.',
+    variantNotes: { singer: 'SINGER WITH MARACAS: the same pair, played by a singer at a vocal mic. The vocal mic will hear the maracas — more when a head passes near it.' },
+  },
+  sound: {
+    subject: 'One maraca head drawn large and cut open, the handle below',
+    looking: { pair: 'One head drawn large · cut open', singer: 'One head drawn large · cut open' },
+    cells: [
+      { k: 'HEAD', at: ['SWINGING', 'STOPS, TURNS', 'MOVING BACK', 'MOVING BACK'], flex: 1.1 },
+      { k: 'SEEDS', at: ['LAG', 'KEEP GOING', 'STRIKE THE WALL', 'SETTLING'], flex: 1.2 },
+      { k: 'SOUND', at: ['—', '—', 'ATTACK', 'FROM THE HEAD'], flex: 1.1 },
+    ],
+    reveal: 'The seeds lag the head, keep going when the stroke turns, and strike the vessel’s wall — the attack. Rubbing along it adds the wash. The handle adds little: the head is the source.',
+    after: 'Both the up and the down stroke can carry a meaningful sound in traditional playing — and each arm can play its own accents.',
+    shapesNotes: ['The pictures show the order of events and where the sound starts — never its level. A few beads stand for the seeds.'],
+    coupledSubject: 'One maraca head drawn large',
+    coupledNote: 'Wrist technique changes attack and wash. A circular wrist keeps the seeds rolling round the wall for a longer, smoother sound; up-and-down strokes throw them against it.',
+    silentNote: 'This lab never plays a sound and draws no frequency curve: how real maracas sound depends on the heads, the seeds, the player and the room. The pictures show where the sound comes from and where it leaves.',
+    pair: {
+      title: 'Stroke or circle',
+      badge: 'A simplified picture: where the seeds go, not how loud · a few beads stand for the seeds · motion drawn larger',
+      looking: 'One head drawn large · cut open',
+      prompt: 'Drag SWING, then switch MOTION. Watch where the seeds go.',
+      key: 'MOTION',
+      rest: 'the middle of the motion',
+      cells: ['MOTION', 'THE SEEDS', 'YOU HEAR'],
+      together: {
+        option: 'UP AND DOWN',
+        blurb: 'The wrist swings the head down and up: the seeds are thrown against the top and the bottom of the vessel.',
+        short: 'UP–DOWN',
+        title: 'UP-AND-DOWN STROKES',
+        card: 'Each turn of the stroke throws the seeds against the vessel’s wall: an accent at each turn, and a little wash between.',
+        v0: 'UP–DOWN',
+        v1: 'THROWN',
+        air: { plus: 'ACCENT', minus: 'ACCENT', rest: 'IN FLIGHT' },
+      },
+      opposed: {
+        option: 'A CIRCULAR WRIST',
+        blurb: 'Small circles of the wrist keep the seeds rolling round the inside of the wall.',
+        short: 'CIRCLE',
+        title: 'A CIRCULAR WRIST',
+        card: 'Repeated circles of the wrist keep the seeds rubbing round the wall instead of striking it: a sound with greater sustain — one of the maraca’s own techniques.',
+        v0: 'CIRCLES',
+        v1: 'ROLLING',
+        air: { plus: 'SUSTAIN', minus: 'SUSTAIN', rest: 'SUSTAIN' },
+      },
+    },
+  },
+  setting: {
+    kitA11y: 'A percussion station from above: the maraca player in the middle, other percussion beside them, a drum kit and an amp upstage, a singer’s microphone downstage.',
+    kitLanding: 'Tap anything around the maraca player — or step through ITEM — to see what it means for a maraca mic. There is nothing to answer yet.',
+    kitIdle: 'Maracas need room for two arms. Around them: loud neighbours, other mics, and sometimes the player’s own vocal mic.',
+    leftHanded: 'Each arm may play its own accents; some pairs differ in tone or level. Check this pair, both hands, and every change of height.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own monitor behind them, the audience and the PA.',
+    studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    studioIdle: 'No monitors. An area or ensemble mic may already carry the maracas — and the room is part of the sound.',
+    before: [
+      { title: 'BOTH HEADS, BOTH ARCS', text: 'Ask for the whole part — the largest accent, changes of height, any switch to another instrument or the voice. Find where both heads travel; the mic, boom and cable stay outside both arms’ reach.' },
+      { title: 'THE PAIR FIRST', text: 'Plastic, wood or rawhide heads, a softer or a more projecting pair: listen to the actual pair at its real playing strength. A material name promises no exact sound.' },
+      { title: 'SAFE INSTRUMENTS', text: 'A loose handle or a cracked vessel can shed its seeds: do not use a damaged pair. Never ask the player to freeze, swap hands or match accents for the mic.' },
+    ],
+    planTitle: 'At the percussion station',
+  },
+  placement: {
+    workedZone: { pair: 'mar.centre.pair', singer: 'mar.centre.singer' },
+    workedAim: 'Face the midpoint between the heads — the starting point counts while the mic faces it within {tol}°. Distance, height and angle are separate things to try.',
+    reveal: 'Centred and a little farther back, both hands tend to balance; the nearer head can leap in level; a spot per head gives control at a cost. Pairs and players vary, so “it depends” is fair too.',
+    typeNotes: { smallDynCard: 'A dynamic can make sense on a loud stage; a small condenser tends to show more of the fine rattle. Compare by ear.' },
+    note: 'Clearance comes first: stop the player before moving a real mic — both arms sweep wider than a single shaker. Watch PEAK meters for the brief accents.',
+    learn: {
+      intro: 'What you just did, in words. After our research, one mic centred in front of the pair, about 40–80 cm (16–32 in) from the midpoint between the heads, is where we recommend you begin; a common minimum for percussion is about 30 cm. If one hand disappears, a spot per head. Starting points, not rules.',
+      separate: 'Distance, height and angle are separate variables: change one at a time. The distance is from the middle of the sound area — not from the nearest single stroke.',
+      clearance: 'Clearance comes first. Large strokes need more space; keep the stand and cable outside both arcs. The hatched areas show roughly where to keep clear.',
+      tendencies: 'Move toward the quieter side if the balance allows, back if the near head leaps every stroke, closer — still outside the arcs — if the room takes over. All tendencies to check by ear.',
+    },
+  },
+  context: {
+    variant: 'pair',
+    zone: 'mar.centre.pair',
+    shield: ['mar.head0.pair', 'mar.head1.pair'],
+    facing: 'the heads',
+    studioPrompt: 'A studio session has no wedge to reject. The decision changes: one centred mic, a pair of spots — or none?',
+    studioNote: 'Mono is often enough for a supportive groove; a stereo picture should serve a deliberate idea, not simply the fact that there are two maracas. Switch back to LIVE for the monitor exercise.',
+    points: [
+      { title: 'A DEDICATED SPOT', text: 'One directional mic for hand percussion is a real touring approach — soundcheck the actual pair and both arms against the full band.' },
+      { title: 'THE SINGER’S MIC', text: 'The vocal mic hears the maracas, especially when a head passes near it. A separate maraca spot does not remove that spill — check both mics together.' },
+      { title: 'THE PATTERN’S NULLS', text: 'Cardioid rejects most behind; supercardioid and hypercardioid have rear lobes and side-rear nulls — place the wedge by the real pattern.' },
+      { title: 'NOT ENOUGH LEVEL', text: 'A lightly played pair may not carry over a loud stage: a more projecting pair, a lower stage level or a changed layout — not more gain.' },
+    ],
+  },
+  twoMic: {
+    variant: 'pair',
+    A: 'mar.right.pair',
+    B: 'mar.left.pair',
+    learn: [
+      'Two spots — one per head — give independent balance and a possible stereo picture, but each also hears the other head, a little later. Compare a single centred mic first: if it is balanced, it remains a valid choice.',
+      'Bring both up together and check in MONO. No fixed polarity switch or distance formula guarantees a better sum — move, re-aim or rebalance by ear.',
+    ],
+  },
+  facing: 'facing the heads',
+  reference: 'heads',
+  axis: 'the line to the heads',
+});

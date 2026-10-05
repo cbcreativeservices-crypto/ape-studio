@@ -704,3 +704,110 @@ Built 2026-10-05 (branch `miking-i1`, from `4334be8b` on `final-lab`). Research:
 | L4R-M4 | C02, C04, C08; `shared/electric/ampPages.tsx` | no hum symptom; "defeat a safety ground" with no word on a DI's lift switch | New symptom `s.hum`: swap one cable at a time, then the DI's ground lift; never the mains earth pin. The safety card names the ground-lift switch as a different, normal control that lifts only the audio ground at its XLR. The practice sheets carry a hum line. | A ground-loop hum is the commonest bass-channel fault; the lift switch is the standard first remedy and is not the mains safety earth. | APPLIED |
 | L4R-m | C02, C04, C08, C09a, C06a/b, C09c, C10, `ampZones.ts`, `micTypes.ts` | minor wording (review minors 1–12, 14–15) | see `REVIEW_LAB4.md` → Resolution | | APPLIED |
 | L4R-B | all of Lab 4 | the key was always the first option in the source; "Yes…" was never the key; a few keys ran long | Keys spread over the three places (source and screen); the hearing check reads "Do you still need a limit…? Yes — max SPL is a distortion limit, not a hearing limit"; C04, C08 and C10 each gain a reasoned "Yes" key; long keys and distractors evened out | The answer-balance rule (1.25 × length, yes/no, slots). | APPLIED · test `mikingLab4Review` |
+
+## Lab 2 · hand percussion: I02 Cajón, I03a Shaker, I03b Egg shaker, I03c Maracas, I04 Headless tambourine, I05a Cowbell, I05b Claves, I05c Woodblock, I05d Güiro (branch miking-i4, 2026-10-05)
+
+Research: `docs/labs/miking/<folder>/SOURCES.md` + `GEOMETRY_PROPOSAL.md` and BATCH2_RESEARCH_SUMMARY.md §2.
+The family lives in `lessons/shared/smallperc/` (objects, hands, player, states, sound page,
+station plan); each lesson in `lessons/i0x…/`.
+
+### Shared (all nine lessons)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| SP-01 | (header) | "Pro Audio Training Academy", "Student …" | Not used | House rule (BATCH2 §2). | — | APPLIED |
+| SP-02 | each lesson's start range | distances "from the center of the playing arc / area" vs the maker's "a gap of at least 12” / 30cm" from the instrument | The lessons' own reference is kept for the starting points ("from the middle of the playing area"); the maker's floor is said once, in words, in each Placement summary ("a common minimum for percussion is about 30 cm between mic and instrument"); a separate CLEAR readout gives the distance from the drawn motion envelope ("nearest stroke") | Two references are easy to mix up (BATCH2 §2, I04 flag); one is a starting distance, the other a clearance. | S-HOME (shaker/SOURCES.md §0); proposal §A | APPLIED (`smallperc/geom.ts` clearLine, every lesson's copy) |
+| SP-03 | shaker [5], egg [6], maracas [8], tambourine [7] | "a separate direct pickup for shakers and tambourine" / one per instrument | "One dedicated directional mic for the station" — ONE shared mic for shakers and tambourine | The touring account used ONE 4011A "as a direct source for shakers and tambourine". | DPA-JONAS | APPLIED |
+| SP-04 | each lesson's safety section | NIOSH cited without its number | The shared hearing check and the critical quick-check item carry "85 dBA averaged over 8 hours, halving the time for every 3 dBA more" — as plain advice, never as a mic limit | Survey: the small-percussion lessons cite the bulletin without the number. | NIOSH-TID (shaker/SOURCES.md §0) | APPLIED (`smallperc/commonItems.ts`) |
+| SP-05 | (Yamaha row) | "have the player stand about eight inches from the mic" | Not drawn as a zone | It is measured from the PLAYER; at the lab's drawn posture (chest 250 mm behind the playing area) the point falls inside the motion envelope. | YMH-REC3 | OWNER: show the 8 in point as a "check it against the motion" marker? |
+| SP-06 | (Yamaha row) | toward/away vs side-to-side motion | The shaker's two states ARE the motion direction ("each forward stroke comes closer" / "steadier"); the other lessons say it in words | Sourced words, made a variable the learner switches. | YMH-REC3 | APPLIED |
+| SP-07 | (build) | — | HOW IT SOUNDS for idiophones has three steps — the event sequence, the lesson's own pair of motions, attack and body — and no membrane step | Idiophones have no drumhead; LESSON_JOURNEY §7 keeps physics to what a model or words can carry. | LESSON_JOURNEY §7 | APPLIED (`smallperc/pages/SSound.tsx`) |
+| SP-08 | (build) | — | The motion envelopes, the arms, the playing height (h 1150) and the player's chest plane (250 mm behind) are drawing defaults / ILLUSTRATIVE, listed in each lesson's unknowns | No source gives any stick, hand or motion clearance (BATCH2 §2). | proposal §A | APPLIED · OWNER: envelope sizes, posture |
+| SP-09 | (build, engine) | — | A reference line may be FINITE (`RefLine.segment`): the CLEAR readout is the distance to the motion capsule | Additive; infinite lines read exactly as before (tested). | — | APPLIED (`engine/geometry/zones.ts`, `engine/model/types.ts`) |
+
+### I03a Handheld Shaker (`source_text/Shaker-Miking-Technique-Research.txt`, lesson id I03a)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| SH-01 | L9, ref [1] | "Meinl sells softer studio and louder live versions"; [1] "Studio and Live product pages" | "Shakers of different sizes and sounds suit different settings"; no studio/live version is claimed | The pages are Small ("Soft and clear sound") and Large ("Rich and clear sound"), both "Perfect for live and studio playing". | MEINL-SH26S, MEINL-SH26L | APPLIED · OWNER: fix [1] in the document |
+| SH-02 | L16 | 30–60 cm "from the center of the playing arc" | Kept as the starting band, said as a starting point, with the maker's 30 cm floor in words (SP-02) | The 30–60 cm is the lesson's own audition range. | LESSON-SHAKER, S-HOME | APPLIED |
+| SH-03 | (geometry) | — | Shell Ø 45 × 160 mm, envelope ±150 / ±60 mm, the right-hand grip — drawing defaults | Meinl prints no size. | shaker/GEOMETRY_PROPOSAL.md §B | APPLIED · OWNER: sizes |
+
+### I03b Egg Shaker (`source_text/Egg-Shaker-Miking-Technique-Research.txt`, lesson id I03b)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| EG-01 | L9 | soft / medium / loud / extra-loud eggs | Kept as relative choices, "not calibrated levels" (a check and a quick-check item) | The set's page prints labels and the SET's weight (110 g) only. | MEINL-ES4 | APPLIED |
+| EG-02 | (geometry) | — | Egg 58 × 45 mm, hands ±180 mm (close) and ±260 mm (apart), the palm cover — drawing defaults | Egg size UNKNOWN. | egg_shaker/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: egg size |
+| EG-03 | L28 | separate spots for widely separated hands (no number) | One spot per hand, "about 30–60 cm from that egg" | The 30–60 cm band is reused for the split (proposal), recorded as a drawing default in the zone's internal record. | proposal | APPLIED |
+| EG-04 | L76 | "keep small loose parts away from children" | Kept as a safety line and a THE SETTING check | The lesson's own safety rule. | LESSON-EGG | APPLIED |
+
+### I03c Maracas (`source_text/Maracas-Miking-Technique-Research.txt`, lesson id I03c)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| MR-01 | (geometry) | — | A pair 284.48 mm (11.2 in) long; head 75 × 95 and handle Ø 25 are drawing defaults | Grinnell's measured lengths are the only sizes. | GRIN-MAR | APPLIED · OWNER: head size |
+| MR-02 | L9 | up/down strokes, "a meaningful sound on both upward and downward motions" | HOW IT SOUNDS adds a circular wrist (the seeds rolling round the wall: a longer sustain) as the second motion | The performer's article describes the circular motion and its sustain. | RANGEL | APPLIED |
+| MR-03 | L26 | a spot per head (no number) | "About 30–60 cm from that head's working area" | Drawing default from the proposal; recorded in the zone. | proposal | APPLIED |
+| MR-04 | L42-L44 | the singer: "place the two microphones and performer to reduce unwanted pickup" | A maraca spot "a little higher, angled down to the heads — which puts the singer's mouth farther off the mic's front than a low mic would" | The lab's geometric reading of the lesson's sentence (ILLUSTRATIVE); the vocal mic's own spill is taught as unavoidable. | LESSON-MARACAS | APPLIED · OWNER: a vocal engineer's look |
+
+### I04 Headless Tambourine and Jingles (`source_text/I04-Headless-Tambourine-and-Jingles-Miking-Technique.txt`, lesson id I04)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| HT-01 | L8, table, exercise | three reference points: "normal playing zone", "nearest expected stroke", "nearest normal movement" | Every distance is measured FROM THE INSTRUMENT at its normal playing position (the front point of the ring); the nearest stroke is a separate CLEAR readout (the gap to the motion envelope) | One reference point per lesson; the stroke is a clearance, not a distance origin. | S-RECBK ("from instrument"), proposal | APPLIED |
+| HT-02 | L8 | "roughly 8 in (20 cm) as a starting point for hand percussion" | Not used as a mic-to-instrument distance | Yamaha's eight inches is PLAYER-to-mic, not instrument-to-mic. | YMH-REC3 | APPLIED |
+| HT-03 | ref [3] | "brass, bronze and plated steel variants" | "Jingles come in different metals and sizes" — no material range claimed from the maker page | The cited page prints "Solid Brass" only. | MEINL-MTA1 | APPLIED · OWNER: source the range or narrow it in the document |
+| HT-04 | ref [7] | "separate direct pickup for shakers and tambourine" | "One shared direct mic for shakers and tambourine" | The tour article names one shared cardioid. | DPA-JONAS | APPLIED |
+| HT-05 | (geometry) | — | Ring Ø 254, jingle size, crescent shape, shake ±150 / strike 200 mm — drawing defaults; the struck variant's mic sits to the side (above it is the strike path) | Sizes UNKNOWN beyond the 10 in diameter. | proposal | APPLIED · OWNER: sizes |
+| HT-06 | — | (absent) | Hearing, phantom and no-feedback lines added (family items) | Survey: the lesson has none. | shaker/SOURCES.md §0 | APPLIED |
+
+### I05a Cowbell (`source_text/Cowbell-Miking-Technique-Research.txt`, lesson id I05a)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CB-01 | ref [5] | overhead "model not named here" | No model named in learner text (owner ruling); the internal record names it | The article does name the overhead model. | DPA-VET | APPLIED · OWNER: fix the document |
+| CB-02 | ref list | "7½-inch" Salsa G | Not used; the drawn bell is the 7 in (177.8 mm) mountable bell | The page text prints no size for that bell; the 7 in is a printed HEIGHT. | MEINL-SMBG, MEINL-SCL70B | APPLIED |
+| CB-03 | L20 | 20–40 cm | Kept as the band, with "the near end is under the common 30 cm minimum — only where clearance allows" | The lesson admits 20 cm is under the maker's 30 cm example. | LESSON-COWBELL, S-HOME | APPLIED |
+| CB-04 | (geometry) | — | Mouth width/height and the stick's arc — drawing defaults | UNKNOWN. | proposal | APPLIED · OWNER: sizes |
+| CB-05 | (context page) | — | The cowbell's spot looks across or down at it: no AIM tilt brings a cardioid's rear to the downstage wedge, so the tighter pattern is the answer here | The lab's own geometry (pinned by the test both ways). | — | APPLIED |
+
+### I05b Claves (`source_text/Claves-Miking-Technique-Research.txt`, lesson id I05b)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CV-01 | ref | "pp. 21–22 in PDF pagination" | No page reference in learner text; the internal record keys the ECV02 extract | The claves text sits on the page whose footer reads "Volume I 21". | PAS-ECV02 | APPLIED · OWNER: fix the reference |
+| CV-02 | L9 | the grip | Drawn as the source says: the striker held like a stick in the fingers; the other clave cradled over curled fingers, the hollow beneath | The grip IS the sound (a check and the sound page's pair). | PAS-ECV02 | APPLIED |
+| CV-03 | (sound page) | — | The bending shape drawn is an ideal unclamped bar's lowest mode (nodes at 0.224 L) — a picture of where it moves least, not a sound | Physics of a uniform bar; a real clave differs. | bar.ts | APPLIED |
+| CV-04 | (geometry) | — | Clave 200 × Ø 25 mm, solid and hollowed — drawing defaults | Sizes not printed. | MEINL-CL1 / CL3 | APPLIED · OWNER: sizes |
+
+### I05c Woodblock (`source_text/Woodblock-Miking-Technique-Research.txt`, lesson id I05c)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| WB-01 | — | (absent) | The opening faces the audience (+x) by default; the second viewpoint is "toward the opening" | The orientation rule is in the cited percussion source, not in the lesson. | PAS-ECV02 | APPLIED |
+| WB-02 | L20 vs exercise | 25–50 cm vs "about 30 and 50 cm" | 25–50 cm kept, "the near end only where clearance allows"; the observation sheet asks for about 30 and 50 cm | Internal mismatch; 25 cm is under the common 30 cm minimum. | LESSON-WOODBLOCK, S-HOME | APPLIED · OWNER: align the document |
+| WB-03 | ref [5] | overhead model unnamed | No model in learner text | As CB-01. | DPA-VET | APPLIED |
+| WB-04 | (geometry) | — | Block 190 × 65 × 70, slot 140 × 8 × 45, foam 25, table h 900, mallet 350 — drawing defaults | Sizes UNKNOWN. | proposal | APPLIED · OWNER: sizes |
+
+### I05d Güiro (`source_text/Guiro-Miking-Technique-Research.txt`, lesson id I05d)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| GU-01 | L4 | the güira "acknowledged for correct identification" | Kept as a quick-check item: a related but distinct instrument | Confirmed; note one collection lists "guira" among güiro names. | MEINL-WIKI, GRIN-GUIRO | APPLIED |
+| GU-02 | L11 | 30–60 cm "from the center of the actual scraped area" | Kept as the band, measured from the middle of the scraped area; two viewpoints (more ridges, more body) | The lesson's own audition range, not a published standard. | LESSON-GUIRO | APPLIED |
+| GU-03 | (geometry) | — | Length 381.0 mm (a museum example, 15 in); Ø 90 → 60, ridges over the middle 60 % at 3 mm, holes Ø 22, scraper 180, overshoot 60 — drawing defaults | Only the length is measured. | MET-GUIRO | APPLIED · OWNER: diameter, ridge layout |
+| GU-04 | L5, L73 | "Students should…", "The student covers…" | "you" / no institutional words in the app | House wording rule. | — | APPLIED |
+
+### I02 Cajón (`source_text/Cajon-Miking-Technique-Research.txt`, lesson id I02)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CJ-01 | L11 | one front mic "about 6–7 inches away at a slight angle" | "About 15–18 cm (6–7 in) from the middle of the plate, dead centre, at a slight angle" | The source says "dead center". | S-DUVEL | APPLIED |
+| CJ-02 | L12 | a second mic "just inside a rear hole" | A clip-on mic on a padded port clamp at the port's mouth, a little off its axis; never a loose mic inside | The lab models no inside; the lesson's own rule forbids a loose mic in the box, and the clamp is the product made for it. The source also cautions the port puts "a great deal of pressure on the mic". | S-DUVEL, MEINL-MPMCC | APPLIED · OWNER: confirm the drawn mouth position |
+| CJ-03 | L12 | White's rear mic "about 20 cm away" | "About 20 cm out from the back, offset to one side by about 45°, pointing toward the port" | The source gives the 45° offset. | SOS-WHITE | APPLIED |
+| CJ-04 | L12, L84 | "front-facing port" | "upward-facing front port"; the front-port model is drawn with its playing surface set back above a low ledge, the port facing up | The maker's words. The real surface slants toward the player; the lab draws it vertical (a simplification, in the accuracy note). | MEINL-SLAP | APPLIED · OWNER: ledge and port sizes |
+| CJ-05 | refs [5], [8] | two references | One (internal record) | Same URL. | MEINL-BUL | APPLIED · OWNER: merge in the document |
+| CJ-06 | L13, L85 | White flips one channel's polarity | "Compare BOTH polarities in mono and move a mic — flipping one is an example, not a rule" | The lesson's own audit. | SOS-WHITE, SOS-PHASE | APPLIED |
+| CJ-07 | (geometry) | — | The hands' strike volume drawn out to 130 mm from the plate (the proposal's 400 mm would cover the published close point) | Shown so the published close spot can be seen; the player check decides. | proposal | APPLIED · OWNER: hands volume |
+| CJ-08 | (geometry) | — | Rear port at h 300, plate 4 mm, feet 8 mm, the seated posture, the box rocking back (15°), the exit path — drawing defaults / ILLUSTRATIVE | No source gives them. | proposal | APPLIED · OWNER: port height, posture |

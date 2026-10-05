@@ -284,3 +284,6 @@ Object.assign(MIC_TYPES, MALLET_MIC_TYPES);
 /* Lab 2 cymbals (I01a–e): the stand-clip condenser. Appended so other lessons merge cleanly. */
 import { CYMBAL_MIC_TYPES } from '../lessons/shared/cymbals/cymbalMics.ts';
 Object.assign(MIC_TYPES, CYMBAL_MIC_TYPES);
+/* Lab 2 small percussion (I02 cajón): the padded port clamp. */
+import { SMALL_PERC_MIC_TYPES } from '../lessons/shared/smallperc/micTypes.ts';
+Object.assign(MIC_TYPES, SMALL_PERC_MIC_TYPES);

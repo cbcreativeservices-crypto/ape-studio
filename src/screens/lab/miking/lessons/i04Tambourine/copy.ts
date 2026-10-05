@@ -1,0 +1,131 @@
+/**
+ * I04 HEADLESS TAMBOURINE — the pages' words, through the family builder
+ * (smallperc/copy.ts). Starting-points voice; no source, brand or model names.
+ */
+import type { LessonCopy } from '../../engine/model/copy.ts';
+import { spCopy } from '../shared/smallperc/copy.ts';
+import { STATES } from './model.ts';
+
+export const TMB_COPY: LessonCopy = spCopy({
+  noun: 'tambourine',
+  the: 'the tambourine',
+  p: 'tmb',
+  variantKey: 'PLAYED',
+  variantShort: { shaken: 'shaken', struck: 'struck into the hand', crescent: 'a crescent, shaken', mounted: 'on a stand clamp' },
+  subject: { shaken: 'a 10 in headless tambourine held at about 45° and shaken', struck: 'a 10 in headless tambourine struck into the other hand', crescent: 'a crescent tambourine held by its grip and shaken', mounted: 'a 10 in headless tambourine flat on a stand clamp, struck with a stick' },
+  origin: { shaken: STATES.shaken.pose.c, struck: STATES.struck.pose.c, crescent: STATES.crescent.pose.c, mounted: STATES.mounted.pose.c },
+  refWords: 'the tambourine itself, as it is played (its nearest frame point)',
+  instrument: {
+    figureBadge: 'A 10 in headless tambourine, edge-on, held at about 45°',
+    figureLabel: 'Side view of a player holding a headless tambourine edge-on at about 45 degrees by its frame: a wooden ring with pairs of metal jingles in slots, and nothing across the middle.',
+    partsBadge: 'A headless tambourine · tap a part to name it',
+    partsLooking: { side: 'Side view · the ring edge-on', top: 'From above · the open ring' },
+    partsIdle: 'A frame with loose metal jingles and NO head: the jingles are the whole sound. (A headed tambourine adds a drum’s body — it has its own lesson in Lab 1.) The next page shows how the jingles sound.',
+    variantNotes: {
+      struck: 'STRUCK INTO THE HAND: a stronger, less continuous accent than a shake — set gain for the strongest planned hit.',
+      crescent: 'CRESCENT: a half-ring with a grip — the same jingles, a different hold and reach.',
+      mounted: 'MOUNTED: flat on a stand clamp, struck with a stick — the instrument stays put, but the clamp can rattle.',
+    },
+  },
+  sound: {
+    subject: 'The headless ring edge-on and level',
+    looking: { shaken: 'The ring edge-on, level · shaken', struck: 'The ring edge-on, level · struck', crescent: 'The ring edge-on, level · shaken', mounted: 'The ring edge-on, level · struck' },
+    cells: [
+      { k: 'FRAME', at: ['MOVED', 'MOVING', 'STOPS, TURNS', 'AT REST'], byVariant: { struck: ['STRUCK', 'JOLTED', 'JOLTED', 'AT REST'], mounted: ['STRUCK', 'JOLTED', 'JOLTED', 'AT REST'] }, flex: 1.1 },
+      { k: 'JINGLES', at: ['AT REST', 'LAG', 'CLASH', 'RINGING'], flex: 1.1 },
+      { k: 'SOUND', at: ['—', '—', 'ATTACK', 'ALL ROUND'], flex: 1 },
+    ],
+    reveal: 'The frame moves; the loose jingle pairs lag, then clash against each other and their pins. There is no head: the jingles’ brief, bright clashes are the whole sound.',
+    after: 'Then the jingles shimmer for a moment. Their metal, the rows and the player’s motion set the balance — and their peaks are much higher than the sound’s average.',
+    shapesNotes: ['A headless tambourine has no head tone to capture: a mic aimed at a missing “skin” cannot find a low body that is not there.'],
+    coupledSubject: 'The headless ring edge-on',
+    coupledNote: 'Shaken, the jingles lag the frame and clash; struck, a jolt throws every pair at once — a stronger, shorter accent. Either way, the jingles are the source.',
+    silentNote: 'This lab never plays a sound and draws no frequency curve: how a real tambourine sounds depends on its jingles, their rows and metal, and the player. The pictures show where the sound comes from and where it leaves.',
+    pair: {
+      title: 'Shaken or struck',
+      badge: 'A simplified picture: where the jingles go, not how loud · motion drawn larger',
+      looking: 'The ring edge-on, level',
+      prompt: 'Drag SWING, then switch MOTION. Watch the jingles against the frame.',
+      key: 'MOTION',
+      rest: 'passing through rest',
+      cells: ['MOTION', 'THE FRAME', 'JINGLES'],
+      together: {
+        option: 'SHAKEN',
+        blurb: 'The hand moves the whole frame; the loose jingles lag behind it, then clash.',
+        short: 'SHAKEN',
+        title: 'SHAKEN',
+        card: 'The frame moves; the jingle pairs, loose on their pins, lag behind it and then clash against each other — on every change of direction.',
+        v0: 'SHAKEN',
+        sub0: 'the frame',
+        v1: 'SWINGS',
+        air: { plus: 'LAG, CLASH', minus: 'LAG, CLASH', rest: 'AT REST' },
+      },
+      opposed: {
+        option: 'STRUCK INTO THE HAND',
+        blurb: 'The frame is struck into the other palm: one jolt throws every pair at once.',
+        short: 'STRUCK',
+        title: 'STRUCK INTO THE HAND',
+        card: 'One sharp jolt throws every jingle pair at once: a stronger, less continuous accent than a shake — the strongest planned hit sets the gain.',
+        v0: 'STRUCK',
+        sub0: 'a jolt',
+        v1: 'JOLTED',
+        air: { plus: 'ALL AT ONCE', minus: 'ALL AT ONCE', rest: 'AT REST' },
+      },
+    },
+  },
+  setting: {
+    kitA11y: 'A percussion station from above: the tambourine player in the middle, other percussion beside them, a drum kit and an amp upstage, a singer’s microphone downstage.',
+    kitLanding: 'Tap anything around the tambourine player — or step through ITEM — to see what it means for a tambourine mic. There is nothing to answer yet.',
+    kitIdle: 'The tambourine player often moves between instruments at a station — and sometimes sings. Around them: cymbals, drums, amps and voices.',
+    leftHanded: 'Players hold and strike with either hand and move between instruments — check the real part and every position.',
+    stageA11y: 'The band on a stage, from above: the percussion station, a floor monitor downstage facing back toward it, the player’s own monitor behind them, the audience and the PA.',
+    studioA11y: 'The band in a studio room, from above: the percussion station, an area mic above it, the room’s walls, no monitors.',
+    stageIdle: 'Two floor monitors: one downstage of the station facing back toward it, and the player’s own behind them. The PA faces the audience.',
+    studioIdle: 'No monitors. An area or vocal mic may already carry the tambourine — and the room is part of the sound.',
+    before: [
+      { title: 'THE WHOLE PART, THE WHOLE ARC', text: 'Ask for the loudest accent, a sustained shake or roll, and any change of hands or position. Note the instrument’s arc, not only where it rests.' },
+      { title: 'CHECK THE INSTRUMENT', text: 'Jingles and frame secure, no unintended rattles. Jingle count, rows and metal vary — do not rank materials without comparing them in the room.' },
+      { title: 'NO SWING TOWARD THE MIC', text: 'Agree a comfortable playing zone; never ask the player to swing toward an exposed capsule for level. Start with the channel muted while you place it.' },
+    ],
+    planTitle: 'At the percussion station',
+  },
+  placement: {
+    workedZone: { shaken: 'tmb.front.shaken', struck: 'tmb.front.struck', crescent: 'tmb.front.crescent', mounted: 'tmb.front.mounted' },
+    workedAim: 'Face the jingles — the starting point counts while the mic faces the tambourine within {tol}°. Distance, height and angle are separate things to try.',
+    reveal: 'From the front, the jingles’ attack tends to come through focused; slightly above, a side-to-side shake tends to change the distance less; farther back, more room and a softer edge. Tambourines and players vary, so “it depends” is fair too.',
+    typeNotes: { smallDynCard: 'If the jingles sound too cutting through a condenser, a dynamic (or a ribbon, kept well out of the motion, in a studio) can give a gentler balance — compare by ear.' },
+    note: 'Clearance comes first: stop the player before moving a real mic. The CLEAR readout is the gap to the nearest stroke; 15–30 cm is a starting distance from the instrument, not a safety clearance. Watch PEAK meters.',
+    learn: {
+      intro: 'What you just did, in words. After our research, one mic about 15–30 cm (6–12 in) from the tambourine itself, as it is played, is where we recommend you begin — in front facing the jingles, or slightly above or to the side of the playing zone. Starting points, not rules.',
+      separate: 'Two different measurements: the starting distance is from the instrument at its normal playing position; the CLEAR readout is the gap to the nearest stroke. Change one variable at a time.',
+      clearance: 'Clearance comes first. Have the player show the loudest accent, the shake and any strike into the hand before anything is placed — and leave room for the complete stroke.',
+      tendencies: 'Too piercing? Compare distance, angle, room and playing method first; a farther mic softens the direct jingle but adds room and spill. Shaken toward and away, the forward accents jump; side to side tends to be more even. All tendencies to check by ear.',
+    },
+  },
+  context: {
+    variant: 'shaken',
+    zone: 'tmb.front.shaken',
+    shield: ['tmb.frame.shaken', 'tmb.jingles.shaken'],
+    facing: 'the jingles',
+    studioPrompt: 'A studio overdub has no wedge to reject. The decision changes: one mono channel at 15–30 cm, or a farther, softer picture?',
+    studioNote: 'Begin with one mono channel; compare the close spot with a farther position at the same playing force. A stereo pair is optional for this small moving source. Switch back to LIVE for the monitor exercise.',
+    points: [
+      { title: 'NEEDED AT ALL?', text: 'Ask whether the tambourine is already loud enough acoustically, or through nearby vocal or percussion mics, before adding a channel.' },
+      { title: 'SHARED OR DEDICATED', text: 'A shared percussion mic supports a player who switches instruments; a dedicated mic gives control when the part matters and the position is predictable.' },
+      { title: 'PEAKS', text: 'Transients far above the average: set headroom on a peak meter from the loudest planned stroke — a later fader cannot undo an overloaded input.' },
+      { title: 'THE FEWEST OPEN MICS', text: 'On a dense stage, choose the fewest open channels that serve the audience and the monitors — and position the mic with its channel muted first.' },
+    ],
+  },
+  twoMic: {
+    variant: 'shaken',
+    A: 'tmb.front.shaken',
+    B: 'tmb.above.shaken',
+    learn: [
+      'A common situation: the tambourine spot, and another mic that hears it too — a vocal mic, a percussion area mic, or a second angle. Each hears it at a different time, and a moving instrument changes that time on every shake.',
+      'Compare each mic alone, then their sum in MONO, through real playing. If the colour changes oddly, move, re-aim or rebalance first; try polarity as a diagnostic, not a fixed switch.',
+    ],
+  },
+  facing: 'facing the jingles',
+  reference: 'tambourine',
+  axis: 'the line to the jingles',
+});

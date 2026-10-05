@@ -625,6 +625,12 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-05 04:11 · ccode · d46adcbc
+changed: feat(miking): Lab 2 I02 Cajón — seated player, rear port and front-port models
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 04:10 · ccode · 0991da54
 changed: miking: Lab 1 review fixes (C1, C2, M1-M11, minors) and rebalanced items lab-wide
 affects other side: nothing (miking fixes, branch final-lab)
@@ -711,6 +717,12 @@ needs: nothing (miking lessons, branch final-lab)
 
 ### 2026-10-05 03:00 · ccode · 5323b5ac
 changed: feat(miking): electric-piano family — oval 4x8 speaker, reed piano model, keys pages
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 02:58 · ccode · 96c3ad9e
+changed: feat(miking): Lab 2 small-percussion family + I03a Shaker, I03b Egg, I03c Maracas
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 

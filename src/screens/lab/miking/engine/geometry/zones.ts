@@ -59,6 +59,14 @@ export function lineDistance(lines: RefLine[], id: string, pose: MicPose): numbe
   if (!l) return NaN;
   // A reference PLANE (Lab 4): the signed distance along its normal.
   if (l.plane) return dot(sub(pose.p, l.point), norm(l.dir)) - (l.offset ?? 0);
+  if (l.segment != null) {
+    // A finite line: the nearest point of the segment (dir a unit vector).
+    const w = sub(pose.p, l.point);
+    let t = dot(w, l.dir);
+    if (t > l.segment) t = l.segment;
+    if (t < -l.segment) t = -l.segment;
+    return len({ x: w.x - l.dir.x * t, y: w.y - l.dir.y * t, z: w.z - l.dir.z * t }) - (l.offset ?? 0);
+  }
   return distToLine(pose.p, l.point, l.dir) - (l.offset ?? 0);
 }
 
