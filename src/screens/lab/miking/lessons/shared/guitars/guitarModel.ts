@@ -326,6 +326,8 @@ export function buildGuitarModel(opts: BuildOpts): BuiltGuitarModel {
     // Clip points: a clip grips the body's edge (the upper bout, both sides,
     // and the waist) — not the strumming side of the lower bout.
     const clipXs = sp.body.pot ? [sp.body.pot.cx.mm + 40, sp.body.pot.cx.mm + 90, sp.body.pot.cx.mm - 40] : [sp.body.xWaist.mm, (sp.body.xWaist.mm + sp.body.xUpper.mm) / 2, sp.body.xUpper.mm];
+    // A banjo's clip may also grip its tailpiece (S-LIVE: "clipped to tailpiece").
+    if (sp.body.pot) rims.push({ id: pid(id, 'tailpiece'), label: 'the tailpiece', c: P(v(sp.body.pot.cx.mm - sp.body.pot.d.mm / 2 + 20, 0, 12)), axis: N, r: 0.5, variants: only });
     for (const x of clipXs) {
       for (const side of ['bass', 'treble'] as const) {
         const y = (side === 'bass' ? -1 : 1) * g.halfW(x, side);
@@ -416,8 +418,9 @@ export type ZoneSpec = {
   distance: { min: number; max: number };
   /** The radial band from the surface's own line (mm). */
   radial?: { max: number; prov: Provenance };
-  /** Aimed at the surface point within r (mm). */
-  aimAtR?: { r: number; prov: Provenance };
+  /** Aimed at the surface point within r (mm) — or at another surface's
+   *  (`surface`, a short id: a clip by the tailpiece aimed at the bridge). */
+  aimAtR?: { r: number; prov: Provenance; surface?: string };
   /** Front axis within this many degrees of the surface's −normal. */
   aimMax?: { deg: number; prov: Provenance };
   micTypeIds: string[];
@@ -460,7 +463,7 @@ export function zoneFor(sc: GuitarScene, z: ZoneSpec): DocumentedZone {
     distance: z.distance,
     ...(z.radial ? { radial: { line: pid(vid, `${z.surface}Line`), max: z.radial.max, prov: z.radial.prov } } : {}),
     requires: { variant: vid, micTypeIds: z.micTypeIds },
-    ...(z.aimAtR ? { aimAt: { surface: pid(vid, z.surface), r: z.aimAtR.r, prov: z.aimAtR.prov } } : {}),
+    ...(z.aimAtR ? { aimAt: { surface: pid(vid, z.aimAtR.surface ?? z.surface), r: z.aimAtR.r, prov: z.aimAtR.prov } } : {}),
     ...(z.aimMax ? { aim: { maxOffAxis: z.aimMax.deg, prov: z.aimMax.prov } } : {}),
     ...(z.boxG ? { box: { ...sc.o.box({ min: z.boxG.min, max: z.boxG.max }), prov: z.boxG.prov } } : {}),
     drawn,

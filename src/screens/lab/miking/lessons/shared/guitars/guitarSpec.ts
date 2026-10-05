@@ -257,6 +257,9 @@ export const BANJO_5: GuitarSpec = {
   resonatorBack: { d: dd(330, 'resonator diameter'), depth: dd(40, 'resonator depth behind the pot') },
 };
 
+/** The open-back banjo: the same pot and neck, no resonator behind it. */
+export const BANJO_OPEN: GuitarSpec = { ...BANJO_5, id: 'banjoOpen', name: 'five-string open-back banjo', resonatorBack: undefined };
+
 /* ── C05b mandolin (mandolin/GEOMETRY_PROPOSAL.md) ── */
 const MANDO_LEN = 350;
 const MANDO_EDGE = 190;
