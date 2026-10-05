@@ -26,6 +26,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
+import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { cancelAnimation, Easing, useAnimatedReaction, useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../../theme/tokens';
@@ -104,6 +105,16 @@ export type AmpPagesSpec = {
   notes: { beam: string; spots: string; place: string; context: string };
   /** Page 6a's studio-and-live cards (scenario comparisons, not rules). */
   liveCards: readonly { title: string; text: string }[];
+  /* ── optional (Lab 2's electric pianos, 2026-10-05): a speaker that is not
+   *    a frame-C cabinet — the reed piano's oval speakers in its lid. ── */
+  /** The placement scene's art (default: the speaker family's amp art). */
+  art?: LessonArt;
+  /** The dock's POSITION words (default: frame C, measured from the grille). */
+  axes?: AxisWords;
+  /** Where the studio-or-live mic starts (default: in front of the speaker). */
+  contextPose?: MicPose;
+  /** The worked example's source-specific words (defaults: the amp's). */
+  worked?: { speaker?: string; across?: string; clearance?: string };
 };
 
 const AXES: AxisWords = {
@@ -115,7 +126,8 @@ const AIM_WORDS = { az: 'Swing the front left or right (seen from above).', el: 
 const now = (rig: Rig, slots: MicSlot[]) => slots.map((s) => micSentence(rig, s, { outside: 'outside the amp' })).join(' ');
 
 export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: PageProps) => ReactNode>> {
-  const art = ampLessonArt(spec.rig);
+  const art = spec.art ?? ampLessonArt(spec.rig);
+  const axes = spec.axes ?? AXES;
   const kind = cabOf(spec.rig);
   const back: Back = spec.rig === 'combo' ? 'open' : 'closed';
 
@@ -738,11 +750,11 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
     const exShown = ex.shown('A');
     const worked: { title: string; text: string; cell: number }[] = [
       { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we recommend you begin — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
-      { title: 'THE SPEAKER', text: `In front of the speaker that is really sounding — found from outside the grille with the amp off or muted. ${spec.rig === 'combo' ? 'On this combo it sits off-centre, under the controls.' : 'On this cabinet, one woofer — not the gap between two.'}`, cell: 1 },
+      { title: 'THE SPEAKER', text: spec.worked?.speaker ?? `In front of the speaker that is really sounding — found from outside the grille with the amp off or muted. ${spec.rig === 'combo' ? 'On this combo it sits off-centre, under the controls.' : 'On this cabinet, one woofer — not the gap between two.'}`, cell: 1 },
       { title: 'THE DISTANCE', text: `${exZone.band} The readout measures from the grille cloth to the mic’s FRONT, rounded to ≈ 5 mm.`, cell: 0 },
-      { title: 'ACROSS THE CONE', text: 'Off the cone axis by about the dust cap’s radius: aimed at the line where the dust cap meets the cone. The bezel reads how far off the axis the mic sits.', cell: 1 },
+      { title: 'ACROSS THE CONE', text: spec.worked?.across ?? 'Off the cone axis by about the dust cap’s radius: aimed at the line where the dust cap meets the cone. The bezel reads how far off the axis the mic sits.', cell: 1 },
       { title: 'THE AIM', text: `Facing the speaker — the lab counts anything within ±${exZone.aim?.maxOffAxis ?? 20}°. Distance, the spot across the cone and the angle are separate things to try, one at a time.`, cell: 2 },
-      { title: 'CLEARANCE', text: `Off the grille cloth — never touching it — on a stable stand, the cable routed away from the player’s ${spec.who === 'steel' ? 'pedals, knee levers and volume pedal' : 'feet and pedalboard'} and from the amp’s hot vents.`, cell: 3 },
+      { title: 'CLEARANCE', text: spec.worked?.clearance ?? `Off the grille cloth — never touching it — on a stable stand, the cable routed away from the player’s ${spec.who === 'steel' ? 'pedals, knee levers and volume pedal' : 'feet and pedalboard'} and from the amp’s hot vents.`, cell: 3 },
     ];
     const wk = worked[exStep];
     const partShort = (id: string) => lesson.model.parts.find((p) => p.id === id)?.short ?? id;
@@ -775,7 +787,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
     const available = zonesAvailable(rig.lesson.zones, rig.variant, mic.typeId, t.mount);
     const azCentre = mic.pose.az > 90 || mic.pose.az < -90 ? 180 : 0;
     const params: DockParam[] = [
-      ...posParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis, words: AXES, aimWords: AIM_WORDS, azCentre }),
+      ...posParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis, words: axes, aimWords: AIM_WORDS, azCentre }),
       { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
       {
         kind: 'group',
@@ -892,7 +904,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
   const PATTERNS: PatternId[] = ['cardioid', 'supercardioid', 'hypercardioid'];
   function AmpContext({ lesson, answers, onAnswered, onInteractive, interactiveDone }: PageProps) {
     const close = lesson.zones.find((z) => z.id === spec.placeZone)!;
-    const rig = useRig(lesson, { mics: [{ slot: 'A', typeId: spec.micDefault, pattern: 'cardioid', pose: { p: { x: G + 70, y: close.start.p.y, z: -45 }, az: 25, el: 0 } }] });
+    const rig = useRig(lesson, { mics: [{ slot: 'A', typeId: spec.micDefault, pattern: 'cardioid', pose: spec.contextPose ?? { p: { x: G + 70, y: close.start.p.y, z: -45 }, az: 25, el: 0 } }] });
     const [live, setLive] = useState(true);
     const [pattern, setPattern] = useState<PatternId>('cardioid');
     const [wedgeId, setWedgeId] = useState(lesson.live.wedges[0]?.id ?? '');
@@ -1093,7 +1105,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
     };
     const azCentre = (rig.mics.find((m) => m.slot === slot)?.pose.az ?? 0) > 90 ? 180 : 0;
     const params: DockParam[] = [
-      ...posParams({ rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis, words: AXES, aimWords: AIM_WORDS, azCentre }),
+      ...posParams({ rig, slot, posAxis, setPosAxis, aimAxis, setAimAxis, words: axes, aimWords: AIM_WORDS, azCentre }),
       { kind: 'toggle', id: 'polarity', label: `${rearMode ? 'REAR' : 'DI'} POL ${switchB === 1 ? '+' : '−'}`, value: switchB === -1, onToggle: flip },
       ...(rearMode ? [{ kind: 'toggle' as const, id: 'mic', label: slot === 'A' ? 'EDIT FRONT' : 'EDIT REAR', value: slot === 'B', onToggle: () => setSlot((s) => (s === 'A' ? 'B' : 'A')) }] : [{ kind: 'fader' as const, id: 'blend', label: 'DI LEVEL', value: (diDb + 12) / 12, home: 1, onChange: (v: number) => setDiDb(Math.round(v * 12) - 12), format: () => `the DI ${diDb === 0 ? 'at the mic’s level' : `${-diDb} dB under the mic`}`, formatShort: () => `${diDb} dB` }]),
       ...(spec.pairs.length > 1 ? [{ kind: 'options' as const, id: 'pair', label: 'PAIR', valueLabel: pair === 'rear' ? 'FRONT+REAR' : 'MIC+DI', selectedId: pair, onSelect: (id: string) => setPair(id as 'rear' | 'di'), sticky: true, options: [{ id: 'rear', label: 'FRONT + REAR MIC', blurb: 'A mic in front and a mic behind the open back.' }, { id: 'di', label: 'MIC + DI', blurb: 'The front mic, blended with a direct (electrical) feed.' }] }] : []),

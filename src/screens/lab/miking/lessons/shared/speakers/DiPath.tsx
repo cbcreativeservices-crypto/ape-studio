@@ -179,10 +179,85 @@ function NodeIcon({ kind, S, lit }: { kind: NodeKind; S: number; lit: boolean })
           ))}
         </Group>
       );
+    case 'keys': {
+      // An electric piano seen from above at an angle: its case, the white
+      // keys with the black keys between, a dark lid over the action.
+      const x0 = -h * 0.95;
+      const W = h * 1.9;
+      const whites = 9;
+      const kw = (W - h * 0.16) / whites;
+      return (
+        <Group>
+          {ring}
+          {shadow}
+          <RoundedRect x={x0} y={-h * 0.62} width={W} height={h * 1.2} r={6}>
+            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={[...TOLEX]} />
+          </RoundedRect>
+          <RoundedRect x={x0 + h * 0.08} y={-h * 0.52} width={W - h * 0.16} height={h * 0.42} r={3}>
+            <LinearGradient start={vec(0, -h * 0.52)} end={vec(0, -h * 0.1)} colors={['#4b4e57', '#26282e', '#121316']} />
+          </RoundedRect>
+          {Array.from({ length: whites }, (_, i) => (
+            <RoundedRect key={`w${i}`} x={x0 + h * 0.08 + i * kw + 0.6} y={-h * 0.04} width={kw - 1.2} height={h * 0.58} r={1.5}>
+              <LinearGradient start={vec(0, -h * 0.04)} end={vec(0, h * 0.54)} colors={['#fbfbf8', '#e3e1da', '#b9b6ad']} />
+            </RoundedRect>
+          ))}
+          {[0, 1, 3, 4, 5, 7].map((i) => (
+            <RoundedRect key={`b${i}`} x={x0 + h * 0.08 + (i + 1) * kw - kw * 0.3} y={-h * 0.04} width={kw * 0.6} height={h * 0.34} r={1.2} color="#0d0d10" />
+          ))}
+        </Group>
+      );
+    }
+    case 'keysAmp':
+      // The amplifier INSIDE the instrument: a small board on its rail.
+      return (
+        <Group>
+          {ring}
+          {shadow}
+          <RoundedRect x={-h * 0.8} y={-h * 0.5} width={h * 1.6} height={h * 1.0} r={4}>
+            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={['#3d7a52', '#1f4a31', '#0f2618']} />
+          </RoundedRect>
+          <RoundedRect x={-h * 0.8} y={-h * 0.5} width={h * 1.6} height={h * 1.0} r={4} style="stroke" strokeWidth={1} color="#08080a" />
+          {[-0.45, 0, 0.45].map((u) => (
+            <Circle key={u} cx={u * h} cy={-h * 0.12} r={h * 0.16}>
+              <RadialGradient c={vec(u * h - 3, -h * 0.18)} r={h * 0.24} colors={['#e9d7a8', '#9a7a3a', '#3c2c10']} />
+            </Circle>
+          ))}
+          {[-0.55, -0.2, 0.15, 0.5].map((u) => (
+            <RoundedRect key={`r${u}`} x={u * h} y={h * 0.18} width={h * 0.2} height={h * 0.12} r={2} color="#c8ccd4" />
+          ))}
+        </Group>
+      );
+    case 'lidSpeakers': {
+      // The lid seen from the player's side: two small oval speakers.
+      const oval = (cx: number) => {
+        const p = make();
+        p.addOval(Skia.XYWHRect(cx - h * 0.36, -h * 0.2, h * 0.72, h * 0.4));
+        return p;
+      };
+      return (
+        <Group>
+          {ring}
+          {shadow}
+          <RoundedRect x={-h * 0.95} y={-h * 0.45} width={h * 1.9} height={h * 0.9} r={8}>
+            <LinearGradient start={vec(-h, -h)} end={vec(h, h)} colors={['#7a3a2c', '#4a1e16', '#26100c']} />
+          </RoundedRect>
+          {[-0.45, 0.45].map((u) => (
+            <Group key={u}>
+              <Path path={oval(u * h)}>
+                <RadialGradient c={vec(u * h - h * 0.08, -h * 0.06)} r={h * 0.4} colors={[...SPEAKER_CONE]} />
+              </Path>
+              <Path path={oval(u * h)} style="stroke" strokeWidth={1.4} color="#d8d2c4" opacity={0.6} />
+              <Circle cx={u * h} cy={0} r={h * 0.07} color="#1b1714" />
+            </Group>
+          ))}
+        </Group>
+      );
+    }
     default:
       return null;
   }
 }
+const SPEAKER_CONE = ['#4a4038', '#2c2621', '#171411'] as const;
 
 const LINK_LOOK: Record<ChainLink['kind'], { color: string; w: number; dash: number[] | null }> = {
   instrument: { color: CABLE, w: 3, dash: null },
