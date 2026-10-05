@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 05:41 · ccode · b514b92b
+changed: feat(miking): shared saxophone family for Lab 3 (soprano, alto, tenor, baritone)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 04:31 · ccode · 4d01722e
 changed: Merge branch 'miking-fix1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)

@@ -96,6 +96,14 @@ export const BRAND_NAMES: readonly string[] = [
   'Paiste',
   'Spectrasound',
   'Son Vo',
+  // Lab 3 saxophone research (docs/labs/miking/alto_sax, soprano_sax, tenor_sax, baritone_sax).
+  'Sweetwater',
+  'Giavaras',
+  'Van Gelder',
+  'Selmer',
+  'Gautrot',
+  'MDAT',
+  'UNSW',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

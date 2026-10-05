@@ -108,3 +108,12 @@ LESSON_CONTENT.I12 = I12_LESSON;
 /* Lab 2 cymbals (I01a–e): appended so other lessons merge cleanly. */
 import { CYMBAL_CONTENT } from '../lessons/shared/cymbals/content.ts';
 Object.assign(LESSON_CONTENT, CYMBAL_CONTENT);
+/* Lab 3 (winds), the saxophones A05a–d (each lesson on its own line). */
+import { A05A_LESSON } from '../lessons/a05aSopranoSax/lesson.ts';
+LESSON_CONTENT.A05a = A05A_LESSON;
+import { A05B_LESSON } from '../lessons/a05bAltoSax/lesson.ts';
+LESSON_CONTENT.A05b = A05B_LESSON;
+import { A05C_LESSON } from '../lessons/a05cTenorSax/lesson.ts';
+LESSON_CONTENT.A05c = A05C_LESSON;
+import { A05D_LESSON } from '../lessons/a05dBaritoneSax/lesson.ts';
+LESSON_CONTENT.A05d = A05D_LESSON;
