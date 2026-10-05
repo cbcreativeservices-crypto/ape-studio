@@ -26,6 +26,9 @@ import { getNotifications } from './push';
 import { dayNameToDow } from './weeklyConcept';
 import { curatedEntryForDate, misunderstoodTerms, oddTerms, type CuratedTermEntry } from './curatedTermLists';
 import { memberStanding } from '../commercial/memberStanding';
+import { registerLocalStoreReset } from '../storage/localStoreRegistry';
+import { createLocalStore } from '../storage/localStore';
+import { DEFAULT_QUIET, normalizeHHMM, releaseClock, releaseDate, releaseWeekly, type QuietWindow } from './quietHours';
 // TYPE-ONLY — store.ts imports this module at runtime (the save funnel), so a
 // value import back would be a require cycle. App.tsx loads the settings and
 // hands them in.
@@ -35,6 +38,65 @@ import type { LocalSettings } from '../settings/store';
  *  ONLY these, never a notification scheduled by anything else. */
 const ID_PREFIX = 'ape.notif.';
 const CHANNEL_ID = 'reminders';
+
+/* ------------------------------------------------------------ quiet hours */
+
+/**
+ * This device's copy of the account's QUIET HOURS (owner 2026-10-04; the
+ * server row, community_notify_prefs, is the truth). The server holds member
+ * alerts and the weekly concept inside the window but cannot reach these
+ * LOCAL reminders, and this scheduler must decide without a network
+ * round-trip — so every successful read or save of the server row is
+ * mirrored here (communityPush.ts → rememberQuietWindow) and each rebuild
+ * moves a reminder that would fire inside the window to its end.
+ *
+ * Nothing mirrored yet (an account that never opened Settings, or before the
+ * first read lands) = the server's own default, ON 22:00–07:00. Unreadable =
+ * the default too: the scheduler still has to book something, and the
+ * default is what the server holds for anyone who never chose.
+ *
+ * Kept in THIS module (not a store file of its own): this module is on the
+ * app-start path, and the start graph has a module budget
+ * (perfStartTrim_20261004).
+ */
+const quietStore = createLocalStore<QuietWindow | null>({
+  key: 'ape:notif:quietHours',
+  empty: () => null,
+  parse: (p) => {
+    const r = (p && typeof p === 'object' ? p : null) as Record<string, unknown> | null;
+    const start = normalizeHHMM(r?.start);
+    const end = normalizeHHMM(r?.end);
+    if (!r || typeof r.enabled !== 'boolean' || !start || !end) throw new Error('quiet hours: damaged');
+    return { enabled: r.enabled, start, end };
+  },
+  serialize: (v) => (v ? JSON.stringify(v) : null),
+});
+
+/** The window a rebuild applies (see above for the fallbacks). */
+export async function readQuietWindow(): Promise<QuietWindow> {
+  await quietStore.hydrate();
+  if (quietStore.isUnreadable()) return DEFAULT_QUIET;
+  return quietStore.get() ?? DEFAULT_QUIET;
+}
+
+/** A cheap synchronous key for the change-gate. */
+export function quietWindowKey(): string {
+  const w = quietStore.get();
+  return w ? `${w.enabled ? 1 : 0}${w.start}${w.end}` : 'default';
+}
+
+/**
+ * Adopt what the SERVER now holds. True when the stored copy changed (the
+ * caller then re-books the reminders: resyncLocalNotifications); false when
+ * it was already the same, or the device refused the write (the shared
+ * notice tells the user).
+ */
+export async function rememberQuietWindow(w: QuietWindow): Promise<boolean> {
+  await quietStore.hydrate();
+  const cur = quietStore.get();
+  if (!quietStore.isUnreadable() && cur && cur.enabled === w.enabled && cur.start === w.start && cur.end === w.end) return false;
+  return quietStore.set({ enabled: w.enabled, start: w.start, end: w.end });
+}
 
 /**
  * Device mirror of the server's `push_enabled` (owner-approved 2026-08-30).
@@ -222,11 +284,33 @@ function notifSlice(s: LocalSettings): string {
     s.notifyOddTerm,
     s.notifyFreq,
     s.notifyTime,
+    quietWindowKey(),
   ]);
+}
+
+/**
+ * The newest settings this engine was handed, so a QUIET HOURS change (made
+ * in Settings → MESSAGES & REQUESTS, saved on the server, mirrored in
+ * quietStore above) can re-book the reminders without the caller holding the
+ * settings. Dropped on the account wipe: the next account hands its own.
+ */
+let lastHanded: LocalSettings | null = null;
+export function forgetHandedSettings(): void {
+  lastHanded = null;
+}
+registerLocalStoreReset(forgetHandedSettings);
+
+/** Re-book every reminder with the newest settings (the quiet-hours window
+ *  changed). Nothing to do before any settings were handed in. */
+export function resyncLocalNotifications(): void {
+  if (!lastHanded) return;
+  lastSlice = ''; // a rebuild, through the change-gate
+  requestLocalNotifSync(lastHanded);
 }
 
 /** Debounced, change-gated — safe to call on EVERY settings save. */
 export function requestLocalNotifSync(s: LocalSettings): void {
+  lastHanded = s;
   const slice = notifSlice(s);
   if (slice === lastSlice) return;
   if (syncTimer) clearTimeout(syncTimer);
@@ -245,6 +329,7 @@ export async function syncLocalNotificationsThrottled(s: LocalSettings): Promise
 }
 
 export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
+  lastHanded = s;
   const N = getNotifications();
   if (!N) return;
   if (syncing) {
@@ -262,6 +347,12 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
     // failed is neither: leave the schedule as it is and try again next sync.
     const phoneOn = await readPhoneMaster();
     if (phoneOn == null) return;
+    // QUIET HOURS (owner 2026-10-04): the server holds member alerts and the
+    // weekly concept inside the member's window; these LOCAL reminders it
+    // cannot reach, so every one that would fire inside the window is moved
+    // to the window's end here (quietHours.ts). Read before the slice so the
+    // change-gate records the window this rebuild used.
+    const quiet = await readQuietWindow();
     lastSlice = notifSlice(s);
     lastFullSyncAt = Date.now();
     // MEMBERS ONLY (owner 2026-09-01): a definite non-member books nothing —
@@ -328,7 +419,8 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
 
     // 1 · Daily study reminder — repeating daily at the chosen time.
     if (s.notifyDailyStudy) {
-      const { hour, minute } = hhmm(s.notifyTime.notifyDailyStudy, '08:00');
+      const at = hhmm(s.notifyTime.notifyDailyStudy, '08:00');
+      const { hour, minute } = releaseClock(at.hour, at.minute, quiet);
       add(
         `${ID_PREFIX}dailyStudy`,
         {
@@ -344,6 +436,10 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
     // every boot/foreground sync, so it only ever fires after true idleness.
     if (s.notifyContinue) {
       const days = Math.max(1, Math.round(s.continueDays || 3));
+      // N days from now lands at this moment's clock time; inside quiet hours
+      // it is booked for the window's end instead.
+      const due = new Date(Date.now() + days * 86400 * 1000);
+      const held = releaseDate(due, quiet);
       add(
         `${ID_PREFIX}continue`,
         {
@@ -351,7 +447,9 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
           body: `It has been ${days} day${days === 1 ? '' : 's'} — your progress is saved right where you stopped.`,
           data: { type: 'local' },
         },
-        { type: T.TIME_INTERVAL, seconds: days * 86400, repeats: false, channelId: CHANNEL_ID },
+        held === due
+          ? { type: T.TIME_INTERVAL, seconds: days * 86400, repeats: false, channelId: CHANNEL_ID }
+          : { type: T.DATE, date: held, channelId: CHANNEL_ID },
       );
     }
 
@@ -394,7 +492,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
           const stored = Number(await AsyncStorage.getItem(K_TERM_COUNT));
           if (Number.isFinite(stored) && stored > 0 && count > stored) {
             const n = (pending?.n ?? 0) + (count - stored);
-            pending = { n, fireAt: nextFirstOfMonth(hour, minute).getTime() };
+            pending = { n, fireAt: releaseDate(nextFirstOfMonth(hour, minute), quiet).getTime() };
           }
           seenCount = count;
         }
@@ -432,7 +530,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
             body: `${pending.n} new term${pending.n === 1 ? ' was' : 's were'} added to the glossary.`,
             data: { type: 'local', dest: 'glossary' },
           },
-          { type: T.DATE, date: new Date(pending.fireAt), channelId: CHANNEL_ID },
+          { type: T.DATE, date: releaseDate(new Date(pending.fireAt), quiet), channelId: CHANNEL_ID },
         );
       } else {
         afterBooking = async () => {
@@ -456,7 +554,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
         return Array.from({ length: 7 }, (_, i) => {
           const d = new Date(first);
           d.setDate(d.getDate() + i);
-          return { d, row: batch ? batch[(i + offset) % batch.length] : null };
+          return { d: releaseDate(d, quiet), row: batch ? batch[(i + offset) % batch.length] : null };
         });
       };
       if (s.dailyTerms) {
@@ -532,7 +630,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
         add(
           `${ID_PREFIX}${idPart}.${i}`,
           { title: title(e), body: e.body, data: { type: 'local', dest: 'glossary', term: e.term } },
-          { type: T.DATE, date: d, channelId: CHANNEL_ID },
+          { type: T.DATE, date: releaseDate(d, quiet), channelId: CHANNEL_ID },
         );
       }
     };
@@ -542,7 +640,8 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
 
     // 6 · Weekly learning summary — repeating weekly (weekday 1 = Sunday).
     if (s.notifyWeeklySummary) {
-      const { hour, minute } = hhmm(s.notifyTime.notifyWeeklySummary, '09:00');
+      const at = hhmm(s.notifyTime.notifyWeeklySummary, '09:00');
+      const { weekday, hour, minute } = releaseWeekly(dayNameToDow(s.notifyFreq.notifyWeeklySummary ?? 'Monday') + 1, at.hour, at.minute, quiet);
       add(
         `${ID_PREFIX}weeklySummary`,
         {
@@ -552,7 +651,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
         },
         {
           type: T.WEEKLY,
-          weekday: dayNameToDow(s.notifyFreq.notifyWeeklySummary ?? 'Monday') + 1,
+          weekday,
           hour,
           minute,
           channelId: CHANNEL_ID,
@@ -562,7 +661,8 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
 
     // 7 · Weekly certificate progress — repeating weekly.
     if (s.notifyCertProgress) {
-      const { hour, minute } = hhmm(s.notifyTime.notifyCertProgress, '09:00');
+      const at = hhmm(s.notifyTime.notifyCertProgress, '09:00');
+      const { weekday, hour, minute } = releaseWeekly(dayNameToDow(s.notifyFreq.notifyCertProgress ?? 'Monday') + 1, at.hour, at.minute, quiet);
       add(
         `${ID_PREFIX}certProgress`,
         {
@@ -572,7 +672,7 @@ export async function syncLocalNotifications(s: LocalSettings): Promise<void> {
         },
         {
           type: T.WEEKLY,
-          weekday: dayNameToDow(s.notifyFreq.notifyCertProgress ?? 'Monday') + 1,
+          weekday,
           hour,
           minute,
           channelId: CHANNEL_ID,
