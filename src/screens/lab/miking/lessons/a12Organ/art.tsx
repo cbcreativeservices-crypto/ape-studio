@@ -66,7 +66,7 @@ function facadeLabels(): ArtLabel[] {
   const P = DIVISIONS.pedal;
   return [
     { id: 'swell', text: 'SWELL · SHUTTERS', short: 'SWELL', u: 0, v: DIVISIONS.swell.y0 - 500, align: 'center', at: { u: 0, v: DIVISIONS.swell.y0 + 200 } },
-    { id: 'great', text: 'GREAT', u: 0, v: -4100, align: 'center', tone: 'muted' },
+    { id: 'great', text: 'GREAT', u: 0, v: -3150, align: 'center', tone: 'muted' },
     { id: 'pedalL', text: 'PEDAL', u: -(P.z0 + P.z1) / 2, v: -500, align: 'center', tone: 'muted' },
     { id: 'pedalR', text: 'PEDAL', u: (P.z0 + P.z1) / 2, v: -500, align: 'center', tone: 'muted' },
     { id: 'positive', text: 'POSITIVE', u: 0, v: 400, align: 'center', at: { u: 0, v: -1000 } },
@@ -172,7 +172,7 @@ export const PIPES_ASPECT = (PIPE_BOX.u1 - PIPE_BOX.u0) / (PIPE_BOX.v1 - PIPE_BO
 /* ═══════════════ HOW IT SOUNDS 2 · a distributed source ═══════════════ */
 
 export type Listen = { id: string; label: string; short: string; p: { x: number; y: number; z: number } };
-const ARR_BOX = { u0: -3000, u1: 24000, v0: -8200, v1: 8200 };
+const ARR_BOX = { u0: -3000, u1: 24000, v0: -8200, v1: 12400 };
 const PATH_IDS: { id: DivisionId; side: 1 | -1 }[] = [
   { id: 'great', side: 1 },
   { id: 'swell', side: 1 },
@@ -201,7 +201,8 @@ export function ArrivalsFigure({ w, h, at, accessibilityLabel }: { w: number; h:
   const first = Math.min(...a.map((q) => q.ms));
   const labels: StaticLabel[] = [
     { id: 'at', text: at.short, u: at.p.x, v: at.p.z + 1100, align: 'center', tone: 'amber' },
-    ...a.filter((q) => q.id !== 'pedal' || q.side === 1).map((q, i) => ({ id: `${q.id}${i}`, text: `${DIVISIONS[q.id].short} +${(q.ms - first).toFixed(1)} ms`, short: `+${(q.ms - first).toFixed(1)}`, u: -2800, v: -6900 + i * 1500, align: 'left' as const, tone: 'blue' as const })),
+    { id: 'head', text: 'ARRIVES AFTER THE FIRST, IN MS', short: 'LATER BY (MS)', u: -2800, v: 9200, align: 'left', tone: 'muted' },
+    ...a.filter((q) => q.id !== 'pedal' || q.side === 1).map((q, i) => ({ id: `${q.id}${i}`, text: `${DIVISIONS[q.id].short} +${(q.ms - first).toFixed(1)}`, short: `+${(q.ms - first).toFixed(1)}`, u: -2800 + i * 6800, v: 11200, align: 'left' as const, tone: 'blue' as const })),
   ];
   return (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>

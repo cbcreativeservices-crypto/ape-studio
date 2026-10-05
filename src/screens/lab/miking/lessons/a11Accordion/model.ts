@@ -44,9 +44,9 @@ export const KEYS = { x0: TREBLE.x0 + 40, x1: TREBLE.x1 - 6, y0: TREBLE.y0 + 30,
 
 export type Bellows = 'in' | 'mid' | 'out';
 export const BELLOWS_STATES: readonly { id: Bellows; label: string; blurb: string; top: number; bottom: number }[] = [
-  { id: 'in', label: 'BELLOWS CLOSED', blurb: 'Pushed in: the bass side close to the treble side.', top: ACCORDION.bellowsClosed.mm, bottom: ACCORDION.bellowsClosed.mm },
-  { id: 'mid', label: 'BELLOWS HALF OPEN', blurb: 'Part-way through a pull: the bass side has moved out, the bottom of the bellows more than the top.', top: 175, bottom: 350 },
-  { id: 'out', label: 'BELLOWS FULLY OPEN', blurb: 'At the end of a long pull: the bass side at its farthest, the bellows fanned open at the bottom.', top: 264, bottom: ACCORDION.bellowsMax.mm },
+  { id: 'in', label: 'CLOSED', blurb: 'Pushed in: the bass side close to the treble side.', top: ACCORDION.bellowsClosed.mm, bottom: ACCORDION.bellowsClosed.mm },
+  { id: 'mid', label: 'HALF OPEN', blurb: 'Part-way through a pull: the bass side has moved out, the bottom of the bellows more than the top.', top: 175, bottom: 350 },
+  { id: 'out', label: 'FULLY OPEN', blurb: 'At the end of a long pull: the bass side at its farthest, the bellows fanned open at the bottom.', top: 264, bottom: ACCORDION.bellowsMax.mm },
 ];
 export const stateOf = (v: string) => BELLOWS_STATES.find((s) => s.id === v) ?? BELLOWS_STATES[1];
 

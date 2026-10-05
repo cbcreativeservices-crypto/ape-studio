@@ -116,8 +116,8 @@ export function ReedSequence({ w, h, shown, voice, accessibilityLabel }: { w: nu
   const xf = useMemo(() => fitXform('side', BOX, w, h, 6), [w, h]);
   const k = Math.max(1, Math.min(PUFF_STEPS.length, shown));
   const st = PUFF_STEPS[k - 1];
-  const reed = tongue(reedLine(st.tip), 3.4);
-  const ghostA = k === 4 ? tongue(reedLine(-0.8), 3.4) : null;
+  const reed = tongue(reedLine(st.tip), 5);
+  const ghostA = k === 4 ? tongue(reedLine(-0.8), 5) : null;
   const rest = make();
   rest.moveTo(RIVET, (PLATE.v0 + PLATE.v1) / 2 - 1);
   rest.lineTo(TIP, (PLATE.v0 + PLATE.v1) / 2 - 1);
@@ -131,8 +131,8 @@ export function ReedSequence({ w, h, shown, voice, accessibilityLabel }: { w: nu
     { id: 'air', text: voice === 'harmonica' ? 'BREATH IN' : 'AIR FROM THE BELLOWS', short: 'AIR', u: 10, v: 34, align: 'left', tone: 'blue' },
     { id: 'plate', text: 'PLATE', u: 238, v: 100, align: 'right', tone: 'muted' },
     { id: 'reed', text: 'REED', u: RIVET + 4, v: 70, align: 'left', tone: 'muted' },
-    { id: 'slot', text: st.open ? 'SLOT OPEN' : 'SLOT CLOSED', u: 140, v: 100, align: 'center', tone: st.open ? 'amber' : 'muted' },
-    ...(st.puffs ? [{ id: 'puff', text: st.sound ? 'PUFFS = THE SOUND' : 'A PUFF OF AIR', short: 'PUFF', u: 92, v: 150, align: 'center' as const, tone: 'amber' as const }] : []),
+    { id: 'slot', text: st.open ? 'SLOT OPEN' : 'SLOT CLOSED', u: 12, v: 104, align: 'left', tone: st.open ? 'amber' : 'muted' },
+    ...(st.puffs ? [{ id: 'puff', text: st.sound ? 'PUFFS = THE SOUND' : 'A PUFF OF AIR', short: 'PUFF', u: 12, v: 160, align: 'left' as const, tone: 'amber' as const }] : []),
   ];
   return (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>

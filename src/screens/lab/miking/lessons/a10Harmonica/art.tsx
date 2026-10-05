@@ -193,6 +193,7 @@ export function HandsProfile({ at, state, hi = false, showHarp = true }: { at: P
   const near = handPath(NEAR_HAND[state], at);
   const far = handPath(FAR_HAND, at);
   const lines = fingerLines(NEAR_HAND[state], at);
+  const thumb = limb([pt(at.u + 30, at.v + 72), pt(at.u + 12, at.v + 30), pt(at.u + 4, at.v + 16)], [17, 14, 12]);
   return (
     <Group>
       <Group opacity={0.75}>
@@ -204,6 +205,7 @@ export function HandsProfile({ at, state, hi = false, showHarp = true }: { at: P
         <BlurMask blur={8} style="normal" />
       </Path>
       <MassArt path={near} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
+      <MassArt path={thumb} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
       <Path path={lines} style="stroke" strokeWidth={2} strokeCap="round" color={SKIN_EDGE} opacity={0.55} />
       {hi ? <Path path={rr(at.u - 30, at.v - 100, at.u + 150, at.v + 140, 30)} style="stroke" strokeWidth={4} color={HIGHLIGHT} /> : null}
     </Group>
@@ -365,6 +367,24 @@ export const A10_ART: LessonArt = {
   labelsYieldToMic: true,
 };
 
+/** The player's face in profile at the harmonica (house line-art: brow,
+ *  nose, lips, chin — no eye), the lips on the hole face at `at`. */
+function facePath(at: Pt): SkPath {
+  const P = (u: number, v: number) => [at.u + u, at.v + v] as const;
+  const f = make();
+  f.moveTo(...P(-64, -160));
+  f.cubicTo(...P(-40, -140), ...P(-30, -112), ...P(-30, -96));
+  f.quadTo(...P(-24, -86), ...P(-20, -76));
+  f.lineTo(...P(6, -44));
+  f.quadTo(...P(4, -36), ...P(-14, -34));
+  f.quadTo(...P(-2, -26), ...P(-3, -16));
+  f.quadTo(...P(-12, -2), ...P(-3, 12));
+  f.quadTo(...P(-6, 26), ...P(-20, 30));
+  f.cubicTo(...P(-12, 52), ...P(-24, 70), ...P(-62, 76));
+  f.lineTo(...P(-112, 82));
+  return f;
+}
+
 /* ═══════════════ the MEET page's close-up ═══════════════ */
 
 /* The harmonica taken apart, drawn oblique (a cabinet projection: depth up
@@ -441,17 +461,12 @@ function Layer({ i, hi }: { i: number; hi: string | null }): ReactElement {
   );
 }
 
-const CLOSE = { u: 370, v: 170 };
-const MEET_BOX = { u0: 0, u1: 560, v0: 10, v1: 330 };
+const CLOSE = { u: 430, v: 170 };
+const MEET_BOX = { u0: 0, u1: 610, v0: 10, v1: 330 };
 
 function MeetHarmonica({ hi }: { hi: string | null }): ReactElement {
   // A lips-and-chin outline beside the hands (line art, house spec: no eye).
-  const face = make();
-  face.moveTo(CLOSE.u - 70, CLOSE.v - 150);
-  face.cubicTo(CLOSE.u - 30, CLOSE.v - 120, CLOSE.u - 2, CLOSE.v - 60, CLOSE.u - 10, CLOSE.v - 30);
-  face.quadTo(CLOSE.u + 4, CLOSE.v - 18, CLOSE.u - 4, CLOSE.v - 8);
-  face.quadTo(CLOSE.u + 2, CLOSE.v + 2, CLOSE.u - 6, CLOSE.v + 12);
-  face.cubicTo(CLOSE.u - 10, CLOSE.v + 50, CLOSE.u - 60, CLOSE.v + 80, CLOSE.u - 120, CLOSE.v + 90);
+  const face = facePath(CLOSE);
   return (
     <Group>
       {LAYERS.map((_, i) => (
@@ -536,15 +551,10 @@ export function HandChamber({ w, h, state, accessibilityLabel }: { w: number; h:
     out.moveTo(HD + 6, 0);
     out.lineTo(HD + 26, 0);
   }
-  const lips = make();
-  lips.moveTo(-70, -150);
-  lips.cubicTo(-30, -120, -2, -60, -10, -30);
-  lips.quadTo(4, -18, -4, -8);
-  lips.quadTo(2, 2, -6, 12);
-  lips.cubicTo(-10, 50, -60, 80, -120, 90);
+  const lips = facePath({ u: 0, v: 0 });
   const st = state;
   const labels: StaticLabel[] = [
-    { id: 'harp', text: 'HARMONICA', u: -6, v: -120, align: 'center', tone: 'muted' },
+    { id: 'harp', text: 'HARMONICA', u: 40, v: -128, align: 'left', tone: 'muted' },
     st === 'mic'
       ? { id: 'mic', text: 'HARP MIC INSIDE THE CHAMBER', short: 'HARP MIC', u: 120, v: 140, align: 'center', tone: 'amber' }
       : { id: 'out', text: st === 'cupped' ? 'A CLOSED CHAMBER' : st === 'half' ? 'OUT THROUGH THE GAP' : 'STRAIGHT OUT', short: st === 'cupped' ? 'CLOSED' : 'OUT', u: 200, v: st === 'open' ? 120 : -130, align: 'center', tone: 'blue' },

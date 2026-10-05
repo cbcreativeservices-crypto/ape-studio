@@ -152,8 +152,8 @@ export const A12_MODEL: InstrumentModel = {
   lines: [{ id: 'axis', label: 'the case’s centre line', point: RANKS, dir: N, surfaces: ['facade', 'ranks', 'great'] }],
   envelopes,
   variants: [
-    { id: 'recording', label: 'AN EMPTY ROOM', blurb: 'A recording session: the room empty and quiet, no PA on.' },
-    { id: 'service', label: 'A SERVICE', blurb: 'A service with a stream and a PA: the congregation in the pews, the PA loudspeakers on, the aisles and exits in use.' },
+    { id: 'recording', label: 'EMPTY ROOM', blurb: 'A recording session: the room empty and quiet, no PA on.' },
+    { id: 'service', label: 'SERVICE', blurb: 'A service with a stream and a PA: the congregation in the pews, the PA loudspeakers on, the aisles and exits in use.' },
   ],
   defaultVariant: 'recording',
   views: {

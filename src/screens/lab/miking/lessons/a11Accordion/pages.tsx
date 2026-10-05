@@ -64,9 +64,9 @@ function useBellows(_p: PageProps): MikingStep {
       badge: 'A simplified picture · the sizes are a drawing · straight paths, no room · silent',
       bezel: [
         { k: 'BELLOWS', v: label, flex: 1.3 },
-        { k: 'MIC → BASS', v: fmtLen(dBass), flex: 1.1 },
-        { k: 'MIC → TREBLE', v: fmtLen(dTreble), flex: 1.1 },
-        { k: 'TREBLE LATER BY', v: fmtMs(dt), flex: 1.2 },
+        { k: 'TO BASS', v: `${Math.round(dBass / 10)} cm`, flex: 1 },
+        { k: 'TO TREBLE', v: `${Math.round(dTreble / 10)} cm`, flex: 1 },
+        { k: 'GAP', v: `${dt.toFixed(1)} ms`, sub: 'treble later', flex: 1 },
       ],
       params: [
         {
@@ -78,7 +78,7 @@ function useBellows(_p: PageProps): MikingStep {
             setT(Math.round(v * 20) / 20);
             setMoved(true);
           },
-          format: () => `${label} · the bass side ${fmtLen(Math.abs(b.ib.z - TREBLE.z0))} from the treble side at the bottom`,
+          format: () => `${label} · ${Math.round(Math.abs(b.ib.z - TREBLE.z0) / 10)} cm at the bottom`,
           formatShort: () => label.split(' ')[0],
         },
         { kind: 'toggle', id: 'dir', label: push ? 'PUSH' : 'PULL', value: push, onToggle: () => setPush((x) => !x) },
