@@ -68,3 +68,68 @@ lesson, and why"); the ids stay here and in code only (review M6: no codes on sc
 |---|---|---|---|---|---|---|
 | C-CALC-1 | Calculator STEREOMIC "3:1 rule minimum spacing" explanation (src/screens/lab/calc/workspaces/micsRf.ts, `threeToOne.explain`, and `mistakes[1]`) | "quiet enough that summing the mics stays clean instead of comb-filtering" / "or bleed combs the mix" | Should say the bleed is about 9.5 dB down, which reduces (does not remove) comb filtering; 3:1 does not guarantee phase coherence | The Kick lesson (L72) and the DPA/Shure references limit the rule; −9.54 dB bleed still combs (dips ≈ −3.5 dB, peaks ≈ +2.5 dB relative to the main mic alone). The Miking Labs never import the calculator's sentence. | Kick L72; lesson ref [12]; SOURCES_SHARED.md §4 | OWNER: ruling §16.10 says fix on `audio-tools-engine` with Comp A's queued items — **not done in this run** (branch rule) |
 | C-POL-1 | micspeaker/viz.tsx (0.37/0.63) vs micselect/micSelectData.ts (0.366/0.634) | Two supercardioid coefficient sets | One exact set in the Miking engine; the old labs left alone | Blueprint R10 | SOURCES_SHARED.md §3 | OWNER: separate fix pass |
+
+## Lab 1 hand drums: M04a Congas, M04b Bongos, M04c Timbales, M05 Djembe
+
+Builder run 2026-10-05 (branch `final-lab`, worktree miking-w3). Source texts:
+`source_text/Congas-…`, `Bongos-…`, `Timbales-…`, `Djembe-…`. Research: `congas/`, `bongos/`,
+`timbales/`, `djembe/` (SOURCES.md and GEOMETRY_PROPOSAL.md), `BATCH1_RESEARCH_SUMMARY.md`.
+Learner text follows the owner's starting-points ruling (no names, no badges).
+
+### M04a Congas
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CG-01 | Curriculum links | The Glyn Johns technique is "taught in Ensembles and Voice" | No cross-link in the app; the correct target is M09 Drum Overheads | Research: WRONG cross-link | congas/SOURCES.md | APPLIED (omitted) · OWNER: fix the document |
+| CG-02 | Curriculum links | "The ride cymbal research draft is deferred…" | Not carried | Stale note | congas/SOURCES.md | APPLIED (omitted) |
+| CG-03 | Decision table | "roughly 6 in–2 ft (15–60 cm)" | "about 15–60 cm (6 in–2 ft)"; the zone uses 152.4–609.6 mm exactly | 2 ft = 61 cm, not 60 (rounding) | RM-CONGA | APPLIED (`m04aCongas/model.ts`) |
+| CG-04 | Ref [3] | Cites the svconline copy of the touring case | The internal record uses the DPA host (same text) | Research note | DPA-JB | APPLIED |
+| CG-05 | Whole lesson | Strokes are named (open, slap, bass, muted) but not where they are played | HOW IT SOUNDS adds where they land: open tone "four fingers near the rim", muffled tone "four fingers … holding the fingers against the head", bass "full palm, in a slightly cupped position, somewhat off center" — drawn at drawing positions (0.85 R, 0.3 R); the slap's spot is left to the player (no source gives it) | The physics step needs a strike point; the descriptions are sourced, the positions are drawing defaults | WP-CONGA | APPLIED (`m04aCongas/lesson.ts` `hand.strokes`) · OWNER: a player's check |
+| CG-06 | (drawing) | — | The plan default puts both drums at x = 0 (z ± 170 mm): in the side view the conga hides behind the tumba; the labels say so and the top view shows both | The geometry file's plan drawing default is kept | congas/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve, or stagger the drums |
+| CG-07 | Decision table, "lower-shell" | "experiment with a mic near — not blocking — the bottom opening" | Zone "In front of the tumba's lower opening (raised)": 30 cm ± 5 cm in front of the shell's lower front edge, within 15 cm of the line through it, facing it ±45°. Garza's actual rig is an X/Y pair "in front of the congas and angled towards the rims"; the app teaches one mic, as the geometry file does | The file's `zone.conga.bottom`; the tolerances are illustrative | SOS-LATIN | APPLIED · OWNER: approve |
+
+### M04b Bongos
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| BG-01 | Two mics row | "give each head its own directional mic at a safe, comparable distance" (no number) | Spot zones (a lesson trial): the "just above" drawing-default band, 2–12 cm beyond each rim, aimed at the head ±60° | A zone needs a band; all values illustrative and said as regions | LESSON | APPLIED (`m04bBongos/model.ts`) · OWNER: approve |
+| BG-02 | (drawing) | "Do not prescribe the player's orientation" | The macho is drawn on the player's left (a common layout); the unknowns and the setting say players differ | Geometry file drawing default | bongos/GEOMETRY_PROPOSAL.md | APPLIED |
+| BG-03 | (addition) | "contrasting registers" | HOW IT SOUNDS adds the physics: at the same tension every shape of a head scales with 1 ÷ diameter, so the macho sits ≈ 1.19 × higher; players tune the pair apart | Ideal-membrane physics (the Cymatics / Drum Tuning tables); sizes from LP-GEN2 | LP-GEN2; MATH | APPLIED |
+| BG-04 | Four approaches | A figure-8 between the drums, lobes toward each head | Not a placement zone (the family has no side-address mic drawing); taught in words on Placement, Microphones and Studio-or-live | A figure-8 capsule is side-address: drawing it end-on would be wrong | S-B181 | APPLIED (words) · OWNER: add a side-address type later? |
+| BG-05 | Four approaches | A compact X/Y pair centred above the drums | The Two-microphones page's "coincident pair" preset (both capsules at one point, ±40°) | A two-mic idea; Δt ≈ 0 is its lesson | S-B181 | APPLIED |
+| BG-06 | Guided lab step 4 | "A live class must use the actual PA…" | "with the system operator" | No institutional words (house rule) | — | APPLIED |
+| BG-07 | (drawing) | A seated player | The seated player's legs are solid parts drawn as legs (ghosted in front of the pair in the side view), not a hatched box | Visual standards: real objects | — | APPLIED |
+
+### M04c Timbales
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| TB-01 | (addition) | No numeric positions | Placement LEARN adds one engineer's percussion overhead "about 91–107 cm (3–3½ ft) above the drums" — words only, no zone (it lies far outside the drawn view) | Research: a number the lesson could cite | SOS-LATIN (Krys) | APPLIED (`m04cTimbales/lesson.ts`) |
+| TB-02 | Choose a starting arrangement | One mic "right between the timbale shells" | Zone "Between the shells": the shells' sourced depth below the heads as the height band; within the smaller drum's radius of the pair's centre; no aim (none published) | The geometry file's `zone.timb.between` | AX-OZO; LP-257 | APPLIED |
+| TB-03 | Choose a starting arrangement | Under-rim dynamics "pointed outwards towards their rims" | Zones under each drum: the "just above" drawing-default band reused below the lower edge (5–15 cm), within the drum's radius, aim within 60° of up | No number in the source; the band is illustrative | SOS-LATIN (Milan) | APPLIED · OWNER: approve |
+| TB-04 | (drawing) | — | The head material is not given by the source: a plain film is drawn and the unknowns say so | Never draw an unknown as known | LP-257 | APPLIED |
+| TB-05 | (drawing) | A bracket for bells | The cowbell's size and position are drawing defaults; a BELL / NO BELL switch | The bell is optional ("sold separately") | LP-257 | APPLIED |
+| TB-06 | Studio and live | "A documented engineer technique does not transfer…" | "One engineer's technique does not transfer…" | Banned wording on screen ("documented") | — | APPLIED |
+
+### M05 Djembe
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| DJ-01 | L21 | "a bottom mic about 8 in (20 cm) from the rim" | "about 20 cm (8 in) from the bottom rim" | Coppinger says "bottom rim" | COPPINGER | APPLIED |
+| DJ-02 | L15 (drawing) | Coppinger's top mic "about 16 in (41 cm) from center" | The mic sits over the head's OUTER EDGE, 406.4 mm from the head's centre, pointing across to the centre: the line rises ≈ 67° above the head plane. The geometry file's default (30° elevation) contradicts "near the outer edge" | Derived from the source's own words, not a guess | COPPINGER | APPLIED (`m05Djembe/model.ts` `DIAG_N`) · OWNER: approve |
+| DJ-03 | (drawing) | — | The bowl's depth (where the waist sits) is a BUILD default, 330 mm — the geometry file gives the waist's diameter but not its height | The goblet cannot be drawn without it | djembe/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve |
+| DJ-04 | (drawing) | Raised support "four pieces of foam", file default 50 mm thick | The raised support is 200 mm (a BUILD default): Coppinger set the drum on foam "to give a bit of clearance for a mic underneath", and his bottom mic sat "under, 8 inches (20cm) from the bottom rim" — 50 mm cannot hold a mic underneath | The source's words over the file's default | COPPINGER | APPLIED · OWNER: approve |
+| DJ-05 | L21 | Duvel's "40–60° angle" (reference not stated) | Measured from the head's normal (the file's default); the practice card says the lab measures it from straight down | Research: angle reference UNKNOWN | S-DUVEL | APPLIED |
+| DJ-06 | The instrument and the performer | Postures: standing, between the knees, tilted, on a stand | Two setups are drawn: upright on the floor, and raised on foam blocks. The tilted posture is described in words, not drawn | A tilted goblet needs per-setup head planes; kept for a later pass | djembe/GEOMETRY_PROPOSAL.md | OWNER: wanted as a third setup? |
+| DJ-07 | (addition) | "deep bass strokes, ringing open tones, and sharply articulated slaps" | HOW IT SOUNDS adds where they are played (bass: palm and flat fingers near the centre; tone and slap closer to the edge, the contact area making the difference) and that the bass note is set by the shell's size and shape, not the skin's tension | Sourced technique and physics | WP-DJEMBE | APPLIED |
+| DJ-08 | (drawing) | — | The height (610 mm, the file's default) sits inside the typical "58–63 cm" | Upgraded from UNKNOWN to a checked default | WP-DJEMBE | APPLIED |
+
+### Shared across the four lessons
+
+| id | Where | Says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| HD-01 | Congas, bongos, timbales | Shure's "just above top heads" (no number) | "about 5–15 cm (2–6 in) above them" — the geometry files' drawing-default band, said as a place to begin (the kick's "within about 6 cm" precedent) | A zone needs a band; the voice says it is a starting region | congas/, bongos/, timbales/ GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve |
+| HD-02 | Every zone with an aim | — | Aim tolerances (±30° of straight down for "aiming down", ±45–60° "at the head") are the lab's | As the kick's ±30° (K-17) | — | APPLIED · OWNER: approve |
+| HD-03 | Clip-on mic | A miniature clip-on condenser on each drum | Drawn on a 140 mm gooseneck clamped to the nearest rim; the reach is enforced (a clip mic farther from a rim is stopped). The capsule's diameter is unknown (drawing default 18 mm) | Retailer listing; DPA's page lists no dimensions | MKT-4099 (SOURCES_SHARED §6) | APPLIED |
+| HD-04 | Feedback and supervision lines | "under a qualified supervisor", "a live class" | "with the system operator" | No institutional words (house rule) | — | APPLIED |
+| HD-05 | Whole lessons | "No audio examples" | Fully silent (owner ruling) | — | — | APPLIED |

@@ -27,3 +27,30 @@ Lesson: `source_text/Djembe-Miking-Technique-Research.txt`. Rules: `snare/SOURCE
 | Coppinger mics | AT4050 (above), AT4047 (under), AKG C-451 EB with CK-1 (above), MD 421 (under) | COPPINGER | High |
 | Audix D4 for djembe | **CONFIRMED** | applications list "djembe" (AX-D4) | High |
 | Duvel mic model | KSM137 (cardioid condenser per Shure's catalogue; pattern not stated in the article) | S-DUVEL | Medium |
+
+## Builder pass (2026-10-05, hand-drum builder, worktree miking-w3)
+
+Added keys and re-reads used by `src/screens/lab/miking/lessons/m05Djembe/`.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| WP-DJEMBE | Wikipedia, "Djembe" (sounds, dimensions) | https://en.wikipedia.org/wiki/Djembe | 200, read |
+| LESSON | The owner's lesson text, `source_text/Djembe-Miking-Technique-Research.txt` | (in the repo) | read |
+| WP-MIC | see `SOURCES_SHARED.md` | — | — |
+| S-SM57-UG, AX-D2, AX-SCX1 | the hand-drum mic family, `SOURCES_SHARED.md` §6 | — | — |
+
+| Fact | Value | Source's exact words | Confidence |
+|---|---|---|---|
+| Bass | palm and flat fingers near the centre | "The bass sound is produced by striking the drum with the palm and flat fingers near the center of the skin." (WP-DJEMBE) | High |
+| Tone and slap | closer to the edge; the contact area decides | "Tone and slap are produced by striking the drum closer to the edge; the contact area of the fingers determines whether the sound is a tone or a slap." (WP-DJEMBE) | High |
+| Bass pitch | set by the shell | "The frequency of the bass is determined by the size and shape of the shell and independent of the amount of tension on the skin." (WP-DJEMBE; a Helmholtz resonance) | High |
+| Typical size | 30–38 cm across, 58–63 cm tall | "djembes have an exterior diameter of 30–38 cm (12–15 in) and a height of 58–63 cm (23–25 in)" (WP-DJEMBE) | High | the 610 mm drawing default sits inside it (DJ-08) |
+| Coppinger re-read (support) | foam for a mic underneath | "To help decouple the djembe from the floor and give a bit of clearance for a mic underneath, we set the djembe on four pieces of foam." (COPPINGER) | High | the raised support is drawn 200 mm (DJ-04) |
+| Coppinger re-read (heard) | top mic bass | "the snap of hand against drum head with that nice, full bass"; bottom: "There is a lot of bass that resonates out from the bottom of the drum" (COPPINGER) | High |
+| Duvel re-read (posture) | NOT STATED | the article gives no support or posture (S-DUVEL) | — |
+| Meinl HDJ500 re-read | build | "Siam Oak"; "Goat" head; "8 mm Strong Tuning" lugs with "Original MEINL style tuning brackets" and "Pre-stretched nylon PP ropes" (MEINL-HDJ500) | Medium | the drawing shows the ropes; the brackets' count is unknown and not drawn |
+
+Simplifications register: the goblet's profile (waist, foot, opening and the bowl's depth are
+drawing / build defaults), the rope lacing pattern, the foam blocks, the hands and player
+envelopes (ILLUSTRATIVE); the Coppinger top-mic line derived from "near the outer edge" (DJ-02).
+`CORRECTIONS_LOG.md` DJ-01 … DJ-08.

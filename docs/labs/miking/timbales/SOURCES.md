@@ -30,3 +30,22 @@ Lesson: `source_text/Timbales-Miking-Technique-Research.txt`. Rules: `snare/SOUR
 | Open bottom | implied by under-rim mics; LP page read today does not say | — | Medium |
 | Stand height, accessory positions | **UNKNOWN** | — | — |
 | Lesson has no numeric positions | the SOS Krys figure (3–3.5 ft above) is a number the lesson could cite | — | — |
+
+## Builder pass (2026-10-05, hand-drum builder, worktree miking-w3)
+
+Added keys and re-reads used by `src/screens/lab/miking/lessons/m04cTimbales/`.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| LESSON | The owner's lesson text, `source_text/Timbales-Miking-Technique-Research.txt` | (in the repo) | read |
+| WP-MIC | see `SOURCES_SHARED.md` | — | — |
+| MKT-4099, S-SM57-UG, AX-D2, AX-SCX1 | the hand-drum mic family, `SOURCES_SHARED.md` §6 | — | — |
+
+| Fact | Value | Source's exact words | Confidence |
+|---|---|---|---|
+| LP-257 re-read | shells, hardware, accessories | "14″ & 15″ diameter, 6-1/2″ deep"; "Brass shells with chrome-plated hardware"; "Heavy-duty stand, cowbell bracket, timbale sticks and tuning wrench"; "Cowbells and Jam Blocks sold separately" (LP-257) | High |
+| Lug count, rim, head material, stand height | NOT STATED | (LP-257) | — | drawing defaults; a plain film head is drawn and the unknowns say so (TB-04) |
+| Krys overhead | 914.4–1066.8 mm above | "about three to three-and-a-half feet above as overheads" (SOS-LATIN) | High | words only on Placement (TB-01) |
+
+Simplifications register: the stand, the bracket and the cowbell (drawing defaults), the stick
+envelopes (ILLUSTRATIVE), the "just above" / "beneath" bands. `CORRECTIONS_LOG.md` TB-01 … TB-06.

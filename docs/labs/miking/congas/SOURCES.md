@@ -36,3 +36,30 @@ as in `snare/SOURCES.md`. Checked 2026-10-04 by Claude (batch 1, lighter pass af
 - 15–60 cm in the lesson vs 152.4–609.6 mm exact (rounding only).
 - DPA case cited from svconline (Congas) and from dpamicrophones.com (Bongos, Timbales, Tambourine): same
   text; use the DPA host.
+
+## Builder pass (2026-10-05, hand-drum builder, worktree miking-w3)
+
+Added keys and re-reads used by `src/screens/lab/miking/lessons/m04aCongas/`.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| WP-CONGA | Wikipedia, "Conga" (playing technique) | https://en.wikipedia.org/wiki/Conga | 200, read |
+| LESSON | The owner's lesson text, `source_text/Congas-Miking-Technique-Research.txt` | (in the repo) | read |
+| WP-MIC | see `SOURCES_SHARED.md` | — | — |
+| MKT-4099, S-SM57-UG, AX-D2, AX-SCX1 | the hand-drum mic family, `SOURCES_SHARED.md` §6 | — | — |
+
+| Fact | Value | Source's exact words | Confidence |
+|---|---|---|---|
+| Open tone | four fingers near the rim | "played with the four fingers near the rim of the head, producing a clear resonant sound" (WP-CONGA) | High |
+| Muffled tone | fingers held against the head | "made by striking the drum with the four fingers, but holding the fingers against the head to muffle the tone" (WP-CONGA) | High |
+| Bass tone | full palm, slightly cupped, off centre | "played with the full palm, in a slightly cupped position, somewhat off center on the head" (WP-CONGA) | High |
+| Slap | no position given | "the most difficult technique, producing a loud clear 'popping' sound" (WP-CONGA) | High |
+| Seated or standing | both | "The drums may be played while seated. Alternatively, the drums may be mounted on a rack or stand to permit the player to play while standing." (WP-CONGA) | High |
+| LP Classic re-read | shell, rim, rods, heads | "Kiln-dried Siam Oak shells"; "Comfort Curve II rims"; "5/16″ Tension rods"; "Natural rawhide heads"; the drums have "shell protectors" (LP-CLASSIC, tumba page) | High |
+| Lug count | NOT STATED | (LP-CLASSIC pages) | — | drawn as a drawing default (6), never stated |
+
+Strike POSITIONS drawn on HOW IT SOUNDS (0.85 R near the rim, 0.3 R off centre) are drawing
+positions for the sourced descriptions; the simplified head ignores the hand's contact area and
+time (said on screen). Simplifications register: the conga's straight taper (0.8 × head at the
+bottom), the side view hiding the conga behind the tumba, the raised stands, the hands and player
+envelopes — all drawing defaults or ILLUSTRATIVE (`CORRECTIONS_LOG.md` CG-01 … CG-07).
