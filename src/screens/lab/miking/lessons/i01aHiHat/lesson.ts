@@ -415,12 +415,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'Why does a closed hi-hat ring so briefly?',
-    options: ['The cymbals press together and damp each other', 'Closed hats are only played very softly', 'The stand absorbs the ring through the pedal'],
+    options: ['The cymbals press together and damp each other', 'Closed hats are only played very softly', 'The stand absorbs the ring down through the pedal'],
     correct: 'The cymbals press together and damp each other',
     explain: 'Closed, each cymbal stops the other ringing. Open, they ring freely.',
     why: {
       'Closed hats are only played very softly': 'Closed hats can be played hard. The other cymbal is what stops the ring.',
-      'The stand absorbs the ring through the pedal': 'The stand barely touches the plates. They damp each other.',
+      'The stand absorbs the ring down through the pedal': 'The stand barely touches the plates. They damp each other.',
     },
   },
   {

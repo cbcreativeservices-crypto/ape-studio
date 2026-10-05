@@ -83,7 +83,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
   {
     id: 'tb.shells',
     label: 'Between the shells',
-    band: 'Start right between the two shells, at shell height, on the audience side. No distance or aim is published — move it and listen to the shell pattern against the heads.',
+    band: 'Start right between the two shells, at shell height, on the audience side. We found no distance or aim for it — move it and listen to the shell pattern against the heads.',
     kind: 'sourced',
     src: 'AX-OZO',
     quote: 'The D2 is on timbales, right in between the shells.',
@@ -120,7 +120,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
       top: { u0: d.c.x - d.R, u1: d.c.x + d.R, v0: d.c.z - d.R, v1: d.c.z + d.R, round: true },
     },
     start: { p: { x: 60, y: d.bottomY + 100, z: d.c.z + Math.sign(d.c.z) * 30 }, az: Math.sign(d.c.z) * 45, el: 55 },
-    tendency: 'The head from below and its shell — one engineer’s studio approach, often paired with an overhead pair for the bells. Not a safe default for a crowded stage.',
+    tendency: 'The head from below and its shell — a studio approach to try, often paired with an overhead pair for the bells. Not a safe default for a crowded stage.',
     checks: ['The stand’s legs and the player’s feet', 'The head’s sound against the shell’s', 'The blend with any top or overhead mic, in mono'],
   })),
   ...([SMALL, LARGE] as const).map<DocumentedZone>((d) => ({

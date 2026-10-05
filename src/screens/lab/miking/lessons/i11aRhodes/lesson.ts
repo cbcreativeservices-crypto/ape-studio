@@ -14,6 +14,7 @@
  * combo, reused) and draws the direct signal apart, as a comparison.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY } from '../../engine/model/sharedItems.ts';
 import { I11A_MODEL, I11A_ZONES } from './geometry.ts';
 import { I11A_MICS } from './model.ts';
 
@@ -316,10 +317,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'A front mic and a rear mic on the open-backed combo sound thin together. What do you try first?',
     options: ['Flip the rear mic’s polarity, then check in mono', 'Turn the rear mic up until it matches the front mic', 'Move the front mic against the grille'],
     correct: 'Flip the rear mic’s polarity, then check in mono',
-    explain: 'The back of the cone moves opposite to the front, so the rear mic starts out inverted. Flip it, then judge the pair in mono at matched levels — and move or rebalance if it is still thin.',
+    explain: `${OPPOSITE_SIDES_POLARITY} Then move or rebalance if it is still thin: a switch cannot fix every frequency.`,
     why: {
-      'Turn the rear mic up until it matches the front mic': 'More level deepens the cancellation. The rear signal is inverted: flip it first.',
-      'Move the front mic against the grille': 'Touching the grille adds noise and does not fix the polarity.',
+      'Turn the rear mic up until it matches the front mic': 'More level deepens the cancellation. The rear mic starts opposite: try flipping its polarity first.',
+      'Move the front mic against the grille': 'Touching the grille adds noise and does not fix the polarity: the back of the cone is still opposite.',
     },
   },
   {

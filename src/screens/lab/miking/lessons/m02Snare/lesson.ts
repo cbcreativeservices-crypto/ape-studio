@@ -10,6 +10,7 @@
  * Pinned by test/mikingLearnerText.test.ts and test/mikingModelM02.test.ts.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
 import { SNARE_MODEL } from './geometry.ts';
 import { NEIGHBOURS, S0_KIT, SNARE_ZONES } from './model.ts';
@@ -56,7 +57,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Top and bottom',
     goal: 'See why a top and a bottom snare mic start out of step, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['sn.two.1', 'sn.two.2', 'sn.two.3', 'sn.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'The heads move the same way, so a top and a bottom mic start opposite; inverting one usually helps — check both states. Polarity flips the sign; it does not remove a delay. Judge the pair in mono, at matched levels.',
+    takeaway: 'The heads move the same way, so a top and a bottom mic start opposite; flipping one is a common first thing to try, never a rule — check both states. Polarity flips the sign; it does not remove a delay. Judge the pair in mono, at matched levels.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -116,18 +117,7 @@ const scenarios: MikingScenario[] = [
       'The stick now strikes the snare-side head instead': 'The sticks still strike the batter head on top. The throw-off only moves the wires.',
     },
   },
-  {
-    id: 'sn.set.1',
-    page: 'setting',
-    prompt: 'Your snare mic is rated to a very high maximum SPL. Does that tell you how long you can safely stand by the kit during soundcheck?',
-    options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for the people near it', 'Yes, as long as the mic is closer to the drum than you are'],
-    correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
-    why: {
-      'Yes — anything below the mic’s rating is safe for the people near it': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as the mic is closer to the drum than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels, repeats and time down.',
-    },
-  },
+  micRatingCheck({ id: 'sn.set.1', page: 'setting', mic: 'snare mic', loudest: 'the hardest rimshot' }),
   {
     id: 'sn.set.2',
     page: 'setting',
@@ -215,13 +205,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'sn.place.1',
     page: 'placement',
-    prompt: 'A starting point says 2.5–7.5 cm above the RIM. Your readout says 5 cm above the batter HEAD. Are you in it?',
-    options: ['Not quite: the rim stands above the head — measure from the rim', 'Yes: 5 cm falls inside the 2.5 to 7.5 cm band', 'Yes, as long as the mic is aimed at the centre of the batter head'],
-    correct: 'Not quite: the rim stands above the head — measure from the rim',
-    explain: 'A distance means something only with its reference surface. The rim stands above the head, so 5 cm above the head is less above the rim — which is why every readout names what it measures from.',
+    prompt: 'A starting point says 2.5–7.5 cm above the RIM. On this drum the rim stands about 1 cm above the head, and your readout says 5 cm above the batter HEAD. Are you in it?',
+    options: ['Yes — measured from the rim, that is about 4 cm: inside the band', 'Yes — 5 cm is inside the band, whichever surface it is read from', 'No — a reading from the head cannot be checked against a rim band'],
+    correct: 'Yes — measured from the rim, that is about 4 cm: inside the band',
+    explain: 'A distance means something only with its reference surface. The rim stands about 1 cm above the head here, so 5 cm above the head is about 4 cm above the rim — inside 2.5–7.5 cm. Had the readout said 2 cm above the head, the mic would be only 1 cm above the rim: under the start, and close to the sticks.',
     why: {
-      'Yes: 5 cm falls inside the 2.5 to 7.5 cm band': 'Same number, different surface. The band is measured from the rim, which stands above the head.',
-      'Yes, as long as the mic is aimed at the centre of the batter head': 'Aim is a separate check. The height is read from the surface the starting point names.',
+      'Yes — 5 cm is inside the band, whichever surface it is read from': 'Right verdict, wrong reason. The surface matters: 2 cm above the head would be only 1 cm above the rim — outside the band.',
+      'No — a reading from the head cannot be checked against a rim band': 'It can: add or take away the step between the two surfaces. Here the rim is about 1 cm above the head.',
     },
   },
   {
@@ -232,7 +222,7 @@ const scenarios: MikingScenario[] = [
     correct: 'More of the whole drum and the kit around it; less close snap',
     explain: 'A little more distance tends to take in more of the drum’s body and buzz — and more of the hi-hat and the kit. Compare at matched levels; drums vary.',
     why: {
-      'Only the level drops; the tone stays exactly as it was': 'Distance changes the balance too: more of the whole drum, more of the kit, and less proximity effect.',
+      'Only the level drops; the tone stays exactly as it was': 'Distance changes the balance too: more of the whole drum, more of the kit, and less proximity effect (with a directional mic).',
       'More low end, because the mic is now farther from the batter head': 'With a directional mic, moving away tends to reduce proximity effect’s low-end lift, not add to it.',
     },
   },
@@ -338,22 +328,22 @@ const scenarios: MikingScenario[] = [
     prompt: 'With the bottom mic inverted, the snare sounds fuller and reads 2 dB louder. What do you conclude?',
     options: ['Not yet: match the levels, then compare both states in mono', 'Inverted is the correct setting for snare drums, so keep it', 'Normal polarity was wrong, because it was quieter'],
     correct: 'Not yet: match the levels, then compare both states in mono',
-    explain: 'Inverting usually helps a top/bottom pair, but not always — the result depends on where the mics are. A louder state sounds “better” at first: compare at matched level, in mono, with the kit.',
+    explain: `${OPPOSITE_SIDES_POLARITY} A louder state sounds “better” at first: compare at matched level, with the kit.`,
     why: {
-      'Inverted is the correct setting for snare drums, so keep it': 'It usually helps, but it is a check, not a law: the result depends on the mic positions.',
+      'Inverted is the correct setting for snare drums, so keep it': 'Flipping is a common first thing to try, not a law: the delay between the mics decides which state is better.',
       'Normal polarity was wrong, because it was quieter': 'Quieter is not wrong. Match levels, then judge which state keeps the snare’s body.',
     },
   },
   {
     id: 'sn.two.4',
     page: 'twoMic',
-    prompt: 'Does a snare need a bottom mic?',
-    options: ['Only if the wires’ sound it adds helps the whole kit', 'Yes: a mic on top cannot hear the snare wires at all', 'Yes, whenever the snare is a 14 in drum'],
-    correct: 'Only if the wires’ sound it adds helps the whole kit',
-    explain: 'A bottom mic is a choice for more control of the wires, not a requirement. Start with a useful top mic; add the bottom one at a modest level and keep it only if it helps.',
+    prompt: 'The top mic alone sounds right in the kit, but the producer wants more wire detail. Is a bottom mic worth trying?',
+    options: ['Yes — if it adds the wires and the pair holds up in mono', 'No — a top mic hears the wires just as well as a bottom one', 'Yes — and once it is flipped, the pair needs no more checks'],
+    correct: 'Yes — if it adds the wires and the pair holds up in mono',
+    explain: 'A bottom mic is a choice for more control of the wires, not a requirement. Add it at a modest level, compare both polarity states in mono at matched level, and keep it only if it helps the whole kit.',
     why: {
-      'Yes: a mic on top cannot hear the snare wires at all': 'A top mic hears the wires too, just less of them. The bottom mic adds control, if that helps.',
-      'Yes, whenever the snare is a 14 in drum': 'The drum’s size does not decide it. What the bottom channel adds to the kit does.',
+      'No — a top mic hears the wires just as well as a bottom one': 'A top mic hears the wires too, but less of them: they lie against the head underneath. The bottom mic adds that detail, if it helps.',
+      'Yes — and once it is flipped, the pair needs no more checks': 'Flipping is the first thing to try, not a setting to trust: compare both states by ear, at matched level, in mono.',
     },
   },
   {
@@ -463,7 +453,7 @@ const symptoms: Symptom[] = [
     correct: 'Channel identity, level, both polarity states, positions — or omit it',
     explain: 'Check which channel is which, then the pair at matched levels in both polarity states, with the kit. If it still does not help, leave it out.',
     why: {
-      'Invert the bottom mic and leave it, since that one is wrong': 'Inverting usually helps, but it is a check: compare both states at matched level.',
+      'Invert the bottom mic and leave it, since that one is wrong': 'Flipping it is a common first thing to try, never a rule: compare both states at matched level, in mono.',
       'Turn the bottom mic up until the snare sounds full again': 'More level does not fix a cancellation; it makes the thin sound louder.',
     },
   },
@@ -578,11 +568,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'What does the strainer (the throw-off) do?',
-    options: ['Pulls the wires against the head, or lets them drop', 'Tightens the batter head to raise its pitch', 'Holds the snare drum firmly in its stand'],
+    options: ['Pulls the wires against the head, or lets them drop', 'Tightens the batter head, raising the drum’s pitch a little', 'Holds the snare drum firmly in its stand'],
     correct: 'Pulls the wires against the head, or lets them drop',
     explain: 'The strainer is the lever on the shell that turns the snares on (wires pulled up against the head) or off (wires dropped clear).',
     why: {
-      'Tightens the batter head to raise its pitch': 'The tension rods tune the heads. The strainer only moves the wires.',
+      'Tightens the batter head, raising the drum’s pitch a little': 'The tension rods tune the heads. The strainer only moves the wires.',
       'Holds the snare drum firmly in its stand': 'The stand’s basket holds the drum. The strainer turns the wires on or off.',
     },
   },
@@ -602,11 +592,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'Why does the snare buzz?',
-    options: ['The wires lose contact with the moving head, then slap back', 'The batter head rubs against the hoop as it moves', 'The air inside the drum rattles against the shell'],
+    options: ['The wires lose contact with the moving head, then slap back', 'The batter head rubs against the metal hoop each time it moves', 'The air inside the drum rattles against the shell'],
     correct: 'The wires lose contact with the moving head, then slap back',
     explain: 'The snare-side head moves faster than the wires can follow: they leave it and slap back, again and again — the buzz.',
     why: {
-      'The batter head rubs against the hoop as it moves': 'That would be a fault. The buzz is the wires slapping the snare-side head.',
+      'The batter head rubs against the metal hoop each time it moves': 'That would be a fault. The buzz is the wires slapping the snare-side head.',
       'The air inside the drum rattles against the shell': 'The air drives the heads; it is the wires on the snare-side head that rattle.',
     },
   },
@@ -627,11 +617,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your snare mic is rated to a very high maximum SPL. What does that tell you about standing by the kit through a long soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the snare stays below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the snare stays below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the snare stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the snare stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the drum than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

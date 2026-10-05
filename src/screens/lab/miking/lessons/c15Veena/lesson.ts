@@ -155,7 +155,7 @@ const scenarios: MikingScenario[] = [
     correct: 'No: keep a mic’s protective parts unless its maker allows it',
     explain: 'One session’s notes are not an instruction. A mic’s windscreen and grille protect it; leave them on unless its manufacturer explicitly authorises a change.',
     why: {
-      'Yes: removing the grille is how veenas are usually miked on a stage': 'One engineer’s session is not a norm. Keep the protective parts on.',
+      'Yes: removing the grille is how veenas are usually miked on a stage': 'One session is not a norm. Keep the protective parts on.',
       'Yes, as long as the mic is a dynamic and not a condenser': 'The type does not make it safe. Follow the maker’s instructions.',
     },
   },

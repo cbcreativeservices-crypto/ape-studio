@@ -14,6 +14,7 @@
  * keeps to the guitar's chain: string → pickup → pedals → amp → speaker → air.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { C02_MODEL, C02_ZONES } from './geometry.ts';
 import { C02_MICS } from './model.ts';
 
@@ -60,7 +61,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Two sources',
     goal: 'Blend a front and a rear mic on an open-backed combo — or a mic and a DI — and see what polarity does and does not change.',
     credit: { scenarios: ['eg.two.1', 'eg.two.2', 'eg.two.3'], interactive: 'polarityVsDelay', note: 'Flip the polarity both ways AND move a mic so the delay changes, then answer the three checks.' },
-    takeaway: 'The back of the cone is opposite in polarity to the front: flip the rear mic, then judge the pair in mono, at matched levels. A DI arrives before the mic. Polarity flips the sign; it does not remove a delay.',
+    takeaway: 'The back of the cone is opposite in polarity to the front: flipping the rear mic is the first thing to try, never a rule — judge the pair in mono, at matched levels. A DI arrives before the mic. Polarity flips the sign; it does not remove a delay.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -131,18 +132,7 @@ const scenarios: MikingScenario[] = [
       'A cleaner copy of what a mic on the speaker hears': 'It never passes through the speaker, the cabinet or the room, so it is a different sound, not a copy.',
     },
   },
-  {
-    id: 'eg.set.2',
-    page: 'setting',
-    prompt: 'Your mic is rated for very high SPL in front of a loud amp. Does that tell you how long you can stand there at soundcheck?',
-    options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — below the mic’s rating, the level is safe for people', 'Yes, as long as you stand farther from the amp than the mic does'],
-    correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — and below it is not a promise.',
-    why: {
-      'Yes — below the mic’s rating, the level is safe for people': 'The rating is about the mic, not your ears. For people, a widely used guideline is 85 dBA averaged over 8 hours.',
-      'Yes, as long as you stand farther from the amp than the mic does': 'Farther than the mic is not a hearing measure. Measure where the person listens, and keep the level and time down.',
-    },
-  },
+  micRatingCheck({ id: 'eg.set.2', page: 'setting', mic: 'amp mic', loudest: 'the amp at full stage level' }),
   {
     id: 'eg.set.3',
     page: 'setting',
@@ -329,9 +319,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'A front mic and a rear mic on an open-backed combo sound thin together. What do you try first?',
     options: ['Flip the rear mic’s polarity, then check in mono', 'Turn the rear mic up until it matches the front mic', 'Move the front mic right up against the grille'],
     correct: 'Flip the rear mic’s polarity, then check in mono',
-    explain: 'The back of the cone moves opposite to the front, so the rear mic starts out inverted. Flip it, then judge the pair in mono at matched levels — and move or rebalance if it is still thin: a switch cannot fix every frequency.',
+    explain: `${OPPOSITE_SIDES_POLARITY} Then move or rebalance if it is still thin: a switch cannot fix every frequency.`,
     why: {
-      'Turn the rear mic up until it matches the front mic': 'More level deepens the cancellation. The rear signal is inverted: flip its polarity first.',
+      'Turn the rear mic up until it matches the front mic': 'More level deepens the cancellation. The rear mic starts opposite: try flipping its polarity first.',
       'Move the front mic right up against the grille': 'Touching the grille risks noise and does not fix the polarity: the back of the cone is still opposite.',
     },
   },
@@ -640,11 +630,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about standing by a loud amp all through soundcheck?',
-    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe while the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you are'],
+    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is closer than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens.',
     },
   },

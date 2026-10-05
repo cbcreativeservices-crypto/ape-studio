@@ -12,6 +12,7 @@
  */
 import type { DiagnosticItem, MikingScenario, PageId, Symptom, Vec3, VariantId, Wedge } from '../../../engine/model/types.ts';
 import type { LessonCopy } from '../../../engine/model/copy.ts';
+import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 import type { PairPreset } from './family.ts';
 import { malletGeom, SHURE_H, SHURE_SPACING, type MalletFamily } from './malletModel.ts';
 
@@ -149,18 +150,8 @@ export function malletWedges(o: { frontZ: number; sideX: number }): Wedge[] {
 /* ── shared checks ── */
 
 export function hearingCheckM(w: MW, page: PageId): MikingScenario {
-  return {
-    id: `${w.p}.set.hear`,
-    page,
-    prompt: `The mic over ${w.the} is rated to a very high SPL. Does that tell you how long the crew can stand beside it through rehearsal?`,
-    options: ['No — max SPL is the mic’s distortion limit, not a hearing limit', 'Yes — anything under the mic’s rating is safe for the people near it', 'Yes, as long as the mic is nearer the bars than the people are'],
-    correct: 'No — max SPL is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more.',
-    why: {
-      'Yes — anything under the mic’s rating is safe for the people near it': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours, measured where they listen.',
-      'Yes, as long as the mic is nearer the bars than the people are': 'Where the mic sits says nothing about the people’s ears. Measure where the person listens, and keep levels and time down.',
-    },
-  };
+  // The shared max-SPL check (sharedItems.ts): what the rating DOES say.
+  return micRatingCheck({ id: `${w.p}.set.hear`, page, mic: `mic over ${w.the}`, loudest: `the loudest roll on ${w.the}` });
 }
 
 export function quickHearingM(w: MW): DiagnosticItem {

@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'No distance is published for a splash. How do you use “about 15–25 cm above”?',
     options: ['As a place to begin, then move and listen', 'As an exact rule, measured to the millimetre', 'As a limit: closer than 15 cm is not allowed'],
     correct: 'As a place to begin, then move and listen',
-    explain: 'With no published number, the band is a sensible start — clear of the stick and the swing — and your ears decide from there.',
+    explain: 'With no fixed number to go by, the band is a sensible start — clear of the stick and the swing — and your ears decide from there.',
     why: {
       'As an exact rule, measured to the millimetre': 'Starting points are places to begin, not exact rules.',
       'As a limit: closer than 15 cm is not allowed': 'It is not a limit. Clearance from the stick and the swing is.',
@@ -391,11 +391,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'Compared with a crash, a splash rings…',
-    options: ['Higher and shorter', 'Lower and longer', 'Exactly the same'],
+    options: ['Higher and shorter', 'Lower and much longer', 'Exactly the same'],
     correct: 'Higher and shorter',
     explain: 'Smaller and thinner: higher, and it fades soon.',
     why: {
-      'Lower and longer': 'A smaller plate rings higher and shorter.',
+      'Lower and much longer': 'A smaller plate rings higher and shorter.',
       'Exactly the same': 'Size and weight change its sound a lot.',
     },
   },

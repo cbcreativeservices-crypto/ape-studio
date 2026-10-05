@@ -117,16 +117,16 @@ method with a mic by the drummer's shoulder is the **shoulder method**.
 
 | id | Line | Lesson says | App says | Why | Source | Status |
 |---|---|---|---|---|---|---|
-| S-01 | (plan) | Stages one mic → extensive | The stages are shown as functional examples, never a fixed order to add mics; the counters describe a plan and never grade it. | The lesson's own caution; the stepper could read as a ladder. | M11 lesson | APPLIED (`m11Kit/copy.ts` `PLAN_WORDS`) |
-| S-02 | (drawing) | Hi-hat and ride spot mics | Drawn on booms (a floor stand straight under them passes through the cymbal); the floor-tom spot sits over the rim away from the rack tom's stand. | Collision check: the first drawing put stands through hardware. | kit plan; test `mikingModelM11` | APPLIED (`m11Kit/plan.ts`) |
+| K11-01 | (plan) | Stages one mic → extensive | The stages are shown as functional examples, never a fixed order to add mics; the counters describe a plan and never grade it. | The lesson's own caution; the stepper could read as a ladder. | M11 lesson | APPLIED (`m11Kit/copy.ts` `PLAN_WORDS`) |
+| K11-02 | (drawing) | Hi-hat and ride spot mics | Drawn on booms (a floor stand straight under them passes through the cymbal); the floor-tom spot sits over the rim away from the rack tom's stand. | Collision check: the first drawing put stands through hardware. | kit plan; test `mikingModelM11` | APPLIED (`m11Kit/plan.ts`) |
 ## M06 Timpani, M07a Concert bass drum, M07b Concert snare, M08 Headed tambourine (branch miking-w4, 2026-10-05)
 
 | id | Line | Lesson says | App says | Why | Source | Status |
 |---|---|---|---|---|---|---|
-| T-01 | L18 / ref [6] | "A documented classical-recording approach … about 1 m above the heads" (cites ebrary) | "about 1 m (3 ft 3 in) above the heads, between the two drums" — the book's own "(3'4")" kept in the record; no source named on screen | The batch research: cite the book (*Classical Recording*), not the ebrary mirror; 1 m = 3 ft 3.4 in | timpani/SOURCES.md DECCA | APPLIED (`m06Timpani/model.ts`) · OWNER: replace ref [6] with the book |
-| T-02 | ref [9] | Neumann MCM newsroom case | Not used | The URL returns 404 | timpani/SOURCES.md | APPLIED · OWNER: find the current URL |
-| T-03 | L20 | "Arrange according to the player's real drum order rather than assuming a fixed left-to-right pitch map" | Kept, and the lab draws the international order with the German order named as its mirror | Yamaha's placement page gives both orders | YMH-TIMP-PLACE | APPLIED (`m06Timpani/copy.ts`) |
-| B-01 | ref [1] | cites the ebrary mirror | The book is the record | as T-01 | concert_bass_drum/SOURCES.md DECCA | OWNER: replace the link |
+| TP-01 | L18 / ref [6] | "A documented classical-recording approach … about 1 m above the heads" (cites ebrary) | "about 1 m (3 ft 3 in) above the heads, between the two drums" — the book's own "(3'4")" kept in the record; no source named on screen | The batch research: cite the book (*Classical Recording*), not the ebrary mirror; 1 m = 3 ft 3.4 in | timpani/SOURCES.md DECCA | APPLIED (`m06Timpani/model.ts`) · OWNER: replace ref [6] with the book |
+| TP-02 | ref [9] | Neumann MCM newsroom case | Not used | The URL returns 404 | timpani/SOURCES.md | APPLIED · OWNER: find the current URL |
+| TP-03 | L20 | "Arrange according to the player's real drum order rather than assuming a fixed left-to-right pitch map" | Kept, and the lab draws the international order with the German order named as its mirror | Yamaha's placement page gives both orders | YMH-TIMP-PLACE | APPLIED (`m06Timpani/copy.ts`) |
+| B-01 | ref [1] | cites the ebrary mirror | The book is the record | as TP-01 | concert_bass_drum/SOURCES.md DECCA | OWNER: replace the link |
 | B-02 | L18 | "just above … looking diagonally downwards … about 45 cm" | "above the playing head, about 45 cm from it, looking diagonally down at it" — the drawing puts the mic 450 mm from the head centre at 45° (a drawing default), which is not literally above the rim | At 45 cm from the head centre no position is above a 36 in drum's rim; "about 45 cm" is read from the head centre (proposal) and the elevation is the owner's call | concert_bass_drum/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve the 45° and the reading of "just above" |
 | B-03 | L26 | "The source's possible suggestion of rotating the drum" | Said as a real suggestion the source makes — and a decision for the player and crew under the stand's manual, never the engineer's | The Decca text does say it ("you could consider turning the drum sideways") | DECCA | APPLIED (`m07aConcertBassDrum/lesson.ts` cbd.ctx.studio) |
 | CS-01 | L24 | Shure tutorial "about 10 cm (4 in)" | "about 10 cm (4 in) or a little more" (the zone starts at 4 in exactly) | Shure's words are "a good 4 inches" (at least about 4 in) | S-SM57-ART | APPLIED (`m07bConcertSnare/model.ts` csn.whole) |
@@ -692,3 +692,4 @@ Built 2026-10-05 (branch `miking-i1`, from `4334be8b` on `final-lab`). Research:
 | CY-08 | — | — | see CH-01 | | | |
 | CY-09 | — | — | see CH-02 | | | |
 | CY-10 | (all) | "Pro Audio Training Academy", "Student" | Not used | House rule. | — | APPLIED |
+> **Ids (review Lab 1 minor 9, 2026-10-05).** The M11 kit rows were S-01/S-02 and the timpani rows T-01–T-03, repeating the snare's and toms' ids; they are now K11-01/K11-02 and TP-01–TP-03.

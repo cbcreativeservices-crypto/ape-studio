@@ -312,13 +312,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'oh.two.1',
     page: 'twoMic',
-    prompt: 'The floor-tom method’s two mics are both 1.02 m from the snare’s centre. Are they the same distance from the kick?',
-    options: ['No — here about 1.46 m and 0.90 m', 'Yes — equal for the snare, equal for all', 'Yes, as long as both are the same model'],
-    correct: 'No — here about 1.46 m and 0.90 m',
-    explain: 'Equal snare distance lines up the snare only. The kick, toms and cymbals still reach the two mics at different times — about 1.6 ms apart for the kick here.',
+    prompt: 'The floor-tom method’s two mics are both 1.02 m from the snare’s centre. Does the snare reach the two mics at the same moment?',
+    options: ['Yes — equal distance lines up the snare, not the other drums', 'Yes — and with it the kick, the toms and the cymbals as well', 'No — the side mic hears the snare later, being lower down'],
+    correct: 'Yes — equal distance lines up the snare, not the other drums',
+    explain: 'Equal snare distance lines up the snare only. The kick, toms and cymbals still reach the two mics at different times — here the kick is about 1.46 m from one mic and 0.90 m from the other, about 1.6 ms apart.',
     why: {
-      'Yes — equal for the snare, equal for all': 'Each source has its own two distances. Matching the snare’s says nothing about the kick’s.',
-      'Yes, as long as both are the same model': 'The model changes the sound, not the distances. Arrival times follow the geometry alone.',
+      'Yes — and with it the kick, the toms and the cymbals as well': 'Each source has its own two distances. Here the kick is about 1.46 m and 0.90 m away — about 1.6 ms apart.',
+      'No — the side mic hears the snare later, being lower down': 'Height is only part of a distance. Both mics are 1.02 m from the snare, so its sound arrives at both together.',
     },
   },
   {
@@ -339,7 +339,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Which pair is least likely to colour the kit when summed to mono?',
     options: ['A coincident X/Y pair, capsules together', 'A spaced pair, each 1.2 m from the snare', 'The floor-tom method’s mic above and side mic'],
     correct: 'A coincident X/Y pair, capsules together',
-    explain: 'Coincident capsules hear each source at the same moment, so the pair itself adds no time difference. It does not fix differences with the close mics.',
+    explain: 'Coincident capsules hear each source at the same moment, so the pair itself adds no time difference — no comb filtering between them. It can still colour off-axis sources through each capsule’s off-axis response, and it does not fix differences with the close mics.',
     why: {
       'A spaced pair, each 1.2 m from the snare': 'Equal snare distance lines up the snare only; every other source arrives at two times, which can colour the mono sum.',
       'The floor-tom method’s mic above and side mic': 'Matched to the snare, but far apart: the kick, toms and cymbals arrive at different times.',
@@ -587,12 +587,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'Which faces of a cymbal send its sound out?',
-    options: ['Both, top and underside', 'Only the top face', 'Only the edge'],
+    options: ['Both, top and underside', 'Only the top face, which the stick hits', 'Only the edge, as it ripples outward'],
     correct: 'Both, top and underside',
     explain: 'The whole plate rings and pushes air from both faces — up toward the overheads and down toward the drums.',
     why: {
-      'Only the top face': 'The underside moves the air too; the close mics below a cymbal hear it.',
-      'Only the edge': 'The edge moves most in many shapes, but the whole plate radiates.',
+      'Only the top face, which the stick hits': 'The underside moves the air too; the close mics below a cymbal hear it.',
+      'Only the edge, as it ripples outward': 'The edge moves most in many shapes, but the whole plate radiates.',
     },
   },
   {
@@ -624,11 +624,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your overheads are rated to 140 dB SPL. What does that tell you about sitting by the kit through a long soundcheck?',
-    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe while the kit stays below the mics’ 140 dB', 'It is safe as long as the mics are above the kit'],
+    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mics’ 140 dB', 'It is safe as long as the mics are above the kit'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the kit stays below the mics’ 140 dB': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
+      'It is safe for a while, as long as the kit stays below the mics’ 140 dB': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as the mics are above the kit': 'Where the mics are says nothing about your ears. Measure where you listen, and limit the time.',
     },
   },

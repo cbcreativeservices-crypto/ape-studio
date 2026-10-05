@@ -35,7 +35,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Choose the microphones',
     goal: 'Choose a mic for each channel’s role by its properties — pattern, power, size and mount — not by brand.',
     credit: { scenarios: ['kt.mic.1', 'kt.mic.2', 'kt.mic.3', 'kt.mic.4', 'kt.rec.1'], note: 'Answer the five checks (one reaches back to how the kit sounds).' },
-    takeaway: 'Each channel’s role sets its mic: a kick mic for weight, small dynamics close to drums, small condensers over cymbals and in the room. Count the condensers: each needs phantom power.',
+    takeaway: 'Each channel’s role sets its mic: a kick mic for weight, small dynamics close to drums; small condensers are common over the cymbals and in the room. Count whatever condensers you choose: each needs phantom power.',
   },
   placement: {
     title: 'Channel plans',
@@ -160,7 +160,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'kt.mic.1',
     page: 'microphone',
-    prompt: 'Your plan has two pencil overheads, a pair of room mics and a hi-hat condenser. How many inputs need phantom power?',
+    prompt: 'Your plan has two small-condenser overheads, a pair of condenser room mics and a hi-hat condenser. How many inputs need phantom power?',
     options: ['Five — every condenser in the plan', 'Two — only the overheads use it', 'None — phantom is for the PA only'],
     correct: 'Five — every condenser in the plan',
     explain: 'Each condenser needs phantom power: count them when you plan the inputs, and mute the outputs before switching it.',
@@ -172,13 +172,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'kt.mic.2',
     page: 'microphone',
-    prompt: 'Which kind of mic is a common choice for a close tom spot?',
-    options: ['A small cardioid dynamic on a short boom', 'A large condenser in the room’s corner', 'A boundary plate on the floor tom’s head'],
+    prompt: 'A tom spot must sit low under a crash, need no phantom power, and stay out of the sticks’ path. Which suits it?',
+    options: ['A small cardioid dynamic on a short boom', 'A large condenser on a tall stand, above the crash', 'A boundary plate resting on the floor tom’s head'],
     correct: 'A small cardioid dynamic on a short boom',
-    explain: 'A small dynamic close to the drum, out of the sticks’ path, is a common start — the toms lesson has the starting points. Other mics can work; choose by properties.',
+    explain: 'Small, low and unpowered: a small dynamic close to the drum, out of the sticks’ path, fits all three needs — the toms lesson has the starting points. Other mics can work when their properties fit.',
     why: {
-      'A large condenser in the room’s corner': 'That is a room mic: far from the tom, it hears mostly the room.',
-      'A boundary plate on the floor tom’s head': 'Nothing rests on a played head: it would rattle and be struck.',
+      'A large condenser on a tall stand, above the crash': 'It needs phantom power, and above the crash it hears the cymbals more than the tom.',
+      'A boundary plate resting on the floor tom’s head': 'Nothing rests on a played head: it would rattle and be struck.',
     },
   },
   {
@@ -518,7 +518,7 @@ const setupTasks: SetupTask[] = [
       { id: 'a', label: 'An overhead pair over the kit, with a kick mic added after listening', ok: true, power: 'phantom', feedback: 'An open picture from the pair; the kick only if the music needs its weight.' },
       { id: 'b', label: 'One whole-kit mic, plus kick and snare spots kept low in the blend', ok: true, power: 'phantom', feedback: 'A whole-kit picture with a little focus — fine if the spots hold up in mono.' },
       { id: 'c', label: 'The floor-tom method: a mic over the snare, a side mic, a kick spot', ok: true, power: 'phantom', feedback: 'A whole-kit family from few mics — the snare distances matched, checked in mono.' },
-      { id: 'd', label: 'Every drum and cymbal spotted, the overheads only for cymbals', ok: false, power: 'phantom', feedback: 'For an open jazz picture with a well-balanced player, a fully isolated kit may be unnecessary.' },
+      { id: 'd', label: 'Every drum and cymbal spotted, the overheads only for cymbals', ok: false, power: 'phantom', feedback: 'Overheads used only for cymbals give up the open whole-kit picture this brief asks for — spot mics can be recorded, but the picture comes from the overheads first.' },
       { id: 'e', label: 'Room mics only, far in the corners, no kit picture', ok: false, power: 'phantom', feedback: 'Corners alone give mostly room: the kit picture comes first.' },
     ],
     reasons: [CLEAR, NEED, { id: 'r.picture', label: 'The whole-kit picture comes first; spots only add what is missing', role: 'required', feedback: 'Say how the picture is set before the spots.' }, { id: 'r.room', label: 'The good room adds to the open sound', role: 'optional', feedback: 'A fair studio reason.' }, BRAND, MORE],
@@ -543,6 +543,8 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a close snare mic. Does it hear the hi-hat?', options: ['No — it is too close to the snare', 'Yes, a little later and quieter', 'Only if it is aimed at the hi-hat'], after: 'Now STEP through the cymbal’s stroke (or PLAY ONCE), then see who arrives first at each mic.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  placement: { prompt: 'Predict: you add a close tom mic to a four-mic base. What else gets louder in that new channel?', options: ['The rest of the kit, later and quieter', 'Only the tom it is aimed at', 'It depends on the tom’s tuning'], after: 'Now build the two plans and count what each added channel costs.' },
+  context: { prompt: 'Predict: on a loud small stage, which drum channels does the PA need first?', options: ['The ones the audience cannot already hear', 'Every drum and cymbal, all equally', 'Only the overhead pair'], after: 'Now route each channel and read where it goes.' },
   twoMic: { prompt: 'If you flip the overhead’s polarity, what happens to its delay behind the kick mic?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
@@ -612,11 +614,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your kit mics are rated to 140 dB SPL or more. What does that tell you about standing by the kit through a long soundcheck?',
-    options: ['Nothing — it is the mics’ distortion limit, not a hearing limit', 'It is safe while the kit stays below the mics’ rating', 'It is safe as long as the mics are between you and the kit'],
+    options: ['Nothing — it is the mics’ distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mics’ rating', 'It is safe as long as the mics are between you and the kit'],
     correct: 'Nothing — it is the mics’ distortion limit, not a hearing limit',
     explain: 'Max SPL says when a MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the kit stays below the mics’ rating': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
+      'It is safe for a while, as long as the kit stays below the mics’ rating': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as the mics are between you and the kit': 'Mics do not shield your ears. Limit the level and the time, and use hearing protection.',
     },
   },

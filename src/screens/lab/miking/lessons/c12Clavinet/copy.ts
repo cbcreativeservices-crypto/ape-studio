@@ -4,6 +4,7 @@
  * null is aimed TOWARD the loudest monitor (CORRECTIONS_LOG C12-02).
  */
 import type { LessonCopy } from '../../engine/model/copy.ts';
+import { OPPOSITE_SIDES_POLARITY } from '../../engine/model/sharedItems.ts';
 import { GRILLE_X } from './ampSpec.ts';
 
 export const CLAV_COPY: LessonCopy = {
@@ -117,7 +118,7 @@ export const CLAV_COPY: LessonCopy = {
     variant: 'combo',
     A: { typeId: 'instDynCard', pattern: 'cardioid', zone: 'cl.line' },
     B: { typeId: 'instDynCard', pattern: 'cardioid', zone: 'cl.back' },
-    opposite: { surface: 'grille', note: 'One mic is now behind the open back: as the cone pushes out toward the front mic, it pulls away from the rear one — the rear mic hears the speaker in the opposite polarity. That is why a rear mic’s polarity is flipped, and then the blend is judged in mono.' },
+    opposite: { surface: 'grille', note: `One mic is now behind the open back: as the cone pushes out toward the front mic, it pulls away from the rear one — the rear mic hears the speaker in the opposite polarity. ${OPPOSITE_SIDES_POLARITY}` },
     learn: [
       'A close mic and a second one a little farther back on the same speaker give a choice of bite and body. A direct (DI) track can play the same part: it arrives before either mic.',
       'Then listen: each alone, the two together, and in MONO. The farther mic hears the speaker later — in mono that can comb. Moving a mic, or delaying a track, changes the delay; the polarity switch does not.',

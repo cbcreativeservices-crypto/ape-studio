@@ -53,7 +53,7 @@ export const C07_COPY = stringsCopy({
     clipCond: 'Ideas to try with a clip-on: keep the capsule over the top between the neck joint and the hole, and compare the low notes with a stand mic.',
   },
   learnSeparate: 'Distance, position along the bass and angle are separate variables: change one at a time. On this cutaway body the neck meets the body at the 17th fret, so the 12th fret is well out on the neck. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-  learnTendencies: 'There is little published guidance for this instrument: these starting points borrow from the guitar, and say so. Near the neck joint is a balanced start; toward the hole adds body and boom; farther back, more room — and room build-up on low notes. With a directional mic, proximity adds bass very close.',
+  learnTendencies: 'We found little guidance for this instrument: these starting points borrow from the guitar, and say so. Near the neck joint is a balanced start; toward the hole adds body and boom; farther back, more room — and room build-up on low notes. With a directional mic, proximity adds bass very close.',
   context: {
     zone: 'neck.bass',
     shield: C07_SHIELD,

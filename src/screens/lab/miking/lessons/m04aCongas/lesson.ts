@@ -14,6 +14,7 @@
  * are that page's contract, so this lesson uses the same ids.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { CONGA_MODEL, CONGA_WORDS } from './geometry.ts';
 import { CONGA, CONGA_DIMS as D, CONGA_ZONES, HEAD_Y, TUMBA } from './model.ts';
@@ -94,18 +95,7 @@ const scenarios: MikingScenario[] = [
       'The area behind the bass amp, where its cables run': 'Tidy cables matter, but the space to protect first is the player’s: hands, wrists, knees and footing.',
     },
   },
-  {
-    id: 'cg.set.2',
-    page: 'setting',
-    prompt: 'Your conga mic is rated to a very high maximum SPL. Does that tell you how long you can stand by the drums through soundcheck?',
-    options: ['No — that is the mic’s distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for people nearby', 'Yes, as long as the mic is closer to the drums than you are'],
-    correct: 'No — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
-    why: {
-      'Yes — anything below the mic’s rating is safe for people nearby': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as the mic is closer to the drums than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
-    },
-  },
+  micRatingCheck({ id: 'cg.set.2', page: 'setting', mic: 'conga mic', loudest: 'the loudest slap' }),
   {
     id: 'cg.set.3',
     page: 'setting',
@@ -181,7 +171,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.mic.2',
     page: 'microphone',
-    prompt: 'One engineer uses condensers for conga overdubs and dynamics next to a drum kit. What does that tell you?',
+    prompt: 'One approach uses condensers for conga overdubs and dynamics next to a drum kit. What does that tell you?',
     options: ['A choice for those situations, not a law about mic types', 'Condensers are the natural-sounding choice for congas', 'Dynamics are what isolates congas from the rest of a band'],
     correct: 'A choice for those situations, not a law about mic types',
     explain: 'Pattern, distance, off-axis response, aim and the room decide more than the transducer type. Neither type is automatically natural or isolating — compare them by ear in the situation in front of you.',
@@ -266,12 +256,12 @@ const scenarios: MikingScenario[] = [
     id: 'cg.ctx.1',
     page: 'context',
     prompt: 'Live, what can favour close, directional mics — often one per drum — on congas?',
-    options: ['Stage spill, and the level you need before feedback', 'Directional mics make the congas louder', 'The room sound is more useful on a stage'],
+    options: ['Stage spill, and the level you need before feedback', 'Directional mics make the congas sound louder on stage', 'The room sound is more useful on a stage than in a studio'],
     correct: 'Stage spill, and the level you need before feedback',
     explain: 'On a loud stage, close directional mics give more direct sound against spill and more independent control; a distant or extra open mic can raise feedback risk. In a studio, more distance may balance the strokes.',
     why: {
-      'Directional mics make the congas louder': 'A pattern decides what a mic rejects, not how loud the drums are.',
-      'The room sound is more useful on a stage': 'That is the studio column: more distance helps when the room adds something.',
+      'Directional mics make the congas sound louder on stage': 'A pattern decides what a mic rejects, not how loud the drums are.',
+      'The room sound is more useful on a stage than in a studio': 'That is the studio column: more distance helps when the room adds something.',
     },
   },
   {
@@ -290,12 +280,12 @@ const scenarios: MikingScenario[] = [
     id: 'cg.ctx.studio',
     page: 'context',
     prompt: 'Studio overdub, no wedges, a good-sounding room. What could justify backing a conga mic off toward 60 cm?',
-    options: ['A better balance of strokes, with the room worth hearing', 'A farther mic will make the congas sound louder', 'Backing off takes the room out of the sound'],
+    options: ['A better balance of strokes, with the room worth hearing', 'A farther mic will make the congas sound louder overall', 'Backing off takes the room’s sound out of the conga mic'],
     correct: 'A better balance of strokes, with the room worth hearing',
     explain: 'In a quiet, well-behaved room, backing off can balance open tones, slaps and muted strokes — and the room becomes part of the sound.',
     why: {
-      'A farther mic will make the congas sound louder': 'Farther means less direct sound, not more. Distance is for balance, not level.',
-      'Backing off takes the room out of the sound': 'The reverse: the farther the mic, the more of the room it hears.',
+      'A farther mic will make the congas sound louder overall': 'Farther means less direct sound, not more. Distance is for balance, not level.',
+      'Backing off takes the room’s sound out of the conga mic': 'The reverse: the farther the mic, the more of the room it hears.',
     },
   },
   {
@@ -337,13 +327,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.two.3',
     page: 'twoMic',
-    prompt: 'Does setting the two conga mics a fixed ratio farther apart make their sum coherent?',
-    options: ['No: judge the pair by ear, in mono, on every stroke', 'Yes, once they are three times farther apart', 'Yes, provided that both mics share the same pickup pattern'],
-    correct: 'No: judge the pair by ear, in mono, on every stroke',
-    explain: 'Each mic hears both drums at different times; no fixed spacing rule solves every pair on one set of drums. Listen in mono and across every stroke.',
+    prompt: 'One mic per conga. Does placing them by 3:1 — each mic at least three times nearer its own drum than the other mic is — help?',
+    options: ['Yes — each hears less of the other drum; still check in mono', 'No — 3:1 applies only to two mics on the same drum', 'Yes — spaced 3:1, the pair can no longer comb at all'],
+    correct: 'Yes — each hears less of the other drum; still check in mono',
+    explain: '3:1 can reduce interacting pickup between mics on different sources — and one mic per conga is exactly that case. Each mic still hears the other drum a little, later, so judge the pair by ear, in mono, on every stroke.',
     why: {
-      'Yes, once they are three times farther apart': 'A spacing ratio is about spill between mics on different sources. These mics share the same drums.',
-      'Yes, provided that both mics share the same pickup pattern': 'Matching patterns does not line up arrival times. Judge the pair in mono, in both polarity states.',
+      'No — 3:1 applies only to two mics on the same drum': 'It is the other way round: 3:1 is about mics on DIFFERENT sources — one mic per drum is where it applies.',
+      'Yes — spaced 3:1, the pair can no longer comb at all': 'It reduces the other drum in each mic; it does not remove it. Whatever is left still arrives late and can comb — check in mono.',
     },
   },
   {
@@ -352,7 +342,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'With a bottom mic added, flipping its polarity makes the congas sound bigger — and 3 dB louder. What do you conclude?',
     options: ['Not yet: match the levels, then compare both states in mono', 'Inverted is better, so keep it that way for the rest of the show', 'Normal polarity was wrong, because it was quieter'],
     correct: 'Not yet: match the levels, then compare both states in mono',
-    explain: 'A louder version almost always sounds “better” at first. Compare at matched level, in mono, across every stroke, before you decide — and never invert a channel just because it is below the drum.',
+    explain: `A louder version almost always sounds “better” at first. ${OPPOSITE_SIDES_POLARITY} Compare across every stroke before you decide.`,
     why: {
       'Inverted is better, so keep it that way for the rest of the show': 'A louder version almost always sounds better at first. Compare at matched level before deciding.',
       'Normal polarity was wrong, because it was quieter': 'Quieter is not wrong. Match levels, then judge which state keeps the body and the attack.',
@@ -552,7 +542,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: HandLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: when the hand pushes the head down into the drum, where does the air inside go?', options: ['Down the shell, toward the open lower end', 'Up, back out through the head', 'Nowhere — the air inside stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
+  sound: { prompt: 'Before you step through: when the hand pushes the head down into the drum, where does the air inside go?', options: ['Down the shell, toward the open lower end', 'Up, back out through the head', 'Nowhere — the air inside the shell stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the shared mic from just above the heads to higher up. What changes?', options: ['More of both drums blended, and more room', 'More slap from the nearer drum', 'Nothing until it is a metre away'], after: 'Higher and farther tends to blend the pair and bring in more of the room — a tendency to check by ear, with every stroke.' },
   context: { prompt: 'Where can this mic, aimed at the tumba, best reject the floor wedge in front of the drums?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -589,11 +579,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'Open tones land near the rim. Compared with a strike at the centre, what does a strike there set moving?',
-    options: ['Shapes with a still line across the head, too', 'Only the lowest, ring-shaped shape', 'Nothing — the rim holds the head still'],
+    options: ['Shapes with a still line across the head, too', 'Only the lowest, ring-shaped shape of the head', 'Nothing — the rim holds the head still'],
     correct: 'Shapes with a still line across the head, too',
     explain: 'At the centre, every shape with a still line across the head stands still; away from the centre, those shapes move, so a strike there drives them too.',
     why: {
-      'Only the lowest, ring-shaped shape': 'That is closer to a centre strike. Away from the centre, more shapes are driven.',
+      'Only the lowest, ring-shaped shape of the head': 'That is closer to a centre strike. Away from the centre, more shapes are driven.',
       'Nothing — the rim holds the head still': 'Only the very edge is held. A little inside it the head moves, and a strike there drives its shapes.',
     },
   },
@@ -601,24 +591,24 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'A stroke pushes the head down into the drum. Where is the air inside pushed?',
-    options: ['Down the shell, toward the open lower end', 'Up and back out through the head', 'Nowhere — the air inside stays still'],
+    options: ['Down the shell, toward the open lower end', 'Up and back out through the head itself', 'Nowhere — the air inside the shell stays still'],
     correct: 'Down the shell, toward the open lower end',
     explain: 'The head moving down pushes the air in the shell toward the open lower end, where a deeper part of the sound leaves.',
     why: {
-      'Up and back out through the head': 'The head is moving down, into the drum — it pushes the air down, toward the open end.',
-      'Nowhere — the air inside stays still': 'The moving head pushes the air in front of it, down the shell toward the open end.',
+      'Up and back out through the head itself': 'The head is moving down, into the drum — it pushes the air down, toward the open end.',
+      'Nowhere — the air inside the shell stays still': 'The moving head pushes the air in front of it, down the shell toward the open end.',
     },
   },
   {
     id: 'q.5',
     covers: 'setting',
     prompt: 'Where should the cable for a conga mic run?',
-    options: ['Away from the player’s feet and their path', 'Up the shell, taped to the drum', 'Into the open lower end, out of sight'],
+    options: ['Away from the player’s feet and their path', 'Up the shell, taped firmly to the drum', 'Into the open lower end, out of everyone’s sight'],
     correct: 'Away from the player’s feet and their path',
     explain: 'Secure cables so they do not shift into the player or create a trip hazard — and never into the open end.',
     why: {
-      'Up the shell, taped to the drum': 'That puts the cable in the hand path and changes the drum. Route it away from the player.',
-      'Into the open lower end, out of sight': 'Never route a cable into the open end: it blocks the sound and the drum’s support.',
+      'Up the shell, taped firmly to the drum': 'That puts the cable in the hand path and changes the drum. Route it away from the player.',
+      'Into the open lower end, out of everyone’s sight': 'Never route a cable into the open end: it blocks the sound and the drum’s support.',
     },
   },
   {
@@ -626,11 +616,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your mic is rated to a very high maximum SPL. What does that tell you about standing by the congas through a long soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the drums than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -664,7 +654,7 @@ export const M04A_LESSON: HandLesson = {
     stages: [
       { title: 'The hand strikes', text: 'The player’s hand strikes the head — the fingers near the rim for an open tone, the palm a little off centre for a bass stroke. That brief contact is where the ATTACK begins.' },
       { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the centre, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
-      { title: 'The air is pushed down', text: 'The head pushes the air in the tall shell down toward the open lower end. Here the drum stands on the floor, so that end meets the floor.', ported: 'The head pushes the air in the tall shell down and out of the open lower end — raised on a stand, that end is clear of the floor.' },
+      { title: 'The air is pushed down', text: 'The head pushes the air in the tall shell down toward the open lower end. Here the drum stands on the floor, so that end meets the floor.', ported: 'The head pushes the air in the tall shell down and out of the open lower end — raised on a stand, that end is clear of the floor. As the head moves down, the air above it thins while air is pushed out below: a mic above and a mic at the open end hear opposite pushes.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — up and around, toward the player and any mic above — and around the base, where the open end meets the floor. Head and lower end are different perspectives.', ported: 'Sound leaves from the head — up and around — and from the open lower end, which adds a deeper, boomier part. Head and lower end are different perspectives.' },
     ],
     attack: 'The start of the sound: the hand’s brief contact with the head. It begins at the head, so a mic above the head and facing it tends to hear more of the hand’s detail — slaps and open tones.',

@@ -11,6 +11,7 @@
  * (owner ruling 2026-10-04): no source, brand or model names.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, SetupReason, Symptom } from '../../../engine/model/types.ts';
+import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 /** The words an item needs: "hi-hat", "the hi-hats", "a hi-hat mic". */
 export type CymWords = { pfx: string; one: string; the: string; mic: string };
@@ -19,18 +20,10 @@ export const HEARING_EXPLAIN = 'Max SPL says when the MIC distorts. For people, 
 
 /** THE SETTING: a mic's max SPL is not a hearing limit. */
 export function hearingCheck(w: CymWords): MikingScenario {
-  return {
-    id: `${w.pfx}.set.hear`,
-    page: 'setting',
-    prompt: `Your ${w.mic} is rated to a very high maximum SPL. Does that tell you how long you can safely stand beside ${w.the} through soundcheck?`,
-    options: ['No — max SPL is the mic’s distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for the people near it', 'Yes, as long as the mic is closer to the cymbal than you are'],
-    correct: 'No — max SPL is the mic’s distortion limit, not a hearing limit',
-    explain: HEARING_EXPLAIN,
-    why: {
-      'Yes — anything below the mic’s rating is safe for the people near it': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as the mic is closer to the cymbal than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels, repeats and time down.',
-    },
-  };
+  // The shared max-SPL check (sharedItems.ts): what the rating DOES say,
+  // with the cymbals' own hearing note added to its explanation.
+  const c = micRatingCheck({ id: `${w.pfx}.set.hear`, page: 'setting', mic: w.mic, loudest: `the hardest hit on ${w.the}` });
+  return { ...c, explain: `${c.explain} Cymbals are among the loudest things on a stage: keep soundcheck short and use hearing protection.` };
 }
 
 /** THE QUICK CHECK's critical item (hearing). */

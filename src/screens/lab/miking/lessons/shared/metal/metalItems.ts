@@ -11,6 +11,7 @@
  * recall. Starting-points voice; no source names (owner 2026-10-04).
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
+import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 export type MetalWords = {
   /** id prefix ("tri", "fc", "bc", "gg") */
@@ -26,18 +27,8 @@ export type MetalWords = {
 };
 
 export function hearingCheck(w: MetalWords, page: PageId = 'setting'): MikingScenario {
-  return {
-    id: `${w.p}.set.hear`,
-    page,
-    prompt: `The spot mic near ${w.the} is rated to a very high SPL. Does that tell you how long the crew can stand there through rehearsal?`,
-    options: ['No — max SPL is the mic’s distortion limit, not a hearing limit', 'Yes — anything under the mic’s rating is safe for the people near it', 'Yes, as long as the mic is nearer the instrument than the people are'],
-    correct: 'No — max SPL is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more.',
-    why: {
-      'Yes — anything under the mic’s rating is safe for the people near it': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours, measured where they listen.',
-      'Yes, as long as the mic is nearer the instrument than the people are': 'Where the mic sits says nothing about the people’s ears. Measure where the person listens, and keep levels and time down.',
-    },
-  };
+  // The shared max-SPL check (sharedItems.ts): what the rating DOES say.
+  return micRatingCheck({ id: `${w.p}.set.hear`, page, mic: `spot mic near ${w.the}`, loudest: `the loudest stroke on ${w.the}` });
 }
 
 export function quickHearing(w: MetalWords, id = `${w.p}.q.6`): DiagnosticItem {

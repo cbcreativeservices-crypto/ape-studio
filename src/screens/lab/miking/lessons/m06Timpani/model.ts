@@ -91,7 +91,7 @@ const pairZone = (id: string, label: string, mid: Vec3, variant: 'two' | 'four',
   checks: ['The mallets’ whole reach and the player’s sightline to the conductor', 'Both drums, soft and loud, and every pedal change', 'Overhead obstructions and the stand’s stability'],
 });
 
-/* ── RECOMMENDED STARTING POINTS (lesson L17-L28; corrections T-01..T-03). ── */
+/* ── RECOMMENDED STARTING POINTS (lesson L17-L28; corrections TP-01..TP-03). ── */
 export const TIMP_ZONES: DocumentedZone[] = [
   pairZone('tp.pair', 'One mic between the two drums, high above', GAP_PAIR, 'two', 'the two drums'),
   pairZone('tp.pairLow', 'Over the left pair (the two larger drums)', GAP_LOW, 'four', 'the two larger drums'),

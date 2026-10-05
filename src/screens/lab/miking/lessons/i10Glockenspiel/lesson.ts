@@ -61,7 +61,7 @@ const pages: Record<PageId, PageContent> = {
   },
   twoMic: {
     title: 'Two microphones',
-    goal: 'Compare a near-coincident pair with a spaced pair over the glockenspiel — no published two-mic dimension exists for it — by what an end bar does to each.',
+    goal: 'Compare a near-coincident pair with a spaced pair over the glockenspiel — no agreed two-mic dimension exists for it — by what an end bar does to each.',
     credit: { scenarios: ['gl.two.1', 'gl.two.2', 'gl.two.3', 'gl.two.4'], interactive: 'pairCompared', note: 'Look at both pairs with an end bar as the source, then answer the four checks.' },
     takeaway: 'One mic often suffices. For a wide solo, a near-coincident pair gives a stable picture and a reliable mono sum; a spaced pair more separate low and high control, with colour in mono. Mount both outside the mallet arc.',
   },
@@ -206,7 +206,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Only if the player proves every stroke clears it',
     explain: 'At that height the capsule or boom can be inside a real player’s mallet arc. Never let a number override a collision or stability concern.',
     why: {
-      'Yes — it is published, so it is safe': 'A published distance is not a clearance check.',
+      'Yes — it is published, so it is safe': 'A starting distance is not a clearance check.',
       'Yes — the mic sits between the bars when the music pauses': 'A mic that looks clear in a pause is not clear during the passage.',
     },
   },
@@ -340,12 +340,12 @@ const symptoms: Symptom[] = [
     id: 'gl.s.click',
     observation: 'Too much click',
     firstChecks: 'Is the mallet approved, and the mic too near the striking point? Discuss the source; compare a safe oblique or higher position.',
-    options: ['The mallet with the player, then an oblique or higher view', 'Cut the treble with EQ until the click is gone', 'Ask for metal mallets so the pitch is clearer'],
+    options: ['The mallet with the player, then an oblique or higher view', 'Cut the treble with EQ until the click is gone entirely', 'Ask for metal mallets so the pitch is clearer to hear'],
     correct: 'The mallet with the player, then an oblique or higher view',
     explain: 'Source first, then the view. EQ cannot make a too-close position right.',
     why: {
-      'Cut the treble with EQ until the click is gone': 'EQ dulls the bell; find the cause.',
-      'Ask for metal mallets so the pitch is clearer': 'Metal adds attack — the opposite.',
+      'Cut the treble with EQ until the click is gone entirely': 'EQ dulls the bell; find the cause.',
+      'Ask for metal mallets so the pitch is clearer to hear': 'Metal adds attack — the opposite.',
     },
   },
   {
@@ -367,7 +367,7 @@ const symptoms: Symptom[] = [
 ];
 
 const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point, measured from the bars', role: 'required', feedback: 'Say why it is a good place to begin, and what it is measured from.' };
-const CLOSE_REASON: SetupReason = { id: 'r.close', label: 'The close 10–15 cm position is published, so it needs no clearance check', role: 'wrong', feedback: 'A published distance never overrides a collision check: it sits inside the mallet path.' };
+const CLOSE_REASON: SetupReason = { id: 'r.close', label: 'The close 10–15 cm position is published, so it needs no clearance check', role: 'wrong', feedback: 'A starting distance never overrides a collision check: it sits inside the mallet path.' };
 
 const setupTasks: SetupTask[] = [
   {
@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: a mallet strikes the middle of a steel bar. What do the bar’s ends do?', options: ['They move up while the middle goes down', 'They move down with the middle', 'They stay still — only the middle moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole bar.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: a mic 10–15 cm above the bars, as one published example has it. What will the drawing show?', options: ['It sits inside the mallets’ travel', 'It is the safest position', 'It is too far to hear the bars'], after: 'Look for the red band, then rest the mic in two blue zones.' },
+  placement: { prompt: 'Predict: a mic 10–15 cm above the bars, as one close example has it. What will the drawing show?', options: ['It sits inside the mallets’ travel', 'It is the safest position', 'It is too far to hear the bars'], after: 'Look for the red band, then rest the mic in two blue zones.' },
   context: { prompt: 'The side fill sits off to the side of a mic above the bars. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'Two mics close together, angled apart, over the middle: the lowest bar sounds. How big is their arrival-time difference?', options: ['Small', 'Large', 'Exactly zero'], after: 'Now step BAR to an end of the keyboard with each PAIR, and watch DELAY and LEVEL.' },
 };
@@ -421,11 +421,11 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'gl.q.2',
     covers: 'instrument',
-    prompt: 'Do all glockenspiels have a damper pedal?',
-    options: ['No — some are damped by hand', 'Yes — each model has one', 'Only the case models have one'],
-    correct: 'No — some are damped by hand',
+    prompt: 'Can a glockenspiel be made with no damper pedal?',
+    options: ['Yes — some are damped by hand', 'No — each model has one', 'Only the large concert models lack one'],
+    correct: 'Yes — some are damped by hand',
     explain: 'Some concert and case models have no pedal; the player damps with the hand.',
-    why: { 'Yes — each model has one': 'Some are made without a pedal.', 'Only the case models have one': 'Case models are usually damped by hand.' },
+    why: { 'No — each model has one': 'Some are made without a pedal.', 'Only the large concert models lack one': 'Case models are usually damped by hand too.' },
   },
   {
     id: 'gl.q.3',
@@ -490,7 +490,7 @@ const words: MalletWords = {
     looking: 'Two mics over the glockenspiel · paths from one bar',
     prompt: 'Choose a PAIR, then step BAR to the lowest and the highest bar. Watch DELAY and LEVEL — and the comb below.',
     learn: [
-      'One mic often suffices for a short or focused phrase. A wider range or a solo may benefit from two viewpoints. There is no published two-mic dimension for the glockenspiel: do not transfer the xylophone, marimba and vibraphone geometry automatically.',
+      'One mic often suffices for a short or focused phrase. A wider range or a solo may benefit from two viewpoints. There is no agreed two-mic dimension for the glockenspiel: do not transfer the xylophone, marimba and vibraphone geometry automatically.',
       'A near-coincident pair over the useful span when a stable picture and a reliable mono sum matter; a spaced pair for more separate low and high coverage — which can colour shared notes in mono. Mount both outside the mallet arc.',
       'Listen to each mic alone, both in stereo, and both summed to mono. If shared notes thin or change colour in mono, change placement and balance before polarity reversal or time alignment. In a mono PA, prioritise a stable mono balance.',
     ],
@@ -684,7 +684,7 @@ export const I10_LESSON: MalletLesson = {
     { text: 'The bars hang on strings through drilled holes (sourced); their posts and the damper’s and pedal’s geometry are drawing defaults; the gas-spring legs are drawn as cylinders on the frame’s legs.', dims: [] },
     { text: 'Which sharps and flats have a tube (“only essential accidental resonators”) — drawn under every second one, a drawing default.', dims: [] },
     { text: 'The case model: the table (760 mm), the split of its 108 mm into a 78 mm base and a 30 mm lid, and the lid open 90° on a far-side hinge — drawing defaults.', dims: [] },
-    { text: 'The pairs (near-coincident about 17 cm and 110°, spaced about 40 cm, both about 45 cm above the bars) — drawing defaults: no published two-mic dimension exists for the glockenspiel.', dims: [] },
+    { text: 'The pairs (near-coincident about 17 cm and 110°, spaced about 40 cm, both about 45 cm above the bars) — drawing defaults: no agreed two-mic dimension exists for the glockenspiel.', dims: [] },
     { text: 'The trial band split into closer (30–45 cm) and higher (45–60 cm) views, and the lateral angle (40–70 cm, 45–65° from straight up) — drawing defaults for the lesson’s words.', dims: [] },
   ],
   live: { wedges: malletWedges({ frontZ: FRONT_Z, sideX: SIDE_X }) },

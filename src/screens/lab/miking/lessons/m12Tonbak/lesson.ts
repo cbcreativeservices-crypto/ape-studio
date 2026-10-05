@@ -11,6 +11,7 @@
  * drum differ.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { TONBAK_MODEL, TONBAK_ZONES } from './geometry.ts';
 import { T_R } from './model.ts';
 
@@ -123,18 +124,7 @@ const scenarios: MikingScenario[] = [
       'Clamp the drum to a stand so that it cannot move while playing': 'Do not clamp a delicate rim, skin or decorated shell; the drum moves with the player.',
     },
   },
-  {
-    id: 'tb.set.2',
-    page: 'setting',
-    prompt: 'Your small condenser is rated for a very high SPL. Does that tell you how long you can sit beside the drum at soundcheck?',
-    options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — below the mic’s rating, the level is safe for people nearby', 'Yes, as long as you sit farther from the drum than the mic does'],
-    correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where they listen.',
-    why: {
-      'Yes — below the mic’s rating, the level is safe for people nearby': 'The rating is about the mic, not your ears. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as you sit farther from the drum than the mic does': 'Farther than the mic is not a hearing measure. Measure where the person listens, and keep the time down.',
-    },
-  },
+  micRatingCheck({ id: 'tb.set.2', page: 'setting', mic: 'small condenser', loudest: 'the loudest stroke' }),
   {
     id: 'tb.set.3',
     page: 'setting',
@@ -319,12 +309,12 @@ const scenarios: MikingScenario[] = [
     id: 'tb.two.2',
     page: 'twoMic',
     prompt: 'How do you bring in the opening mic?',
-    options: ['Hear each alone, then add it quietly in mono while the player plays', 'Set both to the same level, so that neither of them dominates', 'Invert it first, as a second mic on a drum needs its polarity flipped'],
+    options: ['Hear each alone, then add it quietly in mono while the player plays', 'Set both to the same level, so that neither of them dominates', 'Invert it and leave it: a second mic on a drum must be flipped'],
     correct: 'Hear each alone, then add it quietly in mono while the player plays',
-    explain: 'Identify what each mic contributes alone, then introduce the support channel gradually in mono while the player alternates deep, edge and roll strokes. Compare both polarity settings — neither is correct by rule.',
+    explain: `Identify what each mic contributes alone, then introduce the support channel gradually in mono while the player alternates deep, edge and roll strokes. ${OPPOSITE_SIDES_POLARITY}`,
     why: {
       'Set both to the same level, so that neither of them dominates': 'Equal levels are not a goal; the opening mic is a support, usually lower.',
-      'Invert it first, as a second mic on a drum needs its polarity flipped': 'No polarity setting is correct by rule here: compare both, by ear, in mono.',
+      'Invert it and leave it: a second mic on a drum must be flipped': 'Flipping it is a common first thing to try, never a rule: compare both states by ear, in mono.',
     },
   },
   {
@@ -653,7 +643,7 @@ export const M12_LESSON: Lesson = {
     stages: [
       { title: 'A stroke lands', text: 'The fingers or hand strike the head. Near the middle: the deep sound. At the edge: the bright sound.' },
       { title: 'The head moves', text: 'The head moves in the shapes the stroke can reach from where it landed — drawn here much larger than it really moves.' },
-      { title: 'The air inside moves', text: 'The moving head pushes and pulls the air inside the bowl; through the narrow neck some air and sound reach the open lower end.' },
+      { title: 'The air inside moves', text: 'The moving head pushes and pulls the air inside the bowl; through the narrow neck some air and sound reach the open lower end. As the head moves in, the air just outside it thins while air is pushed out of the opening: a mic at the head and a mic at the opening hear opposite pushes.' },
       { title: 'Sound leaves', text: 'Most of the sound leaves the head, toward the player’s right and up; some leaves the open lower end. The bowl and the air inside shape how it rings.' },
     ],
     attack: 'The start of each stroke: the hand’s brief contact with the head. A mic close to where the stroke lands tends to hear more of it — and more contact and finger sound.',
@@ -699,5 +689,5 @@ export const M12_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. No published tonbak miking standard exists: these starting points are adapted from how microphones behave, and every drum, player and room is different. Move the mic, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one wooden tonbak, a seated posture the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. We could not find a recommended way to mic the tonbak: these starting points are adapted from how microphones behave, and every drum, player and room is different. Move the mic, experiment, and trust your ears and the player. The lab is silent and draws a simplified picture: one wooden tonbak, a seated posture the player may not use, head motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the hands.',
 };

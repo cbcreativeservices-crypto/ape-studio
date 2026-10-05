@@ -9,6 +9,7 @@
  * Pinned by test/mikingLearnerText.test.ts and test/mikingModelM03.test.ts.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { KIT_CYMBALS, KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
 import { TOMS_MODEL } from './geometry.ts';
 import { TOM_ZONES } from './model.ts';
@@ -115,18 +116,7 @@ const scenarios: MikingScenario[] = [
       'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there.',
     },
   },
-  {
-    id: 'tm.set.1',
-    page: 'setting',
-    prompt: 'Your tom mic is rated to a very high maximum SPL. Does that tell you how long you can safely stand by the kit through soundcheck?',
-    options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for people near it', 'Yes, as long as the mic is closer to the drum than you are'],
-    correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
-    why: {
-      'Yes — anything below the mic’s rating is safe for people near it': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as the mic is closer to the drum than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels, repeats and time down.',
-    },
-  },
+  micRatingCheck({ id: 'tm.set.1', page: 'setting', mic: 'tom mic', loudest: 'the hardest tom hit' }),
   {
     id: 'tm.set.2',
     page: 'setting',
@@ -227,12 +217,12 @@ const scenarios: MikingScenario[] = [
     id: 'tm.place.2',
     page: 'placement',
     prompt: 'You swing the mic’s aim from the rim toward the centre of the head. What tends to change?',
-    options: ['More low end and body; a little less rim attack', 'Only the level drops; the tone stays exactly the same', 'A fixed bass boost you can read off a chart'],
-    correct: 'More low end and body; a little less rim attack',
-    explain: 'Pointing toward the rim tends to bring a higher-pitched attack; toward the centre a fuller low end. Tendencies, checked on the drum.',
+    options: ['More low end and body; less of the rim’s higher-pitched attack', 'Only the level drops; the tone stays exactly the same', 'A fixed amount of bass boost that you can read off a chart'],
+    correct: 'More low end and body; less of the rim’s higher-pitched attack',
+    explain: 'Pointing toward the rim tends to bring a higher-pitched attack; toward the centre a fuller low end. “Attack” here is that higher-pitched edge near the rim, not the stick’s strike itself. Tendencies, checked on the drum.',
     why: {
       'Only the level drops; the tone stays exactly the same': 'Aim changes the balance too — attack toward the rim, body toward the centre.',
-      'A fixed bass boost you can read off a chart': 'These are tendencies, not fixed amounts. Drums vary — check it on this drum.',
+      'A fixed amount of bass boost that you can read off a chart': 'These are tendencies, not fixed amounts. Drums vary — check it on this drum.',
     },
   },
   {
@@ -241,7 +231,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You use one mic between the two rack toms. What can you no longer do later?',
     options: ['Change the balance of the two toms on a fader', 'Hear either tom at all through that channel', 'Use that channel with the overheads in the mix'],
     correct: 'Change the balance of the two toms on a fader',
-    explain: 'A shared mic keeps one combined perspective: the balance between the two toms is set by where the mic sits, not by a fader.',
+    explain: 'A shared mic keeps one combined perspective: the balance between the two toms is set by where the mic sits, not by a fader. With a mic on each tom instead, the two mics are on different sources — where 3:1 applies: 3:1 can reduce interacting pickup between mics on different sources (each mic at least three times nearer its own tom than the other mic is).',
     why: {
       'Hear either tom at all through that channel': 'Both toms come through the shared mic — that is its point.',
       'Use that channel with the overheads in the mix': 'It mixes with the overheads like any tom channel. What it cannot do is balance the two toms separately.',
@@ -334,13 +324,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'tm.two.3',
     page: 'twoMic',
-    prompt: 'Is there a correct polarity setting for a tom’s bottom mic?',
-    options: ['No: check both states in mono and keep what serves the kit', 'Yes: a tom’s bottom mic is inverted, just like a snare drum’s', 'Yes: it stays at normal polarity, unlike a snare’s'],
-    correct: 'No: check both states in mono and keep what serves the kit',
-    explain: 'No setting is established for a top/bottom tom pair. Compare both states at matched level, in mono, with the overheads — and reposition or omit a mic if needed.',
+    prompt: 'A floor tom has a top mic and a bottom mic, facing each other across the drum. Is flipping the bottom mic a sensible first thing to try?',
+    options: ['Yes — they start opposite; then compare both states by ear', 'No — a tom’s bottom mic stays at normal polarity, unlike a snare’s', 'Yes — and from then on it is the correct setting for this tom'],
+    correct: 'Yes — they start opposite; then compare both states by ear',
+    explain: `${OPPOSITE_SIDES_POLARITY} Judge it with the overheads up — and reposition or leave out a mic if neither state serves the kit.`,
     why: {
-      'Yes: a tom’s bottom mic is inverted, just like a snare drum’s': 'Even on a snare, inversion is a check, not a law — and a tom is a different drum.',
-      'Yes: it stays at normal polarity, unlike a snare’s': 'Nothing fixes it either way. Check both states by ear.',
+      'No — a tom’s bottom mic stays at normal polarity, unlike a snare’s': 'A tom’s heads move together just like a snare’s, so the pair starts opposite. Nothing fixes the setting either way — check both states.',
+      'Yes — and from then on it is the correct setting for this tom': 'Flipping is where to start, never a rule: the delay between the mics can make either state the better one. Check both by ear.',
     },
   },
   {
@@ -576,12 +566,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'What holds the rack toms up on a typical kit?',
-    options: ['A holder standing on the kick, with an arm to each tom', 'Their own three legs, standing on the floor', 'Straps hanging from the cymbal stands above'],
+    options: ['A holder standing on the kick, with an arm to each tom', 'Their own three legs, each standing on the floor below', 'Straps hanging down from the cymbal stands above them'],
     correct: 'A holder standing on the kick, with an arm to each tom',
     explain: 'The rack toms ride on a holder mounted on the kick (or a stand); the floor tom stands on its own legs.',
     why: {
-      'Their own three legs, standing on the floor': 'That is the floor tom. The rack toms ride on a holder.',
-      'Straps hanging from the cymbal stands above': 'Cymbal stands carry cymbals. The toms ride on a holder.',
+      'Their own three legs, each standing on the floor below': 'That is the floor tom. The rack toms ride on a holder.',
+      'Straps hanging down from the cymbal stands above them': 'Cymbal stands carry cymbals. The toms ride on a holder.',
     },
   },
   {
@@ -612,11 +602,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     prompt: 'What must a rack-tom mic and its mount stay clear of?',
-    options: ['The sticks’ path across the toms, and the crash above', 'The kick’s front head, so the audience can see it', 'The floor tom’s space on the far side of the kit'],
+    options: ['The sticks’ path across the toms, and the crash above', 'The kick’s front head, so the audience can still see it', 'The floor tom’s space on the far side of the kit'],
     correct: 'The sticks’ path across the toms, and the crash above',
     explain: 'Fills sweep across all the toms, and the crashes above swing when struck.',
     why: {
-      'The kick’s front head, so the audience can see it': 'How the kit looks is not the safety question.',
+      'The kick’s front head, so the audience can still see it': 'How the kit looks is not the safety question.',
       'The floor tom’s space on the far side of the kit': 'Neighbours matter, but the sticks and the cymbals above are what move.',
     },
   },
@@ -625,11 +615,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your tom mic is rated to a very high maximum SPL. What does that tell you about standing by the kit through a long soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the toms stay below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the toms stay below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the toms stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the toms stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the drum than you': 'Where the mic sits says nothing about your ears. Measure where the person listens.',
     },
   },

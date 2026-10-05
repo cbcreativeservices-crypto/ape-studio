@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'No distance is published for a crash. How do you use a starting point of “20–35 cm above”?',
     options: ['As a place to begin, then move and listen', 'As an exact rule that must be measured to the mm', 'As a limit: closer than 35 cm is not allowed'],
     correct: 'As a place to begin, then move and listen',
-    explain: 'With no published number, the band is a sensible place to start — clear of the stroke and the swing — and your ears decide from there.',
+    explain: 'With no fixed number to go by, the band is a sensible place to start — clear of the stroke and the swing — and your ears decide from there.',
     why: {
       'As an exact rule that must be measured to the mm': 'Starting points are places to begin, never exact rules.',
       'As a limit: closer than 35 cm is not allowed': 'It is not a limit. Clearance from the stroke and the swing is the limit.',

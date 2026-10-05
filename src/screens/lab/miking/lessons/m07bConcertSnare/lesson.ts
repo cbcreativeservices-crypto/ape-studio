@@ -9,6 +9,7 @@
  * record lives in docs/labs/miking/concert_snare/ and the code-only fields.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY } from '../../engine/model/sharedItems.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, distortionSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, type Words } from '../shared/concert/commonItems.ts';
 import { CSN_MODEL } from './geometry.ts';
 import { CSN_DIMS, CSN_ZONES, D, FLOOR_Y } from './model.ts';
@@ -302,7 +303,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Top and bottom mics on the concert snare sound thin together. What is a sensible check?',
     options: ['Compare both polarity states in mono, at matched level', 'Invert the bottom mic and leave it: that setting is a rule', 'Raise the bottom mic until the sum sounds full again'],
     correct: 'Compare both polarity states in mono, at matched level',
-    explain: 'The two heads move the same way, so the mics often start opposite — but the arrival times and the positions matter too. Compare both states; do not mark one as always right.',
+    explain: `The two heads move the same way. ${OPPOSITE_SIDES_POLARITY}`,
     why: {
       'Invert the bottom mic and leave it: that setting is a rule': 'Inverting the bottom mic is a common thing to TRY; it is not a rule. Compare both states.',
       'Raise the bottom mic until the sum sounds full again': 'More level does not fix a cancellation; it can make the thin sum louder.',

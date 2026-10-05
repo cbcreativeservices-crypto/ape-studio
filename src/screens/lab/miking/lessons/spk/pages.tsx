@@ -93,7 +93,7 @@ const LESLIE_PARTS: { id: string; title: string; text: string; view: 'inside' | 
   { id: 'les.upper', title: 'UPPER LOUVERS', text: 'Slatted openings round the top, where the horn’s sound leaves. Upper mics go OUTSIDE them — nothing goes through.', view: 'front' },
   { id: 'les.lower', title: 'LOWER OPENINGS', text: 'Openings round the bottom, where the low rotor’s sound leaves. The lower mic goes outside one of them.', view: 'front' },
   { id: 'les.cabinet', title: 'THE CABINET', text: 'A closed wooden cabinet with turning parts, hot parts and dangerous voltages inside. It stays closed: only a qualified technician opens it.', view: 'front' },
-  { id: 'les.horn', title: 'HORN ROTOR', text: `Two horn bells turning on one axis at the top. The highs — above about ${CROSSOVER_HZ} Hz — come out of the turning bells.`, view: 'inside' },
+  { id: 'les.horn', title: 'HORN ROTOR', text: `Two horn bells turning on one axis at the top — on the classic cabinet only one sounds; the other is blocked and balances it. The highs, above about ${CROSSOVER_HZ} Hz, sweep past a mic once per turn.`, view: 'inside' },
   { id: 'les.driver', title: 'HORN DRIVER', text: 'The speaker under the horn rotor that feeds it; the bells turn above it.', view: 'inside' },
   { id: 'les.xo', title: 'CROSSOVER AND AMPLIFIER', text: `The crossover splits the sound at about ${CROSSOVER_HZ} Hz: highs up to the horn, lows down to the woofer. The amplifier inside is installed equipment, not a mic input.`, view: 'inside' },
   { id: 'les.woofer', title: 'WOOFER', text: 'A 15 in speaker facing DOWN into the low rotor. It does not turn.', view: 'inside' },
@@ -217,7 +217,7 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
             showStrip={false}
             highlight={lPart}
             onTapPart={setLPart}
-            accessibilityLabel={`The rotary cabinet, ${lView === 'inside' ? 'an inside view drawn as a diagram: the horn rotor with two bells at the top over its driver, the woofer facing down, the crossover and amplifier, and the low rotor drum at the bottom' : 'from the front: the upper louvers and the lower openings'}.${lp ? ` Highlighted: ${lp.title.toLowerCase()}.` : ''}`}
+            accessibilityLabel={`The rotary cabinet, ${lView === 'inside' ? 'an inside view drawn as a diagram: the horn rotor at the top, one sounding bell and one capped balance bell, over its driver, the woofer facing down, the crossover and amplifier, and the low rotor drum at the bottom' : 'from the front: the upper louvers and the lower openings'}.${lp ? ` Highlighted: ${lp.title.toLowerCase()}.` : ''}`}
           />
         ),
         badge: lView === 'inside' ? 'An inside view as a diagram — never open the cabinet · sizes and openings are drawing choices' : 'From the front · the openings’ layout is a drawing choice',
@@ -502,7 +502,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
             sticky: true,
             options: [
               { id: 'slow', label: 'SLOW (CHORALE)', blurb: `Horn ${ROTORS.horn.slowRpm} rpm, low rotor ${ROTORS.drum.slowRpm} rpm.` },
-              { id: 'fast', label: 'FAST (TREMOLO)', blurb: `Horn ${ROTORS.horn.fastRpm} rpm (up in ${ROTORS.horn.riseS} s), low rotor ${ROTORS.drum.fastRpm} rpm (up in ${ROTORS.drum.riseS} s).` },
+              { id: 'fast', label: 'FAST (TREMOLO)', blurb: `Horn ${ROTORS.horn.fastRpm} rpm (up in ${ROTORS.horn.riseS} s), low rotor ${ROTORS.drum.fastRpm} rpm (up in ${ROTORS.drum.riseS} s) — one adjustable cabinet’s settings; classic cabinets run the low rotor slower.` },
               { id: 'stop', label: 'STOP', blurb: 'Both rotors come to rest (some cabinets offer this).' },
             ],
           },

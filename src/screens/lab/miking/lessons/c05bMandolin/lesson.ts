@@ -332,12 +332,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'What do “A-style” and “F-style” describe?',
-    options: ['The body’s outline — the opening is a separate thing', 'The kind of strings, steel or nylon', 'The tuning, one an octave above the other'],
+    options: ['The body’s outline — the opening is a separate thing', 'The kind of strings it takes, steel or nylon', 'The tuning, one set an octave above the other'],
     correct: 'The body’s outline — the opening is a separate thing',
     explain: 'A-style is a teardrop outline; F-style adds a scroll and points. The opening — oval or f-holes — is named separately.',
     why: {
-      'The kind of strings, steel or nylon': 'Both styles use steel strings; the letters name the outline.',
-      'The tuning, one an octave above the other': 'They are tuned alike; the letters name the outline.',
+      'The kind of strings it takes, steel or nylon': 'Both styles use steel strings; the letters name the outline.',
+      'The tuning, one set an octave above the other': 'They are tuned alike; the letters name the outline.',
     },
   },
   {
@@ -356,12 +356,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'Where does most of a mandolin’s sound come from?',
-    options: ['The carved top, driven through the floating bridge', 'The strings, moving the air directly', 'The tailpiece at the end of the body'],
+    options: ['The carved top, driven through the floating bridge', 'The strings themselves, moving the air directly', 'The tailpiece, at the far end of the body'],
     correct: 'The carved top, driven through the floating bridge',
     explain: 'The bridge drives the top; the top and the air in the body radiate the sound.',
     why: {
-      'The strings, moving the air directly': 'Strings move little air on their own.',
-      'The tailpiece at the end of the body': 'The tailpiece anchors the strings; it radiates little.',
+      'The strings themselves, moving the air directly': 'Strings move little air on their own.',
+      'The tailpiece, at the far end of the body': 'The tailpiece anchors the strings; it radiates little.',
     },
   },
   {

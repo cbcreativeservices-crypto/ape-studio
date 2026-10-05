@@ -143,13 +143,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'vb.mic.1',
     page: 'microphone',
-    prompt: 'Is a condenser the only sensible mic for a vibraphone?',
-    options: ['No — a suitable dynamic can work too, especially live', 'Yes — a dynamic cannot hear metal bars at all', 'Yes — condensers are the only ones that work above bars'],
-    correct: 'No — a suitable dynamic can work too, especially live',
+    prompt: 'Can a suitable dynamic work over a vibraphone?',
+    options: ['Yes — especially live; compare it by ear', 'No — a dynamic cannot hear metal bars at all', 'No — only condensers work above the bars'],
+    correct: 'Yes — especially live; compare it by ear',
     explain: 'A condenser is a common choice for a detailed mallet instrument; a suitable dynamic can work in a difficult live setup. The source and the setting decide, not the type’s name.',
     why: {
-      'Yes — a dynamic cannot hear metal bars at all': 'Dynamics hear the bars well enough to be used; compare by ear.',
-      'Yes — condensers are the only ones that work above bars': 'Height does not decide the type. Pattern, response, power and mount do.',
+      'No — a dynamic cannot hear metal bars at all': 'Dynamics hear the bars well enough to be used; compare by ear.',
+      'No — only condensers work above the bars': 'Height does not decide the type. Pattern, response, power and mount do.',
     },
   },
   {

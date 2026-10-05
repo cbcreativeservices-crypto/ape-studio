@@ -14,6 +14,7 @@
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { wurliWedges } from '../shared/keys/wurliModel.ts';
+import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { I11B_MODEL, I11B_ZONES } from './geometry.ts';
 import { I11B_MICS } from './model.ts';
 
@@ -140,18 +141,7 @@ const scenarios: MikingScenario[] = [
       'Yes, if the volume is turned down first': 'Turning down does not make the connection safe.',
     },
   },
-  {
-    id: 'wu.set.3',
-    page: 'setting',
-    prompt: 'Your mic is rated for a very high SPL. Does that tell you how long you can stand by the instrument at a loud soundcheck?',
-    options: ['No — it is the mic’s distortion limit, not a hearing limit', 'Yes — below the mic’s rating, the level is safe for people', 'Yes, as long as you stand farther away than the mic does'],
-    correct: 'No — it is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — and below it is not a promise. Keep stage levels down; no aging speaker needs to be pushed for the mic’s sake.',
-    why: {
-      'Yes — below the mic’s rating, the level is safe for people': 'The rating is about the mic, not your ears. For people, a widely used guideline is 85 dBA averaged over 8 hours.',
-      'Yes, as long as you stand farther away than the mic does': 'Farther than the mic is not a hearing measure. Measure where the person listens, and keep the level and time down.',
-    },
-  },
+  micRatingCheck({ id: 'wu.set.3', page: 'setting', mic: 'mic', loudest: 'the instrument’s loudest chord' }),
   {
     id: 'wu.rec.1',
     page: 'microphone',
@@ -300,12 +290,12 @@ const scenarios: MikingScenario[] = [
     id: 'wu.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · Why must the close mic’s stand stay clear of the lid?',
-    options: ['Touching the lid, it can rattle it or bridge to a fault', 'The lid reflects the speakers’ sound away from the mic', 'The lid gets too hot to touch'],
+    options: ['Touching the lid, it can rattle it or bridge to a fault', 'The lid reflects the speakers’ sound away from the mic', 'The lid gets too hot to touch during a long set'],
     correct: 'Touching the lid, it can rattle it or bridge to a fault',
     explain: 'On the later model the lid is the speakers’ baffle: a stand against it adds rattles and stand noise, and metal touching an old instrument can bridge to an electrical fault. Keep the stand independent.',
     why: {
       'The lid reflects the speakers’ sound away from the mic': 'The reason is rattle and safety, not reflections.',
-      'The lid gets too hot to touch': 'The reason is rattle and an electrical path, not heat.',
+      'The lid gets too hot to touch during a long set': 'The reason is rattle and an electrical path, not heat.',
     },
   },
   {
@@ -372,12 +362,12 @@ const scenarios: MikingScenario[] = [
     id: 'wu.mix.1',
     page: 'practice',
     prompt: 'The player plugs the auxiliary output into an external amp on stage. What is the source now?',
-    options: ['That amp’s speaker — mic and judge it on its own', 'Still the instrument’s own two speakers in the lid', 'The auxiliary cable itself'],
+    options: ['That amp’s speaker — mic and judge it on its own', 'Still the instrument’s own two speakers in the lid', 'The auxiliary cable itself, at the plug'],
     correct: 'That amp’s speaker — mic and judge it on its own',
     explain: 'An external amp is a new source: repeat the speaker placement on its cabinet, and do not assume it sounds like the instrument’s own speakers. Document it separately from a mic move.',
     why: {
       'Still the instrument’s own two speakers in the lid': 'Check whether the built-in speakers still play — but the amp the player chose is now the sound.',
-      'The auxiliary cable itself': 'A cable carries a signal; the sound comes from the amp’s speaker.',
+      'The auxiliary cable itself, at the plug': 'A cable carries a signal; the sound comes from the amp’s speaker.',
     },
   },
   {
@@ -636,12 +626,12 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Is it safe to open the case to see where the speakers are?',
-    options: ['No — keep it closed; there is high voltage inside', 'Yes, once it has been unplugged', 'Yes, if you touch only the speakers'],
+    options: ['No — keep it closed; there is high voltage inside', 'Yes, once it has been unplugged from the wall', 'Yes, as long as you touch only the speakers'],
     correct: 'No — keep it closed; there is high voltage inside',
     explain: 'Old reed pianos combine mains power with a high-voltage pickup, and stored charge can remain after unplugging. Find the grilles from outside; leave the inside to a qualified technician.',
     why: {
-      'Yes, once it has been unplugged': 'Unplugging alone does not make it safe: charge can remain.',
-      'Yes, if you touch only the speakers': 'Speaker terminals and wiring are inside, near the high voltage. Keep it closed.',
+      'Yes, once it has been unplugged from the wall': 'Unplugging alone does not make it safe: charge can remain.',
+      'Yes, as long as you touch only the speakers': 'Speaker terminals and wiring are inside, near the high voltage. Keep it closed.',
     },
   },
 ];

@@ -15,7 +15,8 @@
  *
  * WHAT IS DRAWN (speaker_leslie/SOURCES.md, simplifications register):
  *   • INSIDE VIEW — never open a real cabinet: a labelled schematic after the
- *     maker's internal-structure drawing: the horn rotor (two bells) over the
+ *     maker's internal-structure drawing: the horn rotor (one sounding bell and
+ *     a capped balance bell) over the
  *     compression driver, the woofer facing down, the low rotor (a drum with
  *     one scoop opening), the crossover and amplifier. Rotor sizes, the
  *     louver layout and the scoop's shape are drawing defaults.
@@ -341,8 +342,10 @@ function buildAll() {
   const mouths = make();
   mouths.moveTo(-BELL_MOUTH / 2 + 4, REACH - 2);
   mouths.lineTo(BELL_MOUTH / 2 - 4, REACH - 2);
-  mouths.moveTo(-BELL_MOUTH / 2 + 4, -REACH + 2);
-  mouths.lineTo(BELL_MOUTH / 2 - 4, -REACH + 2);
+  // The other bell is the classic cabinet's blocked balance bell: its mouth
+  // is drawn capped, not open (review Lab 1 M7).
+  const plug = make();
+  plug.addRRect(Skia.RRectXY(Skia.XYWHRect(-BELL_MOUTH / 2 + 2, -REACH, BELL_MOUTH - 4, 12), 4, 4));
   // The drum's scoop: an opening of SCOOP_DEG facing +v at φ = 0, and a
   // curved deflector inside (drawing default).
   const half = (SCOOP_DEG / 2) * (Math.PI / 180);
@@ -355,7 +358,7 @@ function buildAll() {
   const scoopMouth = make();
   scoopMouth.moveTo(Math.sin(-half) * DRUM_R, Math.cos(half) * DRUM_R);
   scoopMouth.lineTo(Math.sin(half) * DRUM_R, Math.cos(half) * DRUM_R);
-  return { body, cap, plinth, upperWin, lowerWin, upperSlats, lowerSlats, panelLine, interior, shelves, walls, driver, throat, woofer, wMagnet, wFrame, chassis, drumBody, drumTopOval, drumBotOval, drumTop, drumBot, spindle, planUpper, planLower, planFloor, bells, mouths, drumRim, deflector, scoopMouth };
+  return { body, cap, plinth, upperWin, lowerWin, upperSlats, lowerSlats, panelLine, interior, shelves, walls, driver, throat, woofer, wMagnet, wFrame, chassis, drumBody, drumTopOval, drumBotOval, drumTop, drumBot, spindle, planUpper, planLower, planFloor, bells, mouths, plug, drumRim, deflector, scoopMouth };
 }
 function getBuilt(): Built {
   return (built ??= buildAll());
@@ -551,6 +554,10 @@ function PlanPanel({ rig, level, mics }: { rig: LeslieRig; level: 'upper' | 'low
             <Path path={b.bells} style="stroke" strokeWidth={2} color="#08080a" />
             <Path path={b.mouths} style="stroke" strokeWidth={7} strokeCap="round" color="#030304" />
             <Path path={b.mouths} style="stroke" strokeWidth={2} color="#9aa0ab" opacity={0.7} />
+            <Path path={b.plug}>
+              <LinearGradient start={vec(-30, -REACH)} end={vec(30, -REACH + 12)} colors={['#8a8f99', '#4a4e57', '#24262b']} />
+            </Path>
+            <Path path={b.plug} style="stroke" strokeWidth={1.4} color="#08080a" />
           </Group>
           <Circle cx={0} cy={0} r={HUB_R}>
             <RadialGradient c={vec(-12, -12)} r={HUB_R * 1.4} colors={['#e3e6ec', '#8a8f99', '#3a3d45']} />
@@ -736,7 +743,7 @@ export function LeslieDisplay({ w, h, rig, view, mics = [], accessibilityLabel, 
     }
     const out: StaticLabel[] = view === 'inside'
       ? [
-          { id: 'horn', text: 'HORN ROTOR (TWO BELLS)', short: 'HORN ROTOR', u: W2 + 10, v: HORN_Y - 10, align: 'left', tone: 'amber' },
+          { id: 'horn', text: 'HORN ROTOR (ONE BELL SOUNDS)', short: 'HORN ROTOR', u: W2 + 10, v: HORN_Y - 10, align: 'left', tone: 'amber' },
           { id: 'driver', text: 'HORN DRIVER', short: 'DRIVER', u: 70, v: HORN_Y + 140, align: 'left', tone: 'muted' },
           { id: 'woofer', text: 'WOOFER, FACING DOWN', short: 'WOOFER', u: W2 + 10, v: WOOF_Y - 70, align: 'left', tone: 'muted' },
           { id: 'xo', text: `CROSSOVER ${CROSSOVER_HZ} Hz · AMP`, short: `${CROSSOVER_HZ} Hz · AMP`, u: -W2 - 10, v: SHELF_Y + 110, align: 'right', tone: 'muted' },

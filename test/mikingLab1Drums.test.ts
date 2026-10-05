@@ -33,7 +33,7 @@ import { gradeSetup } from '../src/screens/lab/miking/engine/progress/setupGrade
 import { M01_LESSON } from '../src/screens/lab/miking/lessons/m01Kick/lesson.ts';
 import { M02_LESSON } from '../src/screens/lab/miking/lessons/m02Snare/lesson.ts';
 import { M03_LESSON } from '../src/screens/lab/miking/lessons/m03Toms/lesson.ts';
-import { DEPTH } from '../src/screens/lab/miking/lessons/m02Snare/model.ts';
+import { DEPTH, H_UP, SNARE_ZONES } from '../src/screens/lab/miking/lessons/m02Snare/model.ts';
 import { WIRE_Y } from '../src/screens/lab/miking/lessons/m02Snare/geometry.ts';
 import { FLOOR_16x16, SNARE_14x55, TOM_10x7, TOM_12x8, lowestHeight, rodAngles } from '../src/screens/lab/miking/lessons/shared/drums/drumSpec.ts';
 import { KIT, KIT_CYMBALS, KIT_DRUMS, KIT_FLOOR_Y } from '../src/screens/lab/miking/lessons/shared/kitPlanModel.ts';
@@ -92,9 +92,9 @@ function itemRules(lesson: Lesson) {
       assert.ok(s.correct.length <= 1.6 * mean, `${s.id}: ${s.correct.length} vs mean ${mean.toFixed(1)}`);
     }
   });
-  it('the correct option is the longest in at most a quarter of the checks', () => {
-    const longest = items.filter((s) => s.options.every((o) => o === s.correct || o.length < s.correct.length)).length;
-    assert.ok(longest <= items.length / 4, `correct is the longest in ${longest} of ${items.length}`);
+  it('the correct option is the longest in at most a quarter of the checks (quick check included, review Lab 1 M1)', () => {
+    const longest = [...items, ...lesson.diagnostic].filter((s) => s.options.every((o) => o === s.correct || o.length < s.correct.length)).length;
+    assert.ok(longest <= (items.length + lesson.diagnostic.length) / 4, `correct is the longest in ${longest} of ${items.length + lesson.diagnostic.length}`);
   });
   it('wrong options carry no absolute-word giveaway, and no option recalls a model', () => {
     for (const s of [...items, ...lesson.diagnostic])
@@ -258,5 +258,21 @@ describe('M03 toms (toms/GEOMETRY_PROPOSAL.md §8)', () => {
   it('the bottom mic is measured from the floor tom’s bottom head, which exists only with both heads on', () => {
     assert.equal(zone('floor.bottom').refSurface, 'floorReso');
     assert.deepEqual(m.surfaces.find((s) => s.id === 'floorReso')!.variants, ['floor']);
+  });
+});
+
+describe('review Lab 1 C1: the snare reference-surface check holds in the lab’s own model', () => {
+  it('5 cm above the head is inside the rim band (the hoop stands H_UP above the head); 2 cm would not be', () => {
+    const z = SNARE_ZONES.find((x) => x.id === 'top.close')!;
+    assert.equal(z.refSurface, 'rim');
+    const aboveRim = (aboveHeadMm: number) => aboveHeadMm - H_UP;
+    const inBand = (mm: number) => mm >= z.distance.min && mm <= z.distance.max;
+    assert.ok(inBand(aboveRim(50)), `${aboveRim(50)} mm above the rim`);
+    assert.ok(!inBand(aboveRim(20)), `${aboveRim(20)} mm above the rim`);
+    const item = M02_LESSON.scenarios.find((s) => s.id === 'sn.place.1')!;
+    assert.match(item.prompt, /5 cm above the batter HEAD/);
+    assert.match(item.prompt, /about 1 cm above the head/);
+    assert.equal(Math.round(H_UP / 10), 1, 'the prompt’s “about 1 cm” is the drawn hoop step');
+    assert.match(item.correct, /^Yes — .*about 4 cm/);
   });
 });

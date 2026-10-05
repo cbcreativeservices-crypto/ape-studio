@@ -607,10 +607,28 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 04:10 · ccode · 0991da54
+changed: miking: Lab 1 review fixes (C1, C2, M1-M11, minors) and rebalanced items lab-wide
+affects other side: nothing (miking fixes, branch final-lab)
+needs: nothing (miking fixes, branch final-lab)
+
+
 ### 2026-10-05 04:09 · ccode · 557259f3
 changed: Merge branch 'miking-i1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
+
+
+### 2026-10-05 04:03 · ccode · a70c1ab8
+changed: miking: Leslie inside-view label says one bell sounds (review Lab 1 M7)
+affects other side: nothing (miking fixes, branch final-lab)
+needs: nothing (miking fixes, branch final-lab)
+
+
+### 2026-10-05 03:58 · ccode · 618bf47a
+changed: miking: engine-wide item guards, shown-order fix, shared polarity and max-SPL items
+affects other side: nothing (miking fixes, branch final-lab)
+needs: nothing (miking fixes, branch final-lab)
 
 
 ### 2026-10-05 03:47 · ccode · 98a2b9f5

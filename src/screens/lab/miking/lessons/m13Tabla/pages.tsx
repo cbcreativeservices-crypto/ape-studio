@@ -69,7 +69,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
       sticky: true,
       options: [
         { id: 'dayan', label: 'DAYAN', blurb: 'The smaller, wooden drum: its black patch in the middle.' },
-        { id: 'bayan', label: 'BAYAN', blurb: 'The larger kettle drum: its black patch off-centre, toward the player.' },
+        { id: 'bayan', label: 'BAYAN', blurb: 'The larger kettle drum: its black patch off-centre (drawn toward the player).' },
       ],
     },
     {
@@ -148,7 +148,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
             </Card>
           ) : (
             <Card>
-              <Point title="THE BAYAN · PATCH OFF-CENTRE">The bayan’s patch sits off-centre, toward the player. The heel of the hand rests on the head beside it; pressing raises the head’s tension and bends the pitch up — the glide is part of the music.</Point>
+              <Point title="THE BAYAN · PATCH OFF-CENTRE">The bayan’s patch sits off-centre (drawn here toward the player). The heel of the hand rests on the head beside it; pressing raises the head’s tension and bends the pitch up — the glide is part of the music.</Point>
             </Card>
           )}
           {pressed && predicted != null ? <Note tone="ok">{`You predicted “${predicted}”. It is the bayan: pressing its head while it rings bends the pitch. Its hand moves across the head all the time — leave it room.`}</Note> : null}

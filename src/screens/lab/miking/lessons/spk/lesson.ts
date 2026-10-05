@@ -13,6 +13,7 @@
  * pianos mic a speaker; the organ lessons mic a rotary cabinet.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { SPK_CABS } from './geometry.ts';
 import { SPK_MICS } from './model.ts';
 import { cabLayout } from '../shared/speakers/speakerModel.ts';
@@ -62,7 +63,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Two microphones',
     goal: 'Blend a front and a rear mic on an open-backed cabinet: see what polarity does and does not change — and how a rotary cabinet’s mics add up in mono.',
     credit: { scenarios: ['spk.two.1', 'spk.two.2', 'spk.two.3', 'spk.two.4'], interactive: 'polarityVsDelay', note: 'Flip the rear mic’s polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'The back of the cone is opposite in polarity to the front: flip the rear mic, then judge the pair in mono, at matched levels. Polarity flips the sign; it does not remove a delay. Spaced rotary-cabinet mics move against each other; an X/Y pair stays steadier in mono.',
+    takeaway: 'The back of the cone is opposite in polarity to the front: flipping the rear mic is the first thing to try, never a rule — judge the pair in mono, at matched levels. Polarity flips the sign; it does not remove a delay. Spaced rotary-cabinet mics move against each other; an X/Y pair stays steadier in mono.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -133,18 +134,7 @@ const scenarios: MikingScenario[] = [
       'A mic already built into the amplifier’s speaker': 'It is an electrical output, not a mic. Identify it by its actual connector and level.',
     },
   },
-  {
-    id: 'spk.set.2',
-    page: 'setting',
-    prompt: 'Your mic is rated for very high SPL in front of a loud amp. Does that tell you how long you can stand there at soundcheck?',
-    options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — below the mic’s rating, the level is safe for people', 'Yes, as long as you stand farther away from the amp than the mic'],
-    correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more.',
-    why: {
-      'Yes — below the mic’s rating, the level is safe for people': 'The rating is about the mic, not your ears. For people, a widely used guideline is 85 dBA averaged over 8 hours.',
-      'Yes, as long as you stand farther away from the amp than the mic': 'Farther than the mic is not a hearing measure. Measure where the person listens, and keep the level and time down.',
-    },
-  },
+  micRatingCheck({ id: 'spk.set.2', page: 'setting', mic: 'amp mic', loudest: 'the amp at full stage level' }),
   {
     id: 'spk.set.3',
     page: 'setting',
@@ -331,9 +321,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'A front mic and a rear mic on an open-backed cabinet sound thin together. What do you try first?',
     options: ['Flip the rear mic’s polarity, then check in mono', 'Turn the rear mic up until it matches the front', 'Move the front mic right up against the grille'],
     correct: 'Flip the rear mic’s polarity, then check in mono',
-    explain: 'The back of the cone moves opposite to the front, so the rear mic starts out inverted. Flip it, then judge the pair in mono at matched levels — and adjust positions if it is still thin.',
+    explain: `${OPPOSITE_SIDES_POLARITY} Then adjust positions if it is still thin.`,
     why: {
-      'Turn the rear mic up until it matches the front': 'More level deepens the cancellation. The rear signal is inverted: flip its polarity first.',
+      'Turn the rear mic up until it matches the front': 'More level deepens the cancellation. The rear mic starts opposite: try flipping its polarity first.',
       'Move the front mic right up against the grille': 'Touching the grille risks noise and does not fix the polarity: the back of the cone is still opposite.',
     },
   },
@@ -605,23 +595,23 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'In a rotary cabinet, what carries the high notes?',
-    options: ['The horn rotor in the upper compartment', 'The low rotor’s drum in the bottom', 'The woofer, firing up at the louvers'],
+    options: ['The horn rotor in the upper compartment', 'The low rotor’s turning drum, in the bottom', 'The woofer, firing straight up at the louvers'],
     correct: 'The horn rotor in the upper compartment',
     explain: 'A crossover sends the highs (above about 800 Hz) to the horn rotor at the top, and the lows to the woofer and the turning drum at the bottom.',
     why: {
-      'The low rotor’s drum in the bottom': 'The drum carries the LOWS, from the woofer above it.',
-      'The woofer, firing up at the louvers': 'The woofer fires DOWN into the drum, and it carries the lows.',
+      'The low rotor’s turning drum, in the bottom': 'The drum carries the LOWS, from the woofer above it.',
+      'The woofer, firing straight up at the louvers': 'The woofer fires DOWN into the drum, and it carries the lows.',
     },
   },
   {
     id: 'q.4',
     covers: 'sound',
     prompt: 'A speaker cone moves forward. The air behind it is…',
-    options: ['pulled — the back sounds opposite in polarity', 'pushed out of the back at the same moment', 'still — only the front of a cone moves air'],
+    options: ['pulled — the back sounds opposite in polarity', 'pushed out of the back too, at the same moment', 'still — only the front of a cone moves air'],
     correct: 'pulled — the back sounds opposite in polarity',
     explain: 'The cone pushes the air in front and pulls the air behind at the same moment: an open back radiates the same motion, opposite in polarity.',
     why: {
-      'pushed out of the back at the same moment': 'Moving forward, the cone pushes the FRONT air and pulls the back air.',
+      'pushed out of the back too, at the same moment': 'Moving forward, the cone pushes the FRONT air and pulls the back air.',
       'still — only the front of a cone moves air': 'Both faces of the cone move air; an open back lets the rear sound out.',
     },
   },
@@ -630,12 +620,12 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'A rotary cabinet is running. Where may a mic or its cable go?',
-    options: ['Outside on a stand, clear of the openings and pedals', 'Through a louver, while the cabinet is on slow', 'Just inside the back, held clear of the rotor'],
+    options: ['Outside on a stand, clear of the openings and pedals', 'Through a louver, while the cabinet is on slow', 'Just inside the back, held well clear of the rotor'],
     correct: 'Outside on a stand, clear of the openings and pedals',
     explain: 'There are turning parts, hot parts and dangerous voltages inside. Everything stays outside, clear of the openings, the organ pedals and the walkways.',
     why: {
       'Through a louver, while the cabinet is on slow': 'Nothing goes through a louver at any speed: the rotors turn right behind it.',
-      'Just inside the back, held clear of the rotor': 'The cabinet stays closed; panels come off only for a qualified technician.',
+      'Just inside the back, held well clear of the rotor': 'The cabinet stays closed; panels come off only for a qualified technician.',
     },
   },
   {
@@ -643,11 +633,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about standing by a loud amp all through soundcheck?',
-    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe while the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you are'],
+    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is closer than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens.',
     },
   },
@@ -727,7 +717,7 @@ export const SPK_LESSON: Lesson = {
     { text: 'The grille cloth’s distance proud of the baffle (15) and the panel thickness (18): drawing defaults.', dims: [] },
     { text: 'Driver layout on the 4×12 and bass baffles, the 4×12’s angle (8°), the bass horn’s position and size: drawing defaults. Back type of the 1×12 and 4×12: not stated.', dims: [] },
     { text: 'A rear-mic distance behind an open back: none in the research; 5–15 cm is a drawing default.', dims: [] },
-    { text: 'The rotary cabinet: rotor sizes and heights, the louver and opening layout, the drum’s scoop shape, which face is the front, and the DIRECTION of rotation — drawing defaults (rotation drawn counter-clockwise from above, never taught). Whether both horn bells radiate is not stated: they are drawn alike.', dims: [] },
+    { text: 'The rotary cabinet: rotor sizes and heights, the louver and opening layout, the drum’s scoop shape, which face is the front, and the DIRECTION of rotation — drawing defaults (rotation drawn counter-clockwise from above, never taught). On the classic cabinet one horn bell sounds and the other is a blocked balance bell (review Lab 1 M7): the second bell is drawn capped and the mic light follows the sounding bell only.', dims: [] },
     { text: `Rotor speeds and ramp times are one adjustable cabinet’s defaults: horn ${h.slowRpm}/${h.fastRpm} rpm, ${h.riseS} s up, ${h.fallS} s down; low rotor ${d.slowRpm}/${d.fastRpm} rpm, ${d.riseS} s up, ${d.fallS} s down; the ramps are drawn linear.`, dims: [] },
   ],
   // The stage's monitors (ILLUSTRATIVE positions): the guitarist's wedge

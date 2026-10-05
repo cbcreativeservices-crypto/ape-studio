@@ -93,12 +93,12 @@ const scenarios: MikingScenario[] = [
     id: 'bc.snd.2',
     page: 'sound',
     prompt: 'Two bars of the same thickness: one is half as long. How does its pitch compare?',
-    options: ['About four times higher — two octaves', 'Twice as high — one octave up', 'The same pitch, only quieter'],
+    options: ['About four times higher — two octaves', 'About twice as high — one octave up', 'The same pitch, only a little quieter'],
     correct: 'About four times higher — two octaves',
     explain: 'For bars of one thickness and metal, pitch rises with 1 ÷ length²: half the length, four times the pitch. That is how a graduated row makes its rising run.',
     why: {
-      'Twice as high — one octave up': 'That would be a string or a pipe. A bar’s pitch goes with 1 ÷ length²: half the length gives four times.',
-      'The same pitch, only quieter': 'Length sets a bar’s pitch: the shorter bars are the higher ones.',
+      'About twice as high — one octave up': 'That would be a string or a pipe. A bar’s pitch goes with 1 ÷ length²: half the length gives four times.',
+      'The same pitch, only a little quieter': 'Length sets a bar’s pitch: the shorter bars are the higher ones.',
     },
   },
   {
@@ -566,6 +566,6 @@ export const I06C_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. There is no published bar-chime miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every row, mount, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 27-bar row with drawn bar sizes, a bar held at neither end for its shapes, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the swing and the hand.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. There is no single agreed bar-chime miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every row, mount, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 27-bar row with drawn bar sizes, a bar held at neither end for its shapes, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the swing and the hand.',
   copy: { words: metalWords('bar chimes', 'player') },
 };

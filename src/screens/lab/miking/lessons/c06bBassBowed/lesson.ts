@@ -506,11 +506,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'What keeps a bowed note sounding?',
-    options: ['The bow, gripping and releasing the string', 'The body, storing the first pluck', 'The f-holes, pumping air in and out'],
+    options: ['The bow, gripping and releasing the string', 'The body, storing the energy of the first pluck', 'The f-holes, pumping air in and out'],
     correct: 'The bow, gripping and releasing the string',
     explain: 'The bow feeds the string every vibration; the note lasts as long as the bow moves.',
     why: {
-      'The body, storing the first pluck': 'A pluck dies away; the bow keeps the string going.',
+      'The body, storing the energy of the first pluck': 'A pluck dies away; the bow keeps the string going.',
       'The f-holes, pumping air in and out': 'The f-holes radiate; the bow drives.',
     },
   },
@@ -518,12 +518,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'A mic very close to the bowing zone tends to hear…',
-    options: ['A lot of scrape and rosin noise', 'Only the lowest fundamental', 'Nothing of the bow at all'],
+    options: ['A lot of scrape and rosin noise', 'Only the lowest fundamental', 'Nothing of the bow at all, only the note'],
     correct: 'A lot of scrape and rosin noise',
     explain: 'Close to the bow, its friction noise can dominate; farther away it blends with the note.',
     why: {
       'Only the lowest fundamental': 'Close to the bow, the highs of its friction stand out.',
-      'Nothing of the bow at all': 'Close to the bow, the bow is loud.',
+      'Nothing of the bow at all, only the note': 'Close to the bow, the bow is loud.',
     },
   },
   {
