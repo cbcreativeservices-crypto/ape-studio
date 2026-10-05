@@ -77,9 +77,10 @@ the "what's left" end screen, and credit that never goes down.
 3. **Placement Studio (the flagship screen):**
    - Drag the mic around the instrument in **side view and top view**.
      Distance, height and angle are separate controls.
-   - Documented starting zones are drawn with their source ("Shure Beta 52A
-     guide: 5–7.5 cm from the batter head"). Trial numbers are labelled as
-     trials.
+   - Recommended starting zones are drawn in one style, named by what they
+     are ("Inside, near the batter head: start about 5–7.5 cm from the batter
+     head"). *(Revised by the owner ruling of 2026-10-04 — see §6: no source
+     names or trial labels on screen.)*
    - Collision zones (moving heads, beaters, bows, slides, the player's reach)
      block placement.
    - Readouts show distance from the stated reference surface and angle from
@@ -98,8 +99,9 @@ the "what's left" end screen, and credit that never goes down.
 6. **Troubleshoot:** the lesson's symptom table as tap-through scenarios.
 7. **Practice:** the lesson's exercise plus a fillable observation sheet, kept
    on the device (and synced for members if wanted).
-8. **Sources:** the lesson's evidence audit, the links, and what is still
-   unknown.
+8. ~~**Sources:** the lesson's evidence audit, the links, and what is still
+   unknown.~~ *Removed from the lesson by the owner ruling of 2026-10-04 (§6):
+   the lesson ends at Practice; the audit lives in docs/labs/miking/.*
 
 **Shared tools:**
 - a **stereo-array tool** (XY, ORTF 17 cm/110°, AB, M/S, Decca Tree), used by
@@ -170,8 +172,20 @@ preview.
   (`docs/art/APE_LAB_PHOTO_BRIEF_v2_2026_09_25.md`) and the reasons the
   2026-09-25 package was rejected. Images are touched only on the owner's go,
   folder by folder.
-- **Trial numbers:** shown, clearly labelled as trial starting points, and
-  drawn apart from sourced zones.
+- **Learner-facing presentation (owner ruling 2026-10-04, after approving the
+  Kick Drum lesson):** *supersedes "trial numbers shown, labelled as trial
+  starting points, drawn apart from sourced zones".* Teach general, suggested
+  STARTING POINTS, never dogma: "after our research, here is where we
+  recommend you begin, and ideas and concepts to consider". No sources,
+  brand/model names, reference lists, Sources page or SOURCED / TRIAL /
+  ILLUSTRATIVE badges on screen; every zone is one style, a "Recommended
+  starting point" with a plain suggested range. The research stays mandatory
+  internally (SOURCES.md, CORRECTIONS_LOG.md, the code-only `src` / `quote` /
+  `prov` fields). Full rules: `docs/APE_LAB_VISUAL_CHARTER_2026_10_04.md` §12
+  and `LESSON_JOURNEY.md` §12; pinned by `test/mikingLearnerText.test.ts`.
+- **Kick Drum (M01) APPROVED (2026-10-04)** as the quality standard: "keep
+  this level of illustration and animation quality for ALL labs … keep this
+  as a standard level to match for quality."
 - **Source errors:** Claude fixes them in the app text and logs each one in
   `docs/labs/miking/CORRECTIONS_LOG.md` (what, why, source), so the owner can
   update the documents.
@@ -204,5 +218,7 @@ preview.
 - **Units** follow the app's unit setting. The source's own units stay in the
   citation.
 - **Children (E06)** appear only in plan view: no detailed child figures.
-- **Brand names** appear only in cited facts. Mics are drawn as generic types,
-  never as a brand's likeness.
+- **Brand names** appear only in the internal record (SOURCES.md and the
+  code-only fields) — never in learner text, per the owner ruling of
+  2026-10-04 (§6). Mics are drawn as generic types, never as a brand's
+  likeness.

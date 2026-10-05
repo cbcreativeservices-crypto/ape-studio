@@ -220,3 +220,56 @@ runs through a crossing must not draw a dot or a T at that point.
 - **G1:** see §1.
 - **Device proof:** the Pixel is the device, signed in with the anorak full
   membership account.
+
+## 12. Owner ruling 2026-10-04: learner-facing presentation
+
+Given after the owner approved the Miking Labs Kick Drum lesson (M01):
+
+> "All of the sources and how to read this lab coding makes this all too
+> complicated. We are teaching general suggestive starting points. Nothing is
+> to be taught as strict dogma, everything is open to interpretation and
+> experimentation — that is how innovation happens. … remove all of the
+> references and authoritative honesty points by just stating 'after our
+> research, here is where we recommend to begin, and ideas and concepts to
+> consider' … The cross-referencing is too much a distraction. Illustrations
+> are fine — keep this level of illustration and animation quality for ALL
+> labs. The rest of the lab and build are approved — very nice — keep this as
+> a standard level to match for quality."
+
+**Research and accuracy remain MANDATORY internally.** Everything in §2–§4
+still applies to how a lab is BUILT: every fact keeps its `src` key, the
+lab's `SOURCES.md` and `CORRECTIONS_LOG.md` are kept, unknowns are never drawn
+as known, the simplifications register is kept, and the reviews in §9 still
+check the numbers against the sources.
+
+**None of it is shown to the learner.** For the Miking and Mixing labs this
+supersedes the learner-facing sourced / trial labelling in §3 and in
+`docs/labs/miking/MIKING_LABS_PLAN_2026_10_04.md` §6:
+
+- No source, brand, model or named authority in learner text; no reference
+  list; no Sources page; no "(L39)"-style codes. Generic types stay ("a kick
+  dynamic", "a boundary mic on the pillow", "a small condenser").
+- No SOURCED / TRIAL / ILLUSTRATIVE / IDEAL MODEL / "lab edges" / "ideal only"
+  badges or legends. Every placement zone has ONE style and is called a
+  "Recommended starting point", named by what it is ("Inside, near the batter
+  head") with a plain suggested range ("start about 5–7.5 cm from the batter
+  head").
+- Where a picture is a model or an exaggeration (an ideal polar pattern, an
+  ideal null, membrane motion drawn larger), say so ONCE where it matters, in
+  plain words ("a simplified picture", "motion drawn larger") — never a tag on
+  every readout.
+- The voice is starting points: "after our research, here is where we
+  recommend you begin", "ideas to try", "move it and listen — there is no
+  single right answer". No dogma words (must, always, never) except genuine
+  safety: clearance from heads, beaters and the player, hearing, phantom power
+  and gain, feedback.
+- One short "about these starting points" note sits behind the header's ⓘ
+  (the AccuracyNote `detail`), not on every page.
+- Checks keep testing reasoning, with an explanation for every option; any
+  graded choice accepts every reasonable answer.
+- **Quality bar:** the Kick Drum lesson's illustration and animation quality
+  is the standard for every lab.
+
+Pinned by `test/mikingLearnerText.test.ts` (the `BRAND_NAMES` constant and the
+banned badge and citation forms, over every lesson's learner-facing data and
+every miking presentation file).

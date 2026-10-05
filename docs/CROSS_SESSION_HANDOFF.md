@@ -1,3 +1,31 @@
+## 2026-10-04 — A: INSTRUCTOR / SCHOOL accounts — SERVER LIVE (owner CHECK 7/7 true)
+
+Owner returned the CHECK for `2026-10-04_INSTRUCTOR_ACCOUNTS`: originals_backed_up_7, kind_columns_2, existing_rows_stay_employer, kind_trigger_present, apply_takes_kind_signed_in_only, access_unchanged, lists_report_kind_5 — all true. Backup `private._bkp_fn_20261004i`. The instructor entry below is now live server-side; the web push (wording + apply-form choice) follows on audio-tools-engine. App items 1–4 below are yours.
+
+## 2026-10-04 — A -> ccode: INSTRUCTOR / SCHOOL verified accounts (owner request) — server + web built; app copy is yours
+
+**Owner:** audio instructors and schools verify like employers: same application, same right to contact members, same completion-only Verify page. This is NOT the institutional/roster path; `lookup_student_by_qr` is untouched. "Assign and track completion" is deferred to post-launch.
+
+**Server** (paste files `C:\Users\profe\Downloads\2026-10-04_INSTRUCTOR_ACCOUNTS\`, live after the owner's CHECK; dry-run + behaviour-tested on PG16):
+- `employer_applications.kind` and `employer_profiles.kind` ('employer' | 'instructor', default 'employer'). A trigger copies the approved application's kind onto the profile on both approval paths.
+- `employer_apply(..., p_kind text default 'employer')`. The old 5-arg version is dropped; named 5-arg calls still resolve. Instructor wording appears in the errors (school name/website/email).
+- `kind` is added as the LAST column of `employer_application_mine`, `employer_pending_list`, `employer_active_list`, `employer_profile_public` and `employer_application_for_finalize`.
+- `contact_threads.other_kind` now returns 'instructor' for a verified instructor/school (was always 'employer').
+- New `my_verifier_kind()` returns 'employer', 'instructor' or null.
+- Access unchanged; the CHECK asserts it.
+
+**Deployed:** `employer-confirm-email` v10. The subject keeps the leading `[APE-EMPLOYER]` tag and adds "INSTRUCTOR ·"; the email body shows the account type and "Teaches".
+
+**Web** (A, owner pushes AFTER the SQL is live):
+- the apply form has a click-only "An employer / An instructor or school" choice that relabels the fields and passes `p_kind`;
+- the apply page and the /employers page say employers & instructors.
+
+**APP (your lane):**
+1. Treat `other_kind === 'instructor'` as verified, badged "Verified instructor" (today the app likely shows the employer badge only for 'employer').
+2. EmployerSection / Profile: use `my_verifier_kind()` for "Instructor account" wording. The apply link stays the same URL.
+3. EmployerAdminScreen: show `kind` on the pending and active lists.
+4. Copy: wherever the app says "employers can verify…" (CredentialAboutPanel, copy.ts, publicProfile), say "employers and instructors".
+
 ## 2026-10-04 — A -> ccode: website launch overlay (owner request) — on BOTH branches
 
 While the gate is on, `/` with no key now renders the REAL home page, blurred and `inert`, behind a compact "Coming soon — Monday, October 12" panel. The panel carries the legal links, the contact email and the early-access form.
@@ -535,6 +563,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-04 20:50 · ccode · 20ee570a
+changed: feat(miking): Kick lesson as suggested starting points, no sources on screen
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
+### 2026-10-04 20:45 · ccode · c115b43b
+changed: web: employers & instructors - wording + instructor/school account choice on the apply form
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
+### 2026-10-04 20:19 · ccode · 804883e2
+changed: web: employer verification page now addresses instructors and schools too
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
 
 ### 2026-10-04 19:27 · ccode · b8830559
 changed: web: halve the launch-overlay background blur (3px to 1.5px)
