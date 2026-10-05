@@ -23,6 +23,8 @@ import { Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
+import { NO_INSETS, laneValueAt } from '../rack/laneEdgeGuard';
+import { useEdgeGuard } from '../rack/useEdgeGuard';
 import type { AmpCheck, Misconception } from '../../../features/amp/ampContent';
 import { FAULT_COPY } from '../../../features/amp/ampContent';
 import { hashSeed, shuffledIndices, type FaultId } from '../../../features/amp/ampModel';
@@ -232,6 +234,11 @@ export function ControlSlider({
   // FILL has to be laid out from it, so it needs a rendered value too. 0 means
   // "not measured yet" and falls back to the old percentage for one frame.
   const [trackW, setTrackW] = useState(0);
+  // Edge guard (2026-10-04, owner on a gesture-nav Pixel): a track that runs
+  // close to a window edge insets its cap travel so the cap stays ≥ 40 dp
+  // from the edge — out of the system back-gesture strip (laneEdgeGuard.ts).
+  // Far from the edges the insets are zero and nothing changes.
+  const { ref: trackRef, ins, insRef, measure } = useEdgeGuard({ capW: CAP_W, fallback: NO_INSETS });
   // The value the slider last reported (or was given) — read by the drag so a
   // frame that stays on the same step is dropped.
   const valueRef = useRef(value);
@@ -248,7 +255,7 @@ export function ControlSlider({
       // the inset travel lane in the 2026-09-11 gear pass, which took the
       // rack lane's look without its geometry contract; ParamLane.tsx has
       // always done this correctly.
-      const frac = Math.min(1, Math.max(0, (x - CAP_W / 2) / Math.max(1, wRef.current - CAP_W)));
+      const frac = laneValueAt(x, wRef.current, insRef.current, CAP_W);
       const raw = min + frac * (max - min);
       const snapped = Math.round(raw / step) * step;
       const next = Math.min(max, Math.max(min, snapped));
@@ -260,7 +267,7 @@ export function ControlSlider({
       valueRef.current = next;
       onChange(next);
     },
-    [min, max, step, onChange],
+    [min, max, step, onChange, insRef],
   );
   // The PanResponder is created ONCE; its handlers must read the CURRENT
   // `set`/`disabled` through refs — the first render's closure would otherwise
@@ -287,8 +294,9 @@ export function ControlSlider({
   // fill tip up to 12 pt from the cap at the ends (dead-on only at centre),
   // the same miscalibration the rack lane's tick stops had: an indicator
   // measured against the wrong lane.
+  const innerW = trackW - ins.l - ins.r;
   const fillW: number | `${number}%` =
-    trackW > 0 ? CAP_W / 2 + frac * (trackW - CAP_W) : `${frac * 100}%`;
+    trackW > 0 ? ins.l + CAP_W / 2 + frac * Math.max(0, innerW - CAP_W) : `${frac * 100}%`;
   return (
     <View style={[styles.sliderWrap, disabled && { opacity: 0.4 }]}>
       <View style={styles.sliderHead}>
@@ -296,11 +304,13 @@ export function ControlSlider({
         <Text style={styles.sliderValue}>{shown}</Text>
       </View>
       <View
+        ref={trackRef}
         {...pan.panHandlers}
         onLayout={(e: LayoutChangeEvent) => {
           const w = Math.max(1, e.nativeEvent.layout.width);
           wRef.current = w;
           setTrackW((prev) => (prev === w ? prev : w));
+          measure();
         }}
         style={styles.sliderTrack}
         accessible
@@ -362,7 +372,7 @@ export function ControlSlider({
             cap positioned at 0% / 100% of a clipped track loses half of itself
             at each end — the old 5 pt bar never showed the problem. A real cap
             travels within its slot and stays whole. */}
-        <View pointerEvents="none" style={styles.sliderCapTravel}>
+        <View pointerEvents="none" style={[styles.sliderCapTravel, { left: CAP_W / 2 + ins.l, right: CAP_W / 2 + ins.r }]}>
           {/* Unrounded percent: `Math.round(frac*100)` pinned the cap to 101
               stops, so a control with more steps than that (the de-esser's
               detector frequency, the envelope's attack/decay/release/hold)

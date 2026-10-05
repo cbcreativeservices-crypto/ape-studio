@@ -523,6 +523,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 17:45 · ccode · d556e9de
+changed: fix(rack): keep the dock lane's cap out of the system edge-gesture strips
+affects other side: nothing (client-only lab fader fix; JS-only, to be ported to audio-tools-engine for an OTA by ccode).
+needs: nothing.
+
+
 ### 2026-10-04 17:08 · ccode · 530ca9b6
 changed: docs(miking): source text + surveys for M10, M11, speaker/Leslie, I04 and Lab 6 F01-F12
 affects other side: nothing (branch final-lab, miking lab work).

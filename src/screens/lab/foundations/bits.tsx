@@ -22,6 +22,8 @@ import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 import { useScrollLock } from '../LabShell';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
+import { NO_INSETS, laneDragValue, laneValueAt } from '../rack/laneEdgeGuard';
+import { useEdgeGuard } from '../rack/useEdgeGuard';
 
 export type CheckSpec = {
   question: string;
@@ -172,9 +174,15 @@ export function DragSlider({
   const [w, setW] = useState(0);
   const wRef = useRef(0);
   wRef.current = w;
+  // Edge guard (2026-10-04, owner on a gesture-nav Pixel): a track that runs
+  // close to a window edge insets its cap travel so the cap stays ≥ 40 dp
+  // from the edge — out of the system back-gesture strip. Far from the
+  // edges (most wells) the insets are zero and nothing changes.
+  const { ref: trackRef, ins, insRef, measure } = useEdgeGuard({ capW: CAP_W, fallback: NO_INSETS });
+  const innerW = Math.max(0, w - ins.l - ins.r);
   // The fill ends UNDER the cap, and the cap travels the inset lane — so it is
-  // CAP_W/2 + value*(w - CAP_W), not value*w.
-  const fillW: number | `${number}%` = w > 0 ? CAP_W / 2 + value * (w - CAP_W) : `${value * 100}%`;
+  // CAP_W/2 + value*(w - CAP_W), not value*w (w = the guarded travel span).
+  const fillW: number | `${number}%` = innerW > 0 ? CAP_W / 2 + value * (innerW - CAP_W) : `${value * 100}%`;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
   // Scroll-lock plumbing: context (auto) + explicit prop, kept in a ref so the
@@ -220,14 +228,14 @@ export function DragSlider({
           // Read the touch in the INSET lane the cap travels in, so the map is
           // the exact inverse of the cap position (same contract as
           // ParamLane and ControlSlider).
-          const v = Math.max(0, Math.min(1, (e.nativeEvent.locationX - CAP_W / 2) / Math.max(1, wRef.current - CAP_W)));
+          const v = laneValueAt(e.nativeEvent.locationX, wRef.current, insRef.current, CAP_W);
           baseRef.current = v;
           onChangeRef.current(v);
         }
       },
       onPanResponderMove: (_e, g) => {
         if (wRef.current > 0) {
-          onChangeRef.current(Math.max(0, Math.min(1, baseRef.current + g.dx / Math.max(1, wRef.current - CAP_W))));
+          onChangeRef.current(laneDragValue(baseRef.current, g.dx, wRef.current, insRef.current, CAP_W));
         }
       },
       onPanResponderRelease: () => setLock(false),
@@ -250,8 +258,12 @@ export function DragSlider({
         {readout ? <Text style={[styles.sliderReadout, accent ? { color: accent } : null]}>{readout}</Text> : null}
       </View>
       <View
+        ref={trackRef}
         style={styles.sliderTrackWrap}
-        onLayout={(e) => setW(Math.round(e.nativeEvent.layout.width))}
+        onLayout={(e) => {
+          setW(Math.round(e.nativeEvent.layout.width));
+          measure();
+        }}
         {...pan.panHandlers}
         // This control had NO accessibility node whatsoever — no role, no
         // label, no value, no actions — and every child is pointerEvents="none",
@@ -283,6 +295,7 @@ export function DragSlider({
             gauge. Only a LEVEL slider fills it, with the amplitude ramp
             (owner standard 2026-09-05), which carries real information rather
             than restating the cap's position. Same rule as ParamLane. */}
+        <View pointerEvents="none" style={[styles.sliderGuard, { left: ins.l, right: ins.r }]}>
         <View pointerEvents="none" style={styles.sliderTrack}>
           {levelTint ? (
             <GradientView
@@ -303,6 +316,7 @@ export function DragSlider({
           <View style={[styles.sliderCap, { left: `${value * 100}%` }]}>
             <Animated.View style={[styles.sliderCapLine, accent ? { backgroundColor: accent } : null, pulseStyle]} />
           </View>
+        </View>
         </View>
       </View>
     </View>
@@ -412,6 +426,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     justifyContent: 'center',
   },
+  /** The edge-guarded span the slot and the cap travel live in. */
+  sliderGuard: { position: 'absolute', top: 0, bottom: 0 },
   sliderTrack: {
     position: 'absolute',
     left: CAP_W / 2,
