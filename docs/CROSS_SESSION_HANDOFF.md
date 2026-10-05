@@ -602,6 +602,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 23:22 · ccode · eb833083
+changed: test(miking): hand-drum invariants; docs: sources and corrections for M04a-c, M05
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 23:21 · ccode · eda6b657
 changed: feat(miking): engine for hand drums — frustums, level booms, clip goosenecks, per-lesson pages
 affects other side: nothing (miking lessons, branch final-lab)
