@@ -48,7 +48,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
     variant,
     mics: [
       { slot: 'A', typeId: T.A.typeId || zA.requires?.micTypeIds?.[0] || lesson.micTypeIds[0], pattern: T.A.pattern, pose: zA.start },
-      { slot: 'B', typeId: T.B.typeId || lesson.micTypeIds[0], pattern: T.B.pattern, pose: poseB },
+      { slot: 'B', typeId: T.B.typeId || lesson.micTypeIds[0], pattern: T.B.pattern, pose: poseB, surfaceId: zB?.refSurface },
     ],
   });
   // Opposite heads (the lesson's surface): mics on either side of the drum.

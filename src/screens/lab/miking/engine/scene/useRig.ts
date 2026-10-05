@@ -55,6 +55,8 @@ export type Rig = {
   setPolarity: (slot: MicSlot, pol: 1 | -1) => void;
   setOn: (slot: MicSlot, on: boolean) => void;
   readouts: (slot: MicSlot) => Readouts;
+  /** The head and line a slot's readouts measure from (usually the shared ones). */
+  refOf: (slot: MicSlot) => { surfaceId: string; lineId: string };
   /** The part that STOPPED the last move (a clear pose that a drag, a fader
    *  or a zone jump could not take further), committed with the pose. The
    *  live strip reads the same value from `blocked`; `shown()` folds it in so
@@ -67,7 +69,9 @@ export type Rig = {
   version: number;
 };
 
-export type RigInit = { variant?: VariantId; mics: { slot: MicSlot; typeId: string; pattern: MicPattern; pose: MicPose; polarity?: 1 | -1; on?: boolean }[] };
+/** `surfaceId`: the head this mic's readouts measure from when it is not the
+ *  rig's shared reference (a bottom mic beside a top one). */
+export type RigInit = { variant?: VariantId; mics: { slot: MicSlot; typeId: string; pattern: MicPattern; pose: MicPose; polarity?: 1 | -1; on?: boolean; surfaceId?: string }[] };
 
 function pinFor(lesson: Lesson, typeId: string): SurfacePin {
   const t = micType(typeId);
@@ -240,11 +244,22 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const setOn = useCallback((slot: MicSlot, on: boolean) => setMics((prev) => prev.map((m) => (m.slot === slot ? { ...m, on } : m))), []);
 
   // From the COMMITTED pose (React state), never `.value` during a render.
+  // A slot may read from its own head (a bottom mic beside a top one).
+  const ownB = init.mics.find((m) => m.slot === 'B')?.surfaceId;
+  const ownA = init.mics.find((m) => m.slot === 'A')?.surfaceId;
+  const refs = useMemo(() => {
+    const of = (own: string | undefined) => {
+      const sid = own && lesson.model.surfaces.some((s) => s.id === own && (!s.variants || s.variants.includes(variant))) ? own : surfaceId;
+      return { surfaceId: sid, lineId: sid === surfaceId ? lineId : lineFor(lesson.model, variant, sid) };
+    };
+    return { A: of(ownA), B: of(ownB) };
+  }, [lesson, variant, surfaceId, lineId, ownA, ownB]);
+  const refOf = useCallback((slot: MicSlot) => refs[slot], [refs]);
   const readouts = useCallback(
-    (slot: MicSlot) => deriveReadouts(ctx[slot], (mics.find((m) => m.slot === slot) ?? mics[0]).pose, surfaceId, lineId),
-    [ctx, mics, surfaceId, lineId],
+    (slot: MicSlot) => deriveReadouts(ctx[slot], (mics.find((m) => m.slot === slot) ?? mics[0]).pose, refs[slot].surfaceId, refs[slot].lineId),
+    [ctx, mics, refs],
   );
   const shown = useCallback((slot: MicSlot) => withStop(readouts(slot), stop[slot]), [readouts, stop]);
 
-  return { lesson, variant, setVariant, scene, bounds, mics, pose, blocked, body, pin, ctx, surfaceId, setSurfaceId, lineId, active, setActive, moveTo, jumpTo, commit, setType, setPattern, setPolarity, setOn, readouts, stop, shown, version };
+  return { lesson, variant, setVariant, scene, bounds, mics, pose, blocked, body, pin, ctx, surfaceId, setSurfaceId, lineId, refOf, active, setActive, moveTo, jumpTo, commit, setType, setPattern, setPolarity, setOn, readouts, stop, shown, version };
 }

@@ -624,12 +624,11 @@ function useLiveText(rig: Rig, slot: MicSlot) {
   const pose = rig.pose[slot];
   const blocked = rig.blocked[slot];
   const ctx = rig.ctx[slot];
-  const surfaceId = rig.surfaceId;
-  const lineId = rig.lineId;
+  const { surfaceId, lineId } = rig.refOf(slot);
   const words = useMemo(
-    () => ({ slot, ...refLabels(rig), showAim: rig.body[slot].mount !== 'surface' }),
+    () => ({ slot, ...refLabels(rig, slot), showAim: rig.body[slot].mount !== 'surface' }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [slot, rig.lesson, rig.surfaceId, rig.lineId, rig.body],
+    [slot, rig.lesson, surfaceId, lineId, rig.body],
   );
   return useDerivedValue(() => liveLine(withStop(deriveReadouts(ctx, pose.value, surfaceId, lineId), blocked.value), words), [ctx, pose, blocked, surfaceId, lineId, words]);
 }

@@ -14,9 +14,10 @@ import type { ReadoutWords } from './readoutText.ts';
 type RefWords = Pick<ReadoutWords, 'surfaceLabel' | 'lineLabel' | 'minusWords' | 'minusKey' | 'plusWords' | 'plusKey' | 'lineWords'>;
 
 /** The reference head and line every readout names (one place). */
-export function refLabels(rig: Pick<Rig, 'lesson' | 'surfaceId' | 'lineId'>): RefWords {
-  const s = rig.lesson.model.surfaces.find((q) => q.id === rig.surfaceId);
-  const l = rig.lesson.model.lines.find((q) => q.id === rig.lineId);
+export function refLabels(rig: Pick<Rig, 'lesson' | 'surfaceId' | 'lineId'> & { refOf?: Rig['refOf'] }, slot?: MicSlot): RefWords {
+  const ref = slot && rig.refOf ? rig.refOf(slot) : { surfaceId: rig.surfaceId, lineId: rig.lineId };
+  const s = rig.lesson.model.surfaces.find((q) => q.id === ref.surfaceId);
+  const l = rig.lesson.model.lines.find((q) => q.id === ref.lineId);
   return {
     surfaceLabel: s?.label ?? 'the reference head',
     lineLabel: l?.label ?? 'the reference line',
@@ -29,7 +30,7 @@ export function refLabels(rig: Pick<Rig, 'lesson' | 'surfaceId' | 'lineId'>): Re
 /** The words a slot's readouts are printed with (strip, bezel). */
 export function readoutWords(rig: Rig, slot: MicSlot): ReadoutWords {
   const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
-  return { slot, ...refLabels(rig), showAim: micType(m.typeId).mount !== 'surface' };
+  return { slot, ...refLabels(rig, slot), showAim: micType(m.typeId).mount !== 'surface' };
 }
 
 export function micWords(rig: Rig, slot: MicSlot): MicDescription {
@@ -44,7 +45,7 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
     typeLabel: t.label.toLowerCase(),
     patternLabel: t.patterns.find((p) => p.id === m.pattern)?.label ?? PATTERN_LABELS[m.pattern],
     readouts: r,
-    ...refLabels(rig),
+    ...refLabels(rig, slot),
     zoneLabel: z ? `${z.label}, ${z.band}` : null,
     showAim: t.mount !== 'surface',
   };

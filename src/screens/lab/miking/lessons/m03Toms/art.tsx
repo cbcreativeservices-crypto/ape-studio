@@ -141,7 +141,6 @@ export function tomLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       return [
         { id: 'batter', text: '12 IN BATTER', short: 'BATTER', u: TOM2.c.x + 30, v: TOM2.c.y - 60, align: 'left' },
         { id: 'reso', text: 'BOTTOM HEAD', short: 'BOTTOM', u: TOM2.c.x + 200, v: TOM2.c.y + 230, align: 'left' },
-        { id: 'tom1', text: '10 IN (BEHIND)', short: '10 IN', u: TOM1.c.x - 200, v: TOM1.c.y + 40, align: 'right', tone: 'muted' },
         { id: 'crash', text: 'CRASH', u: C2.c.x + 60, v: C2.c.y - 60, align: 'center', tone: 'muted' },
         { id: 'holder', text: 'HOLDER', u: MOUNT.top.x + 40, v: MOUNT.top.y + 60, align: 'left', tone: 'muted' },
         { id: 'kick', text: 'KICK', u: 380, v: -200, align: 'center', tone: 'muted' },
@@ -163,8 +162,8 @@ export function tomLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       variant === 'open'
         ? { id: 'open', text: 'BOTTOM HEAD OFF', short: 'OPEN', u: FLOOR.c.x, v: FLOOR.c.y + FF.depth + 40, align: 'center' }
         : { id: 'reso', text: 'BOTTOM HEAD', short: 'BOTTOM', u: FLOOR.c.x + FF.R + 34, v: FLOOR.c.y + FF.depth - 6, align: 'left' },
-      { id: 'legs', text: 'LEGS', u: FLOOR.c.x + FF.R + 70, v: FLOOR_Y - 60, align: 'left', tone: 'muted' },
-      { id: 'ride', text: 'RIDE', u: RIDE.c.x + 60, v: RIDE.c.y - 60, align: 'center', tone: 'muted' },
+      { id: 'legs', text: 'LEGS', u: FLOOR.c.x + 40, v: FLOOR_Y - 120, align: 'left', tone: 'muted' },
+      { id: 'ride', text: 'RIDE', u: RIDE.c.x - 60, v: RIDE.c.y + 70, align: 'center', tone: 'muted' },
       { id: 'stick', text: 'STICK', u: FLOOR.c.x - 300, v: FLOOR.c.y - 190, align: 'center', tone: 'illustrative' },
     ];
   }

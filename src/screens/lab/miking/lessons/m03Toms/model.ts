@@ -60,6 +60,22 @@ export function poseToward(p: Vec3, target: Vec3): MicPose {
  *  its batter head (along its head normal). */
 export const above = (d: PlacedDrum, r: number, thetaDeg: number, h: number) => pointOn(frameOf(d), r, thetaDeg, -h);
 
+/** How a rim zone is DRAWN: in the side section on the audience side
+ *  (θ = 0), and from above as a ring sector clear of the sticks' half. h is
+ *  measured outward from the batter head, or from the resonant head when
+ *  `bottom`. */
+function rimDrawn(d: PlacedDrum, r0: number, r1: number, h0: number, h1: number, bottom = false): DocumentedZone['drawn'] {
+  const f = frameOf(d);
+  const pts = [r0, r1].flatMap((r) => [h0, h1].map((h) => pointOn(f, r, 0, bottom ? f.depth + h : -h)));
+  const xs = pts.map((p) => p.x);
+  const ys = pts.map((p) => p.y);
+  const s = stickSector(d);
+  return {
+    side: { u0: Math.min(...xs), u1: Math.max(...xs), v0: Math.min(...ys), v1: Math.max(...ys) },
+    top: { cu: f.c.x, cv: f.c.z, r0, r1, a0: s.a1, a1: s.a0 + 360 },
+  };
+}
+
 /* ── RECOMMENDED STARTING POINTS (lesson table L23–L39; corrections T-01…).
  *  Learner-facing: label, band, tendency, checks. The rest is the internal
  *  record (owner ruling 2026-10-04). ── */
@@ -94,6 +110,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     radial: { line: 'tom2Edge', min: -40, max: 40, prov: edge },
     requires: { variants: ['rack'], micTypeIds: DYN },
     aimAt: { surface: 'tom2', r: R2, prov: TOP_SRC },
+    drawn: rimDrawn(TOM2, R2 - 40, R2 + 40, 25, 75),
     start: poseToward(above(TOM2, R2 + 8, 15, 50), pointOn(F2, R2 - 75, 15, 0)),
     tendency: 'A full, balanced tom with the stick’s attack. Toward the rim tends to bring more attack and ring; toward the centre more low end — a tendency to check on this drum.',
     checks: ['The sticks’ path over the toms, and the crash above', 'Mount security on the hardest strokes', 'Spill from the other toms and the snare'],
@@ -111,6 +128,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     radial: { line: 'tom1Edge', min: -40, max: 40, prov: edge },
     requires: { variants: ['rack'], micTypeIds: DYN },
     aimAt: { surface: 'tom1', r: R1, prov: TOP_SRC },
+    drawn: rimDrawn(TOM1, R1 - 40, R1 + 40, 25, 75),
     start: poseToward(above(TOM1, R1 + 8, -15, 50), pointOn(F1, R1 - 65, -15, 0)),
     tendency: 'The small tom on its own channel: its attack and ring, with the crash and the hi-hat side of the kit nearby.',
     checks: ['The sticks’ path and the crash above', 'Hi-hat and snare spill'],
@@ -132,6 +150,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     // above the 12 in head's plane ((p − c)·n = 50 at x = 260, z = −132),
     // tilted 50° down toward the player so its boom reaches back over the
     // kick and its stand lands in front of the kick's front head.
+    drawn: { side: { u0: 40, u1: 280, v0: TOM2.c.y - (75 + 130 * Math.sin(15 * DEG)) / Math.cos(15 * DEG), v1: TOM2.c.y - (25 - 110 * Math.sin(15 * DEG)) / Math.cos(15 * DEG) }, top: { u0: 40, u1: 280, v0: -185, v1: -85 } },
     start: { p: { x: 260, y: TOM2.c.y - (50 + (260 - TOM2.c.x) * Math.sin(15 * DEG)) / Math.cos(15 * DEG), z: -132 }, az: 0, el: -50 },
     tendency: 'Both toms in one perspective — their balance is set by where the mic sits, not by a fader later. A wider pattern covers both more evenly.',
     checks: ['Both toms at useful, even levels', 'Snare and cymbal spill', 'The sticks’ path over both toms'],
@@ -149,6 +168,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     radial: { line: 'tom2Edge', min: -60, max: 20, prov: ill('a clamp holds the mic just in over the head') },
     requires: { variants: ['rack'], micTypeIds: ['clipDynCard'] },
     aim: { maxOffAxis: 60, minOffAxis: 30, prov: { kind: 'sourced', src: 'SN-904-2019', quote: 'an angle of 30 to 60° (from the head normal, read from the figure)' } },
+    drawn: rimDrawn(TOM2, R2 - 60, R2 + 20, 30, 50),
     start: tiltedToward(TOM2, R2 - 15, 15, 40, 45),
     tendency: 'A low, discreet close view. The angle trades fundamental against overtones — try both ends of the range.',
     checks: ['The clamp fits the hoop and holds', 'The sticks’ path', 'The angle, one change at a time'],
@@ -167,6 +187,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     requires: { variants: ['rack'], micTypeIds: ['rimCondenser'] },
     aim: { maxOffAxis: 80, minOffAxis: 10, prov: ill('"never parallel": 10–80° from the head’s straight-on line is the lab’s reading') },
     aimAt: { surface: 'tom2', r: R2, prov: ill('"angled toward the drumhead"') },
+    drawn: rimDrawn(TOM2, R2 - 80, R2 + 20, 38.1, 76.2),
     start: tiltedToward(TOM2, R2 - 30, 15, 55, 45),
     tendency: 'Detail and a discreet mount, with more cymbal in it if it hears them — condensers vary: check its rating and its pattern.',
     checks: ['Phantom power for this channel', 'The gooseneck within its bend limit', 'Cymbal spill'],
@@ -184,6 +205,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     radial: { line: 'floorEdge', min: -40, max: 40, prov: edge },
     requires: { variants: ['floor', 'open'], micTypeIds: DYN },
     aimAt: { surface: 'floor', r: RF, prov: TOP_SRC },
+    drawn: rimDrawn(FLOOR, RF - 40, RF + 40, 25, 75),
     start: poseToward(above(FLOOR, RF + 8, 25, 50), pointOn(FF, RF - 95, 25, 0)),
     tendency: 'The floor tom’s weight with its attack. Toward the centre tends to bring more low end; toward the rim more attack — check on this drum.',
     checks: ['The sticks’ path, and the player’s right leg beside the drum', 'The ride above', 'Mount security'],
@@ -201,6 +223,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     radial: { line: 'floorEdge', min: -60, max: 20, prov: ill('a clamp holds the mic just in over the head') },
     requires: { variants: ['floor', 'open'], micTypeIds: ['clipDynCard'] },
     aim: { maxOffAxis: 60, minOffAxis: 30, prov: { kind: 'sourced', src: 'SN-904-2019', quote: 'an angle of 30 to 60° (from the head normal)' } },
+    drawn: rimDrawn(FLOOR, RF - 60, RF + 20, 30, 50),
     start: tiltedToward(FLOOR, RF - 15, 25, 40, 45),
     tendency: 'A low-profile close view, clear of stands. The angle trades fundamental against overtones.',
     checks: ['The clamp fits the hoop', 'The sticks’ path and the player’s leg'],
@@ -219,6 +242,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     radial: { line: 'floorEdge', min: -60, max: 20, prov: ill('a rim mount holds the mic just in under the head') },
     requires: { variants: ['floor'], micTypeIds: ['rimCondenser'] },
     aimAt: { surface: 'floorReso', r: RF, prov: ill('aimed up at the resonant head') },
+    drawn: rimDrawn(FLOOR, RF - 60, RF + 20, 30, 80, true),
     start: tiltedToward({ ...FLOOR, c: pointOn(FF, 0, 0, FF.depth), tiltDeg: 0 }, RF - 20, 30, -45, -40),
     tendency: 'The resonant head’s ring — a different perspective from a snare’s bottom mic, which hears wires. A choice for the whole kit, not a requirement.',
     checks: ['Clear of the legs, the floor and the player’s feet', 'Both polarity states with the top mic, in mono'],
@@ -236,6 +260,7 @@ export const TOM_ZONES: DocumentedZone[] = [
     bandProv: ill('the source gives no distance: anywhere inside, 4 cm clear of each end, is the lab’s drawing'),
     requires: { variants: ['open'], micTypeIds: DYN },
     aimAt: { surface: 'floor', r: RF - 20, prov: { kind: 'sourced', src: 'S-B56A-UG', quote: 'pointing up toward top drum head' } },
+    drawn: { side: { u0: FLOOR.c.x - (RF - 10), u1: FLOOR.c.x + (RF - 10), v0: FLOOR.c.y + 40, v1: FLOOR.c.y + FF.depth - 40 }, top: { cu: FLOOR.c.x, cv: FLOOR.c.z, r0: 0, r1: RF - 10, a0: 0, a1: 359.9 } },
     start: { p: pointOn(FF, 40, 30, 170), az: 0, el: 89 },
     tendency: 'The most isolation from the rest of the kit (inside, the shell shields the mic) — and a different drum: with its bottom head off, it rings and sounds differently.',
     checks: ['The player agreed to run the drum without its bottom head', 'The boom clear of the legs and the floor', 'Inside the shell, clear of the batter head'],

@@ -104,7 +104,7 @@ export const TOMS_COPY: LessonCopy = {
     azMax: 45,
     elMax: 30,
     aimBlurb: 'Swing the front up to 45° either way — it still points at the tom.',
-    plan: { u0: -700, u1: 900, v0: -700, v1: 1250 },
+    plan: { u0: -700, u1: 800, v0: -780, v1: 900 },
     side: { u0: -600, u1: 900, v0: -1050, v1: 330 },
     target: 'crash1',
     frontIds: ['fill'],

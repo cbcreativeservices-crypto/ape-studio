@@ -85,7 +85,7 @@ const parts: Part[] = [
 /* ── views (per setup): the rack pair, or the floor tom ── */
 const RACK_SIDE: ViewBox = { u0: -260, u1: 620, v0: -960, v1: -170 };
 const RACK_TOP: ViewBox = { u0: -260, u1: 620, v0: -560, v1: 380 };
-const FLOOR_SIDE: ViewBox = { u0: -760, u1: 180, v0: -720, v1: 310 };
+const FLOOR_SIDE: ViewBox = { u0: -760, u1: 180, v0: -790, v1: 310 };
 const FLOOR_TOP: ViewBox = { u0: -760, u1: 180, v0: 70, v1: 930 };
 
 const n2 = F2.n;
@@ -107,19 +107,19 @@ export const TOMS_MODEL: InstrumentModel = {
   surfaces: [
     { id: 'tom2', partId: 'tom2.batter', label: 'the 12 in head', point: TOM2.c, normal: n2, plus: { words: 'above', key: 'ABOVE' }, minus: { words: 'below', key: 'BELOW' }, variants: ['rack'] },
     { id: 'tom1', partId: 'tom1.batter', label: 'the 10 in head', point: TOM1.c, normal: n1, plus: { words: 'above', key: 'ABOVE' }, minus: { words: 'below', key: 'BELOW' }, variants: ['rack'] },
-    { id: 'floor', partId: 'floor.batter', label: 'the floor tom head', point: FLOOR.c, normal: nF, plus: { words: 'above', key: 'ABOVE' }, minus: { words: 'inside, below', key: 'INSIDE' }, variants: ['floor', 'open'] },
+    { id: 'floor', partId: 'floor.batter', label: 'the 16 in head', point: FLOOR.c, normal: nF, plus: { words: 'above', key: 'ABOVE' }, minus: { words: 'inside, below', key: 'INSIDE' }, variants: ['floor', 'open'] },
     { id: 'floorReso', partId: 'floor.reso', label: 'the bottom head', point: pointOn(FF, 0, 0, FF.depth), normal: FF.axis, plus: { words: 'below', key: 'BELOW' }, minus: { words: 'above', key: 'ABOVE' }, variants: ['floor'] },
   ],
   lines: [
     { id: 'tom2Edge', label: 'the 12 in head’s edge', point: TOM2.c, dir: F2.axis, offset: F2.R, words: edgeWords, variants: ['rack'], surfaces: ['tom2'] },
     { id: 'tom1Edge', label: 'the 10 in head’s edge', point: TOM1.c, dir: F1.axis, offset: F1.R, words: edgeWords, variants: ['rack'], surfaces: ['tom1'] },
-    { id: 'floorEdge', label: 'the floor tom head’s edge', point: FLOOR.c, dir: FF.axis, offset: FF.R, words: edgeWords, variants: ['floor', 'open'], surfaces: ['floor', 'floorReso'] },
+    { id: 'floorEdge', label: 'the 16 in head’s edge', point: FLOOR.c, dir: FF.axis, offset: FF.R, words: edgeWords, variants: ['floor', 'open'], surfaces: ['floor', 'floorReso'] },
   ],
   envelopes: [
-    { id: 'env.stick2', label: 'the sticks’ path', shape: sector(TOM2), prov: ill('no source gives a stick envelope: the drummer-facing half of each tom, 40 cm up, is the lab’s drawing') },
-    { id: 'env.stick1', label: 'the sticks’ path', shape: sector(TOM1), prov: ill('as above') },
-    { id: 'env.stickF', label: 'the sticks’ path', shape: sector(FLOOR), prov: ill('as above') },
-    { id: 'env.leg', label: 'the player’s right leg', shape: { kind: 'box', min: { x: -700, y: FLOOR_Y - D.legBox.mm, z: 120 }, max: { x: -250 - 120, y: FLOOR_Y, z: 300 } }, prov: ill('toms/GEOMETRY_PROPOSAL.md §6 ko.ft.leg (drawn just clear of the floor tom’s shell)') },
+    { id: 'env.stick2', label: 'the sticks’ path', shape: sector(TOM2), prov: ill('no source gives a stick envelope: the drummer-facing half of each tom, 40 cm up, is the lab’s drawing'), variants: ['rack'] },
+    { id: 'env.stick1', label: 'the sticks’ path', shape: sector(TOM1), prov: ill('as above'), variants: ['rack'] },
+    { id: 'env.stickF', label: 'the sticks’ path', shape: sector(FLOOR), prov: ill('as above'), variants: ['floor', 'open'] },
+    { id: 'env.leg', label: 'the player’s right leg', shape: { kind: 'box', min: { x: -700, y: FLOOR_Y - D.legBox.mm, z: 120 }, max: { x: -250 - 120, y: FLOOR_Y, z: 300 } }, prov: ill('toms/GEOMETRY_PROPOSAL.md §6 ko.ft.leg (drawn just clear of the floor tom’s shell)'), variants: ['floor', 'open'] },
   ],
   variants: [
     { id: 'rack', label: 'RACK PAIR', blurb: 'The 10 in and 12 in rack toms on their holder over the kick, both heads on.', phrase: 'the rack pair in view' },
