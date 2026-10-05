@@ -49,6 +49,7 @@ import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { laneFingerAt, laneFingerDx, type LaneFinger } from './laneFinger';
 import { FALLBACK_INSETS, LANE_CAP_W, laneDragValue, laneValueAt } from './laneEdgeGuard';
 import { useEdgeGuard } from './useEdgeGuard';
+import { GestureExclusionZone } from '../../../../modules/ape-gesture-exclusion';
 
 const DOUBLE_TAP_MS = 320;
 
@@ -198,6 +199,11 @@ export function ParamLane({
           the groove is the owner's 2026-09-05 standard and carries real
           information (how hot, in the app-wide colour language) rather than
           restating the cap's position. */}
+      {/* Android gesture nav (next build): the whole lane is excluded from the
+          system back gesture (48 dp of the 200 dp per-edge allowance).
+          Renders nothing on iOS, web and the current store builds — the
+          inset travel below is what protects those. */}
+      <GestureExclusionZone />
       {/* The cap's TRAVEL: the lane less the edge-guard insets. Slot, scale
           and cap all live inside it, so their percentage geometry is
           unchanged — only the span they share is inset from a window edge. */}

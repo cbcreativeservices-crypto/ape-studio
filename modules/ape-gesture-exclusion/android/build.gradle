@@ -1,0 +1,20 @@
+// ape-gesture-exclusion — Android build (2026-10-04). Pure Kotlin, no extra
+// dependencies. Mirrors the SDK-57 installed-module style (see ape-optical):
+// the expo-module-gradle-plugin supplies Kotlin + expo-modules-core +
+// compileSdk/minSdk/targetSdk — do NOT set those here (drift risk).
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.cbcreativeservices.apegestureexclusion'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.apegestureexclusion"
+
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+}

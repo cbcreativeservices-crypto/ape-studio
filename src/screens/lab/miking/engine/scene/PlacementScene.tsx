@@ -35,6 +35,7 @@ import { colors, fonts } from '../../../../../theme/tokens';
 import { fitValue } from '../../../../../theme/legibility';
 import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
 import { useScrollLock } from '../../../scrollLock';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../../modules/ape-gesture-exclusion';
 import { BoundaryMic, KickDynamicMic, SdcMic } from '../../../../../features/lab/micDrawings';
 import type { DocumentedZone, MicPattern, MicPose, MicSlot, Shape3, VariantId, Vec3, ViewBox, ViewId } from '../model/types.ts';
 import { aimVec, angleBetween, clamp, sub } from '../geometry/vec.ts';
@@ -836,6 +837,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
 
   const canvas = (
     <View style={{ width: w, height: h }}>
+      {/* Android gesture nav: a mic dragged at the stage's edge must not start
+          the system back gesture (modules/ape-gesture-exclusion; renders
+          nothing on iOS, web and builds without the module). */}
+      {!mini && interactive ? <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} /> : null}
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={matrix}>
           <Instrument view={view} variant={variant} />

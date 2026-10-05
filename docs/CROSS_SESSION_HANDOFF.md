@@ -523,6 +523,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 17:50 · ccode · 4a1dd64e
+changed: fix(lab): the shared in-page sliders keep their caps out of the edge-gesture strips
+affects other side: nothing (client-only lab slider fix; JS-only, to be ported to audio-tools-engine for an OTA by ccode).
+needs: nothing.
+
 ### 2026-10-04 17:45 · ccode · d556e9de
 changed: fix(rack): keep the dock lane's cap out of the system edge-gesture strips
 affects other side: nothing (client-only lab fader fix; JS-only, to be ported to audio-tools-engine for an OTA by ccode).
