@@ -32,6 +32,11 @@
  *
  * The lane lives OUTSIDE the scroll well, so scroll contention is structurally
  * gone; no scroll-lock plumbing needed here.
+ *
+ * EDGE GUARD (owner, Pixel 7 Pro, 2026-10-04: "when grabbing at extreme ends
+ * wants to scroll (swipe gesture) to next screen"): the cap's travel is inset
+ * inside the full-width lane so the cap never comes within 40 dp of either
+ * window edge — the system back-gesture strips. See laneEdgeGuard.ts.
  */
 import { useRef } from 'react';
 import { AccessibilityInfo, PanResponder, StyleSheet, Text, View } from 'react-native';
@@ -42,6 +47,8 @@ import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { laneFingerAt, laneFingerDx, type LaneFinger } from './laneFinger';
+import { FALLBACK_INSETS, LANE_CAP_W, laneDragValue, laneValueAt } from './laneEdgeGuard';
+import { useEdgeGuard } from './useEdgeGuard';
 
 const DOUBLE_TAP_MS = 320;
 
@@ -91,6 +98,10 @@ export function ParamLane({
   const fingerRef = useRef<LaneFinger>({ id: undefined, px: 0 });
   const pulseStyle = usePulseStyle();
 
+  // Edge guard: the cap's travel insets, from the lane's measured frame in
+  // its window (laneEdgeGuard.ts). The dock fallback holds until measured.
+  const { ref: laneRef, ins, insRef, measure: measureEdges } = useEdgeGuard({ capW: CAP_W, fallback: FALLBACK_INSETS });
+
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -100,7 +111,7 @@ export function ParamLane({
         movedRef.current = false;
         fingerRef.current = laneFingerAt(e.nativeEvent);
         if (wRef.current > 0) {
-          const v = Math.max(0, Math.min(1, (e.nativeEvent.locationX - CAP_W / 2) / (wRef.current - CAP_W)));
+          const v = laneValueAt(e.nativeEvent.locationX, wRef.current, insRef.current);
           baseRef.current = v;
           onChangeRef.current(v);
         }
@@ -110,7 +121,7 @@ export function ParamLane({
         if (dx === 'lifted') return;
         if (Math.abs(dx) > 5) movedRef.current = true;
         if (wRef.current > 0) {
-          onChangeRef.current(Math.max(0, Math.min(1, baseRef.current + dx / (wRef.current - CAP_W))));
+          onChangeRef.current(laneDragValue(baseRef.current, dx, wRef.current, insRef.current));
         }
       },
       onPanResponderRelease: () => {
@@ -141,8 +152,12 @@ export function ParamLane({
 
   return (
     <View
+      ref={laneRef}
       style={styles.lane}
-      onLayout={(e) => (wRef.current = e.nativeEvent.layout.width)}
+      onLayout={(e) => {
+        wRef.current = e.nativeEvent.layout.width;
+        measureEdges();
+      }}
       {...pan.panHandlers}
       // `accessible` IS REQUIRED ON iOS (2026-09-17, bug-hunt pass 4). React
       // Native's AccessibilityProps defaults it to FALSE on a View, and iOS
@@ -183,6 +198,10 @@ export function ParamLane({
           the groove is the owner's 2026-09-05 standard and carries real
           information (how hot, in the app-wide colour language) rather than
           restating the cap's position. */}
+      {/* The cap's TRAVEL: the lane less the edge-guard insets. Slot, scale
+          and cap all live inside it, so their percentage geometry is
+          unchanged — only the span they share is inset from a window edge. */}
+      <View pointerEvents="none" style={[styles.travel, { left: ins.l, right: ins.r }]}>
       <View pointerEvents="none" style={styles.slot}>
         {level ? (
           <LinearGradient
@@ -222,6 +241,7 @@ export function ParamLane({
         <Animated.View style={[styles.capLine, { backgroundColor: c }, pulseStyle]} />
         <View style={[styles.grip, { right: 5, left: undefined }]} />
       </Animated.View>
+      </View>
 
       {/* Backed chips (design pass 2026-08-31): at the lane's ends the cap
           sat under same-hue text — the label and value vanished into it. */}
@@ -235,7 +255,7 @@ export function ParamLane({
   );
 }
 
-const CAP_W = 26;
+const CAP_W = LANE_CAP_W;
 const SLOT_PAD = 9; // slot inset from the lane ends
 
 const styles = StyleSheet.create({
@@ -251,6 +271,7 @@ const styles = StyleSheet.create({
     // Web: riding the fader must never double as a text-selection gesture.
     userSelect: 'none',
   },
+  travel: { position: 'absolute', top: 0, bottom: 0 },
   slot: {
     position: 'absolute',
     left: SLOT_PAD,
