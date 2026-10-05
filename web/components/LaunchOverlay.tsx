@@ -22,8 +22,8 @@ export function LaunchOverlay({ error }: { error: boolean }) {
       className="fixed inset-0 z-[1000] flex items-center justify-center overflow-y-auto px-4 py-6"
       style={{
         background: "rgba(8, 8, 10, 0.22)",
-        backdropFilter: "blur(3px)",
-        WebkitBackdropFilter: "blur(3px)",
+        backdropFilter: "blur(1.5px)",
+        WebkitBackdropFilter: "blur(1.5px)",
       }}
     >
       <style>{"html, body { overflow: hidden; }"}</style>
