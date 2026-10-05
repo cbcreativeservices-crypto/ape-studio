@@ -743,7 +743,7 @@ export function LeslieDisplay({ w, h, rig, view, mics = [], accessibilityLabel, 
     }
     const out: StaticLabel[] = view === 'inside'
       ? [
-          { id: 'horn', text: 'HORN ROTOR (TWO BELLS)', short: 'HORN ROTOR', u: W2 + 10, v: HORN_Y - 10, align: 'left', tone: 'amber' },
+          { id: 'horn', text: 'HORN ROTOR (ONE BELL SOUNDS)', short: 'HORN ROTOR', u: W2 + 10, v: HORN_Y - 10, align: 'left', tone: 'amber' },
           { id: 'driver', text: 'HORN DRIVER', short: 'DRIVER', u: 70, v: HORN_Y + 140, align: 'left', tone: 'muted' },
           { id: 'woofer', text: 'WOOFER, FACING DOWN', short: 'WOOFER', u: W2 + 10, v: WOOF_Y - 70, align: 'left', tone: 'muted' },
           { id: 'xo', text: `CROSSOVER ${CROSSOVER_HZ} Hz · AMP`, short: `${CROSSOVER_HZ} Hz · AMP`, u: -W2 - 10, v: SHELF_Y + 110, align: 'right', tone: 'muted' },
