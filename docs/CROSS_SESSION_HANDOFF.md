@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 06:33 · ccode · a967e40a
+changed: Merge miking-a5 (A10 Harmonica, A11 Accordion, A12 Pipe organ) into final-lab
+affects other side: nothing (miking merge, branch final-lab)
+needs: nothing (miking merge, branch final-lab)
+
+
 ### 2026-10-05 06:25 · ccode · e957ccda
 changed: fix(miking): Lab 3 drawings after the 390 x 844 inspection
 affects other side: nothing (miking lessons, branch final-lab)
