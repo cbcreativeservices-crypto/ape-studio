@@ -284,3 +284,6 @@ Object.assign(MIC_TYPES, MALLET_MIC_TYPES);
 /* Lab 2 cymbals (I01a–e): the stand-clip condenser. Appended so other lessons merge cleanly. */
 import { CYMBAL_MIC_TYPES } from '../lessons/shared/cymbals/cymbalMics.ts';
 Object.assign(MIC_TYPES, CYMBAL_MIC_TYPES);
+/* Lab 3 free reeds (A10 harmonica, A11 accordion): the harp mic and the mini gooseneck. Appended so other lessons merge cleanly. */
+import { FREE_REED_MIC_TYPES } from '../lessons/shared/freereed/freeReedMics.ts';
+Object.assign(MIC_TYPES, FREE_REED_MIC_TYPES);

@@ -79,6 +79,9 @@ export type MicPageSpec = {
   mountLine: (m: MicType) => string;
   /** One sentence before the cards: choose by property for THIS source. */
   intro: string;
+  /** More cards after the stand mics (Lab 3, 2026-10-05): a hand-held harp
+   *  mic, instrument-mounted miniatures — mics no stand placement offers. */
+  extra?: ReactNode;
 };
 
 export function GMicrophone({ lesson, answers, onAnswered }: PageProps, spec: MicPageSpec) {
@@ -212,6 +215,7 @@ export function GMicrophone({ lesson, answers, onAnswered }: PageProps, spec: Mi
               </Card>
             );
           })}
+          {spec.extra ?? null}
           <Note tone="warn">A mic’s max SPL is the level at which the MIC distorts, measured under its maker’s own conditions — never a safe listening level. For people, keep to about 85 dBA averaged over 8 hours, measured where they listen.</Note>
           <Note>Before connecting, disconnecting or switching phantom power: mute the outputs, lower the monitoring and turn the channel gain down, and follow the manual for your own equipment. Do not judge compatibility by the connector’s shape: a miniature mic may need its own adapter.</Note>
         </>

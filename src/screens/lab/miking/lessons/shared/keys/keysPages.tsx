@@ -96,7 +96,7 @@ const OVAL_WORDS: Record<OvalSpot, { title: string; text: string; short: string;
 };
 
 /** A short link to the speaker module (where a navigator is mounted). */
-function SpkLink() {
+export function SpkLink({ text }: { text?: string } = {}) {
   let nav: { dispatch: (a: unknown) => void } | null = null;
   try {
     nav = useNavigation() as unknown as { dispatch: (a: unknown) => void };
@@ -105,7 +105,7 @@ function SpkLink() {
   }
   return (
     <View style={styles.link}>
-      <Text style={styles.linkText}>The loudspeaker itself — cones, cabinets, how a speaker spreads its sound and why the spot on the cone matters — is covered in full in the Amplified speakers & Leslie module.</Text>
+      <Text style={styles.linkText}>{text ?? 'The loudspeaker itself — cones, cabinets, how a speaker spreads its sound and why the spot on the cone matters — is covered in full in the Amplified speakers & Leslie module.'}</Text>
       {nav ? <KeyButton label="OPEN THE SPEAKER MODULE" onPress={() => nav!.dispatch(StackActions.push('MikingLesson', { id: 'SPK' }))} tint={colors.cyanBright} /> : null}
     </View>
   );

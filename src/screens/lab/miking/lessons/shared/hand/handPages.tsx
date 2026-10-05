@@ -122,7 +122,19 @@ export type HandSpec = {
   partsNote: string;
   partsWarn: string;
   /** Page 3. */
-  plan: { items: readonly HandPlanItem[]; label: (scene: HandScene, selLabel: string | null) => string; looking: (scene: HandScene) => string; first: string; before: readonly { title: string; text: string }[] };
+  plan: {
+    items: readonly HandPlanItem[];
+    label: (scene: HandScene, selLabel: string | null) => string;
+    looking: (scene: HandScene) => string;
+    first: string;
+    before: readonly { title: string; text: string }[];
+    /** More steps after the plan (a hook, called on every render): Lab 3's
+     *  harmonica adds its three signal paths (added 2026-10-05). */
+    useExtra?: (p: PageProps) => MikingStep[];
+  };
+  /** Words the shared pages would otherwise say about a hand drum (Lab 3,
+   *  2026-10-05: a harmonica, an accordion, a pipe organ). Absent = unchanged. */
+  words?: { placeBadge?: string; clearance?: string; cardioidTried?: string; sourceNote?: string };
   /** Page 4. */
   mic: MicPageSpec;
   /** Page 5. */
@@ -214,7 +226,10 @@ function HandInstrument(spec: HandSpec) {
 
 /* ═══════════════ 3 · WHERE IT SITS ═══════════════ */
 function HandSetting(spec: HandSpec) {
-  return function HSetting({ lesson, answers, onAnswered, variant }: PageProps) {
+  const useExtra = spec.plan.useExtra ?? (() => [] as MikingStep[]);
+  return function HSetting(p: PageProps) {
+    const { lesson, answers, onAnswered, variant } = p;
+    const extra = useExtra(p);
     const items = lesson.setting.items;
     const byId = (id: string | null) => items.find((i) => i.id === id);
     const [scene, setScene] = useState<HandScene>('stage');
@@ -296,6 +311,7 @@ function HandSetting(spec: HandSpec) {
           </>
         ),
       },
+      ...extra,
       {
         key: 'before',
         title: 'Before any mic',
@@ -392,7 +408,7 @@ function HandPlacement(spec: HandSpec) {
           <View style={styles.tray}>
             <Text style={styles.trayHead}>MIC TYPE</Text>
             <View style={styles.chips}>
-              {lesson.micTypeIds.map((id) => (
+              {lesson.micTypeIds.filter((id) => zonesAvailable(lesson.zones, rig.variant, id, MIC_TYPES[id].mount).length > 0).map((id) => (
                 <Chip key={id} on={id === mic.typeId} label={MIC_TYPES[id].label} onPress={() => rig.setType('A', id)} />
               ))}
             </View>
@@ -457,7 +473,7 @@ function HandPlacement(spec: HandSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => <DualView rig={rig} art={spec.art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={(v) => `${spec.place.label}, ${(lesson.model.viewTags?.[v] ?? v).toLowerCase()}. ${nowLine(rig, ['A'], spec.outside)}`} />,
-          badge: 'Blue = recommended starting points · grey dashes = the player’s hands and body · pinch to zoom',
+          badge: spec.words?.placeBadge ?? 'Blue = recommended starting points · grey dashes = the player’s hands and body · pinch to zoom',
           bezel,
           params,
           initialParam: 'pos',
@@ -485,7 +501,7 @@ function HandPlacement(spec: HandSpec) {
             {spec.learnZones.map((p, i) => (
               <Body key={i}>{p}</Body>
             ))}
-            <Note tone="warn">Clearance comes first: the hands’ whole path — vigorous passages included — the legs, the supports and the player’s normal movement. No stand or cable in the way out.</Note>
+            <Note tone="warn">{spec.words?.clearance ?? 'Clearance comes first: the hands’ whole path — vigorous passages included — the legs, the supports and the player’s normal movement. No stand or cable in the way out.'}</Note>
           </>
         ),
       },
@@ -612,7 +628,7 @@ function HandContext(spec: HandSpec) {
             {isDeepNull(db) ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies. Use the null to aim, not to promise silence.</Note> : null}
             {tried ? (
               pattern === 'cardioid' ? (
-                <Note tone="ok">What you just saw: a cardioid rejects most directly behind (180°). A mic aimed down at a drum points its back UP and away — a floor wedge often sits below that.</Note>
+                <Note tone="ok">{spec.words?.cardioidTried ?? 'What you just saw: a cardioid rejects most directly behind (180°). A mic aimed down at a drum points its back UP and away — a floor wedge often sits below that.'}</Note>
               ) : (
                 <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and picks up a little directly behind (${fmtDb(gainDb(pattern, 180))}). Check the real pattern of the mic in use before you place the wedge.`}</Note>
               )
@@ -674,7 +690,8 @@ function HandTwoMic(spec: HandSpec) {
     const [slot, setSlot] = useState<MicSlot>('B');
     const [posAxis, setPosAxis] = useState<PosAxis>('x');
     const [aimAxis, setAimAxis] = useState<AimAxis>('az');
-    const regions = lesson.model.regions;
+    // The sources on THIS variant's picture (a region may belong to one).
+    const regions = lesson.model.regions.filter((r) => !r.variants || r.variants.includes(variant));
     const [srcId, setSrcId] = useState(regions[0]?.id ?? '');
     const region = regions.find((r) => r.id === srcId) ?? regions[0];
     const src = region.anchor;
@@ -774,7 +791,7 @@ function HandTwoMic(spec: HandSpec) {
             {T.learn.map((p, i) => (
               <Body key={i}>{p}</Body>
             ))}
-            <Note>What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each part of the drum gives its own delay, so no single setting suits every stroke.</Note>
+            <Note>{spec.words?.sourceNote ?? 'What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity flips the sign — it moves the notches; it does not remove the delay. Change the SOURCE: each part of the drum gives its own delay, so no single setting suits every stroke.'}</Note>
           </>
         ),
       },
