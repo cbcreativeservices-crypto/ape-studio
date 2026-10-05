@@ -125,3 +125,8 @@ Object.assign(ART, CYMBAL_ART);
 /* Lab 2 small percussion (I02–I05): appended so other lessons merge cleanly. */
 import { SMALL_PERC_ART } from '../lessons/shared/smallperc/artRegistry';
 Object.assign(ART, SMALL_PERC_ART);
+/* Lab 3 (winds), the brass (each lesson on its own line). */
+import { A01_ART } from '../lessons/a01Trumpet/art';
+ART.A01 = A01_ART;
+import { A02_ART } from '../lessons/a02Trombone/art';
+ART.A02 = A02_ART;

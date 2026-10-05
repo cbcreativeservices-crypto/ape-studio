@@ -38,7 +38,7 @@ export const prj = (view: ViewId, p: Vec3): P2 => [p.x, view === 'side' ? p.y : 
 export const depthOf = (view: ViewId, p: Vec3) => (view === 'side' ? p.z : -p.y);
 const TO_VIEWER: Record<ViewId, Vec3> = { side: { x: 0, y: 0, z: 1 }, top: { x: 0, y: -1, z: 0 } };
 
-function polyPath(pts: P2[], close = true): SkPath {
+export function polyPath(pts: P2[], close = true): SkPath {
   const p = Skia.Path.Make();
   pts.forEach(([u, v], i) => (i === 0 ? p.moveTo(u, v) : p.lineTo(u, v)));
   if (close) p.close();
@@ -60,16 +60,16 @@ export function hull(pts: P2[]): P2[] {
   }
   return [...lo.slice(0, -1), ...hi.slice(0, -1)];
 }
-function circlePts(c: P2, r: number, n = 18): P2[] {
+export function circlePts(c: P2, r: number, n = 18): P2[] {
   const out: P2[] = [];
   for (let i = 0; i < n; i++) out.push([c[0] + r * Math.cos((i / n) * Math.PI * 2), c[1] + r * Math.sin((i / n) * Math.PI * 2)]);
   return out;
 }
 /** A tapered limb: the hull of two circles. */
-function limbPath(a: P2, b: P2, ra: number, rb: number): SkPath {
+export function limbPath(a: P2, b: P2, ra: number, rb: number): SkPath {
   return polyPath(hull([...circlePts(a, ra), ...circlePts(b, rb)]));
 }
-function bbox(pts: P2[]) {
+export function bbox(pts: P2[]) {
   let u0 = Infinity;
   let v0 = Infinity;
   let u1 = -Infinity;
@@ -84,8 +84,8 @@ function bbox(pts: P2[]) {
 }
 
 /* ── the paint list ── */
-type Fill = { colors: string[]; positions?: number[] } | string;
-type Item = {
+export type Fill = { colors: string[]; positions?: number[] } | string;
+export type Item = {
   path: SkPath;
   fill?: Fill;
   stroke?: { color: string; w: number; opacity?: number; dash?: number[] };
@@ -100,7 +100,7 @@ type Item = {
   /** Extra lines over the mass (a hand's knuckles and finger gaps). */
   lines?: SkPath;
 };
-type Group3 = { key: string; depth: number; items: Item[] };
+export type Group3 = { key: string; depth: number; items: Item[] };
 
 const item = (pts: P2[], fill: Fill | undefined, stroke?: Item['stroke'], close = true, rim?: number): Item => ({ path: polyPath(pts, close), fill, stroke, box: bbox(pts), rim });
 
@@ -436,7 +436,8 @@ export function pluckPath(P: Posture, view: ViewId): SkPath {
 }
 
 /* ── the player ── */
-function playerGroups(P: Posture, view: ViewId, withRightArm = true): Group3[] {
+/** The player figure (shared: the brass family draws its players with it). */
+export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId, withRightArm = true): Group3[] {
   const s = P.player;
   const q = (p: Vec3) => prj(view, p);
   const g: Group3[] = [];
@@ -525,7 +526,7 @@ function playerGroups(P: Posture, view: ViewId, withRightArm = true): Group3[] {
 }
 
 /* ── painting ── */
-function PaintItem({ it }: { it: Item }) {
+export function PaintItem({ it }: { it: Item }) {
   const { box } = it;
   const grad = typeof it.fill === 'object' ? it.fill : null;
   if (it.head) return <LineHead head={it.head.paths} c={it.head.c} r={it.head.r} />;

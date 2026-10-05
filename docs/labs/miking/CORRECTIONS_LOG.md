@@ -811,3 +811,46 @@ station plan); each lesson in `lessons/i0x…/`.
 | CJ-06 | L13, L85 | White flips one channel's polarity | "Compare BOTH polarities in mono and move a mic — flipping one is an example, not a rule" | The lesson's own audit. | SOS-WHITE, SOS-PHASE | APPLIED |
 | CJ-07 | (geometry) | — | The hands' strike volume drawn out to 130 mm from the plate (the proposal's 400 mm would cover the published close point) | Shown so the published close spot can be seen; the player check decides. | proposal | APPLIED · OWNER: hands volume |
 | CJ-08 | (geometry) | — | Rear port at h 300, plate 4 mm, feet 8 mm, the seated posture, the box rocking back (15°), the exit path — drawing defaults / ILLUSTRATIVE | No source gives them. | proposal | APPLIED · OWNER: port height, posture |
+
+## Lab 3 · the brass: A01 Trumpet and Flugelhorn, A02 Trombone and Bass Trombone
+
+Source texts: `source_text/Trumpet-Miking-Technique-Research.txt` (T), `Flugelhorn-…` (F),
+`Trombone-…` (TB), `Bass-Trombone-…` (BT). Research: `trumpet/`, `flugelhorn/`, `trombone/`,
+`bass_trombone/` SOURCES.md and GEOMETRY_PROPOSAL.md; `BATCH3_RESEARCH_SUMMARY.md` §2.
+Built 2026-10-05 (branch miking-a1) as two lessons with the instrument as the variant
+(A01: TRUMPET / FLUGELHORN; A02: TENOR / BASS), on the shared brass family
+(`lessons/shared/brass/`).
+
+### A01 Trumpet and Flugelhorn
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| A1-01 | T L14 | DPA "proposes a several-meter trial in a sufficiently large room" | "a farther mic about 3 m away" (setting, studio card, two-mic checks) | The number exists on DPA's page; the trombone lessons already say "about 3 m" (survey 3d-1). | DPA-TPT "try to mic the trumpet or trombone from 3 m away" | APPLIED (`a01Trumpet/lesson.ts`) |
+| A1-02 | T L7 (ADD) | Shure 1–2 ft and DPA 30–50 cm only | Adds the practice guide's trumpet/flugelhorn row as a starting point: "about 60–120 cm (2–4 ft) in front, off the bell's axis, aimed at the edge of the bell" (zone `tp.far`) | Survey 3d-2: a sourced trumpet row the lesson lacked. | MDAT | APPLIED (`a01Trumpet/model.ts`) · OWNER: approve showing it |
+| A1-03 | T L86 | DPA's "close back-of-bell option", no number | A studio "idea to try" zone `tp.back`, 10–22 cm from the rim's centre, behind the rim beside the flare | The source gives no distance: drawn as a drawing default, said as an experiment. | DPA-TPT | APPLIED · OWNER: approve the distance band |
+| A1-04 | T L17 (ADD) | Clip aim "between bell center and edge" | Adds the 80 Hz wireless low-cut to the record only (no number on screen); the clip zone tests the aim: 6–50° off the line to the centre AND the axis meeting the opening | DPA-MOUNT's wireless note; the aim rule made testable. | DPA-MOUNT | APPLIED (record) |
+| A1-05 | F L21 | Pickup mute "protrudes beyond the bell on specified models" | The record carries Yamaha's "3–4 cm" (`brassSpec.ts` FLUGELHORN.pickupMute); on screen the pickup mute stays a separate product, not taught | Number added to the record; the lesson itself keeps it out of scope. | Y-PM | APPLIED (record) |
+| A1-06 | F L20 | One mic for both horns: "mark a usable location for each" | A check (`tp.mic.4`): the trumpet's clip, place and level are rechecked for the flugelhorn — "a trumpet clip may not fit a flugelhorn's wider bell" | Flugelhorn clip fit is UNKNOWN (proposal: "check the clip's range"). | flugelhorn/GEOMETRY_PROPOSAL.md | APPLIED |
+| A1-07 | T L4, PL-2010 (ADD) | "The bell strongly affects the directional sound" | HOW IT SOUNDS draws the bell's spread by band — near-even low down, the front winning from ~500 Hz, a beam from ~1 kHz — as a simplified shape, no dB; the flugelhorn uses the brass trend ("no flugelhorn was measured on its own") | The only measured directivity in Lab 3; drawn qualitatively as the summary requires. | PL-2010 §5.2; UNSW-BRASS | APPLIED (`shared/brass/brassSoundMath.ts`) |
+| A1-08 | T L2, F L2 | "Pro Audio Training Academy", "Students should…" | Not used | House rule. | — | APPLIED |
+
+### A02 Trombone and Bass Trombone
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| A2-01 | BT L25 | "DPA observes that an undamped clip can pick up bell vibration [10]" | "A mic mounted on an instrument can pick up vibration and contact noise" (symptom `tb.sym.rattle`) | DPA-VIB speaks of clip/holder mounts on instruments generally — no bells, no "undamped". | DPA-VIB | APPLIED (`a02Trombone/lesson.ts`) |
+| A2-02 | TB L6 | "seven slide positions, with the seventh the farthest extension" | The slide's travel drawn to scale: 0, 80, 165, 255, 351, 452, 559 mm — DERIVED by equal temperament on the 2.7 m tube, said as approximate ("players find them by ear and feel") | No source gives the travel; the proportions follow from the sourced length. | Y-TBN-MECH; Y-HUB-TBN; trombone/SOURCES.md §c | APPLIED (`shared/brass/brassSpec.ts`) · OWNER: approve showing approximate travel |
+| A2-03 | TB L45 | "An apparently reasonable mic directly in front of the bell can intersect the lower slide's path" | The scene proves it: a stand mic on the bell's axis 30–50 cm out is stopped by the slide's path (its 7th-position travel plus a 100 mm buffer); the recommended zone is above or beside the slide, aimed across the bell (TB L11, labelled internally as the lesson's inference) | The proposal's own test (§4). Buffer 100 mm is a drawing default (proposal 150). | trombone/GEOMETRY_PROPOSAL.md §3–§4 | APPLIED · OWNER: approve the 100 mm buffer |
+| A2-04 | TB L7 (ADD) | DPA 30–50 cm, Shure 1–2 ft, DPA about 3 m | Adds the practice guide's trombone row "about 60–120 cm (2–4 ft) in front, off the bell's axis" (zone `tb.far`) | Sourced row the lesson lacked. | MDAT | APPLIED · OWNER: approve showing it |
+| A2-05 | BT L7 | "a double rotary example with F and G-flat attachments" | Adds Yamaha's "When set to F, the slide is reduced to six positions" on the slide step; the bass trombone's valve loops drawn (positions: drawing defaults) | Sourced words; the geometry is the lab's drawing. | Y-TBN-PLAY3; Y-YBL830 "Key of Bb/F/Gb/D" | APPLIED |
+| A2-06 | BT L11 | No universal lowest bass-trombone frequency for a filter | A check (`tb.mic.4`): start unfiltered, add only what the lowest wanted note allows — no preset corner on screen | The lesson's own rule; the DPA table lists no bass trombone. | DPA-TABLE (absent row) | APPLIED |
+| A2-07 | TB L2, BT L2 | Headers; date order (bass Oct 3 before tenor Oct 4) | Not used | House rule; the order is the lab's (tenor first). | — | APPLIED |
+
+### Shared (the brass family)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| BR-01 | (all) | Horn sections "belong in Ensembles and Voice" | Plain text, no promise: "Miking a whole horn section … is a topic of its own, with ensembles and voice" | Cross-link as words; owner rule: never promise a lab that is not live. | — | APPLIED |
+| BR-02 | (all) | Mutes "change tone, directionality, protrusion" | HOW IT SOUNDS step 4 draws a straight, cup, Harmon and plunger mute in the bell as typical shapes, no sizes; the mutes' path is taught in words and checks, not as a keep-out solid | A clip rides on the bell, so a mute path solid would block every clip; protrusion has no source. | trumpet/GEOMETRY_PROPOSAL.md §2 (drawing defaults) | APPLIED · OWNER: approve |
+| BR-03 | (all) | Bell travel "watch how far the bell moves" | Taught in words and in each zone's checks; not a keep-out solid | Same reason as BR-02; proposal ±15°/±10° is ILLUSTRATIVE. | trumpet/GEOMETRY_PROPOSAL.md §3 | APPLIED |
+| BR-04 | (all) | NIOSH guidance | The plain hearing line (85 dBA / 8 h, 3 dB exchange), no name | Starting-points voice. | NIOSH | APPLIED |

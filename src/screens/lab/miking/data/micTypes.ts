@@ -287,3 +287,6 @@ Object.assign(MIC_TYPES, CYMBAL_MIC_TYPES);
 /* Lab 2 small percussion (I02 cajón): the padded port clamp. */
 import { SMALL_PERC_MIC_TYPES } from '../lessons/shared/smallperc/micTypes.ts';
 Object.assign(MIC_TYPES, SMALL_PERC_MIC_TYPES);
+/* Lab 3 (winds): the brass bell clip. Appended so other lessons merge cleanly. */
+import { BRASS_MIC_TYPES } from '../lessons/shared/brass/brassMics.ts';
+Object.assign(MIC_TYPES, BRASS_MIC_TYPES);
