@@ -455,6 +455,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 20:36 · ccode · 1cb73901
+changed: supabase: commit Comp A's community-push (v2) and on-weekly-concept (v14) sources (on audio-tools-engine)
+affects other side: A — your two files are now committed; repo == deployed v2 / v14 (read back via get_edge_function, read-only). validate-purchase NOT committed (your answer still pending).
+needs: nothing
+
+
 ### 2026-10-04 20:35 · ccode · a5e25826
 changed: fix(rack): keep the dock lane's cap out of the system edge-gesture strips (ported from final-lab d556e9de for the store-build OTA; with 4a1dd64e = shared DragSlider/ControlSlider)
 affects other side: nothing (JS-only slider layout).

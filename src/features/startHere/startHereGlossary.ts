@@ -7,7 +7,9 @@
  * (get_glossary_definition), so the beginner's 24 words carry their own copy.
  *
  * Copied verbatim from the `glossary` table (term, definition, plain_english)
- * on 2026-09-29. If one of these glossary entries is edited, refresh this file
+ * on 2026-10-04 (after migration 2026100410: Sound Source, Listener
+ * (acoustics) and Audio Signal added; Tone, Recording and Playback rewritten).
+ * If one of these glossary entries is edited, refresh this file
  * (keys are the exact `glossary` values used in startHereContent.ts, lower-cased).
  */
 export type StarterGlossaryEntry = { term: string; definition: string; plain_english: string };
@@ -22,6 +24,11 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
     term: 'Audio',
     definition: 'Relating to sound within the range of human hearing (roughly 20 Hz to 20 kHz), or to the electrical or digital signals that represent such sound. The term covers both the acoustic phenomenon and its recorded or transmitted representation.',
     plain_english: 'Audio means sound we can hear, or the signals that carry that sound. It covers the whole hearing range.',
+  },
+  'audio signal': {
+    term: 'Audio Signal',
+    definition: 'An audio signal is an electrical or digital representation of sound, mainly at frequencies within the range of human hearing (roughly 20 Hz to 20 kHz), that equipment can carry, process, store and reproduce. In analog form it is a voltage that varies continuously in a pattern that follows the original sound wave; in digital form it is a stream of numbers, called samples, that describe the same waveform. An audio signal makes no sound by itself: it becomes sound again only when a transducer such as a loudspeaker or headphone turns it back into vibration in the air. Audio signals come from microphones and pickups, or are generated electronically, as by a synthesizer or a test-tone oscillator.',
+    plain_english: 'An audio signal is sound turned into electricity or numbers, so equipment can work with it. A microphone makes one from sound, and a speaker turns it back into sound. You cannot hear an audio signal itself. It travels silently through cables and equipment until a speaker or headphones play it.',
   },
   'audio cable': {
     term: 'Audio cable',
@@ -43,10 +50,10 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
     definition: 'Input/output (I/O) refers to the points at which signals or data enter and leave a device or system, and to the process of that exchange. In audio it encompasses analog and digital connections such as line, microphone, and network I/O.',
     plain_english: 'Input/output means the ins and outs of a device. Signals enter at inputs and leave at outputs. It covers analog and digital connections.',
   },
-  'listening position': {
-    term: 'Listening Position',
-    definition: 'The location where the listener sits relative to the speakers; in a well-set-up stereo system it forms an equilateral or near-equilateral triangle with the two speakers and is often called the sweet spot.',
-    plain_english: 'The listening position is the spot where you sit to listen. Ideally it is an equal distance from each speaker, so the sound is balanced and centered.',
+  'listener (acoustics)': {
+    term: 'Listener (acoustics)',
+    definition: 'In acoustics, the listener is the receiver at the end of the source-path-receiver chain: the person whose ears receive a sound, or a microphone placed to receive it, after the sound has travelled from a source through a medium. What reaches a listener is the direct sound plus reflections from the surroundings, so its level, frequency balance and timing at the listening point differ from those at the source. A microphone receives sound physically, but hearing - the perception of pitch, loudness and timbre - happens in the ear and brain, and differs from one person to another.',
+    plain_english: "The listener is whoever, or whatever, receives a sound: your ears, or a microphone. It is the last stop on a sound's journey from the source, through the medium, to the listener. A microphone receives sound, but it does not hear it the way a person does, and two people can hear the same sound differently.",
   },
   loudness: {
     term: 'Loudness',
@@ -85,18 +92,13 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
   },
   playback: {
     term: 'Playback',
-    definition: 'Playback is the reproduction of pre-recorded audio or video content during an event, such as music, video roll-ins, stings, or recorded segments. The playback source and operator must deliver this content on cue and at the correct level.',
-    plain_english: 'It is playing pre-recorded music or video at the right moment during a show.',
-  },
-  'pure tone': {
-    term: 'Pure Tone',
-    definition: 'A pure tone is a sound consisting of a single frequency with a sinusoidal waveform and no harmonics or overtones. It is an idealized signal rarely produced by acoustic instruments but easily generated electronically, such as by a sine-wave oscillator.',
-    plain_english: 'A pure tone is the simplest sound: one steady pitch with no extra coloring, like the smooth beep of a test tone. Real instruments almost never make one, because they always add overtones.',
+    definition: 'Playback is the reproduction of previously recorded or stored audio, and often video, so it can be heard or seen again through loudspeakers, headphones or displays. In live events, theatre and broadcast, playback also means running pre-recorded content during a show - music, video roll-ins, stings or recorded segments - which the playback source and operator must deliver on cue and at the correct level.',
+    plain_english: 'Playback is playing something that was recorded, so you can hear it again through speakers or headphones. At a show, it also means playing pre-recorded music or video at exactly the right moment.',
   },
   recording: {
     term: 'Recording',
-    definition: "Recording is the capture of an event's audio and/or video to a storage medium for later playback, archiving, or distribution. In corporate AV it produces the master file used for on-demand viewing, compliance, or content repurposing.",
-    plain_english: "Recording is capturing the event's audio and video to a file. So it can be watched or used later.",
+    definition: 'Recording is the capture of sound, or of signals such as audio and video, onto a storage medium - tape, disc, memory card or a computer file - so it can be played back, edited, archived or distributed later. The word names both the act of capturing and the stored result, a recording. At live and corporate events, the recording of a session typically becomes the master file used for on-demand viewing, compliance or reuse.',
+    plain_english: 'Recording means capturing sound, and sometimes video, so it can be kept and played back later. The word also names what you end up with: a song saved on your phone is a recording. At a live event, the recording is the file people watch or use afterwards.',
   },
   'signal path': {
     term: 'Signal Path',
@@ -107,6 +109,16 @@ export const STARTER_GLOSSARY: Record<string, StarterGlossaryEntry> = {
     term: 'Sound',
     definition: 'Sound is a mechanical disturbance that travels through an elastic medium (such as air) as a longitudinal pressure wave, produced when a source vibrates and sets the surrounding particles oscillating about their equilibrium positions. The human-audible range is nominally about 20 Hz to 20 kHz; sound requires a medium and cannot propagate through a vacuum.',
     plain_english: 'Sound is a vibration that travels through air or another material. Something vibrates, pushes on the air, and the disturbance spreads out as a wave. Your ears pick up these vibrations and your brain hears them. Sound cannot travel through empty space because there is nothing to carry it.',
+  },
+  'sound source': {
+    term: 'Sound Source',
+    definition: 'A sound source is any vibrating object or process that disturbs the surrounding medium and radiates sound energy into it - for example the vocal folds, a guitar string coupled to its soundboard, a drum head, a loudspeaker cone, or turbulent airflow. Every sound begins at a source. A source is described by its sound power, its frequency content and its directivity; sound power is a property of the source itself, whereas the sound pressure level at a listener also depends on distance and on the surroundings.',
+    plain_english: 'A sound source is the thing that makes a sound. It vibrates and pushes on the air around it: a voice, a guitar string, a drum or a speaker cone. Every sound starts at a source, then travels through a medium, such as air, to a listener.',
+  },
+  tone: {
+    term: 'Tone',
+    definition: 'In audio, tone most often means the overall character or quality of a sound (its tone color), determined mainly by its balance of frequencies and its harmonic content. In acoustics, a tone is also any sound heard as having a definite pitch: a pure tone of a single frequency, such as a test tone, or a complex tone, such as a sung or played note, whose several frequency components are heard together as one pitch. In music theory, a tone is also the interval of a whole step.',
+    plain_english: 'Tone is the overall quality or color of a sound. It is what makes a sound bright, dark, warm, or thin. The word can also mean any sound with a clear pitch, such as a test tone or a sung note.',
   },
   vibration: {
     term: 'vibration',
@@ -131,7 +143,9 @@ export function starterGlossaryEntry(glossaryTerm: string): StarterGlossaryEntry
  * names that open a glossary entry of their own, in the glossary's spelling.
  * Two were left out because the glossary's only entry with that name is a
  * different sense: "Damping" and "Density" are the reverb controls, not the
- * vibration / medium meanings these lessons use.
+ * vibration / medium meanings these lessons use. 2026-10-04: the three new
+ * entries and Tone carry their live lists; Tone's "Equalization" and "Test
+ * tone" are left out because no glossary entry has exactly that name.
  *
  * A related word that is itself a starter word opens its built-in entry
  * (free, as every starter word). Any other opens through Start Here's metered
@@ -141,11 +155,12 @@ export function starterGlossaryEntry(glossaryTerm: string): StarterGlossaryEntry
 export const STARTER_RELATED: Record<string, readonly string[]> = {
   amplitude: ['Level', 'Waveform', 'loudness (perceptual)', 'Decibel (dB)', 'SPL (sound pressure level)'],
   audio: ['Frequency', 'Sound', 'Audio Frequency', 'Bandwidth'],
+  'audio signal': ['Audio', 'Signal Path', 'Transducer', 'Microphone (Mic)', 'Loudspeaker (Speaker)', 'Level', 'Digital signal', 'Waveform', 'Line Level', 'Mic Level'],
   'audio cable': ['Balanced line', 'Unbalanced line', 'Shielding', 'Speaker cable', 'Audio connectors'],
   'decibel (db)': ['SPL (sound pressure level)', 'Amplitude', 'Frequency Response'],
   frequency: ['Frequency Response', 'Wavelength', 'Audio Frequency', 'Pitch', 'Cycles'],
   'input/output': ['Analog-to-digital converter', 'Digital-to-analog converter', 'Audio Interface', 'Latency', 'Balanced line'],
-  'listening position': ['Soundstage', 'Imaging', 'Speaker Placement', 'Toe-In', 'Audyssey'],
+  'listener (acoustics)': ['Sound Source', 'Medium', 'Source-path-receiver model', 'Listening Position', 'Loudness', 'Hearing Range', 'Direct sound', 'Reflection'],
   loudness: ['LUFS', 'Loudness Normalization', 'Limiting', 'Dynamic Range', 'Equal-Loudness Contours', 'True Peak'],
   'loudspeaker (speaker)': ['Transducer', 'woofer', 'tweeter', 'Monitor Speakers (Studio Monitors)', 'Impedance', 'Amplifier', 'Crossover Frequency'],
   medium: ['Propagation', 'Speed of Sound', 'Acoustic Impedance', 'Elasticity'],
@@ -154,10 +169,11 @@ export const STARTER_RELATED: Record<string, readonly string[]> = {
   noise: ['Noise Floor', 'Hiss', 'Hum', 'Signal-to-Noise Ratio (SNR)', 'Ambient noise'],
   pitch: ['Fundamental', 'Frequency', 'Musical note', 'Hertz (Hz)', 'Octave'],
   playback: ['Roll-In Video', 'Walk-On Music', 'Cue Sheet', 'Show Caller', 'Transition'],
-  'pure tone': ['Complex Tone', 'Harmonic Series', 'Sound Wave', 'Period', 'Beat Frequency'],
   recording: ['Recording Feed', 'Archive', 'Webcast', 'Playback', 'Backup System'],
   'signal path': ['Signal flow', 'Routing', 'Gain Staging', 'Insert Point', 'Signal Management'],
   sound: ['Pressure Wave', 'Frequency', 'Acoustic Pressure', 'Wavelength', 'Compression', 'Particle Displacement'],
+  'sound source': ['Sound Wave', 'Medium', 'vibration', 'Listener (acoustics)', 'Source Device', 'Sound Power', 'Directivity', 'Source-path-receiver model'],
+  tone: ['Timbre', 'Frequency', 'Harmonics', 'Pitch'],
   vibration: ['Resonance', 'Frequency', 'Amplitude', 'vibration transducer'],
   waveform: ['sine wave', 'Envelope', 'Transient', 'Peak level', 'Clipping'],
 };

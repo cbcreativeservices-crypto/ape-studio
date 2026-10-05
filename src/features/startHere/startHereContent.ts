@@ -54,8 +54,8 @@ export type StarterTerm = {
   /**
    * The FULL glossary entry this word opens in place (GlossaryTermPopup —
    * the learner's page stays exactly where it was). The exact glossary term,
-   * matched case-insensitively. Verified present 2026-09-29 against
-   * glossary_browse_v. `null` only when the glossary's entry of that name
+   * matched case-insensitively. Verified present 2026-10-04 (after migration
+   * 2026100410) against glossary_browse_v; no starter word has a gap. `null` only when the glossary's entry of that name
    * means something else — `glossaryGap` then says why, and the gap is in the
    * owner report so an entry can be authored.
    */
@@ -72,19 +72,17 @@ export const STARTER_TERMS: readonly StarterTerm[] = [
     term: 'Source',
     group: 'hearing',
     def: 'The thing that creates a sound, such as a voice, an instrument, or a speaker.',
-    glossary: null,
-    glossaryGap:
-      'The Glossary’s entry for this word is about electronics, not sound, so there is no full entry to open here.',
+    glossary: 'Sound Source',
   },
   { id: 'medium', term: 'Medium', group: 'hearing', def: 'The material sound travels through, such as air.', note: 'Sound also travels through water and solids. It cannot travel through empty space — there is nothing there to vibrate.', glossary: 'Medium' },
-  { id: 'listener', term: 'Listener', group: 'hearing', def: 'The person, or device, receiving the sound.', note: 'A microphone can be the listener too — it receives the sound waves, though it does not hear them the way you do.', glossary: 'Listening Position' },
+  { id: 'listener', term: 'Listener', group: 'hearing', def: 'The person, or device, receiving the sound.', note: 'A microphone can be the listener too — it receives the sound waves, though it does not hear them the way you do.', glossary: 'Listener (acoustics)' },
   { id: 'pitch', term: 'Pitch', group: 'hearing', def: 'How high or low a sound seems.', note: 'Pitch is what you hear. The measurement it follows most closely is frequency.', glossary: 'Pitch' },
-  { id: 'tone', term: 'Tone', group: 'hearing', def: 'A sound with a clear, steady pitch.', note: 'The test tones in this lesson are pure tones — a single frequency. Engineers also say “tone” for a sound’s overall character, as in “a warm tone”.', glossary: 'Pure Tone' },
+  { id: 'tone', term: 'Tone', group: 'hearing', def: 'A sound with a clear, steady pitch.', note: 'The test tones in this lesson are pure tones — a single frequency. Engineers also say “tone” for a sound’s overall character, as in “a warm tone”.', glossary: 'Tone' },
   { id: 'noise', term: 'Noise', group: 'hearing', def: 'A sound that is irregular or complex and is not heard as a clear tone — like hiss, wind or rain.', note: 'In audio work, “noise” also means any unwanted sound or signal, such as hum or hiss.', glossary: 'Noise' },
 
   // ── Signals and equipment ──
   { id: 'audio', term: 'Audio', group: 'equipment', def: 'Sound that equipment has turned into a signal, so it can be carried, changed, recorded or played back.', note: 'Once a speaker turns the signal back into vibration in the air, what you hear is sound again.', glossary: 'Audio' },
-  { id: 'audioSignal', term: 'Audio signal', group: 'equipment', def: 'An electrical or digital copy of a sound that equipment can carry or process.', note: 'You cannot hear an audio signal directly — it has to reach a speaker or headphones first.', glossary: 'Audio' },
+  { id: 'audioSignal', term: 'Audio signal', group: 'equipment', def: 'An electrical or digital copy of a sound that equipment can carry or process.', note: 'You cannot hear an audio signal directly — it has to reach a speaker or headphones first.', glossary: 'Audio Signal' },
   { id: 'microphone', term: 'Microphone', group: 'equipment', def: 'A device that converts sound into an audio signal.', glossary: 'Microphone (Mic)' },
   { id: 'speaker', term: 'Speaker', group: 'equipment', def: 'A device that converts an audio signal into sound.', note: 'Its full name is loudspeaker. Headphones are small speakers worn on the ears.', glossary: 'Loudspeaker (Speaker)' },
   { id: 'cable', term: 'Cable', group: 'equipment', def: 'A physical path that carries a signal between devices.', glossary: 'Audio cable' },
