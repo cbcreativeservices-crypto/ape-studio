@@ -95,6 +95,24 @@ function conceptEmailText(c: Concept): string {
   ].join("\n");
 }
 
+// The cron sends the legacy service-role JWT from Vault. With verify_jwt on,
+// the gateway has already checked its signature, so accepting it by its
+// role claim is safe. A plain string compare fails whenever the runtime's
+// SUPABASE_SERVICE_ROLE_KEY is a different (newer-format) key: that 401'd
+// every run on 2026-10-04 (Comp A).
+function isServiceRoleJwt(auth: string): boolean {
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  const part = token.split(".")[1];
+  if (!part) return false;
+  try {
+    const b64 = part.replace(/-/g, "+").replace(/_/g, "/");
+    const claims = JSON.parse(atob(b64 + "=".repeat((4 - (b64.length % 4)) % 4)));
+    return claims?.role === "service_role" && claims?.ref === "yjgolswjggmlpeowvtxr";
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST" && req.method !== "GET") {
     return json({ error: "method_not_allowed" }, 405);
@@ -105,7 +123,7 @@ Deno.serve(async (req) => {
   if (!service || !url) return json({ error: "misconfigured" }, 500);
 
   const auth = req.headers.get("Authorization") ?? "";
-  if (auth !== `Bearer ${service}`) {
+  if (auth !== `Bearer ${service}` && !isServiceRoleJwt(auth)) {
     return json({ error: "unauthorized" }, 401);
   }
 
