@@ -13,7 +13,7 @@ export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtit
 
 export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
-  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn cymbals and percussion — hanging metal and the gong, the mallet keyboards and the electric pianos: how each one rings, recommended starting points, the player’s space and the mallets’ travel, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.' },
+  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn cymbals and percussion — the kit’s cymbals, hanging metal and the gong, the mallet keyboards and the electric pianos: how each one rings, recommended starting points, the swing, the sticks and the mallets’ travel, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
@@ -60,7 +60,12 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C13', labId: 'strings', title: 'Oud', subtitle: 'A fretless lute with a deep bowl — the upper face, the face, the rose', status: 'ready' },
   { id: 'C14', labId: 'strings', title: 'Sitar', subtitle: 'Low by the bridge, high by the neck — and the sympathetic strings', status: 'ready' },
   { id: 'C15', labId: 'strings', title: 'Saraswati Veena', subtitle: 'Over the top plate, out of the hand’s reach — the resonator, the drone, the yali', status: 'ready' },
-  // Lab 2 (percussion), in catalogue order: I01 cymbals, I02 cajón, I03 shakers, I04 tambourine, I05 wood and bell, I06a–c, I07–I10, I11a/b, I12.
+  // Lab 2 (percussion), in catalogue order: I01a–e cymbals, I02 cajón, I03 shakers, I04 tambourine, I05 wood and bell, I06a–c, I07–I10, I11a/b, I12.
+  { id: 'I01a', labId: 'percussion', title: 'Hi-Hat', subtitle: 'Above the pair, away from the snare — or underneath on a clip', status: 'ready' },
+  { id: 'I01b', labId: 'percussion', title: 'Ride Cymbal', subtitle: 'A spot over the bow, a mic a foot or two above, or one underneath', status: 'ready' },
+  { id: 'I01c', labId: 'percussion', title: 'Crash Cymbal', subtitle: 'Overheads first — then above the plate, or underneath', status: 'ready' },
+  { id: 'I01d', labId: 'percussion', title: 'Splash Cymbal', subtitle: 'On an arm or on top of a crash — a short cue among loud neighbours', status: 'ready' },
+  { id: 'I01e', labId: 'percussion', title: 'China Cymbal', subtitle: 'Upright or turned over — above it, or under its lowest point', status: 'ready' },
   { id: 'I06a', labId: 'percussion', title: 'Triangle', subtitle: 'A bent steel bar hung freely: attack, a long ring and the cutoff', status: 'ready' },
   { id: 'I06b', labId: 'percussion', title: 'Finger Cymbals', subtitle: 'A small pair, held still or danced — attack, ring and the moving hands', status: 'ready' },
   { id: 'I06c', labId: 'percussion', title: 'Bar Chimes', subtitle: 'A row of graduated bars swept by hand — the whole sweep and its tail', status: 'ready' },

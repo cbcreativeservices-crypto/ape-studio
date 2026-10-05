@@ -105,3 +105,6 @@ import { I06C_LESSON } from '../lessons/i06cBarChimes/lesson.ts';
 LESSON_CONTENT.I06c = I06C_LESSON;
 import { I12_LESSON } from '../lessons/i12Gong/lesson.ts';
 LESSON_CONTENT.I12 = I12_LESSON;
+/* Lab 2 cymbals (I01a–e): appended so other lessons merge cleanly. */
+import { CYMBAL_CONTENT } from '../lessons/shared/cymbals/content.ts';
+Object.assign(LESSON_CONTENT, CYMBAL_CONTENT);

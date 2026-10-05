@@ -281,3 +281,6 @@ Object.assign(MIC_TYPES, HAND_DRUM_MIC_TYPES);
 /* Lab 2 mallet keyboards (I07–I10): their mic types, appended. */
 import { MALLET_MIC_TYPES } from '../lessons/shared/mallets/malletMics.ts';
 Object.assign(MIC_TYPES, MALLET_MIC_TYPES);
+/* Lab 2 cymbals (I01a–e): the stand-clip condenser. Appended so other lessons merge cleanly. */
+import { CYMBAL_MIC_TYPES } from '../lessons/shared/cymbals/cymbalMics.ts';
+Object.assign(MIC_TYPES, CYMBAL_MIC_TYPES);

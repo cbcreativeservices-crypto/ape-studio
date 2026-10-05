@@ -119,3 +119,6 @@ import { BAR_CHIMES_ART, BAR_CHIMES_PAGES, BAR_CHIMES_STEP_COUNTS } from '../les
 ART.I06c = { ...BAR_CHIMES_ART, pages: BAR_CHIMES_PAGES, stepCounts: BAR_CHIMES_STEP_COUNTS };
 import { GONG_ART, GONG_PAGES, GONG_STEP_COUNTS } from '../lessons/i12Gong/pages';
 ART.I12 = { ...GONG_ART, pages: GONG_PAGES, stepCounts: GONG_STEP_COUNTS };
+/* Lab 2 cymbals (I01a–e): appended so other lessons merge cleanly. */
+import { CYMBAL_ART } from '../lessons/shared/cymbals/artRegistry';
+Object.assign(ART, CYMBAL_ART);
