@@ -71,7 +71,7 @@ export const CSN_ZONES: DocumentedZone[] = [
     quote: 'placing the mic a good 4 inches away from the snare and angled toward the center will ensure you capture the whole drum sound',
     refSurface: 'rim',
     side: 'outside',
-    distance: { min: 100, max: 160 },
+    distance: { min: 101.6, max: 160 },
     bandProv: ill('"a good 4 inches" (at least about 10 cm): 10–16 cm above the rim is the lab’s band'),
     radial: { line: 'rim', min: -20, max: 160, prov: ill('beside the rim, not over the playing area: the lab’s drawing') },
     aimAt: { surface: 'batter', r: R * 0.5, prov: ill('"angled toward the center": the axis meets the head within half its radius') },
