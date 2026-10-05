@@ -123,3 +123,12 @@ import { A04A_LESSON } from '../lessons/a04aTuba/lesson.ts';
 LESSON_CONTENT.A04a = A04A_LESSON;
 import { A04B_LESSON } from '../lessons/a04bEuphonium/lesson.ts';
 LESSON_CONTENT.A04b = A04B_LESSON;
+/* Lab 3 (winds), the saxophones A05a–d (each lesson on its own line). */
+import { A05A_LESSON } from '../lessons/a05aSopranoSax/lesson.ts';
+LESSON_CONTENT.A05a = A05A_LESSON;
+import { A05B_LESSON } from '../lessons/a05bAltoSax/lesson.ts';
+LESSON_CONTENT.A05b = A05B_LESSON;
+import { A05C_LESSON } from '../lessons/a05cTenorSax/lesson.ts';
+LESSON_CONTENT.A05c = A05C_LESSON;
+import { A05D_LESSON } from '../lessons/a05dBaritoneSax/lesson.ts';
+LESSON_CONTENT.A05d = A05D_LESSON;

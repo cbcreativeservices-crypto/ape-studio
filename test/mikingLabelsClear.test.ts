@@ -35,7 +35,7 @@ const bowedArt = R(await import('../src/screens/lab/miking/lessons/shared/bowed/
 const bowedSpec = R(await import('../src/screens/lab/miking/lessons/shared/bowed/bowedSpec.ts'));
 
 /** The player, not the instrument (bw.* the bowed family's figure, br.* the brass player's, pl.* the low-brass player's). */
-const PERSON = /^(bw\.(player|head|armR\d?a|leftHand|chair)(\.seated)?|br\.(player|head|armR\d?a|valveHands)(\.[a-z]+)?|pl\.[a-zA-Z]+|player\..*|chair|bench\..*|kit\.throne)$/;
+const PERSON = /^(bw\.(player|head|armR\d?a|leftHand|chair)(\.seated)?|br\.(player|head|armR\d?a|valveHands)(\.[a-z]+)?|sx\.(player|head|handR|armR\d?|thighR|strap|chair)(\.[a-z]+)?|pl\.[a-zA-Z]+|player\..*|chair|bench\..*|kit\.throne)$/;
 const LABEL_MIN_S = 0.12; // PlacementScene: no labels below this fit scale
 
 type Hit = { lesson: string; where: string; text: string; parts: string[] };

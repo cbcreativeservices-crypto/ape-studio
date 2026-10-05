@@ -293,3 +293,6 @@ Object.assign(MIC_TYPES, BRASS_MIC_TYPES);
 /* Lab 3 low / coiled brass (A03 horn, A04a tuba, A04b euphonium): ribbon and large condenser. */
 import { LOW_BRASS_MIC_TYPES } from '../lessons/shared/lowbrass/lowBrassMics.ts';
 Object.assign(MIC_TYPES, LOW_BRASS_MIC_TYPES);
+/* Lab 3 saxophones (A05a–d): the supercardioid dynamic and the bell clip. Appended so other lessons merge cleanly. */
+import { SAX_MIC_TYPES } from '../lessons/shared/sax/saxMics.ts';
+Object.assign(MIC_TYPES, SAX_MIC_TYPES);

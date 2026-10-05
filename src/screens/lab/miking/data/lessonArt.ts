@@ -137,3 +137,12 @@ import { TUBA_ART } from '../lessons/a04aTuba/art';
 ART.A04a = TUBA_ART;
 import { EUPH_ART } from '../lessons/a04bEuphonium/art';
 ART.A04b = EUPH_ART;
+/* Lab 3 (winds), the saxophones A05a–d (each lesson on its own line). */
+import { A05A_ART } from '../lessons/a05aSopranoSax/art';
+ART.A05a = A05A_ART;
+import { A05B_ART } from '../lessons/a05bAltoSax/art';
+ART.A05b = A05B_ART;
+import { A05C_ART } from '../lessons/a05cTenorSax/art';
+ART.A05c = A05C_ART;
+import { A05D_ART } from '../lessons/a05dBaritoneSax/art';
+ART.A05d = A05D_ART;

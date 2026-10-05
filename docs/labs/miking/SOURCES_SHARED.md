@@ -135,3 +135,12 @@ resolve from one table. The ribbon's and the large condenser's body sizes are dr
 | Key | Source | URL | Status 2026-10-05 |
 |---|---|---|---|
 | IHS-ROSTRUP | F. Rostrup, "Acoustics: Recording the Horn", International Horn Society: "One figure-8 microphone side-rejecting the piano sound from above the horn and a vacuum tube large diaphragm cardioid from beneath the horn" (the `lbRibbon` and `lbLdc` types' patterns) | see `french_horn/SOURCES.md` | 200, read 2026-10-05 in the Batch 3 pass |
+## 9. Mic types for Lab 3’s saxophones (A05a–d, `lessons/shared/sax/saxMics.ts`)
+
+Added 2026-10-05 by the saxophone builder (branch miking-a3). The full family register is
+`alto_sax/SOURCES.md` §0; these are the keys the shared mic types name.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| S-SAX | Shure, D. Rochman, "Choosing a Saxophone Microphone for Recording and Live Sound" (engineers name condensers for detail, dynamics for close live work, ribbons for a rounded top) | https://www.shure.com/en-EU/insights/choosing-a-saxophone-microphone | 200, read (Batch 3) |
+| S-POLAR | Shure, "Microphone Directionality and Polar Pattern Basics": "the supercardioid is least sensitive at 125 degrees and the hypercardioid at 110 degrees" | https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics | 200, read (Batch 3, `trumpet/SOURCES.md` §0.1) |

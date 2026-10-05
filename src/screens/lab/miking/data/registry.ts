@@ -91,6 +91,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'A03', labId: 'winds', title: 'French Horn', subtitle: 'A bell that faces back: the room in front, or a mic beside the bell', status: 'ready' },
   { id: 'A04a', labId: 'winds', title: 'Tuba', subtitle: 'Bell up or bell front: above the bell, a little off to the side, or farther back', status: 'ready' },
   { id: 'A04b', labId: 'winds', title: 'Euphonium', subtitle: 'Bell up or bell front: above the bell toward its edge, a little off axis, or farther back', status: 'ready' },
+  { id: 'A05a', labId: 'winds', title: 'Soprano Saxophone', subtitle: 'A straight horn: into the bell, above it toward the holes, or a clip far from the bell', status: 'ready' },
+  { id: 'A05b', labId: 'winds', title: 'Alto Saxophone', subtitle: 'Above the bell toward the holes, into the bell, near the keys, or a clip', status: 'ready' },
+  { id: 'A05c', labId: 'winds', title: 'Tenor Saxophone', subtitle: 'Above the bell, a third of the way up from farther off, or a clip', status: 'ready' },
+  { id: 'A05d', labId: 'winds', title: 'Baritone Saxophone', subtitle: 'A big horn: above the bell, the triangle from farther off, and the lowest notes', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

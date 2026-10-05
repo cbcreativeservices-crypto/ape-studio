@@ -619,6 +619,12 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-05 05:54 · ccode · 492d8ad3
+changed: fix(miking): saxophone mics speak of the horn; the plan's swing hatch reads at plan scale
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 05:46 · ccode · c0fa230f
 changed: feat(miking): Lab 3 Winds — A03 French Horn, A04a Tuba, A04b Euphonium lessons, hub row, tests, corrections LB-01..LB-12
 affects other side: nothing (miking lessons, branch final-lab)
@@ -627,6 +633,12 @@ needs: nothing (miking lessons, branch final-lab)
 
 ### 2026-10-05 05:46 · ccode · ff7cd817
 changed: feat(miking engine): opt-in envelopeReveal — keep-outs drawn only as a mic approaches
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 05:41 · ccode · b514b92b
+changed: feat(miking): shared saxophone family for Lab 3 (soprano, alto, tenor, baritone)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
