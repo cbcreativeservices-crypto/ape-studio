@@ -7,6 +7,9 @@ import { KickArt, kickHitTest, kickLabels } from '../lessons/m01Kick/art';
 import { CoupledHeads, StrikeSequence } from '../lessons/m01Kick/soundArt';
 import { SNARE_ART } from '../lessons/m02Snare/art';
 import { TOMS_ART } from '../lessons/m03Toms/art';
+import { M09_ART } from '../lessons/m09Overheads/art';
+import { M10_ART } from '../lessons/m10Room/art';
+import { M11_ART } from '../lessons/m11Kit/art';
 import { cabArt } from '../lessons/spk/art';
 import { SPK_PAGES } from '../lessons/spk/pages';
 import { TONBAK_ART, TONBAK_PAGES } from '../lessons/m12Tonbak/pages';
@@ -24,6 +27,9 @@ const ART: Record<string, LessonArt> = {
   },
   M02: SNARE_ART,
   M03: TOMS_ART,
+  M09: M09_ART,
+  M10: M10_ART,
+  M11: M11_ART,
 };
 // Each further lesson on its own line (lessons are built in parallel).
 ART.SPK = { ...cabArt('1x12'), pages: SPK_PAGES };

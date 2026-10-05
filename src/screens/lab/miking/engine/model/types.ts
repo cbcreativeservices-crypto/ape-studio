@@ -170,6 +170,10 @@ export type DocumentedZone = {
   bandProv?: Provenance;
   /** Distance from a reference line (mm; signed when the line has an offset). */
   radial?: { line: string; min?: number; max?: number; prov: Provenance };
+  /** Distance from a POINT (3-D), mm: the mic's front between min and max
+   *  of it — "each overhead the same distance from the snare's centre".
+   *  Lab 1's kit-level lessons (overheads, room, complete kit). */
+  near?: { point: Vec3; min: number; max: number; prov: Provenance };
   /** `variants`: any of these (the tom lesson's drum choice). */
   requires?: { variant?: VariantId; variants?: VariantId[]; mount?: MountKind; micTypeIds?: string[] };
   /** Where the source's row includes an orientation ("on-axis with beater",
@@ -211,8 +215,13 @@ export type PatternId = 'omni' | 'cardioid' | 'supercardioid' | 'hypercardioid' 
 export type MicPattern = PatternId | 'unstated' | 'halfCardioid';
 /** 'clip': clamped to a drum's rim (the model's `rims`): the body, plus an
  *  arm to the nearest rim point that may not exceed the clamp's reach. */
-export type MountKind = 'stand' | 'surface' | 'clip';
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic';
+/** 'boom': an overhead boom stand — the boom runs level from the mic's tail
+ *  out of the kit (away from the model's `boomHub`), the stand drops from its
+ *  far end (Lab 1's overheads; the lengths are ILLUSTRATIVE, collision.ts). */
+export type MountKind = 'stand' | 'surface' | 'clip' | 'boom';
+/** 'sideLdc': a side-address large-diaphragm condenser (its FRONT is the face
+ *  of the body, not its end; `body.width` is the body's long, upright extent). */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc';
 export type MicType = {
   id: string;
   label: string;
@@ -276,6 +285,8 @@ export type CompiledScene = {
   standRadius: number;
   /** The model's boom rule (InstrumentModel.mountRule), when it has one. */
   mountRule?: MountRule;
+  /** Where an overhead ('boom') mount's boom leaves from (the kit's centre in plan). */
+  boomHub?: Vec3;
 };
 /**
  * How a stand mic's boom leaves its tail (ILLUSTRATIVE mount geometry). The
@@ -343,6 +354,9 @@ export type InstrumentModel = {
    *  variant; others use `yFloor`. */
   floorByVariant?: Partial<Record<VariantId, number>>;
   mountRule?: MountRule;
+  /** An overhead ('boom') mount's boom runs level AWAY from this point in plan
+   *  (the kit's centre): the stand stands outside the kit. */
+  boomHub?: Vec3;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */

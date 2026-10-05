@@ -820,10 +820,92 @@ export function InstrumentDynamicMic({ r, len, x = 0, y = 0, angleDeg = 0, tint 
   );
 }
 
+/**
+ * SIDE-ADDRESS LARGE-DIAPHRAGM CONDENSER, in the Miking scene's local frame:
+ * its FRONT FACE (the side of the body the capsule looks out of) at the
+ * origin, the body's depth toward +y (behind the face), its long upright
+ * extent along local x — `cross` long (the scene passes the long extent in a
+ * side view, the body's width from above). The head basket is the +x end;
+ * the face carries no badge or brand, only the capsule seen through the mesh.
+ */
+function buildSideLdc(cross: number, len: number) {
+  const tall = cross > len * 1.8;
+  const half = cross / 2;
+  const body: SkPathT = Skia.Path.Make();
+  const head: SkPathT = Skia.Path.Make();
+  const mesh: SkPathT = Skia.Path.Make();
+  const ring: SkPathT = Skia.Path.Make();
+  const cap: SkPathT = Skia.Path.Make();
+  if (tall) {
+    // From the side: the body below, the basket above (a rounded dome).
+    const split = half - cross * 0.42;
+    body.addRRect(Skia.RRectXY(Skia.XYWHRect(-half, len * 0.06, split + half, len * 0.88), len * 0.16, len * 0.16));
+    head.addRRect(Skia.RRectXY(Skia.XYWHRect(split, 0, half - split, len), len * 0.48, len * 0.48));
+    ring.addRect(Skia.XYWHRect(split - cross * 0.025, len * 0.02, cross * 0.05, len * 0.96));
+    const step = Math.max(2, len * 0.09);
+    for (let x = split + step * 0.6; x < half - step * 0.3; x += step) {
+      mesh.moveTo(x, len * 0.06);
+      mesh.lineTo(x, len * 0.94);
+    }
+    for (let y = step * 0.6; y < len; y += step) {
+      mesh.moveTo(split + 2, y);
+      mesh.lineTo(half - 2, y);
+    }
+    // The capsule edge-on, just behind the face.
+    cap.addRRect(Skia.RRectXY(Skia.XYWHRect(split + (half - split) * 0.18, len * 0.08, (half - split) * 0.64, len * 0.12), len * 0.04, len * 0.04));
+  } else {
+    // From above: the body's footprint, the basket's crown with its mesh.
+    body.addRRect(Skia.RRectXY(Skia.XYWHRect(-half, 0, cross, len), Math.min(cross, len) * 0.36, Math.min(cross, len) * 0.36));
+    head.addRRect(Skia.RRectXY(Skia.XYWHRect(-half * 0.82, len * 0.08, cross * 0.82, len * 0.84), Math.min(cross, len) * 0.32, Math.min(cross, len) * 0.32));
+    const step = Math.max(2, len * 0.09);
+    for (let x = -half * 0.78; x < half * 0.78; x += step) {
+      mesh.moveTo(x, len * 0.1);
+      mesh.lineTo(x, len * 0.9);
+    }
+    cap.addRect(Skia.XYWHRect(-half * 0.6, len * 0.12, cross * 0.6, len * 0.08));
+  }
+  return { body, head, mesh, ring, cap, tall };
+}
+
+export function SideLdcMic({ cross, len, tint }: { cross: number; len: number; tint?: string }) {
+  const p = useMemo(() => buildSideLdc(cross, len), [cross, len]);
+  const hair = Math.max(0.35, len * 0.012);
+  return (
+    <Group>
+      <Group transform={[{ translateX: -len * 0.05 }, { translateY: len * 0.06 }]}>
+        <Path path={p.body} color="#000000" opacity={0.45}>
+          <BlurMask blur={len * 0.08} style="normal" />
+        </Path>
+      </Group>
+      {/* Body: dark satin, lit from the upper left. */}
+      <Path path={p.body}>
+        <LinearGradient start={vec(0, 0)} end={vec(0, len)} colors={['#8a8f99', '#4a4e57', '#24262c', '#121317']} positions={[0, 0.25, 0.7, 1]} />
+      </Path>
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.9} />
+      {/* Basket: metal shell, the capsule behind the mesh, the mesh. */}
+      <Path path={p.head}>
+        <LinearGradient start={vec(0, 0)} end={vec(0, len)} colors={['#c9ccd5', '#7f838d', '#2f3037']} positions={[0, 0.45, 1]} />
+      </Path>
+      <Path path={p.cap} color="#b9912f" opacity={0.55} />
+      <Group clip={p.head}>
+        <Path path={p.mesh} style="stroke" strokeWidth={Math.max(0.3, len * 0.012)} color="#0c0d10" opacity={0.75} />
+      </Group>
+      <Path path={p.ring}>
+        <LinearGradient start={vec(0, 0)} end={vec(0, len)} colors={['#eef1f6', '#9aa0ab', '#3a3d45']} />
+      </Path>
+      <Path path={p.head} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.85} />
+      {/* The front face: a rim light along it (the side the capsule faces). */}
+      <Path path={p.head} style="stroke" strokeWidth={hair} color={tint ?? ACCENT} opacity={tint ? 0.95 : 0.35} />
+    </Group>
+  );
+}
+
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). */
-export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic'; r: number; len: number; cross?: number; tint?: string }) {
+export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc'; r: number; len: number; cross?: number; tint?: string }) {
   switch (art) {
+    case 'sideLdc':
+      return <SideLdcMic cross={cross ?? r * 2} len={len} tint={tint} />;
     case 'boundary':
       return <BoundaryMic len={len} cross={cross ?? r * 2} tint={tint} />;
     case 'sdc':

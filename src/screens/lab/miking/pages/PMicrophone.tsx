@@ -32,7 +32,11 @@ export function plainLines(m: MicType): { power: string; mount: string; pattern:
   return {
     power: m.transducer === 'dynamic' ? 'Power: none needed' : 'Power: needs phantom power from the desk',
     mount:
-      m.mount === 'surface'
+      m.mount === 'boom'
+        ? 'Mount: an overhead boom stand, counterweighted, its boom clear of the cymbals and the player'
+        : m.address === 'side'
+          ? 'Mount: a floor stand — aim the FACE of the body at the source, not its end'
+          : m.mount === 'surface'
         ? 'Mount: rests on the pillow — it is made for that'
         : m.mount === 'clip'
           ? 'Mount: clamps to the drum’s hoop — a clamp made for it, with the player’s agreement'
@@ -48,7 +52,9 @@ export function plainLines(m: MicType): { power: string; mount: string; pattern:
               ? 'Pattern: figure-8 — hears front and back equally, rejects at the sides'
               : p === 'halfCardioid'
                 ? 'Pattern: half-cardioid — picks up the half-space above its surface'
-                : 'Pattern: open cardioid — not drawn here',
+                : p === 'omni'
+                  ? 'Pattern: omni — hears every side about equally'
+                  : 'Pattern: open cardioid — not drawn here',
   };
 }
 

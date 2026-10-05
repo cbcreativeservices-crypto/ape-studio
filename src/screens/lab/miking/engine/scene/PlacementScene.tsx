@@ -306,7 +306,9 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
   const len = t.body.length.mm;
   const r = t.body.radius.mm;
   const surface = t.mount === 'surface';
-  const cross = surface ? (view === 'side' ? r * 2 : (t.body.width?.mm ?? r * 2)) : r * 2;
+  // A side-address body stands upright: its long extent shows from the side,
+  // its depth from above.
+  const cross = surface ? (view === 'side' ? r * 2 : (t.body.width?.mm ?? r * 2)) : t.address === 'side' && view === 'side' ? (t.body.width?.mm ?? r * 2) : r * 2;
   const transform = useDerivedValue(() => {
     const p = pose.value;
     const aim = aimVec(p.az, surface ? 0 : p.el);
@@ -394,7 +396,7 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
   const art = STAND_ART();
   const path = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    if (body.mount !== 'stand') return p;
+    if (body.mount !== 'stand' && body.mount !== 'boom') return p;
     const segs = assembly(scene, pose.value, body);
     for (let i = 0; i < segs.length; i++) {
       if (segs[i].piece === 'body') continue;
@@ -405,7 +407,7 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
   });
   // The boom joint and the stand's foot, from the same capsules.
   const geo = useDerivedValue(() => {
-    if (body.mount !== 'stand') return { jx: 0, jv: 0, fx: 0, fv: 0, joint: 0, stand: 0 };
+    if (body.mount !== 'stand' && body.mount !== 'boom') return { jx: 0, jv: 0, fx: 0, fv: 0, joint: 0, stand: 0 };
     const segs = assembly(scene, pose.value, body);
     let jx = 0;
     let jv = 0;
@@ -431,7 +433,7 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
   const jOn = useDerivedValue(() => geo.value.joint);
   const footXf = useDerivedValue(() => [{ translateX: geo.value.fx }, { translateY: geo.value.fv }]);
   const footOn = useDerivedValue(() => geo.value.stand);
-  if (body.mount !== 'stand') return null;
+  if (body.mount !== 'stand' && body.mount !== 'boom') return null;
   return (
     <>
       {/* The weighted base under the stand. */}

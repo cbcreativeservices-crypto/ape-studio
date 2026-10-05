@@ -88,6 +88,37 @@ Learner text names no maker or model (owner ruling 2026-10-04); the source stays
 | T-03 | ref [4] | Sennheiser e 904 PDF | — | 404 (as S-07). | toms/SOURCES.md | OWNER: replace the link |
 | T-04 | L52 | DM20 may be bottom-mounted with the RM1 (no distance) | Floor-tom bottom zone: "about 3–8 cm below the bottom head", the lab's drawing, measured from the resonant head; offered only with both heads on. | No source gives a bottom distance or a polarity setting for a tom pair; the app says so and grades no setting. | EW-DM20; L52 | APPLIED (`model.ts` zone `floor.bottom`, `lesson.ts` `tm.two.3`) · OWNER: approve 3–8 cm |
 | T-05 | L23–L24 | "between each pair of toms, 2.5 to 7.5 cm above drum heads" (no aim for the shared mic) | The shared-mic zone sits over the gap between the two rack toms, aimed down within 60° of the heads' straight-on line, on a boom from the audience side (its stand lands in front of the kick). The cymbal exercise uses the 16 in crash over the 10 in tom (the 12 in tom's starting point already had the 18 in crash in its null). | Illustrative lab tolerances; no source gives the aim or the cymbal positions. | S-B56A-UG p.4; kit/GEOMETRY_PROPOSAL.md §2 | APPLIED (`model.ts` zone `rack.shared`, `copy.ts` context) · OWNER: approve 60° |
+## M09 Drum Overheads (`source_text/Drum-Overheads-Miking-Technique-Research.txt`)
+
+Research: `overheads/SOURCES.md` §d and its disagreements log (D-O1 to D-O5). On screen the
+methods carry descriptive names (owner ruling 2026-10-04: no people named): the two-mic
+method over the snare and beside the floor tom is the **floor-tom method**; the two-mic
+method with a mic by the drummer's shoulder is the **shoulder method**.
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| O-01 | L35-36 | Shoulder method: "its cited 32-inch dimension" (undefined) | Defined: 32 in (about 81 cm) from the centre of the snare to EACH mic, and both mics the same distance from the kick. | The measurement was never stated; the drawing and the arrival readouts need it. | overheads/SOURCES.md §b | APPLIED (`m09Overheads/model.ts` `RM_A`, `RM_B`; `copyPairs.ts`) |
+| O-02 | L45 | Floor-tom method: "Roughly 40 in (about 1 m) from the snare is an example in one account" | Two starting points: 40 in (about 1 m) above the snare's centre, or about 4 ft above the kit — both as places to begin, not a rule. | The two accounts differ (D-O3); the lesson gave one. | RM-GJ; MT-GJ | APPLIED (`model.ts` `GJ_MAIN`, `GJ_MAIN_HIGH`; zone `oh.gj.main`) |
+| O-03 | L48 | Side mic "about 6 in (15 cm) above the floor-tom rim" | 6 in above the floor-tom rim AND the same 40 in from the snare's centre: a point just beyond the floor tom, on the line from the snare through the floor tom (−347.5, −492.0, 675.1 in the kit frame). | The two accounts place it differently (D-O4); the equal-distance rule both give fixes one point. | RM-GJ; MT-GJ; overheads/GEOMETRY_PROPOSAL.md §2.7 | APPLIED (`model.ts` `GJ_SIDE`; zone `oh.gj.side`) |
+| O-04 | L117 | "Shure's new article describes X/Y and Mid-Side mono compatibility as guaranteed" | The app never says "guaranteed": a coincident pair or a decoded mid-side pair keeps a steadier mono sum; equal snare distance is not a whole-kit guarantee. | Shure writes "ensures mono compatibility" (M-S) and "avoiding any risk of comb-filtering" (X/Y), not "guaranteed". | S-5TECH | APPLIED (`lesson.ts`, `copyPairs.ts`) · OWNER: the document's L117 should quote "ensures" |
+| O-05 | L23 | ORTF "about 17 cm apart and 110° apart" | 170 mm apart, 110° included angle (each capsule 55° off the centre line). | Confirmed; DPA's "±110°" reads as 220° and is an error on that page (D-O1). | S-5TECH; DPA-STEREO | APPLIED (`pairs.ts`; test `mikingModelM09`) |
+| O-06 | (drawing) | X/Y and ORTF centred over the snare at the mono-overhead height (proposal §2.2-2.3) | Drawn at the floor-tom method's main height (1016 mm above the snare's centre) instead. | At the proposal's height (1.6 m off the floor) the pair sits about 7 mm inside the drawing's sticks' reach; the reach itself is a drawing default. | overheads/GEOMETRY_PROPOSAL.md §2 | OWNER: confirm the pair height or the reach envelope |
+| O-07 | (drawing) | Shoulder method's second mic "by the drummer's shoulder" | Drawn where the two distance rules put it; in this drawing it lands about 20 cm from the right shoulder, inside the sticks' reach — the page says so and asks for a check on the real kit. | The method's own rule places it there for this kit. | overheads/GEOMETRY_PROPOSAL.md §2.6 | APPLIED (page note) · OWNER: keep or move the method to "read only" |
+
+## M10 Drum Room Microphones (`source_text/M10-Drum-Room-Microphones-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| R-01 | L33 | Large condenser in front of the kit (no address stated) | Drawn as a SIDE-address cardioid, its front the logo face, on a stand. | The guide says "side-address cardioid" and "the logo on the front of the mic faces your sound source"; the lesson never said which way it faces. | S-SM4-UG p.3, p.7-8 | APPLIED (`data/micTypesKit.ts` `roomLdc`, `ohLdc`; `micDrawings.tsx` `SideLdcMic`) |
+| R-02 | L6, L33 | "3–6 ft (about 1–2 m) in front of drums" | "1–2 m in front of the kit" — no "about". | The guide prints "(1–2 m)" itself. | S-SM4-UG | APPLIED (`m10Room/lesson.ts`) |
+| R-03 | L39 | "a room pair about 15 ft away in room corners" | "about 4.6 m (15 ft)"; the drawing's room is sized so the corner pair, 300 mm in from two walls, is exactly 15 ft from the kit's centre in plan. | Metric value added; the room is a drawing default built around the one published distance. | UA-STEREO; room/GEOMETRY_PROPOSAL.md §1 | APPLIED (`m10Room/model.ts` `ROOM`, `CORNER_*`; test `mikingModelM10`) |
+
+## M11 Complete Drum-Kit Setups (`source_text/M11-Complete-Drum-Kit-Setups-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| S-01 | (plan) | Stages one mic → extensive | The stages are shown as functional examples, never a fixed order to add mics; the counters describe a plan and never grade it. | The lesson's own caution; the stepper could read as a ladder. | M11 lesson | APPLIED (`m11Kit/copy.ts` `PLAN_WORDS`) |
+| S-02 | (drawing) | Hi-hat and ride spot mics | Drawn on booms (a floor stand straight under them passes through the cymbal); the floor-tom spot sits over the rim away from the rack tom's stand. | Collision check: the first drawing put stands through hardware. | kit plan; test `mikingModelM11` | APPLIED (`m11Kit/plan.ts`) |
 
 ## Shared (all lessons)
 

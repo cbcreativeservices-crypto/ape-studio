@@ -327,7 +327,8 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   };
   const gated = pageGate(page, met, quickPassed) === 'foundations';
   const host: StepHost = { step: stepIdx, setStep, onSteps, head, tail: gated ? null : tail, readWrap, hidden: ending };
-  // PAGE_COMPONENTS (above): a lesson's own page for an id, else the shared page.
+  // PAGE_COMPONENTS (above): a lesson's own page for an id (the kit-level
+  // lessons, the speaker module, the hand drums), else the shared page.
   const Page = gated ? FoundationsPage : PAGE_COMPONENTS[page];
 
   return (

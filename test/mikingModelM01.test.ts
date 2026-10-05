@@ -206,6 +206,8 @@ describe('sources and unknowns', () => {
     const reso = lesson.zones.find((z) => z.id === 'reso.level')!;
     assert.doesNotMatch(reso.label + reso.band, /port/i, 'K-02: the front-head starting point never mentions a port');
   });
+  // The kit-level lessons' mics (overheads, room) carry their own keys.
+  for (const d of ['overheads', 'room']) for (const mm of read(`docs/labs/miking/${d}/SOURCES.md`).matchAll(/^\| ([A-Z0-9][A-Z0-9-]+) \|/gm)) keys.add(mm[1]);
 });
 
 describe('wording', () => {

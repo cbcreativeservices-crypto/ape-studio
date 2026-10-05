@@ -7,11 +7,21 @@ import type { Lesson } from '../engine/model/types.ts';
 import { M01_LESSON } from '../lessons/m01Kick/lesson.ts';
 import { M02_LESSON } from '../lessons/m02Snare/lesson.ts';
 import { M03_LESSON } from '../lessons/m03Toms/lesson.ts';
+import { M09_LESSON } from '../lessons/m09Overheads/lesson.ts';
+import { M10_LESSON } from '../lessons/m10Room/lesson.ts';
+import { M11_LESSON } from '../lessons/m11Kit/lesson.ts';
 import { SPK_LESSON } from '../lessons/spk/lesson.ts';
 import { M12_LESSON } from '../lessons/m12Tonbak/lesson.ts';
 import { M13_LESSON } from '../lessons/m13Tabla/lesson.ts';
 
-const LESSON_CONTENT: Record<string, Lesson> = { M01: M01_LESSON, M02: M02_LESSON, M03: M03_LESSON };
+const LESSON_CONTENT: Record<string, Lesson> = {
+  M01: M01_LESSON,
+  M02: M02_LESSON,
+  M03: M03_LESSON,
+  M09: M09_LESSON,
+  M10: M10_LESSON,
+  M11: M11_LESSON,
+};
 // Each further lesson on its own line (lessons are built in parallel).
 LESSON_CONTENT.SPK = SPK_LESSON;
 LESSON_CONTENT.M12 = M12_LESSON;
