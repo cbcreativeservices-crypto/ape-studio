@@ -523,6 +523,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 17:08 · ccode · 530ca9b6
+changed: docs(miking): source text + surveys for M10, M11, speaker/Leslie, I04 and Lab 6 F01-F12
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
 ### 2026-10-04 16:42 · ccode · bfb36919
 changed: docs(miking): kick reviews resolved — corrections K-15..K-26, resolution tables, blueprint/sources fixes
 affects other side: nothing (branch final-lab, miking lab work).
