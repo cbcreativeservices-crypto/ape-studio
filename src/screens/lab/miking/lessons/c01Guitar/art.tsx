@@ -8,7 +8,7 @@ import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { makeGuitarArt } from '../shared/guitars/GuitarArt';
 import { makeStringSoundPage } from '../shared/guitars/StringSound';
 import { makeStagePlanPage, STRINGS_HEARING, type PlanObject } from '../shared/guitars/StagePlan';
-import { C01_BUILT } from './geometry.ts';
+import { C01_BUILT, C01_ZONES } from './geometry.ts';
 
 const sc = C01_BUILT.scenes.steel;
 const m = sc.fit.mouth;
@@ -28,7 +28,7 @@ export const C01_PLAN: PlanObject[] = [
 ];
 
 export const C01_ART: LessonArt = {
-  ...makeGuitarArt(C01_BUILT),
+  ...makeGuitarArt(C01_BUILT, { zones: C01_ZONES }),
   pages: {
     sound: makeStringSoundPage(C01_BUILT),
     setting: makeStagePlanPage(C01_BUILT, { objects: C01_PLAN, stageEdgeZ: 1650, hearing: STRINGS_HEARING }),

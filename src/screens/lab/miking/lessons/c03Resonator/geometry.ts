@@ -3,11 +3,11 @@
  * family (lap: engine = (x, −zG, yG); round neck: engine = G), their zones and
  * their stage sources.
  */
-import { buildGuitarModel, zoneFor } from '../shared/guitars/guitarModel.ts';
+import { buildGuitarModel, frameGuitarViews, zoneFor } from '../shared/guitars/guitarModel.ts';
 import { bodyShield, stringsWedges } from '../shared/guitars/stringsContent.ts';
 import { C03_VARIANTS, c03ZoneSpecs } from './model.ts';
 
-export const C03_BUILT = buildGuitarModel({
+const RAW = buildGuitarModel({
   id: 'resonator',
   name: 'resonator guitar',
   variants: C03_VARIANTS,
@@ -16,7 +16,9 @@ export const C03_BUILT = buildGuitarModel({
     sides: { label: 'body', short: 'body', role: 'The body round the cone. Its sound ports and the coverplate let the cone’s sound out.' },
   },
 });
+export const C03_ZONES = C03_VARIANTS.flatMap((v) => c03ZoneSpecs(RAW.scenes[v.id]).map((z) => zoneFor(RAW.scenes[v.id], z)));
+/** Framed on the instrument and its starting points (frameGuitarViews). */
+export const C03_BUILT = frameGuitarViews(RAW, C03_ZONES);
 export const C03_MODEL = C03_BUILT.model;
-export const C03_ZONES = C03_VARIANTS.flatMap((v) => c03ZoneSpecs(C03_BUILT.scenes[v.id]).map((z) => zoneFor(C03_BUILT.scenes[v.id], z)));
 export const C03_WEDGES = stringsWedges(C03_BUILT.scenes.lap, { one: 'resonator', the: 'the resonator', player: 'player' }, { wedgeZ: 1250, voice: false });
 export const C03_SHIELD = bodyShield(C03_MODEL, 'lap');

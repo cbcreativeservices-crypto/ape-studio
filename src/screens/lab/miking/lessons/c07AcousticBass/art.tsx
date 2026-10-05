@@ -7,10 +7,10 @@ import { makeGuitarArt } from '../shared/guitars/GuitarArt';
 import { makeStringSoundPage } from '../shared/guitars/StringSound';
 import { makeStagePlanPage, STRINGS_HEARING } from '../shared/guitars/StagePlan';
 import { stringsPlan } from '../shared/guitars/stringsContent.ts';
-import { C07_BUILT } from './geometry.ts';
+import { C07_BUILT, C07_ZONES } from './geometry.ts';
 
 export const C07_ART: LessonArt = {
-  ...makeGuitarArt(C07_BUILT),
+  ...makeGuitarArt(C07_BUILT, { zones: C07_ZONES }),
   pages: {
     sound: makeStringSoundPage(C07_BUILT),
     setting: makeStagePlanPage(C07_BUILT, { objects: stringsPlan(C07_BUILT.scenes.bass, { chair: true, vocal: true, di: true }), stageEdgeZ: 1650, hearing: STRINGS_HEARING }),

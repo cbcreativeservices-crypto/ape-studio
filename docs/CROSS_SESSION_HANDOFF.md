@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 02:49 · ccode · 6abca629
+changed: feat(miking engine): opt-in collision-aware part labels and inset corner
+affects other side: nothing (miking art, branch final-lab)
+needs: nothing (miking art, branch final-lab)
+
+
 ### 2026-10-05 01:38 · ccode · 7fbad8ca
 changed: Merge branch 'miking-c3' into final-lab
 affects other side: nothing (miking merge, branch final-lab)

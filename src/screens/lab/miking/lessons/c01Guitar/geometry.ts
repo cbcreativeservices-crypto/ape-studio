@@ -5,12 +5,14 @@
  * top), their zones, and the stage sources the Studio-or-live page uses.
  */
 import type { Provenance, Wedge } from '../../engine/model/types.ts';
-import { buildGuitarModel, partIdOf, zoneFor } from '../shared/guitars/guitarModel.ts';
+import { buildGuitarModel, frameGuitarViews, partIdOf, zoneFor } from '../shared/guitars/guitarModel.ts';
 import { C01_VARIANTS, c01ZoneSpecs } from './model.ts';
 
-export const C01_BUILT = buildGuitarModel({ id: 'acousticGuitar', name: 'acoustic guitar', variants: C01_VARIANTS, defaultVariant: 'steel' });
+const RAW = buildGuitarModel({ id: 'acousticGuitar', name: 'acoustic guitar', variants: C01_VARIANTS, defaultVariant: 'steel' });
+export const C01_ZONES = C01_VARIANTS.flatMap((v) => c01ZoneSpecs(RAW.scenes[v.id]).map((z) => zoneFor(RAW.scenes[v.id], z)));
+/** Framed on the instrument and its starting points (frameGuitarViews). */
+export const C01_BUILT = frameGuitarViews(RAW, C01_ZONES);
 export const C01_MODEL = C01_BUILT.model;
-export const C01_ZONES = C01_VARIANTS.flatMap((v) => c01ZoneSpecs(C01_BUILT.scenes[v.id]).map((z) => zoneFor(C01_BUILT.scenes[v.id], z)));
 
 const STEEL = C01_BUILT.scenes.steel;
 const stage: Provenance = { kind: 'illustrative', reason: 'a typical small stage; no source gives the positions' };

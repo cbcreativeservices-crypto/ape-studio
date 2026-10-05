@@ -388,6 +388,173 @@ export function buildGuitarModel(opts: BuildOpts): BuiltGuitarModel {
   return { model, scenes };
 }
 
+/* ── framing (art pass 2026-10-05) ── */
+
+/** The stage's typical aspect (w ÷ h) at 390 pt: the glass in the rack. */
+export const STAGE_ASPECT = 1.45;
+
+type Rect = { u0: number; u1: number; v0: number; v1: number };
+const unionR = (a: Rect, b: Rect): Rect => ({ u0: Math.min(a.u0, b.u0), u1: Math.max(a.u1, b.u1), v0: Math.min(a.v0, b.v0), v1: Math.max(a.v1, b.v1) });
+
+/** A zone's drawn rectangle in a view (the guitars draw boxes, never wedges). */
+function zoneRect(z: DocumentedZone, view: ViewId): Rect | null {
+  const d = z.drawn?.[view];
+  if (!d || !('u0' in d)) return null;
+  return { u0: d.u0, u1: d.u1, v0: d.v0, v1: d.v1 };
+}
+
+/**
+ * Grow `r` to the stage's aspect. Extra height goes toward the player
+ * (−v), extra width to the tail side (−u, where the strumming arm and the
+ * bridge mics are); a top edge that would cut through the player's head is
+ * moved to just under the chin (a close-up crop: the hands and the
+ * instrument, never half a face).
+ */
+function toAspect(r: Rect, aspect: number, head: { c: number; r: number } | null): Rect {
+  const widen = (q: Rect): Rect => {
+    const add = (q.v1 - q.v0) * aspect - (q.u1 - q.u0);
+    return add > 0 ? { ...q, u0: q.u0 - add * 0.6, u1: q.u1 + add * 0.4 } : q;
+  };
+  const contentTop = r.v0;
+  const w = r.u1 - r.u0;
+  const h = r.v1 - r.v0;
+  if (w / h < aspect) r = widen(r);
+  else {
+    const add = w / aspect - h;
+    r = { ...r, v0: r.v0 - add * 0.8, v1: r.v1 + add * 0.2 };
+  }
+  if (head) {
+    const top = head.c - head.r - 24;
+    // Under the drawn chin (PlayerFigure: the chin at ≈ 0.98 r), with room for a glass a little taller than the box.
+    const chin = head.c + head.r + 36;
+    if (r.v0 < chin && r.v0 > top) {
+      // The top edge would cut through the face. If the content itself sits
+      // below the chin, crop there and give the height back below; if the
+      // content reaches into the head (a mic above a lap player), take the
+      // whole head and widen to keep the aspect.
+      if (contentTop >= chin) {
+        r = { ...r, v1: r.v1 + (chin - r.v0), v0: chin };
+      } else {
+        r = widen({ ...r, v0: top });
+      }
+    }
+  }
+  return r;
+}
+
+/** How much of the glass's height the inset of the other view takes, at
+ *  most (DualView: 0.34 h + its tag, from the bottom when `insetAt` is
+ *  'bottom'). */
+export const INSET_SHARE = 0.43;
+
+/** How far the headstock and its tuner buttons reach either side of the
+ *  strings' line, upright (the widest headstock's half-width + a button). */
+export const HEAD_REACH = 46 + 26;
+
+/**
+ * Keep the headstock clear of the glass's inset of the other view. The
+ * neck and headstock lie along v ≈ 0 out to the frame's right edge; the
+ * inset takes a right-hand corner. The top-right is used when the frame
+ * leaves `above` mm over v = 0 clear of it; else the bottom-right, the frame
+ * grown downward until `below` mm under v = 0 is clear (keeping the aspect:
+ * the instrument shrinks a little rather than hide its tuners).
+ */
+function placeInset(r: Rect, above: number, below: number): { r: Rect; at: 'top' | 'bottom' } {
+  const h = r.v1 - r.v0;
+  if (r.v0 + INSET_SHARE * h <= -above) return { r, at: 'top' };
+  const need = below - (r.v1 - INSET_SHARE * h);
+  if (need <= 0) return { r, at: 'bottom' };
+  const d = need / (1 - INSET_SHARE);
+  const add = d * ((r.u1 - r.u0) / h);
+  return { r: { u0: r.u0 - add * 0.6, u1: r.u1 + add * 0.4, v0: r.v0, v1: r.v1 + d }, at: 'bottom' };
+}
+
+/**
+ * PER-LESSON VIEW BOXES from the geometry (owner art pass 2026-10-05: "the
+ * ukulele draws too small"). Each variant's views are framed on the
+ * INSTRUMENT and its recommended starting points — not on the player — so a
+ * soprano ukulele fills the stage the way a dreadnought does. True
+ * proportions are kept (one scale for the instrument and the player; the
+ * player is cropped, never shrunk). The mic's roam (useRig.boundsOf) follows
+ * the boxes, so every zone and every start stays inside with room to move.
+ * Pure: returns a NEW built model (the scenes are shared).
+ */
+export function frameGuitarViews(built: BuiltGuitarModel, zones: readonly DocumentedZone[]): BuiltGuitarModel {
+  const viewsByVariant: NonNullable<InstrumentModel['viewsByVariant']> = {};
+  const insetAt: Record<VariantId, 'top' | 'bottom'> = {};
+  for (const [vid, sc] of Object.entries(built.scenes)) {
+    const g = sc.g;
+    const sp = sc.variant.spec;
+    const mine = zones.filter((z) => z.requires?.variant === vid);
+    const x0 = g.tail;
+    const x1 = g.L + sp.neck.headLen.mm;
+    const len = x1 - x0;
+    const halfW = Math.max(g.lowerH, sp.body.pot ? sp.body.pot.d.mm / 2 : 0, sp.resonatorBack ? sp.resonatorBack.d.mm / 2 : 0);
+    const mL = Math.max(120, 0.16 * len);
+    const mR = 50;
+    const P = sc.o.P;
+    const faceView: ViewId = sc.o.lap ? 'top' : 'side';
+    const edgeView: ViewId = sc.o.lap ? 'side' : 'top';
+    // FACE: the instrument's outline, the zones, a margin.
+    let face: Rect = { u0: x0 - mL, u1: x1 + mR, v0: -halfW - Math.max(45, 0.3 * halfW), v1: halfW + Math.max(45, 0.3 * halfW) };
+    // EDGE: from behind the back (room for the player) to out past the zones.
+    const D = g.depth + (sp.resonatorBack ? sp.resonatorBack.depth.mm : 0);
+    let edge: Rect = sc.o.lap ? { u0: face.u0, u1: face.u1, v0: -0.6 * len, v1: D + 160 } : { u0: face.u0, u1: face.u1, v0: -D - 250, v1: 0.6 * len };
+    for (const z of mine) {
+      const f = zoneRect(z, faceView);
+      const e = zoneRect(z, edgeView);
+      // (A lap variant's edge view is the engine's side view: v = −zG.)
+      if (f) face = unionR(face, { u0: f.u0 - 30, u1: f.u1 + 30, v0: f.v0 - 30, v1: f.v1 + 30 });
+      if (e) edge = unionR(edge, sc.o.lap ? { u0: e.u0 - 30, u1: e.u1 + 30, v0: e.v0 - 120, v1: e.v1 + 30 } : { u0: e.u0 - 30, u1: e.u1 + 30, v0: e.v0 - 30, v1: e.v1 + 120 });
+      const s = z.start.p;
+      const fs = faceView === 'side' ? s.y : s.z;
+      const es = edgeView === 'side' ? s.y : s.z;
+      face = unionR(face, { u0: s.x - 60, u1: s.x + 60, v0: fs - 60, v1: fs + 60 });
+      edge = unionR(edge, { u0: s.x - 60, u1: s.x + 60, v0: es - 100, v1: es + 100 });
+    }
+    // One x range for both views (the stacked pair shares x; boundsOf takes the overlap).
+    const u0 = Math.min(face.u0, edge.u0);
+    const u1 = Math.max(face.u1, edge.u1);
+    face = { ...face, u0, u1 };
+    edge = { ...edge, u0, u1 };
+    // The player's head in the face view (engine frame), for the crop rule.
+    // The MAIN view (the engine's side view: the face when upright, the edge
+    // seen from the audience in the lap) takes the stage's aspect; the other
+    // view keeps the same x range.
+    const hc = P(sc.fit.head.c);
+    if (sc.o.lap) {
+      // Edge-on from the audience: the mics above the top, the player behind
+      // and below; never past the floor.
+      edge = { ...edge, v1: Math.min(sc.floorY + 30, Math.max(edge.v1, D + 160)) };
+      const fitted = placeInset(toAspect(edge, STAGE_ASPECT, { c: hc.y, r: sc.fit.head.r }), 40, 60);
+      insetAt[vid] = fitted.at;
+      edge = fitted.r;
+      face = { ...face, u0: edge.u0, u1: edge.u1 };
+      viewsByVariant[vid] = { side: edge, top: face };
+    } else {
+      const fitted = placeInset(toAspect(face, STAGE_ASPECT, { c: hc.y, r: sc.fit.head.r }), HEAD_REACH, HEAD_REACH);
+      insetAt[vid] = fitted.at;
+      face = fitted.r;
+      edge = { ...edge, u0: face.u0, u1: face.u1 };
+      viewsByVariant[vid] = { side: face, top: edge };
+    }
+  }
+  // The headstock fills the top-right of the frame: the glass's inset of the
+  // other view goes bottom-right.
+  // …and the headstock with its tuners is the rectangle the inset keeps off,
+  // whatever the page does to the fit (a live strip's band moves it down).
+  const insetKeepClear: NonNullable<InstrumentModel['insetKeepClear']> = {};
+  for (const [vid, sc] of Object.entries(built.scenes)) {
+    const u0 = sc.g.L - 30;
+    const u1 = sc.g.L + sc.variant.spec.neck.headLen.mm + 10;
+    const faceKeep = { u0, u1, v0: -HEAD_REACH, v1: HEAD_REACH };
+    const edgeKeep = sc.o.lap ? { u0, u1, v0: -50, v1: 70 } : { u0, u1, v0: -70, v1: 40 };
+    insetKeepClear[vid] = sc.o.lap ? { side: edgeKeep, top: faceKeep } : { side: faceKeep, top: edgeKeep };
+  }
+  const model: InstrumentModel = { ...built.model, viewsByVariant, views: viewsByVariant[built.model.defaultVariant]!, insetAt, insetKeepClear };
+  return { model, scenes: built.scenes };
+}
+
 /* ── zones ── */
 
 const DEG = Math.PI / 180;
