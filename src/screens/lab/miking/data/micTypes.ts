@@ -231,3 +231,7 @@ export function micType(id: string): MicType {
  * Registered here, after the table, so other lessons’ additions merge cleanly. */
 import { HAND_DRUM_MIC_TYPES } from '../lessons/shared/handdrums/handMics.ts';
 Object.assign(MIC_TYPES, HAND_DRUM_MIC_TYPES);
+
+/* Lab 2 cymbals (I01a–e): the stand-clip condenser. Appended so other lessons merge cleanly. */
+import { CYMBAL_MIC_TYPES } from '../lessons/shared/cymbals/cymbalMics.ts';
+Object.assign(MIC_TYPES, CYMBAL_MIC_TYPES);
