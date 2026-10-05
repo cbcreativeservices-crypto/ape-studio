@@ -1,0 +1,95 @@
+# Impacts Liquids and Textures Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F04  •  Studio and live applications
+This lesson teaches microphone pickup of a safe impact, a small contained water action, and a sustained surface texture. Students locate the useful attack and decay, compare close with more complete perspective, verify peak headroom, and protect people and equipment from splash or debris. The lesson uses modest classroom sources; it does not require dangerous impacts or immersion. No audio examples are included.
+# Define each acoustic event before placing a microphone
+An impact is not only the first click: the striking object, contact surface, resonant body and room may each contribute. A liquid action can include entry, splash, flow, bubbles and trailing drips. A sustained texture such as a brush on coarse fabric or a dry, clean granular surface may need continuous friction and a natural end. Decide which portion the pictured action or live cue requires, then have the performer repeat that action with similar energy. Water Foley practitioners report both highly varied splashes and surprisingly long drip tails. [1, 2]
+Choose a controllable prop and safe amount of liquid. For this exercise use a small tray or basin on a stable surface, water only, a soft hand-held object and a towel at hand. Use a padded block for impacts, and a clean dry brush or fabric for texture. These are proposed classroom materials, not purported industry prescriptions. Check the sound from a safe listening position first; a microphone should represent the useful action rather than turn every tiny handling noise into the main event.
+# Three core one-microphone trials
+Source
+Starting microphone trial
+Listen for and protect
+Contained impact
+Aim a secure mic at the padded object and the surface together from outside the object’s entire travel. Compare a nearer contact view with a farther view that includes resonance and room.
+Peak attack versus body/decay, floor or stand vibration, and adequate performer clearance.
+Small water pour or splash
+Keep a normal airborne microphone outside the marked splash envelope, off to the side of the basin. Aim at the water entry or container wall, then compare a farther position that includes trickle and drips.
+Liquid hitting capsule, cable or windshield; splatter on a barrier; dripping tail, container resonance and room.
+Dry scrape or brushing texture
+Aim along the active friction zone without letting the brush cross the mic. Compare a close detail position with a broader view of the full stroke.
+Friction versus handle/finger noise, changing pressure, surface resonance and the end of the stroke.
+
+The positions are explicit experiments; the firsthand sources do not establish one universal distance for all impact masses, basins and textures. Document the nearest prop-to-capsule clearance and the farthest travel. If moving the microphone also changes the performer’s force, repeat with the original position before drawing a conclusion. A small-diaphragm or large-diaphragm condenser, dynamic or directional boom mic may all be useful depending on level, response, room and required view. Check the actual mic’s maximum level and powering requirements, not a generic label.
+# Attack headroom and the long tail
+Set gain on the loudest intended impact or splash before evaluating quieter detail. Listen and inspect peak indication at the microphone input, preamp and recording path; reducing a later track fader cannot undo earlier clipping. A pad on the microphone can help only if that model provides one and the overload is at the appropriate stage. Preserve enough headroom for a stronger take without making the performer use more force merely to “reach” the meter. Then let the resonant decay or drip finish before the next action. [1, 2]
+A closer mic can reveal contact transients and small drops but may miss the body of a vibrating object or basin. A farther mic joins source and room and may avoid direct splash or air bursts, at the cost of more room noise. Gary Hecker and other Foley mixers describe camera-dependent distance and close-plus-room methods; test the picture relationship, not only isolated detail. For a soft texture, secure enough direct sound above room noise before processing. [3, 4]
+# Water protection and sensor distinction
+Mark the likely splash footprint with the microphone absent, then set the stand outside it. Place power supplies, recorder, cables and connectors away from the wet area; manage wet hands before touching controls. Use a stable shallow basin, non-slip mat and towels, and stop if liquid escapes its containment. Do not treat a foam windscreen or basket as waterproof. Frank Bry reported that splash hitting a zeppelin windshield produced a loud contact “thunk” and unusable takes; John Valasis also reports high-energy water approaching microphones. The safer classroom choice is less water and more physical separation, not reliance on a windscreen to catch spray. [1, 2]
+Rycote’s rain jacket covers a windshield between takes and is explicitly not intended for use while recording. Use model-approved protection as its maker instructs; plastic or cloth draped over a capsule is not a neutral acoustic barrier. Shure’s SM4 guide says to keep that microphone dry and warns that ingress can cause fire or electric shock. Check the actual device manual. If equipment gets wet, stop and follow manufacturer/service guidance before further use. [5, 6]
+A hydrophone captures pressure variations in water; a stand microphone captures airborne sound above the water. The Elemental Foley team used both a hydrophone for selected internal water sounds and airborne microphones for surface sounds. A hydrophone is an optional separate demonstration only with a model specified for immersion and compatible connection, never an ordinary microphone lowered into a basin. A contact transducer on a dry container senses structure-borne vibration, another distinct path. Compare tracks with their sensing medium named. [7]
+# Multiple microphones and perspective
+Begin with one mic for each cue. If a second mic is justified, give it a different task: one aims at impact or water entry and one captures object, room or drip tail. Record independently, check each alone, then listen to their sum in mono over the full action. Differing arrival times can change the attack, while movement and water flow make a single fixed time alignment imperfect. The Elemental mixer describes choosing among multiple airborne mics rather than routinely combining every main mic, and using the hydrophone for selected water elements. Keep an unprocessed track and label the sensors and positions. [7]
+For a dry texture that moves across a broad surface, a pair of mics or stereo coverage may represent travel, but only when the spatial movement matters and the room permits it. Otherwise a single aimed mic can be more repeatable. F05 develops dedicated perspective and stereo methods; here the first teaching question is whether the second position adds useful information.
+# Studio live and location differences
+A controlled Foley stage can change props, surfaces, room treatment and microphone distance between takes. A live theatrical Foley station must hit a cue once, within a PA and monitor field. Use small contained effects, a fixed source zone and an operator-controlled channel; test gain before feedback at normal rehearsal level. Avoid a wet effect in a live stage area unless the venue has approved containment, cleanup and equipment separation. English National Opera describes live Foley cues that follow performers, dialogue and music, with props arranged in a dedicated booth. [8]
+On location, a real impact or flowing water may have wind, traffic, changing source level and wet footing. Keep stands, crew and electronics outside the action and spray zone, with permission for the site. A windshield is designed for wind and handling noise, not proof against direct water hits; one splash recordist reports ruined takes when water struck the housing. Never enter a road, unstable bank or active machinery area merely to obtain a closer sound. [1, 9]
+# Troubleshooting and safe setup
+Symptom
+Check in order
+Click with no body or tail
+Let the object resonate; move from contact-only pickup toward its body or a useful room position.
+Distorted impact or splash
+Reduce source force if it preserves the cue; inspect mic, preamp and recorder headroom independently before re-taking.
+Splash thump or muffled take
+Stop; move the mic and stand farther outside the splash zone, inspect approved protection and dry/replace as maker instructs. [1, 2, 5]
+Basin dominates or water disappears
+Change aim between water entry, container wall and a fuller position; compare source material and volume.
+Texture sounds like fingers or stand
+Rehearse steady stroke, isolate stand/cable vibration and shift mic aim to the actual friction area.
+
+No heavy drop, explosive charge, glass break, blade, hot liquid, fine airborne powder or hazardous chemical is required. Do not stage a fall or strike a person. Secure stands and cable paths, and use non-slip flooring around any water. Keep PA levels and headphone monitoring comfortable. Do not energize wet equipment, improvise electrical waterproofing, or deliberately create feedback.
+# Guided teaching exercise
+1. Prepare a padded block impact, a small water pour into a contained basin and a dry fabric or brush stroke. Identify attack, body, tail and expected movement. Inspect the room and set the source zones before mounting microphones.
+2. For impact, compare an aimed contact view with a farther object-and-room view using equal performance. Set headroom from the strongest planned hit and leave its decay undisturbed.
+3. With microphone absent, rehearse the small water action to mark splash travel. Place a mic outside that envelope and compare aim at water entry with a view of basin and drips. Keep all electronics and cable junctions dry.
+4. For the texture, compare close friction-zone pickup with a wider full-stroke view. Document performance pressure, start and end, room noise and unwanted handling.
+5. If a second mic is available, assign a different task to it, record independently and check mono summation. Identify whether either channel captures airborne sound, structure vibration or underwater pressure.
+6. For a hypothetical live cue, plan fixed station, PA/monitor routing, containment and cleanup. State why the quiet-stage distance or wet action may be unsuitable at that venue.
+Pass criterion: the learner identifies transient and tail, sets headroom from the strongest planned cue, keeps an airborne microphone out of splash and prop travel, distinguishes hydrophone/contact/air paths, and justifies a studio or live placement. No audio examples.
+# Student observation sheet
+Student __________________________  Date __________  Scene or cue _____________________________
+Trial
+Source action and mic geometry
+Attack body tail noise and choice
+Impact near / far
+____________________________
+____________________________
+Water aim A / B
+____________________________
+____________________________
+Texture near / far
+____________________________
+____________________________
+Second mic or live
+____________________________
+____________________________
+
+Strongest peak and quiet tail ____________________  Splash boundary and capsule gap _____________Dry equipment and floor check __________________  Mono sum or PA feedback check _________________Final position, sensor type and remaining limitation ____________________________________________
+# Critical evidence audit
+## Agreement
+Practitioner accounts agree that water actions contain varied textures and that mic position and wet contact can spoil useful capture. The Elemental team distinguishes underwater and surface perspectives, and Foley interviewees emphasize matching a scene rather than a universal setup. Confidence is high in the need for source-specific aim, headroom, separation and perspective. [1–4, 7]
+## Differing approaches and direct tension
+Some practitioners use multiple microphones or a hydrophone for creative water layers; another report describes many takes lost when the windshield was struck. Valasis used windshields near water, but Rycote’s particular rain jacket is explicitly a between-takes cover. A windscreen’s incidental resistance is not a certified water barrier. This teaching setup favors a small contained action and distance from spray. [1, 2, 5, 7]
+## Gaps
+The sources do not establish a universal distance, splash radius, safe water exposure for unidentified microphones, or numerical gain preset for every impact. The object matrix and exercise are reasoned trials. Verify actual equipment ratings and site conditions; confidence in a particular placement remains moderate until its peak, tail, protection and mix context are checked.
+# Sources and curriculum connections
+Firsthand Foley/sound-effect accounts and maker guidance checked October 4, 2026. Linked pages may contain media; this document has no audio examples.
+[1] Designing Sound interview with Frank Bry on splash recording <https://designingsound.org/2011/01/20/the-recordist-releases-ultimate-splash-sfx-library/>
+[2] Krotos interview with John Valasis on water Foley <https://krotos.studio/blog/water-foley-behind-the-scenes>
+[3] Gary Hecker interview on Foley perspective <https://nofilmschool.com/foley-101-master-foley-artist-gary-hecker>
+[4] Oxford Learning Link interview with Andy Malcolm and Don White <https://learninglink.oup.com/access/content/haines-student-resources/haines-take-10-extended-interviews>
+[5] Rycote Windshield Rain Jacket instructions <https://www.rycote.com/microphone-windshield-shock-mount/windshield-rain-jacket/>
+[6] Shure SM4 user guide <https://www.shure.com/en-US/docs/guide/SM4>
+[7] Elemental Foley team interview on water sound <https://www.asoundeffect.com/elemental-film-sound/>
+[8] English National Opera The Foley Artist <https://www.eno.org/engage/the-foley-artist/>
+[9] Rycote Nano Shield overview <https://www.rycote.com/nano-shield/>
+Cross-links: F01 footsteps and surfaces; F03 props and handling; F05 perspective and multiple mics; F06 natural and urban ambience; F10 specialist field pickup.

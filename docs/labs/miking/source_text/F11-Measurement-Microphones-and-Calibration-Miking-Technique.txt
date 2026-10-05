@@ -1,0 +1,89 @@
+# Measurement Microphones and Calibration Miking Technique
+Pro Audio Training Academy  •  Scientific and Acoustical Lab F11  •  Microphone choice and system checks
+This lesson teaches how the quantity being measured determines microphone selection, orientation, compatible powering and calibration. Learners build a traceable chain from acoustic pressure to a labelled result, perform an appropriate before-and-after acoustic check, and distinguish a relative listening comparison from an absolute measurement. A one-frequency field check cannot establish the full frequency response of a microphone or certify an entire system. No audio examples are included.
+# Start with the measurement question
+Write the question before choosing hardware: sound pressure level at a specified position, the frequency response of a sound field, a room decay estimate, or a relative before-and-after comparison. Identify the relevant frequency and level range, source state, desired weighting and averaging if applicable, acoustic field, position and orientation. The microphone produces an electrical signal related to pressure at its diaphragm; reported results also depend on its preamplifier, analyzer, correction data, calibration and procedure. NIST documents different free-field, pressure and diffuse-field sensitivities, particularly at high frequencies. [1]
+A digital recorder’s dBFS is relative to its own maximum digital level, not directly an acoustic SPL. A linear waveform, a calibrated dB SPL reading, an A-weighted time average and a peak measurement answer different questions. For a regulatory, occupational or contractual claim, obtain the named method and full instrument requirements before work begins. IEC 61672-1 specifies performance of complete sound level meters, not a blanket approval for any microphone plugged into an interface. [2]
+# Select response for the intended sound field
+Field and task
+Microphone approach
+Orientation and limits
+Free-field or predominantly direct sound
+A free-field response microphone or a model with documented free-field correction can serve a specified source direction, such as a loudspeaker test. [1, 3]
+Use the model’s defined incidence angle, often 0° on axis; avoid changing a protective grid or windscreen without checking applicable corrections. Reflections make the actual field less ideal.
+Pressure field, coupler or flush boundary
+A pressure-response microphone is intended for pressure at its diaphragm, including a specified coupler or correctly mounted boundary test. [3]
+The cavity, seal, flush geometry and adapter matter. Do not describe a nearby handheld capsule as a flush boundary microphone.
+Diffuse or random-incidence field
+Use a random-incidence response microphone or documented field correction when the method assumes sound arriving broadly from many directions. [1, 3]
+A reverberant room approximates a diffuse field only to the extent required by the method; real rooms are not perfectly diffuse at every frequency.
+Relative classroom or system-tuning comparison
+A stable microphone and fixed analyzer settings can compare changes at the same position; calibrated gear improves comparability.
+Label the result relative if the full absolute sensitivity and method are unknown. It does not become a certified SPL reading because its spectrum looks smooth.
+
+“Omnidirectional” is a polar-pattern description and is not identical to a pressure-field calibration. Some small microphones can perform well in several fields under stated limits; consult the model’s response and correction data. NIST and GRAS explain the high-frequency diffraction and incidence dependence that make a single generic correction unsafe. [1, 3, 4]
+# Build the complete signal chain
+Confirm the capsule and preamplifier model and serial numbers, sensitivity record, frequency correction, protection grid, cable, powering, analyzer/input and capture mode. An externally polarized condenser measurement microphone may need a dedicated polarization supply; a prepolarized microphone often uses a CCP/IEPE-type constant-current preamp input. These are not automatically compatible with ordinary 48 V phantom power. Use the exact manufacturer-approved adapter or conditioning unit; do not experiment with pinouts or apply power to an unverified sensor. GRAS documents separate powering paths. [5, 6]
+Check that capsule, preamp and input can handle the expected low noise floor and peak level without self-noise masking or overload. Nominal sensitivity in mV/Pa or dB re 1 V/Pa belongs to a particular capsule/chain and calibration record; do not copy it from a similar-looking unit. Keep gain, filters, weighting, correction file and sample settings fixed or log every change. Protect delicate capsules and vents from contact, dust and moisture under the manufacturer’s instructions. [4, 5]
+A calibration certificate from a laboratory supplies a documented result and uncertainty for specified equipment and conditions. A field acoustic calibrator makes a practical sensitivity or function check of the assembled chain. IEC 60942:2017 specifies sound calibrator classes, while IEC 61672-3 describes periodic laboratory tests for qualifying sound level meters. These are distinct jobs. [7, 8]
+# Perform and document the acoustic field check
+1. Confirm that the specific microphone, grid configuration and calibrator coupler or adapter are compatible. Check the calibrator identity, battery/status and valid calibration record under the project method. Keep the system away from high background noise and follow both manuals for sealing and insertion. A calibrator may deliver 94 dB at 1 kHz, 114 dB at 1 kHz or another specified combination; use its actual stated output, including any prescribed environmental correction. NTi shows that a 1/4-inch capsule needs the appropriate adapter on its calibrator. [9]
+2. Record the starting indication, its units and any adjustment. If the instrument has a calibration function, follow its sequence without silently substituting a new gain or changing processing in the middle of a measurement. Check for a stable reading; a poor fit, low battery, overload or wrong frequency/level setting can produce an apparent error. The tolerance for proceeding comes from the specific method and equipment, not one number invented for this course. OSHA directs users to their instrument instructions. [10]
+3. After the session, repeat the check using the same documented setup and record the unadjusted post-run value before any change. If drift or a failed check exceeds the applicable limit, do not simply force the display back to its expected value and report the data as valid. Investigate the chain and follow the project’s retest, flagging or invalidation rule. OSHA requires documented pre- and post-use calibration for its compliance measurements, and its guidance calls this good professional practice more broadly. [10, 11]
+An acoustic calibrator at one frequency verifies the sensitivity chain near that frequency under its coupler conditions. It does not check off-axis response, the entire measurement bandwidth, a damaged grid at high frequency, or the chosen environmental sampling method. GRAS describes separate field corrections and NIST identifies field-dependent responses. [1, 4]
+# Place the microphone and preserve repeatability
+Mount the capsule at the position defined by the method, not at a visually convenient spot. Record a reproducible reference point, height, distance from the source and boundaries, orientation, grid/windscreen state and nearby obstacles. Keep the operator away from the capsule as required by the method; a person standing close changes the field. Use a sturdy stand, appropriate wind protection and cable strain relief without covering vents or altering the geometry. A manufacturer-approved outdoor kit may require its own correction. [1, 3]
+In a studio or lab, control source level and state, HVAC and reflections as the method requires. In a live venue, measure at locations representing the question: a mixer position alone may not represent the audience, and a microphone beside one loudspeaker may not represent the room. Live PA noise exposure and compliance are covered by separate methods; F11 establishes microphone preparation, not a safe exposure limit or a full sound level survey. Preserve reference paths and timing information for later F13 and F14 impulse-response work.
+When several microphones are used, identify each channel and its individual sensitivity and correction data. Do not assume matched response because the capsules share a model name. For relative comparisons, change one position or source condition at a time and repeat the baseline; log when the room, operator or mic orientation changed. Absolute multi-point measurements need each channel’s traceable chain and method-specific spatial sampling.
+# Troubleshooting and safe practice
+If an apparent high-frequency trend changes when the capsule rotates, examine the incidence angle and free-field/random-incidence correction before “fixing” the sound system. If a calibrator reading varies, inspect correct seating, adapter, batteries, ambient condition, cable, preamp input and overload. If a change occurs after the session, preserve original data and notes. Never claim a calibration pass from a software trace alone. [1, 4, 10]
+Use modest demonstration levels. A 94 or 114 dB calibration coupler emits a high level inside its chamber; never place it at a person’s ear or treat it as a sound effect. Do not expose learners to a loudspeaker, siren or impulse merely to prove a meter works. Keep stands out of paths and away from electrical or moving machinery; let qualified personnel handle energized equipment and overhead mounts. De-energize or follow the equipment’s specified connection procedure before swapping specialized preamps and sensors. [5, 9]
+# Guided teaching exercise
+1. Write two questions: a relative change in one room position and an absolute sound level at a specified location. Identify the additional equipment and method needed for the absolute claim.
+2. Inspect a measurement capsule, preamp, analyzer and calibrator manuals. Record their serials, powering, field response, protection grid, intended incidence, frequency/level limits, sensitivity data and any required adapter. If calibrated hardware is absent, use a paper exercise and label all captured comparisons uncalibrated.
+3. Mount the mic on a stable stand at a logged low-level demonstration position. Choose and document orientation and a source setting. Keep people clear and avoid altering the room between trials.
+4. With compatible equipment and instructor supervision, apply the acoustic calibrator as the manuals direct; write the stated output and observed pre-run reading before any adjustment. Do not put the calibrator to an ear.
+5. At safe modest level, make a baseline reading and repeat with one position or orientation change. Return to baseline to test repeatability. Describe whether the result is a relative difference or a calibrated value.
+6. Repeat and document the post-run field check without hiding drift. Decide whether the data meet the chosen method; otherwise mark them for investigation. State why the one-frequency check did not measure full-band response.
+Pass criterion: the learner matches microphone response and orientation to the task, identifies the correct power chain, performs or correctly plans compatible pre- and post-checks, logs changes, and avoids an unsupported compliance or SPL claim. No audio examples.
+# Student measurement sheet
+Student __________________________  Question and method __________________________________________
+Item
+Model, serial, setting or result
+Evidence or decision
+Capsule, preamp and power
+____________________________
+____________________________
+Field response and orientation
+____________________________
+____________________________
+Calibrator, adapter, pre/post
+____________________________
+____________________________
+Position and source state
+____________________________
+____________________________
+
+Correction data and grid ______________________________  Gain, weighting and filter _____________________
+Uncertainty or drift action _____________________________  Final claim and limitation ____________________
+# Critical evidence audit
+## Points of agreement
+NIST and GRAS agree that free-field, pressure and diffuse/random-incidence responses differ, especially as frequency rises. NTi and OSHA support an acoustic field check around a session; IEC distinguishes calibrator performance, sound level meter performance and periodic tests. Confidence is high in matching response to field and documenting the whole signal chain. [1–4, 7–11]
+## Different methods and apparent contradictions
+Manufacturers may favor free-field microphones for many ordinary SPL applications and random-incidence microphones under a diffuse assumption. Both can be appropriate in different fields and with documented corrections. A convenient relative system-tuning trace can guide adjustment without satisfying a regulated sound-level method. Field checks can be repeated by the user, whereas formal calibration and periodic tests require specified apparatus and procedures. [1–4, 7, 8]
+## Important gaps
+The overview sources do not provide a universal tolerance, calibration interval, capsule angle or measurement duration for every protocol and instrument. OSHA’s inspection requirements apply to its own enforcement workflow and cannot simply be generalized to all research or venue work. The full IEC texts and model manuals control any formal conformity conclusion. A pre/post single-frequency check alone cannot validate the frequency response or field sampling. [7–11]
+# Sources and curriculum connections
+Primary government, standards-body and manufacturer guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] NIST Importance of the Free Field Calibration of Microphones <https://www.nist.gov/publications/importance-free-field-calibration-microphones>
+[2] IEC 61672 Part 1 Sound Level Meter Specifications <https://webstore.iec.ch/en/publication/5708>
+[3] GRAS Free Field Pressure and Random Incidence Guide <https://www.grasacoustics.com/microphone-guide/free-field>
+[4] GRAS Acoustics FAQ on Field Corrections <https://www.grasacoustics.com/faq>
+[5] GRAS Externally Polarized versus Prepolarized <https://www.grasacoustics.com/microphone-guide/externally-polarized>
+[6] GRAS Compatible Powering Standards <https://www.grasacoustics.com/fileadmin-gras/Products/Files/manual_PR0003_PR0004_LI0304.pdf>
+[7] IEC 60942 Sound Calibrator Performance Requirements <https://webstore.iec.ch/en/publication/30045>
+[8] IEC 61672 Part 3 Periodic Sound Level Meter Tests <https://webstore.iec.ch/en/publication/5710>
+[9] NTi Class 1 Acoustic Calibrator and Adapter <https://www.nti-audio.com/en/accessories/class-1-sound-calibrator>
+[10] OSHA Technical Manual Occupational Noise <https://www.osha.gov/otm/section-3-health-hazards/chapter-5>
+[11] OSHA Monitoring Noise Levels Appendix G <https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.95AppG>
+Cross-links: F12 sound level and environmental noise; F13 room acoustics; F14 loudspeaker measurement; F15 machinery sound; F16 scientific arrays; Sound Systems and Acoustics labs.

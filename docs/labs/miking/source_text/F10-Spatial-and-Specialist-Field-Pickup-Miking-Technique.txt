@@ -1,0 +1,90 @@
+# Spatial and Specialist Field Pickup Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F10  •  Binaural, surround and Ambisonic capture
+This lesson teaches where to place spatial microphone systems, how to preserve their channel relationships and how to check the intended playback. A two-channel binaural recording, a channel-based surround array and a four-capsule first-order Ambisonic microphone solve different delivery problems. None automatically isolates a distant source or becomes a calibrated acoustic measurement. Students compare perspectives, document geometry and verify a suitable render without audio examples.
+# Define the listening position and deliverable first
+Describe what the listener should experience: a fixed ear-level viewpoint over headphones, an environment intended for a named surround speaker layout, or a field that can be rotated and decoded for an interactive scene. Decide whether the objective is a natural environmental perspective, a separately usable ambience layer, an event broadcast, or a repeatable research record. DPA recommends defining the listening setup before choosing the recording setup. [1]
+Walk and listen at candidate positions. A microphone system describes what reaches it from that location: nearby traffic, wind and reflections remain in the capture. Note a forward direction, height, stand location, sources and their movement, reflective surfaces, weather and potential intelligible conversations. Record a separate close source if the project needs it; do not claim that a surround or Ambisonic array can later isolate every source.
+# Choose a spatial capture method
+Method
+Placement and channels
+Playback and principal limit
+Binaural dummy head or ear-position microphones
+Position the two ear pickup points where a listener would be, at a safe and stable head height; orient the face toward the intended front. Keep left and right paired and label orientation. A dummy head uses head and pinna cues. [2]
+Evaluate the intended headphone experience. Speaker translation is product- and processing-dependent; Neumann specifically describes its KU 100 as speaker-compatible, which is not a universal claim for binaural rigs.
+Channel-based surround array
+Define front L/C/R and surround positions for the target layout. A compact integrated unit or deliberate array of spaced microphones may supply independent full-range channels. Document each capsule and front axis. [1, 3]
+Monitor through the target speaker arrangement and inspect any stereo/mono downmix. Spaced pickup can give envelopment but summed arrivals can color the signal.
+Double Mid-Side surround
+Mount a forward cardioid Mid, backward cardioid Mid and shared sideways figure-eight close together. Preserve the three raw channels, identify the positive Side lobe and decode intentionally. [1]
+Compact and adjustable after capture, but raw channels are not L/C/R/surround outputs; matrix levels and polarity must be checked.
+First-order Ambisonics
+Mount a suitable tetrahedral four-capsule microphone with the documented front and physical orientation. Record four separate, identically treated A-format capsule signals. [4, 5]
+Convert with the microphone-specific A-to-B processor, then render to the delivery layout. Preserve channel order and format metadata; raw A-format is not ready stereo or 5.1.
+
+A channel-based 5.0 capture has five main channels. “.1” describes a separate low-frequency effects channel in a delivery layout, not a requirement for a dedicated subwoofer microphone or a sixth full-range ambience mic. Some integrated products provide a derived LFE output; document whether it is used. Do not silently send a full-range field channel to an LFE bus. [1, 3, 6]
+# Binaural placement and honest playback claims
+A dummy head puts microphones at artificial ears. Start at the intended listener position; rotate or move the head to frame the actual event, rather than aiming an imagined shotgun axis. Neumann identifies headphone playback as the KU 100’s main spatial application and says this particular head can also provide a useful conventional speaker image. Other binaural systems may differ, so test the exact microphone, headphone and speaker destinations. [2]
+In-ear microphones on a person can capture that wearer’s head movements, breath, clothing and steps. Seek informed consent and hygienic fitting; preserve awareness of traffic, stage action and other hazards rather than isolating the wearer with monitoring. A fixed-head recording gives a fixed perspective. Head-tracked interactive playback requires a suitable scene representation or other processing; a plain fixed two-channel take does not by itself reorient the sound field when the listener turns.
+Record a separate conventional mono or stereo perspective where the production needs robust speaker or broadcast compatibility. This is an editorial recommendation, not a statement that binaural channels always fail over loudspeakers. Compare actual downmixes and avoid treating a pleasing headphone image as proof of accurate localization for all listeners.
+# Surround arrays and source-to-room balance
+For five-channel environmental pickup, begin with a stable front image and deliberate rear coverage. DPA describes front L/C/R plus rear microphones, with placement governed by room, source layout, directivity and taste; a spaced omni array can sound enveloping, while cardioids may improve channel separation. The wider array requires room, stable mounting and more setup time. Avoid a fixed spacing formula for every forest, plaza or concert hall. [1]
+A compact integrated surround microphone is useful when rapid setup and camera mobility matter. A manufacturer-specific unit may combine directional front pickup, rear pickup and its own LFE processing, so read its channel map instead of assuming every 5.1-labelled cable carries the same microphone topology. DPA’s 5100, for example, uses five transducers plus a derived LFE output. [3]
+Double Mid-Side offers a compact three-capsule alternative: forward Mid, rear Mid and side-facing figure-eight. DPA describes post-capture matrixing to obtain front and rear channels. Mark which side of the figure-eight is positive before capture, retain independent tracks, and check whether decoded left, right and rear directions follow a walker around the array. The width and rear level can be adjusted, but the matrix does not restore a clipped or wind-ruined capsule. [1]
+For an ambience-only addition to a separate front array, DPA describes the IRT Cross and Hamasaki Square. Those are purpose-built rear/diffuse pickup arrangements with different sizes and patterns, not automatic substitutes for a complete five-channel main array. If combining arrays, test time relationship, direct-sound leakage and downmix for coloration. [1]
+# Ambisonics signal chain and orientation
+In a first-order Ambisonic microphone such as Sennheiser’s AMBEO VR Mic, four tetrahedrally arranged capsules deliver four A-format signals. Sennheiser calls for four independent tracks through identical preamps at matched gain, with linked changes during a take. Its converter produces B-format for subsequent rotation and rendering. Do not sum, pan, noise-reduce or independently normalize the four raw capsule tracks as if they were four ordinary spatial channels. [4, 5]
+Before recording, note the model-specific capsule order, orientation marker, upright/upside-down/endfire mounting, front reference and channel numbers. The Sennheiser converter has distinct FuMa and ambiX output options with different channel order and numeric convention; choose the one required by the next device or software stage and record that choice in metadata. Never infer format solely from “four channels” or a WAV filename. [5, 7]
+Mount the microphone in a suspension and keep its intended front aligned with the scene or camera reference. Sennheiser recommends an upright basket for its specific mic and warns that humidity or moisture can damage capsules. A correctly configured decoder can rotate B-format and render to stereo, binaural or a speaker layout, but the rendered result depends on the decoder, destination and listener. First-order pickup has limited directional resolution; it is useful for an enveloping viewpoint, not a promise of perfectly separable point sources. [1, 4, 5]
+# Field, studio, live and broadcast decisions
+Field capture: use a stable safe stand, appropriate suspension and wind protection for all exposed capsules. A cover must protect the complete array without disrupting the manufacturer’s spacing and response assumptions. Listen for wind buffeting on individual inputs and the decoded monitor; a high-pass filter may remove wanted low-frequency ambience. Wind protection does not make a microphone waterproof. [5, 8]
+Studio/post work: retain raw channels and a record of channel mapping, gain, orientation, processor, output convention and any processing. Store a reference render separately from the original. Test the actual headphone, surround, stereo and mono deliverables requested; do not overwrite the source with an unlabelled binaural or 5.1 render.
+Live sound: spatial ambience can serve a broadcast or remote listener, but an open field array near a PA hears the PA and may create a feedback path if routed back to that system. Keep it out of local reinforcement unless the routing and feedback margin have been engineered. Use appropriate close microphones for intelligible live speech or instruments. For a live stream, check its independent multichannel encoder, stereo and mono paths and the latency/sync with picture before transmission.
+# Safety, permissions and limits
+Obtain access and recording permission for the location and intended use, especially if speech may be identifiable. Do not block a public route with a wide array, leave stands unattended in traffic, approach wildlife for a stronger spatial cue, or mount in a vehicle or rigging without authorization. Check ground stability, wind loading, cable strain relief and the manufacturer’s moisture limits. NPS advises visitors that their actions can affect wildlife and park resources. [9]
+Stop outdoor setup when thunder is heard and move to safe shelter; do not remain to complete a take. The National Weather Service advises shelter at the first thunder and waiting 30 minutes after the last thunder before resuming. Keep poles and stands well away from electrical lines and overhead hazards. Spatial microphones record a perceptual scene; scientific SPL or acoustic analysis requires a separate defined calibration, instrument specification, site protocol and uncertainty statement. [10]
+# Guided teaching exercise
+1. Choose a permitted quiet interior or safe outdoor location with a stationary front source and a planned moving source. Define three destinations on paper: headphones, a named surround layout and a mono or stereo stream. Mark true north only if it is relevant to the project; otherwise label scene front.
+2. Place a binaural head or appropriate ear-position rig at the listener point. Log head height, face direction and any wearer movement. Monitor at a safe level and note which sounds appear at the sides and behind.
+3. Place a compact surround unit or a securely mounted front and rear array at a documented location. Record separate labelled channels; walk the intended source route at a safe distance. Inspect the front/rear balance and the target speaker mapping.
+4. If an Ambisonic microphone is available, label all four capsule tracks from its manual, match the gains, log the physical orientation and record a separate A-format take. Use only its supported A-to-B converter and explicitly select the downstream output convention. If unavailable, trace a manufacturer channel map and proposed signal flow without inventing a capture.
+5. Render or monitor each format through its intended destination. Check left/right, front/rear and any height interpretation using the actual decoder. Compare mono and stereo translations, noting losses and any comb coloration; retain original channels.
+6. Design a live/broadcast signal map with separate stream and PA paths. Flag wind, feedback, privacy, weather and stand hazards. Explain why a field ambience array does not replace a close dialogue or instrument mic.
+Pass criterion: the learner chooses a capture geometry for a named playback, preserves channel and orientation information, identifies a wrong decode or swapped channel, tests downmixes, and documents field and live safety. No audio examples.
+
+# Student field sheet
+Student __________________________  Site and permission ______________________  Date/time ______________
+Capture
+Position, front and channel map
+Destination, translation and limitation
+Binaural
+____________________________
+____________________________
+Surround
+____________________________
+____________________________
+Ambisonic A-format
+____________________________
+____________________________
+
+Wind, weather and stand safety _________________________________________________________________
+Converter and output convention __________________________  Stream and PA routing ___________________
+# Critical evidence audit
+## Points of agreement
+DPA and Sennheiser agree that the intended listening format drives capture and that the raw signals must retain their proper relationships. Neumann supports a headphone-centered binaural perspective; DPA describes the portability versus envelopment tradeoff of coincident and spaced arrays. Confidence is high in documenting placement and channel order and checking the actual render. [1–5]
+## Methods that differ and apparent contradictions
+A wide spaced array can provide strong envelopment but is harder to place and sum to mono; a compact coincident array is portable and easier to transform but can sound less spacious. Neumann reports good speaker compatibility for its KU 100, whereas headphone playback remains the principal binaural reference. These positions concern different devices, arrays and listening conditions rather than a universal yes/no rule for speaker playback. [1–3]
+## Important gaps
+The sources do not establish one best stand height, spacing, preamp level or windscreen for every site. A named 5.1 format does not reveal how its LFE channel was made; four Ambisonic tracks do not reveal their ordering or normalization. Actual hardware manuals, delivery specifications and site conditions control these choices. This lesson does not equate perceptual field capture with a calibrated scientific survey.
+# Sources and curriculum connections
+Primary manufacturer and government guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] DPA Immersive and Object Based Audio Recording Techniques <https://www.dpamicrophones.com/mic-university/audio-production/immersiveobject-based-audio-recording-techniques/>
+[2] Neumann KU 100 Dummy Head <https://www.neumann.com/en-fi/products/microphones/ku-100>
+[3] DPA Developing the 5100 Mobile Surround Microphone <https://www.dpamicrophones.com/mic-university/technology/developing-the-5100-mobile-surround-microphone/>
+[4] Sennheiser AMBEO VR Mic Product Information <https://docs.cloud.sennheiser.com/en-us/ambeo-vr-mic/product-info.html>
+[5] Sennheiser AMBEO VR Mic Recording Instructions <https://docs.cloud.sennheiser.com/en-us/ambeo-vr-mic/manual-recording.html>
+[6] DPA Introduction to Immersive Audio <https://www.dpamicrophones.com/mic-university/background-knowledge/introduction-to-immersive-audio-the-basics/>
+[7] Sennheiser AMBEO Converter Output Format and Orientation <https://docs.cloud.sennheiser.com/en-us/ambeo-vr-mic/manual-converter-overview.html>
+[8] Rycote Windshields and Suspension <https://www.rycote.com/>
+[9] National Park Service Health and Safety <https://www.nps.gov/subjects/healthandsafety/index.htm>
+[10] National Weather Service Lightning Safety <https://www.weather.gov/safety/lightning-safety-overview>
+Cross-links: F06 natural and urban ambience; F07 weather; F08 pass-bys; F09 location speech; Ensembles and Voice large groups; Sports and Broadcasting audience and venue ambience; Scientific and Acoustical measurement.

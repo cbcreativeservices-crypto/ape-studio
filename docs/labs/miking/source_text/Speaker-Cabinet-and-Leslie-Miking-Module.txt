@@ -1,0 +1,107 @@
+# Speaker Cabinet and Leslie Miking Module
+Pro Audio Training Academy  •  Membranophones Lab support module  •  Studio and live applications
+This module teaches microphone pickup of the airborne sound radiated by an amplifier speaker or Leslie rotary cabinet. The instrument may be electronic, electric or acoustic before amplification; a microphone hears the cabinet, the surrounding room and any neighboring sources. It does not capture the instrument’s direct electrical output. Students compare tone across a conventional speaker, then build an external horn-plus-lower-rotor Leslie setup without opening the cabinet. No audio examples are included.
+# Identify the sound source and signal path
+Ask the player what feeds the cabinet, which speaker or outlet is active, whether an internal crossover or external powered sub is in use, and whether a direct electrical signal is available. Listen from a safe position while the actual passage is played at its intended level. Guitar, bass, amplified harmonica, Rhodes and Wurlitzer may all use speaker pickup, but their cabinet designs and musical goals differ. A DI or instrument output is a separate electrical path, not an airborne microphone track; identify it by its actual interface and level and leave electrical connection to equipment-specific instructions.
+Do not treat a Leslie like a fixed cone speaker. Hammond describes traditional 122A/147A cabinets with a rotating high-frequency horn and a lower woofer radiating through a rotating bass drum/rotor. Slow chorale, fast tremolo and the transition between them alter the moving sound. The model matters: inspect the external openings and manufacturer documentation before choosing positions; do not assume all rotary-speaker products have the same internal arrangement. [1, 2]
+# A conventional guitar or bass speaker cabinet
+Find the actual speaker behind the grille; a multi-speaker cabinet may not have identical drivers or equal output. With the amplifier off or at a safe muted level, mark the approximate dust-cap/inner-cone region and outer cone from outside the grille without removing it. Place one compatible microphone on a secure stand in front of an active speaker. Shure’s PGA27 guide gives 1–6 in (2–15 cm) as a model-specific starting range. Shure’s John Mills suggests the dust-cap/cone boundary for one guitar-amp mic, with more center often brighter and more edge often mellower. Those are experiments, not a universal frequency response for every bass cabinet or multiple-driver system. [3, 4]
+Question
+One-variable microphone trial
+Listen for
+Too bright or fizzy?
+Keep capsule-to-grille distance and level constant; move from inner cone toward outer cone on the same speaker. [3, 4]
+Presence, pick/attack, hiss, off-axis tone and useful midrange.
+Too dull or missing articulation?
+Return toward the active cone’s inner region; compare a modest angle change without touching the grille.
+Definition versus harshness; confirm the player’s actual tone at the cabinet.
+Too dry or narrow?
+Move the mic farther back to a safe position, keeping aim; audition room contribution. [3]
+Direct sound, early reflections, other performers and PA spill.
+Two speakers or two microphones?
+Listen to each speaker first; if using two mics, record separately and compare their sum in mono. [4]
+Difference in speaker tone, time arrival, loss of body or comb filtering.
+
+For bass cabinets, check whether a separate horn/tweeter or multiple cone sizes contribute; a single cone mic may not represent the complete cabinet. A low-frequency capable mic must also have a usable response and headroom for the actual source. In a dense studio mix, a close mic offers more isolation; a farther mic can represent cabinet and room. On a loud stage, a close directional placement is often more controllable, but evaluate the real PA/monitor geometry. Do not assume a DI duplicates loudspeaker distortion or cabinet tone.
+# Leslie anatomy and safe external access
+Identify upper horn louvers and lower-rotor openings on the actual cabinet. Place microphones on stands outside the enclosure and away from ventilation, moving parts, power cord and audience traffic. Never push a capsule, cable, fingers or a tool through a louver. Do not remove a back panel, grille or protective cover for this teaching setup, even though some engineer interviews describe open-cabinet techniques. A Hammond 3300 manual warns not to open the unit and directs servicing to qualified people; the 122H/142H manual warns of hazardous voltage at legacy connector pins and different, incompatible 122/147 wiring. Treat the organ-to-Leslie connection as installed equipment, not a microphone jack. [5, 6]
+Plan the mic stands while the cabinet is off. Make sure the cabling cannot contact the cabinet, block air flow or enter a rotating path. Confirm with the operator that the cabinet remains stable and that the chosen sides are accessible. Ask for slow, fast and speed-change passages at musical level; do not reach toward the cabinet during operation. Motor, belt, air movement and cabinet rattle may be audible at close positions. Determine whether they belong in the target sound before shifting a mic.
+# Build the Leslie pickup in stages
+Arrangement
+External position and purpose
+What to verify
+One mic, upper
+Aim a secure mic toward a reachable upper louver from outside. Use if the upper horn supplies the essential part and only one channel exists.
+The lower register may be underrepresented; compare the full musical range and speed changes.
+Two mic, upper plus lower
+Aim one at the upper horn louver and another at a lower opening from outside. An organist interviewed by Shure describes two upper mics with a lower mic roughly 3 in from a rear opening on his particular Leslie; the two-channel adaptation is a practical trial, not his exact full setup. [7]
+Balance upper articulation and lower body; keep both clear of rotor airflow and evaluate mono.
+Three mic, stereo upper plus lower
+Try a near-coincident XY pair outside the upper louvers plus one lower mic, or two separated upper-side mics and one lower mic. Shure interviews document both approaches. [7]
+XY offers a more stable upper-pair mono sum; spaced sides can create different motion/width but require a mono check.
+More distant picture
+In a suitable quiet room, compare one mic or an XY pair farther from the cabinet. One Shure interview mentions a pair a couple of metres away in a good room. [7]
+Room and other instruments increase; direct horn/rotor balance differs from close external pickup.
+
+The upper and lower rotors do not behave as two fixed speaker cones. Keep the upper mic’s aim and external location documented relative to the louvers. Move a second upper mic only after hearing the first. Try an upper XY pair as one-point stereo, then compare safely placed separated upper mics only when the room and stage permit. The lower channel is commonly centered in the stereo image, but the desired balance and orientation depend on the actual arrangement. Shure’s interviewees disagree about spaced versus XY horn pickup, and another prefers side louvers to reduce near/far level mismatch. [7]
+A lower mic can receive moving air that produces low-frequency buffeting; adjust external aim or position and try a suitable windscreen if the microphone design permits. Do not remove covers to eliminate airflow, place a windscreen inside the cabinet, or assume filtering can recover a wind-distorted signal. Check bass notes, chord stabs, sustained tones, slow/fast rotor speed and transitions, not just one held note. [7]
+# One mic, multiple mics and mono
+Start with each Leslie microphone alone. Add lower to upper at a musically useful level and check whether low register and organ articulation remain intelligible. If the upper pair is XY, place directional capsules as close to coincident as their mounts safely allow without touching, angle according to the intended louver coverage and check the combined mono sound. A spaced upper pair may create a larger or more variable stereo picture as the horn rotates; time differences and room pickup can color a mono sum. Listen across a full rotation and speed transition. A polarity reversal is a diagnostic, not a general repair for differing arrival times. [7]
+If a direct output exists on a modern organ or rotary product, label it as a direct electrical source and compare it separately. It may omit actual cabinet, room and moving air behavior, or it may already contain a rotary simulation depending on the device. Do not join a microphone input to an organ/Leslie multipin connector. Any instrument or line connection must follow the named model’s manual and qualified technician guidance where required. The 122 and 147 interfaces can differ despite similar looking connectors. [6]
+# Studio and live context
+A quiet studio can support a farther cabinet perspective or room pair when the space is musically valuable. Retain a close external horn/lower option if the Leslie shares the room with other sources. Compare the stereo image from the actual listening system and check mono, especially for a broadcast or single-speaker destination. A captured Leslie’s speed and physical motion may be part of the performance, so document speed changes before evaluating a placement.
+For live sound, prioritize stable external stands, usable gain and no obstruction to performers or crew. A mono PA can use an upper and lower channel; a stereo upper pair is optional and should be checked at audience locations and in mono feeds. Distant room mics may hear PA return and reduce feedback margin. Have the system operator manage routing to PA, wedges, in-ear monitoring and recording separately. A Leslie’s acoustic output is already loud in the room: reinforce only what the audience needs, rather than adding every microphone by default.
+# Safety, power and hearing checks
+The cabinet must remain assembled as intended by its manufacturer. Do not defeat a grounding connection, alter the organ-to-Leslie cable, change an impedance selector, or operate with a damaged cord. Do not touch exposed connector pins; Hammond’s Heritage manual explicitly warns that power must be off before the specified connections and that the vintage interface can carry hazardous voltage. A technician handles uncertain models, repairs and any internal access. [5, 6]
+Route microphone cables and stand legs away from organ pedals, cabinet vents, doorways and traffic. Prevent a heavy cabinet or stand from tipping during setup. Lower or mute console outputs before connecting microphones or changing phantom settings, then follow the actual microphone manual. Set preamp gain using the loudest cabinet passage and fastest rotor transition; check microphone and preamp overload independently. Keep rehearsal and monitoring levels comfortable. Never demonstrate feedback deliberately.
+# Guided teaching lab
+1. Identify the source. Name the speaker cabinet and active speaker(s), or the Leslie model and accessible upper/lower external openings. Identify any direct electrical feed as a separate route.
+2. Conventional cabinet: with one mic, compare inner-cone boundary and outer-cone positions at a constant safe capsule-to-grille distance. Compare a farther position if the room permits. Document the tonal changes.
+3. Leslie: with power off, position one external upper mic and one external lower mic, both safely outside all openings. Verify secure stands and cable paths before power and playing. Do not remove panels.
+4. Listen through musical notes, chords, slow and fast rotation, and a speed change. Compare upper alone, lower alone and their blend. If possible, add an external upper XY pair, then test stereo and mono.
+5. For live use, have the operator check the upper/lower feeds at intended PA and monitor levels without deliberate feedback. Decide whether an optional room feed stays out of the PA.
+6. Choose and log the setup, its remaining tonal and room compromise, peak headroom, external clearance and all signal-path labels.
+Pass criterion: the learner distinguishes cabinet-air pickup from a direct electrical path; identifies upper horn and lower rotor on the actual Leslie model; makes one reproducible speaker-tone comparison; builds a safe external upper/lower pickup; checks a multi-mic blend in mono; and explains different studio and live choices. No audio examples.
+# Student observation sheet
+Student __________________  Date __________  Cabinet model and room _________________________
+Source / channel
+Capsule site, angle, pattern
+Tone and issue heard
+Fixed speaker A
+________________________
+________________________
+Fixed speaker B / farther trial
+________________________
+________________________
+Leslie upper one
+________________________
+________________________
+Leslie upper two optional
+________________________
+________________________
+Leslie lower
+________________________
+________________________
+Direct electrical path if present
+________________________
+________________________
+
+Rotor speeds tested __________________  Stereo and mono check ______________________________Stand, cable and cover inspection _________________________________________________________PA / monitor / record feeds ____________________  Final tone choice and limitation _________________
+# Critical evidence audit
+## Points of agreement
+Shure’s conventional-amp guidance links lateral position over a particular speaker to a predictable brightness comparison. Hammond’s manuals establish separate upper/lower rotary paths on traditional Leslies. Shure’s musician and FOH interviews agree that upper and lower pickup serve different frequency regions and that placement changes stereo motion and airflow noise. Confidence is high in these broad distinctions. [1–4, 7]
+## Different practitioner approaches
+One Shure interview favors an XY horn pair for controlled mono, while another puts separate upper mics at side louvers for comparable distance and a wider effect. A single upper and lower channel can serve a mono PA; a more distant pair can suit a good studio room. These are different goals, cabinet orientations and available channels. [7]
+## Direct tensions and qualifications
+Some interviewees describe removing a cabinet panel to place a mic closer. Hammond’s owner guidance warns against opening the cabinet and assigns service to qualified personnel. This lesson therefore teaches external placement on intact equipment; it does not treat a musician’s modification as a safe classroom instruction. The sources do not provide a controlled comparison proving that XY or spaced upper pickup is universally better. [5–7]
+## Important gaps
+There is no universal distance, louver side, stereo width, safe connector procedure for an unidentified vintage cabinet, or fixed lower/upper balance. The speaker center-to-edge tonal tendency is a starting comparison, not a guarantee for all multiway cabinets. Confirm actual model, coverings, safety manual, acoustic result and venue routing.
+# Sources and curriculum connections
+Primary maker documents and firsthand engineer accounts checked October 4, 2026. Linked source pages may include their own media; this lesson has no audio examples.
+[1] Hammond — Traditional Leslie Specifications <https://hammondorganco.com/trad-leslie-specifications>
+[2] Hammond — 122A 122XB 147A Owners Manual <https://hammondorganco.com/wp-content/uploads/2022/09/122A-122XB-147A-OwnersManual-updated.pdf>
+[3] Shure — PGA27 User Guide <https://www.shure.com/en-US/docs/guide/PGA27>
+[4] Shure — Miking Guitar Amps with John Mills <https://www.shure.com/en-US/insights/miking-guitar-amps-tips-from-sound-pro-john-mills>
+[5] Hammond — Leslie 3300 Owners Manual <https://hammondorganco.com/wp-content/uploads/2022/09/3300.pdf>
+[6] Hammond — Leslie 122H 142H Owners Manual <https://hammondorganco.com/wp-content/uploads/2022/09/122H142H_manual_V100Web_en.pdf>
+[7] Shure — Miking the Legendary Leslie Tone Cabinet <https://www.shure.com/en-US/insights/miking-the-legendary-leslie-tone-cabinet>

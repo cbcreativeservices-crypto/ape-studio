@@ -1,0 +1,100 @@
+# Natural and Urban Ambience Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F06  •  Field and live applications
+This lesson teaches how to place and protect microphones to capture the sound of a location: broad natural environments, urban beds and changing activity within them. Students choose a listening position, compare mono and stereo pickup, control wind and handling noise, document what happened, and distinguish a creative ambience track from calibrated acoustic measurement. No audio examples are included.
+# Decide what the ambience must represent
+Ambience is the audible environment at a place and time. A natural scene can include birds, insects, water, foliage, weather and distant human activity; a street can include traffic, voices, ventilation, footsteps and reflections. Define whether the aim is an honest site record, a picture-matched background, a live audience feed, or a controlled measurement. An unwanted event in a dramatic bed may be valuable evidence in a documentary or scientific record. The National Park Service treats site selection, time, weather, wind and human-caused sound as consequential parts of soundscape monitoring. [1, 2]
+Stand still and listen before deploying. Note prominent sources, their movement, prevailing wind, ground and reflective surfaces, the horizon of the scene, and whether speech might be intelligible. Move the array to choose a source balance, not simply to make the meters louder. Revisit at a different time if the activity differs from the brief. Label each take with its actual place and time rather than claiming that a filtered or assembled bed is a single unaltered location. [1, 2]
+# Choose the pickup geometry for the destination
+Approach
+Use and placement
+Limit to test
+One mono microphone
+A compact choice for a specific perspective, a mono program feed, or a separate source layer. Aim a directional mic at the relevant portion of a scene, or use an omni when all-around sound is desired.
+It cannot preserve a conventional left/right scene by itself; mic pattern alone cannot remove distant noise or wind.
+Coincident XY
+Two directional capsules as close as the mount permits, angled to frame a horizontal scene. Start with one stable stand position and inspect what lands at the center and edges. [3]
+Convenient, compact, generally robust in mono; width is not the same as environmental depth.
+Near-coincident ORTF
+Two cardioids in the defined 17 cm and 110 degree included-angle geometry, securely mounted. Use when more lateral spread is useful. [3, 4]
+Arrival differences can color the sum; inspect mono and avoid assuming that a wider picture is always more truthful.
+Spaced omni AB
+Two omnis at a deliberate, documented spacing to convey broad diffuse space and low-frequency environment. [3]
+Time differences can create comb filtering in a mono sum; if mono is required, compare each channel separately as well.
+Mid-Side
+Forward Mid plus side-facing figure-eight recorded as separate tracks or decoded correctly to L/R. Vary width in the matrix to fit delivery. [3, 5]
+The raw Side is not a conventional right channel; verify matrix routing and the mono fold-down.
+Binaural or immersive
+Choose only for a headphone or specified immersive deliverable; document microphone orientation and required decoding. [6]
+Headphone spatial result and speaker/mono translation are different questions; a format label alone does not guarantee compatibility.
+
+For ORTF, the angle is the included angle between axes, not 110 degrees to each side. DPA describes ORTF as wider than XY with reasonable mono information, while spaced AB can be unsuitable for a direct mono sum. Source selection and array location remain as important as the stereo format. [3, 4]
+# Place for natural and urban scenes
+Natural scene: choose a safe, permitted listening point at a distance that balances the broader environment with the desired wildlife or water. Near moving water, a small position change can change the water-to-bird balance markedly. Do not approach or lure animals for a cleaner track; follow local wildlife distances and site rules. For a broad site, compare a central stereo position with a second permitted vantage point rather than placing an unmanned stand where it can disturb animals or visitors. [7]
+Urban scene: decide whether the track is a broad plaza or streetscape, a sidewalk perspective, or a focused pass-by. Keep microphones and stands off vehicle lanes, walking paths and access routes. Use a directional mic to emphasize a region of the scene, but remember that side and rear rejection depends on frequency and acoustics; no polar pattern erases the city. A stable array, shielded from a nearby wall or other reflector only when its coloration is useful, makes successive takes more comparable. Document traffic direction and intermittent sirens, aircraft or voices.
+For either scene, record enough uninterrupted time to include normal cycles and transitions. “Several minutes” is a teaching starting point, not a standard duration: a quiet woodland, signal-controlled crossing or periodic train requires a different window. Capture separate labeled alternate positions or foreground details only if they add a clear editorial option. Keep test recordings and representative event notes; do not substitute a constructed loop for an unmodified site record.
+# Control wind before reaching for a filter
+Air moving across a capsule or its grille can create severe low-frequency turbulence that differs from the sound of wind moving through trees or structures. Fit the windshield to the specific mic and conditions: foam can help in light wind; a fur cover, basket/blimp and suspension offer greater protection as conditions require. Shield the recorder and cabling from handling and wind, and monitor while adjusting position. Manufacturers describe layered protection and caution that wind can overload or mask desired sound. [8, 9]
+Do not promise a filter will rescue a buffeted take. A high-pass filter may reduce low-frequency rumble but also remove real thunder, traffic, surf or architectural energy. For a film bed, retain an unfiltered track if the recorder and headroom permit, and document any applied filter; an unfiltered track with wind distortion is still damaged. For measurement or scientific comparison, follow the study protocol and instrument specification; an arbitrary mic, windshield, filter or recording level does not produce calibrated sound-pressure data. NPS excludes high-wind intervals from some monitoring analysis because wind can interfere with measurement. [2, 10]
+# Set levels, monitor and document
+Test on the loudest likely event and leave adequate headroom so an unexpected vehicle, shout or bird call does not clip. Check actual input meters and headphone monitoring; raising gain later also raises microphone self-noise and environmental noise. In quiet settings, a low-noise mic and recorder matter, but moving to a quieter position often matters more. Avoid a fixed “correct” dBFS or LUFS target for every ambience; the scene and recorder determine practical headroom. [11]
+Log date, local time and time zone, precise permitted site, weather and wind, microphone model/pattern, array geometry and orientation, height/position, wind protection, recorder settings, filters, channel map, take length, salient events, and any restrictions on use. Photograph the setup only if permitted. Keep a clear distinction between raw recorded channels and any later assembled, denoised or looped deliverable. For repeatable acoustic monitoring, NPS pairs its sound data with weather information and uses defined field methods; ordinary creative ambience files are not equivalent to that calibrated program. [1, 2, 10]
+# Studio, live and broadcast differences
+In film or studio post production, preserve an identifiable bed and separately captured foreground options. Match perspective and transition between adjacent scenes; multiple layers need not have been recorded from one listening point, but metadata should state that. In live theatre, broadcast or a public event, an ambience mic can convey audience or location to a remote listener. Position it for useful pickup with minimal PA or monitor spill, and route it intentionally; open microphones near loudspeakers can reduce gain before feedback. A quiet field array designed for delayed editing is not automatically safe or effective as an open live feed. [12]
+On a mono or mobile delivery, explicitly check the downmix. For XY and decoded Mid-Side, center material should remain useful; for ORTF and AB, audition any change in low end or transient quality. Never assume that simply summing two spaced microphones recreates one omnidirectional mic. In a live workflow, review the path to every speaker, stream, recorder and monitor at controlled level; mute unused ambience channels and avoid feeding a room mic into nearby reinforcement without system planning. [3, 5, 12]
+# Safety and ethical boundaries
+Check access, permissions and applicable privacy rules before capturing identifiable conversation or publishing a take; local requirements and venue policies vary. Place stands where they cannot trip pedestrians or be struck by vehicles; protect connectors from moisture and follow the gear manufacturer’s weather limits. A windscreen is not waterproofing. Shure notes that even a rugged outdoor microphone needs shelter from precipitation. [13]
+For thunderstorm ambience, record only from a substantial safe shelter or use a safe remote plan. Do not remain outdoors because the microphone is recording; the National Weather Service says to go indoors when thunder is heard and wait at least 30 minutes after the last thunder before resuming. Stay away from flooding and unstable banks, ledges, surf and traffic. Keep monitoring at a safe level; prolonged loud urban exposure calls for hearing protection under occupational guidance. [14, 15]
+# Guided teaching exercise
+1. Choose one accessible natural or park-like site and one accessible urban site. Write one sentence specifying the intended listener position and delivery format for each. Check local permissions and weather first.
+2. At each site, scout silently and log wind, dominant continuous layer, intermittent events, reflectors, safe placement and possible intelligible speech. Sketch the broad source directions.
+3. Mount a protected single mic or stable XY pair. Record a continuous segment long enough to include at least one normal site cycle; log the exact duration. Monitor wind and peaks without shifting the stand during the take.
+4. If available and safe, repeat from a second position with the same pattern, then compare a correctly mounted ORTF, spaced AB or properly decoded Mid-Side array. Record geometry, orientation and wind protection; do not change several variables without noting them.
+5. Check left/right orientation and mono at the beginning, middle and end. Identify one useful feature and one limitation per configuration, including any low-frequency loss from a filter.
+6. Design a live/broadcast version: choose the minimal useful open channels, document the PA and monitor relationship, safe cable route and mono stream path. Do not raise output to provoke feedback.
+Pass criterion: the student explains why the chosen listening point represents the scene, identifies stereo geometry and channel routing, detects wind contamination and mono problems, documents conditions, and distinguishes a creative bed from a calibrated measurement. No audio examples.
+# Student field sheet
+Student ________________________  Date/time zone __________________  Site/permission __________________
+Take and aim
+Mic geometry, wind and settings
+Events, mono check and decision
+Natural first position
+____________________________
+____________________________
+Natural alternate
+____________________________
+____________________________
+Urban first position
+____________________________
+____________________________
+Urban alternate or live
+____________________________
+____________________________
+
+Weather, wind and orientation __________________________  Duration and normal cycle __________________
+Channel map and filters _________________________________  Strongest event and peak ___________________
+Privacy or site restrictions _____________________________  Final use and limitations __________________
+# Critical evidence audit
+## Agreement
+DPA and Sound Devices explain that stereo geometry changes width and mono behavior. Rycote, RØDE and Shure describe wind and outdoor protection as physical problems that require appropriate hardware and placement. NPS identifies site, weather and source activity as critical to a representative soundscape record. Confidence is high in monitoring actual conditions, documenting geometry and checking the destination downmix. [1–5, 8–10]
+## Different goals and methods
+DPA describes spaced AB as a rich diffuse presentation with a mono summation concern; coincident techniques offer more predictable mono. A creative film bed may prefer a wider, more enveloping impression, while a live mono feed may prioritize a stable single mic. These are different delivery needs, not a contradiction in acoustic physics. An engineer may filter rumble for an editorial track, but a scientific protocol must control and report filtering and wind conditions. [2, 3, 10]
+## Gaps and limits
+The cited guidance gives no universal microphone height, AB spacing, field duration, gain setting or guaranteed weather resistance for every site. NPS wind exclusion reflects its monitoring protocol, not a rule to discard every windy creative take. The exercise therefore documents actual settings and conditions and avoids presenting an ordinary microphone recording as a calibrated SPL measurement. Legal permissions are location specific and must be checked for the planned site and use.
+# Sources and curriculum connections
+Primary manufacturer and government guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] National Park Service In the Field Natural Sounds <https://www.nps.gov/subjects/sound/field.htm>
+[2] National Park Service RM 47 Data Collection <https://www.nps.gov/subjects/sound/rm47-part-2-data.htm>
+[3] DPA Stereo Recording Techniques and Setups <https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/>
+[4] RODE Stereo Bar guidance for ORTF angle <https://rode.com/en-us/about/news-info/record-perfect-stereo-imaging-every-time-with-the-new-rode-stereo-bar>
+[5] Sound Devices MS Stereo Basics <https://www.sounddevices.com/ms-stereo-basics/>
+[6] DPA Binaural Recording Techniques <https://www.dpamicrophones.com/mic-university/audio-production/binaural-recording-techniques/>
+[7] National Park Service Safe Wildlife Watching <https://www.nps.gov/subjects/watchingwildlife/7ways.htm>
+[8] RODE Ways to Reduce Wind Noise <https://rode.com/en-us/about/news-info/audio-for-film-101-ways-to-reduce-wind-noise-when-recording-outside>
+[9] Rycote Modular Windshield Kit <https://www.rycote.com/modular-windshield-ws-1-kit-ryc086004/>
+[10] National Park Service Types of Sound Data <https://www.nps.gov/subjects/sound/data.htm>
+[11] Sound Devices Seven Quick Steps to Great Field Audio <https://www.sounddevices.com/seven-quick-steps-to-great-field-audio/>
+[12] Sound Devices Live Recording Microphone Tips <https://www.sounddevices.com/live-recording-microphone-tips/>
+[13] Shure SM63 Outdoor Microphone Guidance <https://www.shure.com/en-US/insights/the-sm63-a-go-to-mic-for-outdoor-applications>
+[14] National Weather Service Lightning Safety <https://www.weather.gov/safety/lightning-safety-overview>
+[15] CDC NIOSH Understand Noise Exposure <https://cdc.gov/niosh/noise/prevent/understand.html>
+Cross-links: F05 Foley perspective and multiple microphones; subsequent field recording topics; Sports and Broadcasting ambience feeds; Scientific and Acoustical Recording measurement protocols.

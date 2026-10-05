@@ -1,0 +1,97 @@
+# Foley Perspective and Multiple Microphones
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F05  •  Studio and live applications
+This lesson teaches how microphone distance, room contribution and channel layout create a perspective for performed Foley. Students compare one mono mic, close-plus-room pickup, and an optional stereo pair; they listen to channels separately and together, check mono, and justify each additional microphone. A close/room pair is two perspectives, not automatically a left/right stereo image. No audio examples are included.
+# Begin with the pictured action and destination
+Define the target event, its on-screen location and motion, the camera or listener perspective, and whether the final destination must work in mono. A close shot may need a distinct object gesture, while a wide interior may need more of the room; neither camera size nor physical distance alone guarantees the right sound. Compare against the production dialogue and ambience rather than judging an isolated Foley track. Gary Hecker describes adjusting mic distance with camera viewpoint; Ben Cross describes capture with the right depth and space; other Foley practitioners prefer a somewhat farther mic to retain natural room. [1–3]
+Choose a repeatable source, performer position and safe motion zone. Listen to the actual room’s noise and decay. If it cannot plausibly match the pictured space, a distant mic may print the wrong room. A dry closer track may preserve an editing option, but it does not guarantee that later processing will recreate every reflection and tonal change. Name the goal for each microphone before mounting it: detail, whole action, real room, or spatial motion. [1–3]
+# Four distinct pickup arrangements
+Arrangement
+Build and intended result
+Check and limitation
+One mono mic
+Place one secure mic at a distance that covers the complete action and desired source/room balance. Move nearer or farther in repeated takes to fit the shot.
+Most direct route to a movable mono cue; a too-close view may sound oversized and a distant view may expose an unsuitable room.
+Close plus room
+Keep a close detail mic and put a second mic at a farther position that hears the full action or useful room. Record as separate labeled channels. [1, 4]
+Blend or select by scene; unequal arrival can color a sum, and room mic may be noisy. These are perspective channels, not left/right stereo.
+Coincident XY stereo
+Place two directional capsules close together without touching, angle them to cover meaningful horizontal movement and record distinct left/right channels. [5]
+Stable level-based image and generally strong mono behavior; stereo width depends on angle and source motion, and room may sound narrower than spaced pairs.
+ORTF or another spaced pair
+Use a correctly mounted, documented stereo geometry only when width/room is an actual goal. ORTF is a near-coincident pair of cardioids with specified spacing and angle. [5]
+Wider time-and-level image; check mono because spacing produces arrival differences. Do not use arbitrary separation and call it ORTF.
+
+There is no universal number of feet from a Foley prop. A 2005 Mix account describes one team using close and far options and another often working three to six feet from footsteps in its room; those are examples for their surfaces and stages, not an F05 prescription. The classroom trial should log actual distance from the active part of the source, microphone angle and room, then compare repeated actions. [4]
+# Separate distance perspective from stereo width
+A source can be far away yet mono. Two microphones at different distances can be two selectable mono perspectives, or a blended mono result, without representing left and right. Conversely, an XY pair at one position can represent horizontal movement without offering two distinct near/far viewpoints. Do not hard-pan close and room merely because there are two tracks; that sends different spectral and reverberant views to opposite sides and may pull a centered picture cue apart. [5]
+For a moving Foley action, such as steps crossing a small stage or an object sliding from side to side, decide whether the performed position itself should travel. A fixed XY pair can map the movement across its angle. ORTF may give a wider image, but its spaced capsules also create arrival differences. A single mono track can be placed or automated in the final mix if spatial recording adds no useful information. These are different production choices; the exercise tests them rather than promising a universal format. [5]
+Mid-Side is an optional controlled-width extension: a forward Mid microphone and a side-facing figure-eight are recorded as separate signals and decoded to left and right. DPA describes left as Mid plus Side and right as Mid minus Side; summing decoded stereo to mono cancels the Side, leaving the Mid contribution. Keep raw Mid and Side identified, use compatible capsules and proper decoding, and check the destination downmix. Do not treat an undecoded Side track as ordinary ambience or confuse Mid-Side with close plus room. [5]
+# Test overlap polarity and timing
+With close plus room, solo the close mic, solo the room mic, then sum at a useful level in mono. Listen to transient body and following decay over the complete movement, including changes as the performer moves. Shure documents comb filtering when one source arrives at microphones at different times and is combined; the effect may change as the source moves. Changing a fader changes how audible the interaction is; moving the mic changes the acoustic time and room path. [6]
+A polarity switch reverses electrical polarity and can be a useful diagnostic, but it does not make two different arrival times coincide at every frequency or every performer position. A fixed digital delay may align one moment or one part of the source, yet can change the relationship to the room tail and later movement. One Foley library producer reports correcting close/distant delay in post so the tracks could be combined. That is a workflow option, not an instruction to time-align every room mic. Choose the blend by listening in context and document any processing. [6, 7]
+For XY, verify capsules are close but not physically touching, and keep their aim and channel labels consistent. For ORTF, use its specified geometry rather than “eyeballing” a wide pair; compare the decoded or panned stereo and mono result. DPA says ORTF generally yields wider stereo than XY while retaining reasonable mono information, not guaranteed perfect compatibility for every moving source. [5]
+# Studio, live and location priorities
+A quiet Foley stage can retain independent detail and room channels for later selection or blending. Cross describes mixing close and room mics live for the desired scene space; a 2005 Mix account documents multiple mounted perspectives for fast changes. Gary Hecker sometimes uses one mic for an exterior cue to avoid printing the studio interior. These are distinct practices shaped by stage, scene and desired room. [1, 3, 4]
+For live theatrical Foley, additional open room microphones also pick up loudspeakers and can reduce gain before feedback. Begin with one stable, source-proximate directional mic at a repeatable station and add a second feed only when it has a clear audience purpose. Keep any stereo motion intelligible at audience seats, mono feeds and monitors. Shure explains that extra open microphones increase room/noise pickup, feedback risk and possible comb filtering. The live system operator controls routing and checks at normal rehearsal level; do not deliberately seek feedback. [8]
+On location, room geometry, wind, traffic, weather, access and camera position may make a stereo or room array impractical. Position stands or booms only where approved and outside performer travel. Capture an adequately isolated mono cue if that best preserves the intended action; add ambience separately when needed and labeled. Avoid treating a particular stereo pattern as a substitute for wind protection, safe mounting or permission.
+# Troubleshooting and safe setup
+What happens
+Investigate
+Hollow or changing mono blend
+Solo each mic, compare timing and movement, lower or relocate the room channel, then retest the whole cue. [6]
+Stereo movement jumps or narrows
+Check source path, left/right labels, capsule angle and pair geometry; listen in mono before committing. [5]
+Room track masks fine detail
+Compare room noise/decay to pictured space; choose a nearer or quieter position rather than merely adding gain.
+Live feedback margin falls
+Reduce unnecessary open mics, change monitor/PA geometry or mic position, and have the operator reassess at controlled level. [8]
+Unexpected thump, rattle or cable sound
+Rehearse full motion; secure stands and strain-relieve cables away from performer and prop. [9]
+
+Use secure stands at floor level unless qualified venue personnel approve any overhead rigging. Keep capsules, booms and cables out of swing, walking, water and debris paths. Mute or lower output during setup changes, then set gain for the strongest expected event. Keep monitoring at comfortable levels. Never move a stand into an active cue to “follow” a performer without prior rehearsal and clear coordination.
+# Guided teaching exercise
+1. Choose a safe action with a short travel, such as a key ring carried across a marked zone or a padded object set on a table. Define a close shot, a wider interior and a mono output. Mark the full performance path.
+2. Record one mono position that covers the entire cue. Repeat it with the mic nearer and farther, while keeping performance similar. Log distance, angle, direct detail, room, noise and fit to the picture.
+3. Keep one close mic and add a room mic in a safe position. Record them separately, solo each, then blend and check mono over the full movement. Note any transient or tonal change; compare the room with the intended scene.
+4. If a matched or compatible pair and mount are available, substitute XY for the room option. Keep capsules near-coincident without touching and document aim. Compare stereo travel and mono sum against the single mic.
+5. If the equipment and time permit, compare a correctly mounted ORTF pair or decoded Mid-Side. State its actual geometry or signal matrix, and do not call a close-plus-room pair stereo.
+6. Design a live version with the fewest useful open channels. Document speaker and monitor relationship, stable mic/performer zones and any mono audience feed.
+Pass criterion: the learner names each channel’s task, distinguishes near/far from left/right, hears and explains a mono overlap problem, documents any stereo geometry and proposes a studio or live setup that serves the intended perspective. No audio examples.
+# Student observation sheet
+Student __________________________  Date __________  Scene or cue _____________________________
+Trial
+Mic geometry and channel purpose
+Stereo mono room and decision
+Single mono near / far
+____________________________
+____________________________
+Close plus room
+____________________________
+____________________________
+XY pair
+____________________________
+____________________________
+ORTF MS or live
+____________________________
+____________________________
+
+Performer path and capsule clearance __________________  Strongest peak ________________________Mono summation at action start and end __________________  PA/monitor routing if live ______________Final track labels, chosen perspective and remaining limitation __________________________________
+# Critical evidence audit
+## Agreement
+Hecker, Cross and the Mix practitioners all use microphone placement to shape picture perspective. Shure and DPA explain why channel arrangement, overlap and mono summation matter. Confidence is high in treating one mic, near/far channels and stereo arrays as different tools with distinct jobs. [1, 3–6]
+## Different methods and apparent contradictions
+Some Foley teams retain close and room mics, while others prefer a somewhat farther single mic that already contains the room. Hecker describes one mic for exterior sounds to avoid studio room; a Foley library producer uses two distances and aligns their timing in post. These decisions depend on scene, stage acoustics, editing need and source movement. DPA contrasts XY’s coincident geometry with the wider but spaced ORTF image. Neither is universally “better” for Foley. [1–5, 7]
+## Gaps
+The sources do not specify a universal Foley mic distance, stereo width, safe overhead mount or time-alignment value. No controlled study in the cited accounts proves that two mics improve every action. This lesson labels stereo and close-plus-room comparisons as classroom trials, checks their full movement and mono result, and requires the actual room, performer and destination to determine the final choice.
+# Sources and curriculum connections
+Original Foley practitioner accounts and primary microphone guidance checked October 4, 2026. Linked pages may contain media; this lesson has no audio examples.
+[1] Gary Hecker interview on Foley perspective <https://nofilmschool.com/foley-101-master-foley-artist-gary-hecker>
+[2] Oxford Learning Link interview with Andy Malcolm and Don White <https://learninglink.oup.com/access/content/haines-student-resources/haines-take-10-extended-interviews>
+[3] Ben Cross interview on Foley recording and mixing <https://www.asoundeffect.com/foley-mixing-armor-sound-effects/>
+[4] Mix magazine Foley Recording 2005 <https://www.mixonline.com/recording/foley-recording-365547>
+[5] DPA Stereo Recording Techniques and Setups <https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/>
+[6] Shure Microphone Techniques for Recording <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[7] A Sound Effect interview on the Edward Foley library <https://www.asoundeffect.com/the-future-of-footstep-sound-effects/>
+[8] Shure Automatic Microphone Mixers and open microphone issues <https://www.shure.com/en-EU/insights/automatic-microphone-mixers-when-your-need-them>
+[9] Rycote boom shock mounts <https://rycote.com/microphone-windshield-shock-mount/boom-shock-mounts/>
+Cross-links: F01 footsteps; F02 clothing; F03 props; F04 impacts and liquids; F06 field ambience; B08 broadcast audience and event space.

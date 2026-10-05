@@ -1,0 +1,139 @@
+# Foley Footsteps and Surfaces Miking Technique
+Pro Audio Training Academy  •  Foley Field and Scientific Lab  •  F01  •  Studio and live applications
+A footstep microphone captures the interaction of a shoe, a surface and a performance in a particular acoustic space. Its distance and aim determine how much contact detail, shoe body, surface texture, room and performer noise are heard. This lesson teaches a safe one-mic starting setup, controlled perspective comparisons and an optional second microphone. Students evaluate the result against the pictured action or the live audience’s needs. No audio examples are included.
+# Define the sound before placing a microphone
+For picture work, identify the character, shoe, apparent floor, shot distance, rhythm and any surface change. A visible carpet may lie over wood or tile; a hard sole on a hollow panel differs from the same shoe on a solid surface. Foley First documents spotting both the character and surface, including transitions and layered floors. NoiseFloor describes choosing different shoes and stage surfaces to match a project. [1, 2]
+Ask the performer to walk the complete cue at the intended speed and force. Mark the active landing area, step-to-step movement, scuffs, pivots and any costume or clothing noise. Listen to the actual floor: an unwanted cavity or suspended-floor resonance may travel through the pit and become part of the recording. Foley First reports that base-floor construction can color steps; a microphone move may reduce its prominence but does not change the underlying structure. [3]
+First choose footwear and a stable surface that produce the needed performance. Then move the microphone. A listener may want intimate texture for a close visual shot, a more integrated perspective for a wider shot, or a clearly reinforced effect in a theatre. These are production goals, not a fixed correspondence between camera distance and microphone distance.
+# Microphone choice and geometry
+A short shotgun, a cardioid or a supercardioid microphone without an interference tube makes a practical comparison for a Foley stage. Shure’s interview with Foley mixer Bryen Hensley documents tight footstep pickup to avoid pants noise, then backing off or widening the pickup when more space is wanted. NoiseFloor reports using a shotgun and a large diaphragm condenser as recurring options while changing microphones for particular sounds. Foley First documents two different shotguns on multiple surfaces. Those accounts show working choices, not a requirement for any one transducer. [2, 4, 5]
+Check the actual polar pattern and off-axis sound. A shotgun’s interference tube can color sounds arriving off axis, and directionality is frequency dependent; it does not remove reverberation. A cardioid or supercardioid may be preferable for a broader moving zone in a particular room. Compare noise, response, headroom, physical size and powering of the actual models. Aim the capsule at the active landing area while observing where its rear and side pickup will face. [6]
+# Core placements and what they test
+Distances refer to capsule to the central active footfall area, unless the published case did not specify its reference point. Start outside every possible foot and body path. Published accounts below describe particular sessions; the classroom position is a proposed comparison with its clearance confirmed on site.
+Approach
+Position and evidence
+Question to answer
+One closer mic
+Classroom trial: place a securely supported directional capsule roughly 0.8–1.0 m from the center of a bounded step area, to one side or in front and clear of the performer. Aim across or down toward the contact zone. Move it farther if any part enters the full movement envelope.
+Can the mic preserve sole contact and surface texture without excessive costume noise, pit boom or uneven near/far steps? This range is an exercise design, not a published rule.
+Published mid perspective
+Foley First compared two shotguns from about 1.5–2 m while recording concrete, hardwood, leaves and gravel. The account does not specify a universal angle or safe stand placement. [5]
+Recreate only if the room and walking zone allow it; document your own angle, target and stability. Compare texture, shoe body and room.
+Published farther perspective
+Foley First describes a scene where a 3.5 m position worked in context after a 1.5 m position did not. It was one gravel fight-scene example, not a prescription for all middle shots. [7]
+Does the wider view suit the scene or simply raise room noise and reduce useful detail? Judge at the intended listening level.
+Near plus room or wider mic
+Optional classroom comparison: keep a focused primary mic; put a second mic at an approved, stable location that offers genuinely different room or motion coverage. Record channels separately.
+Does the second mic help the intended perspective? Check the blend at its actual level in mono; retain only the useful channel(s). [8]
+
+To isolate a placement effect, change one variable at a time. For example, keep mic model, shoe, surface, performer, step area and passage the same while changing distance; then repeat with a small aim or height change. Log the direction of the capsule, the part of the pit it faces, stand position and distance. Do not interpret louder playback alone as better tone; compare at similar listening levels.
+# Tonal decisions by surface and movement
+Situation
+Listen for
+Placement adjustment to test
+Dry hard floor or tile
+Sharp contact, sole taps, floor reflection or squeak.
+Aim across the landing zone and compare a slight off-axis move with a more distant view. Preserve the real floor character if it belongs in the scene.
+Wood or hollow panel
+Useful resonance versus unwanted panel or underlying floor boom.
+Compare footwear and panel support first, then aim/distance. An EQ cut cannot substitute for a physically stable, suitable surface. [3]
+Gravel, leaves or loose material
+Crunch detail, uneven strikes, isolated grains and scuffs.
+Give the performer room to work the full material. A close aim may favor the nearest step; compare a wider view and check background noise. [5, 7]
+Carpet or soft ground
+Quiet contact, underlying floor contribution, cloth or shoe creak.
+Check the actual layered surface and mic self-noise. Tighten pickup safely only as needed; do not compensate by forcing unsafe stomps. [1, 4]
+Walking across the area
+Near-to-far level and timbre changes across the cue.
+Mark the entire motion range and test end points. Consider broader aim, a repositioned capsule or separate planned coverage rather than a mic in the walking path.
+
+# Studio Foley versus live reinforcement
+Context
+First workable plan
+Constraint to assess
+Quiet Foley stage
+One directional mic, stable step zone and separate monitoring. Record the entire action; compare another perspective if the pictured scene warrants it.
+Room sound, pit resonance, clothing, ventilation and repeatability. If a second mic is used, preserve separate channels and test mono. [2, 4, 8]
+Live stage or theatre
+One protected, stable pickup for the footstep area and a soundcheck at intended PA level under the system operator.
+Monitors, PA return, open microphones and performer movement limit gain before feedback. Closer placement can help but must retain correct tone and physical clearance. [9]
+Simultaneous recording and PA
+Decide which mic feeds the PA and which is for recorded perspective. One quiet-room mic may remain off the PA.
+A distant ambience channel may be useful on the recording and unstable in reinforcement. Confirm routing and audience balance separately.
+
+Use headphones at a comfortable level for a studio comparison when they help the performer judge texture and timing. Foley First reports an instance where headphone sound favored one perspective while the picture mix favored another; evaluate the take in its intended context, and allow a monitoring approach that lets the performer work naturally. [7]
+A live microphone and a loudspeaker form a possible feedback path. Before increasing gain, check source distance, microphone pattern, number of open microphones and loudspeaker/monitor geometry with the system operator. Do not intentionally make feedback occur as a classroom demonstration. Recheck the entire cue, especially a step where the player moves away from the mic. [9]
+# When two microphones hear the same steps
+A close channel and a farther channel receive the same impacts at different times, and the sound may differ by surface reflection and off-axis response. Bring up the primary alone, then add the secondary at a musically useful level. Listen to several heel, toe and scuff events in mono and at the intended stereo width. If the combination hollows out or the impact blurs, change placement, level or routing. A polarity switch can be tried as a diagnostic; it is not a general cure for time differences. Do not commit a destructive mix while a separate-track option remains. [8]
+# Safety and technical checks
+Walk the full cue without recording. Mark the complete foot, arm and body envelope, including a sudden pivot or missed step. Secure the surface so it cannot slide or tip; keep stands, mic housings and cables out of the landing and exit paths. Use a stable stand or an approved mount that cannot swing into the performer. Stop the action before repositioning hardware. Check any wet or loose surface for slipping and avoid teaching risky jumps or impacts to create a louder sound. These are practical setup controls, not a claim that a published distance guarantees safe clearance.
+Set input gain using the loudest intended step, including heel hits and hard-surface changes. Inspect both microphone and preamp overload, then quiet passages for noise. A downstream fader cannot repair clipping already created earlier in the signal path. Mute outputs as appropriate before changing connections or phantom settings and follow each microphone’s manual. Manage reproduced sound level for both performers and students. [9, 10]
+# Guided lab and pass criterion
+1. Define a cue: one footwear choice, one clearly identified surface and a short repeatable sequence that includes a normal step, a stronger step and a scuff. If picture is used, mark visible footfalls and the desired perspective.
+2. Perform a silent movement check. Stabilize the surface and support. Mark stand, cables, heel/toe travel and exit path. Choose and log one safe primary position.
+3. Set gain for the strongest action. Capture the complete cue through one microphone and note shoe body, surface texture, clothing, room and unwanted floor resonance.
+4. Change distance only. Compare the closer trial with a farther position if safe and practical. Keep performance and playback comparison as consistent as possible. Then restore the reference and compare one aim change.
+5. If two mics serve the task, test each alone and together in mono at intended levels. In a live space, have the operator check the actual monitor and PA paths without provoking feedback.
+6. Choose the final position and explain what it conveys, what noise or movement remains, and why the audience context favored it. Complete the observation sheet.
+Pass criterion: the student identifies shoe and surface, logs a safe capsule position and full performer motion, compares one placement variable with an intelligible tonal account, shows adequate peak headroom, and justifies the studio or live routing. If two mics are used, the student checks their combined mono behavior. No audio examples are provided.
+# Student observation sheet
+Name ______________________________  Date _______________  Room / stage __________________
+Cue or scene __________________________  Intended listener ______________________________Shoe / sole ____________________________  Surface and underlying floor ____________________Motion envelope and stand clearance checked __________  PA / monitor paths checked __________
+Record
+Position A
+Position B
+Mic model and polar pattern
+_______________________
+_______________________
+Capsule to active step area
+_______________________
+_______________________
+Height, angle and target
+_______________________
+_______________________
+Stand/cable location
+_______________________
+_______________________
+One variable changed
+_______________________
+_______________________
+Contact and sole body
+_______________________
+_______________________
+Surface texture and resonance
+_______________________
+_______________________
+Clothing and room noise
+_______________________
+_______________________
+Peak input and quiet steps
+_______________________
+_______________________
+Mono result with optional mic
+_______________________
+_______________________
+
+Chosen position and why _________________________________________________________________________________________________________________________________________________Remaining compromise _______________________________________________________________Performer clearance and live routing notes ______________________________________________
+
+# Critical evidence audit
+## Points of agreement
+NoiseFloor, Foley First and the Shure interview with Bryen Hensley all make the shoe/surface interaction and intended scene central. Their accounts show that microphone position changes how much detail and room enters the pickup. Shure’s live guide supports checking microphone-to-source and loudspeaker geometry where the effect is reinforced. Confidence is high in these broad principles. [1–5, 9]
+## Where practitioners differ
+Hensley favors very tight pickup for some footsteps to limit clothing, then backs off for more width. Foley First’s 1.5–2 m comparison and 3.5 m scene show that a more distant position may give a better match in another room and picture context. NoiseFloor changes its choice by sound. The approaches address different cues, spaces and microphones. A fixed “best” distance is unsupported. [2, 4, 5, 7]
+## Direct contradictions and qualifications
+There is no controlled same-scene contradiction among these accounts. The apparent tension between close isolation and more distant integration disappears when target perspective and room are stated. Shotgun directionality is not perfect or spectrally uniform off axis; the lesson requires an actual microphone and room check rather than assuming that a shotgun eliminates reflections. [4, 6, 7]
+## Important gaps
+The sources do not supply universal safe clearance, a room-independent placement angle, guaranteed pit isolation, a fixed shot-to-mic-distance mapping or a live gain-before-feedback figure. The 0.8–1.0 m arrangement is a proposed classroom trial. Validate performer clearance, floor support and system behavior on site. Source-specific distances retain the original contexts.
+# Source links and curriculum connections
+Practitioner methods and manufacturer guidance checked October 4, 2026. Text and exercises contain no audio examples. The linked pages may include their own media.
+[1] Foley First — How to Cue a Foley Session <https://foleyfirst.com/blog/how-to-cue-a-foley-session/>
+[2] NoiseFloor — Foley Sound Services <https://noise-floor.com/foley/>
+[3] Foley First — How to Build a Foley Pit <https://foleyfirst.com/blog/how-to-build-a-foley-pit/>
+[4] Shure — Everything You Need to Know About Foley Recording <https://www.shure.com/nl-NL/insights/everything-you-need-to-know-about-foley-recording>
+[5] Foley First — Neumann KMR 81 and Rode NTG 2 on Foley <https://foleyfirst.com/blog/neumann-kmr-81-and-rode-ntg-2-on-foley-short-comparing-test/>
+[6] DPA — The Interference Tube and Its Use in Microphones <https://www.dpamicrophones.com/mic-university/technology/the-interference-tube-and-its-use-in-microphones/>
+[7] Foley First — Foley Artists and Headphones <https://foleyfirst.com/blog/foley-artists-and-headphones-benefits/>
+[8] DPA — Polarity Phase and Delay <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+[9] Shure — Microphone Techniques for Live Sound Reinforcement <https://content-files.shure.com/Pubs/microphone-techniques-for-live-sound-reinforcement/microphone_techniques_for_live_sound_reinforcement_english.pdf>
+[10] Shure — Microphone Choice and Placement Secrets for Recording <https://www.shure.com/en-US/insights/microphone-choice-and-placement-secrets-for-recording>
+Curriculum cross-links: F05 Foley Perspective and Multiple Mics is planned in this lab; F06 Field Ambience and B04 Boom Pickup are later lessons. The existing Djembe-Miking-Technique-Research.docx and Percussion-Ensembles-Miking-Technique.docx cover performance-source contrasts; neither substitutes for Foley footsteps. These references describe topic relationships, not a second lesson in this installment.

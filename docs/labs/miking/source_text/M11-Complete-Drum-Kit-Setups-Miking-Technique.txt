@@ -1,0 +1,132 @@
+# Complete Drum Kit Setups Miking Technique
+Pro Audio Training Academy  •  Membranophones Lab  •  M11  •  Studio and live applications
+A complete drum-kit setup is a coordinated view of kick, snare, toms and cymbals, with any room sound chosen deliberately. The number of microphones follows the required musical control, acoustic space and sound system. This lesson builds from one whole-kit mic to selective spot mics and an extensive multichannel arrangement. It teaches placement order, useful channel roles, bleed and mono checks, safe hardware and a reproducible student exercise. No audio examples are included.
+# Decide what the ensemble needs from the kit
+Ask the drummer to play the song or show passage at intended dynamics: kick pattern, snare accents, ghost notes, tom fills, hi-hat foot, ride and each crash. Listen at the kit and from the audience or control-room perspective. Check tuning, head or hardware rattles and playing balance with the drummer before trying to repair a physical source through microphones. DPA distinguishes a whole-kit acoustic image from an individually controlled collection; Shure similarly contrasts a minimal integrated approach with close miking for separation. [1, 2]
+Write a target before patching: for example, an open jazz image, a dry pop kit with independent toms, a live stage needing kick/snare definition, or a stereo recording with natural room. Overheads may serve as the principal kit image or as cymbal-focused support. A room mic can add useful space in a good room or unnecessary spill in a poor one. These are roles, not fixed prescriptions by genre. [1–3]
+# Build in stages
+Stage
+Channel plan and placement task
+Decision before adding more
+One microphone
+One safe whole-kit position above, slightly behind or in front, aimed for the required kick/snare/tom/cymbal balance. No single position fixes every kit. [1, 4]
+Can the intended audience hear the full rhythmic pattern? If kick is missing, test position before adding a spot.
+Two microphones
+One whole-kit mic plus kick is a common low-channel option; alternatively, choose a documented two-mic whole-kit geometry when the balance supports it. [4, 5]
+Does the second mic improve a missing component, and does their mono combination retain weight?
+Three or four
+Add snare top if it needs independent presence; a fourth channel may be a second overhead or a side mic in a Glyn Johns family setup. Two overheads plus kick and snare is another four-channel plan. [2, 5]
+Is the stereo image centered enough for kick/snare? Check the complete kit in mono and the drummer’s movement.
+Expanded kit
+Overhead pair, kick, snare top and selected tom spots; add hi-hat, ride, snare bottom, second kick or room only when each gives a distinct useful control. [1–3, 6]
+Count channels, stands, inputs and actual bleed. An optional channel is not automatically an improvement.
+
+The stage table gives functional examples, not an instruction to add microphones in a rigid count order. Shure’s recording guide documents one overhead, kick plus overhead, and kick/snare/overhead among low-count options. The Glyn Johns overhead-and-floor-tom-side method, including its three- and four-mic variants, is taught in M09; do not relabel an ordinary two-overhead pair as Glyn Johns. [4]
+# Establish the image before close spots
+For an integrated kit, place one overhead or stereo arrangement so kick and snare are usable and toms and cymbals sit where the musical performance needs them. XY offers a compact, relatively stable mono sum; spaced A/B can be wider but requires more careful mono evaluation. Check capsule-to-snare distances in a spaced arrangement as one starting reference, then listen to kick, toms and cymbals too. Equal snare distance does not make the whole kit “in phase.” Shure discusses these tradeoffs, and Mike Major describes aligning the overhead image to the acoustic line through kick and snare rather than simply the physical midpoint of the kit. [2, 3, 5]
+If the close microphones will carry the drum shells and the overheads mainly supply cymbals, a lower, more focused overhead position can reduce room contribution. Do not automatically discard the overheads’ low frequencies: judge any filtering in the full kit mix. If room microphones are used, establish them after the core image and route them as separate options. M09 has full overhead geometries and Glyn Johns; M10 has mono/stereo room pickup and live routing. [2, 3]
+# Add each close microphone for a purpose
+Source
+Starting role and aim
+Check in the entire kit
+Kick
+Inside toward the batter for attack, outside or near the resonant head for more body; select a safe position for the actual head/port. Two mics are optional. [1, 2]
+Air bursts at the port, stand stability, pedal access, low-end interaction with overheads and bass instrument.
+Snare top
+From outside stick travel, aim across/top head for the needed attack and body. A bottom mic is optional for wire articulation. [1, 2]
+Hi-hat bleed, rimshots and stick clearance; compare bottom-mic polarity and timing at intended levels.
+Rack/floor toms
+One mic per tom or a strategically shared mic where coverage and isolation permit. Shift aim to change attack/body. [1, 6]
+Whether fills are already clear in overheads; spill and phase interaction; mounts and full stick path.
+Hi-hat and ride
+Optional spot if a particular pattern must be independently balanced; aim for the useful playing region without entering stick/cymbal travel. [1, 7]
+Hat air bursts, snare bleed, nearby crash spill, and whether the overhead already provides enough.
+Crash, splash, China
+Usually assess overhead coverage first. Add a dedicated cymbal mic only for a demonstrable balance or staging need. [1, 7]
+Fast peaks, cymbal motion, off-axis tone and the idiophone lesson I01.
+Room/ambience
+Optional mono or stereo environment view, usually a recording/broadcast choice rather than an automatic PA feed. [2, 8]
+Room tone, other players or PA return; arrival and mono interaction with close and overhead tracks.
+
+These positions are directional descriptions, not universal centimetre specifications. Specific distances, mounts and polar patterns belong to the actual kick, snare, tom, overhead and cymbal lessons and each microphone’s manual. A seemingly “isolated” snare or hi-hat microphone still receives substantial bleed. DPA explicitly documents that tradeoff; use it creatively or reposition rather than assuming it can be erased. [1, 7]
+# Compare setup families
+Target
+Minimal arrangement
+Expanded arrangement
+Natural acoustic kit or small jazz group
+One or two whole-kit mics, perhaps kick/snare support after listening. A player-balanced kit and useful room carry much of the tone. [1, 6]
+Spot only a missing voice; an extensively isolated kit may be unnecessary for the music.
+Studio pop/rock with independent control
+Overhead pair + kick + snare provides a coherent base. [2]
+Add tom spots, second kick/snare views, hat/ride and room channels according to arrangement; verify every contribution.
+Small live stage
+Start with what the audience cannot already hear: often kick and, where useful, snare; assess one overhead or shared tom/cymbal coverage only if needed. [4, 9]
+More close mics can help control, but open channels, wedges, PA spill, time and stage space limit practical use.
+Large live or broadcast production
+Choose the house reinforcement channels and audience/broadcast environment feeds separately.
+An extensive patch may serve recording and broadcast while a smaller set feeds the PA or monitors; test every routing path.
+
+Channel counts and choices are planning examples. A two-overhead jazz setup and a fully spotted rock setup can both be correct for their stated goals. DPA explicitly notes that jazz often relies on overheads with optional kick/snare, while pop/rock may require closer tom control. On a loud stage the audience may already hear cymbals acoustically; an open cymbal mic can make reinforcement harsher or less stable. Assess at the actual listening position. [6, 7, 9]
+# Integrate levels, timing and stereo
+Label every channel at the stage box and console before gain setting. Build a reference by listening to the overhead or whole-kit picture first; introduce kick, snare and tom channels one at a time at plausible mix levels. Compare each addition in mono. If an impact becomes hollow or weak, alter the position or balance and try polarity reversal as a diagnostic. A polarity switch only changes sign; it does not generally remove time-of-arrival differences. Check several strokes, not a single transient. Add optional room, hat and ride only after the core kit works. [1–3, 5]
+Decide whether the final image is drummer or audience perspective, then pan close tom/hat spots consistently with the established whole-kit image if stereo is part of the output. Center kick and usually snare when the production needs a stable rhythmic anchor, but do not force one pan recipe on every performance. Verify the actual mono or downmixed output; the wide spaced pair may change tone or center weight when collapsed. If two kick or snare mics are used, assess them alone and together, including any bottom snare mic, before committing their balance. [3, 5]
+# Studio and live constraints
+A studio may preserve separate tracks even when the current blend uses few. In a shared tracking room, bleed from amplifiers, vocals and other instruments can make a kit sound cohesive or reduce later control. A bad-sounding room may favor more close pickup. In live sound, open microphones also pick up monitors and PA; use only channels that serve a real audience need and verify gain before feedback with the operator. A room or audience mic intended for broadcast/recording can remain out of the PA and wedge mixes. Shure’s live guide supplies both individual and shared drum-kit microphone options. [1, 2, 9]
+For soundcheck, have the drummer play the complete show dynamics and have the operator verify kick/snare/tom balance, cymbal coverage, monitor sends and house level at the intended audience location. Check channel mute, patch and polarity labeling. Do not deliberately induce feedback or solve feedback merely by lowering a fader after the signal has already overloaded an earlier input stage.
+# Safety and technical checks
+Stop playing before moving hardware. Clear the entire stick, cymbal, pedal, leg and drummer reach; a safe resting cymbal position is not the whole motion envelope. Use suitable stands and counterweights and protect cables from pedals, feet, walkways and cases. Check any rim-mounted clip for fit and drum hardware stress, not just microphone stability. Do not suspend a mic from venue structures without approval and qualified installation. Secure all gear before the full-volume pass.
+Set gain and any microphone/preamp pad for loudest anticipated hits, including rimshots and crashes; check microphone maximum SPL and input headroom by actual model. Phantom power and ribbon compatibility vary, so follow the specific equipment manuals and mute outputs before connection changes. Limit unnecessary high-level repetitions and maintain comfortable monitoring. A clear meter reading does not prove the microphone capsule is free of overload.
+# Guided practical lab
+1. Choose a short passage containing groove, tom fill and every cymbal used. Ask the drummer to show the loudest hit and full movement. State the audience and desired kit perspective.
+2. Set one safe whole-kit mic or pair. Record the kit, mark its geometric center, capsule position and aim, and note which musical parts are underrepresented.
+3. Add one kick channel and compare whole-kit alone, kick alone and both together at realistic levels in mono. Add snare only if it solves an identified need; repeat the check.
+4. For an expanded exercise, add one tom spot and one optional hat, ride or room channel. Solo each and then compare the whole kit after addition. Reject a channel if it contributes more harmful spill than useful control.
+5. Compare a studio blend with a live channel plan. Trace actual PA, monitor, recording and broadcast routing; have the system operator verify the live arrangement without deliberate feedback.
+6. Log final channel count, priorities, mono/stereo result, clearance, peak headroom and what was omitted. Give the musical reason for the choice.
+Pass criterion: the learner produces a coherent whole-kit image, adds each microphone for a stated need, logs safe clearance and gain, detects a harmful multi-mic interaction by listening in mono, and explains different studio and live plans. No audio examples.
+# Student observation sheet
+Student __________________  Date __________  Kit, room and performance _______________________
+Channel or group
+Position, aim and route
+What it adds / main limitation
+Whole kit or overhead(s)
+________________________
+________________________
+Kick
+________________________
+________________________
+Snare
+________________________
+________________________
+Tom(s)
+________________________
+________________________
+Hat / ride / other
+________________________
+________________________
+Room / broadcast
+________________________
+________________________
+
+Stereo perspective and mono result _______________________________________________________Peak and clearance checks ______________________________________________________________One microphone omitted or moved and why __________________________________________________PA, monitor, recording and broadcast feed decisions __________________________________________
+# Critical evidence audit
+## Agreement
+DPA and Shure agree that whole-kit and individually controlled approaches serve different goals, that bleed is part of multi-mic work, and that room and stage context affect the choice. Mike Major’s Shure article and Shure’s stereo guide reinforce auditioning the whole image and its center/mono behavior. Confidence is high in this framework. [1–5]
+## Different practices
+DPA describes jazz with overhead-led pickup and pop/rock tom close mics. Shure presents a minimal overhead-led kit and a more isolated alternative. Their approaches differ with performer balance, musical style, room and intended control. Shure’s live guide also includes shared-mic and more extensive arrangements. None prescribes a universal channel count. [1, 2, 6, 9]
+## Direct contradictions and qualifications
+The reviewed guidance does not establish a controlled same-kit contradiction. A source may call overheads a whole-kit foundation while another uses them mainly for cymbals in an extensive setup; these are different roles. Equal overhead-to-snare distance can support snare coherence but cannot guarantee kick, tom and cymbal timing. A polarity reversal is an audition tool, not proof of full phase alignment. [1–5]
+## Gaps
+The sources do not specify a universal safe stand position, ideal number of microphones, pan widths, gain setting, live feedback margin or compatibility for an unspecified microphone. Verify actual player motion, venue rules, model manuals, routing and audience position. The channel plans are teaching examples rather than mandatory packages.
+# Sources and curriculum connections
+Manufacturer and practitioner material checked October 4, 2026. Linked pages may contain their own media; this report contains no audio examples.
+[1] DPA — How to Mic a Drum Kit <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-drum-kit/> — whole kit versus individual sources, overheads and optional spots.
+[2] Shure — Recording Drums Part 1 <https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique/> — minimal and close-mic approaches by room and production goal.
+[3] Shure — Mike Major on Overheads and Close Mics <https://www.shure.com/en-ASIA/insights/using-stereo-overhead-miking-techniques-to-supplement-a-multi-miked-drum-setup> — engineer account of overhead image and spot integration.
+[4] Shure — Microphone Techniques for Recording <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf> — low-channel kit examples and source-specific positions.
+[5] Shure — Five Techniques for Stereo Miking Drums <https://www.shure.com/en-US/insights/five-techniques-for-stereo-miking-drums> — stereo geometry, mono qualifications and Glyn Johns cross-reference.
+[6] DPA — How to Mic Tom Toms <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-tom-toms/> — musical reasons to spot or omit toms.
+[7] DPA — How to Mic Hi Hat and Cymbals <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-hi-hat-cymbals/> — hat air bursts, bleed and directional trials.
+[8] DPA — How to Mic a Kick Drum <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-kick-drum/> — inside, outside and integrated front-kit perspectives.
+[9] Shure — Microphone Techniques for Live Sound Reinforcement <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf> — individual and shared live drum-kit pickup.
+Curriculum: M01 kick; M02 snare; M03 toms; M09 overheads including Glyn Johns; M10 drum room; I01 cymbals; E09 rhythm sections and complete bands. M11 combines their channel roles rather than replacing each source-specific lesson.

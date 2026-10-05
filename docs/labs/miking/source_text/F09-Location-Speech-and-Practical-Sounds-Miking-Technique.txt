@@ -1,0 +1,94 @@
+# Location Speech and Practical Sounds Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F09  •  Location and live applications
+This lesson compares boom, handheld, lavalier, approved plant and camera-mounted microphones for speech and sound made by objects in a scene. Students choose a placement that serves the intended perspective, test the full action, control wind, clothing and handling noise, and check independent channels before combining them. Closer and correctly aimed pickup often improves the speech-to-background balance; a directional camera mic does not erase its physical distance from the speaker. No audio examples are included.
+# Map the scene before placing a microphone
+Identify the speaker positions, head turns, movement, frame boundaries, background noise, practical actions and the desired acoustic perspective. “Practical sounds” here means real on-location actions such as a door, keys, dishes or a switch, captured while filming or in a permitted separate take. Decide whether dialogue intelligibility or the action sound has priority at each moment. Listen to HVAC, traffic, reflections and costume before choosing equipment. Sound Devices recommends changes at the source, including mic placement and wind protection, before depending on noise reduction. [1]
+For a controlled comparison, retain each useful microphone on its own labeled channel. A boom and a body mic often have different distances, room sound and timing; they are alternate or blendable perspectives, not automatically two sides of a stereo image. Monitor solo and together, then check any mono sum for hollow color from overlapping pickup. Shure documents comb filtering when the same source reaches microphones at different times. [2]
+# Choose the mic by access, movement and destination
+Approach
+Useful placement and purpose
+Check during the complete scene
+Boom microphone
+A qualified operator holds a protected directional mic just outside the frame, with its useful axis aimed at the talker. Follow head movement from a safe rehearsed position. Shorter or broader patterns may be useful where reflections or movement undermine a narrow pattern. [3]
+Frame edge, shadows, cable, pole motion, off-axis voice, wind and room. The mic must remain out of performer action, lighting and overhead hazards.
+Handheld
+For a visible interview or presentation, the person holds the mic at a consistent practical distance and aim. A reporter can alternate between interviewer and guest with deliberate handoffs. [4]
+Changes of level with hand movement; plosives, handling noise and whether the interviewee understands where to speak. In live use, watch PA and monitor feedback.
+Lavalier or bodyworn
+With the wearer’s consent, secure a compatible capsule in an unobstructed location on clothing near the upper chest or another tested costume position; route and strain-relieve the cable. [5]
+Turn the head, move, sit, brush the fabric and operate props. Check muffling, friction, wind, transmitter security, RF and the sound of breath or jewelry.
+Approved plant mic
+Fix a small mic in an approved prop, set element or furniture position that has a clear line to the relevant voice or action and cannot be struck or seen. [6]
+Actor blocking, off-axis tone, prop vibration, stand or cable hazards and whether the planted perspective sounds plausible when the action moves.
+Camera-mounted
+Use a secured on-camera mic for guide sound, sudden coverage or close-camera work. Aim and shield it appropriately. [3, 7]
+Camera motors, handling, operator speech and distance. Compare against a boom or lav at the actual speaker position; directionality alone does not compensate for a distant camera.
+
+There is no universal winner. A boom can preserve a natural voice and surrounding space when close enough; a lav may maintain a more consistent mouth-to-mic distance as camera framing widens, yet can print clothing noise or a chest-heavy tone. Production mixer Simon Hayes describes choosing body mics when a boom could not reach a wide-and-tight shot, while other crews routinely capture boom and lav options. These are practical choices for the scene rather than proof that one microphone always sounds better. [5, 8]
+# Boom placement and wind control
+Rehearse the widest actor movement and camera frame. Bring the mic as close as safely and visually practical, maintain the intended axis through the line, and listen to head turns rather than aiming only at where a performer started. A narrower shotgun can reject some off-axis activity but still hears sound arriving on axis, and the speaker-to-mic distance remains decisive. RODE specifically recommends moving a boom near the subject where possible instead of treating a distant shotgun as a substitute for proximity. [3]
+Use a suspension to reduce handling vibration, strain-relieve the cable, and fit wind protection appropriate to the conditions. Foam can help in light wind; a basket/blimp and fur may be needed outdoors. Neither is waterproofing. Do a quiet boom rehearsal: pole movement, cable slap, operator clothing and footsteps can be louder than the practical sound. Keep the pole away from power lines, lighting, rigging and other elevated hazards; if safe clearance is uncertain, do not raise it and ask qualified site personnel. OSHA highlights overhead electrical lines as a serious hazard. [9, 10]
+# Lavalier, handheld and plant details
+For a lav, obtain permission before attaching anything to costume or body; follow production costume and hygiene practices. Start with a visible or minimally concealed position when allowed. The capsule and cable should not rub moving fabric; secure a small service loop and strain relief according to the mounting system without pulling on the wearer. Test speaking and silent movement at performance pace. DPA recordist David Thirion describes allowing the capsule exposure to reduce fabric contact; Shure emphasizes that placement varies by clothing. Hiding deeper is not a universal improvement. [5, 11]
+For a handheld, coach the speaker to keep a consistent angle and distance, but choose the actual distance with the mic’s pattern, plosives and scene in mind. An omni is forgiving of aim while a more directional capsule can reject more surrounding pickup in an appropriate setup; tradeoffs include changes as the speaker turns or moves. In live reinforcement, minimize open mics and assess the gain before feedback from the PA and monitors. [4]
+A plant mic is a fixed, approved microphone concealed in a set feature or prop. Its role is to cover a specific mark or action when a boom cannot remain close or a body mic is compromised. DPA defines this use and documents a micro-shotgun planted on a sun visor aimed at actors. Choose a mounting point that does not alter the prop’s function, block ventilation, obstruct a driver or invite contact; coordinate with the responsible department and test the full blocking. Do not secretly plant a mic or assume permission to capture private speech. [6, 12]
+# Practical sounds and channel overlap
+If a practical action is more important than dialogue at one moment, aim a dedicated safe mic toward the active part of the object while preserving a wider perspective as a separate channel. A door has impact, hinge and latch components that may favor different positions; one plant mic may capture the action but also mechanical vibration. Choose positions by audition and protect microphones from the moving object. For a separate effects take, keep the actual material and action consistent and log any departure from the picture performance. Cross-link to F03 props and F04 impacts for source-specific Foley work.
+Solo boom, lav and plant tracks, then compare an intentional blend in mono. Unequal acoustic arrivals and changing actor position may cause frequency-dependent coloration; a polarity switch is a diagnostic, not a universal cure for different delays. Favor the channel that serves the scene, automate a transition or keep the others as editorial options. Avoid leaving unnecessary mics open in live sound, where added ambient pickup can lower feedback margin. [2, 13]
+# Field, live and broadcast priorities
+For film or documentary, retain separated boom, lav, plant and camera reference tracks when available, with clear labels, notes on noise and the frame or camera angle. Capture an appropriate location ambience bed separately for editing transitions; do not claim that a room tone recording can replace lost consonants. A handheld reporter mic may be visible and acceptable, while a narrative frame may require boom or discreet bodyworn pickup.
+In live sound, the audience hears the loudspeaker path as it happens. A close handheld or properly fitted body/headworn mic often offers a stable speech feed; a distant plant or camera mic can bring more PA and room into the system. Check the real speaker and monitor geometry, control unused channels, and rehearse transitions before the show. For broadcast feeds, verify what is sent to the stream, recorder and local PA independently so an ambience or backup channel does not feed an unintended loudspeaker. [13]
+# Safety and permissions
+Keep stands, cables and bodypacks out of foot traffic and performer action; secure them without creating snags, pressure or a skin hazard. Ask before touching a performer or attaching a microphone. For outdoor work, stop before lightning or unsafe weather. The National Weather Service says to move to safe shelter when thunder is heard. Do not operate a boom near energized lines, or mount a plant mic on a vehicle or working electrical fixture without qualified authorization. [10, 14]
+For public, workplace or private locations, confirm the production’s permission and applicable privacy rules before recording conversations. A microphone concealed from the camera is not automatically authorized to record people. Log placement and restrictions with the take. Avoid claiming a universal legal consent rule because jurisdiction and use differ.
+# Guided teaching exercise
+1. Set a consented dialogue-and-prop scene in a quiet safe location. Define the camera frame, two speaking marks, one head turn and one practical action such as placing keys on a table. Scout HVAC, reflective surfaces and travel paths.
+2. Record the scene with a boom from just outside the frame at a safe reach. Monitor the complete line and prop action. Note distance and axis changes, wind or handling noise and whether the practical sound is balanced.
+3. With permission, fit a lav to the performer and record a separate channel. Test normal speech, turn, sit and fabric movement. If possible, compare visible and concealed positions without placing tape directly on a person unless explicitly agreed.
+4. Try a visible handheld for an interview version. Coach consistent handling, then test an approved plant position for the table action. Record each separately; do not conceal a microphone without consent.
+5. Record a camera-mounted reference at the same camera position. Compare intelligibility and room/noise balance with the source-proximate channels. Do not raise gain as a substitute for moving the mic closer.
+6. Solo channels and intentionally combine only useful pairs in mono. Identify any hollow overlap, clothing, handling or prop vibration. Design the live version with the fewest necessary open microphones and a safe routing map.
+Pass criterion: the learner identifies each microphone’s task and intended route, improves source-to-background balance by placement, catches clothing and handling artifacts, explains overlap in mono, and keeps all equipment and people safe. No audio examples.
+# Student observation sheet
+Student __________________________  Date __________  Scene and permission __________________________
+Mic
+Placement, angle and channel
+Speech, action, noise and decision
+Boom
+____________________________
+____________________________
+Lavalier
+____________________________
+____________________________
+Handheld or plant
+____________________________
+____________________________
+Camera reference
+____________________________
+____________________________
+
+Final source choice and limitation _________________________________________________________________
+# Critical evidence audit
+## Agreement
+RODE, Sound Devices and Shure agree that useful proximity and placement matter for intelligible speech; DPA and Shure identify body placement and clothing as practical constraints. Rycote documents the role of suspension and wind shielding, and Shure describes multi-mic overlap. Confidence is high in testing the entire performance and monitoring each channel individually. [1–3, 5, 9, 11]
+## Different methods and apparent contradictions
+Practitioners may favor boom sound when framing permits, yet choose lav or plant mics for wide shots, busy blocking or restricted reach. A visible handheld is suitable for a reporter but not every narrative frame. Camera-mounted pickup can be a useful reference or close-camera source while becoming less intelligible with distance. These positions solve different access and presentation constraints; none overrides the actual placement test. [3–8, 12]
+## Important gaps
+The cited accounts do not specify one distance, pattern, hiding technique or safe overhead reach for all locations. Clothing, frame, reflection, weather, performer comfort and feedback geometry vary. A planted position is not permission to record covertly. The lesson therefore asks for rehearsed placement, channel isolation, informed approval and local safety review rather than a fixed numeric recipe.
+# Sources and curriculum connections
+Primary manufacturer, practitioner and government guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] Sound Devices Six Ways to Reduce Noise While Recording Dialog <https://www.sounddevices.com/6-ways-to-reduce-noise-while-recording-dialog/>
+[2] Shure Microphone Techniques for Recording <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[3] RODE Shotgun Microphone Distance Guidance <https://help.rode.com/hc/en-us/articles/16239917474703-How-Far-Away-Can-I-Be-from-My-R%C3%98DE-Shotgun-Microphone>
+[4] Shure Handheld Wireless Microphones for Presenters <https://www.shure.com/en-US/insights/tell-me-about-handheld-wireless-microphones-for-presenters>
+[5] Shure How to Choose a Lavalier Microphone <https://www.shure.com/en-GB/insights/how-to-choose-the-best-lavalier-microphone>
+[6] DPA Plant Mic Definition <https://www.dpamicrophones.com/dictionary/p/plant-mic/>
+[7] RODE Camera Sound and Distance <https://rode.com/en-us/about/news-info/which-rode-microphone-is-right-for-your-film>
+[8] DPA Interview with Simon Hayes <https://www.dpamicrophones.com/news/2015/in-conversation-with-simon-hayes/>
+[9] Rycote Modular Windshield and Suspension <https://www.rycote.com/microphone-windshield-shock-mount/modular-windshield-kit/>
+[10] OSHA Construction Electrical Incidents <https://www.osha.gov/etools/construction/electrical-incidents/>
+[11] DPA David Thirion on Lavalier Placement <https://www.dpamicrophones.com/news/2020/hiding-in-plain-sight-is-how-to-succeed-with-dpa-lavalier-microphones/>
+[12] DPA Micro Shotgun as Plant Mic <https://www.dpamicrophones.com/news/2020/dpa-4097-core-micro-shotgun-finds-additional-role-as-a-plant-mic/>
+[13] Shure Microphone Techniques for Live Sound <https://content-files.shure.com/Pubs/microphone-techniques-for-live-sound-reinforcement/microphone_techniques_for_live_sound_reinforcement_english.pdf>
+[14] National Weather Service Lightning Safety <https://www.weather.gov/safety/lightning-safety-overview>
+Cross-links: F03 props; F04 impacts; F05 Foley perspective; F06 ambience; F08 pass-bys; Ensembles and Voice lead vocal pickup; Sports and Broadcasting field interviews.

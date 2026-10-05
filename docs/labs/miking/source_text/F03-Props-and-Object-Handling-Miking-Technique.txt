@@ -1,0 +1,96 @@
+# Props and Object Handling Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F03  •  Studio and live applications
+This lesson teaches microphones for handled objects: keys, paper, doors, drawers, furniture and other practical props. The learner identifies which part of an action actually radiates useful sound, positions a microphone outside the performer’s path, and compares intimate detail with a perspective that fits the picture or live production. The locations below are listening trials, not universal distances. No audio examples are included.
+# Break the action into sources and moments
+Watch the action and name each audible event in order: hand grasp, key jingle, insertion, turn, latch release, hinge travel, panel resonance and final contact, for example. A single “door sound” can involve several places on the prop. Paper likewise has a page lift, friction, fold and set-down. Decide which moments carry the scene and which noises would distract. Foley artists Andy Malcolm and Don White describe human interaction with knives, forks, drawers, glass and other objects as Foley, with overlap between Foley and sound-effects departments; the division is a workflow choice, not an acoustic boundary. [1]
+Choose the prop and the action before choosing a microphone. A substitute object may match the required sound better than the pictured object, provided it is safe and controllable. The performer must be able to repeat the timing, energy and motion for the scene. Ben Cross describes the recordist’s job as capturing the artist’s sound cleanly with the right perspective and depth. A microphone cannot compensate for a prop that produces the wrong material or rhythm. [2, 3]
+# Find the active sound area with one microphone
+With the prop secured and still, position one stand-mounted microphone so its useful pickup axis faces the event while leaving the complete hand, door, drawer or chair travel clear. Have the performer rehearse at real speed before setting gain. Listen first from a safe nearby position, then move the mic toward the component that matters. Moving closer favors direct detail and reduces room pickup; moving farther can join the object’s parts and the room, but may admit noise. Malcolm and White deliberately avoid placing mics too close in their film workflow to retain natural space. [1]
+Object and action
+One-mic trial
+What to verify
+Keys and small metal items
+Aim at the normal hand-level movement zone, then compare a closer view of the jangling or contact point with a farther view of the whole gesture.
+Complete hand arc, occasional louder collision, finger and breath noise, actual jingles versus tabletop resonance.
+Paper turn, fold or handling
+Aim at the region where the sheet bends or contacts another surface; compare a close edge/friction view with a position that covers the whole sheet.
+Page flutter, hand rub, stand vibration, air movement from the sheet and whether the wanted cue stays in range.
+Door, drawer and latch
+First cover the complete action from outside the swing or travel path. Then compare an aimed view of the handle/latch and one of the moving panel or frame.
+Small click versus large resonance; hinge, stop and final contact; neither capsule nor cable enters pinch or collision zones.
+Furniture movement and set-down
+Aim at the contact between object and floor or table, then compare a position that includes the object body and its movement.
+Scrape, wheel, structural rattle, impact peak, vibration into stand or floor; protect performer’s lifting path.
+
+These four rows are reasoned classroom trials. The sources establish performance, perspective and microphone choice, but do not prescribe a reliable distance or aim for every key ring, paper weight, hinge or floor. Log actual object dimensions, mic model, pattern, position, level and room. Rotate or move the prop only when doing so preserves the performer’s repeatable action and safety. A cardioid or supercardioid can reduce some off-axis room and competing sources; an omni may give more even coverage of a moving object at the cost of more surroundings. Judge the actual result rather than choosing by pattern label alone. [4]
+# Choose a picture perspective
+A close view may call for distinct handling clicks, while a wide shot may need the object and room to read as one event. Gary Hecker describes moving the microphone with camera perspective and sometimes combining a close mic with a room mic for interiors. Cross reports a close-plus-room setup that he blends to fit the scene. Malcolm and White favor somewhat farther placement to integrate room sound. These are documented approaches serving different scenes and stages; no one arrangement fits every prop. [1, 2, 5]
+Start with one mono source and test the full action, not only the loudest click. If a second microphone offers a useful option, record a close detail channel and a farther room/object channel separately. Compare each alone and their sum in mono. Arrival differences may alter a transient and its following resonance; a moving prop changes those differences across the cue. Choose a balance for the whole action and retain channel labels for editing. Multi-mic capture should provide a reasoned option, not merely more open channels. A documented Foley session used three stations for different props to cover a busy scene quickly; those were performance stations as well as microphone channels. [2, 6]
+# Microphone and gain choices
+A quiet condenser with suitable headroom can reveal soft paper and tiny mechanical details, but a dynamic may be workable when the prop is loud or stage spill is severe. A shotgun can help aim a zone, yet its off-axis sound in reflective rooms can be frequency colored; Schoeps cautions that interference-tube rejection is frequency dependent. Compare a short shotgun to a conventional directional mic in the actual space if available. There is no source-backed “best Foley mic” for all objects. [4, 7]
+Set gain using both the quietest meaningful handling and the loudest intended slam or set-down. Peak metering and headphones can expose brief overload that an average meter misses. If one gain setting cannot serve a very quiet latch and a forceful door close, capture controlled separate passes or use appropriate channels and headroom; do not ask the performer to use unsafe force. Locate overload at capsule, preamp or recorder before moving a fader. Keep original performance dynamics unless the picture calls for an exaggerated effect.
+# Live sound and location differences
+A Foley prop performed live for theatre has to read through a PA, cue exactly with performers and coexist with music, speech and room sound. English National Opera describes live onstage Foley for The Magic Flute, with props organized in a booth and cues keyed to action, dialogue or music. A compact, stable mic position and a known object station can help the operator keep the active prop in pickup. Test the actual speaker and monitor routing at show level; a distant room mic may be less useful when it returns PA sound and reduces feedback margin. [8, 9]
+On location, a boom or stand outside frame may follow the same sound action, but wind, traffic, shot size and access can prevent a studio-like placement. The Oxford interview describes a Foley team taking equipment on location to capture particular sounds. Coordinate with camera, performers and property staff, keep stands out of travel paths, and document the environment. A field recording of a mechanical door without a performer can be a sound effect rather than a timed Foley pass; its microphone geometry is still governed by the target components and intended perspective. [1]
+# Troubleshooting and safe setup
+Symptom
+Check before processing
+Tiny click but no object body
+Move from the latch or contact point toward a view of panel, frame and room; compare performance and actual prop.
+Boomy slam or harsh ring
+Check whether the microphone faces a single resonant surface; adjust angle, distance or force while preserving timing.
+Missing soft detail
+Quiet the room and stand, move toward the active source within safe clearance, then confirm self-noise and gain.
+Scrapes and knocks unrelated to cue
+Look for cable, stand, floor and performer clothing contact; isolate and secure the rig before filtering. [10]
+Changing tone between takes
+Mark hand position, prop orientation, travel, stand location and microphone axis; rehearse the full cue again.
+
+Use stable props and stands. Keep hands clear of hinges and pinch points, and keep microphones, cables and operators outside door or furniture travel. Use a manageable, intact object and an assistant for heavy furniture; no real sharp weapons, broken glass, unstable stacks or live electrical devices are needed for this lesson. Do not block exits or fasten a mic to a moving door without an approved mounting plan. Bring PA channels up under the system operator’s control; never demonstrate feedback deliberately. Secure cables to prevent trips, and keep monitoring levels comfortable.
+# Guided teaching exercise
+1. Select three safe props: a key ring, a sheet of paper and a small door or drawer. List each cue’s audible stages and the pictured or live perspective. Rehearse the complete motion before placing a microphone.
+2. Use one mic on a secure stand for the keys. Compare an aimed close detail position with a farther whole-gesture position; keep the same hand motion and document nearest and farthest distance and any incidental sound.
+3. For paper, move only the microphone aim and position while the performer repeats a page turn. Identify useful bend/friction sound and unwanted hand, breath or stand noise. Set gain on a repeatable strong fold or turn.
+4. For a door or drawer, mark its entire travel and pinch zones. From outside that path, compare one position that covers the whole action with an aimed latch/handle position. Do not place any equipment in the swing.
+5. If another mic is available, record close detail and a farther perspective separately for one cue. Check the combination in mono over its entire motion, then choose one or a blend with a stated reason.
+6. For a live version, arrange the prop station and mic with clear cables and PA/monitor routing. At ordinary soundcheck level, explain what changes in channel priority and feedback margin.
+Pass criterion: the learner locates distinct radiating events, protects performer movement, compares two microphone perspectives for the same action, checks headroom and any multi-mic mono sum, and explains a studio or live choice. No audio examples.
+# Student observation sheet
+Student __________________________  Date __________  Scene or cue _____________________________
+Prop and take
+Active source, mic aim and distance
+Result and selected perspective
+Keys A / B
+____________________________
+____________________________
+Paper A / B
+____________________________
+____________________________
+Door or drawer A / B
+____________________________
+____________________________
+Two-mic or live trial
+____________________________
+____________________________
+
+Full travel clearance __________________  Quiet detail and loudest peak ______________________Stand and cable check __________________  Mono sum or feedback check ________________________Final selected position and remaining compromise _____________________________________________
+# Critical evidence audit
+## Agreement
+The interviewed Foley artists and mixers agree that performance, prop choice, picture perspective and room relationship are intertwined. They use microphone distance and sometimes extra channels to give an editor or mixer useful choices. Confidence is high in those broad practices. [1, 2, 5, 6]
+## Different methods and tension
+Malcolm and White prefer some distance and natural room; Cross uses close and room mics blended live; Hecker moves the mic with shot size. A 1997 Mix account shows both multiple stations and an engineer who wanted a wider pickup rather than a tightly focused shotgun. The methods differ in room quality, scene, budget and desired detail. Schoeps adds that shotgun off-axis behavior indoors can be colored, so “narrower” is not automatically “cleaner.” [1, 2, 5–7]
+## Gaps and limitations
+The sources do not provide an object-by-object controlled comparison, fixed distances or safe mounting instructions for all props. The four object rows and exercise are explicitly reasoned trials, and sound must be judged with the actual performer, object, room and picture. Live stage adaptation requires the venue’s access and system plan. Confidence is moderate for any particular placement until tested.
+# Sources and curriculum connections
+Original Foley practitioner interviews and primary microphone guidance checked October 4, 2026. Linked pages may contain media; this lesson has no audio examples.
+[1] Oxford Learning Link interview with Andy Malcolm and Don White <https://learninglink.oup.com/access/content/haines-student-resources/haines-take-10-extended-interviews>
+[2] Ben Cross interview on recording and mixing Foley <https://www.asoundeffect.com/foley-mixing-armor-sound-effects/>
+[3] Foley First cueing a Foley session <https://foleyfirst.com/blog/how-to-cue-a-foley-session/>
+[4] Shure Three Reasons Why Mic Placement Matters <https://www.shure.com/en-MEA/insights/three-reasons-why-mic-placement-matters>
+[5] Gary Hecker interview on Foley perspective <https://nofilmschool.com/foley-101-master-foley-artist-gary-hecker>
+[6] Mix magazine Foley Recording <https://www.mixonline.com/recording/foley-recording-may-1997-377037>
+[7] Schoeps microphone type basic properties <https://schoeps.de/fileadmin/user_upload/user_upload/Schoeps_Microphone_type_basicproperties.pdf>
+[8] English National Opera The Foley Artist <https://www.eno.org/engage/the-foley-artist/>
+[9] Shure Miking the Rhythm Section <https://www.shure.com/es-LATAM/articulos/miking-the-rhythm-section>
+[10] Rycote boom shock mounts <https://rycote.com/microphone-windshield-shock-mount/boom-shock-mounts/>
+Cross-links: F01 footsteps and surfaces; F02 clothing and body movement; F04 impacts, liquids and textures; F05 Foley perspective and multiple mics; B04 boom and camera pickup.

@@ -1,0 +1,128 @@
+# Drum Room Microphones Miking Technique
+Pro Audio Training Academy  •  Membranophones Lab  •  M10  •  Studio and live applications
+A room microphone hears the kit after its parts have begun to blend in the space. Its placement changes the balance of direct drum sound, cymbals, early reflections, decay and other instruments or PA spill. This lesson teaches a one-mic baseline, several distinct stereo and low-front alternatives, and a controlled comparison with close and overhead microphones. A room feed is optional; the right choice may be to use none. No audio examples are included.
+# Listen to the kit and the room first
+Have the drummer play the actual passage: kick and snare groove, tom fill, open and closed cymbals, soft notes and loud accents. Walk the permitted floor area and listen at more than one height. Identify clear, useful positions and places dominated by flutter, excessive low-frequency buildup, air handling or other performers. Mark the kit orientation, walls, ceiling, doors and traffic routes. Shure emphasizes tuning and performance at the source and notes that a close-mic approach may serve a poor room better. DPA contrasts integrated ambient pickup with individual-drum control. [1, 2]
+Do not call any distance a “room mic” by itself. A mic roughly one metre in front of the kit can be a low, integrated kit perspective; a distant pair can emphasize the room. The useful direct-to-reflected balance depends on the actual space, kit, pattern and target. DPA gives a low front stereo-omni example at approximately 1 m; Shure gives 3–6 ft (about 1–2 m) in front of drums for its SM4 as an application starting point. Neither is a standard room-mic distance for every setup. [3, 4]
+# Choose a microphone for the question
+Choice
+What to test
+Limit to verify
+One omni or directional mic
+A coherent mono room or front-of-kit image; compare snare, kick, cymbals and decay as a whole.
+Omni hears all directions; a directional pattern can favor the kit but may change low end with distance and color off-axis room sound. [5]
+Coincident XY cardioids
+Two directional capsules together, angled across the scene. Useful when stereo width is wanted with relatively stable mono summation. [5]
+Width and coverage depend on angle and aim; it is not a cure for close-versus-room arrival differences.
+Spaced omni pair
+Broad, low-frequency-rich room perspective and time-difference stereo. [5]
+Spacing and position alter center image and mono cancellation; check both channels together.
+Mid/Side pair
+A forward Mid and sideways figure-eight Side at nearly the same position; decode for adjustable width. [6]
+Correct polarity, duplicate Side routing and level are required; mono downmix of a correct decode leaves Mid, but Mid versus close mics still needs checking.
+
+Verify the actual model’s maximum SPL, pad, self-noise, polar pattern, physical orientation and powering. A condenser is common but not compulsory. A ribbon or dynamic can be a deliberate tonal option when its model is suitable for the peaks and room, and its mounting, phantom-power compatibility and preamp needs have been checked against its manual. Pattern names alone do not guarantee a particular drum balance.
+# Core placements to compare
+Approach
+Position and provenance
+Main listening question
+Low front kit pair
+DPA describes a stereo pair of omnis approximately 1 m in front of the kit, low and in front of the kick. Treat this as one documented integrated perspective, not a default for every room. [3]
+Does kick body remain present without making the snare or cymbals remote? Does the stereo pair survive mono?
+Front or overhead one mic
+Shure SM4 guide proposes 3–6 ft (1–2 m) in front for more kick, or over the kit for more cymbals. Its guidance is model-specific. [4]
+Does a modest front move change drum-to-cymbal balance more usefully than raising an overhead?
+Front mono room trial
+Classroom proposal: from a safe position beyond the immediate kit, aim a single mic at the kit’s approximate center; compare two marked positions at least a useful stride apart. No universal metre value is implied.
+At equal playback level, does the second position improve direct sound, early reflection and decay balance?
+Stereo room and distant case
+DPA details AB and XY geometry; Universal Audio recounts one session with a near stereo pair and a room pair about 15 ft away in room corners. That is one production example, not a prescription to use corners. [5, 7]
+Does increased width add useful space or weaken center drums, raise spill and exaggerate room defects?
+
+To place a room pair, listen to both intended channels through the microphones while the full kit plays. Shift the whole pair before altering spacing. If one side hears substantially more snare, cymbal, wall reflection or another band member, adjust position and aim; a visually symmetrical room rarely guarantees a musically balanced pickup. For XY, keep capsules near coincident and aim the shared position intentionally. For AB, choose spacing with the source angle and desired width in mind. DPA explicitly makes source distance, surroundings and direct-to-diffuse balance central to the decision. [5]
+# Tone and context decisions
+Heard result
+Likely cause to investigate
+Microphone experiment
+Clear kit, little room
+Position is fairly near, directional aim favors kit, or room is absorptive.
+Move to a safe farther site or change pattern; listen for whether the new reflections help.
+Snare hollow or center unstable
+Spaced pair, asymmetric arrivals or interaction with overhead/close tracks.
+Compare each room channel, sum to mono, and reposition or lower the troublesome channel.
+Cymbals dominate
+High or line-of-sight position favors cymbals; drummer balance may contribute.
+Compare lower front aim and drummer dynamics; do not solve solely by lowering all room channels.
+Boomy kick or uneven tom notes
+Room position may coincide with a strong room response or nearby boundary.
+Move mic or kit within the permitted room, check several notes and compare positions before EQ.
+Wash, unrelated instruments or PA
+Reflections, open mics and leakage exceed desired drum perspective.
+Try a closer position or omit room feed; check routing in live sound.
+
+# Add room microphones to the existing kit pickup
+First hear overheads alone and with kick and snare. Add one room channel at the level it will actually be used, then listen in stereo and mono. If the kick or snare loses body, compare placements and levels before trying a polarity reversal as a diagnostic. Different source-to-mic distances create arrival differences that a polarity switch cannot generally correct. Test whole-kit passages; a placement that helps snare may alter toms or cymbals differently. Preserve separate tracks for later decisions. DPA identifies different mic distances as a source of phase issues, and Shure urges careful audition of multi-mic combinations. [2, 1]
+Do not automatically time-align a distant room track to the close snare or kick. That changes the relationship between the direct sound and natural arrival/decay that motivated the room mic; it can also affect the rest of the kit. An alignment move is a creative option only after comparing the complete kit and recording the original position. M10 covers the added room perspective; M09 covers overhead geometry including Glyn Johns, and M11 will cover complete kit channel plans.
+# Studio, shared-room and live decisions
+In a quiet studio with a good room, a mono or stereo room signal can become a substantial part of the kit sound. In a shared room it may also hear vocals, amplifiers and other players: decide whether that ensemble image is welcome, and do not promise separation later. With a poor-sounding room, use overheads and closer microphones as the reliable base and record a room option only if it earns its channel. Shure explicitly favors close pickup when room acoustics are poor. [1]
+For live reinforcement, a distant drum-room mic usually has substantial PA and monitor pickup and may consume gain before feedback. Begin with the drum mics needed for the audience. If an ambience or room mic is required for a recording or broadcast, coordinate a separate feed and assess whether it should be absent from the PA and performers’ monitor sends. Do not assume it can be turned up safely in the house system. At soundcheck, the system operator verifies the actual loudspeaker, mic-pattern and channel geometry at intended levels. Shure’s live guide identifies overhead ambience/leakage and emphasizes placement and feedback control. [8]
+# Safety and technical checks
+Keep floor stands and cables clear of the drummer, exits, rolling cases and other performers. Stabilize any long boom with a suitable base and counterweight. Do not attach microphones to a wall, ceiling, overhead grid or venue structure without the appropriate venue approval and qualified installation. Stop the performance before repositioning hardware. Avoid a stand where a cymbal, stick or drummer movement can hit it. A boundary-adjacent trial must also respect access and acoustic treatment.
+Set input gain with the loudest full-kit passage, including crashes and rimshots. Check the microphone and preamp for overload and preserve adequate headroom; a recorder meter alone may not reveal capsule overload. Verify phantom power and cabling against the microphone’s manual before connecting or switching power. Keep headphone and PA listening at safe, comfortable levels. Do not intentionally provoke feedback as a demonstration.
+# Guided lab and observation sheet
+1. Define target: intimate kit, natural room, wide ambience, or a separate live/broadcast environment feed. Note whether vocals, amps and PA are active.
+2. Audition the kit and room. Mark safe positions and full movement routes; choose one mono front/room baseline and log mic, pattern, capsule position, height and aim.
+3. Capture the same complete passage in two positions while changing distance or location only. Compare at similar listening level. Note kick, snare, toms, cymbals, early reflections, decay and other spill.
+4. If suitable, compare one stereo configuration with the mono baseline. Inspect left/right balance and mono collapse. Add it to overhead and close tracks at intended levels; compare before and after a placement change.
+5. For live work, document whether the room feed is in the PA, monitors, record or broadcast paths. Have the system operator check real routing and margin at the planned level without deliberate feedback.
+6. Choose the position or omit the feed. Explain its benefit, remaining compromise, complete-kit summation and physical safety.
+Pass criterion: the student logs a safe reproducible position; distinguishes an integrated front-kit pickup from distant room ambience; compares one variable at matched listening level; checks complete-kit mono behavior; and explains the studio or live feed choice. No audio examples.
+Name ____________________  Date __________  Room and kit orientation _____________________
+Observation
+Position A
+Position B
+Mic / pattern / channel role
+_____________________
+_____________________
+Distance, height, aim, stand site
+_____________________
+_____________________
+Kick and snare body
+_____________________
+_____________________
+Toms and cymbals
+_____________________
+_____________________
+Early reflections and decay
+_____________________
+_____________________
+Spill or PA return
+_____________________
+_____________________
+Mono with overhead/close tracks
+_____________________
+_____________________
+Clearance and routing verified
+_____________________
+_____________________
+
+Chosen position or omission and reason __________________________________________________Remaining limitation __________________________________________________________________
+# Critical evidence audit
+## Points of agreement
+Shure and DPA agree that the kit’s source condition, the space and the goal matter. DPA and Universal Audio describe different integrated and ambience positions, while Shure distinguishes front pickup from higher cymbal-oriented pickup. Multiple microphones call for whole-kit listening and mono checks. Confidence is high in these principles. [1–7]
+## Approaches that differ
+DPA’s low omni pair at approximately 1 m seeks natural kit integration; Shure’s SM4 guide suggests about 1–2 m in front or an overhead alternative; UA recounts a distant corner-pair example. These are different microphones, rooms and goals, not competing universal measurements. Studio room mics can be central to a sound; a live PA may have little useful margin for them. [3, 4, 7, 8]
+## Contradictions and qualifications
+The cited examples do not establish a controlled same-room contradiction. More distance does not always mean a better or wider room sound: reflections, spill and stereo geometry can make it worse. UA’s correctly decoded M/S mono property concerns its Side channels; it does not guarantee a problem-free blend with close drums. A polarity reversal is a diagnostic, not a universal phase repair. [5–7]
+## Important gaps
+No source here supplies a universally safe stand location, a universal room-mic distance, a reliable fixed corner position, a guaranteed delay setting, or a live gain-before-feedback value. Room-specific listening, model manuals, venue mounting rules and operator-led PA checks remain necessary. The unnumbered front-room placement is explicitly a classroom proposal.
+# Sources and curriculum connections
+Technical and practitioner sources checked October 4, 2026. Linked pages may include their own media; this lesson supplies no audio examples.
+[1] Shure — Recording Drums Part 1 <https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique/>
+[2] DPA — How to Mic a Drum Kit <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-drum-kit/>
+[3] DPA — How to Mic a Kick Drum <https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-kick-drum/>
+[4] Shure — SM4 User Guide <https://www.shure.com/en-US/docs/guide/SM4>
+[5] DPA — Stereo Recording Techniques and Setups <https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/>
+[6] Universal Audio — Mid Side Mic Recording Basics <https://www.uaudio.com/blogs/ua/mid-side-mic-recording>
+[7] Universal Audio — Mixing in Stereo <https://www.uaudio.com/blogs/ua/studio-basics-mixing-stereo>
+[8] Shure — Microphone Techniques for Live Sound Reinforcement <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>

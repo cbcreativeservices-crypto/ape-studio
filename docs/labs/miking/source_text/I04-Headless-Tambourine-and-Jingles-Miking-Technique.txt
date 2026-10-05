@@ -1,0 +1,83 @@
+# Headless Tambourine and Jingles Miking Technique
+Pro Audio Training Academy  •  Idiophones Lab I04  •  Studio and live sound
+This lesson teaches microphone pickup of a headless tambourine: a frame with loose metal jingles and no vibrating drumhead. The moving jingles are the principal sound source. Students will establish one repeatable playing zone, compare distance and angle, control brief peaks, and decide whether an individual microphone helps in a studio or on stage. A headed tambourine also produces membrane sound and is cross-linked to the Membranophones Lab. No audio examples are included.
+# Know the instrument before placing the microphone
+Listen to the actual instrument and part. A headless ring or crescent can be shaken, struck into the hand, or mounted and struck; those motions produce different attacks and different paths through the air. Ask the player to demonstrate the loudest accent, sustained shake or roll, and any change between hands or positions. Note the arc of the instrument rather than marking only its position at rest. A headless tambourine has no head tone to preserve; a microphone aimed at a nonexistent “skin” cannot solve an absent low-frequency sound. [1, 2]
+Jingle count, rows and metal vary among products. Meinl offers single- and double-row versions and brass, bronze and plated steel variants, evidence that one tambourine does not stand for every model. Do not promise a fixed frequency response or rank materials without comparing the actual instruments in the room. Check that jingles and frame are secure and free of unintended mechanical rattles. [3]
+# Start with one microphone and a stable playing zone
+Shure’s recording guide gives one microphone 6–12 in (15–30 cm) from tambourine and suggests changing distance or angle if too bright. Its live guide gives the same starting range. Yamaha gives roughly 8 in (20 cm) as a starting point for hand percussion, then emphasizes the direction of the player’s movement. These numbers refer to the instrument’s normal playing zone, not to a stationary frame while a large swing strikes the capsule. Ask the player to stay within a comfortable agreed zone, leave clearance for the complete stroke, and adjust by listening. [1, 2, 4]
+Setup
+Position and purpose
+Check before choosing
+Focused mono
+Place one mic slightly above or to the side of the normal playing zone, with the capsule facing the moving jingles, initially 6–12 in from the nearest expected stroke. [1, 2]
+Check all accents and both ends of the swing; move mic or player zone if the frame approaches the grille.
+Softer, wider studio picture
+Move the mic farther into a useful room or rotate its aim away from the most direct jingle impact; compare while the same part and playing force are repeated. [1, 5]
+More room and leakage, less tightly focused attack; placement is not a substitute for an even performance.
+Loud stage isolation
+Use a stable stand and suitable directional mic near a predictable zone, keeping adequate physical clearance; point rejection toward competing sources or wedges as geometry allows. [2, 6]
+Gain before feedback, monitor spill, performer movement and whether an open percussion mic is needed at all.
+Shared percussion area
+Use one overhead or area mic when the player moves among shakers, tambourine and other percussion; set its height for the complete performance area. [7]
+Less individual control; listen to all instruments and confirm the mic sees the actual tambourine position.
+
+A small- or large-diaphragm condenser can reveal jingle detail and short attacks; Yamaha also suggests trying a dynamic or ribbon microphone when the result is too cutting. The mic’s actual response, maximum level, polar pattern and stage surroundings matter more than its category. A moving-coil dynamic may be a practical stage choice; use the actual mic’s specifications and the real system. A ribbon is an optional studio comparison only when safely supported and used according to its manufacturer’s handling instructions. [4]
+# Treat player motion as part of placement
+Yamaha notes that shaking toward and away from the capsule increases level changes, particularly forward accents; shaking side to side relative to it can give a more even result. Demonstrate both while maintaining the same pulse and playing effort. Do not confuse a change in performer force with a change caused by microphone geometry. A hand strike into the frame often produces a stronger, less continuous accent than a regular shake; reset gain for the strongest planned hit. [4]
+A mic just above the playing area can allow lateral movement with smaller changes in source-to-capsule distance, though the outcome depends on the arc and microphone pattern. If the player sings or plays another instrument at the same time, consider whether the tambourine should be captured by an existing mic, a dedicated percussion mic, or both. Dedicated microphones can increase spill into vocal or drum channels. When more than one mic hears the same moving instrument, compare each alone and their sum in mono through actual playing; moving arrival times can produce changing coloration. [6, 8]
+# Gain, brightness and unwanted sound
+Tambourine transients can be much higher than their perceived average. Yamaha warns that slow VU meters may miss brief peaks and recommends peak indication; set microphone, preamp and recorder or console headroom from the loudest intended passage. Watch or listen for clipping at the mic or input stage as well as downstream, because reducing a later fader cannot repair an overloaded earlier stage. DPA identifies a tambourine as a revealing test of microphone intermodulation distortion. [4, 8]
+If it sounds piercing, first compare distance, angle, room and playing method. A farther placement may soften direct jingle emphasis but also adds room and other instruments; Waves describes this as a creative studio option, not a fixed cure. If low-frequency thumps are due to footsteps, stand vibration or handling, secure the stand, isolate it where practical, move the mic off the impact path and apply a suitable high-pass filter only after checking that no desired body is lost. Do not claim that EQ or filtering repairs clipping or severe distortion. [1, 5, 8]
+# Studio and live sound decisions
+## Studio
+Begin with one mono channel. In a clean overdub, compare the 6–12 in position against a farther location in the same room using matched performance and appropriate gain. Mark player location and facing direction for repeat takes. A room mic or stereo pair can be tried for a deliberate spatial effect, but for this small moving source stereo is optional. If layering against a hi-hat, listen to the arrangement rather than using a prescribed pan or fixed high-pass setting. [1, 4, 5]
+## Live sound
+Ask whether the instrument is already adequately audible acoustically or through nearby vocal/percussion microphones. If it needs reinforcement, use a single stable mic aimed at a repeatable playing zone and begin with the appropriate channel muted while positioning it. Shure explains that directional patterns and mic placement affect leakage and gain before feedback; check the actual wedge or side-fill locations, then bring the channel up at a controlled soundcheck level. Do not ask a player to swing toward an exposed capsule to increase level. [2, 6, 7]
+A shared percussion mic can support a player who switches instruments; a dedicated mic can improve control when the tambourine has an important part and a predictable position. DPA documents a touring setup with separate direct pickup for shakers and tambourine plus area percussion microphones. That is a real example of a larger production, not a requirement for a small stage. On a dense stage, choose the fewest open channels that satisfy the audience and monitor needs. [7]
+# Guided teaching exercise
+1. Inspect the headless instrument, loose parts and stands. Have the player demonstrate shake, hand-struck accents and the actual musical part. Identify the full motion arc and the loudest event.
+2. Mark a comfortable player location. Set one microphone about 6–12 in from the nearest normal movement while maintaining clearance. Document mic model, pattern, angle, height, and nearest/farthest distances.
+3. Set gain on the loudest passage using a peak indication and direct listening. Check both microphone and input overload, then compare side-to-side motion with toward-and-away motion at a similar performance level.
+4. Keeping the part consistent, move the microphone farther away or change its angle. Describe attack, jingle brightness, room contribution, leakage and motion-related level change. Return to the most useful position.
+5. For a studio arrangement, decide whether mono alone serves the part. If a second mic is used, compare individual channels and mono sum during movement. For live sound, compare a dedicated mic with a shared area mic while checking PA and monitor spill at normal operation.
+6. Write the chosen setup, its remaining compromise and the minimum observed gap between the instrument and capsule; explain why this instrument belongs in Idiophones and how a headed tambourine differs.
+Pass criterion: the learner positions a mic relative to the actual playing arc, maintains physical clearance, identifies brief peak overload, demonstrates motion direction as a tonal and level variable, and justifies a studio or live setup. No audio examples.
+# Student observation sheet
+Student __________________________  Date __________
+Tambourine model _______________________________________________________________
+Trial
+Mic placement and performer motion
+Observed change or problem
+A initial mono
+____________________________
+____________________________
+B angle or distance
+____________________________
+____________________________
+C motion direction
+____________________________
+____________________________
+D live or shared mic
+____________________________
+____________________________
+
+Loudest stroke clearance __________________  Peak and distortion check _______________________Other open mics and mono sum __________________  Final choice and tradeoff ______________________
+# Critical evidence audit
+## Agreement
+Shure’s recording and live guides converge on a single-mic 6–12 in starting range and advise changing angle or distance if too bright. Yamaha agrees that hand percussion needs attention to close transient peaks and performer motion. Confidence is high for these starting principles, but the best position remains source and context dependent. [1, 2, 4]
+## Different approaches and direct tensions
+Yamaha begins around 8 in and says either condenser size can work, while a dynamic or ribbon may soften an overly piercing result. DPA’s touring account uses a dedicated cardioid condenser plus open percussion mics. Waves recommends greater studio distance when close percussion sounds harsh. These descriptions pursue different isolation and room goals; none establishes one universal microphone, distance or mix level. [4, 5, 7]
+## Gaps and careful inferences
+The cited sources generally discuss “tambourine” without a controlled headed-versus-headless comparison. This lesson applies their jingle-pickup guidance to a headless instrument while excluding claims about drumhead tone. The suggested above/side placement and stereo optionality are practical experiments derived from the source’s motion, geometry and mono considerations, not measured mandates. No source specifies a universally safe minimum stroke clearance; determine it with the actual performer before raising gain. [1, 2, 4]
+# Sources and curriculum connections
+Primary manufacturer guides and firsthand production account checked October 4, 2026. Linked source pages may contain media; this lesson contains no audio examples.
+[1] Shure Microphone Techniques for Recording <https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_recording_english.pdf-bb0469316afdb6118691d2f3f5e3ff01.pdf>
+[2] Shure Microphone Techniques for Live Sound Reinforcement <https://content-files.shure.com/dievision/archive/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf>
+[3] Meinl Artisan Edition Wood Tambourine specifications <https://meinlpercussion.com/en/products/ae-mta1b-m7910.html>
+[4] Yamaha Recording Acoustic Instruments Part 3 <https://hub.yamaha.com/proaudio/recording/recording-acoustic-instruments-part-3/>
+[5] Waves 8 Handy Microphone Techniques <https://www.waves.com/8-handy-microphone-techniques-youre-probably-not-using-yet>
+[6] Shure Three Reasons Why Mic Placement Matters <https://www.shure.com/en-MEA/insights/three-reasons-why-mic-placement-matters>
+[7] DPA Jonas Brothers tour percussion miking account <https://www.dpamicrophones.com/news/2021/the-jonas-brothers-are-burnin-up-with-dpa/>
+[8] DPA 10 Things Digital Gizmos Cannot Correct <https://www.dpamicrophones.com/mic-university/background-knowledge/10-things-digital-gizmos-cannot-correct-for-you/>
+Cross-links: headed tambourine in Membranophones; shakers and maracas in Idiophones; drum overheads and complete kit in Membranophones; percussion ensembles in Ensembles and Voice.

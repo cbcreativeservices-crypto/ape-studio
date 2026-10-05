@@ -1,0 +1,93 @@
+# Clothing and Body Movement Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F02  •  Performed and live applications
+This lesson teaches the microphone decisions behind a cloth pass: reproducing a character’s fabric and body movements in sync with picture. It also explains what changes when similar sounds are captured live. Students will compare close detail with a fuller garment perspective, distinguish purposeful fabric texture from stand, cable and performer noise, and document a repeatable setup. No audio examples are included.
+# Define the action and intended perspective
+Watch the pictured action or rehearse the live cue first. Identify the actual source: sleeve against torso, leather flex, coat flap, bedclothes, a small hand gesture, or the sound of an entire worn garment. Note start and stop, body energy, character and camera distance. The Foley artist may hold a garment or wear it; Foley First describes both methods, and stresses that full jackets and leather sometimes need the whole item rather than a small swatch. Gary Hecker warns that indiscriminate crumpling produces undifferentiated noise instead of precise movement. [1, 2]
+Cloth can be quiet, so inspect the room before turning up gain: ventilation, electrical hum, traffic, floor and stand vibration, breathing, jewelry and other garments may compete with the wanted detail. Capture pauses as well as movement, since the sound must begin and end with the action. A closer microphone raises direct cloth relative to the room but may magnify a narrow friction point; a more distant position hears the entire action and more room. These are acoustic tradeoffs, not promises that distance alone will match a film scene. [1, 2]
+# Build one microphone position from the gesture
+Use a quiet, secure stand or appropriately operated boom with the capsule aimed at the active fabric, outside the performer’s complete arm and body path. Rehearse the largest gesture before recording and check that the garment cannot brush the microphone, mount, cable or stand. If the fabric is held in the hands, aim at the rubbing or flexing area. If worn, aim at the garment region that actually moves, leaving the face, knees and footsteps outside the intended pickup as much as practical. Change one variable at a time: source area, aim, distance, then microphone type.
+Position
+Useful starting trial
+Main risk or decision
+Close detail
+Move a stand mic toward a small sleeve, leather flex or hand gesture until the detail is clear while preserving full movement clearance. Record the exact source-to-capsule range; no universal close distance is established here.
+Prominent finger rub, breath, narrow texture and collision risk; a distant camera view may require later perspective work.
+Full garment
+Foley First reports 1–1.5 m from the cloth action as effective for its workflow; compare that published practitioner position with the close trial. [1]
+More body movement and room, but quiet texture may fall under room noise. This is a particular team’s practice.
+Distant picture
+Gary Hecker moves the mic farther for a long shot and closer for a close-up; he sometimes adds a separate room mic for interiors. [2]
+Match sound to the scene and production track; distant studio room may differ from pictured space.
+Boom position
+Use a stationary or carefully operated boom over or to the side of the action when the performer travels through a short area. Keep the operator and cable quiet.
+The boom must not swing into the actor or enter the moving garment; handling and cable noise require inspection.
+
+The Foley First team favors a shotgun for its cloth pass and less-than-perfect studio, reporting 1–1.5 m as its preferred working distance and sometimes farther for a rain cover. This is a documented production method, not evidence that a shotgun always isolates sound better indoors. Schoeps notes that an interference-tube microphone has frequency-dependent rejection and may become colored by indoor reflections. Compare a suitable short shotgun against a cardioid or supercardioid condenser in the actual room; choose by the captured result and the desired perspective. A low self-noise microphone and quiet gain chain can matter for subtle fabric, but verify actual specifications and noise in context. [1, 3, 4]
+# Separate intended cloth from unwanted noise
+Purposeful Foley cloth is an externally miked performance. Unwanted costume rustle against a dialogue lavalier is a different problem: contact or fabric passing over the capsule may obscure speech. Production mixer Simon Hayes describes bedding noise making lavaliers impractical in some bed scenes, where a boom may work better. Do not attach a lavalier beneath moving fabric for this cloth exercise or treat lav rubbing as a faithful record of the garment. If live dialogue and clothes must coexist, coordinate boom and body-mic choices with the speech team and costume department. [5]
+Isolate stand-borne and cable-borne thumps with a suitable shock mount, stable stand and cable strain relief; Rycote documents those mechanical paths. Keep the cable from touching garment and moving arms. For a hand-operated boom, listen to pole handling and cable motion during the real gesture. Do not use an indiscriminate high-pass filter, noise reduction or gate before determining whether low fabric body and quiet starts are part of the intended sound. Foley First notes that corrective processing can alter cloth texture and that room noise may prevent quiet tracks from sitting usefully in a mix. [1, 6]
+# Two microphones and picture relationship
+One mono microphone is a sound starting point for a small, centered gesture. For a spacious interior, Hecker describes one close mic and another farther back for room contribution. Record separately, compare each alone, then combine over the full action. Arrival differences can change tone in a mono sum; movement makes any one time alignment only locally correct. Listen to the intended mix and avoid an unwanted, overly loud room layer. For an exterior scene, Hecker describes using a single mic to avoid printing the studio room. These are his perspective methods, not a rule that every exterior must have one mic. [2]
+Some clothes need more than one performed texture or character-specific pass. Foley First describes selecting different jackets and sometimes separate tracks for distinct characters, while warning that extra tracks bring room noise and editing work. Choose extra microphone channels only when they provide a needed acoustic option; do not confuse separate performances or layers with simultaneous multi-mic capture. Keep notes of mic positions, fabric, scene, take and which tracks belong together. [1]
+# Live performance and location distinctions
+For live theatrical Foley or a broadcast demonstration, there may be a PA and audience in the same room. A close directional microphone and a fixed, repeatable performance station can increase useful cloth level relative to loudspeakers and room, but the chosen distance must leave full body clearance. Place monitors and PA to exploit the actual microphone pattern; use ordinary soundcheck procedures and do not deliberately provoke feedback. A farther mic that works on a quiet Foley stage may have insufficient gain before feedback in live reinforcement. A single open channel may be the practical priority. [3, 7]
+On-location dialogue capture reverses the objective: the cloth movement can be unwanted noise beneath speech. A boom or costume-mounted mic is chosen for the dialogue, and its fabric contact is managed. If the task is intentional location capture of a garment, use an external mic near the moving area with safe clearance and document environmental sound, wind and traffic; do not promise that a noisy location can match a controlled Foley stage. The same microphone type can serve different tasks only after the desired source is defined. [5]
+# Troubleshooting and safety
+What you hear
+Check in order
+Thin swish with no garment body
+Use the entire item, change performance, then compare a position that covers more of its moving area; test room noise before moving far back. [1, 2]
+Rumble or knocks
+Stop and inspect floor, stand, boom and cable contact; reset clearance and shock mount before filtering. [6]
+Harsh or colored shotgun result
+Compare position and axis, then a non-interference-tube directional microphone in the same room. [3, 4]
+Too much breath, steps or speech
+Aim at the active cloth, change performer orientation or separate the cloth pass; avoid impractical isolation claims.
+Missing quiet moves or clipping on large moves
+Use the actual soft and loud passage to set gain; monitor peaks and noise floor, then retake with a consistent performance.
+
+Secure stand legs and route cables clear of walking paths. Never drape cloth over a hot light, electrical fixture or microphone connector; do not fasten material to a person without their agreement. Keep playback and monitoring at comfortable levels. Any overhead rigging beyond an ordinary secure stand requires approved mounting by qualified personnel. Do not strike, pull or snag the mic in pursuit of a louder effect.
+# Guided teaching exercise
+1. Choose a short pictured or rehearsed action containing a sleeve movement and a larger coat or jacket movement. Identify the cue points and the wanted fabric texture. Inspect the room and record a short quiet baseline.
+2. With one mic on a secure stand, establish a close detail position without prescribing a fixed distance. Rehearse the complete body arc; record the nearest and farthest source-to-capsule distances, aim, pattern and mic model.
+3. Repeat the same action with the source approximately 1–1.5 m from the mic, following the Foley First practitioner trial. Maintain performance timing and compare direct texture, garment scale, noise and room. If the room is poor, document why a farther take fails.
+4. Compare a short shotgun with a cardioid or supercardioid mic if both are available; keep source and placement as similar as practicable. Describe off-axis color and room contribution rather than assuming one type wins.
+5. If an additional mic is available, retain the close mic and place a second one farther away for an interior perspective. Record separately, compare the sum in mono during movement and decide whether the room layer is useful.
+6. For a live scenario, choose one safe performance station and mic, then have the system operator evaluate ordinary PA and monitor routing at controlled level. State how the distance and channel priority differ from the quiet-stage version.
+Pass criterion: the learner identifies intentional cloth versus unwanted speech-mic rustle, preserves performer clearance, describes a documented distant practitioner method and an explicitly experimental close trial, and selects a perspective justified by picture or live sound conditions. No audio examples.
+# Student observation sheet
+Student __________________________  Date __________  Scene or cue _____________________________
+Trial
+Fabric, action and mic geometry
+Texture, room, noise and choice
+Close detail
+____________________________
+____________________________
+Full garment
+____________________________
+____________________________
+Alternative mic
+____________________________
+____________________________
+Close plus room or live
+____________________________
+____________________________
+
+Largest gesture and minimum capsule gap ___________________________________________________Noise baseline and loudest peak __________________  Mono sum or live feedback check ______________Final position, perspective and limitation _____________________________________________________
+# Critical evidence audit
+## Agreement and different approaches
+Foley First and Gary Hecker agree that cloth performance and perspective must fit the action. Foley First documents a preferred 1–1.5 m position for its cloth workflow; Hecker describes distance adjusted to camera viewpoint and a close-plus-room option for interiors. Their positions serve different material, room and picture goals. The evidence supports comparison, not a universal distance. [1, 2]
+## Direct tension
+Foley First praises shotguns in its budget studio. Schoeps warns that shotgun interference tubes can color diffuse indoor reflections. Both can be true in different rooms and with different microphones; the lesson asks students to compare the actual result. On-set lav rubbing described by production-sound practitioners is unwanted interference with dialogue; a Foley cloth pass is deliberately performed and captured. [1, 3, 5]
+## Important gaps
+These accounts do not establish a universal close distance, a safe mounting geometry for every action, or a microphone model that wins for all fabrics. The close position, boom trial and live reinforcement adaptation are classroom applications based on source, pattern, movement and feedback principles, and must be checked at the actual scene or venue. Confidence is high in those general tradeoffs and moderate in predicting a specific garment’s result without a listening test.
+# Sources and curriculum connections
+Original practitioner accounts and primary maker guidance checked October 4, 2026. Linked source pages may have media; this document has no audio examples.
+[1] Foley First Clothing Foley Recording and Editing <https://foleyfirst.com/blog/foley-recording-and-editing-clothes/>
+[2] Gary Hecker interview on Foley cloth and perspective <https://nofilmschool.com/foley-101-master-foley-artist-gary-hecker>
+[3] Schoeps microphone type basic properties <https://schoeps.de/fileadmin/user_upload/user_upload/Schoeps_Microphone_type_basicproperties.pdf>
+[4] Schoeps CCM 41 supercardioid guidance <https://schoeps.de/en/products/ccm/ccm-microphones/supercardioids/ccm-41/>
+[5] DPA interview with production mixer Simon Hayes <https://www.dpamicrophones.com/news/2015/in-conversation-with-simon-hayes/>
+[6] Rycote boom shock mount guidance <https://rycote.com/microphone-windshield-shock-mount/boom-shock-mounts/>
+[7] Shure Three Reasons Why Mic Placement Matters <https://www.shure.com/en-MEA/insights/three-reasons-why-mic-placement-matters>
+Cross-links: F01 footsteps and surfaces; F03 props; F05 Foley perspective and multiple mics; F09 location speech; B04 boom and camera-mounted pickup; B05 lavalier and concealed pickup.

@@ -1,0 +1,87 @@
+# Wildlife and Distant Sources Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F07  •  Field and live applications
+This lesson compares directional microphones and parabolic reflectors for wildlife calls and other distant, localized sounds. Students learn to select a safe observation point, aim and monitor a moving source, recognize frequency-dependent pickup and document the acoustic context. Microphone directionality changes the balance between a target and its surroundings; it does not make distance disappear. No audio examples are included.
+# Start with the target and the surroundings
+Identify the target sound, approximate direction and movement, nearby competing sources, wind, and the safe legal places from which the recordist can work. A single bird in a canopy asks for a different pattern than a flock crossing a wide field or a low-pitched distant animal. Decide whether the deliverable is an isolated editorial sound, natural behavior documentation, a broader habitat record, or a live feed. Do not promise species identification from sound alone: document an identification as confirmed, provisional or unknown according to the evidence available. [1, 3]
+Choose time and location before adding electronic gain. A quieter position away from road noise, water or your own clothing can improve the target-to-background ratio. Aim from a permitted location, avoid nests and sensitive habitat, and allow animals to behave naturally. In national parks, the National Park Service tells visitors to respect site-specific distances, stay quiet and avoid recorded calls or other attractants. [3]
+# What a directional microphone can and cannot do
+System
+How to aim and when to choose it
+Predictable tradeoff
+Shotgun microphone
+Point its main axis toward the target and keep it in a suitable windscreen and suspension. Compact and easier to follow a moving bird or group; usable when a dish is unwieldy. [1, 4]
+The interference tube reduces some off-axis sound, especially at higher frequencies. It does not acoustically amplify the target or erase foreground noise on the main axis. Off-axis sounds can be colored. [1]
+Parabolic reflector
+Mount the specified capsule at the dish focal point in the orientation required by that particular system, aim the dish precisely, and monitor through headphones. Useful for a localized higher-pitched call at a fixed direction. [1, 2]
+Concentrates sound at medium/high frequencies; more difficult to follow rapid motion or several widely spaced callers. Low frequencies may still reach the capsule directly but are not similarly amplified by the dish. [1, 2]
+Conventional cardioid or omni
+Choose when the target and its surrounding scene are both important, or a group spans more than a narrow beam. Place at an appropriate permitted listening point. [1, 6]
+Less isolation of one remote source; preserves a broader context and may give steadier coverage of moving animals.
+Fixed autonomous recorder
+Deploy only with permission, site approval and a research or editorial plan. Position, protect and log it for repeated unattended listening. [6]
+Documents activity over time rather than chasing one target; detection depends on mic response, weather, background and deployment, not merely nominal recording hours.
+
+The dish gain is acoustic concentration at the focus, not extra electrical preamp gain. Cornell explains that a dish emphasizes shorter wavelengths and does not amplify very low frequencies; SCHOEPS describes its matched dish system as most directional at medium and high frequencies and requiring correction for tonal balance. A low-pitched roar or rumble may therefore be less suited to a typical small dish than a clear high-pitched call. Dish diameter, shape, mic choice and mounting all matter, so avoid a universal cutoff or “range” claim. [1, 2]
+A shotgun also has frequency-dependent rejection. A long interference tube may be more selective at useful frequencies, but it can pick up a distracting source directly in its beam. Cornell notes that shotgun off-axis mid and high frequencies can be altered. Neither system creates a physical zoom lens for sound or replaces careful site selection. [1]
+# Mount, protect, aim and follow
+Before recording, verify microphone power and cable connection, mount the capsule according to the dish maker or microphone instructions, fit appropriate windshield protection, and secure the recorder and cable so handling does not enter the signal. Do not improvise a focal position or reverse a capsule based on another product’s geometry: Innercore specifies a capsule aimed back toward its dish at a marked focus; SCHOEPS likewise gives system-specific orientation. [2, 7]
+Find the source with unaided listening and a safe view, then aim with headphones at a modest monitoring level. Sweep slowly to compare the target with adjacent directions; a sharp improvement in signal and clarity at the intended direction confirms that a narrow dish is aimed usefully. Keep the array steady during a phrase. For an animal moving across the field, anticipate its path and re-aim smoothly between phrases if feasible. A shotgun’s broader useful angle can be preferable when the subject moves quickly. Cornell identifies precise aim and changing position as particular challenges for the parabola. [1]
+When the target leaves the beam, do not boost the gain to compensate without checking what is actually on axis. Pause or reposition at a permitted observation point. Record a separate general ambience track when the surrounding habitat matters, and label it as such. Some parabolic stereo products add wider background pickup, but the focused component and stereo ambience are distinct signal paths whose format and mono behavior need documentation. [1, 8]
+# Wind, noise and signal levels
+Outdoors, windshield choice depends on exposure. Cornell states that foam may suffice in a protected forest yet be inadequate on open grassland; a suitable fur cover or complete basket may be needed, along with suspension and quiet cable management. The dish surface itself may rustle or catch gusts even when the capsule is shielded. A low-cut filter can reduce rumble but may remove real low-frequency vocalization; note its state and compare unfiltered capture when practical. [2, 4]
+Listen for the strongest likely call or transient, leave headroom, and watch actual input meters. Too little microphone sensitivity or too much self-noise can matter for a quiet target; raising recorder gain also raises noise from the mic and environment. A parabola can improve the target-to-background ratio at supported frequencies, but louder wind or a plane in the beam still compromises a take. No universal gain or dBFS setting is safe for every animal, recorder and distance. [1, 9]
+# Different aims in studio, live and science
+For a film or studio library, retain the raw targeted take, log the actual species or source uncertainty and location, and record an independent wide habitat bed if needed. Editing and EQ can shape a deliverable, but label any processed version and preserve the unaltered original. For live wildlife coverage, mount equipment securely in an approved place, protect it from weather, route it only to intended feeds and check any PA or monitor path for feedback. A moving narrow beam can produce level jumps in a live feed; a shotgun or wider ambience mic may serve the audience more consistently. [1, 2]
+For ecological monitoring, a tracked target and a stationary autonomous recorder answer different questions. Standardize microphone model, sensitivity or calibration as required by the protocol, gain/filter settings, orientation, location, dates, duty cycle, weather and effort before comparing sites or seasons. A single clear call proves an event was captured; it does not by itself establish abundance, absence elsewhere or exact distance. NPS describes recording and weather observations as parts of structured sound monitoring. [5, 6]
+# Safety and wildlife welfare
+Follow local access restrictions and species-specific setback rules; leave room for animals to move. If an animal responds to the observer, back away. Do not approach nests, lure animals, use call playback, or move into a hazardous position for a cleaner take. NPS park guidance prohibits disturbing wildlife and advises against wildlife calls and attractants. [3]
+Keep tripods, poles and dishes out of roads, trails and public circulation; do not turn a dish into a visual barrier while stepping backward or tracking a subject. Do not climb unstable ground or enter water to shorten the distance. Check conditions before deployment, shelter gear as specified, and stop outdoor work when thunder is heard; the National Weather Service directs people to get inside a substantial building or hard-topped vehicle. Secure any unattended setup against weather and animals only where authorized. [3, 10]
+# Guided teaching exercise
+1. Pick a lawful, accessible observation point for a naturally occurring distant sound. Document its approximate direction, competing sound and expected movement. If wildlife is not reliably present, use a consenting human performer at a safe controlled distance without playback to animals.
+2. Set up a protected directional microphone. Record a steady target phrase and a brief wider context from the same approved position. Note aim, mic pattern, wind protection and any filter. Do not alter level in midphrase.
+3. If a correctly assembled dish is available, repeat with its capsule at the prescribed focus. Sweep gradually while monitoring; log the most stable aim and whether low and high parts of the sound change relative to a shotgun. Do not infer a universal dB advantage from two uncontrolled takes.
+4. For a moving target, keep eyes on the route and feet planted. Compare maintaining a fixed beam with a smooth re-aim only when safe. Record where the target crosses the edge of the useful acceptance area.
+5. Review each take for wind, self-noise, off-axis coloration and the target-to-background balance. State which microphone better serves a solitary high-pitched call, a moving group and a low-frequency sound in these observed conditions.
+6. Submit a field log and a live or science adaptation: specify weather precautions and routing for live; specify repeatable placement and protocol variables for science.
+Pass criterion: the learner explains the focal point, distinguishes acoustic concentration from electronic gain and shotgun rejection, identifies frequency limits, tracks a target without disturbing wildlife, and records enough metadata to explain the result. No audio examples.
+# Student field sheet
+Student ________________________  Date/time zone __________________  Site approval __________________
+Take
+Aim, geometry and filter
+Target, background and decision
+Shotgun or directional
+____________________________
+____________________________
+Parabolic reflector
+____________________________
+____________________________
+Moving target
+____________________________
+____________________________
+Wide context or fixed
+____________________________
+____________________________
+
+Source identity and confidence _________________________  Estimated direction and movement __________
+Weather and wind protection ___________________________  Recorder, input, gain and peak ______________
+Wildlife behavior and setback _________________________  Remaining tonal or noise limitation __________
+# Critical evidence audit
+## Points of agreement
+Cornell and the dish manufacturers agree that a parabolic system concentrates a narrowly aimed target and that the useful boost depends on frequency and precise geometry. Cornell describes shotguns as lighter, broader tools for moving groups. NPS grounds safe distance and non-disturbance. Confidence is high in these principles; a particular system must still be tested at its actual site. [1–3, 7]
+## Different practices and apparent contradictions
+Cornell says a parabolic dish does not amplify very low frequencies; SCHOEPS says a low-frequency signal can still reach the omni capsule directly without dish directivity and describes EQ for its matched system. These statements concern different signal paths, so they are consistent. Cornell prefers a parabola for isolated birds under comparable conditions yet identifies shotguns as easier for moving birds and groups. The intended source and mobility resolve the choice. [1, 2]
+## Important gaps
+The sources do not establish a universal maximum distance, dish gain, frequency cutoff or safe wildlife setback. Those depend on dish dimensions and design, source spectrum and level, background noise, weather, species and local rules. A field comparison without controlled target level, direction and distance cannot prove one product’s absolute superiority. The lesson asks students to document observations and uncertainty rather than fill these gaps with a numerical promise.
+# Sources and curriculum connections
+Primary research-library, manufacturer and government guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] Cornell Macaulay Library Microphones <https://www.macaulaylibrary.org/resources/audio-recording-gear/microphones/>
+[2] SCHOEPS Parabolic Dish Set <https://schoeps.de/en/products/special-microphones/parabolic-dish/parabolic-dish-set.html>
+[3] National Park Service Safe Wildlife Watching <https://www.nps.gov/subjects/watchingwildlife/7ways.htm>
+[4] Cornell Macaulay Library Accessories and Windscreens <https://www.macaulaylibrary.org/resources/audio-recording-gear/accessories/>
+[5] Cornell Macaulay Library Manage Files and Data <https://www.macaulaylibrary.org/manage-files-data/>
+[6] National Park Service Sound Data Collection <https://www.nps.gov/subjects/sound/rm47-part-2-data.htm>
+[7] Innercore Parabolic Microphone Technical Details <https://www.parabolicmicrophone.co.uk/pages/technical-details>
+[8] Telinga Stereo MK3 Microphone <https://telinga.com/products/stereo-mk3-microphone/>
+[9] Sound Devices Seven Quick Steps to Great Field Audio <https://www.sounddevices.com/seven-quick-steps-to-great-field-audio/>
+[10] National Weather Service Lightning Safety <https://www.weather.gov/safety/lightning-safety-overview>
+Cross-links: F06 natural and urban ambience; F08 moving sources and pass-bys; Scientific and Acoustical Recording protocols; Sports and Broadcasting parabolic microphone applications.

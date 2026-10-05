@@ -1,0 +1,87 @@
+# Moving Sources and Pass Bys Miking Technique
+Pro Audio Training Academy  •  Foley Field and Acoustical Lab F08  •  Field and live applications
+This lesson teaches microphone choices for a source that approaches, crosses and recedes: walking people, bicycles and vehicles. Learners compare a fixed mono perspective, a fixed stereo image and a deliberately tracked directional mic. They plan the path, capture the full movement, check mono and protect crew and bystanders. A pass-by level change, a stereo trajectory and a Doppler pitch shift are separate effects. No audio examples are included.
+# Define the movement and the listening point
+Draw a simple path with approach, closest point and departure. Identify the intended listener or camera position, the safe permitted microphone zone, the moving source and its likely loudest point. A pass-by is not merely the loud instant at closest approach: the lead-in and tail establish distance and motion. Ask whether the audience should hear a stationary observer’s perspective, a camera that follows the subject, or separately selectable positions. Exterior pass-bys and onboard vehicle sounds are different perspectives; practitioners including Watson Wu and Eric Potter document both for later use. [1, 2]
+For a teaching demonstration, use a walking consenting performer in a controlled space with an agreed path and no trip hazards. A real vehicle session needs a permitted site, a driver, a communicated route, a safety lead and a plan that keeps all people and equipment outside the vehicle envelope. Do not set up a lesson on an active roadway or encourage a driver to change speed for a microphone. [3]
+# Four core microphone arrangements
+Arrangement
+Placement and result
+What to check
+Fixed mono
+One securely mounted microphone beside the authorized path at a safe setback. Choose an omni for a broad consistent pickup or a directional pattern aimed at the relevant arc. Record approach, crossing and departure as one continuous event.
+Level and spectrum change as the source moves. A narrow directional pattern may make the pass seem to disappear off axis; document its aim and use a broader pattern when coverage matters.
+Fixed coincident stereo
+An XY pair or correctly routed Mid-Side array at one secure listening position, oriented so the planned path crosses its usable field. Record and label left/right or raw Mid/Side. [4]
+Hear whether the source moves across the image without a center hole; check mono and channel order. XY and decoded Mid-Side have comparatively predictable mono behavior.
+Fixed near or spaced stereo
+A correctly mounted ORTF or deliberate spaced pair can convey more lateral breadth. Document spacing and angle, and choose position around the intended path. [4]
+Check the mono sum over the entire pass. Time differences can change tone and transients, especially for a fast or broad source.
+Tracked directional mono
+From a safe fixed crew position, swivel an appropriate directional mic smoothly to follow the subject, without walking into its route. Use the resulting channel as a focused editorial perspective. [5]
+The mic can hold source presence as it moves but may suppress the natural fixed-observer level arc and include handling noise or off-axis tonal changes.
+
+Do not infer stereo from two microphones simply because there are two channels. A start-position mic and an end-position mic are separate perspectives unless their spacing, orientation, routing and intended blend are planned as a stereo array. Their independent signals may arrive at different times; if combined, listen for comb filtering. A fixed stereo pair can show a crossing without an operator panning a mono track. A tracked mono track remains mono unless the final mix places it spatially. [4]
+# Level, pitch and timbre are different cues
+As a source approaches a fixed microphone, level usually rises, then falls after it passes; surface, source directionality, reflections, changing performance and wind also affect the curve. A directional microphone adds its own angle-dependent change. The physical Doppler effect changes observed frequency when a sounding source and observer move relative to one another; approach is higher and recession lower for a stable emitted tone. It is not created by panning a track. Walking speed may produce little audible shift, and a vehicle engine changing RPM can alter pitch for a separate reason. Do not claim a measured Doppler value from an uncontrolled pass. [6]
+For an engine or bicycle, tire contact, motor/exhaust direction, gear and surface may change the source spectrum through the pass. A high-pass filter can clean wind but remove real low-frequency vehicle body. Record a clean, protected raw channel when practical, and log any filter. Set preamp gain and recorder headroom for the loudest plausible moment, not just the quiet approach; monitor peaks and wind. One Sound Devices account describes multi-channel onboard and external vehicle capture and peak control as context-specific production practice, not a prescribed mic count for a simple pass-by. [1, 7]
+# Plan a stationary pass step by step
+First, scout the route from a safe observation point. Select the authorized path and closest permitted mic location before rigging. Mark microphone orientation and where the source enters and leaves the intended image. Leave cables and stands outside travel and pedestrian routes. Fit wind protection and secure stands against tipping; wind and mechanical handling can overwhelm the lead-in or departure. [3, 8]
+Next, perform one slow rehearsal without recording if practical, with crew and subject acknowledging the start and end. Monitor a representative pass and adjust mic position, pattern or gain only between passes. Capture the full approach and decay; do not chase a source by moving a stand during a live pass. If the sound is louder at closest point than expected, increase headroom before repeating rather than hoping the limiter will reconstruct a clipped input. Label direction, speed category, surface, closest permitted position, array orientation, channel map and any clipping. [7]
+For repeatable comparisons, keep the performer path and pace similar. Capture fixed mono, fixed stereo and tracked mono on separate passes or as independently routed simultaneous channels where safely feasible. If independent recorders are used, synchronize and log their clocks or timecode and a common event; Sound Devices describes coordinated onboard and exterior recorders for larger productions. Alignment for editorial choices is useful, but time-aligning every spatial mic into one mono signal can change the intended passing perspective. [2]
+# People, vehicles and live sound
+Footsteps or a moving performer: a stationary mic preserves the travel and floor changes. A directional mic may prioritize the performer but can exaggerate off-axis changes as they move. If speech is also required, a properly authorized body-worn or boom channel belongs to the location-speech lesson; do not assume a distant pass-by array will provide intelligible dialogue.
+Vehicles: an exterior fixed mic or stereo pair captures the pass from the stationary listener’s location, while an onboard rig captures engine, exhaust or cabin from the vehicle. Sound Devices practitioner accounts describe stereo shotgun external pass-bys and separate onboard channels; these are examples for controlled professional projects. Any vehicle-mounted microphone needs approved professional mounting, cable retention, heat and moving-part clearance, and driver separation from recorder operation. This lesson’s student exercise does not require a moving vehicle. [1, 2]
+For live theatre or broadcast, a fixed safe array can capture a predictable route without a moving operator. Route only necessary channels to PA, monitor and stream, test from relevant audience positions and mono, and control gain before feedback. If the subject changes path unpredictably, an operator may track from a safe station, but the camera image and listening perspective can diverge. Use intercom or visual cues instead of an operator stepping toward the action to rescue a missed sound.
+# Safety limits
+Keep microphones, stands, crew and cables outside active traffic and travel paths, including the subject’s possible deviation and stopping area. Do not use a boom over a public street, railway, track or moving vehicle without the required permissions and qualified production controls. OSHA treats passing traffic and movement within work zones as serious worker hazards; a course exercise cannot create its own traffic control by putting out a stand or cone. [3]
+For loud vehicles and machinery, minimize exposure duration and use appropriate hearing protection while still preserving safe situational awareness. NIOSH recommends controls and protection when exposure is hazardous. At an outdoor site, stop if weather, wind or footing compromises control; shelter appropriately if thunder is heard. Never have a performer or driver watch or follow the microphone instead of the route. [9, 10]
+# Guided teaching exercise
+1. Choose a traffic-free controlled walking route with a consenting performer. Draw approach, closest point and departure, microphone safe zone, operator position and the planned stationary listener direction.
+2. Rig one fixed mono mic with wind protection. Record a complete normal-paced walk from before entry until after exit; log pattern and aim. Set headroom for the nearest footstep or voice, not the distant start.
+3. Repeat with a fixed XY pair or correctly decoded Mid-Side. Label channels, check the stereo trajectory and fold it to mono. If ORTF or a spaced pair is available, compare only with documented geometry and inspect mono coloration.
+4. From the same safe crew zone, repeat with a tracked directional mono mic. Keep feet planted and pan smoothly by hand or on a secure mount. Compare source level, movement cues, handling sound and off-axis changes.
+5. Identify which changes arose from source distance, microphone angle and left/right imaging. If pitch seems to change, distinguish a stable-tone Doppler possibility from the performer changing the sound; do not assign a Doppler number.
+6. Draft a professional vehicle plan on paper: permitted closed route, driver and safety lead, crew setback, mic and cable position, loudest event, hearing protection, communication and stop signal. Do not perform a vehicle pass for this classroom exercise.
+Pass criterion: the student can draw the path and safe microphone zone, distinguish fixed from tracked perspective, explain mono versus stereo trajectory and pitch change, preserve the entire pass, and reject unsafe vehicle placements. No audio examples.
+# Student observation sheet
+Student __________________________  Date __________  Route authorization __________________________
+Trial
+Mic position, aim and format
+Approach, crossing, departure and mono
+Fixed mono
+____________________________
+____________________________
+Fixed XY or MS
+____________________________
+____________________________
+Near or spaced pair
+____________________________
+____________________________
+Tracked mono
+____________________________
+____________________________
+
+Subject path and closest safe point ______________________  Surface and direction _____________________
+Wind protection, filter and peak _________________________  Operator and cable safety __________________
+Final perspective and remaining limitation __________________________________________________________
+# Critical evidence audit
+## Agreement
+DPA supports selecting stereo geometry and checking mono; professional Sound Devices accounts show external pass-bys and onboard viewpoints as separate creative options. OpenStax explains pitch change from relative motion, while OSHA and NIOSH establish distinct traffic and noise hazards. Confidence is high in testing the whole trajectory, preserving headroom and keeping personnel outside travel paths. [1–4, 6, 9]
+## Different methods and apparent contradictions
+A tracked directional mic can hold a source in focus while a fixed stereo pair lets it traverse the image. These are different listener viewpoints, not competing rules for one “correct” pass-by. A field recorder may choose a broader array for continuous coverage and a narrower mic for isolated detail. Stereo width and Doppler pitch are independent; one can occur without the other. [4–6]
+## Gaps
+The sources provide no universal setback, mic angle, headroom figure, vehicle speed or safe mounting recipe. Those depend on route control, site permission, source intensity, array pattern, weather and local production rules. The exercise uses a controlled pedestrian path and treats a vehicle session as a separate professionally supervised plan. No uncontrolled field example establishes a numerical Doppler shift or a universally superior microphone.
+# Sources and curriculum connections
+Primary manufacturer, textbook and public-safety guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] Sound Devices Watson Wu Vehicle Recording <https://www.sounddevices.com/watson-wu/>
+[2] Sound Devices Eric Potter Coordinated Pass Bys <https://www.sounddevices.com/eric-potter/>
+[3] OSHA Highway Work Zones Overview <https://www.osha.gov/highway-workzones>
+[4] DPA Stereo Recording Techniques and Setups <https://www.dpamicrophones.com/mic-university/audio-production/stereo-recording-techniques-and-setups/>
+[5] Sennheiser MKH 416 Interference Tube Microphone <https://docs.cloud.sennheiser.com/en-us/mkh-416-mkh-418-s/mkh-416-mkh-418-s/info-mkh-416.html>
+[6] OpenStax University Physics Doppler Effect <https://openstax.org/books/university-physics-volume-1/pages/17-7-the-doppler-effect>
+[7] Sound Devices Seven Quick Steps to Great Field Audio <https://www.sounddevices.com/seven-quick-steps-to-great-field-audio/>
+[8] RODE Ways to Reduce Wind Noise Outside <https://rode.com/en-us/about/news-info/audio-for-film-101-ways-to-reduce-wind-noise-when-recording-outside>
+[9] CDC NIOSH Understand Noise Exposure <https://www.cdc.gov/niosh/noise/prevent/understand.html>
+[10] National Weather Service Lightning Safety <https://www.weather.gov/safety/lightning-safety-overview>
+Cross-links: F06 ambience; F07 wildlife and distant sources; F09 location speech and practical sounds; Sports and Broadcasting field effects.
