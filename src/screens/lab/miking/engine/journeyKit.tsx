@@ -1,7 +1,7 @@
 /**
  * The JOURNEY's pieces on screen (docs/labs/miking/LESSON_JOURNEY.md):
  *
- *   JourneyMap        the eight stages, one line each, with ✓ per stage —
+ *   JourneyMap        the stages, one line each, with ✓ per stage —
  *                     the advance organiser on page 1 (signalling).
  *   PathChooser       NEW or EXPERIENCED, worded by what each choice costs,
  *                     never by what it forbids (the never-block rule).
@@ -40,8 +40,8 @@ export type JourneyProps = {
 
 export function JourneyMap({ met, here }: { met: ReadonlySet<PageId>; here?: PageId }) {
   return (
-    <View style={styles.map} accessibilityRole="summary" accessibilityLabel={`The lesson's eight stages: ${STAGES.map((s) => s.title).join(', ')}.`}>
-      <Text style={styles.mapHead}>THE JOURNEY · 8 STAGES</Text>
+    <View style={styles.map} accessibilityRole="summary" accessibilityLabel={`The lesson's ${STAGES.length} stages: ${STAGES.map((s) => s.title).join(', ')}.`}>
+      <Text style={styles.mapHead}>{`THE JOURNEY · ${STAGES.length} STAGES`}</Text>
       {STAGES.map((s, i) => {
         const done = s.pages.every((p) => met.has(p));
         const on = here ? s.pages.includes(here) : false;

@@ -4,12 +4,12 @@
  * TRY BEFORE TELL (review M1): PAIR first, with a prediction about Δt;
  * LEARN after, as "what you just saw".
  * PAIR (rack): two mics (a boundary plate inside, a kick dynamic outside
- * near the port — Shure's described pair) and straight paths from a chosen
+ * near the port — a common pair) and straight paths from a chosen
  * source (an OVERLAY). The bezel computes, from the drawing, the path
  * difference, the arrival-time difference, the first comb notch and B's
  * polarity (with the rear-lobe sign, review M8). No 3:1 cell: both mics hear
- * ONE source (reviews M7/M11). The IDEAL comb graph follows the drag live.
- * LEARN (read): Shure's two-mic method, and the limits — polarity is not
+ * ONE source (reviews M7/M11). The simplified comb graph follows the drag live.
+ * LEARN (read): the two-mic idea, and the limits — polarity is not
  * delay; 3:1 is not coherence; louder is not better.
  * CHECK (read): four scenarios, including polarity vs delay (L89).
  * Credit: polarity flipped BOTH ways and a mic moved (Δt changed) in the same
@@ -37,7 +37,7 @@ import type { PageProps } from './pageTypes';
 
 export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, hidden }: PageProps) {
   const model = lesson.model;
-  const inside = lesson.zones.find((z) => z.id === 'b91.pillow') ?? lesson.zones[0];
+  const inside = lesson.zones.find((z) => z.id === 'in.pillow') ?? lesson.zones[0];
   const port = model.ports.ported?.c ?? { x: model.interior.x1, y: 0, z: 0 };
   const rig = useRig(lesson, {
     variant,
@@ -102,7 +102,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       valueLabel: (regions.find((r) => r.id === srcId)?.label ?? '').toUpperCase().slice(0, 10),
       selectedId: srcId,
       onSelect: setSrcId,
-      options: regions.map((r) => ({ id: r.id, label: r.label, blurb: `${r.note} An ideal point source for the path overlay.` })),
+      options: regions.map((r) => ({ id: r.id, label: r.label, blurb: `${r.note} Drawn as one point for the path overlay.` })),
     },
   ];
   // Δd and Δt are B MINUS A (twoMic.ts: Δd = |S − B| − |S − A|), signed, so
@@ -111,7 +111,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   const bezel: BezelItem[] = [
     { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
     { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
-    { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, sub: equal ? undefined : 'ideal', flex: 1.2 },
+    { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
     { k: 'POLARITY', v: `B ${B.polarity === 1 ? '+' : '−'}`, sub: rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
   ];
   const [wellW, setWellW] = useState(0);
@@ -132,7 +132,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A', 'B']} showZones={false} pathsFrom={src} interactive={!hidden} labelFor={labelFor} />,
-        badge: `IDEAL MODEL · dashed = straight paths · white lobe = ideal shape, not range · one point source, no reflections · c = ${C20.toFixed(1)} m/s (${Math.round(C20 / 0.3048)} ft/s), 20 °C`,
+        badge: `A simplified picture · dashed = straight paths · white lobe = pattern shape, not range · one point source, no reflections · c = ${C20.toFixed(1)} m/s (${Math.round(C20 / 0.3048)} ft/s), 20 °C`,
         bezel,
         params,
         initialParam: 'pos',
@@ -149,9 +149,9 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
             {wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={label} /> : null}
           </View>
           <Body>{equal ? 'No path difference, no comb: the source reaches both mics at the same instant.' : `B hears it ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
-          {rearFlip ? <Note>{`The source is in a mic’s rear lobe: an ideal rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
+          {rearFlip ? <Note>{`The source is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
           {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: it moves the notches, it does not remove the delay.`}</Note> : null}
-          <Note tone="warn">The inside and outside mics hear DIFFERENT surfaces of the drum, so this ideal graph predicts only the shared part of the sound — never what the pair will sound like. Judge the pair by ear, in mono, at matched levels. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold a few centimetres from a 56 cm head, so read the depths as illustrative only. 3:1 is a spill guideline for mics on different sources; it says nothing about this pair.</Note>
+          <Note tone="warn">The inside and outside mics hear DIFFERENT surfaces of the drum, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. Judge the pair by ear, in mono, at matched levels. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold a few centimetres from a 56 cm head, so read the depths as illustrative only. 3:1 is a spill guideline for mics on different sources; it says nothing about this pair.</Note>
           {micType(A.typeId).mount === 'surface' ? <Body>Mic A’s pattern is a half-cardioid boundary — not modelled; its level here follows distance only.</Body> : null}
         </>
       ),
@@ -163,7 +163,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       layout: 'read',
       body: (
         <>
-          <Body>Shure describes a boundary mic inside for an attack-related component and a kick dynamic near the port for low-frequency weight. The purpose is to blend different perspectives — not to assume two are always better. Start with each mic useful on its own.</Body>
+          <Body>A common idea: a boundary mic inside for the attack, and a kick dynamic near the port for low-frequency weight. The point is to blend two different perspectives — two mics are not automatically better. Start with each mic useful on its own.</Body>
           <Body>When the second channel goes in: hear the pair at the intended levels in MONO, compare both polarity states at a controlled, matched level — a louder state almost always sounds “better” at first — and check it with the rest of the kit. If it loses body or turns uneven, adjust position and level, or leave the second mic out.</Body>
           <Note>What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity inversion flips the sign — it moves the notches; it does not remove the delay. 0 dB on the graph is the two arrivals in step: at equal level that is 6 dB above either mic alone, so a comb both lifts and cuts.</Note>
         </>

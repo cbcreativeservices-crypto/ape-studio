@@ -1,6 +1,6 @@
 /**
  * MikingLessonScreen — route `MikingLesson { id }` (blueprint §7, §8). ONE
- * lesson, ten pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md),
+ * lesson, nine pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md),
  * each a run of steps on the shared lab strip in sub-step mode (the Drum
  * Tuning host shape, DrumTuningLabScreen.tsx):
  *
@@ -11,8 +11,8 @@
  *
  * CREDIT (ruling §16.1, like the other training labs): a page banks THE
  * MOMENT its requirement is met — its checks answered right (a retry is
- * free) and its interactive reached — on the event, never on NEXT; the
- * Sources page, which has no requirement, banks on NEXT / FINISH. Credit only
+ * free) and its interactive reached — on the event, never on NEXT; a page
+ * with no requirement (ORIENT) banks on NEXT. Credit only
  * grows: START OVER (PRACTICE) clears answers, interactives and the place.
  *
  * WHO IS SAVED (useTier, every render): a member / free account is written;
@@ -61,7 +61,7 @@ import { PMicrophone } from './pages/PMicrophone';
 import { PPlacement } from './pages/PPlacement';
 import { PContext } from './pages/PContext';
 import { PTwoMic } from './pages/PTwoMic';
-import { PPractice, PSources, PTroubleshoot } from './pages/PReadPages';
+import { PPractice, PTroubleshoot } from './pages/PReadPages';
 
 const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
   instrument: PInstrument,
@@ -73,11 +73,10 @@ const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
   twoMic: PTwoMic,
   troubleshoot: PTroubleshoot,
   practice: PPractice,
-  sources: PSources,
 };
 
 /** Steps per page (the strip's count before a page reports its titles). */
-const STEP_COUNTS: Record<PageId, number> = { instrument: 3, sound: 4, setting: 3, microphone: 3, placement: 4, context: 3, twoMic: 3, troubleshoot: 1, practice: 3, sources: 1 };
+const STEP_COUNTS: Record<PageId, number> = { instrument: 3, sound: 4, setting: 3, microphone: 3, placement: 4, context: 3, twoMic: 3, troubleshoot: 1, practice: 3 };
 
 
 export function MikingLessonScreen() {

@@ -31,16 +31,16 @@ import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import { HEAD_SHAPES, strikeShare } from '../engine/physics/membrane.ts';
 import { MembraneFace } from '../engine/scene/MembraneFace';
 import { PageSteps, type MikingStep } from '../engine/steps';
-import { Body, Card, Landing, Note, Point, PredictCard, ProvenanceTag, ScenarioList } from '../engine/kit';
+import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../engine/kit';
 import type { PageProps } from './pageTypes';
 
 const STEP_MS = 1300;
 const IN = 25.4;
-/** DW: the beater strikes "the center of the drum or an area 1-2 inches above the center". */
+/** Where the beater strikes: the centre, or 1–2 in above it (internal record: DW-9000). */
 const STRIKES = [
   { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' },
-  { id: '1', label: '1 IN ABOVE', mm: 1 * IN, blurb: '1 in (25 mm) above the centre — inside the DW pedal manual’s range.' },
-  { id: '2', label: '2 IN ABOVE', mm: 2 * IN, blurb: '2 in (51 mm) above the centre — the top of the DW pedal manual’s range.' },
+  { id: '1', label: '1 IN ABOVE', mm: 1 * IN, blurb: '1 in (25 mm) above the centre — a common strike point.' },
+  { id: '2', label: '2 IN ABOVE', mm: 2 * IN, blurb: '2 in (51 mm) above the centre — about as high as a beater usually strikes.' },
 ] as const;
 
 function useFocusedSafe(): boolean {
@@ -188,7 +188,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
   ];
   const shapeBezel: BezelItem[] = [
     { k: 'SHAPE', v: shape.label, flex: 0.8 },
-    { k: 'RATIO', v: `× ${shape.ratio.toFixed(2)}`, sub: 'ideal', flex: 0.9 },
+    { k: 'RATIO', v: `× ${shape.ratio.toFixed(2)}`, sub: 'to the lowest', flex: 0.9 },
     { k: 'UNDER BEATER', v: `${sharePct} %`, sub: 'of its peak', tint: share < 0.05 ? '#ff6b5e' : undefined, flex: 1.2 },
     { k: 'STILL LINES', v: shape.n + shape.s - 1 === 0 ? 'NONE' : `${shape.n + shape.s - 1}`, flex: 1 },
   ];
@@ -241,7 +241,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
           ) : (
             <Text style={styles.missing}>No drawing for this step.</Text>
           ),
-        badge: 'OVERLAY · the order of events, not their speed or size · motion EXAGGERATED · silent',
+        badge: 'The order of events, not their speed · head motion drawn much larger than it really is · silent',
         bezel: strikeBezel,
         params: strikeParams,
         initialParam: 'step',
@@ -275,10 +275,10 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
             shape={shape}
             strikeMm={strike.mm}
             swing={swing}
-            accessibilityLabel={`The ${S.head.label}, in the ideal shape ${shape.label}: ${shape.still}. ${Math.abs(swing) < 0.05 ? 'Passing through flat.' : 'Blue regions move toward you, amber away.'} Under the beater, ${strike.label.toLowerCase()}, the head moves ${sharePct} percent of this shape's peak.`}
+            accessibilityLabel={`The ${S.head.label}, in the shape ${shape.label}: ${shape.still}. ${Math.abs(swing) < 0.05 ? 'Passing through flat.' : 'Blue regions move toward you, amber away.'} Under the beater, ${strike.label.toLowerCase()}, the head moves ${sharePct} percent of this shape's peak.`}
           />
         ),
-        badge: 'IDEAL MEMBRANE · exact Bessel shapes · no air, no second head · blue + toward you, amber − away · claw positions ILLUSTRATIVE',
+        badge: 'A simplified picture: one head on its own, no air, no second head · blue + toward you, amber − away',
         bezel: shapeBezel,
         params: shapeParams,
         initialParam: 'shape',
@@ -288,12 +288,11 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
           <Landing looking={`${S.head.label} · shape ${shape.label}`} prompt="Step through SHAPE, then try each STRIKE point. Which shapes does a centre strike leave still?" />
           <Card>
             <Point title={`SHAPE ${shape.label} · ${shape.still.toUpperCase()}`}>
-              {`A struck head vibrates in several shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest shape — the others are measured against it, and none of them is a whole-number multiple, which is part of why a drum sounds less “pitched” than a string.' : `Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on an ideal head — not a whole number, which is part of why a drum sounds less “pitched” than a string.`} Under the beater (${strike.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? 'does not drive this shape at all: the beater is on a still line' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}
+              {`A struck head vibrates in several shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest shape — the others are measured against it, and none of them is a whole-number multiple, which is part of why a drum sounds less “pitched” than a string.' : `Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on a simplified head — not a whole number, which is part of why a drum sounds less “pitched” than a string.`} Under the beater (${strike.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? 'does not drive this shape at all: the beater is on a still line' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}
             </Point>
-            <ProvenanceTag kind="ideal" />
           </Card>
-          <Note>A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones. The DW pedal manual puts the strike at the centre or 1–2 in above it.</Note>
-          <Note>This is an ideal head in empty space. On a real kick, the air inside and the second head pull these numbers around — the next step shows the two heads working together.</Note>
+          <Note>A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones. Beaters usually strike at the centre or 1–2 in above it.</Note>
+          <Note>This is a simplified head in empty space. On a real kick, the air inside and the second head pull these numbers around — the next step shows the two heads working together.</Note>
         </>
       ),
     },
@@ -309,7 +308,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
           ) : (
             <Text style={styles.missing}>No drawing for this step.</Text>
           ),
-        badge: 'IDEAL two-head model (the Drum Tuning Lab’s) · equal heads · motion EXAGGERATED · no levels or pitches implied',
+        badge: 'A simplified picture: two equal heads and the air between them · motion drawn larger · no levels or pitches implied',
         bezel: pairBezel,
         params: pairParams,
         initialParam: 'swing',
@@ -323,7 +322,6 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
                 ? 'Both heads move the same way at the same moment. The air between them is carried along more than squeezed, so it pushes back gently: this is the LOWER-pitched of the pair. It moves little air in the room overall, so it radiates weakly and rings on longer.'
                 : 'The heads move in together, then out together. The air between them is squeezed and eased, and its springiness pushes back hard: this is the HIGHER-pitched of the pair. It changes the drum’s whole volume, so it radiates strongly — and spends its energy sooner.'}
             </Point>
-            <ProvenanceTag kind="ideal" />
           </Card>
           <Note>One strike sets both going; the sound you hear is the two together. A port lets some of the squeezed air out — the moving air that can pop a mic at the port.</Note>
         </>

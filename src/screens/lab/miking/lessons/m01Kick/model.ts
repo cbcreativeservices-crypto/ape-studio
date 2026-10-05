@@ -70,14 +70,17 @@ export const PILLOW_TOP = R_IN - KICK_DIMS.pillowH.mm;
  *  pressed between the heads (1 mm short of each head plane). */
 export const PILLOW_X1 = Math.min(KICK_DIMS.pillowLen.mm, KICK_DIMS.L.mm - 1);
 
-/* ── DOCUMENTED ZONES (lesson table L19-37; corrections K-01, K-02, K-09) ── */
+/* ── RECOMMENDED STARTING POINTS (lesson table L19-37; corrections K-01, K-02,
+ *  K-09). Learner-facing: label, band, tendency, checks — plain starting-point
+ *  words (owner ruling 2026-10-04). `kind`, `src`, `quote` and every `prov`
+ *  are the INTERNAL research record, never shown. ── */
 const DYN_STAND = ['kickDynCard', 'kickDynSuper', 'sdc'];
 
 export const KICK_ZONES: DocumentedZone[] = [
   {
-    id: 'b52.near',
-    label: 'Beta 52A guide · near the batter head',
-    band: '5 to 7.5 cm (2 to 3 in) from the beater head, slightly off-center',
+    id: 'in.near',
+    label: 'Inside, near the batter head',
+    band: 'Start about 5–7.5 cm (2–3 in) from the batter head, a little off the beater’s line.',
     kind: 'sourced',
     src: 'S-B52-UG',
     quote: '5 to 7.5 cm (2 to 3 in.) away from beater head, slightly off-center from beater.',
@@ -88,13 +91,13 @@ export const KICK_ZONES: DocumentedZone[] = [
     requires: { variant: 'ported', micTypeIds: ['kickDynSuper'] },
     aim: { maxOffAxis: 30, prov: ill('the row assumes the mic faces the head it is measured from; ±30° is the lab’s tolerance') },
     start: { p: { x: 60, y: STRIKE_Y, z: 40 }, az: 0, el: 0 },
-    tendency: 'The guide’s tone words for this row: “Sharp attack; maximum bass sound, highest sound pressure level.” Stronger articulation is one expected tendency on most drums — still checked on this drum. Why “maximum bass” this close? A directional mic near a radiating head boosts its own lows (proximity effect). That is this mic, this close — not a rule that moving inward always adds bass.',
+    tendency: 'A sharp, defined attack with plenty of low end, and the loudest spot of these starting points. Why so much low end this close? A directional mic near a radiating head lifts its own lows (proximity effect) — that is this mic at this distance, not a rule that deeper means more bass. Move it and listen.',
     checks: ['Clearance from the batter head, the damping and the beater', 'The total tone, on this drum', 'Input overload on the strongest strokes'],
   },
   {
-    id: 'b52.far',
-    label: 'Beta 52A guide · farther in, on the beater line',
-    band: '20 to 30 cm (8 to 12 in) from the beater head, on-axis with the beater',
+    id: 'in.far',
+    label: 'Inside, farther in, on the beater’s line',
+    band: 'Start about 20–30 cm (8–12 in) from the batter head, facing the beater.',
     kind: 'sourced',
     src: 'S-B52-UG',
     quote: '20 to 30 cm (8 to 12 in.) from beater head, on-axis with beater.',
@@ -105,13 +108,13 @@ export const KICK_ZONES: DocumentedZone[] = [
     requires: { variant: 'ported', micTypeIds: ['kickDynSuper'] },
     aim: { maxOffAxis: 30, prov: ill('the row assumes the mic faces the head it is measured from; ±30° is the lab’s tolerance') },
     start: { p: { x: 250, y: STRIKE_Y, z: 0 }, az: 0, el: 0 },
-    tendency: 'The guide’s tone words: “Medium attack; balanced sound.” Compare articulation and resonance on this drum, without assuming it always sounds bassier. Only where the drum and mic physically allow it.',
+    tendency: 'A softer attack and a more balanced sound. Compare attack and resonance on this drum — only where the drum and the mic physically fit.',
     checks: ['The whole assembly still clears the port edge, the damping and the beater', 'Articulation against resonance, on this drum'],
   },
   {
-    id: 'b91.pillow',
-    label: 'Beta 91A guide · boundary mic on the pillow',
-    band: '25 to 152 mm (1 to 6 in) from the beater head, on cushioning',
+    id: 'in.pillow',
+    label: 'Boundary mic resting on the pillow',
+    band: 'Start about 2.5–15 cm (1–6 in) from the batter head, resting on the cushioning.',
     kind: 'sourced',
     src: 'S-B91-UG',
     quote: 'Inside drum, on a pillow or other cushioning surface, 25 to 152 mm (1 to 6 in.) from beater head.',
@@ -120,13 +123,13 @@ export const KICK_ZONES: DocumentedZone[] = [
     distance: { min: 25, max: 152 },
     requires: { mount: 'surface', micTypeIds: ['boundaryHalf'] },
     start: { p: { x: 60, y: 0, z: 0 }, az: 0, el: 0 },
-    tendency: 'The guide’s tone words: “Full, natural sound.”; with the contour switch on, “Sharp attack; maximum bass ‘punch.’” This mounting belongs to this mic type only.',
+    tendency: 'A full, natural sound; with a contour switch (if the mic has one), a sharper attack and more low-end punch. Resting on cushioning suits a boundary mic made for it.',
     checks: ['It rests on the cushioning, grille uncovered', 'Orientation: sources within 60° above the surface', 'The cable is stable and clear of the pedal', 'The contour switch setting'],
   },
   {
-    id: 'e902.reso',
-    label: 'e 902 manual · at the level of the resonant head',
-    band: 'at the level of the resonant head (no distance given)',
+    id: 'reso.level',
+    label: 'Level with the front head',
+    band: 'Start level with the front head — just inside or just outside it, within about 6 cm (2.4 in).',
     kind: 'sourced',
     src: 'SN-902-2019',
     quote: 'Position the microphone at the level of the resonant head.',
@@ -136,13 +139,13 @@ export const KICK_ZONES: DocumentedZone[] = [
     bandProv: ill('"at the level of": the manual gives no distance; ±6 cm about the head plane is the lab’s drawing of it'),
     requires: { micTypeIds: ['kickDynCard'] },
     start: { p: { x: L + 40, y: 0, z: 0 }, az: 0, el: 0 },
-    tendency: 'The manual’s words for this position: “less attack”, “much resonance”, “smooth and voluminous” — a more resonant tendency than close to the batter head.',
+    tendency: 'Less attack and more resonance — a smoother, fuller sound than close to the batter head.',
     checks: ['Room and kit spill', 'Port-air noise, if the head is ported', 'The usable balance in context'],
   },
   {
-    id: 'dpa.outside',
-    label: 'DPA article · just outside, at the edge of the front head',
-    band: 'just outside, on the edge of the resonator head (no distance given)',
+    id: 'out.edge',
+    label: 'Just outside, toward the edge of the front head',
+    band: 'Start about 2–15 cm (1–6 in) outside the front head, toward its edge.',
     kind: 'sourced',
     src: 'DPA-KICK',
     quote: 'Sometimes placing a kick drum mic just outside the drum, on the edge of the resonator head, gives more impact.',
@@ -154,13 +157,13 @@ export const KICK_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: ['sdc', 'kickDynCard', 'kickDynSuper'] },
     aim: { maxOffAxis: 30, prov: ill('the row assumes the mic faces the head it is measured from; ±30° is the lab’s tolerance') },
     start: { p: { x: L + 60, y: -220, z: 0 }, az: 0, el: 0 },
-    tendency: 'DPA: sometimes “gives more impact”. Outside pickup is the normal option for an unported head (DPA documents it). The kit around the drum is heard more.',
+    tendency: 'Sometimes more impact. A natural choice when the front head has no port. You will hear more of the kit around the drum, too.',
     checks: ['The head’s contribution', 'The surrounding kit sound', 'Any acoustic gain needed live'],
   },
   {
-    id: 'live.D',
-    label: 'Shure live guide · inside, a third in from the edge (TRIAL numbers)',
-    band: 'TRIAL: “a few inches” read as 5 to 10 cm from the beater head; “about 1/3 of way in from edge” ≈ 2/3 of the radius off-axis',
+    id: 'in.offset',
+    label: 'Inside, a third of the way in from the edge',
+    band: 'Start about 5–10 cm (2–4 in) from the batter head, about a third of the way in from the edge of the head.',
     kind: 'trial',
     src: 'S-LIVE',
     quote: 'Mount microphone on boom arm inside drum a few inches from beater head, about 1/3 of way in from edge of head (Position D)',
@@ -172,7 +175,7 @@ export const KICK_ZONES: DocumentedZone[] = [
     requires: { variant: 'ported', micTypeIds: DYN_STAND },
     aim: { maxOffAxis: 30, prov: ill('the row assumes the mic faces the head it is measured from; ±30° is the lab’s tolerance') },
     start: { p: { x: 75, y: 0, z: -(2 / 3) * R }, az: 0, el: 0 },
-    tendency: 'Shure’s live guide: “Placing the mic off center will pick up more overtones.”',
+    tendency: 'Off-centre placement tends to pick up more overtones.',
     checks: ['Clearance from the shell, the damping and the head', 'Overtones against attack, on this drum'],
   },
 ];

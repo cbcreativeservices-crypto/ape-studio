@@ -102,27 +102,3 @@ export function zonesAvailable(zones: DocumentedZone[], variant: VariantId, micT
     return true;
   });
 }
-
-/**
- * Is any edge of this zone DRAWN BY THE LAB (review M5)? The source gives the
- * position in words, but the band's numbers, its off-line limits or its aim
- * tolerance are the lab's drawing of those words. Such a zone is shown as
- * "SOURCED*" with "* edges drawn by the lab" — never as plain SOURCED.
- */
-export function zoneEdgesByLab(z: DocumentedZone): boolean {
-  if (z.kind !== 'sourced') return false;
-  if (z.bandProv && z.bandProv.kind !== 'sourced') return true;
-  if (z.radial && z.radial.prov.kind !== 'sourced') return true;
-  if (z.aim && z.aim.prov.kind !== 'sourced') return true;
-  return false;
-}
-
-/** The lab-drawn parts of a zone, in words, for its card. */
-export function labDrawnNotes(z: DocumentedZone): string[] {
-  const out: string[] = [];
-  const say = (p: { kind: string; reason?: string; note?: string }) => (p.kind === 'illustrative' ? p.reason ?? '' : p.note ?? '');
-  if (z.bandProv && z.bandProv.kind !== 'sourced') out.push(say(z.bandProv as never));
-  if (z.radial && z.radial.prov.kind !== 'sourced') out.push(say(z.radial.prov as never));
-  if (z.aim && z.aim.prov.kind !== 'sourced') out.push(`aim: ${say(z.aim.prov as never)}`);
-  return out.filter(Boolean);
-}

@@ -5,10 +5,11 @@
  * the miking"):
  *
  *   • page order: the three FOUNDATIONS first (orient, how it sounds, the
- *     setting), Sources last; the eight stages cover every page once;
+ *     setting), Practice last (no Sources page since the owner ruling of
+ *     2026-10-04); the seven stages cover every page once;
  *   • NEW path: no page that operates a microphone opens its activity before
  *     ORIENT + HOW IT SOUNDS + THE SETTING are met; the foundation pages place
- *     no mic at all; Sources is never gated; navigation itself is never gated;
+ *     no mic at all; navigation itself is never gated;
  *   • the QUICK CHECK (experienced path): 6 items on the foundations only, a
  *     critical safety item, pass = 5 of 6 with every critical item right,
  *     one attempt per run, and it opens the activities;
@@ -73,16 +74,17 @@ const strip = (s: string) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\
 const MIC_PAGES: PageId[] = ['microphone', 'placement', 'context', 'twoMic', 'troubleshoot', 'practice'];
 
 describe('the journey order (stages and pages)', () => {
-  it('the three foundations come first, Sources last', () => {
+  it('the three foundations come first; the lesson ends at Practice (no Sources page)', () => {
     assert.deepEqual(PAGE_IDS.slice(0, 3), ['instrument', 'sound', 'setting']);
     assert.deepEqual([...J.FOUNDATION_PAGES], ['instrument', 'sound', 'setting']);
-    assert.equal(PAGE_IDS[PAGE_IDS.length - 1], 'sources');
+    assert.equal(PAGE_IDS[PAGE_IDS.length - 1], 'practice');
+    assert.ok(!(PAGE_IDS as readonly string[]).includes('sources'));
   });
-  it('the eight stages cover every page exactly once, in page order', () => {
-    assert.equal(J.STAGES.length, 8);
+  it('the seven stages cover every page exactly once, in page order', () => {
+    assert.equal(J.STAGES.length, 7);
     const flat = J.STAGES.flatMap((s) => s.pages);
     assert.deepEqual(flat, [...PAGE_IDS]);
-    assert.deepEqual(J.STAGES.map((s) => s.id), ['orient', 'sound', 'setting', 'mics', 'placement', 'advanced', 'practice', 'sources']);
+    assert.deepEqual(J.STAGES.map((s) => s.id), ['orient', 'sound', 'setting', 'mics', 'placement', 'advanced', 'practice']);
   });
   it('every page of the lesson exists, in that order, with its title', () => {
     for (const p of PAGE_IDS) assert.ok(lesson.pages[p]?.title, p);
@@ -106,8 +108,8 @@ describe('NEW path: no mic is operated before ORIENT + HOW IT SOUNDS + THE SETTI
     const met = new Set<PageId>(J.FOUNDATION_PAGES);
     for (const p of PAGE_IDS) assert.equal(J.pageGate(p, met, false), 'open', p);
   });
-  it('the foundations themselves and Sources are never gated', () => {
-    for (const p of [...J.FOUNDATION_PAGES, 'sources'] as PageId[]) assert.equal(J.pageGate(p, none, false), 'open', p);
+  it('the foundations themselves are never gated', () => {
+    for (const p of J.FOUNDATION_PAGES) assert.equal(J.pageGate(p, none, false), 'open', p);
   });
   it('the foundation pages place no microphone (no mic slot on their scenes)', () => {
     for (const f of ['PInstrument.tsx', 'PSound.tsx', 'PSetting.tsx']) {

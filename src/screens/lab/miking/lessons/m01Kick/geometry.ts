@@ -64,15 +64,15 @@ const shellProv = from(D.R.prov);
 const parts: Part[] = [
   { id: 'kick.batter', label: 'batter head', short: 'batter', role: 'The head the beater strikes, on the player’s side. Its attack starts here.', moving: true, clearance: D.headClear, prov: shellProv, solid: { kind: 'slab', c: { x: 0, y: 0, z: 0 }, r: R, x0: -0.5, x1: 0.5 } },
   { id: 'kick.reso', label: 'resonant head (intact)', short: 'front head', role: 'The front head, facing the audience. With no port, outside pickup is the normal option.', moving: true, clearance: D.headClear, prov: shellProv, variants: ['intact'], solid: { kind: 'slab', c: { x: L, y: 0, z: 0 }, r: R, x0: L - 0.5, x1: L + 0.5 } },
-  { id: 'kick.resoPorted', label: 'resonant head (ported)', short: 'front head', role: 'The front head, facing the audience. An existing port lets an internal mic in — never cut one to match a diagram.', moving: true, clearance: D.headClear, prov: shellProv, variants: ['ported'], solid: { kind: 'slab', c: { x: L, y: 0, z: 0 }, r: R, x0: L - 0.5, x1: L + 0.5, hole: { c: KICK_ANCHORS['bd.port.center'], r: portR } } },
-  { id: 'kick.port', label: 'port (5 in, offset; position illustrative)', short: 'port', role: 'An opening in the front head. Air leaves here too: port air can make a pop or wind-like burst.', prov: D.portD.prov, variants: ['ported'] },
+  { id: 'kick.resoPorted', label: 'resonant head (ported)', short: 'front head', role: 'The front head, facing the audience. An existing port lets an internal mic in — work with the head the player brings.', moving: true, clearance: D.headClear, prov: shellProv, variants: ['ported'], solid: { kind: 'slab', c: { x: L, y: 0, z: 0 }, r: R, x0: L - 0.5, x1: L + 0.5, hole: { c: KICK_ANCHORS['bd.port.center'], r: portR } } },
+  { id: 'kick.port', label: 'port (5 in, offset)', short: 'port', role: 'An opening in the front head. Air leaves here too: port air can make a pop or wind-like burst.', prov: D.portD.prov, variants: ['ported'] },
   { id: 'kick.shell', label: 'shell', short: 'shell', role: 'The wooden cylinder between the heads. With the air inside, it shapes the drum’s resonance.', prov: D.tShell.prov, solid: { kind: 'tube', c: { x: 0, y: 0, z: 0 }, rIn: R_IN, rOut: R, x0: 0, x1: L } },
   { id: 'kick.hoopBatter', label: 'batter hoop', short: 'hoop', role: 'The wood hoop holding the batter head; the pedal clamps to it.', prov: D.tHoop.prov, solid: { kind: 'tube', c: { x: 0, y: 0, z: 0 }, rIn: hoopIn, rOut: hoopOut, x0: -(D.hHoop.mm - D.hoopInset.mm), x1: D.hoopInset.mm } },
   { id: 'kick.hoopReso', label: 'front hoop', short: 'hoop', role: 'The wood hoop holding the front head.', prov: D.tHoop.prov, solid: { kind: 'tube', c: { x: 0, y: 0, z: 0 }, rIn: hoopIn, rOut: hoopOut, x0: L - D.hoopInset.mm, x1: L + D.hHoop.mm - D.hoopInset.mm } },
-  { id: 'kick.pillow', label: 'damping pillow (DW 18 in; size from a retailer listing)', short: 'pillow', role: 'Damping on the bottom of the drum, against the beater head. Mics stay off it — except a boundary mic made to rest on it.', clearance: D.dampClear, prov: { kind: 'sourced', src: 'S-B52-UG', quote: 'place a pillow or blanket on bottom of the drum against the beater head' }, solid: { kind: 'box', min: { x: 1, y: PILLOW_TOP, z: -D.pillowHalfW.mm }, max: { x: PILLOW_X1, y: R_IN, z: D.pillowHalfW.mm } } },
-  ...KICK_GEOM.spurs.map<Part>((s) => ({ id: s.side < 0 ? 'kick.spurL' : 'kick.spurR', label: s.side < 0 ? 'left spur (illustrative)' : 'right spur (illustrative)', short: 'spur', role: 'A leg on each side of the shell that keeps the drum from creeping.', prov: { kind: 'sourced', src: 'YMH-HUB', quote: 'attached to each side of the shell' }, solid: { kind: 'capsule', a: s.top, b: s.foot, r: 8 } })),
-  { id: 'kick.beater', label: 'beater (illustrative)', short: 'beater', role: 'Driven by the pedal; it strikes the batter head at the centre or 1–2 in above it.', moving: true, prov: D.strikeY.prov },
-  { id: 'kick.pedal', label: 'pedal (illustrative)', short: 'pedal', role: 'The player’s foot drives the beater. Cables and stands keep clear of its action.', prov: ill('no source gives pedal dimensions'), solid: { kind: 'box', min: { x: KICK_GEOM.pedal.x0, y: KICK_GEOM.pedal.top, z: -45 }, max: { x: KICK_GEOM.pedal.x1, y: D.yFloor.mm, z: 45 } } },
+  { id: 'kick.pillow', label: 'damping pillow', short: 'pillow', role: 'Damping on the bottom of the drum, against the beater head. Mics stay off it — except a boundary mic made to rest on it.', clearance: D.dampClear, prov: { kind: 'sourced', src: 'S-B52-UG', quote: 'place a pillow or blanket on bottom of the drum against the beater head' }, solid: { kind: 'box', min: { x: 1, y: PILLOW_TOP, z: -D.pillowHalfW.mm }, max: { x: PILLOW_X1, y: R_IN, z: D.pillowHalfW.mm } } },
+  ...KICK_GEOM.spurs.map<Part>((s) => ({ id: s.side < 0 ? 'kick.spurL' : 'kick.spurR', label: s.side < 0 ? 'left spur' : 'right spur', short: 'spur', role: 'A leg on each side of the shell that keeps the drum from creeping.', prov: { kind: 'sourced', src: 'YMH-HUB', quote: 'attached to each side of the shell' }, solid: { kind: 'capsule', a: s.top, b: s.foot, r: 8 } })),
+  { id: 'kick.beater', label: 'beater', short: 'beater', role: 'Driven by the pedal; it strikes the batter head at the centre or 1–2 in above it.', moving: true, prov: D.strikeY.prov },
+  { id: 'kick.pedal', label: 'pedal', short: 'pedal', role: 'The player’s foot drives the beater. Cables and stands keep clear of its action.', prov: ill('no source gives pedal dimensions'), solid: { kind: 'box', min: { x: KICK_GEOM.pedal.x0, y: KICK_GEOM.pedal.top, z: -45 }, max: { x: KICK_GEOM.pedal.x1, y: D.yFloor.mm, z: 45 } } },
 ];
 
 export const KICK_MODEL: InstrumentModel = {
@@ -96,20 +96,20 @@ export const KICK_MODEL: InstrumentModel = {
   envelopes: [
     {
       id: 'env.beater',
-      label: 'beater travel (illustrative)',
+      label: 'beater travel',
       shape: { kind: 'sweep', pivot: axle, r0: beaterLen - 40, r1: beaterLen + headR, a0: restAngle, a1: strikeAngle, halfW: 35 },
       prov: ill('the pedal’s pivot, shaft length and swing are unknown; drawn so the head just reaches the batter head'),
     },
     {
       id: 'env.player',
-      label: 'the player’s foot and leg (illustrative)',
+      label: 'the player’s foot and leg',
       shape: { kind: 'box', min: { x: -720, y: -260, z: -230 }, max: { x: KICK_GEOM.pedal.x0 + 60, y: D.yFloor.mm, z: 230 } },
       prov: ill('no source gives the player’s reach'),
     },
   ],
   variants: [
-    { id: 'ported', label: 'PORTED', blurb: 'An existing 5 in offset port (Remo’s size; its position is unknown and drawn illustratively). An internal mic can go in through it.' },
-    { id: 'intact', label: 'INTACT', blurb: 'No port. Mic it from outside — or use an internal mic that is appropriately installed. Never cut a hole to match a diagram.' },
+    { id: 'ported', label: 'PORTED', blurb: 'An existing 5 in offset port in the front head. An internal mic can go in through it.' },
+    { id: 'intact', label: 'INTACT', blurb: 'No port. Mic it from outside — or use an internal mic that is already installed. Work with the head as the player brings it.' },
   ],
   defaultVariant: 'ported',
   views: {

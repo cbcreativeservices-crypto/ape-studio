@@ -103,7 +103,8 @@ export function fmtDb(db: number): string {
  * first-order null is infinitely deep on paper, so any number near it is an
  * artefact of where the control landed; real microphones reject far less
  * there, and least at low frequencies. Below IDEAL_NULL_DB no number is
- * printed: "deep null (ideal)".
+ * printed: "deep null" (the page says once, in words, that the pattern is a
+ * simplified picture — owner ruling 2026-10-04: no "ideal" tag on every readout).
  */
 export const IDEAL_NULL_DB = -25;
 export function isDeepNull(db: number): boolean {
@@ -112,5 +113,5 @@ export function isDeepNull(db: number): boolean {
 }
 export function fmtIdealPickup(db: number): string {
   'worklet';
-  return isDeepNull(db) ? 'deep null (ideal)' : `${fmtDb(db)} (ideal)`;
+  return isDeepNull(db) ? 'deep null' : fmtDb(db);
 }

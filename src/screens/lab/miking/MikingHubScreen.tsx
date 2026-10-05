@@ -2,7 +2,7 @@
  * MikingHubScreen — route `MikingHub { lab? }` (blueprint §2; ruling §16.3:
  * the "Miking Lab 1: Drums" row opens this hub, which lists its lessons).
  * Only labs and lessons that are READY are listed (owner rule: no
- * placeholder rows). Each lesson shows ✓ and "n of 8 pages" — the lab-local
+ * placeholder rows). Each lesson shows ✓ and "n of N pages" — the lab-local
  * credit of ruling §16.1. A failed progress read says so (D51) and every
  * lesson still opens.
  */
@@ -58,7 +58,7 @@ export function MikingHubScreen() {
             })}
           </View>
         ))}
-        <Text style={styles.note}>Every number is shown with its source. Trial numbers are labelled TRIAL; parts no source describes are drawn ILLUSTRATIVE. Learn the reasoning here — place real mics with the drummer stopped.</Text>
+        <Text style={styles.note}>After our research, these lessons suggest where to begin — starting points, not rules. Move the mic, listen, and trust your ears and the room. Place real mics with the drummer stopped.</Text>
       </ScrollView>
     </View>
   );

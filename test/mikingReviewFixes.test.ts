@@ -8,7 +8,7 @@
  *     names in options, a "why" for every wrong option (cog C1, M2);
  *   • the final task accepts several setups and grades the reasons (cog C1);
  *     the setup procedure is practised in order, power before gain (cog C2);
- *   • hearing safety is taught where it matters, with NIOSH (audio C1);
+ *   • hearing safety is taught where it matters, as plain advice (audio C1);
  *   • no internal source codes in learner text (cog M6);
  *   • PORT GEOMETRY: the port is drawn as an opening IN the head, at the
  *     port's position, in both views; a boom through the port is clear and
@@ -16,7 +16,8 @@
  *   • 3:1 is null for two mics on one source (audio M7, cog M11);
  *   • the comb follows the rear-lobe sign (audio M8);
  *   • ideal nulls never print as a number (audio M3, cog M8);
- *   • zones with a stated orientation test aim; lab-drawn edges read SOURCED*
+ *   • zones with a stated orientation test aim; every zone reads one mark
+ *     (owner ruling 2026-10-04: no SOURCED / TRIAL on screen)
  *     (audio M5, M6);
  *   • page 4: the monitors are fixed; the downstage wedge can be nulled by
  *     AIM within ±45°, the drummer's fill cannot, and the drum lies in its
@@ -32,7 +33,7 @@ import { KICK_GEOM, portOpening } from '../src/screens/lab/miking/lessons/m01Kic
 import { micType } from '../src/screens/lab/miking/data/micTypes.ts';
 import { micBodyOf } from '../src/screens/lab/miking/engine/model/validate.ts';
 import { assembly, checkAssembly, compileScene, solidOnPath } from '../src/screens/lab/miking/engine/geometry/collision.ts';
-import { inZone, zoneEdgesByLab } from '../src/screens/lab/miking/engine/geometry/zones.ts';
+import { inZone } from '../src/screens/lab/miking/engine/geometry/zones.ts';
 import { arrivalAngle, nearNull } from '../src/screens/lab/miking/engine/physics/polar.ts';
 import { effectivePolarity, micGain, notchesHz } from '../src/screens/lab/miking/engine/physics/twoMic.ts';
 import { threeToOneReading } from '../src/screens/lab/miking/engine/physics/levels.ts';
@@ -119,7 +120,7 @@ describe('the final task has more than one acceptable solution (cognitive C1; le
 });
 
 describe('hearing safety is taught where it matters (audio C1, cognitive C2)', () => {
-  it('THE SETTING (before any mic) teaches NIOSH 85 dBA / 8 h / 3 dB exchange and that max SPL is not a hearing limit', () => {
+  it('THE SETTING (before any mic) teaches 85 dBA / 8 h / 3 dB exchange and that max SPL is not a hearing limit', () => {
     // Moved from page 1 by the journey (2026-10-04): ORIENT asks nothing; the
     // hearing warning sits on "Before any mic", where soundcheck begins.
     const p1 = read('src/screens/lab/miking/pages/PSetting.tsx');
@@ -127,7 +128,8 @@ describe('hearing safety is taught where it matters (audio C1, cognitive C2)', (
     assert.match(p1, /every 3 dBA/);
     assert.match(p1, /nothing to do with a microphone’s maximum SPL rating/);
     assert.ok(lesson.pages.setting.credit.scenarios.includes('k.inst.2'));
-    assert.ok(lesson.sources.some((s) => s.key === 'NIOSH'));
+    // The guideline's source stays on the internal record (owner ruling 2026-10-04).
+    assert.match(read('docs/labs/miking/kick/SOURCES.md'), /NIOSH/);
   });
   it('the max-SPL figures sit next to the caveat on page 2', () => {
     const p2 = read('src/screens/lab/miking/pages/PMicrophone.tsx');
@@ -145,8 +147,7 @@ describe('no internal source codes in learner text (cognitive M6)', () => {
     for (const s of lesson.symptoms) texts.push(s.observation, s.explain, ...s.options, ...Object.values(s.why));
     for (const t of lesson.orderTasks) texts.push(t.prompt, t.explain, ...t.steps.flatMap((s) => [s.text, s.early]));
     for (const t of lesson.setupTasks) texts.push(t.brief, t.explain, ...t.setups.flatMap((s) => [s.label, s.feedback]), ...t.reasons.flatMap((r) => [r.label, r.feedback]));
-    for (const z of lesson.zones) texts.push(z.label, z.tendency, ...z.checks);
-    for (const c of lesson.corrections) texts.push(c.text);
+    for (const z of lesson.zones) texts.push(z.label, z.band, z.tendency, ...z.checks);
     texts.push(lesson.practice.task, lesson.accuracyDetail);
     for (const t of texts) assert.doesNotMatch(t, CODE, t);
   });
@@ -238,44 +239,41 @@ describe('ideal nulls never print as a real value (audio M3, cognitive M8)', () 
   it('below the threshold the text has no number', () => {
     assert.equal(isDeepNull(IDEAL_NULL_DB - 0.1), true);
     assert.equal(isDeepNull(IDEAL_NULL_DB + 0.1), false);
-    assert.equal(fmtIdealPickup(-52.4), 'deep null (ideal)');
-    assert.match(fmtIdealPickup(-11.4), /−11\.4 dB \(ideal\)/);
+    assert.equal(fmtIdealPickup(-52.4), 'deep null');
+    assert.match(fmtIdealPickup(-11.4), /^−11\.4 dB$/, 'no "ideal" tag on every readout (owner ruling 2026-10-04)');
   });
   it('pages 2 and 4 branch on isDeepNull before printing a pickup number', () => {
     for (const f of ['PMicrophone.tsx', 'PContext.tsx']) assert.match(read(`src/screens/lab/miking/pages/${f}`), /isDeepNull\(db\)/, f);
   });
 });
 
-describe('zones: aim where the source states an axis; lab-drawn edges disclosed (audio M5, M6)', () => {
+describe('zones: aim where a starting point names an axis; one mark for every zone (audio M5, M6; owner ruling 2026-10-04)', () => {
   const scene = compileScene(m, 'ported');
   const ctx = { scene, surfaces: m.surfaces, lines: m.lines, variant: 'ported', micTypeId: 'kickDynSuper', mount: 'stand' };
-  it('b52.far counts on-axis with the beater, not when the mic is turned away', () => {
-    const z = lesson.zones.find((q) => q.id === 'b52.far')!;
+  it('in.far counts facing the beater, not when the mic is turned away', () => {
+    const z = lesson.zones.find((q) => q.id === 'in.far')!;
     assert.ok(inZone(z, ctx, z.start));
     assert.ok(!inZone(z, ctx, { ...z.start, az: 50 }), 'turned 50° away: out of the zone');
     assert.ok(!inZone(z, ctx, { ...z.start, el: -60 }), 'pointed at the floor: out of the zone');
     assert.ok(inZone(z, ctx, { ...z.start, az: 20 }), 'within the lab’s ±30°');
   });
-  it('marks: plain SOURCED only when every edge is the source’s; TRIAL stays TRIAL', () => {
-    assert.equal(zoneMark(lesson.zones.find((z) => z.id === 'b91.pillow')!), 'SOURCED');
-    for (const id of ['b52.near', 'b52.far', 'e902.reso', 'dpa.outside']) {
-      const z = lesson.zones.find((q) => q.id === id)!;
-      assert.equal(zoneEdgesByLab(z), true, id);
-      assert.equal(zoneMark(z), 'SOURCED*', id);
-    }
-    assert.equal(zoneMark(lesson.zones.find((z) => z.id === 'live.D')!), 'TRIAL');
+  it('marks: every recommended starting point reads the same (IN ZONE), whatever its internal record', () => {
+    for (const z of lesson.zones) assert.equal(zoneMark(z), 'IN ZONE', z.id);
     assert.equal(zoneMark(null), 'NONE');
+    const scene = read('src/screens/lab/miking/engine/scene/PlacementScene.tsx');
+    const band = scene.slice(scene.indexOf('function ZoneBand'), scene.indexOf('/* ── RN labels over the canvas'));
+    assert.doesNotMatch(band, /z\.kind|bandProv|DashPathEffect/, 'one consistent zone style: no trial dashes, no lab-edge dots');
   });
-  it('the placement lobe is drawn in the IDEAL colour, never the sourced blue, and tagged', () => {
+  it('the placement lobe is drawn in the neutral pattern colour, never the zone blue, and tagged', () => {
     const s = read('src/screens/lab/miking/engine/scene/PlacementScene.tsx');
     const slice = s.slice(s.indexOf('function PolarSlice'), s.indexOf('function PathsOverlay'));
     assert.doesNotMatch(slice, /color=\{BLUE\}/);
-    assert.match(slice, /IDEAL PATTERN · SHAPE, NOT RANGE/);
+    assert.match(slice, /PATTERN SHAPE, NOT RANGE/);
   });
 });
 
 describe('page 4: the monitor stays put, the learner aims the mic (audio M2, cognitive M7)', () => {
-  const z = lesson.zones.find((q) => q.id === 'dpa.outside')!;
+  const z = lesson.zones.find((q) => q.id === 'out.edge')!;
   const srcOf = (id: string) => {
     const w = lesson.live.wedges.find((q) => q.id === id)!;
     return { x: w.p.x, y: w.p.y - w.lift, z: w.p.z };
@@ -299,7 +297,7 @@ describe('page 4: the monitor stays put, the learner aims the mic (audio M2, cog
     assert.ok(solidOnPath(compileScene(m, 'ported'), z.start.p, srcOf('fill'), parts));
     assert.equal(solidOnPath(compileScene(m, 'ported'), z.start.p, srcOf('downstage'), parts), null);
   });
-  it('no monitor sits inside the drum or under the kit, and every position is ILLUSTRATIVE', () => {
+  it('no monitor sits inside the drum or under the kit, and every position is illustrative on the record', () => {
     for (const w of lesson.live.wedges) {
       assert.equal(w.prov.kind, 'illustrative');
       assert.ok(w.p.x < -300 || w.p.x > KICK_GEOM.L + 300, w.id);
@@ -317,7 +315,7 @@ describe('readout wording and precision (audio m12, m13)', () => {
     const r = { surfaceId: 'reso', distance: -60, radial: 0, radialLine: 'axis', offAxis: 0, inside: true, zoneId: null, blocked: null };
     const reso = m.surfaces.find((s) => s.id === 'reso')!;
     assert.match(liveLine(r, { slot: 'A', surfaceLabel: reso.label, lineLabel: 'the drum’s axis', showAim: true, minusWords: reso.minus!.words, minusKey: reso.minus!.key }), /inside the drum from the front head/);
-    assert.match(describeMic({ slot: 'A', typeLabel: 'x', patternLabel: 'y', readouts: r, surfaceLabel: reso.label, lineLabel: 'the axis', zoneLabel: null, zoneKind: null, showAim: true, minusWords: reso.minus!.words }), /inside the drum from the front head/);
+    assert.match(describeMic({ slot: 'A', typeLabel: 'x', patternLabel: 'y', readouts: r, surfaceLabel: reso.label, lineLabel: 'the axis', zoneLabel: null, showAim: true, minusWords: reso.minus!.words }), /inside the drum from the front head/);
     assert.match(liveLine({ ...r, surfaceId: 'batter' }, { slot: 'A', surfaceLabel: 'the batter head', lineLabel: 'the beater line', showAim: true }), /behind the batter head/);
   });
 });

@@ -494,19 +494,19 @@ export function kickLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     { id: 'reso', text: variant === 'ported' ? 'FRONT HEAD (PORTED)' : 'FRONT HEAD (INTACT)', short: 'FRONT', u: G.L + 30, v: -G.hoopOut - 46, align: 'right' },
   ];
   if (view === 'side') {
-    out.push({ id: 'beater', text: 'PEDAL · ILLUSTRATIVE', short: 'PEDAL · ILLUS.', u: -230, v: -170, align: 'center', tone: 'illustrative' });
+    out.push({ id: 'beater', text: 'PEDAL', short: 'PEDAL', u: -230, v: -170, align: 'center', tone: 'illustrative' });
     out.push({ id: 'pillow', text: 'PILLOW', u: 150, v: G.pillow.top + 50, align: 'center', tone: 'muted' });
-    out.push({ id: 'floor', text: 'FLOOR · ILLUSTRATIVE', short: 'FLOOR · ILLUS.', u: 895, v: G.yFloor - 24, align: 'right', tone: 'illustrative' });
+    out.push({ id: 'floor', text: 'FLOOR', short: 'FLOOR', u: 895, v: G.yFloor - 24, align: 'right', tone: 'illustrative' });
   } else {
-    out.push({ id: 'pedal', text: 'PEDAL · ILLUSTRATIVE', short: 'PEDAL · ILLUS.', u: -230, v: 110, align: 'center', tone: 'illustrative' });
+    out.push({ id: 'pedal', text: 'PEDAL', short: 'PEDAL', u: -230, v: 110, align: 'center', tone: 'illustrative' });
     // Low on the cushion: the mic zones sit over its middle.
     out.push({ id: 'pillow', text: 'PILLOW (BELOW)', short: 'PILLOW', u: 150, v: G.pillow.halfW - 40, align: 'center', tone: 'muted' });
     out.push({ id: 'player', text: '← PLAYER', u: -300, v: -170, align: 'center', tone: 'muted' });
     // The hardware's sourced COUNT, said in words (the cut shows only 2 per head).
     out.push({ id: 'rods', text: '10 RODS PER HEAD', short: '10 RODS/HEAD', u: G.spurs[1].top.x + 40, v: G.hoopOut + 46, align: 'left', tone: 'illustrative' });
-    out.push({ id: 'spur', text: 'SPURS · ILLUSTRATIVE', short: 'SPURS · ILLUS.', u: G.spurs[1].foot.x + 30, v: G.spurs[1].foot.z + 2, align: 'left', tone: 'illustrative' });
+    out.push({ id: 'spur', text: 'SPURS', short: 'SPURS', u: G.spurs[1].foot.x + 30, v: G.spurs[1].foot.z + 2, align: 'left', tone: 'illustrative' });
   }
-  if (variant === 'ported') out.push({ id: 'port', text: 'PORT · ILLUSTRATIVE', short: 'PORT · ILLUS.', u: G.L + 30, v: (view === 'side' ? PORT.y : PORT.z) + G.portR + 40, align: 'left', tone: 'illustrative' });
+  if (variant === 'ported') out.push({ id: 'port', text: 'PORT', short: 'PORT', u: G.L + 30, v: (view === 'side' ? PORT.y : PORT.z) + G.portR + 40, align: 'left', tone: 'illustrative' });
   return out;
 }
 

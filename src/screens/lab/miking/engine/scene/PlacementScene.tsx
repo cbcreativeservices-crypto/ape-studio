@@ -398,7 +398,7 @@ function PolarSlice({ pose, view, pattern }: { pose: SharedValue<MicPose>; view:
 
 /** The lobe's in-canvas tag, following the mic (UI thread; no React work). */
 function LobeTag({ pose, view, xf, scale, maxX, maxY }: { pose: SharedValue<MicPose>; view: ViewId; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number }) {
-  const text = 'IDEAL PATTERN · SHAPE, NOT RANGE';
+  const text = 'PATTERN SHAPE, NOT RANGE';
   const W = labelWidth(text, scale, maxX);
   const style = useAnimatedStyle(() => {
     const p = pose.value;
@@ -452,19 +452,15 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
     p.addRRect(Skia.RRectXY(Skia.XYWHRect(r.u0, r.v0, Math.max(4, r.u1 - r.u0), r.v1 - r.v0), 10, 10));
     return p;
   }, [r.u0, r.u1, r.v0, r.v1]);
-  const tone = z.kind === 'trial' ? AMBER : BLUE;
-  // The DRAWN band is the distance band: dotted when its numbers are the lab's.
-  const labEdges = z.kind === 'sourced' && !!z.bandProv && z.bandProv.kind !== 'sourced';
+  // One consistent style for every recommended starting point (owner ruling
+  // 2026-10-04): the same blue band, the same solid edge.
+  const tone = BLUE;
   const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.26 : 0.04));
   const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : 0.45));
   return (
     <>
       <Path path={path} color={tone} opacity={fill} />
-      {/* Edge: solid = the source's own numbers; long dashes = TRIAL; short
-          dots = a sourced position whose distance edges the lab drew. */}
-      <Path path={path} style="stroke" strokeWidth={2.5} color={tone} opacity={edge}>
-        {z.kind === 'trial' ? <DashPathEffect intervals={[14, 9]} /> : labEdges ? <DashPathEffect intervals={[3, 6]} /> : null}
-      </Path>
+      <Path path={path} style="stroke" strokeWidth={2.5} color={tone} opacity={edge} />
     </>
   );
 }

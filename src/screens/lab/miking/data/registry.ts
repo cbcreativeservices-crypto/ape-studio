@@ -12,7 +12,7 @@ export type MikingLabMeta = { id: MikingLabId; num: number; name: string; blurb:
 export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtitle: string; status: 'ready' };
 
 export const MIKING_LABS: readonly MikingLabMeta[] = [
-  { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — documented zones, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
+  { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: '' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: '' },

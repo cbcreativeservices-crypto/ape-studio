@@ -7,7 +7,7 @@
  *     every correct answer is an option, credit ids exist);
  *   • the kick proposal's §8 invariants: 10 rods 36° apart, 2 spurs (one each
  *     side), the port wholly inside the head, every zone between the heads,
- *     b52.far ON the beater line and b52.near OFF it;
+ *     in.far ON the beater line and in.near OFF it;
  *   • zone band edges are inclusive (5.0 and 7.5 cm);
  *   • every sourced zone's quote appears verbatim in kick/SOURCES.md, and
  *     every src key resolves to kick/SOURCES.md or SOURCES_SHARED.md;
@@ -41,7 +41,7 @@ describe('M01 validates', () => {
   it('validateLesson returns no problems', () => {
     assert.deepEqual(validateLesson(lesson, MIC_TYPES), []);
   });
-  it('the 10 pages are present (the journey order)', () => {
+  it('the 9 pages are present (the journey order)', () => {
     assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort());
   });
   it('part ids are unique and stable', () => {
@@ -93,15 +93,15 @@ describe('the documented zones', () => {
       const surf = m.surfaces.find((s) => s.id === z.refSurface)!;
       assert.ok(surf.point.x + z.distance.min >= -0.01 && surf.point.x + z.distance.max <= KICK_GEOM.L + 150 + 0.01, z.id);
     }
-    assert.ok(zone('b52.far').distance.max < KICK_GEOM.L, 'the 30 cm end is inside an 18 in drum');
+    assert.ok(zone('in.far').distance.max < KICK_GEOM.L, 'the 30 cm end is inside an 18 in drum');
   });
   it('b52.far lies ON the beater line, b52.near OFF it (K-01, S-B52-UG)', () => {
-    assert.equal(lineDistance(m.lines, 'beater', zone('b52.far').start), 0);
-    assert.ok(zone('b52.far').radial!.max! <= 15);
-    assert.ok(zone('b52.near').radial!.min! > 0, '"slightly off-center" excludes the line itself');
+    assert.equal(lineDistance(m.lines, 'beater', zone('in.far').start), 0);
+    assert.ok(zone('in.far').radial!.max! <= 15);
+    assert.ok(zone('in.near').radial!.min! > 0, '"slightly off-center" excludes the line itself');
   });
   it('band edges are inclusive: 5.0 and 7.5 cm in, 4.9 and 7.6 cm out', () => {
-    const z = zone('b52.near');
+    const z = zone('in.near');
     const scene = compileScene(m, 'ported');
     const ctx = { scene, surfaces: m.surfaces, lines: m.lines, variant: 'ported', micTypeId: 'kickDynSuper', mount: 'stand' };
     const at = (x: number) => ({ ...z.start, p: { ...z.start.p, x } });
@@ -121,7 +121,7 @@ describe('the documented zones', () => {
     const t = MIC_TYPES.boundaryHalf;
     const pillow = m.parts.find((p) => p.id === 'kick.pillow')!.solid as { kind: 'box'; min: { x: number; y: number; z: number }; max: { x: number; y: number; z: number } };
     for (const v of ['ported', 'intact']) {
-      const pose = pinToSurface(lesson.zones.find((z) => z.id === 'b91.pillow')!.start, pillow, micBodyOf(t), t.body.width!.mm / 2);
+      const pose = pinToSurface(lesson.zones.find((z) => z.id === 'in.pillow')!.start, pillow, micBodyOf(t), t.body.width!.mm / 2);
       assert.equal(pose.p.y + 2 * t.body.radius.mm, pillow.min.y, 'the plate sits ON the pillow top');
       assert.equal(checkAssembly(compileScene(m, v), pose, micBodyOf(t)), null, v);
     }
@@ -162,10 +162,11 @@ describe('the documented zones', () => {
     const hit = checkAssembly(scene, { p: { x: 100, y: KICK_GEOM.pillow.top - 20, z: 0 }, az: 0, el: 0 }, micBodyOf(MIC_TYPES.kickDynSuper));
     assert.equal(hit?.partId, 'kick.pillow');
   });
-  it('sourced zone quotes are verbatim in kick/SOURCES.md; trial zones are labelled TRIAL', () => {
+  it('INTERNAL record: sourced zone quotes are verbatim in kick/SOURCES.md; a trial zone records its reading in bandProv', () => {
+    // Owner ruling 2026-10-04: the research stays mandatory, but is never shown.
     for (const z of lesson.zones) {
       if (z.kind === 'sourced') assert.ok(KICK_SOURCES.includes(z.quote), `${z.id}: quote not found verbatim`);
-      else assert.match(z.band, /TRIAL/);
+      else assert.equal(z.bandProv?.kind, 'trial', `${z.id}: a trial zone keeps its reading on record`);
     }
   });
 });
@@ -199,9 +200,9 @@ describe('sources and unknowns', () => {
   });
   it('the corrections log lists the kick fixes, and the lesson applies them', () => {
     for (const id of ['K-01', 'K-02', 'K-03', 'K-06', 'K-07', 'K-08']) assert.match(LOG, new RegExp(`\\| ${id} \\|`));
-    assert.match(lesson.zones.find((z) => z.id === 'b52.far')!.quote, /on-axis with beater/);
-    const reso = lesson.zones.find((z) => z.id === 'e902.reso')!;
-    assert.doesNotMatch(reso.label + reso.band, /port/i, 'K-02: the e 902 row never mentions a port');
+    assert.match(lesson.zones.find((z) => z.id === 'in.far')!.quote, /on-axis with beater/);
+    const reso = lesson.zones.find((z) => z.id === 'reso.level')!;
+    assert.doesNotMatch(reso.label + reso.band, /port/i, 'K-02: the front-head starting point never mentions a port');
   });
 });
 

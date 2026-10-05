@@ -71,7 +71,7 @@ describe('one pose → one set of printed numbers', () => {
           const strip = liveLine(r, words);
           const bezel = placementBezel(r, words, zone, (id) => m.parts.find((p) => p.id === id)?.short ?? id);
           const now = describeMic(
-            { slot: 'A', typeLabel: 'x', patternLabel: 'y', readouts: r, surfaceLabel: words.surfaceLabel, lineLabel: words.lineLabel, zoneLabel: zone?.label ?? null, zoneKind: zone?.kind ?? null, showAim: words.showAim },
+            { slot: 'A', typeLabel: 'x', patternLabel: 'y', readouts: r, surfaceLabel: words.surfaceLabel, lineLabel: words.lineLabel, zoneLabel: zone?.label ?? null, showAim: words.showAim },
             true,
           );
 
@@ -110,7 +110,7 @@ describe('one pose → one set of printed numbers', () => {
             assert.ok(!now.includes('Blocked'));
             assert.equal(bezel[3].k, 'ZONE');
             assert.equal(bezel[3].v, zoneMark(zone));
-            assert.ok(['TRIAL', 'SOURCED', 'SOURCED*', 'NONE'].includes(bezel[3].v));
+            assert.ok(['IN ZONE', 'NONE'].includes(bezel[3].v), 'one consistent mark: no SOURCED / TRIAL on screen');
           }
         });
       }

@@ -1,12 +1,18 @@
 /**
  * M01 KICK DRUM — the lesson's pages as DATA (blueprint §7). The words come
  * from the owner's lesson (docs/labs/miking/source_text/Kick-Drum-Miking-
- * Technique-Research.txt, cited "L<n>" in COMMENTS only — learner text names
- * a source in words) with the fixes logged in docs/labs/miking/
- * CORRECTIONS_LOG.md applied.
+ * Technique-Research.txt, cited "L<n>" in COMMENTS only) with the fixes
+ * logged in docs/labs/miking/CORRECTIONS_LOG.md applied.
+ *
+ * OWNER RULING 2026-10-04 — learner-facing presentation: suggested starting
+ * points, never dogma. Learner text names NO source, brand or model and
+ * carries no SOURCED / TRIAL badge: "after our research, here is where we
+ * recommend you begin". The research stays mandatory and lives in docs/labs/
+ * miking/ (SOURCES.md, CORRECTIONS_LOG.md) and in the code-only fields
+ * (`src`, `quote`, `prov`, `unknowns`). Pinned by test/mikingLearnerText.test.ts.
  *
  * House wording: tonal changes are TENDENCIES, never results; no audio (the
- * lab is fully silent); no invented curves; brands only as provenance.
+ * lab is fully silent); no invented curves; no dogma words except safety.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { KICK_MODEL } from './geometry.ts';
@@ -17,7 +23,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Meet the kick drum',
     goal: 'Get to know the kick drum — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The beater strikes the batter head, on the player’s side; the front head faces the audience, with or without a port. Work with the drum as it is: never cut a port to match a diagram.',
+    takeaway: 'The beater strikes the batter head, on the player’s side; the front head faces the audience, with or without a port. Work with the drum as the player brings it.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -35,19 +41,19 @@ const pages: Record<PageId, PageContent> = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for this drum by its properties — pattern, power, size and mount — not by its brand.',
     credit: { scenarios: ['k.mic.1', 'k.mic.2', 'k.mic.3', 'k.mic.4', 'k.rec.1'], note: 'Answer the five checks (one reaches back to how the kick sounds).' },
-    takeaway: 'Pattern, power, size and mount decide what a mic can do here. No brand is required, no mic type is universally better, and a mic’s maximum SPL is never a hearing limit.',
+    takeaway: 'Pattern, power, size and mount decide what a mic can do here. No brand is required, no mic type is better for every job, and a mic’s maximum SPL is not a hearing limit.',
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Place a mic in a documented zone, measured from its stated head, aimed as the source says, clear of every moving part.',
-    credit: { scenarios: ['k.place.1', 'k.place.2', 'k.place.3', 'k.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different documented zones, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'A documented zone is a starting point for its own product, measured from a named head. Distance, height and angle are separate variables — and clearance always wins.',
+    goal: 'Start where we recommend you begin — measured from the right head, aimed at it, clear of every moving part — then move the mic and see what changes.',
+    credit: { scenarios: ['k.place.1', 'k.place.2', 'k.place.3', 'k.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
+    takeaway: 'A recommended zone is a place to begin, measured from a named head — not a rule. Distance, height and angle are separate things to try, and clearance comes first.',
   },
   context: {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and know what a pattern cannot do.',
     credit: { scenarios: ['k.ctx.1', 'k.ctx.2', 'k.ctx.studio', 'k.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the downstage wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
-    takeaway: 'A cardioid rejects most directly behind; a supercardioid has a rear lobe and rejects most off the rear axis. Real nulls are shallower than the ideal and shallowest in the lows. No mic position alone prevents feedback.',
+    takeaway: 'A cardioid rejects most directly behind; a supercardioid has a rear lobe and rejects most off the rear axis. Real nulls are shallower than the simplified picture, and shallowest in the lows. No mic position alone prevents feedback.',
   },
   twoMic: {
     title: 'Two microphones',
@@ -67,12 +73,6 @@ const pages: Record<PageId, PageContent> = {
     credit: { scenarios: ['k.prac.order', 'k.prac.gain', 'k.prac.setup1', 'k.prac.setup2', 'k.prac.3', 'k.mix.1', 'k.mix.2', 'k.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional — it needs a real drum.' },
     takeaway: 'Safe placement, correct power and level checks, musical reasoning and an accurate account of polarity versus delay pass. A brand, a bass setting or a genre preset do not — and more than one setup can pass.',
   },
-  sources: {
-    title: 'Sources',
-    goal: 'See where every number in this lesson comes from, what the sources disagree on, and what is still unknown.',
-    credit: { scenarios: [], note: 'Credited when you move on from this page.' },
-    takeaway: 'Manufacturer positions are documented starting points for particular products — not mandatory positions, and not predictions of another drum.',
-  },
 };
 
 /*
@@ -91,9 +91,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'The drummer’s front head has no hole, and they want to keep it that way. What are your options?',
     options: ['Mic it from outside, or use an internal mic already properly installed', 'Cut a small port in the front head so a stand mic can reach inside the drum', 'Ask the drummer to swap in a ported head for the show before you start'],
     correct: 'Mic it from outside, or use an internal mic already properly installed',
-    explain: 'With an intact front head, outside pickup is a normal option, and an appropriately installed internal mic is another. Never alter the instrument to match a diagram.',
+    explain: 'With an intact front head, outside pickup is a normal option, and an internal mic that is already installed is another. Work with the drum as the player brings it.',
     why: {
-      'Cut a small port in the front head so a stand mic can reach inside the drum': 'Never alter the instrument to match a diagram. With an intact head, outside pickup is a normal option.',
+      'Cut a small port in the front head so a stand mic can reach inside the drum': 'The drum is the player’s — no need to alter it to match a diagram. With an intact head, outside pickup is a normal option.',
       'Ask the drummer to swap in a ported head for the show before you start': 'The heads are the player’s choice, and the lesson works with the drum as it is. Outside pickup suits an intact head.',
     },
   },
@@ -103,9 +103,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Your kick mic is rated to 174 dB SPL. Does that tell you how long you can safely stand by the drum during soundcheck?',
     options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for the people next to it', 'Yes, if the mic is inside the drum and you are outside it'],
     correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: NIOSH recommends no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
+    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
     why: {
-      'Yes — anything below the mic’s rating is safe for the people next to it': 'Max SPL tells you when the mic distorts, not what your ears can take. NIOSH’s guideline is 85 dBA averaged over 8 hours.',
+      'Yes — anything below the mic’s rating is safe for the people next to it': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'Yes, if the mic is inside the drum and you are outside it': 'A mic inside the drum is not a hearing meter. Measure where the person listens, and keep levels, repeats and time down.',
     },
   },
@@ -151,7 +151,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why can a mic placed at the port pick up a pop or a wind-like burst?',
     options: ['Air pushed out of the drum leaves through the port', 'The port narrows the beater’s click into a tight beam', 'The shell vibrates hardest right around the port'],
     correct: 'Air pushed out of the drum leaves through the port',
-    explain: 'Each strike pushes the batter head in and squeezes the air inside; with a port, some of it rushes out there. DPA suggests adjusting the mic’s angle in the hole rather than pushing it farther in.',
+    explain: 'Each strike pushes the batter head in and squeezes the air inside; with a port, some of it rushes out there. Try changing the mic’s angle in the hole rather than pushing it farther in.',
     why: {
       'The port narrows the beater’s click into a tight beam': 'A pop or wind-like burst is moving air, not a focused click: the strike squeezes the air inside, and some leaves through the port.',
       'The shell vibrates hardest right around the port': 'The port is a hole in the front head, not part of the shell. The burst is air leaving the drum there.',
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · A mic inside the drum, close to the batter head and facing it, hears more of which part of the sound?',
     options: ['The attack, where the beater meets the head', 'The ring that leaves through the front head', 'The shell wall, which carries the most sound'],
     correct: 'The attack, where the beater meets the head',
-    explain: 'Attack starts where the beater meets the batter head, so a mic close to it and facing it tends to hear more attack — a tendency the guides document, and drums vary.',
+    explain: 'Attack starts where the beater meets the batter head, so a mic close to it and facing it tends to hear more attack — a tendency, and drums vary.',
     why: {
       'The ring that leaves through the front head': 'That is the body, which leaves mostly through the front head and port — a mic toward the front head hears more of it.',
       'The shell wall, which carries the most sound': 'The heads move the most air; the shell shapes how long the drum rings. Close to the batter head it is the attack you hear more of.',
@@ -208,25 +208,25 @@ const scenarios: MikingScenario[] = [
   {
     id: 'k.mic.2',
     page: 'microphone',
-    prompt: 'DPA recommends its flatter-response condenser for kick. What does that tell you?',
+    prompt: 'Some engineers prefer a flatter-response condenser on kick. What does that tell you?',
     options: ['It suits one tonal aim; it does not make condensers better in general', 'Condensers are the more accurate choice whatever the drum and the music', 'Dynamic kick mics are no longer a sound choice for this job'],
     correct: 'It suits one tonal aim; it does not make condensers better in general',
-    explain: 'A flatter response is a particular aim. Do not claim every condenser is flat or every dynamic less detailed — and DPA’s view that dynamics cannot capture the natural sound is a maker’s judgement.',
+    explain: 'A flatter response is one tonal aim. It does not make every condenser flat or every dynamic less detailed — compare them by ear on the drum in front of you.',
     why: {
-      'Condensers are the more accurate choice whatever the drum and the music': 'A flatter response is one aim, not a general rule. DPA’s view of dynamics is a maker’s judgement, not a tested comparison.',
-      'Dynamic kick mics are no longer a sound choice for this job': 'Shure, Sennheiser and AKG all document dynamic kick mics. Different approaches serve different aims.',
+      'Condensers are the more accurate choice whatever the drum and the music': 'A flatter response is one aim, not a general rule. Judge it by ear on this drum, in this music.',
+      'Dynamic kick mics are no longer a sound choice for this job': 'Kick dynamics are a common, sound choice. Different approaches serve different aims.',
     },
   },
   {
     id: 'k.mic.3',
     page: 'microphone',
-    prompt: 'There is no room inside for a stand, and you want a mic resting on the pillow. Which mic may rest there?',
-    options: ['Only one whose own manual allows it, such as a boundary plate made for it', 'A small mic, as long as its grille points up at the beater and stays still', 'A dynamic mic, because dynamics can take the level of a kick at close range'],
-    correct: 'Only one whose own manual allows it, such as a boundary plate made for it',
-    explain: 'The Beta 91A guide allows a pillow or cushioning surface. The Beta 52A guide says “Make sure microphone does not touch drum head or damping inside of the drum.” Do not assume another mic is approved.',
+    prompt: 'There is no room inside for a stand, and you want a mic resting on the pillow. Which mic suits resting there?',
+    options: ['One made to rest on cushioning, such as a boundary plate built for it', 'A small mic, as long as its grille points up at the beater and stays still', 'A dynamic mic, because dynamics can take the level of a kick at close range'],
+    correct: 'One made to rest on cushioning, such as a boundary plate built for it',
+    explain: 'A boundary plate is made to rest on a pillow or other cushioning. A stand-mounted kick mic is made to stay clear of the head and the damping — check that a mic is made for it before laying it there.',
     why: {
-      'A small mic, as long as its grille points up at the beater and stays still': 'Size and aim do not make it allowed. Only a mic whose own manual allows it rests on cushioning.',
-      'A dynamic mic, because dynamics can take the level of a kick at close range': 'Level is not the question. The Beta 52A guide keeps that mic off the head and the damping.',
+      'A small mic, as long as its grille points up at the beater and stays still': 'Size and aim do not make it suitable. A mic made to rest on cushioning — a boundary plate — is the one to lay there.',
+      'A dynamic mic, because dynamics can take the level of a kick at close range': 'Level is not the question. A stand-mounted kick dynamic is made to stay off the head and the damping.',
     },
   },
   {
@@ -238,19 +238,19 @@ const scenarios: MikingScenario[] = [
     explain: 'Dynamic mics need no power. The boundary plate and the condenser are both condensers and need phantom power.',
     why: {
       'The boundary plate, since it rests inside the drum': 'Where it rests does not matter: the boundary plate is a condenser and needs phantom power.',
-      'The condenser, if you keep it at a distance from the head': 'Distance does not change what a condenser needs: the cited example needs P48 phantom power.',
+      'The condenser, if you keep it at a distance from the head': 'Distance does not change what a condenser needs: it still needs phantom power.',
     },
   },
   {
     id: 'k.place.1',
     page: 'placement',
-    prompt: 'A guide says 5 to 7.5 cm from the batter head. Your readout says 6 cm from the FRONT head. Are you in that zone?',
-    options: ['No — the number only counts from the head the guide names', 'Yes — 6 cm falls inside the 5 to 7.5 cm band', 'Yes, as long as the mic is also pointed straight at the beater'],
-    correct: 'No — the number only counts from the head the guide names',
-    explain: 'A documented distance only means something with its reference head — which is why every readout here names it.',
+    prompt: 'A starting point says 5 to 7.5 cm from the batter head. Your readout says 6 cm from the FRONT head. Are you in that zone?',
+    options: ['No — the number only counts from the head it names', 'Yes — 6 cm falls inside the 5 to 7.5 cm band', 'Yes, as long as the mic is also pointed straight at the beater'],
+    correct: 'No — the number only counts from the head it names',
+    explain: 'A distance only means something with its reference head — which is why every readout here names it.',
     why: {
       'Yes — 6 cm falls inside the 5 to 7.5 cm band': 'Same number, wrong head. 6 cm from the front head is about 40 cm from the batter head on this drum.',
-      'Yes, as long as the mic is also pointed straight at the beater': 'Aim is a separate variable. The distance must be measured from the head the guide names.',
+      'Yes, as long as the mic is also pointed straight at the beater': 'Aim is a separate variable. The distance is measured from the head the starting point names.',
     },
   },
   {
@@ -259,10 +259,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'You move the mic from near the batter head toward the front head. What should you expect?',
     options: ['More of the drum’s resonance, as a tendency to check on this drum', 'A steady rise in low bass with each centimetre the mic moves inward', 'A fixed drop in attack, by an amount you can read off a chart'],
     correct: 'More of the drum’s resonance, as a tendency to check on this drum',
-    explain: 'Shure and Sennheiser document that tendency, and DPA cautions that drums vary. Proximity effect and the surface a directional mic faces also matter.',
+    explain: 'That is a common tendency, and drums vary. Proximity effect and the surface a directional mic faces also matter.',
     why: {
       'A steady rise in low bass with each centimetre the mic moves inward': 'Proximity effect and the surface the mic faces change the lows too, so no move changes the bass one way every time.',
-      'A fixed drop in attack, by an amount you can read off a chart': 'Guides document tendencies, not fixed amounts. Drums vary — check it on this drum.',
+      'A fixed drop in attack, by an amount you can read off a chart': 'These are tendencies, not fixed amounts. Drums vary — check it on this drum.',
     },
   },
   {
@@ -273,7 +273,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Partly: near a head a directional mic boosts lows, but drums vary',
     explain: 'A directional mic close to a radiating head boosts its own lows (proximity effect). Which surface it faces, the mic and the drum all matter — check it.',
     why: {
-      'Right — the inside of the drum is simply where all the bass is': 'The guide’s “maximum bass” row is close to the batter head: proximity effect, not a rule about depth.',
+      'Right — the inside of the drum is simply where all the bass is': 'The starting point with the most low end is close to the batter head: proximity effect, not a rule about depth.',
       'Wrong — the outside of the front head is where the bass really is': 'That is the same oversimplification the other way round. The surface faced, the mic and the drum all matter.',
     },
   },
@@ -283,7 +283,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Live, what can favour close, directional pickup on the kick?',
     options: ['Stage spill and the gain available before feedback', 'Directional mics give a louder kick than other types', 'The room sound is usually more useful on a stage'],
     correct: 'Stage spill and the gain available before feedback',
-    explain: 'That is the lesson’s live column. In the studio, an outside or more distant perspective may help when the room contributes usefully.',
+    explain: 'Those are common live reasons. In the studio, an outside or more distant perspective may help when the room contributes usefully.',
     why: {
       'Directional mics give a louder kick than other types': 'A pattern decides what a mic rejects, not how loud the kick is. The live reasons are spill and feedback margin.',
       'The room sound is usually more useful on a stage': 'That is the studio column: a more distant perspective helps when the room adds something useful.',
@@ -307,9 +307,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Studio session, no wedge, a good-sounding room. What could justify moving the mic from inside to outside the front head?',
     options: ['The room adds something useful to the kick in this session', 'An outside mic will pick up a louder kick than an inside one', 'Outside, it removes the spill from the rest of the kit'],
     correct: 'The room adds something useful to the kick in this session',
-    explain: 'That is the lesson’s studio column: an outside or more distant perspective may help when the room contributes usefully — checked by ear, at matched levels.',
+    explain: 'A common studio reason: an outside or more distant perspective may help when the room contributes usefully — checked by ear, at matched levels.',
     why: {
-      'An outside mic will pick up a louder kick than an inside one': 'Sometimes it does, sometimes not (DPA) — and louder is not a reason to choose a position.',
+      'An outside mic will pick up a louder kick than an inside one': 'Sometimes it does, sometimes not — and louder is not a reason to choose a position.',
       'Outside, it removes the spill from the rest of the kit': 'The reverse: outside the drum, the kit around it is heard more.',
     },
   },
@@ -328,7 +328,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'k.two.2',
     page: 'twoMic',
-    prompt: 'Two mics hear the beater 1 ms apart. Summed at equal level, same polarity: where is the first notch (ideal model)?',
+    prompt: 'Two mics hear the beater 1 ms apart. Summed at equal level, same polarity: where is the first notch (simplified model)?',
     options: ['500 Hz, then 1.5 kHz, 2.5 kHz …', '1 kHz, then 2 kHz, 3 kHz, 4 kHz …', '250 Hz, then 750 Hz, 1.25 kHz …'],
     correct: '500 Hz, then 1.5 kHz, 2.5 kHz …',
     explain: 'The first cancellation is where the delay is half a period: f = 1 ÷ (2 × 0.001 s) = 500 Hz, then odd multiples. Inverted, the notches sit at 0, 1 kHz, 2 kHz … instead.',
@@ -379,21 +379,21 @@ const scenarios: MikingScenario[] = [
     prompt: 'What would justify adding a second kick channel?',
     options: ['Each mic works alone, the pair adds something, it holds up in mono', 'Two channels give the mix engineer more to work with later on', 'The kick needs more level in the front-of-house mix than one mic gives'],
     correct: 'Each mic works alone, the pair adds something, it holds up in mono',
-    explain: 'Shure’s two-mic method blends different perspectives. If the pair loses body or becomes uneven, adjust position and level — or leave the second mic out.',
+    explain: 'A two-mic setup blends different perspectives. If the pair loses body or becomes uneven, adjust position and level — or leave the second mic out.',
     why: {
-      'Two channels give the mix engineer more to work with later on': 'More channels also add spill and interactions. A second mic must earn its place in the combined sound.',
+      'Two channels give the mix engineer more to work with later on': 'More channels also add spill and interactions. A second mic should earn its place in the combined sound.',
       'The kick needs more level in the front-of-house mix than one mic gives': 'Level comes from gain and the fader, not from another mic.',
     },
   },
   {
     id: 'k.mix.1',
     page: 'practice',
-    prompt: 'You read “20 to 30 cm” in a guide. Before you place the mic, what else must you know?',
+    prompt: 'A starting point says “20 to 30 cm”. Before you place the mic, what else do you need to know?',
     options: ['Which head it is measured from, and how the mic should be aimed', 'The brand of the drum, so the number matches its size', 'Nothing more: the number already tells you exactly where the mic goes'],
     correct: 'Which head it is measured from, and how the mic should be aimed',
-    explain: 'A documented distance belongs to its named head; the row may also name an orientation (“on-axis with beater”). Clearance is a separate check again.',
+    explain: 'A distance belongs to its named head, and a starting point may also name an aim (“facing the beater”). Clearance is a separate check again.',
     why: {
-      'The brand of the drum, so the number matches its size': 'A guide’s distance belongs to its product and its named head; the drum’s brand does not change that.',
+      'The brand of the drum, so the number matches its size': 'A starting point’s distance belongs to its named head; the drum’s brand does not change that.',
       'Nothing more: the number already tells you exactly where the mic goes': 'A distance means nothing without its reference head; aim and clearance are separate checks.',
     },
   },
@@ -403,9 +403,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Your monitor sits about 125° off a supercardioid’s front axis. What can you expect?',
     options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the monitor, because it sits in the null', 'More pickup than straight behind, which is where it rejects the most'],
     correct: 'Strong rejection on paper; in reality less, and least in the lows',
-    explain: 'An ideal null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
+    explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
     why: {
-      'Silence from the monitor, because it sits in the null': 'An ideal null is infinitely deep only on paper. Real mics reject far less, and least in the lows.',
+      'Silence from the monitor, because it sits in the null': 'A null is infinitely deep only on paper. Real mics reject far less, and least in the lows.',
       'More pickup than straight behind, which is where it rejects the most': 'Straight behind, a supercardioid has a small rear lobe; its deepest rejection is off the rear axis.',
     },
   },
@@ -431,9 +431,9 @@ const symptoms: Symptom[] = [
     src: 'DPA-KICK',
     options: ['Its angle and position against the escaping air, then clearance', 'Push the mic farther into the port so the air no longer reaches it', 'Swap the cable first, since sharp bursts usually sound electrical'],
     correct: 'Its angle and position against the escaping air, then clearance',
-    explain: 'DPA: port wind/pop “can be dealt with by simply adjusting the angle of the microphone in the hole.” Never push in farther if it narrows clearance.',
+    explain: 'Port wind or pop can often be dealt with by changing the mic’s angle in the hole. Avoid pushing it farther in if that narrows the clearance.',
     why: {
-      'Push the mic farther into the port so the air no longer reaches it': 'Never push farther in if it narrows the clearance. Adjusting the mic’s angle in the hole often deals with it.',
+      'Push the mic farther into the port so the air no longer reaches it': 'Pushing farther in can narrow the clearance. Changing the mic’s angle in the hole often deals with it.',
       'Swap the cable first, since sharp bursts usually sound electrical': 'Test the air first: port wind is a known cause. Rule it out before blaming the cable.',
     },
   },
@@ -443,7 +443,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Relative levels, mono blend, both polarity states, positions, and the overhead or other open microphones.',
     options: ['Levels, the mono blend, both polarity states and other open mics', 'Turn both channels up together until the kick sounds full and solid', 'Invert the inside mic, since that one is usually the wrong one'],
     correct: 'Levels, the mono blend, both polarity states and other open mics',
-    explain: 'The pair must be evaluated together, including the overheads and other open mics.',
+    explain: 'Judge the pair together, including the overheads and other open mics.',
     why: {
       'Turn both channels up together until the kick sounds full and solid': 'More level does not fix a cancellation; it makes the thin sound louder. Check the pair together first.',
       'Invert the inside mic, since that one is usually the wrong one': 'Neither mic is “usually wrong”. Compare BOTH polarity states at matched level, in mono.',
@@ -491,7 +491,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Stop the drummer, remount and reroute; do not continue the exercise until clearance is restored.',
     options: ['Stop the drummer, remount and reroute; go on once clearance is back', 'Keep going carefully, and fix the mount once the song is over', 'Tape the cable to the pedal itself so it cannot move during the song'],
     correct: 'Stop the drummer, remount and reroute; go on once clearance is back',
-    explain: 'Clearance always comes first: have the drummer stop before any mic moves.',
+    explain: 'Clearance comes first: have the drummer stop before any mic moves.',
     why: {
       'Keep going carefully, and fix the mount once the song is over': 'Clearance comes first: have the drummer stop before any mic moves.',
       'Tape the cable to the pedal itself so it cannot move during the song': 'The pedal moves. Route and secure the cable AWAY from the pedal and walking paths.',
@@ -514,12 +514,12 @@ const orderTasks: OrderTask[] = [
       { text: 'Compare positions one change at a time, at matched levels', early: 'Compare only once the level is set safely — and at matched levels, so louder does not win.' },
       { text: 'Keep the simplest position that works, with safe clearance', early: 'Decide last, after comparing.' },
     ],
-    explain: 'That is the lesson’s order. Phantom: mute the outputs and lower monitoring before connecting, disconnecting or switching it, and follow the actual equipment manual. Gain: set it with headroom for the strongest strokes, watching the overload indicator.',
+    explain: 'A sensible order. Phantom: mute the outputs and lower monitoring before connecting, disconnecting or switching it, and follow your own equipment’s manual. Gain: set it with headroom for the strongest strokes, watching the overload indicator.',
   },
 ];
 
 const POWER_REASON: SetupReason = { id: 'r.power', label: 'This channel gives the mic the power it needs (phantom, or none)', role: 'required', feedback: 'Say how the mic is powered: a condenser needs phantom; a dynamic needs none.' };
-const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a documented starting point for this kind of mic, from its named head', role: 'required', feedback: 'Say where the position comes from and which head it is measured from.' };
+const DOC_REASON: SetupReason = { id: 'r.doc', label: 'It is a recommended starting point for this kind of mic, from the right head', role: 'required', feedback: 'Say why it is a good place to begin, and which head it is measured from.' };
 const CLEAR_REASON: SetupReason = { id: 'r.clear', label: 'The mic, mount and cable stay clear of heads, beater, damping and pedal', role: 'required', feedback: 'Clearance is part of every passing setup.' };
 const BRAND_REASON: SetupReason = { id: 'r.brand', label: 'It is the brand most engineers reach for on a kick', role: 'wrong', feedback: 'A brand is not part of passing: choose by properties.' };
 const BASS_REASON: SetupReason = { id: 'r.bass', label: 'It will give the most bass of any position on the drum', role: 'wrong', feedback: 'Bass emphasis is not a passing reason, and no position always gives the most bass.' };
@@ -531,36 +531,36 @@ const setupTasks: SetupTask[] = [
     page: 'practice',
     brief: 'BRIEF 1 · An existing port in the front head. A loud club show; the drummer wants a defined attack. One channel; phantom power is available.',
     setups: [
-      { id: 'a', label: 'Supercardioid kick dynamic inside, 5 to 7.5 cm from the batter head, slightly off the beater line', ok: true, power: 'none', feedback: 'A documented starting point (Beta 52A guide), close and directional for a loud stage; attack is its tendency.' },
-      { id: 'b', label: 'Boundary plate resting on the pillow, 25 to 152 mm from the batter head, grille uncovered', ok: true, power: 'phantom', feedback: 'Documented by its own manual (Beta 91A guide), low profile inside; it needs the phantom power this channel has.' },
-      { id: 'c', label: 'Supercardioid kick dynamic inside, 20 to 30 cm from the batter head, on the beater line', ok: true, power: 'none', feedback: 'Documented (Beta 52A guide): medium attack, balanced — defensible if the whole assembly clears the port edge and damping.' },
-      { id: 'd', label: 'Small condenser laid on the pillow inside, so that it cannot move about', ok: false, power: 'phantom', feedback: 'Only a mic whose own manual allows it may rest on cushioning — this one’s does not.' },
-      { id: 'e', label: 'Kick dynamic touching the batter head, to get the most attack possible', ok: false, power: 'none', feedback: 'A mic must never touch a head: it is a moving part.' },
+      { id: 'a', label: 'Supercardioid kick dynamic inside, 5 to 7.5 cm from the batter head, slightly off the beater line', ok: true, power: 'none', feedback: 'A recommended starting point, close and directional for a loud stage; attack is its tendency.' },
+      { id: 'b', label: 'Boundary plate resting on the pillow, 25 to 152 mm from the batter head, grille uncovered', ok: true, power: 'phantom', feedback: 'Made to rest on cushioning, low profile inside; it needs the phantom power this channel has.' },
+      { id: 'c', label: 'Supercardioid kick dynamic inside, 20 to 30 cm from the batter head, on the beater line', ok: true, power: 'none', feedback: 'A recommended starting point: softer attack, balanced — fine if the whole assembly clears the port edge and damping.' },
+      { id: 'd', label: 'Small condenser laid on the pillow inside, so that it cannot move about', ok: false, power: 'phantom', feedback: 'A small condenser is not made to lie on the pillow: it can rattle, slide or touch the damping. Mount it clear instead.' },
+      { id: 'e', label: 'Kick dynamic touching the batter head, to get the most attack possible', ok: false, power: 'none', feedback: 'Keep the mic off the head: the head is a moving part, and contact can damage both.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against spill and feedback on stage', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
-    explain: 'More than one setup passes this brief. What passes is the reasoning: a documented starting point from its named head, clearance, and power that matches the mic.',
+    explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named head, clearance, and power that matches the mic.',
   },
   {
     id: 'k.prac.setup2',
     page: 'practice',
     brief: 'BRIEF 2 · Studio session. The front head is intact, and the drummer wants to keep it. The only spare input has NO phantom power.',
     setups: [
-      { id: 'a', label: 'Cardioid kick dynamic outside, at the level of the front head', ok: true, power: 'none', feedback: 'Documented (e 902 manual): a more resonant tendency; a dynamic needs no phantom.' },
-      { id: 'b', label: 'Supercardioid kick dynamic just outside, near the edge of the front head', ok: true, power: 'none', feedback: 'DPA documents outside pickup for unported drums, and a dynamic needs no phantom.' },
+      { id: 'a', label: 'Cardioid kick dynamic outside, at the level of the front head', ok: true, power: 'none', feedback: 'A recommended starting point with a more resonant tendency; a dynamic needs no phantom.' },
+      { id: 'b', label: 'Supercardioid kick dynamic just outside, near the edge of the front head', ok: true, power: 'none', feedback: 'Outside pickup suits a front head with no port, and a dynamic needs no phantom.' },
       { id: 'c', label: 'Condenser just outside the front head, near its edge', ok: false, power: 'phantom', feedback: 'Outside suits an intact head, but this input has no phantom power and a condenser needs it.' },
       { id: 'd', label: 'Boundary plate resting on the pillow inside the drum', ok: false, power: 'phantom', feedback: 'There is no way in without taking the head off — and this input has no phantom power.' },
-      { id: 'e', label: 'Cut a small port so a kick dynamic can go inside', ok: false, power: 'none', feedback: 'Never alter the instrument to match a diagram.' },
+      { id: 'e', label: 'Cut a small port so a kick dynamic can go inside', ok: false, power: 'none', feedback: 'The drum is the player’s: work with it as it is rather than altering it to match a diagram.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.room', label: 'Outside, the room and the head’s ring can add something useful', role: 'optional', feedback: 'A fair studio reason.' }, BRAND_REASON, BASS_REASON],
-    explain: 'Two outside positions pass. What passes is the reasoning: documented, clear, and powered by what this input can supply.',
+    explain: 'Two outside positions pass. What passes is the reasoning: a sensible starting point, clear, and powered by what this input can supply.',
   },
 ];
 
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
   sound: { prompt: 'Before you step through: when the beater pushes the batter head into the drum, what does the FRONT head do?', options: ['It moves outward, away from the player', 'It moves inward, toward the beater', 'It stays still — only the struck head moves'], after: 'Now STEP through the strike (or PLAY ONCE) and watch both heads.' },
-  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch IDEAL PICKUP.' },
-  placement: { prompt: 'Predict: you move the mic from near the batter head toward the front head. What changes?', options: ['More attack', 'More resonance', 'It depends on this drum'], after: 'Rest the mic in two zones and read each zone’s tendency.' },
+  microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
+  placement: { prompt: 'Predict: you move the mic from near the batter head toward the front head. What changes?', options: ['More attack', 'More resonance', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the downstage wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -589,7 +589,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'What do the two spurs on the sides of the shell do?',
     options: ['Keep the drum from creeping forward as it is played', 'Hold the front head’s hoop tight against the end of the shell', 'Lift the drum so that the port clears the floor'],
     correct: 'Keep the drum from creeping forward as it is played',
-    explain: 'Yamaha: legs or “spurs” attached to each side of the shell keep the drum from creeping. The hoops are held by claws and tension rods.',
+    explain: 'Legs, or spurs, on each side of the shell keep the drum from creeping. The hoops are held by claws and tension rods.',
     why: {
       'Hold the front head’s hoop tight against the end of the shell': 'Claws and tension rods hold the hoops. The spurs are legs that keep the drum from creeping.',
       'Lift the drum so that the port clears the floor': 'The port is in the front head, well clear of the floor; the spurs keep the drum from creeping forward.',
@@ -638,9 +638,9 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'The kick mic is rated to 174 dB SPL. What does that tell you about standing by the drum through a long soundcheck?',
     options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the drum stays below the mic’s 174 dB', 'It is safe as long as the mic itself is inside the drum'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. For people, NIOSH recommends no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. NIOSH’s guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe while the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic itself is inside the drum': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -663,9 +663,9 @@ export const M01_LESSON: Lesson = {
   predictions,
   orient: [
     { title: 'WHAT IT IS', text: 'The kick, or bass drum, is the drum of a kit that lies on its side on the floor. A foot pedal swings a beater into the head facing the player — the batter head. The other head, facing the audience, is the front (resonant) head.', src: 'DW-9000' },
-    { title: 'WHERE YOU MEET IT', text: 'In drum kits across most band music, on stage and in the studio. Yamaha calls 22 and 24 inch drums “standard for just about every other genre of music”. This lesson covers both studio recording and live sound.', src: 'YMH-HUB' },
+    { title: 'WHERE YOU MEET IT', text: 'In drum kits across most band music, on stage and in the studio; 22 and 24 in drums are the usual sizes for most styles. This lesson covers both studio recording and live sound.', src: 'YMH-HUB' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'A supportive pulse, a defined attack, a resonant note — or a mix of these. Which one the player wants decides a lot about the mic and its position, so ask before you start.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'Kit bass drums come in “diameters ranging from 18 to 26 inches, with average depths from 14 to 18 inches” (Yamaha). This lab draws a 22 × 18 in drum from maker dimensions; the parts with no source are drawn ILLUSTRATIVE.', src: 'YMH-HUB' },
+    { title: 'ITS SIZE', text: 'Kit bass drums are about 18 to 26 in across and usually 14 to 18 in deep. This lab draws a 22 × 18 in drum, cut open so you can see inside.', src: 'YMH-HUB' },
   ],
   sound: {
     stages: [
@@ -675,7 +675,7 @@ export const M01_LESSON: Lesson = {
       { title: 'Sound leaves the drum', text: 'Sound leaves from both heads — the front head toward the audience, the batter head toward the player. The heads, the air and the shell ringing together are the BODY of the sound; the shell, the tuning and any damping shape how long it rings.', ported: 'Sound leaves from both heads and from the port — the front head and port toward the audience, the batter head toward the player. The heads, the air and the shell ringing together are the BODY of the sound; the shell, the tuning and any damping shape how long it rings.' },
     ],
     attack: 'The start of the sound: the beater’s brief contact with the batter head. It begins at the strike, so a mic close to the batter head and facing it tends to hear more of it.',
-    body: 'The resonance: the heads, the air inside and the shell ringing together after the strike. Much of it leaves through the front head and the port, so a mic toward the front head tends to hear more of it. Both are tendencies the guides document, and drums vary. Tuning and damping change how long the drum rings — the Drum Tuning Lab covers that.',
+    body: 'The resonance: the heads, the air inside and the shell ringing together after the strike. Much of it leaves through the front head and the port, so a mic toward the front head tends to hear more of it. Both are tendencies, and drums vary. Tuning and damping change how long the drum rings — the Drum Tuning Lab covers that.',
     head: { diameterMm: 22 * 25.4, rods: 10, label: '22 in batter head, seen from the player’s side', strikeSrc: 'DW-9000' },
   },
   setting: {
@@ -702,44 +702,16 @@ export const M01_LESSON: Lesson = {
       { id: 'drum', label: 'Drum (size, heads, damping)', kind: 'text' },
       { id: 'head', label: 'Front head', kind: 'choice', choices: ['intact', 'ported'] },
       { id: 'mic', label: 'Mic type', kind: 'choice', choices: ['kick dynamic, supercardioid', 'kick dynamic, cardioid', 'boundary on cushioning', 'condenser', 'other'] },
-      { id: 'pattern', label: 'Pattern (from its own spec)', kind: 'text' },
-      { id: 'zone', label: 'Starting position and its source', kind: 'text' },
+      { id: 'pattern', label: 'Pattern', kind: 'text' },
+      { id: 'zone', label: 'Starting position you tried', kind: 'text' },
       { id: 'distance', label: 'Distance, from which head', kind: 'text' },
       { id: 'aim', label: 'Aim', kind: 'text' },
       { id: 'notes', label: 'What you heard (tendencies, in words)', kind: 'text' },
     ],
   },
-  sources: [
-    { key: 'DPA-KICK', label: '[1] DPA Microphones, Bo Brinck, “How to mic a kick (bass) drum”', url: 'https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-mic-a-kick-drum/', checked: '2026-10-04' },
-    { key: 'S-B52-UG', label: '[2] Shure, BETA52A User Guide, version 3.1 (2023-I)', url: 'https://pubs.shure.com/view/guide/BETA52A/en-US.pdf', checked: '2026-10-04' },
-    { key: 'SN-902-2019', label: '[3] Sennheiser, e 902 Instruction Manual (01/2019) — the lesson’s link is dead; archived copy', url: 'https://web.archive.org/web/20240530010343/https://www.sennheiser.com/globalassets/digizuite/40681-en-e902_manual_01_2019_en.pdf', checked: '2026-10-04', note: 'The current online manual (v1.3, 04/2026) keeps Positions A/B/C but drops the “turn away from where the beater strikes” sentence.' },
-    { key: 'SN-902-DOC', label: '[3, current] Sennheiser e 902 online manual, Operation (v1.3, 04/2026)', url: 'https://docs.cloud.sennheiser.com/en-us/evolution-wired/manual-e902-using.html', checked: '2026-10-04' },
-    { key: 'S-B91-UG', label: '[4] Shure, BETA91A User Guide, version 3.1 (2021-B)', url: 'https://pubs.shure.com/view/guide/BETA91A/en-US.pdf', checked: '2026-10-04' },
-    { key: 'S-2MIC', label: '[5] Shure, “How to Get a Great Kick Drum Sound Using Two Shure Mics” (June 25, 2026)', url: 'https://www.shure.com/en-US/insights/how-to-get-a-great-kick-drum-sound-using-two-shure-mics', checked: '2026-10-04' },
-    { key: 'DPA-PPD', label: '[6] DPA Microphones, “Polarity, phase and delay”', url: 'https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/', checked: '2026-10-04 (link resolves)' },
-    { key: 'AKG-CUT', label: '[7] AKG, D112 MkII cutsheet', url: 'https://support.harmanaudio.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dwef0475a5/pdfs/AKG_d112_mkII_cutsheet.pdf', checked: '2026-10-04 (cutsheet read)', note: 'The lesson’s link is the product page, akg.com/D112MkII.html, which could not be reached from here.' },
-    { key: 'NIOSH', label: '[8] CDC NIOSH, “Understand Noise Exposure” (Jan. 31, 2024)', url: 'https://www.cdc.gov/niosh/noise/prevent/understand.html', checked: '2026-10-04' },
-    { key: 'YMH-ZG01', label: '[9] Yamaha ZG01 manual, phantom-power precautions (an equipment-specific example)', url: 'https://manual.yamaha.com/pa/interfaces/zg01/en-US/7884896267.html', checked: '2026-10-04' },
-    { key: 'S-REC1', label: '[10] Shure, “Recording Drums Part 1” (November 6, 2022)', url: 'https://www.shure.com/en-US/insights/recording-drums-part-1-setting-up-and-microphone-technique', checked: '2026-10-04' },
-    { key: 'S-LIVE', label: '[11] Shure, Microphone Techniques for Live Sound Reinforcement', url: 'https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf', checked: '2026-10-04' },
-    { key: 'DPA-31', label: '[12a] DPA Microphones, “3:1 rule”', url: 'https://www.dpamicrophones.com/dictionary/0-9/31-rule/', checked: '2026-10-04 (link resolves)' },
-    { key: 'S-REC5', label: '[12b] Shure, “Recording Drums Part 5 — Phase Cancellation”', url: 'https://www.shure.com/en-GB/insights/recording-drums-part-5-phase-cancellation', checked: '2026-10-04 (link resolves)' },
-    { key: 'LESSON', label: 'This lesson’s research text: “Kick Drum Miking Technique” (research checkpoint 1, October 2026)', checked: '2026-10-04', note: 'The roles of the kick (pulse, attack, resonant note) and the ask-the-player-first step come from it.' },
-    { key: 'YMH-HUB', label: 'Yamaha Music Hub, “The Modern Drum Set, Part 2: The Bass Drum” (sizes, spurs, claws)', url: 'https://hub.yamaha.com/drums/studio/part-2-the-bass-drum/', checked: '2026-10-04' },
-    { key: 'DW-9000', label: 'DW, 9000 Series Bass Drum Pedals manual (strike point: the centre or 1–2 in above it)', url: 'https://c3.zzounds.com/media/DW9000PedalManual-c60438255a370f0f4d9c3e42aca290d9.pdf', checked: '2026-10-04', note: 'Hosted by a retailer (zZounds).' },
-    { key: 'YMH-RC', label: 'Yamaha Recording Custom drum set, specifications (RBB-2218 22 × 18 in)', url: 'https://usa.yamaha.com/products/musical_instruments/drums/ac_drums/drum_sets/recording_custom_2016/specs.html', checked: '2026-10-04' },
-    { key: 'DW-PILLOW', label: 'DW Bass Drum Dampening Pillow 18″ (“Fits 18″ depth kick drums”); size 18.1 × 15.8 × 4.8 in from a retailer listing', url: 'https://www.dwdrums.com/products/dscpbdp18-bass-drum-dampening-pillow-18/', checked: '2026-10-04', note: 'DW’s page gives no dimensions; the size is the retailer’s. A KickPro pillow (17 × 11 in, 3 in thick) is a little smaller.' },
-    { key: 'MEMBRANE', label: 'Ideal clamped-membrane vibration shapes (Bessel functions) — the same tables the Cymatics and Drum Tuning Labs use', checked: '2026-10-04', note: 'Two-headed drum coupling through the enclosed air: the model the Drum Tuning Lab uses (after Rossing).' },
-    { key: 'DRUM', label: 'Drum size and hardware: Yamaha Recording Custom (RBB-2218), TAMA Superstar Classic, DW Design; Remo 5 in offset-port head; DW pedal manuals', checked: '2026-10-04', note: 'Full rows in docs/labs/miking/kick/SOURCES.md.' },
-    { key: 'PHYSICS', label: 'Speed of sound (the app’s calculator), comb filtering and first-order polar patterns', checked: '2026-10-04', note: 'Rows in docs/labs/miking/SOURCES_SHARED.md.' },
-  ],
-  audit: {
-    agreement: 'Where they address it, the manufacturer guides support experimenting with position and associate beater-side placement with more attack; the combined-channel sources agree that two mics must be judged together; and the manuals make mounting and orientation part of the outcome.',
-    tension: 'DPA says the level just outside a port is sometimes greater than inside, while the Beta 52A guide calls its near-batter row the highest-SPL position of its own choices. Neither supports a rule for every drum. DPA’s claim that dynamics cannot capture the natural sound is a manufacturer judgement without a controlled comparison here — the lesson teaches measured capabilities and listening goals instead.',
-    gaps: 'No source gives a universally best position, a predictable response for every mic-and-drum pair, a fixed mix balance, or a hearing-safety limit from a mic rating. Outcomes depend on the drum, the player, the room, the PA and the mics. The lesson asks a drummer and a qualified practitioner to review setups before publishing; the owner reviews this lab on a phone.',
-  },
-  // Learner text in words; `dims` (code only) ties each line to the
-  // placeholder dimensions it covers (review m11: no identifiers on screen).
+  // INTERNAL record (never shown since the owner ruling of 2026-10-04): the
+  // unknowns in words; `dims` ties each line to the placeholder dimensions it
+  // covers, and validateLesson checks every placeholder is listed.
   unknowns: [
     { text: 'The real shell outside diameter of a “22 in” drum, the hoop height, the hoop-to-shell gap and how far the hoop stands past the head — drawn with placeholders.', dims: ['hHoop', 'cHoop', 'hoopInset'] },
     { text: 'The floor line: whether both hoops touch the floor and how much the spurs lift the drum — so no HEIGHT readout is shown.', dims: ['yFloor'] },
@@ -749,30 +721,6 @@ export const M01_LESSON: Lesson = {
     { text: 'The tension-rod positions: is a rod at bottom centre? (The count — 10 per head — is confirmed.)', dims: ['rodPhaseDeg'] },
     { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
     { text: 'Head excursion and every keep-out clearance — ILLUSTRATIVE values for the owner to approve.', dims: ['kick.batter', 'kick.reso', 'kick.resoPorted', 'kick.pillow'] },
-  ],
-  corrections: [
-    { id: 'K-01', text: 'The Beta 52A 20–30 cm row now includes the guide’s “on-axis with beater”.' },
-    { id: 'K-02', text: 'The e 902 row reads “at the level of the resonant head” — the manual never mentions a port.' },
-    { id: 'K-03', text: '“Turn the e 902 away from the beater strike” is kept as an aiming experiment, not attributed to Sennheiser’s current manual (it is only in the 2019 PDF).' },
-    { id: 'K-04', text: 'The e 902 manual link was dead; the archived 2019 copy and the current manual are listed.' },
-    { id: 'K-05', text: 'AKG facts come from the D112 MkII cutsheet; the product page could not be reached from here.' },
-    { id: 'K-06', text: 'The Beta 52A pattern reads “supercardioid” (Shure’s spec field); “modified supercardioid” is Shure’s description.' },
-    { id: 'K-07', text: 'Supercardioid rejection: ≈ 125° in the ideal model; 120° wherever the Beta 52A guide is cited.' },
-    { id: 'K-08', text: 'The Beta 91A pattern is stated: half-cardioid, sources within 60° above the surface. No lobe is drawn for it.' },
-    { id: 'K-09', text: 'The near row is the guide’s “5 to 7.5 cm … slightly off-center”; the guide never says “inside” — the drawing shows where that is.' },
-    { id: 'K-10', text: 'Units are dual everywhere, the source’s own unit first.' },
-    { id: 'K-15', text: 'The e 902 manual’s other two positions (a few centimetres from the batter head; midway between the heads) are named in words on the Placement page, not drawn as zones.' },
-    { id: 'K-16', text: 'The batter head is part of the resonance: both heads, the air inside and the shell ring together; the front head and port are where much of it leaves the drum.' },
-    { id: 'K-17', text: 'A zone whose source names an orientation (“on-axis with beater”, facing the head) counts only while the mic faces that head, within ±30° — the lab’s tolerance.' },
-    { id: 'K-18', text: 'The one-mic setup sequence includes the power step from the safety section: mute the outputs and lower monitoring, then switch phantom.' },
-    { id: 'K-19', text: 'Studio or live: the monitors stay where a stage puts them (positions drawn by the lab) and you aim the mic; the drummer’s own fill is shown as a case no pattern rejects.' },
-    { id: 'K-20', text: 'An ideal null is never printed as a number: real nulls are shallower, and shallowest at low frequencies.' },
-    { id: 'K-21', text: 'Maximum-SPL figures are distortion limits under each maker’s own test conditions; none is a listening limit.' },
-    { id: 'K-22', text: 'The two-mic graph’s notch depths are illustrative: the levels come from distance alone, which does not hold close to a head.' },
-    { id: 'K-23', text: 'A source in a mic’s ideal rear lobe arrives inverted, so the graph follows the inverted notch set even with the switch at +.' },
-    { id: 'K-24', text: 'The final task accepts several setups for each brief; the reasons given are what is checked.' },
-    { id: 'K-25', text: 'The condenser is called a high-SPL condenser (kick) — the lesson’s own words for it.' },
-    { id: 'K-26', text: 'Proximity effect is hedged: how much depends on the source’s size and the mic; close to a large head it is usually less than a point-source chart suggests.' },
   ],
   // Page 4's two monitors (review M2/M7): fixed where a stage puts them; the
   // learner aims the MIC. Positions are ILLUSTRATIVE (no source gives them).
@@ -801,5 +749,5 @@ export const M01_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'This lab is SILENT, and it DRAWS a model: a 22 × 18 in kick built from manufacturer dimensions, with the unknown parts (floor, port position, pedal, hoop details) drawn ILLUSTRATIVE; the pillow is DW’s 18 in pillow, its size from a retailer listing. The placement zones are manufacturers’ documented starting points for particular products, measured from the head each one names; clearances, the boom and the pedal envelope are ILLUSTRATIVE. Distances are rounded to ≈ 5 mm and measured to the mic’s front, not its acoustic centre. Patterns and the two-mic comb are IDEAL models, not measurements of any drum. On the first pages, head motion is drawn EXAGGERATED from the ideal membrane, arrows show the order of events (never speed or level), and the kit plan’s positions are ILLUSTRATIVE. Learn the reasoning here; place real mics with the drummer stopped, and trust the drum, your ears and a calibrated measurement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 22 × 18 in kick, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
 };

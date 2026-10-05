@@ -3,14 +3,14 @@
  *
  *   ON THE KIT (rack)        the kit from above — the lesson's own drum (its
  *                            art), its neighbours as illustrated objects, the
- *                            player's space hatched ILLUSTRATIVE. Tap an item
+ *                            player's space hatched. Tap an item
  *                            (or step through ITEM) to read what it means for
  *                            a mic on this drum. Explore: nothing to answer.
  *   STAGE AND STUDIO (rack)  the same plan on a STAGE (the lesson's own two
  *                            monitors — the ones the Studio-or-live page uses
  *                            later — and the audience side) or in a STUDIO.
  *   BEFORE ANY MIC (read)    ask the player first; hear the drum unamplified;
- *                            hearing safety (NIOSH, review C1); then the
+ *                            hearing safety (review C1); then the
  *                            three checks.
  * Credit: the three checks.
  */
@@ -20,7 +20,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { SettingItem } from '../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
-import { Body, Card, Landing, Note, Point, ProvenanceTag, ScenarioList } from '../engine/kit';
+import { Body, Card, Landing, Note, Point, ScenarioList } from '../engine/kit';
 import { KitPlan, type KitPlanScene } from '../lessons/shared/KitPlan';
 import type { PageProps } from './pageTypes';
 
@@ -99,7 +99,6 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
     it ? (
       <Card>
         <Point title={it.label.toUpperCase()}>{it.note}</Point>
-        <ProvenanceTag kind={it.prov.kind === 'sourced' ? 'sourced' : 'illustrative'} />
       </Card>
     ) : (
       <Note>{prompt}</Note>
@@ -112,8 +111,8 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: render('kit', kitSel, pickKit, `The drum kit from above: the kick in the middle, its pedal and the throne behind it, the hi-hat and snare to the player's left, the floor tom to the right, a rack tom over the kick. ${kitSelItem ? `Highlighted: ${kitSelItem.label}.` : ''} Positions illustrative.`),
-        badge: 'PLAN from above · a typical right-handed kit · positions ILLUSTRATIVE (no source gives a layout) · grey hatch = the player’s space',
+        render: render('kit', kitSel, pickKit, `The drum kit from above: the kick in the middle, its pedal and the throne behind it, the hi-hat and snare to the player's left, the floor tom to the right, a rack tom over the kick. ${kitSelItem ? `Highlighted: ${kitSelItem.label}.` : ''} A typical layout.`),
+        badge: 'The kit from above · a typical right-handed layout · grey hatch = the player’s space',
         bezel: bezel(kitSelItem, { k: 'LOOKED AT', v: `${kitSeen.size} / ${kitItems.length}`, flex: 1 }),
         params: kitParams,
         initialParam: 'item',
@@ -133,7 +132,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       layout: 'rack',
       rack: {
         render: render(where, wideSel, pickWide, where === 'stage' ? `The kit on a stage, from above: the drummer's fill monitor beside the throne, a downstage wedge on the audience side of the kick, and the audience and PA to the right. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}` : `The kit in a studio room, from above: no monitors on the floor; the room's walls around it. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
-        badge: where === 'stage' ? 'PLAN · the lesson’s two monitors at ILLUSTRATIVE stage positions · audience side to the right' : 'PLAN · a generic room, size ILLUSTRATIVE',
+        badge: where === 'stage' ? 'From above · two monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
         bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
         params: wideParams,
         initialParam: 'item',
@@ -155,9 +154,9 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
         <>
           <Card>
             <Point title="ASK THE PLAYER FIRST">Is the front head intact or ported, and what should the kick do — a supportive pulse, a defined attack, a resonant note, or a mix? Hear the drum without reinforcement first. If its tuning or damping needs work, agree it with the player (the Drum Tuning Lab covers that): mic placement cannot fix a drum that does not make the wanted sound acoustically.</Point>
-            <Point title="WORK WITH THE DRUM AS IT IS">Never cut a port, or change the drum, to match a diagram.</Point>
+            <Point title="WORK WITH THE DRUM AS IT IS">The drum is the player’s. Mic the drum they bring — no need to cut a port or change the drum to match a diagram.</Point>
           </Card>
-          <Note tone="warn">Protect your hearing during repeated hits and soundcheck. NIOSH (the US National Institute for Occupational Safety and Health) recommends no more than 85 dBA averaged over an 8-hour day, and halving the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating, and a mic inside a drum is not a hearing meter. Keep levels and repetitions down, and use hearing protection.</Note>
+          <Note tone="warn">Protect your hearing during repeated hits and soundcheck. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating, and a mic inside a drum is not a hearing meter. Keep levels and repetitions down, and use hearing protection.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />
         </>
       ),

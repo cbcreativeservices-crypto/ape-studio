@@ -6,8 +6,8 @@
  *     bottom in the side view, both sides in plan), never invented ones; the
  *     sourced COUNT is said in a label;
  *   • labels never overlap at the fit scale: a collision falls back to the
- *     short words, else drops the later label; a shortened ILLUSTRATIVE label
- *     keeps its ILLUSTRATIVE tag;
+ *     short words, else drops the later label; no label carries an evidence
+ *     badge (owner ruling 2026-10-04);
  *   • the static art builds its paths ONCE (module cache), not per render;
  *     no beater patch and no brand mark is drawn (neither is sourced);
  *   • a surface mic starts ON its surface (page 5's plate used to float).
@@ -74,8 +74,8 @@ describe('scene labels never overlap', () => {
   it('a label is never wider than the canvas', () => {
     assert.ok(labelWidth('X'.repeat(200), 1.4, 300) <= 296);
   });
-  it('every shortened ILLUSTRATIVE label keeps its tag', () => {
-    for (const m of ART.matchAll(/text: '([^']*ILLUSTRATIVE[^']*)', short: '([^']*)'/g)) assert.match(m[2], /ILLUS/, `${m[1]} → ${m[2]}`);
+  it('no scene label carries an evidence badge (owner ruling 2026-10-04)', () => {
+    for (const m of ART.matchAll(/(?:text|short): '([^']*)'/g)) assert.doesNotMatch(m[1], /ILLUS|SOURCED|TRIAL/, m[1]);
   });
 });
 

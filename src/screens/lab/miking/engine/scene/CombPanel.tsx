@@ -136,7 +136,7 @@ export function CombPanel({ rig, source, w, h, label }: { rig: Rig; source: Vec3
         <Text style={[styles.axis, styles.inStep, { top: yOf(0) - 15, left: padL + 4 }]}>0 dB = the two arrivals in step</Text>
         <Text style={[styles.axis, styles.dbAxis, { top: yOf(-30) - 7 }]}>−30</Text>
       </View>
-      <Text style={styles.badge}>IDEAL MODEL · not a measurement of this drum · Hz, log scale</Text>
+      <Text style={styles.badge}>A simplified picture · not a measurement of this drum · Hz, log scale</Text>
     </View>
   );
 }

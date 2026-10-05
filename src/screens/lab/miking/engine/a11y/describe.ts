@@ -17,9 +17,8 @@ export type MicDescription = {
   surfaceLabel: string;
   /** e.g. "the beater line" */
   lineLabel: string;
-  /** "Shure Beta 52A guide, 5 to 7.5 cm" — null when not in a zone. */
+  /** "Inside, near the batter head, start about 5–7.5 cm …" — null when not in a zone. */
   zoneLabel: string | null;
-  zoneKind: 'sourced' | 'trial' | null;
   /** Off-axis is meaningless for a surface plate (fixed aim). */
   showAim: boolean;
   /** How a negative distance is said (default "behind"). */
@@ -41,7 +40,7 @@ export function describeMic(m: MicDescription, short = false): string {
   const dist = `${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? 'from' : m.minusWords ?? 'behind'} ${m.surfaceLabel}`;
   const off = `${fmtLen(r.radial)} off ${m.lineLabel}`;
   const aim = m.showAim ? `, aimed ${fmtAngle(r.offAxis)} off the head's axis` : '';
-  const zone = m.zoneLabel ? ` In the ${m.zoneKind === 'trial' ? 'TRIAL' : 'documented'} zone: ${m.zoneLabel}.` : ' Not in a documented zone.';
+  const zone = m.zoneLabel ? ` At a recommended starting point: ${m.zoneLabel}.` : ' Not at a recommended starting point.';
   const clear = r.blocked ? ` Blocked: it would touch the ${r.blocked.label}.` : ' Clear of all parts.';
   if (short) return `Mic ${m.slot}: ${where}, ${dist}, ${off}${aim}.${m.zoneLabel ? ` Zone: ${m.zoneLabel}.` : ''}${r.blocked ? ` Blocked by the ${r.blocked.label}.` : ''}`;
   return `Mic ${m.slot}: ${m.typeLabel}, ${m.patternLabel}, ${where}, ${dist}, ${off}${aim}.${zone}${clear}`;

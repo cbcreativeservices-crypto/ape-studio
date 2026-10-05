@@ -2,7 +2,8 @@
  * THE LESSON JOURNEY — the rules every Miking lesson follows
  * (docs/labs/miking/LESSON_JOURNEY.md). Pure; tested in node.
  *
- *   STAGES        eight teaching stages over the ten pages, in order.
+ *   STAGES        seven teaching stages over the nine pages, in order (the
+ *                 Sources stage left the lesson: owner ruling 2026-10-04).
  *   FOUNDATIONS   orient + how it sounds + the setting: understood before any
  *                 mic is operated (owner 2026-10-04: "an understanding of the
  *                 instrument, the sounds, the layout, then finally the miking").
@@ -16,7 +17,7 @@
 import type { DiagnosticItem, PageId } from './model/types.ts';
 import { PAGE_IDS } from './model/types.ts';
 
-export type StageId = 'orient' | 'sound' | 'setting' | 'mics' | 'placement' | 'advanced' | 'practice' | 'sources';
+export type StageId = 'orient' | 'sound' | 'setting' | 'mics' | 'placement' | 'advanced' | 'practice';
 export type Stage = { id: StageId; title: string; line: string; pages: readonly PageId[] };
 
 export const STAGES: readonly Stage[] = [
@@ -24,15 +25,12 @@ export const STAGES: readonly Stage[] = [
   { id: 'sound', title: 'How it sounds', line: 'How a strike becomes sound, and where the sound leaves — shown, never played.', pages: ['sound'] },
   { id: 'setting', title: 'Where it sits', line: 'Its neighbours, the player’s space, a stage and a studio.', pages: ['setting'] },
   { id: 'mics', title: 'Microphones', line: 'Choose by pattern, power, size and mount — for this source.', pages: ['microphone'] },
-  { id: 'placement', title: 'Placement', line: 'A worked example first, then you place the mic.', pages: ['placement'] },
+  { id: 'placement', title: 'Placement', line: 'Where we recommend you begin, then you place the mic.', pages: ['placement'] },
   { id: 'advanced', title: 'Advanced', line: 'Studio or live, two microphones, troubleshooting.', pages: ['context', 'twoMic', 'troubleshoot'] },
   { id: 'practice', title: 'Practice', line: 'Set up in order, choose and justify a setup, a mixed review.', pages: ['practice'] },
-  { id: 'sources', title: 'Sources', line: 'Where every number comes from, and what is unknown.', pages: ['sources'] },
 ];
 
 export const FOUNDATION_PAGES: readonly PageId[] = ['instrument', 'sound', 'setting'];
-/** Reference pages are never gated. */
-export const NEVER_GATED: readonly PageId[] = ['sources'];
 
 export type LearnerPath = 'new' | 'experienced';
 /** The quick check's result for one practice run. */
@@ -61,7 +59,7 @@ export function foundationsLeft(met: ReadonlySet<PageId>): PageId[] {
 
 /** Is a page's ACTIVITY open? Navigation itself is never gated. */
 export function pageGate(page: PageId, met: ReadonlySet<PageId>, quickCheckPassed: boolean): 'open' | 'foundations' {
-  if (isFoundation(page) || NEVER_GATED.includes(page)) return 'open';
+  if (isFoundation(page)) return 'open';
   return foundationsMet(met, quickCheckPassed) ? 'open' : 'foundations';
 }
 

@@ -166,7 +166,7 @@ export function StrikeSequence({ w, h, variant, reveal, shown, accessibilityLabe
     labels.push({ id: 's4a', text: '④ AUDIENCE SIDE', short: '④ AUDIENCE', u: G.L + 60, v: -G.hoopOut - 30, align: 'left', tone: 'blue' });
     labels.push({ id: 's4b', text: '④ PLAYER SIDE', short: '④ PLAYER', u: -250, v: -300, align: 'center', tone: 'blue' });
   }
-  labels.push({ id: 'ex', text: 'MOTION EXAGGERATED', short: 'EXAGGERATED', u: SOUND_BOX.u1 - 20, v: G.yFloor - 18, align: 'right', tone: 'illustrative' });
+  labels.push({ id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: SOUND_BOX.u1 - 20, v: G.yFloor - 18, align: 'right', tone: 'illustrative' });
 
   return (
     <View style={{ width: w, height: h }}>
@@ -241,7 +241,7 @@ export function CoupledHeads({ w, h, variant, mode, swing, accessibilityLabel }:
     { id: 'b', text: swing === 0 ? 'BATTER · AT REST' : swing > 0 ? 'BATTER → IN' : 'BATTER ← OUT', short: 'BATTER', u: 20, v: -G.hoopOut - 30, align: 'left', tone: 'blue' },
     { id: 'r', text: r === 0 ? 'FRONT · AT REST' : r > 0 ? 'FRONT → OUT' : 'FRONT ← IN', short: 'FRONT', u: G.L + 60, v: -G.hoopOut - 30, align: 'left', tone: 'blue' },
     { id: 'air', text: mode === 'together' ? 'AIR CARRIED ALONG' : squeeze > 0.05 ? 'AIR SQUEEZED' : squeeze < -0.05 ? 'AIR EASED' : 'AIR AT REST', short: 'AIR', u: G.L / 2, v: -150, align: 'center', tone: 'blue' },
-    { id: 'ex', text: 'MOTION EXAGGERATED', short: 'EXAGGERATED', u: SOUND_BOX.u1 - 20, v: G.yFloor - 18, align: 'right', tone: 'illustrative' },
+    { id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: SOUND_BOX.u1 - 20, v: G.yFloor - 18, align: 'right', tone: 'illustrative' },
   ];
   return (
     <View style={{ width: w, height: h }}>

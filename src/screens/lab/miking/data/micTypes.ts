@@ -1,9 +1,10 @@
 /**
  * Microphones BY PROPERTY (lesson L96: "chooses a microphone by properties
  * rather than by brand"). Each type is generic; its SIZE comes from a named
- * model's own documentation, and that model appears only as provenance
- * (owner rule: brand names only in cited facts; mics are drawn as generic
- * types, never a brand's likeness). Pure data.
+ * model's own documentation, kept in `examples` and every `prov` as the
+ * INTERNAL record only — owner ruling 2026-10-04: no brand or model name is
+ * shown to the learner. Mics are drawn as generic types, never a brand's
+ * likeness. Pure data.
  *
  * Source keys: docs/labs/miking/kick/SOURCES.md and SOURCES_SHARED.md.
  * Reference point: the mic's FRONT (grille front; element end of a boundary
@@ -31,7 +32,7 @@ export const MIC_TYPES: Record<string, MicType> = {
       { model: 'Shure Beta 52A', fact: 'Spec field: "Supercardioid"; description: "modified supercardioid". 94.0 × 162.0 × 113.0 mm product data. Max SPL 174 dB (1 kHz, 1% THD, 1 kΩ load).', src: 'S-B52-UG' },
     ],
     art: 'kickDynamic',
-    blurb: 'A purpose-built kick dynamic with a large head and a supercardioid pattern. Needs no power. The guide keeps it off the head and the damping.',
+    blurb: 'A purpose-built kick dynamic with a large head and a supercardioid pattern. Needs no power. Keep it off the head and the damping.',
   },
   kickDynCard: {
     id: 'kickDynCard',
@@ -51,7 +52,7 @@ export const MIC_TYPES: Record<string, MicType> = {
       { model: 'AKG D112 MkII', fact: '"Polar pattern Cardioid"; length 115 mm, diameter 70 mm; max SPL "> 160 dB (calculated)" for 0.5 % THD.', src: 'AKG-CUT' },
     ],
     art: 'kickDynamic',
-    blurb: 'A kick dynamic with a cardioid pattern. Needs no power. Shapes differ between models, so two cardioid kick mics are not interchangeable references.',
+    blurb: 'A kick dynamic with a cardioid pattern. Needs no power. Their sound differs from one model to the next, so two cardioid kick mics are not interchangeable.',
   },
   boundaryHalf: {
     id: 'boundaryHalf',
@@ -72,7 +73,7 @@ export const MIC_TYPES: Record<string, MicType> = {
       { model: 'Shure Beta 91A', fact: '"Electret Condenser" boundary mic; 139.1 × 95.11 × 20.3 mm; contour switch "7 dB of attenuation centered at 400 Hz"; "Keep sound sources within a 60° range above this surface."', src: 'S-B91-UG' },
     ],
     art: 'boundary',
-    blurb: 'A low plate designed to rest INSIDE the drum on a pillow — allowed by its own manual only. Needs phantom power. Leave its grille uncovered.',
+    blurb: 'A low plate made to rest INSIDE the drum on a pillow. Needs phantom power. Leave its grille uncovered.',
   },
   sdc: {
     id: 'sdc',
@@ -81,21 +82,21 @@ export const MIC_TYPES: Record<string, MicType> = {
     transducer: 'condenser',
     address: 'end',
     patterns: [
-      { id: 'unstated', label: 'open cardioid (the maker’s word; not drawn)', prov: { kind: 'sourced', src: 'DPA-4055', quote: 'Directional pattern Open Cardioid' } },
-      { id: 'cardioid', label: 'cardioid (generic ideal)', prov: generic },
-      { id: 'omni', label: 'omni (generic ideal)', prov: generic },
+      { id: 'unstated', label: 'open cardioid (not drawn)', prov: { kind: 'sourced', src: 'DPA-4055', quote: 'Directional pattern Open Cardioid' } },
+      { id: 'cardioid', label: 'cardioid (textbook shape)', prov: generic },
+      { id: 'omni', label: 'omni (textbook shape)', prov: generic },
     ],
     body: {
       length: { mm: 132, prov: { kind: 'sourced', src: 'DPA-4055', quote: 'Microphone length 132 mm' } },
       radius: { mm: 28.5, prov: { kind: 'sourced', src: 'DPA-4055', quote: 'Microphone diameter 57 mm' } },
     },
-    power: 'phantom power (P48, 2.0 mA for the cited example)',
+    power: 'phantom power (48 V)',
     mount: 'stand',
     examples: [
       { model: 'DPA 4055 (named in the DPA article the lesson cites)', fact: '"Open Cardioid"; Ø 57 × 132 mm; "P48 (Phantom Power)"; THD < 1% at "156dB SPL RMS".', src: 'DPA-4055' },
     ],
     art: 'sdc',
-    blurb: 'A high-SPL condenser — DPA’s flatter-response approach. A tonal objective, not proof condensers are better. Needs phantom power.',
+    blurb: 'A high-SPL condenser — a flatter-response approach some engineers like on kick. One tonal aim, not proof that condensers are better. Needs phantom power.',
   },
 };
 

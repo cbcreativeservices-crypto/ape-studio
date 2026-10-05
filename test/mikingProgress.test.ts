@@ -11,7 +11,7 @@
  *   • a damaged blob is set aside and the store starts clean;
  *   • the pure merge: union of done/interactive, first answer wins;
  *   • observation sheets: capped at 24 per lesson, oldest dropped.
- *   • the page credit rule (pageComplete): checks + interactive; Sources has
+ *   • the page credit rule (pageComplete): checks + interactive; ORIENT has
  *     no requirement and never banks on its own.
  */
 import assert from 'node:assert/strict';
@@ -87,12 +87,12 @@ describe('credit only grows', () => {
     assert.deepEqual(disk().lessons.M01.done, ['instrument'], 'on disk too');
   });
   it('banking twice never duplicates; the first recorded answer wins', async () => {
-    await P.bankPage(L, 'sources');
-    await P.bankPage(L, 'sources');
+    await P.bankPage(L, 'troubleshoot');
+    await P.bankPage(L, 'troubleshoot');
     await P.recordAnswer(L, 'k.mic.1', false);
     await P.recordAnswer(L, 'k.mic.1', true);
     const lp = P.lessonProgress(P.getMikingProgress(), L);
-    assert.deepEqual(lp.done, ['sources']);
+    assert.deepEqual(lp.done, ['troubleshoot']);
     assert.equal(lp.answers['k.mic.1'], false);
   });
 });
@@ -108,21 +108,21 @@ describe('who is written', () => {
     preview.endLabPreview();
   });
   it('a blocked (guest) session writes nothing, holds the work, shows it, and the sign-in hand-off merges it', async () => {
-    await fresh({ v: 1, lessons: { M01: { done: ['sources'], answers: { 'k.mic.1': true }, interactive: [] } } });
+    await fresh({ v: 1, lessons: { M01: { done: ['troubleshoot'], answers: { 'k.mic.1': true }, interactive: [] } } });
     carry.noteSessionIdentity(''); // a guest launch
     await carry.settleSessionCarry(); // one settle per auth event, in order
     P.setMikingSaveBlocked(true);
     assert.equal(await P.bankPage(L, 'instrument'), false);
     await P.recordAnswer(L, 'k.mic.1', false);
-    assert.deepEqual(disk().lessons.M01.done, ['sources'], 'nothing written');
+    assert.deepEqual(disk().lessons.M01.done, ['troubleshoot'], 'nothing written');
     const shown = P.lessonProgress(P.getMikingProgress(), L);
-    assert.deepEqual([...shown.done].sort(), ['instrument', 'sources'], 'shown this session over the stored record');
+    assert.deepEqual([...shown.done].sort(), ['instrument', 'troubleshoot'], 'shown this session over the stored record');
     assert.equal(shown.answers['k.mic.1'], true, 'the stored (first) answer still wins');
     // Sign in → the ledger writes what was held, merged.
     carry.noteSessionIdentity('u1');
     await carry.settleSessionCarry();
     await new Promise((r) => setTimeout(r, 10));
-    assert.deepEqual([...disk().lessons.M01.done].sort(), ['instrument', 'sources']);
+    assert.deepEqual([...disk().lessons.M01.done].sort(), ['instrument', 'troubleshoot']);
     assert.equal(disk().lessons.M01.answers['k.mic.1'], true);
   });
 });
@@ -154,10 +154,10 @@ describe('pure pieces', () => {
     assert.deepEqual(s.lessons.M01, { done: ['instrument'], answers: { a: true }, interactive: ['regions'] });
   });
   it('merge: union of done and interactive, the stored answer wins, the held place wins', () => {
-    const stored = { v: 1 as const, lessons: { M01: { done: ['sources' as const], answers: { x: true }, interactive: ['a'], lastPage: 'instrument' as const, lastStep: 0 } } };
+    const stored = { v: 1 as const, lessons: { M01: { done: ['troubleshoot' as const], answers: { x: true }, interactive: ['a'], lastPage: 'instrument' as const, lastStep: 0 } } };
     const held = { v: 1 as const, lessons: { M01: { done: ['twoMic' as const], answers: { x: false, y: true }, interactive: ['b'], lastPage: 'placement' as const, lastStep: 1 } } };
     const m = P.mergeMiking(stored, held).lessons.M01;
-    assert.deepEqual([...m.done].sort(), ['sources', 'twoMic']);
+    assert.deepEqual([...m.done].sort(), ['troubleshoot', 'twoMic']);
     assert.deepEqual(m.answers, { x: true, y: true });
     assert.deepEqual([...m.interactive].sort(), ['a', 'b']);
     assert.equal(m.lastPage, 'placement');
@@ -182,9 +182,9 @@ describe('the page credit rule', () => {
     assert.equal(credit.banksOnNext(M01_LESSON, 'instrument'), true, 'ORIENT asks nothing: it banks on NEXT');
     assert.equal(credit.pageComplete(M01_LESSON, 'microphone', { 'k.mic.1': true, 'k.mic.2': true }, none), false);
   });
-  it('Sources has no requirement: it never banks on its own, only on NEXT / FINISH', () => {
-    assert.equal(credit.pageComplete(M01_LESSON, 'sources', {}, new Set()), false);
-    assert.equal(credit.banksOnNext(M01_LESSON, 'sources'), true);
+  it('ORIENT has no requirement: it never banks on its own, only on NEXT', () => {
+    assert.equal(credit.pageComplete(M01_LESSON, 'instrument', {}, new Set()), false);
+    assert.equal(credit.banksOnNext(M01_LESSON, 'instrument'), true);
     assert.equal(credit.banksOnNext(M01_LESSON, 'placement'), false);
   });
 });

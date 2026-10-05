@@ -14,7 +14,10 @@
  * product.
  */
 
-/* ── provenance (charter §2: a fact without a source is 'unknown', never drawn as known) ── */
+/* ── provenance: the INTERNAL accuracy record (charter §2: a fact without a
+ *  source is 'unknown', never drawn as known). Owner ruling 2026-10-04: the
+ *  research stays mandatory here and in docs/labs/miking/, but none of it is
+ *  shown to the learner — no source names, no SOURCED / TRIAL badges. ── */
 export type SrcKey = string;
 export type Provenance =
   | { kind: 'sourced'; src: SrcKey; quote: string }
@@ -58,7 +61,7 @@ export type Part = {
   clearance?: Dim;
   /** Present only in these variants. */
   variants?: VariantId[];
-  /** Where its geometry comes from (shown on page 1 and page 8). */
+  /** Where its geometry comes from (internal record; never shown). */
   prov: Provenance;
 };
 export type Variant = { id: VariantId; label: string; blurb: string };
@@ -89,15 +92,22 @@ export type RefLine = { id: string; label: string; point: Vec3; dir: Vec3 };
 export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
 
 export type ZoneKind = 'sourced' | 'trial';
+/**
+ * A RECOMMENDED STARTING POINT (owner ruling 2026-10-04). Learner-facing:
+ * `label`, `band`, `tendency`, `checks` — plain starting-point words, no
+ * source names. Internal record only (never shown): `kind`, `src`, `quote`,
+ * every `prov`.
+ */
 export type DocumentedZone = {
   id: string;
-  /** Short label for the bezel / chips. */
+  /** What it is, in plain words ("Inside, near the batter head"). */
   label: string;
-  /** The band in the source's own unit first, e.g. "5 to 7.5 cm (2 to 3 in)". */
+  /** The suggested range, plain numbers, e.g. "start about 5–7.5 cm (2–3 in) from the batter head". */
   band: string;
+  /** INTERNAL: where the numbers came from (never shown). */
   kind: ZoneKind;
   src: SrcKey;
-  /** Verbatim source words (sourced) or the trial note. */
+  /** INTERNAL: the research words behind the zone (never shown). */
   quote: string;
   refSurface: string;
   side: 'inside' | 'outside' | 'either';
@@ -116,12 +126,12 @@ export type DocumentedZone = {
   aim?: { maxOffAxis: number; prov: Provenance };
   /** "Go to zone" pose: inside the zone and collision-free (tested). */
   start: MicPose;
-  /** The tendency, in words ("tendency", never "result"). */
+  /** What to listen for, in words ("tendency", never "result"). */
   tendency: string;
   checks: string[];
 };
 
-/* ── microphones by property (brands only as provenance) ── */
+/* ── microphones by property (brands only in the internal record) ── */
 export type PatternId = 'omni' | 'cardioid' | 'supercardioid' | 'hypercardioid' | 'figure8';
 /** 'unstated' / 'halfCardioid' draw NO free-field lobe. */
 export type MicPattern = PatternId | 'unstated' | 'halfCardioid';
@@ -141,6 +151,7 @@ export type MicType = {
   power: string;
   mount: MountKind;
   surfacePartId?: PartId;
+  /** INTERNAL record: the products the drawn size and specs were read from (never shown). */
   examples: { model: string; fact: string; src: SrcKey }[];
   art: MicArtId;
   /** One sentence for page 2. */
@@ -193,9 +204,10 @@ export type Readouts = {
 /* ── lesson ── */
 export type MikingLabId = 'drums' | 'percussion' | 'winds' | 'strings' | 'ensembles' | 'field' | 'broadcast';
 /** The lesson's pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md):
- *  the three FOUNDATIONS (orient, how it sounds, the setting) come first. */
-export type PageId = 'instrument' | 'sound' | 'setting' | 'microphone' | 'placement' | 'context' | 'twoMic' | 'troubleshoot' | 'practice' | 'sources';
-export const PAGE_IDS: readonly PageId[] = ['instrument', 'sound', 'setting', 'microphone', 'placement', 'context', 'twoMic', 'troubleshoot', 'practice', 'sources'];
+ *  the three FOUNDATIONS (orient, how it sounds, the setting) come first; the
+ *  lesson ends at Practice (owner ruling 2026-10-04: no Sources page). */
+export type PageId = 'instrument' | 'sound' | 'setting' | 'microphone' | 'placement' | 'context' | 'twoMic' | 'troubleshoot' | 'practice';
+export const PAGE_IDS: readonly PageId[] = ['instrument', 'sound', 'setting', 'microphone', 'placement', 'context', 'twoMic', 'troubleshoot', 'practice'];
 
 export type ViewBox = { u0: number; u1: number; v0: number; v1: number };
 export type InstrumentModel = {
@@ -234,12 +246,12 @@ export type SetupReason = { id: string; label: string; role: 'required' | 'optio
 export type SetupTask = { id: string; page: PageId; brief: string; setups: readonly SetupChoice[]; reasons: readonly SetupReason[]; explain: string };
 /** An ungraded prediction made BEFORE an activity (try before tell). */
 export type Prediction = { prompt: string; options: readonly string[]; after: string };
-export type SourceRef = { key: SrcKey; label: string; url?: string; checked?: string; note?: string };
 /** A QUICK CHECK item (the experienced path, LESSON_JOURNEY §2.5): one pick,
  *  no retry; `covers` is the FOUNDATION page it tests; a `critical` item
  *  (safety) fails the check when it is wrong, whatever the score. */
 export type DiagnosticItem = { id: string; covers: PageId; critical?: boolean; prompt: string; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
-/** ORIENT: what the instrument is, in a few sourced facts (no tasks). */
+/** ORIENT: what the instrument is, in a few plain facts (no tasks). `src`
+ *  is the internal record (never shown). */
 export type OrientFact = { title: string; text: string; src: SrcKey };
 /** HOW IT SOUNDS: one stage of the explanatory strike sequence. `ported`
  *  replaces `text` when the front head has a port. */
@@ -249,11 +261,12 @@ export type SoundContent = {
   /** The attack / body account, in words (no curve; LESSON_JOURNEY §6). */
   attack: string;
   body: string;
-  /** The head drawn face-on on the shapes step: its nominal diameter and rod count. */
+  /** The head drawn face-on on the shapes step: its nominal diameter and rod
+   *  count (`strikeSrc` is the internal record). */
   head: { diameterMm: number; rods: number; label: string; strikeSrc: SrcKey };
 };
 /** THE SETTING: a neighbour of the instrument on the plan, and what it means
- *  for a mic on this instrument. Positions are the art's (ILLUSTRATIVE). */
+ *  for a mic on this instrument. Positions are the art's (`prov` internal). */
 export type SettingItem = { id: string; label: string; short: string; note: string; prov: Provenance; scene: 'kit' | 'stage' | 'studio' | 'all'; /** One bezel word: what it means for a mic here. */ tag: string };
 export type SettingContent = { items: readonly SettingItem[]; stage: string; studio: string };
 export type PageCredit = { scenarios: string[]; interactive?: string; note: string };
@@ -282,11 +295,13 @@ export type Lesson = {
   /** The experienced path's QUICK CHECK (6 items, foundations only). */
   diagnostic: readonly DiagnosticItem[];
   practice: { task: string; fields: { id: string; label: string; kind: 'text' | 'choice'; choices?: string[] }[] };
-  sources: SourceRef[];
-  audit: { agreement: string; tension: string; gaps: string };
-  /** Each unknown in words; `dims` names (code only) the placeholders it covers. */
+  /** INTERNAL record (never shown): each unknown in words; `dims` names the
+   *  placeholders it covers (validateLesson checks every placeholder is listed).
+   *  The references, the source audit and the corrections live in
+   *  docs/labs/miking/ (SOURCES.md, CORRECTIONS_LOG.md) since the owner ruling
+   *  of 2026-10-04 took the Sources page out of the lesson. */
   unknowns: { text: string; dims: string[] }[];
-  corrections: { id: string; text: string }[];
   live: { wedges: Wedge[] };
+  /** The one "about these starting points" note, behind the header's ⓘ. */
   accuracyDetail: string;
 };

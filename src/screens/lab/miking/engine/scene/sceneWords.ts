@@ -40,7 +40,6 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
     readouts: r,
     ...refLabels(rig),
     zoneLabel: z ? `${z.label}, ${z.band}` : null,
-    zoneKind: z ? z.kind : null,
     showAim: t.mount !== 'surface',
   };
 }

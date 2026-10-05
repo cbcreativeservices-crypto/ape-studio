@@ -3,11 +3,10 @@
  * card, point and takeaway are the Mastering Lab's own (re-exported, not
  * copied — the drumtuning/kit.tsx precedent).
  *
- *   ProvenanceTag   SOURCED / TRIAL READING / ILLUSTRATIVE / IDEAL MODEL —
- *                   colour never alone: the word is always printed.
- *   HowToRead       what each evidence label means (page 1, before the scene).
- *   ZoneCard        a zone in the source's words, with every LAB-DRAWN edge
- *                   disclosed (review M5).
+ *   ZoneCard        a RECOMMENDED STARTING POINT in plain words: what it is,
+ *                   the suggested range, what to listen for, what to check.
+ *                   One consistent style (owner ruling 2026-10-04: no source
+ *                   names, no SOURCED / TRIAL badges on screen).
  *   MikingScenarioCard  one scenario, judged BY VALUE; reports once, when the
  *                   right option is reached, with whether the FIRST pick was
  *                   right (a retry is explained, never penalised). A wrong
@@ -27,63 +26,20 @@ import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-nati
 import { colors, fonts } from '../../../../theme/tokens';
 import { Card } from '../../mastering/kit';
 import type { DocumentedZone, OrderTask, Prediction, SetupTask, Symptom, WhyWrong } from './model/types.ts';
-import { labDrawnNotes, zoneEdgesByLab } from './geometry/zones.ts';
 import { gradeSetup, type SetupGrade } from './progress/setupGrade.ts';
 
 export { Body, Card, Point, SectionTitle, TakeawayCard, KeyButton } from '../../mastering/kit';
 
 const BLUE = '#6fa8ff';
-const AMBER = '#ffc64d';
-const GREY = '#aab0bd';
-const IDEAL = '#e8eaee';
 
-export type TagKind = 'sourced' | 'trial' | 'illustrative' | 'unknown' | 'ideal';
-
-export function ProvenanceTag({ kind, star }: { kind: TagKind; star?: boolean }) {
-  const label = kind === 'sourced' ? 'SOURCED' : kind === 'trial' ? 'TRIAL READING' : kind === 'illustrative' ? 'ILLUSTRATIVE' : kind === 'ideal' ? 'IDEAL MODEL' : 'UNKNOWN';
-  const tone = kind === 'sourced' ? BLUE : kind === 'trial' ? AMBER : kind === 'ideal' ? IDEAL : GREY;
-  const text = `${label}${star ? '*' : ''}`;
-  return (
-    <Text style={[styles.tag, { color: tone, borderColor: tone, borderStyle: kind === 'trial' ? 'dashed' : 'solid' }]} accessibilityLabel={`${label.toLowerCase()}${star ? ', some edges drawn by the lab' : ''}`}>
-      {text}
-    </Text>
-  );
-}
-
-/** The four evidence labels, each defined where the learner first meets them (review M4). */
-export function HowToRead() {
-  const rows: { kind: TagKind; text: string }[] = [
-    { kind: 'sourced', text: 'a number or a position from a named manual or article.' },
-    { kind: 'trial', text: 'the lab’s reading of words that give no number (“a few inches”).' },
-    { kind: 'illustrative', text: 'drawn so the picture makes sense; no source gives its size.' },
-    { kind: 'ideal', text: 'textbook physics — not a measurement of this drum or mic.' },
-  ];
-  return (
-    <View style={styles.read}>
-      <Text style={styles.readHead}>HOW TO READ THIS LAB</Text>
-      {rows.map((r) => (
-        <View key={r.kind} style={styles.readRow}>
-          <ProvenanceTag kind={r.kind} />
-          <Text style={styles.readText}>{r.text}</Text>
-        </View>
-      ))}
-    </View>
-  );
-}
-
-/** A documented zone in words: the source's words, every lab-drawn edge, the tendency. */
+/** A recommended starting point, in plain words (owner ruling 2026-10-04). */
 export function ZoneCard({ z }: { z: DocumentedZone }) {
-  const lab = labDrawnNotes(z);
-  const star = zoneEdgesByLab(z);
   return (
-    <View style={[styles.zone, { borderLeftColor: z.kind === 'trial' ? AMBER : BLUE }]}>
-      <View style={styles.zoneHead}>
-        <ProvenanceTag kind={z.kind} star={star} />
-        <Text style={styles.zoneLabel}>{z.label}</Text>
-      </View>
-      <Text style={styles.quote}>“{z.quote}”</Text>
-      {lab.length ? <Text style={styles.small}>{`* Drawn by the lab, not the source: ${lab.join('; ')}.`}</Text> : null}
-      <Text style={styles.tendency}>{`TENDENCY · ${z.tendency}`}</Text>
+    <View style={[styles.zone, { borderLeftColor: BLUE }]}>
+      <Text style={styles.zoneKey}>RECOMMENDED STARTING POINT</Text>
+      <Text style={styles.zoneLabel}>{z.label}</Text>
+      <Text style={styles.band}>{z.band}</Text>
+      <Text style={styles.tendency}>{`LISTEN FOR · ${z.tendency}`}</Text>
       <Text style={styles.small}>{`CHECK · ${z.checks.join(' · ')}`}</Text>
     </View>
   );
@@ -380,15 +336,10 @@ export function Note({ children, tone = 'info' }: { children: ReactNode; tone?: 
 }
 
 const styles = StyleSheet.create({
-  tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 1.2, borderWidth: 1, borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1, alignSelf: 'flex-start', overflow: 'hidden' },
-  read: { gap: 6, borderWidth: 1, borderColor: colors.hairline, borderRadius: 8, padding: 10, backgroundColor: '#0e0e11' },
-  readHead: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.4 },
-  readRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  readText: { flex: 1, color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 17 },
   zone: { borderLeftWidth: 3, paddingLeft: 10, gap: 4 },
-  zoneHead: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  zoneKey: { color: '#8fbcff', fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.2 },
   zoneLabel: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 18, flexShrink: 1 },
-  quote: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontStyle: 'italic', fontSize: 13, lineHeight: 18 },
+  band: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
   tendency: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
   small: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   q: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19 },

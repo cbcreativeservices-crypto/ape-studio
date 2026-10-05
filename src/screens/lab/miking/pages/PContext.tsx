@@ -2,16 +2,16 @@
  * Page 4 — STUDIO OR LIVE (blueprint §7 row 4; lesson L51-L69).
  *
  * REBUILT 2026-10-04 (reviews: audio M2, cognitive M1/M7/M8):
- *   • the MONITORS stay where a stage puts them (ILLUSTRATIVE positions); the
+ *   • the MONITORS stay where a stage puts them (typical positions); the
  *     learner AIMS THE MIC (left–right, up–down) and picks its PATTERN — "aim
  *     nulls according to the actual pattern" (L68). Moving the monitor round
  *     the mic taught the opposite move.
- *   • The mic is OUTSIDE the front head (DPA's documented "just outside"),
+ *   • The mic is OUTSIDE the front head (the "just outside" starting point),
  *     where free-field reasoning is defensible. The downstage wedge faces the
  *     mic's rear: a null can help. The drummer's own fill sits in FRONT of the
  *     mic: no null reaches it, and the drum itself lies in that path — the
  *     readout says so (solidOnPath) instead of printing a free-field number.
- *   • An ideal null never prints a number: "deep null (ideal)" (M3/M8).
+ *   • A null never prints a number: "deep null" (M3/M8).
  *   • STUDIO is a real activity: the decision card for the studio column.
  *   • Try before tell: a prediction first; the NULL cell reads "?" until the
  *     learner has predicted and turned the mic; the explanation follows.
@@ -32,21 +32,21 @@ import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../engine/kit';
 import type { PageProps } from './pageTypes';
 
-const NULL_TOL = 15; // deg: "in the null" tolerance (illustrative, ruling §16.4)
+const NULL_TOL = 15; // deg: "in the null" tolerance (the lab's, ruling §16.4)
 const AZ_MAX = 45; // deg: the mic still faces the front head
 const EL_MAX = 30;
 const PLAN: ViewBox = { u0: -800, u1: 1650, v0: -780, v1: 1060 };
 const SIDE: ViewBox = { u0: -750, u1: 1650, v0: -420, v1: 330 };
 const PATTERNS: { id: PatternId; label: string; typeId: string }[] = [
-  { id: 'cardioid', label: 'cardioid (ideal)', typeId: 'kickDynCard' },
-  { id: 'supercardioid', label: 'supercardioid (ideal)', typeId: 'kickDynSuper' },
-  { id: 'hypercardioid', label: 'hypercardioid (ideal)', typeId: 'kickDynSuper' },
+  { id: 'cardioid', label: 'cardioid', typeId: 'kickDynCard' },
+  { id: 'supercardioid', label: 'supercardioid', typeId: 'kickDynSuper' },
+  { id: 'hypercardioid', label: 'hypercardioid', typeId: 'kickDynSuper' },
 ];
 /** The drum parts that shield a mic (the shell and both heads). */
 const DRUM_PARTS = ['kick.shell', 'kick.batter', 'kick.reso', 'kick.resoPorted'] as const;
 
 export function PContext({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant }: PageProps) {
-  const z = lesson.zones.find((q) => q.id === 'dpa.outside') ?? lesson.zones[0];
+  const z = lesson.zones.find((q) => q.id === 'out.edge') ?? lesson.zones[0];
   const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: 'kickDynSuper', pattern: 'supercardioid', pose: z.start }] });
   useEffect(() => {
     if (rig.variant !== variant) rig.setVariant(variant);
@@ -120,7 +120,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       selectedId: pattern,
       onSelect: (id) => choosePattern(id as PatternId),
       sticky: true,
-      options: PATTERNS.map((p) => ({ id: p.id, label: p.label, blurb: `An IDEAL ${p.id} on a generic kick dynamic — a hypothetical mic with this pattern, not a particular model’s own. Ideal null at ≈ ${Math.round(nullAngles(p.id)[0])}° off the front axis.` })),
+      options: PATTERNS.map((p) => ({ id: p.id, label: p.label, blurb: `A kick dynamic with a ${p.id} pattern, drawn as a simplified shape. Its null sits at ≈ ${Math.round(nullAngles(p.id)[0])}° off the front axis.` })),
     },
     {
       kind: 'options',
@@ -130,7 +130,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       selectedId: wedge.id,
       onSelect: setWedgeId,
       sticky: true,
-      options: lesson.live.wedges.map((w) => ({ id: w.id, label: w.label, blurb: `${w.note} Position ILLUSTRATIVE.` })),
+      options: lesson.live.wedges.map((w) => ({ id: w.id, label: w.label, blurb: w.note })),
     },
     { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
     { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
@@ -139,8 +139,8 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const pickupCell: BezelItem = shield
     ? { k: 'PICKUP', v: 'SHIELDED', sub: 'drum in path', flex: 1.15 }
     : isDeepNull(db)
-      ? { k: 'PICKUP', v: 'DEEP NULL', sub: 'ideal only', flex: 1.15 }
-      : { k: 'PICKUP', v: fmtDb(db), sub: 'ideal model', flex: 1.15 };
+      ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 }
+      : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 };
   const bezel: BezelItem[] = live
     ? [
         { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: 'monitor', flex: 1 },
@@ -186,7 +186,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
             accessibilityLabel={label}
           />
         ),
-        badge: `IDEAL pattern (white dashed: shape, not range) · monitors at ILLUSTRATIVE stage positions · ±${NULL_TOL}° tolerance ILLUSTRATIVE`,
+        badge: `A simplified pattern (white dashed: shape, not range) · monitors where a stage often puts them · counts within ±${NULL_TOL}° of a null`,
         bezel,
         params,
         initialParam: 'aim',
@@ -201,15 +201,15 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
           ) : wedge.id === 'fill' ? (
             <Note tone="warn">{wedge.note}</Note>
           ) : null}
-          {isDeepNull(db) && !shield ? <Note>An ideal null is infinitely deep on paper. Real microphones reject far less there, and least at low frequencies — where kick feedback lives. Use the null to aim, not to promise silence.</Note> : null}
+          {isDeepNull(db) && !shield ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — where kick feedback lives. Use the null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pattern === 'cardioid' ? (
               <Note tone="ok">{`What you just saw: a cardioid rejects most directly behind (180°). The downstage wedge sits below the mic too, so with a cardioid only a tilt brings it near the null.`}</Note>
             ) : (
-              <Note tone="ok">{`What you just saw: an ideal ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and has a pickup lobe directly behind (${fmtDb(gainDb(pattern, 180))} there). The rear is not a universal rejection zone.${pattern === 'supercardioid' ? ' The Beta 52A guide gives 120° for that mic.' : ''}`}</Note>
+              <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and has a pickup lobe directly behind (${fmtDb(gainDb(pattern, 180))} there). The rear is not a universal rejection zone.`}</Note>
             )
           ) : null}
-          <Note>A mic INSIDE the drum is also shielded by the shell and both heads, which a free-field pattern ignores. Check placement before the performance (Beta 52A guide); real patterns change with frequency and the stage reflects sound — this is the reasoning, not a prediction.</Note>
+          <Note>A mic INSIDE the drum is also shielded by the shell and both heads, which a free-field pattern ignores. Check placement before the performance; real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.</Note>
         </>
       ) : (
         <>
@@ -230,7 +230,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
           <Card>
             <Point title="HOW MUCH ROOM">Studio: an outside or more distant perspective may help when the room contributes usefully. Live: stage spill and the available gain before feedback may favour close, directional pickup.</Point>
             <Point title="HOW MANY MICS">Studio: a second mic can offer a complementary perspective if it improves the combined sound. Live: start with the open mics actually needed — extra channels add spill and acoustic interactions.</Point>
-            <Point title="WHAT THE KICK MUST DO">Studio: judge it against the bass and the kit perspective. Live: first consider the acoustic kick the audience already hears, and what the PA must add.</Point>
+            <Point title="WHAT THE KICK NEEDS TO DO">Studio: judge it against the bass and the kit perspective. Live: first consider the acoustic kick the audience already hears, and what the PA needs to add.</Point>
             <Point title="MOUNTING">Studio: repeated trials are practical when the performer stops. Live: stable, repeatable mounting and a protected cable route matter most during a show.</Point>
           </Card>
           <Body>On a real stage the monitors stay where the players need them: you turn the mic or choose its pattern so that a null faces a loud unwanted source. A drummer’s own fill usually sits in front of a kick mic aimed at the drum, where no pattern rejects; the drum itself shields an inside mic.</Body>

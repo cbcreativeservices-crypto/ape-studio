@@ -1,6 +1,7 @@
 /**
- * Pages 6–8 — TROUBLESHOOT, PRACTICE, SOURCES (blueprint §7 rows 6–8).
- * Document pages (no live display), so they are READ steps.
+ * TROUBLESHOOT and PRACTICE (blueprint §7). Document pages (no live display),
+ * so they are READ steps. The lesson ends at Practice → the what's-left
+ * screen (owner ruling 2026-10-04 took the Sources page out of the lesson).
  *
  * PRACTICE (reviews C1/C2/M12, 2026-10-04) is three steps: the one-mic setup
  * IN ORDER plus a gain/headroom judgement; two setup BRIEFS where several
@@ -14,7 +15,7 @@
  * and the save button is latched while the write is out (P9).
  */
 import { useEffect, useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { useLatchedPress } from '../../../../lib/latch';
 import { PageSteps, type MikingStep } from '../engine/steps';
@@ -35,7 +36,7 @@ export function PTroubleshoot({ lesson, answers, onAnswered, onInteractive, inte
       layout: 'read',
       body: (
         <>
-          <Body>Each card is a row of the lesson’s troubleshooting table. Choose the FIRST things to check; a retry is explained, never penalised.</Body>
+          <Body>Each card is a symptom you may meet. Choose the FIRST things to check; a retry is explained, never penalised.</Body>
           <Body>{`${lesson.symptoms.filter((s) => s.id in answers).length} of ${lesson.symptoms.length} answered.`}</Body>
           {lesson.symptoms.map((s) => (
             <SymptomCard key={s.id} s={s} answered={s.id in answers} onAnswered={(ok) => onAnswered(s.id, ok)} />
@@ -67,7 +68,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
       layout: 'read',
       body: (
         <>
-          <Body>The lesson’s one-mic setup, as a sequence: put the steps in order. A step tapped too early is answered with why it cannot come yet.</Body>
+          <Body>A one-mic setup, as a sequence: put the steps in order. A step tapped too early is answered with why it cannot come yet.</Body>
           {order.map((t) => (
             <OrderTaskCard key={t.id} t={t} answered={t.id in answers} onAnswered={(ok) => onAnswered(t.id, ok)} />
           ))}
@@ -84,7 +85,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
       body: (
         <>
           <Body>{lesson.practice.task}</Body>
-          <Body>Each brief accepts more than one setup. Choose one, then tick every reason that justifies it — the check reads your reasoning, not a single “right” position.</Body>
+          <Body>Each brief accepts more than one setup — there is no single right answer. Choose one, then tick every reason that justifies it: the check reads your reasoning, not a single “right” position.</Body>
           {setups.map((t) => (
             <SetupTaskCard key={t.id} t={t} answered={t.id in answers} onAnswered={(ok) => onAnswered(t.id, ok)} />
           ))}
@@ -137,56 +138,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
   return <PageSteps steps={steps} />;
 }
 
-export function PSources({ lesson }: PageProps) {
-  const steps: MikingStep[] = [
-    {
-      key: 'sources',
-      title: 'Sources',
-      kind: 'READ',
-      layout: 'read',
-      body: (
-        <>
-          <Card>
-            <Point title="WHERE THE SOURCES AGREE">{lesson.audit.agreement}</Point>
-            <Point title="WHERE THEY PULL APART">{lesson.audit.tension}</Point>
-            <Point title="WHAT THEY DO NOT GIVE">{lesson.audit.gaps}</Point>
-          </Card>
-          <Text style={styles.head}>REFERENCES</Text>
-          {lesson.sources.map((s) => (
-            <View key={s.key} style={styles.src}>
-              {s.url ? (
-                <Text style={styles.link} onPress={() => void Linking.openURL(s.url!).catch(() => {})} accessibilityRole="link">
-                  {s.label}
-                </Text>
-              ) : (
-                <Text style={styles.srcText}>{s.label}</Text>
-              )}
-              {s.note ? <Text style={styles.small}>{s.note}</Text> : null}
-              {s.checked ? <Text style={styles.small}>{`Checked ${s.checked}`}</Text> : null}
-            </View>
-          ))}
-          <Text style={styles.head}>STILL UNKNOWN (drawn ILLUSTRATIVE, never a readout)</Text>
-          {lesson.unknowns.map((u) => (
-            <Text key={u.text} style={styles.srcText}>{`• ${u.text}`}</Text>
-          ))}
-          <Text style={styles.head}>WHERE THIS LAB DIFFERS FROM THE ORIGINAL LESSON, AND WHY</Text>
-          {lesson.corrections.map((c) => (
-            <Text key={c.id} style={styles.srcText}>{`• ${c.text}`}</Text>
-          ))}
-          <Note>Manufacturer positions are documented starting points for particular products — not mandatory positions, and not predictions of another mic or drum. A drummer and a qualified practitioner should review real setups.</Note>
-        </>
-      ),
-    },
-  ];
-  return <PageSteps steps={steps} />;
-}
-
 const styles = StyleSheet.create({
-  head: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.6, marginTop: 6 },
-  src: { gap: 2, borderLeftWidth: 2, borderLeftColor: colors.hairline, paddingLeft: 8 },
-  link: { color: colors.cyanBright, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18, textDecorationLine: 'underline' },
-  srcText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
-  small: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   fieldLabel: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1 },
   input: { minHeight: 40, borderWidth: 1, borderColor: colors.hairline, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, color: colors.textPrimary, fontFamily: fonts.barlowRegular, fontSize: 14, backgroundColor: '#101013' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },

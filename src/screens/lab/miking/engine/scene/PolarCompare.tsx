@@ -91,7 +91,7 @@ export function PolarCompare({ w, h, typeId, pattern, angle, label }: { w: numbe
         <Circle cx={sx} cy={sy} r={7} color={AMBER} />
         <Circle cx={sx} cy={sy} r={11} style="stroke" strokeWidth={1.5} color={AMBER} opacity={0.5} />
       </Canvas>
-      <Text style={[styles.tag, { fontSize: fs, left: 6, top: 4 }]}>{isModelled(pattern) ? 'IDEAL PATTERN · same in every plane through the axis' : 'NO LOBE DRAWN · the cited guide gives no free-field pattern'}</Text>
+      <Text style={[styles.tag, { fontSize: fs, left: 6, top: 4 }]}>{isModelled(pattern) ? 'PATTERN SHAPE · the same in every plane through the axis' : 'NO LOBE DRAWN · no simple free-field pattern for this type'}</Text>
       <Text style={[styles.tag, { fontSize: fs, right: 6, bottom: 4, color: AMBER }]}>TEST SOURCE</Text>
       <Text style={[styles.tag, { fontSize: fs, left: cx + R * 0.15, top: cy + 4, color: colors.textMuted }]}>FRONT →</Text>
     </View>

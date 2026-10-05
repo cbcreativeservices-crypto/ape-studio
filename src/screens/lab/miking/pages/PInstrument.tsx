@@ -8,19 +8,17 @@
  *   START (read)       the journey map; NEW or EXPERIENCED; the quick check
  *                      (experienced only — it opens the activities, credits
  *                      nothing).
- *   WHAT IT IS (read)  the drawing, large, and four sourced facts: what it is,
+ *   WHAT IT IS (read)  the drawing, large, and four plain facts: what it is,
  *                      where you meet it, its job in the music, its size.
  *   THE PARTS (rack)   the drum from the side and from above, cut open: tap a
  *                      part (or step through PART) to name it; FRONT HEAD
- *                      ported / intact; HOW TO READ THIS LAB (pre-training of
- *                      the evidence labels before any complex scene).
+ *                      ported / intact. (Owner ruling 2026-10-04: no source
+ *                      names and no evidence badges on screen.)
  *
  * Credit: banks on NEXT from the last step (nothing to answer — an orient
  * page, the PagedLab rule for a page with no requirement).
  */
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { colors, fonts } from '../../../../theme/tokens';
 import type { DockParam } from '../../rack/rackTypes';
 import type { ViewId } from '../engine/model/types.ts';
 import { useRig } from '../engine/scene/useRig.ts';
@@ -28,7 +26,7 @@ import { DualView } from '../engine/scene/DualView';
 import { InstrumentFigure } from '../engine/scene/InstrumentFigure';
 import { sceneLabel } from '../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
-import { Body, Card, HowToRead, Landing, Note, Point, ProvenanceTag } from '../engine/kit';
+import { Body, Card, Landing, Note, Point } from '../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../engine/journeyKit';
 import type { PageProps } from './pageTypes';
 
@@ -83,7 +81,6 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
   );
 
   const labelFor = (v: ViewId) => sceneLabel(rig, v, [], partId ? `Highlighted: ${shownPart?.label ?? partId}.` : undefined);
-  const srcLabel = (key: string) => lesson.sources.find((s) => s.key === key)?.label.replace(/^\[\d+[a-z, ]*\]\s*/, '') ?? '';
   const steps: MikingStep[] = [
     {
       key: 'start',
@@ -113,16 +110,12 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
             view="side"
             variant={variant}
             title={lesson.title.toUpperCase()}
-            badge="MODEL · a 22 × 18 in kick from maker dimensions, cut open · grey = ILLUSTRATIVE"
+            badge="A 22 × 18 in kick, cut open so you can see inside"
             label={`Side view of a ${model.name}, cut open: the batter head on the player's side with the pedal and beater, the shell, and the front head facing the audience.`}
           />
           {lesson.orient.map((f) => (
             <Card key={f.title}>
               <Point title={f.title}>{f.text}</Point>
-              <View style={styles.cite}>
-                <ProvenanceTag kind="sourced" />
-                <Text style={styles.citeText}>{srcLabel(f.src)}</Text>
-              </View>
             </Card>
           ))}
         </>
@@ -137,7 +130,7 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
         render: (w, h) => (
           <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={partId} onTapPart={pick} labelFor={labelFor} />
         ),
-        badge: 'MODEL · 22 × 18 in kick from maker dimensions · grey = illustrative',
+        badge: 'A 22 × 18 in kick, cut open · tap a part to name it',
         bezel: [
           { k: 'PART', v: shownPart ? shownPart.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
           { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
@@ -148,26 +141,19 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       },
       well: (
         <>
-          <HowToRead />
           <Landing looking={`${view === 'side' ? 'Side' : 'Top'} view · the drum cut open`} prompt="Tap any part — or step through PART — to see what it is and what it does. There is nothing to answer on this page." />
           {shownPart ? (
             <Card>
               <Point title={shownPart.label.toUpperCase()}>{shownPart.role}</Point>
               {region ? <Body>{`WHERE SOUND COMES FROM · ${region.note}`}</Body> : null}
-              <ProvenanceTag kind={shownPart.prov.kind} />
             </Card>
           ) : (
             <Note>The beater strikes the batter head. Both heads, the air inside, the shell, the tuning and any damping all shape what you hear — the next page shows how.</Note>
           )}
-          {variant === 'intact' ? <Note>An INTACT front head has no port. Switch FRONT HEAD to see a ported one — the drum as the player brings it; never cut a port to match a diagram.</Note> : null}
+          {variant === 'intact' ? <Note>An INTACT front head has no port. Switch FRONT HEAD to see a ported one. Work with the drum as the player brings it — no need to cut a port to match a diagram.</Note> : null}
         </>
       ),
     },
   ];
   return <PageSteps steps={steps} />;
 }
-
-const styles = StyleSheet.create({
-  cite: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  citeText: { flex: 1, color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
-});

@@ -3,21 +3,22 @@
  * journey: GUIDED, THEN FREE (LESSON_JOURNEY §6).
  *
  * WATCH (rack, worked example): the mic is placed FOR the learner at a
- * documented starting point, on its own rig (it earns nothing), and STEP
- * reads that position piece by piece — the source, the head it is measured
- * from, the distance band, the line, the aim, the clearance — with the bezel
- * cell for the current piece lit. Then the help FADES:
+ * recommended starting point, on its own rig (it earns nothing), and STEP
+ * reads that position piece by piece — where to begin, the head it is
+ * measured from, the distance, the line, the aim, the clearance — with the
+ * bezel cell for the current piece lit. Then the help FADES:
  * TRY BEFORE TELL (review M1): PLACE comes next, with a prediction; LEARN
  * follows as "what you just did".
  * PLACE (rack): drag the mic in the side or top view (the other is the
  * inset); POSITION and AIM place it with no drag; SETUP picks the mic type,
  * the front head and the head distances are read from; ZONE jumps to a
- * documented zone's starting pose. Collisions stop the mic and say what it
+ * recommended starting point's pose. Collisions stop the mic and say what it
  * would hit. The zone's tendency is written in words.
- * LEARN (read): how documented zones work — a starting point for its own
- * product, measured from a named head; clearance always wins.
+ * LEARN (read): how the starting points work — where we recommend you
+ * begin, measured from a named head; clearance comes first. Owner ruling
+ * 2026-10-04: no source names and no SOURCED / TRIAL marks on screen.
  * CHECK (read): three scenarios.
- * Credit: the mic RESTS, clear of every part, in two different documented
+ * Credit: the mic RESTS, clear of every part, in two different recommended
  * zones (on release) + the checks.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -38,7 +39,7 @@ import type { PageProps } from './pageTypes';
 
 export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
   const start = useMemo(() => {
-    const z = lesson.zones.find((q) => q.id === (variant === 'ported' ? 'b52.near' : 'e902.reso')) ?? lesson.zones[0];
+    const z = lesson.zones.find((q) => q.id === (variant === 'ported' ? 'in.near' : 'reso.level')) ?? lesson.zones[0];
     const typeId = z.requires?.micTypeIds?.[0] ?? lesson.micTypeIds[0];
     return { typeId, pose: z.start };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -56,7 +57,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const t = micType(mic.typeId);
 
   /* ── WATCH: the worked example, on its own rig (never credit) ── */
-  const exZone = lesson.zones.find((q) => q.id === (variant === 'ported' ? 'b52.near' : 'e902.reso')) ?? lesson.zones[0];
+  const exZone = lesson.zones.find((q) => q.id === (variant === 'ported' ? 'in.near' : 'reso.level')) ?? lesson.zones[0];
   const exType = exZone.requires?.micTypeIds?.[0] ?? lesson.micTypeIds[0];
   const ex = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: exType, pattern: micType(exType).patterns[0].id, pose: exZone.start }] });
   const [exView, setExView] = useState<ViewId>('side');
@@ -78,12 +79,12 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const exHead = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.label ?? 'its head';
   const exLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line)?.label ?? 'its line' : null;
   const worked: { title: string; text: string; cell: number }[] = [
-    { title: 'THE SOURCE', text: `${exZone.label}. Its words: “${exZone.quote}” A documented STARTING point for this kind of mic — not a rule, and not a promise of a sound.`, cell: 3 },
-    { title: 'THE HEAD', text: `The distance is measured from ${exHead} — the head the source names. The same number from the other head would put the mic somewhere else entirely.`, cell: 0 },
-    { title: 'THE DISTANCE', text: `The band: ${exZone.band}. The readout measures to the mic’s FRONT, rounded to ≈ 5 mm, and it reads inside the band.`, cell: 0 },
-    { title: 'OFF THE LINE', text: exLine ? `The row also places the mic relative to ${exLine}. Where the source gives words without numbers (“slightly off-center”), the lab draws the edges and says so.` : 'This row names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
-    { title: 'THE AIM', text: exZone.aim ? `The row names an orientation, so the mic must face ${exHead} — within ±${exZone.aim.maxOffAxis}°, the lab’s tolerance. Distance, height and angle are separate variables.` : 'This row gives no aim, so the mic simply faces the drum. Distance, height and angle are still separate variables.', cell: 2 },
-    { title: 'CLEARANCE', text: 'Clear of every part — heads, beater, damping, port edge and pedal. Clearance always wins over any number, and the drummer stops before a real mic moves.', cell: 3 },
+    { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we recommend you begin with this kind of mic — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
+    { title: 'THE HEAD', text: `The distance is measured from ${exHead}. The same number from the other head would put the mic somewhere else entirely.`, cell: 0 },
+    { title: 'THE DISTANCE', text: `${exZone.band} The readout measures to the mic’s FRONT, rounded to ≈ 5 mm, and it reads inside that range.`, cell: 0 },
+    { title: 'OFF THE LINE', text: exLine ? `This starting point also places the mic relative to ${exLine}: “a little off the line” is drawn as a range you can see.` : 'This starting point names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
+    { title: 'THE AIM', text: exZone.aim ? `Face the mic toward ${exHead} — the lab counts anything within ±${exZone.aim.maxOffAxis}°. Distance, height and angle are separate things to try.` : 'This starting point gives no aim, so the mic simply faces the drum. Distance, height and angle are still separate things to try.', cell: 2 },
+    { title: 'CLEARANCE', text: 'Clear of every part — heads, beater, damping, port edge and pedal. Clearance comes first, before any number, and the drummer stops before a real mic moves.', cell: 3 },
   ];
   const wk = worked[exStep];
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, (id) => lesson.model.parts.find((p) => p.id === id)?.short ?? id).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
@@ -112,7 +113,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   // same reference head and line, plus the stop reason (readoutText.ts).
   const shown = rig.shown('A');
 
-  // CREDIT: a clear resting pose inside a documented zone, counted on release.
+  // CREDIT: a clear resting pose inside a recommended zone, counted on release.
   const lastVersion = useRef(-1);
   useEffect(() => {
     if (rig.version === lastVersion.current) return;
@@ -159,13 +160,13 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       kind: 'options',
       id: 'zone',
       label: 'ZONE',
-      valueLabel: zone ? (zone.kind === 'trial' ? 'TRIAL' : 'IN ZONE') : 'GO TO',
+      valueLabel: zone ? 'IN ZONE' : 'GO TO',
       selectedId: zone?.id ?? null,
       onSelect: (id) => {
         const z = lesson.zones.find((q) => q.id === id);
         if (z) rig.jumpTo('A', z.start);
       },
-      options: available.map((z) => ({ id: z.id, label: `${z.kind === 'trial' ? 'TRIAL · ' : ''}${z.label}`, blurb: `${z.band}. “${z.quote}”` })),
+      options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
     },
   ];
 
@@ -182,18 +183,18 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
-        badge: 'WORKED EXAMPLE · the mic is placed for you · blue = sourced zone · white dashed lobe = IDEAL pattern shape, not a range',
+        badge: 'WORKED EXAMPLE · the mic is placed for you · blue = a recommended starting point · white dashed lobe = pattern shape, not a range',
         bezel: exBezel,
         params: exParams,
         initialParam: 'piece',
       },
       well: (
         <>
-          <Landing looking={`Worked example · ${micType(exType).short} · ${variant === 'ported' ? 'ported' : 'intact'} front head`} prompt="Step through how this documented position is read, piece by piece. The lit cell on the bezel is the piece being read." />
+          <Landing looking={`Worked example · ${micType(exType).short} · ${variant === 'ported' ? 'ported' : 'intact'} front head`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel is the piece being read." />
           <Card>
             <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
           </Card>
-          {exStep === worked.length - 1 ? <Note tone="ok">That is the whole reading: source, head, distance, line, aim, clearance. On the next step you place the mic yourself — in two different zones.</Note> : null}
+          {exStep === worked.length - 1 ? <Note tone="ok">That is the whole reading: where to begin, head, distance, line, aim, clearance. On the next step you place the mic yourself — in two different zones.</Note> : null}
         </>
       ),
     },
@@ -204,7 +205,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={labelFor} />,
-        badge: 'ZONES: blue = sourced · dotted edge = drawn by the lab · amber dashed = TRIAL reading · grey hatch = ILLUSTRATIVE clearance · white dashed lobe = IDEAL pattern shape, not a range · pinch to zoom, double-tap to reset',
+        badge: 'Blue = recommended starting points · grey hatch = keep clear · white dashed lobe = pattern shape, not a range · pinch to zoom, double-tap to reset',
         bezel,
         params,
         initialParam: 'pos',
@@ -212,14 +213,14 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${t.short} · ${variant === 'ported' ? 'ported' : 'intact'} front head`} prompt="Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different documented zones." />
+          <Landing looking={`${t.short} · ${variant === 'ported' ? 'ported' : 'intact'} front head`} prompt="Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it around and see what changes." />
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.${variant === 'intact' && t.mount === 'stand' ? ' A stand mic cannot pass an intact head: mic it from outside.' : ''}`}</Note> : null}
-          {zone ? <ZoneCard z={zone} /> : <Body>{`Not in a documented zone. Zones for this mic and head: ${available.map((z) => z.label).join('; ') || 'none — try another mic type or front head'}.`}</Body>}
+          {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a recommended starting point. Starting points for this mic and head: ${available.map((z) => z.label).join('; ') || 'none — try another mic type or front head'}.`}</Body>}
           <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
-          {tried ? <Note tone="ok">{`You predicted “${predicted}”. The guides document a tendency toward more resonance as the mic moves toward the front head — and drums vary, so “it depends on this drum” is fair too. Read each zone’s TENDENCY: it is the source’s words, never a promised result.`}</Note> : null}
-          {mic.typeId === 'kickDynCard' ? <Note>The e 902 manual also lists a few centimetres from the batter head (much attack, dry) and midway between the heads (less attack). An aiming experiment to try on a real drum: turn the mic away from where the beater strikes, and check whether the attack eases — this was in Sennheiser’s 2019 manual; the current manual leaves it out.</Note> : null}
-          <Note>Clearance always wins: stop the drummer before moving a real mic. Port air can pop a mic — DPA suggests adjusting the mic’s angle in the hole, not pushing it farther in if that narrows the clearance.</Note>
+          {tried ? <Note tone="ok">{`You predicted “${predicted}”. Moving toward the front head tends to bring more resonance — and drums vary, so “it depends on this drum” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.`}</Note> : null}
+          {mic.typeId === 'kickDynCard' ? <Note>Ideas to try with this kind of mic: a few centimetres from the batter head (lots of attack, dry), or midway between the heads (less attack). Another experiment on a real drum: turn the mic away from where the beater strikes, and listen for whether the attack eases.</Note> : null}
+          <Note>Clearance comes first: stop the drummer before moving a real mic. Port air can pop a mic — try changing the mic’s angle in the hole rather than pushing it farther in, if that would narrow the clearance.</Note>
         </>
       ),
     },
@@ -230,9 +231,9 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'read',
       body: (
         <>
-          <Body>What you just did, in words. Each blue band is a manufacturer’s documented STARTING point for its own product, drawn from the head it names. Where the source gives a position in words without numbers, the lab draws its edges and the zone reads SOURCED* (* edges drawn by the lab). An amber dashed band is a TRIAL reading of words without numbers. None of them is a mandatory position, and none predicts another mic or drum.</Body>
-          <Body>Height, distance and angle are separate variables: change one at a time. A row that names an orientation (“on-axis with beater”) counts only while the mic faces that head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.</Body>
-          <Note tone="warn">Clearance always wins. Stop the drummer before moving a mic; keep the mic, stand and cable clear of both heads, the beater, the port edge, the damping and the pedal. Grey hatched areas are ILLUSTRATIVE keep-outs: no source gives clearance numbers.</Note>
+          <Body>What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum is different.</Body>
+          <Body>Height, distance and angle are separate variables: change one at a time. A starting point that names an aim (“facing the beater”) counts only while the mic faces that head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.</Body>
+          <Note tone="warn">Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable clear of both heads, the beater, the port edge, the damping and the pedal. The grey hatched areas show roughly where to keep clear — leave more room on a real kit.</Note>
           <Body>Moving toward the beater side often increases the emphasis of attack; toward the front head can reveal more resonance — tendencies, and drums vary. With a directional mic, proximity effect also changes the lows as it nears a radiating surface; how much depends on the source’s size and the mic, and close to a large head it is usually less than a point-source chart suggests.</Body>
         </>
       ),
