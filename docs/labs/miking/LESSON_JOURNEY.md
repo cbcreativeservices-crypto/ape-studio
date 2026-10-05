@@ -62,7 +62,7 @@ They can go back to any page at any time.
 ### 2.4 How it is remembered
 On the lesson's own progress record (`ape:miking:v1`, `createLocalStore`), per lesson:
 - `path: 'new' | 'experienced'` — kept through a practice reset (it is a preference);
-- `diag: { right, total, pass, misses[] }` — the quick check's result for THIS practice run;
+- `quick: { right, total, pass, misses[] }` — the quick check's result for THIS practice run;
   START OVER (PRACTICE) clears it, like answers and activities.
 A guest's choice is held for the sign-in hand-off like the rest of their work (`holdSessionWork`);
 a members-only preview remembers it only on screen (preview earns and keeps nothing).
@@ -297,7 +297,7 @@ Always a plan (from above) at the source's real scale, with neighbours as ILLUST
 objects (never boxes or circles), the player's space drawn as an ILLUSTRATIVE keep-out, and
 STAGE / STUDIO variants that reuse the lesson's monitor positions. Every position without a
 source is tagged ILLUSTRATIVE. Lab 1's drum lessons share one kit plan
-(`lessons/shared/kitPlan.ts`); a lesson highlights its own drum.
+(`lessons/shared/kitPlanModel.ts` + `KitPlan.tsx`); a lesson highlights its own drum.
 
 ---
 
@@ -309,6 +309,7 @@ source is tagged ILLUSTRATIVE. Lab 1's drum lessons share one kit plan
   where it differs), the radiating surfaces, the attack/body words;
 - `setting`: the neighbours (id, label, what it means for the mic, provenance) and the
   stage/studio notes;
+- `noun`: the instrument's short noun ("kick" / "kicks") for the path wording;
 - `diagnostic`: the 6 quick-check items (`covers` = the foundation page each one tests,
   `critical` for safety items);
 - pages for all ten ids, with credit lists that validate (`validateLesson`).

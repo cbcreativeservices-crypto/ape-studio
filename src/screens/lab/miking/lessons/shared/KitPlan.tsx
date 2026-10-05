@@ -274,7 +274,7 @@ export function KitPlan({ w, h, scene, variant, Drum, drumBox, pedalBox, wedges,
   for (const wd of stageWedges) add(wd.id, wd.p.x, wd.p.z + 340, 'center');
   if (scene === 'stage') add('audience', K.audienceU + 40, 600, 'right');
   if (scene === 'studio') add('room', K.room.u0 + 40, K.room.v0 + 110, 'left');
-  labels.push({ id: 'space', text: 'PLAYER’S SPACE · ILLUSTRATIVE', short: 'PLAYER · ILLUS.', u: -985, v: 300, align: 'left', tone: 'illustrative' });
+  labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'PLAYER', u: -1000, v: 125, align: 'left', tone: 'illustrative' });
   const seen = new Set<string>();
   const uniq = labels.filter((l) => (seen.has(l.id) ? false : (seen.add(l.id), true)));
 

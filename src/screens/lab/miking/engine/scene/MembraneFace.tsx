@@ -96,8 +96,9 @@ function regionMarks(sh: HeadShape): { r: number; t: number; sign: number }[] {
         best = r;
       }
     }
-    const lobes = sh.n === 0 ? [0] : Array.from({ length: 2 * sh.n }, (_, k) => (k * Math.PI) / sh.n);
-    for (const t of lobes) out.push({ r: sh.n === 0 && i === 0 ? 0 : best, t, sign: Math.sign(shapeAt(sh, best, t)) });
+    // Ring shapes: the mark sits BELOW the centre, clear of the beater mark above it.
+    const lobes = sh.n === 0 ? [Math.PI] : Array.from({ length: 2 * sh.n }, (_, k) => (k * Math.PI) / sh.n);
+    for (const t of lobes) out.push({ r: sh.n === 0 && i === 0 ? Math.min(0.45, rings[1] * 0.5) : best, t, sign: Math.sign(shapeAt(sh, best, t)) });
   }
   return out;
 }
