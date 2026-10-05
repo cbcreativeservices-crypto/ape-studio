@@ -41,7 +41,8 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     if (e.variants && !e.variants.includes(variant)) continue;
     solids.push({ partId: e.id, label: e.label, shape: e.shape, clearance: e.clearance ?? 0 });
   }
-  solids.push({ partId: 'floor', label: 'floor', shape: { kind: 'floor', y: model.yFloor.mm }, clearance: 0 });
+  const yFloor = model.floorByVariant?.[variant] ?? model.yFloor.mm;
+  solids.push({ partId: 'floor', label: 'floor', shape: { kind: 'floor', y: yFloor }, clearance: 0 });
   return {
     variant,
     solids,
@@ -49,9 +50,10 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     interior: model.interior,
     interiors: model.interiors ?? [],
     rims: (model.rims ?? []).filter((r) => !r.variants || r.variants.includes(variant)),
-    yFloor: model.yFloor.mm,
-    boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: BOOM_BEHIND },
+    yFloor,
+    boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: model.mountRule?.length ?? BOOM_BEHIND },
     standRadius: STAND_RADIUS,
+    ...(model.mountRule ? { mountRule: model.mountRule } : {}),
   };
 }
 
@@ -132,7 +134,15 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
     return out;
   }
   let q: Vec3;
-  if (scene.port && isInside(scene, tail)) {
+  const rule = scene.mountRule;
+  if (rule && rule.boom === 'level') {
+    // Level boom (ILLUSTRATIVE): horizontally away from the tail, or along
+    // the model's fallback when the mic points nearly straight up or down.
+    const h = { x: -aim.x, y: 0, z: -aim.z };
+    const hl = len(h);
+    const d = hl > 0.25 ? scale(h, 1 / hl) : norm(rule.fallback);
+    q = add(tail, scale(d, rule.length));
+  } else if (scene.port && isInside(scene, tail)) {
     const toPort = sub(scene.port.c, tail);
     const d = len(toPort);
     q = add(tail, scale(norm(toPort), d + scene.boom.outside));

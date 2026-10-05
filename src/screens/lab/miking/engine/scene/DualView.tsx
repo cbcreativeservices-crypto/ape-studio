@@ -75,9 +75,10 @@ export function DualView(props: DualViewProps) {
   // bottom-left — where it used to sit — holds the pedal, the beater and the
   // player's keep-out (layout pass 2026-10-04).
   const top = band + 2;
+  const avoid = showInset ? { x0: w - 4 - iw, y0: top, x1: w - 4, y1: top + ih + 14 } : undefined;
   return (
     <View style={{ width: w, height: h }}>
-      <PlacementScene {...props} view={view} w={w} h={h} accessibilityLabel={labelFor(view)} />
+      <PlacementScene {...props} view={view} w={w} h={h} avoid={avoid} accessibilityLabel={labelFor(view)} />
       {showInset ? (
         <Pressable
           onPress={() => setView(other)}

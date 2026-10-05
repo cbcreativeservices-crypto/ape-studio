@@ -44,13 +44,17 @@ export function plainLines(m: MicType): { power: string; mount: string; pattern:
           ? 'Pattern: supercardioid — rejects most off to each side of the rear'
           : p === 'hypercardioid'
             ? 'Pattern: hypercardioid — rejects most off to each side of the rear, with a larger rear lobe'
-            : p === 'halfCardioid'
-              ? 'Pattern: half-cardioid — picks up the half-space above its surface'
-              : 'Pattern: open cardioid — not drawn here',
+            : p === 'figure8'
+              ? 'Pattern: figure-8 — hears front and back equally, rejects at the sides'
+              : p === 'halfCardioid'
+                ? 'Pattern: half-cardioid — picks up the half-space above its surface'
+                : 'Pattern: open cardioid — not drawn here',
   };
 }
 
 function sizeLine(m: MicType): string {
+  // A size no maker sheet confirmed (a drawing default) is never printed as a spec.
+  if (m.body.length.placeholder || m.body.radius.placeholder) return 'Drawn size: an approximate drawing size for this type';
   // A typical product size for the type, in both units (not rounded to the
   // readouts' 5 mm; the products it comes from are the internal record).
   const cm = (mm: number) => `${(mm / 10).toFixed(1)}`;

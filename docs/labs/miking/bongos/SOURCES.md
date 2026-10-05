@@ -26,3 +26,24 @@ Lesson: `source_text/Bongos-Miking-Technique-Research.txt`. Rules: `snare/SOURCE
 | Shell height, centre-block size, player posture | **UNKNOWN** | — | — |
 | Lesson has no numeric positions | correct; the sources give none either | — | — |
 | Lesson [3] title "Microphone Techniques for Drums" vs Timbales' "…for Recording" | both Shure booklets contain the same row; S-LIVE too | — | High |
+
+## Builder pass (2026-10-05, hand-drum builder, worktree miking-w3)
+
+Added keys and re-reads used by `src/screens/lab/miking/lessons/m04bBongos/`.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| LESSON | The owner's lesson text, `source_text/Bongos-Miking-Technique-Research.txt` | (in the repo) | read |
+| S-DRUMS | see `congas/SOURCES.md` | — | — |
+| WP-MIC, MATH | see `SOURCES_SHARED.md` | — | — |
+| MKT-4099, S-SM57-UG, AX-D2, AX-SCX1 | the hand-drum mic family, `SOURCES_SHARED.md` §6 | — | — |
+
+| Fact | Value | Source's exact words | Confidence |
+|---|---|---|---|
+| LP Gen II re-read | shells, rims, rods, block | "Siam Oak shells"; "Comfort Curve II rims with cast aluminum bottoms"; "5/16″ Tension rods"; "reinforced center block"; "a pronounced shell contour which results in sharp highs on the Macho and robust lows on the Hembra" (LP-GEN2) | High |
+| Rod count, shell height | NOT STATED | (LP-GEN2) | — | drawing defaults (4 rods, 150 mm) |
+| Same-tension pitch ratio | 8.625 ÷ 7.25 = 1.190 | ideal membrane: every shape's frequency ∝ 1 ÷ diameter at equal tension and density (MATH; the Cymatics / Drum Tuning tables) | High (model) |
+| Spot mics | no distance | "give each head its own directional mic at a safe, comparable distance" (LESSON) | — | the spot zone is a lesson trial with an illustrative band (BG-01) |
+
+Simplifications register: straight shells, the macho on the player's left, the seated player's
+legs and the hand envelopes (ILLUSTRATIVE), the stand. `CORRECTIONS_LOG.md` BG-01 … BG-07.

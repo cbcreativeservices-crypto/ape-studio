@@ -175,5 +175,28 @@ export function sdf(shape: Shape3, p: Vec3): number {
       const d = (x > y ? x : y) < 0 ? -(x2 < y2 ? x2 : y2) : (x > 0 ? x2 : 0) + (y > 0 ? y2 : 0);
       return (d < 0 ? -1 : 1) * Math.sqrt(Math.abs(d)) / baba;
     }
+    case 'frustum': {
+      // Exact capped-cone distance (Quilez), any orientation.
+      const bx = shape.b.x - shape.a.x;
+      const by = shape.b.y - shape.a.y;
+      const bz = shape.b.z - shape.a.z;
+      const px = p.x - shape.a.x;
+      const py = p.y - shape.a.y;
+      const pz = p.z - shape.a.z;
+      const rba = shape.rb - shape.ra;
+      const baba = bx * bx + by * by + bz * bz;
+      const papa = px * px + py * py + pz * pz;
+      const paba = (px * bx + py * by + pz * bz) / baba;
+      const x = Math.sqrt(Math.max(0, papa - paba * paba * baba));
+      const cax = Math.max(0, x - (paba < 0.5 ? shape.ra : shape.rb));
+      const cay = Math.abs(paba - 0.5) - 0.5;
+      const k = rba * rba + baba;
+      let f = (rba * (x - shape.ra) + paba * baba) / k;
+      f = f < 0 ? 0 : f > 1 ? 1 : f;
+      const cbx = x - shape.ra - f * rba;
+      const cby = paba - f;
+      const sg = cbx < 0 && cay < 0 ? -1 : 1;
+      return sg * Math.sqrt(Math.min(cax * cax + cay * cay * baba, cbx * cbx + cby * cby * baba));
+    }
   }
 }

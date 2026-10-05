@@ -56,7 +56,11 @@ export type Shape3 =
   /** A SOLID CYLINDER between a and b, radius r, on ANY axis (a drum standing
    *  upright, a drum held at an angle). Added 2026-10-05 for the hand drums
    *  (tonbak, tabla) whose axes are not parallel to x. */
-  | { kind: 'cyl'; a: Vec3; b: Vec3; r: number };
+  | { kind: 'cyl'; a: Vec3; b: Vec3; r: number }
+  /** A solid capped cone (a cylinder when ra = rb) along a → b, at ANY
+   *  orientation: radius ra at a, rb at b. Upright and tilted drums (the
+   *  hand-drum family), stands' columns, hand envelopes. */
+  | { kind: 'frustum'; a: Vec3; b: Vec3; ra: number; rb: number };
 
 /* ── the instrument model ── */
 export type PartId = string;
@@ -135,10 +139,11 @@ export type RefLine = {
 export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
 
 export type ZoneKind = 'sourced' | 'trial';
-/** How a zone is drawn in one view: a rectangle (u/v, mm), or a ring sector
- *  about (cu, cv) between radii r0..r1 and angles a0..a1 (deg, from +u
- *  toward +v) — a starting point that runs round a drum's rim, from above. */
-export type ZoneDraw = { u0: number; u1: number; v0: number; v1: number } | { cu: number; cv: number; r0: number; r1: number; a0: number; a1: number };
+/** How a zone is drawn in one view: a rectangle (u/v, mm; `round` draws the
+ *  ellipse inside it), or a ring sector about (cu, cv) between radii r0..r1
+ *  and angles a0..a1 (deg, from +u toward +v) — a starting point that runs
+ *  round a drum's rim, from above. */
+export type ZoneDraw = { u0: number; u1: number; v0: number; v1: number; round?: boolean } | { cu: number; cv: number; r0: number; r1: number; a0: number; a1: number };
 /**
  * A RECOMMENDED STARTING POINT (owner ruling 2026-10-04). Learner-facing:
  * `label`, `band`, `tendency`, `checks` — plain starting-point words, no
@@ -170,9 +175,11 @@ export type DocumentedZone = {
   /** Where the source's row includes an orientation ("on-axis with beater",
    *  "facing the beater head"): the mic's front axis must be within
    *  `maxOffAxis` degrees of −normal of the zone's own head — and, with
-   *  `minOffAxis`, at least that far ("30–60° from straight down"). The
-   *  tolerance is the lab's (ILLUSTRATIVE unless a source gives one). */
-  aim?: { maxOffAxis: number; minOffAxis?: number; prov: Provenance };
+   *  `minOffAxis`, at least that far ("30–60° from straight down"). With
+   *  `dir` the aim is tested against that direction instead of −normal (a
+   *  zone aimed ACROSS its reference surface: "aimed at the bottom opening").
+   *  The tolerance is the lab's (ILLUSTRATIVE unless a source gives one). */
+  aim?: { maxOffAxis: number; minOffAxis?: number; dir?: Vec3; prov: Provenance };
   /** "Aim mic at drum head": the mic's front axis, followed forward, meets
    *  the named surface's plane within `r` of its point (prov internal). */
   aimAt?: { surface: string; r: number; prov: Provenance };
@@ -267,7 +274,18 @@ export type CompiledScene = {
   /** Illustrative mount geometry. */
   boom: { radius: number; outside: number; behind: number };
   standRadius: number;
+  /** The model's boom rule (InstrumentModel.mountRule), when it has one. */
+  mountRule?: MountRule;
 };
+/**
+ * How a stand mic's boom leaves its tail (ILLUSTRATIVE mount geometry). The
+ * default (no rule) is the kick's: straight back along the mic's axis, or out
+ * through the port. 'level': the boom runs HORIZONTALLY away from the mic's
+ * tail (the horizontal part of −aim), or along `fallback` when the mic points
+ * nearly straight up or down — so a mic aimed down at a hand drum hangs from a
+ * boom beside the drums instead of a stand dropping through it.
+ */
+export type MountRule = { boom: 'level'; fallback: Vec3; length: number };
 
 /* ── derived (never stored) ── */
 export type Readouts = {
@@ -321,6 +339,10 @@ export type InstrumentModel = {
   rims?: Rim[];
   /** Port per variant (none = intact). */
   ports: Record<VariantId, { c: Vec3; r: number } | null>;
+  /** A floor that moves with the variant (a drum raised on a stand): y per
+   *  variant; others use `yFloor`. */
+  floorByVariant?: Partial<Record<VariantId, number>>;
+  mountRule?: MountRule;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */

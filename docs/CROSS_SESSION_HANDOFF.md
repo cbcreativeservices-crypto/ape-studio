@@ -613,8 +613,26 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-04 23:41 · ccode · c15e797a
+changed: Merge final-lab into miking-w3-on-final: hand drums on the kit-drum engine
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 23:37 · ccode · d93863dc
 changed: feat(miking): shared hand-drum journey kit (tonbak, tabla)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-04 23:22 · ccode · eb833083
+changed: test(miking): hand-drum invariants; docs: sources and corrections for M04a-c, M05
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-04 23:21 · ccode · eda6b657
+changed: feat(miking): engine for hand drums — frustums, level booms, clip goosenecks, per-lesson pages
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 

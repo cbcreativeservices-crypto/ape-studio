@@ -126,6 +126,12 @@ export type LessonCopy = {
     warn: string;
   };
   practice: { gain: string; second: string; mixed: readonly string[]; mixedIntro: string };
+  /** How a mic inside / outside the interior is said to the screen reader
+   *  (default "inside / outside the drum"; a hand drum: "below / above the heads"). */
+  where?: { inside: string; outside: string };
+  /** The screen reader's opening words per view (default "Side view, cutaway," /
+   *  "Top view") — a drum drawn whole, not cut open, says "Side view,". */
+  viewWords?: Readonly<Record<ViewId, string>>;
 };
 
 const NEUTRAL_AXES: LessonCopy['axes'] = {

@@ -7,7 +7,6 @@
 import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 import type { PageId, VariantId, Vec3, ViewId } from '../model/types.ts';
-import type { PageProps } from '../../pages/pageTypes';
 
 /** `short`: the words to fall back to where the full label would collide. */
 export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
@@ -28,8 +27,12 @@ export type LessonArt = {
    *  KitPlan): its plan id, whether the lesson's own art draws it there (M01's
    *  kick), and where the lesson's frame origin sits on the plan (mm). */
   plan?: { own: string | readonly string[]; useArt?: boolean; offset?: Vec3 };
-  /** A lesson's OWN page for a page id, where the kick-shaped default does not
-   *  fit its instrument (added 2026-10-05: the speaker / Leslie module, tonbak,
-   *  tabla). The host falls back to the shared page for every id not given. */
-  pages?: Partial<Record<PageId, (p: PageProps) => ReactNode>>;
+  /** A lesson's or family's OWN page for a page id, where the kick-shaped
+   *  default does not fit its instrument (the speaker / Leslie module, tonbak,
+   *  tabla; the hand-drum family: no pedal, no front head, no kit plan). The
+   *  host falls back to the shared page for every id not given. Typed loosely
+   *  here (the page props live above the engine). */
+  pages?: Partial<Record<PageId, (props: never) => ReactNode>>;
+  /** Steps per page for those family pages (the strip's count before a page reports). */
+  stepCounts?: Partial<Record<PageId, number>>;
 };

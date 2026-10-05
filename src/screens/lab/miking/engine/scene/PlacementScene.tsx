@@ -49,6 +49,7 @@ import { gain, isModelled } from '../physics/polar.ts';
 import { micType } from '../../data/micTypes.ts';
 import type { Rig } from './useRig.ts';
 import { liveLine, withStop } from './readoutText.ts';
+import { frustumOutline } from '../geometry/outline.ts';
 import { refLabels } from './sceneWords.ts';
 import { fitLabels, labelWidth } from './labelLayout.ts';
 import type { LessonArt } from './sceneTypes.ts';
@@ -93,6 +94,8 @@ export type PlacementSceneProps = SceneOptions & {
   mini?: boolean;
   /** A fixed transform (DualView aligns two views on x); default = fit. */
   baseXf?: ViewXform;
+  /** A rectangle part labels must not cover (DualView's inset), in px. */
+  avoid?: { x0: number; y0: number; x1: number; y1: number };
   /** A wider model box than the lesson's view (page 4's plan with a wedge). */
   boxOverride?: ViewBox;
   /** The art's part labels (off where the drawing is too small for them). */
@@ -140,6 +143,12 @@ function shapeOutline(shape: Shape3, view: ViewId): ReturnType<typeof Skia.Path.
         const a = shape.a0 + ((shape.a1 - shape.a0) * i) / n;
         p.lineTo(shape.pivot.x + shape.r0 * Math.cos(a), shape.pivot.y + shape.r0 * Math.sin(a));
       }
+      p.close();
+      return p;
+    }
+    case 'frustum': {
+      const pts = frustumOutline(shape, view);
+      pts.forEach((q, i) => (i === 0 ? p.moveTo(q.u, q.v) : p.lineTo(q.u, q.v)));
       p.close();
       return p;
     }
@@ -253,11 +262,14 @@ function zonePath(z: DocumentedZone, view: ViewId, rig: Rig): ReturnType<typeof 
     return p;
   }
   const r = zoneRect(z, view, rig);
-  p.addRRect(Skia.RRectXY(Skia.XYWHRect(r.u0, r.v0, Math.max(4, r.u1 - r.u0), r.v1 - r.v0), 10, 10));
+  const rect = Skia.XYWHRect(r.u0, r.v0, Math.max(4, r.u1 - r.u0), r.v1 - r.v0);
+  // `round`: the ellipse inside the rect (a band over a round head, from above).
+  if (r.round) p.addOval(rect);
+  else p.addRRect(Skia.RRectXY(rect, 10, 10));
   return p;
 }
 
-function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: number; v0: number; v1: number } {
+function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: number; v0: number; v1: number; round?: boolean } {
   // An upright or tilted drum's zone brings its own projection (geometry.ts).
   const own = z.drawn?.[view];
   if (own && !('cu' in own)) return own;
@@ -558,8 +570,11 @@ function LobeTag({ pose, view, xf, scale, maxX, maxY }: { pose: SharedValue<MicP
     const inInset = left + W > maxX * 0.7 && above < maxY * 0.62;
     const y = inInset ? below : above;
     // No clean spot (the badge still says it): hidden rather than on top of
-    // another label.
-    const ok = y > 4 && y < maxY - 34;
+    // another label. A mic tilted well down seen from the side (a hand
+    // drum's, aimed at a head) has its body, handle and boom rising out of
+    // the lobe, and the part labels sit beside it: no clean spot either.
+    const steep = view === 'side' && Math.abs(p.el) > 30;
+    const ok = !steep && y > 4 && y < maxY - 34;
     return { opacity: ok ? 1 : 0, transform: [{ translateX: left }, { translateY: y }] };
   });
   return (
@@ -723,7 +738,7 @@ export function PlacementScene(props: PlacementSceneProps) {
   return inFull ? <GestureHandlerRootView style={{ width: props.w, height: props.h }}>{body}</GestureHandlerRootView> : body;
 }
 
-function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
+function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, avoid, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
   const model = rig.lesson.model;
   const box = boxOverride ?? viewsOf(model, rig.variant)[view]!;
   const textScale = useStageTextScale();
@@ -958,8 +973,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   // Part labels only where the drawing is big enough to carry them (a short
   // landscape glass drew them on top of each other); full screen always has them.
   const labels = useMemo(
-    () => (mini || !showLabels || base.s < LABEL_MIN_S ? [] : fitLabels(art.labels(view, variant), base, textScale, w)),
-    [mini, showLabels, art, view, variant, base, textScale, w],
+    () => (mini || !showLabels || base.s < LABEL_MIN_S ? [] : fitLabels(art.labels(view, variant), base, textScale, w, avoid)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
+    [mini, showLabels, art, view, variant, base, textScale, w, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1],
   );
   const Instrument = art.Instrument;
   const highlightPath = useMemo(() => {

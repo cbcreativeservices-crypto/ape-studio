@@ -86,3 +86,25 @@ mic is named (ruling §16.13 D2 in ENGINE_BLUEPRINT.md). The 2 older app copies 
 - One temperature (20 °C).
 - Distances displayed to ≈ 5 mm and angles to ≈ 5° (ruling §16.11); the acoustic centre is not
   the grille front (lesson L39), so no millimetre claim is made.
+
+## 6. The hand-drum mic family (M04a Congas, M04b Bongos, M04c Timbales, M05 Djembe)
+
+Engine: `lessons/shared/handdrums/handMics.ts` (registered beside the kick's types in
+`data/micTypes.ts`). Generic types; the products below are the internal record only (owner
+ruling 2026-10-04). Checked 2026-10-04 by Claude (hand-drum builder run). Rows that repeat a
+lesson folder's key say where the full row lives.
+
+| Key | Source | URL | Status 2026-10-04 |
+|---|---|---|---|
+| S-SM57-UG | Shure, SM57 User Guide 3.6 (2025-A): "157 mm (6 3/16 in.)" overall, "32 mm (1 1/4 in.)" grille, "Cardioid" | see `snare/SOURCES.md` | read in the snare pass |
+| AX-D2 | Audix D2 sheet: hypercardioid; "100 mm in length", "39 mm in diameter at the widest point"; applications "Rack tom, floor tom congas" | see `toms/SOURCES.md` | read in the toms pass |
+| AX-D4 | Audix D4 sheet: the same body as the D2; applications include "djembe" | see `toms/SOURCES.md` | read in the toms pass |
+| AX-SCX1 | Audix SCX1 length "104 mm / 4.1 in" (pencil condenser drawing default, Ø 21 mm a drawing default) | see `overheads/GEOMETRY_PROPOSAL.md` | read in the overheads pass |
+| MKT-4099 | Markertek retailer listing, DPA 4099 CORE+ (4099-DP-1): "Directional Pattern: Supercardioid"; "Microphone Length: 1.97" (50mm)"; "Gooseneck Length: 5.5" (140mm)"; "145dB SPL peak"; "With DAD9001 or DAD9099: P48 (Phantom Power)"; "Microphone Diameter: 0.22" (5.7mm)" — taken to be the gooseneck, so the capsule's diameter is UNKNOWN (drawing default Ø 18 mm) | https://www.markertek.com/product/dpa-4099-dp-1/dpa-4099-core-ip58-supercardioid-instrument-microphone-loud-spl-6-mv-pa-sensitivity | 200, read 2026-10-04 (DPA's own product page lists no dimensions; the McGill copy of the user manual is 404) |
+| DPA-JB | DPA, Jonas Brothers touring case: "4099s on high and low congas, the bongos, two toms and two timbales" | see `congas/SOURCES.md` | 200 |
+| S-DUVEL | Shure, "Miking World Instruments with Alexander Duvel" (KSM137 pencil condensers on djembe and tabla) | see `djembe/SOURCES.md` | 200, re-read 2026-10-04 |
+
+Simplifications: the compact dynamics are drawn with the kick dynamic's generic shape at their
+own sourced length and front diameter; the clip-on condenser's gooseneck is drawn as a straight
+run from its clamp at the nearest rim, and its reach (140 mm) is enforced — a clip mic cannot
+sit farther from a rim than its gooseneck allows.

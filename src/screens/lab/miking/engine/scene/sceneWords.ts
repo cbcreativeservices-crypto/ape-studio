@@ -34,6 +34,7 @@ export function readoutWords(rig: Rig, slot: MicSlot): ReadoutWords {
 }
 
 export function micWords(rig: Rig, slot: MicSlot): MicDescription {
+  const where = copyOf(rig.lesson).where;
   const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
   const t = micType(m.typeId);
   // The readouts as SHOWN (with the stop reason): the same value the bezel
@@ -48,6 +49,7 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
     ...refLabels(rig, slot),
     zoneLabel: z ? `${z.label}, ${z.band}` : null,
     showAim: t.mount !== 'surface',
+    ...(where ? { where } : {}),
   };
 }
 
@@ -57,7 +59,8 @@ export function sceneSubject(rig: Pick<Rig, 'lesson' | 'variant'>): string {
 }
 
 export function sceneDescription(rig: Rig, view: ViewId, slots: MicSlot[], extra?: string): SceneDescription {
-  return { view, subject: sceneSubject(rig), mics: slots.filter((s) => rig.mics.some((m) => m.slot === s && m.on)).map((s) => micWords(rig, s)), extra };
+  const vw = copyOf(rig.lesson).viewWords;
+  return { view, subject: sceneSubject(rig), mics: slots.filter((s) => rig.mics.some((m) => m.slot === s && m.on)).map((s) => micWords(rig, s)), extra, ...(vw ? { viewWords: vw[view] } : {}) };
 }
 
 export function sceneLabel(rig: Rig, view: ViewId, slots: MicSlot[], extra?: string): string {
