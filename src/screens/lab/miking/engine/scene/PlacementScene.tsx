@@ -1336,7 +1336,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   // Part labels only where the drawing is big enough to carry them (a short
   // landscape glass drew them on top of each other); full screen always has them.
   const labels = useMemo(() => {
-    if (mini || !showLabels || base.s < LABEL_MIN_S) return [];
+    if (mini || !showLabels || base.s < (model.labelMinScale ?? LABEL_MIN_S)) return [];
     // The lesson's own keep-off rectangles (its zones), in px at the fit.
     const obstacles = showZones && art.labelObstacles ? art.labelObstacles(view, variant, zones.map((z) => z.id)).map((r) => ({ x0: base.ox + r.u0 * base.s, x1: base.ox + r.u1 * base.s, y0: base.oy + r.v0 * base.s, y1: base.oy + r.v1 * base.s })) : undefined;
     // With mics on the drawing (placement, two mics), a bare "PLAYER" over

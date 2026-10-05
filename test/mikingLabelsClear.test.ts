@@ -34,8 +34,8 @@ const { viewsOf } = R(await import('../src/screens/lab/miking/engine/model/types
 const bowedArt = R(await import('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx'));
 const bowedSpec = R(await import('../src/screens/lab/miking/lessons/shared/bowed/bowedSpec.ts'));
 
-/** The player, not the instrument (bw.* the bowed family's figure, br.* the brass player's). */
-const PERSON = /^(bw\.(player|head|armR\d?a|leftHand|chair)(\.seated)?|br\.(player|head|armR\d?a|valveHands)(\.[a-z]+)?|player\..*|chair|bench\..*|kit\.throne)$/;
+/** The player, not the instrument (bw.* the bowed family's figure, br.* the brass player's, pl.* the low-brass player's). */
+const PERSON = /^(bw\.(player|head|armR\d?a|leftHand|chair)(\.seated)?|br\.(player|head|armR\d?a|valveHands)(\.[a-z]+)?|pl\.[a-zA-Z]+|player\..*|chair|bench\..*|kit\.throne)$/;
 const LABEL_MIN_S = 0.12; // PlacementScene: no labels below this fit scale
 
 type Hit = { lesson: string; where: string; text: string; parts: string[] };
@@ -53,10 +53,12 @@ function overlaps(id: string): Hit[] {
       const layouts = [
         { where: 'figure', w: 358, h: 358 / aspect, pad: 6 },
         ...[300, 420, 640].map((h) => ({ where: `stage ${h}`, w: 390, h, pad: 8 })),
+        // A lesson that prints labels below the usual floor is checked down there too.
+        ...(L.model.labelMinScale ? [{ where: 'stage 240', w: 390, h: 240, pad: 8 }] : []),
       ];
       for (const lay of layouts) {
         const xf = fitXform(view, box, lay.w, lay.h, lay.pad);
-        if (lay.where !== 'figure' && xf.s < LABEL_MIN_S) continue;
+        if (lay.where !== 'figure' && xf.s < (L.model.labelMinScale ?? LABEL_MIN_S)) continue;
         for (const l of fitLabels(A.labels(view, variant), xf, 1, lay.w)) {
           const r = labelRect(l, xf, 1, lay.w);
           const parts = new Set<string>();

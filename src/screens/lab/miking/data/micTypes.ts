@@ -290,3 +290,6 @@ Object.assign(MIC_TYPES, SMALL_PERC_MIC_TYPES);
 /* Lab 3 (winds): the brass bell clip. Appended so other lessons merge cleanly. */
 import { BRASS_MIC_TYPES } from '../lessons/shared/brass/brassMics.ts';
 Object.assign(MIC_TYPES, BRASS_MIC_TYPES);
+/* Lab 3 low / coiled brass (A03 horn, A04a tuba, A04b euphonium): ribbon and large condenser. */
+import { LOW_BRASS_MIC_TYPES } from '../lessons/shared/lowbrass/lowBrassMics.ts';
+Object.assign(MIC_TYPES, LOW_BRASS_MIC_TYPES);

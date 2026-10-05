@@ -613,6 +613,18 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-05 05:46 · ccode · c0fa230f
+changed: feat(miking): Lab 3 Winds — A03 French Horn, A04a Tuba, A04b Euphonium lessons, hub row, tests, corrections LB-01..LB-12
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 05:46 · ccode · ff7cd817
+changed: feat(miking engine): opt-in envelopeReveal — keep-outs drawn only as a mic approaches
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 05:40 · ccode · c2547f73
 changed: feat(miking): Lab 3 brass — A01 Trumpet and Flugelhorn, A02 Trombone and Bass Trombone
 affects other side: nothing (miking lessons, branch final-lab)

@@ -408,6 +408,11 @@ export type InstrumentModel = {
    *  mic seen end-on in the side view is moved, not turned, by a drag.
    *  Absent: the kick's behaviour, unchanged. */
   aimHome?: { az: number; el: number };
+  /** The smallest fit scale at which the scene still prints part labels
+   *  (default 0.12, PlacementScene). A tall instrument framed with its seated
+   *  player (the tuba, bell up) sits below that on a phone; its labels have
+   *  short forms and leaders, so it may lower the floor (Lab 3, 2026-10-05). */
+  labelMinScale?: number;
   /** How a stand's boom is routed, per variant (none = straight behind the
    *  mic, the drums' rule). */
   boomRoute?: Partial<Record<VariantId, BoomRoute>>;

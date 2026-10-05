@@ -1,0 +1,118 @@
+/**
+ * A04a TUBA — the shared pages' tuba words (engine/model/copy.ts).
+ * Starting-points voice (owner ruling 2026-10-04): no sources, brands or
+ * badges. Every number is from tuba/SOURCES.md or a named drawing default.
+ */
+import type { LessonCopy } from '../../engine/model/copy.ts';
+
+export const TUBA_COPY: Partial<LessonCopy> = {
+  variantKey: 'BELL',
+  variantShort: { up: 'bell up', front: 'bell front' },
+  sceneSubject: { up: 'a tuba, the player seated, the bell pointing up', front: 'a tuba, the player seated, the bell facing the front' },
+  viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'FROM ABOVE' },
+  axes: {
+    x: { plus: 'toward the audience', minus: 'toward the back', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the back (x), from under the player’s seat.' },
+    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). Above an upward bell, a mic hangs from a boom.' },
+    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the player’s left or right (z).' },
+  },
+  instrument: {
+    figureBadge: 'A tuba, played seated — the bell up beside the head',
+    figureLabel: 'Side view of a seated tuba player: the tuba on the lap leaning against the chest, the mouthpiece at the lips, the piston valves under the right hand, the bell rising beside the head.',
+    partsBadge: 'A tuba, played seated · tap a part to name it',
+    partsLooking: { side: 'Side view · from the player’s right', top: 'Top view · from above' },
+    partsIdle: 'The lips buzz into the mouthpiece; the air in the long, widening tube vibrates; the sound leaves from the bell. Switch BELL: an upward bell and a front bell need different mic positions.',
+    variantNotes: { up: 'Bell up: the usual orchestral tuba. A mic goes above and to the side of the opening — never lowered into it.', front: 'Bell front: the tuba made for recording studios. Point the stand in the bell’s real direction.' },
+  },
+  placement: {
+    workedZone: { up: 'tu.above', front: 'tu.sideF' },
+    workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line straight out of the bell.',
+    workedAim: 'Aim it at the bell — for an upward bell, at its edge rather than straight down into it. The lab counts it while the mic points within about {tol}° of the bell’s centre.',
+    workedClear: 'Clear of every part — the bell’s opening and its sway, the valve hand, the slides and the player. A boom over an upward bell stays outside the space above it. Clearance comes first, and the player stops before a real mic moves.',
+    blocked: {},
+    reveal: 'Closer to the bell tends to bring more attack and definition, with valve and air noise; farther brings the whole tuba and the room. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+    typeNotes: {
+      smallDynCard: 'Ideas to try with a small dynamic: start a foot or two from the bell, off its axis; then move one thing at a time and play the lowest written note and a short, loud phrase each time.',
+      sdcCard: 'Ideas to try with a small condenser: above the bell toward its edge, or farther back for the room. Check that the mic and the channel keep the lowest notes.',
+      lbRibbon: 'Ideas to try with a ribbon: keep it out of the bell’s stream of air — not close over the opening — and follow its manual on phantom power and mounting.',
+      lbLdc: 'Ideas to try with a large condenser: aim its FACE at the bell’s edge, a little off axis. A larger diaphragm is not a promise of more low end.',
+    },
+    note: 'Clearance comes first: stop the player before moving a real mic. A mic, boom or cable anywhere the bell sways, the valve hand moves or the slides stick out is in the wrong place, whatever the number says.',
+    availableLead: 'Starting points for this mic and bell',
+    learn: {
+      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the bell (or, farther back, from the tuba). They are starting points, not rules — move from there and listen; every tuba, player and room is different.',
+      separate: 'Distance, height and the angle off the bell’s axis are separate variables: change one at a time, and play the lowest written note and a short, loud phrase each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, boom and cable out of the bell’s opening and sway, the valve hand, the slides and the water keys. The grey hatch appears as the mic comes near one of them.',
+      tendencies: 'Toward the bell’s axis tends to bring more attack and bite; off axis, softer; farther, more of the room. With a directional mic close up, proximity effect also lifts the lows. These are tendencies, and tubas vary.',
+    },
+  },
+  context: {
+    variant: 'front',
+    zone: 'tu.sideF',
+    typeId: 'smallDynCard',
+    patterns: [
+      { id: 'cardioid', label: 'cardioid', typeId: 'smallDynCard' },
+      { id: 'supercardioid', label: 'supercardioid', typeId: 'smallDynCard' },
+      { id: 'hypercardioid', label: 'hypercardioid', typeId: 'smallDynCard' },
+    ],
+    micNoun: 'A small dynamic',
+    shield: ['lb.bell.front', 'lb.body', 'pl.body'],
+    azMax: 60,
+    elMax: 45,
+    aimBlurb: 'Swing the front up to 60° either way — it still faces the bell.',
+    plan: { u0: -700, u1: 2300, v0: -1200, v1: 1300 },
+    side: { u0: -700, u1: 2300, v0: -1750, v1: 60 },
+    target: 'wedge',
+    frontIds: [],
+    targetWord: 'wedge',
+    looking: 'Top view · a mic in front of a front bell',
+    prompt: 'The tuba player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still faces the bell.',
+    activityDone: 'done — the wedge sat in a null by your aim or pattern',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — which is where the tuba lives. Use the null to aim, not to promise silence.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). Facing back at the bell, its rear points at the audience side — a wedge down on the floor in front sits below that line, so tilting the mic matters as much as turning it.',
+    shieldNote: 'Real patterns change with pitch and become nearly omni in the lowest octaves — exactly where the PA’s subwoofers are. Check the open tuba mic with the player silent and the band playing.',
+    studioId: 'tu.ctx.studio',
+    studioPrompt: 'A studio session, a featured tuba, a good room: is a close mic needed at all?',
+    studioNote: 'In a good room, a farther mic may carry the whole tuba and the room; a closer one adds definition when the arrangement is dense. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
+    learn: {
+      intro: 'These are scenario-based comparisons, not restrictions: a farther mic can suit a quiet hall, and a close mic can suit a dense studio arrangement.',
+      points: [
+        { title: 'PERSPECTIVE', text: 'Studio: hear the tuba with the room first; a farther mic can carry its size. Live: decide what the tuba already gives the audience, and what the PA must add.' },
+        { title: 'SPILL AND LOW END', text: 'A tuba mic hears the bass guitar, the kick and the subwoofers — and the stage floor’s vibration. Close pickup helps; the pattern helps less in the lowest octaves.' },
+        { title: 'MOVEMENT', text: 'The bell sways as the player breathes and moves. A boom over an upward bell needs room above and round it; a front bell, room in front of it.' },
+        { title: 'MOUNTING', text: 'A trumpet or trombone clip is not proof it grips a tuba bell. Only a mount its maker confirms for this bell, with the player’s agreement — or a stable stand.' },
+      ],
+      body: 'With a front bell and a wedge in front, a pattern’s rejection is a tool to aim — tilting the mic as well as turning it. Some stage sound in a tuba mic is normal; the question is how much the music can take.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.',
+    },
+  },
+  twoMic: {
+    variant: 'up',
+    A: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'tu.side' },
+    B: { typeId: 'sdcCard', pattern: 'omni', zone: 'tu.far' },
+    learn: [
+      'A second mic is a choice for a reason — the room, a balance, a spot under a main pair — not a requirement. Start with one tuba mic you like on its own, and keep the second only if it helps.',
+      'When it goes in: hear each mic alone, then the pair in MONO at the intended levels. Move or rebalance a mic first; check both polarity states at matched levels only after that — a polarity switch cannot line up every pitch.',
+    ],
+    warn: 'This simplified graph treats the tuba as one point and both mics as hearing the same sound. Real mics at different distances hear different mixes of bell and room, so read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono, at matched levels.',
+  },
+  practice: {
+    gain: 'tu.prac.gain',
+    second: 'tu.prac.3',
+    mixed: ['tu.mix.1', 'tu.mix.2', 'tu.mix.3'],
+    mixedIntro: 'Three cards from earlier pages, mixed: what a distance is measured from, a pattern’s null, and polarity versus delay.',
+  },
+  terms: {
+    instrument: 'the tuba',
+    aimRef: 'its reference',
+    startIntro: 'This lesson is about putting a microphone on a tuba — but first the tuba itself: what it is, how the lips and the long tube make its sound, where its bell sends that sound, and where it sits among the players. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
+    startNew: 'Good — NEXT takes you through the tuba first. You can change how you started here at any time.',
+    refTitle: 'MEASURED FROM',
+    otherRef: 'The same number measured from another part — the valves, the player — would put the mic somewhere else.',
+    noAim: 'This starting point gives no aim, so the mic simply faces the tuba. Distance, height and angle are still separate things to try.',
+    clipMount: 'Mount: only a mount its maker confirms for this tuba bell, with the player’s agreement — never on a slide',
+    standMount: 'Mount: a stable stand or boom placed clear of the bell’s sway, the valve hand and the slides',
+    inPath: 'tuba in path',
+    facing: 'facing the bell',
+    observation: 'For a real tuba, with the player’s agreement, and the player stopped while anything moves. Write tendencies in words — what you heard, not a promised result.',
+  },
+};

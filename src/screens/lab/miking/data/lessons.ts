@@ -116,3 +116,10 @@ import { A01_LESSON } from '../lessons/a01Trumpet/lesson.ts';
 LESSON_CONTENT.A01 = A01_LESSON;
 import { A02_LESSON } from '../lessons/a02Trombone/lesson.ts';
 LESSON_CONTENT.A02 = A02_LESSON;
+/* Lab 3 (winds), low / coiled brass: A03 horn, A04a tuba, A04b euphonium (each on its own line). */
+import { A03_LESSON } from '../lessons/a03Horn/lesson.ts';
+LESSON_CONTENT.A03 = A03_LESSON;
+import { A04A_LESSON } from '../lessons/a04aTuba/lesson.ts';
+LESSON_CONTENT.A04a = A04A_LESSON;
+import { A04B_LESSON } from '../lessons/a04bEuphonium/lesson.ts';
+LESSON_CONTENT.A04b = A04B_LESSON;
