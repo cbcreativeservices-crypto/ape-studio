@@ -531,11 +531,11 @@ const diagnostic: DiagnosticItem[] = [
 const wedges: Wedge[] = [
   {
     id: 'wedge',
-    label: 'the cellist’s floor wedge, in front, facing back at the cellist',
+    label: 'the cellist’s floor wedge, in front and a little to their right, facing back',
     short: 'WEDGE',
-    p: { x: 1500, y: POSTURE.floorY, z: 120 },
+    p: { x: 1200, y: POSTURE.floorY, z: 600 },
     lift: 150,
-    faces: { x: -1, y: 0, z: 0 },
+    faces: { x: -0.89, y: 0, z: -0.45 },
     note: 'On the floor in front, facing back at the cellist: below and behind a mic aimed back at the cello — the case a pattern’s rejection can help with, tilting as well as turning.',
     prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' },
   },

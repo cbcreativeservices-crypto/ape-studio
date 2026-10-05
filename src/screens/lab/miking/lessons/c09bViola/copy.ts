@@ -1,0 +1,116 @@
+/**
+ * C09b VIOLA — the shared pages' viola words (engine/model/copy.ts).
+ * Starting-points voice (owner ruling 2026-10-04). The 0.5–1.2 m stand
+ * distance is the lesson's own modest suggestion (VA-01).
+ */
+import type { LessonCopy } from '../../engine/model/copy.ts';
+
+export const VIOLA_COPY: Partial<LessonCopy> = {
+  variantKey: 'POSTURE',
+  variantShort: { standing: 'standing', seated: 'seated' },
+  sceneSubject: { standing: 'a viola held under the chin by a standing player', seated: 'a viola held under the chin by a seated player' },
+  viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
+  axes: {
+    x: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: 'Toward the audience or toward the violist (x). Distances are read from the bridge, or the part the starting point names.' },
+    y: { plus: 'lower', minus: 'higher', label: 'HEIGHT', blurb: 'Up or down (y). The viola sits at the player’s shoulder, tilted toward the bow.' },
+    z: { plus: 'to player’s right', minus: 'to player’s left', label: 'ACROSS', blurb: 'Toward the violist’s left (the scroll) or right (the bow arm) (z).' },
+  },
+  instrument: {
+    figureBadge: 'A viola face-on, and its bow · every part named',
+    figureLabel: 'A viola seen face-on with its bow.',
+    partsBadge: 'A viola held under the chin · tap a part to name it',
+    partsLooking: { side: 'Side view · from the violist’s right', top: 'Top view · from above' },
+    partsIdle: 'The bow (or a plucking finger) sets the strings vibrating; the bridge carries that into the hollow body — the next page shows how. Held like a violin, a little larger and lower in pitch.',
+    variantNotes: { seated: 'SEATED: the same hold, about 45 cm lower — the knees, the chair and the floor come closer to a stand’s base. Switch POSTURE to stand the player up.' },
+  },
+  placement: {
+    workedZone: { standing: 'va.front', seated: 'va.front' },
+    workedLine: 'This starting point also reads how far the mic is from {line}: the dashed line the strings follow.',
+    workedAim: 'Aim it broadly at the bridge and the top — the lab counts it while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
+    workedClear: 'Clear of every part — the bow’s full sweep, the bow arm out to the tip of a stroke, the player’s head and the viola itself. Clearance comes first, before any number, and the player stops before a real mic moves.',
+    blocked: {},
+    reveal: 'Closer tends to bring more definition and more bow — and, with a directional mic, more low-end weight; farther, more of the whole viola and the room. Violas vary a lot in size and tone, so “it depends on this viola” is fair too.',
+    typeNotes: {
+      strSdc: 'Ideas to try: begin in front and a little above; then move one thing at a time — the distance, the height, the angle — and play the C and the A strings each time. Use a little more distance if the bow is too prominent.',
+      strMini: 'Ideas to try with a miniature: keep the clip or holder where it is made to go, then change only the capsule’s angle — it hears only part of the viola, so its aim matters.',
+    },
+    note: 'Clearance comes first: stop the player before moving a real mic. A mic, clip or cable anywhere the bow, the bow arm or the player’s head can reach is in the wrong place, whatever the number says.',
+    availableLead: 'Starting points for this mic',
+    learn: {
+      intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the bridge, or the bridge’s foot. They are starting points, not rules — the stand distance is a modest suggestion. Move from there and listen: there is no single right answer, and every viola and room is different.',
+      separate: 'Distance, height and the angle across the top are separate variables: change one at a time, and play the low C, the high A, quiet and strong bows and any pizzicato each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep, the bow arm at the tip of a stroke, and the player’s head. The grey hatched area shows roughly where the bow travels.',
+      tendencies: 'Toward the bridge tends to bring more attack and bow; a position favouring the body, more weight; up close, a directional mic adds low end (proximity effect). These are audition ideas, not promises — check them on the viola in front of you.',
+    },
+  },
+  context: {
+    variant: 'standing',
+    zone: 'va.front',
+    typeId: 'strSdc',
+    patterns: [
+      { id: 'cardioid', label: 'cardioid', typeId: 'strSdc' },
+      { id: 'supercardioid', label: 'supercardioid', typeId: 'strSdc' },
+      { id: 'hypercardioid', label: 'hypercardioid', typeId: 'strSdc' },
+    ],
+    micNoun: 'A small condenser',
+    shield: ['bw.body', 'bw.bodyUpper', 'bw.bodyWaist'],
+    azMax: 60,
+    elMax: 45,
+    aimBlurb: 'Swing the front up to 60° either way — it still faces the viola.',
+    plan: { u0: -900, u1: 2200, v0: -1500, v1: 1100 },
+    side: { u0: -900, u1: 2200, v0: -1100, v1: 1560 },
+    target: 'wedge',
+    frontIds: [],
+    targetWord: 'wedge',
+    looking: 'Top view · mic in front of the viola',
+    prompt: 'The player’s wedge stays where they need it. Turn the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still points at the viola.',
+    activityDone: 'done — the wedge sat in a null by your aim or pattern',
+    deepNull: 'On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — where the viola’s C string lives. Use the null to aim, not to promise silence.',
+    cardioidReveal: 'What you just saw: a cardioid rejects most directly behind (180°). A supercardioid’s deepest rejection is off to the side of its rear — it has a small rear lobe, so a wedge straight behind it is not automatically the best place.',
+    shieldNote: 'The viola’s body also reflects stage sound into the front of a mic aimed away from it — the free-field pattern cannot show that. Listen with the monitors on.',
+    studioId: 'va.ctx.studio',
+    studioPrompt: 'A studio session, an exposed classical viola, a good room: what do you listen for first?',
+    studioNote: 'In the studio, one stand mic often carries the whole viola and the room; a closer cardioid adds definition in a dense arrangement. Repeated trials are practical when the player stops. Switch back to LIVE for the monitor exercise.',
+    learn: {
+      intro: 'These are scenario-based comparisons, not restrictions: the viola that supports a quartet and the viola beside amplified instruments may want different sounds.',
+      points: [
+        { title: 'PERSPECTIVE', text: 'Studio: hear a complete instrument and a coherent room first. Live: think about what the acoustic viola already gives the audience, and what the PA must add.' },
+        { title: 'SPILL AND FEEDBACK', text: 'A closer mic can improve the viola’s level against the stage — if it still sounds right. Place the mic and the wedges by the actual pattern: a supercardioid has a rear lobe.' },
+        { title: 'MOVEMENT', text: 'A stand mic has a working zone; a miniature on the viola keeps one distance as the player turns — but it does not make the viola an isolated source.' },
+        { title: 'IN A GROUP', text: 'With a main pair up, a viola mic is a spot: raise it only for an identifiable balance problem, and check it in stereo and mono.' },
+      ],
+      body: 'With a wedge in front of the player, a pattern’s rejection is a tool to aim — tilting as well as turning. Every system has a feedback limit; the question is how much stage sound the music can take.',
+      warn: 'No mic position alone prevents feedback: the pattern, the other open mics, the monitors, the system level and the room all matter. Turn the system down before moving a live mic, and never ask the player to play through a squeal.',
+    },
+  },
+  twoMic: {
+    variant: 'standing',
+    A: { typeId: 'strSdc', pattern: 'cardioid', zone: 'va.aimed' },
+    B: { typeId: 'strSdc', pattern: 'omni', zone: 'va.front' },
+    learn: [
+      'Two mics on one viola are optional, not a stereo requirement — they can complicate phase and movement. Start with one mic you like on its own; keep a second only for a reason.',
+      'When it goes in: hear each mic alone, then the pair in MONO at the intended levels. Move or rebalance a mic first; check both polarity states at matched levels only after that.',
+    ],
+    warn: 'This simplified graph treats the viola as one point and both mics as hearing the same sound. Read the notch POSITIONS (they follow from the arrival-time difference) and treat their depths as illustrative. Judge by ear, in mono, at matched levels.',
+  },
+  practice: {
+    gain: 'va.prac.gain',
+    second: 'va.prac.3',
+    mixed: ['va.mix.1', 'va.mix.2', 'va.mix.3'],
+    mixedIntro: 'Three cards from earlier pages, mixed: what a distance is measured from, a pattern’s null, and polarity versus delay.',
+  },
+  terms: {
+    instrument: 'the viola',
+    aimRef: 'its reference',
+    startIntro: 'This lesson is about putting a microphone on a viola — but first the viola itself: what it is, how the bow and the strings make its sound, and where the player stands or sits. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.',
+    startNew: 'Good — NEXT takes you through the viola first. You can change how you started here at any time.',
+    refTitle: 'MEASURED FROM',
+    otherRef: 'The same number measured from another part of the viola — the top, the side, an f-hole — would put the mic somewhere else.',
+    noAim: 'This starting point gives no aim, so the mic simply faces the viola. Distance, height and angle are still separate things to try.',
+    clipMount: 'Mount: a clip or holder made for this instrument — on the side, or on two strings behind the bridge — with the player’s agreement',
+    standMount: 'Mount: a stand placed clear of the bow’s sweep, the bow arm and the player',
+    inPath: 'viola in path',
+    facing: 'facing the viola',
+    observation: 'For a real viola, with the player’s agreement, and the player stopped while anything moves. Write tendencies in words — what you heard, not a promised result.',
+  },
+};

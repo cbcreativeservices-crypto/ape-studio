@@ -7,7 +7,11 @@ import { KickArt, kickHitTest, kickLabels } from '../lessons/m01Kick/art';
 import { CoupledHeads, StrikeSequence } from '../lessons/m01Kick/soundArt';
 import { SNARE_ART } from '../lessons/m02Snare/art';
 import { TOMS_ART } from '../lessons/m03Toms/art';
+import { VIOLIN_ART } from '../lessons/c09aViolin/art';
+import { VIOLA_ART } from '../lessons/c09bViola/art';
 import { CELLO_ART } from '../lessons/c09cCello/art';
+import { BASS_PLUCKED_ART } from '../lessons/c06aBassPlucked/art';
+import { BASS_BOWED_ART } from '../lessons/c06bBassBowed/art';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -23,7 +27,11 @@ const ART: Record<string, LessonArt> = {
   M03: TOMS_ART,
 };
 
+ART.C09a = VIOLIN_ART;
+ART.C09b = VIOLA_ART;
 ART.C09c = CELLO_ART;
+ART.C06a = BASS_PLUCKED_ART;
+ART.C06b = BASS_BOWED_ART;
 
 export function lessonArt(id: string): LessonArt | undefined {
   return ART[id];

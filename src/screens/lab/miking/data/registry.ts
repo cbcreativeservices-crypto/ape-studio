@@ -25,7 +25,11 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'M01', labId: 'drums', title: 'Kick Drum', subtitle: 'Bass drum: inside, outside, one mic or two', status: 'ready' },
   { id: 'M02', labId: 'drums', title: 'Snare Drum', subtitle: 'Top, bottom, clamp or stand — and the hi-hat beside it', status: 'ready' },
   { id: 'M03', labId: 'drums', title: 'Rack and Floor Toms', subtitle: 'One mic each, one for two, or none — under the cymbals', status: 'ready' },
+  { id: 'C09a', labId: 'strings', title: 'Violin and Fiddle', subtitle: 'In front and a little above, closer to the bow, or a clip on the violin', status: 'ready' },
+  { id: 'C09b', labId: 'strings', title: 'Viola', subtitle: 'A stand in front, a cardioid aimed at one area, or a miniature', status: 'ready' },
   { id: 'C09c', labId: 'strings', title: 'Cello', subtitle: 'A foot from the bridge, a farther view, or a clip on the strings', status: 'ready' },
+  { id: 'C06a', labId: 'strings', title: 'Upright Bass, Plucked', subtitle: 'In front just above the bridge, an f-hole, or a clip on the strings', status: 'ready' },
+  { id: 'C06b', labId: 'strings', title: 'Upright Bass, Bowed', subtitle: 'In front outside the bow’s sweep, an f-hole, a clip, or a section spot', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
