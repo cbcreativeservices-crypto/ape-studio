@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 00:06 · ccode · 02a0d63f
+changed: feat(miking): engine additions for the guitar family (additive, optional)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 23:12 · ccode · 1e6c1be6
 changed: docs(miking): Lab 4 chordophone research (20 lessons) + BATCH4 summary
 affects other side: nothing (branch final-lab, miking lab work).

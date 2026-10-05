@@ -11,6 +11,7 @@
  * plate) — not its acoustic centre (Kick L39; GEOMETRY_PROPOSAL §5).
  */
 import type { MicType } from '../engine/model/types.ts';
+import { STRINGS_MIC_TYPES } from './micTypesStrings.ts';
 
 const generic = { kind: 'sourced', src: 'WP-MIC', quote: 'a superposition of an omnidirectional (pressure) and a figure-8 (pressure gradient)' } as const;
 
@@ -173,6 +174,9 @@ Object.assign(MIC_TYPES, {
     blurb: 'A slim condenser on a short gooseneck that clamps to the hoop. Needs phantom power. Keep its head angled toward the drumhead, never flat to it.',
   },
 } satisfies Record<string, MicType>);
+
+/* ── Lab 4: the plucked strings (data/micTypesStrings.ts) ── */
+Object.assign(MIC_TYPES, STRINGS_MIC_TYPES);
 
 export function micType(id: string): MicType {
   return MIC_TYPES[id] ?? MIC_TYPES.kickDynCard;
