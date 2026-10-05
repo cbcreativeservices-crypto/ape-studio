@@ -86,6 +86,17 @@ export const TAMB_MODEL: InstrumentModel = {
     side: { u0: -430, u1: 570, v0: -1480, v1: -760 },
     top: { u0: -430, u1: 570, v0: -460, v1: 460 },
   },
+  // Held or shaken, the side view is framed 150 mm higher: the mic in front
+  // sits level with the tambourine (y ≈ −1150), which in the shared frame put
+  // it right under the top-right inset of the other view at phone width
+  // (integrator, 2026-10-05). Mounted, the mic hangs above the head on a boom
+  // rising to the right: that frame runs 200 mm further right instead, so the
+  // mic body clears the inset (its boom may pass behind it).
+  viewsByVariant: {
+    held: { side: { u0: -430, u1: 570, v0: -1630, v1: -910 } },
+    shaken: { side: { u0: -430, u1: 570, v0: -1630, v1: -910 } },
+    mounted: { side: { u0: -430, u1: 770, v0: -1480, v1: -760 } },
+  },
   yFloor: { mm: 0, prov: ill('the floor is the frame’s origin') },
   interior: { x0: 0.5, x1: DEPTH, rIn: R - FT, c: POSES.held.c, axis: neg(POSES.held.n) },
   ports: { held: null, shaken: null, mounted: null },
