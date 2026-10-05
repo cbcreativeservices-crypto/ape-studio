@@ -125,3 +125,13 @@ snare's `smallDynCard` (same S-SM57-UG body and pattern), so M06–M08 now use `
 | S-SM57-UG | Shure, SM57 User Guide 3.6 (2025-A): "Dynamic (moving coil)"; "Cardioid"; 157 mm overall, 32 mm grille | see `snare/SOURCES.md` | read in the snare pass (2026-10-04) |
 | AX-DPE8 | Audix DP Elite 8 sheet (archived): SCX1 length "104 mm / 4.1 in" (the pencil condenser's drawn length; Ø 21 mm is a drawing default) | see `snare/SOURCES.md`, `overheads/GEOMETRY_PROPOSAL.md` §5 | archived copy read (2026-10-04) |
 | LESSON-TIMP | The owner's timpani lesson, L35: "A cardioid condenser is well documented for spots in both small orchestras and amplified shows." | `source_text/Timpani-Miking-Technique-Research.txt` | the lesson's own words |
+
+## 8. Mic types for Lab 3's low / coiled brass (A03 horn, A04a tuba, A04b euphonium; `lessons/shared/lowbrass/lowBrassMics.ts`)
+
+Added 2026-10-05 by the A03/A04 builder (branch miking-a2). The full rows live in the Batch 3
+research (`french_horn/SOURCES.md`, `trumpet/SOURCES.md` §0); repeated here so the shared mic types
+resolve from one table. The ribbon's and the large condenser's body sizes are drawing defaults.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| IHS-ROSTRUP | F. Rostrup, "Acoustics: Recording the Horn", International Horn Society: "One figure-8 microphone side-rejecting the piano sound from above the horn and a vacuum tube large diaphragm cardioid from beneath the horn" (the `lbRibbon` and `lbLdc` types' patterns) | see `french_horn/SOURCES.md` | 200, read 2026-10-05 in the Batch 3 pass |

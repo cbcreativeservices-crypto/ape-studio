@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 05:46 · ccode · ff7cd817
+changed: feat(miking engine): opt-in envelopeReveal — keep-outs drawn only as a mic approaches
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 04:31 · ccode · 4d01722e
 changed: Merge branch 'miking-fix1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
