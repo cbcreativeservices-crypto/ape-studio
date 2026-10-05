@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 02:29 · ccode · 039ad71c
+changed: Merge branch 'miking-c4' into final-lab
+affects other side: nothing (miking merge, branch final-lab)
+needs: nothing (miking merge, branch final-lab)
+
+
 ### 2026-10-05 02:15 · ccode · ea9025f5
 changed: feat(miking): C12 Clavinet lesson (Lab 4), Lab 4 keys tests, corrections log
 affects other side: nothing (miking lessons, branch final-lab)
