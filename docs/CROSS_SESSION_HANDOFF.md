@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 04:09 · ccode · 557259f3
+changed: Merge branch 'miking-i1' into final-lab
+affects other side: nothing (miking merge, branch final-lab)
+needs: nothing (miking merge, branch final-lab)
+
+
 ### 2026-10-05 03:47 · ccode · 98a2b9f5
 changed: fix(miking): crash boom-stand label clear of the hi-hats at 390 x 844
 affects other side: nothing (miking lessons, branch final-lab)
