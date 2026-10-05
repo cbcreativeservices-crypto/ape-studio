@@ -27,7 +27,7 @@ export const A05B_LESSON: Lesson = buildSaxLesson({
   short: 'alto',
   Short: 'Alto',
   zones: ALTO_ZONES,
-  use: { worked: 'as.above', live: 'as.above', twoA: 'as.above', twoB: 'as.front', twoBType: 'roomLdc' },
+  use: { worked: 'as.above', live: 'as.above', twoA: 'as.above', twoB: 'as.front', twoBType: 'saxLdc' },
   orient: [
     { title: 'WHAT IT IS', text: 'The alto saxophone, pitched in E♭, is the most common saxophone. A cane reed on the mouthpiece sets the air in a conical brass tube vibrating; the neck joins the body, the bow turns the tube back up, and the bell curves up and forward. Pads on hinged keys open and close the tone holes.', src: 'Y-SAX-MECH3' },
     { title: 'WHERE YOU MEET IT', text: 'Big bands and horn sections, jazz combos, pop, soul and funk, concert bands and saxophone quartets — on stage and in the studio. This lesson covers both.', src: 'LESSON' },
@@ -73,9 +73,9 @@ export const A05B_LESSON: Lesson = buildSaxLesson({
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A little distance can carry the whole horn and the room; in a section, a main pair may carry it already.',
   placementReveal: 'Toward the key stack tends to bring warmth and more key noise; toward the bell, brightness and focus; farther, more of the whole horn and the room. Horns and players vary, so “it depends on this horn” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
   typeNotes: {
-    instDynCard: 'Ideas to try: begin a few centimetres above the bell, aimed at the holes; then move one thing at a time — toward the bell, toward the holes, a little farther — and play low and high notes each time.',
+    saxDynCard: 'Ideas to try: begin a few centimetres above the bell, aimed at the holes; then move one thing at a time — toward the bell, toward the holes, a little farther — and play low and high notes each time.',
     saxDynSuper: 'The same places as the cardioid dynamic; its tighter pattern hears less of the stage, and its least-sensitive directions sit toward the rear, off to each side.',
-    roomLdc: 'Ideas to try: begin about half a metre in front, aimed between the bell and the left-hand keys; in a good room try a little farther, or over the player’s shoulder.',
+    saxLdc: 'Ideas to try: begin about half a metre in front, aimed between the bell and the left-hand keys; in a good room try a little farther, or over the player’s shoulder.',
     saxClip: 'Ideas to try with a clip: keep it on the rim where it is made to go, and change only the capsule’s angle — between the bell and the keys for balance, into the bell for more bite.',
   },
   learnIntro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the space in front. They are starting points, not rules. Move from there and listen: there is no single right answer, and every horn, player and room is different.',

@@ -31,7 +31,6 @@ import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
 import { Kit, MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
-import { hatchFor } from '../bowed/BowedArt';
 import { SaxScene } from './SaxArt';
 import { swingShape } from './saxModel.ts';
 import type { SaxPosture } from './saxPosture.ts';
@@ -94,7 +93,16 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
   const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
   const self = cfg.P;
   const sweep = useMemo(() => swingPlan(self), [self]);
-  const hatch = useMemo(() => hatchFor(box), [box]);
+  // A plan is drawn small: the hatch's lines are spaced and weighted for it.
+  const hatch = useMemo(() => {
+    const p = make();
+    const span = box.u1 - box.u0 + (box.v1 - box.v0);
+    for (let d = 0; d < span; d += 70) {
+      p.moveTo(box.u0 + d, box.v0);
+      p.lineTo(box.u0 + d - (box.v1 - box.v0), box.v1);
+    }
+    return p;
+  }, [box]);
   const shown = cfg.objects.filter((o) => o.scene === 'all' || o.scene === scene || (scene !== 'kit' && o.scene === 'kit' && o.kind !== 'self'));
   const floor = useMemo(() => {
     const p = make();
@@ -168,9 +176,9 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
             {scene === 'stage' ? wedges.filter((x) => x.glyph !== 'none').map((x) => <WedgeTop key={x.id} at={{ x: x.p.x, z: x.p.z }} faces={{ x: x.faces.x, z: x.faces.z }} />) : null}
             <SaxScene P={self} view="top" />
             <Group clip={sweep}>
-              <Path path={hatch} style="stroke" strokeWidth={2} color="#8a8f9c" opacity={0.5} />
+              <Path path={hatch} style="stroke" strokeWidth={12} color="#a7adb9" opacity={0.6} />
             </Group>
-            <Path path={sweep} style="stroke" strokeWidth={2.5} color="#8a8f9c" opacity={0.75} />
+            <Path path={sweep} style="stroke" strokeWidth={16} color="#a7adb9" opacity={0.85} />
             {ring ? <Path path={ring} style="stroke" strokeWidth={14} color="#ffc64d" opacity={0.9} /> : null}
           </Group>
         </Canvas>

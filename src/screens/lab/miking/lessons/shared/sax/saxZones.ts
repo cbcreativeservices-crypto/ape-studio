@@ -38,7 +38,7 @@ export type ZoneWords = { label: string; band: string; tendency: string; checks:
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const FEW = ill('"a few inches" has no number: drawn 5–10 cm (a drawing default)');
-const DYNAMICS = ['instDynCard', 'saxDynSuper'];
+const DYNAMICS = ['saxDynCard', 'saxDynSuper'];
 
 /** Square to `axis`, on the side of `toward` (unit). */
 function across(axis: Vec3, toward: Vec3): Vec3 {
@@ -227,7 +227,7 @@ export function saxZone(F: SaxFamily, kind: ZoneKindId, id: string, w: ZoneWords
           distance: { min: 457.2, max: 609.6 },
           cone: { min: 0, max: 40, prov: ill('directly in front: within 40° of the audience-facing line (the lab’s drawing)') },
           aim: { maxOffAxis: 25, prov: ill('aimed between the bell and the left-hand keys: within 25°') },
-          requires: { micTypeIds: ['roomLdc'] },
+          requires: { micTypeIds: ['saxLdc'] },
           draw: draws(c, FORWARD, 40, 457.2, 609.6),
         },
         around(c, FORWARD, [530, 500, 560, 480, 590], 36, c, up),
@@ -246,7 +246,7 @@ export function saxZone(F: SaxFamily, kind: ZoneKindId, id: string, w: ZoneWords
           distance: { min: 304.8, max: 609.6 },
           cone: { min: 0, max: 60, prov: ill('in front of the bell: within 60° of the audience-facing line (the lab’s drawing)') },
           aimAt: { surface: 'third', r: 130, prov: ill('aimed a third of the way up the horn: the front axis meets the body there, within 13 cm') },
-          requires: { micTypeIds: ['roomLdc'] },
+          requires: { micTypeIds: ['saxLdc'] },
           draw: draws(A.rimC, FORWARD, 60, 304.8, 609.6),
         },
         around(A.rimC, norm(add(FORWARD, { x: 0, y: 0.15, z: 0 })), [450, 420, 480, 390, 520, 360], 54, A.third, up),
@@ -281,7 +281,7 @@ export function saxZone(F: SaxFamily, kind: ZoneKindId, id: string, w: ZoneWords
           near: { point: A.bottom, min: 0.9 * H, max: 1.15 * H, prov: ill('the triangle’s other side, from the bottom of the horn') },
           cone: { min: 0, max: 60, prov: ill('in front of the horn (the lab’s drawing)') },
           aim: { maxOffAxis: 25, dir: aimDir, prov: ill('aimed at the middle of the horn: within 25°') },
-          requires: { micTypeIds: ['roomLdc'] },
+          requires: { micTypeIds: ['saxLdc'] },
           draw: { side: sampled('side', apex, H * 0.5, test), top: sampled('top', apex, H * 0.5, test) },
         },
         gen(),
@@ -304,7 +304,7 @@ export function saxZone(F: SaxFamily, kind: ZoneKindId, id: string, w: ZoneWords
           distance: { min: 150, max: 300 },
           cone: { min: 0, max: 60, prov: ill('above and a little behind the right shoulder (the lab’s drawing)') },
           aim: { maxOffAxis: 35, dir: norm(sub(look, add(ear, scale(n, 220)))), prov: ill('looking down over the shoulder at the horn: within 35°') },
-          requires: { micTypeIds: ['roomLdc'] },
+          requires: { micTypeIds: ['saxLdc'] },
           draw: draws(ear, n, 60, 150, 300),
         },
         around(ear, n, [220, 200, 240, 180, 260, 160, 280], 54, look, FORWARD),

@@ -6,9 +6,12 @@
  * (owner ruling 2026-10-04: no brand or model name on screen). Merged into
  * MIC_TYPES by data/micTypes.ts.
  *
- * Shared types reused as they are (never duplicated): `instDynCard` (the
- * compact instrument dynamic, cardioid) and `roomLdc` (the side-address
- * large-diaphragm condenser on a floor stand). New here:
+ * The bodies are the shared ones (the compact dynamic of S-SM57-UG, the
+ * kit lessons' side-address condenser of S-SM4-WEB); the words are the
+ * horn's (the shared `instDynCard` and `roomLdc` speak of a guitar speaker
+ * and a drum kit on the microphone page):
+ *   saxDynCard   the compact instrument dynamic, cardioid;
+ *   saxLdc       the side-address large-diaphragm condenser, cardioid;
  *   saxDynSuper  the same compact dynamic body with a SUPERCARDIOID capsule
  *                (its nulls ≈ 125° off the front, toward the rear — the
  *                Studio-or-live page aims them);
@@ -19,6 +22,42 @@ import type { MicType } from '../../../engine/model/types.ts';
 const placeholder = (mm: number, needed: string) => ({ mm, prov: { kind: 'unknown', needed } as const, placeholder: true });
 
 export const SAX_MIC_TYPES = {
+  saxDynCard: {
+    id: 'saxDynCard',
+    label: 'End-address instrument dynamic, cardioid',
+    short: 'DYN · CARD',
+    transducer: 'dynamic',
+    address: 'end',
+    patterns: [{ id: 'cardioid', label: 'cardioid', prov: { kind: 'sourced', src: 'S-SM57-UG', quote: 'Cardioid' } }],
+    body: {
+      length: { mm: 157, prov: { kind: 'sourced', src: 'S-SM57-UG', quote: '157 mm (6 3/16 in.) overall length (p.6 drawing)' } },
+      radius: { mm: 16, prov: { kind: 'sourced', src: 'S-SM57-UG', quote: '32 mm (1 1/4 in.) grille/front diameter (p.6 drawing)' } },
+    },
+    power: 'none needed (dynamic)',
+    mount: 'stand',
+    examples: [{ model: 'Shure SM57 (the compact instrument dynamic the S-SAX engineers use close on horns)', fact: '"Dynamic (moving coil)"; "Cardioid"; 157 mm long, 32 mm grille.', src: 'S-SM57-UG' }],
+    art: 'smallDynamic',
+    blurb: 'A compact instrument dynamic with a cardioid pattern — a common close choice on a horn, live and in the studio. It takes the level a few centimetres from a bell. Needs no power.',
+  },
+  saxLdc: {
+    id: 'saxLdc',
+    label: 'Large-diaphragm condenser, side-address, on a floor stand',
+    short: 'LARGE SIDE',
+    transducer: 'condenser',
+    address: 'side',
+    patterns: [{ id: 'cardioid', label: 'cardioid', prov: { kind: 'sourced', src: 'S-SM4-UG', quote: 'Polar Pattern: Cardioid' } }],
+    // The kit lessons' side-address body (S-SM4-WEB product data), reused.
+    body: {
+      length: { mm: 80.01, prov: { kind: 'sourced', src: 'S-SM4-WEB', quote: 'height "80.01" (product data), drawn as the depth front to back' } },
+      radius: { mm: 59.004, prov: { kind: 'sourced', src: 'S-SM4-WEB', quote: 'width "118.008" (product data)' } },
+      width: { mm: 254.991, prov: { kind: 'sourced', src: 'S-SM4-WEB', quote: 'depth "254.991" (product data), drawn as the upright length' } },
+    },
+    power: 'phantom power (48 V)',
+    mount: 'stand',
+    examples: [{ model: 'Shure SM4 (side-address cardioid condenser)', fact: '"Polar Pattern: Cardioid"; 48 V phantom; the S-SAX engineers name neutral condensers for detail in a quiet room.', src: 'S-SM4-UG' }],
+    art: 'sideLdc',
+    blurb: 'A side-address cardioid condenser a little way off the horn: aim its FACE between the bell and the keys. Detailed, with more of the room. Needs phantom power.',
+  },
   saxDynSuper: {
     id: 'saxDynSuper',
     label: 'End-address instrument dynamic, supercardioid',

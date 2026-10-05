@@ -27,7 +27,7 @@ export const A05C_LESSON: Lesson = buildSaxLesson({
   short: 'tenor',
   Short: 'Tenor',
   zones: TENOR_ZONES,
-  use: { worked: 'ts.above', live: 'ts.above', twoA: 'ts.above', twoB: 'ts.third', twoBType: 'roomLdc' },
+  use: { worked: 'ts.above', live: 'ts.above', twoA: 'ts.above', twoB: 'ts.third', twoBType: 'saxLdc' },
   orient: [
     { title: 'WHAT IT IS', text: 'The tenor saxophone, pitched in B♭, is the alto’s larger, lower cousin: a longer conical tube, a neck with a gentle rise before it turns down, the bow and an upturned bell. Its body sits lower and farther to the player’s right than an alto’s.', src: 'Y-HUB-SAX' },
     { title: 'WHERE YOU MEET IT', text: 'Jazz, rock and roll, soul, funk and pop, big-band sections and solo features — on stage and in the studio. This lesson covers both.', src: 'LESSON' },
@@ -73,9 +73,9 @@ export const A05C_LESSON: Lesson = buildSaxLesson({
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. The tenor is a big horn: a little distance — a third of the way up, from 30 to 60 cm — lets its holes and bell blend.',
   placementReveal: 'Toward the key stack tends to bring warmth and more key noise; toward the bell, focus and honk; farther, more of the whole horn and the room. Horns and players vary, so “it depends on this horn” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
   typeNotes: {
-    instDynCard: 'Ideas to try: begin a few centimetres above the bell, aimed at the holes; then move one thing at a time — toward the bell, toward the holes, a little farther — and play low and high notes each time.',
+    saxDynCard: 'Ideas to try: begin a few centimetres above the bell, aimed at the holes; then move one thing at a time — toward the bell, toward the holes, a little farther — and play low and high notes each time.',
     saxDynSuper: 'The same places as the cardioid dynamic; its tighter pattern hears less of the stage, and its least-sensitive directions sit toward the rear, off to each side.',
-    roomLdc: 'Ideas to try: begin 30–60 cm from the bell, aimed a third of the way up the horn (seated: about level with the right elbow); in a good room try over the player’s shoulder too.',
+    saxLdc: 'Ideas to try: begin 30–60 cm from the bell, aimed a third of the way up the horn (seated: about level with the right elbow); in a good room try over the player’s shoulder too.',
     saxClip: 'Ideas to try with a clip: keep it on the rim where it is made to go, and change only the capsule’s angle — between the bell and the keys for balance, into the bell for more bite.',
   },
   learnIntro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the bell, the tone holes, a third of the way up the horn. They are starting points, not rules; the bigger the horn, the more a little distance helps it blend. Move from there and listen: there is no single right answer.',

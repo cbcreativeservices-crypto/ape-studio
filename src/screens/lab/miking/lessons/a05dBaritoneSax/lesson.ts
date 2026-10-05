@@ -27,7 +27,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
   short: 'baritone',
   Short: 'Baritone',
   zones: BARITONE_ZONES,
-  use: { worked: 'bs.above', live: 'bs.above', twoA: 'bs.above', twoB: 'bs.triangle', twoBType: 'roomLdc' },
+  use: { worked: 'bs.above', live: 'bs.above', twoA: 'bs.above', twoB: 'bs.triangle', twoBType: 'saxLdc' },
   orient: [
     { title: 'WHAT IT IS', text: 'The baritone saxophone, pitched in E♭, is the largest and lowest of the four common saxophones. Its long conical tube is folded: a loop at the top of the neck, a long body, the bow and an upturned bell. Many modern baritones have a low A key, one note lower than the others.', src: 'Y-HUB-SAX' },
     { title: 'WHERE YOU MEET IT', text: 'Big bands and horn sections, jazz, R&B and rock, concert bands and saxophone quartets — often doubling the bass line.', src: 'LESSON' },
@@ -73,9 +73,9 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A big horn rewards distance: a farther mic — the triangle — takes in the whole baritone, alone or beside a close mic.',
   placementReveal: 'Toward the key stack tends to bring warmth and key noise; toward the bell, focus and a nasal edge; farther, more of the whole horn and the room. On a baritone the holes are spread far apart, so distance matters more. Each zone’s LISTEN FOR line is an idea to check by ear.',
   typeNotes: {
-    instDynCard: 'Ideas to try: begin a few centimetres above the bell, aimed at the holes; then compare a little farther and lower, toward the middle of the body, with the lowest and the highest notes each time.',
+    saxDynCard: 'Ideas to try: begin a few centimetres above the bell, aimed at the holes; then compare a little farther and lower, toward the middle of the body, with the lowest and the highest notes each time.',
     saxDynSuper: 'The same places as the cardioid dynamic; its tighter pattern hears less of the stage, and its least-sensitive directions sit toward the rear, off to each side.',
-    roomLdc: 'Ideas to try: begin 30–60 cm from the bell, aimed a third of the way up; in a good room try the triangle — about the horn’s length from its top and its bottom.',
+    saxLdc: 'Ideas to try: begin 30–60 cm from the bell, aimed a third of the way up; in a good room try the triangle — about the horn’s length from its top and its bottom.',
     saxClip: 'Ideas to try with a clip: keep it on the rim, angled between the bell and the keys — and remember it hears only part of a big horn.',
   },
   learnIntro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the bell, the tone holes, the top and the bottom of the horn. They are starting points, not rules; the bigger the horn, the farther away it can blend. Move from there and listen: there is no single right answer.',

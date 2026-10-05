@@ -626,9 +626,9 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     context: {
       variant: 'standing',
       zone: c.use.live,
-      typeId: 'instDynCard',
+      typeId: 'saxDynCard',
       patterns: [
-        { id: 'cardioid', label: 'cardioid', typeId: 'instDynCard' },
+        { id: 'cardioid', label: 'cardioid', typeId: 'saxDynCard' },
         { id: 'supercardioid', label: 'supercardioid', typeId: 'saxDynSuper' },
       ],
       micNoun: 'A compact dynamic',
@@ -664,7 +664,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     },
     twoMic: {
       variant: 'standing',
-      A: { typeId: 'instDynCard', pattern: 'cardioid', zone: c.use.twoA },
+      A: { typeId: 'saxDynCard', pattern: 'cardioid', zone: c.use.twoA },
       B: { typeId: c.use.twoBType, pattern: 'cardioid', zone: c.use.twoB },
       learn: [
         'A second mic — a room mic, or a farther stand mic beside a close one or a clip — is a choice for a reason, not a requirement. Hear each mic alone first: each should work on its own.',
@@ -701,7 +701,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
     subtitle: c.subtitle,
     noun: { one: s, many: `${s}s` },
     model: c.F.MODEL,
-    micTypeIds: ['instDynCard', 'saxDynSuper', 'roomLdc', 'saxClip'],
+    micTypeIds: ['saxDynCard', 'saxDynSuper', 'saxLdc', 'saxClip'],
     zones: c.zones,
     pages,
     scenarios,
