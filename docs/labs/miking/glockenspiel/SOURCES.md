@@ -36,3 +36,9 @@ Lesson: `source_text/Glockenspiel-Miking-Technique-Research.txt`. Keys: `vibraph
 - GLK-D3 YG-2500 height: spec 33 1/2–41 3/8 in; manual 85–105 cm (= its own "33-1/2"-44-3/8"").
 - GLK-D4 YG-2500 bar size / weight: spec 1 1/4 × 3/8 in (31.75 × 9.525); manual 32.5 / 9 mm;
   70 lbs vs 36 kg (79 lbs).
+
+## Lesson key (added by the I2 builder, 2026-10-05)
+
+| Key | Source | URL | Status |
+|---|---|---|---|
+| LESSON-GLK | The owner's lesson text itself (`source_text/Glockenspiel-Miking-Technique-Research.txt`), for the lab's own trial positions and words (the one-mic trial bands, the under-the-tubes alternative) | (in the repo) | the lesson's own words |

@@ -313,7 +313,16 @@ export type CompiledScene = {
  * nearly straight up or down — so a mic aimed down at a hand drum hangs from a
  * boom beside the drums instead of a stand dropping through it.
  */
-export type MountRule = { boom: 'level'; fallback: Vec3; length: number };
+export type MountRule = {
+  boom: 'level';
+  fallback: Vec3;
+  length: number;
+  /** The boom ALWAYS runs along `fallback`, whatever the aim (added
+   *  2026-10-05 for the mallet keyboards: a mic tilted along the keyboard —
+   *  one of a coincident pair — still hangs from a stand on the audience
+   *  side, never one standing in the keyboard). */
+  fixed?: boolean;
+};
 /**
  * How a stand's boom reaches a mic that hangs over or inside an instrument
  * (Lab 4: a mic over a grand's strings is held from the open, curved side; a

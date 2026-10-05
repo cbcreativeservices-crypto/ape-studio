@@ -613,6 +613,12 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-05 03:02 · ccode · c06aa406
+changed: feat(miking): mallet-bar family for Lab 2 (bars, resonators, frames, fans, case)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 03:00 · ccode · 9c69b4d9
 changed: feat(miking): Lab 2 I11a Rhodes and I11b Wurlitzer lessons
 affects other side: nothing (miking lessons, branch final-lab)

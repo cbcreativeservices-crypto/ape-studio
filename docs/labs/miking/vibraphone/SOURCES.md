@@ -78,3 +78,9 @@ F33 = F3, C16 = C2, C28 = C3, F45 = F4, C52 = C5, F57 = F5, F69 = F6, C76 = C7, 
 | L47 NIOSH-TID | resolves (WebFetch); the bulletin's figure: "If sound levels are above 85 dB(A), implement a hearing loss prevention program" — no 3 dB exchange in it. |
 | [6] S-POLAR | 200 (principles). |
 | All 7 refs | resolve (NIOSH-TID 403 to curl, read via WebFetch). |
+
+## Lesson key (added by the I2 builder, 2026-10-05)
+
+| Key | Source | URL | Status |
+|---|---|---|---|
+| LESSON-VIBE | The owner's lesson text itself (`source_text/Vibraphone-Miking-Technique-Research.txt`), for the lab's own trial positions and words (the one-mic trial bands, the under-the-tubes alternative) | (in the repo) | the lesson's own words |

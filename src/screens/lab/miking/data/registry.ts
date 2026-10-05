@@ -13,7 +13,7 @@ export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtit
 
 export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
-  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn struck instruments — metal, wood, tines and reeds: recommended starting points, the player’s space, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.' },
+  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn percussion — the mallet keyboards and the electric pianos: from the front and from above, recommended starting points, the player’s space and the mallets’ travel, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
@@ -60,7 +60,11 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C13', labId: 'strings', title: 'Oud', subtitle: 'A fretless lute with a deep bowl — the upper face, the face, the rose', status: 'ready' },
   { id: 'C14', labId: 'strings', title: 'Sitar', subtitle: 'Low by the bridge, high by the neck — and the sympathetic strings', status: 'ready' },
   { id: 'C15', labId: 'strings', title: 'Saraswati Veena', subtitle: 'Over the top plate, out of the hand’s reach — the resonator, the drone, the yali', status: 'ready' },
-  // Lab 2 (percussion), the electric pianos (each lesson on its own line).
+  // Lab 2 (percussion), in catalogue order: I01 … I06, I07–I10 mallet keyboards, I11a/b electric pianos, I12.
+  { id: 'I07', labId: 'percussion', title: 'Vibraphone', subtitle: 'Metal bars, tubes and fans: one mic above, or a spaced or coincident pair', status: 'ready' },
+  { id: 'I08', labId: 'percussion', title: 'Marimba', subtitle: 'Wooden bars over pipes, five octaves wide: one mic, or a spaced or coincident pair', status: 'ready' },
+  { id: 'I09', labId: 'percussion', title: 'Xylophone', subtitle: 'Hard, bright bars: one mic above, off-axis, or a spaced or coincident pair', status: 'ready' },
+  { id: 'I10', labId: 'percussion', title: 'Glockenspiel', subtitle: 'Steel bars that ring long: a safe view above, the close example that conflicts, one mic or two', status: 'ready' },
   { id: 'I11a', labId: 'percussion', title: 'Rhodes (Tine Piano)', subtitle: 'Mic the speaker it plays through — the direct signal compared alongside', status: 'ready' },
   { id: 'I11b', labId: 'percussion', title: 'Wurlitzer (Reed Piano)', subtitle: 'Two small oval speakers that face the player — a close mic in a narrow gap', status: 'ready' },
 ];

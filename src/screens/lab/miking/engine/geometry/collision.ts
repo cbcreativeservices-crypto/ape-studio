@@ -174,7 +174,7 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
     // the model's fallback when the mic points nearly straight up or down.
     const h = { x: -aim.x, y: 0, z: -aim.z };
     const hl = len(h);
-    const d = hl > 0.25 ? scale(h, 1 / hl) : norm(rule.fallback);
+    const d = hl > 0.25 && !rule.fixed ? scale(h, 1 / hl) : norm(rule.fallback);
     q = add(tail, scale(d, rule.length));
   } else if (scene.port && isInside(scene, tail)) {
     const toPort = sub(scene.port.c, tail);
