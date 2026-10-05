@@ -31,6 +31,9 @@ import { C09B_LESSON } from '../lessons/c09bViola/lesson.ts';
 import { C09C_LESSON } from '../lessons/c09cCello/lesson.ts';
 import { C06A_LESSON } from '../lessons/c06aBassPlucked/lesson.ts';
 import { C06B_LESSON } from '../lessons/c06bBassBowed/lesson.ts';
+import { C13_LESSON } from '../lessons/c13Oud/lesson.ts';
+import { C14_LESSON } from '../lessons/c14Sitar/lesson.ts';
+import { C15_LESSON } from '../lessons/c15Veena/lesson.ts';
 
 const LESSON_CONTENT: Record<string, Lesson> = {
   M01: M01_LESSON,
@@ -65,6 +68,10 @@ LESSON_CONTENT.C09b = C09B_LESSON;
 LESSON_CONTENT.C09c = C09C_LESSON;
 LESSON_CONTENT.C06a = C06A_LESSON;
 LESSON_CONTENT.C06b = C06B_LESSON;
+// Lab 4, the lute family (oud, sitar, veena).
+LESSON_CONTENT.C13 = C13_LESSON;
+LESSON_CONTENT.C14 = C14_LESSON;
+LESSON_CONTENT.C15 = C15_LESSON;
 
 export function lessonById(id: string | undefined): Lesson | undefined {
   return id ? LESSON_CONTENT[id] : undefined;

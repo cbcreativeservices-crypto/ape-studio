@@ -180,7 +180,7 @@ function brk(x: number, w: number) {
 }
 
 /* ── one ideal string, shape n ── */
-function StringShapesCanvas({ w, h, n, swing, pFrac, label, endWords }: { w: number; h: number; n: number; swing: number; pFrac: number; label: string; endWords: [string, string] }) {
+export function StringShapesCanvas({ w, h, n, swing, pFrac, label, endWords, pickWord = 'PICK' }: { w: number; h: number; n: number; swing: number; pFrac: number; label: string; endWords: [string, string]; pickWord?: string }) {
   const L = 1000;
   const A = 150;
   const box = { u0: -60, u1: L + 60, v0: -A - 70, v1: A + 90 };
@@ -213,7 +213,7 @@ function StringShapesCanvas({ w, h, n, swing, pFrac, label, endWords }: { w: num
   const labels: StaticLabel[] = [
     { id: 'a', text: endWords[0], u: 0, v: A + 46, align: 'left', tone: 'muted' },
     { id: 'b', text: endWords[1], u: L, v: A + 46, align: 'right', tone: 'muted' },
-    { id: 'p', text: 'PICK', u: pFrac * L, v: A + 74, align: 'center', tone: 'amber' },
+    { id: 'p', text: pickWord, u: pFrac * L, v: A + 74, align: 'center', tone: 'amber' },
     ...still.map((s, i) => ({ id: `s${i}`, text: 'STILL', u: s * L, v: -A - 40, align: 'center' as const, tone: 'illustrative' as const })),
   ];
   return (

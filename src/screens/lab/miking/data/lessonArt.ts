@@ -37,6 +37,9 @@ import { VIOLA_ART } from '../lessons/c09bViola/art';
 import { CELLO_ART } from '../lessons/c09cCello/art';
 import { BASS_PLUCKED_ART } from '../lessons/c06aBassPlucked/art';
 import { BASS_BOWED_ART } from '../lessons/c06bBassBowed/art';
+import { C13_ART } from '../lessons/c13Oud/art';
+import { C14_ART } from '../lessons/c14Sitar/art';
+import { C15_ART } from '../lessons/c15Veena/art';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -74,6 +77,10 @@ ART.C05B = C05B_ART;
 ART.C05A = C05A_ART;
 ART.C03 = C03_ART;
 ART.C07 = C07_ART;
+// Lab 4, the lute family (oud, sitar, veena).
+ART.C13 = C13_ART;
+ART.C14 = C14_ART;
+ART.C15 = C15_ART;
 
 ART.C09a = VIOLIN_ART;
 ART.C09b = VIOLA_ART;

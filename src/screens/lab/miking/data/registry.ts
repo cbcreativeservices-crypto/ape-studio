@@ -15,7 +15,7 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: '' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
-  { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments and their players — the guitar family, the amplified chain and the bowed strings: recommended starting points, the player’s space and the bow’s sweep, studio or live, and what a second mic does. Silent; tendencies in words.' },
+  { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments and their players — guitars and their amps, the bowed strings, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '' },
   { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '' },
@@ -54,6 +54,9 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C09a', labId: 'strings', title: 'Violin and Fiddle', subtitle: 'In front and a little above, closer to the bow, or a clip on the violin', status: 'ready' },
   { id: 'C09b', labId: 'strings', title: 'Viola', subtitle: 'A stand in front, a cardioid aimed at one area, or a miniature', status: 'ready' },
   { id: 'C09c', labId: 'strings', title: 'Cello', subtitle: 'A foot from the bridge, a farther view, or a clip on the strings', status: 'ready' },
+  { id: 'C13', labId: 'strings', title: 'Oud', subtitle: 'A fretless lute with a deep bowl — the upper face, the face, the rose', status: 'ready' },
+  { id: 'C14', labId: 'strings', title: 'Sitar', subtitle: 'Low by the bridge, high by the neck — and the sympathetic strings', status: 'ready' },
+  { id: 'C15', labId: 'strings', title: 'Saraswati Veena', subtitle: 'Over the top plate, out of the hand’s reach — the resonator, the drone, the yali', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

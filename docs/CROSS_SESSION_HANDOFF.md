@@ -613,8 +613,20 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-05 01:50 · ccode · 75129217
+changed: fix(miking): yali carved relief; "an oud" on the shared start step
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 01:49 · ccode · 65ceb2d4
 changed: fix(miking): Lab 4 strings review pass — bass views, trio plan, sound labels, corrections log
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:44 · ccode · e2618939
+changed: fix(miking): lute lessons, first visual pass at 390x844
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
@@ -629,6 +641,30 @@ needs: nothing (miking merge, branch final-lab)
 changed: Merge branch 'miking-c1' (via integ-c1) into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
+
+
+### 2026-10-05 01:33 · ccode · d33f8d04
+changed: feat(miking): C15 Saraswati Veena lesson on the lute family
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:33 · ccode · 4f6fc4fb
+changed: feat(miking): C14 Sitar lesson on the lute family
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:33 · ccode · 4802c5bb
+changed: feat(miking): C13 Oud lesson on the lute family
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:33 · ccode · 752c56b3
+changed: feat(miking): shared lute family for Lab 4 (oud, sitar, Saraswati veena)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 01:31 · ccode · 2548fd26
