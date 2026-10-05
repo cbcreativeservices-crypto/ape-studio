@@ -602,6 +602,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 23:05 · ccode · 61545c7f
+changed: fix(miking): toms seen at 390 wide — drawn zones, per-mic reference head, labels
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 22:47 · ccode · 04621f7c
 changed: feat(miking): M03 Rack and Floor Toms lesson (Lab 1)
 affects other side: nothing (miking lessons, branch final-lab)
