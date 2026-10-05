@@ -86,7 +86,14 @@ export function lineRef(label: string): string {
   return label.replace(/^the /, '').replace(/’s\b/, '').toUpperCase();
 }
 
-export type BezelCell = { k: string; v: string; sub?: string; tint?: string; flex?: number };
+/** A stop's short name for the bezel: the part's `short`, else a keep-out's
+ *  own words ("the player’s hands" → "player’s hands") — never a raw id such
+ *  as "env.hands" (clarity pass 2026-10-05). */
+export function stopShortOf(model: { parts: { id: string; short: string }[]; envelopes: { id: string; label: string }[] }, extra: Record<string, string> = {}): (id: string) => string {
+  return (id) => model.parts.find((p) => p.id === id)?.short ?? extra[id] ?? model.envelopes.find((e) => e.id === id)?.label.replace(/^the /i, '') ?? id;
+}
+
+export type BezelCell ={ k: string; v: string; sub?: string; tint?: string; flex?: number };
 
 export const ZONE_TINT = { zone: '#6fa8ff', blocked: '#ff6b5e' } as const;
 

@@ -31,7 +31,11 @@ export type HandKind =
   /** Seen from above: a hand over the strings. */
   | 'above'
   /** Relaxed, open. */
-  | 'rest';
+  | 'rest'
+  /** A loose fist round a stick (a drummer's grip; the stick is the caller's). */
+  | 'grip'
+  /** Fingers curved down onto keys (a pianist's hand, seen from the side). */
+  | 'keys';
 
 export type Hand = {
   /** The wrist joint. */
@@ -44,8 +48,11 @@ export type Hand = {
   board?: { v: number; half: number; tips: number[] };
 };
 
-export type PlayerView = 'front' | 'above';
-export type PlayerPosture = 'seated' | 'standing' | 'lap';
+/** 'side': in profile (added 2026-10-05 for the pianist and the drummer);
+ *  R joints are the NEAR side, L the far side; `facing` says which way. */
+export type PlayerView = 'front' | 'above' | 'side';
+/** 'floor': seated cross-legged on the floor (barefoot: no shoes drawn). */
+export type PlayerPosture = 'seated' | 'standing' | 'lap' | 'floor';
 
 export type PlayerPose = {
   view: PlayerView;
@@ -69,6 +76,9 @@ export type PlayerPose = {
   floor: number | null;
   /** A strap over the left shoulder to this point (a standing player). */
   strapTo?: Pt | null;
+  /** 'side' view: the way the player faces along u (default +1, toward +u).
+   *  'above' view: the direction the chest faces, radians (default +v). */
+  facing?: number;
 };
 
 /** True adult proportions (mm): the drawing's widths, a drawing default. */

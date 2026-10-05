@@ -10,10 +10,12 @@
  * The player is drawn as quiet line art (a bald head — the house style) so
  * the drum stays the subject. Nothing moves (D8); paths are built once.
  */
-import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { radiusAt, T_LEN, T_R } from './model.ts';
+import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
 import { T_F, T_H0, T_N, alongAxis } from './geometry.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -130,16 +132,72 @@ function getBuilt(view: ViewId): Built {
   return (built[view] ??= view === 'top' ? buildTop() : buildSide());
 }
 
+/** The player as the shared figure (players/PlayerFigure, clarity pass
+ *  2026-10-05), on a chair, the drum across the lap, facing the audience
+ *  (+x): the same places as the line art it replaces. ILLUSTRATIVE. */
+const tonbakPoses: Partial<Record<ViewId, PlayerPose>> = {};
+function tonbakPose(view: ViewId): PlayerPose {
+  const hit = tonbakPoses[view];
+  if (hit) return hit;
+  let pose: PlayerPose;
+  if (view === 'side') {
+    const hip = pt(-470, -615);
+    pose = {
+      view: 'side',
+      posture: 'seated',
+      facing: 1,
+      head: { c: pt(-430, -1120), r: 100 },
+      neck: pt(-447, -962),
+      shoulderR: pt(-442, -910),
+      shoulderL: pt(-456, -920),
+      elbowR: pt(-300, -680),
+      elbowL: pt(-318, -700),
+      handR: { wrist: pt(-150, -720), dir: 0.1, kind: 'rest' },
+      handL: { wrist: pt(-170, -760), dir: 0.05, kind: 'rest' },
+      hipR: hip,
+      hipL: pt(hip.u - 10, hip.v - 4),
+      kneeR: pt(40, -570),
+      kneeL: pt(16, -580),
+      footR: pt(170, 0),
+      footL: pt(124, 0),
+      floor: 0,
+    };
+  } else {
+    // From above: authored chest toward +v round the neck, turned to face +x
+    // (`facing` 0): (right, fwd) lands at world (neck + fwd, neck + right).
+    const n = pt(-482, 0);
+    const L = (right: number, fwd: number) => pt(n.u - right, n.v + fwd);
+    pose = {
+      view: 'above',
+      posture: 'seated',
+      facing: 0,
+      head: { c: L(0, 12), r: 96 },
+      neck: n,
+      shoulderR: L(188, 4),
+      shoulderL: L(-188, 4),
+      elbowR: L(230, 150),
+      elbowL: L(-200, 160),
+      handR: { wrist: L(150, 300), dir: Math.PI / 2 - 0.4, kind: 'above' },
+      handL: { wrist: L(-70, 280), dir: Math.PI / 2 + 0.2, kind: 'above' },
+      hipR: L(106, -40),
+      hipL: L(-106, -40),
+      kneeR: L(210, 430),
+      kneeL: L(-210, 430),
+      footR: L(200, 500),
+      footL: L(-200, 500),
+      floor: null,
+    };
+  }
+  tonbakPoses[view] = pose;
+  return pose;
+}
+
 export function TonbakArt({ view }: { view: ViewId; variant: VariantId }) {
   const g = getBuilt(view);
   if (g.kind === 'top') {
     return (
       <Group>
-        <Path path={g.shoulders} style="stroke" strokeWidth={6} color="#5a5f6a" opacity={0.55} />
-        <Path path={g.headP} style="stroke" strokeWidth={6} color="#5a5f6a" opacity={0.55} />
-        <Path path={g.lap} style="stroke" strokeWidth={5} color="#5a5f6a" opacity={0.35}>
-          <DashPathEffect intervals={[22, 14]} />
-        </Path>
+        <PlayerBehind pose={tonbakPose('top')} dim={0.85} />
         <Path path={g.shadow} color="#000" opacity={0.5}>
           <BlurMask blur={26} style="normal" />
         </Path>
@@ -159,7 +217,7 @@ export function TonbakArt({ view }: { view: ViewId; variant: VariantId }) {
         <Path path={g.head}>
           <LinearGradient start={vec(-T_R, 0)} end={vec(T_R, 0)} colors={SKIN} />
         </Path>
-        <Path path={g.arms} style="stroke" strokeWidth={34} strokeCap="round" color="#5a5f6a" opacity={0.28} />
+        <PlayerInFront pose={tonbakPose('top')} dim={0.85} />
       </Group>
     );
   }
@@ -170,7 +228,7 @@ export function TonbakArt({ view }: { view: ViewId; variant: VariantId }) {
       </Path>
       <Path path={g.floorEdge} style="stroke" strokeWidth={2.5} color="#4a4c58" />
       <Path path={g.chair} style="stroke" strokeWidth={10} color="#3a3d45" opacity={0.7} />
-      <Path path={g.person} style="stroke" strokeWidth={9} strokeCap="round" strokeJoin="round" color="#5a5f6a" opacity={0.6} />
+      <PlayerBehind pose={tonbakPose('side')} dim={0.85} />
       <Group transform={[{ translateX: 8 }, { translateY: 12 }]}>
         <Path path={g.silhouette} color="#000" opacity={0.5}>
           <BlurMask blur={18} style="normal" />
@@ -190,6 +248,7 @@ export function TonbakArt({ view }: { view: ViewId; variant: VariantId }) {
       <Circle cx={-T_R * 0.4} cy={T_H0.y - T_R * 0.45} r={T_R * 0.25} color="#ffffff" opacity={0.12}>
         <BlurMask blur={T_R * 0.2} style="normal" />
       </Circle>
+      <PlayerInFront pose={tonbakPose('side')} dim={0.85} />
     </Group>
   );
 }
@@ -202,7 +261,7 @@ export function tonbakLabels(view: ViewId): ArtLabel[] {
       { id: 'bowl', text: 'BOWL', u: radiusAt(sb) + 20, v: zOf(sb), align: 'left', tone: 'muted' },
       { id: 'neck', text: 'NECK', u: radiusAt(0.62 * T_LEN) + 20, v: zOf(0.62 * T_LEN), align: 'left', tone: 'muted' },
       { id: 'foot', text: 'FOOT · OPENING', short: 'OPENING', u: radiusAt(T_LEN) + 20, v: zOf(T_LEN) + 4, align: 'left', tone: 'muted' },
-      { id: 'player', text: '← PLAYER', u: -470, v: 160, align: 'center', tone: 'muted' },
+      { id: 'player', text: 'PLAYER', u: -470, v: 160, align: 'center', tone: 'muted' },
     ];
   }
   return [

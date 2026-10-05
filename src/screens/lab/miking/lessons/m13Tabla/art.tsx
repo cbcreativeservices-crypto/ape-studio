@@ -15,6 +15,8 @@ import { BlurMask, Circle, DashPathEffect, Group, LinearGradient, Path, RadialGr
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { BAYAN, DAYAN, type TablaDrum } from './geometry.ts';
+import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -249,17 +251,74 @@ function TopDrum({ d, p }: { d: TablaDrum; p: ReturnType<typeof topParts> }) {
   );
 }
 
+/** The player as the shared figure (players/PlayerFigure, clarity pass
+ *  2026-10-05): seated cross-legged on the floor, barefoot, facing the
+ *  audience (+x), the right hand on the dayan, the left on the bayan — the
+ *  same places as the line art it replaces. ILLUSTRATIVE. */
+const tablaPoses: Partial<Record<ViewId, PlayerPose>> = {};
+function tablaPose(view: ViewId): PlayerPose {
+  const hit = tablaPoses[view];
+  if (hit) return hit;
+  let pose: PlayerPose;
+  if (view === 'side') {
+    const hip = pt(-600, -170);
+    pose = {
+      view: 'side',
+      posture: 'floor',
+      facing: 1,
+      head: { c: pt(-560, -1000), r: 100 },
+      neck: pt(-577, -845),
+      shoulderR: pt(-572, -795),
+      shoulderL: pt(-586, -805),
+      elbowR: pt(-430, -560),
+      elbowL: pt(-446, -575),
+      handR: { wrist: pt(-230, -490), dir: 0.12, kind: 'rest' },
+      handL: { wrist: pt(-250, -430), dir: 0.3, kind: 'rest' },
+      hipR: hip,
+      hipL: pt(hip.u - 10, hip.v - 4),
+      kneeR: pt(-250, -120),
+      kneeL: pt(-280, -130),
+      footR: pt(-420, 0),
+      footL: pt(-400, 0),
+      floor: 0,
+    };
+  } else {
+    const n = pt(-580, 0);
+    const L = (right: number, fwd: number) => pt(n.u - right, n.v + fwd);
+    pose = {
+      view: 'above',
+      posture: 'floor',
+      facing: 0,
+      head: { c: L(0, 10), r: 96 },
+      neck: n,
+      shoulderR: L(188, 4),
+      shoulderL: L(-188, 4),
+      elbowR: L(230, 170),
+      elbowL: L(-230, 170),
+      handR: { wrist: L(165, 360), dir: Math.PI / 2 - 0.2, kind: 'above' },
+      handL: { wrist: L(-165, 360), dir: Math.PI / 2 + 0.2, kind: 'above' },
+      hipR: L(106, -40),
+      hipL: L(-106, -40),
+      kneeR: L(300, 230),
+      kneeL: L(-300, 230),
+      footR: L(80, 300),
+      footL: L(-80, 300),
+      floor: null,
+    };
+  }
+  tablaPoses[view] = pose;
+  return pose;
+}
+
 export function TablaArt({ view }: { view: ViewId; variant: VariantId }) {
   const b = getBuilt();
   if (view === 'top') {
     return (
       <Group>
-        <Path path={b.person.topLegs} style="stroke" strokeWidth={5} color="#5a5f6a" opacity={0.35}>
-          <DashPathEffect intervals={[22, 14]} />
-        </Path>
-        <Path path={b.person.top} style="stroke" strokeWidth={6} strokeCap="round" color="#5a5f6a" opacity={0.55} />
+        <PlayerBehind pose={tablaPose('top')} dim={0.85} />
         <TopDrum d={BAYAN} p={b.top[0]} />
         <TopDrum d={DAYAN} p={b.top[1]} />
+        <PlayerInFront pose={tablaPose('top')} dim={0.85} />
       </Group>
     );
   }
@@ -268,9 +327,10 @@ export function TablaArt({ view }: { view: ViewId; variant: VariantId }) {
       <Path path={b.floor}>
         <LinearGradient start={vec(0, 0)} end={vec(0, 60)} colors={['#202128', '#141519', '#0b0b0e']} />
       </Path>
-      <Path path={b.person.side} style="stroke" strokeWidth={9} strokeCap="round" strokeJoin="round" color="#5a5f6a" opacity={0.6} />
+      <PlayerBehind pose={tablaPose('side')} dim={0.85} />
       <SideDrum d={BAYAN} p={b.side[0]} behind />
       <SideDrum d={DAYAN} p={b.side[1]} behind={false} />
+      <PlayerInFront pose={tablaPose('side')} dim={0.85} />
     </Group>
   );
 }
@@ -280,7 +340,7 @@ export function tablaLabels(view: ViewId): ArtLabel[] {
     return [
       { id: 'dayan', text: 'DAYAN · PATCH CENTRED', short: 'DAYAN', u: DAYAN.H.x, v: DAYAN.H.z + DAYAN.maxR + 50, align: 'center' },
       { id: 'bayan', text: 'BAYAN · PATCH OFF-CENTRE', short: 'BAYAN', u: BAYAN.H.x, v: BAYAN.H.z - BAYAN.maxR - 40, align: 'center' },
-      { id: 'player', text: '← PLAYER', u: -570, v: 140, align: 'center', tone: 'muted' },
+      { id: 'player', text: 'PLAYER', u: -570, v: 140, align: 'center', tone: 'muted' },
     ];
   }
   return [

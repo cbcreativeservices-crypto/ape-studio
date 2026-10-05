@@ -1,53 +1,70 @@
 /**
  * THE SHARED PLAYER — the drawing (owner art pass 2026-10-05: "the player
- * figure is crude"). A respectful, neutral, adult figure at TRUE size, drawn
- * from a PlayerPose (playerPose.ts) in the view's millimetres, at the Kick's
- * illustration standard:
- *   • body masses built as smooth silhouettes — a tailored long-sleeved shirt
- *     (collar, placket, cuffs), trousers, shoes — each limb a tapered form
- *     joined into ONE outline (path union), never tubes and circles;
- *   • light from the upper left: a gradient for form, a rim highlight on the
- *     lit edge, a darker contour; a soft contact shadow where it rests;
+ * figure is crude"; clarity pass 2026-10-05: "a flat grey mannequin"). A
+ * respectful, neutral, adult figure at TRUE size, drawn from a PlayerPose
+ * (playerPose.ts) in the view's millimetres, at the app's illustration
+ * standard:
+ *   • body masses built as smooth silhouettes — a long-sleeved shirt (collar,
+ *     placket, cuffs, a belt), trousers, leather shoes — each limb a tapered
+ *     form joined into ONE outline (path union), never tubes and circles;
+ *   • FORM from an upper-left light: a gradient across each mass, a crisp lit
+ *     crescent on its upper-left edge (the rim light), a soft core shadow on
+ *     its lower-right edge, a darker contour; a soft contact shadow where it
+ *     rests and where the near arm lies over the instrument;
+ *   • clothing FOLDS suggested simply: creases at the inside of each elbow and
+ *     knee, a pull fold along each sleeve, the drape from the armpits to the
+ *     belt — each a dark crease with a lit edge beside it;
+ *   • hands with fingers: knuckles and the gaps between fingers drawn, a
+ *     picking hand round a pick, a fretting hand's fingers arched over the
+ *     board onto the strings (thumb behind the neck), a hand on a steel bar, a
+ *     fist round a stick, a hand curved down onto keys;
  *   • the head in the house LINE-ART spec (reference_head_icon_spec): one
- *     uniform stroke, bald, brows, nose and mouth, ears, NO eyes; seen from
- *     above, the cranium, the ears and the nose's tip;
- *   • hands with fingers: a picking hand round a pick, a fretting hand's
- *     fingers arched over the board onto the strings (thumb behind the
- *     neck), a hand resting on a steel bar;
+ *     uniform light stroke, bald, brows, nose and mouth, ears, NO eyes — front,
+ *     profile (mirrored for the facing) and from above;
  *   • a muted palette (neighbours recede, charter §6): nothing competes with
  *     the instrument, the zones or the mic.
  *
+ * THREE VIEWS: 'front' (face-on), 'above' (plan) and 'side' (profile: the R
+ * joints are the near side, the L joints the far side, drawn darker).
+ *
  * TWO LAYERS, so the instrument sits between them:
- *   <PlayerBehind/>   legs, torso, head, the arm that passes behind the neck;
- *   <PlayerInFront/>  the arm over the body and the hands on the strings.
+ *   <PlayerBehind/>   legs, torso, head, the far arm;
+ *   <PlayerInFront/>  the near arm and the hands.
  * Nothing moves (D8). Paths are built once per pose (cached by the pose
  * object) — the pose comes from the instrument's model, so the hands stay
- * inside the keep-outs the mic is stopped by.
+ * inside the keep-outs the mic is stopped by. The drawing never changes a
+ * joint: the same pose, better drawn.
  *
- * API (for any string lesson): build a PlayerPose (see guitars/
- * guitarPlayer.ts for the guitars), then
+ * API (for any lesson): build a PlayerPose, then
  *   <PlayerBehind pose={pose} />  …the instrument…  <PlayerInFront pose={pose} />
+ * Art that builds its own body geometry (the bowed family's 3-D figure, the
+ * lute players) paints it with the same look through <FigureMass/> and
+ * <LineHead/>.
  */
+import { useMemo } from 'react';
 import { BlurMask, Circle, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { BODY, dist, lerp, pt, type Hand, type PlayerPose, type Pt } from './playerPose.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 
-/* ── palette: muted, cool-neutral; light from the upper left ── */
-const SHIRT = ['#5d687e', '#465064', '#2f3645'];
-const SHIRT_RIM = '#9aa6bd';
-const SHIRT_EDGE = '#171a21';
-const SHIRT_LINE = '#252a35';
-const TROUSER = ['#41454f', '#2d3038', '#1b1d22'];
-const TROUSER_RIM = '#767c89';
-/** Skin: a neutral lay-figure grey (no complexion is implied). */
-const SKIN = ['#8a8f98', '#6e737c', '#52565e'];
-const SKIN_RIM = '#b3b8c1';
-const SKIN_EDGE = '#24272d';
-const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
+/* ── palette: muted; light from the upper left ── */
+
+export type FigureTone = 'shirt' | 'trousers' | 'skin' | 'shoe' | 'seat';
+type ToneDef = { ramp: string[]; rim: string; core: string; edge: string; rimW: number; coreW: number };
+/** The shirt: a deep, muted slate blue. Trousers: charcoal. Shoes: dark
+ *  leather. Skin: a soft, warm neutral (one muted mid tone, no complexion
+ *  singled out). A seat: dark upholstery. */
+export const FIGURE_TONES: Record<FigureTone, ToneDef> = {
+  shirt: { ramp: ['#76839e', '#55617b', '#3a4357', '#262c3a'], rim: '#c3cde2', core: '#0f121a', edge: '#12151c', rimW: 7, coreW: 30 },
+  trousers: { ramp: ['#585c66', '#3c3f47', '#272a30', '#17191d'], rim: '#9aa0ab', core: '#08090b', edge: '#0d0e11', rimW: 7, coreW: 34 },
+  skin: { ramp: ['#c3ab98', '#a28977', '#7d6656', '#5a4639'], rim: '#ecdccd', core: '#2b1f18', edge: '#2a201a', rimW: 4.5, coreW: 16 },
+  shoe: { ramp: ['#5a4030', '#3a281c', '#22170f', '#120c08'], rim: '#a58a72', core: '#050302', edge: '#070504', rimW: 4, coreW: 14 },
+  seat: { ramp: ['#4a4c55', '#2e3036', '#1b1c21', '#0f1013'], rim: '#8d929d', core: '#050506', edge: '#08080a', rimW: 5, coreW: 20 },
+};
+const SHIRT_LINE = '#161a24';
 /** The line-art head (house spec): a light neutral stroke. */
-const HEAD_LINE = '#cfd4dc';
+export const HEAD_LINE = '#cfd4dc';
 const HEAD_FILL = 'rgba(16,18,23,0.8)';
 const CHROME = ['#f2f4f8', '#b9bec8', '#6b707b', '#d4d8df'];
 const PICK = ['#7a3a1a', '#4a200c'];
@@ -80,7 +97,7 @@ function capsule(a: Pt, b: Pt, ra: number, rb: number): SkPath {
 }
 
 /** A chain of tapered segments through joints with radii, as one outline. */
-function limb(pts: Pt[], rs: number[]): SkPath {
+export function limb(pts: Pt[], rs: number[]): SkPath {
   let out: SkPath | null = null;
   for (let i = 0; i < pts.length - 1; i++) {
     const c = capsule(pts[i], pts[i + 1], rs[i], rs[i + 1]);
@@ -116,7 +133,7 @@ function smooth(points: Pt[], tension = 0.5): SkPath {
   return p;
 }
 
-/** An open smooth stroke through points. */
+/** An open smooth stroke through points (Catmull-Rom, ends held). */
 function curve(points: Pt[]): SkPath {
   const p = make();
   p.moveTo(points[0].u, points[0].v);
@@ -124,9 +141,15 @@ function curve(points: Pt[]): SkPath {
     p.lineTo(points[1].u, points[1].v);
     return p;
   }
-  for (let i = 1; i < points.length - 1; i++) {
-    const m = i === points.length - 2 ? points[i + 1] : lerp(points[i], points[i + 1], 0.5);
-    p.quadTo(points[i].u, points[i].v, m.u, m.v);
+  const n = points.length;
+  const at = (i: number) => points[Math.max(0, Math.min(n - 1, i))];
+  for (let i = 0; i < n - 1; i++) {
+    const p0 = at(i - 1);
+    const p1 = at(i);
+    const p2 = at(i + 1);
+    const p3 = at(i + 2);
+    const k = 1 / 6;
+    p.cubicTo(p1.u + (p2.u - p0.u) * k, p1.v + (p2.v - p0.v) * k, p2.u - (p3.u - p1.u) * k, p2.v - (p3.v - p1.v) * k, p2.u, p2.v);
   }
   return p;
 }
@@ -138,31 +161,91 @@ const local = (h: Hand) => {
   return (x: number, y: number): Pt => pt(h.wrist.u + x * c - y * s, h.wrist.v + x * s + y * c);
 };
 
-/* ── the parts ── */
+/** A crease across a limb at `at`, perpendicular to the a→b direction. */
+function crease(a: Pt, b: Pt, at: number, half: number, bow: number): SkPath {
+  const c = lerp(a, b, at);
+  const th = Math.atan2(b.v - a.v, b.u - a.u);
+  const nx = -Math.sin(th);
+  const ny = Math.cos(th);
+  const tx = Math.cos(th);
+  const ty = Math.sin(th);
+  return curve([pt(c.u - nx * half, c.v - ny * half), pt(c.u + tx * bow, c.v + ty * bow), pt(c.u + nx * half, c.v + ny * half)]);
+}
 
-type Mass = { path: SkPath; ramp: string[]; rim: string; edge: string; box: { u0: number; v0: number; u1: number; v1: number } };
-const boxOf = (p: SkPath) => {
-  const b = p.getBounds();
-  return { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height };
-};
-const mass = (path: SkPath, ramp: string[], rim: string, edge = SHIRT_EDGE): Mass => ({ path, ramp, rim, edge, box: boxOf(path) });
+/* ── the look of one mass: crescents built once per path ── */
 
-type Built = {
-  behind: Mass[];
-  front: Mass[];
-  shoes: SkPath[];
-  shirtLines: SkPath;
-  shirtLinesFront: SkPath;
-  buttons: Pt[];
-  head: { line: SkPath; fill: SkPath };
-  bars: { path: SkPath; box: { u0: number; v0: number; u1: number; v1: number } }[];
-  pick: SkPath | null;
-  shadow: SkPath | null;
-  strap: SkPath | null;
-};
+type Look = { rim: SkPath; core: SkPath };
+const lookCache = new WeakMap<SkPath, Map<string, Look>>();
+/** The lit crescent (upper left) and the core-shadow crescent (lower right)
+ *  of a mass: the path minus itself shifted along the light. */
+function lookOf(path: SkPath, tone: FigureTone): Look {
+  let byTone = lookCache.get(path);
+  if (!byTone) {
+    byTone = new Map();
+    lookCache.set(path, byTone);
+  }
+  const hit = byTone.get(tone);
+  if (hit) return hit;
+  const t = FIGURE_TONES[tone];
+  const shifted = (dx: number, dy: number) => {
+    const q = path.copy();
+    q.offset(dx, dy);
+    return q;
+  };
+  const rim = Skia.Path.MakeFromOp(path, shifted(t.rimW * 0.8, t.rimW), PathOp.Difference) ?? make();
+  const core = Skia.Path.MakeFromOp(path, shifted(-t.coreW * 0.75, -t.coreW), PathOp.Difference) ?? make();
+  const look = { rim, core };
+  byTone.set(tone, look);
+  return look;
+}
 
-/** The front-view head (house line-art spec), centred on c, height ≈ 2r. */
-function headFront(c: Pt, r: number, neckV: number): { line: SkPath; fill: SkPath } {
+/**
+ * One body mass at the house figure standard: the tone's gradient for form,
+ * the core shadow (soft, lower right), the lit rim (crisp, upper left), the
+ * contour. `far`: the far limb in a profile, a little darker. Shared with the
+ * art that builds its own figure geometry (bowed, lutes).
+ */
+export function FigureMass({ path, tone, far = false, contour = 2.2 }: { path: SkPath; tone: FigureTone; far?: boolean; contour?: number }) {
+  const t = FIGURE_TONES[tone];
+  const look = useMemo(() => lookOf(path, tone), [path, tone]);
+  const b = useMemo(() => path.getBounds(), [path]);
+  return (
+    <Group>
+      <Path path={path}>
+        <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width, b.y + b.height)} colors={t.ramp} positions={[0, 0.38, 0.72, 1]} />
+      </Path>
+      <Group clip={path}>
+        <Path path={look.core} color={t.core} opacity={0.55}>
+          <BlurMask blur={t.coreW * 0.45} style="normal" />
+        </Path>
+      </Group>
+      <Path path={look.rim} opacity={0.7}>
+        <LinearGradient start={vec(b.x, b.y)} end={vec(b.x + b.width * 0.7, b.y + b.height * 0.7)} colors={[t.rim, 'rgba(255,255,255,0)']} />
+      </Path>
+      {far ? <Path path={path} color="#000" opacity={0.3} /> : null}
+      <Path path={path} style="stroke" strokeWidth={contour} color={t.edge} opacity={0.95} />
+    </Group>
+  );
+}
+
+/** Creases: a dark fold line with a lit edge just above-left of it. */
+function Folds({ path, light, width = 2.6, clip }: { path: SkPath; light: string; width?: number; clip?: SkPath }) {
+  return (
+    <Group clip={clip}>
+      <Group transform={[{ translateX: -1.6 }, { translateY: -2.2 }]}>
+        <Path path={path} style="stroke" strokeWidth={width * 0.7} strokeCap="round" color={light} opacity={0.32} />
+      </Group>
+      <Path path={path} style="stroke" strokeWidth={width} strokeCap="round" color={SHIRT_LINE} opacity={0.62} />
+    </Group>
+  );
+}
+
+/* ── heads (house line-art spec) ── */
+
+export type HeadPaths = { line: SkPath; fill: SkPath };
+
+/** The front-view head, centred on c, height ≈ 2r; the neck down to neckV. */
+export function headFront(c: Pt, r: number, neckV: number): HeadPaths {
   const k = r / 110;
   const P = (x: number, y: number) => pt(c.u + x * k, c.v + y * k);
   const right = [P(0, -118), P(52, -108), P(77, -70), P(81, -26), P(77, 8), P(71, 42), P(58, 75), P(34, 99), P(0, 108)];
@@ -191,8 +274,41 @@ function headFront(c: Pt, r: number, neckV: number): { line: SkPath; fill: SkPat
   return { line, fill };
 }
 
+/**
+ * The PROFILE head (house spec: authored facing LEFT, mirrored for a right-
+ * facing figure): a full cranium wide at the back, a gentle forehead, a small
+ * brow notch, a straight bridge to a defined tip with the nostril undercut,
+ * the lips, a chin tucking under, the jaw sweeping back and up to the ear, a
+ * thick squared neck column, one ear mid-skull. `facing` +1 = toward +u.
+ */
+export function headProfile(c: Pt, r: number, neckV: number, facing: number): HeadPaths {
+  const k = r / 110;
+  const s = facing >= 0 ? -1 : 1; // authored facing −u
+  const P = (x: number, y: number) => pt(c.u + s * x * k, c.v + y * k);
+  // The silhouette from the nape over the crown to the chin (open: the neck
+  // closes it).
+  const back = [P(58, 96), P(84, 66), P(102, 18), P(100, -36), P(80, -86), P(40, -114), P(-6, -120), P(-46, -106), P(-70, -78)];
+  const face = [P(-70, -78), P(-80, -44), P(-82, -30), P(-77, -21), P(-83, -9), P(-92, 8), P(-102, 24), P(-90, 32), P(-82, 33), P(-85, 45), P(-80, 52), P(-84, 60), P(-76, 70), P(-72, 84), P(-60, 94), P(-40, 98)];
+  const line = make();
+  line.addPath(curve(back));
+  line.addPath(curve(face));
+  // The jaw: from under the chin back and up toward the ear.
+  line.addPath(curve([P(-40, 98), P(-4, 92), P(22, 76), P(30, 52)]));
+  // The neck column.
+  const nb = (neckV - c.v) / k;
+  line.addPath(curve([P(-38, 98), P(-42, (98 + nb) / 2), P(-48, nb)]));
+  line.addPath(curve([P(58, 96), P(62, (96 + nb) / 2), P(68, nb)]));
+  // The ear: an outer helix oval and a small inner fold.
+  line.addPath(smooth([P(18, -14), P(40, -18), P(50, 6), P(44, 34), P(24, 40), P(16, 18)], 0.6));
+  line.addPath(curve([P(28, -2), P(38, 6), P(34, 22), P(26, 24)]));
+  // The brow stroke above the notch.
+  line.addPath(curve([P(-76, -30), P(-60, -36), P(-44, -32)]));
+  const fill = union(smooth([...back, ...face.slice(1), P(-4, 96)], 0.5), capsule(P(10, 96), P(10, nb - 6), 52 * k, 58 * k));
+  return { line, fill };
+}
+
 /** The head from above: the cranium, the ears, the nose's tip toward +v. */
-function headAbove(c: Pt, r: number): { line: SkPath; fill: SkPath } {
+export function headAbove(c: Pt, r: number): HeadPaths {
   const k = r / 110;
   const P = (x: number, y: number) => pt(c.u + x * k, c.v + y * k);
   const skull = smooth([P(0, -98), P(62, -80), P(80, -10), P(70, 60), P(36, 92), P(0, 98), P(-36, 92), P(-70, 60), P(-80, -10), P(-62, -80)], 0.55);
@@ -203,25 +319,57 @@ function headAbove(c: Pt, r: number): { line: SkPath; fill: SkPath } {
   return { line, fill: skull };
 }
 
-/** A hand (in its own frame), as one outline; `pick` adds a pick's tip. */
-function handPath(h: Hand): { path: SkPath; pick: SkPath | null; bar: SkPath | null; thumbBehind: SkPath | null } {
+/** A house line-art head: a quiet translucent interior and one light stroke. */
+export function LineHead({ head, c, r }: { head: HeadPaths; c: Pt; r: number }) {
+  return (
+    <Group>
+      <Path path={head.fill} color={HEAD_FILL} />
+      <Path path={head.fill}>
+        <RadialGradient c={vec(c.u - r * 0.4, c.v - r * 0.5)} r={r * 1.4} colors={['rgba(255,255,255,0.07)', 'rgba(255,255,255,0)']} />
+      </Path>
+      <Path path={head.line} style="stroke" strokeWidth={Math.max(3, r * 0.038)} strokeCap="round" strokeJoin="round" color={HEAD_LINE} opacity={0.85} />
+    </Group>
+  );
+}
+
+/* ── hands ── */
+
+type HandShape = { path: SkPath; lines: SkPath; pick: SkPath | null; bar: SkPath | null; thumbBehind: SkPath | null };
+
+/** A hand (in its own frame), as one outline plus its knuckle and finger
+ *  lines; `pick` adds a pick's tip. Exported for art with its own figure. */
+export function handShape(h: Hand): HandShape {
   const L = local(h);
   const W = BODY.handW / 2;
-  if (h.kind === 'pick') {
+  const lines = make();
+  if (h.kind === 'pick' || h.kind === 'grip') {
     // A loose fist: the palm, the curled fingers' knuckles, the thumb along
-    // the top holding the pick against the side of the index finger.
+    // the top (holding the pick against the side of the index finger, or
+    // wrapped round a stick).
     const palm = smooth([L(0, -W * 0.72), L(60, -W * 0.95), L(98, -W * 0.82), L(112, -W * 0.2), L(108, W * 0.55), L(82, W * 0.92), L(36, W * 0.86), L(0, W * 0.7)], 0.6);
-    const knuckles = [-0.62, -0.2, 0.22, 0.6].map((y, i) => capsule(L(96 - i * 3, y * W), L(118 - i * 6, y * W * 1.02), 13, 12));
+    const ys = [-0.62, -0.2, 0.22, 0.6];
+    const knuckles = ys.map((y, i) => capsule(L(96 - i * 3, y * W), L(118 - i * 6, y * W * 1.02), 13, 12));
     const thumb = capsule(L(38, -W * 0.9), L(104, -W * 0.98), 15, 12);
-    const tip = L(122, -W * 1.08);
-    const pick = make();
-    const a = L(110, -W * 1.2);
-    const b = L(114, -W * 0.76);
-    pick.moveTo(a.u, a.v);
-    pick.lineTo(b.u, b.v);
-    pick.lineTo(tip.u + Math.cos(h.dir) * 14, tip.v + Math.sin(h.dir) * 14);
-    pick.close();
-    return { path: union(palm, thumb, ...knuckles), pick, bar: null, thumbBehind: null };
+    // The gaps between the curled fingers, and the knuckle line.
+    for (let i = 0; i < 3; i++) {
+      const y = ((ys[i] + ys[i + 1]) / 2) * W;
+      lines.addPath(curve([L(100 - i * 3, y), L(118 - i * 5, y * 1.02)]));
+    }
+    lines.addPath(curve([L(84, -W * 0.7), L(90, 0), L(80, W * 0.78)]));
+    // The thumb's crease.
+    lines.addPath(curve([L(60, -W * 0.82), L(74, -W * 0.92)]));
+    let pick: SkPath | null = null;
+    if (h.kind === 'pick') {
+      const tip = L(122, -W * 1.08);
+      pick = make();
+      const a = L(110, -W * 1.2);
+      const b = L(114, -W * 0.76);
+      pick.moveTo(a.u, a.v);
+      pick.lineTo(b.u, b.v);
+      pick.lineTo(tip.u + Math.cos(h.dir) * 14, tip.v + Math.sin(h.dir) * 14);
+      pick.close();
+    }
+    return { path: union(palm, thumb, ...knuckles), lines, pick, bar: null, thumbBehind: null };
   }
   if (h.kind === 'fret' && h.board) {
     // The back of the hand below the neck, the fingers arching over the
@@ -255,32 +403,114 @@ function handPath(h: Hand): { path: SkPath; pick: SkPath | null; bar: SkPath | n
       const mid = pt(tu + 3, lowEdge + 1);
       const tip = pt(tu, tipVs[i]);
       const r = i === 3 ? 6.4 : 7.4;
+      // The middle joint's crease and the nail's edge at the tip.
+      lines.addPath(crease(k, mid, 0.85, r * 0.8, 2));
+      lines.addPath(crease(mid, tip, 0.78, r * 0.55, -1.5));
       return limb([k, mid, tip], [r + 1.6, r + 0.4, r - 0.8]);
     });
+    // The knuckle row across the back of the hand.
+    lines.addPath(curve([pt(lo - 4, knuckleV + 10), pt((lo + hi) / 2, knuckleV + 4), pt(hi + 8, knuckleV + 10)]));
     const tu = (tips[0] + tips[1]) / 2 + 10;
     const thumb = capsule(pt(tu - 8, bd.v - bd.half + 6), pt(tu + 6, bd.v - bd.half - 14), 11, 10);
-    return { path: union(palm, ...fingers), pick: null, bar: null, thumbBehind: thumb };
+    return { path: union(palm, ...fingers), lines, pick: null, bar: null, thumbBehind: thumb };
   }
   if (h.kind === 'bar' && h.board) {
     // A steel bar across the strings, the hand resting over it, the fingers
     // curled down in front.
     const bu = h.board.tips[0];
     const bv = h.board.v;
-    const bar = h.board.half > 20 ? capsule(pt(bu, bv - h.board.half), pt(bu, bv + h.board.half), 11, 11) : (() => {
-      const p = make();
-      p.addCircle(bu, bv, h.board.half);
-      return p;
-    })();
+    const bar =
+      h.board.half > 20
+        ? capsule(pt(bu, bv - h.board.half), pt(bu, bv + h.board.half), 11, 11)
+        : (() => {
+            const p = make();
+            p.addCircle(bu, bv, h.board.half);
+            return p;
+          })();
     const centre = h.board.half > 20 ? pt(bu + 8, bv - 2) : pt(bu, bv - 34);
     const palm = limb([h.wrist, lerp(h.wrist, centre, 0.55), centre], [31, 38, 36]);
     const fingersEnd = h.board.half > 20 ? pt(bu + 48, bv + 24) : pt(bu + 34, bv + 6);
     const fingers = limb([pt(centre.u + 18, centre.v - 6), fingersEnd], [17, 13]);
-    return { path: union(palm, fingers), pick: null, bar, thumbBehind: null };
+    lines.addPath(crease(pt(centre.u + 18, centre.v - 6), fingersEnd, 0.35, 12, 2));
+    lines.addPath(crease(pt(centre.u + 18, centre.v - 6), fingersEnd, 0.7, 10, 2));
+    return { path: union(palm, fingers), lines, pick: null, bar, thumbBehind: null };
+  }
+  if (h.kind === 'keys') {
+    // Seen from the side: the back of the hand arched over the keys, the
+    // fingers curving down to the key tops, the thumb along the near edge.
+    const palm = smooth([L(0, -W * 0.42), L(56, -W * 0.62), L(104, -W * 0.5), L(118, -W * 0.05), L(100, W * 0.42), L(48, W * 0.48), L(0, W * 0.4)], 0.6);
+    const fingers = limb([L(100, -W * 0.3), L(146, -W * 0.05), L(170, W * 0.5)], [17, 14, 11]);
+    lines.addPath(crease(L(100, -W * 0.3), L(146, -W * 0.05), 0.15, 13, 2));
+    lines.addPath(crease(L(146, -W * 0.05), L(170, W * 0.5), 0.1, 11, 2));
+    const thumb = capsule(L(30, W * 0.3), L(96, W * 0.62), 14, 11);
+    return { path: union(palm, fingers, thumb), lines, pick: null, bar: null, thumbBehind: null };
   }
   // 'above' / 'rest': the hand seen from its back, fingers together.
   const palm = smooth([L(0, -W * 0.62), L(70, -W * 0.92), L(118, -W * 0.7), L(150, -W * 0.25), L(152, W * 0.28), L(122, W * 0.72), L(66, W * 0.9), L(0, W * 0.64)], 0.6);
   const thumb = capsule(L(30, -W * 0.8), L(82, -W * 1.18), 15, 12);
-  return { path: union(palm, thumb), pick: null, bar: null, thumbBehind: null };
+  // The gaps between the four fingers and the knuckle row.
+  for (const y of [-0.42, 0.02, 0.44]) lines.addPath(curve([L(112, y * W * 0.9), L(150, y * W * 0.62)]));
+  lines.addPath(curve([L(100, -W * 0.74), L(108, 0), L(100, W * 0.74)]));
+  return { path: union(palm, thumb), lines, pick: null, bar: null, thumbBehind: null };
+}
+
+/* ── the parts ── */
+
+type Mass = { path: SkPath; tone: FigureTone; far?: boolean };
+
+type Built = {
+  behind: Mass[];
+  front: Mass[];
+  shoes: Mass[];
+  foldsBehind: { path: SkPath; light: string; clip?: SkPath }[];
+  foldsFront: { path: SkPath; light: string }[];
+  handLines: SkPath;
+  shirtLines: SkPath;
+  shirtLinesFront: SkPath;
+  buttons: Pt[];
+  belt: SkPath | null;
+  head: HeadPaths;
+  bars: { path: SkPath; box: { u0: number; v0: number; u1: number; v1: number } }[];
+  pick: SkPath | null;
+  shadow: SkPath | null;
+  strap: SkPath | null;
+};
+
+const boxOf = (p: SkPath) => {
+  const b = p.getBounds();
+  return { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height };
+};
+
+const SHIRT_LIGHT = FIGURE_TONES.shirt.rim;
+const TROUSER_LIGHT = FIGURE_TONES.trousers.rim;
+
+/** Several open strokes as one path (never a PathOp: those fill). */
+function joined(...ps: SkPath[]): SkPath {
+  const p = make();
+  for (const q of ps) p.addPath(q);
+  return p;
+}
+
+/** Sleeve folds for one arm, kept few and soft: one crease at the inside
+ *  of the elbow, one pull fold down the forearm from it. */
+function sleeveFolds(_s: Pt, e: Pt, w: Pt): SkPath {
+  const p = make();
+  p.addPath(crease(e, w, 0.08, BODY.elbowR * 0.42, 4));
+  const th = Math.atan2(w.v - e.v, w.u - e.u);
+  const off = BODY.elbowR * 0.18;
+  const a = lerp(e, w, 0.16);
+  const b = lerp(e, w, 0.42);
+  p.addPath(curve([pt(a.u - Math.sin(th) * off, a.v + Math.cos(th) * off), pt(b.u - Math.sin(th) * off * 0.3, b.v + Math.cos(th) * off * 0.3)]));
+  return p;
+}
+
+/** Trouser folds for one leg: a soft crease below the knee, a short one down
+ *  the shin. */
+function legFolds(_h: Pt, k: Pt, a: Pt): SkPath {
+  const p = make();
+  p.addPath(crease(k, a, 0.16, BODY.kneeR * 0.45, 6));
+  p.addPath(curve([lerp(k, a, 0.34), lerp(k, a, 0.66)]));
+  return p;
 }
 
 function buildFront(pose: PlayerPose): Built {
@@ -344,14 +574,37 @@ function buildFront(pose: PlayerPose): Built {
   lines.addPath(cuff(pose.handL.wrist, pose.elbowL));
   const linesFront = make();
   linesFront.addPath(cuff(pose.handR.wrist, pose.elbowR));
-  // A crease at the inside of each elbow.
-  linesFront.addPath(curve([lerp(pose.elbowR, pose.handR.wrist, 0.08), lerp(pose.elbowR, pt(sR.u, sR.v), 0.12)]));
+  // The drape: from under each arm toward the belt.
+  const drape = make();
+  drape.addPath(curve([pt(sR.u - 20, sR.v + 150), pt(sR.u + 34, waistV - 70), pt(n.u - 70, waistV - 8)]));
+  drape.addPath(curve([pt(sL.u + 20, sL.v + 150), pt(sL.u - 34, waistV - 70), pt(n.u + 70, waistV - 8)]));
+  drape.addPath(curve([pt(n.u - 40, n.v + 90), pt(n.u - 60, n.v + 160)]));
+  // The belt across the waist (the shirt tucked in), over the hips.
+  const beltV = hipV - 38;
+  const beltBand = make();
+  beltBand.addRect(Skia.XYWHRect(pose.hipR.u - 120, beltV - 16, pose.hipL.u - pose.hipR.u + 240, 32));
+  const belt = Skia.Path.MakeFromOp(beltBand, torso, PathOp.Intersect) ?? beltBand;
+  // The shirt is tucked in: below the belt the trousers show.
+  const below = make();
+  below.addRect(Skia.XYWHRect(pose.hipR.u - 400, beltV + 12, pose.hipL.u - pose.hipR.u + 800, 600));
+  const shirt = Skia.Path.MakeFromOp(torso, below, PathOp.Difference) ?? torso;
   const head = headFront(pose.head.c, pose.head.r, n.v);
-  const hR = handPath(pose.handR);
-  const hL = handPath(pose.handL);
-  const behind: Mass[] = [mass(trousers, TROUSER, TROUSER_RIM), mass(torso, SHIRT, SHIRT_RIM), mass(armL, SHIRT, SHIRT_RIM)];
-  if (hL.thumbBehind) behind.push(mass(hL.thumbBehind, SKIN, SKIN_RIM, SKIN_EDGE));
-  const front: Mass[] = [mass(armR, SHIRT, SHIRT_RIM), mass(hR.path, SKIN, SKIN_RIM, SKIN_EDGE), mass(hL.path, SKIN, SKIN_RIM, SKIN_EDGE)];
+  const hR = handShape(pose.handR);
+  const hL = handShape(pose.handL);
+  const handLines = make();
+  handLines.addPath(hR.lines);
+  handLines.addPath(hL.lines);
+  const behind: Mass[] = [
+    { path: trousers, tone: 'trousers' },
+    { path: shirt, tone: 'shirt' },
+    { path: armL, tone: 'shirt' },
+  ];
+  if (hL.thumbBehind) behind.push({ path: hL.thumbBehind, tone: 'skin' });
+  const front: Mass[] = [
+    { path: armR, tone: 'shirt' },
+    { path: hR.path, tone: 'skin' },
+    { path: hL.path, tone: 'skin' },
+  ];
   const bars = [hR.bar, hL.bar].filter((b): b is SkPath => !!b).map((b) => ({ path: b, box: boxOf(b) }));
   // A standing player's strap: from behind the left shoulder down across the
   // chest to the strap button by the neck.
@@ -361,16 +614,40 @@ function buildFront(pose: PlayerPose): Built {
     const b = pose.strapTo;
     const m = pt((a.u + b.u) / 2 + 26, (a.v + b.v) / 2);
     strap = make();
-    const s1 = curve([a, m, b]);
-    strap.addPath(s1);
+    strap.addPath(curve([a, m, b]));
   }
   // A soft shadow under the seated player (the chair is not drawn).
-  const shadow = pose.floor !== null ? (() => {
-    const p = make();
-    p.addOval(Skia.XYWHRect(n.u - 300, pose.floor! - 22, 600, 44));
-    return p;
-  })() : null;
-  return { behind, front, shoes, shirtLines: lines, shirtLinesFront: linesFront, buttons, head, bars, pick: hR.pick, shadow, strap };
+  const shadow =
+    pose.floor !== null
+      ? (() => {
+          const p = make();
+          p.addOval(Skia.XYWHRect(n.u - 300, pose.floor! - 22, 600, 44));
+          return p;
+        })()
+      : null;
+  const foldsBehind = [
+    { path: joined(legFolds(pose.hipR, pose.kneeR, ankle(pose.footR)), legFolds(pose.hipL, pose.kneeL, ankle(pose.footL))), light: TROUSER_LIGHT, clip: trousers },
+    { path: drape, light: SHIRT_LIGHT, clip: shirt },
+    { path: sleeveFolds(sL, pose.elbowL, pose.handL.wrist), light: SHIRT_LIGHT, clip: armL },
+  ];
+  const foldsFront = [{ path: sleeveFolds(sR, pose.elbowR, pose.handR.wrist), light: SHIRT_LIGHT }];
+  return {
+    behind,
+    front,
+    shoes: shoes.map((path) => ({ path, tone: 'shoe' as const })),
+    foldsBehind,
+    foldsFront,
+    handLines,
+    shirtLines: lines,
+    shirtLinesFront: linesFront,
+    buttons,
+    belt,
+    head,
+    bars,
+    pick: hR.pick,
+    shadow,
+    strap,
+  };
 }
 
 function buildAbove(pose: PlayerPose): Built {
@@ -401,45 +678,179 @@ function buildAbove(pose: PlayerPose): Built {
   const thighs = seated ? union(limb([pose.hipR, pose.kneeR], [BODY.thighR, BODY.kneeR + 2]), limb([pose.hipL, pose.kneeL], [BODY.thighR, BODY.kneeR + 2])) : null;
   const shoes = [pose.footR, pose.footL].map((f) => smooth([pt(f.u - 44, f.v - 150), pt(f.u + 44, f.v - 150), pt(f.u + 50, f.v - 40), pt(f.u + 30, f.v + 14), pt(f.u - 30, f.v + 14), pt(f.u - 50, f.v - 40)], 0.5));
   const head = headAbove(pose.head.c, pose.head.r);
-  const hR = handPath(pose.handR);
-  const hL = handPath(pose.handL);
+  const hR = handShape(pose.handR);
+  const hL = handShape(pose.handL);
+  const handLines = make();
+  handLines.addPath(hR.lines);
+  handLines.addPath(hL.lines);
   const behind: Mass[] = [];
-  if (thighs) behind.push(mass(thighs, TROUSER, TROUSER_RIM));
-  behind.push(mass(torso, SHIRT, SHIRT_RIM), mass(armL, SHIRT, SHIRT_RIM));
-  const front: Mass[] = [mass(armR, SHIRT, SHIRT_RIM), mass(hR.path, SKIN, SKIN_RIM, SKIN_EDGE), mass(hL.path, SKIN, SKIN_RIM, SKIN_EDGE)];
+  if (thighs) behind.push({ path: thighs, tone: 'trousers' });
+  behind.push({ path: torso, tone: 'shirt' }, { path: armL, tone: 'shirt' });
+  const front: Mass[] = [
+    { path: armR, tone: 'shirt' },
+    { path: hR.path, tone: 'skin' },
+    { path: hL.path, tone: 'skin' },
+  ];
   const bars = [hR.bar, hL.bar].filter((b): b is SkPath => !!b).map((b) => ({ path: b, box: boxOf(b) }));
   const lines = make();
-  // The collar seen from above, round the base of the neck.
+  // The collar seen from above, round the base of the neck; the shoulder
+  // seams and the shoulder blades' fold.
   lines.addPath(curve([pt(n.u - 70, n.v - 10), pt(n.u, n.v + 34), pt(n.u + 70, n.v - 10)]));
-  return { behind, front, shoes: seated ? [] : shoes, shirtLines: lines, shirtLinesFront: make(), buttons: [], head, bars, pick: null, shadow: null, strap: null };
+  const blades = make();
+  blades.addPath(curve([pt(n.u - 120, n.v - 70), pt(n.u - 40, n.v - 96), pt(n.u + 40, n.v - 96), pt(n.u + 120, n.v - 70)]));
+  return {
+    behind,
+    front,
+    shoes: seated ? [] : shoes.map((path) => ({ path, tone: 'shoe' as const })),
+    foldsBehind: [
+      { path: blades, light: SHIRT_LIGHT, clip: torso },
+      { path: sleeveFolds(sL, pose.elbowL, pose.handL.wrist), light: SHIRT_LIGHT, clip: armL },
+    ],
+    foldsFront: [{ path: sleeveFolds(sR, pose.elbowR, pose.handR.wrist), light: SHIRT_LIGHT }],
+    handLines,
+    shirtLines: lines,
+    shirtLinesFront: make(),
+    buttons: [],
+    belt: null,
+    head,
+    bars,
+    pick: null,
+    shadow: null,
+    strap: null,
+  };
+}
+
+/**
+ * THE PROFILE (added 2026-10-05: the pianist, the drummer). R joints are the
+ * near side, L the far side (drawn a little darker, behind the body). The
+ * torso is built round the hip→neck line with a chest forward and a back
+ * behind it; a seated figure's thighs run forward from the hips.
+ */
+function buildSide(pose: PlayerPose): Built {
+  const f = pose.facing ?? 1;
+  const n = pose.neck;
+  const hip = lerp(pose.hipR, pose.hipL, 0.5);
+  // The torso's axis (hip → neck) and its forward normal (toward `facing`).
+  const ax = Math.atan2(n.v - hip.v, n.u - hip.u);
+  let nu = -Math.sin(ax);
+  let nv = Math.cos(ax);
+  if (Math.sign(nu || f) !== Math.sign(f)) {
+    nu = -nu;
+    nv = -nv;
+  }
+  const along = (t: number, fwd: number) => {
+    const c = lerp(hip, n, t);
+    return pt(c.u + nu * fwd, c.v + nv * fwd);
+  };
+  const sh = pose.shoulderR;
+  const torso = smooth(
+    [
+      along(1.02, 46), // the front of the collar
+      along(0.86, 104), // the chest
+      along(0.6, 112),
+      along(0.32, 96), // the belly
+      along(0.06, 104), // the lap's front at the hip
+      along(-0.1, 40),
+      along(-0.06, -128), // the seat
+      along(0.24, -118), // the small of the back
+      along(0.62, -120), // the shoulder blade
+      along(0.9, -92),
+      along(1.02, -48), // the nape
+    ],
+    0.5,
+  );
+  const seated = pose.posture !== 'standing';
+  const ankle = (foot: Pt) => pt(foot.u - f * 40, foot.v - 70);
+  const leg = (h: Pt, k: Pt, foot: Pt) => limb([h, k, ankle(foot)], [BODY.thighR, seated ? BODY.kneeR : BODY.kneeR - 4, BODY.ankleR]);
+  const legFar = leg(pose.hipL, pose.kneeL, pose.footL);
+  const legNear = leg(pose.hipR, pose.kneeR, pose.footR);
+  // Shoes in profile: the heel behind the ankle, the toe forward.
+  const shoe = (foot: Pt) => smooth([pt(foot.u - f * 96, foot.v - 2), pt(foot.u - f * 100, foot.v - 64), pt(foot.u - f * 44, foot.v - 92), pt(foot.u + f * 40, foot.v - 62), pt(foot.u + f * 140, foot.v - 34), pt(foot.u + f * 150, foot.v - 4)], 0.45);
+  const armFar = limb([pose.shoulderL, pose.elbowL, pose.handL.wrist], [BODY.upperArmR - 2, BODY.elbowR, BODY.wristR + 2]);
+  const armNear = limb([sh, pose.elbowR, pose.handR.wrist], [BODY.upperArmR, BODY.elbowR, BODY.wristR + 2]);
+  const head = headProfile(pose.head.c, pose.head.r, n.v + 10, f);
+  const hR = handShape(pose.handR);
+  const hL = handShape(pose.handL);
+  // Only the near hand's knuckles show (the far hand is behind the body).
+  const handLines = hR.lines;
+  // Details: the collar, the belt at the waist, the cuff of the near arm.
+  const lines = make();
+  lines.addPath(curve([along(1.04, -40), along(0.98, 10), along(1.0, 50)]));
+  const b0 = along(0.12, 130);
+  const b1 = along(0.12, -150);
+  const beltPath = (() => {
+    const th = Math.atan2(b1.v - b0.v, b1.u - b0.u);
+    const ox = -Math.sin(th) * 16;
+    const oy = Math.cos(th) * 16;
+    const p = make();
+    p.moveTo(b0.u + ox, b0.v + oy);
+    p.lineTo(b1.u + ox, b1.v + oy);
+    p.lineTo(b1.u - ox, b1.v - oy);
+    p.lineTo(b0.u - ox, b0.v - oy);
+    p.close();
+    return Skia.Path.MakeFromOp(p, torso, PathOp.Intersect) ?? p;
+  })();
+  const linesFront = make();
+  const cuffAt = lerp(pose.handR.wrist, pose.elbowR, 40 / Math.max(40, dist(pose.handR.wrist, pose.elbowR)));
+  linesFront.addPath(crease(pose.elbowR, pose.handR.wrist, dist(pose.elbowR, cuffAt) / Math.max(1, dist(pose.elbowR, pose.handR.wrist)), BODY.wristR + 6, 3));
+  // The drape: from under the arm to the belt, and the chest's fold.
+  const drape = make();
+  drape.addPath(curve([along(0.78, -40), along(0.5, -10), along(0.2, 20)]));
+  drape.addPath(curve([along(0.8, 70), along(0.62, 90)]));
+  const shadow =
+    pose.floor !== null
+      ? (() => {
+          const p = make();
+          const c = lerp(pose.footR, pose.footL, 0.5);
+          p.addOval(Skia.XYWHRect(Math.min(hip.u, c.u) - 160, pose.floor! - 20, Math.abs(c.u - hip.u) + 420, 40));
+          return p;
+        })()
+      : null;
+  const behind: Mass[] = [
+    { path: legFar, tone: 'trousers', far: true },
+    { path: armFar, tone: 'shirt', far: true },
+    { path: hL.path, tone: 'skin', far: true },
+    { path: torso, tone: 'shirt' },
+    { path: legNear, tone: 'trousers' },
+  ];
+  const front: Mass[] = [
+    { path: armNear, tone: 'shirt' },
+    { path: hR.path, tone: 'skin' },
+  ];
+  return {
+    behind,
+    front,
+    shoes: [
+      // Barefoot on the floor: the same foot, in skin.
+      { path: shoe(pose.footL), tone: pose.posture === 'floor' ? 'skin' : 'shoe', far: true },
+      { path: shoe(pose.footR), tone: pose.posture === 'floor' ? 'skin' : 'shoe' },
+    ],
+    foldsBehind: [
+      { path: drape, light: SHIRT_LIGHT, clip: torso },
+      { path: legFolds(pose.hipR, pose.kneeR, ankle(pose.footR)), light: TROUSER_LIGHT, clip: legNear },
+    ],
+    foldsFront: [{ path: sleeveFolds(sh, pose.elbowR, pose.handR.wrist), light: SHIRT_LIGHT }],
+    handLines,
+    shirtLines: lines,
+    shirtLinesFront: linesFront,
+    buttons: [],
+    belt: beltPath,
+    head,
+    bars: [],
+    pick: hR.pick,
+    shadow,
+    strap: null,
+  };
 }
 
 const cache = new WeakMap<PlayerPose, Built>();
 function built(pose: PlayerPose): Built {
   let b = cache.get(pose);
   if (!b) {
-    b = pose.view === 'front' ? buildFront(pose) : buildAbove(pose);
+    b = pose.view === 'front' ? buildFront(pose) : pose.view === 'side' ? buildSide(pose) : buildAbove(pose);
     cache.set(pose, b);
   }
   return b;
-}
-
-/** One body mass: form gradient, a rim light on the upper-left edge, contour. */
-function MassArt({ m }: { m: Mass }) {
-  const { u0, v0, u1, v1 } = m.box;
-  return (
-    <Group>
-      <Path path={m.path}>
-        <LinearGradient start={vec(u0, v0)} end={vec(u1, v1)} colors={m.ramp} />
-      </Path>
-      <Group clip={m.path}>
-        <Path path={m.path} style="stroke" strokeWidth={9} opacity={0.5}>
-          <LinearGradient start={vec(u0, v0)} end={vec(u0 + (u1 - u0) * 0.55, v0 + (v1 - v0) * 0.55)} colors={[m.rim, 'rgba(0,0,0,0)']} />
-        </Path>
-      </Group>
-      <Path path={m.path} style="stroke" strokeWidth={2.4} color={m.edge} opacity={0.9} />
-    </Group>
-  );
 }
 
 function Bar({ b }: { b: Built['bars'][number] }) {
@@ -453,54 +864,78 @@ function Bar({ b }: { b: Built['bars'][number] }) {
   );
 }
 
-/** The player BEHIND the instrument: legs, torso, head, the far arm. */
-export function PlayerBehind({ pose, dim = 1 }: { pose: PlayerPose; dim?: number }) {
+/** An 'above' pose with a `facing`: turned about the neck so the chest faces
+ *  that way (the pose is authored chest toward +v). */
+function aboveTurn(pose: PlayerPose) {
+  if (pose.view !== 'above' || pose.facing === undefined) return undefined;
+  const a = pose.facing - Math.PI / 2;
+  return [{ translateX: pose.neck.u }, { translateY: pose.neck.v }, { rotate: a }, { translateX: -pose.neck.u }, { translateY: -pose.neck.v }];
+}
+
+/** The player BEHIND the instrument: legs, torso, head, the far arm.
+ *  `part` splits it for art that layers by height (a drummer from above: the
+ *  legs under the drums, the body over them): 'legs' (trousers, shoes and
+ *  the shadow) or 'upper' (the rest); default both. */
+export function PlayerBehind({ pose, dim = 1, part = 'all' }: { pose: PlayerPose; dim?: number; part?: 'all' | 'legs' | 'upper' }) {
   const b = built(pose);
+  const legs = part !== 'upper';
+  const upper = part !== 'legs';
+  const isLeg = (tone: FigureTone) => tone === 'trousers' || tone === 'shoe';
   return (
-    <Group opacity={dim}>
-      {b.shadow ? (
+    <Group opacity={dim} transform={aboveTurn(pose)}>
+      {legs && b.shadow ? (
         <Path path={b.shadow} color="#000" opacity={0.45}>
           <BlurMask blur={14} style="normal" />
         </Path>
       ) : null}
-      {b.shoes.map((s, i) => (
-        <Group key={`shoe${i}`}>
-          <Path path={s}>
-            <LinearGradient start={vec(s.getBounds().x, s.getBounds().y)} end={vec(s.getBounds().x + s.getBounds().width, s.getBounds().y + s.getBounds().height)} colors={SHOE} />
+      {(legs ? b.shoes : [])
+        .filter((s) => s.far)
+        .map((s, i) => (
+          <FigureMass key={`shoeF${i}`} path={s.path} tone={s.tone} far />
+        ))}
+      {b.behind.map((m, i) => ((isLeg(m.tone) ? legs : upper) ? <FigureMass key={`b${i}`} path={m.path} tone={m.tone} far={m.far} /> : null))}
+      {(legs ? b.shoes : [])
+        .filter((s) => !s.far)
+        .map((s, i) => (
+          <FigureMass key={`shoe${i}`} path={s.path} tone={s.tone} />
+        ))}
+      {b.foldsBehind.map((fo, i) => ((fo.light === TROUSER_LIGHT ? legs : upper) ? <Folds key={`fb${i}`} path={fo.path} light={fo.light} clip={fo.clip} /> : null))}
+      {upper ? (
+        <>
+      <Path path={b.shirtLines} style="stroke" strokeWidth={2.4} strokeCap="round" color={SHIRT_LINE} opacity={0.9} />
+      {b.belt ? (
+        <>
+          <Path path={b.belt}>
+            <LinearGradient start={vec(b.belt.getBounds().x, b.belt.getBounds().y)} end={vec(b.belt.getBounds().x, b.belt.getBounds().y + b.belt.getBounds().height)} colors={['#3a2a20', '#1e150f']} />
           </Path>
-          <Path path={s} style="stroke" strokeWidth={2} color="#55585f" opacity={0.7} />
-        </Group>
-      ))}
-      {b.behind.map((m, i) => (
-        <MassArt key={`b${i}`} m={m} />
-      ))}
-      <Path path={b.shirtLines} style="stroke" strokeWidth={2.2} strokeCap="round" color={SHIRT_LINE} opacity={0.9} />
+          <Path path={b.belt} style="stroke" strokeWidth={1.6} color="#0b0806" />
+        </>
+      ) : null}
       {b.buttons.map((q, i) => (
-        <Circle key={`btn${i}`} cx={q.u} cy={q.v} r={4} color="#8d97aa" opacity={0.8} />
+        <Circle key={`btn${i}`} cx={q.u} cy={q.v} r={4} color="#a7b0c2" opacity={0.85} />
       ))}
       {b.strap ? (
         <>
           <Path path={b.strap} style="stroke" strokeWidth={46} strokeCap="round" color="#141519" opacity={0.95} />
           <Path path={b.strap} style="stroke" strokeWidth={40} strokeCap="round">
-            <LinearGradient start={vec(pose.shoulderL.u - 60, pose.shoulderL.v)} end={vec(pose.shoulderL.u + 60, pose.shoulderL.v + 200)} colors={['#5a3a22', '#3c2615', '#24170c']} />
+            <LinearGradient start={vec(pose.shoulderL.u - 60, pose.shoulderL.v)} end={vec(pose.shoulderL.u + 60, pose.shoulderL.v + 200)} colors={['#6a4528', '#3c2615', '#24170c']} />
           </Path>
+          <Path path={b.strap} style="stroke" strokeWidth={2} strokeCap="round" color="#a07850" opacity={0.5} />
         </>
       ) : null}
-      {/* the head: line art over a quiet translucent interior */}
-      <Path path={b.head.fill} color={HEAD_FILL} />
-      <Path path={b.head.fill}>
-        <RadialGradient c={vec(pose.head.c.u - pose.head.r * 0.4, pose.head.c.v - pose.head.r * 0.5)} r={pose.head.r * 1.4} colors={['rgba(255,255,255,0.07)', 'rgba(255,255,255,0)']} />
-      </Path>
-      <Path path={b.head.line} style="stroke" strokeWidth={4.2} strokeCap="round" strokeJoin="round" color={HEAD_LINE} opacity={0.82} />
+      {/* the head: house line art over a quiet translucent interior */}
+      <LineHead head={b.head} c={pose.head.c} r={pose.head.r} />
+        </>
+      ) : null}
     </Group>
   );
 }
 
-/** The player IN FRONT of the instrument: the near arm and both hands. */
+/** The player IN FRONT of the instrument: the near arm and the hands. */
 export function PlayerInFront({ pose, dim = 1 }: { pose: PlayerPose; dim?: number }) {
   const b = built(pose);
   return (
-    <Group opacity={dim}>
+    <Group opacity={dim} transform={aboveTurn(pose)}>
       {b.bars.map((q, i) => (
         <Bar key={`bar${i}`} b={q} />
       ))}
@@ -512,10 +947,16 @@ export function PlayerInFront({ pose, dim = 1 }: { pose: PlayerPose; dim?: numbe
               <BlurMask blur={12} style="normal" />
             </Path>
           ) : null}
-          <MassArt m={m} />
+          <FigureMass path={m.path} tone={m.tone} far={m.far} />
+          {i === 0
+            ? b.foldsFront.map((fo, j) => (
+                <Folds key={`ff${j}`} path={fo.path} light={fo.light} clip={m.path} />
+              ))
+            : null}
         </Group>
       ))}
-      <Path path={b.shirtLinesFront} style="stroke" strokeWidth={2.2} strokeCap="round" color={SHIRT_LINE} opacity={0.9} />
+      <Path path={b.shirtLinesFront} style="stroke" strokeWidth={2.4} strokeCap="round" color={SHIRT_LINE} opacity={0.9} />
+      <Path path={b.handLines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
       {b.pick ? (
         <Path path={b.pick}>
           <LinearGradient start={vec(b.pick.getBounds().x, b.pick.getBounds().y)} end={vec(b.pick.getBounds().x + 20, b.pick.getBounds().y + 20)} colors={PICK} />
