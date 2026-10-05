@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { headers } from "next/headers";
+import { LaunchOverlay } from "@/components/LaunchOverlay";
 import { TAGLINE, KNOWLEDGE } from "@/lib/brand";
 import { AppScreen } from "@/components/AppScreen";
 import { AppScreenMarquee } from "@/components/AppScreenMarquee";
@@ -9,7 +11,7 @@ import {
   getAppScreen,
 } from "@/lib/app-screens";
 
-export default function Home() {
+function HomeContent() {
   return (
     <div className="relative">
       <RoomField />
@@ -380,3 +382,25 @@ const CREDIBILITY: string[] = [
   "Transparent credential requirements",
   "Independent credential verification",
 ];
+
+// While the site gate is on, web/proxy.ts marks a key-less visit to "/" with
+// x-ape-locked: 1. The real home page then renders blurred and inert behind
+// the launch overlay (owner 2026-10-04). With the key, or after launch, the
+// header is absent and the page renders normally.
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const locked = (await headers()).get("x-ape-locked") === "1";
+  if (!locked) return <HomeContent />;
+  const error = (await searchParams)?.e === "1";
+  return (
+    <>
+      <div inert aria-hidden="true">
+        <HomeContent />
+      </div>
+      <LaunchOverlay error={error} />
+    </>
+  );
+}
