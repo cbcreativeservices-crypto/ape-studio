@@ -53,6 +53,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'I06a', labId: 'percussion', title: 'Triangle', subtitle: 'A bent steel bar hung free: attack, a long ring and the cutoff', status: 'ready' },
   { id: 'I06b', labId: 'percussion', title: 'Finger Cymbals', subtitle: 'A small pair, held still or danced — attack, ring and the moving hands', status: 'ready' },
   { id: 'I06c', labId: 'percussion', title: 'Bar Chimes', subtitle: 'A row of graduated bars swept by hand — the whole sweep and its tail', status: 'ready' },
+  { id: 'I12', labId: 'percussion', title: 'Gong', subtitle: 'Tam-tam or bossed gong: identify it, then a front view, a closer spot or the room', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

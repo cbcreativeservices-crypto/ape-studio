@@ -70,3 +70,5 @@ import { I06B_LESSON } from '../lessons/i06bFingerCymbals/lesson.ts';
 LESSON_CONTENT.I06b = I06B_LESSON;
 import { I06C_LESSON } from '../lessons/i06cBarChimes/lesson.ts';
 LESSON_CONTENT.I06c = I06C_LESSON;
+import { I12_LESSON } from '../lessons/i12Gong/lesson.ts';
+LESSON_CONTENT.I12 = I12_LESSON;

@@ -56,8 +56,56 @@ const { I06B_LESSON } = await import('../src/screens/lab/miking/lessons/i06bFing
 const bc = await import('../src/screens/lab/miking/lessons/i06cBarChimes/model.ts');
 const { I06C_LESSON } = await import('../src/screens/lab/miking/lessons/i06cBarChimes/lesson.ts');
 
+const gg = await import('../src/screens/lab/miking/lessons/i12Gong/model.ts');
+const ggG = await import('../src/screens/lab/miking/lessons/i12Gong/geometry.ts');
+const { I12_LESSON } = await import('../src/screens/lab/miking/lessons/i12Gong/lesson.ts');
+
 type L = typeof I06A_LESSON;
-const LESSONS_UNDER_TEST: L[] = [I06A_LESSON, I06B_LESSON, I06C_LESSON];
+const LESSONS_UNDER_TEST: L[] = [I06A_LESSON, I06B_LESSON, I06C_LESSON, I12_LESSON];
+
+describe('I12 gong: identify it first — a tam-tam or a bossed gong', () => {
+  it('a 32 in symphonic tam-tam (sourced size) and an 18 in bossed gong (inside the 12–24 in range)', () => {
+    assert.ok(near(gg.GONG.tamtamD.mm, 32 * IN) && gg.GONG.tamtamD.prov.kind === 'sourced');
+    assert.ok(gg.GONG.bossedD.mm >= 12 * IN && gg.GONG.bossedD.mm <= 24 * IN);
+    assert.ok(gg.GONG.tamtamD.mm <= gg.GONG.standRating.mm, 'inside the frame’s rating');
+  });
+  it('the selector: two variants; the boss and its zone exist only on the bossed gong', () => {
+    assert.deepEqual(I12_LESSON.model.variants.map((v: { id: string }) => v.id), ['tamtam', 'bossed']);
+    const boss = I12_LESSON.model.parts.find((p: { id: string }) => p.id === 'gg.boss')!;
+    assert.deepEqual(boss.variants, ['bossed']);
+    assert.equal(I12_LESSON.zones.find((z: { id: string }) => z.id === 'gg.boss')!.requires!.variant, 'bossed');
+  });
+  it('the frame is wider than the gong plus its swing; the gong hangs below the top bar', () => {
+    for (const v of ['tamtam', 'bossed']) {
+      assert.ok(gg.frameW(v) / 2 > gg.radiusOf(v) + gg.GONG.swing.mm, v);
+      assert.ok(ggG.topBarY(v) < gg.CY - gg.radiusOf(v), v);
+    }
+  });
+  it('every starting point is at least 30 cm from the face at rest and outside the free swing', () => {
+    for (const z of I12_LESSON.zones) {
+      const x = z.start.p.x - (z.refSurface === 'boss' ? gg.GONG.bossH.mm : gg.GONG.dome.mm);
+      assert.ok(x >= 250 || z.refSurface === 'boss', `${z.id}: ${x}`);
+      const v = z.requires?.variant ?? 'tamtam';
+      const swingFront = (v === 'bossed' ? gg.GONG.bossH.mm : gg.GONG.dome.mm) + gg.GONG.swing.mm + 100;
+      assert.ok(z.start.p.x > swingFront, `${z.id} inside the swing`);
+    }
+  });
+  it('a tam-tam is struck a little off centre, toward the player; a bossed gong on its boss', () => {
+    assert.ok(gg.strikePoint('tamtam').z < 0 && near(gg.strikeFrac('tamtam'), 0.25));
+    assert.ok(near(gg.strikePoint('bossed').z, 0));
+  });
+  it('the build-up moves the energy to finer shapes on a tam-tam; a boss stroke keeps the ring-shaped ones', () => {
+    const late = mm.buildUpWeights(3, 0.25, 'tamtam');
+    const early = mm.buildUpWeights(2, 0.25, 'tamtam');
+    const fine = (w: number[]) => w.slice(6).reduce((a, b) => a + b, 0) / w.reduce((a, b) => a + b, 1e-9);
+    assert.ok(fine(late) > fine(early));
+    const boss = mm.buildUpWeights(3, 0, 'bossed');
+    mm.DISC_SHAPES.forEach((d: { n: number }, i: number) => {
+      if (d.n === 0) assert.ok(boss[i] >= 0.6);
+      else assert.ok(boss[i] < 1e-9);
+    });
+  });
+});
 
 describe('I06c bar chimes: the row', () => {
   it('27 bars in a single row, 60 in a double — counts sourced; graduated, longest at the player’s left', () => {
@@ -220,7 +268,7 @@ describe('suspended metal: every lesson validates; every start is clear, in its 
 
 describe('suspended metal: silent and still', () => {
   it('no file in the family plays a sound or runs a loop', () => {
-    const dirs = ['lessons/shared/metal', 'lessons/i06aTriangle', 'lessons/i06bFingerCymbals', 'lessons/i06cBarChimes'];
+    const dirs = ['lessons/shared/metal', 'lessons/i06aTriangle', 'lessons/i06bFingerCymbals', 'lessons/i06cBarChimes', 'lessons/i12Gong'];
     for (const d of dirs) {
       for (const f of readdirSync(join(ROOT, MIKING, d))) {
         const text = read(`${MIKING}/${d}/${f}`);

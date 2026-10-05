@@ -68,6 +68,23 @@ function bands(at: (r: number, t: number) => number, R: number, r0Frac: number, 
   return { pos, neg };
 }
 
+/** A disc's field (blue + / amber −) as a group, for a caller's own canvas:
+ *  centred at the origin, radius R, θ measured from `dir`. */
+export function DiscField({ at, R, r0Frac = 0.04, dir = Math.PI * 0.75, fieldKey }: { at: (r: number, t: number) => number; R: number; r0Frac?: number; dir?: number; fieldKey: string }) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const field = useMemo(() => bands(at, R, r0Frac, dir), [fieldKey, R, r0Frac, dir]);
+  return (
+    <Group>
+      {field.pos.map((p, i) => (
+        <Path key={`p${i}`} path={p} color={BLUE_BANDS[i]} />
+      ))}
+      {field.neg.map((p, i) => (
+        <Path key={`n${i}`} path={p} color={AMBER_BANDS[i]} />
+      ))}
+    </Group>
+  );
+}
+
 export type DiscFaceProps = {
   w: number;
   h: number;
