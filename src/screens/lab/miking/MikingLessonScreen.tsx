@@ -63,7 +63,7 @@ import { PContext } from './pages/PContext';
 import { PTwoMic } from './pages/PTwoMic';
 import { PPractice, PTroubleshoot } from './pages/PReadPages';
 
-const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
+const SHARED_PAGES: Record<PageId, (p: PageProps) => ReactNode> = {
   instrument: PInstrument,
   sound: PSound,
   setting: PSetting,
@@ -322,6 +322,9 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   };
   const gated = pageGate(page, met, quickPassed) === 'foundations';
   const host: StepHost = { step: stepIdx, setStep, onSteps, head, tail: gated ? null : tail, readWrap, hidden: ending };
+  // A lesson may bring its own page for an id (LessonArt.pages); the shared
+  // page serves every other id.
+  const PAGE_COMPONENTS = art.pages ? { ...SHARED_PAGES, ...art.pages } : SHARED_PAGES;
   const Page = gated ? FoundationsPage : PAGE_COMPONENTS[page];
 
   return (

@@ -171,6 +171,27 @@ function shapeOutline(shape: Shape3, view: ViewId): ReturnType<typeof Skia.Path.
       p.close();
       return p;
     }
+    case 'prism': {
+      // Lab 4. No hinge: the plan polygon (top), its x-extent × [y0, y1]
+      // (side). Hinged (a lid): the turned face polygon, in either view.
+      const hg = shape.hinge;
+      if (!hg && view === 'side') {
+        const xs = shape.pts.map((q) => q[0]);
+        p.addRect(Skia.XYWHRect(Math.min(...xs), shape.y0, Math.max(...xs) - Math.min(...xs), shape.y1 - shape.y0));
+        return p;
+      }
+      const a = ((hg?.deg ?? 0) * Math.PI) / 180;
+      shape.pts.forEach(([x, z], i) => {
+        const dz = z - (hg?.z ?? 0);
+        const vz = (hg?.z ?? 0) + dz * Math.cos(a);
+        const vy = (hg?.y ?? shape.y0) - dz * Math.sin(a);
+        const v = view === 'side' ? vy : hg ? vz : z;
+        if (i === 0) p.moveTo(x, v);
+        else p.lineTo(x, v);
+      });
+      p.close();
+      return p;
+    }
     default:
       return null;
   }
@@ -739,6 +760,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const surfA = bodies.A.mount === 'surface';
   const surfB = bodies.B.mount === 'surface';
   const live = slots;
+  const azLimit = model.aimAzLimit ?? 80;
   const hasB = live.includes('B');
   const hasA = live.includes('A');
 
@@ -838,11 +860,19 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           const ay = f.sy - e.y;
           if (Math.abs(ax) + Math.abs(ay) < 2) return;
           if (view === 'side') {
-            const el = (Math.atan2(-ay * Math.cos((st.az * Math.PI) / 180), -ax) * 180) / Math.PI;
+            // |cos az| and its sign keep a mic turned to face +x (az near
+            // 180°, a mic behind an open-backed cabinet) tilting the right way;
+            // for |az| < 90° this is the original formula.
+            const c = Math.cos((st.az * Math.PI) / 180);
+            const el = (Math.atan2(-ay * Math.abs(c), c < 0 ? ax : -ax) * 180) / Math.PI;
             to = { p: st.p, az: st.az, el: clamp(el, -80, 80) };
           } else {
-            const az = (Math.atan2(ay, -ax) * 180) / Math.PI;
-            to = { p: st.p, az: clamp(az, -80, 80), el: st.el };
+            let az = (Math.atan2(ay, -ax) * 180) / Math.PI;
+            // Unwrap toward the current aim, then hold the model's limit
+            // (±80° unless the lesson allows a mic to face the other way).
+            while (az - st.az > 180) az -= 360;
+            while (az - st.az < -180) az += 360;
+            to = { p: st.p, az: clamp(az, -azLimit, azLimit), el: st.el };
           }
         } else {
           const d = unprojectDelta(cur, e.x - startTouch.value.x, e.y - startTouch.value.y);
@@ -890,7 +920,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         scheduleOnRN(tapAt, e.x, e.y);
       });
     return Gesture.Simultaneous(pinch, Gesture.Exclusive(pan, reset, tap));
-  }, [xf, hasA, hasB, poseA, poseB, lenA, lenB, rA, rB, surfA, surfB, interactive, mini, grab, startTouch, startPose, setLock, bodies, pins, view, scene, bounds, blockedA, blockedB, finish, pinchStart, pinchFocal, base, onTapPart, tapAt]);
+  }, [xf, hasA, hasB, poseA, poseB, lenA, lenB, rA, rB, surfA, surfB, interactive, mini, grab, startTouch, startPose, setLock, bodies, pins, view, scene, bounds, blockedA, blockedB, finish, pinchStart, pinchFocal, base, onTapPart, tapAt, azLimit]);
 
   // ── what is drawn ──
   const zones = useMemo(() => {

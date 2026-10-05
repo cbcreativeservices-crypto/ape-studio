@@ -22,6 +22,10 @@ Source keys (used by `src/screens/lab/miking/data/sources.ts` and by `model.ts` 
 | DPA-31 | DPA Microphones, "3:1 rule" (lesson ref [12a]) | https://www.dpamicrophones.com/dictionary/0-9/31-rule/ | URL resolves (kick pass); content not re-audited |
 | DPA-PPD | DPA Microphones, "Polarity, phase and delay" (lesson ref [6]) | https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/ | URL resolves (kick pass); content not re-audited |
 | MATH | Derivation from the stated formula (shown in the row) | — | derived; checked by test |
+| S-SM57-UG | Shure, SM57 User Guide 3.6 (2025-A): the instrument-dynamic outline (157 mm long, 32 mm grille, 23 mm tail; "Cardioid") used by the generic `instDynCard` type | see `snare/SOURCES.md` | read 2026-10-04 in the snare pass; added here 2026-10-05 (mic family, speaker / Leslie module) |
+| AX-SCX1 | Audix SCX1 pencil condenser length "104 mm / 4.1 in" (the generic `sdcCard` type's length; Ø 21 mm is a drawing default) | as quoted in `overheads/GEOMETRY_PROPOSAL.md` §(mic family) | quoted in the research pass; the sheet itself not re-read 2026-10-05 — re-verify |
+| DPA-HARP | DPA, "How to mic a harp": the generic `miniOmni` type (an omnidirectional miniature at a harp's sound hole; its size is a drawing default) | see `harp/SOURCES.md` | read 2026-10-04 in the Lab 4 research pass; added here 2026-10-05 (Lab 4 mic family) |
+| PHYS-STRING | The ideal flexible string fixed at both ends: shapes sin(nπx/L), pitch ratios n, n − 1 still points; a stiff real string's upper shapes run sharp (standard string physics, Fletcher & Rossing, *The Physics of Musical Instruments*; from standard texts, not re-checked online) | — | engine `physics/stringModes.ts`, test `mikingLab4Keys.test.ts` (Lab 4, 2026-10-05) |
 
 ---
 

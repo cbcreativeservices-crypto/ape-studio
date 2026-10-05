@@ -50,7 +50,7 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     interiors: model.interiors ?? [],
     rims: (model.rims ?? []).filter((r) => !r.variants || r.variants.includes(variant)),
     yFloor: model.yFloor.mm,
-    boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: BOOM_BEHIND },
+    boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: BOOM_BEHIND, route: model.boomRoute?.[variant] ?? null },
     standRadius: STAND_RADIUS,
   };
 }
@@ -132,10 +132,28 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
     return out;
   }
   let q: Vec3;
+  const route = scene.boom.route;
   if (scene.port && isInside(scene, tail)) {
     const toPort = sub(scene.port.c, tail);
     const d = len(toPort);
     q = add(tail, scale(norm(toPort), d + scene.boom.outside));
+  } else if (route && route.legs.length) {
+    // Lab 4: the boom reaches in from the instrument's open side, leg by leg
+    // (BoomRoute); the stand drops from the last leg's end.
+    let from = tail;
+    for (let li = 0; li < route.legs.length; li++) {
+      const lg = route.legs[li];
+      const along = from.x * lg.dir.x + from.y * lg.dir.y + from.z * lg.dir.z;
+      const flip = lg.back != null && along < -lg.back;
+      const need = flip ? lg.past + along : lg.past - along;
+      const reach = li === 0 ? Math.max(scene.boom.behind, need) : need;
+      if (reach <= 0) continue;
+      const to = add(from, scale(lg.dir, flip ? -reach : reach));
+      out.push({ a: from, b: to, r: scene.boom.radius, piece: 'boom' });
+      from = to;
+    }
+    if (from.y < scene.yFloor) out.push({ a: from, b: { x: from.x, y: scene.yFloor, z: from.z }, r: scene.standRadius, piece: 'stand' });
+    return out;
   } else {
     q = sub(tail, scale(aim, scene.boom.behind));
   }

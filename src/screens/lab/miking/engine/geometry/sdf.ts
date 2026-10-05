@@ -153,5 +153,57 @@ export function sdf(shape: Shape3, p: Vec3): number {
     }
     case 'floor':
       return shape.y - p.y;
+    case 'prism': {
+      // Into the prism's own frame: undo the hinge turn about the x-parallel
+      // line (y, z) = (hinge.y, hinge.z) — the forward turn takes (dz, dy)
+      // to (dz·cos + dy·sin, −dz·sin + dy·cos), lifting +z toward −y.
+      let py = p.y;
+      let pz = p.z;
+      const hg = shape.hinge;
+      if (hg) {
+        const a = (hg.deg * Math.PI) / 180;
+        const c = Math.cos(a);
+        const s = Math.sin(a);
+        const dz = p.z - hg.z;
+        const dy = p.y - hg.y;
+        pz = hg.z + dz * c - dy * s;
+        py = hg.y + dz * s + dy * c;
+      }
+      // The plan polygon's signed distance, inline (the worklet plugin
+      // orders its function factories by itself: a call to a sibling
+      // worklet declared later hit the temporal dead zone on web).
+      let d2 = Infinity;
+      let inside = false;
+      const pts = shape.pts;
+      for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+        const ax = pts[j][0];
+        const az = pts[j][1];
+        const bx = pts[i][0];
+        const bz = pts[i][1];
+        const e = segDist2D(p.x, pz, ax, az, bx, bz);
+        if (e < d2) d2 = e;
+        if (bz > pz !== az > pz && p.x < ((ax - bx) * (pz - bz)) / (az - bz) + bx) inside = !inside;
+      }
+      return combine2(inside ? -d2 : d2, Math.max(shape.y0 - py, py - shape.y1));
+    }
   }
+}
+
+/** Signed distance to a closed polygon in a plane (negative inside, the
+ *  even–odd rule). Build-time only (the art and the piano family's string
+ *  fitting); `sdf` computes the same thing inline. */
+export function polyDist2D(pts: readonly (readonly [number, number])[], px: number, pz: number): number {
+  let d = Infinity;
+  let inside = false;
+  const n = pts.length;
+  for (let i = 0, j = n - 1; i < n; j = i++) {
+    const ax = pts[j][0];
+    const az = pts[j][1];
+    const bx = pts[i][0];
+    const bz = pts[i][1];
+    const e = segDist2D(px, pz, ax, az, bx, bz);
+    if (e < d) d = e;
+    if (bz > pz !== az > pz && px < ((ax - bx) * (pz - bz)) / (az - bz) + bx) inside = !inside;
+  }
+  return inside ? -d : d;
 }

@@ -52,7 +52,13 @@ export type Shape3 =
    *  ±halfW in z. Beater / pedal travel. */
   | { kind: 'sweep'; pivot: Vec3; r0: number; r1: number; a0: number; a1: number; halfW: number }
   /** The floor half-space: solid where y > y (y-down). */
-  | { kind: 'floor'; y: number };
+  | { kind: 'floor'; y: number }
+  /** A PRISM: a polygon in plan (x, z) extruded between y0 and y1 (y-down,
+   *  y0 < y1). With `hinge`, the prism is turned about the line parallel to
+   *  x through (y, z) = (hinge.y, hinge.z) by `deg`, its +z side lifting
+   *  toward −y (a grand piano's lid on its stick). Added for Lab 4 (the
+   *  pianos: a curved case outline, a lid). */
+  | { kind: 'prism'; pts: readonly (readonly [number, number])[]; y0: number; y1: number; hinge?: { y: number; z: number; deg: number } };
 
 /* ── the instrument model ── */
 export type PartId = string;
@@ -123,6 +129,10 @@ export type RefLine = {
    *  reference head makes this the line readouts measure from (several drums
    *  in one scene). Absent = the variant's first line, whatever the head. */
   surfaces?: string[];
+  /** A reference PLANE, not a line (Lab 4): the reading is the SIGNED
+   *  distance from the plane through `point` whose normal is `dir` (minus
+   *  `offset`) — a piano's hammer line read "toward the tail / the keys". */
+  plane?: boolean;
 };
 export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
 
@@ -247,10 +257,21 @@ export type CompiledScene = {
   /** Hoops a clip mount may clamp to. */
   rims: Rim[];
   yFloor: number;
-  /** Illustrative mount geometry. */
-  boom: { radius: number; outside: number; behind: number };
+  /** Illustrative mount geometry (`route`: the variant's BoomRoute). */
+  boom: { radius: number; outside: number; behind: number; route?: BoomRoute | null };
   standRadius: number;
 };
+/**
+ * How a stand's boom reaches a mic that hangs over or inside an instrument
+ * (Lab 4: a mic over a grand's strings is held from the open, curved side; a
+ * mic inside an upright's open top comes up out of it first). The boom runs
+ * from the mic's tail leg by leg: along `dir` until the point is `past` mm
+ * along `dir` (the first leg at least the usual reach); a point already more
+ * than `back` mm on the −dir side runs along −dir instead. The stand drops
+ * from the last leg's end. ILLUSTRATIVE.
+ */
+export type BoomLeg = { dir: Vec3; past: number; back?: number };
+export type BoomRoute = { legs: readonly BoomLeg[] };
 
 /* ── derived (never stored) ── */
 export type Readouts = {
@@ -287,6 +308,9 @@ export type InstrumentModel = {
   variants: Variant[];
   defaultVariant: VariantId;
   views: Partial<Record<ViewId, ViewBox>>;
+  /** How far the aim may swing left–right by drag (deg; default 80). 180
+   *  lets a mic face the other way (behind an open-backed cabinet). */
+  aimAzLimit?: number;
   /** A variant that shows a different drum (the tom lesson's rack pair or
    *  floor tom) frames its own boxes. */
   viewsByVariant?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
@@ -298,6 +322,9 @@ export type InstrumentModel = {
   rims?: Rim[];
   /** Port per variant (none = intact). */
   ports: Record<VariantId, { c: Vec3; r: number } | null>;
+  /** How a stand's boom is routed, per variant (none = straight behind the
+   *  mic, the drums' rule). */
+  boomRoute?: Partial<Record<VariantId, BoomRoute>>;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */

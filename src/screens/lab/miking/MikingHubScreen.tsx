@@ -58,7 +58,7 @@ export function MikingHubScreen() {
             })}
           </View>
         ))}
-        <Text style={styles.note}>After our research, these lessons suggest where to begin — starting points, not rules. Move the mic, listen, and trust your ears and the room. Place real mics with the drummer stopped.</Text>
+        <Text style={styles.note}>{`After our research, these lessons suggest where to begin — starting points, not rules. Move the mic, listen, and trust your ears and the room. Place real mics with the ${shown.every((l) => l.id === 'drums') ? 'drummer' : 'player'} stopped.`}</Text>
       </ScrollView>
     </View>
   );

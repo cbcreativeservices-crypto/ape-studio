@@ -24,19 +24,21 @@ import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../
 import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../engine/physics/polar.ts';
 import { fmtDb, fmtIdealPickup, isDeepNull } from '../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../data/micTypes';
+import { copyOf } from '../engine/model/copy.ts';
 import type { PageProps } from './pageTypes';
 
 /** Three plain lines per mic type: what the choice needs (review M3). */
-export function plainLines(m: MicType): { power: string; mount: string; pattern: string } {
+export function plainLines(m: MicType, mountWords?: Readonly<Partial<Record<MicType['mount'], string>>>): { power: string; mount: string; pattern: string } {
   const p = m.patterns[0].id;
   return {
     power: m.transducer === 'dynamic' ? 'Power: none needed' : 'Power: needs phantom power from the desk',
     mount:
-      m.mount === 'surface'
+      mountWords?.[m.mount] ??
+      (m.mount === 'surface'
         ? 'Mount: rests on the pillow — it is made for that'
         : m.mount === 'clip'
           ? 'Mount: clamps to the drum’s hoop — a clamp made for it, with the player’s agreement'
-          : 'Mount: a stand or a suitable mount, kept off the heads and damping',
+          : 'Mount: a stand or a suitable mount, kept off the heads and damping'),
     pattern:
       p === 'cardioid'
         ? 'Pattern: cardioid — rejects most directly behind'
@@ -172,7 +174,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
           <Body>No brand is required. Choose by what the job needs: the pattern, the power it needs, its size and how it mounts, and the level it is specified for. Try not to assume every dynamic is less detailed, every condenser flat, or that a larger diaphragm means better bass — test ideas like these with your ears.</Body>
           {lesson.micTypeIds.map((id) => {
             const m = MIC_TYPES[id];
-            const pl = plainLines(m);
+            const pl = plainLines(m, copyOf(lesson).words?.mount);
             const isOpen = open.has(id);
             return (
               <Card key={id}>

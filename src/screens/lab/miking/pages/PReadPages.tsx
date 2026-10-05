@@ -61,7 +61,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
   const order = lesson.orderTasks.filter((t) => t.page === 'practice');
   const setups = lesson.setupTasks.filter((t) => t.page === 'practice');
   const pick = (ids: readonly string[]) => lesson.scenarios.filter((s) => ids.includes(s.id));
-  const P = copyOf(lesson).practice;
+  const P = { ...copyOf(lesson).practice, sheet: copyOf(lesson).words?.sheet ?? 'For a real drum, with the drummer’s agreement and the drummer stopped while anything moves. Write tendencies in words — what you heard, not a promised result.' };
   const steps: MikingStep[] = [
     {
       key: 'order',
@@ -105,7 +105,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
           <Body>{P.mixedIntro}</Body>
           <ScenarioList items={pick(P.mixed)} answers={answers} onAnswered={onAnswered} />
           <Card>
-            <Point title="OBSERVATION SHEET · OPTIONAL">For a real drum, with the drummer’s agreement and the drummer stopped while anything moves. Write tendencies in words — what you heard, not a promised result.</Point>
+            <Point title="OBSERVATION SHEET · OPTIONAL">{P.sheet}</Point>
             {lesson.practice.fields.map((f) =>
               f.kind === 'choice' ? (
                 <View key={f.id} style={{ gap: 4 }}>

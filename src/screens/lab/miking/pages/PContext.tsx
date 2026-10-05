@@ -104,7 +104,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
         setAimed(true);
       },
       // Short: the lane prints this beside its label.
-      format: () => (a === 0 ? 'facing the head' : `${fmtAngle(Math.abs(a))} ${aimAxis === 'az' ? (a > 0 ? 'right' : 'left') : a > 0 ? 'up' : 'down'}`),
+      format: () => (a === 0 ? C.words?.facing ?? 'facing the head' : `${fmtAngle(Math.abs(a))} ${aimAxis === 'az' ? (a > 0 ? 'right' : 'left') : a > 0 ? 'up' : 'down'}`),
       formatShort: () => fmtAngle(a),
       chooser: {
         title: 'TURN THE MIC',
@@ -141,7 +141,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
   ];
 
   const pickupCell: BezelItem = shield
-    ? { k: 'PICKUP', v: 'SHIELDED', sub: 'drum in path', flex: 1.15 }
+    ? { k: 'PICKUP', v: 'SHIELDED', sub: C.words?.inPath ?? 'drum in path', flex: 1.15 }
     : isDeepNull(db)
       ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 }
       : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 };

@@ -4,9 +4,10 @@
  * millimetres of the view's (u, v) plane — side u = x, v = y; top u = x,
  * v = z — and is drawn under the scene's single transform.
  */
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
-import type { VariantId, Vec3, ViewId } from '../model/types.ts';
+import type { PageId, VariantId, Vec3, ViewId } from '../model/types.ts';
+import type { PageProps } from '../../pages/pageTypes';
 
 /** `short`: the words to fall back to where the full label would collide. */
 export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
@@ -27,4 +28,8 @@ export type LessonArt = {
    *  KitPlan): its plan id, whether the lesson's own art draws it there (M01's
    *  kick), and where the lesson's frame origin sits on the plan (mm). */
   plan?: { own: string | readonly string[]; useArt?: boolean; offset?: Vec3 };
+  /** A lesson's OWN page for a page id, where the drum-shaped default does
+   *  not fit its instrument (a string's sound, a keyboard on a stage). The
+   *  host falls back to the shared page for every id not given. */
+  pages?: Partial<Record<PageId, (p: PageProps) => ReactNode>>;
 };

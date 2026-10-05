@@ -10,7 +10,7 @@
  * charter §12) applies: no source, brand or model names, no badges. Pinned by
  * test/mikingLearnerText.test.ts (lesson data walk). Pure data; no React.
  */
-import type { MicPattern, MicPose, PatternId, VariantId, Vec3, ViewBox, ViewId } from './types.ts';
+import type { MicPattern, MicPose, MountKind, PatternId, VariantId, Vec3, ViewBox, ViewId } from './types.ts';
 
 /** A strike-sequence bezel cell: its value at each event (index = event − 1). */
 export type CopyCell = { k: string; at: readonly string[]; byVariant?: Readonly<Partial<Record<VariantId, readonly string[]>>>; flex?: number };
@@ -125,7 +125,27 @@ export type LessonCopy = {
     learn: readonly string[];
     warn: string;
   };
-  practice: { gain: string; second: string; mixed: readonly string[]; mixedIntro: string };
+  practice: { gain: string; second: string; mixed: readonly string[]; mixedIntro: string };
+  /** Lab 4 on: the few page words the drum lessons wrote inline. Absent =
+   *  each page's drum words, unchanged. */
+  words?: {
+    /** ORIENT, START: the lesson's opening paragraph. */
+    intro?: string;
+    /** ORIENT, START: the note once NEW is chosen. */
+    newNote?: string;
+    /** MICROPHONES: the mount line, per mount. */
+    mount?: Readonly<Partial<Record<MountKind, string>>>;
+    /** PLACEMENT, worked example: THE SURFACE ({head} = its label). */
+    workedHead?: string;
+    /** PLACEMENT, worked example: THE AIM when the zone names none. */
+    workedNoAim?: string;
+    /** STUDIO OR LIVE: the AIM lane at the starting aim ("facing the head"). */
+    facing?: string;
+    /** STUDIO OR LIVE: what lies in the path (the SHIELDED cell). */
+    inPath?: string;
+    /** PRACTICE: the optional observation sheet's line. */
+    sheet?: string;
+  };
 };
 
 const NEUTRAL_AXES: LessonCopy['axes'] = {
