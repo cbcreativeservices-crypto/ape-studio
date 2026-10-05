@@ -74,7 +74,7 @@ function sectionGeom(spec: BowedSpec) {
 
 export function sectionBox(spec: BowedSpec) {
   const g = sectionGeom(spec);
-  return { u0: -g.W * 1.35, u1: g.W * 1.35, v0: -(g.h + g.aT + g.W * 0.55), v1: g.rib + g.aB + g.W * 0.45 };
+  return { u0: -g.W * 1.35, u1: g.W * 1.35, v0: -(g.h + g.aT + g.W * 1.0), v1: g.rib + g.aB + g.W * 0.45 };
 }
 
 export type SectionProps = { w: number; h: number; spec: BowedSpec; excite: Excite; reveal: SharedValue<number>; shown: number; accessibilityLabel: string };

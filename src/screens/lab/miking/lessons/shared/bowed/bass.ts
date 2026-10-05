@@ -46,7 +46,7 @@ export const BASS_ATTACH = [
 export const FHOLE = BB(fhX, BASS.fholeY.mm, archAt(BASS, fhX, BASS.fholeY.mm));
 
 export const BASS_VIEWS = {
-  side: { u0: -900, u1: 1500, v0: -1150, v1: 820 },
+  side: { u0: -900, u1: 1500, v0: -1520, v1: 830 },
   top: { u0: -900, u1: 1500, v0: -680, v1: 760 },
 };
 

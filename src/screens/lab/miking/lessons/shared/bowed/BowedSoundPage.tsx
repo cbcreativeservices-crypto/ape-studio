@@ -312,7 +312,7 @@ export function makeBowedSoundPage(cfg: BowedSoundConfig): (p: PageProps) => Rea
         },
         well: (
           <>
-            <Landing looking={cfg.excite === 'bow' ? 'One cycle of a bowed string' : 'One cycle of a plucked string'} prompt="Drag PHASE through one cycle, by hand. Then move the bow point and drag again." />
+            <Landing looking={cfg.excite === 'bow' ? 'One cycle of a bowed string' : 'One cycle of a plucked string'} prompt={`Drag PHASE through one cycle, by hand. Then move the ${cfg.excite === 'bow' ? 'bow' : 'pluck'} point and drag again.`} />
             <Card>
               <Point title={cfg.excite === 'bow' ? (state === 'stick' ? 'STICKING' : 'SLIPPING') : 'TWO CORNERS'}>
                 {cfg.excite === 'bow'

@@ -35,7 +35,7 @@ const LABELS = {
 };
 
 /** The drum kit to the bassist's right, the piano to the left (a typical trio). */
-export const BASS_KIT_AT = { x: 150, z: 1550 };
+export const BASS_KIT_AT = { x: 250, z: 1250 };
 
 export function bassArt(kind: BassKind): LessonArt {
   const bowed = kind === 'bow';
@@ -45,8 +45,8 @@ export function bassArt(kind: BassKind): LessonArt {
     { id: 'bass', kind: 'self', at: { x: BASS_A.bridgeTop.x, z: BASS_A.bridgeTop.z }, r: 360, label: 'bass', scene: 'all' },
     { id: 'hands', kind: 'self', at: hands, r: 170, label: bowed ? 'bow' : 'hands', scene: 'kit' },
     { id: 'endpin', kind: 'self', at: { x: P.endpinTip!.x, z: P.endpinTip!.z }, r: 150, label: 'endpin', scene: 'kit' },
-    { id: 'drums', kind: 'kit', at: BASS_KIT_AT, r: 700, label: 'drum kit', short: 'drums', scene: 'kit' },
-    { id: 'piano', kind: 'piano', at: { x: 1350, z: -2150 }, yaw: 90, r: 650, label: 'piano', scene: 'kit' },
+    { id: 'drums', kind: 'kit', at: BASS_KIT_AT, yaw: -90, r: 650, label: 'drum kit', short: 'drums', scene: 'kit' },
+    { id: 'piano', kind: 'piano', at: { x: -250, z: -2000 }, r: 650, label: 'piano', scene: 'kit' },
   ];
   return {
     Instrument: makeBowedInstrument(P, BASS_VIEWS, bowed),
@@ -99,7 +99,7 @@ export function bassArt(kind: BassKind): LessonArt {
         P,
         hands: kind,
         objects,
-        near: { u0: -1500, u1: 2300, v0: -2350, v1: 2450 },
+        near: { u0: -1500, u1: 2000, v0: -2150, v1: 2000 },
         wide: { u0: -1600, u1: 3700, v0: -2500, v1: 2600 },
         nearA11y: bowed
           ? 'A bass in a small group from above: the bassist standing behind the bass, the bow’s sweep hatched, the endpin, a drum kit to the bassist’s right and a grand piano to the left.'
