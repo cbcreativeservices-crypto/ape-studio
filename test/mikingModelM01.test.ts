@@ -41,7 +41,7 @@ describe('M01 validates', () => {
   it('validateLesson returns no problems', () => {
     assert.deepEqual(validateLesson(lesson, MIC_TYPES), []);
   });
-  it('the 8 pages are present, in the blueprint order', () => {
+  it('the 10 pages are present (the journey order)', () => {
     assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort());
   });
   it('part ids are unique and stable', () => {

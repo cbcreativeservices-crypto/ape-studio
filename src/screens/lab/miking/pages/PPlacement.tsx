@@ -1,7 +1,13 @@
 /**
- * Page 3 — PLACEMENT STUDIO (blueprint §5, §7 row 3; lesson L19-L41).
+ * PLACEMENT STUDIO (blueprint §5, §7 row 3; lesson L19-L41) — stage 5 of the
+ * journey: GUIDED, THEN FREE (LESSON_JOURNEY §6).
  *
- * TRY BEFORE TELL (review M1): PLACE comes first, with a prediction; LEARN
+ * WATCH (rack, worked example): the mic is placed FOR the learner at a
+ * documented starting point, on its own rig (it earns nothing), and STEP
+ * reads that position piece by piece — the source, the head it is measured
+ * from, the distance band, the line, the aim, the clearance — with the bezel
+ * cell for the current piece lit. Then the help FADES:
+ * TRY BEFORE TELL (review M1): PLACE comes next, with a prediction; LEARN
  * follows as "what you just did".
  * PLACE (rack): drag the mic in the side or top view (the other is the
  * inset); POSITION and AIM place it with no drag; SETUP picks the mic type,
@@ -26,7 +32,7 @@ import { nowText, readoutWords, sceneLabel } from '../engine/scene/sceneWords.ts
 import { placementBezel } from '../engine/scene/readoutText.ts';
 import { placementParams, type AimAxis, type PosAxis } from '../engine/scene/placementDock.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
-import { Body, Landing, Note, NowLine, PredictCard, ScenarioList, ZoneCard } from '../engine/kit';
+import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../engine/kit';
 import { MIC_TYPES, micType } from '../data/micTypes';
 import type { PageProps } from './pageTypes';
 
@@ -48,6 +54,51 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const [predicted, setPredicted] = useState<string | null>(null);
   const mic = rig.mics[0];
   const t = micType(mic.typeId);
+
+  /* ── WATCH: the worked example, on its own rig (never credit) ── */
+  const exZone = lesson.zones.find((q) => q.id === (variant === 'ported' ? 'b52.near' : 'e902.reso')) ?? lesson.zones[0];
+  const exType = exZone.requires?.micTypeIds?.[0] ?? lesson.micTypeIds[0];
+  const ex = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: exType, pattern: micType(exType).patterns[0].id, pose: exZone.start }] });
+  const [exView, setExView] = useState<ViewId>('side');
+  const [exStep, setExStep] = useState(0);
+  useEffect(() => {
+    if (ex.variant !== variant) ex.setVariant(variant);
+    if (ex.mics[0].typeId !== exType) ex.setType('A', exType);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variant, exType]);
+  // Once the rig has the new variant and type (its scene recompiled), place
+  // the mic at the zone's validated start and read from the zone's head.
+  useEffect(() => {
+    if (ex.variant !== variant || ex.mics[0].typeId !== exType) return;
+    ex.jumpTo('A', exZone.start);
+    if (ex.surfaceId !== exZone.refSurface) ex.setSurfaceId(exZone.refSurface);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ex.variant, ex.mics[0].typeId, exZone.id]);
+  const exShown = ex.shown('A');
+  const exHead = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.label ?? 'its head';
+  const exLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line)?.label ?? 'its line' : null;
+  const worked: { title: string; text: string; cell: number }[] = [
+    { title: 'THE SOURCE', text: `${exZone.label}. Its words: “${exZone.quote}” A documented STARTING point for this kind of mic — not a rule, and not a promise of a sound.`, cell: 3 },
+    { title: 'THE HEAD', text: `The distance is measured from ${exHead} — the head the source names. The same number from the other head would put the mic somewhere else entirely.`, cell: 0 },
+    { title: 'THE DISTANCE', text: `The band: ${exZone.band}. The readout measures to the mic’s FRONT, rounded to ≈ 5 mm, and it reads inside the band.`, cell: 0 },
+    { title: 'OFF THE LINE', text: exLine ? `The row also places the mic relative to ${exLine}. Where the source gives words without numbers (“slightly off-center”), the lab draws the edges and says so.` : 'This row names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
+    { title: 'THE AIM', text: exZone.aim ? `The row names an orientation, so the mic must face ${exHead} — within ±${exZone.aim.maxOffAxis}°, the lab’s tolerance. Distance, height and angle are separate variables.` : 'This row gives no aim, so the mic simply faces the drum. Distance, height and angle are still separate variables.', cell: 2 },
+    { title: 'CLEARANCE', text: 'Clear of every part — heads, beater, damping, port edge and pedal. Clearance always wins over any number, and the drummer stops before a real mic moves.', cell: 3 },
+  ];
+  const wk = worked[exStep];
+  const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, (id) => lesson.model.parts.find((p) => p.id === id)?.short ?? id).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
+  const exParams: DockParam[] = [
+    {
+      kind: 'fader',
+      id: 'piece',
+      label: 'STEP',
+      value: exStep / (worked.length - 1),
+      onChange: (v) => setExStep(Math.round(v * (worked.length - 1))),
+      format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`,
+      formatShort: () => `${exStep + 1} / ${worked.length}`,
+    },
+    { kind: 'toggle', id: 'view', label: exView === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: exView === 'top', onToggle: () => setExView((v) => (v === 'side' ? 'top' : 'side')) },
+  ];
 
   // Distances are read from the head the active zone names (lesson L39), else from
   // the head chosen in SETUP.
@@ -124,6 +175,28 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const pred = lesson.predictions.placement;
   const tried = predicted != null && visited.size >= 2;
   const steps: MikingStep[] = [
+    {
+      key: 'watch',
+      title: 'Worked example',
+      kind: 'WATCH',
+      layout: 'rack',
+      rack: {
+        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
+        badge: 'WORKED EXAMPLE · the mic is placed for you · blue = sourced zone · white dashed lobe = IDEAL pattern shape, not a range',
+        bezel: exBezel,
+        params: exParams,
+        initialParam: 'piece',
+      },
+      well: (
+        <>
+          <Landing looking={`Worked example · ${micType(exType).short} · ${variant === 'ported' ? 'ported' : 'intact'} front head`} prompt="Step through how this documented position is read, piece by piece. The lit cell on the bezel is the piece being read." />
+          <Card>
+            <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
+          </Card>
+          {exStep === worked.length - 1 ? <Note tone="ok">That is the whole reading: source, head, distance, line, aim, clearance. On the next step you place the mic yourself — in two different zones.</Note> : null}
+        </>
+      ),
+    },
     {
       key: 'place',
       title: 'Place the mic',

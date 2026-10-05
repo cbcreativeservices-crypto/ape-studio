@@ -119,12 +119,14 @@ describe('the final task has more than one acceptable solution (cognitive C1; le
 });
 
 describe('hearing safety is taught where it matters (audio C1, cognitive C2)', () => {
-  it('page 1 teaches NIOSH 85 dBA / 8 h / 3 dB exchange and that max SPL is not a hearing limit', () => {
-    const p1 = read('src/screens/lab/miking/pages/PInstrument.tsx');
+  it('THE SETTING (before any mic) teaches NIOSH 85 dBA / 8 h / 3 dB exchange and that max SPL is not a hearing limit', () => {
+    // Moved from page 1 by the journey (2026-10-04): ORIENT asks nothing; the
+    // hearing warning sits on "Before any mic", where soundcheck begins.
+    const p1 = read('src/screens/lab/miking/pages/PSetting.tsx');
     assert.match(p1, /85 dBA averaged over an 8-hour day/);
     assert.match(p1, /every 3 dBA/);
     assert.match(p1, /nothing to do with a microphone’s maximum SPL rating/);
-    assert.ok(lesson.pages.instrument.credit.scenarios.includes('k.inst.2'));
+    assert.ok(lesson.pages.setting.credit.scenarios.includes('k.inst.2'));
     assert.ok(lesson.sources.some((s) => s.key === 'NIOSH'));
   });
   it('the max-SPL figures sit next to the caveat on page 2', () => {

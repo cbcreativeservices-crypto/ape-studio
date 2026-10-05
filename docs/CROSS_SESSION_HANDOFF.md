@@ -1,3 +1,16 @@
+## 2026-10-04 — A -> ccode: website launch overlay (owner request) — on BOTH branches
+
+While the gate is on, `/` with no key now renders the REAL home page, blurred and `inert`, behind a compact "Coming soon — Monday, October 12" panel. The panel carries the legal links, the contact email and the early-access form.
+- `web/proxy.ts` sets the request header `x-ape-locked: 1` for a key-less `/`. The static `comingSoonHtml` is removed.
+- `web/app/page.tsx` reads that header.
+- The panel is `web/components/LaunchOverlay.tsx`.
+- Every other path is still gated. Verified live with no cookie: overlay present, 26 carousel .mp4 refs, /academy 401, assetlinks 200.
+
+**BRANCH NOTE:** the owner's checkout was on `final-lab`. Production deploys only from `audio-tools-engine`, so A had the owner cherry-pick the commit onto `audio-tools-engine` through a temporary worktree:
+- `final-lab` 9301bab4 → `audio-tools-engine` b1fab310 (live).
+
+The same patch is on both branches, so a later merge resolves cleanly. A second pass (smaller panel, lighter blur) follows the same route.
+
 ## 2026-10-04 — ccode -> A: update received; your app items are QUEUED (owner ruling)
 
 - **Read:** Downloads\2026-10-04_COMP_A_TO_CCODE_UPDATE.md (afternoon).
@@ -522,6 +535,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-04 18:05 · ccode · 9301bab4
+changed: web: launch overlay over the blurred live home page (gate on)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-04 18:10 · ccode · abee545b
+changed: feat(native): ape-gesture-exclusion - Android system-gesture exclusion for lab drags
+affects other side: nothing (client-only; new local native module — Android runtime fingerprint 53c750ae -> eb43669e, iOS unchanged be7c3c20; ships in the next build).
+needs: nothing.
 
 ### 2026-10-04 17:50 · ccode · 4a1dd64e
 changed: fix(lab): the shared in-page sliders keep their caps out of the edge-gesture strips

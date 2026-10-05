@@ -12,7 +12,7 @@ import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { ScrollView } from 'react-native';
 import { MikingRack, type MikingRackSpec } from './rack/MikingRack';
 
-export type StepKind = 'LEARN' | 'TRY' | 'COMPARE' | 'PLACE' | 'LIVE' | 'PAIR' | 'POLARITY' | 'CHECK' | 'PRACTICE' | 'READ';
+export type StepKind = 'WATCH' | 'LEARN' | 'TRY' | 'COMPARE' | 'PLACE' | 'LIVE' | 'PAIR' | 'POLARITY' | 'CHECK' | 'PRACTICE' | 'READ';
 
 export type MikingStep = { key: string; title: string; kind: StepKind } & (
   | { layout: 'rack'; rack: MikingRackSpec; well: ReactNode }

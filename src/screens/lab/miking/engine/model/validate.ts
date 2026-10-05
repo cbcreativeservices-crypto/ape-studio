@@ -7,6 +7,7 @@ import type { Lesson, MicBody, MicType, Dim, PageId } from './types.ts';
 import { PAGE_IDS } from './types.ts';
 import { checkAssembly, compileScene, pinToSurface } from '../geometry/collision.ts';
 import { inZone } from '../geometry/zones.ts';
+import { validateQuickCheck } from '../journey.ts';
 
 export function micBodyOf(t: MicType): MicBody {
   return { length: t.body.length.mm, radius: t.body.radius.mm, mount: t.mount, surfacePartId: t.surfacePartId };
@@ -103,5 +104,7 @@ export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>
       else if (sc.page !== id) out.push(`page ${id}: credit scenario ${sid} belongs to page ${sc.page}`);
     }
   }
+  for (const q of validateQuickCheck(lesson.diagnostic ?? [])) out.push(q);
+  if (lesson.pages.instrument && (lesson.pages.instrument.credit.scenarios.length || lesson.pages.instrument.credit.interactive)) out.push('page instrument (ORIENT) must carry no task');
   return out;
 }

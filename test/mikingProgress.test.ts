@@ -175,9 +175,11 @@ describe('pure pieces', () => {
 describe('the page credit rule', () => {
   it('checks AND the interactive; a retry-free first answer is not needed, an answer is', () => {
     const none = new Set<string>();
-    assert.equal(credit.pageComplete(M01_LESSON, 'instrument', {}, none), false);
-    assert.equal(credit.pageComplete(M01_LESSON, 'instrument', { 'k.inst.1': false }, none), false, 'the interactive is still owed');
-    assert.equal(credit.pageComplete(M01_LESSON, 'instrument', { 'k.inst.1': false, 'k.inst.2': true }, new Set(['regions'])), true, 'a first pick that was wrong still counts once the right one is reached');
+    assert.equal(credit.pageComplete(M01_LESSON, 'sound', {}, none), false);
+    assert.equal(credit.pageComplete(M01_LESSON, 'sound', { 'k.snd.1': false, 'k.snd.2': true, 'k.snd.3': true }, none), false, 'the interactive is still owed');
+    assert.equal(credit.pageComplete(M01_LESSON, 'sound', { 'k.snd.1': false, 'k.snd.2': true, 'k.snd.3': true }, new Set(['soundPath'])), true, 'a first pick that was wrong still counts once the right one is reached');
+    assert.equal(credit.pageComplete(M01_LESSON, 'setting', { 'k.inst.1': true, 'k.inst.2': true }, none), false, 'every check is owed');
+    assert.equal(credit.banksOnNext(M01_LESSON, 'instrument'), true, 'ORIENT asks nothing: it banks on NEXT');
     assert.equal(credit.pageComplete(M01_LESSON, 'microphone', { 'k.mic.1': true, 'k.mic.2': true }, none), false);
   });
   it('Sources has no requirement: it never banks on its own, only on NEXT / FINISH', () => {

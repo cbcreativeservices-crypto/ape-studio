@@ -14,13 +14,19 @@
  *   a members-only PREVIEW         → nothing at all (PREVIEW EARNS NOTHING).
  *
  * CREDIT ONLY GROWS (owner 2026-09-29): `done` is a union; a practice reset
- * clears answers, interactives and the resume point, and keeps `done`.
+ * clears answers, interactives, the quick check and the resume point, and
+ * keeps `done` (and the learner's chosen path — a preference, not progress).
+ *
+ * THE JOURNEY (docs/labs/miking/LESSON_JOURNEY.md §2.4): `path` is NEW or
+ * EXPERIENCED; `quick` is this run's quick-check result. Recording a quick
+ * check NEVER touches `done` — skipping cannot inflate credit (tested).
  */
 import { useSyncExternalStore } from 'react';
 import { getLabPreview } from '../../../../../features/lab/labPreviewStore';
 import { holdSessionWork, registerSessionCarry, releaseSessionWork } from '../../../../../features/lab/sessionCarry';
 import { createLocalStore } from '../../../../../features/storage/localStore';
 import { PAGE_IDS, type PageId } from '../model/types.ts';
+import type { LearnerPath, QuickCheckResult } from '../journey.ts';
 
 export const MIKING_KEY = 'ape:miking:v1';
 const CARRY_KEY = 'miking';
@@ -33,6 +39,10 @@ export type LessonProgress = {
   interactive: string[];
   lastPage?: PageId;
   lastStep?: number;
+  /** NEW or EXPERIENCED (kept through a practice reset). */
+  path?: LearnerPath;
+  /** This practice run's quick check (one attempt per run). */
+  quick?: QuickCheckResult;
 };
 export type MikingProgress = { v: 1; lessons: Record<string, LessonProgress> };
 
@@ -61,9 +71,21 @@ export function sanitizeMiking(raw: unknown): MikingProgress {
     };
     if (isPage(r.lastPage)) lp.lastPage = r.lastPage;
     if (typeof r.lastStep === 'number' && Number.isInteger(r.lastStep) && r.lastStep >= 0 && r.lastStep < 20) lp.lastStep = r.lastStep;
+    if (r.path === 'new' || r.path === 'experienced') lp.path = r.path;
+    const q = sanitizeQuick(r.quick);
+    if (q) lp.quick = q;
     out.lessons[id] = lp;
   }
   return out;
+}
+
+function sanitizeQuick(x: unknown): QuickCheckResult | null {
+  if (!x || typeof x !== 'object' || Array.isArray(x)) return null;
+  const q = x as Record<string, unknown>;
+  const n = (v: unknown) => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 50;
+  if (!n(q.right) || !n(q.total) || typeof q.pass !== 'boolean' || (q.right as number) > (q.total as number)) return null;
+  const misses = Array.isArray(q.misses) ? [...new Set(q.misses.filter(isPage))] : [];
+  return { right: q.right as number, total: q.total as number, pass: q.pass, misses };
 }
 
 /** Pure: stored + held. `done` and `interactive` are unions; the FIRST
@@ -79,6 +101,11 @@ export function mergeMiking(stored: MikingProgress, held: MikingProgress): Mikin
       lastPage: h.lastPage ?? s.lastPage,
       lastStep: h.lastPage ? h.lastStep : s.lastStep,
     };
+    const path = h.path ?? s.path;
+    if (path) out.lessons[id].path = path;
+    // One attempt per run: the attempt already on record wins.
+    const quick = s.quick ?? h.quick;
+    if (quick) out.lessons[id].quick = quick;
   }
   return out;
 }
@@ -135,13 +162,26 @@ export function recordAnswer(lessonId: string, id: string, firstRight: boolean):
 export function recordInteractive(lessonId: string, id: string): Promise<boolean> {
   return change((p) => withLesson(p, lessonId, (l) => (l.interactive.includes(id) ? l : { ...l, interactive: [...l.interactive, id] })));
 }
+/** NEW or EXPERIENCED — never touches credit. */
+export function recordPath(lessonId: string, path: LearnerPath): Promise<boolean> {
+  return change((p) => withLesson(p, lessonId, (l) => (l.path === path ? l : { ...l, path })));
+}
+/** Pure: this run's quick check on a lesson record. The FIRST attempt of a
+ *  run stands; `done` is never touched (skipping cannot inflate credit). */
+export function withQuickCheck(l: LessonProgress, res: QuickCheckResult): LessonProgress {
+  if (l.quick) return l;
+  return { ...l, quick: { ...res, misses: [...res.misses] } };
+}
+export function recordQuickCheck(lessonId: string, res: QuickCheckResult): Promise<boolean> {
+  return change((p) => withLesson(p, lessonId, (l) => withQuickCheck(l, res)));
+}
 export function recordPlace(lessonId: string, page: PageId, step: number): Promise<boolean> {
   return change((p) => withLesson(p, lessonId, (l) => ({ ...l, lastPage: page, lastStep: step })));
 }
 
 /** START OVER (PRACTICE): answers, interactives and the place go; credit stays. */
 export function clearMikingPracticeRun(lessonId: string): Promise<boolean> {
-  const clear = (l: LessonProgress): LessonProgress => ({ done: l.done, answers: {}, interactive: [] });
+  const clear = (l: LessonProgress): LessonProgress => (l.path ? { done: l.done, answers: {}, interactive: [], path: l.path } : { done: l.done, answers: {}, interactive: [] });
   setSession(withLesson(session, lessonId, clear));
   releaseSessionWork<MikingProgress>(CARRY_KEY, (prev) => withLesson(prev, lessonId, clear));
   if (getLabPreview().active || saveBlocked) return Promise.resolve(false);

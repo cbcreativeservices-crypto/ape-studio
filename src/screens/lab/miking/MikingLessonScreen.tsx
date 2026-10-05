@@ -1,7 +1,8 @@
 /**
  * MikingLessonScreen — route `MikingLesson { id }` (blueprint §7, §8). ONE
- * lesson, eight pages, each a run of steps on the shared lab strip in
- * sub-step mode (the Drum Tuning host shape, DrumTuningLabScreen.tsx):
+ * lesson, ten pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md),
+ * each a run of steps on the shared lab strip in sub-step mode (the Drum
+ * Tuning host shape, DrumTuningLabScreen.tsx):
  *
  *     ‹ KICK DRUM                                        ⚖
  *     [⏮] [‹ PREV]   PAGE 3 · STEP 2 / 3 ▾   [NEXT ›]
@@ -18,6 +19,14 @@
  * a guest or an unknown tier is held for the sign-in hand-off; a members-only
  * PREVIEW earns nothing. A failed read shows the shared UNREADABLE note and
  * every page stays open (D51). Labs never block navigation.
+ *
+ * THE JOURNEY (LESSON_JOURNEY §2–§3): the learner's path (NEW / EXPERIENCED)
+ * and this run's quick check live on the progress record; the FOUNDATIONS
+ * (orient, how it sounds, the setting) are "met" from stored credit OR from
+ * what was met on screen this session (so a guest and a preview are judged
+ * by what they did). Until they are met — or the quick check is passed — a
+ * later page shows the Foundations card in place of its ACTIVITY; NEXT,
+ * PREV and CONTENTS still go anywhere. Passing the check credits nothing.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -36,9 +45,14 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '
 import { PAGE_IDS, type Lesson, type PageId, type VariantId } from './engine/model/types.ts';
 import { StepHostContext, type StepHost } from './engine/steps';
 import { TakeawayCard } from './engine/kit';
-import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPlace, clearMikingPracticeRun, setMikingSaveBlocked, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
+import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPath, recordPlace, recordQuickCheck, clearMikingPracticeRun, setMikingSaveBlocked, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
 import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
 import { lessonById } from './data/lessons';
+import { isFoundation, pageGate, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
+import { FoundationsCard, type JourneyProps } from './engine/journeyKit';
+import { PageSteps } from './engine/steps';
+import { PSound } from './pages/PSound';
+import { PSetting } from './pages/PSetting';
 import { lessonArt } from './data/lessonArt';
 import type { LessonArt } from './engine/scene/sceneTypes.ts';
 import type { PageProps } from './pages/pageTypes';
@@ -51,6 +65,8 @@ import { PPractice, PSources, PTroubleshoot } from './pages/PReadPages';
 
 const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
   instrument: PInstrument,
+  sound: PSound,
+  setting: PSetting,
   microphone: PMicrophone,
   placement: PPlacement,
   context: PContext,
@@ -61,7 +77,7 @@ const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
 };
 
 /** Steps per page (the strip's count before a page reports its titles). */
-const STEP_COUNTS: Record<PageId, number> = { instrument: 2, microphone: 3, placement: 3, context: 3, twoMic: 3, troubleshoot: 1, practice: 3, sources: 1 };
+const STEP_COUNTS: Record<PageId, number> = { instrument: 3, sound: 4, setting: 3, microphone: 3, placement: 4, context: 3, twoMic: 3, troubleshoot: 1, practice: 3, sources: 1 };
 
 
 export function MikingLessonScreen() {
@@ -87,6 +103,12 @@ export function MikingLessonScreen() {
   return <LessonHost lesson={lesson} art={art} startPage={params.page} />;
 }
 
+/** The web preview harness only: `&unlock=1` treats the quick check as passed
+ *  so a capture can reach any stage (never the production router). */
+function devUnlock(): boolean {
+  return __DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && /[?&]unlock=1(&|$)/.test(window.location.search);
+}
+
 function devStartPage(fromParams?: string): PageId | null {
   if (fromParams && (PAGE_IDS as readonly string[]).includes(fromParams)) return fromParams as PageId;
   // The web preview harness only (`#labpreview/MikingLesson/M01` + `?page=`).
@@ -109,9 +131,21 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   const hydrated = useMikingHydrated();
   const unreadable = useMikingUnreadable();
   const lp = lessonProgress(progress, lesson.id);
-  const answers = lp.answers;
-  const interactiveDone = useMemo(() => new Set(lp.interactive), [lp.interactive]);
+  // What happened ON SCREEN this session, kept beside the record: a preview
+  // writes nothing, yet the journey must still follow what the learner did.
+  const [localAnswers, setLocalAnswers] = useState<Record<string, boolean>>({});
+  const [localInteractive, setLocalInteractive] = useState<ReadonlySet<string>>(() => new Set());
+  const [metLocal, setMetLocal] = useState<ReadonlySet<PageId>>(() => new Set());
+  const [localPath, setLocalPath] = useState<LearnerPath | null>(null);
+  const [localQuick, setLocalQuick] = useState<QuickCheckResult | null>(null);
+  const answers = useMemo(() => ({ ...localAnswers, ...lp.answers }), [localAnswers, lp.answers]);
+  const interactiveDone = useMemo(() => new Set([...lp.interactive, ...localInteractive]), [lp.interactive, localInteractive]);
   const doneIds = useMemo(() => new Set<string>(lp.done), [lp.done]);
+  const met = useMemo(() => new Set<PageId>([...lp.done, ...metLocal]), [lp.done, metLocal]);
+  const path: LearnerPath | null = localPath ?? lp.path ?? null;
+  const quick: QuickCheckResult | null = lp.quick ?? localQuick;
+  const unlocked = useMemo(() => devUnlock(), []);
+  const quickPassed = !!quick?.pass || unlocked;
 
   const dev = useMemo(() => devStartPage(startPage), [startPage]);
   const [pageIdx, setPageIdx] = useState(() => (dev ? PAGE_IDS.indexOf(dev) : 0));
@@ -157,18 +191,33 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   );
   const onSteps = useCallback((t: string[]) => setStepTitles((prev) => (prev.length === t.length && prev.every((x, i) => x === t[i]) ? prev : t)), []);
 
-  const onAnswered = useCallback((id: string, ok: boolean) => void recordAnswer(lesson.id, id, ok), [lesson.id]);
-  const onInteractive = useCallback((id: string) => void recordInteractive(lesson.id, id), [lesson.id]);
+  const onAnswered = useCallback(
+    (id: string, ok: boolean) => {
+      setLocalAnswers((a) => (id in a ? a : { ...a, [id]: ok }));
+      void recordAnswer(lesson.id, id, ok);
+    },
+    [lesson.id],
+  );
+  const onInteractive = useCallback(
+    (id: string) => {
+      setLocalInteractive((s0) => (s0.has(id) ? s0 : new Set([...s0, id])));
+      void recordInteractive(lesson.id, id);
+    },
+    [lesson.id],
+  );
+  const markMet = useCallback((p: PageId) => setMetLocal((m) => (m.has(p) ? m : new Set([...m, p]))), []);
 
   // BANK ON COMPLETION: the moment the requirement is met.
   const complete = pageComplete(lesson, page, answers, interactiveDone);
   const done = doneIds.has(page);
   useEffect(() => {
     if (complete && !done) void bankPage(lesson.id, page);
-  }, [complete, done, lesson.id, page]);
+    if (complete) markMet(page);
+  }, [complete, done, lesson.id, page, markMet]);
   const beforeAdvance = useCallback(() => {
     if (!done && (complete || banksOnNext(lesson, page))) void bankPage(lesson.id, page);
-  }, [lesson, done, complete, page]);
+    if (complete || banksOnNext(lesson, page)) markMet(page);
+  }, [lesson, done, complete, page, markMet]);
 
   const stepCount = stepTitles.length || STEP_COUNTS[page];
   const stepIdx = Math.min(step, Math.max(0, stepCount - 1));
@@ -183,6 +232,9 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
 
   const doReset = () =>
     void clearMikingPracticeRun(lesson.id).then(() => {
+      setLocalAnswers({});
+      setLocalInteractive(new Set());
+      setLocalQuick(null);
       setRunId((r) => r + 1);
       goPage(0);
     });
@@ -240,8 +292,27 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
       <LabNextButton />
     </ScrollView>
   );
-  const host: StepHost = { step: stepIdx, setStep, onSteps, head, tail, readWrap, hidden: ending };
-  const Page = PAGE_COMPONENTS[page];
+  const journey: JourneyProps = {
+    path,
+    choosePath: (p) => {
+      setLocalPath(p);
+      void recordPath(lesson.id, p);
+    },
+    quick,
+    recordQuick: (r) => {
+      setLocalQuick((q) => q ?? r);
+      void recordQuickCheck(lesson.id, r);
+    },
+    met,
+    quickPassed,
+    goPage: (id, atStep = 0) => goPage(PAGE_IDS.indexOf(id), atStep),
+    titleOf: (id) => lesson.pages[id].title,
+    noun: lesson.noun,
+    here: page,
+  };
+  const gated = pageGate(page, met, quickPassed) === 'foundations';
+  const host: StepHost = { step: stepIdx, setStep, onSteps, head, tail: gated ? null : tail, readWrap, hidden: ending };
+  const Page = gated ? FoundationsPage : PAGE_COMPONENTS[page];
 
   return (
     <LabNavProvider value={nav}>
@@ -256,7 +327,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
         {ending ? (
           <LabEndScreen
             labTitle={`Miking: ${lesson.title}`}
-            units={PAGE_IDS.map((id) => ({ id, label: lesson.pages[id].title, detail: `${lesson.pages[id].credit.note}${firstTry(id)}` }))}
+            units={PAGE_IDS.map((id) => ({ id, label: lesson.pages[id].title, detail: `${lesson.pages[id].credit.note}${firstTry(id)}${quick?.pass && isFoundation(id) && !doneIds.has(id) ? ' Skipped with the quick check — open it to earn its credit.' : ''}` }))}
             cleared={doneIds}
             unreadable={unreadable}
             mode="progress"
@@ -287,12 +358,19 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
               hidden={ending}
               canSave={canSave}
               preview={preview}
+              journey={journey}
             />
           </StepHostContext.Provider>
         </View>
       </View>
     </LabNavProvider>
   );
+}
+
+/** In place of a later page's activity while the foundations are not met
+ *  (navigation is never gated: the strip still goes anywhere). */
+function FoundationsPage({ journey }: PageProps) {
+  return <PageSteps steps={[{ key: 'foundations', title: 'Built on the foundations', kind: 'READ', layout: 'read', body: <FoundationsCard journey={journey} pageTitle={journey.titleOf(journey.here)} /> }]} />;
 }
 
 const styles = StyleSheet.create({

@@ -5,6 +5,7 @@
  * v = z — and is drawn under the scene's single transform.
  */
 import type { ReactElement } from 'react';
+import type { SharedValue } from 'react-native-reanimated';
 import type { VariantId, ViewId } from '../model/types.ts';
 
 /** `short`: the words to fall back to where the full label would collide. */
@@ -16,4 +17,12 @@ export type LessonArt = {
   labels: (view: ViewId, variant: VariantId) => ArtLabel[];
   /** The part under a model point (u, v), `tol` in mm; null = none. */
   hitTest: (view: ViewId, variant: VariantId, u: number, v: number, tol: number) => string | null;
+  /** HOW IT SOUNDS (LESSON_JOURNEY §6 stage 2): the strike sequence revealed
+   *  by `reveal` (1 … n, a shared value: stepped, or played ONCE by the
+   *  page), with `shown` (an integer, for the labels) … */
+  StrikeSequence?: (props: { w: number; h: number; variant: VariantId; reveal: SharedValue<number>; shown: number; accessibilityLabel: string }) => ReactElement;
+  /** … and the two heads coupled through the air, swung by hand. */
+  CoupledHeads?: (props: { w: number; h: number; variant: VariantId; mode: 'together' | 'opposed'; swing: number; accessibilityLabel: string }) => ReactElement;
+  /** THE SETTING: the instrument's footprint on the kit plan (top view, mm). */
+  plan?: { drum: { u0: number; u1: number; halfW: number }; pedal: { u0: number; u1: number; halfW: number } };
 };

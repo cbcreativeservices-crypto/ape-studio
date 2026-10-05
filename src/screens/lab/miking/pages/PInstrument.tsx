@@ -1,26 +1,38 @@
 /**
- * Page 1 — MEET THE INSTRUMENT (blueprint §7 row 1; lesson L6-L8).
+ * Page 1 — ORIENT: MEET THE INSTRUMENT (LESSON_JOURNEY §6 stage 1).
  *
- * LEARN (rack): the drum from the side and from above (one model). Tap a part
- * to name it and see what it does; the PART fader steps through the sound
- * sources without a drag (the accessible path). FRONT HEAD switches ported /
- * intact — the drum as it is, never cut to match a diagram.
- * CHECK (read): hearing safety first (NIOSH, review C1), then two checks.
- * Credit: every sound source found (tapped or stepped to) + the check.
+ * The owner, 2026-10-04: "The user interaction begins too early — there needs
+ * to be an understanding of the instrument, the sounds, the layout, then
+ * finally the miking." So this page asks NOTHING and places NO mic:
+ *
+ *   START (read)       the journey map; NEW or EXPERIENCED; the quick check
+ *                      (experienced only — it opens the activities, credits
+ *                      nothing).
+ *   WHAT IT IS (read)  the drawing, large, and four sourced facts: what it is,
+ *                      where you meet it, its job in the music, its size.
+ *   THE PARTS (rack)   the drum from the side and from above, cut open: tap a
+ *                      part (or step through PART) to name it; FRONT HEAD
+ *                      ported / intact; HOW TO READ THIS LAB (pre-training of
+ *                      the evidence labels before any complex scene).
+ *
+ * Credit: banks on NEXT from the last step (nothing to answer — an orient
+ * page, the PagedLab rule for a page with no requirement).
  */
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DockParam } from '../../rack/rackTypes';
 import type { ViewId } from '../engine/model/types.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
+import { InstrumentFigure } from '../engine/scene/InstrumentFigure';
 import { sceneLabel } from '../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
-import { Body, Card, HowToRead, Landing, Note, Point, ProvenanceTag, ScenarioList } from '../engine/kit';
+import { Body, Card, HowToRead, Landing, Note, Point, ProvenanceTag } from '../engine/kit';
+import { JourneyMap, PathChooser, QuickCheckCard } from '../engine/journeyKit';
 import type { PageProps } from './pageTypes';
 
-export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
+export function PInstrument({ lesson, art, variant, setVariant, hidden, journey }: PageProps) {
   const model = lesson.model;
   const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: lesson.micTypeIds[0], pattern: 'supercardioid', pose: lesson.zones[0].start }] });
   useEffect(() => {
@@ -28,23 +40,18 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
   }, [variant, rig]);
   const [view, setView] = useState<ViewId>('side');
   const [partId, setPartId] = useState<string | null>(null);
-  const [found, setFound] = useState<ReadonlySet<string>>(() => new Set());
+  const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const regions = model.regions;
-  const regionIdx = Math.max(0, regions.findIndex((r) => r.partId === partId));
+  const parts = model.parts.filter((p) => !p.variants || p.variants.includes(variant));
+  const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId || (partId === 'kick.reso' && p.id === 'kick.resoPorted')));
 
   const pick = (id: string) => {
     setPartId(id);
-    const r = regions.find((q) => q.partId === id);
-    if (r) setFound((prev) => (prev.has(r.id) ? prev : new Set([...prev, r.id])));
+    setSeen((prev) => (prev.has(id) ? prev : new Set([...prev, id])));
   };
-  const allFound = regions.every((r) => found.has(r.id));
-  useEffect(() => {
-    if (allFound && !interactiveDone.has('regions')) onInteractive('regions');
-  }, [allFound, interactiveDone, onInteractive]);
-
   const region = regions.find((r) => r.partId === partId);
   // The front head is one tap target; its part differs by variant.
-  const shownPart = partId === 'kick.reso' ? model.parts.find((p) => p.id === (variant === 'ported' ? 'kick.resoPorted' : 'kick.reso')) : model.parts.find((p) => p.id === partId);
+  const shownPart = partId === 'kick.reso' || partId === 'kick.resoPorted' ? model.parts.find((p) => p.id === (variant === 'ported' ? 'kick.resoPorted' : 'kick.reso')) : model.parts.find((p) => p.id === partId);
 
   const params: DockParam[] = useMemo(
     () => [
@@ -52,13 +59,13 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
         kind: 'fader',
         id: 'part',
         label: 'PART',
-        value: regions.length > 1 ? regionIdx / (regions.length - 1) : 0,
+        value: parts.length > 1 ? partIdx / (parts.length - 1) : 0,
         onChange: (v) => {
-          const r = regions[Math.round(v * (regions.length - 1))];
-          if (r && (!r.variants || r.variants.includes(variant))) pick(r.partId);
+          const p = parts[Math.round(v * (parts.length - 1))];
+          if (p) pick(p.id);
         },
-        format: () => (region ? `${region.label.toUpperCase()} · ${found.size} of ${regions.length} found` : `step through the ${regions.length} sound sources`),
-        formatShort: () => (region ? region.label.toUpperCase().slice(0, 9) : 'STEP'),
+        format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
+        formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
       },
       { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
       {
@@ -72,15 +79,59 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [regions, regionIdx, region, found, view, variant, model.variants],
+    [parts, partIdx, shownPart, seen, view, variant, model.variants],
   );
 
   const labelFor = (v: ViewId) => sceneLabel(rig, v, [], partId ? `Highlighted: ${shownPart?.label ?? partId}.` : undefined);
+  const srcLabel = (key: string) => lesson.sources.find((s) => s.key === key)?.label.replace(/^\[\d+[a-z, ]*\]\s*/, '') ?? '';
   const steps: MikingStep[] = [
     {
-      key: 'learn',
-      title: 'Find the sources',
+      key: 'start',
+      title: 'Start here',
+      kind: 'READ',
+      layout: 'read',
+      body: (
+        <>
+          <Body>{`This lesson is about putting a microphone on a ${lesson.noun.one} — but first the drum itself: what it is, how it makes its sound, and where it sits. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.`}</Body>
+          <JourneyMap met={journey.met} here="instrument" />
+          <PathChooser journey={journey} />
+          {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
+          {journey.path === 'new' ? <Note tone="ok">Good — NEXT takes you through the drum first. You can change how you started here at any time.</Note> : null}
+        </>
+      ),
+    },
+    {
+      key: 'what',
+      title: 'What it is',
       kind: 'LEARN',
+      layout: 'read',
+      body: (
+        <>
+          <InstrumentFigure
+            art={art}
+            model={model}
+            view="side"
+            variant={variant}
+            title={lesson.title.toUpperCase()}
+            badge="MODEL · a 22 × 18 in kick from maker dimensions, cut open · grey = ILLUSTRATIVE"
+            label={`Side view of a ${model.name}, cut open: the batter head on the player's side with the pedal and beater, the shell, and the front head facing the audience.`}
+          />
+          {lesson.orient.map((f) => (
+            <Card key={f.title}>
+              <Point title={f.title}>{f.text}</Point>
+              <View style={styles.cite}>
+                <ProvenanceTag kind="sourced" />
+                <Text style={styles.citeText}>{srcLabel(f.src)}</Text>
+              </View>
+            </Card>
+          ))}
+        </>
+      ),
+    },
+    {
+      key: 'parts',
+      title: 'The parts',
+      kind: 'TRY',
       layout: 'rack',
       rack: {
         render: (w, h) => (
@@ -89,7 +140,7 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
         badge: 'MODEL · 22 × 18 in kick from maker dimensions · grey = illustrative',
         bezel: [
           { k: 'PART', v: shownPart ? shownPart.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
-          { k: 'SOURCES FOUND', v: `${found.size} / ${regions.length}` },
+          { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
           { k: 'FRONT HEAD', v: variant === 'ported' ? 'PORTED' : 'INTACT' },
         ],
         params,
@@ -98,31 +149,17 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
       well: (
         <>
           <HowToRead />
-          <Landing looking={`${view === 'side' ? 'Side' : 'Top'} view · the drum cut open`} prompt="Tap a part — or step through PART — to find where the sound comes from." />
+          <Landing looking={`${view === 'side' ? 'Side' : 'Top'} view · the drum cut open`} prompt="Tap any part — or step through PART — to see what it is and what it does. There is nothing to answer on this page." />
           {shownPart ? (
             <Card>
               <Point title={shownPart.label.toUpperCase()}>{shownPart.role}</Point>
-              {region ? <Body>{`SOUND SOURCE · ${region.note}`}</Body> : null}
+              {region ? <Body>{`WHERE SOUND COMES FROM · ${region.note}`}</Body> : null}
               <ProvenanceTag kind={shownPart.prov.kind} />
             </Card>
           ) : (
-            <Note>The beater strikes the batter head. Both heads, the air inside, the shell, the tuning and any damping all shape what you hear.</Note>
+            <Note>The beater strikes the batter head. Both heads, the air inside, the shell, the tuning and any damping all shape what you hear — the next page shows how.</Note>
           )}
-          <Text style={styles.found} accessibilityLabel={`Sources: ${regions.map((r) => `${r.label} ${found.has(r.id) ? 'found' : 'not yet'}`).join(', ')}`}>{`Found: ${regions.map((r) => `${found.has(r.id) ? '✓' : '○'} ${r.label}`).join('   ')}`}</Text>
-          {variant === 'intact' && !found.has('r.port') ? <Note tone="warn">The port is a source on a PORTED head — switch FRONT HEAD to see it.</Note> : null}
-          <Note>Before any mic: ask the player whether the front head is intact or ported, and what the kick should do — a supportive pulse, a defined attack, a resonant note, or a mix. Hear the drum without reinforcement. If its tuning or damping needs work, agree it with the player (the Drum Tuning Lab covers that): mic placement cannot fix a drum that does not make the wanted sound acoustically.</Note>
-        </>
-      ),
-    },
-    {
-      key: 'check',
-      title: 'Check',
-      kind: 'CHECK',
-      layout: 'read',
-      body: (
-        <>
-          <Note tone="warn">Protect your hearing during repeated hits and soundcheck. NIOSH (the US National Institute for Occupational Safety and Health) recommends no more than 85 dBA averaged over an 8-hour day, and halving the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating, and a mic inside a drum is not a hearing meter. Keep levels and repetitions down, and use hearing protection.</Note>
-          <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'instrument')} answers={answers} onAnswered={onAnswered} />
+          {variant === 'intact' ? <Note>An INTACT front head has no port. Switch FRONT HEAD to see a ported one — the drum as the player brings it; never cut a port to match a diagram.</Note> : null}
         </>
       ),
     },
@@ -131,5 +168,6 @@ export function PInstrument({ lesson, art, answers, onAnswered, onInteractive, i
 }
 
 const styles = StyleSheet.create({
-  found: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
+  cite: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  citeText: { flex: 1, color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
 });

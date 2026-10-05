@@ -3,6 +3,7 @@
  */
 import type { Lesson, VariantId } from '../engine/model/types.ts';
 import type { LessonArt } from '../engine/scene/sceneTypes.ts';
+import type { JourneyProps } from '../engine/journeyKit';
 
 export type PageProps = {
   lesson: Lesson;
@@ -21,4 +22,6 @@ export type PageProps = {
   /** May this learner's observation sheets be written? */
   canSave: boolean;
   preview: boolean;
+  /** The journey (LESSON_JOURNEY.md): path, quick check, foundations, jumps. */
+  journey: JourneyProps;
 };

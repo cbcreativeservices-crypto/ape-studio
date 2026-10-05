@@ -192,8 +192,10 @@ export type Readouts = {
 
 /* ── lesson ── */
 export type MikingLabId = 'drums' | 'percussion' | 'winds' | 'strings' | 'ensembles' | 'field' | 'broadcast';
-export type PageId = 'instrument' | 'microphone' | 'placement' | 'context' | 'twoMic' | 'troubleshoot' | 'practice' | 'sources';
-export const PAGE_IDS: readonly PageId[] = ['instrument', 'microphone', 'placement', 'context', 'twoMic', 'troubleshoot', 'practice', 'sources'];
+/** The lesson's pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md):
+ *  the three FOUNDATIONS (orient, how it sounds, the setting) come first. */
+export type PageId = 'instrument' | 'sound' | 'setting' | 'microphone' | 'placement' | 'context' | 'twoMic' | 'troubleshoot' | 'practice' | 'sources';
+export const PAGE_IDS: readonly PageId[] = ['instrument', 'sound', 'setting', 'microphone', 'placement', 'context', 'twoMic', 'troubleshoot', 'practice', 'sources'];
 
 export type ViewBox = { u0: number; u1: number; v0: number; v1: number };
 export type InstrumentModel = {
@@ -233,6 +235,27 @@ export type SetupTask = { id: string; page: PageId; brief: string; setups: reado
 /** An ungraded prediction made BEFORE an activity (try before tell). */
 export type Prediction = { prompt: string; options: readonly string[]; after: string };
 export type SourceRef = { key: SrcKey; label: string; url?: string; checked?: string; note?: string };
+/** A QUICK CHECK item (the experienced path, LESSON_JOURNEY §2.5): one pick,
+ *  no retry; `covers` is the FOUNDATION page it tests; a `critical` item
+ *  (safety) fails the check when it is wrong, whatever the score. */
+export type DiagnosticItem = { id: string; covers: PageId; critical?: boolean; prompt: string; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
+/** ORIENT: what the instrument is, in a few sourced facts (no tasks). */
+export type OrientFact = { title: string; text: string; src: SrcKey };
+/** HOW IT SOUNDS: one stage of the explanatory strike sequence. `ported`
+ *  replaces `text` when the front head has a port. */
+export type SoundStage = { title: string; text: string; ported?: string };
+export type SoundContent = {
+  stages: readonly SoundStage[];
+  /** The attack / body account, in words (no curve; LESSON_JOURNEY §6). */
+  attack: string;
+  body: string;
+  /** The head drawn face-on on the shapes step: its nominal diameter and rod count. */
+  head: { diameterMm: number; rods: number; label: string; strikeSrc: SrcKey };
+};
+/** THE SETTING: a neighbour of the instrument on the plan, and what it means
+ *  for a mic on this instrument. Positions are the art's (ILLUSTRATIVE). */
+export type SettingItem = { id: string; label: string; short: string; note: string; prov: Provenance; scene: 'kit' | 'stage' | 'studio' | 'all'; /** One bezel word: what it means for a mic here. */ tag: string };
+export type SettingContent = { items: readonly SettingItem[]; stage: string; studio: string };
 export type PageCredit = { scenarios: string[]; interactive?: string; note: string };
 export type PageContent = { title: string; goal: string; credit: PageCredit; takeaway: string };
 export type Lesson = {
@@ -240,6 +263,8 @@ export type Lesson = {
   labId: MikingLabId;
   title: string;
   subtitle: string;
+  /** The instrument's short noun, for the journey's wording ("kick" / "kicks"). */
+  noun: { one: string; many: string };
   model: InstrumentModel;
   micTypeIds: string[];
   zones: DocumentedZone[];
@@ -250,6 +275,12 @@ export type Lesson = {
   setupTasks: SetupTask[];
   /** One prediction per rack page, asked before the activity. */
   predictions: Partial<Record<PageId, Prediction>>;
+  /** ORIENT's facts, HOW IT SOUNDS and THE SETTING (the foundations). */
+  orient: readonly OrientFact[];
+  sound: SoundContent;
+  setting: SettingContent;
+  /** The experienced path's QUICK CHECK (6 items, foundations only). */
+  diagnostic: readonly DiagnosticItem[];
   practice: { task: string; fields: { id: string; label: string; kind: 'text' | 'choice'; choices?: string[] }[] };
   sources: SourceRef[];
   audit: { agreement: string; tension: string; gaps: string };

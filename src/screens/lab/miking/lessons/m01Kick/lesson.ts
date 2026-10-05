@@ -8,33 +8,45 @@
  * House wording: tonal changes are TENDENCIES, never results; no audio (the
  * lab is fully silent); no invented curves; brands only as provenance.
  */
-import type { Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { KICK_MODEL } from './geometry.ts';
 import { KICK_DIMS, KICK_ZONES, L } from './model.ts';
 
 const pages: Record<PageId, PageContent> = {
   instrument: {
-    title: 'Meet the instrument',
-    goal: 'Name the two heads, find where the attack and the resonance come from, and choose ported or intact.',
-    credit: { scenarios: ['k.inst.1', 'k.inst.2'], interactive: 'regions', note: 'Find every sound source on the drawing (tap it, or step through PART), and answer the two checks.' },
-    takeaway: 'The beater strikes the batter head. Both heads, the air inside and the shell resonate together; the front head and the port are where much of that resonance leaves the drum. Work with the drum as it is: never cut a port to match a diagram.',
+    title: 'Meet the kick drum',
+    goal: 'Get to know the kick drum — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',
+    credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
+    takeaway: 'The beater strikes the batter head, on the player’s side; the front head faces the audience, with or without a port. Work with the drum as it is: never cut a port to match a diagram.',
+  },
+  sound: {
+    title: 'How it makes its sound',
+    goal: 'See how a strike becomes sound — the beater, the heads, the air inside — and where the sound leaves the drum. Shown, never played.',
+    credit: { scenarios: ['k.snd.1', 'k.snd.2', 'k.snd.3'], interactive: 'soundPath', note: 'Step the strike through to the end (or play it once), and answer the three checks.' },
+    takeaway: 'Attack starts where the beater meets the batter head. The body — both heads, the air inside and the shell ringing together — leaves mostly through the front head and the port. A mic hears more of whichever it is closer to and faces: a tendency, and drums vary.',
+  },
+  setting: {
+    title: 'Where it sits',
+    goal: 'Know the kick’s neighbours on the kit, the player’s space, and what a stage and a studio add — and what to do before any mic.',
+    credit: { scenarios: ['k.inst.1', 'k.inst.2', 'k.set.1'], note: 'Answer the three checks.' },
+    takeaway: 'The pedal side is the player’s space: no stand, boom or cable goes through it. Live, monitors and spill shape the choice; in a studio the room may help. Ask the player first, and protect your hearing.',
   },
   microphone: {
     title: 'Choose the microphone',
-    goal: 'Choose a mic by its properties — pattern, power, size and mount — not by its brand.',
-    credit: { scenarios: ['k.mic.1', 'k.mic.2', 'k.mic.3', 'k.mic.4'], note: 'Answer the four checks.' },
+    goal: 'Choose a mic for this drum by its properties — pattern, power, size and mount — not by its brand.',
+    credit: { scenarios: ['k.mic.1', 'k.mic.2', 'k.mic.3', 'k.mic.4', 'k.rec.1'], note: 'Answer the five checks (one reaches back to how the kick sounds).' },
     takeaway: 'Pattern, power, size and mount decide what a mic can do here. No brand is required, no mic type is universally better, and a mic’s maximum SPL is never a hearing limit.',
   },
   placement: {
     title: 'Placement Studio',
     goal: 'Place a mic in a documented zone, measured from its stated head, aimed as the source says, clear of every moving part.',
-    credit: { scenarios: ['k.place.1', 'k.place.2', 'k.place.3'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different documented zones, and answer the three checks.' },
+    credit: { scenarios: ['k.place.1', 'k.place.2', 'k.place.3', 'k.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different documented zones, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
     takeaway: 'A documented zone is a starting point for its own product, measured from a named head. Distance, height and angle are separate variables — and clearance always wins.',
   },
   context: {
     title: 'Studio or live',
     goal: 'Aim the mic so its pattern’s real rejection faces a loud unwanted source — and know what a pattern cannot do.',
-    credit: { scenarios: ['k.ctx.1', 'k.ctx.2', 'k.ctx.studio'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the downstage wedge sits in the rejection. STUDIO: answer the decision card. Then the two checks.' },
+    credit: { scenarios: ['k.ctx.1', 'k.ctx.2', 'k.ctx.studio', 'k.rec.3'], interactive: 'wedgeInNull', note: 'LIVE: aim the mic (or change its pattern) until the downstage wedge sits in the rejection. STUDIO: answer the decision card. Then the three checks.' },
     takeaway: 'A cardioid rejects most directly behind; a supercardioid has a rear lobe and rejects most off the rear axis. Real nulls are shallower than the ideal and shallowest in the lows. No mic position alone prevents feedback.',
   },
   twoMic: {
@@ -75,7 +87,7 @@ const pages: Record<PageId, PageContent> = {
 const scenarios: MikingScenario[] = [
   {
     id: 'k.inst.1',
-    page: 'instrument',
+    page: 'setting',
     prompt: 'The drummer’s front head has no hole, and they want to keep it that way. What are your options?',
     options: ['Mic it from outside, or use an internal mic already properly installed', 'Cut a small port in the front head so a stand mic can reach inside the drum', 'Ask the drummer to swap in a ported head for the show before you start'],
     correct: 'Mic it from outside, or use an internal mic already properly installed',
@@ -87,7 +99,7 @@ const scenarios: MikingScenario[] = [
   },
   {
     id: 'k.inst.2',
-    page: 'instrument',
+    page: 'setting',
     prompt: 'Your kick mic is rated to 174 dB SPL. Does that tell you how long you can safely stand by the drum during soundcheck?',
     options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for the people next to it', 'Yes, if the mic is inside the drum and you are outside it'],
     correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
@@ -95,6 +107,90 @@ const scenarios: MikingScenario[] = [
     why: {
       'Yes — anything below the mic’s rating is safe for the people next to it': 'Max SPL tells you when the mic distorts, not what your ears can take. NIOSH’s guideline is 85 dBA averaged over 8 hours.',
       'Yes, if the mic is inside the drum and you are outside it': 'A mic inside the drum is not a hearing meter. Measure where the person listens, and keep levels, repeats and time down.',
+    },
+  },
+  {
+    id: 'k.set.1',
+    page: 'setting',
+    prompt: 'You need a stand for a kick mic. Which space around the drum must its base, boom and cable stay out of?',
+    options: ['The pedal, the player’s feet and the path to the throne', 'The front of the drum, so the audience can see the head', 'The area under the floor tom, where its legs stand'],
+    correct: 'The pedal, the player’s feet and the path to the throne',
+    explain: 'The pedal side is the player’s space, moving all the time. Route stands and cables away from the pedal’s action and the walking path, and stop the drummer before anything moves.',
+    why: {
+      'The front of the drum, so the audience can see the head': 'Outside the front head is a normal place for a kick mic. The space to protect is the player’s: pedal, feet and walking path.',
+      'The area under the floor tom, where its legs stand': 'Neighbours need room too, but the space that moves all the time is the pedal and the player’s feet.',
+    },
+  },
+  {
+    id: 'k.snd.1',
+    page: 'sound',
+    prompt: 'Where does much of the kick’s resonance leave the drum?',
+    options: ['Through the front head, and through the port if there is one', 'Mostly through the shell, since it is the largest surface of all', 'Only at the batter head, where the beater strikes it'],
+    correct: 'Through the front head, and through the port if there is one',
+    explain: 'Both heads, the air inside and the shell ring together; the front head and the port are where much of that resonance leaves the drum — which is why a mic toward the front head tends to hear more of it.',
+    why: {
+      'Mostly through the shell, since it is the largest surface of all': 'The shell shapes how long the drum rings, but the heads are what move the air most; much of the resonance leaves through the front head and the port.',
+      'Only at the batter head, where the beater strikes it': 'The batter head radiates too (toward the player), but the air inside drives the front head, and the port lets air out: much of the resonance leaves there.',
+    },
+  },
+  {
+    id: 'k.snd.2',
+    page: 'sound',
+    prompt: 'The beater strikes the exact centre of the head. Which of the head’s vibration shapes can it set moving?',
+    options: ['Only the ring-shaped ones; the rest have a still line there', 'All of them equally, because the whole of the head is struck', 'Only the shapes that have a still line across the centre'],
+    correct: 'Only the ring-shaped ones; the rest have a still line there',
+    explain: 'A strike sets a shape moving in proportion to how much the head moves at the strike point in that shape. Every shape with a still line across the head is still at the centre, so a centre strike drives only the ring-shaped ones.',
+    why: {
+      'All of them equally, because the whole of the head is struck': 'The beater touches one small spot. A shape is driven only as much as the head moves at that spot in that shape — not at all on a still line.',
+      'Only the shapes that have a still line across the centre': 'The reverse: a still line through the centre means the head does not move there in that shape, so a centre strike cannot push it.',
+    },
+  },
+  {
+    id: 'k.snd.3',
+    page: 'sound',
+    prompt: 'Why can a mic placed at the port pick up a pop or a wind-like burst?',
+    options: ['Air pushed out of the drum leaves through the port', 'The port narrows the beater’s click into a tight beam', 'The shell vibrates hardest right around the port'],
+    correct: 'Air pushed out of the drum leaves through the port',
+    explain: 'Each strike pushes the batter head in and squeezes the air inside; with a port, some of it rushes out there. DPA suggests adjusting the mic’s angle in the hole rather than pushing it farther in.',
+    why: {
+      'The port narrows the beater’s click into a tight beam': 'A pop or wind-like burst is moving air, not a focused click: the strike squeezes the air inside, and some leaves through the port.',
+      'The shell vibrates hardest right around the port': 'The port is a hole in the front head, not part of the shell. The burst is air leaving the drum there.',
+    },
+  },
+  {
+    id: 'k.rec.1',
+    page: 'microphone',
+    prompt: 'FROM EARLIER · A mic inside the drum, close to the batter head and facing it, hears more of which part of the sound?',
+    options: ['The attack, where the beater meets the head', 'The ring that leaves through the front head', 'The shell wall, which carries the most sound'],
+    correct: 'The attack, where the beater meets the head',
+    explain: 'Attack starts where the beater meets the batter head, so a mic close to it and facing it tends to hear more attack — a tendency the guides document, and drums vary.',
+    why: {
+      'The ring that leaves through the front head': 'That is the body, which leaves mostly through the front head and port — a mic toward the front head hears more of it.',
+      'The shell wall, which carries the most sound': 'The heads move the most air; the shell shapes how long the drum rings. Close to the batter head it is the attack you hear more of.',
+    },
+  },
+  {
+    id: 'k.rec.2',
+    page: 'placement',
+    prompt: 'FROM EARLIER · You move the mic stand to reach a new zone. What must its base and cable stay clear of?',
+    options: ['The pedal, the player’s feet and the walking path', 'The front hoop, so the audience can see the head', 'The floor tom, so the mic picks up fewer toms'],
+    correct: 'The pedal, the player’s feet and the walking path',
+    explain: 'The pedal side is the player’s space. Stop the drummer, move the stand, and route the cable away from the pedal’s action and the walking path.',
+    why: {
+      'The front hoop, so the audience can see the head': 'How the drum looks is not the safety question. The space that moves all the time is the pedal and the player’s feet.',
+      'The floor tom, so the mic picks up fewer toms': 'Spill is a real concern, but the base and cable must first stay out of the player’s space: pedal, feet, path.',
+    },
+  },
+  {
+    id: 'k.rec.3',
+    page: 'context',
+    prompt: 'FROM EARLIER · A mic just outside the front head hears more of which part of the sound?',
+    options: ['The body leaving the front head and the port', 'The beater’s attack, straight from the struck head', 'Only the room, because the shell blocks the drum'],
+    correct: 'The body leaving the front head and the port',
+    explain: 'Much of the body leaves through the front head and the port, so an outside mic tends to hear more resonance — and, outside the drum, more of the kit and the room as well.',
+    why: {
+      'The beater’s attack, straight from the struck head': 'The attack starts at the batter head, on the far side of the drum from an outside mic: inside, close to the batter head, hears more of it.',
+      'Only the room, because the shell blocks the drum': 'The front head itself radiates toward the mic, so it hears the drum — plus more of the room and the kit than an inside mic.',
     },
   },
   {
@@ -462,17 +558,100 @@ const setupTasks: SetupTask[] = [
 
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
+  sound: { prompt: 'Before you step through: when the beater pushes the batter head into the drum, what does the FRONT head do?', options: ['It moves outward, away from the player', 'It moves inward, toward the beater', 'It stays still — only the struck head moves'], after: 'Now STEP through the strike (or PLAY ONCE) and watch both heads.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE round the back and watch IDEAL PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from near the batter head toward the front head. What changes?', options: ['More attack', 'More resonance', 'It depends on this drum'], after: 'Rest the mic in two zones and read each zone’s tendency.' },
   context: { prompt: 'Where will this supercardioid reject the downstage wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
   twoMic: { prompt: 'If you flip B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
 
+/*
+ * THE QUICK CHECK (experienced path, LESSON_JOURNEY §2.5): 6 items, two per
+ * foundation page; q.6 (hearing) is critical. Pass = 5 of 6 on the first
+ * pick with q.6 right. It opens the activities; it credits NOTHING.
+ */
+const diagnostic: DiagnosticItem[] = [
+  {
+    id: 'q.1',
+    covers: 'instrument',
+    prompt: 'Which head does the kick pedal’s beater strike?',
+    options: ['The batter head, on the player’s side', 'The front head, on the audience side', 'Either one, depending on how the pedal is set'],
+    correct: 'The batter head, on the player’s side',
+    explain: 'The pedal sits on the player’s side and drives the beater into the batter head; the front (resonant) head faces the audience.',
+    why: {
+      'The front head, on the audience side': 'The front head faces the audience and is not struck; the pedal drives the beater into the batter head on the player’s side.',
+      'Either one, depending on how the pedal is set': 'The pedal clamps to the batter hoop on the player’s side; its beater strikes the batter head.',
+    },
+  },
+  {
+    id: 'q.2',
+    covers: 'instrument',
+    prompt: 'What do the two spurs on the sides of the shell do?',
+    options: ['Keep the drum from creeping forward as it is played', 'Hold the front head’s hoop tight against the end of the shell', 'Lift the drum so that the port clears the floor'],
+    correct: 'Keep the drum from creeping forward as it is played',
+    explain: 'Yamaha: legs or “spurs” attached to each side of the shell keep the drum from creeping. The hoops are held by claws and tension rods.',
+    why: {
+      'Hold the front head’s hoop tight against the end of the shell': 'Claws and tension rods hold the hoops. The spurs are legs that keep the drum from creeping.',
+      'Lift the drum so that the port clears the floor': 'The port is in the front head, well clear of the floor; the spurs keep the drum from creeping forward.',
+    },
+  },
+  {
+    id: 'q.3',
+    covers: 'sound',
+    prompt: 'A strike exactly at the centre of a drumhead drives which of its vibration shapes?',
+    options: ['Only the ring-shaped ones — the rest are still there', 'All of the shapes, each one just as hard', 'Only the shapes split by a line through the centre'],
+    correct: 'Only the ring-shaped ones — the rest are still there',
+    explain: 'A strike drives a shape only as much as the head moves at the strike point in that shape; a shape with a still line through the centre does not move there.',
+    why: {
+      'All of the shapes, each one just as hard': 'The beater touches one spot. A shape is driven only as much as the head moves at that spot — not at all on a still line.',
+      'Only the shapes split by a line through the centre': 'The reverse: those shapes are still at the centre, so a centre strike cannot drive them.',
+    },
+  },
+  {
+    id: 'q.4',
+    covers: 'sound',
+    prompt: 'The beater pushes the batter head into the drum. What does the air inside do to the front head?',
+    options: ['Pushes it outward, away from the player', 'Pulls it inward, toward the beater', 'Nothing — the air escapes through the shell'],
+    correct: 'Pushes it outward, away from the player',
+    explain: 'The batter head squeezes the air inside, and the air pushes the front head outward: the two heads are coupled through the air (with a port, some air also rushes out).',
+    why: {
+      'Pulls it inward, toward the beater': 'The batter head moving in squeezes the air; squeezed air pushes on the front head, so it moves outward.',
+      'Nothing — the air escapes through the shell': 'The shell is closed wood. The air is squeezed and pushes the front head outward; only a port lets some out.',
+    },
+  },
+  {
+    id: 'q.5',
+    covers: 'setting',
+    prompt: 'Where should the cable for a kick mic run?',
+    options: ['Away from the pedal and the player’s walking path', 'Along the pedal, taped down so that it cannot move', 'Under the batter hoop, close to the beater'],
+    correct: 'Away from the pedal and the player’s walking path',
+    explain: 'Route and secure cables so they do not snag a pedal or a walking path — the pedal side is the player’s space and moves all the time.',
+    why: {
+      'Along the pedal, taped down so that it cannot move': 'The pedal moves with every stroke. Keep the cable away from its action, not taped to it.',
+      'Under the batter hoop, close to the beater': 'That is where the pedal and the beater work. Route the cable away from the player’s side.',
+    },
+  },
+  {
+    id: 'q.6',
+    covers: 'setting',
+    critical: true,
+    prompt: 'The kick mic is rated to 174 dB SPL. What does that tell you about standing by the drum through a long soundcheck?',
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the drum stays below the mic’s 174 dB', 'It is safe as long as the mic itself is inside the drum'],
+    correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
+    explain: 'Max SPL says when the MIC distorts. For people, NIOSH recommends no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
+    why: {
+      'It is safe while the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. NIOSH’s guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe as long as the mic itself is inside the drum': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
+    },
+  },
+];
+
 export const M01_LESSON: Lesson = {
   id: 'M01',
   labId: 'drums',
   title: 'Kick Drum',
   subtitle: 'Bass drum: inside, outside, one mic or two',
+  noun: { one: 'kick', many: 'kicks' },
   model: KICK_MODEL,
   micTypeIds: ['kickDynSuper', 'kickDynCard', 'boundaryHalf', 'sdc'],
   zones: KICK_ZONES,
@@ -482,6 +661,41 @@ export const M01_LESSON: Lesson = {
   orderTasks,
   setupTasks,
   predictions,
+  orient: [
+    { title: 'WHAT IT IS', text: 'The kick, or bass drum, is the drum of a kit that lies on its side on the floor. A foot pedal swings a beater into the head facing the player — the batter head. The other head, facing the audience, is the front (resonant) head.', src: 'DW-9000' },
+    { title: 'WHERE YOU MEET IT', text: 'In drum kits across most band music, on stage and in the studio. Yamaha calls 22 and 24 inch drums “standard for just about every other genre of music”. This lesson covers both studio recording and live sound.', src: 'YMH-HUB' },
+    { title: 'WHAT IT DOES IN THE MUSIC', text: 'A supportive pulse, a defined attack, a resonant note — or a mix of these. Which one the player wants decides a lot about the mic and its position, so ask before you start.', src: 'LESSON' },
+    { title: 'ITS SIZE', text: 'Kit bass drums come in “diameters ranging from 18 to 26 inches, with average depths from 14 to 18 inches” (Yamaha). This lab draws a 22 × 18 in drum from maker dimensions; the parts with no source are drawn ILLUSTRATIVE.', src: 'YMH-HUB' },
+  ],
+  sound: {
+    stages: [
+      { title: 'The beater strikes', text: 'The pedal swings the beater into the batter head, on the player’s side. That brief contact is where the ATTACK — the start of the sound — begins.' },
+      { title: 'The batter head is pushed in', text: 'The head bows into the drum — most at the centre, not at all at the hoop: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
+      { title: 'The air pushes the front head', text: 'The batter head squeezes the air inside, and the air pushes the front head outward. The two heads are coupled through the air.', ported: 'The batter head squeezes the air inside; the air pushes the front head outward — and some of it rushes out through the port. That moving air is what can pop a mic placed at the port.' },
+      { title: 'Sound leaves the drum', text: 'Sound leaves from both heads — the front head toward the audience, the batter head toward the player. The heads, the air and the shell ringing together are the BODY of the sound; the shell, the tuning and any damping shape how long it rings.', ported: 'Sound leaves from both heads and from the port — the front head and port toward the audience, the batter head toward the player. The heads, the air and the shell ringing together are the BODY of the sound; the shell, the tuning and any damping shape how long it rings.' },
+    ],
+    attack: 'ATTACK — the start of the sound: the beater’s brief contact with the batter head. It begins at the strike, so a mic close to the batter head and facing it tends to hear more of it.',
+    body: 'BODY (resonance) — the heads, the air inside and the shell ringing together after the strike. Much of it leaves through the front head and the port, so a mic toward the front head tends to hear more of it. Both are tendencies the guides document, and drums vary. Tuning and damping change how long the drum rings — the Drum Tuning Lab covers that.',
+    head: { diameterMm: 22 * 25.4, rods: 10, label: '22 in batter head, seen from the player’s side', strikeSrc: 'DW-9000' },
+  },
+  setting: {
+    items: [
+      { id: 'kick', label: 'the kick drum (cut open, as on every page)', short: 'KICK', note: 'Lying on its side, the front head toward the audience. The same drawing as every other page of this lesson.', prov: { kind: 'sourced', src: 'YMH-RC', quote: 'RBB-2218 22"×18"' }, tag: 'THE DRUM', scene: 'all' },
+      { id: 'pedal', label: 'bass drum pedal', short: 'PEDAL', note: 'Clamped to the batter hoop. Its footboard, beater and the player’s right foot move with every stroke: stands, booms and cables stay clear of its action.', prov: { kind: 'illustrative', reason: 'no source gives pedal dimensions' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'throne', label: 'drum throne (the player’s seat)', short: 'THRONE', note: 'The space between the throne, the pedals and the drum is the player’s. Nothing of yours goes through it, and the walking path to the throne stays clear.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'hihat', label: 'hi-hat (left foot)', short: 'HI-HAT', note: 'Played with the left foot and the sticks, to the player’s left. A loud neighbour: a mic outside the drum hears more of the kit around it than one inside.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'snare', label: 'snare drum', short: 'SNARE', note: 'Between the player’s knees, just above the pedal side — a loud neighbour close to the batter side of the kick.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'tom', label: 'rack tom (mounted above the kick)', short: 'RACK TOM', note: 'Often mounted on or above the kick. Its mount takes room over the shell: a boom’s path has to go around it.', prov: { kind: 'illustrative', reason: 'a typical layout; no source gives positions' }, tag: 'BOOM PATH', scene: 'kit' },
+      { id: 'floor', label: 'floor tom', short: 'FLOOR TOM', note: 'On the player’s right. Another neighbour a kick mic can hear.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'fill', label: 'the drummer’s fill (monitor)', short: 'DRUM FILL', note: 'A floor monitor beside the throne so the drummer can hear the band. It sits on the drummer’s side of the kick — you will see later why no pattern rejects it there.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'downstage', label: 'a downstage wedge (another player’s monitor)', short: 'WEDGE', note: 'On the audience side of the kick, facing back toward the stage. A loud source an outside kick mic can face away from.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
+      { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'The front head faces the audience. Live, the PA adds to the kick the audience already hears from the drum itself.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
+      { id: 'room', label: 'the room', short: 'THE ROOM', note: 'In a studio there are no wedges on the floor, and the room itself can add something useful — one reason a more distant or outside mic may help.', prov: { kind: 'illustrative', reason: 'a generic room; no source gives its size' }, tag: 'ROOM SOUND', scene: 'studio' },
+    ],
+    stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the stage is loud. Stage spill and the gain available before feedback push toward close, directional pickup.',
+    studio: 'STUDIO: no wedges on the floor, repeated trials are practical when the drummer stops, and the room may contribute usefully — an outside or more distant mic may help.',
+  },
+  diagnostic,
   practice: {
     task: 'Choose a one-mic setup for a given drum and performance, describe an alternative position, and explain what would justify a second channel. With a real drum and the drummer’s agreement, you can record what you tried below.',
     fields: [
@@ -510,6 +724,11 @@ export const M01_LESSON: Lesson = {
     { key: 'S-LIVE', label: '[11] Shure, Microphone Techniques for Live Sound Reinforcement', url: 'https://www.shure.com/damfiles/default/global/documents/publications/en/performance-production/microphone_techniques_for_live_sound_reinforcement_english.pdf-3df433145fca686a736beeb5da588efa.pdf', checked: '2026-10-04' },
     { key: 'DPA-31', label: '[12a] DPA Microphones, “3:1 rule”', url: 'https://www.dpamicrophones.com/dictionary/0-9/31-rule/', checked: '2026-10-04 (link resolves)' },
     { key: 'S-REC5', label: '[12b] Shure, “Recording Drums Part 5 — Phase Cancellation”', url: 'https://www.shure.com/en-GB/insights/recording-drums-part-5-phase-cancellation', checked: '2026-10-04 (link resolves)' },
+    { key: 'LESSON', label: 'This lesson’s research text: “Kick Drum Miking Technique” (research checkpoint 1, October 2026)', checked: '2026-10-04', note: 'The roles of the kick (pulse, attack, resonant note) and the ask-the-player-first step come from it.' },
+    { key: 'YMH-HUB', label: 'Yamaha Music Hub, “The Modern Drum Set, Part 2: The Bass Drum” (sizes, spurs, claws)', url: 'https://hub.yamaha.com/drums/studio/part-2-the-bass-drum/', checked: '2026-10-04' },
+    { key: 'DW-9000', label: 'DW, 9000 Series Bass Drum Pedals manual (strike point: the centre or 1–2 in above it)', url: 'https://c3.zzounds.com/media/DW9000PedalManual-c60438255a370f0f4d9c3e42aca290d9.pdf', checked: '2026-10-04', note: 'Hosted by a retailer (zZounds).' },
+    { key: 'YMH-RC', label: 'Yamaha Recording Custom drum set, specifications (RBB-2218 22 × 18 in)', url: 'https://usa.yamaha.com/products/musical_instruments/drums/ac_drums/drum_sets/recording_custom_2016/specs.html', checked: '2026-10-04' },
+    { key: 'MEMBRANE', label: 'Ideal clamped-membrane vibration shapes (Bessel functions) — the same tables the Cymatics and Drum Tuning Labs use', checked: '2026-10-04', note: 'Two-headed drum coupling through the enclosed air: the model the Drum Tuning Lab uses (after Rossing).' },
     { key: 'DRUM', label: 'Drum size and hardware: Yamaha Recording Custom (RBB-2218), TAMA Superstar Classic, DW Design; Remo 5 in offset-port head; DW pedal manuals', checked: '2026-10-04', note: 'Full rows in docs/labs/miking/kick/SOURCES.md.' },
     { key: 'PHYSICS', label: 'Speed of sound (the app’s calculator), comb filtering and first-order polar patterns', checked: '2026-10-04', note: 'Rows in docs/labs/miking/SOURCES_SHARED.md.' },
   ],
