@@ -16,7 +16,7 @@
  * level is OK.
  */
 
-export type NodeKind = 'instrument' | 'pedals' | 'volume' | 'di' | 'amp' | 'head' | 'cab' | 'combo' | 'mic' | 'desk';
+export type NodeKind = 'instrument' | 'pedals' | 'volume' | 'di' | 'amp' | 'head' | 'cab' | 'combo' | 'mic' | 'desk' | 'keys' | 'keysAmp' | 'lidSpeakers';
 export type ChainNode = { id: string; kind: NodeKind; lane: 'air' | 'di' | 'amp'; col: number };
 export type LinkKind = 'instrument' | 'speaker' | 'air' | 'mic' | 'balanced' | 'line';
 export type ChainLink = { from: string; to: string; kind: LinkKind };
@@ -30,6 +30,9 @@ export type ChainSpec = {
   diBox: boolean;
   /** The amp's own direct / line output. */
   ampDirect: boolean;
+  /** A node drawn as another object (Lab 2's electric pianos, 2026-10-05):
+   *  the instrument as a keyboard, an amplifier and speakers built into it. */
+  icons?: Partial<Record<string, NodeKind>>;
 };
 
 /** The nodes and links for a chain (air-lane columns left → right). */
@@ -54,6 +57,7 @@ export function buildChain(c: ChainSpec): { nodes: ChainNode[]; links: ChainLink
     nodes.push({ id: 'ampdi', kind: 'di', lane: 'amp', col: ampCol });
     links.push({ from: 'amp', to: 'ampdi', kind: 'line' }, { from: 'ampdi', to: 'desk', kind: 'balanced' });
   }
+  if (c.icons) for (const n of nodes) n.kind = c.icons[n.id] ?? n.kind;
   return { nodes, links };
 }
 

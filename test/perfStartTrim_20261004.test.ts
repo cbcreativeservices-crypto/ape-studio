@@ -468,10 +468,10 @@ const COUNTS_AT_HEAD: Record<string, string> = {
   sound: '4 Labs', acoustics: '3 Labs', signal: '9 Labs', mixingworkflow: '3 Labs', production: '2 Labs',
   livesound: '1 Lab', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
   saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '3 Labs',
-  visualization: '2 Labs', instruments: '4 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
+  visualization: '2 Labs', instruments: '5 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
   calculators: '166 Calculators', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
 };
-const TOTAL_AT_HEAD = 222; // was 217 before the ampacity calculator; +1 Miking Lab 1: Drums (2026-10-04); +1 Miking Lab 4: Strings (2026-10-05, a lab is listed once it has a ready lesson)
+const TOTAL_AT_HEAD = 223; // was 217 before the ampacity calculator; +1 Miking Lab 1: Drums (2026-10-04); +1 Miking Lab 4: Strings (2026-10-05, a lab is listed once it has a ready lesson); +1 Miking Lab 2: Percussion (2026-10-05)
 
 describe('3. the members-only gate decides exactly as before', () => {
   it('loading the catalog (what the gate does at start) does not load the calc registry', async () => {

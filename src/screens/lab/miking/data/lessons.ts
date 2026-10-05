@@ -37,6 +37,8 @@ import { C15_LESSON } from '../lessons/c15Veena/lesson.ts';
 import { C11_LESSON } from '../lessons/c11Piano/lesson.ts';
 import { C10_LESSON } from '../lessons/c10Harp/lesson.ts';
 import { C12_LESSON } from '../lessons/c12Clavinet/lesson.ts';
+import { I11A_LESSON } from '../lessons/i11aRhodes/lesson.ts';
+import { I11B_LESSON } from '../lessons/i11bWurlitzer/lesson.ts';
 
 const LESSON_CONTENT: Record<string, Lesson> = {
   M01: M01_LESSON,
@@ -79,6 +81,9 @@ LESSON_CONTENT.C15 = C15_LESSON;
 LESSON_CONTENT.C11 = C11_LESSON;
 LESSON_CONTENT.C10 = C10_LESSON;
 LESSON_CONTENT.C12 = C12_LESSON;
+// Lab 2 (percussion), the electric pianos (each lesson on its own line).
+LESSON_CONTENT.I11a = I11A_LESSON;
+LESSON_CONTENT.I11b = I11B_LESSON;
 
 export function lessonById(id: string | undefined): Lesson | undefined {
   return id ? LESSON_CONTENT[id] : undefined;

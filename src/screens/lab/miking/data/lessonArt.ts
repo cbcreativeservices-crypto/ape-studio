@@ -43,6 +43,8 @@ import { C15_ART } from '../lessons/c15Veena/art';
 import { PIANO_ART } from '../lessons/c11Piano/pages';
 import { HARP_ART } from '../lessons/c10Harp/pages';
 import { CLAV_ART } from '../lessons/c12Clavinet/pages';
+import { I11A_ART } from '../lessons/i11aRhodes/art';
+import { I11B_ART } from '../lessons/i11bWurlitzer/art';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -72,6 +74,9 @@ ART.M13 = { ...TABLA_ART, pages: TABLA_PAGES };
 ART.C02 = C02_ART;
 ART.C08 = C08_ART;
 ART.C04 = C04_ART;
+// Lab 2 (percussion), the electric pianos (each lesson on its own line).
+ART.I11a = I11A_ART;
+ART.I11b = I11B_ART;
 
 // Lab 4, the guitar family (each lesson on its own line: lessons are built in parallel).
 ART.C01 = C01_ART;
