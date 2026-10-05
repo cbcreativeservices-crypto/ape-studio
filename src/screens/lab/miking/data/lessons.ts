@@ -139,3 +139,6 @@ import { A11_LESSON } from '../lessons/a11Accordion/lesson.ts';
 LESSON_CONTENT.A11 = A11_LESSON;
 import { A12_LESSON } from '../lessons/a12Organ/lesson.ts';
 LESSON_CONTENT.A12 = A12_LESSON;
+/* Lab 3 (winds), the woodwinds (A06–A09b): appended so other lessons merge cleanly. */
+import { WOODWIND_CONTENT } from '../lessons/shared/woodwinds/content.ts';
+Object.assign(LESSON_CONTENT, WOODWIND_CONTENT);

@@ -153,3 +153,6 @@ import { A11_LESSON_ART } from '../lessons/a11Accordion/pages';
 ART.A11 = A11_LESSON_ART;
 import { A12_LESSON_ART } from '../lessons/a12Organ/pages';
 ART.A12 = A12_LESSON_ART;
+/* Lab 3 (winds), the woodwinds (A06–A09b): appended so other lessons merge cleanly. */
+import { WOODWIND_ART } from '../lessons/shared/woodwinds/artRegistry';
+Object.assign(ART, WOODWIND_ART);
