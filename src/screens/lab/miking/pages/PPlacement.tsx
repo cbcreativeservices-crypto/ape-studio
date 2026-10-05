@@ -183,7 +183,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
-        badge: 'WORKED EXAMPLE · the mic is placed for you · blue = a recommended starting point · white dashed lobe = pattern shape, not a range',
+        badge: 'WORKED EXAMPLE · placed for you · blue = recommended starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: exParams,
         initialParam: 'piece',
@@ -205,7 +205,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={labelFor} />,
-        badge: 'Blue = recommended starting points · grey hatch = keep clear · white dashed lobe = pattern shape, not a range · pinch to zoom, double-tap to reset',
+        badge: 'Blue = recommended starting points · grey hatch = keep clear · dashed lobe = pattern shape · pinch to zoom',
         bezel,
         params,
         initialParam: 'pos',

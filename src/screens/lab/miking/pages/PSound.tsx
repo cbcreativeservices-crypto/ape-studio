@@ -188,7 +188,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
   ];
   const shapeBezel: BezelItem[] = [
     { k: 'SHAPE', v: shape.label, flex: 0.8 },
-    { k: 'RATIO', v: `× ${shape.ratio.toFixed(2)}`, sub: 'to the lowest', flex: 0.9 },
+    { k: 'RATIO', v: `× ${shape.ratio.toFixed(2)}`, sub: 'vs lowest', flex: 0.9 },
     { k: 'UNDER BEATER', v: `${sharePct} %`, sub: 'of its peak', tint: share < 0.05 ? '#ff6b5e' : undefined, flex: 1.2 },
     { k: 'STILL LINES', v: shape.n + shape.s - 1 === 0 ? 'NONE' : `${shape.n + shape.s - 1}`, flex: 1 },
   ];

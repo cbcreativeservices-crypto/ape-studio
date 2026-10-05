@@ -1,3 +1,41 @@
+## 2026-10-04 21:00 PT — A: INSTRUCTOR PROGRESS SHARING — SERVER LIVE (owner CHECK 8/8 true)
+
+`2026-10-04_INSTRUCTOR_PROGRESS_SHARING` applied. The CHECK came back all true: instructor_code_column, share_table_locked, everyone_off_by_default, functions_7_signed_in_only, on_off_record_private, instructors_only_not_employers, never_shows_answers, institutional_path_untouched. Rollback artifact: https://claude.ai/artifact/MHcVmxpPYoxo7kLqnZoQ2D. The functions in the entry below are callable now, and the app UI is yours.
+
+## 2026-10-04 — A -> ccode: INSTRUCTOR PROGRESS SHARING (owner request) — server built, pending owner CHECK; app UI is yours
+
+**Owner (Cháno):** in Profile/Settings a student can switch on "Allow my instructor to see my progress". It is NEVER on by default. It works for ONE named, verified instructor (kind = 'instructor', not revoked), never for employers. The instructor tells the student to turn it on and gives them a code. The instructor then sees topic and lab progress and completion, % completion for each topic and study method (flashcards included), and quiz attempts (count plus each score and date, never answers). Institutional `lookup_student_by_qr` is untouched.
+
+**Server** (paste files `C:\Users\profe\Downloads\2026-10-04_INSTRUCTOR_PROGRESS_SHARING\`; dry-run plus 12 behaviour tests on PG16; signed-in only, never anon). All ids are hidden behind `share_id`:
+- STUDENT
+  - `instructor_share_lookup(p_code)` → (instructor_name, school). Call it to show "Share with Ina S · Miramar College?" before the switch flips. Empty = wrong code. Case and dashes are ignored.
+  - `instructor_share_on(p_code)` → (instructor_name, school, granted_at, instructor_active). Replaces any previous instructor. Errors: "that instructor code is not right", "that is your own instructor code", "please sign in first".
+  - `instructor_share_off()` → boolean.
+  - `instructor_share_mine()` → the same 4 columns; no row = switch OFF. If `instructor_active` is false, the instructor lost verification: show "Your instructor's account is no longer verified — nothing is being shared."
+- INSTRUCTOR (only when `my_verifier_kind() = 'instructor'`)
+  - `instructor_my_code()` → 8-character code to give students (created on first call; null for everyone else).
+  - `instructor_students()` → share_id, student_name, granted_at, topics_started, topics_complete, labs_complete, labs_total, last_activity.
+  - `instructor_student_progress(share_id)` → jsonb:
+    - `student{name, shared_since}`
+    - `topics[]{topic_id, name, field, subject, status complete|in_progress, completed_at, best_score, study_pct, methods[]{key, name, completion_pct, last_studied}, quiz_attempts[]{number, score, practice, submitted_at}}`
+    - `labs{complete, total, list[]{name, area, completed_at}}`
+    - `final_exams[]{number, score, out_of, passed, submitted_at}`
+    - `credentials[]{type, name, earned_at}`
+  - `study_pct` = the average of the topic's applicable methods' completion_pct. Scores are as stored, the same numbers the student sees. Raises "this student has not shared their progress with you" if the share is gone, belongs to another instructor, or the instructor is revoked.
+- Every on/off is recorded in `private.instructor_share_events`.
+
+**APP (your lane):**
+1. **Profile → Privacy/Settings, student:**
+   - a switch "Allow my instructor to see my progress", OFF by default;
+   - turning it on opens a code entry → lookup → confirm card (name + school) → on;
+   - the ON state shows who and since when, plus "Turn off";
+   - copy says employers never see this.
+2. **Instructor accounts** (`my_verifier_kind() = 'instructor'`), in EmployerSection:
+   - "Your instructor code" (copy/share);
+   - a "My students" list;
+   - a student detail screen from `instructor_student_progress`.
+3. Do not show any of this to employer-kind accounts.
+
 ## 2026-10-04 — A: INSTRUCTOR / SCHOOL accounts — SERVER LIVE (owner CHECK 7/7 true)
 
 Owner returned the CHECK for `2026-10-04_INSTRUCTOR_ACCOUNTS`: originals_backed_up_7, kind_columns_2, existing_rows_stay_employer, kind_trigger_present, apply_takes_kind_signed_in_only, access_unchanged, lists_report_kind_5 — all true. Backup `private._bkp_fn_20261004i`. The instructor entry below is now live server-side; the web push (wording + apply-form choice) follows on audio-tools-engine. App items 1–4 below are yours.
@@ -563,6 +601,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-04 21:10 · ccode · a3e89af8
+changed: docs(miking): Lab 1 batch research (16 lessons) + lead rulings
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
 
 ### 2026-10-04 20:50 · ccode · 20ee570a
 changed: feat(miking): Kick lesson as suggested starting points, no sources on screen
