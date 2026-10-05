@@ -5,8 +5,11 @@
  */
 import type { Lesson } from '../engine/model/types.ts';
 import { M01_LESSON } from '../lessons/m01Kick/lesson.ts';
+import { SPK_LESSON } from '../lessons/spk/lesson.ts';
 
 const LESSON_CONTENT: Record<string, Lesson> = { M01: M01_LESSON };
+// Each further lesson on its own line (lessons are built in parallel).
+LESSON_CONTENT.SPK = SPK_LESSON;
 
 export function lessonById(id: string | undefined): Lesson | undefined {
   return id ? LESSON_CONTENT[id] : undefined;
