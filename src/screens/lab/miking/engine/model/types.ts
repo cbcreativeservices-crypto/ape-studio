@@ -397,6 +397,15 @@ export type InstrumentModel = {
   /** How a stand's boom is routed, per variant (none = straight behind the
    *  mic, the drums' rule). */
   boomRoute?: Partial<Record<VariantId, BoomRoute>>;
+  /** Where the glass's mini inset of the other view sits (default 'top',
+   *  top-right). 'bottom' puts it bottom-right — per variant if need be: a
+   *  long instrument framed edge to edge (the guitar family) puts its
+   *  headstock in one of the two right-hand corners. */
+  insetAt?: 'top' | 'bottom' | Partial<Record<VariantId, 'top' | 'bottom'>>;
+  /** A rectangle per variant and main view (mm) the inset must not cover —
+   *  the guitars' headstock and tuners; the glass takes the other corner
+   *  when the preferred one would (DualView, labelLayout.chooseInsetCorner). */
+  insetKeepClear?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */

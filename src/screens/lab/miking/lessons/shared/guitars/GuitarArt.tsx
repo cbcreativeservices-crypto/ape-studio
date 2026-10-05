@@ -14,19 +14,27 @@
  *   GuitarEdge   the instrument seen EDGE-ON (frame G x, z): the sides and
  *                back, the bridge and strings over the top, the neck, the
  *                headstock tilted back.
- *   PlayerFront / PlayerAbove / PlayerLapSide   the player as a muted
- *                figure behind and round the instrument (neighbours recede,
- *                charter §6): a minimal line-art bald head, the torso, the
- *                arms and hands, the legs — where the lesson keeps clear.
+ *   the PLAYER   the shared illustrated player (lessons/shared/players),
+ *                posed from the model's envelopes (guitarPlayer.ts), drawn in
+ *                two layers round the instrument: body behind, the near arm
+ *                and the hands in front (art pass 2026-10-05).
+ *
+ * ART PASS 2026-10-05 also: the top's form (edge shade, a lacquer sheen, a
+ * lit binding), string and board shadows, fret crowns, real tuner buttons,
+ * collision-aware labels with leaders, and the zones as label obstacles.
  *
  * Nothing moves (D8). Paths are built once per scene and cached. No brand
  * mark, inlay logo or likeness of a maker's design.
  */
 import { BlurMask, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import type { VariantId, ViewId } from '../../../engine/model/types.ts';
+import type { DocumentedZone, VariantId, ViewId } from '../../../engine/model/types.ts';
+import { viewsOf } from '../../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { fretX, outlinePoly, type GuitarGeom } from './guitarSpec.ts';
 import { partIdOf, type BuiltGuitarModel, type GuitarScene } from './guitarModel.ts';
+import { guitarPlayerPose } from './guitarPlayer.ts';
+import type { PlayerPose } from '../players/playerPose.ts';
+import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -46,9 +54,6 @@ const STEEL_STR = '#e4e8ef';
 const NYLON_STR = '#f2efe6';
 const HOLE = ['#1a120c', '#0b0806', '#050403'];
 const TORTOISE = ['#5a2a14', '#2e140a', '#6d3518'];
-const FIG = ['#2b2f38', '#20232a', '#16181d'];
-const FIG_EDGE = '#4a505c';
-const SKIN = ['#3a3e48', '#2c3038', '#22252c'];
 const INK = '#08080a';
 
 type Paths = ReturnType<typeof buildFace>;
@@ -70,6 +75,19 @@ function oval(cx: number, cy: number, rx: number, ry: number): SkPath {
   const p = make();
   p.addOval(Skia.XYWHRect(cx - rx, cy - ry, rx * 2, ry * 2));
   return p;
+}
+
+/** The headstock's half-width (drawing default, as buildFace draws it). */
+function headWOf(sp: GuitarScene['g']['spec']): number {
+  return sp.neck.head === 'slotted' || sp.neck.head === 'banjo' ? 39 : sp.neck.head === 'paddle' ? 30 : sp.strings.perCourse === 2 && sp.strings.courses === 6 ? 48 : sp.strings.courses <= 4 ? 40 : 43;
+}
+/** …and its edge at `dx` mm past the nut (the tuners' shafts leave there). */
+function headHalfAt(sp: GuitarScene['g']['spec'], dx: number): number {
+  const hw = headWOf(sp);
+  const hl = sp.neck.headLen.mm;
+  const t = Math.max(0, Math.min(1, (dx / hl - 0.12) / (0.96 - 0.12)));
+  if (sp.neck.head === 'banjo') return hw * (dx / hl < 0.55 ? 0.95 : 1.05);
+  return hw * (1 + t * ((sp.neck.head === 'paddle' ? 0.95 : 1.06) - 1));
 }
 
 /* ═══════════════════════════════ FACE ═══════════════════════════════ */
@@ -115,7 +133,7 @@ function buildFace(sc: GuitarScene) {
   // The headstock: a solid plate, a slotted plate, a banjo peghead, a paddle.
   const hl = sp.neck.headLen.mm;
   const nutH = g.boardHalf(g.L);
-  const headW = sp.neck.head === 'slotted' || sp.neck.head === 'banjo' ? 39 : sp.neck.head === 'paddle' ? 30 : sp.strings.perCourse === 2 && sp.strings.courses === 6 ? 48 : sp.strings.courses <= 4 ? 40 : 43;
+  const headW = headWOf(sp);
   const H0 = g.L;
   const headPath =
     sp.neck.head === 'banjo'
@@ -385,16 +403,35 @@ export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
             <LinearGradient start={tl} end={br} colors={woodTop} />
           </Path>
           <Path path={P.grain} style="stroke" strokeWidth={0.5} color="#8a6a3a" opacity={0.18} clip={P.outline} />
-          {/* binding: a cream line inside a dark edge */}
+          {/* form: the arched top darkens toward its edge, and catches the
+              light on the upper-left of the lower bout (a lacquer sheen) */}
+          <Group clip={P.outline}>
+            <Path path={P.outline} style="stroke" strokeWidth={30} color="#2a1608" opacity={0.28}>
+              <BlurMask blur={12} style="normal" />
+            </Path>
+          </Group>
+          <Path path={P.outline}>
+            <RadialGradient c={vec(sp.body.xLower.mm - g.lowerH * 0.25, -g.lowerH * 0.45)} r={g.lowerH * 1.15} colors={['rgba(255,248,228,0.30)', 'rgba(255,248,228,0)']} />
+          </Path>
+          {/* binding: a cream line inside a dark edge, lit on the upper left */}
           <Path path={P.outline} style="stroke" strokeWidth={4.5} color="#2a1a0e" />
           <Path path={P.outline} style="stroke" strokeWidth={2} color={BINDING} />
+          <Path path={P.outline} style="stroke" strokeWidth={2.4} opacity={0.8}>
+            <LinearGradient start={tl} end={vec((g.tail + g.edge) / 2, 0)} colors={['#ffffff', 'rgba(255,255,255,0)']} />
+          </Path>
         </>
       )}
       {P.ros ? <Path path={P.ros} style="stroke" strokeWidth={2.2} color="#3a2414" opacity={0.85} /> : null}
       {P.hole ? (
-        <Path path={P.hole}>
-          <RadialGradient c={vec(g.hole.x - g.hole.r * 0.3, -g.hole.r * 0.3)} r={g.hole.r * 1.2} colors={HOLE} />
-        </Path>
+        <>
+          <Path path={P.hole}>
+            <RadialGradient c={vec(g.hole.x - g.hole.r * 0.3, -g.hole.r * 0.3)} r={g.hole.r * 1.2} colors={HOLE} />
+          </Path>
+          {/* the top's thickness, lit on the far (lower-right) edge of the hole */}
+          <Path path={P.hole} style="stroke" strokeWidth={2.2} opacity={0.75}>
+            <LinearGradient start={vec(g.hole.x - g.hole.r * 0.5, -g.hole.r * 0.5)} end={vec(g.hole.x + g.hole.r * 0.7, g.hole.r * 0.7)} colors={['rgba(0,0,0,0)', '#d9b67a']} />
+          </Path>
+        </>
       ) : null}
       {P.fholes ? <Path path={P.fholes} style="stroke" strokeWidth={6} strokeCap="round" color="#120b06" /> : null}
       {P.scroll ? <Path path={P.scroll} style="stroke" strokeWidth={3} color="#3a2414" opacity={0.9} /> : null}
@@ -432,10 +469,17 @@ export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
         <Circle key={`pin${i}`} cx={q.x} cy={q.y} r={sp.strings.perCourse === 2 ? 1.6 : 2.6} color={sp.strings.nylon ? BONE : '#f1ead8'} />
       ))}
       {/* the neck: fingerboard, frets, marks, nut, headstock */}
+      {/* the board's own shadow on the top, then the board */}
+      <Path path={P.board} color="#000" opacity={0.35} transform={[{ translateX: 2 }, { translateY: 4 }]}>
+        <BlurMask blur={4} style="normal" />
+      </Path>
       <Path path={P.board}>
         <LinearGradient start={vec(g.boardEnd, -30)} end={vec(g.boardEnd + 60, 30)} colors={ROSEWOOD} />
       </Path>
-      <Path path={P.frets} style="stroke" strokeWidth={1.4} color="#c9ced8" />
+      <Line p1={vec(g.boardEnd, -g.boardHalf(g.boardEnd) + 0.8)} p2={vec(g.L, -g.boardHalf(g.L) + 0.8)} color="#7a5638" strokeWidth={1.2} opacity={0.9} />
+      {/* frets: a dark seat under a bright crown */}
+      <Path path={P.frets} style="stroke" strokeWidth={2} color="#2a2c32" transform={[{ translateX: -0.8 }]} />
+      <Path path={P.frets} style="stroke" strokeWidth={1.3} color="#dfe3ea" />
       {P.marks.map((m, i) => (
         <Circle key={`mk${i}`} cx={m.x} cy={m.y} r={3.2} color="#ece4d2" />
       ))}
@@ -443,15 +487,37 @@ export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
       <Path path={P.headPath}>
         <LinearGradient start={vec(g.L, -40)} end={vec(g.L + sp.neck.headLen.mm, 40)} colors={sp.neck.head === 'banjo' ? ['#3a2014', '#2a170f', '#1c0f08'] : MAHOGANY} />
       </Path>
+      <Path path={P.headPath}>
+        <LinearGradient start={vec(g.L, -40)} end={vec(g.L + sp.neck.headLen.mm * 0.5, 10)} colors={['rgba(255,220,180,0.22)', 'rgba(255,220,180,0)']} />
+      </Path>
       <Path path={P.slots} color="#0d0906" />
       <Path path={P.headPath} style="stroke" strokeWidth={1.2} color="#120b06" />
-      {P.posts.map((q, i) => (
-        <Group key={`post${i}`}>
-          {/* the tuner button out to the side, the post on the face */}
-          <Path path={rr(q.x - 6, q.side * 4 + q.y * 1.0 + q.side * 10, q.x + 6, q.y * 1.0 + q.side * 30, 3)} color={sp.strings.nylon ? '#efe6cf' : NICKEL} />
-          <Circle cx={q.x} cy={q.y * 0.72} r={3.4} color={NICKEL} />
-        </Group>
-      ))}
+      {P.posts.map((q, i) => {
+        // The tuner: a shaft out of the headstock's edge to a button, and
+        // the post through the face in its bushing.
+        const hw = headHalfAt(sp, q.x - g.L);
+        const by = q.side * (hw + 13);
+        const metal = sp.strings.nylon ? ['#fbf6ea', '#e6dcc4', '#bfb193'] : CHROME;
+        return (
+          <Group key={`post${i}`}>
+            <Path path={rr(q.x - 2.2, q.side * (hw - 2), q.x + 2.2, q.side * (hw + 6), 1)} color="#9aa0ab" />
+            <Path path={oval(q.x, by, 8, 11)}>
+              <LinearGradient start={vec(q.x - 8, by - 11)} end={vec(q.x + 8, by + 11)} colors={metal} />
+            </Path>
+            <Path path={oval(q.x, by, 8, 11)} style="stroke" strokeWidth={0.9} color="#4a4e57" />
+            <Circle cx={q.x} cy={q.y * 0.72} r={5.4} color="#6b707b" />
+            <Circle cx={q.x} cy={q.y * 0.72} r={3.4}>
+              <RadialGradient c={vec(q.x - 1.4, q.y * 0.72 - 1.4)} r={4} colors={['#ffffff', NICKEL, '#8a909b']} />
+            </Circle>
+          </Group>
+        );
+      })}
+      {/* string shadows on the top and the board (light from the upper left) */}
+      <Group transform={[{ translateX: 1.4 }, { translateY: 2.6 }]} opacity={0.32}>
+        {P.strings.map((s, i) => (
+          <Path key={`ss${i}`} path={s.path} style="stroke" strokeWidth={s.w * 1.4} color="#000" />
+        ))}
+      </Group>
       {P.strings.map((s, i) => (
         <Path key={`s${i}`} path={s.path} style="stroke" strokeWidth={s.w} color={s.color} />
       ))}
@@ -561,279 +627,17 @@ export function GuitarEdge({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
 
 /* ═══════════════════════════════ PLAYER ═══════════════════════════════ */
 
-/** A minimal line-art bald head (the house head spec), seen front or above. */
-function Head({ cx, cy, r, above = false }: { cx: number; cy: number; r: number; above?: boolean }) {
-  return (
-    <Group>
-      <Circle cx={cx} cy={cy} r={r * 0.92}>
-        <RadialGradient c={vec(cx - r * 0.35, cy - r * 0.4)} r={r * 1.3} colors={SKIN} />
-      </Circle>
-      <Circle cx={cx} cy={cy} r={r * 0.92} style="stroke" strokeWidth={3} color={FIG_EDGE} />
-      {above ? (
-        // From above: the nose's line toward the audience (+z, down the screen).
-        <Line p1={vec(cx, cy + r * 0.88)} p2={vec(cx, cy + r * 1.12)} color={FIG_EDGE} strokeWidth={3} />
-      ) : (
-        <>
-          <Path path={oval(cx - r * 0.95, cy + r * 0.05, r * 0.12, r * 0.22)} style="stroke" strokeWidth={2.4} color={FIG_EDGE} />
-          <Path path={oval(cx + r * 0.95, cy + r * 0.05, r * 0.12, r * 0.22)} style="stroke" strokeWidth={2.4} color={FIG_EDGE} />
-        </>
-      )}
-    </Group>
-  );
-}
-
-function figPath(pts: [number, number][]): SkPath {
-  // A smooth closed figure through the points (quadratic midpoints).
-  const p = make();
-  const n = pts.length;
-  const mid = (i: number) => [(pts[i][0] + pts[(i + 1) % n][0]) / 2, (pts[i][1] + pts[(i + 1) % n][1]) / 2];
-  const m0 = mid(n - 1);
-  p.moveTo(m0[0], m0[1]);
-  for (let i = 0; i < n; i++) {
-    const m = mid(i);
-    p.quadTo(pts[i][0], pts[i][1], m[0], m[1]);
+/** The shared player's pose for a scene and view (cached per scene): every
+ *  joint from the model's envelopes (guitarPlayer.ts). */
+const poseCache = new Map<string, PlayerPose>();
+export function playerPoseOf(sc: GuitarScene, view: ViewId): PlayerPose {
+  const key = `${sc.variant.spec.id}|${sc.variant.id}|${sc.variant.posture}|${view}`;
+  let p = poseCache.get(key);
+  if (!p) {
+    p = guitarPlayerPose(sc, view === 'side' ? 'side' : 'top');
+    poseCache.set(key, p);
   }
-  p.close();
   return p;
-}
-
-function Fig({ path, from, to }: { path: SkPath; from: [number, number]; to: [number, number] }) {
-  return (
-    <>
-      <Path path={path}>
-        <LinearGradient start={vec(from[0], from[1])} end={vec(to[0], to[1])} colors={FIG} />
-      </Path>
-      <Path path={path} style="stroke" strokeWidth={2.5} color={FIG_EDGE} opacity={0.9} />
-    </>
-  );
-}
-
-/** An arm or leg: a rounded tube along a smooth polyline (a stroke with a
- *  darker rim), light from the upper left. */
-function Limb({ pts, w }: { pts: [number, number][]; w: number }) {
-  const p = make();
-  p.moveTo(pts[0][0], pts[0][1]);
-  if (pts.length === 2) p.lineTo(pts[1][0], pts[1][1]);
-  for (let i = 1; i < pts.length - 1; i++) {
-    const m = i === pts.length - 2 ? pts[i + 1] : [(pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2];
-    p.quadTo(pts[i][0], pts[i][1], m[0], m[1]);
-  }
-  const a = pts[0];
-  const b = pts[pts.length - 1];
-  return (
-    <>
-      <Path path={p} style="stroke" strokeWidth={w + 6} strokeCap="round" strokeJoin="round" color={FIG_EDGE} />
-      <Path path={p} style="stroke" strokeWidth={w} strokeCap="round" strokeJoin="round">
-        <LinearGradient start={vec(a[0] - w, a[1] - w)} end={vec(b[0] + w, b[1] + w)} colors={FIG} />
-      </Path>
-    </>
-  );
-}
-
-/** A hand: a rounded mitt with a thumb, skin-toned (a muted figure). */
-function Hand({ x, y, r, rot = 0 }: { x: number; y: number; r: number; rot?: number }) {
-  return (
-    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: rot * DEG }]}>
-      <Path path={oval(0, 0, r * 1.15, r * 0.8)}>
-        <RadialGradient c={vec(-r * 0.4, -r * 0.4)} r={r * 1.6} colors={SKIN} />
-      </Path>
-      <Path path={oval(-r * 0.7, -r * 0.55, r * 0.38, r * 0.24)} color={SKIN[1]} />
-      <Path path={oval(0, 0, r * 1.15, r * 0.8)} style="stroke" strokeWidth={2.5} color={FIG_EDGE} />
-    </Group>
-  );
-}
-
-/** The player from the front (upright postures): behind the instrument,
- *  legs below it — drawn BEFORE the instrument; the strumming forearm after. */
-export function PlayerFrontBack({ sc }: { sc: GuitarScene }) {
-  const f = sc.fit;
-  const g = sc.g;
-  const hx = f.head.c.x;
-  const hy = f.head.c.y;
-  const sy = hy + 150; // shoulders
-  const torso = figPath([
-    [hx - 230, sy + 30],
-    [hx - 200, sy - 10],
-    [hx - 60, sy - 30],
-    [hx + 60, sy - 30],
-    [hx + 200, sy - 10],
-    [hx + 230, sy + 30],
-    [hx + 190, g.lowerH + 60],
-    [hx - 190, g.lowerH + 60],
-  ]);
-  const floor = sc.floorY;
-  const seated = sc.variant.posture === 'seated';
-  const legs = seated
-    ? [
-        figPath([[hx - 170, g.lowerH + 40], [hx - 60, g.lowerH + 40], [hx - 70, floor - 30], [hx - 160, floor - 30]]),
-        figPath([[hx + 40, g.lowerH + 40], [hx + 150, g.lowerH + 40], [hx + 150, floor - 30], [hx + 60, floor - 30]]),
-      ]
-    : [
-        figPath([[hx - 150, g.lowerH + 30], [hx - 40, g.lowerH + 30], [hx - 50, floor - 30], [hx - 140, floor - 30]]),
-        figPath([[hx + 10, g.lowerH + 30], [hx + 120, g.lowerH + 30], [hx + 110, floor - 30], [hx + 20, floor - 30]]),
-      ];
-  const shoes = seated
-    ? [rr(hx - 185, floor - 40, hx - 50, floor, 18), rr(hx + 35, floor - 40, hx + 170, floor, 18)]
-    : [rr(hx - 160, floor - 40, hx - 30, floor, 18), rr(hx, floor - 40, hx + 130, floor, 18)];
-  // The fretting arm (the player's left = +x): down from the shoulder to an
-  // elbow hanging below the neck, the forearm up to the hand on the neck.
-  const fx = fretX(g.L, 4);
-  const elbowL: [number, number] = [Math.max(hx + 260, g.edge + 90), Math.min(g.lowerH + 20, 190)];
-  // The strumming arm's upper half, behind the body: shoulder to the elbow
-  // resting on the bass edge of the lower bout.
-  const e = sc.fit.arm.a;
-  return (
-    <Group>
-      <Fig path={torso} from={[hx - 200, sy]} to={[hx + 200, g.lowerH]} />
-      {legs.map((p, i) => (
-        <Fig key={`leg${i}`} path={p} from={[hx - 150, g.lowerH]} to={[hx + 150, floor]} />
-      ))}
-      {shoes.map((p, i) => (
-        <Path key={`shoe${i}`} path={p} color="#121317" />
-      ))}
-      <Limb pts={[[hx - 205, sy + 25], [e.x - 30, e.y - 40]]} w={92} />
-      <Limb pts={[[hx + 205, sy + 25], [elbowL[0] - 10, sy + 160], elbowL]} w={92} />
-      <Limb pts={[elbowL, [fx - 20, g.boardHalf(fx) + 30]]} w={78} />
-      <Head cx={hx} cy={hy} r={f.head.r} />
-      {/* the neck of the player, under the head */}
-      <Path path={rr(hx - 34, hy + f.head.r * 0.8, hx + 34, sy - 20, 10)} color={SKIN[1]} />
-    </Group>
-  );
-}
-
-/** The hands over the instrument (drawn AFTER it): the strumming forearm and
- *  hand, and the fretting fingers round the neck. */
-export function PlayerFrontHands({ sc }: { sc: GuitarScene }) {
-  const f = sc.fit;
-  const g = sc.g;
-  const a = f.arm.a;
-  const b = f.arm.b;
-  const fx = fretX(g.L, 4);
-  const fingers = make();
-  for (let k = 0; k < 3; k++) fingers.addRRect(Skia.RRectXY(Skia.XYWHRect(fx - 12 - k * 22, -g.boardHalf(fx) - 6, 15, g.boardHalf(fx) * 1.4), 7, 7));
-  return (
-    <Group opacity={0.94}>
-      {/* the strumming forearm over the lower bout, the hand over the strings */}
-      <Limb pts={[[a.x - 30, a.y - 40], [b.x - 30, b.y - 6]]} w={f.arm.r * 1.9} />
-      <Hand x={b.x + 8} y={b.y + 6} r={f.arm.r * 1.05} rot={30} />
-      {/* the fretting hand: the palm under the neck, the fingers over it */}
-      <Hand x={fx - 26} y={g.boardHalf(fx) + 26} r={f.arm.r * 0.95} rot={-10} />
-      <Path path={fingers}>
-        <LinearGradient start={vec(fx - 60, -30)} end={vec(fx, 30)} colors={SKIN} />
-      </Path>
-      <Path path={fingers} style="stroke" strokeWidth={2} color={FIG_EDGE} />
-    </Group>
-  );
-}
-
-/** The player from above (upright postures), behind the instrument. */
-export function PlayerAbove({ sc }: { sc: GuitarScene }) {
-  const f = sc.fit;
-  const g = sc.g;
-  const hx = f.head.c.x;
-  const hz = f.head.c.z;
-  const z0 = f.torso.min.z;
-  const z1 = f.torso.max.z;
-  const shoulders = figPath([
-    [hx - 250, (z0 + z1) / 2 + 20],
-    [hx - 210, z0 + 30],
-    [hx + 210, z0 + 30],
-    [hx + 250, (z0 + z1) / 2 + 20],
-    [hx + 200, z1 + 4],
-    [hx - 200, z1 + 4],
-  ]);
-  const seated = sc.variant.posture === 'seated';
-  const thighs = seated
-    ? [figPath([[hx - 190, z1 - 10], [hx - 70, z1 - 10], [hx - 80, f.legs.max.z], [hx - 180, f.legs.max.z]]), figPath([[hx + 20, z1 - 10], [hx + 140, z1 - 10], [hx + 130, f.legs.max.z], [hx + 30, f.legs.max.z]])]
-    : [];
-  const feet = f.feet ? [rr(hx - 200, f.feet.max.z - 230, hx - 90, f.feet.max.z, 30), rr(hx + 10, f.feet.max.z - 230, hx + 120, f.feet.max.z, 30)] : [];
-  const fx = fretX(g.L, 4);
-  return (
-    <Group>
-      {thighs.map((p, i) => (
-        <Fig key={`th${i}`} path={p} from={[hx, z1]} to={[hx, f.legs.max.z]} />
-      ))}
-      {feet.map((p, i) => (
-        <Path key={`ft${i}`} path={p} color="#121317" />
-      ))}
-      <Fig path={shoulders} from={[hx - 200, z0]} to={[hx + 200, z1]} />
-      <Limb pts={[[hx + 210, z0 + 70], [Math.max(hx + 280, g.edge + 80), (z0 + z1) / 2 + 60], [fx - 20, -30]]} w={84} />
-      <Head cx={hx} cy={hz} r={f.head.r * 0.95} above />
-    </Group>
-  );
-}
-
-/** The strumming forearm seen from above, over the top (after the instrument). */
-export function PlayerAboveHands({ sc }: { sc: GuitarScene }) {
-  const f = sc.fit;
-  const a = f.arm.a;
-  const b = f.arm.b;
-  return (
-    <Group opacity={0.94}>
-      <Limb pts={[[a.x - 60, f.torso.max.z - 40], [a.x - 10, a.z + 10], [b.x - 20, b.z + 40]]} w={f.arm.r * 1.9} />
-      <Hand x={b.x} y={b.z + 52} r={f.arm.r * 1.05} rot={10} />
-    </Group>
-  );
-}
-
-/** Lap style from the side (the engine's side view): seated behind, leaning
- *  over the instrument that lies face up across the thighs. In engine (x, y):
- *  y = −zG, so up is −y. */
-export function PlayerLapSide({ sc }: { sc: GuitarScene }) {
-  const f = sc.fit;
-  const g = sc.g;
-  const hx = f.head.c.x;
-  const hy = -f.head.c.z; // engine y of the head
-  const floor = sc.floorY;
-  const D = g.depth;
-  const torso = figPath([
-    [hx - 230, hy + 140],
-    [hx + 230, hy + 140],
-    [hx + 210, D + 20],
-    [hx - 210, D + 20],
-  ]);
-  const thigh = figPath([
-    [hx - 260, D + 10],
-    [hx + 330, D + 10],
-    [hx + 330, D + 120],
-    [hx - 260, D + 120],
-  ]);
-  const shin = [figPath([[hx + 230, D + 110], [hx + 320, D + 110], [hx + 300, floor - 30], [hx + 210, floor - 30]])];
-  return (
-    <Group>
-      <Fig path={torso} from={[hx, hy]} to={[hx, D]} />
-      <Fig path={thigh} from={[hx, D]} to={[hx, D + 120]} />
-      {shin.map((p, i) => (
-        <Fig key={`sh${i}`} path={p} from={[hx, D]} to={[hx, floor]} />
-      ))}
-      <Path path={rr(hx + 180, floor - 40, hx + 330, floor, 18)} color="#121317" />
-      <Head cx={hx} cy={hy} r={f.head.r} />
-    </Group>
-  );
-}
-
-/** Lap style from above (the engine's top view, engine z = yG): the player
- *  sits on the bass side, toward −z. */
-export function PlayerLapAbove({ sc }: { sc: GuitarScene }) {
-  const f = sc.fit;
-  const hx = f.head.c.x;
-  const hz = f.head.c.y;
-  const z0 = f.torso.min.y;
-  const z1 = f.torso.max.y;
-  const shoulders = figPath([
-    [hx - 250, (z0 + z1) / 2],
-    [hx - 200, z0 + 20],
-    [hx + 200, z0 + 20],
-    [hx + 250, (z0 + z1) / 2],
-    [hx + 200, z1 + 10],
-    [hx - 200, z1 + 10],
-  ]);
-  return (
-    <Group>
-      <Fig path={shoulders} from={[hx - 200, z0]} to={[hx + 200, z1]} />
-      <Head cx={hx} cy={hz} r={f.head.r * 0.95} above />
-    </Group>
-  );
 }
 
 /* ═══════════════════════════ the lesson's art ═══════════════════════════ */
@@ -854,22 +658,24 @@ function Floor({ y, u0, u1 }: { y: number; u0: number; u1: number }) {
  *  view the face. */
 export function GuitarSceneArt({ sc, view }: { sc: GuitarScene; view: ViewId }) {
   const lap = sc.o.lap;
+  const pose = playerPoseOf(sc, view);
+  // The player in two layers round the instrument (shared/players).
   if (!lap && view === 'side') {
     return (
       <Group>
         <Floor y={sc.floorY} u0={sc.g.tail - 900} u1={sc.g.L + 1200} />
-        <PlayerFrontBack sc={sc} />
+        <PlayerBehind pose={pose} />
         <GuitarFace sc={sc} />
-        <PlayerFrontHands sc={sc} />
+        <PlayerInFront pose={pose} />
       </Group>
     );
   }
   if (!lap) {
     return (
       <Group>
-        <PlayerAbove sc={sc} />
+        <PlayerBehind pose={pose} />
         <GuitarEdge sc={sc} />
-        <PlayerAboveHands sc={sc} />
+        <PlayerInFront pose={pose} />
       </Group>
     );
   }
@@ -877,47 +683,102 @@ export function GuitarSceneArt({ sc, view }: { sc: GuitarScene; view: ViewId }) 
     return (
       <Group>
         <Floor y={sc.floorY} u0={sc.g.tail - 900} u1={sc.g.L + 1200} />
-        <PlayerLapSide sc={sc} />
+        <PlayerBehind pose={pose} />
         <Group transform={[{ scaleY: -1 }]}>
           <GuitarEdge sc={sc} />
         </Group>
+        <PlayerInFront pose={pose} />
       </Group>
     );
   }
   return (
     <Group>
-      <PlayerLapAbove sc={sc} />
+      <PlayerBehind pose={pose} />
       <GuitarFace sc={sc} />
+      <PlayerInFront pose={pose} />
     </Group>
   );
 }
 
-/** Labels for a view, from the scene's anchors (mm of the view's u, v). */
-export function guitarLabels(sc: GuitarScene, view: ViewId, extra?: (sc: GuitarScene, view: ViewId) => ArtLabel[]): ArtLabel[] {
+type Place = { u: number; v: number; align: 'left' | 'center' | 'right' };
+/** A part's label with its leader point and its fall-back places: beside
+ *  the part first, then a little farther off (with a leader back to it). */
+function partLabel(id: string, text: string, short: string | undefined, at: { u: number; v: number }, places: Place[], tone?: 'muted'): ArtLabel {
+  const [first, ...alts] = places;
+  return { id, text, ...(short ? { short } : {}), ...first, alts, at, ...(tone ? { tone } : {}) };
+}
+
+/**
+ * Labels for a view, from the scene's anchors (mm of the view's u, v).
+ * ART PASS 2026-10-05: every label names its part's point (`at`) and offers
+ * places OUTSIDE the instrument's outline — above it, below it, then farther
+ * out with a leader — so the scene's layout (labelLayout.fitLabels) can keep
+ * the words off the mic, the recommended starting points and each other.
+ * `box` is the view's frame, so no label is placed off the glass.
+ */
+export function guitarLabels(sc: GuitarScene, view: ViewId, extra?: (sc: GuitarScene, view: ViewId) => ArtLabel[], box?: { u0: number; u1: number; v0: number; v1: number }): ArtLabel[] {
   const g = sc.g;
   const sp = g.spec;
   const lap = sc.o.lap;
   const face = (!lap && view === 'side') || (lap && view === 'top');
   const out: ArtLabel[] = [];
   const openWord = sp.opening.kind === 'fholes' ? 'F-HOLES' : sp.opening.kind === 'coverplate' ? 'COVERPLATE' : sp.opening.kind === 'head' ? 'HEAD' : 'SOUND HOLE';
+  const openShort = openWord === 'SOUND HOLE' ? 'HOLE' : openWord === 'COVERPLATE' ? 'COVER' : undefined;
+  const vIn = (v: number) => (box ? Math.max(box.v0 + 16, Math.min(box.v1 - 14, v)) : v);
+  // The outline's upper (bass, −y) and lower (treble, +y) edge at x, the
+  // neck's edges beyond the body.
+  const upper = (x: number) => (x > g.edge ? -g.boardHalf(x) : -Math.max(g.halfW(x, 'bass'), g.boardHalf(x)));
+  const lower = (x: number) => (x > g.edge ? g.boardHalf(x) : Math.max(g.halfW(x, 'treble'), g.boardHalf(x)));
+  // In the face view the treble edge is toward +v (down the glass) when
+  // upright; lap style shows the face from above with the treble side toward
+  // the audience (+z, down the glass) too.
+  const around = (x: number, gap = 24): Place[] => [
+    { u: x, v: vIn(lower(x) + gap), align: 'center' },
+    { u: x, v: vIn(upper(x) - gap), align: 'center' },
+    { u: x, v: vIn(lower(x) + gap + 70), align: 'center' },
+    { u: x, v: vIn(upper(x) - gap - 70), align: 'center' },
+    { u: x, v: vIn(lower(x) + gap + 140), align: 'center' },
+    // Beside the obvious places (a zone straight below or above the part).
+    { u: x + 110, v: vIn(lower(x) + gap + 40), align: 'left' },
+    { u: x - 110, v: vIn(lower(x) + gap + 40), align: 'right' },
+    { u: x + 110, v: vIn(upper(x) - gap - 40), align: 'left' },
+  ];
+  const aboveFirst = (x: number, gap = 24): Place[] => {
+    const p = around(x, gap);
+    return [p[1], p[0], p[3], p[2], ...p.slice(4)];
+  };
   if (face) {
-    const below = g.lowerH + 26;
-    out.push({ id: 'opening', text: openWord, short: openWord === 'SOUND HOLE' ? 'HOLE' : undefined, u: sp.body.pot ? sp.body.pot.cx.mm : g.hole.x, v: sp.opening.kind === 'fholes' ? -g.lowerH * 0.15 : sp.body.pot ? -60 : -g.hole.r - 34, align: 'center' });
-    out.push({ id: 'bridge', text: 'BRIDGE', u: sp.bridge.x.mm, v: sp.body.pot ? below : sp.bridge.w.mm / 2 + 24, align: 'center' });
-    if (sp.jointFret && sp.jointFret.mm !== 12) out.push({ id: 'fret12', text: '12TH FRET', short: '12TH', u: g.fret12, v: -g.boardHalf(g.fret12) - 30, align: 'center' });
-    out.push({ id: 'joint', text: sp.jointFret?.mm === 12 ? 'NECK JOINT · 12TH FRET' : 'NECK JOINT', short: 'JOINT', u: g.edge, v: g.boardHalf(g.edge) + 34, align: 'center' });
-    out.push({ id: 'head', text: 'HEADSTOCK', short: 'HEAD', u: g.L + sp.neck.headLen.mm * 0.55, v: -sp.neck.headLen.mm * 0.35 - 30, align: 'center', tone: 'muted' });
-    out.push({ id: 'player', text: 'PLAYER', u: sc.fit.head.c.x, v: lap ? sc.fit.head.c.y : sc.fit.head.c.y - sc.fit.head.r - 24, align: 'center', tone: 'muted' });
-  } else {
+    const holeX = sp.body.pot ? sp.body.pot.cx.mm : sp.opening.kind === 'coverplate' ? sp.opening.x.mm : g.hole.x;
+    out.push(partLabel('opening', openWord, openShort, { u: holeX, v: 0 }, sp.body.pot ? [{ u: holeX, v: vIn(upper(holeX) - 24), align: 'center' }, ...around(holeX).slice(2)] : aboveFirst(holeX)));
+    out.push(partLabel('bridge', 'BRIDGE', undefined, { u: sp.bridge.x.mm, v: 0 }, around(sp.bridge.x.mm)));
+    if (sp.jointFret && sp.jointFret.mm !== 12) out.push(partLabel('fret12', '12TH FRET', '12TH', { u: g.fret12, v: 0 }, aboveFirst(g.fret12, 20)));
+    out.push(partLabel('joint', sp.jointFret?.mm === 12 ? 'NECK JOINT · 12TH FRET' : 'NECK JOINT', 'JOINT', { u: g.edge, v: 0 }, around(g.edge, 22)));
+    const hx = g.L + sp.neck.headLen.mm * 0.55;
+    // Beyond the tuner buttons (the head's half-width + a button), above first.
+    const hReach = headWOf(sp) + 38;
+    out.push(partLabel('head', 'HEADSTOCK', 'HEAD', { u: hx, v: 0 }, [{ u: hx, v: vIn(-hReach), align: 'center' }, { u: hx, v: vIn(hReach + 6), align: 'center' }, { u: g.L + sp.neck.headLen.mm, v: vIn(-hReach + 8), align: 'right' }], 'muted'));
     if (!lap) {
-      out.push({ id: 'top', text: sp.opening.kind === 'head' ? 'HEAD' : 'TOP', u: g.tail + 40, v: 26, align: 'left' });
-      out.push({ id: 'back', text: 'BACK', u: g.tail + 40, v: -g.depth - 22, align: 'left', tone: 'muted' });
-      out.push({ id: 'strings', text: 'STRINGS', u: (g.edge + g.L) / 2, v: g.h(g.edge) + 26, align: 'center' });
-      out.push({ id: 'player', text: 'PLAYER', u: sc.fit.head.c.x, v: sc.fit.torso.min.z + 30, align: 'center', tone: 'muted' });
-      out.push({ id: 'audience', text: 'AUDIENCE ↓', u: g.L + 60, v: 560, align: 'center', tone: 'muted' });
+      // On the player's chest (the head may be cropped by the frame).
+      const f = sc.fit;
+      const chest = f.head.c.y + f.head.r * 0.92 + 70;
+      out.push({ id: 'player', text: 'PLAYER', u: f.head.c.x + 70, v: vIn(chest), align: 'center', tone: 'muted', alts: [{ u: f.head.c.x - 150, v: vIn(chest), align: 'center' }] });
     } else {
-      out.push({ id: 'top', text: 'TOP (FACING UP)', short: 'TOP', u: g.tail + 40, v: -28, align: 'left' });
-      out.push({ id: 'player', text: 'PLAYER', u: sc.fit.head.c.x, v: -sc.fit.head.c.z - sc.fit.head.r - 24, align: 'center', tone: 'muted' });
+      out.push({ id: 'player', text: 'PLAYER', u: sc.fit.head.c.x, v: vIn(sc.fit.head.c.y + 40), align: 'center', tone: 'muted' });
+    }
+  } else {
+    const D = g.depth;
+    if (!lap) {
+      const tz = sp.opening.kind === 'head' ? 'HEAD' : 'TOP';
+      out.push(partLabel('top', tz, undefined, { u: g.tail + 30, v: 0 }, [{ u: g.tail - 14, v: 0, align: 'right' }, { u: g.tail + 40, v: vIn(26), align: 'left' }, { u: g.tail + 40, v: vIn(80), align: 'left' }]));
+      out.push(partLabel('back', 'BACK', undefined, { u: g.tail + 30, v: -D }, [{ u: g.tail - 14, v: -D, align: 'right' }, { u: g.tail + 40, v: vIn(-D - 22), align: 'left' }], 'muted'));
+      const sx = (g.edge + g.L) / 2;
+      out.push(partLabel('strings', 'STRINGS', undefined, { u: sx, v: g.h(sx) }, [{ u: sx, v: vIn(g.h(g.edge) + 26), align: 'center' }, { u: sx, v: vIn(-50), align: 'center' }, { u: sx, v: vIn(g.h(g.edge) + 96), align: 'center' }]));
+      const f = sc.fit;
+      out.push({ id: 'player', text: 'PLAYER', u: f.head.c.x - f.head.r - 14, v: vIn(f.head.c.z), align: 'right', tone: 'muted', alts: [{ u: f.head.c.x + f.head.r + 14, v: vIn(f.head.c.z), align: 'left' }] });
+      out.push({ id: 'audience', text: 'AUDIENCE ↓', short: '↓ AUDIENCE', u: box ? box.u1 - 20 : g.L + 60, v: box ? box.v1 - 22 : 560, align: 'right', tone: 'muted' });
+    } else {
+      out.push(partLabel('top', 'TOP (FACING UP)', 'TOP', { u: g.tail + 30, v: 0 }, [{ u: g.tail - 14, v: -D / 2, align: 'right' }, { u: g.tail + 40, v: vIn(-28), align: 'left' }]));
+      out.push({ id: 'player', text: 'PLAYER', u: sc.fit.head.c.x + sc.fit.head.r + 16, v: vIn(-sc.fit.head.c.z), align: 'left', tone: 'muted' });
     }
   }
   return [...out, ...(extra ? extra(sc, view) : [])];
@@ -976,12 +837,26 @@ export function guitarHit(sc: GuitarScene, view: ViewId, u: number, vv: number, 
 }
 
 /** The lesson art for a built guitar model: one scene per variant. */
-export function makeGuitarArt(built: BuiltGuitarModel, extras?: { labels?: (sc: GuitarScene, view: ViewId) => ArtLabel[] }): Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest'> {
+export function makeGuitarArt(
+  built: BuiltGuitarModel,
+  extras?: { labels?: (sc: GuitarScene, view: ViewId) => ArtLabel[]; zones?: readonly DocumentedZone[] },
+): Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' | 'labelObstacles' | 'labelsYieldToMic'> {
   const scOf = (v: VariantId) => built.scenes[v] ?? built.scenes[built.model.defaultVariant];
+  const vid = (v: VariantId) => (built.scenes[v] ? v : built.model.defaultVariant);
+  const zones = extras?.zones ?? [];
   return {
     Instrument: ({ view, variant }) => <GuitarSceneArt sc={scOf(variant)} view={view} />,
-    labels: (view, variant) => guitarLabels(scOf(variant), view, extras?.labels),
+    labels: (view, variant) => guitarLabels(scOf(variant), view, extras?.labels, viewsOf(built.model, vid(variant))[view]),
     hitTest: (view, variant, u, v, tol) => guitarHit(scOf(variant), view, u, v, tol),
+    // The words keep off the recommended starting points and step back from
+    // the mic (art pass 2026-10-05: labels were drawn over both).
+    labelObstacles: (view, variant, shown) =>
+      zones
+        .filter((z) => z.requires?.variant === vid(variant) && shown.includes(z.id))
+        .map((z) => z.drawn?.[view])
+        .filter((d): d is { u0: number; u1: number; v0: number; v1: number } => !!d && 'u0' in d)
+        .map((d) => ({ u0: d.u0 - 10, u1: d.u1 + 10, v0: d.v0 - 10, v1: d.v1 + 10 })),
+    labelsYieldToMic: true,
   };
 }
 

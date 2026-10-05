@@ -3,11 +3,11 @@
  * shared guitar family (standing, frame G = engine), its zones and its
  * stage sources.
  */
-import { buildGuitarModel, zoneFor } from '../shared/guitars/guitarModel.ts';
+import { buildGuitarModel, frameGuitarViews, zoneFor } from '../shared/guitars/guitarModel.ts';
 import { bodyShield, stringsWedges } from '../shared/guitars/stringsContent.ts';
 import { C05A_VARIANTS, c05aZoneSpecs } from './model.ts';
 
-export const C05A_BUILT = buildGuitarModel({
+const RAW = buildGuitarModel({
   id: 'banjo',
   name: 'five-string banjo',
   variants: C05A_VARIANTS,
@@ -18,7 +18,9 @@ export const C05A_BUILT = buildGuitarModel({
     bridge: { label: 'bridge', short: 'bridge', role: 'A thin floating bridge standing on the head: the strings press it down, and it drives the head. The strings never touch the head themselves.' },
   },
 });
+export const C05A_ZONES = C05A_VARIANTS.flatMap((v) => c05aZoneSpecs(RAW.scenes[v.id]).map((z) => zoneFor(RAW.scenes[v.id], z)));
+/** Framed on the instrument and its starting points (frameGuitarViews). */
+export const C05A_BUILT = frameGuitarViews(RAW, C05A_ZONES);
 export const C05A_MODEL = C05A_BUILT.model;
-export const C05A_ZONES = C05A_VARIANTS.flatMap((v) => c05aZoneSpecs(C05A_BUILT.scenes[v.id]).map((z) => zoneFor(C05A_BUILT.scenes[v.id], z)));
 export const C05A_WEDGES = stringsWedges(C05A_BUILT.scenes.reso, { one: 'banjo', the: 'the banjo', player: 'banjo player' }, { wedgeZ: 1700 });
 export const C05A_SHIELD = bodyShield(C05A_MODEL, 'reso');
