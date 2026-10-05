@@ -51,6 +51,8 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C08', labId: 'strings', title: 'Electric Bass', subtitle: 'Fretted and fretless: one woofer, room to breathe, mic and DI', status: 'ready' },
   // Lab 2 (percussion), suspended metal: I06a–c, I12 (each lesson on its own line).
   { id: 'I06a', labId: 'percussion', title: 'Triangle', subtitle: 'A bent steel bar hung free: attack, a long ring and the cutoff', status: 'ready' },
+  { id: 'I06b', labId: 'percussion', title: 'Finger Cymbals', subtitle: 'A small pair, held still or danced — attack, ring and the moving hands', status: 'ready' },
+  { id: 'I06c', labId: 'percussion', title: 'Bar Chimes', subtitle: 'A row of graduated bars swept by hand — the whole sweep and its tail', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

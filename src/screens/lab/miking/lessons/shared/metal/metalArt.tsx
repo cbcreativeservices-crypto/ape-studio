@@ -153,5 +153,31 @@ export function PlayerInk({ path, faint = false }: { path: SkPath; faint?: boole
   return <Path path={path} style="stroke" strokeWidth={9} strokeCap="round" strokeJoin="round" color={INK} opacity={faint ? 0.35 : 0.6} />;
 }
 
+/**
+ * A hand from the side, line art, pinching a strap or a clip at (u, v):
+ * the fingers curled over the top, the thumb under — about life size (a
+ * palm ~80 mm). `flip` mirrors it (a hand from the other side).
+ */
+export function handPinch(u: number, v: number, flip = false): SkPath {
+  const s = flip ? -1 : 1;
+  const p = make();
+  // the back of the hand and the wrist, coming down from the arm
+  p.moveTo(u + s * 95, v - 70);
+  p.cubicTo(u + s * 70, v - 60, u + s * 40, v - 48, u + s * 18, v - 30);
+  // curled fingers over the top, ending at the pinch
+  p.cubicTo(u + s * 4, v - 22, u - s * 10, v - 18, u - s * 8, v - 6);
+  p.cubicTo(u - s * 6, v + 2, u + s * 2, v + 4, u + s * 6, v);
+  // the thumb underneath, back to the palm
+  p.moveTo(u + s * 6, v + 6);
+  p.cubicTo(u + s * 20, v + 18, u + s * 48, v + 10, u + s * 70, v - 12);
+  p.lineTo(u + s * 100, v - 30);
+  return p;
+}
+
+/** A hand's line art: a little stronger than the body's, still quiet. */
+export function HandInk({ path }: { path: SkPath }): ReactElement {
+  return <Path path={path} style="stroke" strokeWidth={3.2} strokeCap="round" strokeJoin="round" color="#9aa0ad" opacity={0.75} />;
+}
+
 /** A highlight halo for a tapped part (amber, under the part). */
 export const HIGHLIGHT = '#ffc64d';

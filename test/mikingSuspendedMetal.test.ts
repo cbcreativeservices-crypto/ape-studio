@@ -49,8 +49,64 @@ const { inZone } = await import('../src/screens/lab/miking/engine/geometry/zones
 const { lessonById } = await import('../src/screens/lab/miking/data/lessons.ts');
 const { LESSONS, readyLabs } = await import('../src/screens/lab/miking/data/registry.ts');
 
+const fc = await import('../src/screens/lab/miking/lessons/i06bFingerCymbals/model.ts');
+const fcG = await import('../src/screens/lab/miking/lessons/i06bFingerCymbals/geometry.ts');
+const { I06B_LESSON } = await import('../src/screens/lab/miking/lessons/i06bFingerCymbals/lesson.ts');
+
+const bc = await import('../src/screens/lab/miking/lessons/i06cBarChimes/model.ts');
+const { I06C_LESSON } = await import('../src/screens/lab/miking/lessons/i06cBarChimes/lesson.ts');
+
 type L = typeof I06A_LESSON;
-const LESSONS_UNDER_TEST: L[] = [I06A_LESSON];
+const LESSONS_UNDER_TEST: L[] = [I06A_LESSON, I06B_LESSON, I06C_LESSON];
+
+describe('I06c bar chimes: the row', () => {
+  it('27 bars in a single row, 60 in a double — counts sourced; graduated, longest at the player’s left', () => {
+    const one = bc.barsOf('single');
+    const two = bc.barsOf('double');
+    assert.equal(one.length, 27);
+    assert.equal(two.length, 60);
+    assert.equal(bc.BC.bars.prov.kind, 'sourced');
+    for (let i = 1; i < one.length; i++) assert.ok(one[i].L < one[i - 1].L && one[i].z > one[i - 1].z);
+    assert.ok(one[0].z < 0, 'the long bars at −z');
+  });
+  it('the row fits on the rail, which sits inside the 12–16 in reading', () => {
+    const one = bc.barsOf('single');
+    assert.ok(Math.abs(one[0].z) <= bc.BC.rail.mm / 2 && Math.abs(one[one.length - 1].z) <= bc.BC.rail.mm / 2);
+    assert.ok(bc.BC.rail.mm >= 12 * IN && bc.BC.rail.mm <= 16 * IN);
+  });
+  it('P0 is the row’s centre at the bars’ mean mid-height; the ends sit at the end bars’ middles', () => {
+    assert.ok(near(bc.P0.z, 0) && bc.P0.y > bc.BAR_TOP && bc.P0.y < bc.BAR_TOP + bc.BC.longest.mm);
+    assert.ok(near(bc.END_L.y, bc.BAR_TOP + bc.BC.longest.mm / 2) && near(bc.END_R.y, bc.BAR_TOP + bc.BC.shortest.mm / 2));
+  });
+  it('the shortest bar rings (longest/shortest)² higher — five times the length, 25 times the pitch', () => {
+    assert.ok(near(mm.chimePitchRatio(bc.BC.shortest.mm, bc.BC.longest.mm), 25));
+  });
+  it('bar sizes are flagged placeholders (no source gives them)', () => {
+    for (const k of ['longest', 'shortest', 'barD', 'filament', 'railDepth', 'railH', 'height', 'swingDeg'] as const) assert.equal(bc.BC[k].placeholder, true, k);
+  });
+});
+
+describe('I06b finger cymbals: a measured pair, two ways of playing', () => {
+  it('the museum pair: Ø 5.5 and 4.8 cm, 2.4 cm high — sourced', () => {
+    assert.ok(near(fc.FC.dA.mm, 55) && near(fc.FC.dB.mm, 48) && near(fc.FC.h.mm, 24));
+    for (const k of ['dA', 'dB', 'h'] as const) assert.equal(fc.FC[k].prov.kind, 'sourced', k);
+  });
+  it('held still: the held cymbal flat at P0, the dropped one above it', () => {
+    assert.ok(near(fcG.HELD_C.y, fc.P0.y) && fcG.DROP_C.y < fc.P0.y);
+    assert.ok(near(fc.P0.y - fcG.DROP_C.y, fc.FC.drop.mm));
+  });
+  it('the dance zones sit outside the whole dance envelope; the held zones outside the hands', () => {
+    const env = (id: string) => fcG.FC_MODEL.envelopes.find((e: { id: string }) => e.id === id)!.shape as { min: { x: number; y: number; z: number }; max: { x: number; y: number; z: number } };
+    const inBox = (b: ReturnType<typeof env>, p: { x: number; y: number; z: number }) => p.x > b.min.x && p.x < b.max.x && p.y > b.min.y && p.y < b.max.y && p.z > b.min.z && p.z < b.max.z;
+    for (const z of fcG.FC_ZONES) {
+      const box = z.requires?.variant === 'dance' ? env('env.dance') : env('env.hands');
+      assert.ok(!inBox(box, z.start.p), z.id);
+    }
+  });
+  it('dance numbers are flagged placeholders', () => {
+    for (const k of ['holdH', 'drop', 'danceH', 'danceR', 'danceTop', 'route', 'domeD', 'thick'] as const) assert.equal(fc.FC[k].placeholder, true, k);
+  });
+});
 
 describe('suspended metal: the physics the pictures draw', () => {
   it('a bar free at both ends: the textbook ratios 1 : 2.757 : 5.404 : 8.933 : 13.34', () => {
@@ -164,7 +220,7 @@ describe('suspended metal: every lesson validates; every start is clear, in its 
 
 describe('suspended metal: silent and still', () => {
   it('no file in the family plays a sound or runs a loop', () => {
-    const dirs = ['lessons/shared/metal', 'lessons/i06aTriangle'];
+    const dirs = ['lessons/shared/metal', 'lessons/i06aTriangle', 'lessons/i06bFingerCymbals', 'lessons/i06cBarChimes'];
     for (const d of dirs) {
       for (const f of readdirSync(join(ROOT, MIKING, d))) {
         const text = read(`${MIKING}/${d}/${f}`);

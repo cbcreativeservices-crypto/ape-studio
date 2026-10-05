@@ -81,3 +81,7 @@ Object.assign(ART, HAND_DRUM_ART);
 /* Lab 2 (percussion), suspended metal: I06a–c, I12 (each lesson on its own line). */
 import { TRIANGLE_ART, TRIANGLE_PAGES, TRIANGLE_STEP_COUNTS } from '../lessons/i06aTriangle/pages';
 ART.I06a = { ...TRIANGLE_ART, pages: TRIANGLE_PAGES, stepCounts: TRIANGLE_STEP_COUNTS };
+import { FINGER_CYMBALS_ART, FINGER_CYMBALS_PAGES, FINGER_CYMBALS_STEP_COUNTS } from '../lessons/i06bFingerCymbals/pages';
+ART.I06b = { ...FINGER_CYMBALS_ART, pages: FINGER_CYMBALS_PAGES, stepCounts: FINGER_CYMBALS_STEP_COUNTS };
+import { BAR_CHIMES_ART, BAR_CHIMES_PAGES, BAR_CHIMES_STEP_COUNTS } from '../lessons/i06cBarChimes/pages';
+ART.I06c = { ...BAR_CHIMES_ART, pages: BAR_CHIMES_PAGES, stepCounts: BAR_CHIMES_STEP_COUNTS };

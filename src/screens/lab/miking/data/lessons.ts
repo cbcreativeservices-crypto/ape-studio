@@ -66,3 +66,7 @@ Object.assign(LESSON_CONTENT, HAND_DRUM_CONTENT);
 /* Lab 2 (percussion), suspended metal: I06a–c, I12 (each lesson on its own line). */
 import { I06A_LESSON } from '../lessons/i06aTriangle/lesson.ts';
 LESSON_CONTENT.I06a = I06A_LESSON;
+import { I06B_LESSON } from '../lessons/i06bFingerCymbals/lesson.ts';
+LESSON_CONTENT.I06b = I06B_LESSON;
+import { I06C_LESSON } from '../lessons/i06cBarChimes/lesson.ts';
+LESSON_CONTENT.I06c = I06C_LESSON;
