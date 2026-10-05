@@ -74,89 +74,6 @@ function gateHtml(error: boolean): string {
 }
 
 /* ============================================================
- *  TEMPORARY PUBLIC HOME PAGE (owner 2026-10-02)
- *  While the gate is on, a visitor WITHOUT the key sees this page at "/"
- *  instead of the bare key screen: launch date + the public legal links,
- *  so App Review and the public can reach the site. Every other path is
- *  still gated. The early-access key box posts to /api/unlock as before.
- *  Remove this (or turn the gate off) at launch.
- * ============================================================ */
-function comingSoonHtml(error: boolean): string {
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pro Audio Training Academy — Launching Monday, October 12</title>
-<meta name="description" content="Pro Audio Training Academy launches Monday, October 12, 2026. Learn the Craft. Earn the Credential." />
-<style>
-  :root {
-    --bg:#0c0c0c; --surface:#151515; --border:#2a2a2e;
-    --amber:#ffc64d; --amber-deep:#ffb400;
-    --fg:#f0f0f0; --sub:#a6a6ad; --muted:#8a8b93; --red:#ff4b3a;
-  }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  html, body { min-height:100%; }
-  body {
-    background: radial-gradient(1000px 500px at 50% -10%, rgba(255,198,77,0.10), transparent 60%), var(--bg);
-    color:var(--fg);
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    -webkit-font-smoothing:antialiased;
-    display:flex; align-items:center; justify-content:center;
-    padding:3rem 1.25rem; text-align:center;
-  }
-  .wrap { width:100%; max-width:34rem; }
-  .logo { width:110px; height:auto; margin:0 auto 1.5rem; display:block; }
-  .name { font-size:0.8rem; letter-spacing:0.22em; text-transform:uppercase; font-weight:600; color:var(--sub); margin-bottom:2rem; }
-  h1 { font-size:clamp(1.7rem, 5vw, 2.4rem); line-height:1.15; font-weight:800; margin-bottom:0.75rem; }
-  .date { color:var(--amber); }
-  .tag { color:var(--sub); font-size:1.05rem; margin-bottom:2.25rem; }
-  nav ul { list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap:0.6rem; margin-bottom:1.75rem; }
-  nav a { display:inline-block; padding:0.6rem 1rem; border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--fg); text-decoration:none; font-size:0.95rem; }
-  nav a:hover, nav a:focus-visible { border-color:var(--amber); color:var(--amber); outline:none; }
-  .contact { color:var(--sub); font-size:0.95rem; margin-bottom:2.75rem; }
-  .contact a { color:var(--amber); }
-  details { border-top:1px solid var(--border); padding-top:1.25rem; max-width:20rem; margin:0 auto; }
-  summary { cursor:pointer; color:var(--muted); font-size:0.85rem; }
-  form { display:flex; flex-direction:column; gap:0.6rem; margin-top:0.9rem; }
-  input[type=password] { width:100%; padding:0.75rem 1rem; font-size:1rem; background:var(--surface); color:var(--fg); border:1px solid var(--border); border-radius:10px; outline:none; text-align:center; }
-  input[type=password]:focus { border-color:var(--amber); }
-  button { width:100%; padding:0.75rem 1rem; font-size:0.95rem; font-weight:700; background:var(--amber); color:#0c0c0c; border:0; border-radius:10px; cursor:pointer; }
-  button:hover { background:var(--amber-deep); }
-  .err { color:var(--red); font-size:0.85rem; min-height:1.1em; }
-  footer { margin-top:2.5rem; color:var(--muted); font-size:0.8rem; }
-</style>
-</head>
-<body>
-  <main class="wrap">
-    <img class="logo" src="/logo-hero.png" alt="Pro Audio Training Academy" />
-    <div class="name">Pro Audio Training Academy</div>
-    <h1>Launching <span class="date">Monday, October&nbsp;12</span></h1>
-    <p class="tag">Learn the Craft. Earn the Credential.</p>
-    <nav aria-label="Legal and support">
-      <ul>
-        <li><a href="/privacy">Privacy Policy</a></li>
-        <li><a href="/terms">Terms of Service</a></li>
-        <li><a href="/support">Support</a></li>
-        <li><a href="/accessibility">Accessibility</a></li>
-      </ul>
-    </nav>
-    <p class="contact">Questions? <a href="mailto:info@proaudiotrainingacademy.com">info@proaudiotrainingacademy.com</a></p>
-    <details${error ? " open" : ""}>
-      <summary>Early access</summary>
-      <form method="POST" action="/api/unlock" autocomplete="off">
-        <input type="password" name="key" placeholder="Enter key" aria-label="Access key" />
-        <button type="submit">Enter</button>
-        <div class="err">${error ? "Incorrect key. Try again." : ""}</div>
-      </form>
-    </details>
-    <footer>&copy; 2026 Pro Audio Training Academy LLC</footer>
-  </main>
-</body>
-</html>`;
-}
-
-/* ============================================================
  *  DOMAIN CANONICALIZATION (owner 2026-08-30)
  *  The .co is a secondary/typo domain: it must 308 to the real
  *  site, never serve a duplicate copy of it. Handled HERE (in
@@ -227,15 +144,15 @@ export function proxy(request: NextRequest) {
 
   const error = request.nextUrl.searchParams.get("e") === "1";
 
-  // Home page without the key -> the temporary public launch page (200).
+  // Home page without the key -> the real home page, blurred and inert behind
+  // the launch overlay (owner 2026-10-04; see web/components/LaunchOverlay.tsx).
+  // The marker is set HERE, server-side, on every key-less "/" request.
   if (pathname === "/") {
-    return new NextResponse(comingSoonHtml(error), {
-      status: 200,
-      headers: {
-        "content-type": "text/html; charset=utf-8",
-        "cache-control": "no-store",
-      },
-    });
+    const reqHeaders = new Headers(request.headers);
+    reqHeaders.set("x-ape-locked", "1");
+    const res = NextResponse.next({ request: { headers: reqHeaders } });
+    res.headers.set("cache-control", "no-store");
+    return res;
   }
 
   // Otherwise show ONLY the key screen.
