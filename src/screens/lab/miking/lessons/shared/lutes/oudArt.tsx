@@ -288,13 +288,14 @@ export function OudFront({ sc, dim = 1 }: { sc: LuteScene; dim?: number }) {
       {/* the pegbox and its pegs (behind the strings) */}
       {P.pegs.map((pg, i) => (
         <Group key={`peg${i}`}>
-          <Path path={rr(pg.x - 3.5, pg.side * 14, pg.x + 3.5, pg.side * 58, 3)}>
+          <Path path={rr(pg.x - 3, pg.side * 14, pg.x + 3, pg.side * 40, 3)}>
             <LinearGradient start={vec(pg.x - 4, 0)} end={vec(pg.x + 4, 0)} colors={A(PAL.ebony)} />
           </Path>
-          <Path path={oval(pg.x, pg.side * 66, 7.5, 12)}>
-            <RadialGradient c={vec(pg.x - 3, pg.side * 66 - 4)} r={14} colors={['#5a4a3e', '#231b15', '#0e0b09']} />
+          {/* the peg's head: a flattened, turned knob, lit from the upper left */}
+          <Path path={oval(pg.x, pg.side * 50, 8.5, 13)}>
+            <RadialGradient c={vec(pg.x - 3, pg.side * 50 - 5)} r={16} colors={['#7a6150', '#3a2a1e', '#120d09']} />
           </Path>
-          <Circle cx={pg.x} cy={pg.side * 76} r={3.4} color={PAL.bone[1]} />
+          <Path path={oval(pg.x, pg.side * 50, 8.5, 13)} style="stroke" strokeWidth={1.2} color="#8a6a4a" opacity={0.7} />
         </Group>
       ))}
       <Path path={P.pegbox}>

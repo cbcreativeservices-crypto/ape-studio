@@ -2,6 +2,7 @@
  * C13 OUD — the pages' words, built by the strings copy (starting-points
  * voice; no sources, brands or badges).
  */
+import type { LessonCopy } from '../../engine/model/copy.ts';
 import { stringsCopy } from '../shared/guitars/stringsCopy.ts';
 import { familyWords, type Noun } from '../shared/guitars/stringsContent.ts';
 import { OUD } from '../shared/lutes/luteSpec.ts';
@@ -10,7 +11,7 @@ import { C13_BUILT, C13_SHIELD } from './geometry.ts';
 export const OUD_N: Noun = { one: 'oud', the: 'the oud', player: 'oud player' };
 const g = C13_BUILT.scene.oud!;
 
-export const C13_COPY = stringsCopy({
+const base = stringsCopy({
   n: OUD_N,
   subject: { oud: 'a seated player with an oud' },
   variantKey: 'INSTRUMENT',
@@ -84,3 +85,9 @@ export const C13_COPY = stringsCopy({
   practice: { prefix: 'oud', mixedIntro: 'Three cards from earlier pages, mixed: a reference point, a pattern’s null, and polarity versus delay.' },
   words: familyWords(OUD_N),
 });
+
+/** The ALONG lane in the oud's own words (the guitar copy says headstock). */
+export const C13_COPY: LessonCopy = {
+  ...base,
+  axes: { ...base.axes, x: { plus: 'toward the pegbox', minus: 'toward the tail', label: 'ALONG', blurb: 'Along the strings, toward the pegbox or the tail of the bowl (x).' } },
+};

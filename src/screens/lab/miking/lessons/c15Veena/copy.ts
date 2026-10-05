@@ -9,6 +9,7 @@ import type { LessonCopy } from '../../engine/model/copy.ts';
 import { stringsCopy } from '../shared/guitars/stringsCopy.ts';
 import { familyWords, type Noun } from '../shared/guitars/stringsContent.ts';
 import { C15_BUILT, C15_SHIELD } from './geometry.ts';
+import { poseAimedAt } from '../shared/guitars/guitarModel.ts';
 
 export const VEENA_N: Noun = { one: 'veena', the: 'the veena', player: 'veena player' };
 const g = C15_BUILT.scene.veena!;
@@ -87,8 +88,18 @@ const base = stringsCopy({
   words: familyWords(VEENA_N),
 });
 
+/** Mic B on the two-mic page: the lesson's optional support toward the
+ *  drone (tala) side — closer, over the neck's start, aimed at the side
+ *  bridge — so the pair's paths differ as a real pair's would. */
+const P = C15_BUILT.scene.posture.P;
+export const TALA_SUPPORT_POSE = poseAimedAt(P({ x: 170, y: 200, z: 240 }), P({ x: 40, y: 55, z: 0 }));
+
 export const C15_COPY: LessonCopy = {
   ...base,
+  axes: { ...base.axes, x: { plus: "toward the yali", minus: "toward the resonator", label: "ALONG", blurb: "Along the veena, toward the yali (the player’s left) or the resonator (x)." } },
+  twoMic: { ...base.twoMic, B: { typeId: 'sdcCard', pattern: 'cardioid', pose: TALA_SUPPORT_POSE } },
+  // The veena's face points UP: from above it is seen face-on, not edge-on.
+  instrument: { ...base.instrument, partsLooking: { side: 'Front view · the veena and the player', top: 'From above · the top plate face-on' } },
   context: {
     ...base.context,
     target: 'sidefill',

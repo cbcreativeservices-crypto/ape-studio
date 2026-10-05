@@ -77,7 +77,6 @@ export function luteLabels(sc: LuteScene, view: ViewId): ArtLabel[] {
       out.push(L('jawari', 'MAIN BRIDGE', V(-10, 70, 0), 'left', { short: 'BRIDGE' }));
       out.push(L('sympathetic', 'SYMPATHETIC STRINGS', V(250, -g.neck.half - 110, 0), 'right', { short: 'SYMPATHETIC' }));
       out.push(L('frets', 'ARCHED FRETS', V(430, g.neck.half + 80, 0), 'left', { short: 'FRETS' }));
-      out.push(L('upperGourd', 'UPPER GOURD', V(g.upperGourd.x - 40, g.upperGourd.r + 70, 0), 'left', { short: 'GOURD' }));
       out.push(L('player', 'PLAYER', [head[0], head[1] - sc.fit.head.r - 24], 'center', { tone: 'muted' }));
     } else {
       out.push(L('gourd', 'GOURD', V(g.gourd.cx, 0, -g.gourd.c - 60), 'center'));

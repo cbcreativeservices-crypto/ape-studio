@@ -173,7 +173,7 @@ function PluckCanvas({ sc, w, h, reveal, pickMm, label }: { sc: LuteScene; w: nu
   const labels: StaticLabel[] = [
     { id: 'n1', text: `① ${striker}`, u: ov.pickPt[0], v: ov.pickPt[1] + (sc.kind === 'oud' ? 128 : 60), align: 'center', tone: 'amber' },
     { id: 'n2', text: sc.kind === 'oud' ? '② STRING' : '② STRING ON THE BRIDGE', short: '②', u: mid[0], v: mid[1] - 70, align: 'center', tone: 'amber' },
-    { id: 'n3', text: `③ BRIDGE → ${radiator}`, short: '③', u: ov.e0[0], v: ov.topC[1] + ov.topR + 40, align: 'center', tone: 'amber' },
+    { id: 'n3', text: `③ BRIDGE → ${radiator}`, short: '③ BRIDGE', u: ov.e0[0], v: ov.topC[1] + ov.topR + 40, align: 'center', tone: 'amber' },
     { id: 'n4', text: '④ SOUND LEAVES', short: '④', u: ov.topC[0], v: ov.topC[1] - ov.topR * 1.4 - 10, align: 'center', tone: 'amber' },
     ...(sc.kind === 'sitar' ? [{ id: 'n5', text: '⑤ SYMPATHETIC STRINGS', short: '⑤', u: vp(sc, view, { x: 520, y: -150, z: 0 })[0], v: vp(sc, view, { x: 520, y: -150, z: 0 })[1], align: 'center' as const, tone: 'amber' as const }] : []),
   ];
@@ -652,7 +652,7 @@ export function makeLuteSoundPage(built: BuiltLute) {
         layout: 'rack',
         rack: {
           render: (w, h) => (
-            <StringShapesCanvas w={w} h={h} n={shapeN} swing={swing} pFrac={pFrac} endWords={['BRIDGE', 'NUT']} label={`One string between its two fixed ends, in shape ${shapeN}: ${shapeN - 1} still points. Under the ${C.sound.strikerPhrase}, ${pick.label.toLowerCase()}, the string moves ${sharePct} percent of this shape's peak.`} />
+            <StringShapesCanvas w={w} h={h} n={shapeN} swing={swing} pFrac={pFrac} endWords={['BRIDGE', 'NUT']} pickWord={C.sound.striker} label={`One string between its two fixed ends, in shape ${shapeN}: ${shapeN - 1} still points. Under the ${C.sound.strikerPhrase}, ${pick.label.toLowerCase()}, the string moves ${sharePct} percent of this shape's peak.`} />
           ),
           badge: 'A simplified picture: one ideal string, fixed at both ends · motion drawn larger',
           bezel: shapeBezel,

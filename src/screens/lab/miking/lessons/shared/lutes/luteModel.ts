@@ -494,7 +494,8 @@ export function viewsFor(sc: LuteScene): Partial<Record<ViewId, ViewBox>> {
   if (sc.kind === 'sitar') {
     const top = sc.posture.P(v(sc.sitar!.top, 0, 0));
     return {
-      side: { u0: -420, u1: top.x + 120, v0: Math.min(top.y, f.head.c.y - f.head.r) - 130, v1: sc.floorY + 30 },
+      // Room on the right keeps the neck's top clear of the view inset (top right).
+      side: { u0: -420, u1: top.x + 420, v0: Math.min(top.y, f.head.c.y - f.head.r) - 130, v1: sc.floorY + 30 },
       top: { u0: -420, u1: top.x + 120, v0: f.torso.min.z - 30, v1: 680 },
     };
   }
@@ -525,7 +526,8 @@ export type LuteZoneSpec = {
   micTypeIds: string[];
   /** Start: a point and a target, INSTRUMENT frame. */
   start: { p: Vec3; aimAt: Vec3 };
-  /** The drawn band's half-size across the face (mm, default 90). */
+  /** The drawn band's half-size across the face (mm, default 75): a picture
+   *  of where to begin, smaller than the radial tolerance. */
   drawHalf?: number;
   tendency: string;
   checks: string[];
@@ -535,7 +537,7 @@ export function luteZone(sc: LuteScene, z: LuteZoneSpec): DocumentedZone {
   const P = sc.posture.P;
   const D = sc.posture.D;
   const sp = sc.at[z.surface];
-  const r = z.drawHalf ?? z.radial?.max ?? 90;
+  const r = z.drawHalf ?? 75;
   // Drawn: the band as a box in the instrument frame (± r across the face,
   // the distance band out from it), mapped and boxed per view.
   const corners: Vec3[] = [];

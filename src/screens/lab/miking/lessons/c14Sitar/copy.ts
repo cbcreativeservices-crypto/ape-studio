@@ -87,6 +87,8 @@ const base = stringsCopy({
 
 export const C14_COPY: LessonCopy = {
   ...base,
+  // The neck rises at 45°: the lane moves across the scene, not along the neck.
+  axes: { ...base.axes, x: { plus: "to the player’s left", minus: "to the player’s right", label: "LEFT–RIGHT", blurb: "Across the scene, toward the player’s left (up the neck’s side) or right (the gourd’s side) (x)." } },
   sound: {
     ...base.sound,
     cells: [

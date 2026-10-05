@@ -76,7 +76,7 @@ export function c13ZoneSpecs(sc: LuteScene): LuteZoneSpec[] {
       box: { min: v(-3000, -3000, -3000), max: v(3000, -5, 3000), prov: ill('"angled slightly downward": the mic sits above the rose') },
       micTypeIds: ['instDynCard', 'sdcCard'],
       start: { p: v(at.rose.x, -45, 95), aimAt: at.rose },
-      drawHalf: 70,
+      drawHalf: 55,
       tendency: 'A close stage view with level to spare before feedback. The rose is where the bowl’s air breathes, so some notes can bloom or hum — if one booms, angle off the rose or back away a little.',
       checks: ['The risha’s arc and the face: no contact', 'Boom or hum on the low notes', 'Feedback headroom with the monitor up'],
     },

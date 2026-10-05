@@ -112,9 +112,15 @@ function VocalPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   const mic = rr(o.at.x - 26, o.at.z - 70, o.at.x + 26, o.at.z + 70, 26);
   return (
     <Group>
-      <Path path={ring}>
-        <RadialGradient c={vec(base.x - 40, base.z - 40)} r={150} colors={['#5b5f69', '#2a2c32', '#16171b']} />
+      {/* a flat, round stand base seen from above: a dished disc with a rim and the hub */}
+      <Path path={ring} color="#000" opacity={0.45} transform={[{ translateX: 8 }, { translateY: 10 }]}>
+        <BlurMask blur={12} style="normal" />
       </Path>
+      <Path path={ring}>
+        <RadialGradient c={vec(base.x, base.z)} r={130} colors={['#2a2c32', '#3a3d45', '#5d616c']} />
+      </Path>
+      <Path path={ring} style="stroke" strokeWidth={5} color="#8a8f9c" opacity={0.8} />
+      <Circle cx={base.x} cy={base.z} r={22} color="#9aa0ab" />
       <Line p1={vec(base.x, base.z)} p2={vec(o.at.x, o.at.z + 60)} color="#7a7f8a" strokeWidth={12} strokeCap="round" />
       <Path path={mic}>
         <LinearGradient start={vec(o.at.x - 26, o.at.z - 70)} end={vec(o.at.x + 26, o.at.z + 70)} colors={['#c8ccd4', '#6b707b', '#2b2d33']} />
@@ -331,7 +337,7 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
         const at = o ? o.at : wd ? { x: wd.p.x, z: wd.p.z } : null;
         if (!at) continue;
         // Behind the player (the chair, the tanpura): the label goes above, upstage.
-        const behind = o?.kind === 'chair' || o?.kind === 'tanpura';
+        const behind = o?.kind === 'chair';
         const dz = o?.kind === 'audience' ? -120 : o?.kind === 'room' ? 0 : o?.kind === 'rug' ? (o.r ?? 1100) * 0.62 - 90 : behind ? -((o?.r ?? 260) + 70) : (o?.r ?? 260) + 80;
         labels.push({ id: `${it.id}:${id}`, text: it.short, u: at.x, v: at.z + dz, align: 'center', tone: highlight === it.id ? 'amber' : undefined });
         break;

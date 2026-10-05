@@ -14,7 +14,7 @@ export const C14_ART: LessonArt = {
   ...makeLuteArt(C14_BUILT),
   pages: {
     sound: makeLuteSoundPage(C14_BUILT),
-    setting: makeLutePlanPage(C14_BUILT, { objects: sitarPlan(C14_BUILT.scene), near: { u0: -720, u1: 1250, v0: -1180, v1: 640 }, stageEdgeZ: 1650, hearing: LUTE_HEARING }),
+    setting: makeLutePlanPage(C14_BUILT, { objects: sitarPlan(C14_BUILT.scene), near: { u0: -720, u1: 1250, v0: -1250, v1: 640 }, stageEdgeZ: 1650, hearing: LUTE_HEARING }),
   },
   stepCounts: { sound: LUTE_SOUND_STEPS(C14_BUILT.scene), setting: 3 },
 };
