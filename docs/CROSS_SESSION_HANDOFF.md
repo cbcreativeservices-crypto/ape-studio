@@ -455,6 +455,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 20:35 · ccode · a5e25826
+changed: fix(rack): keep the dock lane's cap out of the system edge-gesture strips (ported from final-lab d556e9de for the store-build OTA; with 4a1dd64e = shared DragSlider/ControlSlider)
+affects other side: nothing (JS-only slider layout).
+needs: nothing
+
+
 ### 2026-10-04 11:44 · ccode · 30ff79f1
 changed: Docs: handoff 10-04B points at docs/bughunt process files
 affects other side: nothing (doc pointer).
