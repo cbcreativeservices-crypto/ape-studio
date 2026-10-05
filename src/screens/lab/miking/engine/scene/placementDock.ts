@@ -12,6 +12,7 @@ import type { DockParam } from '../../../rack/rackTypes';
 import type { MicPose, MicSlot } from '../model/types.ts';
 import { fmtAngle, fmtLen } from '../model/units.ts';
 import { micType } from '../../data/micTypes.ts';
+import { copyOf, type LessonCopy } from '../model/copy.ts';
 import type { Rig } from './useRig.ts';
 
 export type PosAxis = 'x' | 'y' | 'z';
@@ -23,10 +24,13 @@ function axisRange(rig: Rig, a: PosAxis): [number, number] {
   return [rig.bounds.min[a], rig.bounds.max[a]];
 }
 
-export function posWords(a: PosAxis, v: number): string {
-  if (a === 'x') return `${fmtLen(Math.abs(v))} ${v >= 0 ? 'past' : 'before'} batter`;
-  if (a === 'y') return `${fmtLen(Math.abs(v))} ${v <= 0 ? 'above' : 'below'} axis`;
-  return `${fmtLen(Math.abs(v))} to player’s ${v >= 0 ? 'right' : 'left'}`;
+/** The POSITION lane's words, from the lesson's axis words (copy.axes):
+ *  `v` is measured from the variant's origin. A height of exactly 0 reads
+ *  as the axis's minus side (the kick: "above axis"), as before. */
+export function posWords(a: PosAxis, v: number, words: LessonCopy['axes'] = copyOf({}).axes): string {
+  const w = words[a];
+  const plus = a === 'y' ? v > 0 : v >= 0;
+  return `${fmtLen(Math.abs(v))} ${plus ? w.plus : w.minus}`;
 }
 
 export function placementParams(opts: {
@@ -43,6 +47,8 @@ export function placementParams(opts: {
   const surface = micType(m.typeId).mount === 'surface';
   const [lo, hi] = axisRange(rig, posAxis);
   const cur = pose.p[posAxis];
+  const axes = copyOf(rig.lesson).axes;
+  const origin = axes.origin?.[rig.variant]?.[posAxis] ?? 0;
   // The committed stop reason of THIS slot (the same one the strip and the
   // bezel print), not a page-wide copy.
   const block = rig.stop[slot];
@@ -59,16 +65,16 @@ export function placementParams(opts: {
       },
       // Compact: the lane prints its value right-aligned beside the label, so a
       // long line ran over "POSITION". The stop comes FIRST when there is one.
-      format: () => (stopWord ? `${stopWord} · ${fmtLen(Math.abs(cur))}` : posWords(posAxis, cur)),
-      formatShort: () => (posAxis === 'x' ? 'ALONG' : posAxis === 'y' ? 'HEIGHT' : 'ACROSS'),
+      format: () => (stopWord ? `${stopWord} · ${fmtLen(Math.abs(cur - origin))}` : posWords(posAxis, cur - origin, axes)),
+      formatShort: () => (posAxis === 'x' ? axes.x.label.split(' ')[0] : posAxis === 'y' ? axes.y.label.split(' ')[0] : axes.z.label.split(' ')[0]),
       chooser: {
         title: 'MOVE THE MIC',
         selectedId: posAxis,
         onSelect: (id) => setPosAxis(id as PosAxis),
         options: [
-          { id: 'x', label: 'ALONG the drum', blurb: 'Toward or away from the batter head (x). Distance is read from the head the zone names.' },
-          { id: 'y', label: 'HEIGHT', blurb: surface ? 'A boundary plate rests on the pillow: its height is set by the cushioning.' : 'Up or down (y). Height above the floor is not shown — the floor line is unknown.' },
-          { id: 'z', label: 'ACROSS', blurb: 'Toward the player’s left or right (z).' },
+          { id: 'x', label: axes.x.label, blurb: axes.x.blurb },
+          { id: 'y', label: axes.y.label, blurb: surface ? axes.surfaceY ?? axes.y.blurb : axes.y.blurb },
+          { id: 'z', label: axes.z.label, blurb: axes.z.blurb },
         ],
       },
     },

@@ -99,3 +99,25 @@ export function effectivePolarity(switchPol: 1 | -1, gA: number, gB: number): 1 
   const sB = gB < 0 ? -1 : 1;
   return (switchPol * sA * sB) as 1 | -1;
 }
+
+/**
+ * OPPOSITE HEADS (the snare's or a tom's top and bottom mics). In a drum's
+ * lowest, heads-together motion both heads move the same way at the same
+ * moment: as the batter head moves AWAY from a mic above it, the bottom head
+ * moves TOWARD a mic below it — one mic hears a pull while the other hears a
+ * push. Two mics on opposite sides of the drum (of `plane`) therefore start
+ * with opposite pressure, separately from any arrival-time difference. A
+ * simplified picture: the heads' higher motions do not all keep this sign
+ * (owner's lesson: teach the check, not a law).
+ */
+export type OppositePlane = { point: Vec3; normal: Vec3 } | null;
+
+/** −1 when a and b lie on opposite sides of the plane, else 1. */
+export function oppositeSign(plane: OppositePlane, a: Vec3, b: Vec3): 1 | -1 {
+  'worklet';
+  if (!plane) return 1;
+  const n = plane.normal;
+  const da = (a.x - plane.point.x) * n.x + (a.y - plane.point.y) * n.y + (a.z - plane.point.z) * n.z;
+  const db = (b.x - plane.point.x) * n.x + (b.y - plane.point.y) * n.y + (b.z - plane.point.z) * n.z;
+  return da * db < 0 ? -1 : 1;
+}

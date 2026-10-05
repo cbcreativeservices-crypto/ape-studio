@@ -29,19 +29,13 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../features/settings/a11y';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import { HEAD_SHAPES, strikeShare } from '../engine/physics/membrane.ts';
+import { copyOf } from '../engine/model/copy.ts';
 import { MembraneFace } from '../engine/scene/MembraneFace';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../engine/kit';
 import type { PageProps } from './pageTypes';
 
 const STEP_MS = 1300;
-const IN = 25.4;
-/** Where the beater strikes: the centre, or 1–2 in above it (internal record: DW-9000). */
-const STRIKES = [
-  { id: 'c', label: 'CENTRE', mm: 0, blurb: 'The exact centre of the head.' },
-  { id: '1', label: '1 IN ABOVE', mm: 1 * IN, blurb: '1 in (25 mm) above the centre — a common strike point.' },
-  { id: '2', label: '2 IN ABOVE', mm: 2 * IN, blurb: '2 in (51 mm) above the centre — about as high as a beater usually strikes.' },
-] as const;
 
 function useFocusedSafe(): boolean {
   try {
@@ -53,6 +47,10 @@ function useFocusedSafe(): boolean {
 
 export function PSound({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
   const S = lesson.sound;
+  const C = copyOf(lesson);
+  /** Where the strike lands on the face-on head (the lesson's own points). */
+  const STRIKES = C.sound.strikes;
+  const variantLabel = lesson.model.variants.find((v) => v.id === variant)?.label ?? variant.toUpperCase();
   const n = S.stages.length;
   const motion = useAnimationsAllowed();
   const focused = useFocusedSafe();
@@ -107,14 +105,14 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
   }, [shown, n, interactiveDone, onInteractive]);
 
   const stage = S.stages[shown - 1];
-  const stageText = (i: number) => (variant === 'ported' && S.stages[i].ported ? S.stages[i].ported! : S.stages[i].text);
+  const stageText = (i: number) => S.stages[i].byVariant?.[variant] ?? (variant === 'ported' && S.stages[i].ported ? S.stages[i].ported! : S.stages[i].text);
 
   /* ── the head's shapes ── */
   const [shapeIdx, setShapeIdx] = useState(0);
-  const [strikeId, setStrikeId] = useState<(typeof STRIKES)[number]['id']>('1');
+  const [strikeId, setStrikeId] = useState<string>(C.sound.strikeDefault);
   const [swing, setSwing] = useState(1);
   const shape = HEAD_SHAPES[shapeIdx];
-  const strike = STRIKES.find((s) => s.id === strikeId)!;
+  const strike = STRIKES.find((s) => s.id === strikeId) ?? STRIKES[0];
   const R = S.head.diameterMm / 2;
   const share = strikeShare(shape, strike.mm / R);
   const sharePct = Math.round(share * 100);
@@ -138,21 +136,23 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
       {
         kind: 'options',
         id: 'head',
-        label: 'FRONT HEAD',
-        valueLabel: variant === 'ported' ? 'PORTED' : 'INTACT',
+        label: C.variantKey,
+        valueLabel: variantLabel,
         selectedId: variant,
         onSelect: (id) => setVariant(id),
         options: lesson.model.variants.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [shown, n, stage, playing, motion, variant, lesson.model.variants],
+    [shown, n, stage, playing, motion, variant, lesson.model.variants, C.variantKey, variantLabel],
   );
+  // The lesson's cells, each read at this event (and for this variant).
   const strikeBezel: BezelItem[] = [
     { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
-    { k: 'BATTER', v: shown >= 2 ? 'PUSHED IN' : 'AT REST', flex: 1.2 },
-    { k: 'FRONT', v: shown >= 3 ? 'PUSHED OUT' : 'AT REST', flex: 1.2 },
-    { k: 'PORT', v: variant !== 'ported' ? 'NONE' : shown >= 3 ? 'AIR OUT' : '—', flex: 1 },
+    ...C.sound.cells.map((c) => {
+      const at = c.byVariant?.[variant] ?? c.at;
+      return { k: c.k, v: at[Math.min(at.length - 1, shown - 1)] ?? '—', flex: c.flex ?? 1 };
+    }),
   ];
 
   const shapeParams: DockParam[] = [
@@ -181,7 +181,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
       label: 'STRIKE',
       valueLabel: strike.label,
       selectedId: strikeId,
-      onSelect: (id) => setStrikeId(id as (typeof STRIKES)[number]['id']),
+      onSelect: (id) => setStrikeId(id),
       sticky: true,
       options: STRIKES.map((s) => ({ id: s.id, label: s.label, blurb: s.blurb })),
     },
@@ -189,7 +189,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
   const shapeBezel: BezelItem[] = [
     { k: 'SHAPE', v: shape.label, flex: 0.8 },
     { k: 'RATIO', v: `× ${shape.ratio.toFixed(2)}`, sub: 'vs lowest', flex: 0.9 },
-    { k: 'UNDER BEATER', v: `${sharePct} %`, sub: 'of its peak', tint: share < 0.05 ? '#ff6b5e' : undefined, flex: 1.2 },
+    { k: `UNDER ${C.sound.striker}`, v: `${sharePct} %`, sub: 'of its peak', tint: share < 0.05 ? '#ff6b5e' : undefined, flex: 1.2 },
     { k: 'STILL LINES', v: shape.n + shape.s - 1 === 0 ? 'NONE' : `${shape.n + shape.s - 1}`, flex: 1 },
   ];
 
@@ -237,7 +237,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
       rack: {
         render: (w, h) =>
           Strike ? (
-            <Strike w={w} h={h} variant={variant} reveal={reveal} shown={shown} accessibilityLabel={`Side view of the kick, cut open. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}`} />
+            <Strike w={w} h={h} variant={variant} reveal={reveal} shown={shown} accessibilityLabel={`${C.sound.subject}. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}`} />
           ) : (
             <Text style={styles.missing}>No drawing for this step.</Text>
           ),
@@ -249,14 +249,12 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`Side view · the kick cut open · ${variant === 'ported' ? 'ported' : 'intact'} front head`} prompt="STEP through the strike, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+          <Landing looking={C.sound.looking[variant] ?? 'Side view'} prompt="STEP through the strike, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
             <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
           </Card>
-          {reached && predicted != null ? (
-            <Note tone="ok">{`You predicted “${predicted}”. The squeezed air pushes the front head OUTWARD, away from the player — both heads move the same way at that moment. The two heads are coupled through the air inside.`}</Note>
-          ) : null}
-          {reached ? <Note>Then both heads spring back and keep ringing for a while — the BODY of the sound. How long depends on the tuning, the damping and the drum (the Drum Tuning Lab covers that).</Note> : null}
+          {reached && predicted != null && C.sound.reveal ? <Note tone="ok">{`You predicted “${predicted}”. ${C.sound.reveal}`}</Note> : null}
+          {reached ? <Note>{C.sound.after}</Note> : null}
         </>
       ),
     },
@@ -275,7 +273,9 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
             shape={shape}
             strikeMm={strike.mm}
             swing={swing}
-            accessibilityLabel={`The ${S.head.label}, in the shape ${shape.label}: ${shape.still}. ${Math.abs(swing) < 0.05 ? 'Passing through flat.' : 'Blue regions move toward you, amber away.'} Under the beater, ${strike.label.toLowerCase()}, the head moves ${sharePct} percent of this shape's peak.`}
+            striker={C.sound.striker}
+            hoop={S.head.hoop}
+            accessibilityLabel={`The ${S.head.label}, in the shape ${shape.label}: ${shape.still}. ${Math.abs(swing) < 0.05 ? 'Passing through flat.' : 'Blue regions move toward you, amber away.'} Under ${C.sound.strikerPhrase}, ${strike.label.toLowerCase()}, the head moves ${sharePct} percent of this shape's peak.`}
           />
         ),
         badge: 'A simplified picture: one head on its own, no air, no second head · blue + toward you, amber − away',
@@ -288,11 +288,12 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
           <Landing looking={`${S.head.label} · shape ${shape.label}`} prompt="Step through SHAPE, then try each STRIKE point. Which shapes does a centre strike leave still?" />
           <Card>
             <Point title={`SHAPE ${shape.label} · ${shape.still.toUpperCase()}`}>
-              {`A struck head vibrates in several shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest shape — the others are measured against it, and none of them is a whole-number multiple, which is part of why a drum sounds less “pitched” than a string.' : `Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on a simplified head — not a whole number, which is part of why a drum sounds less “pitched” than a string.`} Under the beater (${strike.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? 'does not drive this shape at all: the beater is on a still line' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}
+              {`A struck head vibrates in several shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest shape — the others are measured against it, and none of them is a whole-number multiple, which is part of why a drum sounds less “pitched” than a string.' : `Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on a simplified head — not a whole number, which is part of why a drum sounds less “pitched” than a string.`} Under ${C.sound.strikerPhrase} (${strike.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? `does not drive this shape at all: ${C.sound.strikerPhrase} is on a still line` : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}
             </Point>
           </Card>
-          <Note>A shape is set moving only as much as the head moves at the strike point in that shape. At the exact centre, every shape with a still line across the head stands still — so a centre strike drives only the ring-shaped ones. Beaters usually strike at the centre or 1–2 in above it.</Note>
-          <Note>This is a simplified head in empty space. On a real kick, the air inside and the second head pull these numbers around — the next step shows the two heads working together.</Note>
+          {C.sound.shapesNotes.map((t) => (
+            <Note key={t.slice(0, 24)}>{t}</Note>
+          ))}
         </>
       ),
     },
@@ -304,7 +305,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
       rack: {
         render: (w, h) =>
           Coupled ? (
-            <Coupled w={w} h={h} variant={variant} mode={pair} swing={pairSwing} accessibilityLabel={`Side view of the kick: both heads in their lowest shape, ${pair === 'together' ? 'moving the same way, the air carried along' : 'moving in and out together, the air squeezed and eased'}. Motion exaggerated.`} />
+            <Coupled w={w} h={h} variant={variant} mode={pair} swing={pairSwing} accessibilityLabel={`${C.sound.coupledSubject}: both heads in their lowest shape, ${pair === 'together' ? 'moving the same way, the air carried along' : 'moving in and out together, the air squeezed and eased'}. Motion exaggerated.`} />
           ) : (
             <Text style={styles.missing}>No drawing for this step.</Text>
           ),
@@ -323,7 +324,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
                 : 'The heads move in together, then out together. The air between them is squeezed and eased, and its springiness pushes back hard: this is the HIGHER-pitched of the pair. It changes the drum’s whole volume, so it radiates strongly — and spends its energy sooner.'}
             </Point>
           </Card>
-          <Note>One strike sets both going; the sound you hear is the two together. A port lets some of the squeezed air out — the moving air that can pop a mic at the port.</Note>
+          <Note>{C.sound.coupledNote}</Note>
         </>
       ),
     },
@@ -338,7 +339,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
             <Point title="ATTACK">{S.attack}</Point>
             <Point title="BODY">{S.body}</Point>
           </Card>
-          <Note>This lab never plays a sound and draws no frequency curve for the drum: how a real kick sounds depends on the drum, the heads, the tuning, the beater and the player. The pictures show where the sound comes from and where it leaves.</Note>
+          <Note>{C.sound.silentNote}</Note>
           {!reached ? <Note tone="warn">The strike sequence on step 1 has not reached its end yet — step it through to earn this page’s credit.</Note> : null}
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
         </>

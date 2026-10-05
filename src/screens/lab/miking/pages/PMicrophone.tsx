@@ -31,15 +31,22 @@ export function plainLines(m: MicType): { power: string; mount: string; pattern:
   const p = m.patterns[0].id;
   return {
     power: m.transducer === 'dynamic' ? 'Power: none needed' : 'Power: needs phantom power from the desk',
-    mount: m.mount === 'surface' ? 'Mount: rests on the pillow — it is made for that' : 'Mount: a stand or a suitable mount, kept off the heads and damping',
+    mount:
+      m.mount === 'surface'
+        ? 'Mount: rests on the pillow — it is made for that'
+        : m.mount === 'clip'
+          ? 'Mount: clamps to the drum’s hoop — a clamp made for it, with the player’s agreement'
+          : 'Mount: a stand or a suitable mount, kept off the heads and damping',
     pattern:
       p === 'cardioid'
         ? 'Pattern: cardioid — rejects most directly behind'
         : p === 'supercardioid'
           ? 'Pattern: supercardioid — rejects most off to each side of the rear'
-          : p === 'halfCardioid'
-            ? 'Pattern: half-cardioid — picks up the half-space above its surface'
-            : 'Pattern: open cardioid — not drawn here',
+          : p === 'hypercardioid'
+            ? 'Pattern: hypercardioid — rejects most off to each side of the rear, with a larger rear lobe'
+            : p === 'halfCardioid'
+              ? 'Pattern: half-cardioid — picks up the half-space above its surface'
+              : 'Pattern: open cardioid — not drawn here',
   };
 }
 
@@ -142,7 +149,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
           {deep || nearNullNow ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pat === 'supercardioid' ? (
-              <Note>{`What you just saw: a supercardioid rejects most at ≈ 125° — toward the rear but OFF the axis — with a small inverted lobe directly behind (${fmtDb(gainDb('supercardioid', 180))}). Real supercardioid kick mics put their deepest rejection somewhere around 120°–126°, and a real pattern changes with pitch.`}</Note>
+              <Note>{`What you just saw: a supercardioid rejects most at ≈ 125° — toward the rear but OFF the axis — with a small inverted lobe directly behind (${fmtDb(gainDb('supercardioid', 180))}). Real supercardioid ${lesson.noun.one} mics put their deepest rejection somewhere around 120°–126°, and a real pattern changes with pitch.`}</Note>
             ) : pat === 'cardioid' ? (
               <Note>What you just saw: a cardioid rejects most directly behind (180°).</Note>
             ) : !isModelled(pat) ? null : (

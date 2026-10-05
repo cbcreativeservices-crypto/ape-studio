@@ -557,3 +557,219 @@ export function BoundaryMic({ len, cross, x = 0, y = 0, angleDeg = 0, tint }: { 
     </Group>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INSTRUMENT DYNAMICS for the drum kit (Miking Lab 1, 2026-10-04). Same
+// conventions as the kick mics above: front at the origin, the body toward +y,
+// `r` the front radius, `len` the overall length; generic shapes, no brand.
+
+function buildSmallDynamic(r: number, len: number) {
+  // A straight grille barrel (≈ 22 % of the length) with a rounded nose, a
+  // chrome joint ring, then a long body tapering from the front diameter to
+  // the tail's (the sourced size set: 157 long, Ø 32 front, Ø 23 tail).
+  const gl = len * 0.22;
+  const nose = r * 0.42;
+  const grille: SkPathT = Skia.Path.Make();
+  grille.moveTo(-r * 0.96, gl);
+  grille.lineTo(-r, nose);
+  grille.cubicTo(-r, nose * 0.25, -r * 0.7, 0, 0, 0);
+  grille.cubicTo(r * 0.7, 0, r, nose * 0.25, r, nose);
+  grille.lineTo(r * 0.96, gl);
+  grille.close();
+  const mesh = crossHatch(-r, 0, r, gl, Math.max(1, r * 0.18));
+  const ring: SkPathT = Skia.Path.Make();
+  ring.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, gl - r * 0.05, r * 2, r * 0.22), r * 0.06, r * 0.06));
+  const b0 = gl + r * 0.17;
+  const tailR = r * 0.72;
+  const tailTop = len - r * 0.55;
+  const body: SkPathT = Skia.Path.Make();
+  body.moveTo(-r * 0.97, b0);
+  body.lineTo(-tailR, tailTop);
+  body.lineTo(tailR, tailTop);
+  body.lineTo(r * 0.97, b0);
+  body.close();
+  const tail: SkPathT = Skia.Path.Make();
+  tail.addRRect(Skia.RRectXY(Skia.XYWHRect(-tailR * 0.94, tailTop, tailR * 1.88, len - tailTop), r * 0.1, r * 0.1));
+  const grooves: SkPathT = Skia.Path.Make();
+  for (const t of [0.3, 0.7]) {
+    const y = tailTop + (len - tailTop) * t;
+    grooves.moveTo(-tailR * 0.9, y);
+    grooves.lineTo(tailR * 0.9, y);
+  }
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addPath(grille);
+  shadow.addPath(body);
+  shadow.addPath(tail);
+  return { grille, mesh, ring, body, tail, grooves, shadow };
+}
+
+/** SMALL END-ADDRESS DYNAMIC (the common snare / tom instrument mic). */
+export function SmallDynamicMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: number; len: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
+  const p = useMemo(() => buildSmallDynamic(r, len), [r, len]);
+  const lit = LIT(r);
+  const hair = Math.max(0.35, r * 0.03);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Group transform={[{ translateX: -r * 0.12 }, { translateY: r * 0.1 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.5}>
+          <BlurMask blur={r * 0.2} style="normal" />
+        </Path>
+      </Group>
+      <Path path={p.body}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#6a6f7a', '#3b3f48', '#23252b', '#121317']} positions={[0, 0.3, 0.65, 1]} />
+      </Path>
+      <Path path={p.tail}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#9aa0ab', '#4f535c', '#1f2126']} />
+      </Path>
+      <Path path={p.grooves} style="stroke" strokeWidth={hair} color="#0d0e11" opacity={0.8} />
+      <Path path={p.grille}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#a9aeb8', '#575c66', '#1e2025']} positions={[0, 0.45, 1]} />
+      </Path>
+      <Group clip={p.grille}>
+        <Path path={p.mesh} style="stroke" strokeWidth={Math.max(0.3, r * 0.04)} color="#0c0d10" opacity={0.75} />
+        <Circle cx={r * 0.4} cy={len * 0.08} r={r * 0.4} color="#ffffff" opacity={0.16}>
+          <BlurMask blur={r * 0.3} style="normal" />
+        </Circle>
+      </Group>
+      <Path path={p.ring}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#f4f6fa', '#9aa0ab', '#3a3d45']} />
+      </Path>
+      <Path path={p.grille} style="stroke" strokeWidth={hair * 1.4} color="#08080a" opacity={0.9} />
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.4} color="#08080a" opacity={0.9} />
+      <Path path={p.grille} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.35} />
+    </Group>
+  );
+}
+
+function buildClipDynamic(r: number, len: number) {
+  // A short, wide body: a domed grille over the front ≈ 45 %, a chrome ring,
+  // a rear body that narrows a little to the connector (Ø 41 × 63 set).
+  const gl = len * 0.45;
+  const grille: SkPathT = Skia.Path.Make();
+  grille.moveTo(-r * 0.97, gl);
+  grille.lineTo(-r, r * 0.5);
+  grille.cubicTo(-r, r * 0.12, -r * 0.62, 0, 0, 0);
+  grille.cubicTo(r * 0.62, 0, r, r * 0.12, r, r * 0.5);
+  grille.lineTo(r * 0.97, gl);
+  grille.close();
+  const mesh = crossHatch(-r, 0, r, gl, Math.max(1, r * 0.16));
+  const ring: SkPathT = Skia.Path.Make();
+  ring.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, gl - r * 0.04, r * 2, r * 0.14), r * 0.05, r * 0.05));
+  const body: SkPathT = Skia.Path.Make();
+  body.moveTo(-r * 0.96, gl + r * 0.1);
+  body.lineTo(-r * 0.78, len);
+  body.lineTo(r * 0.78, len);
+  body.lineTo(r * 0.96, gl + r * 0.1);
+  body.close();
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addPath(grille);
+  shadow.addPath(body);
+  return { grille, mesh, ring, body, shadow };
+}
+
+/** COMPACT CLIP-ON DYNAMIC (rides a rim clamp; the clamp is drawn by the scene). */
+export function ClipDynamicMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: number; len: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
+  const p = useMemo(() => buildClipDynamic(r, len), [r, len]);
+  const lit = LIT(r);
+  const hair = Math.max(0.35, r * 0.03);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Group transform={[{ translateX: -r * 0.1 }, { translateY: r * 0.08 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.5}>
+          <BlurMask blur={r * 0.18} style="normal" />
+        </Path>
+      </Group>
+      <Path path={p.body}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#5d626d', '#30333b', '#1a1b20', '#0f1013']} positions={[0, 0.3, 0.7, 1]} />
+      </Path>
+      <Path path={p.grille}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#9ba1ac', '#4c515b', '#1b1d22']} positions={[0, 0.45, 1]} />
+      </Path>
+      <Group clip={p.grille}>
+        <Path path={p.mesh} style="stroke" strokeWidth={Math.max(0.3, r * 0.035)} color="#0c0d10" opacity={0.75} />
+      </Group>
+      <Path path={p.ring}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#f4f6fa', '#9aa0ab', '#3a3d45']} />
+      </Path>
+      <Path path={p.grille} style="stroke" strokeWidth={hair * 1.4} color="#08080a" opacity={0.9} />
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.4} color="#08080a" opacity={0.9} />
+      <Path path={p.grille} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.35} />
+    </Group>
+  );
+}
+
+function buildGooseneck(r: number, len: number) {
+  // A slim condenser head (Ø = 2r, its first ≈ 40 mm a grille) on a ribbed
+  // gooseneck that runs back to the clamp (the head's length is a drawing
+  // default; the gooseneck is the sourced 9.5 mm across).
+  const head = Math.min(len * 0.28, 44);
+  const gr = r * 0.43;
+  const grille: SkPathT = Skia.Path.Make();
+  grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, 0, r * 2, head * 0.45), r * 0.45, r * 0.45));
+  const mesh = crossHatch(-r, 0, r, head * 0.45, Math.max(1, r * 0.3));
+  const body: SkPathT = Skia.Path.Make();
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.96, head * 0.42, r * 1.92, head * 0.58), r * 0.2, r * 0.2));
+  const neck: SkPathT = Skia.Path.Make();
+  neck.addRect(Skia.XYWHRect(-gr, head, gr * 2, len - head));
+  const ribs: SkPathT = Skia.Path.Make();
+  for (let yy = head + 3; yy < len; yy += Math.max(2.5, gr * 0.7)) {
+    ribs.moveTo(-gr, yy);
+    ribs.lineTo(gr, yy);
+  }
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addPath(grille);
+  shadow.addPath(body);
+  shadow.addPath(neck);
+  return { grille, mesh, body, neck, ribs, shadow };
+}
+
+/** SLIM CONDENSER ON A GOOSENECK (a rim-mounted drum condenser). */
+export function GooseneckMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: number; len: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
+  const p = useMemo(() => buildGooseneck(r, len), [r, len]);
+  const lit = LIT(r);
+  const hair = Math.max(0.3, r * 0.04);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Group transform={[{ translateX: -r * 0.12 }, { translateY: r * 0.1 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.45}>
+          <BlurMask blur={r * 0.25} style="normal" />
+        </Path>
+      </Group>
+      <Path path={p.neck}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#5b5f69', '#2a2c32', '#121317']} />
+      </Path>
+      <Path path={p.ribs} style="stroke" strokeWidth={hair} color="#08080a" opacity={0.7} />
+      <Path path={p.body}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#e6e9ef', METAL_HI, METAL_MID, '#2b2d34']} positions={[0, 0.22, 0.6, 1]} />
+      </Path>
+      <Path path={p.grille}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#a9aeb8', '#575c66', '#1e2025']} />
+      </Path>
+      <Group clip={p.grille}>
+        <Path path={p.mesh} style="stroke" strokeWidth={Math.max(0.25, r * 0.05)} color="#0c0d10" opacity={0.7} />
+      </Group>
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.85} />
+      <Path path={p.grille} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.85} />
+      <Path path={p.grille} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.3} />
+    </Group>
+  );
+}
+
+/** One switch for every Miking mic art id (the placement scene and the
+ *  polar page draw through it). */
+export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck'; r: number; len: number; cross?: number; tint?: string }) {
+  switch (art) {
+    case 'boundary':
+      return <BoundaryMic len={len} cross={cross ?? r * 2} tint={tint} />;
+    case 'sdc':
+      return <SdcMic r={r} len={len} tint={tint} />;
+    case 'smallDynamic':
+      return <SmallDynamicMic r={r} len={len} tint={tint} />;
+    case 'clipDynamic':
+      return <ClipDynamicMic r={r} len={len} tint={tint} />;
+    case 'gooseneck':
+      return <GooseneckMic r={r} len={len} tint={tint} />;
+    default:
+      return <KickDynamicMic r={r} len={len} tint={tint} />;
+  }
+}
