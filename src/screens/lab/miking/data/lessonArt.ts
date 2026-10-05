@@ -23,6 +23,12 @@ import { ConcertSnareArt, concertSnareHitTest, concertSnareLabels } from '../les
 import { ConcertSnareCoupled, ConcertSnareStrike } from '../lessons/m07bConcertSnare/soundArt';
 import { TambourineArt, tambourineHitTest, tambourineLabels } from '../lessons/m08HeadedTambourine/art';
 import { TambourineCoupled, TambourineStrike } from '../lessons/m08HeadedTambourine/soundArt';
+import { C01_ART } from '../lessons/c01Guitar/art';
+import { C05C_ART } from '../lessons/c05cUkulele/art';
+import { C05B_ART } from '../lessons/c05bMandolin/art';
+import { C05A_ART } from '../lessons/c05aBanjo/art';
+import { C03_ART } from '../lessons/c03Resonator/art';
+import { C07_ART } from '../lessons/c07AcousticBass/art';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -48,6 +54,14 @@ const ART: Record<string, LessonArt> = {
 ART.SPK = { ...cabArt('1x12'), pages: SPK_PAGES };
 ART.M12 = { ...TONBAK_ART, pages: TONBAK_PAGES };
 ART.M13 = { ...TABLA_ART, pages: TABLA_PAGES };
+
+// Lab 4, the guitar family (each lesson on its own line: lessons are built in parallel).
+ART.C01 = C01_ART;
+ART.C05C = C05C_ART;
+ART.C05B = C05B_ART;
+ART.C05A = C05A_ART;
+ART.C03 = C03_ART;
+ART.C07 = C07_ART;
 
 export function lessonArt(id: string): LessonArt | undefined {
   return ART[id];

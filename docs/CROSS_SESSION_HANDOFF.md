@@ -613,10 +613,34 @@ affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
 
+### 2026-10-05 00:58 · ccode · 8734881b
+changed: Merge branch 'final-lab' into integ-c1
+affects other side: nothing (miking merge, branch final-lab)
+needs: nothing (miking merge, branch final-lab)
+
+
 ### 2026-10-05 00:56 · ccode · 32fdb87e
 changed: docs(miking): Lab 2 idiophone research (24 lessons) + BATCH2 summary
 affects other side: nothing (branch final-lab, miking lab work).
 needs: nothing.
+
+
+### 2026-10-05 00:55 · ccode · 1da36c7a
+changed: Merge branch 'miking-c1' into final-lab
+affects other side: nothing (miking merge, branch final-lab)
+needs: nothing (miking merge, branch final-lab)
+
+
+### 2026-10-05 00:39 · ccode · 7a77984c
+changed: docs(miking): Lab 4 guitar-family corrections (RS, BJ, MD, UK, AB, L4); brand list
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 00:33 · ccode · e42e07d0
+changed: feat(miking): C05b Mandolin lesson
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 00:27 · ccode · 6a2bf905
@@ -629,6 +653,12 @@ needs: nothing (miking merge, branch final-lab)
 changed: Merge branch 'miking-w2' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
+
+
+### 2026-10-05 00:23 · ccode · bcf6a2df
+changed: feat(miking): C03 Resonator Guitar lesson (lap style and upright)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 00:19 · ccode · bd639888
@@ -653,6 +683,18 @@ needs: nothing
 changed: feat(miking): shared cymbal family, kit scene and kit pages; engine hooks for kit lessons
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing
+
+
+### 2026-10-05 00:07 · ccode · d76d5bca
+changed: feat(miking): C01 Acoustic Guitar lesson; Lab 4 Strings in the hub
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 00:06 · ccode · 02a0d63f
+changed: feat(miking): engine additions for the guitar family (additive, optional)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 00:00 · ccode · 7f90efa3

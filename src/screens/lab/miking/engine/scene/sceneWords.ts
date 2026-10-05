@@ -40,6 +40,7 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
   // The readouts as SHOWN (with the stop reason): the same value the bezel
   // and the live strip print (readoutText.ts).
   const r = rig.shown(slot);
+  const W = copyOf(rig.lesson).words;
   const z = r.zoneId ? rig.lesson.zones.find((q) => q.id === r.zoneId) ?? null : null;
   return {
     slot,
@@ -49,7 +50,8 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
     ...refLabels(rig, slot),
     zoneLabel: z ? `${z.label}, ${z.band}` : null,
     showAim: t.mount !== 'surface',
-    ...(where ? { where } : {}),
+    where: where ?? { inside: W.inside, outside: W.outside },
+    axisWords: W.axis,
   };
 }
 
@@ -59,8 +61,11 @@ export function sceneSubject(rig: Pick<Rig, 'lesson' | 'variant'>): string {
 }
 
 export function sceneDescription(rig: Rig, view: ViewId, slots: MicSlot[], extra?: string): SceneDescription {
-  const vw = copyOf(rig.lesson).viewWords;
-  return { view, subject: sceneSubject(rig), mics: slots.filter((s) => rig.mics.some((m) => m.slot === s && m.on)).map((s) => micWords(rig, s)), extra, ...(vw ? { viewWords: vw[view] } : {}) };
+  const c = copyOf(rig.lesson);
+  const W = c.words;
+  // A lesson's own per-view words (the hand drums) win over its family's.
+  const viewWords = { side: c.viewWords?.side ?? W.viewSide, top: c.viewWords?.top ?? W.viewTop };
+  return { view, subject: sceneSubject(rig), viewWords, mics: slots.filter((s) => rig.mics.some((m) => m.slot === s && m.on)).map((s) => micWords(rig, s)), extra };
 }
 
 export function sceneLabel(rig: Rig, view: ViewId, slots: MicSlot[], extra?: string): string {
