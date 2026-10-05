@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 00:48 · ccode · 24d5d976
+changed: feat(miking): C09c Cello lesson (Lab 4 Strings), on the bowed family
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 00:47 · ccode · fcac076e
 changed: feat(miking): engine additions for the bowed strings (additive, optional)
 affects other side: nothing (miking lessons, branch final-lab)

@@ -161,12 +161,16 @@ function strokesOf(bow: BowPose, shoulder: Vec3, pole: Vec3): { hand: Vec3; elbo
   });
 }
 
-/* ── UNDER THE CHIN (violin, viola) ── */
-export function underChin(spec: BowedSpec, tailDrop = 0): Posture {
+/* ── UNDER THE CHIN (violin, viola) — standing, or seated (the proposal's
+ *    seated option: the upper body and the instrument 450 mm lower, the
+ *    player on a chair; in the lesson frame only the floor, the legs and
+ *    the chair move) ── */
+export function underChin(spec: BowedSpec, tailDrop = 0, seat = false): Posture {
   const st = stationsOf(spec);
   const D = Math.PI / 180;
+  const dy = seat ? 450 : 0;
   // The research frame (floor origin) — the engine's axes.
-  const tailW = v(0, -1450 + tailDrop, 0);
+  const tailW = v(0, -1450 + tailDrop + dy, 0);
   const fwdLeft = v(Math.cos(45 * D), 0, -Math.sin(45 * D));
   const x = norm(add(scale(fwdLeft, Math.cos(10 * D)), v(0, -Math.sin(10 * D), 0)));
   const flat = axesFrom(x, v(0, -1, 0));
@@ -176,43 +180,60 @@ export function underChin(spec: BowedSpec, tailDrop = 0): Posture {
   const ax = axesFrom(x, z);
   const B0w = sub(tailW, scale(ax.x, st.tailX));
   const L = (p: Vec3) => sub(p, B0w);
+  // The upper body moves with the instrument.
+  const U = (xx: number, yy: number, zz: number) => L(v(xx, yy + tailDrop + dy, zz));
   const floorY = -B0w.y;
   const zm = 10; // the player's midline: the tail sits at the throat
-  const head = L(v(-60, -1600 + tailDrop, -80));
-  const neck = L(v(-80, -1462 + tailDrop, zm));
-  const chest = L(v(-95, -1300 + tailDrop, zm));
-  const pelvis = L(v(-70, -960, zm));
-  const shoulderL = L(v(-85, -1425 + tailDrop, zm - 185));
-  const shoulderR = L(v(-85, -1425 + tailDrop, zm + 185));
+  const head = U(-60, -1600, -80);
+  const neck = U(-80, -1462, zm);
+  const chest = U(-95, -1300, zm);
+  const pelvis = seat ? L(v(-90, -545, zm)) : L(v(-70, -960, zm));
+  const shoulderL = U(-85, -1425, zm - 185);
+  const shoulderR = U(-85, -1425, zm + 185);
   const handL = toLesson(ax, { x: st.nutX - 32, y: -4, z: -30 });
   const elbowL = elbowOf(shoulderL, handL, UPPER_ARM, FOREARM, v(0.1, 1, 0.45));
   const bow = bowOf(spec, st, ax, 1);
   const handR = add(bow.frog, scale(bow.up, 28));
   const poleR = v(-0.1, 1, 0.55);
   const elbowR = elbowOf(shoulderR, handR, UPPER_ARM, FOREARM, poleR);
-  const player: Skeleton = {
-    head,
-    headR: 105,
-    face: norm(v(0.85, 0.35, -0.4)),
-    neck,
-    chest,
-    pelvis,
-    shoulderL,
-    shoulderR,
-    elbowL,
-    elbowR,
-    handL,
-    handR,
-    hipL: L(v(-70, -945, zm - 95)),
-    hipR: L(v(-70, -945, zm + 95)),
-    kneeL: L(v(-45, -505, zm - 105)),
-    kneeR: L(v(-45, -505, zm + 105)),
-    ankleL: L(v(-75, -80, zm - 115)),
-    ankleR: L(v(-75, -80, zm + 115)),
-    toeL: L(v(95, -22, zm - 150)),
-    toeR: L(v(95, -22, zm + 150)),
-  };
-  return { spec, st, kind: 'underChin', ax, floorY, player, bow, strokes: strokesOf(bow, shoulderR, poleR) };
+  const legs = seat
+    ? {
+        hipL: L(v(-90, -540, zm - 95)),
+        hipR: L(v(-90, -540, zm + 95)),
+        kneeL: L(v(330, -525, zm - 120)),
+        kneeR: L(v(330, -525, zm + 120)),
+        ankleL: L(v(355, -80, zm - 135)),
+        ankleR: L(v(355, -80, zm + 135)),
+        toeL: L(v(520, -22, zm - 160)),
+        toeR: L(v(520, -22, zm + 160)),
+      }
+    : {
+        hipL: L(v(-70, -945, zm - 95)),
+        hipR: L(v(-70, -945, zm + 95)),
+        kneeL: L(v(-45, -505, zm - 105)),
+        kneeR: L(v(-45, -505, zm + 105)),
+        ankleL: L(v(-75, -80, zm - 115)),
+        ankleR: L(v(-75, -80, zm + 115)),
+        toeL: L(v(95, -22, zm - 150)),
+        toeR: L(v(95, -22, zm + 150)),
+      };
+  const player: Skeleton = { head, headR: 105, face: norm(v(0.85, 0.35, -0.4)), neck, chest, pelvis, shoulderL, shoulderR, elbowL, elbowR, handL, handR, ...legs };
+  let chair: Posture['chair'];
+  if (seat) {
+    const seatY = floorY - 460;
+    const sc = L(v(-60, 0, zm));
+    const box = { min: v(sc.x - 230, seatY - 4, sc.z - 225), max: v(sc.x + 200, seatY + 26, sc.z + 225) };
+    chair = {
+      seat: box,
+      legs: [
+        [v(box.min.x + 25, seatY + 26, box.min.z + 30), v(box.min.x + 15, floorY, box.min.z + 20)],
+        [v(box.min.x + 25, seatY + 26, box.max.z - 30), v(box.min.x + 15, floorY, box.max.z - 20)],
+        [v(box.max.x - 25, seatY + 26, box.min.z + 30), v(box.max.x - 10, floorY, box.min.z + 20)],
+        [v(box.max.x - 25, seatY + 26, box.max.z - 30), v(box.max.x - 10, floorY, box.max.z - 20)],
+      ],
+    };
+  }
+  return { spec, st, kind: 'underChin', ax, floorY, player, bow, strokes: strokesOf(bow, shoulderR, poleR), chair };
 }
 
 /* ── SEATED (cello) ── */

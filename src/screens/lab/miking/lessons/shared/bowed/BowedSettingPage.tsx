@@ -33,7 +33,7 @@ import type { PageProps } from '../../../pages/pageTypes';
 import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from '../drums/DrumArt';
 import { KICK_22x18 } from '../drums/drumSpec.ts';
 import { KIT_CYMBALS, KIT_DRUMS } from '../kitPlanModel.ts';
-import { hatchFor, sceneGroups, sweepPaths } from './BowedArt';
+import { hatchFor, pluckPath, sceneGroups, sweepPaths } from './BowedArt';
 import type { Posture } from './posture.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -55,6 +55,8 @@ export type PlanObject = {
 
 export type BowedSettingConfig = {
   P: Posture;
+  /** What works the strings: the bow (its sweep hatched) or a plucking hand. Default bow. */
+  hands?: 'bow' | 'pluck';
   objects: readonly PlanObject[];
   /** The plan boxes (lesson frame, mm): around the player, and the wider room. */
   near: ViewBox;
@@ -208,8 +210,8 @@ function WedgeTop({ at, faces }: { at: { x: number; z: number }; faces: { x: num
 }
 
 /** A string player and instrument from above (the family's own art). */
-function BowedTop({ P, dim }: { P: Posture; dim: number }) {
-  const groups = useMemo(() => sceneGroups(P, 'top'), [P]);
+function BowedTop({ P, dim, bow = true }: { P: Posture; dim: number; bow?: boolean }) {
+  const groups = useMemo(() => sceneGroups(P, 'top', { bow }), [P, bow]);
   return (
     <Group opacity={dim}>
       {groups.map((g) => (
@@ -235,7 +237,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   const textScale = useStageTextScale();
   const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
   const self = cfg.P;
-  const sweep = useMemo(() => sweepPaths(self, 'top'), [self]);
+  const sweep = useMemo(() => (cfg.hands === 'pluck' ? pluckPath(self, 'top') : sweepPaths(self, 'top').bow), [self, cfg.hands]);
   const hatch = useMemo(() => hatchFor(box), [box]);
   const shown = cfg.objects.filter((o) => o.scene === 'all' || o.scene === scene || (scene !== 'kit' && o.scene === 'kit' && o.kind !== 'self'));
   const floor = useMemo(() => {
@@ -293,11 +295,11 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
             </Group>
           ))}
           {scene === 'stage' ? wedges.filter((x) => x.glyph !== 'none').map((x) => <WedgeTop key={x.id} at={{ x: x.p.x, z: x.p.z }} faces={{ x: x.faces.x, z: x.faces.z }} />) : null}
-          <BowedTop P={self} dim={1} />
-          <Group clip={sweep.bow}>
+          <BowedTop P={self} dim={1} bow={cfg.hands !== 'pluck'} />
+          <Group clip={sweep}>
             <Path path={hatch} style="stroke" strokeWidth={2} color="#8a8f9c" opacity={0.5} />
           </Group>
-          <Path path={sweep.bow} style="stroke" strokeWidth={2.5} color="#8a8f9c" opacity={0.75} />
+          <Path path={sweep} style="stroke" strokeWidth={2.5} color="#8a8f9c" opacity={0.75} />
           {ring ? <Path path={ring} style="stroke" strokeWidth={14} color="#ffc64d" opacity={0.9} /> : null}
         </Group>
       </Canvas>
@@ -363,7 +365,7 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
         layout: 'rack',
         rack: {
           render: (w, h) => <BowedPlan w={w} h={h} cfg={cfg} box={cfg.near} scene="kit" wedges={lesson.live.wedges} items={items} highlight={nearSel} onTap={pickNear} accessibilityLabel={cfg.nearA11y} />,
-          badge: 'From above · a typical layout · grey hatch = the bow’s sweep',
+          badge: cfg.hands === 'pluck' ? 'From above · a typical layout · grey hatch = the plucking hand’s path' : 'From above · a typical layout · grey hatch = the bow’s sweep',
           bezel: bezel(nearSelItem, { k: 'LOOKED AT', v: `${seen.size} / ${nearItems.length}`, flex: 1 }),
           params: [fader(nearItems, nearSel, pickNear)],
           initialParam: 'item',

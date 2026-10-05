@@ -412,6 +412,14 @@ export function sweepPaths(P: Posture, view: ViewId): { bow: SkPath; hand: SkPat
   return { bow: bowP, hand: handP };
 }
 
+/** The plucking hand's path, hatched: the model's capsule (x′ 60–300 above
+ *  the bridge, radius 60 — bowedModel's bw.pluck), projected. */
+export function pluckPath(P: Posture, view: ViewId): SkPath {
+  const a = prj(view, toLesson(P.ax, { x: 60, y: 0, z: stringZ(P.spec, 60) }));
+  const b = prj(view, toLesson(P.ax, { x: 300, y: 0, z: stringZ(P.spec, 300) }));
+  return polyPath(hull([...circlePts(a, 60, 16), ...circlePts(b, 60, 16)]));
+}
+
 /* ── the player ── */
 function playerGroups(P: Posture, view: ViewId, withRightArm = true): Group3[] {
   const s = P.player;
@@ -541,6 +549,7 @@ const HATCH = '#8a8f9c';
 export function BowedScene({ P, view, bow = true, sweep = true, hatch }: { P: Posture; view: ViewId; bow?: boolean; sweep?: boolean; hatch: SkPath }) {
   const groups = useMemo(() => sceneGroups(P, view, { bow }), [P, view, bow]);
   const sw = useMemo(() => (sweep ? sweepPaths(P, view) : null), [P, view, sweep]);
+  const pl = useMemo(() => (!bow && P.kind === 'standing' ? pluckPath(P, view) : null), [P, view, bow]);
   // The player recedes (charter §6: the subject is the instrument): the
   // parts behind it and the parts in front are each composited at a lower
   // opacity, so the instrument and the mic read through the bow arm.
@@ -569,6 +578,14 @@ export function BowedScene({ P, view, bow = true, sweep = true, hatch }: { P: Po
           <Path path={sw.hand} style="stroke" strokeWidth={2.2} color={HATCH} opacity={0.6}>
             <DashPathEffect intervals={[14, 10]} />
           </Path>
+        </>
+      ) : null}
+      {pl ? (
+        <>
+          <Group clip={pl}>
+            <Path path={hatch} style="stroke" strokeWidth={2} color={HATCH} opacity={0.5} />
+          </Group>
+          <Path path={pl} style="stroke" strokeWidth={2.5} color={HATCH} opacity={0.75} />
         </>
       ) : null}
     </Group>

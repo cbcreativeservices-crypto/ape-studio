@@ -26,7 +26,10 @@
  *
  * Pure: plain data.
  */
-import type { Dim, InstrumentModel, Part, Provenance, ReferenceSurface, RefLine, Rim, Shape3, Vec3, ViewBox, MicPose } from '../../../engine/model/types.ts';
+import type { Dim, DocumentedZone, InstrumentModel, MicPose, MicType, Part, Provenance, ReferenceSurface, RefLine, Rim, Shape3, Vec3, ViewBox } from '../../../engine/model/types.ts';
+import { checkAssembly, compileScene } from '../../../engine/geometry/collision.ts';
+import { inZone } from '../../../engine/geometry/zones.ts';
+import { micBodyOf } from '../../../engine/model/validate.ts';
 import { add, angleBetween, dot, len, norm, scale, sub } from '../../../engine/geometry/vec.ts';
 import { archAt, fbHalf, fingerboardZ, halfWidth, stringYs, stringZ, type BowedSpec } from './bowedSpec.ts';
 import { anchorsOf, toLesson, type BPoint, type Posture } from './posture.ts';
@@ -380,6 +383,99 @@ export function zoneDisc(view: 'side' | 'top', c: Vec3, r: number): { poly: [num
 /** The distance from a point to a direction's cone axis (for tests). */
 export function offAxisDeg(from: Vec3, p: Vec3, axis: Vec3): number {
   return angleBetween(sub(p, from), axis);
+}
+
+/**
+ * One model for several postures of the same instrument (a violinist
+ * standing or seated): the instrument and everything that does not move
+ * between them is shared; a part whose solid differs is kept once per
+ * variant — the first variant keeps its id, the others get `id.<variant>` —
+ * and each variant has its own floor line.
+ */
+export function mergeVariants(list: { variant: string; model: InstrumentModel }[], views?: InstrumentModel['viewsByVariant']): InstrumentModel {
+  const [first, ...rest] = list;
+  const parts: Part[] = [];
+  const key = (p: Part) => JSON.stringify(p.solid ?? null);
+  for (const p of first.model.parts) {
+    const same = rest.every((r) => {
+      const q = r.model.parts.find((x) => x.id === p.id);
+      return q && key(q) === key(p);
+    });
+    parts.push(same ? p : { ...p, variants: [first.variant] });
+  }
+  for (const r of rest) {
+    for (const q of r.model.parts) {
+      const p = first.model.parts.find((x) => x.id === q.id);
+      if (p && key(p) === key(q)) continue;
+      parts.push({ ...q, id: `${q.id}.${r.variant}`, variants: [r.variant] });
+    }
+  }
+  return {
+    ...first.model,
+    parts,
+    variants: first.model.variants,
+    defaultVariant: first.variant,
+    ports: Object.fromEntries(list.map((x) => [x.variant, null])),
+    yFloorByVariant: Object.fromEntries(list.map((x) => [x.variant, x.model.yFloor.mm])),
+    ...(views ? { viewsByVariant: views } : {}),
+  };
+}
+
+/** A part id as it exists in a variant (its per-variant twin, if any). */
+export function partIn(model: InstrumentModel, id: string, variant: string): string {
+  const p = model.parts.find((x) => x.id === id);
+  if (p && (!p.variants || p.variants.includes(variant))) return id;
+  const twin = `${id}.${variant}`;
+  return model.parts.some((x) => x.id === twin) ? twin : id;
+}
+
+/**
+ * The first pose (in the caller's order of preference) that is inside the
+ * zone and clear of every solid in every one of `variants` — a zone's
+ * validated "go to zone" start, found once at load.
+ */
+export function firstClear(model: InstrumentModel, zone: Omit<DocumentedZone, 'start'>, variants: readonly string[], candidates: Iterable<MicPose>, micTypes: Record<string, MicType>): MicPose {
+  const t = micTypes[zone.requires?.micTypeIds?.[0] ?? 'strSdc'];
+  const body = micBodyOf(t);
+  const scenes = variants.map((v) => ({ v, scene: compileScene(model, v) }));
+  let firstIn: MicPose | null = null;
+  for (const pose of candidates) {
+    let ok = true;
+    for (const { v, scene } of scenes) {
+      if (!inZone(zone as DocumentedZone, { scene, surfaces: model.surfaces, lines: model.lines, variant: v, micTypeId: t.id, mount: t.mount }, pose)) {
+        ok = false;
+        break;
+      }
+      if (!firstIn) firstIn = pose;
+      if (checkAssembly(scene, pose, body)) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) return pose;
+  }
+  throw new Error(`no clear start for zone ${zone.id}${firstIn ? ' (candidates were in the zone but blocked)' : ''}`);
+}
+
+/** Candidate poses round a direction from a target: distances × angles. */
+export function* around(target: Vec3, axis: Vec3, dists: readonly number[], coneMax: number, aimAtPt: Vec3, side: Vec3): Generator<MicPose> {
+  const a = norm(axis);
+  // Two unit vectors across the axis.
+  let u = sub(side, scale(a, dot(side, a)));
+  u = len(u) < 1e-6 ? norm(sub({ x: 0, y: 1, z: 0 }, scale(a, a.y))) : norm(u);
+  const w = norm({ x: a.y * u.z - a.z * u.y, y: a.z * u.x - a.x * u.z, z: a.x * u.y - a.y * u.x });
+  for (const d of dists) {
+    for (let ring = 0; ring * 6 <= coneMax; ring++) {
+      const th = (ring * 6 * Math.PI) / 180;
+      const steps = ring === 0 ? 1 : 12;
+      for (let k = 0; k < steps; k++) {
+        const ph = (k / steps) * Math.PI * 2;
+        const dir = add(scale(a, Math.cos(th)), add(scale(u, Math.sin(th) * Math.cos(ph)), scale(w, Math.sin(th) * Math.sin(ph))));
+        const p = add(target, scale(dir, d));
+        yield aimAt(p, aimAtPt);
+      }
+    }
+  }
 }
 
 export const _len = len;

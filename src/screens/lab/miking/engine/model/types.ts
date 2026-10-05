@@ -314,6 +314,9 @@ export type InstrumentModel = {
    *  floor tom) frames its own boxes. */
   viewsByVariant?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
   yFloor: Dim;
+  /** A variant's own floor line, when it differs (a violinist standing or
+   *  seated: the instrument's frame stays put, the floor moves). */
+  yFloorByVariant?: Partial<Record<VariantId, number>>;
   /** The interior a mic counts as "inside". */
   interior: Interior;
   interiors?: Interior[];

@@ -41,7 +41,10 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     if (e.variants && !e.variants.includes(variant)) continue;
     solids.push({ partId: e.id, label: e.label, shape: e.shape, clearance: e.clearance ?? 0 });
   }
-  solids.push({ partId: 'floor', label: 'floor', shape: { kind: 'floor', y: model.yFloor.mm }, clearance: 0 });
+  // A variant may stand the instrument at another height above the floor (a
+  // violinist standing or seated): its own floor line (added 2026-10-05).
+  const yFloor = model.yFloorByVariant?.[variant] ?? model.yFloor.mm;
+  solids.push({ partId: 'floor', label: 'floor', shape: { kind: 'floor', y: yFloor }, clearance: 0 });
   return {
     variant,
     solids,
@@ -49,7 +52,7 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     interior: model.interior,
     interiors: model.interiors ?? [],
     rims: (model.rims ?? []).filter((r) => !r.variants || r.variants.includes(variant)),
-    yFloor: model.yFloor.mm,
+    yFloor,
     boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: BOOM_BEHIND },
     standRadius: STAND_RADIUS,
   };
