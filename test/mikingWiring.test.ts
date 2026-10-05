@@ -66,7 +66,7 @@ describe('listing (owner: Training Labs → Instruments & Recording, members onl
   it('one row per lab with a READY lesson — no placeholder rows', () => {
     const fam = cat.families!.find((f) => f.name === 'Miking Labs')!;
     assert.deepEqual(fam.labs.map((l) => l.params!.lab), readyLabs().map((l: { id: string }) => l.id));
-    assert.deepEqual(readyLabs().map((l: { id: string }) => l.id), ['drums'], 'only Lab 1 has a ready lesson today');
+    assert.deepEqual(readyLabs().map((l: { id: string }) => l.id), ['drums', 'strings'], 'Labs 1 and 4 have ready lessons today');
     assert.ok(LESSONS.every((l: { status: string }) => l.status === 'ready'));
     assert.ok(categoryLeaves(cat as never).some((l: { route?: string }) => l.route === 'MikingHub'));
   });
