@@ -25,9 +25,10 @@ import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../engine/physic
 import { fmtDb, fmtIdealPickup, isDeepNull } from '../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../data/micTypes';
 import type { PageProps } from './pageTypes';
+import { copyOf, type LessonTerms } from '../engine/model/copy.ts';
 
 /** Three plain lines per mic type: what the choice needs (review M3). */
-export function plainLines(m: MicType): { power: string; mount: string; pattern: string } {
+export function plainLines(m: MicType, terms?: LessonTerms): { power: string; mount: string; pattern: string } {
   const p = m.patterns[0].id;
   return {
     power: m.transducer === 'dynamic' ? 'Power: none needed' : 'Power: needs phantom power from the desk',
@@ -35,8 +36,8 @@ export function plainLines(m: MicType): { power: string; mount: string; pattern:
       m.mount === 'surface'
         ? 'Mount: rests on the pillow — it is made for that'
         : m.mount === 'clip'
-          ? 'Mount: clamps to the drum’s hoop — a clamp made for it, with the player’s agreement'
-          : 'Mount: a stand or a suitable mount, kept off the heads and damping',
+          ? terms?.clipMount ?? 'Mount: clamps to the drum’s hoop — a clamp made for it, with the player’s agreement'
+          : terms?.standMount ?? 'Mount: a stand or a suitable mount, kept off the heads and damping',
     pattern:
       p === 'cardioid'
         ? 'Pattern: cardioid — rejects most directly behind'
@@ -46,7 +47,9 @@ export function plainLines(m: MicType): { power: string; mount: string; pattern:
             ? 'Pattern: hypercardioid — rejects most off to each side of the rear, with a larger rear lobe'
             : p === 'halfCardioid'
               ? 'Pattern: half-cardioid — picks up the half-space above its surface'
-              : 'Pattern: open cardioid — not drawn here',
+              : p === 'omni'
+                ? 'Pattern: omni — picks up all round, with no rejection to aim'
+                : 'Pattern: open cardioid — not drawn here',
   };
 }
 
@@ -172,7 +175,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
           <Body>No brand is required. Choose by what the job needs: the pattern, the power it needs, its size and how it mounts, and the level it is specified for. Try not to assume every dynamic is less detailed, every condenser flat, or that a larger diaphragm means better bass — test ideas like these with your ears.</Body>
           {lesson.micTypeIds.map((id) => {
             const m = MIC_TYPES[id];
-            const pl = plainLines(m);
+            const pl = plainLines(m, copyOf(lesson).terms);
             const isOpen = open.has(id);
             return (
               <Card key={id}>

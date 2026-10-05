@@ -25,6 +25,7 @@ import { copyOf } from '../engine/model/copy.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
 import { InstrumentFigure } from '../engine/scene/InstrumentFigure';
+import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import { sceneLabel } from '../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point } from '../engine/kit';
@@ -92,11 +93,11 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       layout: 'read',
       body: (
         <>
-          <Body>{`This lesson is about putting a microphone on a ${lesson.noun.one} — but first the drum itself: what it is, how it makes its sound, and where it sits. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.`}</Body>
+          <Body>{C.terms?.startIntro ?? `This lesson is about putting a microphone on a ${lesson.noun.one} — but first the drum itself: what it is, how it makes its sound, and where it sits. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.`}</Body>
           <JourneyMap met={journey.met} here="instrument" />
           <PathChooser journey={journey} />
           {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
-          {journey.path === 'new' ? <Note tone="ok">Good — NEXT takes you through the drum first. You can change how you started here at any time.</Note> : null}
+          {journey.path === 'new' ? <Note tone="ok">{C.terms?.startNew ?? 'Good — NEXT takes you through the drum first. You can change how you started here at any time.'}</Note> : null}
         </>
       ),
     },
@@ -107,15 +108,19 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       layout: 'read',
       body: (
         <>
-          <InstrumentFigure
-            art={art}
-            model={model}
-            view="side"
-            variant={variant}
-            title={lesson.title.toUpperCase()}
-            badge={C.instrument.figureBadge}
-            label={C.instrument.figureLabel}
-          />
+          {art.figure ? (
+            <ExpandableFigure badge={C.instrument.figureBadge} title={lesson.title.toUpperCase()} aspect={art.figure.aspect} render={art.figure.render} />
+          ) : (
+            <InstrumentFigure
+              art={art}
+              model={model}
+              view="side"
+              variant={variant}
+              title={lesson.title.toUpperCase()}
+              badge={C.instrument.figureBadge}
+              label={C.instrument.figureLabel}
+            />
+          )}
           {lesson.orient.map((f) => (
             <Card key={f.title}>
               <Point title={f.title}>{f.text}</Point>

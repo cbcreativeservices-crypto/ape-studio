@@ -48,7 +48,14 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
     ...refLabels(rig, slot),
     zoneLabel: z ? `${z.label}, ${z.band}` : null,
     showAim: t.mount !== 'surface',
+    ...termWords(rig),
   };
+}
+
+/** The lesson's own instrument words for the scene description (none: the drum's). */
+function termWords(rig: Pick<Rig, 'lesson'>): Pick<MicDescription, 'instrument' | 'aimRef'> {
+  const t = copyOf(rig.lesson).terms;
+  return t ? { instrument: t.instrument, aimRef: t.aimRef } : {};
 }
 
 /** The instrument in words for this variant (the lesson's copy). */

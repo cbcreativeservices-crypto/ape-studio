@@ -17,7 +17,7 @@
 import type { DocumentedZone, MicBody, MicPose, Readouts, RefLine, ReferenceSurface, CompiledScene, VariantId } from '../model/types.ts';
 import { aimVec, angleBetween, scale } from './vec.ts';
 import { checkAssembly, isInside } from './collision.ts';
-import { lineDistance, surfaceDistance, zoneFor } from './zones.ts';
+import { aimOff, lineDistance, surfaceDistance, zoneFor } from './zones.ts';
 
 export type ReadoutCtx = {
   scene: CompiledScene;
@@ -32,7 +32,11 @@ export type ReadoutCtx = {
 export function deriveReadouts(ctx: ReadoutCtx, pose: MicPose, surfaceId: string, lineId: string): Readouts {
   'worklet';
   let normal = { x: 1, y: 0, z: 0 };
-  for (let i = 0; i < ctx.surfaces.length; i++) if (ctx.surfaces[i].id === surfaceId) normal = ctx.surfaces[i].normal;
+  let ref: ReferenceSurface | null = null;
+  for (let i = 0; i < ctx.surfaces.length; i++) if (ctx.surfaces[i].id === surfaceId) {
+    normal = ctx.surfaces[i].normal;
+    ref = ctx.surfaces[i];
+  }
   const blocked = checkAssembly(ctx.scene, pose, ctx.body);
   const zoneId = blocked
     ? null
@@ -42,7 +46,9 @@ export function deriveReadouts(ctx: ReadoutCtx, pose: MicPose, surfaceId: string
     distance: surfaceDistance(ctx.surfaces, surfaceId, pose),
     radial: lineDistance(ctx.lines, lineId, pose),
     radialLine: lineId,
-    offAxis: angleBetween(aimVec(pose.az, pose.el), scale(normal, -1)),
+    // A TARGET point's aim is measured toward the point (aimOff); a plane's
+    // from −normal, as before.
+    offAxis: ref && ref.target ? aimOff(ref, pose) : angleBetween(aimVec(pose.az, pose.el), scale(normal, -1)),
     inside: isInside(ctx.scene, pose.p),
     zoneId,
     blocked: blocked ? { partId: blocked.partId, label: blocked.label } : null,

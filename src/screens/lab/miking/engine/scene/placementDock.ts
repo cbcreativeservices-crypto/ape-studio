@@ -81,14 +81,16 @@ export function placementParams(opts: {
   ];
   if (!surface) {
     const a = aimAxis === 'az' ? pose.az : pose.el;
+    // A lesson may let a mic face the other way (aimAzLimit, up to 180°).
+    const lim = aimAxis === 'az' ? rig.lesson.model.aimAzLimit ?? AIM_MAX : AIM_MAX;
     out.push({
       kind: 'fader',
       id: 'aim',
       label: 'AIM',
-      value: (a + AIM_MAX) / (2 * AIM_MAX),
+      value: Math.min(1, Math.max(0, (a + lim) / (2 * lim))),
       home: 0.5,
       onChange: (v) => {
-        const ang = Math.round((v * 2 - 1) * AIM_MAX);
+        const ang = Math.round((v * 2 - 1) * lim);
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
         rig.moveTo(slot, to);
       },

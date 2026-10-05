@@ -153,5 +153,28 @@ export function sdf(shape: Shape3, p: Vec3): number {
     }
     case 'floor':
       return shape.y - p.y;
+    case 'fan': {
+      // In the fan's plane: I. Quilez's sdPie (a sector of half-angle `ang`
+      // about +u), folded across u (and through the pivot when two-sided),
+      // rounded by `round`; across the plane, ±halfW along `axis`.
+      const wx = p.x - shape.c.x;
+      const wy = p.y - shape.c.y;
+      const wz = p.z - shape.c.z;
+      const along = wx * shape.axis.x + wy * shape.axis.y + wz * shape.axis.z;
+      const pu = wx * shape.u.x + wy * shape.u.y + wz * shape.u.z;
+      const pv = wx * shape.v.x + wy * shape.v.y + wz * shape.v.z;
+      const qx = Math.abs(pv);
+      const qy = shape.twoSided ? Math.abs(pu) : pu;
+      const sa = Math.sin(shape.ang);
+      const ca = Math.cos(shape.ang);
+      const l = Math.sqrt(qx * qx + qy * qy) - shape.r;
+      let t = qx * sa + qy * ca;
+      t = t < 0 ? 0 : t > shape.r ? shape.r : t;
+      const mx = qx - sa * t;
+      const my = qy - ca * t;
+      const sg = ca * qx - sa * qy;
+      const m = Math.sqrt(mx * mx + my * my) * (sg < 0 ? -1 : 1);
+      return combine2((l > m ? l : m) - shape.round, Math.abs(along) - shape.halfW);
+    }
   }
 }

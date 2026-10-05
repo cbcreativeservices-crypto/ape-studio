@@ -27,6 +27,10 @@ export type MicDescription = {
   plusWords?: string;
   /** A signed radial's words (a line with an offset). */
   lineWords?: { plus: string; minus: string };
+  /** The instrument's noun ("the instrument"; default "the drum") and what
+   *  the aim is read against (default "the head's axis"). */
+  instrument?: string;
+  aimRef?: string;
 };
 
 export type SceneDescription = {
@@ -40,10 +44,10 @@ export type SceneDescription = {
 export function describeMic(m: MicDescription, short = false): string {
   'worklet';
   const r = m.readouts;
-  const where = r.inside ? 'inside the drum' : 'outside the drum';
+  const where = `${r.inside ? 'inside' : 'outside'} ${m.instrument ?? 'the drum'}`;
   const dist = `${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? m.plusWords ?? 'from' : m.minusWords ?? 'behind'} ${m.surfaceLabel}`;
   const off = m.lineWords ? `${fmtLen(Math.abs(r.radial))} ${r.radial >= 0 ? m.lineWords.plus : m.lineWords.minus} ${m.lineLabel}` : `${fmtLen(r.radial)} off ${m.lineLabel}`;
-  const aim = m.showAim ? `, aimed ${fmtAngle(r.offAxis)} off the head's axis` : '';
+  const aim = m.showAim ? `, aimed ${fmtAngle(r.offAxis)} off ${m.aimRef ?? "the head's axis"}` : '';
   const zone = m.zoneLabel ? ` At a recommended starting point: ${m.zoneLabel}.` : ' Not at a recommended starting point.';
   const clear = r.blocked ? ` Blocked: it would touch the ${r.blocked.label}.` : ' Clear of all parts.';
   if (short) return `Mic ${m.slot}: ${where}, ${dist}, ${off}${aim}.${m.zoneLabel ? ` Zone: ${m.zoneLabel}.` : ''}${r.blocked ? ` Blocked by the ${r.blocked.label}.` : ''}`;

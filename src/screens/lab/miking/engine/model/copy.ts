@@ -126,6 +126,35 @@ export type LessonCopy = {
     warn: string;
   };
   practice: { gain: string; second: string; mixed: readonly string[]; mixedIntro: string };
+  /** The instrument's words where a SHARED page would otherwise say "drum" or
+   *  "head" (added 2026-10-05 for the bowed strings). Absent = the drum words
+   *  the pages always used, so Lab 1 reads exactly as before. */
+  terms?: LessonTerms;
+};
+
+export type LessonTerms = {
+  /** "the instrument" — "inside / outside the instrument" in the scene words. */
+  instrument: string;
+  /** What a mic's aim is read against ("the bridge"): "aimed 20° off <aimRef>". */
+  aimRef: string;
+  /** START: what the lesson covers first ("first the instrument itself: …"). */
+  startIntro: string;
+  /** START, the NEW path's note. */
+  startNew: string;
+  /** PLACEMENT's worked example: the second piece's title ("THE HEAD"). */
+  refTitle: string;
+  /** … and its sentence after "The distance is measured from X." */
+  otherRef: string;
+  /** … when the starting point gives no aim. */
+  noAim: string;
+  /** MICROPHONES: a clip mount's and a stand mount's plain line. */
+  clipMount: string;
+  standMount: string;
+  /** STUDIO OR LIVE: the instrument in the path, and the aim at rest. */
+  inPath: string;
+  facing: string;
+  /** PRACTICE: the optional observation sheet. */
+  observation: string;
 };
 
 const NEUTRAL_AXES: LessonCopy['axes'] = {
@@ -243,5 +272,6 @@ export function copyOf(lesson: { copy?: Partial<LessonCopy> }): LessonCopy {
     context: { ...NEUTRAL_COPY.context, ...(c.context ?? {}) },
     twoMic: { ...NEUTRAL_COPY.twoMic, ...(c.twoMic ?? {}) },
     practice: { ...NEUTRAL_COPY.practice, ...(c.practice ?? {}) },
+    ...(c.terms ? { terms: c.terms } : {}),
   };
 }

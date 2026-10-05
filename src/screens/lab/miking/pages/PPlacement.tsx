@@ -89,10 +89,10 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const exLine = exZone.radial ? lesson.model.lines.find((l) => l.id === exZone.radial!.line)?.label ?? 'its line' : null;
   const worked: { title: string; text: string; cell: number }[] = [
     { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we recommend you begin with this kind of mic — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
-    { title: 'THE HEAD', text: `The distance is measured from ${exHead}. The same number from the other head would put the mic somewhere else entirely.`, cell: 0 },
+    { title: C.terms?.refTitle ?? 'THE HEAD', text: `The distance is measured from ${exHead}. ${C.terms?.otherRef ?? 'The same number from the other head would put the mic somewhere else entirely.'}`, cell: 0 },
     { title: 'THE DISTANCE', text: `${exZone.band} The readout measures to the mic’s FRONT, rounded to ≈ 5 mm, and it reads inside that range.`, cell: 0 },
     { title: 'OFF THE LINE', text: exLine ? fill(C.placement.workedLine, { line: exLine }) : 'This starting point names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
-    { title: 'THE AIM', text: exZone.aim || exZone.aimAt ? fill(C.placement.workedAim, { head: exHead, tol: `${exZone.aim?.maxOffAxis ?? ''}` }) : 'This starting point gives no aim, so the mic simply faces the drum. Distance, height and angle are still separate things to try.', cell: 2 },
+    { title: 'THE AIM', text: exZone.aim || exZone.aimAt ? fill(C.placement.workedAim, { head: exHead, tol: `${exZone.aim?.maxOffAxis ?? ''}` }) : C.terms?.noAim ?? 'This starting point gives no aim, so the mic simply faces the drum. Distance, height and angle are still separate things to try.', cell: 2 },
     { title: 'CLEARANCE', text: C.placement.workedClear, cell: 3 },
   ];
   const wk = worked[exStep];
