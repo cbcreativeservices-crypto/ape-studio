@@ -16,21 +16,24 @@ import { BASS_HEARING, type BassKind } from './bassWords.ts';
 const L = BASS_SPEC.string.mm;
 
 const LABELS = {
+  // The bass is far larger than the cello whose offsets these began as: in
+  // plan its 70 cm body would carry the words. Each label sits clear of the
+  // body, with a leader back to its part (review LAB4 M2).
   side: {
-    bridge: { du: 80, dv: -20 },
-    fb: { du: 90, dv: -30 },
-    scroll: { du: 80, dv: -10 },
-    tail: { du: 90, dv: 40 },
+    bridge: { du: 80, dv: -20, lead: true },
+    fb: { du: 90, dv: -30, lead: true },
+    scroll: { du: 230, dv: -10, lead: true },
+    tail: { du: 90, dv: 40, lead: true },
     endpin: { du: 60, dv: -40 },
     player: { du: -150, dv: 40, align: 'right' as const },
   },
   top: {
-    bridge: { du: 80, dv: -40 },
-    fhole: { du: 70, dv: 60 },
-    scroll: { du: 60, dv: -60 },
-    bow: { du: 0, dv: 60, align: 'center' as const },
-    sweep: { du: 0, dv: 90, align: 'center' as const },
-    player: { du: -60, dv: -40, align: 'right' as const },
+    bridge: { du: 80, dv: -40, lead: true },
+    fhole: { du: 240, dv: 20, lead: true },
+    scroll: { du: -190, dv: -60, align: 'right' as const, lead: true },
+    bow: { du: 260, dv: -110, lead: true },
+    sweep: { du: 300, dv: -60, lead: true },
+    player: { du: -217, dv: 74, align: 'right' as const },
   },
 };
 

@@ -80,7 +80,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.snd.1',
     page: 'sound',
     prompt: 'A mic is placed in front of a clavinet’s amp. What does it actually hear?',
-    options: ['The speaker, turning the clavinet’s signal back into sound', 'The clavinet’s strings, carried through the air and the amp’s grille', 'The pickups directly, picked up by their magnetism'],
+    options: ['The clavinet’s strings, carried through the air and the amp’s grille', 'The pickups directly, picked up by their magnetism', 'The speaker, turning the clavinet’s signal back into sound'],
     correct: 'The speaker, turning the clavinet’s signal back into sound',
     explain: 'The strings make almost no sound in the air; the pickups make a signal. Only a speaker turns that signal back into sound — and that is all a mic can hear.',
     why: {
@@ -92,7 +92,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.snd.2',
     page: 'sound',
     prompt: 'A clavinet key goes down. What makes the string sound?',
-    options: ['A tangent presses it onto an anvil, and it rings past that point', 'A felt hammer strikes it once and falls back, as in a piano', 'A small plectrum plucks it, as in a harpsichord'],
+    options: ['A felt hammer strikes it once and falls back, as in a piano', 'A tangent presses it onto an anvil, and it rings past that point', 'A small plectrum plucks it, as in a harpsichord'],
     correct: 'A tangent presses it onto an anvil, and it rings past that point',
     explain: 'A small plunger — the tangent — under the string presses it onto an anvil; the string rings between the anvil and the bridge, where the pickups are.',
     why: {
@@ -104,7 +104,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.snd.3',
     page: 'sound',
     prompt: 'What stops the note when the key comes up?',
-    options: ['The yarn-wound part of the string, freed as the tangent drops', 'A felt damper that falls back onto the string', 'The pickups, which switch off for a moment until the next key is played'],
+    options: ['A felt damper that falls back onto the string', 'The yarn-wound part of the string, freed as the tangent drops', 'The pickups, which switch off for a moment until the next key is played'],
     correct: 'The yarn-wound part of the string, freed as the tangent drops',
     explain: 'Part of each string is wound with yarn. While the tangent holds the string on the anvil, that part is cut off; when it drops, the yarn mutes the string at once.',
     why: {
@@ -116,7 +116,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.set.1',
     page: 'setting',
     prompt: 'You want a direct signal from the clavinet. Where does its output go?',
-    options: ['A DI or a line or instrument input, never a mic input with phantom', 'A mic input with phantom power switched on, which gives it more level', 'Straight into the speaker cabinet, bypassing the amp'],
+    options: ['A mic input with phantom power switched on, which gives it more level', 'A DI or a line or instrument input, never a mic input with phantom', 'Straight into the speaker cabinet, bypassing the amp'],
     correct: 'A DI or a line or instrument input, never a mic input with phantom',
     explain: 'Use a DI or a suitable line or instrument input, following the interface’s specifications. Never connect a mic input or phantom power to the clavinet’s output.',
     why: {
@@ -128,7 +128,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.set.2',
     page: 'setting',
     prompt: 'Your amp mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck at the amp?',
-    options: ['Nothing — a mic’s max SPL is a distortion limit, not a hearing limit', 'Everyone is safe while the amp stays below the mic’s rated level', 'You are safe as long as the mic is nearer the amp than you'],
+    options: ['Everyone is safe while the amp stays below the mic’s rated level', 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit', 'You are safe as long as the mic is nearer the amp than you'],
     correct: 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time — and a stage amp is loud.',
     why: {
@@ -140,7 +140,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.set.3',
     page: 'setting',
     prompt: 'A tube combo is hot and loud. How do you mount the close mic?',
-    options: ['A low, stable stand, clear of the speaker and the hot amp', 'Tape it to the grille cloth, so that it cannot move at all during the set', 'Rest it on top of the amp, pointing down the front'],
+    options: ['Tape it to the grille cloth, so that it cannot move at all during the set', 'Rest it on top of the amp, pointing down the front', 'A low, stable stand, clear of the speaker and the hot amp'],
     correct: 'A low, stable stand, clear of the speaker and the hot amp',
     explain: 'A low-profile stand or an approved cabinet clip, secure, clear of the grille and of a hot tube chassis — and the cable secured so nobody trips over it.',
     why: {
@@ -152,7 +152,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · What do the clavinet’s pickups turn the string’s motion into?',
-    options: ['A small voltage, which the amp turns back into sound', 'Sound in the air, which a mic can pick up right beside the clavinet', 'Light, which a sensor reads under each key'],
+    options: ['Sound in the air, which a mic can pick up right beside the clavinet', 'A small voltage, which the amp turns back into sound', 'Light, which a sensor reads under each key'],
     correct: 'A small voltage, which the amp turns back into sound',
     explain: 'Magnetic pickups make a small voltage from the moving string; the amplifier and speaker turn it back into sound.',
     why: {
@@ -164,7 +164,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.mic.1',
     page: 'microphone',
     prompt: 'Why is a directional dynamic a common close mic on an amp?',
-    options: ['It takes high sound levels and needs no power', 'It hears only the speaker, nothing else on stage', 'It is the only kind that can face a speaker'],
+    options: ['It hears only the speaker, nothing else on stage', 'It is the only kind that can face a speaker', 'It takes high sound levels and needs no power'],
     correct: 'It takes high sound levels and needs no power',
     explain: 'Close to a loud speaker, a dynamic copes with the level and needs no phantom power. A small condenser can work too, if its maximum level suits.',
     why: {
@@ -176,7 +176,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.mic.2',
     page: 'microphone',
     prompt: 'A cardioid right at the grille sounds bass-heavy. Which property is a likely part of it?',
-    options: ['Proximity effect: a directional mic up close lifts the lows', 'A cardioid hears less bass than an omni, whatever the distance', 'The speaker sends its bass straight down the mic’s axis'],
+    options: ['A cardioid hears less bass than an omni, whatever the distance', 'Proximity effect: a directional mic up close lifts the lows', 'The speaker sends its bass straight down the mic’s axis'],
     correct: 'Proximity effect: a directional mic up close lifts the lows',
     explain: 'Directional mics gain low end close to a source. Move back a little, or try another position, and compare at matched level.',
     why: {
@@ -188,7 +188,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.mic.3',
     page: 'microphone',
     prompt: 'Where does a supercardioid reject the most?',
-    options: ['Off to each side of the rear, near 125°', 'Straight behind it, right on its rear axis', 'At its sides, square to its front'],
+    options: ['Straight behind it, right on its rear axis', 'At its sides, square to its front', 'Off to each side of the rear, near 125°'],
     correct: 'Off to each side of the rear, near 125°',
     explain: 'A supercardioid has a small rear lobe; its deepest rejection is toward the rear but off the axis.',
     why: {
@@ -200,7 +200,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.mic.4',
     page: 'microphone',
     prompt: 'You try a small condenser at the grille, with a fuzz pedal on. What do you check first?',
-    options: ['Its maximum level, and the preamp’s headroom on the loudest peaks', 'Nothing: a condenser stays cleaner than a dynamic at high levels', 'That phantom power is off, since the speaker powers it'],
+    options: ['Nothing: a condenser stays cleaner than a dynamic at high levels', 'Its maximum level, and the preamp’s headroom on the loudest peaks', 'That phantom power is off, since the speaker powers it'],
     correct: 'Its maximum level, and the preamp’s headroom on the loudest peaks',
     explain: 'Fuzz and boost pedals raise the level at the speaker; check the mic’s and the preamp’s headroom on the strongest playing. A condenser still needs its phantom power.',
     why: {
@@ -212,7 +212,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.place.1',
     page: 'placement',
     prompt: 'You move the close mic from the centre of the speaker toward the edge of the cone. What tends to change?',
-    options: ['The attack and the brightness soften', 'More bite and upper-mid edge come in', 'Only the level changes, not the tone'],
+    options: ['More bite and upper-mid edge come in', 'Only the level changes, not the tone', 'The attack and the brightness soften'],
     correct: 'The attack and the brightness soften',
     explain: 'Toward the centre tends to bring more bite; toward the edge, a rounder sound — which may lose the percussive bite the part needs.',
     why: {
@@ -224,7 +224,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.place.2',
     page: 'placement',
     prompt: 'The cabinet has several speakers. Where does the close mic go?',
-    options: ['On one chosen speaker, noted down — not between two', 'Between two speakers, to catch both of them at once', 'Wherever the grille cloth looks the brightest'],
+    options: ['Between two speakers, to catch both of them at once', 'Wherever the grille cloth looks the brightest', 'On one chosen speaker, noted down — not between two'],
     correct: 'On one chosen speaker, noted down — not between two',
     explain: 'Between speakers the mic hears several sources at different distances — an uneven result. Choose one, and write down which.',
     why: {
@@ -248,7 +248,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · Why does a mic right next to the clavinet itself capture little of its sound?',
-    options: ['Its strings make almost no sound in the air; the speaker does', 'Its case blocks a mic from hearing the strings at all', 'Its pickups cancel the sound that comes near them, like a noise gate'],
+    options: ['Its case blocks a mic from hearing the strings at all', 'Its pickups cancel the sound that comes near them, like a noise gate', 'Its strings make almost no sound in the air; the speaker does'],
     correct: 'Its strings make almost no sound in the air; the speaker does',
     explain: 'The clavinet is electro-mechanical: its sound reaches the air through an amplifier and a speaker.',
     why: {
@@ -260,7 +260,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.ctx.1',
     page: 'context',
     prompt: 'The keyboardist’s wedge is loud in the amp mic. Which way do you aim the mic’s rejection?',
-    options: ['Toward the wedge, by the mic’s actual pattern', 'Away from the wedge, so the mic’s back is clear', 'Straight up, away from the stage and its monitors'],
+    options: ['Away from the wedge, so the mic’s back is clear', 'Toward the wedge, by the mic’s actual pattern', 'Straight up, away from the stage and its monitors'],
     correct: 'Toward the wedge, by the mic’s actual pattern',
     explain: 'The rejection — the null — is where the mic hears least: point it AT the loudest monitor, while the front still faces the speaker. Lower the level before you move it.',
     why: {
@@ -272,7 +272,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.ctx.2',
     page: 'context',
     prompt: 'With a cardioid facing the speaker, where should the wedge sit for the most rejection?',
-    options: ['Straight behind the mic, on its rear axis', 'Off to one side of the rear, near 125°', 'Beside the mic, square to its front'],
+    options: ['Off to one side of the rear, near 125°', 'Straight behind the mic, on its rear axis', 'Beside the mic, square to its front'],
     correct: 'Straight behind the mic, on its rear axis',
     explain: 'A cardioid rejects most directly behind (180°). A supercardioid’s deepest rejection is off the rear axis, near 125°. Aim by the actual pattern.',
     why: {
@@ -284,7 +284,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.ctx.studio',
     page: 'context',
     prompt: 'In the studio, what does a clean direct track add next to the amp mic?',
-    options: ['A precise, low-spill signal that can be re-amped later', 'The sound of the amplifier, the speaker and the room around them', 'More level, so the amp mic can be turned down'],
+    options: ['The sound of the amplifier, the speaker and the room around them', 'More level, so the amp mic can be turned down', 'A precise, low-spill signal that can be re-amped later'],
     correct: 'A precise, low-spill signal that can be re-amped later',
     explain: 'A direct track is clean and repeatable, and can be processed or re-amped later. It does not include the amp, the speaker, the room or the mic.',
     why: {
@@ -296,7 +296,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · A direct signal taken BEFORE the pedals: what does it leave out?',
-    options: ['The effects the player was hearing, and the amp', 'Nothing: it is the same as a direct signal after them', 'The clavinet’s own pickup and switch settings'],
+    options: ['Nothing: it is the same as a direct signal after them', 'The effects the player was hearing, and the amp', 'The clavinet’s own pickup and switch settings'],
     correct: 'The effects the player was hearing, and the amp',
     explain: 'A pre-pedal DI is clean and open to later processing, but does not document the sound the player was monitoring. Label it pre or post.',
     why: {
@@ -308,7 +308,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.two.1',
     page: 'twoMic',
     prompt: 'A close mic and a second one 25 cm back on the same speaker. Why can they sound hollow in mono?',
-    options: ['The speaker reaches the two mics at different times', 'The farther mic hears the speaker in reverse polarity', 'Two mics on one speaker cancel completely in mono'],
+    options: ['The farther mic hears the speaker in reverse polarity', 'Two mics on one speaker cancel completely in mono', 'The speaker reaches the two mics at different times'],
     correct: 'The speaker reaches the two mics at different times',
     explain: 'The farther mic hears the speaker later. Summed in mono, the delayed copy cancels at some frequencies — a comb.',
     why: {
@@ -320,7 +320,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.two.2',
     page: 'twoMic',
     prompt: 'You flip the farther mic’s polarity. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals line up again in time', 'It doubles, because the inverted copy arrives later'],
+    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'It doubles, because the inverted copy arrives later'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay. The notches move; Δt does not.',
     why: {
@@ -332,7 +332,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.two.3',
     page: 'twoMic',
     prompt: 'A DI track and the amp mic sound thin together in mono. What is a likely cause?',
-    options: ['The mic’s signal arrives later than the DI’s', 'The DI track carries the room’s reflections', 'The DI is wired in reverse polarity by design'],
+    options: ['The DI track carries the room’s reflections', 'The DI is wired in reverse polarity by design', 'The mic’s signal arrives later than the DI’s'],
     correct: 'The mic’s signal arrives later than the DI’s',
     explain: 'The direct signal is instant; the mic hears the speaker a little later. Adjust the distance, the track delay or the blend first; then test polarity.',
     why: {
@@ -344,19 +344,19 @@ const scenarios: MikingScenario[] = [
     id: 'cv.two.4',
     page: 'twoMic',
     prompt: 'Should a close amp mic and a room mic be panned hard apart?',
-    options: ['Not necessarily: they need not be panned apart to sound larger', 'Yes: a close mic and a room mic on one amp make a stereo pair', 'Yes, so that they cannot comb in mono'],
+    options: ['Hard apart: a close mic and a room mic on one amp make a stereo pair', 'Not necessarily: they need not be panned apart to sound larger', 'Hard apart, so that they cannot comb in mono'],
     correct: 'Not necessarily: they need not be panned apart to sound larger',
     explain: 'A close and a room mic are two perspectives, not a stereo pair. Panning does not change the mono sum — check it either way.',
     why: {
-      'Yes: a close mic and a room mic on one amp make a stereo pair': 'Two perspectives on one speaker are not automatically a stereo pair.',
-      'Yes, so that they cannot comb in mono': 'Panning does not change the mono sum.',
+      'Hard apart: a close mic and a room mic on one amp make a stereo pair': 'Two perspectives on one speaker are not automatically a stereo pair.',
+      'Hard apart, so that they cannot comb in mono': 'Panning does not change the mono sum.',
     },
   },
   {
     id: 'cv.prac.gain',
     page: 'practice',
     prompt: 'The direct signal is clean on soft playing but distorts when the boost pedal comes on. What do you do?',
-    options: ['Lower the stage that clips — the boost or the input — and re-check', 'Pull the channel fader down until the boost sounds clean', 'Ask the player not to use the boost pedal in the show at all'],
+    options: ['Pull the channel fader down until the boost sounds clean', 'Lower the stage that clips — the boost or the input — and re-check', 'Ask the player not to use the boost pedal in the show at all'],
     correct: 'Lower the stage that clips — the boost or the input — and re-check',
     explain: 'Find the stage that clips — the clavinet’s output, a pedal or the input — and restore headroom there. A lowered fader does not undo clipping before it.',
     why: {
@@ -368,7 +368,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.prac.3',
     page: 'practice',
     prompt: 'What would justify keeping both a DI track and the amp mic?',
-    options: ['Together they improve the part, and they hold up in mono', 'Two tracks give the mix engineer more to choose from later', 'The amp mic alone is too quiet to use'],
+    options: ['Two tracks give the mix engineer more to choose from later', 'The amp mic alone is too quiet to use', 'Together they improve the part, and they hold up in mono'],
     correct: 'Together they improve the part, and they hold up in mono',
     explain: 'Keep both only when the combination helps the part in context — aligned, and checked in mono.',
     why: {
@@ -380,7 +380,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.mix.1',
     page: 'practice',
     prompt: 'Which part of the chain does a close amp mic capture?',
-    options: ['The speaker, after the clavinet, the pedals and the amp', 'The clavinet’s pickups, before the pedals and the amp have shaped it', 'Only the pedals, between the clavinet and the amp'],
+    options: ['The clavinet’s pickups, before the pedals and the amp have shaped it', 'Only the pedals, between the clavinet and the amp', 'The speaker, after the clavinet, the pedals and the amp'],
     correct: 'The speaker, after the clavinet, the pedals and the amp',
     explain: 'The mic is the last link: it hears everything before it, through the speaker — and the room around it.',
     why: {
@@ -392,7 +392,7 @@ const scenarios: MikingScenario[] = [
     id: 'cv.mix.2',
     page: 'practice',
     prompt: 'A wedge sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the wedge, because it sits in the null', 'More wedge than straight behind the mic, where it rejects the most'],
+    options: ['Silence from the wedge, because it sits in the null', 'More wedge than straight behind the mic, where it rejects the most', 'Strong rejection on paper; in reality less, and least in the lows'],
     correct: 'Strong rejection on paper; in reality less, and least in the lows',
     explain: 'A null is infinitely deep only on paper. Real mics reject far less, and least at low frequencies.',
     why: {
@@ -618,11 +618,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your amp mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck at the amp?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the amp stays below the mic’s rating', 'It is safe as long as the mic is nearer the amp than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the amp stays below the mic’s rated level', 'It is safe as long as the mic is nearer the amp than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the amp stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the amp stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the amp than you': 'Where the mic sits says nothing about your ears.',
     },
   },

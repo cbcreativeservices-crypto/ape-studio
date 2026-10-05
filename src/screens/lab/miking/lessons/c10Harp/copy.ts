@@ -120,7 +120,7 @@ export const HARP_COPY: LessonCopy = {
     A: { typeId: 'sdcCard', pattern: 'cardioid', zone: 'hp.pair' },
     B: { typeId: 'sdcCard', pattern: 'cardioid', pose: aimedAt({ x: P[0] + HP.n[0] * 300, y: P[1] + HP.n[1] * 300, z: 300 }, { x: P[0], y: P[1], z: 0 }) },
     learn: [
-      'Two spots about 30 cm from the soundboard — one toward its upper half, one lower — can support registers one mic misses. One reported setup brought the upper spot up a little more than the lower (about twice as loud, roughly 6 dB) — a starting point, not a rule.',
+      'Two spots about 30 cm from the soundboard — one toward its upper half, one lower — can support registers one mic misses. One setup to try: bring the upper spot about 6 dB above the lower — a starting point, not a rule.',
       'Then listen: each mic alone, the pair together, and the pair in MONO. Sound from the board reaches the two mics at different times — in mono that can comb. Moving a mic changes the delay; the polarity switch does not.',
     ],
     warn: 'This simplified graph takes ONE point of the board as the source; a harp is a large, spread-out source, so read the graph as the reasoning, not a prediction. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the levels. Judge the pair by ear, in mono, at matched levels.',

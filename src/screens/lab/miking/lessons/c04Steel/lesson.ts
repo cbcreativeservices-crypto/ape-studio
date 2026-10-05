@@ -64,7 +64,7 @@ const pages: Record<PageId, PageContent> = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
     takeaway: 'Small moves across the cone before EQ; gain for the loudest realistic passage; for anything electrical you are unsure of, stop.',
   },
   practice: {
@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.snd.1',
     page: 'sound',
     prompt: 'The player slides the bar to half-way along the sounding length. What happens to the pitch?',
-    options: ['It rises an octave — half the length, twice the pitch', 'It falls an octave, since less string is left to vibrate', 'It stays the same: the bar only changes the tone'],
+    options: ['It falls an octave, since less string is left to vibrate', 'It rises an octave — half the length, twice the pitch', 'It stays the same: the bar only changes the tone'],
     correct: 'It rises an octave — half the length, twice the pitch',
     explain: 'The bar is a movable fret: only the string between the bar and the bridge vibrates. Half the length sounds twice the frequency — an octave up.',
     why: {
@@ -95,7 +95,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.snd.2',
     page: 'sound',
     prompt: 'A pedal raises one string by a whole tone. What does it change at the changer?',
-    options: ['The string’s tension — about a quarter more', 'The string’s length, by moving the bridge along', 'The pickup’s position under that string'],
+    options: ['The string’s length, by moving the bridge along', 'The pickup’s position under that string', 'The string’s tension — about a quarter more'],
     correct: 'The string’s tension — about a quarter more',
     explain: 'Pitch rises with the square root of tension: a whole tone (× 1.12 in frequency) needs about × 1.26 the tension. The pedal rods pull the changer’s fingers to do it.',
     why: {
@@ -107,7 +107,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.snd.3',
     page: 'sound',
     prompt: 'Where does most of the sound you will mic come from?',
-    options: ['The amp’s speaker, fed by the pickup and the volume pedal', 'The strings themselves, through the air just above the steel’s neck', 'The pedals and knee levers, as the player moves them'],
+    options: ['The strings themselves, through the air just above the steel’s neck', 'The pedals and knee levers, as the player moves them', 'The amp’s speaker, fed by the pickup and the volume pedal'],
     correct: 'The amp’s speaker, fed by the pickup and the volume pedal',
     explain: 'The strings start the sound; the pickup turns their motion into a signal; the volume pedal and effects shape it; the amp and speaker make what you mic. No mic goes near the hands or under the instrument.',
     why: {
@@ -119,7 +119,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.set.1',
     page: 'setting',
     prompt: 'Where may the amp mic’s stand and cable go?',
-    options: ['Clear of the pedals, knee levers and volume pedal', 'Under the steel, between the pedal rods', 'Against the player’s knees, where it has a steady base to lean on'],
+    options: ['Under the steel, between the pedal rods', 'Clear of the pedals, knee levers and volume pedal', 'Against the player’s knees, where it has a steady base to lean on'],
     correct: 'Clear of the pedals, knee levers and volume pedal',
     explain: 'The player’s feet and knees work while they play. A stand or cable in that zone can block a pedal or a knee lever, or trip someone. Keep the mic at the amp.',
     why: {
@@ -131,7 +131,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.set.2',
     page: 'setting',
     prompt: 'Some steel amps have an XLR output that imitates a miked speaker. What is it?',
-    options: ['An electrical output — its own source, not a mic', 'A microphone built into the amp, aimed at the speaker', 'The same signal a mic on the speaker would capture'],
+    options: ['A microphone built into the amp, aimed at the speaker', 'An electrical output — its own source, not a mic', 'The same signal a mic on the speaker would capture'],
     correct: 'An electrical output — its own source, not a mic',
     explain: 'A “simulated mic” output is still electrical: it never passes through the air. Where it is taken and what it imitates are in that amp’s own manual. Label it as its own channel.',
     why: {
@@ -143,7 +143,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.set.3',
     page: 'setting',
     prompt: 'The steel amp is tilted back on a stand for the player. What do you check?',
-    options: ['That it stands firm and cannot tip if bumped', 'That the mic touches its grille to steady it', 'That the tilt points the speaker at the wedge'],
+    options: ['That the mic touches its grille to steady it', 'That it stands firm and cannot tip if bumped', 'That the tilt points the speaker at the wedge'],
     correct: 'That it stands firm and cannot tip if bumped',
     explain: 'A tilted amp must be mechanically stable — follow its own manual for any tilt foot or stand. A falling amp is a danger to people and equipment.',
     why: {
@@ -155,7 +155,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Why might the steel’s quiet swells and its sharp attacks need careful gain?',
-    options: ['The volume pedal can take a quiet note to a loud peak', 'A steel amp has no volume control of its own to set the level', 'The pickup gets louder as the bar moves up'],
+    options: ['A steel amp has no volume control of its own to set the level', 'The pickup gets louder as the bar moves up', 'The volume pedal can take a quiet note to a loud peak'],
     correct: 'The volume pedal can take a quiet note to a loud peak',
     explain: 'A smooth swell can end in a much louder peak, and a picked attack can jump above the sustain. Set the gain for the loudest realistic moment.',
     why: {
@@ -167,7 +167,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.mic.1',
     page: 'microphone',
     prompt: 'A dynamic or a condenser on the steel amp: what decides it?',
-    options: ['Its rating, pad, mount and spill — then your ears', 'A condenser, because a steel is a gentle instrument', 'A dynamic, because a condenser cannot sit near an amp'],
+    options: ['A condenser, because a steel is a gentle instrument', 'Its rating, pad, mount and spill — then your ears', 'A dynamic, because a condenser cannot sit near an amp'],
     correct: 'Its rating, pad, mount and spill — then your ears',
     explain: 'A dynamic is robust on a stage; a condenser can be tried when its level rating, pad, mounting and spill suit. Neither guarantees a tone — compare at matched level.',
     why: {
@@ -179,7 +179,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.mic.2',
     page: 'microphone',
     prompt: 'The channel has no phantom power. Which of this page’s mic types can you still use?',
-    options: ['The two dynamics: neither needs power', 'The small condenser, kept a little farther back', 'The small condenser, while the amp is switched on'],
+    options: ['The small condenser, kept a little farther back', 'The two dynamics: neither needs power', 'The small condenser, while the amp is switched on'],
     correct: 'The two dynamics: neither needs power',
     explain: 'Dynamics need no power; a condenser needs phantom from the desk wherever it is placed.',
     why: {
@@ -191,7 +191,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.mic.3',
     page: 'microphone',
     prompt: 'Next to vocal mics on a busy stage, which pattern habit helps the steel mic?',
-    options: ['Aim its rejection at the loudest competing source', 'Point its front straight at the vocal mic to cancel it out', 'Choose an omni so that all the sources are balanced'],
+    options: ['Point its front straight at the vocal mic to cancel it out', 'Aim its rejection at the loudest competing source', 'Choose an omni so that all the sources are balanced'],
     correct: 'Aim its rejection at the loudest competing source',
     explain: 'Use the mic’s real pattern: face the speaker, and turn its rejection toward the loudest neighbour or monitor.',
     why: {
@@ -203,7 +203,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.mic.4',
     page: 'microphone',
     prompt: 'Does a condenser cause feedback just because it is more sensitive?',
-    options: ['Not by itself — compare at the same useful level', 'Yes, since its higher output reaches the PA first', 'Only when it sits closer to the grille than a dynamic'],
+    options: ['Yes, since its higher output reaches the PA first', 'Only when it sits closer to the grille than a dynamic', 'Not by itself — compare at the same useful level'],
     correct: 'Not by itself — compare at the same useful level',
     explain: 'At the same reproduced level, pattern, placement and monitors decide feedback; the gain is simply set lower for a more sensitive mic.',
     why: {
@@ -215,7 +215,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.place.1',
     page: 'placement',
     prompt: 'Where do these amp starting points come from, for a steel?',
-    options: ['General amp practice, to test on the steel’s amp', 'Measurements made on one famous steel player’s rig', 'Fixed rules that hold for all steel amps ever made'],
+    options: ['Measurements made on one famous steel player’s rig', 'Fixed rules that hold for all steel amps ever made', 'General amp practice, to test on the steel’s amp'],
     correct: 'General amp practice, to test on the steel’s amp',
     explain: 'After our research, these are general starting points for miking an amp’s speaker — an informed experiment on a steel rig, checked by ear.',
     why: {
@@ -227,7 +227,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.place.2',
     page: 'placement',
     prompt: 'High notes and bar attacks sound sharp and brittle at the dust cap’s centre. What first?',
-    options: ['Slide toward the cap’s edge or outer cone, same distance', 'Cut the treble on the amp first, before moving the mic or anything else', 'Move the mic back and change its angle in one go'],
+    options: ['Cut the treble on the amp first, before moving the mic or anything else', 'Move the mic back and change its angle in one go', 'Slide toward the cap’s edge or outer cone, same distance'],
     correct: 'Slide toward the cap’s edge or outer cone, same distance',
     explain: 'One change at a time: slide across the cone first, compare at matched level, then try an angle.',
     why: {
@@ -239,7 +239,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.place.3',
     page: 'placement',
     prompt: 'The steel loses definition in the full band. What do you try?',
-    options: ['Shift back toward the cap’s edge, then judge it in the band', 'Move the mic farther back for more of the room around the steel amp', 'Turn the steel amp up until it cuts through the band'],
+    options: ['Move the mic farther back for more of the room around the steel amp', 'Turn the steel amp up until it cuts through the band', 'Shift back toward the cap’s edge, then judge it in the band'],
     correct: 'Shift back toward the cap’s edge, then judge it in the band',
     explain: 'The outer cone or a farther position can soften the steel too much in a dense mix. Return toward the cap’s edge and listen with the band.',
     why: {
@@ -251,7 +251,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · Which of these hears the air from the steel’s amp?',
-    options: ['A mic in front of the speaker', 'The amp’s simulated-mic output', 'A DI box before the amp'],
+    options: ['The amp’s simulated-mic output', 'A mic in front of the speaker', 'A DI box before the amp'],
     correct: 'A mic in front of the speaker',
     explain: 'Only a mic hears the speaker’s air. The other two are electrical paths — separate sources.',
     why: {
@@ -263,7 +263,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.ctx.1',
     page: 'context',
     prompt: 'On stage, why a close mic on a low, stable stand?',
-    options: ['Isolation from drums and wedges, and nothing in the way', 'A low stand makes the amp sound warmer in the room', 'Because a taller stand would pick up the knee levers moving nearby'],
+    options: ['A low stand makes the amp sound warmer in the room', 'Because a taller stand would pick up the knee levers moving nearby', 'Isolation from drums and wedges, and nothing in the way'],
     correct: 'Isolation from drums and wedges, and nothing in the way',
     explain: 'Close and directional hears more of the steel and less of the stage; low and stable stays out of the player’s reach and cannot tip into the speaker.',
     why: {
@@ -274,20 +274,20 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ps.ctx.2',
     page: 'context',
-    prompt: 'Your mic is a supercardioid. Is “put the monitor directly behind it” a reliable rule?',
-    options: ['No — its deepest rejection is off to each side of the rear', 'Yes — a directional mic rejects most of all straight behind itself', 'Yes, as long as the monitor is turned down a little'],
-    correct: 'No — its deepest rejection is off to each side of the rear',
-    explain: 'A supercardioid rejects most at about 126° each side, with a small lobe straight behind. Aim by the mic’s real pattern.',
+    prompt: 'Your mic is a supercardioid. Is its deepest rejection off to each side of the rear, rather than straight behind?',
+    options: ['No — a directional mic rejects most of all straight behind itself', 'No, it rejects the same all the way round the back', 'Yes — near 125° each side; a small lobe sits straight behind'],
+    correct: 'Yes — near 125° each side; a small lobe sits straight behind',
+    explain: 'A supercardioid rejects most near 125° each side, with a small lobe straight behind. Aim by the mic’s real pattern.',
     why: {
-      'Yes — a directional mic rejects most of all straight behind itself': 'Only a cardioid rejects most at 180°.',
-      'Yes, as long as the monitor is turned down a little': 'Lower level helps, but the rule itself is wrong for this pattern.',
+      'No — a directional mic rejects most of all straight behind itself': 'Only a cardioid rejects most at 180°. So “put the monitor directly behind it” suits a cardioid, not this mic.',
+      'No, it rejects the same all the way round the back': 'The rejection changes with angle: deepest near 125° each side, with a small lobe straight behind.',
     },
   },
   {
     id: 'ps.ctx.3',
     page: 'context',
     prompt: 'The steel mic is bleeding into a nearby vocal channel. What first?',
-    options: ['Lower the amp level a little, then rework mic and amp aim', 'Raise the steel amp until the vocal mic is drowned out in the mix', 'Turn the vocal mic toward the steel amp to match'],
+    options: ['Raise the steel amp until the vocal mic is drowned out in the mix', 'Turn the vocal mic toward the steel amp to match', 'Lower the amp level a little, then rework mic and amp aim'],
     correct: 'Lower the amp level a little, then rework mic and amp aim',
     explain: 'Coordinate the amp and the PA: a steel amp pushed loud for its mic tone masks others and bleeds into vocals. Lower, then revise the geometry.',
     why: {
@@ -299,7 +299,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.ctx.studio',
     page: 'context',
     prompt: 'Studio, a good room. What could justify a farther mic on the steel’s amp?',
-    options: ['The room adds space the close mic lacks', 'A farther mic sounds more like the steel itself', 'It removes the need for the close mic'],
+    options: ['A farther mic sounds more like the steel itself', 'The room adds space the close mic lacks', 'It removes the need for the close mic'],
     correct: 'The room adds space the close mic lacks',
     explain: 'Capture a good close mic first; add a farther mic only if the room helps, and check the blend in mono — distance means delay.',
     why: {
@@ -311,7 +311,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · Why must the mic stand stay out of the zone under the pedal steel?',
-    options: ['The player’s feet and knees work there while playing', 'The pedal rods put a hum into a mic cable that runs nearby', 'The steel’s body shades the mic from its amp'],
+    options: ['The pedal rods put a hum into a mic cable that runs nearby', 'The player’s feet and knees work there while playing', 'The steel’s body shades the mic from its amp'],
     correct: 'The player’s feet and knees work there while playing',
     explain: 'Pedals, knee levers and the volume pedal are played continuously. Nothing may block them or trip the player.',
     why: {
@@ -323,7 +323,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.two.1',
     page: 'twoMic',
     prompt: 'When is a rear mic on the steel’s amp worth trying?',
-    options: ['Only on a cabinet with a real open back', 'On a closed-back amp just as on an open one', 'Only when the amp is tilted back'],
+    options: ['On a closed-back amp just as on an open one', 'Only on a cabinet with a real open back', 'Only when the amp is tilted back'],
     correct: 'Only on a cabinet with a real open back',
     explain: 'A rear mic needs sound coming out of the back. On a closed cabinet, there is little to hear behind it.',
     why: {
@@ -335,7 +335,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.two.2',
     page: 'twoMic',
     prompt: 'You flip one source’s polarity. What happens to the arrival-time difference?',
-    options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals now line up exactly', 'It doubles, because one copy is now inverted'],
+    options: ['It drops to zero, so the two arrivals now line up exactly', 'It doubles, because one copy is now inverted', 'Nothing — polarity flips the sign, not the timing'],
     correct: 'Nothing — polarity flips the sign, not the timing',
     explain: 'Only moving a mic (or delaying a direct path) changes the timing. Polarity moves the notches.',
     why: {
@@ -347,7 +347,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.two.3',
     page: 'twoMic',
     prompt: 'You split a passive steel pickup into several inputs for a direct path. What is the risk?',
-    options: ['Loading the pickup can change its tone and level', 'The pickup’s signal turns into speaker-level power', 'Nothing: a passive pickup sounds the same anywhere'],
+    options: ['The pickup’s signal turns into speaker-level power', 'Nothing: a passive pickup sounds the same anywhere', 'Loading the pickup can change its tone and level'],
     correct: 'Loading the pickup can change its tone and level',
     explain: 'A passive pickup is sensitive to what it feeds. Use a proper instrument-level splitter or DI that preserves its loading — not several unknown inputs in parallel.',
     why: {
@@ -359,7 +359,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.prac.gain',
     page: 'practice',
     prompt: 'The sustain sits well under the overload light, but the swell’s peak and a hard bar attack light it. What do you do?',
-    options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader down until the swell peaks sound clean again', 'Ask the player to keep the volume pedal half-way for the gig'],
+    options: ['Pull the channel fader down until the swell peaks sound clean again', 'Lower the input gain, or use a pad its manual allows, and re-check', 'Ask the player to keep the volume pedal half-way for the gig'],
     correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
     explain: 'Set the gain for the loudest realistic moment — the full volume-pedal travel and the hardest attack. A lower fader does not undo input clipping.',
     why: {
@@ -371,7 +371,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.prac.3',
     page: 'practice',
     prompt: 'What would justify adding a second source on the steel’s amp?',
-    options: ['Each works alone, the blend adds something, and it holds in mono', 'Two channels simply give the mix engineer more to work with later', 'The steel needs more level in the mix than one mic can give'],
+    options: ['Two channels simply give the mix engineer more to work with later', 'The steel needs more level in the mix than one mic can give', 'Each works alone, the blend adds something, and it holds in mono'],
     correct: 'Each works alone, the blend adds something, and it holds in mono',
     explain: 'A second mic or direct path must earn its place, for a stated goal; otherwise keep the one good close mic.',
     why: {
@@ -383,7 +383,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.mix.1',
     page: 'practice',
     prompt: 'Before you place the amp mic, what else do you need besides a distance?',
-    options: ['The real speaker’s position, and the grille as reference', 'The amp’s brand and model, so that the number fits its speaker', 'Nothing more: the number places the mic by itself'],
+    options: ['The amp’s brand and model, so that the number fits its speaker', 'Nothing more: the number places the mic by itself', 'The real speaker’s position, and the grille as reference'],
     correct: 'The real speaker’s position, and the grille as reference',
     explain: 'A distance belongs to its reference — the grille — and to the speaker that is really there. Clearance is a separate check.',
     why: {
@@ -395,7 +395,7 @@ const scenarios: MikingScenario[] = [
     id: 'ps.mix.2',
     page: 'practice',
     prompt: 'A cable at the amp is damaged and the amp smells hot. What now?',
-    options: ['Stop, keep clear, and call a qualified technician', 'Finish the soundcheck at a lower level first, then deal with it', 'Open the amp and look for the problem yourself'],
+    options: ['Finish the soundcheck at a lower level first, then deal with it', 'Stop, keep clear, and call a qualified technician', 'Open the amp and look for the problem yourself'],
     correct: 'Stop, keep clear, and call a qualified technician',
     explain: 'Damaged cable, abnormal heat, smoke or a shock are stop conditions. Never open a chassis or change wiring for mic work.',
     why: {
@@ -407,9 +407,9 @@ const scenarios: MikingScenario[] = [
     id: 'ps.mix.3',
     page: 'practice',
     prompt: 'Which change removes the arrival-time difference between the amp mic and a direct path?',
-    options: ['Delaying the direct path, or moving the mic closer', 'Flipping the polarity switch on one channel', 'Turning the later source up until it matches the earlier one'],
-    correct: 'Delaying the direct path, or moving the mic closer',
-    explain: 'Only the paths — or a deliberate delay — set the timing. Polarity moves the notches; level changes their depth.',
+    options: ['Delaying the direct path to line up with the mic', 'Flipping the polarity switch on one channel', 'Turning the later source up until it matches the earlier one'],
+    correct: 'Delaying the direct path to line up with the mic',
+    explain: 'Only the paths — or a deliberate delay — set the timing. Moving the mic closer only shrinks the gap: the speaker and the amp add their own lag. Polarity moves the notches; level changes their depth.',
     why: {
       'Flipping the polarity switch on one channel': 'Polarity flips the sign; the delay stays.',
       'Turning the later source up until it matches the earlier one': 'Level changes the notches’ depth, not the delay.',
@@ -418,6 +418,18 @@ const scenarios: MikingScenario[] = [
 ];
 
 const symptoms: Symptom[] = [
+  {
+    id: 's.hum',
+    observation: 'Hum or buzz on the DI channel',
+    firstChecks: 'Is it a cable, a shared power circuit, or the DI’s audio ground? Swap one cable at a time; then try the DI’s ground-lift switch, as its manual describes.',
+    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the earth pin off the amp’s mains plug to break the loop', 'Turn the DI channel up so the steel playing covers the hum'],
+    correct: 'Swap one cable at a time, then try the DI’s ground lift',
+    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s mains earth stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
+    why: {
+      'Pull the earth pin off the amp’s mains plug to break the loop': 'Never. The mains earth is the safety path that stops a fault becoming a shock. Only a qualified technician deals with mains wiring.',
+      'Turn the DI channel up so the steel playing covers the hum': 'More gain raises the hum with the instrument.',
+    },
+  },
   {
     id: 's.brittle',
     observation: 'Upper notes sound sharp or brittle',
@@ -704,7 +716,7 @@ export const C04_LESSON: Lesson = {
       { id: 'site', label: 'Spot on the cone, distance from the grille, angle', kind: 'text' },
       { id: 'zone', label: 'Stand and cable route; the pedal and knee-lever zone kept clear', kind: 'text' },
       { id: 'tone', label: 'Swells, attacks, sustain: what you heard (tendencies)', kind: 'text' },
-      { id: 'notes', label: 'Second source, mono check; final choice and its limitation', kind: 'text' },
+      { id: 'notes', label: 'Second source, mono check; hum checked (the DI’s ground lift as its manual says — the mains earth never touched); final choice and its limitation', kind: 'text' },
     ],
   },
   unknowns: [

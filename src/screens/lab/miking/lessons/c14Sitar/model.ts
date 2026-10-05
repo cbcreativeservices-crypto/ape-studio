@@ -77,7 +77,7 @@ export function c14ZoneSpecs(sc: LuteScene): LuteZoneSpec[] {
       aimAt: { surface: 'neck', r: 120, prov: ill('pointed at the neck: the axis meets it within 12 cm — the lab’s tolerance') },
       micTypeIds: STAND,
       start: { p: v(390, 0, 190), aimAt: at.neck },
-      tendency: 'More string character and, on a sitar that has them, more of the sympathetic strings’ shimmer — and more fret and hand noise. On its own it loses the body; it is the second of a pair.',
+      tendency: 'More string character and, on a sitar that has them, the sympathetic strings’ shimmer can stand out more — with more fret and hand noise. On its own it loses the body; it is usually the second of a pair.',
       checks: ['Clear of the left hand’s travel along the neck', 'Fret and hand noise', 'The pair in mono with the low mic'],
     },
     {

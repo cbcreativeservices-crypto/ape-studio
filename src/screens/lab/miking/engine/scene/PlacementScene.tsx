@@ -51,7 +51,7 @@ import type { Rig } from './useRig.ts';
 import { liveLine, withStop } from './readoutText.ts';
 import { frustumOutline } from '../geometry/outline.ts';
 import { refLabels } from './sceneWords.ts';
-import { fitLabels, labelWidth } from './labelLayout.ts';
+import { fitLabels, labelRect, labelWidth, leaderLine } from './labelLayout.ts';
 import type { LessonArt } from './sceneTypes.ts';
 
 const BLUE = '#6fa8ff';
@@ -1079,6 +1079,16 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
     [mini, showLabels, art, view, variant, base, textScale, w, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1],
   );
+  // Leaders from labels that sit clear of the instrument back to their part,
+  // in model space (the canvas transform carries them through a zoom).
+  const leaders = useMemo(
+    () =>
+      labels.flatMap((l) => {
+        const ln = l.lead ? leaderLine(labelRect(l, base, textScale, w), base, l.lead) : null;
+        return ln ? [{ id: l.id, a: vec((ln.x1 - base.ox) / base.s, (ln.y1 - base.oy) / base.s), b: vec((ln.x2 - base.ox) / base.s, (ln.y2 - base.oy) / base.s) }] : [];
+      }),
+    [labels, base, textScale, w],
+  );
   const Instrument = art.Instrument;
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
@@ -1110,6 +1120,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={matrix}>
           <Instrument view={view} variant={variant} />
+          {leaders.map((ld) => (
+            <Line key={`lead:${ld.id}`} p1={ld.a} p2={ld.b} color="#e1e4eb" opacity={0.55} strokeWidth={0.8 / base.s} />
+          ))}
           {envelopes.map((e) => (
             <Group key={e.id} clip={e.path}>
               <Path path={hatchPath} style="stroke" strokeWidth={2} color={GREY} opacity={0.55} />

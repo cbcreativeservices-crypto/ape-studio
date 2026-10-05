@@ -47,7 +47,7 @@ export const C08_SPEC: AmpPagesSpec = {
     sheetNote: 'For a real rig, with the player’s agreement, levels at zero while anything is connected, and the speaker connection left as it is. Write tendencies in words.',
   },
   notes: {
-    beam: 'At bass pitches a cabinet spreads its sound wide — the beam you see here belongs to the higher harmonics. A 10 in woofer beams a little later than this 12 in cone as the pitch rises; the horn takes over the very top.',
+    beam: 'At bass pitches a cabinet spreads its sound wide — the beam you see here belongs to the higher harmonics. A 10 in woofer beams a little later than the 12 in cone drawn in this explorer as the pitch rises; the horn takes over the very top.',
     spots: 'On a bass woofer, toward the centre tends to add bite — slap, pick, fretless articulation — and toward the edge tends to be warmer. (A 10 in woofer has the same parts as this 12 in one, a little smaller.)',
     place: 'The zones sit on ONE woofer — the lower right, ringed on page 1. Close (2.5–15 cm) for focus; 10–45 cm for room to breathe; the two overlap between 10 and 15 cm, a natural first try. The horn sits above, off this cut.',
     context: 'Live, a DI usually carries the dependable low end; the mic adds the cabinet’s character, blended underneath and checked in mono.',

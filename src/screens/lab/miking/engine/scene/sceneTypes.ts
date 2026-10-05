@@ -8,8 +8,10 @@ import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 import type { PageId, SettingItem, VariantId, Vec3, ViewId, Wedge } from '../model/types.ts';
 
-/** `short`: the words to fall back to where the full label would collide. */
-export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
+/** `short`: the words to fall back to where the full label would collide.
+ *  `lead`: the part the label names (u, v), when the label sits clear of the
+ *  instrument — a thin leader line runs from the label back to it. */
+export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative'; lead?: { u: number; v: number } };
 
 export type LessonArt = {
   /** The instrument (static; Skia elements in mm). */

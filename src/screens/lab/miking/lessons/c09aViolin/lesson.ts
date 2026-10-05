@@ -85,7 +85,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.snd.1',
     page: 'sound',
     prompt: 'How does a bow keep a violin note sounding?',
-    options: ['It grips and drags the string, then lets it slip back — every cycle', 'It strikes the string again and again, faster than the eye can follow', 'It presses the string down onto the fingerboard to start the note'],
+    options: ['It strikes the string again and again, faster than the eye can follow', 'It grips and drags the string, then lets it slip back — every cycle', 'It presses the string down onto the fingerboard to start the note'],
     correct: 'It grips and drags the string, then lets it slip back — every cycle',
     explain: 'Rosin on the hair grips the string and drags it with the bow; when the string’s pull wins, it slips back and is caught again. Grip and slip repeat once every vibration, for as long as the bow moves.',
     why: {
@@ -97,7 +97,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.snd.2',
     page: 'sound',
     prompt: 'Why can a mic very close to one f-hole give a lopsided picture of the violin?',
-    options: ['The violin radiates differently from each part, and at each pitch', 'The f-hole is the one part of the violin that radiates sound at all', 'The f-hole blocks the high frequencies coming out of the body'],
+    options: ['The f-hole is the one part of the violin that radiates sound at all', 'The f-hole blocks the high frequencies coming out of the body', 'The violin radiates differently from each part, and at each pitch'],
     correct: 'The violin radiates differently from each part, and at each pitch',
     explain: 'The top, the back and the f-holes each radiate their own mix, and the pattern changes with pitch. Very close to one spot, the mic hears that spot; a little distance blends them.',
     why: {
@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.snd.3',
     page: 'sound',
     prompt: 'One of the string’s shapes has a still point right under the bow. What happens to that shape?',
-    options: ['The bow cannot drive it there, so it is weak in the sound', 'It becomes the loudest shape, because the bow presses right there', 'Nothing changes: the bow drives all of the shapes the same'],
+    options: ['It becomes the loudest shape, because the bow presses right there', 'The bow cannot drive it there, so it is weak in the sound', 'Nothing changes: the bow drives all of the shapes the same'],
     correct: 'The bow cannot drive it there, so it is weak in the sound',
     explain: 'A point can only drive a shape as much as the string moves there in that shape. On a still point it cannot — so moving the bow toward or away from the bridge changes which overtones are strong.',
     why: {
@@ -122,7 +122,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.set.2',
     page: 'setting',
     prompt: 'On which side of the player does the bow sweep, out to arm’s length?',
-    options: ['The player’s right, toward the audience at the tip of a stroke', 'The player’s left, out past the scroll and the left hand', 'Straight up above the player’s head, clear of the bow and of the music stand'],
+    options: ['The player’s left, out past the scroll and the left hand', 'Straight up above the player’s head, clear of the bow and of the music stand', 'The player’s right, toward the audience at the tip of a stroke'],
     correct: 'The player’s right, toward the audience at the tip of a stroke',
     explain: 'The bow arm is on the right: at the tip of a stroke the hand is out at arm’s length, forward and to the right. The other end of the bow swings back over the left shoulder at the frog. A stand mic comes in from the front, clear of both.',
     why: {
@@ -134,7 +134,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.set.3',
     page: 'setting',
     prompt: 'Before placing any mic, what do you ask the violinist?',
-    options: ['Their posture, the bow’s reach, the passages and the sound wanted', 'Whether it is a violin or a fiddle, since each has its own mic position', 'Nothing: a starting point already says where the mic goes'],
+    options: ['Whether it is a violin or a fiddle, since each has its own mic position', 'Their posture, the bow’s reach, the passages and the sound wanted', 'Nothing: a starting point already says where the mic goes'],
     correct: 'Their posture, the bow’s reach, the passages and the sound wanted',
     explain: 'Check the real playing posture, the full up- and down-bow, the highest and lowest notes and the loudest and softest phrases — and the sound wanted: a classical solo and a fiddle in a band ask for different things.',
     why: {
@@ -146,7 +146,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic very close to where the bow meets the strings tends to hear more of…',
-    options: ['The bow — articulation, and rosin and scratch', 'The air breathing in and out of the f-holes in the low notes', 'The whole violin and the room, blended together'],
+    options: ['The air breathing in and out of the f-holes in the low notes', 'The bow — articulation, and rosin and scratch', 'The whole violin and the room, blended together'],
     correct: 'The bow — articulation, and rosin and scratch',
     explain: 'The bite starts where the hair grips the string, so a mic close to it hears more of it — and can overstate the friction. A tendency, to check by ear.',
     why: {
@@ -158,7 +158,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.mic.1',
     page: 'microphone',
     prompt: 'Why might a miniature clipped to the violin suit a fiddler who moves?',
-    options: ['It moves with the violin, so the distance holds as the player turns', 'Its clip stops it from hearing the monitors and the rest of the stage', 'It needs no power, so a spare input without phantom will do'],
+    options: ['Its clip stops it from hearing the monitors and the rest of the stage', 'It moves with the violin, so the distance holds as the player turns', 'It needs no power, so a spare input without phantom will do'],
     correct: 'It moves with the violin, so the distance holds as the player turns',
     explain: 'On the violin, the capsule keeps one distance however the player turns — a stand mic has a working zone the player can leave. It still hears the stage, and its close view is more coloured.',
     why: {
@@ -170,7 +170,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.mic.2',
     page: 'microphone',
     prompt: 'A miniature aimed at an f-hole instead of the bridge tends to give…',
-    options: ['More level, and often a slightly duller colour', 'Less level, and a much brighter, thinner sound', 'Exactly the same sound, only quieter overall'],
+    options: ['Less level, and a much brighter, thinner sound', 'Exactly the same sound, only quieter overall', 'More level, and often a slightly duller colour'],
     correct: 'More level, and often a slightly duller colour',
     explain: 'Toward the f-hole there is more output; the colour often turns a little duller than aimed at the bridge. One setup’s observation — check it by ear on the real violin.',
     why: {
@@ -182,7 +182,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.mic.3',
     page: 'microphone',
     prompt: 'In a good, quiet room, why might you try an omni on a solo violin?',
-    options: ['For a broad, even pickup of the violin and the room', 'Because an omni rejects the room better than a cardioid', 'Because an omni works only at distances under 10 cm'],
+    options: ['Because an omni rejects the room better than a cardioid', 'Because an omni works only at distances under 10 cm', 'For a broad, even pickup of the violin and the room'],
     correct: 'For a broad, even pickup of the violin and the room',
     explain: 'An omni hears all round, with no directional proximity effect — welcome when the room adds to the sound. A directional mic helps when the room is poor or other players are close.',
     why: {
@@ -194,7 +194,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.mic.4',
     page: 'microphone',
     prompt: 'Your only spare input has no phantom power. Which of this page’s mics can you use?',
-    options: ['Neither: both condensers need phantom power to work', 'The miniature, because its clip carries the power', 'The stand condenser, as long as its cable is short'],
+    options: ['The miniature, because its clip carries the power', 'Neither: both condensers need phantom power to work', 'The stand condenser, as long as its cable is short'],
     correct: 'Neither: both condensers need phantom power to work',
     explain: 'Both of these mics are condensers: the stand mic needs phantom power, and the miniature needs it through its adapter. Find a powered input — or a different kind of mic.',
     why: {
@@ -206,7 +206,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.place.1',
     page: 'placement',
     prompt: 'A starting point says “about 30 cm in front of where the bow meets the strings”. What is it measured from?',
-    options: ['The strings where the bow meets them — not the scroll or the body', 'The player’s chin, where the violin rests against the player’s collarbone', 'The floor under the player, since that is easy to measure'],
+    options: ['The player’s chin, where the violin rests against the player’s collarbone', 'The strings where the bow meets them — not the scroll or the body', 'The floor under the player, since that is easy to measure'],
     correct: 'The strings where the bow meets them — not the scroll or the body',
     explain: 'A distance means something only with the part it is measured from. The same 30 cm from the chin rest or the scroll puts the mic somewhere else — which is why every readout names its reference.',
     why: {
@@ -218,7 +218,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.place.2',
     page: 'placement',
     prompt: 'You bring the mic from about a metre to about 30 cm from the violin. What tends to change?',
-    options: ['More bow articulation and detail; less of the room', 'Only the level rises; the tone stays exactly the same', 'Less low end, because the mic is now nearer the strings'],
+    options: ['Only the level rises; the tone stays exactly the same', 'More bow articulation and detail; less of the room', 'Less low end, because the mic is now nearer the strings'],
     correct: 'More bow articulation and detail; less of the room',
     explain: 'Closer tends to bring more of the bow and the strings, more separation, and less room. Too close, the scratch can take over — and a directional mic adds low end (proximity effect).',
     why: {
@@ -230,7 +230,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.place.3',
     page: 'placement',
     prompt: 'Where should a body-clip miniature’s capsule point on a violin?',
-    options: ['At the bridge or an f-hole, away from the player’s face', 'At the player’s chin, to catch the breath with the note', 'At the scroll, which is farthest from the bow'],
+    options: ['At the player’s chin, to catch the breath with the note', 'At the scroll, which is farthest from the bow', 'At the bridge or an f-hole, away from the player’s face'],
     correct: 'At the bridge or an f-hole, away from the player’s face',
     explain: 'On the bass-side rib, the capsule looks over the top at the bridge (brighter) or toward an f-hole (more level, duller) — pointed away from the head so breath noise stays out.',
     why: {
@@ -242,7 +242,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · What must a violin mic, its stand and its cable stay clear of?',
-    options: ['The bow’s sweep, the bow arm and the player’s head', 'The front of the violin, so the audience can see it', 'The music stand, so the player can read the part and the conductor'],
+    options: ['The front of the violin, so the audience can see it', 'The bow’s sweep, the bow arm and the player’s head', 'The music stand, so the player can read the part and the conductor'],
     correct: 'The bow’s sweep, the bow arm and the player’s head',
     explain: 'Clearance comes first: both ends of the bow, the arm out to the tip of a stroke, and the head at the chin rest. Stop the player before anything moves, and check a full bow again.',
     why: {
@@ -254,7 +254,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.ctx.1',
     page: 'context',
     prompt: 'A fiddler plays a solo beside a banjo and drums on a loud stage. A good first step for the mic?',
-    options: ['Closer placement — or an approved miniature — with the pattern aimed', 'A farther mic, so the band blends naturally into the violin', 'Turn the violin channel up until it rises above the rest of the band'],
+    options: ['A farther mic, so the band blends naturally into the violin', 'Turn the violin channel up until it rises above the rest of the band', 'Closer placement — or an approved miniature — with the pattern aimed'],
     correct: 'Closer placement — or an approved miniature — with the pattern aimed',
     explain: 'On a loud stage, closer pickup and an aimed pattern give more violin relative to the band and the monitors. A farther mic suits a quiet room; more gain raises the band in that channel too.',
     why: {
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.ctx.studio',
     page: 'context',
     prompt: 'A solo classical violin in a good studio room. What is a fair first choice?',
-    options: ['One stand mic in front and above, then small changes by ear', 'Two close miniatures, one on each side, to make it stereo', 'A mic as close to the bridge as it will go, for the detail'],
+    options: ['Two close miniatures, one on each side, to make it stereo', 'A mic as close to the bridge as it will go, for the detail', 'One stand mic in front and above, then small changes by ear'],
     correct: 'One stand mic in front and above, then small changes by ear',
     explain: 'A modest distance blends the violin and the room into a balanced line; adjust height, angle and distance by ear. Two close mics are optional, and very close can sound scratchy.',
     why: {
@@ -279,7 +279,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · How does a bow keep the violin sounding?',
-    options: ['By gripping the string and letting it slip back, every cycle', 'By striking the string many times a second, faster than we can see', 'By blowing air across the f-holes as it moves'],
+    options: ['By striking the string many times a second, faster than we can see', 'By gripping the string and letting it slip back, every cycle', 'By blowing air across the f-holes as it moves'],
     correct: 'By gripping the string and letting it slip back, every cycle',
     explain: 'Grip and slip, once every vibration — so the sound carries the bow’s own texture as well as the note. A close mic hears more of that texture.',
     why: {
@@ -291,7 +291,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.two.1',
     page: 'twoMic',
     prompt: 'Why can a close spot mic and a farther mic on one violin sound thin together?',
-    options: ['The sound reaches them at different times, so some pitches cancel', 'The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum'],
+    options: ['The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'The sound reaches them at different times, so some pitches cancel'],
     correct: 'The sound reaches them at different times, so some pitches cancel',
     explain: 'The farther mic hears each note a little later. Summed, some pitches arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
@@ -305,7 +305,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.two.4',
     page: 'twoMic',
     prompt: 'In a chamber recording with a main pair up, how do you use a violin spot mic?',
-    options: ['Raise it only for a stated balance, and check it in mono', 'Make it the loudest channel, since the violin plays the melody', 'Mute the main pair whenever the violin has the tune'],
+    options: ['Make it the loudest channel, since the violin plays the melody', 'Raise it only for a stated balance, and check it in mono', 'Mute the main pair whenever the violin has the tune'],
     correct: 'Raise it only for a stated balance, and check it in mono',
     explain: 'The main pair carries the ensemble image; a spot supports it. Bring it up gradually, watch that the player does not leap forward, and check the blend in stereo and mono.',
     why: {
@@ -318,7 +318,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.prac.3',
     page: 'practice',
     prompt: 'What would justify adding a second violin channel?',
-    options: ['The first mic works alone, the pair adds something, it holds in mono', 'Two channels give the mix engineer more options to choose from later on', 'The violin needs more level in the mix than one mic can give it'],
+    options: ['Two channels give the mix engineer more options to choose from later on', 'The violin needs more level in the mix than one mic can give it', 'The first mic works alone, the pair adds something, it holds in mono'],
     correct: 'The first mic works alone, the pair adds something, it holds in mono',
     explain: 'A second mic blends a different perspective — and a delay. If the pair loses body, move or rebalance it, check polarity — or leave it out.',
     why: {
@@ -330,7 +330,7 @@ const scenarios: MikingScenario[] = [
     id: 'vn.mix.1',
     page: 'practice',
     prompt: 'A starting point reads “5–10 cm from the side of the violin”. What is it measured from?',
-    options: ['The violin’s rib on that side, by the lower bout', 'The bridge, which all violin distances are measured from', 'The player’s shoulder, where the violin rests'],
+    options: ['The bridge, which all violin distances are measured from', 'The player’s shoulder, where the violin rests', 'The violin’s rib on that side, by the lower bout'],
     correct: 'The violin’s rib on that side, by the lower bout',
     explain: 'A distance belongs to the part it names. Some starting points name the bridge, some where the bow meets the strings, and this one the side — different numbers for the same spot.',
     why: {
@@ -347,7 +347,7 @@ const symptoms: Symptom[] = [
     id: 'vn.sym.scratch',
     observation: 'Scratch or rosin noise dominates',
     firstChecks: 'Is the mic too close to the bridge and the bow? Move it outward, up or back, and reassess the full phrase.',
-    options: ['Move the mic outward, up or back, then play the full phrase', 'Cut the high frequencies on the violin channel first', 'Ask the player to bow more lightly for the whole of the session'],
+    options: ['Cut the high frequencies on the violin channel first', 'Move the mic outward, up or back, then play the full phrase', 'Ask the player to bow more lightly for the whole of the session'],
     correct: 'Move the mic outward, up or back, then play the full phrase',
     explain: 'Very close to the bow, the mic overstates the friction. A little more distance or a different angle blends the note and the bow.',
     why: {
@@ -359,7 +359,7 @@ const symptoms: Symptom[] = [
     id: 'vn.sym.dull',
     observation: 'The tone is dull or lacks detail',
     firstChecks: 'Is the mic too far, off axis or turned toward an f-hole? Adjust the angle and the position, and check the stage spill.',
-    options: ['Too far, off axis, or turned to an f-hole: adjust angle and position', 'Boost the treble on the channel until the detail comes back', 'Swap to an omni mic, the brighter-sounding pattern on a violin up close'],
+    options: ['Boost the treble on the channel until the detail comes back', 'Too far, off axis, or turned to an f-hole: adjust angle and position', 'Swap to an omni mic, the brighter-sounding pattern on a violin up close'],
     correct: 'Too far, off axis, or turned to an f-hole: adjust angle and position',
     explain: 'Distance, an off-axis angle or an f-hole aim can each dull the sound. Change the geometry first — then check what the stage adds.',
     why: {
@@ -371,7 +371,7 @@ const symptoms: Symptom[] = [
     id: 'vn.sym.string',
     observation: 'One string is much brighter than the others',
     firstChecks: 'Is the capsule localised on one region? Take a broader perspective and test all four strings.',
-    options: ['Take a broader view and test all four strings', 'Cut that string’s frequencies with a narrow EQ', 'Ask the player to avoid that string where possible'],
+    options: ['Cut that string’s frequencies with a narrow EQ', 'Ask the player to avoid that string where possible', 'Take a broader view and test all four strings'],
     correct: 'Take a broader view and test all four strings',
     explain: 'A close capsule can favour the string or region it faces. A little more distance or a different angle evens the strings out.',
     why: {
@@ -383,7 +383,7 @@ const symptoms: Symptom[] = [
     id: 'vn.sym.turn',
     observation: 'The tone changes as the player turns',
     firstChecks: 'Does the stand mic lose the view of the top? Define a working zone with the player, or test an approved miniature.',
-    options: ['Agree a working zone, or try an approved miniature', 'Compress the channel hard until the level stops changing', 'Ask the player to stand completely still'],
+    options: ['Compress the channel hard until the level stops changing', 'Ask the player to stand completely still', 'Agree a working zone, or try an approved miniature'],
     correct: 'Agree a working zone, or try an approved miniature',
     explain: 'A stand mic hears the violin from one place. Mark the spot with the player, or use a miniature that moves with the violin.',
     why: {
@@ -458,7 +458,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'What is the difference between a violin and a fiddle?',
-    options: ['None in the instrument — only the music it plays', 'A fiddle has five strings and no f-holes', 'A fiddle is held on the right shoulder'],
+    options: ['A fiddle has five strings and no f-holes', 'A fiddle is held on the right shoulder', 'None in the instrument — only the music it plays'],
     correct: 'None in the instrument — only the music it plays',
     explain: 'Violin and fiddle are the same instrument named in different musical settings; the mic follows the music and the setting.',
     why: {
@@ -494,12 +494,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'A mic very close to one spot on the violin tends to…',
-    options: ['Overstate that spot — friction, rosin or body', 'Hear the whole violin, evenly balanced', 'Lose the high notes of the violin'],
+    options: ['Overstate that spot — friction, rosin or body', 'Hear the whole violin, evenly balanced across it', 'Lose the high notes of the violin altogether'],
     correct: 'Overstate that spot — friction, rosin or body',
     explain: 'The violin radiates differently from each part; very close, one region dominates. A little distance blends them.',
     why: {
-      'Hear the whole violin, evenly balanced': 'That is what a little distance tends to give.',
-      'Lose the high notes of the violin': 'A close mic hears the highs fine; the issue is one region dominating.',
+      'Hear the whole violin, evenly balanced across it': 'That is what a little distance tends to give.',
+      'Lose the high notes of the violin altogether': 'A close mic hears the highs fine; the issue is one region dominating.',
     },
   },
   {
@@ -507,12 +507,12 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'What must a stand mic and its cable stay clear of around a violinist?',
-    options: ['The bow’s sweep, the bow arm and the player’s head', 'The music stand, so the music can be read', 'The audience’s view of the violin'],
+    options: ['The bow’s sweep, the bow arm and the player’s head', 'The music stand, so the player can read the music', 'The audience’s view of the violin and the player'],
     correct: 'The bow’s sweep, the bow arm and the player’s head',
     explain: 'Clearance comes first: whatever moves — the bow at both ends, the arm out to the tip — and the head at the chin rest.',
     why: {
-      'The music stand, so the music can be read': 'Sight lines matter, but safety is about what moves.',
-      'The audience’s view of the violin': 'The view matters less than the player’s movement.',
+      'The music stand, so the player can read the music': 'Sight lines matter, but safety is about what moves.',
+      'The audience’s view of the violin and the player': 'The view matters less than the player’s movement.',
     },
   },
   hearingDiag('q.6', W),

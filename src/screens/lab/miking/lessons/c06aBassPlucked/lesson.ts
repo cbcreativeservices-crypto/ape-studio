@@ -86,7 +86,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.1`,
     page: 'sound',
     prompt: 'A four-string bass’s open E is about 41 Hz. What does that mean for the mic and the channel?',
-    options: ['They must keep the lows — and the detail that makes the pitch clear', 'Only the lows matter: a bass mic needs no high frequencies at all', 'Nothing: at 41 Hz a microphone cannot pick up the note, so the channel does not matter'],
+    options: ['Only the lows matter: a bass mic needs no high frequencies at all', 'Nothing: at 41 Hz a microphone cannot pick up the note, so the channel does not matter', 'They must keep the lows — and the detail that makes the pitch clear'],
     correct: 'They must keep the lows — and the detail that makes the pitch clear',
     explain: 'A bass mic must capture the low notes AND the high-frequency detail: the harmonics, the finger attack and the room define how clearly the pitch is heard.',
     why: {
@@ -98,7 +98,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.2`,
     page: 'sound',
     prompt: 'What happens to a plucked string once the finger lets go?',
-    options: ['It swings back and rings, its shape splitting into two corners', 'It stops at once, because nothing keeps pulling it after release', 'It keeps the exact triangle the finger gave it until it is damped'],
+    options: ['It stops at once, because nothing keeps pulling it after release', 'It swings back and rings, its shape splitting into two corners', 'It keeps the exact triangle the finger gave it until it is damped'],
     correct: 'It swings back and rings, its shape splitting into two corners',
     explain: 'Released, the pulled triangle splits into two corners that run apart and back; the string rings on, and with nothing to keep it going the note dies away — the body of the sound.',
     why: {
@@ -110,7 +110,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.3`,
     page: 'sound',
     prompt: 'A mic near one f-hole of the bass tends to give…',
-    options: ['More level and body — and maybe one local resonance overstated', 'Only the finger attack, with the low end filtered out', 'The whole bass evenly, just as a room mic farther back would hear it'],
+    options: ['Only the finger attack, with the low end filtered out', 'More level and body — and maybe one local resonance overstated', 'The whole bass evenly, just as a room mic farther back would hear it'],
     correct: 'More level and body — and maybe one local resonance overstated',
     explain: 'Near an f-hole there is more output and low-mid body; one spot can also overstate a local resonance. A bridge-oriented view includes more pluck definition.',
     why: {
@@ -123,7 +123,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.2`,
     page: 'setting',
     prompt: 'Where must a mic stand never go around an upright bass?',
-    options: ['Anywhere it could tip onto the bass, or by the endpin and feet', 'In front of the bass, where the audience can see the stand and its cable', 'Beside the bassist’s amp, where the cable is shortest'],
+    options: ['In front of the bass, where the audience can see the stand and its cable', 'Beside the bassist’s amp, where the cable is shortest', 'Anywhere it could tip onto the bass, or by the endpin and feet'],
     correct: 'Anywhere it could tip onto the bass, or by the endpin and feet',
     explain: 'A bass is valuable, heavy and unstable if bumped. Keep stands and cables away from the endpin and the feet, and never where a falling stand could reach the instrument.',
     why: {
@@ -135,7 +135,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.3`,
     page: 'setting',
     prompt: 'Before placing a mic, what do you ask the bassist to play?',
-    options: ['Low notes, higher walking lines, accents, soft notes and any slap', 'One long low E, to set the level for the whole show', 'Nothing: a starting point does not depend on what the bassist plays'],
+    options: ['One long low E, to set the level for the whole show', 'Nothing: a starting point does not depend on what the bassist plays', 'Low notes, higher walking lines, accents, soft notes and any slap'],
     correct: 'Low notes, higher walking lines, accents, soft notes and any slap',
     explain: 'Set gain for the peaks, not the first gentle note, and listen across the range. Ask about the pickup, the posture, the room and the neighbours too.',
     why: {
@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.1`,
     page: 'microphone',
     prompt: 'FROM EARLIER · Where do the bass’s low notes, finger sounds and body come from?',
-    options: ['Different places: the strings, the bridge, the body, the f-holes', 'All from one spot, the bridge, where the whole sound begins and leaves', 'Only from the f-holes, which work like a loudspeaker'],
+    options: ['All from one spot, the bridge, where the whole sound begins and leaves', 'Different places: the strings, the bridge, the body, the f-holes', 'Only from the f-holes, which work like a loudspeaker'],
     correct: 'Different places: the strings, the bridge, the body, the f-holes',
     explain: 'Low fundamentals, harmonics, fingerboard sounds and the room arise from different places — which is why a mic’s position changes the balance so much.',
     why: {
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'What is a bass pickup, compared with a microphone?',
-    options: ['A separate electrical path — not a mic hearing the air', 'A small microphone hidden inside the bass', 'A microphone with a stronger low end than a stand mic has'],
+    options: ['A small microphone hidden inside the bass', 'A separate electrical path — not a mic hearing the air', 'A microphone with a stronger low end than a stand mic has'],
     correct: 'A separate electrical path — not a mic hearing the air',
     explain: 'A pickup turns the vibration into an electrical signal directly; it does not hear airborne sound. Use the pickup’s own input or preamp requirements, and keep it on its own channel.',
     why: {
@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.2`,
     page: 'microphone',
     prompt: 'A directional mic very close to the bass sounds boomy. A likely reason?',
-    options: ['Proximity effect: a directional mic up close lifts the lows', 'The omni pattern is collecting the room’s bass from all around it', 'The strings are too thick for the mic to hear'],
+    options: ['The omni pattern is collecting the room’s bass from all around it', 'Proximity effect: a directional mic up close lifts the lows', 'The strings are too thick for the mic to hear'],
     correct: 'Proximity effect: a directional mic up close lifts the lows',
     explain: 'A directional mic develops a bass boost very close; an omni has different proximity behaviour and hears more room. Back off or change the angle before a big cut.',
     why: {
@@ -183,7 +183,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.3`,
     page: 'microphone',
     prompt: 'Why might a miniature on the strings below the bridge suit a moving bassist?',
-    options: ['It moves with the bass, keeping one distance from the strings', 'Its clip stops it from hearing the drums and the rest of the stage', 'It needs no phantom power, so a plain line input will do'],
+    options: ['Its clip stops it from hearing the drums and the rest of the stage', 'It moves with the bass, keeping one distance from the strings', 'It needs no phantom power, so a plain line input will do'],
     correct: 'It moves with the bass, keeping one distance from the strings',
     explain: 'A clip made for the bass grips the two outer strings below the bridge and carries the capsule with the instrument. It still hears the stage, and its close view is more local.',
     why: {
@@ -195,7 +195,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.4`,
     page: 'microphone',
     prompt: 'Is a large-diaphragm mic automatically better for a bass’s lows?',
-    options: ['No: check the actual mic’s specifications and its position', 'Yes: only a large diaphragm can capture a low E at full strength', 'Yes, as long as it is placed at an f-hole'],
+    options: ['Yes: only a large diaphragm can capture a low E at full strength', 'No: check the actual mic’s specifications and its position', 'Yes, as long as it is placed at an f-hole'],
     correct: 'No: check the actual mic’s specifications and its position',
     explain: 'Diaphragm size does not decide low-frequency capture. The mic’s actual response, its pattern and where it sits do — check them, then listen.',
     why: {
@@ -207,7 +207,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.1`,
     page: 'placement',
     prompt: 'A starting point says “15–30 cm out in front, just above the bridge”. Where is the mic?',
-    options: ['In front of the strings, a little higher than the bridge', 'Clipped onto the bridge, at its top edge', 'Under the strings, in the gap between the bridge and the arched top'],
+    options: ['Clipped onto the bridge, at its top edge', 'In front of the strings, a little higher than the bridge', 'Under the strings, in the gap between the bridge and the arched top'],
     correct: 'In front of the strings, a little higher than the bridge',
     explain: '“Above the bridge” is a height on the instrument’s face — a little up the strings from the bridge — with the mic 15–30 cm out in front. Nothing goes on the bridge.',
     why: {
@@ -219,7 +219,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.2`,
     page: 'placement',
     prompt: 'You move the mic a little higher, toward the fingerboard. What tends to change?',
-    options: ['More finger attack and pitch definition; less body', 'More low end, because the strings are longer there', 'Nothing: the height along the strings makes no difference'],
+    options: ['More low end, because the strings are longer there', 'Nothing: the height along the strings makes no difference', 'More finger attack and pitch definition; less body'],
     correct: 'More finger attack and pitch definition; less body',
     explain: 'Toward the fingerboard tends to bring the fingers and the pitch; too localised and the body thins. Compare it with a lower, topward view.',
     why: {
@@ -231,7 +231,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'A stand mic 20 cm in front and a capsule under the strings at 20 cm from the bridge’s foot: the same position?',
-    options: ['No: different geometries — their distances are not interchangeable', 'Yes: 20 cm is 20 cm, whichever mount holds the mic or part it is measured from', 'Yes, as long as both are aimed at the bridge'],
+    options: ['Yes: 20 cm is 20 cm, whichever mount holds the mic or part it is measured from', 'No: different geometries — their distances are not interchangeable', 'Yes, as long as both are aimed at the bridge'],
     correct: 'No: different geometries — their distances are not interchangeable',
     explain: 'A stand mic in front of the strings and a capsule mounted under them are different places measured from different parts. Choose one, then audition the other.',
     why: {
@@ -243,7 +243,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.2`,
     page: 'placement',
     prompt: 'FROM EARLIER · What must a bass mic, its stand and its cable stay clear of?',
-    options: ['The hands, the endpin and the feet — and a tipping stand’s reach', 'The front of the bass, so the audience can see the instrument clearly', 'The piano, so the pianist can see the bassist'],
+    options: ['The front of the bass, so the audience can see the instrument clearly', 'The piano, so the pianist can see the bassist', 'The hands, the endpin and the feet — and a tipping stand’s reach'],
     correct: 'The hands, the endpin and the feet — and a tipping stand’s reach',
     explain: 'Clearance comes first: the plucking hand above the bridge, the left hand along the neck, the floor around the endpin — and a stand placed so it cannot fall onto the bass.',
     why: {
@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.1`,
     page: 'context',
     prompt: 'You aim a directional bass mic away from the drums, and the kit is still loud in it. Why?',
-    options: ['The bass body reflects the kit back into the mic’s front', 'The mic is faulty: aiming away removes the kit completely', 'The bass is too quiet, so the mic has stopped working'],
+    options: ['The mic is faulty: aiming away removes the kit completely', 'The bass is too quiet, so the mic has stopped working', 'The bass body reflects the kit back into the mic’s front'],
     correct: 'The bass body reflects the kit back into the mic’s front',
     explain: 'The bass’s large surface reflects drum and PA sound toward the front of a mic aimed away from them. If the pattern alone fails, move the bassist, the drummer, the amp or the mic.',
     why: {
@@ -267,7 +267,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.2`,
     page: 'context',
     prompt: 'On a loud stage with a pickup installed, what is a common plan?',
-    options: ['Pickup for the low end; the mic for detail, as feedback allows', 'The mic alone, turned up until it is as loud as the rest of the band', 'Pickup and mic summed onto one channel to save inputs'],
+    options: ['The mic alone, turned up until it is as loud as the rest of the band', 'Pickup and mic summed onto one channel to save inputs', 'Pickup for the low end; the mic for detail, as feedback allows'],
     correct: 'Pickup for the low end; the mic for detail, as feedback allows',
     explain: 'The pickup often carries the dependable low-frequency main path; the mic adds acoustic detail as far as gain before feedback allows. Keep them on separate channels so the mic can come down without losing the bass.',
     why: {
@@ -279,7 +279,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.studio`,
     page: 'context',
     prompt: 'A good, isolated studio room, a natural jazz bass. Why might you try an omni?',
-    options: ['A broad picture of the whole bass and the room, with no proximity lift', 'An omni rejects the room’s sound better than a cardioid aimed at the bass', 'Omnis only work on bass, so there is no other choice'],
+    options: ['An omni rejects the room’s sound better than a cardioid aimed at the bass', 'A broad picture of the whole bass and the room, with no proximity lift', 'Omnis only work on bass, so there is no other choice'],
     correct: 'A broad picture of the whole bass and the room, with no proximity lift',
     explain: 'In a favourable, isolated room an omni can capture the whole instrument broadly; a directional mic helps when isolation is needed. Check the room’s low-frequency decay too.',
     why: {
@@ -291,7 +291,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · A four-string bass’s lowest open note is about…',
-    options: ['41 Hz, the open E', '65 Hz, like a cello’s C', '196 Hz, like a violin’s G'],
+    options: ['65 Hz, like a cello’s C', '196 Hz, like a violin’s G', '41 Hz, the open E'],
     correct: '41 Hz, the open E',
     explain: 'The open E is about 41 Hz (instruments with an extension or a fifth string go lower) — the region where patterns reject least and rooms boom most.',
     why: {
@@ -303,7 +303,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.two.1`,
     page: 'twoMic',
     prompt: 'A close and a far mic on the bass: the body disappears in the sum. Why?',
-    options: ['They hear each note at different times, so some pitches cancel', 'The far mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum, whatever the delay'],
+    options: ['The far mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum, whatever the delay', 'They hear each note at different times, so some pitches cancel'],
     correct: 'They hear each note at different times, so some pitches cancel',
     explain: 'The farther mic hears each note later; some pitches arrive out of step and cancel. Listen to each alone and in mono, move or rebalance, then compare polarity and timing.',
     why: {
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.two.4`,
     page: 'twoMic',
     prompt: 'A pickup and a mic on the bass sound hollow together. What do you try first?',
-    options: ['Hear each alone, sum in mono, move or rebalance — then polarity', 'Flip the pickup’s polarity and leave it that way for the show', 'Boost the low end on both channels until the body comes back'],
+    options: ['Flip the pickup’s polarity and leave it that way for the show', 'Boost the low end on both channels until the body comes back', 'Hear each alone, sum in mono, move or rebalance — then polarity'],
     correct: 'Hear each alone, sum in mono, move or rebalance — then polarity',
     explain: 'The mic hears airborne sound later than the pickup, and electronics add their own phase. Try placement and balance first; a polarity button cannot align every frequency.',
     why: {
@@ -330,7 +330,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.prac.3`,
     page: 'practice',
     prompt: 'What would justify adding a second bass path — a room mic, or a pickup beside the mic?',
-    options: ['A clear purpose, each path working alone, and the pair holding in mono', 'Two channels give the mix engineer more options to choose from later on', 'A bass needs a pickup and a mic together, whatever the room or stage'],
+    options: ['Two channels give the mix engineer more options to choose from later on', 'A clear purpose, each path working alone, and the pair holding in mono', 'A bass needs a pickup and a mic together, whatever the room or stage'],
     correct: 'A clear purpose, each path working alone, and the pair holding in mono',
     explain: 'A strong single-mic sound is the reference. A second path earns its place by adding something — level on a loud stage, space in a room — and by holding together in mono.',
     why: {
@@ -342,7 +342,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mix.1`,
     page: 'practice',
     prompt: 'A starting point reads “about 4–11 cm from the bridge’s foot”. What is it measured from?',
-    options: ['The bridge’s foot, on the top', 'The strings just above the bridge', 'The front edge of the fingerboard'],
+    options: ['The strings just above the bridge', 'The front edge of the fingerboard', 'The bridge’s foot, on the top'],
     correct: 'The bridge’s foot, on the top',
     explain: 'A distance belongs to the part it names: from the bridge’s foot, from the strings above the bridge and from the fingerboard are different numbers for the same spot.',
     why: {
@@ -359,19 +359,19 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.boom`,
     observation: 'Low notes boom unevenly',
     firstChecks: 'Is the mic on an f-hole, or is it a room mode? Shift the position and check several notes and the room.',
-    options: ['An f-hole or a room mode: shift it, and check several notes', 'Cut all the low end, so no note can boom', 'Move the mic right up to the f-hole for control'],
+    options: ['Cut all the low end, so that no note can boom at all', 'Move the mic right up to the f-hole for more control', 'An f-hole or a room mode: shift it, and check several notes'],
     correct: 'An f-hole or a room mode: shift it, and check several notes',
     explain: 'A low note can boom from a local resonance or from the room. Move the mic (or the bass) and compare several notes before a large cut that thins every note.',
     why: {
-      'Cut all the low end, so no note can boom': 'A broad cut removes the fundamentals the music needs.',
-      'Move the mic right up to the f-hole for control': 'Closer to the f-hole usually adds more boom.',
+      'Cut all the low end, so that no note can boom at all': 'A broad cut removes the fundamentals the music needs.',
+      'Move the mic right up to the f-hole for more control': 'Closer to the f-hole usually adds more boom.',
     },
   },
   {
     id: `${P}.sym.attack`,
     observation: 'All finger attack, little body',
     firstChecks: 'Is the capsule too high or too close to the fingerboard? Include the bridge and top, or a broader frontal view.',
-    options: ['Too high or close to the fingerboard: include the bridge and top', 'Boost the low end on the channel until the body returns', 'Ask the bassist to pluck more softly for the rest of the set'],
+    options: ['Boost the low end on the channel until the body returns', 'Ask the bassist to pluck more softly for the rest of the set', 'Too high or close to the fingerboard: include the bridge and top'],
     correct: 'Too high or close to the fingerboard: include the bridge and top',
     explain: 'Near the fingerboard the fingers dominate. Moving down toward the bridge and the top, or back for a broader view, brings the body back.',
     why: {
@@ -395,7 +395,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.drums`,
     observation: 'Drum bleed dominates',
     firstChecks: 'Is the bass reflecting the kit into the mic? Reposition the bass, the drums or the mic; use rejection and a pickup.',
-    options: ['Reflections off the bass: move people or mics; aim; add a pickup', 'Turn the bass channel up until the bass covers the drums in that mic', 'Swap to an omni, which hears the drums less'],
+    options: ['Turn the bass channel up until the bass covers the drums in that mic', 'Reflections off the bass: move people or mics; aim; add a pickup', 'Swap to an omni, which hears the drums less'],
     correct: 'Reflections off the bass: move people or mics; aim; add a pickup',
     explain: 'The bass body reflects the kit into the mic. Rearranging the players, aiming the rejection, and using a pickup for the low end all help.',
     why: {
@@ -407,7 +407,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.feedback`,
     observation: 'Feedback on stage',
     firstChecks: 'Which channel and which speaker excite the body? Lower the offending level and revise the monitor, amp and mic geometry.',
-    options: ['Lower the offending level; revise monitor, amp and mic geometry', 'Cut all the low end on both bass channels at once, to stop the ring', 'Boost the bass channel so the note covers the ring'],
+    options: ['Cut all the low end on both bass channels at once, to stop the ring', 'Lower the offending level; revise monitor, amp and mic geometry', 'Boost the bass channel so the note covers the ring'],
     correct: 'Lower the offending level; revise monitor, amp and mic geometry',
     explain: 'A resonant bass can feed back acoustically. Reduce the offending level, change the speaker, bass and mic geometry and the number of open mics, and check the pickup channel separately. Never provoke feedback.',
     why: {
@@ -530,12 +530,12 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Where must a stand never be placed around an upright bass?',
-    options: ['Where it could tip onto the bass, or by the endpin and feet', 'In front of the bass, at a safe distance', 'Anywhere the audience could see it'],
+    options: ['Where it could tip onto the bass, or by the endpin and feet', 'In front of the bass, at a safe distance from the body', 'Somewhere the audience could see it from their seats'],
     correct: 'Where it could tip onto the bass, or by the endpin and feet',
     explain: 'A falling stand can damage a bass; feet and the endpin share the floor. Clearance and stability come first.',
     why: {
-      'In front of the bass, at a safe distance': 'That is fine — placed so it cannot fall onto the bass.',
-      'Anywhere the audience could see it': 'Looks matter less than safety.',
+      'In front of the bass, at a safe distance from the body': 'That is fine — placed so it cannot fall onto the bass.',
+      'Somewhere the audience could see it from their seats': 'Looks matter less than safety.',
     },
   },
   hearingDiag('q.6', W),

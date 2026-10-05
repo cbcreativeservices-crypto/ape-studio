@@ -87,7 +87,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.1`,
     page: 'sound',
     prompt: 'What does the bow do that a plucking finger does not?',
-    options: ['It keeps feeding the string, so a note can sustain', 'It strikes the string once and lets it ring away', 'It holds the string still, so only the body sounds'],
+    options: ['It strikes the string once and lets it ring away', 'It keeps feeding the string, so a note can sustain', 'It holds the string still, so only the body sounds'],
     correct: 'It keeps feeding the string, so a note can sustain',
     explain: 'The bow grips the string, lets it slip, and grips again every vibration: it keeps putting energy in, so long notes, crescendos and quiet entrances are all possible.',
     why: {
@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.2`,
     page: 'sound',
     prompt: 'Why can a mic very close to where the bow plays sound scratchy?',
-    options: ['It hears the bow’s grip — rosin and scrape — up close', 'Bowing makes the strings vibrate too fast for the mic', 'A bowed bass has no low notes, only high noise'],
+    options: ['Bowing makes the strings vibrate too fast for the mic', 'It hears the bow’s grip — rosin and scrape — up close', 'A bowed bass has no low notes, only high noise'],
     correct: 'It hears the bow’s grip — rosin and scrape — up close',
     explain: 'The bow’s grip and release adds friction noise at the strings. Close to the bow, that articulation can dominate; a little farther, or toward the body, it blends with the note.',
     why: {
@@ -111,7 +111,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.3`,
     page: 'sound',
     prompt: 'A mic near one f-hole of the bowed bass tends to give…',
-    options: ['More body and output — and maybe one local resonance overstated', 'Only the bow noise, with the low end filtered out', 'The whole bass evenly, just as a room mic farther back would hear it'],
+    options: ['Only the bow noise, with the low end filtered out', 'More body and output — and maybe one local resonance overstated', 'The whole bass evenly, just as a room mic farther back would hear it'],
     correct: 'More body and output — and maybe one local resonance overstated',
     explain: 'Near an f-hole there is more output and low-mid body; one spot can also overstate a local resonance or a room mode. It is an option to test, never a must.',
     why: {
@@ -124,7 +124,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.2`,
     page: 'setting',
     prompt: 'What must you check before settling on a bowed-bass mic position?',
-    options: ['The full bow path: every string, long strokes, tip and frog', 'Only where the bow is resting while the bassist waits', 'Only the distance from the bridge to the front of the mic'],
+    options: ['Only where the bow is resting while the bassist waits', 'Only the distance from the bridge to the front of the mic', 'The full bow path: every string, long strokes, tip and frog'],
     correct: 'The full bow path: every string, long strokes, tip and frog',
     explain: 'Ask the bassist to bow every string with full strokes. The mic, its stand and its cable must clear the hair, the frog, the tip and the bowing arm along the whole path.',
     why: {
@@ -136,7 +136,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.3`,
     page: 'setting',
     prompt: 'Before placing a mic, what do you ask the bassist to play?',
-    options: ['Soft and loud bowing, high and low notes, the full bow travel', 'One long low E, to set the level for the whole session', 'Nothing: a starting point does not depend on the playing'],
+    options: ['One long low E, to set the level for the whole session', 'Nothing: a starting point does not depend on the playing', 'Soft and loud bowing, high and low notes, the full bow travel'],
     correct: 'Soft and loud bowing, high and low notes, the full bow travel',
     explain: 'Listen to soft bow starts, sustained notes and the loudest passage; set gain for the peaks without losing the quiet detail — and watch the bow’s whole path.',
     why: {
@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.1`,
     page: 'microphone',
     prompt: 'FROM EARLIER · Where do the bowed bass’s low notes, bow noise and body come from?',
-    options: ['Different places: the strings and bow, the bridge, the body, the f-holes', 'All from one spot, the bridge, where the whole sound begins and then leaves the bass', 'Only from the f-holes, which work like a loudspeaker'],
+    options: ['All from one spot, the bridge, where the whole sound begins and then leaves the bass', 'Only from the f-holes, which work like a loudspeaker', 'Different places: the strings and bow, the bridge, the body, the f-holes'],
     correct: 'Different places: the strings and bow, the bridge, the body, the f-holes',
     explain: 'The bow’s noise starts at the strings, the low fundamentals and body leave from the whole instrument and the f-holes — which is why a mic’s position changes the balance so much.',
     why: {
@@ -160,7 +160,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'A good, quiet room and a solo bowed bass. Why might you try an omni?',
-    options: ['The whole bass and the room, with no proximity lift', 'An omni rejects the room better than a cardioid does', 'An omni ignores the bow noise and hears only the body'],
+    options: ['An omni rejects the room better than a cardioid does', 'An omni ignores the bow noise and hears only the body', 'The whole bass and the room, with no proximity lift'],
     correct: 'The whole bass and the room, with no proximity lift',
     explain: 'An omni can capture the whole instrument and the room without a directional mic’s close-up bass rise; a cardioid reduces unwanted room and neighbours. The room decides.',
     why: {
@@ -184,7 +184,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.3`,
     page: 'microphone',
     prompt: 'Is a large-diaphragm mic automatically better for a bowed bass’s lows?',
-    options: ['No: check the actual mic’s specifications and its position', 'Yes: only a large diaphragm can capture a low E at full strength', 'Yes, as long as it is placed at an f-hole'],
+    options: ['Yes: only a large diaphragm can capture a low E at full strength', 'No: check the actual mic’s specifications and its position', 'Yes, as long as it is placed at an f-hole'],
     correct: 'No: check the actual mic’s specifications and its position',
     explain: 'Diaphragm size does not decide low-frequency capture. The mic’s actual response, its pattern and where it sits do — check them, then listen.',
     why: {
@@ -196,7 +196,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.4`,
     page: 'microphone',
     prompt: 'A pickup is installed. What does it add to a bowed bass on a loud stage?',
-    options: ['A separate electrical path for level; its tone depends on its design', 'A second microphone that hears only the bow', 'Nothing: a pickup only responds to plucked notes, so it stays silent while the bow plays'],
+    options: ['A second microphone that hears only the bow', 'A separate electrical path for level; its tone depends on its design', 'Nothing: a pickup only responds to plucked notes, so it stays silent while the bow plays'],
     correct: 'A separate electrical path for level; its tone depends on its design',
     explain: 'A pickup can carry level on a loud stage; its tone, its response to the bow and the preamp it needs depend on its design. Keep it on its own channel and compare it with the mic.',
     why: {
@@ -208,7 +208,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.1`,
     page: 'placement',
     prompt: 'The front starting point for a bowed bass adds one thing to the plucked one. What?',
-    options: ['It must sit outside the bow’s whole sweep', 'It must sit right on the bow’s path, to hear the bow', 'It must touch the strings, so it moves with them'],
+    options: ['It must sit right on the bow’s path, to hear the bow', 'It must sit outside the bow’s whole sweep', 'It must touch the strings, so it moves with them'],
     correct: 'It must sit outside the bow’s whole sweep',
     explain: 'The same 15–30 cm in front, a little above the bridge — but the bow plays right there, sweeping out to both sides. The mic, stand and cable sit outside its whole path.',
     why: {
@@ -220,7 +220,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.2`,
     page: 'placement',
     prompt: 'The bowed bass sounds scratchy with the mic close to the bowing zone. What do you try?',
-    options: ['Move toward the body or the bridge’s level, or back a little', 'Move even closer to the bow, to focus on the strings', 'Turn up a high-frequency boost on the channel to balance out the scratch'],
+    options: ['Move even closer to the bow, to focus on the strings', 'Turn up a high-frequency boost on the channel to balance out the scratch', 'Move toward the body or the bridge’s level, or back a little'],
     correct: 'Move toward the body or the bridge’s level, or back a little',
     explain: 'Too close to the bow, rosin and scrape dominate. Shifting toward the body integrates the note; backing off a little blends the bow with the bass.',
     why: {
@@ -232,7 +232,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'An orchestral bass section. What is a section spot for?',
-    options: ['A support for the main pickup — the section, not one player', 'One close mic on each bass, mixed up as the main sound of the section', 'Replacing the main pair for the whole low end'],
+    options: ['One close mic on each bass, mixed up as the main sound of the section', 'A support for the main pickup — the section, not one player', 'Replacing the main pair for the whole low end'],
     correct: 'A support for the main pickup — the section, not one player',
     explain: 'First balance the section in the main mics and the hall. A spot (or a few) on stands in front of the section adds pitch or articulation if needed — brought in gradually and checked in mono.',
     why: {
@@ -244,7 +244,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.2`,
     page: 'placement',
     prompt: 'FROM EARLIER · What must a bowed-bass mic, its stand and its cable stay clear of?',
-    options: ['The bow’s whole path, the bowing arm, the endpin and the feet', 'The front of the bass, so the audience can see it clearly', 'Only the bridge itself; the rest of the space is open'],
+    options: ['The front of the bass, so the audience can see it clearly', 'Only the bridge itself; the rest of the space is open', 'The bow’s whole path, the bowing arm, the endpin and the feet'],
     correct: 'The bow’s whole path, the bowing arm, the endpin and the feet',
     explain: 'Clearance comes first: the bow’s hair, frog and tip through every stroke, the bowing arm, the floor around the endpin — and a stand placed so it cannot fall onto the bass.',
     why: {
@@ -256,7 +256,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.1`,
     page: 'context',
     prompt: 'You aim a directional bass mic away from the drums, and the kit is still loud in it. Why?',
-    options: ['The bass body reflects the kit back into the mic’s front', 'The mic is faulty: aiming away removes the kit completely', 'The bow’s noise is masking the mic’s rejection'],
+    options: ['The mic is faulty: aiming away removes the kit completely', 'The bass body reflects the kit back into the mic’s front', 'The bow’s noise is masking the mic’s rejection'],
     correct: 'The bass body reflects the kit back into the mic’s front',
     explain: 'The bass’s large surface reflects drum and PA sound toward the front of a mic aimed away from them. If the pattern alone fails, move the players or the mic.',
     why: {
@@ -268,7 +268,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.2`,
     page: 'context',
     prompt: 'A bass spot in a chamber group. How do you bring it into the mix?',
-    options: ['Gradually, under the main pair — checking mono and the image', 'Up to full level first, then lower the main pair to match', 'Only with the polarity flipped, so that it cannot comb against the pair'],
+    options: ['Up to full level first, then lower the main pair to match', 'Only with the polarity flipped, so that it cannot comb against the pair', 'Gradually, under the main pair — checking mono and the image'],
     correct: 'Gradually, under the main pair — checking mono and the image',
     explain: 'The spot also hears the other players and the room. Bring it in gradually, listen in mono for combing, and check that the bass does not jump out of its place in the image.',
     why: {
@@ -280,7 +280,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.studio`,
     page: 'context',
     prompt: 'A good, quiet studio, a solo bowed bass. One mic sounds balanced. What next?',
-    options: ['Keep it as the reference before adding anything', 'Add an f-hole mic and a bridge mic out of habit', 'Swap to a closer mic, to get more bow on the record'],
+    options: ['Add an f-hole mic and a bridge mic out of habit', 'Keep it as the reference before adding anything', 'Swap to a closer mic, to get more bow on the record'],
     correct: 'Keep it as the reference before adding anything',
     explain: 'A balanced one-mic sound is the reference. A second mic must add something you can name — body, room — and hold together with the first in mono.',
     why: {
@@ -292,7 +292,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · How long can a bowed bass note last?',
-    options: ['As long as the bow keeps moving', 'Only until the first pluck dies away', 'A fixed time set by the string’s length'],
+    options: ['Only until the first pluck dies away', 'A fixed time set by the string’s length', 'As long as the bow keeps moving'],
     correct: 'As long as the bow keeps moving',
     explain: 'The bow feeds the string every vibration; the note sustains as long as the bow moves and the bassist keeps it going.',
     why: {
@@ -304,7 +304,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.two.1`,
     page: 'twoMic',
     prompt: 'A bass spot and the main pair: the low notes thin out in the mix. Why?',
-    options: ['They hear each note at different times, so some pitches cancel', 'The main pair inverts the bass on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum'],
+    options: ['The main pair inverts the bass on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'They hear each note at different times, so some pitches cancel'],
     correct: 'They hear each note at different times, so some pitches cancel',
     explain: 'The main pair is farther and hears each note later; some pitches arrive out of step and cancel. Solo each, sum in mono, move or rebalance the spot, then test polarity or timing.',
     why: {
@@ -318,7 +318,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.two.4`,
     page: 'twoMic',
     prompt: 'Must the closer bass spot carry the low-frequency foundation?',
-    options: ['No: in the hall the main pair may already carry it', 'Yes: a spot exists only to add the low end the main pair misses', 'Yes, as long as its polarity is flipped'],
+    options: ['Yes: a spot exists only to add the low end the main pair misses', 'Yes, as long as its polarity is flipped', 'No: in the hall the main pair may already carry it'],
     correct: 'No: in the hall the main pair may already carry it',
     explain: 'Do not assume the spot must carry the lows; listen to what the main array already gives, then use the spot for what is missing — often pitch and articulation.',
     why: {
@@ -331,7 +331,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.prac.3`,
     page: 'practice',
     prompt: 'What would justify adding a spot or a pickup to a bowed bass?',
-    options: ['A stated purpose, each path working alone, and the pair holding in mono', 'Two channels give the mix engineer more options to choose from later on', 'A bowed bass needs a spot and a pickup together, whatever the room or stage'],
+    options: ['Two channels give the mix engineer more options to choose from later on', 'A stated purpose, each path working alone, and the pair holding in mono', 'A bowed bass needs a spot and a pickup together, whatever the room or stage'],
     correct: 'A stated purpose, each path working alone, and the pair holding in mono',
     explain: 'Use a spot or a pickup only for a stated musical and acoustic purpose — level on a loud stage, definition in a section — and check it alone and summed in mono.',
     why: {
@@ -343,7 +343,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mix.1`,
     page: 'practice',
     prompt: 'A starting point reads “15–30 cm out in front, just above the bridge”. What is it measured from?',
-    options: ['The strings just above the bridge', 'The bridge’s foot, on the top', 'The tip of the bow, resting on the strings'],
+    options: ['The bridge’s foot, on the top', 'The tip of the bow, resting on the strings', 'The strings just above the bridge'],
     correct: 'The strings just above the bridge',
     explain: 'A distance belongs to the part it names: from the strings above the bridge, from the bridge’s foot and from an f-hole are different numbers for the same spot.',
     why: {
@@ -360,7 +360,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.scratch`,
     observation: 'Too much scratch and rosin',
     firstChecks: 'Is the capsule very close to the bowing zone? Shift toward the body or the bridge’s level, or back a little.',
-    options: ['Too close to the bow: shift toward the body, or back a little', 'Boost the highs so the bow sounds brighter and cleaner', 'Ask the bassist to bow with less rosin on the hair'],
+    options: ['Boost the highs so the bow sounds brighter and cleaner', 'Too close to the bow: shift toward the body, or back a little', 'Ask the bassist to bow with less rosin on the hair'],
     correct: 'Too close to the bow: shift toward the body, or back a little',
     explain: 'Close to where the bow plays, the friction noise dominates. Moving toward the body or back a little blends the bow into the note.',
     why: {
@@ -372,7 +372,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.pitch`,
     observation: 'Sustained notes lack pitch',
     firstChecks: 'Is the room or the ensemble masking the harmonics? Adjust the angle or height, or bring a directional spot closer.',
-    options: ['Room or ensemble masking: adjust angle or height, or a closer spot', 'Cut the low end on the channel until the pitch comes forward again', 'Swap to the largest mic you have, for clearer notes'],
+    options: ['Cut the low end on the channel until the pitch comes forward again', 'Swap to the largest mic you have, for clearer notes', 'Room or ensemble masking: adjust angle or height, or a closer spot'],
     correct: 'Room or ensemble masking: adjust angle or height, or a closer spot',
     explain: 'The pitch lives in the harmonics; a reverberant room or loud neighbours mask them. A different angle or height, or a closer directional spot, brings them forward.',
     why: {
@@ -384,11 +384,11 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.boom`,
     observation: 'One low note booms',
     firstChecks: 'Is the mic on an f-hole, or is it a room mode? Move the mic or the player; compare several notes and the room.',
-    options: ['An f-hole or a room mode: move mic or player, check several notes', 'Cut all the low end, so no note can boom', 'Move the mic right up to the f-hole, so the boom is under control'],
+    options: ['Cut all the low end, so that no note can boom at all', 'An f-hole or a room mode: move mic or player, check several notes', 'Move the mic right up to the f-hole, so the boom is under control'],
     correct: 'An f-hole or a room mode: move mic or player, check several notes',
     explain: 'One booming note can come from a local resonance or from the room. Move the mic or the bass and compare several notes before a large cut that thins every note.',
     why: {
-      'Cut all the low end, so no note can boom': 'A broad cut removes the fundamentals the music needs.',
+      'Cut all the low end, so that no note can boom at all': 'A broad cut removes the fundamentals the music needs.',
       'Move the mic right up to the f-hole, so the boom is under control': 'Closer to the f-hole usually adds more boom.',
     },
   },
@@ -396,7 +396,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.section`,
     observation: 'The section spot isolates one player',
     firstChecks: 'Is the spot too close, or poorly aimed? Move it to hear the intended group; lower it in the main-pair mix.',
-    options: ['Too close or poorly aimed: move it to hear the group; lower it', 'Add one more spot on that player’s neighbour, to balance the two players', 'Flip the spot’s polarity until the player blends in'],
+    options: ['Add one more spot on that player’s neighbour, to balance the two players', 'Too close or poorly aimed: move it to hear the group; lower it', 'Flip the spot’s polarity until the player blends in'],
     correct: 'Too close or poorly aimed: move it to hear the group; lower it',
     explain: 'A section spot should hear the section. Back it off or re-aim it to cover the group, and keep it under the main pair.',
     why: {
@@ -482,7 +482,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'Which part should never have a mic or clip clamped to it?',
-    options: ['The bridge', 'The two outer strings below the bridge', 'A stable stand in front of the bass'],
+    options: ['The two outer strings below the bridge', 'A stable stand in front of the bass', 'The bridge'],
     correct: 'The bridge',
     explain: 'Clamping the bridge can impede its vibration. A clip made for the bass grips the strings below it instead.',
     why: {

@@ -85,12 +85,12 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.2`,
     page: 'sound',
     prompt: 'An open string is plucked exactly at its middle. Which of its shapes can that pluck set moving?',
-    options: ['Only the odd ones; every even shape is still there', 'All of them equally, because the whole string moves', 'Only the even ones; the odd shapes are still there'],
-    correct: 'Only the odd ones; every even shape is still there',
+    options: ['All of them equally, because the whole string moves', 'Only the even ones; the odd shapes stay silent', 'Only the odd ones; the even shapes stay silent'],
+    correct: 'Only the odd ones; the even shapes stay silent',
     explain: 'A pluck drives a shape only as much as the string moves at the finger in that shape. Every even shape has a still point at the exact middle.',
     why: {
       'All of them equally, because the whole string moves': 'The finger touches one spot. A shape is driven only as much as the string moves there.',
-      'Only the even ones; the odd shapes are still there': 'The reverse: the even shapes have a still point at the middle.',
+      'Only the even ones; the odd shapes stay silent': 'The reverse: the even shapes have a still point at the middle.',
     },
   },
   {
@@ -110,7 +110,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.2`,
     page: 'setting',
     prompt: 'The bass has a pickup going to a DI. What is that path?',
-    options: ['A separate electrical signal, not a microphone', 'A microphone built into the bass for the stage', 'The same sound as the room mic, just louder'],
+    options: ['A microphone built into the bass for the stage', 'The same sound as the room mic, just louder', 'A separate electrical signal, not a microphone'],
     correct: 'A separate electrical signal, not a microphone',
     explain: 'A pickup turns string or top motion into an electrical signal; it does not hear the air round the bass. Label it as its own path — and an internal mic, if there is one, hears the inside of the body.',
     why: {
@@ -122,7 +122,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.3`,
     page: 'setting',
     prompt: 'Before you place a stand mic for a seated bassist, what do you need from the player?',
-    options: ['Their whole motion — plucking, fretting, singing, any movement', 'The make of the bass, so you can look up its single correct spot', 'Nothing: a starting point already says where the mic goes'],
+    options: ['The make of the bass, so you can look up its single correct spot', 'Their whole motion — plucking, fretting, singing, any movement', 'Nothing: a starting point already says where the mic goes'],
     correct: 'Their whole motion — plucking, fretting, singing, any movement',
     explain: 'A starting point is valid only where the player cannot hit the mic or lose sight of the neck. Watch the whole part, including the lowest notes and any slaps or taps.',
     why: {
@@ -134,7 +134,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.1`,
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic close to the sound hole hears more of which part of the sound?',
-    options: ['The air in the body, breathing through the hole', 'The fingers on the strings out on the neck', 'The tuners turning, way up at the far headstock end'],
+    options: ['The fingers on the strings out on the neck', 'The air in the body, breathing through the hole', 'The tuners turning, way up at the far headstock end'],
     correct: 'The air in the body, breathing through the hole',
     explain: 'The air inside the body moves in and out through the hole — a big part of the low end. Close to it, a mic hears more of that, and boom that varies note to note.',
     why: {
@@ -146,7 +146,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'Does a larger diaphragm mean a mic will capture the bass’s low notes better?',
-    options: ['Not by itself: check its published response and listen', 'Yes: the bigger the diaphragm, the deeper the bass it hears', 'Yes, as long as it is a condenser and not a dynamic'],
+    options: ['Yes: the bigger the diaphragm, the deeper the bass it hears', 'Not by itself: check its published response and listen', 'Yes, as long as it is a condenser and not a dynamic'],
     correct: 'Not by itself: check its published response and listen',
     explain: 'Diaphragm size alone does not settle it: the mic’s response, pattern, handling noise and the room all matter. Read the documentation, then listen on monitors that can reproduce the low notes.',
     why: {
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.1`,
     page: 'placement',
     prompt: 'A starting point says 20–45 cm from where the neck meets the body. Your readout says 30 cm out from the sound hole. Are you in it?',
-    options: ['Not necessarily: it is read from the neck joint, not the hole', 'Yes: 30 cm falls inside the 20 to 45 cm band', 'Yes, as long as the mic is pointed straight at the top of the bass'],
+    options: ['Yes: 30 cm falls inside the 20 to 45 cm band', 'Yes, as long as the mic is pointed straight at the top of the bass', 'Not necessarily: it is read from the neck joint, not the hole'],
     correct: 'Not necessarily: it is read from the neck joint, not the hole',
     explain: 'A distance means something only with its reference point. The neck joint and the sound hole are different places, so the same number puts the mic somewhere else.',
     why: {
@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.2`,
     page: 'placement',
     prompt: 'You slide the mic from the neck joint toward the sound hole. What tends to change?',
-    options: ['More low-mid body, and boom that may vary by note', 'More string and finger detail, and less low end', 'Only the level; the tone stays exactly the same'],
+    options: ['More string and finger detail, and less low end', 'More low-mid body, and boom that may vary by note', 'Only the level; the tone stays exactly the same'],
     correct: 'More low-mid body, and boom that may vary by note',
     explain: 'The hole is where the body’s air breathes: closer to it, more low-mid body — and some notes may boom while others do not. Compare across the range at matched levels.',
     why: {
@@ -183,7 +183,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'Why does this lesson call its starting distances “borrowed”?',
-    options: ['Little published guidance exists for this instrument', 'The bass is too quiet to be miked from a distance at all', 'Its distances must match a guitar’s exactly to work'],
+    options: ['The bass is too quiet to be miked from a distance at all', 'Little published guidance exists for this instrument', 'Its distances must match a guitar’s exactly to work'],
     correct: 'Little published guidance exists for this instrument',
     explain: 'The acoustic bass has little instrument-specific guidance, so these starting points borrow guitar positions as experiments — and say so. Verify them on the actual bass.',
     why: {
@@ -195,7 +195,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.2`,
     page: 'placement',
     prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a seated bassist?',
-    options: ['Both hands, the long neck’s path and their view of it', 'The front of the bass, so that the audience can see it clearly', 'The floor by the chair, which belongs to the DI and its cable'],
+    options: ['The front of the bass, so that the audience can see it clearly', 'The floor by the chair, which belongs to the DI and its cable', 'Both hands, the long neck’s path and their view of it'],
     correct: 'Both hands, the long neck’s path and their view of it',
     explain: 'Clearance comes first: the plucking hand over the body, the fretting hand along a long neck, and the player’s view of it. Stop the player before anything moves.',
     why: {
@@ -208,7 +208,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.studio`,
     page: 'context',
     prompt: 'In the studio one low note booms and another almost vanishes. What is a likely cause to check first?',
-    options: ['A room resonance at those pitches, or the mic’s spot', 'The bass is broken and should go to a repairer', 'The mic is too good at hearing low notes overall'],
+    options: ['The bass is broken and should go to a repairer', 'The mic is too good at hearing low notes overall', 'A room resonance at those pitches, or the mic’s spot'],
     correct: 'A room resonance at those pitches, or the mic’s spot',
     explain: 'Rooms build up some low pitches and cancel others at particular spots. Move the player or the mic and compare before reaching for EQ.',
     why: {
@@ -220,7 +220,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · Why can a pattern’s rejection disappoint on a bass?',
-    options: ['Real patterns reject least at low frequencies', 'A bass makes no sound behind the mic at all', 'Patterns only work on instruments with strings'],
+    options: ['A bass makes no sound behind the mic at all', 'Real patterns reject least at low frequencies', 'Patterns only work on instruments with strings'],
     correct: 'Real patterns reject least at low frequencies',
     explain: 'A real mic’s rejection is weakest in the low end — exactly where a bass and a wedge carrying it are loudest. Use the null to aim, not to promise silence.',
     why: {
@@ -243,7 +243,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.boom`,
     observation: 'Low notes boom or vary greatly from note to note',
     firstChecks: 'Is the mic on the hole, or in a room mode? Shift aim or the player’s position; compare notes and the room’s decay.',
-    options: ['Shift the aim or the player; compare notes and the room', 'Boost the treble until the boom is no longer noticed', 'Swap to a different mic with a larger diaphragm instead'],
+    options: ['Boost the treble until the boom is no longer noticed', 'Shift the aim or the player; compare notes and the room', 'Swap to a different mic with a larger diaphragm instead'],
     correct: 'Shift the aim or the player; compare notes and the room',
     explain: 'Close to the hole, or at a room’s build-up spot, some notes pile up. Move first; EQ only for a specific problem.',
     why: {
@@ -255,7 +255,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.thin`,
     observation: 'Attack without body',
     firstChecks: 'Is the mic too far toward the fingerboard? Include more of the top or the bridge region, or back up.',
-    options: ['Include more of the top, or back up a little', 'Turn the bass channel up until it sounds full', 'Add a second mic aimed straight into the sound hole'],
+    options: ['Turn the bass channel up until it sounds full', 'Include more of the top, or back up a little', 'Add a second mic aimed straight into the sound hole'],
     correct: 'Include more of the top, or back up a little',
     explain: 'A view mostly of the strings and neck lacks the body. Include more of the top, then judge in the mix.',
     why: {
@@ -267,7 +267,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.low`,
     observation: 'The lowest note seems absent',
     firstChecks: 'Is the mic, the room, a filter or the monitoring limiting it? Check the whole chain before an EQ boost.',
-    options: ['Check the mic, room, any filter and the monitors first', 'Boost the sub-bass on the channel until you hear it', 'Ask the player to stop using the lowest string at all'],
+    options: ['Boost the sub-bass on the channel until you hear it', 'Ask the player to stop using the lowest string at all', 'Check the mic, room, any filter and the monitors first'],
     correct: 'Check the mic, room, any filter and the monitors first',
     explain: 'A high-pass filter, a small monitor or headphones, or a room null can all hide a low note that the bass is making. Find which before boosting.',
     why: {
@@ -320,7 +320,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'On this acoustic bass, where does the neck meet the body?',
-    options: ['At the 17th fret — the 12th is far out on the neck', 'At the 12th fret, the same as a classical guitar', 'At the sound hole, where the fingerboard ends'],
+    options: ['At the 12th fret, the same as a classical guitar', 'At the 17th fret — the 12th is far out on the neck', 'At the sound hole, where the fingerboard ends'],
     correct: 'At the 17th fret — the 12th is far out on the neck',
     explain: 'This cutaway body meets its 34 in neck at the 17th fret, so “the 12th fret” and “the neck joint” are far apart here.',
     why: {
@@ -332,7 +332,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'The bass has a pickup. What is it?',
-    options: ['A separate electrical path, not a microphone', 'A microphone that hears the bass from outside', 'A part of the bridge that makes the top louder'],
+    options: ['A microphone that hears the bass from outside', 'A part of the bridge that makes the top louder', 'A separate electrical path, not a microphone'],
     correct: 'A separate electrical path, not a microphone',
     explain: 'A pickup turns motion into an electrical signal; it does not hear the air round the bass. Label it as its own path.',
     why: {
@@ -344,19 +344,19 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'A string plucked exactly at its middle drives which of its shapes?',
-    options: ['Only the odd ones — the even ones are still there', 'All of its shapes, each one just as hard', 'Only the even ones — the odd ones are still there'],
-    correct: 'Only the odd ones — the even ones are still there',
+    options: ['All of its shapes, each one just as hard', 'Only the odd ones — the even ones stay silent', 'Only the even ones — the odd ones stay silent'],
+    correct: 'Only the odd ones — the even ones stay silent',
     explain: 'A pluck drives a shape only as much as the string moves at the finger; every even shape has a still point at the middle.',
     why: {
-      'All of its shapes, each one just as hard': 'The finger touches one spot; a shape still there is not driven.',
-      'Only the even ones — the odd ones are still there': 'The reverse: the even ones are still at the middle.',
+      'All of its shapes, each one just as hard': 'The finger touches one spot; a shape with a still point there is not driven at all.',
+      'Only the even ones — the odd ones stay silent': 'The reverse: the even ones are still at the middle.',
     },
   },
   {
     id: 'q.4',
     covers: 'sound',
     prompt: 'Why might a mic right at the sound hole make some low notes boom?',
-    options: ['The body’s air breathes there, piling up some notes', 'The strings are thickest and loudest over the hole', 'The hole is where the top moves least of all'],
+    options: ['The strings are thickest and loudest over the hole', 'The hole is where the top moves least of all', 'The body’s air breathes there, piling up some notes'],
     correct: 'The body’s air breathes there, piling up some notes',
     explain: 'The body’s air moves through the hole; close to it, a directional mic’s proximity effect adds more — and some notes pile up more than others.',
     why: {
@@ -368,7 +368,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     prompt: 'What must a stand mic stay out of, round a seated bassist?',
-    options: ['Both hands, the long neck and their view of it', 'The front of the bass, so the audience can see it clearly', 'The space behind the chair, where the cables run'],
+    options: ['The front of the bass, so the audience can see it clearly', 'The space behind the chair, where the cables run', 'Both hands, the long neck and their view of it'],
     correct: 'Both hands, the long neck and their view of it',
     explain: 'The plucking hand works over the body, the fretting hand travels a long neck, and the player watches it. In front of the bass is usually where a mic comes in.',
     why: {

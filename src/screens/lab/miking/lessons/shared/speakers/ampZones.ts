@@ -175,7 +175,7 @@ export function guitarRearZone(): DocumentedZone {
     requires: { variant: 'open' },
     aim: { maxOffAxis: 30, prov: ill('facing the back of the speaker: ±30° is the lab’s tolerance') },
     start: { p: { x: backX('combo') - 220, y: 0, z: 0 }, az: 180, el: 0 },
-    tendency: 'The back of the cone: thicker and duller, with less bite. It is opposite in polarity to the front, so flip this mic’s polarity before you blend it — then check the pair in mono.',
+    tendency: 'The back of the cone: thicker and duller, with less bite. It is opposite in polarity to the front, so flip this mic’s polarity before you blend it — then check the pair in mono. It is also farther from the cone than the front mic, so a delay remains after the flip: listen in mono and move it if the low mids thin out.',
     checks: ['This mic’s polarity switched', 'The pair checked in mono, at matched levels', 'The stand clear of the vents, valves and walkway'],
   };
 }
@@ -256,7 +256,7 @@ export const BASS_ZONES: readonly DocumentedZone[] = [
   {
     id: 'bass.far',
     label: 'Farther back, for the cabinet and the room',
-    band: 'In a good, quiet room, try about 60–100 cm (2–3 ft) back — usually as a second mic under the close one.',
+    band: 'In a good, quiet room, try about 60–100 cm (2–3.3 ft) back — usually as a second mic under the close one.',
     kind: 'trial',
     src: 'S-BASSREC',
     quote: 'a specialised kick/bass dynamic mic up close alongside a condenser mic placed further away … check the phase relationships (no distance given)',

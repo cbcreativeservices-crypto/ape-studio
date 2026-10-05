@@ -89,19 +89,19 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.2`,
     page: 'sound',
     prompt: 'An open course is plucked exactly at its middle. Which of its shapes can that pluck set moving?',
-    options: ['Only the odd ones; each even shape is still there', 'All of them equally, because the whole string moves', 'Only the even ones; the odd shapes are still there'],
-    correct: 'Only the odd ones; each even shape is still there',
+    options: ['All of them equally, because the whole string moves', 'Only the even ones; the odd shapes stay silent', 'Only the odd ones; the even shapes stay silent'],
+    correct: 'Only the odd ones; the even shapes stay silent',
     explain: 'A pluck drives a shape only as much as the string moves under the risha in that shape. Each even shape has a still point at the exact middle.',
     why: {
       'All of them equally, because the whole string moves': 'The risha touches one spot. A shape is driven only as much as the string moves there.',
-      'Only the even ones; the odd shapes are still there': 'The reverse: the even shapes have a still point at the middle.',
+      'Only the even ones; the odd shapes stay silent': 'The reverse: the even shapes have a still point at the middle.',
     },
   },
   {
     id: `${P}.snd.3`,
     page: 'sound',
     prompt: 'What does the oud’s deep, rounded bowl do for its sound?',
-    options: ['It closes in the air that breathes out through the rosettes', 'It radiates most of the sound out toward the audience', 'It sets the pitch of each open string as it is tuned'],
+    options: ['It radiates most of the sound out toward the audience', 'It closes in the air that breathes out through the rosettes', 'It sets the pitch of each open string as it is tuned'],
     correct: 'It closes in the air that breathes out through the rosettes',
     explain: 'The bowl encloses the air that the face pumps in and out through the rosettes — a big part of the warm, low bloom. The face does most of the radiating; the strings’ tension and length set the pitch.',
     why: {
@@ -114,7 +114,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.2`,
     page: 'setting',
     prompt: 'A player clips a small capsule to the oud and calls it “my mic”. What do you check first?',
-    options: ['Whether it hears the air or senses vibration, and how it is powered', 'Nothing: anything the player calls a mic is a mic for this lesson', 'Whether it is louder than a stand mic, so it can replace that mic'],
+    options: ['Nothing: anything the player calls a mic is a mic for this lesson', 'Whether it hears the air or senses vibration, and how it is powered', 'Whether it is louder than a stand mic, so it can replace that mic'],
     correct: 'Whether it hears the air or senses vibration, and how it is powered',
     explain: 'Some clip-on devices are vibration pickups: they sense the instrument, not the air, and represent it differently. Label the path for what it is, and follow its own manual for power.',
     why: {
@@ -126,7 +126,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.3`,
     page: 'setting',
     prompt: 'Before you place a stand mic for a seated oud player, what do you need from them?',
-    options: ['Their whole motion: the risha arc, the slides, the pegbox swing', 'The make of the oud, so you can look up its single correct spot', 'Nothing yet: a starting point already says where the mic goes'],
+    options: ['The make of the oud, so you can look up its single correct spot', 'Their whole motion: the risha arc, the slides, the pegbox swing', 'Nothing yet: a starting point already says where the mic goes'],
     correct: 'Their whole motion: the risha arc, the slides, the pegbox swing',
     explain: 'A starting point is valid only where the player cannot hit the mic. Watch the whole phrase — risha strokes, tremolo, the left hand’s slides and how the pegbox moves.',
     why: {
@@ -138,7 +138,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.1`,
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic close to the main rosette hears more of which part of the sound?',
-    options: ['The bowl’s air, breathing in and out through the rose', 'The left hand’s slides, out at the end of the neck', 'The pegs turning, up at the far end of the pegbox'],
+    options: ['The left hand’s slides, out at the end of the neck', 'The bowl’s air, breathing in and out through the rose', 'The pegs turning, up at the far end of the pegbox'],
     correct: 'The bowl’s air, breathing in and out through the rose',
     explain: 'The air inside the bowl moves through the rosettes — a big part of the bloom. Close to the main rose, a mic hears more of it, and some notes can bloom or hum.',
     why: {
@@ -150,7 +150,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'Which choice is a sound way to pick a mic for the oud?',
-    options: ['By its response, pattern, headroom and how it is held', 'By its capsule size: a larger one captures more of the body', 'By the brand most oud players are said to prefer for this'],
+    options: ['By its capsule size: a larger one captures more of the body', 'By the brand most oud players are said to prefer for this', 'By its response, pattern, headroom and how it is held'],
     correct: 'By its response, pattern, headroom and how it is held',
     explain: 'A small condenser is a practical focused start; a large one, an omni in a quiet room and a dynamic on a stage are options, not a ranking. Read the response and pattern, check headroom, and listen.',
     why: {
@@ -162,7 +162,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.3`,
     page: 'microphone',
     prompt: 'The only spare input has no phantom power. Which of this page’s mics can you use?',
-    options: ['The instrument dynamic: it needs no power at all', 'The small condenser, if its cable run is kept short', 'Either one, as long as the gain is turned up high'],
+    options: ['The small condenser, if its cable run is kept short', 'The instrument dynamic: it needs no power at all', 'Either one, as long as the gain is turned up high'],
     correct: 'The instrument dynamic: it needs no power at all',
     explain: 'Dynamic mics need no power. The small condenser needs phantom power, whatever its cable or the gain setting.',
     why: {
@@ -175,7 +175,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.1`,
     page: 'placement',
     prompt: 'A starting point says 30–45 cm out from the upper face. Your readout says 38 cm out from the main rose. Are you in it?',
-    options: ['Not necessarily: it is read from the upper face, not the rose', 'Yes: 38 cm falls inside the 30 to 45 cm band', 'Yes, as long as the mic is pointed straight at the oud’s face'],
+    options: ['Yes: 38 cm falls inside the 30 to 45 cm band', 'Yes, as long as the mic is pointed straight at the oud’s face', 'Not necessarily: it is read from the upper face, not the rose'],
     correct: 'Not necessarily: it is read from the upper face, not the rose',
     explain: 'A distance means something only with its reference point. The upper face and the main rose are different places, so the same number puts the mic somewhere else.',
     why: {
@@ -187,7 +187,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.2`,
     page: 'placement',
     prompt: 'You turn the mic from the upper face further toward the neck. What tends to change?',
-    options: ['More slides and finger noise, and less of the body', 'More of the bowl’s bloom and the warm low notes', 'Only the level; the tone stays the same as before'],
+    options: ['More of the bowl’s bloom and the warm low notes', 'Only the level; the tone stays the same as before', 'More slides and finger noise, and less of the body'],
     correct: 'More slides and finger noise, and less of the body',
     explain: 'Toward the neck, a mic hears more of the left hand — slides, fingers — and less of the face and the bowl’s air. A little can be musical; too much takes over.',
     why: {
@@ -199,19 +199,19 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'Why does this lesson give a farther room view no number?',
-    options: ['No oud research gives one: try it by ear in a good room', 'The oud is too quiet to be miked from farther away', 'A far mic sounds much the same wherever it is placed'],
+    options: ['The oud is too quiet to be miked from farther away', 'No oud research gives one: try it by ear in a good room', 'A far mic sounds much the same wherever in the room it is placed'],
     correct: 'No oud research gives one: try it by ear in a good room',
     explain: 'The oud-specific starting points are close-in ones. Farther back is worth trying where the room is pleasing and quiet — move back from the first start and listen for the oud and the room together.',
     why: {
       'The oud is too quiet to be miked from farther away': 'It can be — in a quiet, pleasing room. There is simply no researched distance to give.',
-      'A far mic sounds much the same wherever it is placed': 'Distance and the room change the sound a lot; that is why it is tried by ear.',
+      'A far mic sounds much the same wherever in the room it is placed': 'Distance and the room change the sound a lot; that is why it is tried by ear.',
     },
   },
   {
     id: `${P}.rec.2`,
     page: 'placement',
     prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a seated oud player?',
-    options: ['The risha’s arc, the left hand, the pegbox and their view', 'The front of the oud, so that the audience can see it clearly', 'The floor by the chair, which belongs to the vocal mic stand'],
+    options: ['The front of the oud, so that the audience can see it clearly', 'The floor by the chair, which belongs to the vocal mic stand', 'The risha’s arc, the left hand, the pegbox and their view'],
     correct: 'The risha’s arc, the left hand, the pegbox and their view',
     explain: 'Clearance comes first: the risha hand over the face, the left hand along the neck, the pegbox that swings as the player moves, and the player’s view. Stop the player before anything moves.',
     why: {
@@ -224,7 +224,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.studio`,
     page: 'context',
     prompt: 'A quiet studio with a pleasing room. What is a fair next step after the upper-face start?',
-    options: ['Try farther back and compare: the room may add to the oud', 'Move in to 5 cm from the rose for the most detail possible', 'Add three more mics at once and choose later in the mix'],
+    options: ['Move in to 5 cm from the rose for the most detail possible', 'Try farther back and compare: the room may add to the oud', 'Add three more mics at once and choose later in the mix'],
     correct: 'Try farther back and compare: the room may add to the oud',
     explain: 'In a quiet, pleasing room, a farther position blends the oud with the room. Compare at matched levels, one change at a time — and check quiet notes and the direct-to-room balance.',
     why: {
@@ -236,7 +236,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · Live, you move the mic close to the main rose for more level. What can come with it?',
-    options: ['More bloom and boom on some notes, from the bowl’s air', 'A thinner sound with less of the oud’s low end in it', 'A drier attack, because the rose has no strings over it'],
+    options: ['A thinner sound with less of the oud’s low end in it', 'More bloom and boom on some notes, from the bowl’s air', 'A drier attack, because the rose has no strings over it'],
     correct: 'More bloom and boom on some notes, from the bowl’s air',
     explain: 'The rose is where the bowl’s air breathes. Close to it, some notes bloom or hum — and a directional mic adds proximity bass on top. Angle off the rose if one booms.',
     why: {
@@ -248,7 +248,7 @@ const scenarios: MikingScenario[] = [
   ...practiceChecks(P, OUD_N, {
     quote: '30–45 cm from the upper face',
     right: 'The upper face, between the main rose and the neck',
-    wrong1: 'The main rose, since that is the loudest place',
+    wrong1: 'The main rose, since that is the loudest place on the oud',
     wrong2: 'The bowl, measured round the back of the oud',
     explain: 'A distance belongs to the point it names: from the upper face, from the main rose and from the bridge are different places for the same number.',
   }),
@@ -259,7 +259,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.click`,
     observation: 'Too much risha click',
     firstChecks: 'Is the mic aimed straight at the plucking area, or very close? Aim less directly at it, or move a little farther back — and confirm the click is not musically intended.',
-    options: ['Aim off the plucking area or back away a little', 'Cut the high frequencies hard on the oud channel', 'Ask the player to change to a softer risha'],
+    options: ['Cut the high frequencies hard on the oud channel', 'Ask the player to change to a softer risha', 'Aim off the plucking area or back away a little'],
     correct: 'Aim off the plucking area or back away a little',
     explain: 'A close view of the risha region magnifies its click. Change the aim or distance first — and ask whether the articulation is part of the music.',
     why: {
@@ -283,7 +283,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.boom`,
     observation: 'Boomy low notes',
     firstChecks: 'Is the mic on the rose’s axis, or very close? Move off the rose, compare a little more distance, and check proximity effect and the room.',
-    options: ['Move off the rose’s axis and compare a bit farther back', 'Boost the treble until the boom is no longer noticed', 'Swap to a mic with a much larger capsule instead'],
+    options: ['Boost the treble until the boom is no longer noticed', 'Move off the rose’s axis and compare a bit farther back', 'Swap to a mic with a much larger capsule instead'],
     correct: 'Move off the rose’s axis and compare a bit farther back',
     explain: 'Close to the rose, the bowl’s air and proximity effect pile up some notes. Move first; EQ only for a specific problem that is left.',
     why: {
@@ -295,7 +295,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.finger`,
     observation: 'Finger noise dominates',
     firstChecks: 'Is the mic pointed at the neck? Redirect it toward the body, and compare whole phrases — not one note.',
-    options: ['Redirect toward the body and compare whole phrases', 'Gate the channel so it closes between the notes', 'Ask the player to stop sliding between the notes'],
+    options: ['Gate the channel so it closes between the notes', 'Ask the player to stop sliding between the notes', 'Redirect toward the body and compare whole phrases'],
     correct: 'Redirect toward the body and compare whole phrases',
     explain: 'A mic aimed toward the neck hears the left hand most. Turn it toward the body; judge on whole phrases, where the slides belong to the music.',
     why: {
@@ -348,7 +348,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'The oud’s neck has no frets. What does that mean for the sound a mic hears?',
-    options: ['The left hand’s slides, between the semitones too, are part of it', 'The oud can play only the notes of its open strings, one at a time', 'The strings are stopped by pegs along the neck instead of frets'],
+    options: ['The oud can play only the notes of its open strings, one at a time', 'The strings are stopped by pegs along the neck instead of frets', 'The left hand’s slides, between the semitones too, are part of it'],
     correct: 'The left hand’s slides, between the semitones too, are part of it',
     explain: 'A fretless neck lets the left hand stop the string anywhere and slide between notes. Those slides and the fingers are part of the music — a mic toward the neck hears more of them.',
     why: {
@@ -360,7 +360,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'What are the oud’s three carved rosettes?',
-    options: ['Openings that let the bowl’s air breathe in and out', 'Decorations only, glued onto a solid, closed face', 'Supports for the bridge, under the strings’ pull'],
+    options: ['Decorations only, glued onto a solid, closed face', 'Openings that let the bowl’s air breathe in and out', 'Supports for the bridge, under the strings’ pull'],
     correct: 'Openings that let the bowl’s air breathe in and out',
     explain: 'The rosettes are carved lattices over sound holes: the bowl’s air moves through them, a big part of the warm bloom.',
     why: {
@@ -372,19 +372,19 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'A string plucked exactly at its middle drives which of its shapes?',
-    options: ['Only the odd ones — the even ones are still there', 'All of its shapes, each one just as hard', 'Only the even ones — the odd ones are still there'],
-    correct: 'Only the odd ones — the even ones are still there',
+    options: ['All of its shapes, each one just as hard', 'Only the even ones — the odd ones stay silent', 'Only the odd ones — the even ones stay silent'],
+    correct: 'Only the odd ones — the even ones stay silent',
     explain: 'A pluck drives a shape only as much as the string moves under the risha; each even shape has a still point at the middle.',
     why: {
-      'All of its shapes, each one just as hard': 'The risha touches one spot; a shape that is still there is not driven.',
-      'Only the even ones — the odd ones are still there': 'The reverse: the even ones are still at the middle.',
+      'All of its shapes, each one just as hard': 'The risha touches one spot; a shape with a still point there is not driven at all.',
+      'Only the even ones — the odd ones stay silent': 'The reverse: the even ones are still at the middle.',
     },
   },
   {
     id: 'q.4',
     covers: 'sound',
     prompt: 'Why might a mic right by the main rose make some notes boom?',
-    options: ['The bowl’s air breathes there, piling up some notes', 'The strings are thickest and loudest over the rose', 'The rose is where the face moves the most of all'],
+    options: ['The strings are thickest and loudest over the rose', 'The bowl’s air breathes there, piling up some notes', 'The rose is where the face moves the most of all'],
     correct: 'The bowl’s air breathes there, piling up some notes',
     explain: 'The bowl’s air moves through the rose; close to it — with a directional mic’s proximity effect on top — some notes pile up more than others.',
     why: {
@@ -396,7 +396,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     prompt: 'What must a stand mic stay out of, round a seated oud player?',
-    options: ['The risha’s arc, the left hand, the pegbox and their view', 'The front of the oud, so the audience can see it clearly', 'The space behind the chair, where the cables are run'],
+    options: ['The front of the oud, so the audience can see it clearly', 'The risha’s arc, the left hand, the pegbox and their view', 'The space behind the chair, where the cables are run'],
     correct: 'The risha’s arc, the left hand, the pegbox and their view',
     explain: 'The risha works over the face, the left hand along the neck, the pegbox swings as the player moves, and the player watches. In front of the oud is usually where a mic comes in.',
     why: {

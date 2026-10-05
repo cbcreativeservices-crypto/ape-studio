@@ -605,7 +605,7 @@ export function hatchFor(box: { u0: number; u1: number; v0: number; v1: number }
 
 /* ── labels and taps ── */
 
-export type LabelPlan = Partial<Record<string, { du: number; dv: number; align?: ArtLabel['align'] }>>;
+export type LabelPlan = Partial<Record<string, { du: number; dv: number; align?: ArtLabel['align']; lead?: boolean }>>;
 
 /** Part labels at the anchors (offsets per lesson and view, mm). */
 export function bowedLabels(P: Posture, view: ViewId, offsets: Record<ViewId, LabelPlan>, bowed: boolean): ArtLabel[] {
@@ -614,7 +614,9 @@ export function bowedLabels(P: Posture, view: ViewId, offsets: Record<ViewId, La
     const o = offsets[view][id];
     if (!o) return null;
     const [u, v] = prj(view, p);
-    return { id, text, short, u: u + o.du, v: v + o.dv, align: o.align ?? 'left', tone };
+    // The part itself is the leader's end: a label set well clear of the
+    // body (the double bass's) still points at what it names.
+    return { id, text, short, u: u + o.du, v: v + o.dv, align: o.align ?? 'left', tone, lead: o.lead ? { u, v } : undefined };
   };
   const out: (ArtLabel | null)[] = [
     at(A.bridgeTop, 'bridge', 'BRIDGE', undefined),
@@ -722,6 +724,55 @@ export function portraitBox(spec: BowedSpec) {
   return { u0: left, u1: right, v0: -W - 70 * (spec.body.mm / 358), v1: W + 140 + spec.bow.mm * 0.08 };
 }
 
+/**
+ * The portrait's part labels (frame B, the side view's u = x, v = y): every
+ * word sits OFF the body — a row above the upper edge, a row in the gap
+ * between the body and the bow — with a leader back to its part (owner
+ * 2026-10-05: on the double bass the words sat on the top). Pure, for the tests.
+ */
+export function portraitLabels(spec: BowedSpec): StaticLabel[] {
+  const P = portraitOf(spec);
+  const st = P.st;
+  const k = spec.body.mm / 358;
+  const W = spec.lower.mm / 2;
+  const above = -W - 22 * k;
+  // In the gap between the body and the bow beneath it.
+  const below = W + (P.bow.tip.y - 5 * k - W) * 0.59; // the text sits 7 pt above its v, 5 pt below
+  const tailU = (spec.tailpiece[0] + spec.tailpiece[1]) / 2;
+  const fhU = (spec.fholeX[0] + spec.fholeX[1]) / 2;
+  return [
+    { id: 'scroll', text: 'SCROLL', u: st.scrollX - 10, v: -W * 0.55, align: 'right' },
+    { id: 'pegs', text: spec.id === 'bass' ? 'TUNING MACHINES' : 'PEGS', short: spec.id === 'bass' ? 'MACHINES' : 'PEGS', u: (st.nutX + st.scrollX) / 2, v: W * 0.62, align: 'center' },
+    { id: 'bridge', text: 'BRIDGE', u: 0, v: above, align: 'center', lead: { u: 0, v: -spec.bridgeW.mm * 0.45 } },
+    { id: 'fb', text: 'FINGERBOARD', short: 'BOARD', u: (st.fbEndX + st.nutX) / 2, v: above, align: 'center', lead: { u: (st.fbEndX + st.nutX) / 2, v: -fbHalf(spec, (st.fbEndX + st.nutX) / 2) } },
+    { id: 'top', text: 'TOP (BELLY)', short: 'TOP', u: -spec.body.mm * 0.32, v: above, align: 'center', lead: { u: -spec.body.mm * 0.32, v: -W * 0.6 } },
+    { id: 'tail', text: 'TAILPIECE', short: 'TAIL', u: tailU, v: below, align: 'center', lead: { u: tailU, v: spec.bridgeW.mm * 0.2 } },
+    { id: 'fhole', text: 'F-HOLE', u: fhU + 30 * k, v: below, align: 'left', lead: { u: fhU, v: spec.fholeY.mm } },
+    spec.endpin ? { id: 'endpin', text: 'ENDPIN', u: st.tailX - (spec.collar?.mm ?? 0) - spec.endpin.mm * 0.3, v: -40 * k - 10, align: 'center' } : { id: 'chin', text: 'CHIN REST', short: 'CHIN', u: st.tailX - 10, v: above, align: 'right', lead: { u: st.tailX + 30, v: -W * 0.35 } },
+    { id: 'strings', text: `STRINGS ${spec.strings.join(' ')}`, short: 'STRINGS', u: st.nutX * 0.7, v: below, align: 'center', tone: 'muted', lead: { u: st.nutX * 0.7, v: 0 } },
+    { id: 'tip', text: 'BOW · TIP', short: 'TIP', u: P.bow.tip.x, v: P.bow.tip.y + 38 * k + 12, align: 'left' },
+    { id: 'hair', text: 'HAIR', u: P.bow.contact.x, v: P.bow.tip.y + 30 * k + 8, align: 'center', tone: 'muted' },
+    { id: 'frog', text: 'FROG', u: P.bow.frog.x, v: P.bow.tip.y + 38 * k + 12, align: 'right' },
+  ];
+}
+
+/** True where the portrait draws the instrument (body, fingerboard and neck,
+ *  pegbox and scroll, tailpiece, endpin, bow) — frame B, mm. Pure. */
+export function portraitHit(spec: BowedSpec, u: number, v: number): boolean {
+  const P = portraitOf(spec);
+  const st = P.st;
+  const k = spec.body.mm / 358;
+  const body = outline(spec, 40);
+  if (inPoly(u, v, body)) return true;
+  const seg = (a: P2, b: P2, r: number) => segD(u, v, a, b) <= r;
+  if (seg([st.fbEndX, 0], [st.nutX, 0], fbHalf(spec, st.fbEndX))) return true;
+  if (seg([st.nutX, 0], [st.scrollX, 0], fbHalf(spec, st.nutX) * 2.4)) return true;
+  if (seg([spec.tailpiece[0], 0], [spec.tailpiece[1], 0], spec.bridgeW.mm * 0.3)) return true;
+  if (P.endpinTip && seg([st.tailX, 0], [P.endpinTip.x, 0], 6 * k)) return true;
+  if (seg([P.bow.tip.x, P.bow.tip.y], [P.bow.frog.x, P.bow.frog.y], 5 * k)) return true;
+  return false;
+}
+
 export function makeBowedPortrait(spec: BowedSpec, a11y: string): { aspect: number; render: (w: number, h: number) => ReactElement } {
   const P = portraitOf(spec);
   const box = portraitBox(spec);
@@ -730,23 +781,7 @@ export function makeBowedPortrait(spec: BowedSpec, a11y: string): { aspect: numb
     const textScale = useStageTextScale();
     const xf = useMemo(() => fitXform('side', box, w, h, 6), [w, h]);
     const items = useMemo(() => [...instrumentItems(P, 'side'), ...bowItems(P, 'side')], []);
-    const st = P.st;
-    const k = spec.body.mm / 358;
-    const W = spec.lower.mm / 2;
-    const labels: StaticLabel[] = [
-      { id: 'scroll', text: 'SCROLL', u: st.scrollX - 10, v: -W * 0.55, align: 'right' },
-      { id: 'pegs', text: spec.id === 'bass' ? 'TUNING MACHINES' : 'PEGS', short: spec.id === 'bass' ? 'MACHINES' : 'PEGS', u: (st.nutX + st.scrollX) / 2, v: W * 0.62, align: 'center' },
-      { id: 'fb', text: 'FINGERBOARD', short: 'BOARD', u: (st.fbEndX + st.nutX) / 2, v: -W * 0.42, align: 'center' },
-      { id: 'bridge', text: 'BRIDGE', u: 0, v: -W - 22 * k, align: 'center' },
-      { id: 'fhole', text: 'F-HOLE', u: (spec.fholeX[0] + spec.fholeX[1]) / 2 + 20 * k, v: spec.fholeY.mm + 34 * k, align: 'left' },
-      { id: 'tail', text: 'TAILPIECE', short: 'TAIL', u: (spec.tailpiece[0] + spec.tailpiece[1]) / 2, v: -W * 0.42, align: 'center' },
-      spec.endpin ? { id: 'endpin', text: 'ENDPIN', u: st.tailX - (spec.collar?.mm ?? 0) - spec.endpin.mm * 0.3, v: -30 * k, align: 'center' } : { id: 'chin', text: 'CHIN REST', short: 'CHIN', u: st.tailX + 10, v: -W - 10, align: 'left' },
-      { id: 'top', text: 'TOP (BELLY)', short: 'TOP', u: -spec.body.mm * 0.3, v: W * 0.45, align: 'center' },
-      { id: 'strings', text: `STRINGS ${spec.strings.join(' ')}`, short: 'STRINGS', u: st.nutX * 0.7, v: W * 0.42, align: 'center', tone: 'muted' },
-      { id: 'tip', text: 'BOW · TIP', short: 'TIP', u: P.bow.tip.x, v: P.bow.tip.y + 38 * k + 12, align: 'left' },
-      { id: 'hair', text: 'HAIR', u: P.bow.contact.x, v: P.bow.tip.y + 30 * k + 8, align: 'center', tone: 'muted' },
-      { id: 'frog', text: 'FROG', u: P.bow.frog.x, v: P.bow.tip.y + 38 * k + 12, align: 'right' },
-    ];
+    const labels = useMemo(() => portraitLabels(spec), []);
     return (
       <View style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>

@@ -23,13 +23,13 @@ export type Words = {
 export const hearingCheck = (id: string, w: Words): MikingScenario => ({
   id,
   page: 'setting',
-  prompt: `Your ${w.noun} mic is rated for a very high maximum SPL. Does that tell you how long you can stand beside a loud stage monitor?`,
-  options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for the people near it', 'Yes, as long as the mic is closer to the speaker than you are'],
-  correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
+  prompt: `Your ${w.noun} mic is rated for a very high maximum SPL. Do you still need a limit on how long you stand beside a loud stage monitor?`,
+  options: ['Yes — a mic’s max SPL is a distortion limit, not a hearing limit', 'No — anything below the mic’s rating is safe for the people near it', 'No, as long as the mic is closer to the speaker than you are'],
+  correct: 'Yes — a mic’s max SPL is a distortion limit, not a hearing limit',
   explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
   why: {
-    'Yes — anything below the mic’s rating is safe for the people near it': 'A mic’s rating says nothing about ears. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-    'Yes, as long as the mic is closer to the speaker than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels and time down.',
+    'No — anything below the mic’s rating is safe for the people near it': 'A mic’s rating says nothing about ears. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+    'No, as long as the mic is closer to the speaker than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels and time down.',
   },
 });
 
@@ -38,11 +38,11 @@ export const hearingDiag = (id: string, w: Words): DiagnosticItem => ({
   covers: 'setting',
   critical: true,
   prompt: `Your ${w.noun} mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?`,
-  options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the stage stays below the mic’s rating', 'It is safe as long as the mic is nearer the speaker than you'],
+  options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'It is safe as long as the mic is nearer the speaker than you'],
   correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
   explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
   why: {
-    'It is safe while the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+    'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
     'It is safe as long as the mic is nearer the speaker than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
   },
 });
