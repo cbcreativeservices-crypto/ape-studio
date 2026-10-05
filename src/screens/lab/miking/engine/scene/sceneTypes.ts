@@ -4,9 +4,9 @@
  * millimetres of the view's (u, v) plane — side u = x, v = y; top u = x,
  * v = z — and is drawn under the scene's single transform.
  */
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
-import type { VariantId, Vec3, ViewId } from '../model/types.ts';
+import type { PageId, VariantId, Vec3, ViewId } from '../model/types.ts';
 
 /** `short`: the words to fall back to where the full label would collide. */
 export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
@@ -27,4 +27,10 @@ export type LessonArt = {
    *  KitPlan): its plan id, whether the lesson's own art draws it there (M01's
    *  kick), and where the lesson's frame origin sits on the plan (mm). */
   plan?: { own: string | readonly string[]; useArt?: boolean; offset?: Vec3 };
+  /** A FAMILY's own page for a page id (the guitar family: a plucked string,
+   *  not a struck head; a stage plan, not the kit). Pages not listed use the
+   *  shared pages/. Typed loosely here (the page props live above the engine). */
+  pages?: Partial<Record<PageId, (props: never) => ReactNode>>;
+  /** Steps per page for those family pages (the strip's count before a page reports). */
+  stepCounts?: Partial<Record<PageId, number>>;
 };

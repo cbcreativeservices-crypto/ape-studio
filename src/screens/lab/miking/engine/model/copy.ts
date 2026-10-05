@@ -126,6 +126,51 @@ export type LessonCopy = {
     warn: string;
   };
   practice: { gain: string; second: string; mixed: readonly string[]; mixedIntro: string };
+  /** The instrument family's words where a shared page would otherwise say
+   *  "drum" (added with the guitar family; the drum words are the default). */
+  words?: FamilyWords;
+};
+
+export type FamilyWords = {
+  /** "the drum itself", "faces the drum" */
+  instrument: string;
+  /** "the drummer stopped" */
+  player: string;
+  /** The surface a distance is read from, in the worked example ("THE HEAD"). */
+  reference: string;
+  /** Where a mic is, for the screen reader. */
+  inside: string;
+  outside: string;
+  /** "aimed 10° off the head's axis" (screen reader). */
+  axis: string;
+  /** The context page's AIM lane at its home. */
+  facing: string;
+  /** The context page's PICKUP cell when the instrument blocks the path. */
+  shield: string;
+  /** The microphone page's mount lines. */
+  mountStand: string;
+  mountClip: string;
+  /** The practice page's optional observation sheet. */
+  sheet: string;
+  /** The canvas description's view words. */
+  viewSide: string;
+  viewTop: string;
+};
+
+export const DRUM_WORDS: FamilyWords = {
+  instrument: 'drum',
+  player: 'drummer',
+  reference: 'head',
+  inside: 'inside the drum',
+  outside: 'outside the drum',
+  axis: 'the head’s axis',
+  facing: 'facing the head',
+  shield: 'drum in path',
+  mountStand: 'Mount: a stand or a suitable mount, kept off the heads and damping',
+  mountClip: 'Mount: clamps to the drum’s hoop — a clamp made for it, with the player’s agreement',
+  sheet: 'For a real drum, with the drummer’s agreement and the drummer stopped while anything moves. Write tendencies in words — what you heard, not a promised result.',
+  viewSide: 'Side view, cutaway,',
+  viewTop: 'Top view',
 };
 
 const NEUTRAL_AXES: LessonCopy['axes'] = {
@@ -226,12 +271,13 @@ export const NEUTRAL_COPY: LessonCopy = {
     warn: 'Judge the pair by ear, in mono, at matched levels.',
   },
   practice: { gain: '', second: '', mixed: [], mixedIntro: 'Cards from earlier pages, mixed.' },
+  words: DRUM_WORDS,
 };
 
 /** The lesson's copy over the neutral words (one level deep per section). */
-export function copyOf(lesson: { copy?: Partial<LessonCopy> }): LessonCopy {
+export function copyOf(lesson: { copy?: Partial<LessonCopy> }): LessonCopy & { words: FamilyWords } {
   const c = lesson.copy;
-  if (!c) return NEUTRAL_COPY;
+  if (!c) return { ...NEUTRAL_COPY, words: DRUM_WORDS };
   return {
     ...NEUTRAL_COPY,
     ...c,
@@ -243,5 +289,6 @@ export function copyOf(lesson: { copy?: Partial<LessonCopy> }): LessonCopy {
     context: { ...NEUTRAL_COPY.context, ...(c.context ?? {}) },
     twoMic: { ...NEUTRAL_COPY.twoMic, ...(c.twoMic ?? {}) },
     practice: { ...NEUTRAL_COPY.practice, ...(c.practice ?? {}) },
+    words: { ...DRUM_WORDS, ...(c.words ?? {}) },
   };
 }

@@ -738,6 +738,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const rB = bodies.B.radius;
   const surfA = bodies.A.mount === 'surface';
   const surfB = bodies.B.mount === 'surface';
+  // Plain data for the worklets: the model's aim home (the guitars), or null.
+  const home = model.aimHome ? { az: model.aimHome.az, el: model.aimHome.el } : null;
   const live = slots;
   const hasB = live.includes('B');
   const hasA = live.includes('A');
@@ -776,7 +778,11 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           const ringP = { x: ps.p.x - aim.x * kk, y: ps.p.y - aim.y * kk, z: ps.p.z - aim.z * kk };
           const rg = project(cur, ringP);
           const dr = Math.sqrt((tx - rg.sx) * (tx - rg.sx) + (ty - rg.sy) * (ty - rg.sy));
-          if (dr <= RING_R_PX + 8) return `${slot}.aim`;
+          // A model with an aim home (the guitars): a mic seen nearly END-ON
+          // has its ring on top of its body — the touch MOVES it (aim it in
+          // the other view or with the dock).
+          const endOn = !!home && Math.sqrt((rg.sx - f.sx) * (rg.sx - f.sx) + (rg.sy - f.sy) * (rg.sy - f.sy)) < RING_R_PX * 2 + 8;
+          if (dr <= RING_R_PX + 8 && !endOn) return `${slot}.aim`;
         }
         const vx = t.sx - f.sx;
         const vy = t.sy - f.sy;
@@ -840,6 +846,12 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           if (view === 'side') {
             const el = (Math.atan2(-ay * Math.cos((st.az * Math.PI) / 180), -ax) * 180) / Math.PI;
             to = { p: st.p, az: st.az, el: clamp(el, -80, 80) };
+          } else if (home) {
+            // Turn about the model's aim home (unwrapped toward the current aim).
+            let az = (Math.atan2(ay, -ax) * 180) / Math.PI;
+            while (az - st.az > 180) az -= 360;
+            while (az - st.az < -180) az += 360;
+            to = { p: st.p, az: clamp(az, home.az - 80, home.az + 80), el: st.el };
           } else {
             const az = (Math.atan2(ay, -ax) * 180) / Math.PI;
             to = { p: st.p, az: clamp(az, -80, 80), el: st.el };
@@ -890,7 +902,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         scheduleOnRN(tapAt, e.x, e.y);
       });
     return Gesture.Simultaneous(pinch, Gesture.Exclusive(pan, reset, tap));
-  }, [xf, hasA, hasB, poseA, poseB, lenA, lenB, rA, rB, surfA, surfB, interactive, mini, grab, startTouch, startPose, setLock, bodies, pins, view, scene, bounds, blockedA, blockedB, finish, pinchStart, pinchFocal, base, onTapPart, tapAt]);
+  }, [xf, hasA, hasB, poseA, poseB, lenA, lenB, rA, rB, surfA, surfB, interactive, mini, grab, startTouch, startPose, setLock, bodies, pins, view, scene, bounds, blockedA, blockedB, finish, pinchStart, pinchFocal, base, onTapPart, tapAt, home?.az, home?.el]);
 
   // ── what is drawn ──
   const zones = useMemo(() => {

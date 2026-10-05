@@ -27,6 +27,9 @@ export type MicDescription = {
   plusWords?: string;
   /** A signed radial's words (a line with an offset). */
   lineWords?: { plus: string; minus: string };
+  /** The family's words for inside / outside and the aim's axis (default: a drum's). */
+  where?: { inside: string; outside: string };
+  axisWords?: string;
 };
 
 export type SceneDescription = {
@@ -35,15 +38,17 @@ export type SceneDescription = {
   subject: string;
   mics: MicDescription[];
   extra?: string;
+  /** The view words (default "Side view, cutaway," / "Top view"). */
+  viewWords?: { side: string; top: string };
 };
 
 export function describeMic(m: MicDescription, short = false): string {
   'worklet';
   const r = m.readouts;
-  const where = r.inside ? 'inside the drum' : 'outside the drum';
+  const where = r.inside ? m.where?.inside ?? 'inside the drum' : m.where?.outside ?? 'outside the drum';
   const dist = `${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? m.plusWords ?? 'from' : m.minusWords ?? 'behind'} ${m.surfaceLabel}`;
   const off = m.lineWords ? `${fmtLen(Math.abs(r.radial))} ${r.radial >= 0 ? m.lineWords.plus : m.lineWords.minus} ${m.lineLabel}` : `${fmtLen(r.radial)} off ${m.lineLabel}`;
-  const aim = m.showAim ? `, aimed ${fmtAngle(r.offAxis)} off the head's axis` : '';
+  const aim = m.showAim ? `, aimed ${fmtAngle(r.offAxis)} off ${m.axisWords ?? "the head's axis"}` : '';
   const zone = m.zoneLabel ? ` At a recommended starting point: ${m.zoneLabel}.` : ' Not at a recommended starting point.';
   const clear = r.blocked ? ` Blocked: it would touch the ${r.blocked.label}.` : ' Clear of all parts.';
   if (short) return `Mic ${m.slot}: ${where}, ${dist}, ${off}${aim}.${m.zoneLabel ? ` Zone: ${m.zoneLabel}.` : ''}${r.blocked ? ` Blocked by the ${r.blocked.label}.` : ''}`;
@@ -52,7 +57,7 @@ export function describeMic(m: MicDescription, short = false): string {
 
 export function describeScene(d: SceneDescription): string {
   'worklet';
-  const view = d.view === 'side' ? 'Side view, cutaway,' : 'Top view';
+  const view = d.view === 'side' ? d.viewWords?.side ?? 'Side view, cutaway,' : d.viewWords?.top ?? 'Top view';
   let s = `${view} of ${d.subject}.`;
   for (let i = 0; i < d.mics.length; i++) s += ` ${describeMic(d.mics[i])}`;
   if (d.extra) s += ` ${d.extra}`;
