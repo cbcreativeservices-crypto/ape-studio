@@ -21,8 +21,9 @@ import { useStageTextScale } from '../../../rack/stageAspect';
 import type { SettingItem, VariantId, Vec3, Wedge } from '../../engine/model/types.ts';
 import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
-import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_BOX, planHitTest, planLabelAt, type KitDrumId, type PlanId } from './kitPlanModel.ts';
-import { CymbalPlan, DrumPlan, topTransform } from './drums/DrumArt';
+import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_BOX, PLAN_HARDWARE, planHitTest, planLabelAt, type KitDrumId, type PlanId } from './kitPlanModel.ts';
+import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from './drums/DrumArt';
+import { KICK_22x18 } from './drums/drumSpec.ts';
 
 const AMBER = '#ffc64d';
 const GREY = '#8a8f9c';
@@ -87,52 +88,7 @@ function hatchPath(): SkPath {
   return p;
 }
 
-/** Boom-stand feet and the double tom holder on the kick (drawing defaults,
- *  kit/GEOMETRY_PROPOSAL.md §2: "stands: tripods; boom arms to each cymbal";
- *  toms §1: "one arm from the kick shell top to each rack tom"). */
-export const PLAN_HARDWARE = {
-  booms: { crash1: { u: -230, v: -800 }, crash2: { u: 540, v: 560 }, ride: { u: -40, v: 880 } } as Record<'crash1' | 'crash2' | 'ride', { u: number; v: number }>,
-  tomPost: { u: 230, v: -110 },
-};
-
-/* ── the kick from above (uncut): a horizontal drum, its hoops, its pedal ── */
-function KickPlanArt({ hi }: { hi: boolean }) {
-  const k = KIT.kick;
-  const parts = useMemo(() => {
-    const shell = rr(0, -k.R, k.depth, 2 * k.R, 4);
-    const hoops = Skia.Path.Make();
-    hoops.addRRect(Skia.RRectXY(Skia.XYWHRect(k.hoop.u0, -k.hoop.halfW, 25, 2 * k.hoop.halfW), 5, 5));
-    hoops.addRRect(Skia.RRectXY(Skia.XYWHRect(k.hoop.u1 - 25, -k.hoop.halfW, 25, 2 * k.hoop.halfW), 5, 5));
-    const rods = Skia.Path.Make();
-    for (const s of [-1, 1]) {
-      rods.moveTo(k.hoop.u0 + 4, s * (k.hoop.halfW + 10));
-      rods.lineTo(60, s * (k.hoop.halfW + 10));
-      rods.moveTo(k.hoop.u1 - 4, s * (k.hoop.halfW + 10));
-      rods.lineTo(k.depth - 60, s * (k.hoop.halfW + 10));
-    }
-    const pedal = rr(k.pedal.u0, -k.pedal.halfW, k.pedal.u1 - k.pedal.u0, 2 * k.pedal.halfW, 10);
-    return { shell, hoops, rods, pedal };
-  }, [k]);
-  return (
-    <Group>
-      <Path path={parts.shell} color="#000" opacity={0.5} transform={[{ translateX: 12 }, { translateY: 16 }]}>
-        <BlurMask blur={14} style="normal" />
-      </Path>
-      <Path path={parts.shell}>
-        <LinearGradient start={vec(0, -k.R)} end={vec(0, k.R)} colors={['#3a2210', '#e2b679', '#c48f52', '#7a4a20', '#2f1b0a']} positions={[0, 0.25, 0.5, 0.8, 1]} />
-      </Path>
-      <Path path={parts.rods} style="stroke" strokeWidth={6} strokeCap="round" color="#2a2c32" />
-      <Path path={parts.rods} style="stroke" strokeWidth={2} strokeCap="round" color="#d9dde5" opacity={0.8} />
-      <Path path={parts.hoops}>
-        <LinearGradient start={vec(0, -k.hoop.halfW)} end={vec(0, k.hoop.halfW)} colors={['#c48a4c', '#7a4a20', '#2f1b0a']} />
-      </Path>
-      <Path path={parts.pedal}>
-        <LinearGradient start={vec(k.pedal.u0, -45)} end={vec(k.pedal.u1, 45)} colors={['#6b707b', '#3a3d45', '#22242a']} />
-      </Path>
-      {hi ? <Path path={rr(k.hoop.u0 - 30, -k.hoop.halfW - 30, k.hoop.u1 - k.hoop.u0 + 60, k.hoop.halfW * 2 + 60, 30)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
-    </Group>
-  );
-}
+export { PLAN_HARDWARE } from './kitPlanModel.ts';
 
 function HiHatArt({ hi }: { hi: boolean }) {
   const h = KIT_CYMBALS.hihat;
@@ -381,7 +337,7 @@ export function KitPlan({ w, h, scene, variant, items, own, OwnArt, offset = { x
             <ThroneArt hi={hi('throne')} />
             {drum('floor')}
             {drum('snare')}
-            {OwnArt && own === 'kick' ? <OwnArt view="top" variant={variant} /> : <KickPlanArt hi={false} />}
+            {OwnArt && own === 'kick' ? <OwnArt view="top" variant={variant} /> : <KickFromAbove spec={KICK_22x18} u0={0} z={0} pedal={KIT.kick.pedal} />}
             {hi('kick') || (own === 'kick' && !OwnArt) ? <Path path={rr(KIT.kick.hoop.u0 - 30, -KIT.kick.hoop.halfW - 30, KIT.kick.hoop.u1 - KIT.kick.hoop.u0 + 60, KIT.kick.hoop.halfW * 2 + 60, 30)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
             {hi('pedal') ? <Path path={rr(KIT.kick.pedal.u0 - 24, -KIT.kick.pedal.halfW - 24, KIT.kick.pedal.u1 - KIT.kick.pedal.u0 + 48, KIT.kick.pedal.halfW * 2 + 48, 20)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
             <TomMountPlan />
@@ -389,7 +345,7 @@ export function KitPlan({ w, h, scene, variant, items, own, OwnArt, offset = { x
             {drum('tom2', own === 'kick' ? 0.8 : 1, own === 'kick')}
             <HiHatArt hi={hi('hihat')} />
             {(['crash1', 'crash2', 'ride'] as const).map((id) => (
-              <CymbalPlan key={id} cx={KIT_CYMBALS[id].c.x} cz={KIT_CYMBALS[id].c.z} d={KIT_CYMBALS[id].d} tiltDeg={KIT_CYMBALS[id].tiltDeg} highlight={hi(id)} dim={hi(id) ? 0.95 : 0.62} />
+              <CymbalPlan key={id} cx={KIT_CYMBALS[id].c.x} cz={KIT_CYMBALS[id].c.z} d={KIT_CYMBALS[id].d} tiltDeg={KIT_CYMBALS[id].tiltDeg} highlight={hi(id)} dim={hi(id) ? 0.85 : 0.36} />
             ))}
             {stageWedges.map((wd) => (
               <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={hi(wd.id)} />

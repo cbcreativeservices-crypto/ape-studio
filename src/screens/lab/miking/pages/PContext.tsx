@@ -86,7 +86,9 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
     if (rig.mics[0].pattern !== pattern) rig.setPattern('A', pattern as MicPattern);
   }, [pattern, rig]);
 
-  const a = aimAxis === 'az' ? pose.az : pose.el;
+  // The fader turns the mic about its starting aim (the kick's starts at 0, 0).
+  const a0 = aimAxis === 'az' ? z.start.az : z.start.el;
+  const a = Math.round((aimAxis === 'az' ? pose.az : pose.el) - a0);
   const lim = aimAxis === 'az' ? AZ_MAX : EL_MAX;
   const params: DockParam[] = [
     {
@@ -96,7 +98,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       value: (a + lim) / (2 * lim),
       home: 0.5,
       onChange: (v) => {
-        const ang = Math.round((v * 2 - 1) * lim);
+        const ang = a0 + Math.round((v * 2 - 1) * lim);
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
         rig.moveTo('A', to);
         setAimed(true);

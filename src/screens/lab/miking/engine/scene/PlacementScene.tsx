@@ -201,10 +201,35 @@ function hatch(box: ViewBox): ReturnType<typeof Skia.Path.Make> {
 }
 
 /** A zone's projection into a view: the distance band × the radial band. */
+/** A zone's drawn shape in a view: the lesson's own (a rect or a ring
+ *  sector round a rim), else the kick's head-band projection. */
+function zonePath(z: DocumentedZone, view: ViewId, rig: Rig): ReturnType<typeof Skia.Path.Make> {
+  const own = z.drawn?.[view];
+  const p = Skia.Path.Make();
+  if (own && 'cu' in own) {
+    const n = 32;
+    const at = (r: number, a: number) => ({ x: own.cu + r * Math.cos((a * Math.PI) / 180), y: own.cv + r * Math.sin((a * Math.PI) / 180) });
+    for (let i = 0; i <= n; i++) {
+      const q = at(own.r1, own.a0 + ((own.a1 - own.a0) * i) / n);
+      if (i === 0) p.moveTo(q.x, q.y);
+      else p.lineTo(q.x, q.y);
+    }
+    for (let i = n; i >= 0; i--) {
+      const q = at(own.r0, own.a0 + ((own.a1 - own.a0) * i) / n);
+      p.lineTo(q.x, q.y);
+    }
+    p.close();
+    return p;
+  }
+  const r = zoneRect(z, view, rig);
+  p.addRRect(Skia.RRectXY(Skia.XYWHRect(r.u0, r.v0, Math.max(4, r.u1 - r.u0), r.v1 - r.v0), 10, 10));
+  return p;
+}
+
 function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: number; v0: number; v1: number } {
   // An upright or tilted drum's zone brings its own projection (geometry.ts).
   const own = z.drawn?.[view];
-  if (own) return own;
+  if (own && !('cu' in own)) return own;
   const m = rig.lesson.model;
   const s = m.surfaces.find((q) => q.id === z.refSurface)!;
   const a = s.point.x + s.normal.x * z.distance.min;
@@ -421,7 +446,7 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
       const dx = b.x - a.x;
       const dy = b.y - a.y;
       const dz = b.z - a.z;
-      return { ax: a.x, av: vOf(view, a), bx: b.x, bv: vOf(view, b), on: 1, far: Math.sqrt(dx * dx + dy * dy + dz * dz) > CLIP_REACH ? 1 : 0 };
+      return { ax: a.x, av: vOf(view, a), bx: b.x, bv: vOf(view, b), on: 1, far: Math.sqrt(dx * dx + dy * dy + dz * dz) > (body.reach ?? CLIP_REACH) ? 1 : 0 };
     }
     return { ax: 0, av: 0, bx: 0, bv: 0, on: 0, far: 0 };
   });
@@ -537,12 +562,8 @@ function PathsOverlay({ rig, view, from }: { rig: Rig; view: ViewId; from: Vec3 
 }
 
 function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view: ViewId; zoneSV: SharedValue<string | null> }) {
-  const r = zoneRect(z, view, rig);
-  const path = useMemo(() => {
-    const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(r.u0, r.v0, Math.max(4, r.u1 - r.u0), r.v1 - r.v0), 10, 10));
-    return p;
-  }, [r.u0, r.u1, r.v0, r.v1]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const path = useMemo(() => zonePath(z, view, rig), [z, view, rig.lesson, rig.variant]);
   // One consistent style for every recommended starting point (owner ruling
   // 2026-10-04): the same blue band, the same solid edge.
   const tone = BLUE;

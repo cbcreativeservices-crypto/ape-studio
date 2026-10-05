@@ -124,6 +124,22 @@ export const FLOOR_16x16: DrumSpec = {
   legs: { n: dd(3, 'floor-tom leg count'), phaseDeg: dd(30, 'floor-tom leg angles'), spread: dd(120, 'how far a leg foot stands out past the shell'), r: dd(6.5, 'leg radius') },
 };
 
+/** The 22 × 18 in kick (M01's own numbers: kick/SOURCES.md, m01Kick/model.ts),
+ *  as a neighbour in the other drum lessons: wood hoops, 10 rods per head. */
+export const KICK_22x18: DrumSpec = {
+  id: 'kick',
+  name: '22 × 18 in kick drum',
+  d: { mm: 22 * IN, prov: src('YMH-RC', 'RBB-2218 22"×18"') },
+  depth: { mm: 18 * IN, prov: trial('YMH-RC', '18 in nominal depth') },
+  tShell: { mm: 7, prov: src('TAMA-SSC', 'Bass Drum : 8ply, 7mm') },
+  plies: 8,
+  hoop: { kind: 'wood', t: { mm: 8, prov: trial('YMH-TC', 'BD : 8.0 mm') }, above: dd(19, 'kick hoop past the head (M01: 25 − 6)'), below: dd(6, 'kick hoop inset (M01)'), gap: dd(3, 'kick hoop gap (M01)') },
+  rods: { n: { mm: 10, prov: src('YMH-RC', 'No. of Tuning Bolts 10 (per head; owner-confirmed 2026-10-04)') }, phaseDeg: dd(18, 'kick rod phase (M01)') },
+  lug: twoPieceLug(),
+  batter: 'coated',
+  reso: 'ebony',
+};
+
 /* ── a placed drum: the frame ── */
 
 export type PlacedDrum = { spec: DrumSpec; c: Vec3; tiltDeg: number };

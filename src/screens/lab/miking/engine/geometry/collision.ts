@@ -160,7 +160,7 @@ export function checkAssembly(scene: CompiledScene, pose: MicPose, body: MicBody
       const ax = sg.b.x - sg.a.x;
       const ay = sg.b.y - sg.a.y;
       const az = sg.b.z - sg.a.z;
-      if (Math.sqrt(ax * ax + ay * ay + az * az) > CLIP_REACH) return { partId: 'clamp', label: 'the clamp’s reach', piece: 'arm' };
+      if (Math.sqrt(ax * ax + ay * ay + az * az) > (body.reach ?? CLIP_REACH)) return { partId: 'clamp', label: 'the clamp’s reach', piece: 'arm' };
       continue;
     }
     const dx = sg.b.x - sg.a.x;

@@ -122,7 +122,7 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
     { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
     { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
     { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
-    { k: 'POLARITY', v: `B ${B.polarity === 1 ? '+' : '−'}`, sub: sideFlip ? 'opposite heads' : rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
+    { k: 'POLARITY', v: `B ${B.polarity === 1 ? '+' : '−'}`, sub: sideFlip ? 'heads: −' : rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
   ];
   const [wellW, setWellW] = useState(0);
   const label = useMemo(

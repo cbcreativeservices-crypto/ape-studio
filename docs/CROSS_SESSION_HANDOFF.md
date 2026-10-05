@@ -602,6 +602,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 22:00 · ccode · 4a63fb8a
+changed: feat(miking): engine for upright and tilted drums; shared drum family; one 5-piece kit plan
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 21:21 · ccode · 0b64ea25
 changed: docs(miking): builder brief for the lesson rollout
 affects other side: nothing (branch final-lab, miking lab work).

@@ -5,6 +5,7 @@
 import type { LessonArt } from '../engine/scene/sceneTypes.ts';
 import { KickArt, kickHitTest, kickLabels } from '../lessons/m01Kick/art';
 import { CoupledHeads, StrikeSequence } from '../lessons/m01Kick/soundArt';
+import { SNARE_ART } from '../lessons/m02Snare/art';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -16,6 +17,7 @@ const ART: Record<string, LessonArt> = {
     // The kick is the kit frame's origin; its own (cutaway) art draws it on the plan.
     plan: { own: 'kick', useArt: true },
   },
+  M02: SNARE_ART,
 };
 
 export function lessonArt(id: string): LessonArt | undefined {

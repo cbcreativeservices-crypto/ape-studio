@@ -79,6 +79,14 @@ export const KIT = {
   room: { u0: -1120, u1: 1720, v0: -820, v1: 930 },
 } as const;
 
+/** Boom-stand feet and the double tom holder on the kick (drawing defaults,
+ *  kit/GEOMETRY_PROPOSAL.md §2: "stands: tripods; boom arms to each cymbal";
+ *  toms §1: "one arm from the kick shell top to each rack tom"). Plan (u, v). */
+export const PLAN_HARDWARE = {
+  booms: { crash1: { u: -230, v: -800 }, crash2: { u: 540, v: 560 }, ride: { u: -40, v: 880 } } as Record<'crash1' | 'crash2' | 'ride', { u: number; v: number }>,
+  tomPost: { u: 230, v: -110 },
+};
+
 /** Compatibility name (the geometry proposals call the plan KIT_PLAN). */
 export const KIT_PLAN = KIT;
 

@@ -123,6 +123,10 @@ export type RefLine = {
 export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
 
 export type ZoneKind = 'sourced' | 'trial';
+/** How a zone is drawn in one view: a rectangle (u/v, mm), or a ring sector
+ *  about (cu, cv) between radii r0..r1 and angles a0..a1 (deg, from +u
+ *  toward +v) — a starting point that runs round a drum's rim, from above. */
+export type ZoneDraw = { u0: number; u1: number; v0: number; v1: number } | { cu: number; cv: number; r0: number; r1: number; a0: number; a1: number };
 /**
  * A RECOMMENDED STARTING POINT (owner ruling 2026-10-04). Learner-facing:
  * `label`, `band`, `tendency`, `checks` — plain starting-point words, no
@@ -165,7 +169,7 @@ export type DocumentedZone = {
   /** How the zone is DRAWN in each view (mm, u/v), when the band cannot be
    *  read off an x-axis head (an upright drum): derived in the lesson's
    *  geometry from the same numbers. */
-  drawn?: Partial<Record<ViewId, { u0: number; u1: number; v0: number; v1: number }>>;
+  drawn?: Partial<Record<ViewId, ZoneDraw>>;
   /** "Go to zone" pose: inside the zone and collision-free (tested). */
   start: MicPose;
   /** What to listen for, in words ("tendency", never "result"). */
@@ -194,6 +198,8 @@ export type MicType = {
   body: { length: Dim; radius: Dim; width?: Dim };
   power: string;
   mount: MountKind;
+  /** A clip mount's reach from the hoop to the mic's tail (default CLIP_REACH). */
+  clip?: { reach: Dim };
   surfacePartId?: PartId;
   /** INTERNAL record: the products the drawn size and specs were read from (never shown). */
   examples: { model: string; fact: string; src: SrcKey }[];
@@ -217,7 +223,7 @@ export type Wedge = { id: string; label: string; short: string; p: Vec3; lift: n
 /** One collision solid, flattened for the worklets (plain data only). */
 export type Solid = { partId: string; label: string; shape: Shape3; clearance: number };
 /** What `checkAssembly` needs to know about the mic (plain data). */
-export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string };
+export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string; reach?: number };
 /** The space a mic counts as "inside": along `axis` (default +x, absolute x)
  *  between x0 and x1 from c, within rIn of the axis. */
 export type Interior = { x0: number; x1: number; rIn: number; c: Vec3; axis?: Vec3 };

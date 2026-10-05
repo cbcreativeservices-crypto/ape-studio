@@ -145,8 +145,8 @@ function buildSection(spec: DrumSpec, o: SectionOpts) {
     flange(1, D - dn, D + up, D + up);
   }
   // Heads (≈ 5 mm films).
-  const batter = rect(make(), -R - 1, -2.5, R + 1, 2.5);
-  const reso = o.reso ? rect(make(), -R - 1, D - 2.5, R + 1, D + 2.5) : null;
+  const batter = rect(make(), -R - 1, -3, R + 1, 3);
+  const reso = o.reso ? rect(make(), -R - 1, D - 3, R + 1, D + 3) : null;
   const sheen = seg(make(), -R * 0.92, -1.2, R * 0.6, -1.2);
   // Silhouette hardware: a lug per head, its rod down from the hoop's ear.
   const lugs = make();
@@ -171,10 +171,10 @@ function buildSection(spec: DrumSpec, o: SectionOpts) {
   if (spec.wires && o.wires) {
     const w = spec.wires;
     const L2 = w.length.mm / 2;
-    const y = D + 2.5 + (o.wires === 'off' ? w.dropOff.mm : 0);
-    const band = rect(make(), -L2, y, L2, y + 3.4);
+    const y = D + 3 + (o.wires === 'off' ? w.dropOff.mm : 0);
+    const band = rect(make(), -L2, y, L2, y + 5);
     const coils = make();
-    for (let x = -L2 + 3; x < L2 - 3; x += 2.6) seg(coils, x, y + 0.2, x + 1.2, y + 3.2);
+    for (let x = -L2 + 3; x < L2 - 3; x += 3.2) seg(coils, x, y + 0.4, x + 1.6, y + 4.6);
     const plates = rect(rect(make(), -L2 - 7, y - 0.5, -L2, y + 4), L2, y - 0.5, L2 + 7, y + 4);
     const sx = w.strainerDeg.mm >= 90 && w.strainerDeg.mm <= 270 ? -1 : 1;
     const strainer = rrect(make(), sx * (R + 2), D * 0.22, sx * (R + 30), D * 0.78, 3);
@@ -351,6 +351,7 @@ export function DrumExterior({ spec, reso = true, dim = 1 }: { spec: DrumSpec; r
     exteriorCache.set(key, g);
   }
   const { R, D, hOut, up } = g;
+  const hoopCols = spec.hoop.kind === 'wood' ? ['#2f1b0a', '#c48a4c', '#9a6430', '#5e3a1b'] : CHROME;
   return (
     <Group opacity={dim}>
       <Path path={g.shadow} color="#000" opacity={0.45}>
@@ -370,18 +371,103 @@ export function DrumExterior({ spec, reso = true, dim = 1 }: { spec: DrumSpec; r
       <Path path={g.rods} style="stroke" strokeWidth={3} strokeCap="round" color="#2a2c32" />
       <Path path={g.rods} style="stroke" strokeWidth={1} strokeCap="round" color="#d9dde5" opacity={0.8} />
       <Path path={g.hoopTop}>
-        <LinearGradient start={vec(-hOut, -up)} end={vec(hOut, 0)} colors={CHROME} />
+        <LinearGradient start={vec(-hOut, -up)} end={vec(hOut, 0)} colors={hoopCols} />
       </Path>
       <Path path={g.hoopTop} style="stroke" strokeWidth={0.7} color={INK} />
       {g.hoopBot ? (
         <>
           <Path path={g.hoopBot}>
-            <LinearGradient start={vec(-hOut, D)} end={vec(hOut, D + up)} colors={CHROME} />
+            <LinearGradient start={vec(-hOut, D)} end={vec(hOut, D + up)} colors={hoopCols} />
           </Path>
           <Path path={g.hoopBot} style="stroke" strokeWidth={0.7} color={INK} />
         </>
       ) : null}
-      <Path path={g.lips} style="stroke" strokeWidth={2.4} strokeCap="round" color="#dfe3ea" />
+      {spec.hoop.kind === 'triple' ? <Path path={g.lips} style="stroke" strokeWidth={2.4} strokeCap="round" color="#dfe3ea" /> : null}
+    </Group>
+  );
+}
+
+/** A HORIZONTAL drum from the side (the kick as a neighbour): DrumExterior
+ *  turned so its axis runs along +x from its batter head at `x0`. */
+export function KickSideNeighbour({ spec, x0, cy, dim = 0.5 }: { spec: DrumSpec; x0: number; cy: number; dim?: number }) {
+  return (
+    <Group transform={[{ translateX: x0 }, { translateY: cy }, { rotate: -Math.PI / 2 }]}>
+      <DrumExterior spec={spec} dim={dim} />
+    </Group>
+  );
+}
+
+/** The kick from above (uncut): its shell as a lit cylinder, both wood hoops,
+ *  the rods at its silhouette, and the pedal on the player's side. `u0` is
+ *  the batter head's x; `z` its axis. */
+export function KickFromAbove({ spec, u0, z, pedal, dim = 1 }: { spec: DrumSpec; u0: number; z: number; pedal?: { u0: number; u1: number; halfW: number }; dim?: number }) {
+  const R = spec.d.mm / 2;
+  const L = spec.depth.mm;
+  const { rOut } = hoopRadii(spec);
+  const parts = useMemo(() => {
+    const shell = rrect(make(), 0, -R, L, R, 4);
+    const hoops = make();
+    rrect(hoops, -spec.hoop.above.mm, -rOut, spec.hoop.below.mm, rOut, 5);
+    rrect(hoops, L - spec.hoop.below.mm, -rOut, L + spec.hoop.above.mm, rOut, 5);
+    const rods = make();
+    for (const s of [-1, 1]) {
+      seg(rods, -spec.hoop.above.mm + 4, s * (rOut + 10), 60, s * (rOut + 10));
+      seg(rods, L + spec.hoop.above.mm - 4, s * (rOut + 10), L - 60, s * (rOut + 10));
+    }
+    const ped = pedal ? rrect(make(), pedal.u0 - u0, -pedal.halfW, pedal.u1 - u0, pedal.halfW, 10) : null;
+    return { shell, hoops, rods, ped };
+  }, [R, L, rOut, spec, pedal, u0]);
+  return (
+    <Group opacity={dim} transform={[{ translateX: u0 }, { translateY: z }]}>
+      <Group transform={[{ translateX: 12 }, { translateY: 16 }]}>
+        <Path path={parts.shell} color="#000" opacity={0.5}>
+          <BlurMask blur={14} style="normal" />
+        </Path>
+      </Group>
+      <Path path={parts.shell}>
+        <LinearGradient start={vec(0, -R)} end={vec(0, R)} colors={['#3a2210', '#e2b679', '#c48f52', '#7a4a20', '#2f1b0a']} positions={[0, 0.25, 0.5, 0.8, 1]} />
+      </Path>
+      <Path path={parts.rods} style="stroke" strokeWidth={6} strokeCap="round" color="#2a2c32" />
+      <Path path={parts.rods} style="stroke" strokeWidth={2} strokeCap="round" color="#d9dde5" opacity={0.8} />
+      <Path path={parts.hoops}>
+        <LinearGradient start={vec(0, -rOut)} end={vec(0, rOut)} colors={['#c48a4c', '#7a4a20', '#2f1b0a']} />
+      </Path>
+      {parts.ped ? (
+        <Path path={parts.ped}>
+          <LinearGradient start={vec(-300, -45)} end={vec(0, 45)} colors={['#6b707b', '#3a3d45', '#22242a']} />
+        </Path>
+      ) : null}
+    </Group>
+  );
+}
+
+/** A drumstick (ILLUSTRATIVE: no source gives a stick; a common 16 in
+ *  hickory stick drawn), from its butt to its tip bead. */
+export function Stick({ from, to, dim = 1 }: { from: { x: number; y: number }; to: { x: number; y: number }; dim?: number }) {
+  const ang = Math.atan2(to.y - from.y, to.x - from.x);
+  const len = Math.hypot(to.x - from.x, to.y - from.y);
+  const p = useMemo(() => {
+    // A tapered dowel along +x: Ø 14 at the butt to a shoulder, a bead tip.
+    const body = make();
+    body.moveTo(0, -7);
+    body.lineTo(len * 0.78, -6);
+    body.quadTo(len * 0.93, -3.2, len - 9, -2.6);
+    body.lineTo(len - 9, 2.6);
+    body.quadTo(len * 0.93, 3.2, len * 0.78, 6);
+    body.lineTo(0, 7);
+    body.close();
+    const bead = oval(make(), len - 5, 0, 6, 4.4);
+    return { body, bead };
+  }, [len]);
+  return (
+    <Group opacity={dim} transform={[{ translateX: from.x }, { translateY: from.y }, { rotate: ang }]}>
+      <Path path={p.body}>
+        <LinearGradient start={vec(0, -7)} end={vec(0, 7)} colors={['#f3dcae', '#d9b277', '#a87b42', '#6e4a22']} />
+      </Path>
+      <Path path={p.bead}>
+        <RadialGradient c={vec(len - 7, -1.5)} r={7} colors={['#fff2d6', '#d9b277', '#8a5e2e']} />
+      </Path>
+      <Path path={p.body} style="stroke" strokeWidth={0.8} color="#3a240e" opacity={0.8} />
     </Group>
   );
 }
@@ -603,6 +689,9 @@ export function CymbalPlan({ cx, cz, d, tiltDeg, highlight = false, dim = 0.82 }
         <Circle cx={0} cy={0} r={12} color="#1a1b1f" />
         <Path path={disc} style="stroke" strokeWidth={3} color="#7a5418" />
       </Group>
+      {/* the rim, crisp at any translucency: a cymbal above reads as above */}
+      <Path path={disc} style="stroke" strokeWidth={3.5} color="#e2b679" opacity={0.75} />
+      <Circle cx={0} cy={0} r={12} color="#1a1b1f" opacity={0.8} />
       {highlight ? <Circle cx={0} cy={0} r={R + 40} style="stroke" strokeWidth={9} color="#ffc64d" /> : null}
     </Group>
   );
