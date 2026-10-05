@@ -88,7 +88,7 @@ export const CBD_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, here is where we recommend you begin: a spot above the playing head, looking diagonally down at it from about 45 cm — or closer, for a loud stage. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum, player and hall is different.',
       separate: 'Height, distance and angle are separate variables: change one at a time with the same passage. A mic on the far head, a side position or a room mic are experiments for a quiet room — compare them alone and together in mono, and leave them out if they add little.',
-      clearance: 'Clearance comes first. Have the player show the mallet’s full arc, rolls, other mallets and both hands damping both heads before anything is placed. The grey hatched areas show roughly where to keep clear — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Have the player show the mallet’s full arc, rolls, other mallets and both hands damping both heads before anything is placed. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real stage.',
       tendencies: 'A spot near the playing head favours the mallet’s transient; the main pickup and farther mics carry more of the low bloom and the hall. A kick-drum mic’s shaped response may not suit an orchestral bass drum — compare it with a more neutral mic by ear. All tendencies.',
     },
   },

@@ -39,7 +39,7 @@ export const VIOLA_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the part it names — the bridge, or the bridge’s foot. They are starting points, not rules — the stand distance is a modest suggestion. Move from there and listen: there is no single right answer, and every viola and room is different.',
       separate: 'Distance, height and the angle across the top are separate variables: change one at a time, and play the low C, the high A, quiet and strong bows and any pizzicato each time. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep, the bow arm at the tip of a stroke, and the player’s head. The grey hatched area shows roughly where the bow travels.',
+      clearance: 'Clearance comes first. Stop the player before moving a mic; keep the mic, stand, clip and cable out of the bow’s full sweep, the bow arm at the tip of a stroke, and the player’s head. The bow’s keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where the bow travels.',
       tendencies: 'Toward the bridge tends to bring more attack and bow; a position favouring the body, more weight; up close, a directional mic adds low end (proximity effect). These are audition ideas, not promises — check them on the viola in front of you.',
     },
   },

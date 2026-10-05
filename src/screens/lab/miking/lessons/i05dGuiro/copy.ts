@@ -95,7 +95,7 @@ export const GU_COPY: LessonCopy = spCopy({
     learn: {
       intro: 'What you just did, in words. After our research, a mic roughly 30–60 cm (1–2 ft) from the middle of the scraped area is where we recommend you begin — facing more of the ridges, or a little lower for more body. A common minimum for percussion is about 30 cm. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time with the whole pattern. Compare the two viewpoints at matched level.',
-      clearance: 'Clearance comes first: the scraper’s whole travel, past both ends, both ways, and the holding hand. The hatched areas show roughly where to keep clear.',
+      clearance: 'Clearance comes first: the scraper’s whole travel, past both ends, both ways, and the holding hand. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'Closer gives more direct rasp but can favour one small section of the stroke; farther takes in the whole path with more room and spill. All tendencies to check by ear.',
     },
   },

@@ -35,7 +35,7 @@ import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, Z
 import { useRig, type Rig } from '../../engine/scene/useRig.ts';
 import { DualView } from '../../engine/scene/DualView';
 import { PlacementScene } from '../../engine/scene/PlacementScene';
-import { placementBezel, lenCell } from '../../engine/scene/readoutText.ts';
+import { placementBezel, lenCell, stopShortOf } from '../../engine/scene/readoutText.ts';
 import { readoutWords } from '../../engine/scene/sceneWords.ts';
 import { zonesAvailable } from '../../engine/geometry/zones.ts';
 import { dist } from '../../engine/geometry/vec.ts';
@@ -750,7 +750,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
     { title: 'CLEARANCE', text: 'Off the grille cloth — never touching it — on a secure stand, the cable routed away from the player’s feet and the walkway. With the amp off or muted while you place it.', cell: 3 },
   ];
   const wk = worked[exStep];
-  const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, (id) => L['1x12'].model.parts.find((p) => p.id === id)?.short ?? id).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
+  const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, stopShortOf(L['1x12'].model)).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
 
   /* PLACE: one rig per cabinet; the dock edits the chosen one */
   const [cabId, setCabId] = useState('1x12:closed');
@@ -829,7 +829,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
     },
   ];
-  const bezel: BezelItem[] = placementBezel(shown, readoutWords(rig, 'A'), zone, (id) => rig.lesson.model.parts.find((p) => p.id === id)?.short ?? id);
+  const bezel: BezelItem[] = placementBezel(shown, readoutWords(rig, 'A'), zone, stopShortOf(rig.lesson.model));
 
   /* ROTARY: build the pickup from outside, with the cabinet off */
   const les = useLeslieRig({ motion, hidden, focused, start: 'stop' });

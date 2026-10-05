@@ -92,7 +92,7 @@ export const MAR_COPY: LessonCopy = spCopy({
     learn: {
       intro: 'What you just did, in words. After our research, one mic centred in front of the pair, about 40–80 cm (16–32 in) from the midpoint between the heads, is where we recommend you begin; a common minimum for percussion is about 30 cm. If one hand disappears, a spot per head. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time. The distance is from the middle of the sound area — not from the nearest single stroke.',
-      clearance: 'Clearance comes first. Large strokes need more space; keep the stand and cable outside both arcs. The hatched areas show roughly where to keep clear.',
+      clearance: 'Clearance comes first. Large strokes need more space; keep the stand and cable outside both arcs. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'Move toward the quieter side if the balance allows, back if the near head leaps every stroke, closer — still outside the arcs — if the room takes over. All tendencies to check by ear.',
     },
   },

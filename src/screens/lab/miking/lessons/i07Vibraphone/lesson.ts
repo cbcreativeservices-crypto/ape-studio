@@ -587,7 +587,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin: one mic about 45–75 cm above the middle, aimed down; or one of a spaced pair about 46 cm above the bars and 61 cm apart; and, only as an alternative, a mic under the tubes. They are starting points, not rules: move from there and listen.',
       separate: 'Height, distance along the keyboard and angle are separate variables: change one at a time, with the real phrase — low, middle and high, single notes and chords.',
-      clearance: 'Clearance comes first. Have the player show the mallets’ full arc over both rows and the whole passage before anything is placed. The grey hatch shows roughly where the mallets travel — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Have the player show the mallets’ full arc over both rows and the whole passage before anything is placed. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel — leave more room on a real stage.',
       tendencies: 'Closer tends to bring more attack and one region of the keyboard; higher blends the keyboard and adds the room. Under the tubes: a coloured, local sound. All tendencies to check by ear.',
     },
   },

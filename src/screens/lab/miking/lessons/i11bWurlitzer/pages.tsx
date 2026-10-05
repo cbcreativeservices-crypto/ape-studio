@@ -64,7 +64,7 @@ const AMP: AmpPagesSpec = {
   notes: {
     beam: '',
     spots: '',
-    place: 'The two grilles face the player: a close mic lives in the narrow gap between the lid, the hands over the keys and the player’s forearms — the hatched shapes. Every position here is drawn at typical proportions; measure the real instrument.',
+    place: 'The two grilles face the player: a close mic lives in the narrow gap between the lid, the hands over the keys and the player’s forearms — the keep-clear shapes that appear as the mic comes close. Every position here is drawn at typical proportions; measure the real instrument.',
     context: 'On stage the speakers face the player, so a close mic also hears what is near the player — their wedge above all. One close mic on the best-sounding grille is a sensible first choice; the auxiliary output can help when the stage is very loud.',
   },
   liveCards: [

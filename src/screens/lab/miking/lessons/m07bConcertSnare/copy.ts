@@ -88,7 +88,7 @@ export const CSN_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, these blue zones are where we recommend you begin: two close starting points that snares in general are often miked from, and a broader one — measured from the head or rim each names. None is a concert-snare rule. Move from there and listen: there is no single right answer, and every drum, player and hall is different.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the same passage and realistic dynamics. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Have the player show the highest and widest stick motion, the throw-off and the reach to the trap table before anything is placed. The grey hatched areas show roughly where to keep clear — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Have the player show the highest and widest stick motion, the throw-off and the reach to the trap table before anything is placed. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real stage.',
       tendencies: 'Closer usually means more direct detail and less room; it can also make a roll sound like separate clicks. Farther brings more of the whole drum, and of the cymbals and timpani beside it. A directional mic close to the head may also lift its own lows (proximity effect) — how much depends on the mic and the angle.',
     },
   },

@@ -34,6 +34,8 @@
  */
 import { BlurMask, DashPathEffect, FillType, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { Pt } from './pianoSpec.ts';
+import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { BODY, pt, type PlayerPose } from '../players/playerPose.ts';
 import { blackKeys, FLOOR_Y, grandGeom, KEY_DIMS, KEY_TOP_Y, KEYBOARD, KEYS_Z0, keyZ, LID_DEG, lidPoint, lidUnderY, pianistAt, stickOf, uprightGeom, WHITE, type GrandGeom, type GrandId, type LidState, type Pianist } from './pianoSpec.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -991,13 +993,82 @@ function pianistPaths(pn: Pianist, xKey: number, pedalX: number, view: 'side' | 
   return o;
 }
 
+/** The pianist's joints for the shared player (playerPose.ts), cached: the
+ *  same anchors as before (the head, the bench, the key fronts, the pedals),
+ *  in profile from the side and from above. */
+const pianistPoseCache = new Map<string, PlayerPose>();
+function pianistPose(pn: Pianist, xKey: number, pedalX: number, view: 'side' | 'top'): PlayerPose {
+  const key = `${view}:${xKey}:${pedalX}`;
+  const hit = pianistPoseCache.get(key);
+  if (hit) return hit;
+  const h = pn.head;
+  const b = pn.bench;
+  let pose: PlayerPose;
+  if (view === 'side') {
+    // Seated in profile, facing +x (the keys): thighs forward under the
+    // keybed, the near foot on the pedal, the forearms level to the keys.
+    const hip = pt(b.x0 + 170, b.y - 85);
+    const knee = pt(hip.u + 440, b.y - 105);
+    const keysV = KEY_TOP_Y - 45;
+    pose = {
+      view: 'side',
+      posture: 'seated',
+      facing: 1,
+      head: { c: pt(h.x, h.y), r: pn.headR },
+      neck: pt(h.x - 20, h.y + 160),
+      shoulderR: pt(h.x - 20, h.y + 215),
+      shoulderL: pt(h.x - 34, h.y + 205),
+      elbowR: pt(h.x + 100, h.y + 480),
+      elbowL: pt(h.x + 86, h.y + 468),
+      handR: { wrist: pt(xKey - 20, keysV), dir: 0.12, kind: 'keys' },
+      handL: { wrist: pt(xKey - 40, keysV - 6), dir: 0.12, kind: 'keys' },
+      hipR: hip,
+      hipL: pt(hip.u - 10, hip.v - 4),
+      kneeR: knee,
+      kneeL: pt(knee.u - 20, knee.v - 6),
+      footR: pt(pedalX - 70, FLOOR_Y),
+      footL: pt(pedalX - 170, FLOOR_Y),
+      floor: FLOOR_Y,
+    };
+  } else {
+    // From above, authored chest toward +v round the neck, then turned to
+    // face +x (`facing` 0): local (a, b) lands at world (b, −a) from the neck.
+    const n = pt(h.x - 10, 0);
+    const L = (right: number, fwd: number) => pt(n.u - right, n.v + fwd);
+    const handFwd = xKey + 60 - n.u - 150;
+    pose = {
+      view: 'above',
+      posture: 'seated',
+      facing: 0,
+      head: { c: L(0, -18), r: pn.headR },
+      neck: n,
+      shoulderR: L(BODY.shoulderHalf, 4),
+      shoulderL: L(-BODY.shoulderHalf, 4),
+      elbowR: L(250, handFwd - 140),
+      elbowL: L(-250, handFwd - 140),
+      handR: { wrist: L(270, handFwd), dir: Math.PI / 2, kind: 'above' },
+      handL: { wrist: L(-270, handFwd), dir: Math.PI / 2, kind: 'above' },
+      hipR: L(106, -40),
+      hipL: L(-106, -40),
+      kneeR: L(130, 430),
+      kneeL: L(-130, 430),
+      footR: L(140, 500),
+      footL: L(-140, 500),
+      floor: null,
+    };
+  }
+  pianistPoseCache.set(key, pose);
+  return pose;
+}
+
 /** The pianist on the bench, ILLUSTRATIVE, muted so it never competes with
- *  the instrument (charter §6). `xKey`: the key fronts; `pedalX`: the pedals. */
+ *  the instrument (charter §6). `xKey`: the key fronts; `pedalX`: the pedals.
+ *  The figure is the shared player (clarity pass 2026-10-05: the house
+ *  figure standard and line-art head, in place of a circle head and blocks). */
 export function Pianist({ view, xKey, pedalX, dim = 0.9 }: { view: 'side' | 'top'; xKey: number; pedalX: number; dim?: number }) {
   const pn = pianistAt(xKey, pedalX);
   const p = pianistPaths(pn, xKey, pedalX, view);
-  const cloth = (x0: number, y0: number, x1: number, y1: number) => <LinearGradient start={vec(x0, y0)} end={vec(x1, y1)} colors={[...P.CLOTH]} />;
-  const h = pn.head;
+  const pose = pianistPose(pn, xKey, pedalX, view);
   if (view === 'side') {
     return (
       <Group opacity={dim}>
@@ -1005,22 +1076,8 @@ export function Pianist({ view, xKey, pedalX, dim = 0.9 }: { view: 'side' | 'top
         <Path path={p.benchTop}>
           <LinearGradient start={vec(pn.bench.x0, pn.bench.y - 60)} end={vec(pn.bench.x1, pn.bench.y)} colors={['#4a4c55', '#141418']} />
         </Path>
-        <Path path={p.shin}>{cloth(h.x, 0, h.x + 400, FLOOR_Y)}</Path>
-        <Path path={p.shoe} color="#121216" />
-        <Path path={p.thigh}>{cloth(h.x, pn.bench.y - 150, h.x + 500, pn.bench.y)}</Path>
-        <Path path={p.torso}>{cloth(h.x - 200, h.y, h.x + 200, pn.bench.y)}</Path>
-        <Path path={p.neck}>
-          <LinearGradient start={vec(h.x - 30, 0)} end={vec(h.x + 40, 0)} colors={[...P.SKIN]} />
-        </Path>
-        <Path path={p.head}>
-          <RadialGradient c={vec(h.x - 30, h.y - 30)} r={pn.headR * 1.4} colors={[...P.SKIN]} />
-        </Path>
-        <Path path={p.hair} color={P.HAIR} />
-        <Path path={p.upperArm}>{cloth(h.x, h.y + 200, h.x + 200, h.y + 450)}</Path>
-        <Path path={p.forearm}>{cloth(h.x + 100, h.y + 400, xKey, KEY_TOP_Y)}</Path>
-        <Path path={p.hand}>
-          <LinearGradient start={vec(xKey, KEY_TOP_Y - 40)} end={vec(xKey + 120, KEY_TOP_Y)} colors={[...P.SKIN]} />
-        </Path>
+        <PlayerBehind pose={pose} />
+        <PlayerInFront pose={pose} />
       </Group>
     );
   }
@@ -1029,16 +1086,8 @@ export function Pianist({ view, xKey, pedalX, dim = 0.9 }: { view: 'side' | 'top
       <Path path={p.benchTop}>
         <LinearGradient start={vec(pn.bench.x0, -pn.bench.hw)} end={vec(pn.bench.x1, pn.bench.hw)} colors={['#4a4c55', '#141418']} />
       </Path>
-      <Path path={p.thighs}>{cloth(pn.bench.x1 - 150, -200, pn.bench.x1 + 120, 200)}</Path>
-      <Path path={p.arms}>{cloth(h.x, -300, xKey, 300)}</Path>
-      <Path path={p.hands}>
-        <LinearGradient start={vec(xKey, -300)} end={vec(xKey + 120, 300)} colors={[...P.SKIN]} />
-      </Path>
-      <Path path={p.torso}>{cloth(h.x - 150, -230, h.x + 150, 230)}</Path>
-      <Path path={p.head}>
-        <RadialGradient c={vec(h.x - 20, -30)} r={pn.headR * 1.3} colors={[...P.SKIN]} />
-      </Path>
-      <Path path={p.hair} color={P.HAIR} />
+      <PlayerBehind pose={pose} />
+      <PlayerInFront pose={pose} />
     </Group>
   );
 }

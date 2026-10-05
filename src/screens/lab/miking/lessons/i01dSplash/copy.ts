@@ -64,7 +64,7 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the face of the splash it names. No distance is published for a splash: these bands are places to begin — move from there and listen.',
       separate: 'Height above the splash, the spot over the plate and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT, square to the plate, and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side, the swing, the crash above or under it, the arm and the player’s arm. The grey hatched areas show roughly where to keep clear — leave more room on a real kit.',
+      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side, the swing, the crash above or under it, the arm and the player’s arm. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real kit.',
       tendencies: 'Closer tends to catch more of the quick attack; farther, more of the kit. On top of a crash, the two plates sound together. A splash is often one cue: the overheads may carry it well. Tendencies, checked by ear.',
     },
   },

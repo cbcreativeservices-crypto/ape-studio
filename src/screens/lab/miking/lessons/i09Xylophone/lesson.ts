@@ -544,7 +544,7 @@ const copy: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin: one mic about 45–75 cm above the middle of the played notes, aimed down; one of a spaced pair; a safe off-axis position on the audience side; and, only for a deliberate colour, a mic under the tubes. Starting points, not rules.',
       separate: 'Height, place and angle are separate variables: change one at a time, with low, middle and high notes, fast figures and the loudest accent.',
-      clearance: 'Clearance comes first: walk the full phrase with the player before locking anything. The grey hatch shows roughly where the mallets travel.',
+      clearance: 'Clearance comes first: walk the full phrase with the player before locking anything. The mallets’ keep-clear area appears as the mic gets close — in red, with the reason, if a move is stopped — and shows roughly where they travel.',
       tendencies: 'Closer tends to bring more mallet impact and one region; farther or off-axis blends more bars and more room. All tendencies to check by ear.',
     },
   },

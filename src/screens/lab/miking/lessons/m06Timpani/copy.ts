@@ -126,7 +126,7 @@ export const TIMP_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin: a shared spot about 1 m above the heads between two drums (one for each pair in a set of four), or a closer spot on the conductor’s side of one drum. They are starting points, not rules: move from there and listen — there is no single right answer, and every set, player and hall is different.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the whole passage. The number of drums is not a required number of mics — scale up only if the music needs it.',
-      clearance: 'Clearance comes first. Have the timpanist show the mallets’ full sweep, the reach between drums, the pedal changes and their sightline to the conductor before anything is placed. The grey hatched areas show roughly where to keep clear — leave more room on a real stage.',
+      clearance: 'Clearance comes first. Have the timpanist show the mallets’ full sweep, the reach between drums, the pedal changes and their sightline to the conductor before anything is placed. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real stage.',
       tendencies: 'A shared spot farther up hears more of both drums and of the hall; a closer spot hears more attack and a smaller part of a large head, and may miss the note’s full bloom. Aiming near the rim never means putting hardware in the playing area. All tendencies to check by ear.',
     },
   },

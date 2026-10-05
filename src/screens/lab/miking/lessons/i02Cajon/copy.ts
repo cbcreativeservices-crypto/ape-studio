@@ -95,7 +95,7 @@ export const CAJ_COPY: LessonCopy = spCopy({
     learn: {
       intro: 'What you just did, in words. After our research, here is where we recommend you begin: in front of the plate, about 30–40 cm, just below the top edge and angled down at its middle — or a close spot dead centre about 15–18 cm out at a slight angle. Behind, about 20 cm out and offset toward a rear port. Different working examples; starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time with the whole pattern. Compare at matched level.',
-      clearance: 'Clearance comes first: both hands’ arcs — a flourish can reach farther — the knees, shins and heels, the box rocking back, and the way off the box. The hatched areas show roughly where to keep clear.',
+      clearance: 'Clearance comes first: both hands’ arcs — a flourish can reach farther — the knees, shins and heels, the box rocking back, and the way off the box. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'Front: more hand attack and slap. Port: more low end and air. Wider: the whole box and the room — and more spill. All tendencies to check by ear.',
     },
   },

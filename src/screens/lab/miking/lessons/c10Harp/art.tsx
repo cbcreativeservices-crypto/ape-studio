@@ -17,14 +17,14 @@ import { BlurMask, Group, LinearGradient, Path, RadialGradient, Skia, vec } from
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { harpGeom, harpistAt, type HarpGeom, type Pt } from './harpSpec.ts';
+import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
 const MAPLE = ['#e3c48a', '#b8894a', '#7c5426'];
 const SPRUCE = ['#f2dcae', '#dcbd82', '#b7955a'];
 const GILT = ['#f6dd95', '#c9a24a', '#7c5a18'];
-const CLOTH = ['#4b5366', '#353b49', '#232733'];
-const SKIN = ['#9a8572', '#7b6858', '#5d4e42'];
 
 const isLever = (v: VariantId) => v === 'lever';
 
@@ -187,10 +187,76 @@ function harpistSide(): SidePaths {
   return o;
 }
 
+/** The harpist's joints for the shared player (players/PlayerFigure),
+ *  cached: the same anchors as before (the seat, the head, the hands at the
+ *  strings), in profile from the side and from above. ILLUSTRATIVE. */
+const harpistPoses = new Map<string, PlayerPose>();
+function harpistPose(view: 'side' | 'top'): PlayerPose {
+  const hit = harpistPoses.get(view);
+  if (hit) return hit;
+  const h = harpistAt();
+  const s = h.seat;
+  let pose: PlayerPose;
+  if (view === 'side') {
+    const hip = pt((s.x0 + s.x1) / 2, s.y - 80);
+    const knee = pt(hip.u + 400, hip.v - 20);
+    pose = {
+      view: 'side',
+      posture: 'seated',
+      facing: 1,
+      head: { c: pt(h.head.x, h.head.y), r: h.headR },
+      neck: pt(h.head.x - 15, h.head.y + 155),
+      shoulderR: pt(h.head.x - 10, h.head.y + 208),
+      shoulderL: pt(h.head.x - 24, h.head.y + 198),
+      elbowR: pt(h.head.x + 190, h.head.y + 420),
+      elbowL: pt(h.head.x + 176, h.head.y + 400),
+      handR: { wrist: pt(h.head.x + 430, h.head.y + 350), dir: -0.25, kind: 'rest' },
+      handL: { wrist: pt(h.head.x + 420, h.head.y + 300), dir: -0.3, kind: 'rest' },
+      hipR: hip,
+      hipL: pt(hip.u - 10, hip.v - 4),
+      kneeR: knee,
+      kneeL: pt(knee.u - 30, knee.v - 6),
+      footR: pt(knee.u + 60, 0),
+      footL: pt(knee.u + 20, 0),
+      floor: 0,
+    };
+  } else {
+    // From above, authored chest toward +v round the neck, turned to face +x
+    // (`facing` 0): (right, fwd) lands at world (neck + fwd, neck + right).
+    const n = pt(h.head.x - 10, h.head.z);
+    const L = (right: number, fwd: number) => pt(n.u - right, n.v + fwd);
+    const fwdHands = -420 - 90 - n.u;
+    pose = {
+      view: 'above',
+      posture: 'seated',
+      facing: 0,
+      head: { c: L(0, -18), r: h.headR },
+      neck: n,
+      shoulderR: L(188, 4),
+      shoulderL: L(-188, 4),
+      elbowR: L(200, fwdHands * 0.55),
+      elbowL: L(-160, fwdHands * 0.55),
+      handR: { wrist: L(120 - n.v, fwdHands), dir: Math.PI / 2, kind: 'above' },
+      handL: { wrist: L(-60 - n.v, fwdHands), dir: Math.PI / 2, kind: 'above' },
+      hipR: L(106, -40),
+      hipL: L(-106, -40),
+      kneeR: L(150, 400),
+      kneeL: L(-150, 400),
+      footR: L(150, 470),
+      footL: L(-150, 470),
+      floor: null,
+    };
+  }
+  harpistPoses.set(view, pose);
+  return pose;
+}
+
+/** The harpist and chair from the side (ILLUSTRATIVE, muted): the shared
+ *  player in profile (clarity pass 2026-10-05). */
 function HarpistSide({ dim = 0.85 }: { dim?: number }) {
   const o = harpistSide();
   const h = harpistAt();
-  const cloth = <LinearGradient start={vec(h.head.x - 200, h.head.y)} end={vec(h.head.x + 300, 0)} colors={CLOTH} />;
+  const pose = harpistPose('side');
   return (
     <Group opacity={dim}>
       <Path path={o.back} color="#2a2b31" />
@@ -198,21 +264,8 @@ function HarpistSide({ dim = 0.85 }: { dim?: number }) {
       <Path path={o.seat}>
         <LinearGradient start={vec(h.seat.x0, h.seat.y - 50)} end={vec(h.seat.x1, h.seat.y)} colors={['#4a4c55', '#141418']} />
       </Path>
-      <Path path={o.shin}>{cloth}</Path>
-      <Path path={o.shoe} color="#121216" />
-      <Path path={o.thigh}>{cloth}</Path>
-      <Path path={o.torso}>{cloth}</Path>
-      <Path path={o.neck}>
-        <LinearGradient start={vec(h.head.x - 28, 0)} end={vec(h.head.x + 32, 0)} colors={SKIN} />
-      </Path>
-      <Path path={o.head}>
-        <RadialGradient c={vec(h.head.x - 30, h.head.y - 30)} r={h.headR * 1.4} colors={SKIN} />
-      </Path>
-      <Path path={o.hair} color="#2a2522" />
-      <Path path={o.arm}>{cloth}</Path>
-      <Path path={o.hand}>
-        <LinearGradient start={vec(h.head.x + 500, h.head.y + 290)} end={vec(h.head.x + 590, h.head.y + 360)} colors={SKIN} />
-      </Path>
+      <PlayerBehind pose={pose} />
+      <PlayerInFront pose={pose} />
     </Group>
   );
 }
@@ -334,48 +387,16 @@ export function HarpistPlan({ dim = 0.85 }: { dim?: number }) {
     o = {};
     o.seat = make();
     o.seat.addRRect(Skia.RRectXY(Skia.XYWHRect(h.seat.x0, -h.seat.hw, h.seat.x1 - h.seat.x0, h.seat.hw * 2), 30, 30));
-    o.thighs = make();
-    for (const s of [-1, 1]) {
-      o.thighs.moveTo(h.seat.x1 - 160, -120 + s * 70);
-      o.thighs.lineTo(h.seat.x1 + 180, -120 + s * 90);
-      o.thighs.lineTo(h.seat.x1 + 180, -120 + s * 190);
-      o.thighs.lineTo(h.seat.x1 - 160, -120 + s * 170);
-      o.thighs.close();
-    }
-    o.torso = make();
-    o.torso.addOval(Skia.XYWHRect(h.head.x - 140, h.head.z - 230, 280, 460));
-    o.arms = make();
-    for (const s of [-1, 1]) {
-      o.arms.moveTo(h.head.x + 20, h.head.z + s * 180);
-      o.arms.lineTo(-420, s * 120);
-      o.arms.lineTo(-420, s * 60);
-      o.arms.lineTo(h.head.x + 30, h.head.z + s * 110);
-      o.arms.close();
-    }
-    o.head = make();
-    o.head.addOval(Skia.XYWHRect(h.head.x - h.headR * 0.9, h.head.z - h.headR * 0.82, h.headR * 1.8, h.headR * 1.64));
-    o.hair = make();
-    o.hair.addOval(Skia.XYWHRect(h.head.x - h.headR * 0.95, h.head.z - h.headR * 0.74, h.headR * 1.56, h.headR * 1.48));
     topCache.set(key, o);
   }
+  const pose = harpistPose('top');
   return (
     <Group opacity={dim}>
       <Path path={o.seat}>
         <LinearGradient start={vec(h.seat.x0, -h.seat.hw)} end={vec(h.seat.x1, h.seat.hw)} colors={['#4a4c55', '#141418']} />
       </Path>
-      <Path path={o.thighs}>
-        <LinearGradient start={vec(h.seat.x1 - 160, -300)} end={vec(h.seat.x1 + 180, 100)} colors={CLOTH} />
-      </Path>
-      <Path path={o.arms}>
-        <LinearGradient start={vec(h.head.x, -300)} end={vec(-420, 300)} colors={CLOTH} />
-      </Path>
-      <Path path={o.torso}>
-        <LinearGradient start={vec(h.head.x - 140, -380)} end={vec(h.head.x + 140, 80)} colors={CLOTH} />
-      </Path>
-      <Path path={o.head}>
-        <RadialGradient c={vec(h.head.x - 20, h.head.z - 30)} r={h.headR * 1.3} colors={SKIN} />
-      </Path>
-      <Path path={o.hair} color="#2a2522" />
+      <PlayerBehind pose={pose} />
+      <PlayerInFront pose={pose} />
     </Group>
   );
 }

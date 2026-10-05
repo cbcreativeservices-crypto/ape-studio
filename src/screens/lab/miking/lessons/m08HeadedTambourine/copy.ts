@@ -123,7 +123,7 @@ export const TAMB_COPY: LessonCopy = {
     learn: {
       intro: 'What you just did, in words. After our research, one mic about 15–30 cm (6–12 in) from the tambourine is where we recommend you begin. From there, aim at the head for more body or at the rim for more jingle. Starting points, not rules: move and listen — there is no single right answer.',
       separate: 'Height, distance and angle are separate variables: change one at a time, with the same passage. A held tambourine moves toward and away from a fixed mic: find a spot that covers the whole motion.',
-      clearance: 'Clearance comes first. Have the player show the whole arm, wrist, hand and stick motion, and the shake, before anything is placed. The grey hatched areas show roughly where to keep clear — leave more room for a real player.',
+      clearance: 'Clearance comes first. Have the player show the whole arm, wrist, hand and stick motion, and the shake, before anything is placed. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room for a real player.',
       tendencies: 'Closer usually raises the tambourine against its neighbours but lets one jingle or one impact jump out; a little farther blends head, rim and room. If it is too bright, try distance and angle first. All tendencies to check by ear.',
     },
   },

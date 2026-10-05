@@ -39,7 +39,7 @@ import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, Z
 import { useRig, type Rig } from '../../../engine/scene/useRig.ts';
 import { DualView } from '../../../engine/scene/DualView';
 import { PlacementScene } from '../../../engine/scene/PlacementScene';
-import { placementBezel, lenCell } from '../../../engine/scene/readoutText.ts';
+import { placementBezel, lenCell, stopShortOf } from '../../../engine/scene/readoutText.ts';
 import { readoutWords } from '../../../engine/scene/sceneWords.ts';
 import { zonesAvailable } from '../../../engine/geometry/zones.ts';
 import { dist } from '../../../engine/geometry/vec.ts';
@@ -757,7 +757,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
       { title: 'CLEARANCE', text: spec.worked?.clearance ?? `Off the grille cloth — never touching it — on a stable stand, the cable routed away from the player’s ${spec.who === 'steel' ? 'pedals, knee levers and volume pedal' : 'feet and pedalboard'} and from the amp’s hot vents.`, cell: 3 },
     ];
     const wk = worked[exStep];
-    const partShort = (id: string) => lesson.model.parts.find((p) => p.id === id)?.short ?? id;
+    const partShort = stopShortOf(lesson.model);
     const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, partShort).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
     /* PLACE */
     const startZ = lesson.zones.find((z) => z.id === spec.placeZone)!;
@@ -860,7 +860,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
         layout: 'rack',
         rack: {
           render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={(v) => `${v === 'side' ? 'Side' : 'Top'} view of ${spec.ampNoun}, cut through the miked speaker. ${now(rig, ['A'])}`} />,
-          badge: 'Blue = recommended starting points · dashed lobe = pattern shape · hatched = keep clear · pinch to zoom',
+          badge: 'Blue = recommended starting points · dashed lobe = pattern shape · keep-clear areas show as a mic comes near · pinch to zoom',
           bezel,
           params,
           initialParam: 'pos',

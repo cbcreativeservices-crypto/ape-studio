@@ -59,7 +59,7 @@ export const RIDE_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the face of the ride it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every ride is different.',
       separate: 'Height above the ride, the spot over the plate (bell, bow or edge) and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT, square to the tilted ride, and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side of the ride, its swing (hardest after a crash on the edge), the crash beside it, the ride’s own boom and the player’s right arm. The grey hatched areas show roughly where to keep clear — leave more room on a real kit.',
+      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side of the ride, its swing (hardest after a crash on the edge), the crash beside it, the ride’s own boom and the player’s right arm. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear — leave more room on a real kit.',
       tendencies: 'Toward the bell tends to bring a brighter, more cutting sound; toward the edge more of the wash. Higher takes in more of the kit around the ride; underneath, less stick. Tendencies, checked by ear.',
     },
   },

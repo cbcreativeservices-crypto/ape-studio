@@ -23,7 +23,9 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { VariantId, Vec3, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
-import { add, dot, norm, scale, sub } from '../../../engine/geometry/vec.ts';
+import { useKeepOutsAtRest } from '../../../engine/scene/keepOuts.ts';
+import { FIGURE_TONES, FigureMass, handShape, headAbove, headProfile, LineHead, type FigureTone, type HeadPaths } from '../players/PlayerFigure';
+import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { archAt, fbHalf, fingerboardZ, halfWidth, outline, stationsOf, stringYs, stringZ, type BowedSpec } from './bowedSpec.ts';
 import { anchorsOf, toLesson, type BPoint, type BowPose, type Posture } from './posture.ts';
 
@@ -83,7 +85,21 @@ function bbox(pts: P2[]) {
 
 /* ── the paint list ── */
 type Fill = { colors: string[]; positions?: number[] } | string;
-type Item = { path: SkPath; fill?: Fill; stroke?: { color: string; w: number; opacity?: number; dash?: number[] }; opacity?: number; box: { u0: number; v0: number; u1: number; v1: number }; clip?: SkPath; rim?: number };
+type Item = {
+  path: SkPath;
+  fill?: Fill;
+  stroke?: { color: string; w: number; opacity?: number; dash?: number[] };
+  opacity?: number;
+  box: { u0: number; v0: number; u1: number; v1: number };
+  clip?: SkPath;
+  rim?: number;
+  /** A body mass painted at the shared figure standard (players/PlayerFigure). */
+  tone?: FigureTone;
+  /** The house line-art head (players/PlayerFigure). */
+  head?: { paths: HeadPaths; c: { u: number; v: number }; r: number };
+  /** Extra lines over the mass (a hand's knuckles and finger gaps). */
+  lines?: SkPath;
+};
 type Group3 = { key: string; depth: number; items: Item[] };
 
 const item = (pts: P2[], fill: Fill | undefined, stroke?: Item['stroke'], close = true, rim?: number): Item => ({ path: polyPath(pts, close), fill, stroke, box: bbox(pts), rim });
@@ -98,7 +114,6 @@ const METAL = { colors: ['#eef1f5', '#9aa1ad', '#4d535e'] };
 const CLOTH = { colors: ['#4c5466', '#2f3542', '#1b1f28'] };
 const TROUSER = { colors: ['#3c4150', '#262a35', '#14171e'] };
 const SKIN = { colors: ['#e2bfa3', '#b98d6f', '#7d5a45'] };
-const HAIR = '#2a211c';
 const SHOE = { colors: ['#3a3634', '#151312', '#050505'] };
 const STRING_COL = '#d7dbe2';
 const OUTLINE = '#07070a';
@@ -425,10 +440,13 @@ function playerGroups(P: Posture, view: ViewId, withRightArm = true): Group3[] {
   const s = P.player;
   const q = (p: Vec3) => prj(view, p);
   const g: Group3[] = [];
+  // The figure is painted at the shared player's standard (clarity pass
+  // 2026-10-05): each mass with the house form, rim light and core shadow.
+  const toneOf = (fill: Fill): FigureTone | undefined => (fill === TROUSER ? 'trousers' : fill === CLOTH ? 'shirt' : fill === SHOE ? 'shoe' : fill === SKIN ? 'skin' : undefined);
   const limb = (key: string, a: Vec3, b: Vec3, ra: number, rb: number, fill: Fill) => {
     const A2 = q(a);
     const B2 = q(b);
-    g.push({ key, depth: depthOf(view, add(scale(a, 0.5), scale(b, 0.5))), items: [{ path: limbPath(A2, B2, ra, rb), fill, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([A2, B2]), rim: 1.4 }] });
+    g.push({ key, depth: depthOf(view, add(scale(a, 0.5), scale(b, 0.5))), items: [{ path: limbPath(A2, B2, ra, rb), fill, stroke: { color: OUTLINE, w: 1.6 }, box: bbox([A2, B2]), rim: 1.4, tone: toneOf(fill) }] });
   };
   // Legs and feet.
   limb('thighL', s.hipL, s.kneeL, 80, 62, TROUSER);
@@ -447,7 +465,7 @@ function playerGroups(P: Posture, view: ViewId, withRightArm = true): Group3[] {
     ...circlePts(q(s.hipR), 92),
   ];
   const torso = hull(tc);
-  g.push({ key: 'torso', depth: depthOf(view, s.chest), items: [{ path: polyPath(torso), fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(torso), rim: 1.6 }] });
+  g.push({ key: 'torso', depth: depthOf(view, s.chest), items: [{ path: polyPath(torso), fill: CLOTH, stroke: { color: OUTLINE, w: 1.8 }, box: bbox(torso), rim: 1.6, tone: 'shirt' }] });
   // Arms.
   limb('upperL', s.shoulderL, s.elbowL, 54, 44, CLOTH);
   limb('foreL', s.elbowL, s.handL, 42, 32, CLOTH);
@@ -455,33 +473,40 @@ function playerGroups(P: Posture, view: ViewId, withRightArm = true): Group3[] {
     limb('upperR', s.shoulderR, s.elbowR, 54, 44, CLOTH);
     limb('foreR', s.elbowR, s.handR, 42, 32, CLOTH);
   }
-  const hand = (key: string, h: Vec3) => {
+  // Hands with fingers (the shared hand, seen from its back), pointing along
+  // the forearm, in place of a disc.
+  const hand = (key: string, h: Vec3, elbow: Vec3) => {
     const c = q(h);
-    const pts = circlePts(c, 40, 16);
-    g.push({ key, depth: depthOf(view, h) + 25, items: [{ path: polyPath(pts), fill: SKIN, stroke: { color: OUTLINE, w: 1.4 }, box: bbox(pts), rim: 1 }] });
+    const e = q(elbow);
+    const dir = Math.atan2(c[1] - e[1], c[0] - e[0]);
+    const hs = handShape({ wrist: { u: c[0] - Math.cos(dir) * 70, v: c[1] - Math.sin(dir) * 70 }, dir, kind: 'rest' });
+    const b = hs.path.getBounds();
+    g.push({ key, depth: depthOf(view, h) + 25, items: [{ path: hs.path, fill: SKIN, box: { u0: b.x, v0: b.y, u1: b.x + b.width, v1: b.y + b.height }, tone: 'skin', lines: hs.lines }] });
   };
-  hand('handL', s.handL);
-  if (withRightArm) hand('handR', s.handR);
-  // Neck and head: hair at the back, the face turned along `face`.
-  const headBottom = sub(s.head, scale(norm(sub(s.head, s.neck)), s.headR * 0.7));
-  limb('neckLimb', s.neck, headBottom, 50, 46, SKIN);
+  hand('handL', s.handL, s.elbowL);
+  if (withRightArm) hand('handR', s.handR, s.elbowR);
+  // The head: the house LINE-ART head (bald, no eyes; reference_head_icon_
+  // spec) — in profile from the side, turned to the face from above — with
+  // its neck column down to the collar (no hair, no shaded face).
   const hc = q(s.head);
   const f2 = prj(view, s.face);
   const fl = Math.hypot(f2[0], f2[1]) || 1;
   const fu: P2 = [f2[0] / fl, f2[1] / fl];
   const r = s.headR;
-  const hairC: P2 = [hc[0] - fu[0] * r * 0.12, hc[1] - fu[1] * r * 0.12];
-  const skull = circlePts(hairC, r * 1.02, 28);
-  // From above, the crown of the head (hair) shows, with the brow and nose
-  // toward the face; from the side, the face in profile.
-  const face = view === 'top' ? circlePts([hc[0] + fu[0] * r * 0.55, hc[1] + fu[1] * r * 0.55], r * 0.48, 22) : circlePts([hc[0] + fu[0] * r * 0.1, hc[1] + fu[1] * r * 0.1], r * 0.9, 28);
-  const nose = circlePts([hc[0] + fu[0] * r * 0.98, hc[1] + fu[1] * r * 0.98], r * 0.13, 10);
-  const headItems: Item[] = [
-    { path: polyPath(skull), fill: HAIR, stroke: { color: OUTLINE, w: 1.6 }, box: bbox(skull) },
-    { path: polyPath(face), fill: SKIN, box: bbox(face), rim: 1.2 },
-  ];
-  if (fl > 0.35) headItems.push({ path: polyPath(nose), fill: SKIN, box: bbox(nose) });
-  g.push({ key: 'head', depth: depthOf(view, s.head), items: headItems });
+  let paths: HeadPaths;
+  if (view === 'side') {
+    paths = headProfile({ u: hc[0], v: hc[1] }, r, q(s.neck)[1], fu[0] >= 0 ? 1 : -1);
+  } else {
+    const h0 = headAbove({ u: 0, v: 0 }, r);
+    const m = Skia.Matrix().translate(hc[0], hc[1]).rotate(Math.atan2(fu[1], fu[0]) - Math.PI / 2);
+    const line = h0.line.copy();
+    line.transform(m);
+    const fill = h0.fill.copy();
+    fill.transform(m);
+    paths = { line, fill };
+  }
+  const hb = paths.fill.getBounds();
+  g.push({ key: 'head', depth: depthOf(view, s.head), items: [{ path: paths.fill, box: { u0: hb.x, v0: hb.y, u1: hb.x + hb.width, v1: hb.y + hb.height }, head: { paths, c: { u: hc[0], v: hc[1] }, r } }] });
   // The chair.
   if (P.chair) {
     const { min, max } = P.chair.seat;
@@ -503,6 +528,15 @@ function playerGroups(P: Posture, view: ViewId, withRightArm = true): Group3[] {
 function PaintItem({ it }: { it: Item }) {
   const { box } = it;
   const grad = typeof it.fill === 'object' ? it.fill : null;
+  if (it.head) return <LineHead head={it.head.paths} c={it.head.c} r={it.head.r} />;
+  if (it.tone) {
+    return (
+      <Group opacity={it.opacity ?? 1} clip={it.clip}>
+        <FigureMass path={it.path} tone={it.tone} contour={1.8} />
+        {it.lines ? <Path path={it.lines} style="stroke" strokeWidth={1.6} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} /> : null}
+      </Group>
+    );
+  }
   return (
     <Group opacity={it.opacity ?? 1} clip={it.clip}>
       {it.fill ? (
@@ -548,8 +582,11 @@ const HATCH = '#8a8f9c';
 /** The instrument, its bow, its sweep and its player, for one view. */
 export function BowedScene({ P, view, bow = true, sweep = true, hatch }: { P: Posture; view: ViewId; bow?: boolean; sweep?: boolean; hatch: SkPath }) {
   const groups = useMemo(() => sceneGroups(P, view, { bow }), [P, view, bow]);
-  const sw = useMemo(() => (sweep ? sweepPaths(P, view) : null), [P, view, sweep]);
-  const pl = useMemo(() => (!bow && P.kind === 'standing' ? pluckPath(P, view) : null), [P, view, bow]);
+  // In the placement scene the sweeps are keep-outs shown by the engine on
+  // approach, never at rest (keepOuts.ts, owner ruling 2026-10-05).
+  const keep = useKeepOutsAtRest();
+  const sw = useMemo(() => (sweep && keep ? sweepPaths(P, view) : null), [P, view, sweep, keep]);
+  const pl = useMemo(() => (!bow && keep && P.kind === 'standing' ? pluckPath(P, view) : null), [P, view, bow, keep]);
   // The player recedes (charter §6: the subject is the instrument): the
   // parts behind it and the parts in front are each composited at a lower
   // opacity, so the instrument and the mic read through the bow arm.

@@ -95,7 +95,7 @@ export const BELL_COPY: LessonCopy = spCopy({
     learn: {
       intro: 'What you just did, in words. After our research, a mic about 20–40 cm (8–16 in) from a useful side or top view of the bell is where we recommend you begin — a common minimum for percussion is about 30 cm, so the near end of that range must still clear every stroke. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time. Do not assume a mic pointed into the mouth is fuller or brighter — the whole body radiates.',
-      clearance: 'Clearance comes first. The stick’s path, its rebound and every fill define the minimum; rehearse them after every clamp or mic adjustment. The hatched areas show roughly where to keep clear.',
+      clearance: 'Clearance comes first. The stick’s path, its rebound and every fill define the minimum; rehearse them after every clamp or mic adjustment. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'Painfully sharp? A little more distance, another safe angle, or a bell, beater or mute that fits the part. Too far back against the cymbals? Improve the bell-to-mic versus cymbal-to-mic relationship by placement and pattern. All tendencies to check by ear.',
     },
   },

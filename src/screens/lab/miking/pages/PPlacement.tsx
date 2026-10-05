@@ -30,7 +30,7 @@ import { zonesAvailable } from '../engine/geometry/zones.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
 import { nowText, readoutWords, sceneLabel } from '../engine/scene/sceneWords.ts';
-import { placementBezel } from '../engine/scene/readoutText.ts';
+import { placementBezel, stopShortOf } from '../engine/scene/readoutText.ts';
 import { placementParams, type AimAxis, type PosAxis } from '../engine/scene/placementDock.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../engine/kit';
@@ -96,7 +96,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     { title: 'CLEARANCE', text: C.placement.workedClear, cell: 3 },
   ];
   const wk = worked[exStep];
-  const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, (id) => lesson.model.parts.find((p) => p.id === id)?.short ?? id).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
+  const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, stopShortOf(lesson.model)).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
   const exParams: DockParam[] = [
     {
       kind: 'fader',
@@ -181,7 +181,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     },
   ];
 
-  const bezel: BezelItem[] = placementBezel(shown, readoutWords(rig, 'A'), zone, (id) => lesson.model.parts.find((p) => p.id === id)?.short ?? id);
+  const bezel: BezelItem[] = placementBezel(shown, readoutWords(rig, 'A'), zone, stopShortOf(lesson.model));
 
   const labelFor = (v: ViewId) => sceneLabel(rig, v, ['A']);
   const pred = lesson.predictions.placement;
@@ -216,7 +216,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={labelFor} />,
-        badge: 'Blue = recommended starting points · grey hatch = keep clear · dashed lobe = pattern shape · pinch to zoom',
+        badge: 'Blue = recommended starting points · keep-clear areas show as a mic comes near · dashed lobe = pattern shape · pinch to zoom',
         bezel,
         params,
         initialParam: 'pos',

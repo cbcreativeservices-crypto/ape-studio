@@ -22,7 +22,7 @@ import { zonesAvailable } from '../../../../engine/geometry/zones.ts';
 import { useRig } from '../../../../engine/scene/useRig.ts';
 import { DualView } from '../../../../engine/scene/DualView';
 import { nowText, readoutWords, sceneLabel } from '../../../../engine/scene/sceneWords.ts';
-import { placementBezel } from '../../../../engine/scene/readoutText.ts';
+import { placementBezel, stopShortOf } from '../../../../engine/scene/readoutText.ts';
 import { placementParams, type AimAxis, type PosAxis } from '../../../../engine/scene/placementDock.ts';
 import { PageSteps, type MikingStep } from '../../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../../../engine/kit';
@@ -77,7 +77,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     { title: 'CLEARANCE', text: H.clearWords, cell: 3 },
   ];
   const wk = worked[exStep];
-  const partShort = (id: string) => lesson.model.parts.find((p) => p.id === id)?.short ?? (id === 'gooseneck' ? 'REACH' : id);
+  const partShort = stopShortOf(lesson.model, { gooseneck: 'REACH' });
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, partShort).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
   const exParams: DockParam[] = [
     {
@@ -194,7 +194,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'rack',
       rack: {
         render: (w, h) => <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={['A']} interactive={!hidden} labelFor={labelFor} />,
-        badge: 'Blue = recommended starting points · grey hatch = keep clear · dashed lobe = pattern shape · pinch to zoom',
+        badge: 'Blue = recommended starting points · keep-clear areas show as a mic comes near · dashed lobe = pattern shape · pinch to zoom',
         bezel,
         params,
         initialParam: 'pos',

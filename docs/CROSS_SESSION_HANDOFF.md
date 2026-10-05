@@ -625,6 +625,12 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-05 04:45 · ccode · d732169f
+changed: Miking clarity pass: keep-outs only on approach, illustrated players
+affects other side: nothing (miking clarity, branch final-lab)
+needs: nothing (miking clarity, branch final-lab)
+
+
 ### 2026-10-05 04:31 · ccode · 4d01722e
 changed: Merge branch 'miking-fix1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)

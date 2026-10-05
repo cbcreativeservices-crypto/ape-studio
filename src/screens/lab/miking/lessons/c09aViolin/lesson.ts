@@ -614,6 +614,6 @@ export const C09A_LESSON: Lesson = {
   ],
   live: { wedges },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules; the stand distances in particular are modest suggestions. Every violin, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, the bow’s sweep as a hatched area, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules; the stand distances in particular are modest suggestions. Every violin, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: one player in a typical hold, the bow’s sweep as a keep-clear area that appears as the mic comes close, mic patterns and the two-mic comb as textbook shapes, and string and body motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped, and only with their agreement.',
   copy: VIOLIN_COPY,
 };

@@ -55,7 +55,7 @@ export const M10_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is a place we recommend you begin — most measured from the kick’s front head. They are starting points, not rules: no distance is a “room mic” by itself. Move from there and listen.',
       separate: 'Distance, height and aim are separate variables: change one at a time, and compare at the same listening level so louder does not win. Distances are measured to the mic’s front and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Keep stands and cables clear of the drummer, exits, walkways, cases and other players; give long booms a proper base. The grey hatching shows the door and its walkway.',
+      clearance: 'Clearance comes first. Keep stands and cables clear of the drummer, exits, walkways, cases and other players; give long booms a proper base. The door and its walkway are a keep-clear area: it appears as a mic or stand gets close.',
       tendencies: 'Closer tends to give a clearer kit with little room; farther, more early reflections and decay. A high mic in the cymbals’ line of sight hears more cymbals; low and in front, more kick. Tendencies — this room decides.',
     },
   },

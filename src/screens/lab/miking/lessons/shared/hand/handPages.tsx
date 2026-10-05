@@ -25,7 +25,7 @@ import { DualView } from '../../../engine/scene/DualView';
 import { PlacementScene } from '../../../engine/scene/PlacementScene';
 import { CombPanel } from '../../../engine/scene/CombPanel';
 import { InstrumentFigure } from '../../../engine/scene/InstrumentFigure';
-import { placementBezel, lenCell } from '../../../engine/scene/readoutText.ts';
+import { placementBezel, lenCell, stopShortOf } from '../../../engine/scene/readoutText.ts';
 import { readoutWords } from '../../../engine/scene/sceneWords.ts';
 import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { zonesAvailable } from '../../../engine/geometry/zones.ts';
@@ -349,7 +349,7 @@ function HandPlacement(spec: HandSpec) {
     const [exStep, setExStep] = useState(0);
     const pieces = spec.worked.pieces(exZone);
     const wk = pieces[exStep];
-    const exBezel: BezelItem[] = placementBezel(ex.shown('A'), readoutWords(ex, 'A'), exZone, (id) => lesson.model.parts.find((p) => p.id === id)?.short ?? id).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
+    const exBezel: BezelItem[] = placementBezel(ex.shown('A'), readoutWords(ex, 'A'), exZone, stopShortOf(lesson.model)).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
 
     const startZone = lesson.zones.find((z) => z.id === spec.place.zone) ?? lesson.zones[0];
     const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: spec.place.mic, pattern: 'cardioid', pose: startZone.start }] });
@@ -421,7 +421,7 @@ function HandPlacement(spec: HandSpec) {
         options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
       },
     ];
-    const bezel: BezelItem[] = placementBezel(shown, readoutWords(rig, 'A'), zone, (id) => lesson.model.parts.find((p) => p.id === id)?.short ?? id);
+    const bezel: BezelItem[] = placementBezel(shown, readoutWords(rig, 'A'), zone, stopShortOf(lesson.model));
     const pred = lesson.predictions.placement;
     const tried = predicted != null && visited.size >= 2;
     const steps: MikingStep[] = [

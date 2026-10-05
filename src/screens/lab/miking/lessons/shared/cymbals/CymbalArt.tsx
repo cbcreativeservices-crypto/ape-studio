@@ -30,6 +30,7 @@ import { View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, SweepGradient, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
+import { useKeepOutsAtRest } from '../../../engine/scene/keepOuts.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { KIT, KIT_FLOOR_Y } from '../kitPlanModel.ts';
 import {
@@ -234,6 +235,9 @@ export function SwingEnvelope({ spec, cx, cy, tiltDeg }: { spec: CymbalSpec; cx:
     }
     return p;
   }, [R, ang, spec.rise.mm]);
+  // Not at rest in the placement scene (keepOuts.ts, owner ruling 2026-10-05).
+  const keep = useKeepOutsAtRest();
+  if (!keep) return null;
   return (
     <Group transform={[{ translateX: cx }, { translateY: cy }, { rotate: -tiltDeg * DEG }]}>
       <Path path={fan} color="#8a8f9c" opacity={0.16} />

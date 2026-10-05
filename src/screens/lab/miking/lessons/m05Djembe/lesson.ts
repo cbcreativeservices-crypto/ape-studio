@@ -763,7 +763,7 @@ export const M05_LESSON: HandLesson = {
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic. The two top positions — very close, and quite far — are different case examples, not rules; the low and under positions only exist when the drum is raised clear of the floor.',
       'Change one variable at a time while the player plays the same full passage. Nearer raises direct sound but can exaggerate contact; backing off in a good room integrates the strokes with more room and more of the band. A fixed angle does not mean a fixed tone across drums and patterns.',
-      'Clearance comes first. Stop the player before moving any mic, stand, cable or support. Map the hand, wrist, knee, leg and drum-motion envelope; keep the low mic and cable out of foot traffic and from under an unstable instrument. The grey hatched areas show roughly where to keep clear.',
+      'Clearance comes first. Stop the player before moving any mic, stand, cable or support. Map the hand, wrist, knee, leg and drum-motion envelope; keep the low mic and cable out of foot traffic and from under an unstable instrument. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       'A low mic is a focused supplement, often narrower and with less hand articulation — not a one-mic solution. If there is no safe, repeatable low position, keep one well-placed top or front mic.',
     ],
     context: {

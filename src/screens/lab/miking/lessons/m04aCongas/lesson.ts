@@ -773,7 +773,7 @@ export const M04A_LESSON: HandLesson = {
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum and player is different.',
       'Height, distance and angle are separate variables: change one at a time and have the player play every stroke again. A starting point that names an aim counts only while the mic faces that way. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      'Clearance comes first. Stop the player before moving a mic; keep the capsule, stand, boom, clamp and cable clear of every hand stroke, wrist and knee — and of the open lower ends. The grey hatched areas show roughly where to keep clear; leave more room on a real stage, and check again during the loudest, most animated passage.',
+      'Clearance comes first. Stop the player before moving a mic; keep the capsule, stand, boom, clamp and cable clear of every hand stroke, wrist and knee — and of the open lower ends. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear; leave more room on a real stage, and check again during the loudest, most animated passage.',
       'Closer and more direct tends to bring more hand detail and isolation — and can favour one stroke or make slaps very pronounced. Backing off in a good room tends to balance the strokes, with more of the room and the band. A separate room mic, about two metres in front, is another idea for a good studio. Move the mic before reaching for EQ.',
     ],
     context: {

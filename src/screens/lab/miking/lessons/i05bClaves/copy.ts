@@ -92,7 +92,7 @@ export const CLV_COPY: LessonCopy = spCopy({
     learn: {
       intro: 'What you just did, in words. After our research, a mic about 30–60 cm (1–2 ft) from the middle of the striking area, aimed at it, is where we recommend you begin; a common minimum for percussion is about 30 cm. Starting points, not rules.',
       separate: 'Distance, height and angle are separate variables: change one at a time, with both hands moving. If the player changes the grip, the mic may need reassessing.',
-      clearance: 'Clearance comes first: never between the sticks, outside the striker’s whole path. The hatched areas show roughly where to keep clear.',
+      clearance: 'Clearance comes first: never between the sticks, outside the striker’s whole path. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'A sharp click with little wood? Compare the grip and the pair first, then a little more distance or another safe angle. Buried by the room? Closer — outside both hands. All tendencies to check by ear.',
     },
   },

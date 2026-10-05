@@ -63,7 +63,7 @@ export const CHINA_COPY: Partial<LessonCopy> = {
     learn: {
       intro: 'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the face of the China it names. No distance is published for a China: these bands are places to begin — move from there and listen.',
       separate: 'Height above the China, the spot over the plate and the angle are separate variables: change one at a time. Distances are measured to the mic’s FRONT, square to the rim plane, and rounded to ≈ 5 mm.',
-      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side, the swing, the China’s boom, the ride beside it and the player’s arm. Underneath, start below the plate’s lowest point in its mount. The grey hatched areas show roughly where to keep clear.',
+      clearance: 'Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable out of the stick’s side, the swing, the China’s boom, the ride beside it and the player’s arm. Underneath, start below the plate’s lowest point in its mount. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear.',
       tendencies: 'Toward the lip tends to bring more of the trashy edge, toward the cup a harder tone; underneath, a very direct sound with less stick. A China often cuts through the overheads on its own. Tendencies, checked by ear.',
     },
   },

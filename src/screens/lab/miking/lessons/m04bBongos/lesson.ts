@@ -767,7 +767,7 @@ export const M04B_LESSON: HandLesson = {
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is a region where we recommend you begin with that kind of mic. We could not find a recommended bongo distance, so “just above” here means safely clear of the hands — then listen. They are starting points, not rules.',
       'Height, distance and angle are separate variables: change one at a time and have the player play the whole part again. A starting point that names an aim counts only while the mic faces that way. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
-      'Clearance comes first. Stop the player before moving a mic; keep the grille, body, clamp, boom and cable out of every finger and palm stroke, and leave room for a seated player’s legs. The grey hatched areas show roughly where to keep clear; check again during vigorous playing.',
+      'Clearance comes first. Stop the player before moving a mic; keep the grille, body, clamp, boom and cable out of every finger and palm stroke, and leave room for a seated player’s legs. Keep-clear areas appear as the mic gets close — in red, with the reason, if a move is stopped — and show roughly where to keep clear; check again during vigorous playing.',
       'A shared mic farther away can represent both drums more evenly in a quiet room — and gathers more room and other instruments; a close mic gives more direct sound but may favour one stroke or one drum. A figure-8 between the drums, a lobe toward each head, is another idea — map its back lobe and side nulls first.',
     ],
     context: {

@@ -1,81 +1,56 @@
 /**
  * The PLAYER round a lute, as a muted figure (charter §6: neighbours recede)
- * — a minimal line-art bald head (the house head spec), the torso, the arms
- * and hands, the legs: on a chair for the oud, cross-legged on the floor for
- * the sitar and the veena. Drawn from the scene's fit (luteModel.ts), the
+ * — the house line-art bald head (reference_head_icon_spec), the torso, the
+ * arms and hands, the legs: on a chair for the oud, cross-legged on the floor
+ * for the sitar and the veena. Drawn from the scene's fit (luteModel.ts), the
  * same numbers the keep-outs are built from. Nothing moves (D8).
  *
- * The visual language matches the guitar family's figures (GuitarArt.tsx);
- * its helpers are local there, so the few shapes are drawn here again rather
- * than reaching into another family's file.
+ * The LOOK is the shared player's (players/PlayerFigure, clarity pass
+ * 2026-10-05): every body mass painted with FigureMass (form gradient, lit rim,
+ * core shadow, contour), the hands with fingers (handShape), the head in line
+ * art (LineHead) — so a lute player reads like the guitar family's players.
+ * The geometry below is unchanged: the same joints, the same widths.
  */
-import { Circle, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { Group, Line, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
+import { useMemo } from 'react';
 import type { ViewId } from '../../../engine/model/types.ts';
 import type { LuteScene } from './luteModel.ts';
-import { DEG, ep, make, oval, PAL, rr, smooth, type Pt, type SkPath } from './luteDraw';
+import { DEG, ep, make, PAL, rr, smooth, type Pt, type SkPath } from './luteDraw';
+import { FIGURE_TONES, FigureMass, handShape, headAbove, headFront, limb as limbPath, LineHead } from '../players/PlayerFigure';
 
-const FIG = PAL.fig as unknown as string[];
-const SKIN = PAL.skin as unknown as string[];
-const EDGE = PAL.figEdge;
-
-export function Head({ cx, cy, r, above = false }: { cx: number; cy: number; r: number; above?: boolean }) {
-  return (
-    <Group>
-      <Circle cx={cx} cy={cy} r={r * 0.92}>
-        <RadialGradient c={vec(cx - r * 0.35, cy - r * 0.4)} r={r * 1.3} colors={SKIN} />
-      </Circle>
-      <Circle cx={cx} cy={cy} r={r * 0.92} style="stroke" strokeWidth={3} color={EDGE} />
-      {above ? (
-        <Line p1={vec(cx, cy + r * 0.88)} p2={vec(cx, cy + r * 1.12)} color={EDGE} strokeWidth={3} />
-      ) : (
-        <>
-          <Path path={oval(cx - r * 0.95, cy + r * 0.05, r * 0.12, r * 0.22)} style="stroke" strokeWidth={2.4} color={EDGE} />
-          <Path path={oval(cx + r * 0.95, cy + r * 0.05, r * 0.12, r * 0.22)} style="stroke" strokeWidth={2.4} color={EDGE} />
-        </>
-      )}
-    </Group>
-  );
+/** A head in the house line-art spec. Front: the face to the audience, its
+ *  neck column down to `neckY` (default just below the jaw). Above: the
+ *  cranium and the nose's tip toward +v (the audience). */
+export function Head({ cx, cy, r, above = false, neckY }: { cx: number; cy: number; r: number; above?: boolean; neckY?: number }) {
+  const head = useMemo(() => (above ? headAbove({ u: cx, v: cy }, r) : headFront({ u: cx, v: cy }, r, neckY ?? cy + r * 1.35)), [cx, cy, r, above, neckY]);
+  return <LineHead head={head} c={{ u: cx, v: cy }} r={r} />;
 }
 
-function Fig({ path, from, to }: { path: SkPath; from: Pt; to: Pt }) {
-  return (
-    <>
-      <Path path={path}>
-        <LinearGradient start={vec(from[0], from[1])} end={vec(to[0], to[1])} colors={FIG} />
-      </Path>
-      <Path path={path} style="stroke" strokeWidth={2.5} color={EDGE} opacity={0.9} />
-    </>
-  );
+/** A body mass (the torso, a leg) at the shared figure standard. */
+function Fig({ path, tone = 'shirt' }: { path: SkPath; tone?: 'shirt' | 'trousers' }) {
+  return <FigureMass path={path} tone={tone} />;
 }
 
+/** An arm (a sleeve) through joints, `w` wide: one tapered outline. */
 export function Limb({ pts, w }: { pts: Pt[]; w: number }) {
-  const p = make();
-  p.moveTo(pts[0][0], pts[0][1]);
-  if (pts.length === 2) p.lineTo(pts[1][0], pts[1][1]);
-  for (let i = 1; i < pts.length - 1; i++) {
-    const m: Pt = i === pts.length - 2 ? pts[i + 1] : [(pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2];
-    p.quadTo(pts[i][0], pts[i][1], m[0], m[1]);
-  }
-  const a = pts[0];
-  const b = pts[pts.length - 1];
-  return (
-    <>
-      <Path path={p} style="stroke" strokeWidth={w + 6} strokeCap="round" strokeJoin="round" color={EDGE} />
-      <Path path={p} style="stroke" strokeWidth={w} strokeCap="round" strokeJoin="round">
-        <LinearGradient start={vec(a[0] - w, a[1] - w)} end={vec(b[0] + w, b[1] + w)} colors={FIG} />
-      </Path>
-    </>
-  );
+  const path = useMemo(() => limbPath(pts.map(([u, v]) => ({ u, v })), pts.map((_, i) => (w / 2) * (1 - (0.18 * i) / Math.max(1, pts.length - 1)))), [pts, w]);
+  return <FigureMass path={path} tone="shirt" />;
 }
 
+/** A hand seen from its back, the fingers together, pointing `rot`°. */
 export function Hand({ x, y, r, rot = 0 }: { x: number; y: number; r: number; rot?: number }) {
+  const h = useMemo(() => {
+    const dir = rot * DEG;
+    // The shared hand is true size (about 15 cm long): scaled to this
+    // figure's hand radius so the drawing's proportions are kept.
+    const k = r / 40;
+    const hs = handShape({ wrist: { u: -70, v: 0 }, dir: 0, kind: 'rest' });
+    return { hs, k, dir };
+  }, [r, rot]);
   return (
-    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: rot * DEG }]}>
-      <Path path={oval(0, 0, r * 1.15, r * 0.8)}>
-        <RadialGradient c={vec(-r * 0.4, -r * 0.4)} r={r * 1.6} colors={SKIN} />
-      </Path>
-      <Path path={oval(-r * 0.7, -r * 0.55, r * 0.38, r * 0.24)} color={SKIN[1]} />
-      <Path path={oval(0, 0, r * 1.15, r * 0.8)} style="stroke" strokeWidth={2.5} color={EDGE} />
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: h.dir }, { scale: h.k }]}>
+      <FigureMass path={h.hs.path} tone="skin" contour={2} />
+      <Path path={h.hs.lines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
     </Group>
   );
 }
@@ -85,14 +60,24 @@ export function Fingers({ at, dir, across, n = 3 }: { at: Pt; dir: Pt; across: n
   const l = Math.hypot(dir[0], dir[1]) || 1;
   const d: Pt = [dir[0] / l, dir[1] / l];
   const a = Math.atan2(d[1], d[0]);
-  const p = make();
-  for (let k = 0; k < n; k++) p.addRRect(Skia.RRectXY(Skia.XYWHRect(-k * 24 - 8, -across / 2, 16, across), 8, 8));
+  const p = useMemo(() => {
+    let out: SkPath | null = null;
+    for (let k = 0; k < n; k++) {
+      const f = limbPath(
+        [
+          { u: -k * 24, v: across / 2 },
+          { u: -k * 24 - 2, v: 0 },
+          { u: -k * 24, v: -across / 2 },
+        ],
+        [8.5, 8, 7],
+      );
+      out = out ? Skia.Path.MakeFromOp(out, f, PathOp.Union) ?? out : f;
+    }
+    return out ?? make();
+  }, [n, across]);
   return (
     <Group transform={[{ translateX: at[0] }, { translateY: at[1] }, { rotate: a }]}>
-      <Path path={p}>
-        <LinearGradient start={vec(-60, -across / 2)} end={vec(0, across / 2)} colors={SKIN} />
-      </Path>
-      <Path path={p} style="stroke" strokeWidth={2} color={EDGE} />
+      <FigureMass path={p} tone="skin" contour={1.8} />
     </Group>
   );
 }
@@ -134,17 +119,16 @@ export function PlayerBack({ sc, view }: { sc: LuteScene; view: ViewId }) {
     }
     return (
       <Group>
-        <Fig path={torso} from={[sR[0], sR[1]]} to={[sL[0], hipY]} />
+        <Fig path={torso} />
         {legs.map((p, i) => (
-          <Fig key={`leg${i}`} path={p} from={[sR[0] - 100, hipY]} to={[sL[0] + 100, floor]} />
+          <Fig key={`leg${i}`} path={p} tone="trousers" />
         ))}
         {shoes.map((p, i) => (
-          <Path key={`shoe${i}`} path={p} color="#121317" />
+          <FigureMass key={`shoe${i}`} path={p} tone="shoe" />
         ))}
         <Limb pts={[[sR[0] - 5, sR[1] + 20], eR]} w={88} />
         <Limb pts={[[sL[0] + 5, sL[1] + 20], eL]} w={88} />
-        <Path path={rr(hc[0] - 34, hc[1] + f.head.r * 0.8, hc[0] + 34, sR[1] - 18, 10)} color={SKIN[1]} />
-        <Head cx={hc[0]} cy={hc[1]} r={f.head.r} />
+        <Head cx={hc[0]} cy={hc[1]} r={f.head.r} neckY={sR[1] - 26} />
       </Group>
     );
   }
@@ -168,9 +152,9 @@ export function PlayerBack({ sc, view }: { sc: LuteScene; view: ViewId }) {
   return (
     <Group>
       {legs.map((p, i) => (
-        <Fig key={`th${i}`} path={p} from={[kR[0], z1]} to={[kL[0], kL[1] + 60]} />
+        <Fig key={`th${i}`} path={p} tone="trousers" />
       ))}
-      <Fig path={shoulders} from={[sR[0], z0]} to={[sL[0], z1]} />
+      <Fig path={shoulders} />
       <Limb pts={[[sR[0] + 10, (z0 + z1) / 2], eR]} w={82} />
       <Limb pts={[[sL[0] - 10, (z0 + z1) / 2], eL]} w={82} />
       <Head cx={hc[0]} cy={hc[1]} r={f.head.r * 0.95} above />

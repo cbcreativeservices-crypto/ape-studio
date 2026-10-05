@@ -28,7 +28,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import Animated, { useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, type SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../theme/tokens';
@@ -37,7 +37,10 @@ import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect'
 import { useScrollLock } from '../../../scrollLock';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../../modules/ape-gesture-exclusion';
 import { MikingMicArt } from '../../../../../features/lab/micDrawings';
-import type { DocumentedZone, MicPattern, MicPose, MicSlot, Shape3, VariantId, Vec3, ViewBox, ViewId } from '../model/types.ts';
+import { useDecorativeMotion } from '../../../../../features/settings/decorativeMotion';
+import type { CompiledScene, DocumentedZone, Envelope, MicBody, MicPattern, MicPose, MicSlot, Shape3, VariantId, Vec3, ViewBox, ViewId } from '../model/types.ts';
+import { sdf } from '../geometry/sdf.ts';
+import { KeepOutsAtRest } from './keepOuts.ts';
 import { viewsOf } from '../model/types.ts';
 import { copyOf } from '../model/copy.ts';
 import { aimVec, angleBetween, clamp, sub } from '../geometry/vec.ts';
@@ -57,7 +60,6 @@ import type { LessonArt } from './sceneTypes.ts';
 const BLUE = '#6fa8ff';
 const AMBER = '#ffc64d';
 const RED = '#ff6b5e';
-const GREY = '#8a8f9c';
 /** The IDEAL-model colour (charter: blue = SOURCED, amber = TRIAL, grey = ILLUSTRATIVE). */
 const IDEAL = '#e8eaee';
 const POLAR_R = 170; // mm: the drawn radius of an on-axis lobe (a drawing size, not a range)
@@ -649,7 +651,7 @@ function PolarSlice({ pose, view, pattern }: { pose: SharedValue<MicPose>; view:
 /** A kept part label's place, for the lobe tag to step round (opt-in). */
 type LabelBox = { u: number; v: number; W: number; align: 'left' | 'center' | 'right' };
 
-function LobeTag({ pose, view, xf, scale, maxX, maxY, labelBoxes = null }: { pose: SharedValue<MicPose>; view: ViewId; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number; labelBoxes?: LabelBox[] | null }) {
+function LobeTag({ pose, view, xf, scale, maxX, maxY, labelBoxes = null, shown, avoid = null }: { pose: SharedValue<MicPose>; view: ViewId; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number; labelBoxes?: LabelBox[] | null; shown: SharedValue<number>; avoid?: { x0: number; y0: number; x1: number; y1: number } | null }) {
   const text = 'PATTERN SHAPE, NOT RANGE';
   const W = labelWidth(text, scale, maxX);
   const H = 9.5 * scale * 1.25;
@@ -674,15 +676,20 @@ function LobeTag({ pose, view, xf, scale, maxX, maxY, labelBoxes = null }: { pos
       }
       return false;
     };
+    // The caller's keep-off rect (DualView's inset, wherever it sits).
+    const hitsAvoid = (yy: number) => !!avoid && left < avoid.x1 && left + W > avoid.x0 && yy < avoid.y1 && yy + H > avoid.y0;
     let y = inInset ? below : above;
-    if (hitsLabel(y)) y = y === above ? below : above;
+    if (hitsLabel(y) || hitsAvoid(y)) y = y === above ? below : above;
+    if (hitsAvoid(y)) y = -1000;
     // No clean spot (the badge still says it): hidden rather than on top of
     // another label. A mic tilted well down seen from the side (a hand
     // drum's, aimed at a head) has its body, handle and boom rising out of
     // the lobe, and the part labels sit beside it: no clean spot either.
     const steep = view === 'side' && Math.abs(p.el) > 30;
     const ok = !steep && y > 4 && y < maxY - 34 && !hitsLabel(y) && !(y === above && inInset);
-    return { opacity: ok ? 1 : 0, transform: [{ translateX: left }, { translateY: y }] };
+    // Shown while a mic moves, never at rest (the badge under the display
+    // says it once: owner ruling 2026-10-05, less on the drawing).
+    return { opacity: ok ? shown.value : 0, transform: [{ translateX: left }, { translateY: y }] };
   });
   return (
     <Animated.View pointerEvents="none" style={[styles.label, { width: W }, style]}>
@@ -720,8 +727,8 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
   // One consistent style for every recommended starting point (owner ruling
   // 2026-10-04): the same blue band, the same solid edge.
   const tone = BLUE;
-  const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.26 : 0.04));
-  const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : 0.45));
+  const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.26 : 0.03));
+  const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : 0.32));
   return (
     <>
       <Path path={path} color={tone} opacity={fill} />
@@ -810,6 +817,139 @@ function LeaderLines({ labels, xf, scale, maxX }: { labels: { u: number; v: numb
       <Path path={path} style="stroke" strokeWidth={halo} color="#000" opacity={0.5} />
       <Path path={path} style="stroke" strokeWidth={line} color={colors.amberLabel} opacity={0.8} />
     </>
+  );
+}
+
+/* ── keep-outs: shown on approach, never at rest ─────────────────────── */
+
+/** A mic within this distance (mm) of a keep-out starts to show it. */
+const NEAR_MM = 110;
+/** How long a keep-out stays after the mic stops moving (ms). */
+const HOLD_MS = 900;
+/** The soft "you are getting close" tint: a light neutral, no hatch. */
+const NEAR_TINT = '#d9dee8';
+
+export type EnvelopeDrawn = { id: string; label: string; shape: Shape3; clearance: number; path: ReturnType<typeof Skia.Path.Make>; top: { u: number; v0: number } };
+
+/** "the player’s hands" → "✕ KEEP CLEAR · PLAYER’S HANDS" (plain words). */
+export function keepClearText(label: string): string {
+  return `✕ KEEP CLEAR · ${label.replace(/^the /i, '').toUpperCase()}`;
+}
+
+/** How close (0 far … 1 touching) the shown mics' assemblies are to a shape. */
+function nearness(scene: CompiledScene, shape: Shape3, clearance: number, poses: MicPose[], bodies: MicBody[]): number {
+  'worklet';
+  let best = 1e9;
+  for (let m = 0; m < poses.length; m++) {
+    const segs = assembly(scene, poses[m], bodies[m]);
+    for (let i = 0; i < segs.length; i++) {
+      const sg = segs[i];
+      if (sg.piece === 'arm') continue;
+      const dx = sg.b.x - sg.a.x;
+      const dy = sg.b.y - sg.a.y;
+      const dz = sg.b.z - sg.a.z;
+      const n = Math.min(16, Math.max(1, Math.ceil(Math.sqrt(dx * dx + dy * dy + dz * dz) / 40)));
+      for (let k = 0; k <= n; k++) {
+        const t = k / n;
+        const d = sdf(shape, { x: sg.a.x + dx * t, y: sg.a.y + dy * t, z: sg.a.z + dz * t }) - sg.r - clearance;
+        if (d < best) best = d;
+      }
+    }
+  }
+  return clamp(1 - best / NEAR_MM, 0, 1);
+}
+
+/**
+ * ONE keep-out (a model envelope) in this view. Owner ruling 2026-10-05
+ * ("too complicated… distraction"): not drawn at rest. While a mic moves
+ * (`gate`), it fades in softly as the mic comes within NEAR_MM — a light
+ * tint and outline, no hatch — and shows clearly in red, hatched, with its
+ * plain-word reason, when the move is STOPPED by it. It fades out when the
+ * mic leaves or stops moving. `pinned` (a tapped part on the meet / where-it-
+ * sits pages) shows it softly at rest. The collision is unchanged: this is
+ * drawing only.
+ */
+function EnvelopeMark({ e, rig, slots, gate, hatchPath, fadeMs, pinned }: { e: EnvelopeDrawn; rig: Rig; slots: MicSlot[]; gate: SharedValue<number>; hatchPath: ReturnType<typeof Skia.Path.Make>; fadeMs: number; pinned: boolean }) {
+  const scene = rig.scene;
+  const poseA = rig.pose.A;
+  const poseB = rig.pose.B;
+  const blockedA = rig.blocked.A;
+  const blockedB = rig.blocked.B;
+  const bodyA = rig.body.A;
+  const bodyB = rig.body.B;
+  const useA = slots.includes('A');
+  const useB = slots.includes('B');
+  const { shape, clearance, id } = e;
+  const near = useDerivedValue(() => {
+    const poses: MicPose[] = [];
+    const bodies: MicBody[] = [];
+    if (useA) {
+      poses.push(poseA.value);
+      bodies.push(bodyA);
+    }
+    if (useB) {
+      poses.push(poseB.value);
+      bodies.push(bodyB);
+    }
+    return poses.length ? nearness(scene, shape, clearance, poses, bodies) : 0;
+  });
+  const hit = useSharedValue(0);
+  useAnimatedReaction(
+    () => ((useA && blockedA.value?.partId === id) || (useB && blockedB.value?.partId === id) ? 1 : 0),
+    (h, prev) => {
+      if (h !== prev) hit.value = withTiming(h, { duration: fadeMs });
+    },
+    [useA, useB, id, fadeMs],
+  );
+  const soft = useDerivedValue(() => (pinned ? 1 : gate.value * near.value) * (1 - hit.value));
+  const strong = useDerivedValue(() => gate.value * hit.value);
+  const softFill = useDerivedValue(() => soft.value * 0.12);
+  const softEdge = useDerivedValue(() => soft.value * 0.6);
+  const hitFill = useDerivedValue(() => strong.value * 0.16);
+  const hitHatch = useDerivedValue(() => strong.value * 0.4);
+  const hitEdge = useDerivedValue(() => strong.value * 0.95);
+  return (
+    <>
+      <Path path={e.path} color={NEAR_TINT} opacity={softFill} />
+      <Path path={e.path} style="stroke" strokeWidth={2.5} color={NEAR_TINT} opacity={softEdge}>
+        <DashPathEffect intervals={[16, 10]} />
+      </Path>
+      <Path path={e.path} color={RED} opacity={hitFill} />
+      <Group clip={e.path}>
+        <Path path={hatchPath} style="stroke" strokeWidth={2} color={RED} opacity={hitHatch} />
+      </Group>
+      <Path path={e.path} style="stroke" strokeWidth={3.5} color={RED} opacity={hitEdge} />
+    </>
+  );
+}
+
+/** The stopped keep-out's reason, in plain words, over its top edge. */
+function EnvelopeReason({ e, rig, slots, gate, xf, scale, maxX, maxY }: { e: EnvelopeDrawn; rig: Rig; slots: MicSlot[]; gate: SharedValue<number>; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number }) {
+  const text = keepClearText(e.label);
+  const W = labelWidth(text, scale, maxX);
+  const H = 9.5 * scale * 1.25;
+  const blockedA = rig.blocked.A;
+  const blockedB = rig.blocked.B;
+  const useA = slots.includes('A');
+  const useB = slots.includes('B');
+  const id = e.id;
+  const { u, v0 } = e.top;
+  const style = useAnimatedStyle(() => {
+    const on = (useA && blockedA.value?.partId === id) || (useB && blockedB.value?.partId === id);
+    const c = xf.value;
+    const x = c.ox + u * c.s;
+    let y = c.oy + v0 * c.s - H - 4;
+    if (y < 4) y = c.oy + v0 * c.s + 4;
+    y = Math.max(4, Math.min(maxY - H - 22, y));
+    const left = Math.max(2, Math.min(maxX - W - 2, x - W / 2));
+    return { opacity: on ? gate.value : 0, transform: [{ translateX: left }, { translateY: y }] };
+  });
+  return (
+    <Animated.View pointerEvents="none" style={[styles.label, styles.reason, { width: W }, style]}>
+      <Text style={[styles.labelText, { fontSize: 9.5 * scale, textAlign: 'center', color: '#ffb3ab' }]} {...fitValue(9.5 * scale)}>
+        {text}
+      </Text>
+    </Animated.View>
   );
 }
 
@@ -1142,23 +1282,70 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const surfaceId = rig.surfaceId;
   const lineId = rig.lineId;
   const zoneA = useDerivedValue(() => deriveReadouts(ctxA, poseA.value, surfaceId, lineId).zoneId);
-  const envelopes = useMemo(() => {
-    if (!showEnvelopes) return [];
-    return model.envelopes
-      .filter((e) => !e.variants || e.variants.includes(variant))
-      .map((e) => ({ id: e.id, path: shapeOutline(e.shape, view) }))
-      .filter((e): e is { id: string; path: ReturnType<typeof Skia.Path.Make> } => !!e.path);
-  }, [showEnvelopes, model.envelopes, variant, view]);
+  // Keep-outs (owner ruling 2026-10-05): built for every scene that may show
+  // them, DRAWN only on approach / on a stop (EnvelopeMark). A mini inset
+  // never shows them.
+  const envelopes = useMemo<EnvelopeDrawn[]>(() => {
+    if (!showEnvelopes || mini) return [];
+    const out: EnvelopeDrawn[] = [];
+    const add = (id: string, label: string, shape: Shape3, clearance: number) => {
+      const path = shapeOutline(shape, view);
+      if (!path) return;
+      const b = path.getBounds();
+      out.push({ id, label, shape, clearance, path, top: { u: b.x + b.width / 2, v0: b.y } });
+    };
+    for (const e of model.envelopes as Envelope[]) {
+      if (e.variants && !e.variants.includes(variant)) continue;
+      add(e.id, e.label, e.shape, e.clearance ?? 0);
+    }
+    // A moving PART that is a path through the air (the bow's, a hand's) is a
+    // keep-out too: the lesson art used to hatch it at rest.
+    for (const p of model.parts) {
+      if (!p.moving || !p.solid || !/’s path$/.test(p.label)) continue;
+      if (p.variants && !p.variants.includes(variant)) continue;
+      add(p.id, p.label, p.solid, p.clearance?.mm ?? 0);
+    }
+    return out;
+  }, [showEnvelopes, mini, model.envelopes, model.parts, variant, view]);
   const hatchPath = useMemo(() => hatch(box), [box]);
+  // The gate: 1 while a mic moves (a drag here, a fader, a jump, the other
+  // view's drag), held HOLD_MS after it stops, then faded out. Nothing is
+  // drawn at rest. Reduced motion / Low-Light: no fades, the same holds.
+  const motion = useDecorativeMotion();
+  const fadeIn = motion ? 160 : 0;
+  const fadeOut = motion ? 420 : 0;
+  const gate = useSharedValue(0);
+  useAnimatedReaction(
+    () => {
+      const a = poseA.value;
+      const b = poseB.value;
+      return { g: grab.value !== '', k: `${a.p.x}|${a.p.y}|${a.p.z}|${a.az}|${a.el}|${b.p.x}|${b.p.y}|${b.p.z}|${b.az}|${b.el}` };
+    },
+    (cur, prev) => {
+      if (!prev) return;
+      if (cur.g) {
+        if (!prev.g) gate.value = withTiming(1, { duration: fadeIn });
+        return;
+      }
+      if (prev.g || cur.k !== prev.k) gate.value = withSequence(withTiming(1, { duration: fadeIn }), withDelay(HOLD_MS, withTiming(0, { duration: fadeOut })));
+    },
+    [fadeIn, fadeOut],
+  );
+  const lobeOpacity = useDerivedValue(() => gate.value);
+  const micsOn = rig.mics.some((m) => live.includes(m.slot) && m.on);
   // Part labels only where the drawing is big enough to carry them (a short
   // landscape glass drew them on top of each other); full screen always has them.
   const labels = useMemo(() => {
     if (mini || !showLabels || base.s < LABEL_MIN_S) return [];
     // The lesson's own keep-off rectangles (its zones), in px at the fit.
     const obstacles = showZones && art.labelObstacles ? art.labelObstacles(view, variant, zones.map((z) => z.id)).map((r) => ({ x0: base.ox + r.u0 * base.s, x1: base.ox + r.u1 * base.s, y0: base.oy + r.v0 * base.s, y1: base.oy + r.v1 * base.s })) : undefined;
-    return fitLabels(art.labels(view, variant), base, textScale, w, avoid, obstacles);
+    // With mics on the drawing (placement, two mics), a bare "PLAYER" over
+    // the drawn figure only adds words to the picture (clarity pass
+    // 2026-10-05); an off-glass pointer ("← PLAYER") stays.
+    const own = art.labels(view, variant).filter((l) => !(micsOn && l.id === 'player' && l.text === 'PLAYER'));
+    return fitLabels(own, base, textScale, w, avoid, obstacles);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
-  }, [mini, showLabels, showZones, zones, art, view, variant, base, textScale, w, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
+  }, [mini, showLabels, showZones, zones, art, view, variant, base, textScale, w, micsOn, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
   const Instrument = art.Instrument;
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
@@ -1197,15 +1384,13 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       {!mini && interactive ? <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} /> : null}
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={matrix}>
-          <Instrument view={view} variant={variant} />
+          {/* The art's own keep-out shapes stay off this drawing (keepOuts.ts). */}
+          <KeepOutsAtRest.Provider value={false}>
+            <Instrument view={view} variant={variant} />
+          </KeepOutsAtRest.Provider>
           <LeaderLines labels={labels} xf={xf} scale={textScale} maxX={w} />
           {envelopes.map((e) => (
-            <Group key={e.id} clip={e.path}>
-              <Path path={hatchPath} style="stroke" strokeWidth={2} color={GREY} opacity={0.55} />
-            </Group>
-          ))}
-          {envelopes.map((e) => (
-            <Path key={`${e.id}:o`} path={e.path} style="stroke" strokeWidth={2.5} color={GREY} opacity={0.7} />
+            <EnvelopeMark key={e.id} e={e} rig={rig} slots={micsShown.map((m) => m.slot)} gate={gate} hatchPath={hatchPath} fadeMs={fadeIn} pinned={highlight === e.id} />
           ))}
           {zones.map((z) => (
             <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} />
@@ -1238,8 +1423,11 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={textScale} maxX={w} yieldTo={yieldTo} view={view} />
       ))}
       {showPolar && !mini && showLabels
-        ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} labelBoxes={labelBoxes} />)
+        ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} labelBoxes={labelBoxes} shown={lobeOpacity} avoid={avoid ?? null} />)
         : null}
+      {envelopes.map((e) => (
+        <EnvelopeReason key={`why:${e.id}`} e={e} rig={rig} slots={micsShown.map((m) => m.slot)} gate={gate} xf={xf} scale={textScale} maxX={w} maxY={h} />
+      ))}
       {!mini && interactive && showLive ? (
         <View pointerEvents="none" style={styles.liveWrap}>
           {micsShown.map((m) => (
@@ -1357,6 +1545,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     includeFontPadding: false,
   },
+  // A stopped keep-out's reason: a dark backing so it reads over any art.
+  reason: { backgroundColor: 'rgba(12,12,15,0.78)', borderRadius: 5, paddingVertical: 1 },
   // Web: the backing hugs the words (a full-width band hid the head labels).
   liveWeb: { alignSelf: 'flex-start', maxWidth: '100%' },
   viewTag: { position: 'absolute', left: 6, bottom: 3, color: colors.textMuted, fontFamily: fonts.oswaldMedium, letterSpacing: 1.2 },
