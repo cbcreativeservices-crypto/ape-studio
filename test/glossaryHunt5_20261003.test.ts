@@ -83,16 +83,17 @@ describe('1 · a coded server error is not a charge: the next open asks again', 
     assert.deepEqual(rpc(), ['c1', 'c1']);
   });
 
-  it('an uncoded timeout is still never re-sent (owner ruling #2 kept)', async () => {
+  it('an uncoded timeout is filed as maybe-charged, and (since the 24 h ledger, 2026-10-04) re-sent on the next open', async () => {
     signIn('h5-free-2');
     rpc().length = 0;
     g.__GH5_ERR__ = { message: 'gateway timeout' };
     await gw.readDefinitionOnce('c2', false);
     g.__GH5_ERR__ = null;
-    const again = await gw.readDefinitionOnce('c2', false);
-    assert.equal(again.state, 'fault');
     assert.equal(gw.sessionChargeUnanswered('c2'), true);
-    assert.deepEqual(rpc(), ['c2']);
+    const again = await gw.readDefinitionOnce('c2', false);
+    assert.equal(again.state, 'ok');
+    assert.equal(gw.sessionChargeUnanswered('c2'), false);
+    assert.deepEqual(rpc(), ['c2', 'c2']);
   });
 });
 

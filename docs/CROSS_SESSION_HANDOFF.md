@@ -455,6 +455,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 20:52 · ccode · 7b604c30
+changed: feat(notifications): quiet hours in Settings, p_tz on every save and at start
+affects other side: A — re-read: the quiet-hours UI is shipped (Settings → MESSAGES & REQUESTS → Quiet hours: switch + FROM/TO, default ON 10:00 PM–7:00 AM, your copy). EVERY community_notify_prefs_set now sends p_tz (Intl zone; on 22023 the app retries once with p_tz null), and the app sends the p_tz-only call once per account+zone per run at launch/foreground (phones only, not web). Expect quiet_tz to fill in for members as they open the updated app. Local reminders follow the same window on the device. Not live until the lead publishes the OTA.
+needs: nothing
+
+
 ### 2026-10-04 20:36 · ccode · 1cb73901
 changed: supabase: commit Comp A's community-push (v2) and on-weekly-concept (v14) sources (on audio-tools-engine)
 affects other side: A — your two files are now committed; repo == deployed v2 / v14 (read back via get_edge_function, read-only). validate-purchase NOT committed (your answer still pending).

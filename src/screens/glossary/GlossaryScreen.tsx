@@ -965,7 +965,7 @@ function ShortReadNote({ kind }: { kind: 'unanswered' | 'other' | undefined }) {
   return (
     <Text style={styles.shortReadNote}>
       {kind === 'unanswered'
-        ? 'This is the opening of the entry — the full definition didn’t arrive when this term was opened. So you’re never charged twice, it isn’t fetched again until you next open the app.'
+        ? 'This is the opening of the entry — the full definition didn’t arrive. Close the term and open it again to retry: a term you opened in the last 24 hours is never charged twice.'
         : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Close the term and open it again to retry.'}
     </Text>
   );
@@ -2246,9 +2246,11 @@ ${COPY.glossaryFreeAllowance}`,
   const openLinked = useCallback(
     (id: string) => {
       const metered = meterKnown && (serverMeters || capped);
+      // A sent-but-never-answered term is not "already opened" (2026-10-04):
+      // it is read again now, and one that never reached the server would be
+      // charged — so the reader is asked first, like any new term.
       const alreadyOpened =
         sessionDefinition(id, isMember) != null ||
-        sessionChargeUnanswered(id) ||
         (!serverMeters && SESSION_FALLBACK_CHARGED.has(id));
       const left = lookupsLeft(meterCountRef.current);
       const plan = crossLinkPlan({ metered, alreadyOpened, left });

@@ -72,12 +72,10 @@ describe('glossaryGateway: a read SENT and never answered is remembered for the 
     assert.equal(r.state, 'fault');
     assert.equal(gw.sessionChargeUnanswered('t1'), true, 'the charged-but-unanswered open is not remembered');
     g.__GSC_FAULT__ = null;
-    // Owner ruling 2026-10-03 #2: a free reader's re-open is not re-sent
-    // (glossaryMemberMeter_20261003); a confirmed member's read is, and a good
-    // read clears the record.
+    // 2026-10-04: a free reader's re-open IS re-sent now (the server's 24 h
+    // ledger answers a counted term without spending — glossaryMemberMeter),
+    // and a good read clears the record.
     await gw.readDefinitionOnce('t1', false);
-    assert.equal(gw.sessionChargeUnanswered('t1'), true);
-    await gw.readDefinitionOnce('t1', true);
     assert.equal(gw.sessionChargeUnanswered('t1'), false);
   });
 

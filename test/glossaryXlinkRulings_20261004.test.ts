@@ -86,7 +86,9 @@ describe('GlossaryScreen: the cross-link path', () => {
   });
   it('"already opened" is the session rule of every metered path', () => {
     assert.match(linked, /sessionDefinition\(id, isMember\) != null \|\|/);
-    assert.match(linked, /sessionChargeUnanswered\(id\) \|\|/);
+    // 2026-10-04: a sent-but-unanswered term is re-read now (the server's 24 h
+    // ledger is live), so it is asked about like a new one — never free-hopped.
+    assert.doesNotMatch(linked, /sessionChargeUnanswered\(id\)/);
     assert.match(linked, /\(!serverMeters && SESSION_FALLBACK_CHARGED\.has\(id\)\)/);
     assert.match(linked, /lookupsLeft\(meterCountRef\.current\)/);
   });
