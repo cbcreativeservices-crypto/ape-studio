@@ -43,6 +43,7 @@ import { copyOf } from '../model/copy.ts';
 import { aimVec, angleBetween, clamp, sub } from '../geometry/vec.ts';
 import { fitXform, project, unprojectDelta, zoomAbout, type ViewXform } from '../geometry/frame.ts';
 import { assembly, CLIP_REACH, constrainMove, pinToSurface, type Blocked } from '../geometry/collision.ts';
+import { sdf } from '../geometry/sdf.ts';
 import { deriveReadouts } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
 import { gain, isModelled } from '../physics/polar.ts';
@@ -730,6 +731,34 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
   );
 }
 
+/**
+ * One keep-out envelope, hatched. With the model's `envelopeReveal` (Lab 3,
+ * opt-in) it is drawn only while a shown mic — its front or its tail — is
+ * within `reveal` mm of it, fading out by 2 × reveal; it blocks the mic
+ * either way (collision.ts). Without it: always drawn, as before.
+ */
+function EnvelopeHatch({ shape, path, hatchPath, reveal, poses }: { shape: Shape3; path: ReturnType<typeof Skia.Path.Make>; hatchPath: ReturnType<typeof Skia.Path.Make>; reveal: number; poses: SharedValue<MicPose>[] }) {
+  const opacity = useDerivedValue(() => {
+    if (reveal <= 0) return 1;
+    let d = 1e9;
+    for (let i = 0; i < poses.length; i++) {
+      const q = poses[i].value;
+      d = Math.min(d, sdf(shape, q.p));
+      const a = aimVec(q.az, q.el);
+      d = Math.min(d, sdf(shape, { x: q.p.x - a.x * 120, y: q.p.y - a.y * 120, z: q.p.z - a.z * 120 }));
+    }
+    return clamp((2 * reveal - d) / reveal, 0, 1);
+  });
+  return (
+    <Group opacity={opacity}>
+      <Group clip={path}>
+        <Path path={hatchPath} style="stroke" strokeWidth={2} color={GREY} opacity={0.55} />
+      </Group>
+      <Path path={path} style="stroke" strokeWidth={2.5} color={GREY} opacity={0.7} />
+    </Group>
+  );
+}
+
 /* ── RN labels over the canvas, following the same transform ─────────── */
 
 /** The mics a label yields to (LessonArt.labelsYieldToMic): each pose and
@@ -1146,8 +1175,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     if (!showEnvelopes) return [];
     return model.envelopes
       .filter((e) => !e.variants || e.variants.includes(variant))
-      .map((e) => ({ id: e.id, path: shapeOutline(e.shape, view) }))
-      .filter((e): e is { id: string; path: ReturnType<typeof Skia.Path.Make> } => !!e.path);
+      .map((e) => ({ id: e.id, path: shapeOutline(e.shape, view), shape: e.shape }))
+      .filter((e): e is { id: string; path: ReturnType<typeof Skia.Path.Make>; shape: Shape3 } => !!e.path);
   }, [showEnvelopes, model.envelopes, variant, view]);
   const hatchPath = useMemo(() => hatch(box), [box]);
   // Part labels only where the drawing is big enough to carry them (a short
@@ -1199,14 +1228,20 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         <Group transform={matrix}>
           <Instrument view={view} variant={variant} />
           <LeaderLines labels={labels} xf={xf} scale={textScale} maxX={w} />
-          {envelopes.map((e) => (
-            <Group key={e.id} clip={e.path}>
-              <Path path={hatchPath} style="stroke" strokeWidth={2} color={GREY} opacity={0.55} />
-            </Group>
-          ))}
-          {envelopes.map((e) => (
-            <Path key={`${e.id}:o`} path={e.path} style="stroke" strokeWidth={2.5} color={GREY} opacity={0.7} />
-          ))}
+          {model.envelopeReveal ? (
+            envelopes.map((e) => <EnvelopeHatch key={e.id} shape={e.shape} path={e.path} hatchPath={hatchPath} reveal={model.envelopeReveal ?? 0} poses={micsShown.map((m) => rig.pose[m.slot])} />)
+          ) : (
+            <>
+              {envelopes.map((e) => (
+                <Group key={e.id} clip={e.path}>
+                  <Path path={hatchPath} style="stroke" strokeWidth={2} color={GREY} opacity={0.55} />
+                </Group>
+              ))}
+              {envelopes.map((e) => (
+                <Path key={`${e.id}:o`} path={e.path} style="stroke" strokeWidth={2.5} color={GREY} opacity={0.7} />
+              ))}
+            </>
+          )}
           {zones.map((z) => (
             <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} />
           ))}

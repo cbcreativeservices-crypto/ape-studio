@@ -415,6 +415,12 @@ export type InstrumentModel = {
    *  the guitars' headstock and tuners; the glass takes the other corner
    *  when the preferred one would (DualView, labelLayout.chooseInsetCorner). */
   insetKeepClear?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
+  /** Opt-in (Lab 3, 2026-10-05): the keep-out envelopes are DRAWN only as a
+   *  shown mic approaches one — fully within this many mm of it (the mic's
+   *  front or tail), fading out by twice that — so a scene full of moving
+   *  hands and bells is not hatched all over. They block a mic either way.
+   *  Absent: every envelope is drawn, as before. */
+  envelopeReveal?: number;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */
