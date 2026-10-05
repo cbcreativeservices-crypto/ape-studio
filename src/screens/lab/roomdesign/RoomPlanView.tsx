@@ -23,6 +23,7 @@ import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reani
 import { colors, fonts } from '../../../theme/tokens';
 import { fieldLevelColor, levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import { fingerAt, fingerOffset, pickHandle, planTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
 import {
   bounds,
@@ -313,6 +314,14 @@ export function RoomPlanView({
 
   return (
     <View style={{ width: w, height: h }} {...(edit === 'none' ? {} : pan.panHandlers)} accessible accessibilityLabel={`Room plan, ${fmtLen(b.width, units)} by ${fmtLen(b.length, units)}`}>
+      {/* Android gesture nav: a handle dragged at the screen edge must not start
+          the system back gesture (modules/ape-gesture-exclusion). The plan and
+          the side view are never on screen together (the VIEW readout swaps one
+          for the other; full screen is its own window), so each takes the whole
+          stage band: lane 48 + 140 = 188 of the 200 dp per-edge cap. Mounted only
+          while the view is editable (the read-only Review plan takes none).
+          Renders nothing on iOS, web and builds without the module. */}
+      {edit === 'none' ? null : <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />}
       <Svg width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
         {/* Floor */}
         <Path d={outlinePath} fill={floorTint} stroke="none" />

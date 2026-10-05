@@ -49,6 +49,7 @@ import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor, heatRgbW } from '../../../fe
 import { HEAD_BY_ID, type ConeRead, type Driver, type MembraneSpec } from '../../../features/cymatics/membrane';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 
 export type MembraneViewMode = 'head' | 'heat' | 'phase' | 'nodes' | 'head3d' | 'section' | 'speaker';
 
@@ -484,6 +485,11 @@ export function MembraneView(p: MembraneViewProps) {
       accessibilityLabel={`${isSpeaker ? 'Loudspeaker' : 'Drum head'} display, ${MEMBRANE_VIEW_LABELS[view].toLowerCase()} view, response ${Math.round(p.strength * 100)} percent`}
       {...pan.panHandlers}
     >
+      {/* Android gesture nav: a drag that starts at the screen edge must not
+          start the system back gesture (modules/ape-gesture-exclusion; the
+          stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap; armed only while a drag target is chosen).
+          Renders nothing on iOS, web and builds without the module. */}
+      <GestureExclusionZone active={p.dragTarget != null} maxHeightDp={STAGE_BAND_DP} />
       <Canvas style={{ width: boxW, height: boxH }}>
        {/* Everything below is in glass units; this one Group is the zoom. */}
        <Group transform={[{ scale: s }]}>

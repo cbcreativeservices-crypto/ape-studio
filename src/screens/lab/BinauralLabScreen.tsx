@@ -34,6 +34,7 @@ import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, BIN_SRC } from '../../../modules/ape-dsp';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../modules/ape-gesture-exclusion';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../features/audio/audioOutputStore';
 import { startFenced } from '../../features/audio/startFenced';
@@ -588,6 +589,11 @@ function Stage({
 
   return (
     <View {...pan.panHandlers}>
+      {/* Android gesture nav: a drag that starts at the screen edge must not
+          start the system back gesture (modules/ape-gesture-exclusion; the
+          stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap).
+          Renders nothing on iOS, web and builds without the module. */}
+      <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
       <Svg width={size} height={size} viewBox={`0 0 ${STAGE_U} ${STAGE_U}`}>
         {/* Distance rings (1..4 m). */}
         {[1, 2, 3, 4].map((m) => (

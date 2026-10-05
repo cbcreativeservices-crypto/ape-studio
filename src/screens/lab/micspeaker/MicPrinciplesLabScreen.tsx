@@ -56,6 +56,7 @@ import { MicCutaway } from './MicCutaway';
 import { MIC_ASPECT } from './micCutawayAsset';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 
 // ── Pure models the SCREEN owns (no Skia dependency — readouts must work
 //    even on pre-Skia clients showing the honest card). ─────────────────────
@@ -618,6 +619,11 @@ function PolarStage({
       onLayout={full ? undefined : () => onDims(w, h)}
       {...pan.panHandlers}
     >
+      {/* Android gesture nav: a drag that starts at the screen edge must not
+          start the system back gesture (modules/ape-gesture-exclusion; the
+          stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap).
+          Renders nothing on iOS, web and builds without the module. */}
+      <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
       {viz && eff ? (
         <PolarViz viz={viz} width={w} height={h} a={a} b={b} src={eff} running={running} />
       ) : viz ? null : (

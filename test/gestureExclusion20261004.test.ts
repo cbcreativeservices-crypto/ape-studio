@@ -74,8 +74,10 @@ describe('iOS: the interactive pop stays off on lab drag routes', () => {
     const ALLOWED = [
       'AmplitudeLab', 'AudioLearning', 'AwardProgress', 'CareerFamily', 'CareerFamilyList', 'CareerFinder',
       'CareerFinderAbout', 'CareerFinderResults', 'ConceptModule', 'EarLab', 'LabCategory', 'StartHereTerms',
-      'ToolInfo', 'ToolLearn', 'ToolLibrary', 'TubeCard', 'TubeReference',
+      'ToolInfo', 'ToolLearn', 'ToolLibrary', 'TubeReference',
     ];
+    // TubeCard left the set 2026-10-04: its card is a drag surface (sheet swipe + zoomed pan).
+    assert.ok(!optedIn.includes('TubeCard'), 'TubeCard carries a horizontal drag surface — no iOS swipe-back');
     for (const r of optedIn) assert.ok(ALLOWED.includes(r), `${r} opted into the iOS edge swipe — a lab with a drag control must not`);
     assert.equal((nav.match(/gestureEnabled: true/g) ?? []).length, 2, 'only the `swipe` const (and its comment) enable the gesture');
     assert.doesNotMatch(nav, /fullScreenGestureEnabled/);

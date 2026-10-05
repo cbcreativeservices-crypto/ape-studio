@@ -39,6 +39,7 @@ import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { EqAuditionBar } from './eqAudition';
 import type { EqModuleComponentProps } from './registry';
 import { CheckQuestion } from '../../foundations/bits';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../modules/ape-gesture-exclusion';
 
 // ---- Graph geometry — fxViz's own pixel-unit helpers (legibility pass
 //      2026-09-26: the graph now draws at the width the glass grants, so the
@@ -97,6 +98,11 @@ function NodeDragSurface({
   ).current;
   return (
     <View style={{ width: gw }} {...pan.panHandlers}>
+      {/* Android gesture nav: a drag that starts at the screen edge must not
+          start the system back gesture (modules/ape-gesture-exclusion; the
+          stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap).
+          Renders nothing on iOS, web and builds without the module. */}
+      <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
       {children}
     </View>
   );

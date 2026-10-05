@@ -36,6 +36,7 @@ import { MATERIAL_BY_ID } from '../../../features/cymatics/materials';
 import { plateAspect, type PlateSpec } from '../../../features/cymatics/plateModes';
 import { isLibraryShape, libraryInside, librarySnapInside, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
 import { useStageTextScale } from '../rack/stageAspect';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 
 export type PlateViewMode = 'particles' | 'heat' | 'overlay' | 'phase' | 'nodes' | 'plate3d' | 'section';
 
@@ -595,6 +596,11 @@ export function PlateView(p: PlateViewProps) {
       accessibilityLabel={`Plate display, ${VIEW_LABELS[view].toLowerCase()} view, response ${Math.round(p.strength * 100)} percent${p.dragTarget ? `, drag on the plate to move the ${p.dragTarget === 'section' ? 'slice' : p.dragTarget}` : ''}`}
       {...pan.panHandlers}
     >
+      {/* Android gesture nav: a drag that starts at the screen edge must not
+          start the system back gesture (modules/ape-gesture-exclusion; the
+          stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap; armed only while a drag target is chosen).
+          Renders nothing on iOS, web and builds without the module. */}
+      <GestureExclusionZone active={p.dragTarget != null} maxHeightDp={STAGE_BAND_DP} />
       <Canvas style={{ width: boxW, height: boxH }}>
        {/* Everything below is in glass units; this one Group is the zoom. */}
        <Group transform={[{ scale: s }]}>

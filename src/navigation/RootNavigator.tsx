@@ -472,7 +472,11 @@ export function RootNavigator() {
       <Stack.Screen name="SpeakerLab" getComponent={MemberGated.SpeakerLab} />
       <Stack.Screen name="TubeLab" getComponent={MemberGated.TubeLab} />
       <Stack.Screen name="TubeReference" getComponent={MemberGated.TubeReference} options={swipe} />
-      <Stack.Screen name="TubeCard" getComponent={MemberGated.TubeCard} options={swipe} />
+      {/* No swipe-back on TubeCard (2026-10-04): the card is a drag surface —
+          a horizontal swipe flips sheets and a zoomed one-finger drag pans,
+          both of which start at the left edge as often as anywhere, where the
+          iOS interactive pop would take them. The ‹ back button stays. */}
+      <Stack.Screen name="TubeCard" getComponent={MemberGated.TubeCard} />
       <Stack.Screen name="CalcLab" getComponent={Lazy.CalcLab} />
       <Stack.Screen name="CalcWorkspace" getComponent={Lazy.CalcWorkspace} />
       <Stack.Screen name="CalcSymbolsKey" getComponent={Lazy.CalcSymbolsKey} />

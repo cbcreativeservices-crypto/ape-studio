@@ -44,6 +44,7 @@ import {
 import { Easing, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
@@ -561,6 +562,11 @@ export function InspectStripView({
 
   return (
     <View {...pan.panHandlers}>
+      {/* Android gesture nav: a drag that starts at the screen edge must not
+          start the system back gesture (modules/ape-gesture-exclusion; the
+          stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap).
+          Renders nothing on iOS, web and builds without the module. */}
+      <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
       <Canvas pointerEvents="none" style={{ width: fullW, height: fullH, backgroundColor: BG, borderRadius: 8 }}>
         <Group transform={[{ scale: ts }]}>
         <SkLine p1={{ x: INS_PAD - 6, y: geo.midY }} p2={{ x: width - INS_PAD + 6, y: geo.midY }} color="#3a3a42" strokeWidth={1} />

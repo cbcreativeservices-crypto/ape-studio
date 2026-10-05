@@ -10,6 +10,7 @@ import { AccessibilityInfo, Animated, Easing, LayoutChangeEvent, PanResponder, S
 import { colors, fonts } from '../../../../theme/tokens';
 import { LANDMARKS } from '../../../../features/tuning/tuningMath';
 import { Btn, CentsRail, Row, centsOfXFrac, type RailMarker } from './primitives';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../modules/ape-gesture-exclusion';
 
 /** Drag snap window (¢). */
 const DRAG_SNAP = 9;
@@ -142,6 +143,11 @@ export function DragRail({
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => step(e.nativeEvent.actionName === 'increment' ? 10 : -10)}
       >
+        {/* Android gesture nav: a drag that starts at the screen edge must not
+            start the system back gesture (modules/ape-gesture-exclusion; the
+            stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap; one rail per chapter page).
+            Renders nothing on iOS, web and builds without the module. */}
+        <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
         <CentsRail markers={markers} reduceMotion={reduceMotion || dragging} height={110} fit={fit} brackets={brackets} />
       </View>
       {bare ? null : (

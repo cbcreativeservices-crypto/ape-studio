@@ -45,6 +45,7 @@ import { Image } from 'expo-image';
 import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePageCached, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -521,6 +522,13 @@ export function TubeCardScreen() {
 
       {/* Image area — everything below the bar; pinch-zoom + pan only. */}
       <View style={styles.imageArea} onLayout={onAreaLayout} {...responder.panHandlers}>
+        {/* Android gesture nav: the sheet swipe (and the zoomed pan) starting at
+            the screen edge must not start the system back gesture
+            (modules/ape-gesture-exclusion). No dock lane here, but the stage
+            band keeps the house budget; centred on the card. Renders nothing
+            on iOS, web and builds without the module — iOS swipe-back is off
+            for this route instead (RootNavigator). */}
+        <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
         {imgW > 0 && pageUri ? (
           <Animated.View
             style={{

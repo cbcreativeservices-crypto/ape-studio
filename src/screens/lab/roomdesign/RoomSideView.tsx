@@ -13,6 +13,7 @@ import Svg, { Circle, G, Line, Path, Polyline, Rect, Text as SvgText } from 'rea
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import { fingerAt, fingerOffset, pickHandle, sideLabelRows, sideTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
 import { bounds, ceilingHeightAt, cloudHangZ, fmtLen, type Analysis, type Pt, type RoomDesign } from './roomModel';
 import { SURFACE_TINT, type PlanHandle } from './RoomPlanView';
@@ -152,6 +153,14 @@ export function RoomSideView({
 
   return (
     <View style={{ width: w, height: h }} {...(edit ? pan.panHandlers : {})} accessible accessibilityLabel={`Side view, ceiling ${fmtLen(room.height, units)}`}>
+      {/* Android gesture nav: a handle dragged at the screen edge must not start
+          the system back gesture (modules/ape-gesture-exclusion). The plan and
+          the plan view are never on screen together (the VIEW readout swaps one
+          for the other; full screen is its own window), so each takes the whole
+          stage band: lane 48 + 140 = 188 of the 200 dp per-edge cap. Mounted only
+          while the view is editable (the read-only Review plan takes none).
+          Renders nothing on iOS, web and builds without the module. */}
+      {edit ? <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} /> : null}
       <Svg width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
         {/* Room section */}
         <Path d={`M${floorL.x},${floorL.y} L${floorR.x},${floorR.y} L${rearTop.x},${rearTop.y} ${ceilingPts.split(' ').reverse().map((p) => `L${p}`).join(' ')} Z`} fill="#131417" stroke="none" />

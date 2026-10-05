@@ -56,6 +56,7 @@ import { fonts } from '../../../theme/tokens';
 import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
+import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import {
   MATERIALS,
   alphaAt,
@@ -2097,6 +2098,11 @@ export function RoomSceneView(p: RoomSceneProps) {
 
   return (
     <View style={{ width: w, height: h }} {...pan.panHandlers}>
+      {/* Android gesture nav: a drag that starts at the screen edge must not
+          start the system back gesture (modules/ape-gesture-exclusion; the
+          stage band, so lane 48 + 140 stays inside the 200 dp per-edge cap).
+          Renders nothing on iOS, web and builds without the module. */}
+      <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         {/* Room interior: subtle depth so the field never floats on flat black. */}
         <Path path={interior}>
