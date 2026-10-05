@@ -31,3 +31,20 @@ Lesson: `source_text/Timpani-Miking-Technique-Research.txt`. Rules: `snare/SOURC
 | Kettle height, head height above floor | **UNKNOWN** | — | — |
 | Schoeps tube lengths "not capsule-to-head distance" | not re-read today | — | — |
 | Neumann MCM case [9] | **UNREACHABLE (404)** | — | — |
+
+## Builder additions (2026-10-05, branch miking-w4: the M06 build)
+
+| Key | Source | URL | Status |
+|---|---|---|---|
+| LESSON-TIMP | The owner's lesson text itself (`source_text/Timpani-Miking-Technique-Research.txt`), for the lab's own trial positions and words | (in the repo) | the lesson's own words |
+
+- Kettle pitch ratios on HOW IT SOUNDS: the Cymatics model's measured principal series
+  (`features/cymatics/membrane.ts` KETTLE_PRINCIPAL, called through `engine/physics/kettle.ts`):
+  (0,1) ≈ 0.85, (1,1) = 1, (2,1) = 1.5, (3,1) ≈ 1.99, (4,1) ≈ 2.44 against (1,1).
+- Simplifications register (M06): the head outlines are the IDEAL membrane's (1,1) and (0,1) shapes,
+  exaggerated ("motion drawn larger"); the bowl's shape, depth, ring, legs, pedal and the 8 rods are
+  drawing defaults (`lessons/shared/concert/timpanoSpec.ts`); the four-drum arc is a drawing default;
+  the shared spot's aim is not given by the source (the lab counts within 60° of straight down) and its
+  ±15 cm band is the lab's; the mallet sectors and the player box are ILLUSTRATIVE.
+- The Decca passage is cited as the book (Haigh, Dunkerley, Rogers, *Classical Recording*, Focal Press),
+  read on the mirror; the Neumann newsroom case [9] stays unreachable (404) and is not used.

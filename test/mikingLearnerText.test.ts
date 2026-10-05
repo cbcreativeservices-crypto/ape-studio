@@ -58,6 +58,11 @@ export const BRAND_NAMES: readonly string[] = [
   '4055',
   'NIOSH',
   'Rossing',
+  // Lab 1 concert lessons (M06–M08): the classical-recording book, the orchestra kits, the case studies.
+  'Decca',
+  'Schoeps',
+  'Boston Pops',
+  'Percussive Arts Society',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */
