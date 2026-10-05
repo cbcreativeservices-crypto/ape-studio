@@ -536,6 +536,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 19:27 · ccode · b8830559
+changed: web: halve the launch-overlay background blur (3px to 1.5px)
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-10-04 19:01 · ccode · 5cdb6b39
 changed: web: compact launch panel, lighter blur so the live site shows through
 affects other side: nothing (branch final-lab, miking lab work).

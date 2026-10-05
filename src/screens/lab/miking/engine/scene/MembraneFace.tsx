@@ -145,15 +145,28 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
     return { claws, rodsP };
   }, [rods, hoopIn, hoopOut]);
   const marks = useMemo(() => regionMarks(shape), [shape]);
-  const labels: StaticLabel[] = [
-    { id: 'beater', text: 'BEATER', u: -30, v: -strikeMm, align: 'right', tone: 'amber' },
-    ...(Math.abs(swing) > 0.12
-      ? marks.map((m, i) => {
-          const sg = m.sign * Math.sign(swing);
-          return { id: `m${i}`, text: sg > 0 ? '+' : '−', u: Math.sin(m.t) * m.r * R, v: -Math.cos(m.t) * m.r * R, align: 'center' as const, tone: (sg > 0 ? 'inkBlue' : 'inkAmber') as 'inkBlue' | 'inkAmber' };
-        })
-      : []),
-  ];
+  const labels: StaticLabel[] = [{ id: 'beater', text: 'BEATER', u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
+  // + / − in every region, drawn as strokes (crisp at any size; colour is
+  // never the only signal, charter §8).
+  const signs = useMemo(() => {
+    const plus = Skia.Path.Make();
+    const minus = Skia.Path.Make();
+    if (Math.abs(swing) > 0.12) {
+      for (const m of marks) {
+        const sg = m.sign * Math.sign(swing);
+        const x = Math.sin(m.t) * m.r * R;
+        const y = -Math.cos(m.t) * m.r * R;
+        const p = sg > 0 ? plus : minus;
+        p.moveTo(x - 16, y);
+        p.lineTo(x + 16, y);
+        if (sg > 0) {
+          p.moveTo(x, y - 16);
+          p.lineTo(x, y + 16);
+        }
+      }
+    }
+    return { plus, minus };
+  }, [marks, swing, R]);
   return (
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
@@ -188,6 +201,10 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
           <Line p1={vec(0, -strikeMm - 20)} p2={vec(0, -strikeMm + 20)} color="#ffc64d" strokeWidth={3} />
           <Circle cx={0} cy={-strikeMm} r={20} style="stroke" strokeWidth={5} color="#ffc64d" />
           <Circle cx={0} cy={0} r={5} color="#5a5244" />
+          <Path path={signs.plus} style="stroke" strokeWidth={13} color="rgba(255,255,255,0.85)" strokeCap="round" />
+          <Path path={signs.minus} style="stroke" strokeWidth={13} color="rgba(255,255,255,0.85)" strokeCap="round" />
+          <Path path={signs.plus} style="stroke" strokeWidth={6} color="#123f8c" strokeCap="round" />
+          <Path path={signs.minus} style="stroke" strokeWidth={6} color="#7a4a00" strokeCap="round" />
         </Group>
       </Canvas>
       <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />

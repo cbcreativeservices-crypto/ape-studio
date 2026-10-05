@@ -21,7 +21,8 @@ export function StaticLabels({ labels, xf, scale, w }: { labels: StaticLabel[]; 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {kept.map((l) => {
-        const W = labelWidth(l.text, scale, w);
+        // A one-glyph mark (+ / −) gets room to breathe: fitValue never shrinks it.
+        const W = Math.max(22 * scale, labelWidth(l.text, scale, w));
         const x = xf.ox + l.u * xf.s;
         const left = Math.max(2, Math.min(w - W - 2, l.align === 'left' ? x : l.align === 'right' ? x - W : x - W / 2));
         const top = xf.oy + l.v * xf.s - 7 * scale;
