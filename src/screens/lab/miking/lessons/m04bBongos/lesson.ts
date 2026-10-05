@@ -9,6 +9,7 @@
  * that page's contract.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { BONGO_MODEL, BONGO_WORDS } from './geometry.ts';
 import { BETWEEN, BONGO_DIMS as D, BONGO_ZONES, HEAD_Y, HEMBRA, MACHO } from './model.ts';
@@ -86,18 +87,7 @@ const scenarios: MikingScenario[] = [
       'The centre block, so the two drums stay level': 'Clamp nothing to the block without a made-for-it mount, but the space to keep clear is the player’s: hands and legs.',
     },
   },
-  {
-    id: 'bg.set.2',
-    page: 'setting',
-    prompt: 'Your bongo mic is rated to a very high maximum SPL. Does that tell you how long you can sit beside the drums through soundcheck?',
-    options: ['No — that is the mic’s distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for people nearby', 'Yes, as long as the mic is closer to the drums than you are'],
-    correct: 'No — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
-    why: {
-      'Yes — anything below the mic’s rating is safe for people nearby': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as the mic is closer to the drums than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
-    },
-  },
+  micRatingCheck({ id: 'bg.set.2', page: 'setting', mic: 'bongo mic', loudest: 'the loudest slap' }),
   {
     id: 'bg.set.3',
     page: 'setting',
@@ -149,13 +139,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bg.rec.1',
     page: 'microphone',
-    prompt: 'FROM EARLIER · On ideal heads at the same tension, how much higher do the 7¼ in macho’s shapes sit than the 8⅝ in hembra’s?',
-    options: ['About 1.19 times: 8⅝ ÷ 7¼', 'About the same: they are similar', 'About twice: an octave higher'],
-    correct: 'About 1.19 times: 8⅝ ÷ 7¼',
-    explain: 'Pitch scales with 1 ÷ diameter at the same tension: 8.625 ÷ 7.25 ≈ 1.19. Real pairs are tuned apart by the player, so ask.',
+    prompt: 'FROM EARLIER · Two ideal heads of the same material at the same tension: one is 20 % wider than the other. How do its shapes compare?',
+    options: ['About 1.2 times lower: pitch follows 1 ÷ diameter', 'About 1.2 times higher: a bigger head rings harder', 'The same: a head’s size does not change its pitch'],
+    correct: 'About 1.2 times lower: pitch follows 1 ÷ diameter',
+    explain: 'Pitch scales with 1 ÷ diameter at the same tension, so a head 1.2 times wider sits about 1.2 times lower — like the hembra against the macho here. Real pairs are tuned apart by the player, so ask.',
     why: {
-      'About the same: they are similar': 'They differ by about a fifth in size, and pitch follows 1 ÷ diameter: about 1.19 times.',
-      'About twice: an octave higher': 'An octave would need a head half the size. The diameters give about 1.19.',
+      'About 1.2 times higher: a bigger head rings harder': 'A bigger head is lower, not higher: every shape scales with 1 ÷ diameter.',
+      'The same: a head’s size does not change its pitch': 'At the same tension, size sets the pitch: every shape scales with 1 ÷ diameter.',
     },
   },
   {
@@ -282,12 +272,12 @@ const scenarios: MikingScenario[] = [
     id: 'bg.ctx.studio',
     page: 'context',
     prompt: 'Quiet studio, one performer. What could justify raising the shared mic a little farther above the pair?',
-    options: ['A more even blend of both drums, in a room worth hearing', 'A farther mic will make the bongos sound louder', 'Distance takes the room out of the bongo sound'],
+    options: ['A more even blend of both drums, in a room worth hearing', 'A farther mic will make the bongos sound louder overall', 'Distance takes the room’s sound out of the bongo mic'],
     correct: 'A more even blend of both drums, in a room worth hearing',
     explain: 'A shared mic at a greater distance can represent both drums more evenly in a quiet room — and gathers more room and other instruments.',
     why: {
-      'A farther mic will make the bongos sound louder': 'Farther means less direct sound. Distance is for balance, not level.',
-      'Distance takes the room out of the bongo sound': 'The reverse: the farther the mic, the more room it hears.',
+      'A farther mic will make the bongos sound louder overall': 'Farther means less direct sound. Distance is for balance, not level.',
+      'Distance takes the room’s sound out of the bongo mic': 'The reverse: the farther the mic, the more room it hears.',
     },
   },
   {
@@ -592,24 +582,24 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'A strike near the edge, compared with one at the centre, drives…',
-    options: ['Shapes with a still line across the head, too', 'Only the lowest shape, more strongly', 'Nothing — the rim holds the head still'],
+    options: ['Shapes with a still line across the head, too', 'Only the lowest shape, and more strongly', 'Nothing — the rim holds the whole of the head still'],
     correct: 'Shapes with a still line across the head, too',
     explain: 'At the centre, every shape with a still line across the head stands still; near the edge those shapes join in.',
     why: {
-      'Only the lowest shape, more strongly': 'Near the edge the lowest shape moves less; others join in.',
-      'Nothing — the rim holds the head still': 'Only the very edge is held; a little inside it the head moves.',
+      'Only the lowest shape, and more strongly': 'Near the edge the lowest shape moves less; others join in.',
+      'Nothing — the rim holds the whole of the head still': 'Only the very edge is held; a little inside it the head moves.',
     },
   },
   {
     id: 'q.5',
     covers: 'setting',
     prompt: 'Where should a bongo mic’s cable run?',
-    options: ['Away from the legs, the feet and the player’s path', 'Along the centre block, taped down', 'Under the drums, between the knees'],
+    options: ['Away from the legs, the feet and the player’s path', 'Along the centre block between the drums, taped down', 'Under the drums, between the player’s knees'],
     correct: 'Away from the legs, the feet and the player’s path',
     explain: 'Confirm strain relief and a route nobody can trip on, away from the player’s legs and feet.',
     why: {
-      'Along the centre block, taped down': 'Tape nothing to the drums without the owner’s OK; route the cable away from the player.',
-      'Under the drums, between the knees': 'That is where the legs move. Route it away.',
+      'Along the centre block between the drums, taped down': 'Tape nothing to the drums without the owner’s OK; route the cable away from the player.',
+      'Under the drums, between the player’s knees': 'That is where the legs move. Route it away.',
     },
   },
   {
@@ -617,11 +607,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your mic is rated to a very high maximum SPL. What does that tell you about sitting beside the bongos through a long soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the drums than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -707,7 +697,7 @@ export const M04B_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. No published source gives a bongo mic distance, so the starting points here are regions to begin in: safely clear of the hands, then listen. Every pair, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. We could not find a recommended bongo mic distance, so the starting points here are regions to begin in: safely clear of the hands, then listen. Every pair, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: HEMBRA,
     drums: { macho: MACHO, hembra: HEMBRA },
@@ -775,7 +765,7 @@ export const M04B_LESSON: HandLesson = {
       hdClip: 'Ideas to try with this kind of mic: one clip-on at each rim, outside the hands — little stage space. Check the clamp fits, for vibration, cable strain and every finger motion.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is a region where we recommend you begin with that kind of mic. No published source gives a bongo distance, so “just above” here means safely clear of the hands — then listen. They are starting points, not rules.',
+      'What you just did, in words. After our research, each blue zone is a region where we recommend you begin with that kind of mic. We could not find a recommended bongo distance, so “just above” here means safely clear of the hands — then listen. They are starting points, not rules.',
       'Height, distance and angle are separate variables: change one at a time and have the player play the whole part again. A starting point that names an aim counts only while the mic faces that way. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm.',
       'Clearance comes first. Stop the player before moving a mic; keep the grille, body, clamp, boom and cable out of every finger and palm stroke, and leave room for a seated player’s legs. The grey hatched areas show roughly where to keep clear; check again during vigorous playing.',
       'A shared mic farther away can represent both drums more evenly in a quiet room — and gathers more room and other instruments; a close mic gives more direct sound but may favour one stroke or one drum. A figure-8 between the drums, a lobe toward each head, is another idea — map its back lobe and side nulls first.',

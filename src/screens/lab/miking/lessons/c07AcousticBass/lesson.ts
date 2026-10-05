@@ -183,8 +183,8 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'Why does this lesson call its starting distances “borrowed”?',
-    options: ['Little published guidance exists for this instrument', 'The bass is too quiet to be miked from a distance at all', 'Its distances must match a guitar’s exactly to work'],
-    correct: 'Little published guidance exists for this instrument',
+    options: ['We found little guidance for this instrument', 'The bass is too quiet to be miked from a distance at all', 'Its distances must match a guitar’s exactly to work'],
+    correct: 'We found little guidance for this instrument',
     explain: 'The acoustic bass has little instrument-specific guidance, so these starting points borrow guitar positions as experiments — and say so. Verify them on the actual bass.',
     why: {
       'The bass is too quiet to be miked from a distance at all': 'It can be miked; the point is that the starting distances are borrowed and need checking.',

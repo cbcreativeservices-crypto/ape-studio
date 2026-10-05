@@ -99,8 +99,10 @@ export function inRange(arr: LeslieArrangement, m: LeslieMic): boolean {
 
 /** The angle (deg, 0..180) between a horn bell pointing at plan angle θ
  *  (deg; 0 = the front, increasing counter-clockwise from above, i.e.
- *  toward +z) and the line from the rotor axis to the mic — the nearer of
- *  the two opposite bells. 0 = a bell points straight at the mic. */
+ *  toward +z) and the line from the rotor axis to the mic. Only that bell
+ *  sounds: on the classic cabinet the opposite bell is a blocked balance
+ *  bell (review Lab 1 M7), so a mic hears ONE sweep per turn. 0 = the
+ *  sounding bell points straight at the mic. */
 export function bellToMic(thetaDeg: number, m: { x: number; z: number }): number {
   'worklet';
   const a = (thetaDeg * Math.PI) / 180;
@@ -108,6 +110,6 @@ export function bellToMic(thetaDeg: number, m: { x: number; z: number }): number
   const bz = Math.sin(a);
   const l = Math.sqrt(m.x * m.x + m.z * m.z) || 1;
   const c = (bx * m.x + bz * m.z) / l;
-  const ang = (Math.acos(Math.max(-1, Math.min(1, Math.abs(c)))) * 180) / Math.PI;
+  const ang = (Math.acos(Math.max(-1, Math.min(1, c))) * 180) / Math.PI;
   return ang;
 }

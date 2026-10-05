@@ -9,6 +9,7 @@
  * that page's contract.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { TIMB_MODEL, TIMB_WORDS } from './geometry.ts';
 import { HEAD_Y, LARGE, SMALL, TIMB_DIMS as D, TIMB_ZONES } from './model.ts';
@@ -86,18 +87,7 @@ const scenarios: MikingScenario[] = [
       'Only the bell, since it is the highest thing on the stand': 'The bell is one target among several: heads, rims and shells need clearance too.',
     },
   },
-  {
-    id: 'tb.set.2',
-    page: 'setting',
-    prompt: 'Your timbale mic is rated to a very high maximum SPL. Does that tell you how long you can stand by the timbales through soundcheck?',
-    options: ['No — that is the mic’s distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for people nearby', 'Yes, as long as the mic is closer to the drums than you are'],
-    correct: 'No — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Loud percussion soundchecks expose people to sound whatever the mic’s rating. A widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time — keep repetitions down.',
-    why: {
-      'Yes — anything below the mic’s rating is safe for people nearby': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as the mic is closer to the drums than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
-    },
-  },
+  micRatingCheck({ id: 'tb.set.2', page: 'setting', mic: 'timbale mic', loudest: 'the hardest rimshot' }),
   {
     id: 'tb.set.3',
     page: 'setting',
@@ -140,7 +130,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Where does part of a timbale’s head sound leave, besides from the top of the head?',
     options: ['Through the open lower end of the shell', 'Through the cowbell on the bracket', 'Nowhere — the shell is closed underneath'],
     correct: 'Through the open lower end of the shell',
-    explain: 'The head pushes the air in the shallow shell down and out of the open lower end — which is why one engineer mics the pair from beneath.',
+    explain: 'The head pushes the air in the shallow shell down and out of the open lower end — which is why miking the pair from beneath is another idea to try.',
     why: {
       'Through the cowbell on the bracket': 'The bell is a separate instrument that spills into the mics; it does not carry the head’s sound.',
       'Nowhere — the shell is closed underneath': 'Timbale shells are open at the bottom.',
@@ -198,24 +188,24 @@ const scenarios: MikingScenario[] = [
     id: 'tb.mic.4',
     page: 'microphone',
     prompt: 'A compact dynamic is suggested for close stage work, a condenser for a broader view. What decides the choice?',
-    options: ['The model’s pattern, size, mount, power and peak level for this job', 'The type alone: dynamics are rugged and condensers are more natural', 'The brand the band used on its last tour'],
+    options: ['The model’s pattern, size, mount, power and peak level for this job', 'The type alone: dynamics are rugged and condensers are more natural', 'The brand the band happened to use on its last tour'],
     correct: 'The model’s pattern, size, mount, power and peak level for this job',
     explain: 'Use actual model specifications. A transducer class does not guarantee warmth, isolation, resilience to every peak or safety from a stick.',
     why: {
       'The type alone: dynamics are rugged and condensers are more natural': 'Those are stereotypes to test. The specific model’s properties decide.',
-      'The brand the band used on its last tour': 'A tour case shows one workable choice, not a rule.',
+      'The brand the band happened to use on its last tour': 'A tour case shows one workable choice, not a rule.',
     },
   },
   {
     id: 'tb.place.1',
     page: 'placement',
     prompt: 'In your one shared mic, the 15 in drum dominates the 14 in. What do you try first?',
-    options: ['Shift or aim the mic toward the quieter drum, then listen', 'Turn the gain up until the 14 in comes through', 'Ask the player to play the 15 in more softly'],
+    options: ['Shift or aim the mic toward the quieter drum, then listen', 'Turn the gain up until the 14 in comes through clearly', 'Ask the player to play the 15 in more softly all night'],
     correct: 'Shift or aim the mic toward the quieter drum, then listen',
     explain: 'Moving a mic toward one drum tends to raise that drum relative to the other. If one mic still cannot balance them, use separate spots.',
     why: {
-      'Turn the gain up until the 14 in comes through': 'Gain lifts both drums together; the balance stays the same.',
-      'Ask the player to play the 15 in more softly': 'The part is the player’s. Balance it with the mic’s position.',
+      'Turn the gain up until the 14 in comes through clearly': 'Gain lifts both drums together; the balance stays the same.',
+      'Ask the player to play the 15 in more softly all night': 'The part is the player’s. Balance it with the mic’s position.',
     },
   },
   {
@@ -227,19 +217,19 @@ const scenarios: MikingScenario[] = [
     explain: 'A rimshot target is in the stick path: a mic there will be struck. Start outside the whole stick arc.',
     why: {
       'Above the pair on the audience side': 'That is a recommended starting region, outside the stick path.',
-      'Between the shells on the audience side': 'That is another starting region one engineer uses — if the mount is secure.',
+      'Between the shells on the audience side': 'That is another starting region to try — if the mount is secure.',
     },
   },
   {
     id: 'tb.place.3',
     page: 'placement',
-    prompt: 'A band engineer puts a mic “right between the shells”. Can you copy that exactly?',
-    options: ['Only as a starting idea — no distance or aim was published', 'Yes — a mic wedged between the shells sounds the same as theirs', 'Yes — it guarantees the heads and the cáscara together'],
-    correct: 'Only as a starting idea — no distance or aim was published',
-    explain: 'The account documents a between-shell mic, not its pattern, distance or aim. Try it as a perspective on the shell area, and check that the heads and rimshots stay usable.',
+    prompt: 'One idea puts a mic “right between the shells”, with no distance or aim given. Is it worth trying?',
+    options: ['Yes — as a view of the shell area, secured and checked by ear', 'No — without a distance or an aim, it cannot be placed', 'Yes — it captures the heads and the cáscara equally well'],
+    correct: 'Yes — as a view of the shell area, secured and checked by ear',
+    explain: 'We found the idea, not its pattern, distance or aim. Try it as a perspective on the shell area, keep it secure and out of every stick path, and check that the heads and rimshots stay usable.',
     why: {
-      'Yes — a mic wedged between the shells sounds the same as theirs': 'An arbitrary mic wedged there is not equivalent — or necessarily safe or secure.',
-      'Yes — it guarantees the heads and the cáscara together': 'It can favour the cáscara; check the heads and rimshots by ear.',
+      'No — without a distance or an aim, it cannot be placed': 'A region to begin in is enough to start: place it safely, then move it and listen.',
+      'Yes — it captures the heads and the cáscara equally well': 'It can favour the cáscara and the shells; check the heads and rimshots by ear.',
     },
   },
   {
@@ -282,12 +272,12 @@ const scenarios: MikingScenario[] = [
     id: 'tb.ctx.studio',
     page: 'context',
     prompt: 'Studio, extensive percussion. When does a separate shell or overhead mic earn its channel?',
-    options: ['When the shell part or the bells cannot be balanced otherwise', 'Whenever a channel is spare on the desk for it', 'When the engineer wants more options later'],
+    options: ['When the shell part or the bells cannot be balanced otherwise', 'Whenever a channel is spare on the desk, just in case', 'When the engineer wants more options for the mix later'],
     correct: 'When the shell part or the bells cannot be balanced otherwise',
     explain: 'Establish the timbale sound alone first, then add an optional shell or overhead channel only for a demonstrated need — checking mono, duplicated bell pickup and bleed.',
     why: {
-      'Whenever a channel is spare on the desk for it': 'A spare channel is not a reason: every open mic adds overlapping pickup.',
-      'When the engineer wants more options later': 'Options come at a cost in spill and interaction; add a mic for a real need.',
+      'Whenever a channel is spare on the desk, just in case': 'A spare channel is not a reason: every open mic adds overlapping pickup.',
+      'When the engineer wants more options for the mix later': 'Options come at a cost in spill and interaction; add a mic for a real need.',
     },
   },
   {
@@ -380,7 +370,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says “beneath the drums, pointing out toward the rims”. What else do you check before using it live?',
     options: ['The stand legs and feet, and whether it suits a crowded stage', 'The brand of the timbales, so the angle matches them', 'Nothing more — that wording already places the mic exactly where it goes'],
     correct: 'The stand legs and feet, and whether it suits a crowded stage',
-    explain: 'It is one engineer’s studio preference, not a safe default for a crowded stage. Check clearance and stability before anything else.',
+    explain: 'It is a studio idea to try, not a safe default for a crowded stage. Check clearance and stability before anything else.',
     why: {
       'The brand of the timbales, so the angle matches them': 'Brands do not set placement; clearance and the job do.',
       'Nothing more — that wording already places the mic exactly where it goes': 'It names a region and an aim, not a distance; clearance and listening finish the job.',
@@ -466,12 +456,12 @@ const symptoms: Symptom[] = [
     id: 's.mono',
     observation: 'The full setup becomes thin in mono',
     firstChecks: 'Overlapping timbale, shell, accessory and overhead channels.',
-    options: ['Solo and reintroduce one channel at a time; move or aim first', 'Invert the second timbale channel and each overhead to be safe', 'Turn all the channels up together'],
+    options: ['Solo and reintroduce one channel at a time; move or aim first', 'Invert the second timbale channel and each overhead to be safe', 'Turn all the channels up together until it sounds full'],
     correct: 'Solo and reintroduce one channel at a time; move or aim first',
     explain: 'Solo and reintroduce one at a time; move or aim before comparing polarity.',
     why: {
       'Invert the second timbale channel and each overhead to be safe': 'There is no fixed correct polarity; compare each state at matched level.',
-      'Turn all the channels up together': 'More level does not fix a cancellation.',
+      'Turn all the channels up together until it sounds full': 'More level does not fix a cancellation.',
     },
   },
   {
@@ -536,7 +526,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'One compact dynamic above and between the heads, aimed down', ok: true, power: 'none', feedback: 'A recommended starting point; a dynamic needs no phantom.' },
       { id: 'c', label: 'A clip-on condenser on each rim', ok: false, power: 'phantom', feedback: 'It needs phantom power these inputs lack.' },
       { id: 'd', label: 'A small-condenser pair a metre above the drums', ok: false, power: 'phantom', feedback: 'Distant on a loud stage, and it needs phantom power.' },
-      { id: 'e', label: 'Two dynamics beneath the drums among the stand legs', ok: false, power: 'none', feedback: 'One engineer’s studio preference — not a safe default for a crowded stage.' },
+      { id: 'e', label: 'Two dynamics beneath the drums among the stand legs', ok: false, power: 'none', feedback: 'A studio idea to try — not a safe default for a crowded stage.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against stage spill and feedback', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
     explain: 'Two close, dynamic setups pass. What passes is the reasoning: a sensible starting point, clear of every stick, powered by what these inputs can supply.',
@@ -556,36 +546,36 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'What is a timbale?',
-    options: ['A shallow, single-headed drum, played with sticks', 'A deep drum with a head on each end', 'A hand drum held between the knees'],
+    options: ['A shallow, single-headed drum, played with sticks', 'A deep drum with a head stretched over each end', 'A pair of hand drums held between the player’s knees'],
     correct: 'A shallow, single-headed drum, played with sticks',
     explain: 'Timbales are a pair of shallow single-headed drums on a stand, played with sticks on the heads, rims and shells.',
     why: {
-      'A deep drum with a head on each end': 'Timbales are shallow and open at the bottom: one head each.',
-      'A hand drum held between the knees': 'That describes bongos. Timbales stand on a stand and are played with sticks.',
+      'A deep drum with a head stretched over each end': 'Timbales are shallow and open at the bottom: one head each.',
+      'A pair of hand drums held between the player’s knees': 'That describes bongos. Timbales stand on a stand and are played with sticks.',
     },
   },
   {
     id: 'q.2',
     covers: 'instrument',
     prompt: 'What is the cáscara?',
-    options: ['A pattern played on the side of the shell', 'The head of the larger drum', 'The bracket that holds the bell'],
+    options: ['A pattern played on the side of the shell', 'The head of the larger of the two drums', 'The metal bracket that holds the cowbell above the drums'],
     correct: 'A pattern played on the side of the shell',
     explain: 'Players strike the metal shells for cáscara patterns.',
     why: {
-      'The head of the larger drum': 'The cáscara is played on the shell, not the head.',
-      'The bracket that holds the bell': 'That is the cowbell bracket. The cáscara is played on the shell.',
+      'The head of the larger of the two drums': 'The cáscara is played on the shell, not the head.',
+      'The metal bracket that holds the cowbell above the drums': 'That is the cowbell bracket. The cáscara is played on the shell.',
     },
   },
   {
     id: 'q.3',
     covers: 'sound',
     prompt: 'The stick strikes the brass shell. Which part rings?',
-    options: ['The metal shell, a solid-body sound', 'The head, through the shell', 'Only the air in the shell'],
+    options: ['The metal shell, a solid-body sound', 'The head, with the sound carried through the shell', 'Only the air inside the shallow shell'],
     correct: 'The metal shell, a solid-body sound',
     explain: 'The shell and rim are solid-body contributions; the head is the membrane.',
     why: {
-      'The head, through the shell': 'The shell rings on its own; the head is a different source.',
-      'Only the air in the shell': 'The metal shell itself rings.',
+      'The head, with the sound carried through the shell': 'The shell rings on its own; the head is a different source.',
+      'Only the air inside the shallow shell': 'The metal shell itself rings.',
     },
   },
   {
@@ -617,11 +607,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your mic is rated to a very high maximum SPL. What does that tell you about standing by the timbales through a long soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drums stay below the mic’s rating', 'It is safe as long as the mic is nearer the drums than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drums stay below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the drums than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -708,7 +698,7 @@ export const M04C_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. No published source gives a timbale mic distance, so the starting points here are regions to begin in: out of every stick path, then listen. Every pair, part and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. We could not find a recommended timbale mic distance, so the starting points here are regions to begin in: out of every stick path, then listen. Every pair, part and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: SMALL,
     drums: { small: SMALL, large: LARGE },
@@ -776,10 +766,10 @@ export const M04C_LESSON: HandLesson = {
       hdClip: 'Ideas to try with this kind of mic: one on each drum’s far rim, out of the stick path, with the player’s OK. Check for stand or clamp noise, and the bell in both.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is a region where we recommend you begin with that kind of mic. No published source gives a timbale distance, so these are regions to begin in: out of every stick path, then listen. Starting points, not rules.',
+      'What you just did, in words. After our research, each blue zone is a region where we recommend you begin with that kind of mic. We could not find a recommended timbale distance, so these are regions to begin in: out of every stick path, then listen. Starting points, not rules.',
       'The shell-oriented and above-head starting points differ because they favour different surfaces: a part mostly on heads and rimshots may suit a top mic; a continuous cáscara may need a mic nearer the shells. Change one thing at a time and ask for the whole phrase again.',
       'Clearance comes first. Stop the player before moving a stand, clamp or cable; keep every mic and boom outside the widest head, rim, shell and accessory strokes, and nothing where it could drop onto the player. The grey hatched areas show roughly where; recheck after the full-intensity passage.',
-      'A separate percussion overhead — one engineer’s account puts a pair about 91–107 cm (3–3½ ft) above the drums — can cover bells and the whole setup when the part needs it. Bring each extra mic in only for a demonstrated need, and check mono.',
+      'A separate percussion overhead — one starting point is a pair about 91–107 cm (3–3½ ft) above the drums — can cover bells and the whole setup when the part needs it. Bring each extra mic in only for a demonstrated need, and check mono.',
     ],
     context: {
       pose: { p: { x: LARGE.c.x + LARGE.R + 60, y: HEAD_Y - 150, z: LARGE.c.z }, az: 0, el: -35 },
@@ -791,7 +781,7 @@ export const M04C_LESSON: HandLesson = {
         { title: 'WHAT THE PART NEEDS', text: 'Bells, blocks and cymbals may be louder than the heads and enter several mics. A mono PA or off-axis audience may need a centred timbale feed rather than hard-panned drums.' },
         { title: 'MOUNTING', text: 'Stable, properly rated stands and compatible clips only, cables secured with strain relief, nothing that could drop onto the player — checked again after a changeover.' },
       ],
-      closing: 'One engineer’s technique does not transfer unchanged to every PA: feedback depends on the loudspeaker, microphone, room and gain. Place speakers and mics by the actual pattern, decide monitor feeds with the operator, and never provoke feedback.',
+      closing: 'No technique transfers unchanged to every PA: feedback depends on the loudspeaker, microphone, room and gain. Place speakers and mics by the actual pattern, decide monitor feeds with the operator, and never provoke feedback.',
     },
     pairs: [
       {

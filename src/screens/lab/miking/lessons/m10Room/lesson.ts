@@ -104,7 +104,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'You move a room mic farther from the kit. What happens to the balance of kit and room?',
     options: ['The room’s share tends to grow', 'The kit’s share tends to grow', 'The balance stays where it was'],
     correct: 'The room’s share tends to grow',
-    explain: 'Farther away, the direct sound weakens while the reflections arrive closer behind it: the room’s share grows — whether that helps depends on the room.',
+    explain: 'The direct sound falls about 6 dB each time the distance doubles, while the room’s reverberant sound stays roughly even — so farther out, the room takes over. Whether that helps depends on the room.',
     why: {
       'The kit’s share tends to grow': 'Farther from the kit, its direct sound weakens: the room’s share grows, not the kit’s.',
       'The balance stays where it was': 'Distance changes the direct sound much more than the room’s answer, so the balance moves.',
@@ -152,7 +152,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · Which mic hears the room’s reflections the most, compared with the kit’s direct sound?',
     options: ['The one farthest from the kit', 'The one closest to the kit', 'The one with the largest body'],
     correct: 'The one farthest from the kit',
-    explain: 'Farther away the direct sound is weaker and the reflections arrive close behind it: the room’s share grows.',
+    explain: 'The direct sound falls about 6 dB each time the distance doubles, while the room’s reverberant sound stays roughly even — so farther out, the room’s share grows.',
     why: {
       'The one closest to the kit': 'Close up, the direct sound is strong and the reflections comparatively weak.',
       'The one with the largest body': 'Size says nothing about the room’s share; distance and pattern do.',
@@ -209,13 +209,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'rm.place.1',
     page: 'placement',
-    prompt: 'A starting point says “about 1 m in front”. In front of what?',
-    options: ['The kick’s front head, as the zone names it', 'Whichever part of the kit you choose to measure from', 'The nearest wall, measured into the room'],
-    correct: 'The kick’s front head, as the zone names it',
-    explain: 'A distance only means something with its reference — here the kick’s front head. Every readout here names it.',
+    prompt: 'A starting point says “about 1 m in front of the kick’s front head”. A helper measures the 1 m from the snare instead. What goes wrong?',
+    options: ['The mic lands somewhere else: re-measure from the front head', 'Nothing: 1 m in front of the kit is the same from each drum', 'Nothing, as long as the mic is then aimed at the snare'],
+    correct: 'The mic lands somewhere else: re-measure from the front head',
+    explain: 'A distance only means something with its reference. The snare sits back by the player, behind the kick’s front head, so the same 1 m puts the mic nearer the kit than the starting point means. Every readout here names its reference.',
     why: {
-      'Whichever part of the kit you choose to measure from': 'Measured from the cymbals, the same number puts the mic somewhere else entirely. Use the named reference.',
-      'The nearest wall, measured into the room': 'The reference is the kit, not the room’s walls.',
+      'Nothing: 1 m in front of the kit is the same from each drum': 'The drums sit at different depths: the snare is back by the player, the kick’s front head well forward. The same number lands somewhere else.',
+      'Nothing, as long as the mic is then aimed at the snare': 'Aim is a separate check. The distance is still read from the wrong surface.',
     },
   },
   {
@@ -233,13 +233,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'rm.place.3',
     page: 'placement',
-    prompt: 'A corner pair 4.6 m out worked in one session. Is it a rule for room mics?',
-    options: ['No — one production example, for that room and goal', 'Yes — the corners are where room mics belong in a room', 'Yes, if the room is about the same size'],
-    correct: 'No — one production example, for that room and goal',
-    explain: 'It is one example, not a prescription. Corners can add width — or weaken the centre and exaggerate the room’s faults. Listen.',
+    prompt: 'A corner pair 4.6 m out worked well in one session. Is it worth trying in your room?',
+    options: ['Yes — as an idea to try, judged in this room by ear', 'Yes — the corners are where room mics belong in a room', 'No — a spot that worked in one room only suits that room'],
+    correct: 'Yes — as an idea to try, judged in this room by ear',
+    explain: 'It is one example, not a prescription — but a good one to try. Corners can add width, or weaken the centre and exaggerate the room’s faults. Listen.',
     why: {
       'Yes — the corners are where room mics belong in a room': 'A corner is one choice; it can help or hurt. No position is the room-mic position.',
-      'Yes, if the room is about the same size': 'The same size is not the same room: surfaces, the kit and the goal differ.',
+      'No — a spot that worked in one room only suits that room': 'Rooms differ, so it is not a rule — but it is still a sensible idea to try and judge by ear.',
     },
   },
   {
@@ -305,13 +305,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'rm.two.1',
     page: 'twoMic',
-    prompt: 'The room mic hears the snare about 3 ms after the overhead. Is that a fault to fix?',
-    options: ['Not by itself — the delay is part of the room sound', 'Yes — it has to be lined up with the overhead before mixing', 'Yes — flip its polarity to remove it'],
-    correct: 'Not by itself — the delay is part of the room sound',
+    prompt: 'The room mic hears the snare about 3 ms after the overhead, and the band likes the space it adds. Can you keep that delay?',
+    options: ['Yes — a room mic is late by design; judge the blend by ear', 'No — it has to be lined up with the overhead before mixing', 'No — flip its polarity first, which takes the delay away'],
+    correct: 'Yes — a room mic is late by design; judge the blend by ear',
     explain: 'A room mic is late by design. Listen to the blend in stereo and mono; move it if the kit loses body — but do not align it automatically.',
     why: {
-      'Yes — it has to be lined up with the overhead before mixing': 'Aligning it changes the very relationship that made the room mic worth having. It is a creative option, not a fix.',
-      'Yes — flip its polarity to remove it': 'Polarity flips the sign; it does not remove a delay.',
+      'No — it has to be lined up with the overhead before mixing': 'Aligning it changes the very relationship that made the room mic worth having. It is a creative option, not a fix.',
+      'No — flip its polarity first, which takes the delay away': 'Polarity flips the sign; it does not remove a delay.',
     },
   },
   {
@@ -542,6 +542,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
+  sound: { prompt: 'Before you step through: a room mic 5 m from the kit and an overhead 1 m away. Which hears the snare first, and by about how much?', options: ['The overhead, by about 12 ms', 'The room mic, since it hears the room', 'Both at once: sound arrives everywhere together'], after: 'Step through: the direct sound comes first, then the reflections. Every 34 cm of extra path is about 1 ms.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE round the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a room mic a long stride farther from the kit. What changes?', options: ['More room, less direct kit', 'More direct kit, less room', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is behind and to one side of a room mic that faces the kit. How can its pattern help?', options: ['Turn it, or choose a pattern, so a null faces the PA', 'It cannot help — the PA is behind it', 'Only turning the PA down helps'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -614,11 +615,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your room mic is rated to 140 dB SPL. What does that tell you about sitting in the room through long full-kit passes?',
-    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe while the kit stays below the mic’s 140 dB', 'It is safe as long as you sit near the room mic'],
+    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the kit stays below the mic’s 140 dB', 'It is safe as long as you sit near the room mic'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the kit stays below the mic’s 140 dB': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
+      'It is safe for a while, as long as the kit stays below the mic’s 140 dB': 'A mic’s rating is about the mic. Hearing risk depends on the level where you are and for how long.',
       'It is safe as long as you sit near the room mic': 'Where the mic is says nothing about your ears. Measure where you listen, and limit the time.',
     },
   },

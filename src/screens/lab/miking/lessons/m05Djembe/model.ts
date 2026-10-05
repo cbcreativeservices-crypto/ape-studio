@@ -125,7 +125,7 @@ export const DJ_ZONES: DocumentedZone[] = [
       top: { u0: DIAG_N.x * COP_DIST - 80, u1: DIAG_N.x * COP_DIST + 80, v0: -80, v1: 80, round: true },
     },
     start: { p: { x: DIAG_N.x * COP_DIST, y: HEAD_Y + DIAG_N.y * COP_DIST, z: 0 }, az: 0, el: -67 },
-    tendency: 'The snap of the hand on the head with a full bass in one engineer’s comparison — more of the whole drum and of the room than a very close mic. Test it before adding a second.',
+    tendency: 'The snap of the hand on the head with a full bass, as a starting point to compare — more of the whole drum and of the room than a very close mic. Test it before adding a second.',
     checks: ['The bass the top mic already carries', 'Room and other players in the pickup', 'Clear of the hands and the player’s head'],
   },
   {

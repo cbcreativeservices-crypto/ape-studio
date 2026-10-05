@@ -149,7 +149,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A figure-8 ribbon can smooth a banjo’s attack. What must you check before using one live?',
     options: ['Where the monitors are: a figure-8 hears its back as well', 'That the banjo has a resonator, or it will not work', 'Nothing: a ribbon rejects the other sources on a stage'],
     correct: 'Where the monitors are: a figure-8 hears its back as well',
-    explain: 'A figure-8 picks up equally from the rear. With floor monitors behind it, it can be unsuitable — one engineer rules it out for exactly that reason.',
+    explain: 'A figure-8 picks up equally from the rear. With floor monitors behind it, it can be unsuitable — rule it out for exactly that reason.',
     why: {
       'That the banjo has a resonator, or it will not work': 'The back of the banjo is not the issue; the back of the MIC is.',
       'Nothing: a ribbon rejects the other sources on a stage': 'A figure-8 rejects only at its sides; its back hears as well as its front.',
@@ -159,13 +159,13 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.1`,
     page: 'placement',
-    prompt: 'One starting point says about 3 in from the head’s centre, another 30–40 cm from the neck junction. Are they the same position?',
-    options: ['No: different places, for different jobs', 'Yes: both are measured from the banjo’s bridge', 'Yes, as long as the mic faces the banjo'],
-    correct: 'No: different places, for different jobs',
-    explain: 'Close in front of the head gives attack and projection; the neck junction a blend of strings, fingers and head. Move between them by ear — they are not one coordinate.',
+    prompt: 'One starting point says about 3 in from the head’s centre, another 30–40 cm from the neck junction. Can both be good places to begin?',
+    options: ['Yes: different places, for different jobs', 'No: only one of two starting points can be right', 'Yes, because both are measured from the bridge'],
+    correct: 'Yes: different places, for different jobs',
+    explain: 'Close in front of the head gives attack and projection; the neck junction a blend of strings, fingers and head. Both are good places to begin — move between them by ear; they are not one coordinate.',
     why: {
-      'Yes: both are measured from the banjo’s bridge': 'One is read from the head’s centre, the other from the neck junction — neither from the bridge.',
-      'Yes, as long as the mic faces the banjo': 'Aim is a separate thing. These are different points and distances.',
+      'No: only one of two starting points can be right': 'Starting points are places to begin, not answers: each suits a different job. Try both and listen.',
+      'Yes, because both are measured from the bridge': 'Right verdict, wrong reason: one is read from the head’s centre, the other from the neck junction — neither from the bridge.',
     },
   },
   {
@@ -321,11 +321,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'What is a banjo’s head?',
-    options: ['A tensioned membrane, like a drumhead, over the pot', 'The peghead at the far end of the neck', 'A wooden top with a sound hole in it'],
+    options: ['A tensioned membrane, like a drumhead, over the pot', 'The peghead at the far end of the neck, with the tuners', 'A wooden top with a sound hole in it'],
     correct: 'A tensioned membrane, like a drumhead, over the pot',
     explain: 'The head is stretched over the round pot by a hoop and hooks — a drumhead. The bridge stands on it.',
     why: {
-      'The peghead at the far end of the neck': 'That holds the tuners. The head is the membrane on the pot.',
+      'The peghead at the far end of the neck, with the tuners': 'That holds the tuners. The head is the membrane on the pot.',
       'A wooden top with a sound hole in it': 'That is a guitar. A banjo has a membrane head instead.',
     },
   },
@@ -357,12 +357,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'What does an open back change?',
-    options: ['More sound leaves behind the pot, into the player', 'The head stops vibrating altogether', 'The strings sound an octave lower'],
+    options: ['More sound leaves behind the pot, into the player', 'The head stops vibrating altogether once it is open', 'The strings sound an octave lower than with a resonator'],
     correct: 'More sound leaves behind the pot, into the player',
     explain: 'Without a resonator, the back of the head radiates straight into the player, whose body colours it.',
     why: {
-      'The head stops vibrating altogether': 'The head vibrates the same; where the sound goes changes.',
-      'The strings sound an octave lower': 'Pitch is set by the strings. The back changes where sound goes.',
+      'The head stops vibrating altogether once it is open': 'The head vibrates the same; where the sound goes changes.',
+      'The strings sound an octave lower than with a resonator': 'Pitch is set by the strings. The back changes where sound goes.',
     },
   },
   {

@@ -15,6 +15,7 @@
  * lab is fully silent); no invented curves; no dogma words except safety.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { KICK_MODEL } from './geometry.ts';
 import { KICK_DIMS, KICK_ZONES, L } from './model.ts';
 import { KICK_COPY } from './copy.ts';
@@ -98,18 +99,7 @@ const scenarios: MikingScenario[] = [
       'Ask the drummer to swap in a ported head for the show before you start': 'The heads are the player’s choice, and the lesson works with the drum as it is. Outside pickup suits an intact head.',
     },
   },
-  {
-    id: 'k.inst.2',
-    page: 'setting',
-    prompt: 'Your kick mic is rated to 174 dB SPL. Does that tell you how long you can safely stand by the drum during soundcheck?',
-    options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for the people next to it', 'Yes, if the mic is inside the drum and you are outside it'],
-    correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
-    why: {
-      'Yes — anything below the mic’s rating is safe for the people next to it': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, if the mic is inside the drum and you are outside it': 'A mic inside the drum is not a hearing meter. Measure where the person listens, and keep levels, repeats and time down.',
-    },
-  },
+  micRatingCheck({ id: 'k.inst.2', page: 'setting', mic: 'kick mic', loudest: 'the hardest kick' }),
   {
     id: 'k.set.1',
     page: 'setting',
@@ -637,11 +627,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'The kick mic is rated to 174 dB SPL. What does that tell you about standing by the drum through a long soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the drum stays below the mic’s 174 dB', 'It is safe as long as the mic itself is inside the drum'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drum stays below the mic’s 174 dB', 'It is safe as long as the mic itself is inside the drum'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drum stays below the mic’s 174 dB': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic itself is inside the drum': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

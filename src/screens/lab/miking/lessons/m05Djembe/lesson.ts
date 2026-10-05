@@ -9,6 +9,7 @@
  * that page's contract.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { DJ_MODEL, DJ_WORDS } from './geometry.ts';
 import { DJEMBE, DJ_DIMS as D, DJ_ZONES, HEAD_Y } from './model.ts';
@@ -42,7 +43,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Placement Studio',
     goal: 'Start where we recommend you begin — one mic above the head first; a low mic only when the opening is clear — outside every hand, knee and foot; then move it and see what changes.',
     credit: { scenarios: ['dj.place.1', 'dj.place.2', 'dj.place.3', 'dj.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different recommended starting points, and answer the four checks. The worked example earns nothing on its own — it is there to read.' },
-    takeaway: 'Two published starting points sit very close and quite far above the head: different cases, not rules. If one mic carries enough bass, a second is unnecessary; a low mic only where the opening is clear.',
+    takeaway: 'Two starting points sit very close and quite far above the head: different cases, not rules. If one mic carries enough bass, a second is unnecessary; a low mic only where the opening is clear.',
   },
   context: {
     title: 'Studio or live',
@@ -54,7 +55,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Two microphones',
     goal: 'With a top mic and a low or under mic, see how the arrival-time difference places comb-filter notches — and what polarity does and does not change.',
     credit: { scenarios: ['dj.two.1', 'dj.two.2', 'dj.two.3', 'dj.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'The top and bottom mics hear different parts of the sound at different times. A polarity flip is a diagnostic option, not automatically correct — never invert a channel just because it is below the drum.',
+    takeaway: 'The top and low mics hear different parts of the sound at different times — and start opposite, so flipping one is a common first thing to try, never a rule. Polarity flips the sign; it does not remove a delay: compare both states in mono.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -86,18 +87,7 @@ const scenarios: MikingScenario[] = [
       'The rope tuning, so the drum stays in tune while playing': 'Clamp nothing to the ropes, but the space that moves is the player’s and the drum’s.',
     },
   },
-  {
-    id: 'dj.set.2',
-    page: 'setting',
-    prompt: 'Your djembe mic is rated to a very high maximum SPL. Does that tell you how long you can sit beside the drum through soundcheck?',
-    options: ['No — that is the mic’s distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for people nearby', 'Yes, as long as the mic is closer to the drum than you are'],
-    correct: 'No — that is the mic’s distortion limit, not a hearing limit',
-    explain: 'Human noise-exposure guidance is separate from the mic’s peak SPL rating. A widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time — manage loud rehearsals.',
-    why: {
-      'Yes — anything below the mic’s rating is safe for people nearby': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as the mic is closer to the drum than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
-    },
-  },
+  micRatingCheck({ id: 'dj.set.2', page: 'setting', mic: 'djembe mic', loudest: 'the loudest slap' }),
   {
     id: 'dj.set.3',
     page: 'setting',
@@ -198,21 +188,21 @@ const scenarios: MikingScenario[] = [
     id: 'dj.mic.4',
     page: 'microphone',
     prompt: 'Does a condenser automatically overload on a djembe, or a dynamic automatically sound dull?',
-    options: ['No — check the actual model’s peak level and response', 'Yes — condensers overload on a hand drum played this hard', 'Yes — dynamics lose the slap'],
+    options: ['No — check the actual model’s peak level and response', 'Yes — condensers overload on a hand drum played this hard', 'Yes — a dynamic loses the slap’s detail on a djembe'],
     correct: 'No — check the actual model’s peak level and response',
     explain: 'Do not infer that every condenser overloads or every dynamic is dull. Pattern, response, maximum SPL, size and mounting matter more than a transducer stereotype.',
     why: {
       'Yes — condensers overload on a hand drum played this hard': 'That depends on the model’s rated peak level and where it sits.',
-      'Yes — dynamics lose the slap': 'A dynamic can serve above or below; judge the model and its position.',
+      'Yes — a dynamic loses the slap’s detail on a djembe': 'A dynamic can serve above or below; judge the model and its position.',
     },
   },
   {
     id: 'dj.place.1',
     page: 'placement',
-    prompt: 'One published top mic sits 5–10 cm above the head; another about 41 cm from it. Which is right?',
+    prompt: 'Two starting points: a top mic 5–10 cm above the head, or one about 41 cm from it. Which is right?',
     options: ['Both are case examples — try one, then the other, and listen', 'The closer one: the nearer mic is the more accurate of the two', 'The farther one: close mics sound thin'],
     correct: 'Both are case examples — try one, then the other, and listen',
-    explain: 'Published distances are examples conditioned on the drum, its height and safe clearance — not rules. Nearer raises direct sound but can exaggerate contact; farther integrates the strokes with more room.',
+    explain: 'These distances are examples conditioned on the drum, its height and safe clearance — not rules. Nearer raises direct sound but can exaggerate contact; farther integrates the strokes with more room.',
     why: {
       'The closer one: the nearer mic is the more accurate of the two': 'Nearer can exaggerate contact and narrow the balance of strokes. Test it.',
       'The farther one: close mics sound thin': 'Not every close mic sounds thin. Try both, one change at a time.',
@@ -329,13 +319,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'dj.two.3',
     page: 'twoMic',
-    prompt: 'Should the low mic be inverted because it sits below the drum?',
-    options: ['Not by rule — compare both states, in mono, on the whole phrase', 'Yes — a mic below a drum is the one to invert, as a rule of thumb', 'Yes, but only when it is closer than the top mic'],
-    correct: 'Not by rule — compare both states, in mono, on the whole phrase',
-    explain: 'Do not permanently reverse a channel based only on its being below the drum. Move or aim first, compare the switch at actual levels in mono, across bass, tones and slaps.',
+    prompt: 'A top mic over the head and a low mic at the open foot. Is flipping the low mic a sensible first thing to try?',
+    options: ['Yes — the two start opposite; then compare both states by ear', 'No — a mic below a drum stays at normal polarity', 'Yes — and once flipped, it needs no further checking'],
+    correct: 'Yes — the two start opposite; then compare both states by ear',
+    explain: `As the head moves down, the air above it thins while air is pushed out of the foot. ${OPPOSITE_SIDES_POLARITY} Compare across bass, tones and slaps.`,
     why: {
-      'Yes — a mic below a drum is the one to invert, as a rule of thumb': 'There is no such rule. Compare both states by ear.',
-      'Yes, but only when it is closer than the top mic': 'Distance sets the delay, not a fixed polarity. Compare both states.',
+      'No — a mic below a drum stays at normal polarity': 'The head and the foot push the air opposite ways at the same instant, so the pair usually starts opposite. Nothing fixes the setting — check both states.',
+      'Yes — and once flipped, it needs no further checking': 'Flipping is where to start, not a rule: the delay between the mics can make either state the better one. Compare both by ear.',
     },
   },
   {
@@ -442,12 +432,12 @@ const symptoms: Symptom[] = [
     id: 's.vanish',
     observation: 'The bass vanishes when the two mics combine',
     firstChecks: 'Does each channel alone have body?',
-    options: ['Each channel alone; then reposition and compare polarity', 'Invert the low mic, since it sits below the drum', 'Turn the low mic up until the bass returns'],
+    options: ['Each channel alone; then reposition and compare polarity', 'Invert the low mic, since it sits below the drum', 'Turn the low mic up until the bass returns to the mix'],
     correct: 'Each channel alone; then reposition and compare polarity',
     explain: 'Reposition or aim, then compare polarity at actual levels in mono. No mandatory inversion.',
     why: {
-      'Invert the low mic, since it sits below the drum': 'Never invert by rule. Compare both states at matched level.',
-      'Turn the low mic up until the bass returns': 'More level does not fix a cancellation.',
+      'Invert the low mic, since it sits below the drum': 'Flipping is a common first thing to try, never a rule: compare both states at matched level.',
+      'Turn the low mic up until the bass returns to the mix': 'More level does not fix a cancellation.',
     },
   },
   {
@@ -556,11 +546,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'What is a djembe?',
-    options: ['A single-headed goblet drum, open at the bottom', 'A two-headed drum played with sticks', 'A pair of small drums joined by a block'],
+    options: ['A single-headed goblet drum, open at the bottom', 'A two-headed drum, played with a pair of thin sticks', 'A pair of small drums joined by a block'],
     correct: 'A single-headed goblet drum, open at the bottom',
     explain: 'A djembe is a single-headed goblet-shaped hand drum with an open lower end.',
     why: {
-      'A two-headed drum played with sticks': 'A djembe has one head and is played with the hands.',
+      'A two-headed drum, played with a pair of thin sticks': 'A djembe has one head and is played with the hands.',
       'A pair of small drums joined by a block': 'That describes bongos.',
     },
   },
@@ -568,11 +558,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'What do the ropes on a djembe do?',
-    options: ['Pull the head tight: they tune it', 'Hold the foot to the bowl', 'Mute the bass for a dry sound'],
+    options: ['Pull the head tight: they tune it', 'Hold the carved foot onto the bowl', 'Mute the bass for a dry sound'],
     correct: 'Pull the head tight: they tune it',
     explain: 'Ropes laced between two rings pull the head tight — the tuning. Clamp nothing to them.',
     why: {
-      'Hold the foot to the bowl': 'The shell is carved in one piece; the ropes tune the head.',
+      'Hold the carved foot onto the bowl': 'The shell is carved in one piece; the ropes tune the head.',
       'Mute the bass for a dry sound': 'The ropes tension the head; they do not mute it.',
     },
   },
@@ -592,23 +582,23 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'Where does a lot of the djembe’s bass leave the drum?',
-    options: ['Out of the open foot, at the bottom', 'Through the ropes on the bowl', 'Only up from the head'],
+    options: ['Out of the open foot, at the bottom', 'Through the gaps in the ropes on the bowl', 'Only up from the head, toward the player'],
     correct: 'Out of the open foot, at the bottom',
     explain: 'A lot of bass resonates out of the bottom of the drum.',
     why: {
-      'Through the ropes on the bowl': 'The ropes tune the head; the bass leaves through the open foot.',
-      'Only up from the head': 'The head radiates the slaps and tones; much of the bass leaves at the bottom.',
+      'Through the gaps in the ropes on the bowl': 'The ropes tune the head; the bass leaves through the open foot.',
+      'Only up from the head, toward the player': 'The head radiates the slaps and tones; much of the bass leaves at the bottom.',
     },
   },
   {
     id: 'q.5',
     covers: 'setting',
     prompt: 'The djembe rests flat on the floor. Where can a low mic go?',
-    options: ['Nowhere under it — keep one good top mic', 'Under the foot, slid in from the side', 'Inside the bowl, through the opening'],
+    options: ['Nowhere under it — keep one good top mic', 'Under the foot, slid in from the side of it', 'Inside the bowl, through the opening'],
     correct: 'Nowhere under it — keep one good top mic',
     explain: 'Do not place a mic underneath a drum resting on the floor or prop it up; keep one well-placed top mic.',
     why: {
-      'Under the foot, slid in from the side': 'That blocks the opening of a resting drum.',
+      'Under the foot, slid in from the side of it': 'That blocks the opening of a resting drum.',
       'Inside the bowl, through the opening': 'Nothing goes into the drum.',
     },
   },
@@ -617,11 +607,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your mic is rated to a very high maximum SPL. What does that tell you about sitting beside the djembe through a long soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the drum stays below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the drum stays below the mic’s rating', 'It is safe as long as the mic is nearer the drum than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the drum stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the drum stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the drum than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },
@@ -655,7 +645,7 @@ export const M05_LESSON: HandLesson = {
     stages: [
       { title: 'The hand strikes', text: 'The hand strikes the head — the palm and flat fingers near the centre for a bass, closer to the edge for a tone or a slap. That brief contact is where the ATTACK begins.' },
       { title: 'The head is pushed in', text: 'The head bows down into the drum — most at the centre, not at all at the rim: its lowest vibration shape, drawn here many times larger than it really moves. Then it springs back and rings.' },
-      { title: 'The air is pushed down', text: 'The head pushes the air in the bowl down through the narrow waist toward the foot. Resting on the floor, the foot’s opening meets the floor.', ported: 'The head pushes the air in the bowl down through the narrow waist and out of the open foot. Raised, the opening is clear of the floor.' },
+      { title: 'The air is pushed down', text: 'The head pushes the air in the bowl down through the narrow waist toward the foot. Resting on the floor, the foot’s opening meets the floor.', ported: 'The head pushes the air in the bowl down through the narrow waist and out of the open foot — while the air above the head thins: a mic above and a mic at the foot hear opposite pushes. Raised, the opening is clear of the floor.' },
       { title: 'Sound leaves the drum', text: 'Sound leaves from the head — the slaps and tones — and around the foot, where the opening meets the floor. The air in the bowl sets the deep bass note.', ported: 'Sound leaves from the head — the slaps and tones — and out of the open foot, where a lot of the bass resonates. The air in the bowl sets the deep bass note.' },
     ],
     attack: 'The start of the sound: the hand on the head. A mic close above the head and facing it tends to hear more of the slaps and tones — and can exaggerate contact if it is very close.',
@@ -706,7 +696,7 @@ export const M05_LESSON: HandLesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. The published examples here are different cases — very close and quite far, top and bottom — not rules: test one mic before adding another. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. The examples here are different cases — very close and quite far, top and bottom — not rules: test one mic before adding another. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: DJEMBE,
     shellLook: 'goblet',
@@ -771,7 +761,7 @@ export const M05_LESSON: HandLesson = {
       hdSdc: 'Ideas to try with this kind of mic: above the outer edge, about 41 cm from the head’s centre, pointing across it — more of the whole drum and the room. Check the bass it already carries.',
     },
     placeLearn: [
-      'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic. The two published top positions — very close, and quite far — are different case examples, not rules; the low and under positions only exist when the drum is raised clear of the floor.',
+      'What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic. The two top positions — very close, and quite far — are different case examples, not rules; the low and under positions only exist when the drum is raised clear of the floor.',
       'Change one variable at a time while the player plays the same full passage. Nearer raises direct sound but can exaggerate contact; backing off in a good room integrates the strokes with more room and more of the band. A fixed angle does not mean a fixed tone across drums and patterns.',
       'Clearance comes first. Stop the player before moving any mic, stand, cable or support. Map the hand, wrist, knee, leg and drum-motion envelope; keep the low mic and cable out of foot traffic and from under an unstable instrument. The grey hatched areas show roughly where to keep clear.',
       'A low mic is a focused supplement, often narrower and with less hand articulation — not a one-mic solution. If there is no safe, repeatable low position, keep one well-placed top or front mic.',

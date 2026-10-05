@@ -61,7 +61,7 @@ export function c07ZoneSpecs(sc: GuitarScene): ZoneSpec[] {
       aimAtR: { r: 130, prov: AIMED },
       micTypeIds: STAND,
       start: { d: 300 },
-      tendency: 'A broader view of the top with less of the hole — one engineer’s guitar start, worth trying here. If the low end booms, turn a little away from the sound hole.',
+      tendency: 'A broader view of the top with less of the hole — a guitar starting point, worth trying here. If the low end booms, turn a little away from the sound hole.',
       checks: ['The fretting hand round the cutaway', 'Boom on the low notes: turn away from the hole', 'Compare with the neck-joint start at matched levels'],
     },
     {

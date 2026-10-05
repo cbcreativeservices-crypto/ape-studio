@@ -4,6 +4,7 @@
  * Every number here is from snare/SOURCES.md or a named drawing default.
  */
 import type { LessonCopy } from '../../engine/model/copy.ts';
+import { OPPOSITE_SIDES_POLARITY } from '../../engine/model/sharedItems.ts';
 
 export const SNARE_COPY: LessonCopy = {
   variantKey: 'SNARES',
@@ -131,7 +132,7 @@ export const SNARE_COPY: LessonCopy = {
     },
     learn: [
       'A bottom mic is a choice for more control of the wires’ sound — not a requirement. Start with a useful top mic, bring the bottom one in at a modest level, and keep it only if it improves the snare in the whole kit.',
-      'When it goes in: hear the pair in MONO at the intended levels, and compare both polarity states at a matched level — a louder state almost always sounds “better” at first. Inverting the bottom mic usually helps, but not always: the result depends on where the mics are. Check it with the overheads and the other open mics, too.',
+      `${OPPOSITE_SIDES_POLARITY} A louder state almost always sounds “better” at first. Check it with the overheads and the other open mics, too.`,
     ],
     warn: 'The top and bottom mics hear DIFFERENT surfaces — the batter head’s crack and the wires’ buzz — so this simplified graph shows only the shared part of the sound, not what the pair will sound like. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone — read the depths as illustrative. Judge the pair by ear, in mono, at matched levels.',
   },

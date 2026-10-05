@@ -13,6 +13,7 @@
  * levers clear.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import { OPPOSITE_SIDES_POLARITY } from '../../engine/model/sharedItems.ts';
 import { C04_MODEL, C04_ZONES } from './geometry.ts';
 import { C04_MICS } from './model.ts';
 
@@ -325,7 +326,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'When is a rear mic on the steel’s amp worth trying?',
     options: ['Only on a cabinet with a real open back', 'On a closed-back amp just as on an open one', 'Only when the amp is tilted back'],
     correct: 'Only on a cabinet with a real open back',
-    explain: 'A rear mic needs sound coming out of the back. On a closed cabinet, there is little to hear behind it.',
+    explain: `A rear mic needs sound coming out of the back. On a closed cabinet, there is little to hear behind it. On an open back: ${OPPOSITE_SIDES_POLARITY}`,
     why: {
       'On a closed-back amp just as on an open one': 'A closed back keeps the rear sound in the box.',
       'Only when the amp is tilted back': 'Tilt has nothing to do with an open back.',
@@ -634,11 +635,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your mic is rated for a very high SPL. What does that tell you about sitting by a loud steel amp all through soundcheck?',
-    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe while the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer to the amp than you are'],
+    options: ['Nothing — it is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the amp stays below the level of the mic’s rating', 'It is safe as long as the mic is closer to the amp than you are'],
     correct: 'Nothing — it is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — and below it is not a promise. Measure where the person listens.',
     why: {
-      'It is safe while the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit.',
+      'It is safe for a while, as long as the amp stays below the level of the mic’s rating': 'A mic rating is not a hearing limit.',
       'It is safe as long as the mic is closer to the amp than you are': 'Where the mic sits says nothing about your ears.',
     },
   },

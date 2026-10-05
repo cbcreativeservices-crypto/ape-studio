@@ -43,7 +43,7 @@ export function c14ZoneSpecs(sc: LuteScene): LuteZoneSpec[] {
       box: { min: v(-3000, 0, -3000), max: v(3000, 3000, 3000), prov: ill('below the bridge: the mic is lower than the bridge in front view') },
       micTypeIds: ['sdcCard'],
       start: { p: v(-130, 0, 210), aimAt: at.jawari },
-      tendency: 'A close, open view of the bridge and the board — the buzz and the attack up front, with the room still around it. One engineer chose it in a noisy hall to get close; it is a choice for that room, not a rule.',
+      tendency: 'A close, open view of the bridge and the board — the buzz and the attack up front, with the room still around it. It was chosen in a noisy hall to get close; it is a choice for that room, not a rule.',
       checks: ['Clear of the mizrab hand and the gourd', 'The bridge buzz the player intends — not more', 'What else an omni this close still hears'],
     },
     {

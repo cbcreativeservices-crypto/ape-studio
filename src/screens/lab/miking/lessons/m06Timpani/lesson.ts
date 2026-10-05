@@ -201,9 +201,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'A starting point says about 1 m above the heads. Your readout says 1 m above the floor. Are you in it?',
     options: ['No — the number counts from the heads, not the floor', 'Yes — 1 m is 1 m, wherever it is measured from', 'Yes, as long as the mic is between the two drums'],
     correct: 'No — the number counts from the heads, not the floor',
-    explain: 'A distance only means something with its reference. 1 m above the floor is below the height of most timpani heads.',
+    explain: 'A distance only means something with its reference. The heads here sit about 0.76 m up, so 1 m above the floor is only about 25 cm above them — far closer than the starting point.',
     why: {
-      'Yes — 1 m is 1 m, wherever it is measured from': 'Same number, wrong reference: from the floor, the mic would sit roughly at head height.',
+      'Yes — 1 m is 1 m, wherever it is measured from': 'Same number, wrong reference: from the floor, the mic would sit only about 25 cm above the heads.',
       'Yes, as long as the mic is between the two drums': 'Between the drums is one part; the height counts from the heads.',
     },
   },

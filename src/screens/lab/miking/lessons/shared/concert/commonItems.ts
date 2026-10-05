@@ -13,6 +13,7 @@
  * brand recall. Starting-points voice; no source names (owner 2026-10-04).
  */
 import type { MikingScenario, OrderTask, PageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
+import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 export type Words = {
   /** id prefix ("tp", "cbd", "cs", "tb") */
@@ -26,18 +27,7 @@ export type Words = {
 };
 
 export function hearingCheck(w: Words, page: PageId, id = `${w.p}.set.hear`): MikingScenario {
-  return {
-    id,
-    page,
-    prompt: `The spot mic near ${w.the} is rated to a very high SPL. Does that tell you how long the crew can stand there through rehearsal?`,
-    options: ['No — max SPL is the mic’s distortion limit, not a hearing limit', 'Yes — anything under the mic’s rating is safe for the people near it', 'Yes, as long as the mic is closer to the drum than the people are'],
-    correct: 'No — max SPL is the mic’s distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Hearing risk depends on the level where a person is and for how long: a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more.',
-    why: {
-      'Yes — anything under the mic’s rating is safe for the people near it': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours, measured where they listen.',
-      'Yes, as long as the mic is closer to the drum than the people are': 'Where the mic sits says nothing about the people’s ears. Measure where the person listens, and keep levels and time down.',
-    },
-  };
+  return micRatingCheck({ id, page, mic: `spot mic near ${w.the}`, loudest: w.loudest });
 }
 
 export function quickHearing(w: Words): { id: string; covers: PageId; critical: true; prompt: string; options: string[]; correct: string; explain: string; why: Record<string, string> } {
@@ -46,11 +36,11 @@ export function quickHearing(w: Words): { id: string; covers: PageId; critical: 
     covers: 'setting',
     critical: true,
     prompt: `A spot mic on ${w.the} is rated far above any level in the hall. What does that tell you about a long rehearsal next to it?`,
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the hall stays below the mic’s rating', 'It is safe as long as the mic is much closer to the drum than you are'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the hall stays below the mic’s rating', 'It is safe as long as the mic is much closer to the drum than you are'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the hall stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the hall stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is much closer to the drum than you are': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };

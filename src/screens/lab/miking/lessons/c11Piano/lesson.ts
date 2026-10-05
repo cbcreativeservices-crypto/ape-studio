@@ -12,6 +12,7 @@
  * test/mikingLab4Keys.test.ts.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { FLOOR_Y } from '../shared/piano/pianoSpec.ts';
 import { PIANO_MODEL } from './geometry.ts';
 import { GB, PIANO_ZONES } from './model.ts';
@@ -130,18 +131,7 @@ const scenarios: MikingScenario[] = [
       'Nobody: slide the mic in under the closed lid instead': 'A mic pushed under a closed lid can touch the strings or dampers, or be crushed. Ask, and set the lid first.',
     },
   },
-  {
-    id: 'pn.set.2',
-    page: 'setting',
-    prompt: 'Your piano mic is rated to a very high maximum SPL. Does that tell you how long you can stand by the open piano during a loud soundcheck?',
-    options: ['No — a mic’s max SPL is a distortion limit, not a hearing limit', 'Yes — anything below the mic’s rating is safe for people nearby', 'Yes, as long as the mic is closer to the hammers than you are'],
-    correct: 'No — a mic’s max SPL is a distortion limit, not a hearing limit',
-    explain: 'Max SPL says when the MIC distorts. Close to the hammers a piano can pass 130 dB. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time.',
-    why: {
-      'Yes — anything below the mic’s rating is safe for people nearby': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'Yes, as long as the mic is closer to the hammers than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels, repeats and time down.',
-    },
-  },
+  micRatingCheck({ id: 'pn.set.2', page: 'setting', mic: 'piano mic', loudest: 'the loudest chord' }),
   {
     id: 'pn.set.3',
     page: 'setting',
@@ -629,11 +619,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your piano mic is rated to a very high maximum SPL. What does that tell you about standing by the open piano through a long, loud soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe while the piano stays below the mic’s rating', 'It is safe as long as the mic is nearer the hammers than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the piano stays below the mic’s rating', 'It is safe as long as the mic is nearer the hammers than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts; close to the hammers a piano can pass 130 dB. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe while the piano stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for a while, as long as the piano stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the hammers than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

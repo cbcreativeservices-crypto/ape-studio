@@ -124,10 +124,10 @@ describe('the rotary cabinet: size, and every mic outside', () => {
     assert.ok(ms.every((m) => lm.inRange('upperLower', m)));
     assert.ok(!lm.leslieMics('upperLower', 40, 40).every((m) => lm.inRange('upperLower', m)));
   });
-  it('a bell points at a mic when the angle says so (0° = the front)', () => {
+  it('the sounding bell points at a mic when the angle says so (0° = the front); the balance bell does not sound', () => {
     const front = lm.leslieMics('upper', 150, 150)[0];
     assert.ok(lm.bellToMic(0, front) < 1e-6);
-    assert.ok(lm.bellToMic(180, front) < 1e-6, 'the opposite bell too');
+    assert.ok(near(lm.bellToMic(180, front), 180, 1e-6), 'the opposite bell is the blocked balance bell: one sweep per turn');
     assert.ok(near(lm.bellToMic(90, front), 90, 1e-6));
   });
 });
