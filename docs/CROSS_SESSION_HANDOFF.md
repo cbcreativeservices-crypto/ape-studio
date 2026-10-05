@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 23:37 · ccode · d93863dc
+changed: feat(miking): shared hand-drum journey kit (tonbak, tabla)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 23:12 · ccode · 1e6c1be6
 changed: docs(miking): Lab 4 chordophone research (20 lessons) + BATCH4 summary
 affects other side: nothing (branch final-lab, miking lab work).
@@ -621,6 +627,12 @@ needs: nothing (miking lessons, branch final-lab)
 
 ### 2026-10-04 22:47 · ccode · 04621f7c
 changed: feat(miking): M03 Rack and Floor Toms lesson (Lab 1)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-04 22:39 · ccode · b18663e2
+changed: feat(miking): engine additions for non-kick lessons (additive, optional)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 

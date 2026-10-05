@@ -52,7 +52,11 @@ export type Shape3 =
    *  ±halfW in z. Beater / pedal travel. */
   | { kind: 'sweep'; pivot: Vec3; r0: number; r1: number; a0: number; a1: number; halfW: number }
   /** The floor half-space: solid where y > y (y-down). */
-  | { kind: 'floor'; y: number };
+  | { kind: 'floor'; y: number }
+  /** A SOLID CYLINDER between a and b, radius r, on ANY axis (a drum standing
+   *  upright, a drum held at an angle). Added 2026-10-05 for the hand drums
+   *  (tonbak, tabla) whose axes are not parallel to x. */
+  | { kind: 'cyl'; a: Vec3; b: Vec3; r: number };
 
 /* ── the instrument model ── */
 export type PartId = string;
@@ -105,6 +109,10 @@ export type ReferenceSurface = {
   plus?: { words: string; key: string };
   /** Offered only in these variants (default: all). */
   variants?: VariantId[];
+  /** A TARGET POINT, not a plane (added 2026-10-05): distance = |p − point|
+   *  ("25–40 cm from the head", measured capsule to target), and a zone's aim
+   *  is measured toward the point. `normal` still orients a zone's `cone`. */
+  target?: boolean;
 };
 /**
  * A reference LINE. The radial readout is the distance from it — or, with
@@ -170,10 +178,19 @@ export type DocumentedZone = {
   aimAt?: { surface: string; r: number; prov: Provenance };
   /** The front must also lie in this box (a region between two drums). */
   box?: { min: Vec3; max: Vec3; prov: Provenance };
+  /** The APPROACH (added 2026-10-05): the angle between (p − the surface's
+   *  point) and its normal lies in [min, max] degrees — "approached at 30–45°
+   *  from the head normal" — and, with `toward`, on that side (dot ≥ 0). */
+  cone?: { min: number; max: number; toward?: Vec3; prov: Provenance };
   /** How the zone is DRAWN in each view (mm, u/v), when the band cannot be
    *  read off an x-axis head (an upright drum): derived in the lesson's
    *  geometry from the same numbers. */
   drawn?: Partial<Record<ViewId, ZoneDraw>>;
+  /** How the zone is DRAWN, per view, as polygons in the view's (u, v) mm —
+   *  computed in the lesson's geometry from the same numbers (added
+   *  2026-10-05). When present, PlacementScene draws these instead of the
+   *  plane band (which assumes a normal along x); `drawn` wins if both. */
+  draw?: Partial<Record<ViewId, { poly: readonly (readonly [number, number])[] }[]>>;
   /** "Go to zone" pose: inside the zone and collision-free (tested). */
   start: MicPose;
   /** What to listen for, in words ("tendency", never "result"). */
@@ -188,7 +205,7 @@ export type MicPattern = PatternId | 'unstated' | 'halfCardioid';
 /** 'clip': clamped to a drum's rim (the model's `rims`): the body, plus an
  *  arm to the nearest rim point that may not exceed the clamp's reach. */
 export type MountKind = 'stand' | 'surface' | 'clip';
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck';
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic';
 export type MicType = {
   id: string;
   label: string;
@@ -290,6 +307,12 @@ export type InstrumentModel = {
   /** A variant that shows a different drum (the tom lesson's rack pair or
    *  floor tom) frames its own boxes. */
   viewsByVariant?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
+  /** What each view is called on screen (default "SIDE · CUTAWAY" / "TOP ·
+   *  CUTAWAY"): a hand drum's side view is an elevation, not a cut. */
+  viewTags?: Partial<Record<ViewId, string>>;
+  /** How far the aim may swing left–right by drag (deg; default 80). 180
+   *  lets a mic face the other way (behind an open-backed cabinet). */
+  aimAzLimit?: number;
   yFloor: Dim;
   /** The interior a mic counts as "inside". */
   interior: Interior;

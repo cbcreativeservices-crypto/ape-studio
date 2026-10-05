@@ -153,5 +153,27 @@ export function sdf(shape: Shape3, p: Vec3): number {
     }
     case 'floor':
       return shape.y - p.y;
+    case 'cyl': {
+      // The exact capped cylinder on any axis (I. Quilez's sdCylinder): x is
+      // the radial excess, y the axial excess, both scaled by |b − a|².
+      const bax = shape.b.x - shape.a.x;
+      const bay = shape.b.y - shape.a.y;
+      const baz = shape.b.z - shape.a.z;
+      const pax = p.x - shape.a.x;
+      const pay = p.y - shape.a.y;
+      const paz = p.z - shape.a.z;
+      const baba = bax * bax + bay * bay + baz * baz;
+      if (baba < 1e-12) return Math.sqrt(pax * pax + pay * pay + paz * paz) - shape.r;
+      const paba = pax * bax + pay * bay + paz * baz;
+      const qx = pax * baba - bax * paba;
+      const qy = pay * baba - bay * paba;
+      const qz = paz * baba - baz * paba;
+      const x = Math.sqrt(qx * qx + qy * qy + qz * qz) - shape.r * baba;
+      const y = Math.abs(paba - baba * 0.5) - baba * 0.5;
+      const x2 = x * x;
+      const y2 = y * y * baba;
+      const d = (x > y ? x : y) < 0 ? -(x2 < y2 ? x2 : y2) : (x > 0 ? x2 : 0) + (y > 0 ? y2 : 0);
+      return (d < 0 ? -1 : 1) * Math.sqrt(Math.abs(d)) / baba;
+    }
   }
 }

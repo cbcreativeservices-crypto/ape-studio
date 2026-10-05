@@ -9,15 +9,15 @@ import { View } from 'react-native';
 import { Canvas, Group } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../rack/stageAspect';
 import { ExpandableFigure } from '../../../kit/ExpandableFigure';
-import type { InstrumentModel, VariantId, ViewId } from '../model/types.ts';
+import type { InstrumentModel, VariantId, ViewBox, ViewId } from '../model/types.ts';
 import { viewsOf } from '../model/types.ts';
 import { fitXform } from '../geometry/frame.ts';
 import type { LessonArt } from './sceneTypes.ts';
 import { StaticLabels } from './StaticLabels';
 
-function Figure({ art, model, view, variant, w, h, label }: { art: LessonArt; model: InstrumentModel; view: ViewId; variant: VariantId; w: number; h: number; label: string }) {
+function Figure({ art, model, view, variant, w, h, label, box: boxIn }: { art: LessonArt; model: InstrumentModel; view: ViewId; variant: VariantId; w: number; h: number; label: string; box?: ViewBox }) {
   const textScale = useStageTextScale();
-  const box = viewsOf(model, variant)[view]!;
+  const box = boxIn ?? viewsOf(model, variant)[view]!;
   const xf = useMemo(() => fitXform(view, box, w, h, 6), [view, box, w, h]);
   const Instrument = art.Instrument;
   return (
@@ -32,8 +32,9 @@ function Figure({ art, model, view, variant, w, h, label }: { art: LessonArt; mo
   );
 }
 
-export function InstrumentFigure(props: { art: LessonArt; model: InstrumentModel; view: ViewId; variant: VariantId; label: string; badge: string; title: string }) {
-  const box = viewsOf(props.model, props.variant)[props.view]!;
+/** `box`: a tighter frame than the lesson's view (a small drum in a wide view). */
+export function InstrumentFigure(props: { art: LessonArt; model: InstrumentModel; view: ViewId; variant: VariantId; label: string; badge: string; title: string; box?: ViewBox }) {
+  const box = props.box ?? viewsOf(props.model, props.variant)[props.view]!;
   const aspect = (box.u1 - box.u0) / (box.v1 - box.v0);
   return <ExpandableFigure badge={props.badge} title={props.title} aspect={aspect} render={(fw: number, fh: number) => <Figure {...props} w={fw} h={fh} />} />;
 }

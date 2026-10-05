@@ -98,6 +98,45 @@ export const MIC_TYPES: Record<string, MicType> = {
     art: 'sdc',
     blurb: 'A high-SPL condenser — a flatter-response approach some engineers like on kick. One tonal aim, not proof that condensers are better. Needs phantom power.',
   },
+  // Added 2026-10-05 for the speaker-cabinet / Leslie module, tonbak and tabla
+  // (speaker_leslie/, tonbak/, tabla/ SOURCES; the size facts are snare/SOURCES).
+  instDynCard: {
+    id: 'instDynCard',
+    label: 'End-address instrument dynamic, cardioid',
+    short: 'INST DYN',
+    transducer: 'dynamic',
+    address: 'end',
+    patterns: [{ id: 'cardioid', label: 'cardioid', prov: { kind: 'sourced', src: 'S-SM57-UG', quote: 'Cardioid' } }],
+    body: {
+      length: { mm: 157, prov: { kind: 'sourced', src: 'S-SM57-UG', quote: 'p.6 drawing: "157 mm (6 3/16 in.)" overall length' } },
+      radius: { mm: 16, prov: { kind: 'sourced', src: 'S-SM57-UG', quote: 'p.6 drawing: "32 mm (1 1/4 in.)" grille/front diameter' } },
+    },
+    power: 'none needed (dynamic)',
+    mount: 'stand',
+    examples: [{ model: 'Shure SM57', fact: '"Dynamic (moving coil)"; "Cardioid"; 157 mm long, 32 mm grille, 23 mm tail; no maximum SPL stated.', src: 'S-SM57-UG' }],
+    art: 'instDynamic',
+    blurb: 'A compact instrument dynamic with a cardioid pattern — a common first choice in front of a guitar speaker and on loud sources. Needs no power.',
+  },
+  sdcCard: {
+    id: 'sdcCard',
+    label: 'Small-diaphragm condenser (pencil)',
+    short: 'SMALL COND',
+    transducer: 'condenser',
+    address: 'end',
+    patterns: [
+      { id: 'cardioid', label: 'cardioid', prov: generic },
+      { id: 'omni', label: 'omni capsule (textbook shape)', prov: generic },
+    ],
+    body: {
+      length: { mm: 104, prov: { kind: 'trial', src: 'AX-SCX1', note: 'one pencil condenser’s documented length ("104 mm / 4.1 in"), used for the generic type (room/kit GEOMETRY_PROPOSAL)' } },
+      radius: { mm: 10.5, prov: { kind: 'unknown', needed: 'a pencil condenser’s body diameter: drawing default Ø 21 mm' }, placeholder: true },
+    },
+    power: 'phantom power (48 V)',
+    mount: 'stand',
+    examples: [{ model: 'Audix SCX1 (length); Shure KSM137 (the tabla account’s mic)', fact: 'pencil condensers: 104 mm long (SCX1); Ø drawn 21 mm (drawing default).', src: 'AX-SCX1' }],
+    art: 'sdc',
+    blurb: 'A slim small-diaphragm condenser, usually cardioid (some take an omni capsule): detailed, light, easy to place. Needs phantom power.',
+  },
 };
 
 /* ── Lab 1: the snare and the toms (snare/SOURCES.md, toms/SOURCES.md §b) ── */

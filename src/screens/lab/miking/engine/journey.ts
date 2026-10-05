@@ -22,7 +22,7 @@ export type Stage = { id: StageId; title: string; line: string; pages: readonly 
 
 export const STAGES: readonly Stage[] = [
   { id: 'orient', title: 'Meet the instrument', line: 'What it is, where it is used, and its parts. Explore — no tasks.', pages: ['instrument'] },
-  { id: 'sound', title: 'How it sounds', line: 'How a strike becomes sound, and where the sound leaves — shown, never played.', pages: ['sound'] },
+  { id: 'sound', title: 'How it sounds', line: 'How it makes its sound, and where the sound leaves — shown, never played.', pages: ['sound'] },
   { id: 'setting', title: 'Where it sits', line: 'Its neighbours, the player’s space, a stage and a studio.', pages: ['setting'] },
   { id: 'mics', title: 'Microphones', line: 'Choose by pattern, power, size and mount — for this source.', pages: ['microphone'] },
   { id: 'placement', title: 'Placement', line: 'Where we recommend you begin, then you place the mic.', pages: ['placement'] },

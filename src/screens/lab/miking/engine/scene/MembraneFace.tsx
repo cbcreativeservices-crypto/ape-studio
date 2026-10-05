@@ -44,6 +44,9 @@ export type MembraneFaceProps = {
   accessibilityLabel: string;
   /** The strike mark's word (default "BEATER"; a snare's "STICK"). */
   striker?: string;
+  /** The same word under its other name (a hand drum says STROKE); wins over
+   *  `striker` when both are given. */
+  strikeWord?: string;
   /** The hoop: wood (a kick) or a chrome triple-flange hoop (default wood). */
   hoop?: 'wood' | 'metal';
 };
@@ -107,7 +110,7 @@ function regionMarks(sh: HeadShape): { r: number; t: number; sign: number }[] {
   return out;
 }
 
-export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, accessibilityLabel, striker = 'BEATER', hoop = 'wood' }: MembraneFaceProps) {
+export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, accessibilityLabel, striker = 'BEATER', strikeWord, hoop = 'wood' }: MembraneFaceProps) {
   const R = diameterMm / 2;
   const hoopIn = R + 3;
   const hoopOut = hoopIn + 9;
@@ -149,7 +152,7 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
     return { claws, rodsP };
   }, [rods, hoopIn, hoopOut]);
   const marks = useMemo(() => regionMarks(shape), [shape]);
-  const labels: StaticLabel[] = [{ id: 'beater', text: striker, u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
+  const labels: StaticLabel[] = [{ id: 'beater', text: strikeWord ?? striker, u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
   // + / − in every region, drawn as strokes (crisp at any size; colour is
   // never the only signal, charter §8).
   const signs = useMemo(() => {

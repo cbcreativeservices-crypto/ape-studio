@@ -87,7 +87,7 @@ export function DualView(props: DualViewProps) {
           hitSlop={6}
         >
           <PlacementScene {...props} view={other} w={iw} h={ih} mini interactive={false} accessibilityLabel={labelFor(other)} />
-          <Text style={styles.insetTag}>{other === 'top' ? 'TOP ⇄' : 'SIDE ⇄'}</Text>
+          <Text style={styles.insetTag}>{rig.lesson.model.viewTags?.[other] ? `${rig.lesson.model.viewTags[other]!.split(' · ')[0]} ⇄` : other === 'top' ? 'TOP ⇄' : 'SIDE ⇄'}</Text>
         </Pressable>
       ) : null}
     </View>

@@ -7,6 +7,10 @@ import { KickArt, kickHitTest, kickLabels } from '../lessons/m01Kick/art';
 import { CoupledHeads, StrikeSequence } from '../lessons/m01Kick/soundArt';
 import { SNARE_ART } from '../lessons/m02Snare/art';
 import { TOMS_ART } from '../lessons/m03Toms/art';
+import { cabArt } from '../lessons/spk/art';
+import { SPK_PAGES } from '../lessons/spk/pages';
+import { TONBAK_ART, TONBAK_PAGES } from '../lessons/m12Tonbak/pages';
+import { TABLA_ART, TABLA_PAGES } from '../lessons/m13Tabla/pages';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -21,6 +25,10 @@ const ART: Record<string, LessonArt> = {
   M02: SNARE_ART,
   M03: TOMS_ART,
 };
+// Each further lesson on its own line (lessons are built in parallel).
+ART.SPK = { ...cabArt('1x12'), pages: SPK_PAGES };
+ART.M12 = { ...TONBAK_ART, pages: TONBAK_PAGES };
+ART.M13 = { ...TABLA_ART, pages: TABLA_PAGES };
 
 export function lessonArt(id: string): LessonArt | undefined {
   return ART[id];

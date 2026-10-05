@@ -755,9 +755,74 @@ export function GooseneckMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: 
   );
 }
 
+function buildInstrumentDynamic(r: number, len: number) {
+  // The classic end-address instrument dynamic (Miking Labs, 2026-10-05): a
+  // flat-fronted cylindrical mesh grille (≈ 29 % of the length) at the full
+  // width, a dark joint ring, then a satin body tapering to ≈ 72 % of the
+  // grille's width at the XLR end (the documented 32 → 23 mm of the common
+  // type; proportions only — generic, no maker's likeness).
+  const gl = len * 0.29;
+  const tailR = r * 0.72;
+  const grille: SkPathT = Skia.Path.Make();
+  grille.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, 0, r * 2, gl), r * 0.32, r * 0.32));
+  const mesh = crossHatch(-r, 0, r, gl, Math.max(1, r * 0.2));
+  const ring: SkPathT = Skia.Path.Make();
+  ring.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.98, gl - len * 0.008, r * 1.96, len * 0.04), r * 0.06, r * 0.06));
+  const b0 = gl + len * 0.03;
+  const body: SkPathT = Skia.Path.Make();
+  body.moveTo(-r * 0.96, b0);
+  body.lineTo(-tailR, len - r * 0.06);
+  body.quadTo(-tailR, len, -tailR + r * 0.08, len);
+  body.lineTo(tailR - r * 0.08, len);
+  body.quadTo(tailR, len, tailR, len - r * 0.06);
+  body.lineTo(r * 0.96, b0);
+  body.close();
+  const grooves: SkPathT = Skia.Path.Make();
+  for (const t of [0.9, 0.94]) {
+    const half = r * 0.96 + (tailR - r * 0.96) * ((len * t - b0) / (len - b0));
+    grooves.moveTo(-half, len * t);
+    grooves.lineTo(half, len * t);
+  }
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addPath(grille);
+  shadow.addPath(body);
+  return { grille, mesh, ring, body, grooves, shadow, gl };
+}
+
+/** END-ADDRESS INSTRUMENT DYNAMIC: radius `r` (the grille), overall length
+ *  `len`, front at the origin (same conventions as the kick dynamic). */
+export function InstrumentDynamicMic({ r, len, x = 0, y = 0, angleDeg = 0, tint }: { r: number; len: number; x?: number; y?: number; angleDeg?: number; tint?: string }) {
+  const p = useMemo(() => buildInstrumentDynamic(r, len), [r, len]);
+  const lit = LIT(r);
+  const hair = Math.max(0.35, r * 0.03);
+  return (
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: (angleDeg * Math.PI) / 180 }]}>
+      <Group transform={[{ translateX: -r * 0.12 }, { translateY: r * 0.1 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.5}>
+          <BlurMask blur={r * 0.18} style="normal" />
+        </Path>
+      </Group>
+      <Path path={p.body}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#6a6f7a', '#3b3f48', '#23252b', '#121317']} positions={[0, 0.3, 0.65, 1]} />
+      </Path>
+      <Path path={p.grooves} style="stroke" strokeWidth={hair} color="#0d0e11" opacity={0.8} />
+      <Path path={p.grille}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#a9aeb8', '#575c66', '#1e2025']} />
+      </Path>
+      <Group clip={p.grille}>
+        <Path path={p.mesh} style="stroke" strokeWidth={Math.max(0.3, r * 0.035)} color="#0c0d10" opacity={0.75} />
+      </Group>
+      <Path path={p.ring} color="#17181c" />
+      <Path path={p.grille} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.9} />
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.3} color="#08080a" opacity={0.9} />
+      <Path path={p.grille} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.32} />
+    </Group>
+  );
+}
+
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). */
-export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck'; r: number; len: number; cross?: number; tint?: string }) {
+export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic'; r: number; len: number; cross?: number; tint?: string }) {
   switch (art) {
     case 'boundary':
       return <BoundaryMic len={len} cross={cross ?? r * 2} tint={tint} />;
@@ -769,6 +834,8 @@ export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' 
       return <ClipDynamicMic r={r} len={len} tint={tint} />;
     case 'gooseneck':
       return <GooseneckMic r={r} len={len} tint={tint} />;
+    case 'instDynamic':
+      return <InstrumentDynamicMic r={r} len={len} tint={tint} />;
     default:
       return <KickDynamicMic r={r} len={len} tint={tint} />;
   }
