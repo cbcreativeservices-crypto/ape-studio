@@ -609,14 +609,14 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-10-05 03:00 · ccode · 9c69b4d9
 changed: feat(miking): Lab 2 I11a Rhodes and I11b Wurlitzer lessons
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 03:00 · ccode · 5323b5ac
 changed: feat(miking): electric-piano family — oval 4x8 speaker, reed piano model, keys pages
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 01:38 · ccode · 7fbad8ca
