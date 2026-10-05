@@ -7,6 +7,7 @@ import { KickArt, kickHitTest, kickLabels } from '../lessons/m01Kick/art';
 import { CoupledHeads, StrikeSequence } from '../lessons/m01Kick/soundArt';
 import { SNARE_ART } from '../lessons/m02Snare/art';
 import { TOMS_ART } from '../lessons/m03Toms/art';
+import { C01_ART } from '../lessons/c01Guitar/art';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -21,6 +22,9 @@ const ART: Record<string, LessonArt> = {
   M02: SNARE_ART,
   M03: TOMS_ART,
 };
+
+// Lab 4, the guitar family (each lesson on its own line: lessons are built in parallel).
+ART.C01 = C01_ART;
 
 export function lessonArt(id: string): LessonArt | undefined {
   return ART[id];
