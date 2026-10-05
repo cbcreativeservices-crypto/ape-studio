@@ -169,7 +169,7 @@ function TomMountPlan() {
 }
 
 /** A floor wedge from above: cabinet, sloped grille facing `faces`, corners. */
-function WedgePlan({ at, faces, hi }: { at: Vec3; faces: Vec3; hi: boolean }) {
+export function WedgePlan({ at, faces, hi }: { at: Vec3; faces: Vec3; hi: boolean }) {
   const ang = Math.atan2(faces.z, faces.x);
   const parts = useMemo(() => {
     const cab = rr(-150, -280, 300, 560, 18);

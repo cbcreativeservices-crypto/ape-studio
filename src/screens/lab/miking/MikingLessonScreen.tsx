@@ -231,7 +231,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
     if (complete || banksOnNext(lesson, page)) markMet(page);
   }, [lesson, done, complete, page, markMet]);
 
-  // A family's own pages (the hand drums) may have their own step counts.
+  // A family's own pages (the hand drums, the guitars) may have their own step counts.
   const countOf = (id: PageId) => art.stepCounts?.[id] ?? STEP_COUNTS[id];
   const stepCount = stepTitles.length || countOf(page);
   const stepIdx = Math.min(step, Math.max(0, stepCount - 1));

@@ -607,6 +607,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 00:39 · ccode · 7a77984c
+changed: docs(miking): Lab 4 guitar-family corrections (RS, BJ, MD, UK, AB, L4); brand list
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 00:33 · ccode · e42e07d0
+changed: feat(miking): C05b Mandolin lesson
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 00:27 · ccode · 6a2bf905
 changed: Merge branch 'miking-w4' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
@@ -617,6 +629,12 @@ needs: nothing (miking merge, branch final-lab)
 changed: Merge branch 'miking-w2' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
+
+
+### 2026-10-05 00:23 · ccode · bcf6a2df
+changed: feat(miking): C03 Resonator Guitar lesson (lap style and upright)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 00:19 · ccode · bd639888
@@ -641,6 +659,18 @@ needs: nothing
 changed: feat(miking): shared cymbal family, kit scene and kit pages; engine hooks for kit lessons
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing
+
+
+### 2026-10-05 00:07 · ccode · d76d5bca
+changed: feat(miking): C01 Acoustic Guitar lesson; Lab 4 Strings in the hub
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 00:06 · ccode · 02a0d63f
+changed: feat(miking): engine additions for the guitar family (additive, optional)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 00:00 · ccode · 7f90efa3

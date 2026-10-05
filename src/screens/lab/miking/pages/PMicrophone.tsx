@@ -25,22 +25,23 @@ import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../engine/physic
 import { fmtDb, fmtIdealPickup, isDeepNull } from '../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../data/micTypes';
 import type { PageProps } from './pageTypes';
+import { copyOf, DRUM_WORDS, type FamilyWords } from '../engine/model/copy.ts';
 
 /** Three plain lines per mic type: what the choice needs (review M3). */
-export function plainLines(m: MicType): { power: string; mount: string; pattern: string } {
+export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | 'mountClip'> = DRUM_WORDS): { power: string; mount: string; pattern: string } {
   const p = m.patterns[0].id;
   return {
-    power: m.transducer === 'dynamic' ? 'Power: none needed' : 'Power: needs phantom power from the desk',
+    power: m.transducer === 'condenser' ? 'Power: needs phantom power from the desk' : 'Power: none needed',
     mount:
       m.mount === 'boom'
         ? 'Mount: an overhead boom stand, counterweighted, its boom clear of the cymbals and the player'
         : m.address === 'side'
           ? 'Mount: a floor stand — aim the FACE of the body at the source, not its end'
           : m.mount === 'surface'
-        ? 'Mount: rests on the pillow — it is made for that'
-        : m.mount === 'clip'
-          ? 'Mount: clamps to the drum’s hoop — a clamp made for it, with the player’s agreement'
-          : 'Mount: a stand or a suitable mount, kept off the heads and damping',
+            ? 'Mount: rests on the pillow — it is made for that'
+            : m.mount === 'clip'
+              ? words.mountClip
+              : words.mountStand,
     pattern:
       p === 'cardioid'
         ? 'Pattern: cardioid — rejects most directly behind'
@@ -182,7 +183,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
           <Body>No brand is required. Choose by what the job needs: the pattern, the power it needs, its size and how it mounts, and the level it is specified for. Try not to assume every dynamic is less detailed, every condenser flat, or that a larger diaphragm means better bass — test ideas like these with your ears.</Body>
           {lesson.micTypeIds.map((id) => {
             const m = MIC_TYPES[id];
-            const pl = plainLines(m);
+            const pl = plainLines(m, copyOf(lesson).words);
             const isOpen = open.has(id);
             return (
               <Card key={id}>

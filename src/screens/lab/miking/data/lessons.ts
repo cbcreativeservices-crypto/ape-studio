@@ -17,6 +17,12 @@ import { M08_LESSON } from '../lessons/m08HeadedTambourine/lesson.ts';
 import { SPK_LESSON } from '../lessons/spk/lesson.ts';
 import { M12_LESSON } from '../lessons/m12Tonbak/lesson.ts';
 import { M13_LESSON } from '../lessons/m13Tabla/lesson.ts';
+import { C01_LESSON } from '../lessons/c01Guitar/lesson.ts';
+import { C05C_LESSON } from '../lessons/c05cUkulele/lesson.ts';
+import { C05B_LESSON } from '../lessons/c05bMandolin/lesson.ts';
+import { C05A_LESSON } from '../lessons/c05aBanjo/lesson.ts';
+import { C03_LESSON } from '../lessons/c03Resonator/lesson.ts';
+import { C07_LESSON } from '../lessons/c07AcousticBass/lesson.ts';
 
 const LESSON_CONTENT: Record<string, Lesson> = {
   M01: M01_LESSON,
@@ -34,6 +40,13 @@ const LESSON_CONTENT: Record<string, Lesson> = {
 LESSON_CONTENT.SPK = SPK_LESSON;
 LESSON_CONTENT.M12 = M12_LESSON;
 LESSON_CONTENT.M13 = M13_LESSON;
+// Lab 4, the guitar family.
+LESSON_CONTENT.C01 = C01_LESSON;
+LESSON_CONTENT.C05C = C05C_LESSON;
+LESSON_CONTENT.C05B = C05B_LESSON;
+LESSON_CONTENT.C05A = C05A_LESSON;
+LESSON_CONTENT.C03 = C03_LESSON;
+LESSON_CONTENT.C07 = C07_LESSON;
 
 export function lessonById(id: string | undefined): Lesson | undefined {
   return id ? LESSON_CONTENT[id] : undefined;

@@ -357,6 +357,12 @@ export type InstrumentModel = {
   /** An overhead ('boom') mount's boom runs level AWAY from this point in plan
    *  (the kit's centre): the stand stands outside the kit. */
   boomHub?: Vec3;
+  /** Where a mic FACING the instrument points, when that is not −x (the
+   *  guitar family: a mic faces the top along −z, az = −90°). The dock's AIM
+   *  lane and the plan-view aim drag then turn ±80° about this home, and a
+   *  mic seen end-on in the side view is moved, not turned, by a drag.
+   *  Absent: the kick's behaviour, unchanged. */
+  aimHome?: { az: number; el: number };
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */
