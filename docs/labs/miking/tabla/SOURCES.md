@@ -23,3 +23,14 @@ Lesson: `source_text/Tabla-Miking-Lesson.txt`. Rules: `snare/SOURCES.md`. Checke
 | Trials A–D (30–50 cm; 15–25 cm; XY 50–80 cm; room 1–2 m) | **Instructor trials** (lesson says so) | — | — |
 | Syahi positions (central on dayan, off-centre on bayan) | from the lesson; Met essay not re-read today (429) | — | Medium |
 | Support rings, seating, which drum on which side | **UNKNOWN** | — | — |
+
+## Simplifications register (the build, 2026-10-05)
+
+| Item | Drawn as | Status |
+|---|---|---|
+| Heights and widths | the Met pair's largest extents (MET-TABLA) | sourced |
+| Head diameters 145 / 230 mm; patch radii 0.45 / 0.36 of the head; bayan patch offset 0.28 of the radius toward the player | drawing defaults (placeholders) | OWNER check |
+| Seating on the floor, right-handed layout, rings 60 mm, tilts 15° / 10°, drum places ±150 / −170 mm | drawing defaults (placeholders) | OWNER check on the phone |
+| The dayan's clear pitch from the patch's loading | general knowledge (the classic tabla-overtone result), not re-read; no ideal-membrane shapes are drawn | physics note |
+| Hands / body / legs keep-outs | illustrative boxes | OWNER check |
+| Wedge (1400, 0, 0), side fill (200, 0, 1500) | typical layout, illustrative | — |

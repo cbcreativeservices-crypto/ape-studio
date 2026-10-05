@@ -24,3 +24,15 @@ Lesson: `source_text/Tonbak-Miking-Technique.txt`. Rules: `snare/SOURCES.md`. Ch
 | Playing posture | **UNKNOWN** (lesson: "note the head orientation") | — | — |
 | Hearing-safety figure | absent in the lesson (parity item) | NIOSH row in kick/SOURCES.md | — |
 | Tonbak-specific miking source | none exists (the lesson admits it) | — | — |
+
+## Simplifications register (the build, 2026-10-05)
+
+| Item | Drawn as | Status |
+|---|---|---|
+| Length, head | 406.4 mm, 254 mm (MET-89.4.304) | sourced |
+| Waist, foot | 254 × 6.5/18.5 and × 11.1/18.5 (brass example's ratios, MET-89.4.332) | derived |
+| Opening 110 mm; bowl curve; waist at 0.64 of the length | drawing defaults (placeholders) | OWNER check |
+| Posture: across the lap, head to the player's right, tilted 15° up, head 620 mm high | drawing defaults (placeholders) | OWNER check on the phone |
+| Hands / body / thighs / shins keep-outs | illustrative boxes | OWNER check |
+| Head shapes on HOW IT SOUNDS | the ideal clamped membrane (kick's tables); badged as simplified | model |
+| Wedge (1500, 0, 350) and side fill (300, 0, 1500) | typical layout, illustrative | — |

@@ -602,6 +602,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 23:37 · ccode · d93863dc
+changed: feat(miking): shared hand-drum journey kit (tonbak, tabla)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 22:39 · ccode · b18663e2
 changed: feat(miking): engine additions for non-kick lessons (additive, optional)
 affects other side: nothing (miking lessons, branch final-lab)
