@@ -31,6 +31,9 @@ type Status = "idle" | "working" | "code" | "approved" | "queued" | "error";
 
 export default function EmployerApplyForm() {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  /** Owner 2026-10-04: audio instructors and schools verify the same way. */
+  const [kind, setKind] = useState<"employer" | "instructor">("employer");
+  const isInstr = kind === "instructor";
   const [company, setCompany] = useState("");
   const [website, setWebsite] = useState("");
   const [email, setEmail] = useState("");
@@ -82,6 +85,7 @@ export default function EmployerApplyForm() {
         p_work_email: email,
         p_role_title: role,
         p_hiring_for: hiringFor || null,
+        p_kind: kind,
       });
       if (applyErr) {
         setError(applyErr.message);
@@ -221,7 +225,7 @@ export default function EmployerApplyForm() {
           You need an account first
         </p>
         <p className="mt-2 text-sm text-text-muted">
-          Employer verification is tied to an Academy account, and contacting members happens in
+          Employer and instructor verification is tied to an Academy account, and contacting members happens in
           the app. Create your account in the app, then come back here and sign in to apply.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -323,7 +327,9 @@ export default function EmployerApplyForm() {
         </p>
         <p className="mt-2 text-sm text-text-muted">
           {status === "approved"
-            ? "You confirmed your work address, it is at your company's own domain, and the site checks out — so your employer account is active. Open the app to set what you are looking for and to contact members."
+            ? isInstr
+              ? "You confirmed your school address, it is at your school's own domain, and the site checks out — so your instructor account is active. Open the app to contact members."
+              : "You confirmed your work address, it is at your company's own domain, and the site checks out — so your employer account is active. Open the app to set what you are looking for and to contact members."
             : "We could not confirm every detail automatically, so a person will look at it. You will hear back by email. Nothing more is needed from you."}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -355,23 +361,48 @@ export default function EmployerApplyForm() {
         </p>
       ) : null}
 
+      <fieldset>
+        <legend className="text-sm font-semibold text-foreground">I am applying as</legend>
+        <div className="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Account type">
+          {([
+            ["employer", "An employer"],
+            ["instructor", "An instructor or school"],
+          ] as const).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={kind === value}
+              onClick={() => setKind(value)}
+              className={`rounded-md border px-4 py-2 text-sm font-semibold transition-colors ${
+                kind === value
+                  ? "border-amber bg-amber/15 text-amber"
+                  : "border-border text-foreground hover:border-amber"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
       <div>
         <label htmlFor="company" className="text-sm font-semibold text-foreground">
-          Company name
+          {isInstr ? "School or program name" : "Company name"}
         </label>
         <input id="company" required value={company} onChange={(e) => setCompany(e.target.value)} className={`mt-1 ${field}`} />
       </div>
 
       <div>
         <label htmlFor="website" className="text-sm font-semibold text-foreground">
-          Company website
+          {isInstr ? "School website" : "Company website"}
         </label>
         <input
           id="website"
           required
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
-          placeholder="acme.com"
+          placeholder={isInstr ? "myschool.edu" : "acme.com"}
           inputMode="url"
           autoCapitalize="none"
           spellCheck={false}
@@ -381,7 +412,7 @@ export default function EmployerApplyForm() {
 
       <div>
         <label htmlFor="email" className="text-sm font-semibold text-foreground">
-          Your work email
+          {isInstr ? "Your school email" : "Your work email"}
         </label>
         <input
           id="email"
@@ -389,7 +420,7 @@ export default function EmployerApplyForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@acme.com"
+          placeholder={isInstr ? "you@myschool.edu" : "you@acme.com"}
           autoCapitalize="none"
           spellCheck={false}
           className={`mt-1 ${field}`}
@@ -397,7 +428,7 @@ export default function EmployerApplyForm() {
         {/* Said plainly, because it is the difference between instant and a
             wait — and because a free address is not a refusal. */}
         <p className="mt-1 text-xs text-text-muted">
-          An address at your company&rsquo;s own domain verifies instantly. A Gmail or Outlook
+          An address at your {isInstr ? "school" : "company"}&rsquo;s own domain verifies instantly. A Gmail or Outlook
           address is fine too — it just means a person reviews it first.
         </p>
       </div>
@@ -406,12 +437,12 @@ export default function EmployerApplyForm() {
         <label htmlFor="role" className="text-sm font-semibold text-foreground">
           Your role
         </label>
-        <input id="role" required value={role} onChange={(e) => setRole(e.target.value)} placeholder="Studio Manager" className={`mt-1 ${field}`} />
+        <input id="role" required value={role} onChange={(e) => setRole(e.target.value)} placeholder={isInstr ? "Audio Production Instructor" : "Studio Manager"} className={`mt-1 ${field}`} />
       </div>
 
       <div>
         <label htmlFor="hiring" className="text-sm font-semibold text-foreground">
-          What are you looking for? <span className="font-normal text-text-muted">(optional)</span>
+          {isInstr ? "What do you teach?" : "What are you looking for?"} <span className="font-normal text-text-muted">(optional)</span>
         </label>
         <textarea id="hiring" rows={3} value={hiringFor} onChange={(e) => setHiringFor(e.target.value)} className={`mt-1 ${field}`} />
       </div>
@@ -421,7 +452,7 @@ export default function EmployerApplyForm() {
         disabled={status === "working"}
         className="self-start rounded-md bg-amber px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-amber-deep disabled:opacity-60"
       >
-        {status === "working" ? "Sending…" : "Apply for an employer account"}
+        {status === "working" ? "Sending…" : isInstr ? "Apply for an instructor account" : "Apply for an employer account"}
       </button>
     </form>
   );

@@ -36,16 +36,16 @@ export default function Page() {
             Want to reach the person, not just check the certificate?
           </p>
           <p className="mt-3 text-sm text-text-muted">
-            Verified employers can contact members directly through the app. We never publish a
+            Verified employers and instructors can contact members directly through the app. We never publish a
             member’s email or phone number — you send a request, and they decide whether to reply.
             It takes an Academy account and the app; if your work email is at your company’s own
-            domain, verification is immediate.
+            domain (or your school&rsquo;s), verification is immediate.
           </p>
           <a
             href="/employers/apply"
             className="mt-5 inline-block rounded-md bg-amber px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-amber-deep"
           >
-            Apply for an employer account
+            Apply for an employer or instructor account
           </a>
         </div>
       </div>
