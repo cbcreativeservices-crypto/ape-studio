@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 04:45 · ccode · d732169f
+changed: Miking clarity pass: keep-outs only on approach, illustrated players
+affects other side: nothing (miking clarity, branch final-lab)
+needs: nothing (miking clarity, branch final-lab)
+
+
 ### 2026-10-05 02:57 · ccode · 1b9091de
 changed: Merge branch 'miking-c1-art' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
