@@ -93,7 +93,7 @@ export const CELLO_ZONES: DocumentedZone[] = [
   {
     id: 'vc.clip',
     label: 'Miniature on the strings, under them',
-    band: 'Clip it to the two outer strings below the bridge, and bring the capsule about 4–9 cm in front of the bridge’s foot — between the bridge and the fingerboard, under the strings.',
+    band: 'Clip it to the two outer strings below the bridge, and bring the capsule about 4–9 cm from the bridge’s foot on the fingerboard side — under the strings, below the bow’s path.',
     kind: 'sourced',
     src: 'DPA-VC',
     quote: 'Attaching the microphone to the C and A string below the bridge places the microphone capsule in the sweet spot, between the bridge and fingerboard.',

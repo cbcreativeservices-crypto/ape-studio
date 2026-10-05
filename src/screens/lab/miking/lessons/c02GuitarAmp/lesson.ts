@@ -66,7 +66,7 @@ const pages: Record<PageId, PageContent> = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
     takeaway: 'Move the mic before reaching for EQ: across the cone, toward or away from the grille, one change at a time. For anything hot, smoking or electrical: stop, keep clear, call a technician.',
   },
   practice: {
@@ -88,7 +88,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.snd.1',
     page: 'sound',
     prompt: 'A pickup sits exactly under a still point of one harmonic’s shape. How much of that harmonic does it sense?',
-    options: ['Almost none — the string barely moves there', 'Most of it, since a still string is easy to sense', 'Twice as much, from the two halves of the string'],
+    options: ['Twice as much, from the two halves of the string', 'Almost none — the string barely moves there', 'Most of it, since a still string is easy to sense'],
     correct: 'Almost none — the string barely moves there',
     explain: 'A magnetic pickup senses the string moving over it. At a still point (a node) that harmonic does not move the string, so the pickup hears almost none of it. That is why each pickup position has its own sound.',
     why: {
@@ -100,7 +100,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.snd.2',
     page: 'sound',
     prompt: 'An open-backed combo sounds out behind as well as in front. How does the sound from the back compare?',
-    options: ['The same motion of the cone, opposite in polarity', 'A delayed echo of the front, in the same polarity', 'Nothing a mic placed behind it could pick up'],
+    options: ['A delayed echo of the front, in the same polarity', 'Nothing a mic placed behind it could pick up', 'The same motion of the cone, opposite in polarity'],
     correct: 'The same motion of the cone, opposite in polarity',
     explain: 'When the cone moves forward it pushes the air in front and pulls the air behind at the same moment: the back radiates the same motion, opposite in polarity — usually thicker and duller, because the magnet and the chassis sit in the way.',
     why: {
@@ -112,7 +112,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.snd.3',
     page: 'sound',
     prompt: 'Why does a close mic aimed at the middle of a guitar speaker tend to sound brighter than one aimed toward its edge?',
-    options: ['At higher pitches, the middle of the cone does more of the work', 'The edge of the cone moves too fast for a close mic to follow it', 'The dust cap filters the bass out before the sound leaves it'],
+    options: ['The edge of the cone moves too fast for a close mic to follow it', 'The dust cap filters the bass out before the sound leaves it', 'At higher pitches, the middle of the cone does more of the work'],
     correct: 'At higher pitches, the middle of the cone does more of the work',
     explain: 'At low pitches the whole cone moves as one. Higher up, the cone flexes, and more of the high-frequency sound comes from the middle, near the voice coil. Close in, the spot the mic faces tilts the balance — a tendency to check on each speaker.',
     why: {
@@ -124,7 +124,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.set.1',
     page: 'setting',
     prompt: 'A DI box sits between the guitar and the amp. What does its output to the desk carry?',
-    options: ['The guitar’s signal before the amp — no amp, speaker or room', 'The amp’s full sound, with only the speaker’s colour taken out', 'A cleaner copy of what a mic on the speaker hears'],
+    options: ['The amp’s full sound, with only the speaker’s colour taken out', 'A cleaner copy of what a mic on the speaker hears', 'The guitar’s signal before the amp — no amp, speaker or room'],
     correct: 'The guitar’s signal before the amp — no amp, speaker or room',
     explain: 'A DI before the amp taps the guitar’s own signal (after any pedals in front of it). It never passes through the amp, the speaker or the room — a separate source with its own uses, not a copy of the mic.',
     why: {
@@ -137,7 +137,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.set.3',
     page: 'setting',
     prompt: 'On stage, where does the amp mic’s cable go?',
-    options: ['Away from the player’s feet and the amp’s hot vents', 'Under the pedalboard, where nobody can see it', 'Along the back of the amp, tucked close to the vents'],
+    options: ['Under the pedalboard, where nobody can see it', 'Along the back of the amp, tucked close to the vents', 'Away from the player’s feet and the amp’s hot vents'],
     correct: 'Away from the player’s feet and the amp’s hot vents',
     explain: 'The guitarist works the pedals with their feet while they play, and the amp needs its vents clear to cool. Route the cable away from both — and never drape anything over the vents to cut spill.',
     why: {
@@ -149,7 +149,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Close to the speaker and aimed at the centre of the cone, a mic tends to hear…',
-    options: ['a brighter, more forward sound than toward the edge', 'only the bass, because the middle of the cone moves most', 'the back of the cone, through the dust cap'],
+    options: ['only the bass, because the middle of the cone moves most', 'the back of the cone, through the dust cap', 'a brighter, more forward sound than toward the edge'],
     correct: 'a brighter, more forward sound than toward the edge',
     explain: 'At higher pitches the middle of the cone does more of the work, so a close mic aimed there tends to sound brighter — with distortion, sometimes fizzy. A tendency, and speakers vary.',
     why: {
@@ -161,7 +161,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.mic.1',
     page: 'microphone',
     prompt: 'The guitar channel has no phantom power. Which of this page’s mic types can you still use?',
-    options: ['The two dynamics: neither needs power to work', 'The small condenser, kept a little back from the grille', 'The small condenser, as long as the amp is switched on'],
+    options: ['The small condenser, kept a little back from the grille', 'The two dynamics: neither needs power to work', 'The small condenser, as long as the amp is switched on'],
     correct: 'The two dynamics: neither needs power to work',
     explain: 'Dynamic mics need no power. A condenser needs phantom power from the desk wherever it is placed. A ribbon mic needs its own maker’s rules about phantom — check them before connecting.',
     why: {
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.mic.2',
     page: 'microphone',
     prompt: 'Some engineers like a condenser on a guitar amp, others a dynamic. What does that tell you?',
-    options: ['Both can suit; compare them by ear at matched level', 'A condenser is the more accurate choice for a guitar amp', 'A dynamic is required, because a guitar amp is loud'],
+    options: ['A condenser is the more accurate choice for a guitar amp', 'A dynamic is required, because a guitar amp is loud', 'Both can suit; compare them by ear at matched level'],
     correct: 'Both can suit; compare them by ear at matched level',
     explain: 'Different mics give different tones and both types are used on guitar amps. Check the mic’s level rating, mounting and power, then compare by ear at the same reproduced level.',
     why: {
@@ -185,7 +185,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.mic.3',
     page: 'microphone',
     prompt: 'Your mic is side-address: it picks up through its side, not its end. How do you aim it at the speaker?',
-    options: ['Turn its marked front side toward the cone', 'Point its top end at the cone, as with an end-address mic', 'Either side will do, since the pattern faces both ways'],
+    options: ['Point its top end at the cone, as with an end-address mic', 'Turn its marked front side toward the cone', 'Either side will do, since the pattern faces both ways'],
     correct: 'Turn its marked front side toward the cone',
     explain: 'A side-address mic hears through the side its maker marks as the front. Face that side to the speaker, follow its own manual for mounting, and secure the cable.',
     why: {
@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.mic.4',
     page: 'microphone',
     prompt: 'On stage, does a condenser cause more feedback simply because it is more sensitive?',
-    options: ['Not by itself — compare mics at the same useful level', 'Yes, since its higher output reaches the PA first', 'Only when it sits closer to the grille than a dynamic'],
+    options: ['Yes, since its higher output reaches the PA first', 'Not by itself — compare mics at the same useful level', 'Only when it sits closer to the grille than a dynamic'],
     correct: 'Not by itself — compare mics at the same useful level',
     explain: 'Sensitivity alone does not decide feedback: at the same reproduced level, the pattern, the placement and the monitors decide it. The gain is simply set lower for a more sensitive mic.',
     why: {
@@ -209,7 +209,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.place.1',
     page: 'placement',
     prompt: 'A starting point says “1.5–5 cm (½–2 in)”. Measured from what?',
-    options: ['From the grille cloth, in front of the speaker itself', 'From the middle of the grille, wherever the speaker is', 'From the back of the cone, measured inside the amp'],
+    options: ['From the middle of the grille, wherever the speaker is', 'From the back of the cone, measured inside the amp', 'From the grille cloth, in front of the speaker itself'],
     correct: 'From the grille cloth, in front of the speaker itself',
     explain: 'The grille is the surface you can see and measure from — and the number belongs to the speaker that is really sounding. On a combo the speaker sits off-centre, so the middle of the grille is the wrong place to start.',
     why: {
@@ -221,7 +221,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.place.2',
     page: 'placement',
     prompt: 'You slide the mic from the dust cap’s edge toward the cone’s edge, keeping the same distance. What should you expect?',
-    options: ['A smoother, darker sound, as a tendency to check', 'A louder sound, with a fixed and predictable lift in the bass', 'No change, since the distance has not moved'],
+    options: ['A louder sound, with a fixed and predictable lift in the bass', 'A smoother, darker sound, as a tendency to check', 'No change, since the distance has not moved'],
     correct: 'A smoother, darker sound, as a tendency to check',
     explain: 'Most often the edge sounds smoother or darker than the centre — speakers vary, so listen, and check the guitar keeps its definition in the band. Keeping the distance fixed means you hear only the move across the cone.',
     why: {
@@ -233,7 +233,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.place.3',
     page: 'placement',
     prompt: 'At the dust cap’s edge the sound is a little too bright. Which next try keeps the comparison fair?',
-    options: ['Slide toward the edge, keeping the distance', 'Move it back and toward the edge, both in one go', 'Swap the mic and move it at the same time'],
+    options: ['Move it back and toward the edge, both in one go', 'Slide toward the edge, keeping the distance', 'Swap the mic and move it at the same time'],
     correct: 'Slide toward the edge, keeping the distance',
     explain: 'One change at a time: slide across the cone first. If it is still too bright, try a modest angle, then a little distance — and compare at matched level, on the same phrase.',
     why: {
@@ -245,7 +245,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · Which of these does NOT hear the air from the amp?',
-    options: ['A DI box between the guitar and the amp', 'A mic a few centimetres in front of the grille', 'A mic behind the open back'],
+    options: ['A mic a few centimetres in front of the grille', 'A DI box between the guitar and the amp', 'A mic behind the open back'],
     correct: 'A DI box between the guitar and the amp',
     explain: 'A DI is an electrical tap, taken before the amp. Both mics hear air from the speaker — the front and the back of the cone.',
     why: {
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.ctx.1',
     page: 'context',
     prompt: 'On a loud stage, why might you start with a close, directional mic on the guitar amp?',
-    options: ['More of the amp, less of the stage, and more gain before feedback', 'A close mic makes the amp itself sound louder to the whole audience', 'A mic farther back could not pick up a guitar speaker'],
+    options: ['A close mic makes the amp itself sound louder to the whole audience', 'A mic farther back could not pick up a guitar speaker', 'More of the amp, less of the stage, and more gain before feedback'],
     correct: 'More of the amp, less of the stage, and more gain before feedback',
     explain: 'Close and directional favours the amp over the drums and the monitors — the usual live reasons — and the PA then adds only what the stage sound lacks. In a quiet studio a farther mic may add a useful room.',
     why: {
@@ -269,7 +269,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.ctx.2',
     page: 'context',
     prompt: 'The guitarist’s wedge is downstage, facing back toward them — behind your cardioid amp mic. Where does a cardioid reject most?',
-    options: ['Directly behind it, where that wedge sits', 'At its sides, about ninety degrees off its axis', 'In front of it, toward the speaker it faces'],
+    options: ['At its sides, about ninety degrees off its axis', 'In front of it, toward the speaker it faces', 'Directly behind it, where that wedge sits'],
     correct: 'Directly behind it, where that wedge sits',
     explain: 'A cardioid rejects most at 180°. The mic faces the amp, so its back faces downstage — toward that wedge. Real nulls are shallower than the simplified pattern, and shallowest in the lows.',
     why: {
@@ -281,9 +281,9 @@ const scenarios: MikingScenario[] = [
     id: 'eg.ctx.3',
     page: 'context',
     prompt: 'Your amp mic is a supercardioid. Where does the loudest monitor ideally sit?',
-    options: ['Off to one side of its rear, near its null', 'Directly behind it, just as for a cardioid mic', 'Straight in front of it, beside the amp'],
+    options: ['Directly behind it, just as for a cardioid mic', 'Straight in front of it, beside the amp', 'Off to one side of its rear, near its null'],
     correct: 'Off to one side of its rear, near its null',
-    explain: 'A supercardioid rejects most at about 126° each side, and has a small lobe straight behind. So “put the monitor directly behind it” suits a cardioid, not this mic — aim by the mic’s real pattern.',
+    explain: 'A supercardioid rejects most near 125° each side, and has a small lobe straight behind. So “put the monitor directly behind it” suits a cardioid, not this mic — aim by the mic’s real pattern.',
     why: {
       'Directly behind it, just as for a cardioid mic': 'A supercardioid picks up a little straight behind; its deepest rejection is off to each side of the rear.',
       'Straight in front of it, beside the amp': 'In front is where it picks up most — a monitor there feeds straight into it.',
@@ -293,7 +293,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.ctx.studio',
     page: 'context',
     prompt: 'Studio session, a good-sounding room, no monitors on the floor. What could justify a mic farther back from the amp?',
-    options: ['The room adds something useful to the sound', 'A farther mic picks up more of the amp’s low end', 'It removes the need for a close mic'],
+    options: ['A farther mic picks up more of the amp’s low end', 'The room adds something useful to the sound', 'It removes the need for a close mic'],
     correct: 'The room adds something useful to the sound',
     explain: 'A farther mic hears the amp and the room together: worth it when the room helps. Record the close mic alone first, then bring the far one up underneath, and check the blend in mono — distance means delay.',
     why: {
@@ -305,7 +305,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · Why keep the mic stand clear of the guitarist’s pedalboard?',
-    options: ['The player works the pedals with their feet while playing', 'Pedals put hum into a nearby mic’s cable', 'The pedalboard reflects the amp’s sound straight back into the mic'],
+    options: ['Pedals put hum into a nearby mic’s cable', 'The player works the pedals with their feet while playing', 'The pedalboard reflects the amp’s sound straight back into the mic'],
     correct: 'The player works the pedals with their feet while playing',
     explain: 'The pedalboard is part of the player’s space: a stand or cable there can be kicked, move a pedal or trip someone. Keep the stand compact and the cable routed away.',
     why: {
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.two.1',
     page: 'twoMic',
     prompt: 'A front mic and a rear mic on an open-backed combo sound thin together. What do you try first?',
-    options: ['Flip the rear mic’s polarity, then check in mono', 'Turn the rear mic up until it matches the front mic', 'Move the front mic right up against the grille'],
+    options: ['Turn the rear mic up until it matches the front mic', 'Flip the rear mic’s polarity, then check in mono', 'Move the front mic right up against the grille'],
     correct: 'Flip the rear mic’s polarity, then check in mono',
     explain: `${OPPOSITE_SIDES_POLARITY} Then move or rebalance if it is still thin: a switch cannot fix every frequency.`,
     why: {
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.two.2',
     page: 'twoMic',
     prompt: 'You flip one mic’s polarity. What happens to the arrival-time difference between the two?',
-    options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals now line up exactly', 'It doubles, because the copy is now inverted'],
+    options: ['It drops to zero, so the two arrivals now line up exactly', 'It doubles, because the copy is now inverted', 'Nothing — polarity flips the sign, not the timing'],
     correct: 'Nothing — polarity flips the sign, not the timing',
     explain: 'Polarity inversion reverses the signal’s sign. Only moving a mic changes when the sound arrives: the notches move, the delay does not.',
     why: {
@@ -341,7 +341,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.two.3',
     page: 'twoMic',
     prompt: 'You blend the amp mic with a DI and the low notes go hollow. What do you try first?',
-    options: ['Each alone, then mono; move or rebalance, then polarity', 'Turn the DI up until the lows fully come back', 'Boost the lows on the mic channel, then leave the blend as it is'],
+    options: ['Turn the DI up until the lows fully come back', 'Each alone, then mono; move or rebalance, then polarity', 'Boost the lows on the mic channel, then leave the blend as it is'],
     correct: 'Each alone, then mono; move or rebalance, then polarity',
     explain: 'The DI arrives first; the mic, after the sound crosses the air, and the amp shapes it on the way. Hear each alone, then the blend in mono; move the mic or rebalance, then try polarity both ways. No single setting fixes every frequency.',
     why: {
@@ -353,7 +353,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.prac.gain',
     page: 'practice',
     prompt: 'Normal playing sits well below the overload light, but the solo’s loudest chords light it. What do you do?',
-    options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader down until the loudest chords sound clean again', 'Ask the player to turn the amp down for the solo only'],
+    options: ['Pull the channel fader down until the loudest chords sound clean again', 'Ask the player to turn the amp down for the solo only', 'Lower the input gain, or use a pad its manual allows, and re-check'],
     correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
     explain: 'Set the input gain with headroom for the loudest passage the player really plays, and watch the overload light. A lower fader does not undo clipping at the input.',
     why: {
@@ -377,7 +377,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.mix.1',
     page: 'practice',
     prompt: 'A starting point says “15–30 cm (6–12 in), on the axis”. Before you place the mic, what else do you need to know?',
-    options: ['Which speaker is sounding, and that it is measured from the grille', 'The amp’s brand, so the number matches its speaker', 'Nothing more: the number on its own tells you exactly where it goes'],
+    options: ['The amp’s brand, so the number matches its speaker', 'Nothing more: the number on its own tells you exactly where it goes', 'Which speaker is sounding, and that it is measured from the grille'],
     correct: 'Which speaker is sounding, and that it is measured from the grille',
     explain: 'A distance belongs to its reference — the grille — and to the speaker that is really active. Clearance is a separate check again.',
     why: {
@@ -389,7 +389,7 @@ const scenarios: MikingScenario[] = [
     id: 'eg.mix.2',
     page: 'practice',
     prompt: 'The amp gives off a hot smell and the cable at its back looks damaged. What now?',
-    options: ['Stop, keep everyone clear, and get a qualified technician', 'Move the mic farther back and carry on with the soundcheck', 'Open the back panel and look for the loose wire yourself'],
+    options: ['Move the mic farther back and carry on with the soundcheck', 'Stop, keep everyone clear, and get a qualified technician', 'Open the back panel and look for the loose wire yourself'],
     correct: 'Stop, keep everyone clear, and get a qualified technician',
     explain: 'Heat, smoke, a burning smell, damaged cable or a shock are stop conditions. Mic work never includes opening a chassis or touching amp wiring.',
     why: {
@@ -413,10 +413,22 @@ const scenarios: MikingScenario[] = [
 
 const symptoms: Symptom[] = [
   {
+    id: 's.hum',
+    observation: 'Hum or buzz on the DI channel',
+    firstChecks: 'Is it a cable, a shared power circuit, or the DI’s audio ground? Swap one cable at a time; then try the DI’s ground-lift switch, as its manual describes.',
+    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the earth pin off the amp’s mains plug to break the loop', 'Turn the DI channel up so the guitar playing covers the hum'],
+    correct: 'Swap one cable at a time, then try the DI’s ground lift',
+    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s mains earth stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
+    why: {
+      'Pull the earth pin off the amp’s mains plug to break the loop': 'Never. The mains earth is the safety path that stops a fault becoming a shock. Only a qualified technician deals with mains wiring.',
+      'Turn the DI channel up so the guitar playing covers the hum': 'More gain raises the hum with the instrument.',
+    },
+  },
+  {
     id: 's.fizz',
     observation: 'Too much fizz or harshness',
     firstChecks: 'Is the mic near the dust-cap centre? Slide toward the dust cap’s edge or the outer cone, then compare a small angle.',
-    options: ['Slide toward the cap’s edge or the outer cone, then a small angle', 'Turn the amp’s treble control down first, before moving the mic at all', 'Push the mic right against the grille cloth'],
+    options: ['Turn the amp’s treble control down first, before moving the mic at all', 'Slide toward the cap’s edge or the outer cone, then a small angle', 'Push the mic right against the grille cloth'],
     correct: 'Slide toward the cap’s edge or the outer cone, then a small angle',
     explain: 'One variable at a time: the same distance, a move across the cone, then an angle. Listen to the fizz, the pick attack and the midrange in the full mix.',
     why: {
@@ -428,7 +440,7 @@ const symptoms: Symptom[] = [
     id: 's.dull',
     observation: 'The guitar sounds dull or buried in the mix',
     firstChecks: 'Is the mic toward the outer cone, or aimed away? Shift toward the dust cap’s edge; check with the band before reaching for EQ.',
-    options: ['Shift toward the cap’s edge; check it with the band before EQ', 'Add treble on the channel first, and only then think about moving the mic', 'Move the mic over to the middle of the grille'],
+    options: ['Add treble on the channel first, and only then think about moving the mic', 'Move the mic over to the middle of the grille', 'Shift toward the cap’s edge; check it with the band before EQ'],
     correct: 'Shift toward the cap’s edge; check it with the band before EQ',
     explain: 'Return toward the dust cap’s edge of the active speaker and listen in the full mix — a guitar that sounds fine alone can disappear in the band.',
     why: {
@@ -540,7 +552,7 @@ const setupTasks: SetupTask[] = [
   {
     id: 'eg.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A studio, a good room, the same open-backed combo; the player wants a fuller, wider sound. Two inputs, NO phantom power.',
+    brief: 'BRIEF 2 · A studio, a good room, the same open-backed combo; the player wants a fuller sound with more depth. Two inputs, NO phantom power.',
     setups: [
       { id: 'a', label: 'A dynamic at the dust cap’s edge, plus a dynamic 15–30 cm behind the open back, polarity flipped', ok: true, power: 'none', feedback: 'A front-and-rear pair from outside, checked in mono — dynamics need no phantom.' },
       { id: 'b', label: 'A dynamic close at the cap’s edge, plus a dynamic 60–90 cm back for the room', ok: true, power: 'none', feedback: 'Close plus room in a good room — bring the room mic up under the close one and check in mono.' },
@@ -700,7 +712,7 @@ export const C02_LESSON: Lesson = {
       { id: 'site', label: 'Spot on the cone, distance from the grille, angle', kind: 'text' },
       { id: 'tone', label: 'Clean and driven: what you heard (tendencies, in words)', kind: 'text' },
       { id: 'mono', label: 'Second mic or DI: alone, together, in mono', kind: 'text' },
-      { id: 'notes', label: 'Stand, cable, vents checked; final choice and its limitation', kind: 'text' },
+      { id: 'notes', label: 'Stand, cable, vents checked; hum checked (the DI’s ground lift as its manual says — the mains earth never touched); final choice and its limitation', kind: 'text' },
     ],
   },
   // INTERNAL record (never shown).

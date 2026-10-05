@@ -77,7 +77,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.snd.1',
     page: 'sound',
     prompt: 'A harp string is plucked. What moves most of the air?',
-    options: ['The soundboard, pulled by the string where it is anchored', 'The string itself, since it is the part the finger plucks and lets go', 'The pillar, which rings when the strings pull on it'],
+    options: ['The string itself, since it is the part the finger plucks and lets go', 'The pillar, which rings when the strings pull on it', 'The soundboard, pulled by the string where it is anchored'],
     correct: 'The soundboard, pulled by the string where it is anchored',
     explain: 'A string is too thin to move much air. Anchored in the soundboard, it pulls on it as it swings, and the board — light and large — moves the air.',
     why: {
@@ -89,7 +89,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.snd.2',
     page: 'sound',
     prompt: 'Where else does sound leave the harp, besides the soundboard’s face?',
-    options: ['Through the sound holes in the back of the soundbox', 'Out of the top of the pillar, above the neck', 'Through the pedals, down into the floor'],
+    options: ['Out of the top of the pillar, above the neck', 'Through the sound holes in the back of the soundbox', 'Through the pedals, down into the floor'],
     correct: 'Through the sound holes in the back of the soundbox',
     explain: 'The air inside the soundbox is pushed and pulled too; it leaves through the holes in the box’s back — toward the harpist.',
     why: {
@@ -101,7 +101,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.snd.3',
     page: 'sound',
     prompt: 'A mic is pointed straight at the middle of the soundboard from close by. What is a common result?',
-    options: ['One region and the board’s low resonance stand out', 'The whole harp, evenly, from the bass to the treble', 'Mostly the room, since the board reflects the sound'],
+    options: ['The whole harp, evenly, from the bass to the treble', 'Mostly the room, since the board reflects the sound', 'One region and the board’s low resonance stand out'],
     correct: 'One region and the board’s low resonance stand out',
     explain: 'Close in, a mic hears only part of a large source — and a directional mic pointed straight at the board can boom. Distance, height or a spot higher up give more of the whole.',
     why: {
@@ -113,7 +113,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.set.1',
     page: 'setting',
     prompt: 'A spot mic near the top of the pillar would be easiest from a boom over the harpist’s head. What do you do?',
-    options: ['Use a secure stand from the side, never over the harpist', 'Swing the boom over quickly while the harpist is not playing', 'Hold the mic there by hand during the performance'],
+    options: ['Swing the boom over quickly while the harpist is not playing', 'Use a secure stand from the side, never over the harpist', 'Hold the mic there by hand during the performance'],
     correct: 'Use a secure stand from the side, never over the harpist',
     explain: 'Nothing moves over the harp or the harpist’s head without a secure stand and a controlled path. Bring the boom in from the side, clear of their reach and view.',
     why: {
@@ -125,19 +125,19 @@ const scenarios: MikingScenario[] = [
     id: 'hp.set.2',
     page: 'setting',
     prompt: 'Your harp mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal next to the orchestra?',
-    options: ['Nothing — a mic’s max SPL is a distortion limit, not a hearing limit', 'Everyone is safe while the music stays below the mic’s rated level', 'You are safe as long as the mic is nearer the harp than you'],
+    options: ['Everyone is safe while the music stays below the mic’s rated level', 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit', 'You are safe for as long as the mic stays nearer to the harp than you are'],
     correct: 'Nothing — a mic’s max SPL is a distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, and every 3 dBA more halves the time — and an orchestra or band around the harp is loud.',
     why: {
       'Everyone is safe while the music stays below the mic’s rated level': 'Max SPL tells you when the mic distorts, not what your ears can take. A widely used guideline for people is 85 dBA averaged over 8 hours.',
-      'You are safe as long as the mic is nearer the harp than you': 'A mic is not a hearing meter. Measure where the person listens, and keep levels and time down.',
+      'You are safe for as long as the mic stays nearer to the harp than you are': 'A mic is not a hearing meter. Measure where the person listens, and keep levels and time down.',
     },
   },
   {
     id: 'hp.set.3',
     page: 'setting',
     prompt: 'The harp sounds boomy and you want to put some foam in a sound hole. What comes first?',
-    options: ['Ask the owner; only with their agreement, and nothing forced in', 'Push a little foam in yourself: it comes out again after the concert', 'Tape over the hole instead, which is gentler than foam'],
+    options: ['Push a little foam in yourself: it comes out again after the concert', 'Tape over the hole instead, which is gentler than foam', 'Ask the owner; only with their agreement, and nothing forced in'],
     correct: 'Ask the owner; only with their agreement, and nothing forced in',
     explain: 'Partly filling a hole is a technique some use — but only when the owner asks for it. First try moving the mic: up, out, or away from the middle of the board.',
     why: {
@@ -149,7 +149,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic close to the soundboard hears what, compared with one 2 m away?',
-    options: ['Part of the harp, with more low resonance', 'The whole harp, with the room blended in', 'Mostly the strings, with no board at all'],
+    options: ['The whole harp, with the room blended in', 'Part of the harp, with more low resonance', 'Mostly the strings, with no board at all'],
     correct: 'Part of the harp, with more low resonance',
     explain: 'The harp is a large source: close in, a mic hears the region it faces, often with its low resonance; around 2–3 m the whole instrument and the room blend.',
     why: {
@@ -161,7 +161,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.mic.1',
     page: 'microphone',
     prompt: 'A solo harp in a good room. Why might a spaced pair of omnis suit it?',
-    options: ['They take in the whole harp and the room together', 'They reject the room, so the harp sounds much closer', 'They need no stands, so nothing is near the harp'],
+    options: ['They reject the room, so the harp sounds much closer', 'They need no stands, so nothing is near the harp', 'They take in the whole harp and the room together'],
     correct: 'They take in the whole harp and the room together',
     explain: 'Omnis do not reject by direction: about 2 m or more from a full-size harp they blend the whole instrument with the room — and check the pair in mono.',
     why: {
@@ -173,7 +173,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.mic.2',
     page: 'microphone',
     prompt: 'A cardioid close to the soundboard sounds bass-heavy. Which property is a likely part of it?',
-    options: ['Proximity effect: a directional mic up close lifts the lows', 'A cardioid hears less bass than an omni, whatever its distance', 'The cardioid is rejecting the high strings on purpose'],
+    options: ['A cardioid hears less bass than an omni, whatever its distance', 'Proximity effect: a directional mic up close lifts the lows', 'The cardioid is rejecting the high strings on purpose'],
     correct: 'Proximity effect: a directional mic up close lifts the lows',
     explain: 'Directional mics gain low end close to a source; pointed at the board’s middle, that adds to its own resonance. Move out or up, or try an omni.',
     why: {
@@ -185,7 +185,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.mic.3',
     page: 'microphone',
     prompt: 'Where does a supercardioid reject the most?',
-    options: ['Off to each side of the rear, near 125°', 'Straight behind it, right on its rear axis', 'At its sides, square to its front'],
+    options: ['Straight behind it, right on its rear axis', 'At its sides, square to its front', 'Off to each side of the rear, near 125°'],
     correct: 'Off to each side of the rear, near 125°',
     explain: 'A supercardioid has a small rear lobe; its deepest rejection is toward the rear but off the axis.',
     why: {
@@ -197,7 +197,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.mic.4',
     page: 'microphone',
     prompt: 'You plan a miniature at a sound hole for a concert. What does it need?',
-    options: ['Phantom power, an approved holder and the owner’s agreement', 'Nothing: miniatures are dynamic mics, so they need no power at all', 'Tape, so that it stays firmly on the soundboard'],
+    options: ['Nothing: miniatures are dynamic mics, so they need no power at all', 'Tape, so that it stays firmly on the soundboard', 'Phantom power, an approved holder and the owner’s agreement'],
     correct: 'Phantom power, an approved holder and the owner’s agreement',
     explain: 'A miniature is a condenser: it needs phantom power, often through its own adapter. It goes on a holder the owner approves — never forced in, never taped to the finish.',
     why: {
@@ -208,20 +208,20 @@ const scenarios: MikingScenario[] = [
   {
     id: 'hp.place.1',
     page: 'placement',
-    prompt: 'A starting point says “about 60 cm from the soundboard”. Your readout says 60 cm from the PILLAR. Are you in it?',
-    options: ['Not necessarily: measure from the soundboard it names', 'Yes: 60 cm is 60 cm, whichever part you start from', 'Yes, as long as the mic is at the harpist’s head height'],
-    correct: 'Not necessarily: measure from the soundboard it names',
+    prompt: 'A starting point says “about 60 cm from the soundboard”. Your readout says 60 cm from the PILLAR. Do you need to measure again, from the soundboard?',
+    options: ['Yes: the band is read from the soundboard it names', 'No: 60 cm is 60 cm, whichever part you start from', 'No, as long as the mic is at the harpist’s head height'],
+    correct: 'Yes: the band is read from the soundboard it names',
     explain: 'A distance means something only with its surface. The soundboard leans back, far from the pillar — which is why every readout names what it measures from.',
     why: {
-      'Yes: 60 cm is 60 cm, whichever part you start from': 'Same number, different surface. The band is measured from the soundboard.',
-      'Yes, as long as the mic is at the harpist’s head height': 'Height is a separate check. The distance is read from the soundboard.',
+      'No: 60 cm is 60 cm, whichever part you start from': 'Same number, different surface. The band is measured from the soundboard.',
+      'No, as long as the mic is at the harpist’s head height': 'Height is a separate check. The distance is read from the soundboard.',
     },
   },
   {
     id: 'hp.place.2',
     page: 'placement',
     prompt: 'The harp is too forward and bright from a spot near the top of the pillar. What is one alternative to try?',
-    options: ['Slightly behind, on the side away from the harpist’s head', 'Closer to the pillar, so the harp sounds more natural and less bright', 'Straight at the middle of the board, very close'],
+    options: ['Closer to the pillar, so the harp sounds more natural and less bright', 'Slightly behind, on the side away from the harpist’s head', 'Straight at the middle of the board, very close'],
     correct: 'Slightly behind, on the side away from the harpist’s head',
     explain: 'A spot slightly behind and above, on the side away from the harpist’s head, looking down at the board, is a gentler alternative — or bring the pillar spot down in the blend.',
     why: {
@@ -233,7 +233,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.place.3',
     page: 'placement',
     prompt: 'Why keep a front mic a little to one side of the strings rather than right in their plane?',
-    options: ['The harpist’s hands work both sides of the strings there', 'The strings are loudest exactly in their own plane', 'The starting points are all measured from the string plane itself'],
+    options: ['The strings are loudest exactly in their own plane', 'The harpist’s hands work both sides of the strings there', 'The starting points are all measured from the string plane itself'],
     correct: 'The harpist’s hands work both sides of the strings there',
     explain: 'The hands reach round both sides of the strings: a mic in their plane is in the way. A little to one side, it still looks back at the board.',
     why: {
@@ -245,7 +245,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · What must a harp mic, its stand and its cable stay out of?',
-    options: ['The harpist’s hands and view, the pedals, and the space over their head', 'The front of the harp, so that the audience can see the strings and the hands', 'The soundbox’s back, which must not be looked at by a mic'],
+    options: ['The front of the harp, so that the audience can see the strings and the hands', 'The harpist’s hands and view, the pedals, and the space over their head', 'The soundbox’s back, which must not be looked at by a mic'],
     correct: 'The harpist’s hands and view, the pedals, and the space over their head',
     explain: 'Clearance comes first: the hands round the strings, the feet on the pedals, the view to the music, and nothing swinging over the harp or the harpist.',
     why: {
@@ -257,7 +257,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.ctx.1',
     page: 'context',
     prompt: 'The harpist’s wedge is loud in the harp mic. What is a good first move to try?',
-    options: ['Turn the mic so the wedge falls in its rejection', 'Turn the harp channel up so the harp covers the wedge', 'Move the mic right up against the strings'],
+    options: ['Turn the harp channel up so the harp covers the wedge', 'Move the mic right up against the strings', 'Turn the mic so the wedge falls in its rejection'],
     correct: 'Turn the mic so the wedge falls in its rejection',
     explain: 'Aim the pattern’s rejection at the wedge, by its actual pattern, while the mic still faces the board — then lower the wedge or move it if needed, with the level down first.',
     why: {
@@ -269,7 +269,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.ctx.2',
     page: 'context',
     prompt: 'With a cardioid facing the harp, where should a wedge sit for the most rejection?',
-    options: ['Straight behind the mic, on its rear axis', 'Off to one side of the rear, near 125°', 'Beside the mic, square to its front'],
+    options: ['Off to one side of the rear, near 125°', 'Beside the mic, square to its front', 'Straight behind the mic, on its rear axis'],
     correct: 'Straight behind the mic, on its rear axis',
     explain: 'A cardioid rejects most directly behind (180°). A supercardioid’s deepest rejection is off the rear axis, near 125°. Aim by the actual pattern.',
     why: {
@@ -281,7 +281,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.ctx.studio',
     page: 'context',
     prompt: 'A solo harp in a beautiful room. What could justify a pair about 2 m away instead of close spots?',
-    options: ['The room is worth hearing, and the whole harp blends at that distance', 'Distant mics pick up far less of the harpist’s fingers than close ones do', 'Close spots belong on a stage, not in a studio, by convention'],
+    options: ['Distant mics pick up far less of the harpist’s fingers than close ones do', 'Close spots belong on a stage, not in a studio, by convention', 'The room is worth hearing, and the whole harp blends at that distance'],
     correct: 'The room is worth hearing, and the whole harp blends at that distance',
     explain: 'Around 2–3 m from a full-size harp the instrument and the room integrate — a natural solo perspective. Close spots bring definition; the choice is what the music needs.',
     why: {
@@ -293,7 +293,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · Air from inside the soundbox leaves the harp where?',
-    options: ['Through the sound holes in its back, toward the harpist', 'Through the top of the neck, above the strings and the tuning pins', 'Through the base, down into the floor'],
+    options: ['Through the top of the neck, above the strings and the tuning pins', 'Through the sound holes in its back, toward the harpist', 'Through the base, down into the floor'],
     correct: 'Through the sound holes in its back, toward the harpist',
     explain: 'The holes are in the soundbox’s back, facing the harpist — a mic behind the harp, or a miniature at a hole, hears that air.',
     why: {
@@ -305,7 +305,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.two.1',
     page: 'twoMic',
     prompt: 'Two spots on the soundboard, an upper and a lower. Why can the pair sound hollow in mono?',
-    options: ['The board reaches the two mics at different times', 'The lower mic hears the board in reverse polarity', 'Two mics on one harp cancel each other completely in mono'],
+    options: ['The lower mic hears the board in reverse polarity', 'Two mics on one harp cancel each other completely in mono', 'The board reaches the two mics at different times'],
     correct: 'The board reaches the two mics at different times',
     explain: 'Sound from a point on the board has a different path to each mic. Summed in mono, the delayed copy cancels at some frequencies — a comb.',
     why: {
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.two.2',
     page: 'twoMic',
     prompt: 'You flip the lower mic’s polarity. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals line up again in time', 'It doubles, because the inverted copy arrives later'],
+    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'It doubles, because the inverted copy arrives later'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay. The notches move; Δt does not.',
     why: {
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.two.3',
     page: 'twoMic',
     prompt: 'Should the upper and lower spots be panned hard left and right?',
-    options: ['Not necessarily: much of the harp’s range runs up and down', 'Yes: two spots on a harp make a stereo pair by their nature', 'Yes, so the bass sits on one side and the treble on the other'],
+    options: ['Yes: two spots on a harp make a stereo pair by their nature', 'Not necessarily: much of the harp’s range runs up and down', 'Yes, so the bass sits on one side and the treble on the other'],
     correct: 'Not necessarily: much of the harp’s range runs up and down',
     explain: 'The harp’s registers are spread mostly vertically, so two spots need not be panned apart. A single natural mic can be stronger than a poorly balanced pair.',
     why: {
@@ -341,7 +341,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.two.4',
     page: 'twoMic',
     prompt: 'Does a harp need two mics?',
-    options: ['Only if the second covers something the first misses', 'Yes: one mic cannot hear a harp’s whole range at all', 'Yes, whenever it is a pedal harp rather than a lever harp'],
+    options: ['Yes: one mic cannot hear a harp’s whole range at all', 'Yes, whenever it is a pedal harp rather than a lever harp', 'Only if the second covers something the first misses'],
     correct: 'Only if the second covers something the first misses',
     explain: 'One well-placed mic can be strong. Add a second spot only when it supports a register the first misses — and check the pair in mono.',
     why: {
@@ -353,7 +353,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.prac.gain',
     page: 'practice',
     prompt: 'Quiet plucks sit well below the overload light, but the strongest accents and glissandi light it. What do you do?',
-    options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader down until the accents sound clean', 'Ask the harpist to play the accents more softly during the concert'],
+    options: ['Pull the channel fader down until the accents sound clean', 'Lower the input gain, or use a pad its manual allows, and re-check', 'Ask the harpist to play the accents more softly during the concert'],
     correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
     explain: 'Set gain with headroom for the strongest playing. A lowered fader does not undo clipping at the input.',
     why: {
@@ -365,7 +365,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.prac.3',
     page: 'practice',
     prompt: 'What would justify adding a second harp mic?',
-    options: ['One mic misses a register, and the pair holds up in mono', 'Two channels give the mix engineer more options later on', 'The harp needs more level than one mic can give it'],
+    options: ['Two channels give the mix engineer more options later on', 'One mic misses a register, and the pair holds up in mono', 'The harp needs more level than one mic can give it'],
     correct: 'One mic misses a register, and the pair holds up in mono',
     explain: 'A second mic should solve a real problem — a missing register — and the pair should still sound full in mono.',
     why: {
@@ -389,7 +389,7 @@ const scenarios: MikingScenario[] = [
     id: 'hp.mix.2',
     page: 'practice',
     prompt: 'A wedge sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the wedge, because it sits in the null', 'More wedge than straight behind the mic, where it rejects the most'],
+    options: ['Silence from the wedge, because it sits in the null', 'More wedge than straight behind the mic, where it rejects the most', 'Strong rejection on paper; in reality less, and least in the lows'],
     correct: 'Strong rejection on paper; in reality less, and least in the lows',
     explain: 'A null is infinitely deep only on paper. Real mics reject far less, and least at low frequencies.',
     why: {
@@ -452,7 +452,7 @@ const symptoms: Symptom[] = [
     id: 'hp.sym.mono',
     observation: 'The stereo sum loses notes',
     firstChecks: 'Unequal arrival times from two mics: compare in mono, adjust the pair’s geometry.',
-    options: ['Each mic alone, then the pair in mono; change the geometry', 'Flip one mic’s polarity and leave it that way for the whole concert', 'Pan the two mics harder apart to separate them'],
+    options: ['Flip one mic’s polarity and leave it that way for the whole concert', 'Pan the two mics harder apart to separate them', 'Each mic alone, then the pair in mono; change the geometry'],
     correct: 'Each mic alone, then the pair in mono; change the geometry',
     explain: 'Two mics hearing the harp at different times comb in mono. Change the spacing, use a coincident pair, or one mic.',
     why: {
@@ -554,11 +554,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'Where are a harp’s sound holes?',
-    options: ['In the back of the soundbox, toward the harpist', 'In the soundboard, under the strings', 'In the pillar, up near the crown at the top'],
+    options: ['In the back of the soundbox, toward the harpist', 'In the soundboard itself, under the strings', 'In the pillar, up near the crown at the top'],
     correct: 'In the back of the soundbox, toward the harpist',
     explain: 'The holes are in the soundbox’s back, facing the harpist; the soundboard is its front, where the strings are anchored.',
     why: {
-      'In the soundboard, under the strings': 'The soundboard carries the strings; the holes are in the back.',
+      'In the soundboard itself, under the strings': 'The soundboard carries the strings; the holes are in the back.',
       'In the pillar, up near the crown at the top': 'The pillar is a solid column at the front.',
     },
   },
@@ -615,11 +615,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your harp mic is rated to a very high maximum SPL. What does that tell you about a long, loud rehearsal next to the orchestra?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the music stays below the mic’s rating', 'It is safe as long as the mic is nearer the harp than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the music stays below the mic’s rated level', 'It is safe as long as the mic is nearer the harp than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the music stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the music stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the harp than you': 'Where the mic sits says nothing about your ears.',
     },
   },

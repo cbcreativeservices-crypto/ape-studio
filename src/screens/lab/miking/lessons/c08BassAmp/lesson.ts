@@ -62,7 +62,7 @@ const pages: Record<PageId, PageContent> = {
   troubleshoot: {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
-    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
+    credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all eight symptoms (a retry is explained, never penalised).' },
     takeaway: 'Move the mic before reaching for EQ, check the DI on its own, and stop for anything electrical you are not sure of.',
   },
   practice: {
@@ -81,7 +81,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.snd.1',
     page: 'sound',
     prompt: 'A five-string bass adds a low B string. About how low is its open note?',
-    options: ['About 31 Hz — lower than a four-string’s 41 Hz', 'About 82 Hz — the same as a guitar’s low string', 'About 41 Hz — the same as a four-string’s low E'],
+    options: ['About 82 Hz — the same as a guitar’s low string', 'About 41 Hz — the same as a four-string’s low E', 'About 31 Hz — lower than a four-string’s 41 Hz'],
     correct: 'About 31 Hz — lower than a four-string’s 41 Hz',
     explain: 'In equal temperament the low E (E1) is about 41.2 Hz and a five-string’s low B (B0) about 30.9 Hz. Mics, DIs, filters and the PA all have to reach that far down — check the lowest notes the player really plays.',
     why: {
@@ -93,7 +93,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.snd.2',
     page: 'sound',
     prompt: 'Why might a bass cabinet have a small horn as well as its woofers?',
-    options: ['For the top end — string noise, pick and slap detail', 'For the lowest notes, which the woofers cannot reach', 'To spread the bass evenly round the whole room'],
+    options: ['To spread the bass evenly round the whole room', 'For the lowest notes, which the woofers cannot reach', 'For the top end — string noise, pick and slap detail'],
     correct: 'For the top end — string noise, pick and slap detail',
     explain: 'A horn handles the highest frequencies the woofers do not. A mic on one woofer may not hear it — aim at the horn only as a deliberate choice, and listen for hiss.',
     why: {
@@ -105,7 +105,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.snd.3',
     page: 'sound',
     prompt: 'Close in, a mic aimed at the middle of a woofer tends to hear…',
-    options: ['more upper-mid bite than toward the edge', 'only the lowest notes, since the middle moves most', 'nothing of the cone, only the dust cap’s air'],
+    options: ['only the lowest notes, since the middle moves most', 'nothing of the cone, only the dust cap’s air', 'more upper-mid bite than toward the edge'],
     correct: 'more upper-mid bite than toward the edge',
     explain: 'Higher up, the middle of the cone does more of the work, so a close mic aimed there tends to hear more attack — slap, pick, fretless articulation. Toward the edge tends to be warmer. Tendencies to check.',
     why: {
@@ -117,7 +117,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.set.1',
     page: 'setting',
     prompt: 'The head has a DI output with a PRE / POST switch. What decides what PRE and POST include?',
-    options: ['That head’s own manual — it differs from model to model', 'Nothing: PRE is plain dry and POST is the speaker’s full sound', 'The desk, which sets it when the cable is connected'],
+    options: ['Nothing: PRE is plain dry and POST is the speaker’s full sound', 'The desk, which sets it when the cable is connected', 'That head’s own manual — it differs from model to model'],
     correct: 'That head’s own manual — it differs from model to model',
     explain: 'Which pad, EQ, drive and effects a PRE or POST output includes is model-specific. Read the manual, then label the channel for what it really carries — and remember neither is the speaker’s air.',
     why: {
@@ -129,7 +129,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.set.2',
     page: 'setting',
     prompt: 'The desk is short of inputs. Can the head’s speaker output go into a desk input or an ordinary DI?',
-    options: ['No — a speaker output goes only to a speaker', 'Yes, through the DI box’s pad switch', 'Yes, as long as the head is turned right down first'],
+    options: ['Yes, through the DI box’s pad switch', 'Yes, as long as the head is turned right down first', 'No — a speaker output goes only to a speaker'],
     correct: 'No — a speaker output goes only to a speaker',
     explain: 'A speaker output carries high power. It goes to the cabinet by a speaker cable — never to a mic, line or ordinary DI input. Some heads must never run without their speaker load: read the manual; when unsure, stop and ask a technician.',
     why: {
@@ -141,7 +141,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.set.3',
     page: 'setting',
     prompt: 'You need to connect the DI box to the bass. When do you plug in?',
-    options: ['With the amp off or every level at zero', 'Whenever the bassist is not playing a note', 'Only once the desk has phantom power switched on'],
+    options: ['Whenever the bassist is not playing a note', 'With the amp off or every level at zero', 'Only once the desk has phantom power switched on'],
     correct: 'With the amp off or every level at zero',
     explain: 'Making or breaking connections with levels up can send a loud pop through the system. Power off, or all levels at zero, then connect — and switch phantom with the outputs muted.',
     why: {
@@ -153,7 +153,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · Which notes must a bass mic, its preamp and any filter be able to carry?',
-    options: ['Down to about 41 Hz — about 31 Hz on a five-string', 'Only the notes above about 100 Hz that you can clearly hear', 'Only the horn’s range, above the woofers'],
+    options: ['Only the notes above about 100 Hz that you can clearly hear', 'Down to about 41 Hz — about 31 Hz on a five-string', 'Only the horn’s range, above the woofers'],
     correct: 'Down to about 41 Hz — about 31 Hz on a five-string',
     explain: 'The open low E is about 41 Hz, a low B about 31 Hz. A mic or filter that turns those down thins the bass — check the lowest notes the player really plays.',
     why: {
@@ -165,7 +165,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.mic.1',
     page: 'microphone',
     prompt: 'What should you check first about a mic for a close bass cabinet?',
-    options: ['Its low-frequency response and how much level it handles', 'That it is made by the same company as the bassist’s head', 'That it has the brightest sound of all the mics'],
+    options: ['That it is made by the same company as the bassist’s head', 'Its low-frequency response and how much level it handles', 'That it has the brightest sound of all the mics'],
     correct: 'Its low-frequency response and how much level it handles',
     explain: 'A bass cabinet is loud and low: the mic must reach the lowest notes and handle the level without distorting. Then compare by ear, at matched level.',
     why: {
@@ -177,7 +177,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.mic.2',
     page: 'microphone',
     prompt: 'No phantom power on the bass channel. Which of this page’s mic types can you still use?',
-    options: ['The two dynamics: neither needs power', 'The small condenser, kept a little farther back', 'The small condenser, while the head is switched on'],
+    options: ['The small condenser, kept a little farther back', 'The two dynamics: neither needs power', 'The small condenser, while the head is switched on'],
     correct: 'The two dynamics: neither needs power',
     explain: 'Dynamics need no power. A condenser needs phantom power from the desk wherever it is placed.',
     why: {
@@ -188,20 +188,20 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ba.mic.3',
     page: 'microphone',
-    prompt: 'A DI box needs 48 V phantom power to work. Does that make it a microphone?',
-    options: ['No — it is an electrical source, labelled as its own channel', 'Yes, because a box that needs phantom power counts as a mic', 'Yes, it is a mic built into the box for the bass'],
-    correct: 'No — it is an electrical source, labelled as its own channel',
+    prompt: 'A DI box needs 48 V phantom power to work. Is it still a direct source, labelled as its own channel?',
+    options: ['No, a box that needs phantom power counts as a mic', 'Yes — it carries the bass’s electrical signal, not air', 'No, it is a mic built into the box for the bass'],
+    correct: 'Yes — it carries the bass’s electrical signal, not air',
     explain: 'Some DI boxes use phantom power to run their electronics. They still carry the instrument’s electrical signal — not the air from a speaker. Label it “bass DI”, not “bass mic”.',
     why: {
-      'Yes, because a box that needs phantom power counts as a mic': 'Phantom power runs electronics of many kinds; it says nothing about hearing air.',
-      'Yes, it is a mic built into the box for the bass': 'There is no capsule in a DI: it takes the electrical signal from the instrument.',
+      'No, a box that needs phantom power counts as a mic': 'Phantom power runs electronics of many kinds; it says nothing about hearing air.',
+      'No, it is a mic built into the box for the bass': 'There is no capsule in a DI: it takes the electrical signal from the instrument.',
     },
   },
   {
     id: 'ba.mic.4',
     page: 'microphone',
     prompt: 'A close dynamic on the woofer and a condenser farther back: what does each tend to bring?',
-    options: ['Close: focus and isolation; farther: cabinet and room', 'Close: the room; farther: the woofer’s focused sound', 'They bring the same sound, only at two quite different levels'],
+    options: ['Close: the room; farther: the woofer’s focused sound', 'Close: focus and isolation; farther: cabinet and room', 'They bring the same sound, only at two quite different levels'],
     correct: 'Close: focus and isolation; farther: cabinet and room',
     explain: 'Close in, the mic hears mostly the woofer; farther back, more of the cabinet and the room — useful only when the room helps, and checked in mono because it arrives later.',
     why: {
@@ -213,7 +213,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.place.1',
     page: 'placement',
     prompt: 'A bass cabinet has four 10 in woofers. Where do you begin?',
-    options: ['On ONE woofer — not the gap between two', 'In the middle of the grille, between all four', 'Wherever the cabinet’s logo plate sits'],
+    options: ['In the middle of the grille, between all four', 'Wherever the cabinet’s logo plate sits', 'On ONE woofer — not the gap between two'],
     correct: 'On ONE woofer — not the gap between two',
     explain: 'Between woofers a mic hears several arrivals at once, with unpredictable cancellations. Choose one woofer — at a safe level, by ear — and start there.',
     why: {
@@ -225,7 +225,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.place.2',
     page: 'placement',
     prompt: 'Close in, the bass sounds tight but small. Which first try gives the low notes more room to breathe?',
-    options: ['Back the mic off to 10–45 cm, keeping its aim', 'Push the mic right up against the grille cloth', 'Swap to another mic and move it at the same time'],
+    options: ['Push the mic right up against the grille cloth', 'Swap to another mic and move it at the same time', 'Back the mic off to 10–45 cm, keeping its aim'],
     correct: 'Back the mic off to 10–45 cm, keeping its aim',
     explain: 'A little more distance lets the woofer and cabinet combine and the lows develop — at the cost of more room and stage. One change at a time, at matched level.',
     why: {
@@ -237,7 +237,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.place.3',
     page: 'placement',
     prompt: 'Slap and pop sound too clanky through the close mic. What do you try first?',
-    options: ['Slide outward on the cone, keeping the distance', 'Aim the mic straight at the horn instead of the woofer', 'Boost the treble so the pop cuts through'],
+    options: ['Aim the mic straight at the horn instead of the woofer', 'Boost the treble so the pop cuts through', 'Slide outward on the cone, keeping the distance'],
     correct: 'Slide outward on the cone, keeping the distance',
     explain: 'Toward the centre — or the horn — tends to exaggerate clank and hiss. Slide toward the edge first; if a DI is in use it may already carry the transient detail.',
     why: {
@@ -249,7 +249,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · Which of these hears the air from the cabinet?',
-    options: ['A mic in front of one woofer', 'A DI box between the bass and the head', 'The head’s POST DI output'],
+    options: ['A DI box between the bass and the head', 'A mic in front of one woofer', 'The head’s POST DI output'],
     correct: 'A mic in front of one woofer',
     explain: 'Only a mic hears the speaker’s air. Both DI paths are electrical, taken before the speaker — separate sources, labelled as such.',
     why: {
@@ -261,7 +261,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.ctx.1',
     page: 'context',
     prompt: 'On a loud stage, why does the bass often go to the PA through a DI?',
-    options: ['It is dependable: no spill and no room in it', 'A DI makes the bass louder than a cabinet mic could', 'The cabinet cannot be miked once the band plays'],
+    options: ['A DI makes the bass louder than a cabinet mic could', 'The cabinet cannot be miked once the band plays', 'It is dependable: no spill and no room in it'],
     correct: 'It is dependable: no spill and no room in it',
     explain: 'A DI carries the bass without the drums, the wedges or the room. A cabinet mic is often added for its character — blended under the DI and checked in mono.',
     why: {
@@ -273,7 +273,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.ctx.2',
     page: 'context',
     prompt: 'The bassist’s wedge sits downstage, behind your cardioid cabinet mic. Where does the cardioid reject most?',
-    options: ['Directly behind it, where that wedge sits', 'At its sides, about ninety degrees off its axis', 'In front of it, toward the woofer it faces'],
+    options: ['At its sides, about ninety degrees off its axis', 'Directly behind it, where that wedge sits', 'In front of it, toward the woofer it faces'],
     correct: 'Directly behind it, where that wedge sits',
     explain: 'A cardioid rejects most at 180°. Real nulls are shallower than the simplified pattern — shallowest in the lows, which is where a bass wedge is loudest.',
     why: {
@@ -285,7 +285,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.ctx.3',
     page: 'context',
     prompt: 'Too much stage bass is feeding back through the PA. What comes first?',
-    options: ['Lower the offending level, then rework the geometry', 'Turn the bass mic up until it drowns the spill out completely', 'Point the cabinet straight at the vocal mics'],
+    options: ['Turn the bass mic up until it drowns the spill out completely', 'Lower the offending level, then rework the geometry', 'Point the cabinet straight at the vocal mics'],
     correct: 'Lower the offending level, then rework the geometry',
     explain: 'Make it safe first: lower the level. Then revisit where the cabinet, the monitors and the mics point, and how much of the low end the stage really needs.',
     why: {
@@ -297,7 +297,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.ctx.studio',
     page: 'context',
     prompt: 'Studio, a good room: what could justify a second mic farther back from the bass cabinet?',
-    options: ['The room adds something the close mic and DI lack', 'A farther mic reaches lower notes than a close one does', 'It replaces the need for a DI on the session'],
+    options: ['A farther mic reaches lower notes than a close one does', 'The room adds something the close mic and DI lack', 'It replaces the need for a DI on the session'],
     correct: 'The room adds something the close mic and DI lack',
     explain: 'Try it only once the close mic and the DI are stable, and only if the room helps. It arrives later: check the low end in mono.',
     why: {
@@ -309,7 +309,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · The DI box’s low-cut switch turns the sound down about 6 dB at 80 Hz. Why not switch it on by habit?',
-    options: ['The bass’s lowest notes sit well below 80 Hz', 'It adds about 6 dB of hum to the signal right at 80 Hz', 'It only works when phantom power is off'],
+    options: ['It adds about 6 dB of hum to the signal right at 80 Hz', 'It only works when phantom power is off', 'The bass’s lowest notes sit well below 80 Hz'],
     correct: 'The bass’s lowest notes sit well below 80 Hz',
     explain: 'A low E is about 41 Hz, a low B about 31 Hz. A filter at 80 Hz already turns those down. Use it only for a diagnosed rumble, checking the lowest notes and the PA.',
     why: {
@@ -321,7 +321,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.two.1',
     page: 'twoMic',
     prompt: 'You blend the cabinet mic with the DI and the low notes hollow out. What do you try first?',
-    options: ['Each alone, then mono; move or rebalance, then polarity', 'Turn the DI up until the lows come fully back again', 'Boost the lows on the mic channel, then leave the blend as it is'],
+    options: ['Turn the DI up until the lows come fully back again', 'Each alone, then mono; move or rebalance, then polarity', 'Boost the lows on the mic channel, then leave the blend as it is'],
     correct: 'Each alone, then mono; move or rebalance, then polarity',
     explain: 'The DI arrives first; the mic hears the speaker after the sound crosses the air, shaped by the head and the cabinet on the way. Judge each alone and the blend in mono; move or rebalance, then try polarity both ways.',
     why: {
@@ -333,7 +333,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.two.2',
     page: 'twoMic',
     prompt: 'You flip the DI’s polarity. What happens to the time the mic arrives after the DI?',
-    options: ['Nothing — polarity flips the sign, not the timing', 'It drops to zero, so the two arrivals now line up exactly', 'It doubles, because the DI is now inverted'],
+    options: ['It drops to zero, so the two arrivals now line up exactly', 'Nothing — polarity flips the sign, not the timing', 'It doubles, because the DI is now inverted'],
     correct: 'Nothing — polarity flips the sign, not the timing',
     explain: 'Only moving the mic changes when its sound arrives. Polarity moves the notches; in a fixed studio setup, delaying the DI can line the two up — but no single delay fixes every frequency.',
     why: {
@@ -345,7 +345,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.two.3',
     page: 'twoMic',
     prompt: 'The bassist uses a fuzz pedal BEFORE the DI box. What does the DI carry?',
-    options: ['The fuzz, but not the head, the cabinet or the room', 'The dry bass, with the fuzz automatically taken back out of it', 'The full sound of the cabinet, fuzz and all'],
+    options: ['The dry bass, with the fuzz automatically taken back out of it', 'The fuzz, but not the head, the cabinet or the room', 'The full sound of the cabinet, fuzz and all'],
     correct: 'The fuzz, but not the head, the cabinet or the room',
     explain: 'A DI carries whatever comes before it. With pedals in front it is no longer dry; it still has no head, speaker or room in it. Label it for what it carries.',
     why: {
@@ -357,7 +357,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.prac.gain',
     page: 'practice',
     prompt: 'The bassist’s slap pops light the overload on the mic channel; the fingerstyle verses do not. What do you do?',
-    options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader down until the slap pops sound clean again', 'Ask the bassist to play the pops more softly for the show'],
+    options: ['Pull the channel fader down until the slap pops sound clean again', 'Lower the input gain, or use a pad its manual allows, and re-check', 'Ask the bassist to play the pops more softly for the show'],
     correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
     explain: 'Set the gain with headroom for the hardest notes the player really plays — and check the DI channel too: an active bass can overload it before the speaker distorts.',
     why: {
@@ -369,7 +369,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.prac.3',
     page: 'practice',
     prompt: 'You have a good DI. What would justify adding the cabinet mic as well?',
-    options: ['It adds character the DI lacks, and the blend holds up in mono', 'Two channels simply give the mixer a lot more to work with later on', 'The bass needs more level in the mix than the DI can give'],
+    options: ['Two channels simply give the mixer a lot more to work with later on', 'The bass needs more level in the mix than the DI can give', 'It adds character the DI lacks, and the blend holds up in mono'],
     correct: 'It adds character the DI lacks, and the blend holds up in mono',
     explain: 'The mic should earn its place: the cabinet’s character, checked against the DI alone and in the blend, in mono. On a loud stage it may add more spill than character.',
     why: {
@@ -381,7 +381,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.mix.1',
     page: 'practice',
     prompt: 'A starting point says “10–45 cm (4–18 in)”. Before you place the mic, what else do you need to know?',
-    options: ['Which woofer, and that it is measured from the grille', 'The cabinet’s brand, so the number matches its drivers', 'Nothing more: the number on its own places the mic'],
+    options: ['The cabinet’s brand, so the number matches its drivers', 'Nothing more: the number on its own places the mic', 'Which woofer, and that it is measured from the grille'],
     correct: 'Which woofer, and that it is measured from the grille',
     explain: 'A distance belongs to its reference — the grille — and to the woofer you chose. Clearance is a separate check.',
     why: {
@@ -393,7 +393,7 @@ const scenarios: MikingScenario[] = [
     id: 'ba.mix.2',
     page: 'practice',
     prompt: 'You are not sure whether a jack on the head is a speaker output or a line output. What now?',
-    options: ['Stop patching, and check the manual or ask a technician', 'Try it into a spare desk input at a low level and just listen', 'Use an instrument cable, which works for either'],
+    options: ['Try it into a spare desk input at a low level and just listen', 'Use an instrument cable, which works for either', 'Stop patching, and check the manual or ask a technician'],
     correct: 'Stop patching, and check the manual or ask a technician',
     explain: 'An uncertain connector is a stop condition. Speaker outputs carry high power and need a speaker; read the model’s manual, or ask a qualified technician.',
     why: {
@@ -405,9 +405,9 @@ const scenarios: MikingScenario[] = [
     id: 'ba.mix.3',
     page: 'practice',
     prompt: 'Which change removes the arrival-time difference between the cabinet mic and the DI itself?',
-    options: ['Delaying the DI, or moving the mic closer', 'Flipping the polarity switch on the DI channel', 'Turning the mic up until it matches the DI'],
-    correct: 'Delaying the DI, or moving the mic closer',
-    explain: 'Only the paths — or a deliberate delay — set the timing. Polarity moves the notches; level changes their depth.',
+    options: ['Delaying the DI to line up with the mic', 'Flipping the polarity switch on the DI channel', 'Turning the mic up until it matches the DI'],
+    correct: 'Delaying the DI to line up with the mic',
+    explain: 'Only the paths — or a deliberate delay — set the timing. Moving the mic closer only shrinks the gap: the speaker and the amp add their own lag. Polarity moves the notches; level changes their depth.',
     why: {
       'Flipping the polarity switch on the DI channel': 'Polarity flips the sign; the delay stays.',
       'Turning the mic up until it matches the DI': 'Level changes the depth of the notches, not the delay.',
@@ -416,6 +416,18 @@ const scenarios: MikingScenario[] = [
 ];
 
 const symptoms: Symptom[] = [
+  {
+    id: 's.hum',
+    observation: 'Hum or buzz on the DI channel',
+    firstChecks: 'Is it a cable, a shared power circuit, or the DI’s audio ground? Swap one cable at a time; then try the DI’s ground-lift switch, as its manual describes.',
+    options: ['Swap one cable at a time, then try the DI’s ground lift', 'Pull the earth pin off the amp’s mains plug to break the loop', 'Turn the DI channel up so the bass playing covers the hum'],
+    correct: 'Swap one cable at a time, then try the DI’s ground lift',
+    explain: 'A DI’s ground-lift switch breaks only the audio ground at its XLR output; the amp’s mains earth stays connected. If one cable at a time and the lift do not cure it, stop and get a qualified technician.',
+    why: {
+      'Pull the earth pin off the amp’s mains plug to break the loop': 'Never. The mains earth is the safety path that stops a fault becoming a shock. Only a qualified technician deals with mains wiring.',
+      'Turn the DI channel up so the bass playing covers the hum': 'More gain raises the hum with the instrument.',
+    },
+  },
   {
     id: 's.dull',
     observation: 'The bass mic sounds dull in the mix',
@@ -702,7 +714,7 @@ export const C08_LESSON: Lesson = {
       { id: 'site', label: 'Which woofer, spot on the cone, distance from the grille', kind: 'text' },
       { id: 'di', label: 'DI: which one, where in the chain, PRE or POST, pad', kind: 'text' },
       { id: 'mono', label: 'Mic and DI alone, together, in mono; polarity', kind: 'text' },
-      { id: 'notes', label: 'Speaker connection untouched; final choice and its limitation', kind: 'text' },
+      { id: 'notes', label: 'Speaker connection untouched; hum checked (the DI’s ground lift as its manual says — the mains earth never touched); final choice and its limitation', kind: 'text' },
     ],
   },
   unknowns: [

@@ -21,13 +21,13 @@ const pages: Record<PageId, PageContent> = {
     title: 'Meet the sitar',
     goal: 'Get to know the sitar — a long-necked, fretted lute on a gourd, with melody, drone and (often) sympathetic strings — what it is, where you meet it, what it does in the music, and its parts, before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'The mizrab plucks a main string over a broad bone bridge; the bridge drives the board on the gourd; and the sympathetic strings under the arched frets ring with the notes that match them.',
+    takeaway: 'The mizrab plucks a main string over a broad bone bridge; the bridge drives the board on the gourd; and the sympathetic strings under the arched frets ring with the notes — or the overtones — that match their tuning.',
   },
   sound: {
     title: 'How it makes its sound',
     goal: 'See how a mizrab stroke becomes sound — the string grazing the broad bridge, the board, the gourd’s air — where the sound leaves, and why the sympathetic strings ring after some notes. Shown, never played.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The board, driven through the broad bridge, does most of the work; the bridge’s buzz is the player’s; and the sympathetic strings answer only the notes that match their tuning.',
+    takeaway: 'The board, driven through the broad bridge, does most of the work; the bridge’s buzz is the player’s; and the sympathetic strings ring with the notes — or the overtones — that match their tuning.',
   },
   setting: {
     title: 'Where it sits',
@@ -90,7 +90,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.2`,
     page: 'sound',
     prompt: 'A sympathetic string is never plucked. When does it ring?',
-    options: ['When a played note lines up with one of its own shapes', 'Whenever a string is played, whatever note it happens to be', 'Only when the player strikes it with the back of the mizrab'],
+    options: ['Whenever a string is played, whatever note it happens to be', 'When a played note lines up with one of its own shapes', 'Only when the player strikes it with the back of the mizrab'],
     correct: 'When a played note lines up with one of its own shapes',
     explain: 'The bridge passes it the played string’s motion. It builds up only where one of its shapes sits at the same pitch as one of the played note’s — so it rings after some notes and stays quiet after others.',
     why: {
@@ -115,19 +115,19 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.2`,
     page: 'setting',
     prompt: 'The producer wants “that sympathetic shimmer” on the record. What do you check first?',
-    options: ['That this sitar has sympathetic strings, and the passage excites them', 'Which mic brand gives the most shimmer on a sitar', 'Nothing: each sitar shimmers if the mic is placed close enough'],
+    options: ['Which mic brand gives the most shimmer on a sitar', 'Nothing: each sitar will shimmer if the mic is placed close enough to it', 'That this sitar has sympathetic strings, and the passage excites them'],
     correct: 'That this sitar has sympathetic strings, and the passage excites them',
     explain: 'Sitars differ: one has thirteen sympathetic strings, another has none. Confirm what this one has, and that the music plays notes that line up with their tuning, before promising a sound.',
     why: {
       'Which mic brand gives the most shimmer on a sitar': 'A brand cannot add strings that are not there. Check the instrument.',
-      'Nothing: each sitar shimmers if the mic is placed close enough': 'Some sitars have no sympathetic strings at all — and a matched note is still needed.',
+      'Nothing: each sitar will shimmer if the mic is placed close enough to it': 'Some sitars have no sympathetic strings at all — and a matched note is still needed.',
     },
   },
   {
     id: `${P}.set.3`,
     page: 'setting',
     prompt: 'Before you place a stand mic for a sitar player on the floor, what do you need from them?',
-    options: ['Their whole motion: the mizrab, the bends, the neck, the gourd', 'The make of the sitar, so you can look up its single correct spot', 'Nothing yet: a starting point already says where the mic goes'],
+    options: ['The make of the sitar, so you can look up its single correct spot', 'Nothing yet: a starting point already says where the mic goes', 'Their whole motion: the mizrab, the bends, the neck, the gourd'],
     correct: 'Their whole motion: the mizrab, the bends, the neck, the gourd',
     explain: 'A starting point is valid only where the player cannot hit the mic. Watch the widest neck and hand movement — the bends pull strings far across the frets — and keep clear of the gourd on the foot.',
     why: {
@@ -139,9 +139,9 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.1`,
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic aimed high, toward the neck, hears more of what?',
-    options: ['String character, any sympathetic shimmer, and fret noise', 'The gourd’s air and the deepest part of the body', 'The bridge’s buzz, heard close up and at its very brightest'],
+    options: ['The gourd’s air and the deepest part of the body', 'String character, any sympathetic shimmer, and fret noise', 'The bridge’s buzz, heard close up and at its very brightest'],
     correct: 'String character, any sympathetic shimmer, and fret noise',
-    explain: 'Toward the neck, a mic hears more of the strings, the sympathetic strings under the frets (if there are any) and the left hand — and less of the board over the gourd.',
+    explain: 'Toward the neck, a mic hears relatively more of the strings and the left hand, so any sympathetic shimmer can stand out more — and less of the board’s body. A tendency to check.',
     why: {
       'The gourd’s air and the deepest part of the body': 'That is low, toward the bridge and the body.',
       'The bridge’s buzz, heard close up and at its very brightest': 'The bridge is at the other end, on the board. Close to it, the buzz grows.',
@@ -151,7 +151,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'Does a small-diaphragm mic lack the sitar’s low end because it is small?',
-    options: ['Not by itself: check its response and listen at matched levels', 'Yes: a small diaphragm cannot hear the lower notes well', 'Yes, unless a ribbon is used, which cures a harsh source'],
+    options: ['Yes: a small diaphragm cannot hear the lower notes well', 'Not by itself: check its response and listen at matched levels', 'Yes, unless a ribbon is used, which cures a harsh source'],
     correct: 'Not by itself: check its response and listen at matched levels',
     explain: 'Diaphragm size alone does not decide the low end, and no mic type cures a harsh source by itself. Read the response, then compare at similar levels.',
     why: {
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.3`,
     page: 'microphone',
     prompt: 'The only spare input has no phantom power. Which of this page’s mics can you use?',
-    options: ['The instrument dynamic: it needs no power at all', 'The small condenser, if its cable run is kept short', 'Either one, as long as the gain is turned up high'],
+    options: ['The small condenser, if its cable run is kept short', 'Either one, as long as the gain is turned up high', 'The instrument dynamic: it needs no power at all'],
     correct: 'The instrument dynamic: it needs no power at all',
     explain: 'Dynamic mics need no power. The small condenser needs phantom power, whatever its cable or the gain setting.',
     why: {
@@ -176,7 +176,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.1`,
     page: 'placement',
     prompt: 'A starting point says about 18–20 cm from the board, toward the bridge and the body. Your readout says 19 cm out from the neck. Are you in it?',
-    options: ['Not necessarily: it is read toward the bridge, not the neck', 'Yes: 19 cm falls inside the 18 to 20 cm band', 'Yes, as long as the mic is pointed at some part of the sitar'],
+    options: ['Yes: 19 cm falls inside the 18 to 20 cm band', 'Not necessarily: it is read toward the bridge, not the neck', 'Yes, as long as the mic is pointed at some part of the sitar'],
     correct: 'Not necessarily: it is read toward the bridge, not the neck',
     explain: 'A distance means something only with its place. Low toward the bridge and high toward the neck are two different starting points at the same distance.',
     why: {
@@ -188,8 +188,8 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.2`,
     page: 'placement',
     prompt: 'With a low and a high mic both offered, why begin with the low one alone?',
-    options: ['Most of the sound is in front of the bridge; add the high one only if needed', 'The high mic is the louder one, so it should be faded in last', 'Two mics on a sitar cancel out, so one is the only real choice'],
-    correct: 'Most of the sound is in front of the bridge; add the high one only if needed',
+    options: ['The high mic is the louder one, so it should be faded in last', 'Most of the sound is by the bridge; add the high mic only if needed', 'Two mics on a sitar cancel out, so one is the only real choice'],
+    correct: 'Most of the sound is by the bridge; add the high mic only if needed',
     explain: 'Low toward the bridge and body carries most of the sitar. The high mic adds string character and shimmer — keep it only when that contribution is clear and the pair holds up in mono.',
     why: {
       'The high mic is the louder one, so it should be faded in last': 'Level is set by gain and faders. The reason is what each mic contributes.',
@@ -199,8 +199,8 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.3`,
     page: 'placement',
-    prompt: 'One starting point is a close omni about 20 cm below the bridge, for a noisy hall. What does that tell you?',
-    options: ['A choice for that room: getting close; not a rule for every room', 'The best sitar position, to be copied in whatever room you use', 'That omnis are the only mics that work on a sitar'],
+    prompt: 'One account has a close omni about 20 cm below the bridge in a noisy hall. What does that tell you?',
+    options: ['The best sitar position, to be copied in whatever room you use', 'That omnis are the only mics that work on a sitar', 'A choice for that room: getting close; not a rule for every room'],
     correct: 'A choice for that room: getting close; not a rule for every room',
     explain: 'Close placement raised the sitar above the hall’s noise in that session. In a quiet, good room a farther view may represent the instrument better. Compare in your own room.',
     why: {
@@ -212,7 +212,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.2`,
     page: 'placement',
     prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a sitar player on the floor?',
-    options: ['The mizrab hand, the neck’s travel, the gourd and their view', 'The front of the gourd, so that the audience can see the inlay', 'The rug at the front, which belongs to the floor wedge'],
+    options: ['The front of the gourd, so that the audience can see the inlay', 'The mizrab hand, the neck’s travel, the gourd and their view', 'The rug at the front, which belongs to the floor wedge'],
     correct: 'The mizrab hand, the neck’s travel, the gourd and their view',
     explain: 'Clearance comes first: the mizrab hand over the board, the left hand pulling strings far across the frets, the gourd resting on the foot, and the player’s view. Stop the player before anything moves.',
     why: {
@@ -225,7 +225,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.studio`,
     page: 'context',
     prompt: 'A quiet studio with a good room. What is a fair first step for the sitar?',
-    options: ['Build it on one mic, then compare a farther view or a pair', 'Put up five mics at once to capture each of the possible layers', 'Start from the far room mic and add close mics to fix it'],
+    options: ['Put up five mics at once to capture each of the possible layers', 'Build it on one mic, then compare a farther view or a pair', 'Start from the far room mic and add close mics to fix it'],
     correct: 'Build it on one mic, then compare a farther view or a pair',
     explain: 'One clear mic first; then, if the room supports the music, compare a farther view or a pair against it — judging the quiet opening and the decay as well as the strong strokes.',
     why: {
@@ -237,11 +237,11 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · Live, you bring the low mic closer to the bridge for more level. What grows with it?',
-    options: ['The nearest attack and the bridge’s buzz', 'The sympathetic strings’ shimmer, most of all', 'The gourd’s air and the room, more than the strings'],
+    options: ['The sympathetic strings’ shimmer, most of all', 'The gourd’s air and the room, more than the strings', 'The nearest attack and the bridge’s buzz'],
     correct: 'The nearest attack and the bridge’s buzz',
     explain: 'Close to the bridge, the nearest attack and the jawari’s buzz dominate. More level before feedback comes with more local colour — retain only the buzz the player intends.',
     why: {
-      'The sympathetic strings’ shimmer, most of all': 'The shimmer is heard more toward the neck and with distance, not right at the bridge.',
+      'The sympathetic strings’ shimmer, most of all': 'The shimmer also leaves through the soundboard (the sympathetic strings have their own small bridge there), but right at the main bridge the nearest attack and buzz dominate it.',
       'The gourd’s air and the room, more than the strings': 'Closer means more direct, nearer sound — less room, not more.',
     },
   },
@@ -260,7 +260,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.weak`,
     observation: 'Weak body, a small tone',
     firstChecks: 'Is the mic only on one small spot? Compare a broader view of the lower board, or a little more distance — and ask whether the sitar itself is quiet.',
-    options: ['Take in more of the lower board, or move back a little', 'Boost the low end hard on the sitar’s own channel strip', 'Move the mic right against the gourd for more body'],
+    options: ['Boost the low end hard on the sitar’s own channel strip', 'Take in more of the lower board, or move back a little', 'Move the mic right against the gourd for more body'],
     correct: 'Take in more of the lower board, or move back a little',
     explain: 'A view of one small spot misses the board. Take in more of it, or back off a little — and listen to the sitar unamplified to know what it gives.',
     why: {
@@ -272,7 +272,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.buzz`,
     observation: 'Too much bridge attack or buzz',
     firstChecks: 'Is the mic aimed right at the bridge, very close? Aim off it or move back — keeping the jawari character the player intends.',
-    options: ['Aim off the bridge or move back, keeping the intended buzz', 'Ask the player to adjust the bridge so it buzzes less', 'Cut the high frequencies hard until the buzz is gone'],
+    options: ['Ask the player to adjust the bridge so it buzzes less', 'Cut the high frequencies hard until the buzz is gone', 'Aim off the bridge or move back, keeping the intended buzz'],
     correct: 'Aim off the bridge or move back, keeping the intended buzz',
     explain: 'Close on the bridge, its buzz dominates. Change the aim or distance; the buzz itself is part of the instrument, set by the player.',
     why: {
@@ -284,7 +284,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.symp`,
     observation: 'The sympathetic decay disappears',
     firstChecks: 'Does this sitar have sympathetic strings, and does the passage excite them? Then test a wider view and the room.',
-    options: ['Check it has them and the notes match; then try a wider view', 'Turn up the high frequencies until the shimmer comes back', 'Move the mic right under the frets, against the strings'],
+    options: ['Turn up the high frequencies until the shimmer comes back', 'Move the mic right under the frets, against the strings', 'Check it has them and the notes match; then try a wider view'],
     correct: 'Check it has them and the notes match; then try a wider view',
     explain: 'No sympathetic strings — or notes that do not line up with their tuning — means no shimmer to catch. If they are there, a wider view and the room carry the decay.',
     why: {
@@ -296,7 +296,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.rattle`,
     observation: 'Unwanted rattles',
     firstChecks: 'Listen to the sitar acoustically first; ask the player or a technician to diagnose the instrument. Never adjust the bridge or hardware as a miking fix.',
-    options: ['Listen acoustically, then ask the player to diagnose it', 'Tighten whatever looks loose on the sitar yourself', 'Gate the channel so that the rattle is cut between the notes'],
+    options: ['Tighten whatever looks loose on the sitar yourself', 'Gate the channel so that the rattle is cut between the notes', 'Listen acoustically, then ask the player to diagnose it'],
     correct: 'Listen acoustically, then ask the player to diagnose it',
     explain: 'A rattle in the instrument is the player’s or a technician’s to find. Confirm it is the sitar (not a stand or a cable), then ask.',
     why: {
@@ -349,9 +349,9 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'What are a sitar’s sympathetic strings?',
-    options: ['Strings under the frets that ring when matching notes are played', 'Extra melody strings that the player plucks for the highest notes', 'Strings that tie the frets onto the neck so they cannot slide'],
+    options: ['Extra melody strings that the player plucks for the highest notes', 'Strings under the frets that ring when matching notes are played', 'Strings that tie the frets onto the neck so they cannot slide'],
     correct: 'Strings under the frets that ring when matching notes are played',
-    explain: 'They run under the arched frets to small pegs along the neck, and are never plucked: they ring in sympathy with notes that match their tuning. Some sitars have none.',
+    explain: 'They run under the arched frets to small pegs along the neck, and are never plucked: they ring in sympathy with notes — or overtones — that match their tuning. Some sitars have none.',
     why: {
       'Extra melody strings that the player plucks for the highest notes': 'The melody strings run over the frets and are plucked; the sympathetic ones are not.',
       'Strings that tie the frets onto the neck so they cannot slide': 'The frets are tied on with cord; the sympathetic strings are strings in their own right.',
@@ -361,7 +361,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'Why are a sitar’s frets arched high over the neck?',
-    options: ['The sympathetic strings pass under them, the main strings over', 'They make the neck stronger, so that it carries the strings’ pull', 'They hold the gourd in place against the bottom of the neck'],
+    options: ['They make the neck stronger, so that it carries the strings’ pull', 'They hold the gourd in place against the bottom of the neck', 'The sympathetic strings pass under them, the main strings over'],
     correct: 'The sympathetic strings pass under them, the main strings over',
     explain: 'The arch leaves room beneath for the sympathetic strings; the main strings cross the tops, and the player pulls them sideways across the frets to bend notes.',
     why: {
@@ -373,11 +373,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'After some notes the sitar keeps a shimmer; after others it does not. Why?',
-    options: ['Only notes that line up with the sympathetic tuning set them ringing', 'The player damps the sympathetic strings with a hand on the gourd', 'Higher notes ring on longer than the lower notes on a sitar'],
+    options: ['The player damps the sympathetic strings with a flat hand on the gourd', 'Only notes that line up with the sympathetic tuning set them ringing', 'Higher notes ring on longer than the lower notes on a sitar'],
     correct: 'Only notes that line up with the sympathetic tuning set them ringing',
     explain: 'A sympathetic string builds up only where one of its own shapes matches one of the played note’s. Matched notes shimmer on; others leave it nearly still.',
     why: {
-      'The player damps the sympathetic strings with a hand on the gourd': 'The difference comes from the notes and the tuning, not from damping.',
+      'The player damps the sympathetic strings with a flat hand on the gourd': 'The difference comes from the notes and the tuning, not from damping.',
       'Higher notes ring on longer than the lower notes on a sitar': 'Pitch height is not the reason; whether the note lines up with the tuning is.',
     },
   },
@@ -385,7 +385,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'The sitar has a bright, buzzing edge from its main bridge. Whose is it?',
-    options: ['The player’s: set in the instrument, part of the sound', 'The engineer’s: added by the mic, so it can be removed', 'The room’s: a reflection that appears only on stage'],
+    options: ['The engineer’s: added by the mic, so it can be removed', 'The player’s: set in the instrument, part of the sound', 'The room’s: a reflection that appears only on stage'],
     correct: 'The player’s: set in the instrument, part of the sound',
     explain: 'The strings graze the broad bridge’s curved top — the jawari sound, set by the player. A close mic hears more of it; aim and distance balance it, the bridge is never touched.',
     why: {
@@ -397,7 +397,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     prompt: 'What must a stand mic stay out of, round a sitar player on the floor?',
-    options: ['The mizrab hand, the neck’s travel, the gourd and their view', 'The front of the gourd, so the audience can see it clearly', 'The space behind the player, where the tanpura sits'],
+    options: ['The front of the gourd, so the audience can see it clearly', 'The mizrab hand, the neck’s travel, the gourd and their view', 'The space behind the player, where the tanpura sits'],
     correct: 'The mizrab hand, the neck’s travel, the gourd and their view',
     explain: 'The mizrab works over the board, the left hand pulls strings far across a long neck, the gourd rests on the foot, and the player watches. In front of the board is usually where a mic comes in.',
     why: {
@@ -438,7 +438,7 @@ export const C14_LESSON: Lesson = {
       { title: 'The sympathetic strings answer', text: 'Under the frets, sympathetic strings tuned for the music are set going by the bridge when the played note lines up with their tuning — and ring on after it. On a sitar that has them; the next steps show why only some notes do it.' },
     ],
     attack: 'The start of the note: the mizrab’s strike and the string grazing the broad bridge — a bright, buzzing onset. It is heard most directly close to the bridge; a close mic there makes it dominate.',
-    body: 'The note’s ring: the strings, the board and the gourd’s air together, plus — after matching notes — the sympathetic shimmer. A wider view and the room carry the decay; toward the neck, more shimmer and string. Tendencies; sitars vary.',
+    body: 'The note’s ring: the strings, the board and the gourd’s air together, plus — after matching notes — the sympathetic shimmer. A wider view and the room carry the decay; toward the neck, the strings and the shimmer can stand out more. Tendencies; sitars vary.',
     head: { diameterMm: 290, rods: 0, label: 'the board', strikeSrc: 'LESSON' },
   },
   setting: {

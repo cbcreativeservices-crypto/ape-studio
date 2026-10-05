@@ -85,19 +85,19 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.2`,
     page: 'sound',
     prompt: 'An open string is plucked exactly at its middle. Which of its shapes can that pluck set moving?',
-    options: ['Only the odd ones; every even shape is still there', 'All of them equally, because the whole string moves', 'Only the even ones; the odd shapes are still there'],
-    correct: 'Only the odd ones; every even shape is still there',
+    options: ['All of them equally, because the whole string moves', 'Only the even ones; the odd shapes stay silent', 'Only the odd ones; the even shapes stay silent'],
+    correct: 'Only the odd ones; the even shapes stay silent',
     explain: 'A pluck drives a shape only as much as the string moves at the pick in that shape. Every even shape has a still point at the exact middle.',
     why: {
       'All of them equally, because the whole string moves': 'The pick touches one spot. A shape is driven only as much as the string moves there.',
-      'Only the even ones; the odd shapes are still there': 'The reverse: the even shapes have a still point at the middle.',
+      'Only the even ones; the odd shapes stay silent': 'The reverse: the even shapes have a still point at the middle.',
     },
   },
   {
     id: `${P}.snd.3`,
     page: 'sound',
     prompt: 'Is a resonator with one cone the same sound source as one with three?',
-    options: ['No: one cone and three cones radiate differently', 'Yes: resonators all radiate in exactly the same way', 'Yes, as long as the coverplates look the same'],
+    options: ['Yes: resonators all radiate in exactly the same way', 'Yes, as long as the coverplates look the same', 'No: one cone and three cones radiate differently'],
     correct: 'No: one cone and three cones radiate differently',
     explain: 'A spider-bridge single cone, a biscuit-bridge single cone and a three-cone design do not present the same sound field. Look at the instrument — without opening it — and test by ear.',
     why: {
@@ -110,7 +110,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.2`,
     page: 'setting',
     prompt: 'Lap style, the coverplate faces up. Where does the mic’s stand come from?',
-    options: ['A boom from the side, clear of the bar and the picking hand', 'Straight down from above, right over the middle of the cone', 'Clamped to the coverplate, so it moves with the instrument'],
+    options: ['Straight down from above, right over the middle of the cone', 'A boom from the side, clear of the bar and the picking hand', 'Clamped to the coverplate, so it moves with the instrument'],
     correct: 'A boom from the side, clear of the bar and the picking hand',
     explain: 'Bring a boom in from the side so the capsule sees the instrument without crossing the bar’s path, the picking hand or the player leaning over it. Confirm their full reach first.',
     why: {
@@ -122,7 +122,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.3`,
     page: 'setting',
     prompt: 'You hear a rattle from the coverplate during soundcheck. What do you do?',
-    options: ['Stop, and ask the owner or a qualified repairer', 'Open the coverplate and tighten the cone’s screw', 'Move the mic closer to hear where the rattle is'],
+    options: ['Open the coverplate and tighten the cone’s screw', 'Stop, and ask the owner or a qualified repairer', 'Move the mic closer to hear where the rattle is'],
     correct: 'Stop, and ask the owner or a qualified repairer',
     explain: 'Check whether it persists with the mic muted; if it does, it belongs to the instrument. Never open the coverplate or adjust the cone, bridge or screws for a mic problem.',
     why: {
@@ -134,7 +134,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.1`,
     page: 'microphone',
     prompt: 'FROM EARLIER · Where does the cone’s sound leave the instrument?',
-    options: ['Through the coverplate’s holes and the sound ports', 'Through a round sound hole, just under the strings', 'Through the headstock, at the end of the neck'],
+    options: ['Through a round sound hole, just under the strings', 'Through the headstock, at the end of the neck', 'Through the coverplate’s holes and the sound ports'],
     correct: 'Through the coverplate’s holes and the sound ports',
     explain: 'There is no flat-top sound hole here: the cone radiates through the perforated coverplate, and the air inside also leaves through the ports on the upper body.',
     why: {
@@ -146,7 +146,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'A cardioid condenser or a dynamic on the resonator: how do you choose?',
-    options: ['By the job: detail in a quiet room, robustness on a loud stage', 'Only a condenser: a dynamic cannot hear a metal cone properly', 'By the brand most players use, since it suits the cone best of all'],
+    options: ['Only a condenser: a dynamic cannot hear a metal cone properly', 'By the job: detail in a quiet room, robustness on a loud stage', 'By the brand most players use, since it suits the cone best of all'],
     correct: 'By the job: detail in a quiet room, robustness on a loud stage',
     explain: 'A cardioid condenser can reveal detail; a dynamic can be a robust close option. Choose for sensitivity, pattern, stage level and the tone wanted.',
     why: {
@@ -159,7 +159,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.1`,
     page: 'placement',
     prompt: 'The guitar starting points say “near the sound hole”. Why can’t you copy that onto a resonator as it is?',
-    options: ['It has a coverplate over a cone, not a flat-top sound hole', 'Resonators are much too loud to be miked with a stand at all', 'Its sound leaves only from the back, toward the player'],
+    options: ['Resonators are much too loud to be miked with a stand at all', 'It has a coverplate over a cone, not a flat-top sound hole', 'Its sound leaves only from the back, toward the player'],
     correct: 'It has a coverplate over a cone, not a flat-top sound hole',
     explain: 'A flat-top’s sound-hole picture does not transfer literally: the cone radiates through the coverplate and the ports. Listen round the instrument, then begin at the coverplate and upper body.',
     why: {
@@ -171,7 +171,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.2`,
     page: 'placement',
     prompt: 'The sound is piercing and metallic. What is a good first move?',
-    options: ['Move off that coverplate spot, change angle, or step back', 'Cut the treble hard on the channel until the sound softens', 'Move even closer, right onto the middle of the cone'],
+    options: ['Cut the treble hard on the channel until the sound softens', 'Move off that coverplate spot, change angle, or step back', 'Move even closer, right onto the middle of the cone'],
     correct: 'Move off that coverplate spot, change angle, or step back',
     explain: 'Very close to one spot of the coverplate hears a narrow, sharp view. Move off it a few centimetres, change the angle, or take a broader view.',
     why: {
@@ -183,7 +183,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'The sound is thin and all pick. What is the mic probably hearing?',
-    options: ['Mostly the strings and neck, too little of the cone', 'Too much of the cone and too little of the strings', 'The room only, because it is much too far away'],
+    options: ['Too much of the cone and too little of the strings', 'Mostly the strings and neck, too little of the cone', 'The room only, because it is much too far away'],
     correct: 'Mostly the strings and neck, too little of the cone',
     explain: 'A view dominated by the strings and the neck misses the cone. Include more of the off-centre coverplate region, or move back slightly.',
     why: {
@@ -195,7 +195,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.2`,
     page: 'placement',
     prompt: 'FROM EARLIER · What must the mic and its boom stay out of, lap style?',
-    options: ['The bar’s path, the picking hand and the leaning player', 'The front of the instrument, so the audience can see it', 'The floor by the chair, which belongs to the DI box'],
+    options: ['The front of the instrument, so the audience can see it', 'The floor by the chair, which belongs to the DI box', 'The bar’s path, the picking hand and the leaning player'],
     correct: 'The bar’s path, the picking hand and the leaning player',
     explain: 'The bar travels the whole neck, the picking hand works over the coverplate, and the player leans over the instrument. A bar or an arm must never be able to hit the mic.',
     why: {
@@ -208,7 +208,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.studio`,
     page: 'context',
     prompt: 'In the studio, when does a second mic make sense on the resonator?',
-    options: ['When it adds a distinct view, such as a farther overall one', 'Whenever the room is large enough to hold two mic stands', 'When the first mic is quieter than the other channels'],
+    options: ['Whenever the room is large enough to hold two mic stands', 'When the first mic is quieter than the other channels', 'When it adds a distinct view, such as a farther overall one'],
     correct: 'When it adds a distinct view, such as a farther overall one',
     explain: 'One reliable mic first. A second earns its place with a distinct purpose — a closer cone view plus a farther overall view — and a check in mono.',
     why: {
@@ -220,7 +220,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · The pickup and the mic are both live. What is the pickup?',
-    options: ['A separate electrical path, not a microphone hearing air', 'A second microphone hidden inside the coverplate', 'The same signal as the mic, sent along a cable'],
+    options: ['A second microphone hidden inside the coverplate', 'A separate electrical path, not a microphone hearing air', 'The same signal as the mic, sent along a cable'],
     correct: 'A separate electrical path, not a microphone hearing air',
     explain: 'A cone or bridge pickup, or an imaging pedal’s output, is an electrical source — not a capsule hearing the air. Label it, and check it with the mic in mono.',
     why: {
@@ -243,7 +243,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.thin`,
     observation: 'A thin, all-pick sound',
     firstChecks: 'Is the mic dominated by the strings and neck? Include more of the off-centre resonator area, or move back slightly.',
-    options: ['Include more of the off-centre coverplate, or move back', 'Turn the channel up until the thin sound feels full again', 'Add a second mic aimed at the strings near the neck'],
+    options: ['Turn the channel up until the thin sound feels full again', 'Include more of the off-centre coverplate, or move back', 'Add a second mic aimed at the strings near the neck'],
     correct: 'Include more of the off-centre coverplate, or move back',
     explain: 'A view of the strings and neck misses the cone. Change the view first.',
     why: {
@@ -255,7 +255,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.metal`,
     observation: 'A piercing, metallic tone',
     firstChecks: 'Is the mic extremely close to one coverplate region? Move off that spot, change angle, or take a broader view.',
-    options: ['Move off that spot, change the angle, or step back', 'Cut the high frequencies hard until it is quite dull', 'Move the mic right onto the cone’s centre'],
+    options: ['Cut the high frequencies hard until it is quite dull', 'Move the mic right onto the cone’s centre', 'Move off that spot, change the angle, or step back'],
     correct: 'Move off that spot, change the angle, or step back',
     explain: 'One close spot gives a narrow, sharp view. Move, then judge.',
     why: {
@@ -267,7 +267,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.move`,
     observation: 'The tone changes while the player plays',
     firstChecks: 'Does the instrument rotate or slide away? Work with the player’s normal movement; use a suitable clip or the pickup if needed.',
-    options: ['Work with their movement; try a suitable clip or the pickup', 'Ask the player to sit completely still for the whole of the set', 'Turn the mic up whenever they turn away from it'],
+    options: ['Ask the player to sit completely still for the whole of the set', 'Turn the mic up whenever they turn away from it', 'Work with their movement; try a suitable clip or the pickup'],
     correct: 'Work with their movement; try a suitable clip or the pickup',
     explain: 'Players move. Mark a comfortable playing zone, or use a mount that moves with the instrument.',
     why: {
@@ -320,7 +320,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'What is under a resonator guitar’s coverplate?',
-    options: ['A thin metal cone the bridge sits on', 'A round sound hole like a flat-top guitar', 'A pickup that makes the instrument louder'],
+    options: ['A round sound hole like a flat-top guitar', 'A thin metal cone the bridge sits on', 'A pickup that makes the instrument louder'],
     correct: 'A thin metal cone the bridge sits on',
     explain: 'The bridge sits on one or more spun-metal cones; the coverplate protects them and lets their sound out.',
     why: {
@@ -344,19 +344,19 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'A string plucked exactly at its middle drives which of its shapes?',
-    options: ['Only the odd ones — the even ones are still there', 'All of its shapes, each one just as hard', 'Only the even ones — the odd ones are still there'],
-    correct: 'Only the odd ones — the even ones are still there',
+    options: ['All of its shapes, each one just as hard', 'Only the odd ones — the even ones stay silent', 'Only the even ones — the odd ones stay silent'],
+    correct: 'Only the odd ones — the even ones stay silent',
     explain: 'A pluck drives a shape only as much as the string moves at the pick; every even shape has a still point at the middle.',
     why: {
-      'All of its shapes, each one just as hard': 'The pick touches one spot; a shape still there is not driven.',
-      'Only the even ones — the odd ones are still there': 'The reverse: the even ones are still at the middle.',
+      'All of its shapes, each one just as hard': 'The pick touches one spot; a shape with a still point there is not driven at all.',
+      'Only the even ones — the odd ones stay silent': 'The reverse: the even ones are still at the middle.',
     },
   },
   {
     id: 'q.4',
     covers: 'sound',
     prompt: 'Where does a resonator’s sound mostly leave from?',
-    options: ['The coverplate’s holes and the sound ports', 'A round sound hole between the bridge and neck', 'The back, toward the player’s body'],
+    options: ['A round sound hole between the bridge and neck', 'The back, toward the player’s body', 'The coverplate’s holes and the sound ports'],
     correct: 'The coverplate’s holes and the sound ports',
     explain: 'The cone radiates through the perforated coverplate; the ports let the body’s air out too.',
     why: {
@@ -368,7 +368,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     prompt: 'You notice a loose screw on the cone during setup. What do you do?',
-    options: ['Leave it, and tell the owner or a qualified repairer', 'Tighten it a little, so it stops rattling into the mic', 'Tape the coverplate down so the rattle is muffled'],
+    options: ['Tighten it a little, so it stops rattling into the mic', 'Tape the coverplate down so the rattle is muffled', 'Leave it, and tell the owner or a qualified repairer'],
     correct: 'Leave it, and tell the owner or a qualified repairer',
     explain: 'The cone and its hardware are delicate and model-specific. Never adjust them as part of miking.',
     why: {

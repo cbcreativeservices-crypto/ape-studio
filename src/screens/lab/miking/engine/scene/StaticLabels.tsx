@@ -21,6 +21,8 @@ export type StaticLabel = {
   tone?: 'muted' | 'illustrative' | 'amber' | 'blue' | 'inkBlue' | 'inkAmber';
   alts?: readonly { u: number; v: number; align: 'left' | 'center' | 'right' }[];
   at?: { u: number; v: number };
+  /** The Lab 4 review's name for `at`. */
+  lead?: { u: number; v: number };
 };
 
 /** ink* = dark marks for a LIGHT surface (a coated drumhead), with a light halo. */

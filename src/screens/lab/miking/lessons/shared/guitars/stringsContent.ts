@@ -25,11 +25,11 @@ export function hearingDiag(n: Noun): DiagnosticItem {
     covers: 'setting',
     critical: true,
     prompt: `Your ${n.one} mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?`,
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the stage stays below the mic’s rating', `It is safe as long as the mic is nearer the ${n.one} than you`],
+    options: ['It is safe for as long as the stage stays below the mic’s rated level', 'Nothing — that is the mic’s distortion limit, not a hearing limit', `It is safe as long as the mic is nearer the ${n.one} than you`],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       [`It is safe as long as the mic is nearer the ${n.one} than you`]: 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   };
@@ -54,7 +54,7 @@ export function micChecks(p: string, n: Noun): MikingScenario[] {
       id: `${p}.mic.3`,
       page: 'microphone',
       prompt: 'The only spare input has no phantom power. Which of this page’s mics can you use?',
-      options: ['The instrument dynamic: it needs no power', 'The small condenser, if its cable run is short', 'The clip-on mini, because it is so very small'],
+      options: ['The small condenser, if its cable run is short', 'The instrument dynamic: it needs no power', 'The clip-on mini, because it is so very small'],
       correct: 'The instrument dynamic: it needs no power',
       explain: 'Dynamic mics need no power. The small condenser and the clip-on mini are condensers: they need phantom power, whatever their size or cable.',
       why: {
@@ -84,7 +84,7 @@ export function contextChecks(p: string, n: Noun): MikingScenario[] {
       id: `${p}.ctx.1`,
       page: 'context',
       prompt: `The floor wedge in front of the player is loud in the ${n.one} mic. What is a good first move to try?`,
-      options: ['Turn the mic so the wedge falls in its rejection', `Turn the ${n.one} channel up so it covers the sound of the wedge`, `Move the mic a long way back from the ${n.one}`],
+      options: [`Turn the ${n.one} channel up so it covers the sound of the wedge`, `Move the mic a long way back from the ${n.one}`, 'Turn the mic so the wedge falls in its rejection'],
       correct: 'Turn the mic so the wedge falls in its rejection',
       explain: `Aim the pattern’s rejection at the wedge, by its actual pattern, while the mic still faces the ${n.one} and stays clear of the hands. Then judge what is left.`,
       why: {
@@ -96,7 +96,7 @@ export function contextChecks(p: string, n: Noun): MikingScenario[] {
       id: `${p}.ctx.2`,
       page: 'context',
       prompt: `With a supercardioid on the ${n.one}, where should the wedge sit for the most rejection?`,
-      options: ['Toward the rear, off to one side of the axis', 'Directly behind the mic, right on its rear axis', 'Beside the mic, square to the front of it'],
+      options: ['Directly behind the mic, right on its rear axis', 'Beside the mic, square to the front of it', 'Toward the rear, off to one side of the axis'],
       correct: 'Toward the rear, off to one side of the axis',
       explain: 'A supercardioid’s deepest rejection is off the rear axis (near 125°); straight behind it has a small rear lobe. Aim by the actual pattern.',
       why: {
@@ -168,7 +168,7 @@ export function practiceChecks(p: string, n: Noun, refExample: { quote: string; 
       id: `${p}.prac.gain`,
       page: 'practice',
       prompt: `The quiet passages sit well below the overload light, but the player’s strongest notes light it. What do you do?`,
-      options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader well down until the hard notes sound clean again', 'Ask the player to play much more softly once the show has started'],
+      options: ['Pull the channel fader well down until the hard notes sound clean again', 'Ask the player to play much more softly once the show has started', 'Lower the input gain, or use a pad its manual allows, and re-check'],
       correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
       explain: 'Set input gain for the loudest passage the player intends, with headroom, and check that soft notes still sit above the noise. A lowered fader does not undo clipping at the input.',
       why: {

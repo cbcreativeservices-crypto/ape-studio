@@ -84,7 +84,7 @@ export function stringsCopy(o: StringsCopyOpts): LessonCopy {
       ],
       reveal: o.soundReveal,
       after: o.soundAfter,
-      shapesNotes: ['A pluck sets a shape moving only as much as the string moves at the pick in that shape. Plucked in the exact middle, every even shape is still there. Nearer the bridge, the upper shapes join in: brighter.', o.shapesNote2],
+      shapesNotes: ['A pluck sets a shape moving only as much as the string moves at the pick in that shape. Plucked in the exact middle, every even shape has a still point under the pick, so it is not set moving. Nearer the bridge, the upper shapes join in: brighter.', o.shapesNote2],
       coupledSubject: `Front view of the ${n.one}`,
       coupledNote: o.coupledNote,
       silentNote: `This lab never plays a sound and draws no frequency curve for the ${n.one}: how a real one sounds depends on the instrument, the strings, the room and the player. The pictures show where the sound comes from and where it leaves.`,

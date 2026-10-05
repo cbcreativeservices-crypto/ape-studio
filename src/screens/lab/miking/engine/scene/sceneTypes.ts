@@ -11,7 +11,8 @@ import type { PageId, SettingItem, VariantId, Vec3, ViewId, Wedge } from '../mod
 /** `short`: the words to fall back to where the full label would collide.
  *  `alts`: other places it may sit (tried before the short form); `at`: the
  *  part's own point — a label moved away from it gets a thin leader to it
- *  (labelLayout.fitLabels; strings art pass 2026-10-05). */
+ *  (labelLayout.fitLabels; strings art pass 2026-10-05). `lead`: the same as
+ *  `at` (the Lab 4 review's name for it).  */
 export type ArtLabel = {
   id: string;
   text: string;
@@ -22,6 +23,7 @@ export type ArtLabel = {
   tone?: 'muted' | 'illustrative';
   alts?: readonly { u: number; v: number; align: 'left' | 'center' | 'right' }[];
   at?: { u: number; v: number };
+  lead?: { u: number; v: number };
 };
 
 /** A rectangle in mm of a view's (u, v) plane. */

@@ -57,7 +57,7 @@ export const MIC_TYPES: Record<string, MicType> = {
       { model: 'AKG D112 MkII', fact: '"Polar pattern Cardioid"; length 115 mm, diameter 70 mm; max SPL "> 160 dB (calculated)" for 0.5 % THD.', src: 'AKG-CUT' },
     ],
     art: 'kickDynamic',
-    blurb: 'A kick dynamic with a cardioid pattern. Needs no power. Their sound differs from one model to the next, so two cardioid kick mics are not interchangeable.',
+    blurb: 'A large end-address dynamic with a cardioid pattern, built for loud, low sources such as a kick drum or a bass cabinet. Needs no power. Models differ in tone, so two are not interchangeable.',
   },
   boundaryHalf: {
     id: 'boundaryHalf',

@@ -66,7 +66,7 @@ export const C01_COPY: LessonCopy = {
     reveal: 'The string itself moves very little air: it is the bridge rocking the TOP that makes most of the sound. The thin top is the loudspeaker; the string is the motor.',
     after: 'Then the strings, the top and the air in the body keep ringing together for a while — the BODY of the sound. How long depends on the guitar, the strings and the player.',
     shapesNotes: [
-      'A pluck sets a shape moving only as much as the string moves at the pick in that shape. Plucked in the exact middle, every even shape is still there — a rounder, hollower note. Nearer the bridge, the upper shapes join in: brighter.',
+      'A pluck sets a shape moving only as much as the string moves at the pick in that shape. Plucked in the exact middle, every even shape has a still point under the pick, so it is not set moving — a rounder, hollower note. Nearer the bridge, the upper shapes join in: brighter.',
       'This is an ideal string between rigid ends. A real string is a little stiff and its ends move with the bridge and the top — the reason a real guitar never sounds like this picture alone.',
     ],
     coupledSubject: 'Front view of the guitar',

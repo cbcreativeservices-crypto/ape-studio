@@ -98,7 +98,7 @@ export const BASS_FRONT: ZoneT = {
 export const BASS_FHOLE: ZoneT = {
   id: 'ub.fhole',
   label: 'A few inches from an f-hole',
-  band: 'Try about 5–10 cm (2–4 in) in front of the f-hole on the far side from the player, aimed into it — for a fuller sound.',
+  band: 'Try about 5–10 cm (2–4 in) in front of the treble (G-string) f-hole, the one on the far side from the player, aimed into it — for a fuller sound.',
   kind: 'sourced',
   src: 'S-BWS',
   quote: 'Position the mic a few inches from the f-hole for a fuller sound… roll off the bass if the sound is too boomy',

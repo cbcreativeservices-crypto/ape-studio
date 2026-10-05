@@ -78,7 +78,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.1`,
     page: 'sound',
     prompt: 'Where does most of a Saraswati veena’s sound leave from?',
-    options: ['The top plate over the resonator, driven through the bridge', 'The gourd under the neck, which works as a second soundboard', 'The carved yali, which rings like a bell at the neck’s end'],
+    options: ['The gourd under the neck, which works as a second soundboard', 'The top plate over the resonator, driven through the bridge', 'The carved yali, which rings like a bell at the neck’s end'],
     correct: 'The top plate over the resonator, driven through the bridge',
     explain: 'The strings move little air. They drive the broad bridge, the bridge drives the top plate, and the plate over the resonator radiates most of the sound — in the measured radiation it mattered most.',
     why: {
@@ -90,7 +90,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.2`,
     page: 'sound',
     prompt: 'You hear a bright buzz from the veena’s bridge. What is it, most likely?',
-    options: ['The strings vibrating against the flat bridge, as intended', 'A fault in the mic, which a different mic would then cure', 'A crack in the plate, which the engineer should report now'],
+    options: ['A fault in the mic, which a different mic would then cure', 'A crack in the plate, which the engineer should report now', 'The strings vibrating against the flat bridge, as intended'],
     correct: 'The strings vibrating against the flat bridge, as intended',
     explain: 'The veena’s broad, flat bridge lets the strings vibrate against it: that buzz is part of the instrument, set by the player. Ask what is intended; a mic close to the bridge hears more of it.',
     why: {
@@ -102,12 +102,12 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.3`,
     page: 'sound',
     prompt: 'An open melody string is plucked exactly at its middle. Which of its shapes can that pluck set moving?',
-    options: ['Only the odd ones; each even shape is still there', 'All of them equally, because the whole string moves', 'Only the even ones; the odd shapes are still there'],
-    correct: 'Only the odd ones; each even shape is still there',
+    options: ['All of them equally, because the whole string moves', 'Only the odd ones; the even shapes stay silent', 'Only the even ones; the odd shapes stay silent'],
+    correct: 'Only the odd ones; the even shapes stay silent',
     explain: 'A pluck drives a shape only as much as the string moves under the finger in that shape. Each even shape has a still point at the exact middle.',
     why: {
       'All of them equally, because the whole string moves': 'The finger touches one spot. A shape is driven only as much as the string moves there.',
-      'Only the even ones; the odd shapes are still there': 'The reverse: the even shapes have a still point at the middle.',
+      'Only the even ones; the odd shapes stay silent': 'The reverse: the even shapes have a still point at the middle.',
     },
   },
   hearingCheck(P, VEENA_N),
@@ -115,7 +115,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.2`,
     page: 'setting',
     prompt: 'The player arrives with a veena that has two large gourds on a long tube. What do you do with this lesson’s starting points?',
-    options: ['Set them aside: work out this veena’s own geometry with the player', 'Use them as they are: all veenas look alike to a microphone, really', 'Aim at the larger gourd as if it were the Saraswati top plate'],
+    options: ['Use them as they are: all veenas look alike to a microphone, really', 'Aim at the larger gourd as if it were the Saraswati top plate', 'Set them aside: work out this veena’s own geometry with the player'],
     correct: 'Set them aside: work out this veena’s own geometry with the player',
     explain: 'A two-gourd veena such as the rudra veena is a different instrument, held differently, with no Saraswati-style main face. Any target or distance for it is developed with that player, in its own trial.',
     why: {
@@ -139,7 +139,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.1`,
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic aimed at the gourd under the neck hears what, mostly?',
-    options: ['Not the main source: the gourd is a support, not the soundboard', 'The richest part of the sound, since the gourd is the main resonator', 'The tala strings, which run right through the gourd'],
+    options: ['The richest part of the sound, since the gourd is the main resonator', 'Not the main source: the gourd is a support, not the soundboard', 'The tala strings, which run right through the gourd'],
     correct: 'Not the main source: the gourd is a support, not the soundboard',
     explain: 'The gourd under the neck mainly supports it on the thigh. Do not treat it as a second main soundboard — and never obstruct the supporting knee.',
     why: {
@@ -151,7 +151,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'An engineer’s notes say they took the windscreen and grille off their dynamics for a veena session. Should you copy that?',
-    options: ['No: keep a mic’s protective parts unless its maker allows it', 'Yes: removing the grille is how veenas are usually miked on a stage', 'Yes, as long as the mic is a dynamic and not a condenser'],
+    options: ['Yes: removing the grille is how veenas are usually miked on a stage', 'No: keep a mic’s protective parts unless its maker allows it', 'Yes, as long as the mic is a dynamic and not a condenser'],
     correct: 'No: keep a mic’s protective parts unless its maker allows it',
     explain: 'One session’s notes are not an instruction. A mic’s windscreen and grille protect it; leave them on unless its manufacturer explicitly authorises a change.',
     why: {
@@ -163,7 +163,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.3`,
     page: 'microphone',
     prompt: 'The only spare input has no phantom power. Which of this page’s mics can you use?',
-    options: ['The instrument dynamic: it needs no power at all', 'The small condenser, if its cable run is kept short', 'Either one, as long as the gain is turned up high'],
+    options: ['The small condenser, if its cable run is kept short', 'Either one, as long as the gain is turned up high', 'The instrument dynamic: it needs no power at all'],
     correct: 'The instrument dynamic: it needs no power at all',
     explain: 'Dynamic mics need no power. The small condenser needs phantom power, whatever its cable or the gain setting.',
     why: {
@@ -176,7 +176,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.1`,
     page: 'placement',
     prompt: 'A starting point says 30–50 cm from the top plate, between the bridge and the body. Your readout says 40 cm, square to the plate. Are you in it?',
-    options: ['Only if the mic is also aimed at that broad area of the plate', 'Yes: 40 cm falls well inside the 30 to 50 cm band, so it must be in it', 'No: the distance is read from the yali, not the plate'],
+    options: ['Yes: 40 cm falls well inside the 30 to 50 cm band, so it must be in it', 'No: the distance is read from the yali, not the plate', 'Only if the mic is also aimed at that broad area of the plate'],
     correct: 'Only if the mic is also aimed at that broad area of the plate',
     explain: 'The distance is read square to the plate, from the point the zone names — and this zone also asks for the aim: a broad area of the plate between the bridge and the body, out of the hand’s reach.',
     why: {
@@ -188,7 +188,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.2`,
     page: 'placement',
     prompt: 'At the same distance, you turn the mic toward the main bridge and the plucking area. What tends to change?',
-    options: ['More of each note’s start — maybe more click or buzz', 'More of the resonator’s body and the deepest notes, too', 'Only the level; the tone stays the same as before'],
+    options: ['More of the resonator’s body and the deepest notes, too', 'More of each note’s start — maybe more click or buzz', 'Only the level; the tone stays the same as before'],
     correct: 'More of each note’s start — maybe more click or buzz',
     explain: 'Toward the bridge, a mic hears more of the onset, and possibly pick click or buzz beyond what the music wants. Tell the instrument’s intended buzz apart from what the aim adds.',
     why: {
@@ -200,19 +200,19 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'A study measured a veena’s radiation with mics 25 cm from the top plate. Does that make 25 cm the place to put your mic?',
-    options: ['No: it was where the study measured, not a recommendation', 'Yes: the study found 25 cm is the best musical distance', 'Yes, but only for a mic of exactly the same model as the study’s'],
+    options: ['It does: the study found 25 cm is the best musical distance', 'It does, but only for a mic of exactly the same model as the study’s', 'No: it was where the study measured, not a recommendation'],
     correct: 'No: it was where the study measured, not a recommendation',
     explain: 'The study mapped the plate’s radiation at 25, 50 and 75 cm and found it changes with pitch, direction and distance. It supports comparing positions around the face — not one best distance.',
     why: {
-      'Yes: the study found 25 cm is the best musical distance': 'The study names no best musical distance; it measured at several radii.',
-      'Yes, but only for a mic of exactly the same model as the study’s': 'Measurement radius is not a musical recommendation, whatever the mic.',
+      'It does: the study found 25 cm is the best musical distance': 'The study names no best musical distance; it measured at several radii.',
+      'It does, but only for a mic of exactly the same model as the study’s': 'Measurement radius is not a musical recommendation, whatever the mic.',
     },
   },
   {
     id: `${P}.rec.2`,
     page: 'placement',
     prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a veena player on the floor?',
-    options: ['The plucking hand, the left hand, the gourd and their view', 'The space above the plate, which belongs to the audience’s view', 'The rug at the front, which belongs to the floor wedge'],
+    options: ['The space above the plate, which belongs to the audience’s view', 'The plucking hand, the left hand, the gourd and their view', 'The rug at the front, which belongs to the floor wedge'],
     correct: 'The plucking hand, the left hand, the gourd and their view',
     explain: 'Clearance comes first: the plucking hand and arm over the plate, the left hand along the neck and its gamakas, the gourd on the thigh, the yali, and the player’s view. Stop the player before anything moves.',
     why: {
@@ -224,7 +224,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.1`,
     page: 'context',
     prompt: 'A floor wedge in front is loud in the mic that looks down at the veena. What is a sound first step?',
-    options: ['Lower that send; a null of this mic cannot reach the floor in front', 'Turn the veena channel up so that it covers the sound of the floor wedge', 'Tilt the mic until its rear points straight down at the floor'],
+    options: ['Turn the veena channel up so that it covers the sound of the floor wedge', 'Tilt the mic until its rear points straight down at the floor', 'Lower that send; a null of this mic cannot reach the floor in front'],
     correct: 'Lower that send; a null of this mic cannot reach the floor in front',
     explain: 'Looking down at the veena, the mic’s rear faces the ceiling; a floor wedge in front sits at its side, where no null reaches. Bring the level down, and use a side-fill whose position a null can reach.',
     why: {
@@ -236,7 +236,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.2`,
     page: 'context',
     prompt: 'A supercardioid looks down at the plate. Where can a monitor sit in its deepest rejection?',
-    options: ['Toward its rear and off to one side: up and beside the player', 'On the floor right in front of the veena, where floor wedges usually go', 'Directly below the mic, under the veena on the floor'],
+    options: ['On the floor right in front of the veena, where floor wedges usually go', 'Directly below the mic, under the veena on the floor', 'Toward its rear and off to one side: up and beside the player'],
     correct: 'Toward its rear and off to one side: up and beside the player',
     explain: 'A supercardioid rejects most off its rear axis (near 125°). Looking down, its rear points up — so a side-fill at head height, beside the player, can sit there.',
     why: {
@@ -248,7 +248,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.studio`,
     page: 'context',
     prompt: 'A quiet studio, solo veena. What do you hear before adding a second mic?',
-    options: ['The plate start alone, through melody, gamakas and drone', 'Only the lowest note, since it shows the resonator best', 'Nothing: start with three mics and choose in the mix'],
+    options: ['Only the lowest note, since it shows the resonator best', 'Nothing: start with three mics and choose in the mix', 'The plate start alone, through melody, gamakas and drone'],
     correct: 'The plate start alone, through melody, gamakas and drone',
     explain: 'Hear the main start before adding channels, across the whole range — a single bass note does not represent the instrument. Compare a farther view if the room contributes.',
     why: {
@@ -260,7 +260,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · The plate’s measured radiation changed with pitch, direction and distance. What does that suggest for a live mic?',
-    options: ['Compare a few positions round the face; one spot may favour some notes', 'Each spot on the plate gives a similar sound, so just pick one of them', 'The mic must sit exactly where the study measured, 25 cm out'],
+    options: ['Each spot on the plate gives a similar sound, so just pick one of them', 'Compare a few positions round the face; one spot may favour some notes', 'The mic must sit exactly where the study measured, 25 cm out'],
     correct: 'Compare a few positions round the face; one spot may favour some notes',
     explain: 'Because the pattern changes with pitch and direction, a single close spot can favour some notes or a local resonance. Compare positions round the main face at matched levels.',
     why: {
@@ -283,7 +283,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.buzz`,
     observation: 'Too much sharp bridge buzz',
     firstChecks: 'Is the buzz intended? Then move the aim off the local bridge region, or step back.',
-    options: ['Ask if it is intended, then aim off the bridge or step back', 'Ask the player to adjust the bridge so that it buzzes less', 'Cut the high frequencies hard until the buzz is gone'],
+    options: ['Ask the player to adjust the bridge so that it buzzes less', 'Cut the high frequencies hard until the buzz is gone', 'Ask if it is intended, then aim off the bridge or step back'],
     correct: 'Ask if it is intended, then aim off the bridge or step back',
     explain: 'The buzz is part of the veena. If the mic exaggerates it, change the aim or distance; the bridge itself is never adjusted for a mic.',
     why: {
@@ -295,7 +295,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.thin`,
     observation: 'Weak melody or a thin body',
     firstChecks: 'Is the mic on one small spot? Change the angle toward a broader view of the top plate; confirm it sounds that way acoustically.',
-    options: ['Turn toward a broader view of the plate; listen acoustically', 'Aim at the gourd under the neck for more of the veena’s body', 'Boost the low end on the channel until it sounds full'],
+    options: ['Aim at the gourd under the neck for more of the veena’s body', 'Boost the low end on the channel until it sounds full', 'Turn toward a broader view of the plate; listen acoustically'],
     correct: 'Turn toward a broader view of the plate; listen acoustically',
     explain: 'A view of one small spot misses the plate. Take in more of it — and listen to the veena unamplified to know what it gives.',
     why: {
@@ -307,7 +307,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.drone`,
     observation: 'The drone strings overpower the melody',
     firstChecks: 'Is the mic aimed at the tala side? Shift the aim away from it, and judge on whole phrases.',
-    options: ['Aim away from the tala side and judge whole phrases', 'Ask the player to stop using the tala strings', 'Gate the channel so the drone is cut between notes'],
+    options: ['Ask the player to stop using the tala strings', 'Aim away from the tala side and judge whole phrases', 'Gate the channel so the drone is cut between notes'],
     correct: 'Aim away from the tala side and judge whole phrases',
     explain: 'A mic toward the side the tala strings run along hears more of them. Shift the aim and judge whole phrases — the drone belongs in the music.',
     why: {
@@ -319,7 +319,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.hit`,
     observation: 'The player hits the mic, or has to change posture',
     firstChecks: 'Stop. Move the stand or boom outside the whole hand and knee envelope.',
-    options: ['Stop, then move the stand out of the hands’ and knee’s reach', 'Ask the player to keep their hands a little narrower while playing', 'Tape the boom to the stand so that it cannot move'],
+    options: ['Ask the player to keep their hands a little narrower while playing', 'Stop, then move the stand out of the hands’ and knee’s reach', 'Tape the boom to the stand so that it cannot move'],
     correct: 'Stop, then move the stand out of the hands’ and knee’s reach',
     explain: 'The player’s full motion comes first. Move the mic out of the hands’ and knee’s reach, then rebuild the position from there.',
     why: {
@@ -373,7 +373,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'What is the small gourd under the Saraswati veena’s neck, mainly?',
-    options: ['A support for the neck on the left thigh', 'A second main soundboard, as loud as the plate', 'The tuning chamber that sets the strings’ pitch'],
+    options: ['A second main soundboard, as loud as the plate', 'A support for the neck on the left thigh', 'The tuning chamber that sets the strings’ pitch'],
     correct: 'A support for the neck on the left thigh',
     explain: 'It mainly supports the neck. Do not treat it as an interchangeable second main soundboard — and never obstruct the supporting knee.',
     why: {
@@ -385,7 +385,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'What are the veena’s three tala strings?',
-    options: ['Open drone strings along the side, struck for rhythm', 'Extra melody strings pressed on the frets for high notes', 'Strings under the frets that ring by sympathy alone'],
+    options: ['Extra melody strings pressed on the frets for high notes', 'Open drone strings along the side, struck for rhythm', 'Strings under the frets that ring by sympathy alone'],
     correct: 'Open drone strings along the side, struck for rhythm',
     explain: 'The tala strings run along the side of the neck and are struck open for drone and rhythm — one more thing a mic balances against the melody.',
     why: {
@@ -397,7 +397,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'The veena’s measured radiation changed with pitch, direction and distance. What does that suggest?',
-    options: ['Compare a few positions round the face before settling', 'The positions all sound alike, so the first one will do fine', 'Only the 25 cm study radius gives a true sound'],
+    options: ['The positions all sound alike, so the first one will do fine', 'Only the 25 cm study radius gives a true sound', 'Compare a few positions round the face before settling'],
     correct: 'Compare a few positions round the face before settling',
     explain: 'A pattern that changes with pitch and direction means one spot can favour some notes. Compare positions round the main face at matched levels.',
     why: {
@@ -409,12 +409,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'A string plucked exactly at its middle drives which of its shapes?',
-    options: ['Only the odd ones — the even ones are still there', 'All of its shapes, each one just as hard', 'Only the even ones — the odd ones are still there'],
-    correct: 'Only the odd ones — the even ones are still there',
+    options: ['All of its shapes, each one just as hard', 'Only the odd ones — the even ones stay silent', 'Only the even ones — the odd ones stay silent'],
+    correct: 'Only the odd ones — the even ones stay silent',
     explain: 'A pluck drives a shape only as much as the string moves under the finger; each even shape has a still point at the middle.',
     why: {
-      'All of its shapes, each one just as hard': 'The finger touches one spot; a shape that is still there is not driven.',
-      'Only the even ones — the odd ones are still there': 'The reverse: the even ones are still at the middle.',
+      'All of its shapes, each one just as hard': 'The finger touches one spot; a shape with a still point there is not driven at all.',
+      'Only the even ones — the odd ones stay silent': 'The reverse: the even ones are still at the middle.',
     },
   },
   {

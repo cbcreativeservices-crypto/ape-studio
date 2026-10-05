@@ -98,7 +98,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.snd.3`,
     page: 'sound',
     prompt: 'What does a resonator back do, compared with an open back?',
-    options: ['Reflects more of the sound forward, away from the player', 'Makes the head vibrate in completely different shapes', 'Stops the sound from leaving the front of the head at all'],
+    options: ['Makes the head vibrate in completely different shapes', 'Reflects more of the sound forward, away from the player', 'Stops the sound from leaving the front of the head at all'],
     correct: 'Reflects more of the sound forward, away from the player',
     explain: 'The resonator is a bowl behind the pot that reflects sound forward. An open back lets more go behind, into the player — whose body then shapes it.',
     why: {
@@ -111,7 +111,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.2`,
     page: 'setting',
     prompt: 'The bluegrass band works around one shared mic. What is that?',
-    options: ['An ensemble technique: players step in and out to balance', 'A way to avoid miking the banjo at all, whatever the room', 'The same as close miking, only with fewer cables'],
+    options: ['A way to avoid miking the banjo at all, whatever the room', 'The same as close miking, only with fewer cables', 'An ensemble technique: players step in and out to balance'],
     correct: 'An ensemble technique: players step in and out to balance',
     explain: 'With one or two shared mics, players move in for solos and back for balance. It needs choreography, restrained monitors and a kind room — an ensemble technique.',
     why: {
@@ -123,7 +123,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.set.3`,
     page: 'setting',
     prompt: 'You hear a buzz from the bridge area. What do you do first?',
-    options: ['Check it with the mic muted, then hand it to the player', 'Nudge the bridge a little along the head to stop it buzzing', 'Tighten the head’s hooks until the buzz is gone'],
+    options: ['Nudge the bridge a little along the head to stop it buzzing', 'Tighten the head’s hooks until the buzz is gone', 'Check it with the mic muted, then hand it to the player'],
     correct: 'Check it with the mic muted, then hand it to the player',
     explain: 'If it is there acoustically, it belongs to the banjo. The bridge and the head tension are the player’s — never a miking step.',
     why: {
@@ -135,7 +135,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.1`,
     page: 'microphone',
     prompt: 'FROM EARLIER · What radiates most of a banjo’s sound?',
-    options: ['The head, driven by the bridge', 'The strings, straight into the room', 'The neck, along its whole length'],
+    options: ['The strings, straight into the room', 'The head, driven by the bridge', 'The neck, along its whole length'],
     correct: 'The head, driven by the bridge',
     explain: 'The head is a tensioned membrane driven by the bridge: it radiates most of the sound, toward a mic in front.',
     why: {
@@ -147,7 +147,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'A figure-8 ribbon can smooth a banjo’s attack. What must you check before using one live?',
-    options: ['Where the monitors are: a figure-8 hears its back as well', 'That the banjo has a resonator, or it will not work', 'Nothing: a ribbon rejects the other sources on a stage'],
+    options: ['That the banjo has a resonator, or it will not work', 'Nothing: a ribbon rejects the other sources on a stage', 'Where the monitors are: a figure-8 hears its back as well'],
     correct: 'Where the monitors are: a figure-8 hears its back as well',
     explain: 'A figure-8 picks up equally from the rear. With floor monitors behind it, it can be unsuitable — rule it out for exactly that reason.',
     why: {
@@ -159,20 +159,20 @@ const scenarios: MikingScenario[] = [
   {
     id: `${P}.place.1`,
     page: 'placement',
-    prompt: 'One starting point says about 3 in from the head’s centre, another 30–40 cm from the neck junction. Can both be good places to begin?',
-    options: ['Yes: different places, for different jobs', 'No: only one of two starting points can be right', 'Yes, because both are measured from the bridge'],
-    correct: 'Yes: different places, for different jobs',
-    explain: 'Close in front of the head gives attack and projection; the neck junction a blend of strings, fingers and head. Both are good places to begin — move between them by ear; they are not one coordinate.',
+    prompt: 'One starting point says about 3 in from the head’s centre, another 30–40 cm from the neck junction. Are they the same position?',
+    options: ['Yes: both are measured from the banjo’s bridge', 'Yes, as long as the mic faces the banjo', 'No: different places, for different jobs'],
+    correct: 'No: different places, for different jobs',
+    explain: 'Close in front of the head gives attack and projection; the neck junction a blend of strings, fingers and head. Move between them by ear — they are not one coordinate.',
     why: {
-      'No: only one of two starting points can be right': 'Starting points are places to begin, not answers: each suits a different job. Try both and listen.',
-      'Yes, because both are measured from the bridge': 'Right verdict, wrong reason: one is read from the head’s centre, the other from the neck junction — neither from the bridge.',
+      'Yes: both are measured from the banjo’s bridge': 'One is read from the head’s centre, the other from the neck junction — neither from the bridge.',
+      'Yes, as long as the mic faces the banjo': 'Aim is a separate thing. These are different points and distances.',
     },
   },
   {
     id: `${P}.place.2`,
     page: 'placement',
     prompt: 'The banjo sounds thin and all fingers. What is a good first move?',
-    options: ['Include more of the head and pot, at a modest distance', 'Move closer in to the strings, out along the neck', 'Turn the channel up until it sounds fuller'],
+    options: ['Move closer in to the strings, out along the neck', 'Include more of the head and pot, at a modest distance', 'Turn the channel up until it sounds fuller'],
     correct: 'Include more of the head and pot, at a modest distance',
     explain: 'A view aimed mainly at the neck, or too close to the picking, misses the head. Bring more of the head and pot in.',
     why: {
@@ -184,7 +184,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.place.3`,
     page: 'placement',
     prompt: 'Why would you try a mic behind an open-back banjo only as an audition?',
-    options: ['The player’s body, reflections and spill can dominate it', 'Nothing much comes out of the back of an open-back banjo', 'A rear mic is the one correct place on an open back'],
+    options: ['Nothing much comes out of the back of an open-back banjo', 'The player’s body, reflections and spill can dominate it', 'A rear mic is the one correct place on an open back'],
     correct: 'The player’s body, reflections and spill can dominate it',
     explain: 'Sound does leave the open back — straight into the player. Their body obstructs and colours it, so a rear view is something to audition, not to assume.',
     why: {
@@ -196,7 +196,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.2`,
     page: 'placement',
     prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a banjo player?',
-    options: ['The picking hand and forearm, the fretting hand and the neck', 'The front of the banjo, so the audience can see the head', 'The floor round the player’s feet, which is kept for the DI'],
+    options: ['The front of the banjo, so the audience can see the head', 'The floor round the player’s feet, which is kept for the DI', 'The picking hand and forearm, the fretting hand and the neck'],
     correct: 'The picking hand and forearm, the fretting hand and the neck',
     explain: 'The picking forearm rests on the rim, the hand works over the head, the fretting hand travels the neck — and the neck swings as the player moves. Stop the player before anything moves.',
     why: {
@@ -209,7 +209,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.ctx.studio`,
     page: 'context',
     prompt: 'A quiet studio, a good room, solo banjo. When could an omni be the right choice?',
-    options: ['When the room is good and its sound is wanted', 'When the room is noisy and its sound needs rejecting', 'When the banjo must be isolated from a band'],
+    options: ['When the room is noisy and its sound needs rejecting', 'When the banjo must be isolated from a band', 'When the room is good and its sound is wanted'],
     correct: 'When the room is good and its sound is wanted',
     explain: 'An omni near the neck junction gives a detailed, broad view — and hears the room and any neighbours. Choose it when that contribution is wanted.',
     why: {
@@ -221,7 +221,7 @@ const scenarios: MikingScenario[] = [
     id: `${P}.rec.3`,
     page: 'context',
     prompt: 'FROM EARLIER · An open-back banjo on a loud stage: where does some of its sound go?',
-    options: ['Out of the back, into the player’s body', 'Only out of the front, toward the audience', 'Down through the neck into the floor'],
+    options: ['Only out of the front, toward the audience', 'Out of the back, into the player’s body', 'Down through the neck into the floor'],
     correct: 'Out of the back, into the player’s body',
     explain: 'Without a resonator, sound leaves behind the pot too — into the player, who obstructs and colours it.',
     why: {
@@ -244,7 +244,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.thin`,
     observation: 'A thin, all-fingers sound',
     firstChecks: 'Is the mic aimed mainly at the neck, or too close to the picking? Include more head and pot, at a modest distance.',
-    options: ['Include more of the head and pot, at a modest distance', 'Move closer in to the strings, out along the neck', 'Turn the channel up until the banjo sounds full'],
+    options: ['Move closer in to the strings, out along the neck', 'Include more of the head and pot, at a modest distance', 'Turn the channel up until the banjo sounds full'],
     correct: 'Include more of the head and pot, at a modest distance',
     explain: 'A view mostly of the strings and fingers misses the head. Change the view first.',
     why: {
@@ -256,7 +256,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.papery`,
     observation: 'A hard, papery head sound',
     firstChecks: 'Is a close mic aimed at one spot of the head? Move toward the neck-junction blend, or step back.',
-    options: ['Move toward the neck junction, or step back a little', 'Cut the high frequencies until the head sounds soft', 'Move even closer in, right onto the head’s centre'],
+    options: ['Cut the high frequencies until the head sounds soft', 'Move toward the neck junction, or step back a little', 'Move even closer in, right onto the head’s centre'],
     correct: 'Move toward the neck junction, or step back a little',
     explain: 'One close spot on the head magnifies it. A broader view balances it.',
     why: {
@@ -268,7 +268,7 @@ const symptoms: Symptom[] = [
     id: `${P}.sym.lost`,
     observation: 'The banjo disappears in the band',
     firstChecks: 'Is the room or bleed masking it? Bring a directional mic closer and check with the ensemble.',
-    options: ['Bring a directional mic closer and check with the band', 'Turn the banjo channel up until it is the loudest thing', 'Swap to an omni so it hears more of the stage'],
+    options: ['Turn the banjo channel up until it is the loudest thing', 'Bring a directional mic closer and check with the band', 'Swap to an omni so it hears more of the stage'],
     correct: 'Bring a directional mic closer and check with the band',
     explain: 'Closer, with a pattern aimed against the neighbours, the banjo gains on the band. Judge it in the ensemble.',
     why: {
@@ -321,19 +321,19 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'instrument',
     prompt: 'What is a banjo’s head?',
-    options: ['A tensioned membrane, like a drumhead, over the pot', 'The peghead at the far end of the neck, with the tuners', 'A wooden top with a sound hole in it'],
+    options: ['The peghead at the far end of the neck, with the tuners', 'A wooden top with a round sound hole cut in it', 'A tensioned membrane, like a drumhead, over the pot'],
     correct: 'A tensioned membrane, like a drumhead, over the pot',
     explain: 'The head is stretched over the round pot by a hoop and hooks — a drumhead. The bridge stands on it.',
     why: {
       'The peghead at the far end of the neck, with the tuners': 'That holds the tuners. The head is the membrane on the pot.',
-      'A wooden top with a sound hole in it': 'That is a guitar. A banjo has a membrane head instead.',
+      'A wooden top with a round sound hole cut in it': 'That is a guitar. A banjo has a membrane head instead.',
     },
   },
   {
     id: 'q.2',
     covers: 'instrument',
     prompt: 'Where does a five-string banjo’s short string start?',
-    options: ['At a peg partway up the neck', 'At the tailpiece, behind the bridge', 'At a tuner on the resonator'],
+    options: ['At the tailpiece, behind the bridge', 'At a peg partway up the neck', 'At a tuner on the resonator'],
     correct: 'At a peg partway up the neck',
     explain: 'The fifth string is short: it starts at its own peg partway up the neck.',
     why: {
@@ -345,7 +345,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'The strings press the bridge onto the head off its centre. What follows?',
-    options: ['Many of the head’s shapes are driven: bright and quick', 'Only the lowest shape is driven: a deep, long note', 'None are driven, because the strings do not touch it'],
+    options: ['Only the lowest shape is driven: a deep, long note', 'None are driven, because the strings do not touch it', 'Many of the head’s shapes are driven: bright and quick'],
     correct: 'Many of the head’s shapes are driven: bright and quick',
     explain: 'Off centre, few shapes have a still line under the bridge, so many ring together. A drumhead also damps fast.',
     why: {
@@ -357,11 +357,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.4',
     covers: 'sound',
     prompt: 'What does an open back change?',
-    options: ['More sound leaves behind the pot, into the player', 'The head stops vibrating altogether once it is open', 'The strings sound an octave lower than with a resonator'],
+    options: ['The head stops vibrating altogether, so it goes quiet', 'More sound leaves behind the pot, into the player', 'The strings sound an octave lower than with a resonator'],
     correct: 'More sound leaves behind the pot, into the player',
     explain: 'Without a resonator, the back of the head radiates straight into the player, whose body colours it.',
     why: {
-      'The head stops vibrating altogether once it is open': 'The head vibrates the same; where the sound goes changes.',
+      'The head stops vibrating altogether, so it goes quiet': 'The head vibrates the same; where the sound goes changes.',
       'The strings sound an octave lower than with a resonator': 'Pitch is set by the strings. The back changes where sound goes.',
     },
   },
@@ -369,7 +369,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.5',
     covers: 'setting',
     prompt: 'What must a stand mic stay out of, round a banjo player?',
-    options: ['The picking hand and forearm, the fretting hand and the neck', 'The front of the banjo, so the audience can see the head clearly', 'The space behind the player, where the cables run'],
+    options: ['The front of the banjo, so the audience can see the head clearly', 'The space behind the player, where the cables run', 'The picking hand and forearm, the fretting hand and the neck'],
     correct: 'The picking hand and forearm, the fretting hand and the neck',
     explain: 'The forearm rests on the rim, the hand picks over the head, the other hand travels the neck. In front of the head is usually where a mic comes in.',
     why: {

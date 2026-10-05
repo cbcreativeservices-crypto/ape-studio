@@ -50,6 +50,8 @@ export function LuteSceneArt({ sc, view }: { sc: LuteScene; view: ViewId }) {
 export function luteLabels(sc: LuteScene, view: ViewId): ArtLabel[] {
   const L = (id: string, text: string, p: Pt, align: ArtLabel['align'] = 'center', extra: Partial<ArtLabel> = {}): ArtLabel => ({ id, text, u: p[0], v: p[1], align, ...extra });
   const V = (x: number, y: number, z: number) => vp(sc, view, { x, y, z });
+  // A label set clear of the instrument, with a leader back to the part.
+  const at = (p: Pt) => ({ lead: { u: p[0], v: p[1] } });
   const head = ep(view, sc.fit.head.c);
   const out: ArtLabel[] = [];
   if (sc.kind === 'oud') {
@@ -73,14 +75,14 @@ export function luteLabels(sc: LuteScene, view: ViewId): ArtLabel[] {
   if (sc.kind === 'sitar') {
     const g = sc.sitar!;
     if (view === 'side') {
-      out.push(L('gourd', 'GOURD', V(g.gourd.cx - 60, g.gourd.a + 30, 0), 'center'));
-      out.push(L('jawari', 'MAIN BRIDGE', V(-10, 70, 0), 'left', { short: 'BRIDGE' }));
-      out.push(L('sympathetic', 'SYMPATHETIC STRINGS', V(250, -g.neck.half - 110, 0), 'right', { short: 'SYMPATHETIC' }));
-      out.push(L('frets', 'ARCHED FRETS', V(430, g.neck.half + 80, 0), 'left', { short: 'FRETS' }));
+      out.push(L('gourd', 'GOURD', V(g.gourd.cx - g.gourd.a - 90, 0, 0), 'center', at(V(g.gourd.cx - g.gourd.a * 0.7, 0, 0))));
+      out.push(L('jawari', 'MAIN BRIDGE', V(-10, g.gourd.a + 70, 0), 'left', { short: 'BRIDGE', ...at(V(0, 0, 10)) }));
+      out.push(L('sympathetic', 'SYMPATHETIC STRINGS', V(230, g.neck.half + 80, 0), 'left', { short: 'SYMPATHETIC', ...at(V(260, 0, 8)) }));
+      out.push(L('frets', 'ARCHED FRETS', V(430, g.neck.half + 80, 0), 'left', { short: 'FRETS', ...at(V(430, 0, 6)) }));
       out.push(L('player', 'PLAYER', [head[0], head[1] - sc.fit.head.r - 24], 'center', { tone: 'muted' }));
     } else {
-      out.push(L('gourd', 'GOURD', V(g.gourd.cx, 0, -g.gourd.c - 60), 'center'));
-      out.push(L('frets', 'ARCHED FRETS', V(520, 0, 60), 'center', { short: 'FRETS' }));
+      out.push(L('gourd', 'GOURD', V(g.gourd.cx - g.gourd.a - 130, 0, -g.gourd.c * 0.5), 'right', at(V(g.gourd.cx - g.gourd.a * 0.7, 0, -g.gourd.c * 0.5))));
+      out.push(L('frets', 'ARCHED FRETS', V(520, 0, g.neck.depth + 70), 'center', { short: 'FRETS', ...at(V(520, 0, 6)) }));
       out.push(L('player', 'PLAYER', [head[0], sc.fit.torso.min.z + 30], 'center', { tone: 'muted' }));
       out.push(L('audience', 'AUDIENCE ↓', [700, 600], 'center', { tone: 'muted' }));
     }
@@ -88,15 +90,18 @@ export function luteLabels(sc: LuteScene, view: ViewId): ArtLabel[] {
   }
   const g = sc.veena!;
   if (view === 'side') {
-    out.push(L('resonator', 'RESONATOR', V(g.bowl.cx, 0, g.bowl.zc - g.bowl.c - 40), 'center'));
-    out.push(L('frets', 'FRETS ON WAX', V(420, g.neck.half, 70), 'center', { short: 'FRETS' }));
+    // Beside the bowl, toward the gourd (under it, the words ran off the floor).
+    const res = V(g.bowl.cx, 0, g.bowl.zc - g.bowl.c - 40);
+    out.push(L('resonator', 'RESONATOR', [res[0] + 190, res[1] - 120], 'left', at([res[0] + 60, res[1] - 90])));
+    out.push(L('frets', 'FRETS ON WAX', V(420, g.neck.half + 60, 70), 'center', { short: 'FRETS', ...at(V(420, 0, 6)) }));
     out.push(L('gourd', 'GOURD (SUPPORT)', V(g.gourd.x, 0, g.gourd.z - g.gourd.r - 40), 'center', { short: 'GOURD' }));
-    out.push(L('yali', 'YALI', V(930, 0, 70), 'center'));
+    out.push(L('yali', 'YALI', V(930, g.neck.half + 50, 70), 'center', at(V(930, 0, -40))));
     out.push(L('player', 'PLAYER', [head[0], head[1] - sc.fit.head.r - 24], 'center', { tone: 'muted' }));
   } else {
     out.push(L('plate', 'TOP PLATE', V(g.bowl.cx, -g.plateR - 40, 0), 'center', { short: 'PLATE' }));
-    out.push(L('tala', 'TALA STRINGS', V(330, g.neck.half + 120, 0), 'center', { short: 'TALA' }));
-    out.push(L('yali', 'YALI', V(905, 0, 40), 'center'));
+    const tala = V(330, g.neck.half, 10);
+    out.push(L('tala', 'TALA STRINGS', [tala[0], tala[1] + 160], 'center', { short: 'TALA', ...at(tala) }));
+    out.push(L('yali', 'YALI', V(g.tip + 40, 0, 0), 'left', at(V(g.tip - 60, 0, -40))));
     out.push(L('player', 'PLAYER', [head[0], sc.fit.torso.min.z + 30], 'center', { tone: 'muted' }));
     out.push(L('audience', 'AUDIENCE ↓', [900, 640], 'center', { tone: 'muted' }));
   }

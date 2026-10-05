@@ -84,7 +84,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.snd.1',
     page: 'sound',
     prompt: 'How does a bow keep a cello note sounding?',
-    options: ['It grips and drags the string, then lets it slip back — every cycle', 'It strikes the string again and again, faster than the eye can follow', 'It presses the string down onto the fingerboard to start it'],
+    options: ['It strikes the string again and again, faster than the eye can follow', 'It presses the string down onto the fingerboard to start it', 'It grips and drags the string, then lets it slip back — every cycle'],
     correct: 'It grips and drags the string, then lets it slip back — every cycle',
     explain: 'Rosin on the hair grips the string and drags it with the bow; when the string’s pull wins, it slips back and is caught again. Grip and slip repeat once every vibration, feeding the string energy as long as the bow moves.',
     why: {
@@ -96,7 +96,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.snd.2',
     page: 'sound',
     prompt: 'What carries the strings’ vibration into the cello’s body?',
-    options: ['The bridge, rocking on its two feet as the strings pull it', 'The f-holes, which the vibrating strings blow their air into', 'The tailpiece, which shakes the end of the body'],
+    options: ['The f-holes, which the vibrating strings blow their air into', 'The bridge, rocking on its two feet as the strings pull it', 'The tailpiece, which shakes the end of the body'],
     correct: 'The bridge, rocking on its two feet as the strings pull it',
     explain: 'The strings pull the top of the bridge side to side; it rocks on its feet. One foot drives the top in and out; the other sits over the soundpost, which links the top to the back.',
     why: {
@@ -108,7 +108,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.snd.3',
     page: 'sound',
     prompt: 'One of the string’s shapes has a still point right under the bow. What happens to that shape?',
-    options: ['The bow cannot drive it there, so it is weak in the sound', 'It becomes the loudest shape, because the bow presses right there', 'Nothing changes: the bow drives all of the shapes the same'],
+    options: ['It becomes the loudest shape, because the bow presses right there', 'The bow cannot drive it there, so it is weak in the sound', 'Nothing changes: the bow drives all of the shapes the same'],
     correct: 'The bow cannot drive it there, so it is weak in the sound',
     explain: 'A point can only drive a shape as much as the string moves there in that shape. On a still point it cannot — so moving the bow along the string changes which shapes, and so which overtones, are strong.',
     why: {
@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.set.2',
     page: 'setting',
     prompt: 'Where should a stand’s base and its cable go around a seated cellist?',
-    options: ['Away from the endpin, the chair and the feet, outside the bow’s sweep', 'Close in beside the endpin, where the floor space between the feet is clear', 'Across the front of the cello, the shortest route to the mic'],
+    options: ['Close in beside the endpin, where the floor space between the feet is clear', 'Across the front of the cello, the shortest route to the mic', 'Away from the endpin, the chair and the feet, outside the bow’s sweep'],
     correct: 'Away from the endpin, the chair and the feet, outside the bow’s sweep',
     explain: 'The endpin’s point, the chair legs and the feet share the floor, and the bow sweeps out to both sides. Route the cable away from them — and never across the front of the cello.',
     why: {
@@ -133,7 +133,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.set.3',
     page: 'setting',
     prompt: 'Before placing any mic, what do you ask the cellist?',
-    options: ['How they sit and sway, where the bow goes, the sound they want', 'The make of their cello, to look up its one correct mic position', 'Nothing: a starting point already says where the mic goes'],
+    options: ['The make of their cello, to look up its one correct mic position', 'How they sit and sway, where the bow goes, the sound they want', 'Nothing: a starting point already says where the mic goes'],
     correct: 'How they sit and sway, where the bow goes, the sound they want',
     explain: 'A starting point is only valid if the cellist cannot hit the mic and still has room to move. Ask about the repertoire — sustained notes, pizzicato, loud passages — and hear the cello unamplified first.',
     why: {
@@ -145,7 +145,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic very close to where the bow meets the strings tends to hear more of…',
-    options: ['The bow’s bite — rosin and hair at the start of notes', 'The air breathing in and out of the f-holes in the low notes', 'The whole body and the room, blended together'],
+    options: ['The air breathing in and out of the f-holes in the low notes', 'The whole body and the room, blended together', 'The bow’s bite — rosin and hair at the start of notes'],
     correct: 'The bow’s bite — rosin and hair at the start of notes',
     explain: 'The bite starts where the hair grips the string, so a mic close to it hears more of it — and less of the whole body. A tendency, to check by ear.',
     why: {
@@ -157,7 +157,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.mic.1',
     page: 'microphone',
     prompt: 'Why might a miniature on the strings suit a loud stage?',
-    options: ['It stays at one distance from the strings as the cellist moves', 'Its clip stops it from hearing the monitors and the rest of the stage', 'It needs no power, so a spare input without phantom will do'],
+    options: ['Its clip stops it from hearing the monitors and the rest of the stage', 'It stays at one distance from the strings as the cellist moves', 'It needs no power, so a spare input without phantom will do'],
     correct: 'It stays at one distance from the strings as the cellist moves',
     explain: 'Mounted on the strings below the bridge, the capsule moves with the cello, so the level and tone hold as the cellist sways — and close placement helps the cello against the stage. It still hears the monitors and the stage.',
     why: {
@@ -169,7 +169,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.mic.2',
     page: 'microphone',
     prompt: 'The cello’s lowest note is about 65 Hz. What do you check?',
-    options: ['That the mic and channel keep useful lows — then judge by ear', 'Nothing: all microphones capture 65 Hz in the same way', 'That the mic has a large diaphragm, since only large ones capture bass'],
+    options: ['Nothing: all microphones capture 65 Hz in the same way', 'That the mic and channel keep useful lows — then judge by ear', 'That the mic has a large diaphragm, since only large ones capture bass'],
     correct: 'That the mic and channel keep useful lows — then judge by ear',
     explain: 'Check the mic’s and the channel’s low end, and set any low-cut filter with the low C playing — then decide by the sound, not by a number on a sheet. Placement and the room matter as much.',
     why: {
@@ -181,7 +181,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.mic.3',
     page: 'microphone',
     prompt: 'A cardioid very close to the cello makes the low strings boom. A likely reason?',
-    options: ['Proximity effect: a directional mic up close lifts the lows', 'The omni pattern is collecting the room’s bass', 'The f-holes are aimed straight at the mic’s grille from close by'],
+    options: ['The omni pattern is collecting the room’s bass', 'Proximity effect: a directional mic up close lifts the lows', 'The f-holes are aimed straight at the mic’s grille from close by'],
     correct: 'Proximity effect: a directional mic up close lifts the lows',
     explain: 'Directional mics lift the low end as they get close to a source. Back the mic off or change its angle before reaching for EQ — or try an omni, which has no proximity effect.',
     why: {
@@ -193,7 +193,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.mic.4',
     page: 'microphone',
     prompt: 'The cellist sits beside a drum kit; you aim a directional mic away from it. What can still happen?',
-    options: ['The cello’s body reflects the drums into the mic’s front', 'Nothing: aiming away from the kit removes it from the mic completely', 'The mic hears only the back of the cello'],
+    options: ['Nothing: aiming away from the kit removes it from the mic completely', 'The cello’s body reflects the drums into the mic’s front', 'The mic hears only the back of the cello'],
     correct: 'The cello’s body reflects the drums into the mic’s front',
     explain: 'The cello’s large body is a reflective surface: sound from the kit or the PA can bounce off it into the front of a mic aimed away from them. Aim, distance and the players’ positions all play a part.',
     why: {
@@ -205,7 +205,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.place.1',
     page: 'placement',
     prompt: 'The starting point says “about 30 cm from the bridge”. Your readout says 30 cm from the top, lower down. Are you in it?',
-    options: ['Not necessarily — measure from the bridge, as the point names', 'Yes: 30 cm is 30 cm, whatever part of the cello it is read from', 'Yes, as long as the mic is aimed at the cello'],
+    options: ['Yes: 30 cm is 30 cm, whatever part of the cello it is read from', 'Not necessarily — measure from the bridge, as the point names', 'Yes, as long as the mic is aimed at the cello'],
     correct: 'Not necessarily — measure from the bridge, as the point names',
     explain: 'A distance means something only with the part it is measured from. The same 30 cm from another part of the cello puts the mic somewhere else — which is why every readout names its reference.',
     why: {
@@ -217,7 +217,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.place.2',
     page: 'placement',
     prompt: 'In a good room you move the mic from about 30 cm to about 1 m in front. What tends to change?',
-    options: ['More of the whole cello and the room; less bow detail', 'Only the level drops; the tone stays exactly the same', 'More low end, because the mic is now farther away'],
+    options: ['Only the level drops; the tone stays exactly the same', 'More of the whole cello and the room; less bow detail', 'More low end, because the mic is now farther away'],
     correct: 'More of the whole cello and the room; less bow detail',
     explain: 'A little more distance tends to blend the body, the strings and the room — and more of any neighbours. Compare at matched levels; cellos and rooms vary.',
     why: {
@@ -229,7 +229,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.place.3',
     page: 'placement',
     prompt: 'Where does a cello miniature’s clip attach?',
-    options: ['On the two outer strings below the bridge — not on the bridge', 'On the bridge itself, where the strings’ vibration is the strongest', 'Inside an f-hole, pressed against its edge'],
+    options: ['On the bridge itself, where the strings’ vibration is the strongest', 'Inside an f-hole, pressed against its edge', 'On the two outer strings below the bridge — not on the bridge'],
     correct: 'On the two outer strings below the bridge — not on the bridge',
     explain: 'A clip made for the cello grips the outer strings between the bridge and the tailpiece, and the gooseneck brings the capsule to its spot. Clamping the bridge can damp it — and a valuable cello needs the player’s agreement first.',
     why: {
@@ -241,7 +241,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · What must a cello mic, its stand and its cable stay clear of?',
-    options: ['The bow’s sweep, the bow arm, the endpin and the feet', 'The front of the cello, so the audience can see it', 'The music stand, so the cellist can read the part and the conductor'],
+    options: ['The front of the cello, so the audience can see it', 'The music stand, so the cellist can read the part and the conductor', 'The bow’s sweep, the bow arm, the endpin and the feet'],
     correct: 'The bow’s sweep, the bow arm, the endpin and the feet',
     explain: 'Clearance comes first: both ends of the bow, the arm that moves it, and the floor around the endpin. Stop the cellist before anything moves, and check the full motion again.',
     why: {
@@ -253,7 +253,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.ctx.1',
     page: 'context',
     prompt: 'Feedback starts to ring on the cello’s mic. What is the first move?',
-    options: ['Lower the level, then change the mic, monitor and open mics', 'Boost the cello channel so the note covers the ring', 'Ask the cellist to play louder, so the mic needs less gain to work'],
+    options: ['Boost the cello channel so the note covers the ring', 'Ask the cellist to play louder, so the mic needs less gain to work', 'Lower the level, then change the mic, monitor and open mics'],
     correct: 'Lower the level, then change the mic, monitor and open mics',
     explain: 'Feedback is a sound-system condition: reduce the level at once, then revise the geometry — the mic, the wedge, the open mics. Never provoke it on purpose.',
     why: {
@@ -266,7 +266,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.ctx.studio',
     page: 'context',
     prompt: 'A solo cello in a good studio room. What could justify one farther mic and no close one?',
-    options: ['The room adds to the sound, and nothing needs separating', 'A close mic would hear far more spill than a farther one', 'Close cello mics suit live work only, not a studio'],
+    options: ['A close mic would hear far more spill than a farther one', 'Close cello mics suit live work only, not a studio', 'The room adds to the sound, and nothing needs separating'],
     correct: 'The room adds to the sound, and nothing needs separating',
     explain: 'If the room is good and the cello plays alone, a farther mic can carry body, strings and space together. A close mic adds definition when the arrangement needs it.',
     why: {
@@ -278,7 +278,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · Where does most of the cello’s sound leave from?',
-    options: ['The whole top and back, and the f-holes in the low notes', 'Only the f-holes, which act as the cello’s built-in loudspeaker', 'The scroll and the pegbox at the top of the neck'],
+    options: ['Only the f-holes, which act as the cello’s built-in loudspeaker', 'The whole top and back, and the f-holes in the low notes', 'The scroll and the pegbox at the top of the neck'],
     correct: 'The whole top and back, and the f-holes in the low notes',
     explain: 'The top and back plates radiate, each part differently at each pitch, and air breathes through the f-holes. So a close mic hears its own slice — and no single f-hole is a full-cello spot.',
     why: {
@@ -290,7 +290,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.two.1',
     page: 'twoMic',
     prompt: 'Why can a close and a farther mic on one cello sound thin together?',
-    options: ['The sound reaches them at different times, so some pitches cancel', 'The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum'],
+    options: ['The farther mic inverts the sound on its way there, so it cancels', 'Two mics on one source cancel each other’s low end in the sum', 'The sound reaches them at different times, so some pitches cancel'],
     correct: 'The sound reaches them at different times, so some pitches cancel',
     explain: 'The farther mic hears each note a little later. Summed, some pitches arrive out of step and cancel — a comb of notches. Move or rebalance first, then check polarity at matched levels.',
     why: {
@@ -304,7 +304,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.two.4',
     page: 'twoMic',
     prompt: 'Does a solo cello need a second mic?',
-    options: ['Only for a reason — the room, a balance — and if it holds in mono', 'Yes: a single mic cannot record in stereo', 'Yes, one mic for the low C string and another one for the high A'],
+    options: ['Yes: a single mic cannot record in stereo', 'Yes, one mic for the low C string and another one for the high A', 'Only for a reason — the room, a balance — and if it holds in mono'],
     correct: 'Only for a reason — the room, a balance — and if it holds in mono',
     explain: 'A strong single-mic sound is the reference. Add a second view for a stated goal, hear each alone and the pair in mono, and keep it only if it helps.',
     why: {
@@ -317,7 +317,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.prac.3',
     page: 'practice',
     prompt: 'What would justify adding a second cello channel?',
-    options: ['The first mic works alone, the pair adds something, it holds in mono', 'Two channels give the mix engineer more options to choose from later on', 'The cello needs more level in the mix than one mic gives'],
+    options: ['Two channels give the mix engineer more options to choose from later on', 'The first mic works alone, the pair adds something, it holds in mono', 'The cello needs more level in the mix than one mic gives'],
     correct: 'The first mic works alone, the pair adds something, it holds in mono',
     explain: 'A second mic blends a different perspective — and a delay. If the pair loses body, move or rebalance it, check polarity — or leave it out.',
     why: {
@@ -329,7 +329,7 @@ const scenarios: MikingScenario[] = [
     id: 'vc.mix.1',
     page: 'practice',
     prompt: 'A starting point reads “4–9 cm from the bridge’s foot, under the strings”. What is it measured from?',
-    options: ['The bridge’s foot on the top, as the starting point names', 'The top of the bridge, where the strings cross it', 'The fingerboard’s end, since it is the nearest part to the capsule'],
+    options: ['The top of the bridge, where the strings cross it', 'The fingerboard’s end, since it is the nearest part to the capsule', 'The bridge’s foot on the top, as the starting point names'],
     correct: 'The bridge’s foot on the top, as the starting point names',
     explain: 'A distance belongs to the part it names: from the foot, from the top of the bridge and from the fingerboard are different numbers for the same spot.',
     why: {
@@ -346,7 +346,7 @@ const symptoms: Symptom[] = [
     id: 'vc.sym.weight',
     observation: 'The C string lacks weight',
     firstChecks: 'Mic angle, distance, the low-cut filter and the room; move or re-aim, and audition the filter with the low C playing.',
-    options: ['Angle, distance, the filter and the room — with the low C playing', 'Boost the low end on the channel before anything else', 'Swap to the largest mic you have, for its bigger diaphragm and bass'],
+    options: ['Boost the low end on the channel before anything else', 'Swap to the largest mic you have, for its bigger diaphragm and bass', 'Angle, distance, the filter and the room — with the low C playing'],
     correct: 'Angle, distance, the filter and the room — with the low C playing',
     explain: 'A filter set too high, a mic off to one side or a room that cancels the lows can each thin the C string. Check them with the low C playing before reaching for EQ.',
     why: {
@@ -358,11 +358,11 @@ const symptoms: Symptom[] = [
     id: 'vc.sym.boom',
     observation: 'The C string booms on some notes',
     firstChecks: 'Close directional proximity effect, or a room mode: back off, change the height, or move the cello in the room.',
-    options: ['Proximity or a room mode: back off, change height or position', 'Cut all the low end, so no note can boom', 'Move the mic right up to an f-hole, where the low end is controlled'],
+    options: ['Cut all the low end, so that no note can boom at all', 'Proximity or a room mode: back off, change height or position', 'Move the mic right up to an f-hole, where the low end is controlled'],
     correct: 'Proximity or a room mode: back off, change height or position',
     explain: 'A close directional mic lifts the lows, and a room can boost a few notes. Moving the mic or the cello usually fixes it better than a broad cut, which thins every note.',
     why: {
-      'Cut all the low end, so no note can boom': 'A broad cut thins every note to fix a few. Find the cause.',
+      'Cut all the low end, so that no note can boom at all': 'A broad cut thins every note to fix a few. Find the cause.',
       'Move the mic right up to an f-hole, where the low end is controlled': 'An f-hole adds low-mid body: it usually makes boom worse.',
     },
   },
@@ -370,7 +370,7 @@ const symptoms: Symptom[] = [
     id: 'vc.sym.scrape',
     observation: 'Bow scrape hides the pitch',
     firstChecks: 'The capsule is too close to the bow and the bridge: back away or change the angle.',
-    options: ['Back the mic away or change its angle', 'Cut the high frequencies on the channel', 'Ask the cellist to use less rosin'],
+    options: ['Cut the high frequencies on the channel', 'Ask the cellist to use less rosin', 'Back the mic away or change its angle'],
     correct: 'Back the mic away or change its angle',
     explain: 'Very close to where the bow meets the strings, the mic hears the hair and rosin more than the note. A little more distance or a different angle blends them.',
     why: {
@@ -382,7 +382,7 @@ const symptoms: Symptom[] = [
     id: 'vc.sym.sway',
     observation: 'The balance between strings changes as the cellist sways',
     firstChecks: 'The stand mic’s working zone is too narrow: reposition it, or try an approved miniature that moves with the cello.',
-    options: ['Reposition the stand mic, or try an approved miniature', 'Ask the cellist to sit completely still', 'Compress the channel hard until the level stops changing'],
+    options: ['Ask the cellist to sit completely still', 'Compress the channel hard until the level stops changing', 'Reposition the stand mic, or try an approved miniature'],
     correct: 'Reposition the stand mic, or try an approved miniature',
     explain: 'A seated cellist moves with the music. A slightly farther or wider view, or a miniature on the strings that moves with the cello, keeps the balance steadier.',
     why: {
@@ -480,7 +480,7 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.2',
     covers: 'instrument',
     prompt: 'Which part should never have a mic or clip clamped to it?',
-    options: ['The bridge', 'A stand beside the cello', 'The two outer strings below the bridge'],
+    options: ['A stand beside the cello', 'The bridge', 'The two outer strings below the bridge'],
     correct: 'The bridge',
     explain: 'Hardware on the bridge can damp its vibration and risk the instrument; a clip made for the cello grips the strings below it instead.',
     why: {
@@ -517,12 +517,12 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'What must a stand mic and its cable stay clear of around a seated cellist?',
-    options: ['The bow’s sweep, the bow arm, the endpin and the feet', 'The music stand, so the player can still read the music', 'The audience’s view of the instrument'],
+    options: ['The bow’s sweep, the bow arm, the endpin and the feet', 'The music stand, so the player can read the music', 'The audience’s view of the instrument and the player'],
     correct: 'The bow’s sweep, the bow arm, the endpin and the feet',
     explain: 'Clearance comes first: whatever moves — the bow at both ends, the arm, the feet — and the endpin’s point on the floor.',
     why: {
-      'The music stand, so the player can still read the music': 'Sight lines matter, but safety is about what moves.',
-      'The audience’s view of the instrument': 'The view matters less than the player’s movement.',
+      'The music stand, so the player can read the music': 'Sight lines matter, but safety is about what moves.',
+      'The audience’s view of the instrument and the player': 'The view matters less than the player’s movement.',
     },
   },
   hearingDiag('q.6', W),

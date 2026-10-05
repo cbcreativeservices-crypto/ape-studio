@@ -83,7 +83,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.snd.1',
     page: 'sound',
     prompt: 'Where does most of an acoustic guitar’s sound leave from?',
-    options: ['The top and the sound hole, driven through the bridge', 'The strings themselves, straight out into the whole room', 'The headstock and tuners, where the strings end'],
+    options: ['The strings themselves, straight out into the whole room', 'The headstock and tuners, where the strings end', 'The top and the sound hole, driven through the bridge'],
     correct: 'The top and the sound hole, driven through the bridge',
     explain: 'A thin string moves very little air on its own. It rocks the bridge, the bridge drives the top, and the top and the air breathing through the hole radiate most of the sound.',
     why: {
@@ -95,19 +95,19 @@ const scenarios: MikingScenario[] = [
     id: 'ag.snd.2',
     page: 'sound',
     prompt: 'An open string is plucked exactly at its middle, over the 12th fret. Which of its shapes can that pluck set moving?',
-    options: ['Only the odd ones; every even shape is still there', 'All of them equally, because the whole string moves', 'Only the even ones; the odd shapes are still there'],
-    correct: 'Only the odd ones; every even shape is still there',
+    options: ['Only the even ones; the odd shapes stay silent', 'Only the odd ones; the even shapes stay silent', 'All of them equally, because the whole string moves'],
+    correct: 'Only the odd ones; the even shapes stay silent',
     explain: 'A pluck drives a shape only as much as the string moves at the pick in that shape. Every even shape has a still point at the exact middle, so a pluck there leaves them still.',
     why: {
       'All of them equally, because the whole string moves': 'The pick touches one spot. A shape is driven only as much as the string moves there — not at all at a still point.',
-      'Only the even ones; the odd shapes are still there': 'The reverse: the even shapes have a still point at the middle; the odd ones move most there.',
+      'Only the even ones; the odd shapes stay silent': 'The reverse: the even shapes have a still point at the middle; the odd ones move most there.',
     },
   },
   {
     id: 'ag.snd.3',
     page: 'sound',
     prompt: 'Why does a pluck close to the bridge tend to sound brighter?',
-    options: ['It sets the upper shapes moving relatively more', 'It makes the vibrating string shorter, so it is higher', 'It moves the top less, so only the hole is heard'],
+    options: ['It makes the vibrating string shorter, so it is higher', 'It moves the top less, so only the hole is heard', 'It sets the upper shapes moving relatively more'],
     correct: 'It sets the upper shapes moving relatively more',
     explain: 'Near the end of the string the upper shapes move almost as much as the lowest, so they start relatively stronger — a brighter balance. The pitch does not change: the string length is the same.',
     why: {
@@ -120,7 +120,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.set.2',
     page: 'setting',
     prompt: 'Before you place a stand mic for a seated guitarist, what do you need from the player?',
-    options: ['Their whole motion — strumming, fretting, singing, any movement', 'The guitar’s make, so you can look up its single correct position', 'Nothing: the 12th fret already marks where the mic goes'],
+    options: ['Nothing: the 12th fret already marks where the mic goes', 'Their whole motion — strumming, fretting, singing, any movement', 'The guitar’s make, so you can look up its single correct position'],
     correct: 'Their whole motion — strumming, fretting, singing, any movement',
     explain: 'A starting point is valid only where the player cannot hit the mic or lose sight of the neck. Watch the full performance — loud strums, position shifts, singing — before anything is tightened.',
     why: {
@@ -132,7 +132,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.set.3',
     page: 'setting',
     prompt: 'The guitarist also sings. What else does the guitar mic hear?',
-    options: ['Their voice, from just above and behind it', 'Nothing else, as long as it is close to the guitar', 'Only the PA, because it faces the audience'],
+    options: ['Nothing else, as long as it is close to the guitar', 'Their voice, from just above and behind it', 'Only the PA, because it faces the audience'],
     correct: 'Their voice, from just above and behind it',
     explain: 'The mouth is a short way above the guitar, so the voice reaches the guitar mic — and the guitar reaches the vocal mic. Plan the balance of the two; no pattern removes the voice from a mic aimed at the guitar.',
     why: {
@@ -144,7 +144,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic close to the sound hole hears more of which part of the sound?',
-    options: ['The air in the body, breathing through the hole', 'The pick scraping on the strings close to the bridge', 'The tuners turning at the headstock'],
+    options: ['The pick scraping on the strings close to the bridge', 'The tuners turning at the headstock', 'The air in the body, breathing through the hole'],
     correct: 'The air in the body, breathing through the hole',
     explain: 'The air inside the body moves in and out through the hole — a big part of the low end. Close to it, a mic hears more of that: fuller, and boomy if too close.',
     why: {
@@ -156,7 +156,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.mic.1',
     page: 'microphone',
     prompt: 'When does an omni on the guitar make the most sense?',
-    options: ['In a quiet, good room where its sound is welcome', 'On a loud stage, to keep all the monitors out of it', 'Very close, to get the most bass from proximity'],
+    options: ['On a loud stage, to keep all the monitors out of it', 'In a quiet, good room where its sound is welcome', 'Very close, to get the most bass from proximity'],
     correct: 'In a quiet, good room where its sound is welcome',
     explain: 'An omni hears all round: a fuller, less position-sensitive view — and the room and any spill with it. Choose it when the room is worth hearing.',
     why: {
@@ -168,7 +168,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.mic.2',
     page: 'microphone',
     prompt: 'What is a clip-on mini mic’s main advantage on a guitar?',
-    options: ['It keeps the same distance as the player moves', 'It rejects the stage, so feedback stops mattering', 'It needs no power, so the spare input will do'],
+    options: ['It rejects the stage, so feedback stops mattering', 'It keeps the same distance as the player moves', 'It needs no power, so the spare input will do'],
     correct: 'It keeps the same distance as the player moves',
     explain: 'Mounted on the body, the capsule moves with the guitar, so a moving player does not change the distance. It still hears a small local view, and it still needs power.',
     why: {
@@ -180,7 +180,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.mic.3',
     page: 'microphone',
     prompt: 'The only spare input has no phantom power. Which of this page’s mics can you use?',
-    options: ['The instrument dynamic: it needs no power', 'The small condenser, if its cable run is short', 'The clip-on mini, because it is so small'],
+    options: ['The small condenser, if its cable run is short', 'The clip-on mini, because it is so small', 'The instrument dynamic: it needs no power'],
     correct: 'The instrument dynamic: it needs no power',
     explain: 'Dynamic mics need no power. The small condenser and the clip-on mini are condensers: they need phantom power, whatever their size or cable.',
     why: {
@@ -192,7 +192,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.mic.4',
     page: 'microphone',
     prompt: 'What tends to happen with a directional mic brought very close to the guitar?',
-    options: ['It adds bass — the proximity effect', 'It loses its bass, because it is so close', 'It turns into an omni and hears all round'],
+    options: ['It loses its bass, because it is so close', 'It turns into an omni and hears all round', 'It adds bass — the proximity effect'],
     correct: 'It adds bass — the proximity effect',
     explain: 'Very close, a directional mic’s low end rises — the proximity effect. Close to the hole that adds to the boom; check a low passage before reaching for a filter.',
     why: {
@@ -204,7 +204,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.place.1',
     page: 'placement',
     prompt: 'A starting point says 15–30 cm from the 12th fret. Your readout says 20 cm out from the sound hole. Are you in it?',
-    options: ['Not necessarily: it is read from the 12th fret, not the hole', 'Yes: 20 cm falls inside the 15 to 30 cm band', 'Yes, as long as the mic is pointed straight at the guitar’s top'],
+    options: ['Yes: 20 cm falls inside the 15 to 30 cm band', 'Yes, as long as the mic is pointed straight at the guitar’s top', 'Not necessarily: it is read from the 12th fret, not the hole'],
     correct: 'Not necessarily: it is read from the 12th fret, not the hole',
     explain: 'A distance means something only with its reference point. The 12th fret and the sound hole are different places, so the same number puts the mic somewhere else — which is why every readout names what it measures from.',
     why: {
@@ -216,7 +216,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.place.2',
     page: 'placement',
     prompt: 'You slide the mic from the 12th fret toward the sound hole, at the same distance. What tends to change?',
-    options: ['More body and low end; listen for boom', 'More string detail and less low end', 'Only the level; the tone stays the same'],
+    options: ['More string detail and less low end', 'More body and low end; listen for boom', 'Only the level; the tone stays the same'],
     correct: 'More body and low end; listen for boom',
     explain: 'The hole is where the air in the body breathes: a mic facing it hears more body and low end — fuller, and boomy if too close. Compare at matched levels; guitars vary.',
     why: {
@@ -228,7 +228,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.place.3',
     page: 'placement',
     prompt: 'On a steel-string dreadnought, why are “the 12th fret” and “where the neck meets the body” different places?',
-    options: ['Its neck meets the body at the 14th fret, a little farther in', 'They are just one and the same point on a steel-string dreadnought', 'The 12th fret sits right over its sound hole'],
+    options: ['They are just one and the same point on a steel-string dreadnought', 'Its neck meets the body at the 14th fret, a little farther in', 'The 12th fret sits right over its sound hole'],
     correct: 'Its neck meets the body at the 14th fret, a little farther in',
     explain: 'On these steel-string bodies the neck joins at the 14th fret, so the 12th fret is about 3.5 cm out on the neck. On a classical body the neck joins at the 12th: there, the two are the same.',
     why: {
@@ -240,7 +240,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · What must a stand mic and its boom stay out of, round a seated guitarist?',
-    options: ['The strumming arm, the fretting hand and their view of the neck', 'The front of the guitar, so that the audience can see it clearly', 'The floor by the chair, which belongs to the DI box'],
+    options: ['The front of the guitar, so that the audience can see it clearly', 'The strumming arm, the fretting hand and their view of the neck', 'The floor by the chair, which belongs to the DI box'],
     correct: 'The strumming arm, the fretting hand and their view of the neck',
     explain: 'Clearance comes first: the arm sweeps over the body, the hand travels the neck, and the player watches the neck. Stop the player before anything moves.',
     why: {
@@ -252,7 +252,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.ctx.1',
     page: 'context',
     prompt: 'The floor wedge in front of the player is loud in the guitar mic. What is a good first move to try?',
-    options: ['Turn the mic so the wedge falls in its rejection', 'Turn the guitar channel up so it covers the wedge', 'Move the mic farther away from the guitar'],
+    options: ['Turn the guitar channel up so it covers the wedge', 'Turn the mic so the wedge falls in its rejection', 'Move the mic farther away from the guitar'],
     correct: 'Turn the mic so the wedge falls in its rejection',
     explain: 'Aim the pattern’s rejection at the wedge, by its actual pattern, while the mic still faces the guitar and stays clear of the hands. Then judge what is left.',
     why: {
@@ -264,7 +264,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.ctx.2',
     page: 'context',
     prompt: 'With a supercardioid on the guitar, where should the wedge sit for the most rejection?',
-    options: ['Toward the rear, off to one side of the axis', 'Directly behind the mic, right on its rear axis', 'Beside the mic, square to its front'],
+    options: ['Directly behind the mic, right on its rear axis', 'Beside the mic, square to its front', 'Toward the rear, off to one side of the axis'],
     correct: 'Toward the rear, off to one side of the axis',
     explain: 'A supercardioid’s deepest rejection is off the rear axis (near 125°); straight behind it has a small rear lobe. Aim by the actual pattern.',
     why: {
@@ -276,7 +276,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.ctx.studio',
     page: 'context',
     prompt: 'A studio session in a good room, the guitarist alone. What could justify moving the mic farther back?',
-    options: ['A more natural blend of guitar and room, with no spill to fight', 'A farther mic hears less of the room than a close mic would hear', 'A farther mic needs no phantom power to work'],
+    options: ['A farther mic hears less of the room than a close mic would hear', 'A more natural blend of guitar and room, with no spill to fight', 'A farther mic needs no phantom power to work'],
     correct: 'A more natural blend of guitar and room, with no spill to fight',
     explain: 'Moving back integrates the whole instrument with the room, with less isolation. In a quiet good room with one player, that trade can be worth it — judge it by ear.',
     why: {
@@ -288,7 +288,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · On a loud stage, the guitar’s top can also do what?',
-    options: ['Reflect the PA and other instruments into the mic', 'Block the sound of anything behind the guitar', 'Turn the wedge’s sound into the guitar’s own'],
+    options: ['Block the sound of anything behind the guitar', 'Turn the wedge’s sound into the guitar’s own', 'Reflect the PA and other instruments into the mic'],
     correct: 'Reflect the PA and other instruments into the mic',
     explain: 'The top is a hard, broad surface right in front of the mic: stage sound bounces off it into the mic even when the mic is aimed away from that sound.',
     why: {
@@ -300,7 +300,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.two.1',
     page: 'twoMic',
     prompt: 'A neck-side mic and a bridge-side mic sound hollow together in mono. Why?',
-    options: ['The guitar reaches them at different times, so some pitches cancel', 'One of the two mics must be faulty, so it should be swapped for another', 'Two mics on one guitar cancel each other out completely'],
+    options: ['One of the two mics must be faulty, so it should be swapped for another', 'Two mics on one guitar cancel each other out completely', 'The guitar reaches them at different times, so some pitches cancel'],
     correct: 'The guitar reaches them at different times, so some pitches cancel',
     explain: 'Each mic hears the guitar from its own distance. Summed, the time difference makes a comb: some pitches add, some cancel — hollow. Move or rebalance a mic, then listen again.',
     why: {
@@ -312,7 +312,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.two.2',
     page: 'twoMic',
     prompt: 'You flip mic B’s polarity. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so both of the arrivals now line up again', 'It doubles, because the inverted copy arrives later'],
+    options: ['It drops to zero, so both of the arrivals now line up again', 'It doubles, because the inverted copy arrives later', 'Nothing: polarity flips the sign; the delay stays the same'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
     why: {
@@ -324,7 +324,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.two.3',
     page: 'twoMic',
     prompt: 'With mic B inverted, the pair sounds fuller and reads 2 dB louder. What do you conclude?',
-    options: ['Not yet: match the levels, then compare both states in mono', 'Inverted is the correct setting for guitar pairs, so keep it', 'Normal polarity was wrong, because it was the quieter one'],
+    options: ['Inverted is the correct setting for guitar pairs, so keep it', 'Normal polarity was wrong, because it was the quieter one', 'Not yet: match the levels, then compare both states in mono'],
     correct: 'Not yet: match the levels, then compare both states in mono',
     explain: 'A louder state sounds “better” at first. Match the levels, compare both states in mono with the song, and keep what keeps the guitar’s body — the answer depends on where the mics are.',
     why: {
@@ -336,7 +336,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.two.4',
     page: 'twoMic',
     prompt: 'When does a second guitar mic earn its place?',
-    options: ['When it adds a defined tone or width and holds up in mono', 'Whenever the guitar is a twelve-string, for its extra strings', 'When the first mic cannot give enough level on its own'],
+    options: ['Whenever the guitar is a twelve-string, for its extra strings', 'When it adds a defined tone or width and holds up in mono', 'When the first mic cannot give enough level on its own'],
     correct: 'When it adds a defined tone or width and holds up in mono',
     explain: 'A good mono mic is often enough, especially in a busy arrangement. A second earns its place with a stated purpose — and only if the pair still works in mono.',
     why: {
@@ -348,7 +348,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.prac.gain',
     page: 'practice',
     prompt: 'Soft fingerpicking sits well below the overload light, but the player’s hardest strums light it. What do you do?',
-    options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader well down until the hard strums sound clean', 'Ask the player to strum more softly during the show'],
+    options: ['Pull the channel fader well down until the hard strums sound clean', 'Ask the player to strum more softly during the show', 'Lower the input gain, or use a pad its manual allows, and re-check'],
     correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
     explain: 'Set input gain for the loudest passage the player intends, with headroom, and check that soft notes still sit above the noise. A lowered fader does not undo clipping at the input.',
     why: {
@@ -360,7 +360,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.prac.3',
     page: 'practice',
     prompt: 'What would justify adding a second guitar channel?',
-    options: ['One mic works alone, the second adds a stated tone, it holds in mono', 'Two channels give the mix engineer more options to work with later', 'The guitar needs more level in the mix than one mic can give'],
+    options: ['Two channels give the mix engineer more options to work with later', 'One mic works alone, the second adds a stated tone, it holds in mono', 'The guitar needs more level in the mix than one mic can give'],
     correct: 'One mic works alone, the second adds a stated tone, it holds in mono',
     explain: 'Start with one coherent position. A second mic — another spot, a room, or the pickup — earns its place when its contribution is defined and the sum still works in mono.',
     why: {
@@ -372,7 +372,7 @@ const scenarios: MikingScenario[] = [
     id: 'ag.mix.1',
     page: 'practice',
     prompt: 'A starting point says “4–8 in from the bridge”. Where do you measure from?',
-    options: ['The bridge, not the sound hole or the 12th fret', 'The sound hole, since that is the loudest place', 'The guitar’s back, through the whole body'],
+    options: ['The sound hole, since that is the loudest place', 'The guitar’s back, through the whole body', 'The bridge, not the sound hole or the 12th fret'],
     correct: 'The bridge, not the sound hole or the 12th fret',
     explain: 'A distance belongs to the point it names: from the bridge, from the hole and from the 12th fret are different places for the same number.',
     why: {
@@ -578,12 +578,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.3',
     covers: 'sound',
     prompt: 'A string plucked exactly at its middle drives which of its shapes?',
-    options: ['Only the odd ones — the even ones are still there', 'All of its shapes, each one just as hard', 'Only the even ones — the odd ones are still there'],
-    correct: 'Only the odd ones — the even ones are still there',
+    options: ['Only the odd ones — the even ones stay silent', 'All of its shapes, each one just as hard', 'Only the even ones — the odd ones stay silent'],
+    correct: 'Only the odd ones — the even ones stay silent',
     explain: 'A pluck drives a shape only as much as the string moves at the pick; every even shape has a still point at the middle.',
     why: {
-      'All of its shapes, each one just as hard': 'The pick touches one spot; a shape still there is not driven.',
-      'Only the even ones — the odd ones are still there': 'The reverse: the even ones are still at the middle.',
+      'All of its shapes, each one just as hard': 'The pick touches one spot; a shape with a still point there is not driven at all.',
+      'Only the even ones — the odd ones stay silent': 'The reverse: the even ones are still at the middle.',
     },
   },
   {
@@ -615,11 +615,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your guitar mic is rated to a very high maximum SPL. What does that tell you about a long, loud soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the stage stays below the mic’s rating', 'It is safe as long as the mic is nearer the guitar than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the stage stays below the mic’s rated level', 'It is safe as long as the mic is nearer the guitar than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the stage stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the stage stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the guitar than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

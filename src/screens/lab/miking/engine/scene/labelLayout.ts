@@ -1,6 +1,8 @@
 /**
  * Scene LABEL layout (pure; no React Native, so the tests reach it): the
- * width a label is given, and which labels fit side by side at the fit scale.
+ * width a label is given, which labels fit side by side at the fit scale,
+ * and the LEADER line from a label that sits clear of the instrument back to
+ * the part it names (owner 2026-10-05: labels never sit on the instrument).
  */
 import type { ViewXform } from '../geometry/frame.ts';
 
@@ -12,6 +14,33 @@ type Align = 'left' | 'center' | 'right';
 type PxRect = { x0: number; x1: number; y0: number; y1: number };
 /** Another place a label may sit (mm of the view), tried in order. */
 export type LabelPlace = { u: number; v: number; align: Align };
+export type LabelRect = PxRect;
+type Placed = { u: number; v: number; text: string; align: Align };
+
+
+/** The screen box a label's text occupies (the same box the scenes draw). */
+export function labelRect(l: Placed, xf: ViewXform, scale: number, maxX: number, text = l.text): LabelRect {
+  const W = labelWidth(text, scale, maxX);
+  const h = 9.5 * scale * 1.25;
+  const x = xf.ox + l.u * xf.s;
+  const left = Math.max(2, Math.min(maxX - W - 2, l.align === 'left' ? x : l.align === 'right' ? x - W : x - W / 2));
+  const top = xf.oy + l.v * xf.s - 7 * scale;
+  return { x0: left, x1: left + W, y0: top, y1: top + h };
+}
+
+/**
+ * A leader runs from the part (`lead`, model u/v) to the nearest edge of the
+ * label's box, stopping 2 px short of the text. Screen coordinates; null when
+ * the part sits under or right beside the box (no line is needed).
+ */
+export function leaderLine(r: LabelRect, xf: ViewXform, lead: { u: number; v: number }): { x1: number; y1: number; x2: number; y2: number } | null {
+  const ax = xf.ox + lead.u * xf.s;
+  const ay = xf.oy + lead.v * xf.s;
+  const bx = Math.max(r.x0 - 2, Math.min(r.x1 + 2, ax));
+  const by = Math.max(r.y0 - 2, Math.min(r.y1 + 2, ay));
+  if (Math.hypot(ax - bx, ay - by) < 6) return null;
+  return { x1: ax, y1: ay, x2: bx, y2: by };
+}
 
 /**
  * Keep only labels that do not collide at the FIT scale (in the art's order,
@@ -29,7 +58,7 @@ export type LabelPlace = { u: number; v: number; align: Align };
  *   • a label with `at` (its part's point) that ends up away from that point
  *     comes back with `leader` = `at`, so the scene can draw a thin line to it.
  */
-export function fitLabels<T extends { u: number; v: number; text: string; short?: string; align: Align; alts?: readonly LabelPlace[]; at?: { u: number; v: number } }>(
+export function fitLabels<T extends { u: number; v: number; text: string; short?: string; align: Align; alts?: readonly LabelPlace[]; at?: { u: number; v: number }; lead?: { u: number; v: number } }>(
   labels: T[],
   xf: ViewXform,
   scale: number,
@@ -62,11 +91,13 @@ export function fitLabels<T extends { u: number; v: number; text: string; short?
         kept.push(r);
         done = true;
         let leader: { u: number; v: number } | undefined;
-        if (l.at) {
-          const ax = xf.ox + l.at.u * xf.s;
-          const ay = xf.oy + l.at.v * xf.s;
+        // `lead` (the Lab 4 review's name) is the same as `at`.
+        const at = l.at ?? l.lead;
+        if (at) {
+          const ax = xf.ox + at.u * xf.s;
+          const ay = xf.oy + at.v * xf.s;
           const near = ax >= r.x0 - 6 && ax <= r.x1 + 6 && ay >= r.y0 - 6 && ay <= r.y1 + 6;
-          if (!near) leader = l.at;
+          if (!near) leader = at;
         }
         if (i === 0 && text === l.text && !leader) out.push(l);
         else out.push({ ...l, text, u: p.u, v: p.v, align: p.align, ...(leader ? { leader } : {}) });

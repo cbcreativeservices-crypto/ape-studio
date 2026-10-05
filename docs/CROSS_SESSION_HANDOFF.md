@@ -625,6 +625,12 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-05 04:07 · ccode · 5bbc885d
+changed: fix(miking): Lab 4 review fixes — labels clear of the instrument, piano polarity, DI hum, sitar shimmer, answer balance
+affects other side: nothing (miking fixes, branch final-lab)
+needs: nothing (miking fixes, branch final-lab)
+
+
 ### 2026-10-05 04:03 · ccode · a70c1ab8
 changed: miking: Leslie inside-view label says one bell sounds (review Lab 1 M7)
 affects other side: nothing (miking fixes, branch final-lab)

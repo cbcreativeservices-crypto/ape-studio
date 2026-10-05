@@ -58,7 +58,7 @@ const pages: Record<PageId, PageContent> = {
   twoMic: {
     title: 'Bass and treble',
     goal: 'See why a mic over the bass and one over the treble can thin out in mono, how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
-    credit: { scenarios: ['pn.two.1', 'pn.two.2', 'pn.two.3', 'pn.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
+    credit: { scenarios: ['pn.two.1', 'pn.two.2', 'pn.two.3', 'pn.two.4', 'pn.two.5'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the five checks.' },
     takeaway: 'Two spaced mics hear the middle strings at different times: in mono that can comb. Moving a mic changes the delay; the polarity switch does not. Check each mic alone, the pair, and the pair in mono, at matched levels.',
   },
   troubleshoot: {
@@ -87,7 +87,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.snd.1',
     page: 'sound',
     prompt: 'A key is pressed and held. What stops the note when the key comes back up?',
-    options: ['The damper falls back onto the strings', 'The hammer presses the strings to stop them', 'The soundboard stops when the key is released'],
+    options: ['The hammer presses the strings to stop them', 'The damper falls back onto the strings', 'The soundboard stops when the key is released'],
     correct: 'The damper falls back onto the strings',
     explain: 'Pressing the key lifts that note’s damper; releasing it lets the felt fall back on the strings and stop them — unless the sustain pedal holds every damper up.',
     why: {
@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.snd.2',
     page: 'sound',
     prompt: 'Where does most of the sound of a piano come from — the strings themselves, or something else?',
-    options: ['The soundboard, driven by the strings through the bridge', 'The strings alone, since they are the part that vibrates', 'The lid, which vibrates hardest when the piano is played'],
+    options: ['The strings alone, since they are the part that vibrates', 'The soundboard, driven by the strings through the bridge', 'The lid, which vibrates hardest when the piano is played'],
     correct: 'The soundboard, driven by the strings through the bridge',
     explain: 'A string is too thin to move much air on its own. The bridge passes its vibration to the large, light soundboard, and the board moves the air.',
     why: {
@@ -111,7 +111,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.snd.3',
     page: 'sound',
     prompt: 'A grand’s lid is up on the full stick. Where is much of the sound thrown?',
-    options: ['Out over the curved side, where the lid opens', 'Back toward the pianist, over the music desk', 'Straight down, into the floor under the piano'],
+    options: ['Back toward the pianist, over the music desk', 'Out over the curved side, where the lid opens', 'Straight down, into the floor under the piano'],
     correct: 'Out over the curved side, where the lid opens',
     explain: 'The soundboard radiates up and down; the raised lid reflects much of the upward sound out over the open, curved side — usually toward the audience. Some also leaves under the piano.',
     why: {
@@ -123,7 +123,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.set.1',
     page: 'setting',
     prompt: 'You want a mic over the strings of a grand whose lid is closed. Who raises the lid, and when?',
-    options: ['Someone who knows the piano, onto its stick, before any stand', 'You raise it a little yourself, and hold it while the mic goes in', 'Nobody: slide the mic in under the closed lid instead'],
+    options: ['You raise it a little yourself, and hold it while the mic goes in', 'Nobody: slide the mic in under the closed lid instead', 'Someone who knows the piano, onto its stick, before any stand'],
     correct: 'Someone who knows the piano, onto its stick, before any stand',
     explain: 'The lid goes onto its designed full- or short-stick position, set by someone familiar with the instrument, before stands or mounts are adjusted. Never reach under a lid that is not safely propped.',
     why: {
@@ -136,7 +136,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.set.3',
     page: 'setting',
     prompt: 'Where should a mic stand’s base and cable NOT go around a grand?',
-    options: ['By the pedals, the bench and the pianist’s feet', 'Out beyond the curved side, well clear of the case and the lid', 'Near the tail, behind the end of the piano'],
+    options: ['Out beyond the curved side, well clear of the case and the lid', 'By the pedals, the bench and the pianist’s feet', 'Near the tail, behind the end of the piano'],
     correct: 'By the pedals, the bench and the pianist’s feet',
     explain: 'The pianist’s feet work the pedals and their body moves on the bench; a stand or cable there can be kicked or thump. Route stands and cables away from the pedals, the bench and the performer.',
     why: {
@@ -148,7 +148,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic close to the hammer line, over the strings, tends to hear more of what?',
-    options: ['The hammers’ attack and the mechanism', 'The room and the hall’s reflections', 'The bass under the soundboard'],
+    options: ['The room and the hall’s reflections', 'The bass under the soundboard', 'The hammers’ attack and the mechanism'],
     correct: 'The hammers’ attack and the mechanism',
     explain: 'The attack starts where the hammers strike the strings, with the action’s own noises. Close to the hammers tends to bring more of it; farther away, a softer attack.',
     why: {
@@ -160,7 +160,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.mic.1',
     page: 'microphone',
     prompt: 'A solo piano in a good room. Why might a pair of omnis outside the curve suit it?',
-    options: ['They take in the whole instrument and the room together', 'They reject the room, so the piano sounds much closer and drier', 'They need no stands, so nothing goes near the piano'],
+    options: ['They reject the room, so the piano sounds much closer and drier', 'They need no stands, so nothing goes near the piano', 'They take in the whole instrument and the room together'],
     correct: 'They take in the whole instrument and the room together',
     explain: 'Omnis do not reject by direction: just outside the piano they blend the whole keyboard with the room — good in a room worth hearing, poor beside drums or loud monitors.',
     why: {
@@ -172,7 +172,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.mic.2',
     page: 'microphone',
     prompt: 'A loud stage, the piano beside the drums. What tends to help the piano mics most?',
-    options: ['Directional mics close in, with the lid lowered', 'Omnis far outside, to take in the whole stage', 'More gain on distant mics until the piano is loud'],
+    options: ['Omnis far outside, to take in the whole stage', 'Directional mics close in, with the lid lowered', 'More gain on distant mics until the piano is loud'],
     correct: 'Directional mics close in, with the lid lowered',
     explain: 'Close, directional mics and a shorter or closed lid separate the piano from the stage and help gain before feedback — at the cost of a closer, more percussive sound.',
     why: {
@@ -184,7 +184,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.mic.3',
     page: 'microphone',
     prompt: 'Where does a supercardioid reject the most?',
-    options: ['Off to each side of the rear, near 125°', 'Straight behind it, right on its rear axis', 'At its sides, square to its front'],
+    options: ['Straight behind it, right on its rear axis', 'Off to each side of the rear, near 125°', 'At its sides, square to its front'],
     correct: 'Off to each side of the rear, near 125°',
     explain: 'A supercardioid has a small rear lobe; its deepest rejection is toward the rear but off the axis. Aim the source you want less of into that region.',
     why: {
@@ -196,7 +196,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.mic.4',
     page: 'microphone',
     prompt: 'The only spare input has no phantom power. Which of this page’s mic types can you use on the piano?',
-    options: ['The dynamic: it needs no power', 'The small condenser, if it is close', 'Either one, with a shorter cable'],
+    options: ['The small condenser, if it is close', 'The dynamic: it needs no power', 'Either one, with a shorter cable'],
     correct: 'The dynamic: it needs no power',
     explain: 'A dynamic needs no power. The small condenser needs phantom power wherever it is placed.',
     why: {
@@ -208,7 +208,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.place.1',
     page: 'placement',
     prompt: 'A starting point says “about 30 cm above the middle strings”. Your readout says 30 cm above the RIM. Are you in it?',
-    options: ['Not quite: the rim stands above the strings — measure from them', 'Yes: 30 cm is 30 cm, whichever part you measure from', 'Yes, as long as the mic is right over the middle of the keyboard'],
+    options: ['Yes: 30 cm is 30 cm, whichever part you measure from', 'Yes, as long as the mic is right over the middle of the keyboard', 'Not quite: the rim stands above the strings — measure from them'],
     correct: 'Not quite: the rim stands above the strings — measure from them',
     explain: 'A distance means something only with its surface. A grand’s strings sit well below the rim, so 30 cm above the rim is more than 30 cm above the strings — which is why every readout names what it measures from.',
     why: {
@@ -220,7 +220,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.place.2',
     page: 'placement',
     prompt: 'You move the mic from about 20 cm to about 45 cm back from the hammer line. What tends to change?',
-    options: ['A softer attack, with less of the hammers and mechanism', 'More attack and more mechanism, since the hammers are farther away', 'Nothing: only the height above the strings matters'],
+    options: ['More attack and more mechanism, since the hammers are farther away', 'Nothing: only the height above the strings matters', 'A softer attack, with less of the hammers and mechanism'],
     correct: 'A softer attack, with less of the hammers and mechanism',
     explain: 'Nearer the hammers tends to bring more attack and mechanism; moving back along the strings tends to soften it. Compare at matched levels; pianos vary.',
     why: {
@@ -232,7 +232,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.place.3',
     page: 'placement',
     prompt: 'Why does a stand’s boom usually reach over a grand’s strings from the curved side?',
-    options: ['That side is open under the raised lid, away from the pianist', 'That side is where the strings are strongest and loudest', 'The starting points are all measured from the curved side of the case'],
+    options: ['That side is where the strings are strongest and loudest', 'The starting points are all measured from the curved side of the case', 'That side is open under the raised lid, away from the pianist'],
     correct: 'That side is open under the raised lid, away from the pianist',
     explain: 'The lid is hinged on the straight bass side and opens on the curved side: that is where there is room under it, clear of the pianist’s hands, sight line and feet.',
     why: {
@@ -244,7 +244,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.rec.2',
     page: 'placement',
     prompt: 'FROM EARLIER · Before any stand goes near a grand, what has to happen to the lid?',
-    options: ['It is set on its stick by someone who knows the piano', 'It is lifted by hand and held while the stand goes in', 'It is closed, so the mics can rest on top of it'],
+    options: ['It is lifted by hand and held while the stand goes in', 'It is closed, so the mics can rest on top of it', 'It is set on its stick by someone who knows the piano'],
     correct: 'It is set on its stick by someone who knows the piano',
     explain: 'The lid goes onto its designed stick position first; then stands and mounts. Mics come out before the lid is lowered again.',
     why: {
@@ -256,7 +256,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.ctx.1',
     page: 'context',
     prompt: 'A piano mic under the short-stick lid is picking up a loud side-fill speaker. What is a good first move to try?',
-    options: ['Turn the mic so the side-fill falls in its rejection', 'Turn the piano channel up until it covers the side-fill', 'Raise the lid to full stick to let the piano out'],
+    options: ['Turn the piano channel up until it covers the side-fill', 'Turn the mic so the side-fill falls in its rejection', 'Raise the lid to full stick to let the piano out'],
     correct: 'Turn the mic so the side-fill falls in its rejection',
     explain: 'Aim the pattern’s rejection at the speaker, by its actual pattern, while the mic still faces the strings. Lowering the speaker’s level or moving it are the next checks — and reduce the level before moving anything.',
     why: {
@@ -268,7 +268,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.ctx.2',
     page: 'context',
     prompt: 'The piano mic is inside the case, under the lid. A floor wedge sits well below the rim. What does the case do?',
-    options: ['It shields the mic from much of the wedge’s direct sound', 'Nothing: the mic hears the wedge exactly as it would in open air', 'It makes the wedge louder in the mic, like a horn'],
+    options: ['Nothing: the mic hears the wedge exactly as it would in open air', 'It shields the mic from much of the wedge’s direct sound', 'It makes the wedge louder in the mic, like a horn'],
     correct: 'It shields the mic from much of the wedge’s direct sound',
     explain: 'The rim and the lid stand in the straight path from a floor wedge to a mic inside the case. The free-field pattern ignores that, so the lab says “shielded” instead of printing a number — real reflections still reach the mic.',
     why: {
@@ -280,7 +280,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.ctx.studio',
     page: 'context',
     prompt: 'Studio session, a beautiful room, a solo pianist. What could justify mics outside the piano instead of over the strings?',
-    options: ['The room is worth hearing, and the music wants the whole instrument', 'Outside mics pick up far less of the hammers than they really do', 'Mics over the strings belong on a stage, not in a studio'],
+    options: ['Outside mics pick up far less of the hammers than they really do', 'The room is worth hearing, and the music wants the whole instrument', 'Mics over the strings belong on a stage, not in a studio'],
     correct: 'The room is worth hearing, and the music wants the whole instrument',
     explain: 'In a good room, an outside pair blends the whole keyboard with the room — a natural solo perspective. Over the strings brings definition; the choice is what the music needs.',
     why: {
@@ -292,7 +292,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.rec.3',
     page: 'context',
     prompt: 'FROM EARLIER · An upright stands against a wall. Where does much of its sound leave?',
-    options: ['Out of the back, from its soundboard, toward the wall', 'Out of the front, through the keys toward the pianist', 'Only up through the open top, nowhere else'],
+    options: ['Out of the front, through the keys toward the pianist', 'Out of the back, from its soundboard, toward the wall', 'Only up through the open top, nowhere else'],
     correct: 'Out of the back, from its soundboard, toward the wall',
     explain: 'An upright’s soundboard is at the back. Much of its sound leaves there, toward the wall, and some up through the top — so the wall behind changes what a mic hears.',
     why: {
@@ -304,11 +304,11 @@ const scenarios: MikingScenario[] = [
     id: 'pn.two.1',
     page: 'twoMic',
     prompt: 'One mic over the bass strings, one over the treble. Why can the pair sound hollow in mono?',
-    options: ['The middle strings reach the two mics at different times', 'The bass mic hears its strings in reverse polarity', 'Two mics on one piano cancel each other completely in mono'],
+    options: ['The bass mic hears its strings in reverse polarity', 'Two mics on one piano cancel each other completely in mono', 'The middle strings reach the two mics at different times'],
     correct: 'The middle strings reach the two mics at different times',
     explain: 'Sound from the middle of the keyboard has a different path to each mic. Summed in mono, the delayed copy cancels at some frequencies — a comb — which can hollow the middle out.',
     why: {
-      'The bass mic hears its strings in reverse polarity': 'Neither mic is inverted here: the issue is arrival TIME, not polarity.',
+      'The bass mic hears its strings in reverse polarity': 'Both mics face the same side of the soundboard here, so neither starts out inverted: the issue is arrival TIME. (A mic under the board is different — see the next check.)',
       'Two mics on one piano cancel each other completely in mono': 'They comb at some frequencies and add at others; how much depends on the delay and the levels.',
     },
   },
@@ -316,7 +316,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.two.2',
     page: 'twoMic',
     prompt: 'You flip the bass mic’s polarity. What happens to the arrival-time difference?',
-    options: ['Nothing: polarity flips the sign; the delay stays the same', 'It drops to zero, so the two arrivals line up again in time', 'It doubles, because the inverted copy arrives later'],
+    options: ['It drops to zero, so the two arrivals line up again in time', 'Nothing: polarity flips the sign; the delay stays the same', 'It doubles, because the inverted copy arrives later'],
     correct: 'Nothing: polarity flips the sign; the delay stays the same',
     explain: 'Polarity reverses the signal’s sign; it does not remove a delay caused by sound reaching the mics at different times. The notches move; Δt does not.',
     why: {
@@ -328,7 +328,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.two.3',
     page: 'twoMic',
     prompt: 'The bass/treble pair sounds thin in mono. Which change works on the cause itself?',
-    options: ['Bring the pair closer or change its geometry, then recheck', 'Pan the two mics harder left and right to widen them', 'Boost the middle frequencies on both mics until it sounds full again'],
+    options: ['Pan the two mics harder left and right to widen them', 'Boost the middle frequencies on both mics until it sounds full again', 'Bring the pair closer or change its geometry, then recheck'],
     correct: 'Bring the pair closer or change its geometry, then recheck',
     explain: 'The cause is the time difference between the mics. Narrowing the pair, changing its geometry — a coincident pair, or one mic — changes it. Panning and EQ do not.',
     why: {
@@ -340,7 +340,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.two.4',
     page: 'twoMic',
     prompt: 'Does a piano need two mics?',
-    options: ['Only if the second solves a real bass, treble or image problem', 'Yes: one mic cannot hear a piano’s whole range at all', 'Yes, whenever the piano is a concert grand rather than an upright'],
+    options: ['Yes: one mic cannot hear a piano’s whole range at all', 'Yes, whenever the piano is a concert grand rather than an upright', 'Only if the second solves a real bass, treble or image problem'],
     correct: 'Only if the second solves a real bass, treble or image problem',
     explain: 'Begin with one mic when channels, space or a mono PA call for simplicity: find a balanced view across the keyboard, and add a second only when it solves a real problem.',
     why: {
@@ -349,10 +349,22 @@ const scenarios: MikingScenario[] = [
     },
   },
   {
+    id: 'pn.two.5',
+    page: 'twoMic',
+    prompt: 'A mic under the grand’s soundboard and one over the strings sound thin together. What do you try first?',
+    options: ['Boost the low end on the under mic until the blend sounds full', 'Move the under mic farther away so it is quieter in the blend', 'Each alone, then mono, then this mic’s polarity both ways'],
+    correct: 'Each alone, then mono, then this mic’s polarity both ways',
+    explain: 'The board pushes air up as it pulls air down, so the two start out roughly opposite in the lows. Compare both polarity states in mono at matched levels; the delay between them is still there.',
+    why: {
+      'Boost the low end on the under mic until the blend sounds full': 'EQ cannot undo a cancellation between mics; it boosts what is left of it. Check the polarity first.',
+      'Move the under mic farther away so it is quieter in the blend': 'Quieter hides the thinning a little; the two still start out opposite. Compare both polarity states.',
+    },
+  },
+  {
     id: 'pn.prac.gain',
     page: 'practice',
     prompt: 'Soft passages sit well below the overload light, but fortissimo chords light it. What do you do?',
-    options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader down until the chords sound clean', 'Ask the pianist to play the loud chords more softly during the show'],
+    options: ['Pull the channel fader down until the chords sound clean', 'Lower the input gain, or use a pad its manual allows, and re-check', 'Ask the pianist to play the loud chords more softly during the show'],
     correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
     explain: 'Keep gain headroom for fortissimo transients: very loud peaks happen close to the hammers. A lowered fader does not undo clipping at the input; use a pad only as the manual permits.',
     why: {
@@ -376,7 +388,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.mix.1',
     page: 'practice',
     prompt: 'A starting point says “about 20 cm behind the soundboard” on an upright. Where do you measure from?',
-    options: ['The back of the soundboard, not the wall or the case front', 'The wall behind the piano, since it is easier to reach with a stand', 'The front of the keys, where the pianist sits'],
+    options: ['The wall behind the piano, since it is easier to reach with a stand', 'The front of the keys, where the pianist sits', 'The back of the soundboard, not the wall or the case front'],
     correct: 'The back of the soundboard, not the wall or the case front',
     explain: 'A distance belongs to the surface it names: “behind the soundboard” is from the board at the back of the piano.',
     why: {
@@ -388,7 +400,7 @@ const scenarios: MikingScenario[] = [
     id: 'pn.mix.2',
     page: 'practice',
     prompt: 'A side-fill sits about 125° off a supercardioid’s front axis. What can you expect?',
-    options: ['Strong rejection on paper; in reality less, and least in the lows', 'Silence from the side-fill, because it sits in the null', 'More side-fill than straight behind the mic, where it rejects most'],
+    options: ['Silence from the side-fill, because it sits in the null', 'Strong rejection on paper; in reality less, and least in the lows', 'More side-fill than straight behind the mic, where it rejects most'],
     correct: 'Strong rejection on paper; in reality less, and least in the lows',
     explain: 'A null is infinitely deep only on paper. Real mics reject far less there, and least at low frequencies — use the null to aim, not to promise silence.',
     why: {
@@ -619,11 +631,11 @@ const diagnostic: DiagnosticItem[] = [
     covers: 'setting',
     critical: true,
     prompt: 'Your piano mic is rated to a very high maximum SPL. What does that tell you about standing by the open piano through a long, loud soundcheck?',
-    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for a while, as long as the piano stays below the mic’s rating', 'It is safe as long as the mic is nearer the hammers than you'],
+    options: ['Nothing — that is the mic’s distortion limit, not a hearing limit', 'It is safe for as long as the piano stays below the mic’s rated level', 'It is safe as long as the mic is nearer the hammers than you'],
     correct: 'Nothing — that is the mic’s distortion limit, not a hearing limit',
     explain: 'Max SPL says when the MIC distorts; close to the hammers a piano can pass 130 dB. For people, a widely used guideline is no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more — measured where the person listens.',
     why: {
-      'It is safe for a while, as long as the piano stays below the mic’s rating': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
+      'It is safe for as long as the piano stays below the mic’s rated level': 'A mic rating is not a hearing limit. A widely used guideline for people is 85 dBA averaged over 8 hours.',
       'It is safe as long as the mic is nearer the hammers than you': 'Where the mic sits says nothing about your ears. Measure where the person listens, and keep levels and time down.',
     },
   },

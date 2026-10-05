@@ -74,7 +74,7 @@ const CLOSE_Z: Omit<DocumentedZone, 'start'> = {
 
 const SIDE_Z: Omit<DocumentedZone, 'start'> = {
   id: 'vn.side',
-  label: 'A few inches from the side',
+  label: 'About 5–10 cm from the side',
   band: 'For a stage: try about 5–10 cm (2–4 in) from the side of the violin by its lower bout, aimed at the body — clear of the bow and the bow arm.',
   kind: 'sourced',
   src: 'S-BWS',
