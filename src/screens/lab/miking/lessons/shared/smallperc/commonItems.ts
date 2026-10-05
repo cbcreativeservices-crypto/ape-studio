@@ -128,11 +128,11 @@ export function louderIsNotBetter(w: SpWords): MikingScenario {
     id: `${w.p}.two.4`,
     page: 'twoMic',
     prompt: `You flip B’s polarity and ${w.the} suddenly sounds fuller; the sum reads 3 dB louder. What do you conclude?`,
-    options: ['Not yet: match the levels, then compare both states again in mono', 'Inverted is the better setting, so keep it for the whole session', 'Normal polarity was wrong, because it was the quieter of the two'],
+    options: ['Not yet: match the levels, then compare both states again in mono', 'Inverted is the better setting, so keep it that way for the whole session', 'Normal polarity was wrong, because it was the quieter of the two'],
     correct: 'Not yet: match the levels, then compare both states again in mono',
     explain: 'A louder version almost always sounds “better” at first. Compare at matched level, in mono and with the whole arrangement, before you decide.',
     why: {
-      'Inverted is the better setting, so keep it for the whole session': 'A louder version almost always sounds better at first. Compare at matched level before deciding.',
+      'Inverted is the better setting, so keep it that way for the whole session': 'A louder version almost always sounds better at first. Compare at matched level before deciding.',
       'Normal polarity was wrong, because it was the quieter of the two': 'Quieter is not wrong. Match levels, then judge which state keeps the body of the sound.',
     },
   };

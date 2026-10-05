@@ -411,3 +411,51 @@ station plan); each lesson in `lessons/i0x…/`.
 | MR-02 | L9 | up/down strokes, "a meaningful sound on both upward and downward motions" | HOW IT SOUNDS adds a circular wrist (the seeds rolling round the wall: a longer sustain) as the second motion | The performer's article describes the circular motion and its sustain. | RANGEL | APPLIED |
 | MR-03 | L26 | a spot per head (no number) | "About 30–60 cm from that head's working area" | Drawing default from the proposal; recorded in the zone. | proposal | APPLIED |
 | MR-04 | L42-L44 | the singer: "place the two microphones and performer to reduce unwanted pickup" | A maraca spot "a little higher, angled down to the heads — which puts the singer's mouth farther off the mic's front than a low mic would" | The lab's geometric reading of the lesson's sentence (ILLUSTRATIVE); the vocal mic's own spill is taught as unavoidable. | LESSON-MARACAS | APPLIED · OWNER: a vocal engineer's look |
+
+### I04 Headless Tambourine and Jingles (`source_text/I04-Headless-Tambourine-and-Jingles-Miking-Technique.txt`, lesson id I04)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| HT-01 | L8, table, exercise | three reference points: "normal playing zone", "nearest expected stroke", "nearest normal movement" | Every distance is measured FROM THE INSTRUMENT at its normal playing position (the front point of the ring); the nearest stroke is a separate CLEAR readout (the gap to the motion envelope) | One reference point per lesson; the stroke is a clearance, not a distance origin. | S-RECBK ("from instrument"), proposal | APPLIED |
+| HT-02 | L8 | "roughly 8 in (20 cm) as a starting point for hand percussion" | Not used as a mic-to-instrument distance | Yamaha's eight inches is PLAYER-to-mic, not instrument-to-mic. | YMH-REC3 | APPLIED |
+| HT-03 | ref [3] | "brass, bronze and plated steel variants" | "Jingles come in different metals and sizes" — no material range claimed from the maker page | The cited page prints "Solid Brass" only. | MEINL-MTA1 | APPLIED · OWNER: source the range or narrow it in the document |
+| HT-04 | ref [7] | "separate direct pickup for shakers and tambourine" | "One shared direct mic for shakers and tambourine" | The tour article names one shared cardioid. | DPA-JONAS | APPLIED |
+| HT-05 | (geometry) | — | Ring Ø 254, jingle size, crescent shape, shake ±150 / strike 200 mm — drawing defaults; the struck variant's mic sits to the side (above it is the strike path) | Sizes UNKNOWN beyond the 10 in diameter. | proposal | APPLIED · OWNER: sizes |
+| HT-06 | — | (absent) | Hearing, phantom and no-feedback lines added (family items) | Survey: the lesson has none. | shaker/SOURCES.md §0 | APPLIED |
+
+### I05a Cowbell (`source_text/Cowbell-Miking-Technique-Research.txt`, lesson id I05a)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CB-01 | ref [5] | overhead "model not named here" | No model named in learner text (owner ruling); the internal record names it | The article does name the overhead model. | DPA-VET | APPLIED · OWNER: fix the document |
+| CB-02 | ref list | "7½-inch" Salsa G | Not used; the drawn bell is the 7 in (177.8 mm) mountable bell | The page text prints no size for that bell; the 7 in is a printed HEIGHT. | MEINL-SMBG, MEINL-SCL70B | APPLIED |
+| CB-03 | L20 | 20–40 cm | Kept as the band, with "the near end is under the common 30 cm minimum — only where clearance allows" | The lesson admits 20 cm is under the maker's 30 cm example. | LESSON-COWBELL, S-HOME | APPLIED |
+| CB-04 | (geometry) | — | Mouth width/height and the stick's arc — drawing defaults | UNKNOWN. | proposal | APPLIED · OWNER: sizes |
+| CB-05 | (context page) | — | The cowbell's spot looks across or down at it: no AIM tilt brings a cardioid's rear to the downstage wedge, so the tighter pattern is the answer here | The lab's own geometry (pinned by the test both ways). | — | APPLIED |
+
+### I05b Claves (`source_text/Claves-Miking-Technique-Research.txt`, lesson id I05b)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CV-01 | ref | "pp. 21–22 in PDF pagination" | No page reference in learner text; the internal record keys the ECV02 extract | The claves text sits on the page whose footer reads "Volume I 21". | PAS-ECV02 | APPLIED · OWNER: fix the reference |
+| CV-02 | L9 | the grip | Drawn as the source says: the striker held like a stick in the fingers; the other clave cradled over curled fingers, the hollow beneath | The grip IS the sound (a check and the sound page's pair). | PAS-ECV02 | APPLIED |
+| CV-03 | (sound page) | — | The bending shape drawn is an ideal unclamped bar's lowest mode (nodes at 0.224 L) — a picture of where it moves least, not a sound | Physics of a uniform bar; a real clave differs. | bar.ts | APPLIED |
+| CV-04 | (geometry) | — | Clave 200 × Ø 25 mm, solid and hollowed — drawing defaults | Sizes not printed. | MEINL-CL1 / CL3 | APPLIED · OWNER: sizes |
+
+### I05c Woodblock (`source_text/Woodblock-Miking-Technique-Research.txt`, lesson id I05c)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| WB-01 | — | (absent) | The opening faces the audience (+x) by default; the second viewpoint is "toward the opening" | The orientation rule is in the cited percussion source, not in the lesson. | PAS-ECV02 | APPLIED |
+| WB-02 | L20 vs exercise | 25–50 cm vs "about 30 and 50 cm" | 25–50 cm kept, "the near end only where clearance allows"; the observation sheet asks for about 30 and 50 cm | Internal mismatch; 25 cm is under the common 30 cm minimum. | LESSON-WOODBLOCK, S-HOME | APPLIED · OWNER: align the document |
+| WB-03 | ref [5] | overhead model unnamed | No model in learner text | As CB-01. | DPA-VET | APPLIED |
+| WB-04 | (geometry) | — | Block 190 × 65 × 70, slot 140 × 8 × 45, foam 25, table h 900, mallet 350 — drawing defaults | Sizes UNKNOWN. | proposal | APPLIED · OWNER: sizes |
+
+### I05d Güiro (`source_text/Guiro-Miking-Technique-Research.txt`, lesson id I05d)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| GU-01 | L4 | the güira "acknowledged for correct identification" | Kept as a quick-check item: a related but distinct instrument | Confirmed; note one collection lists "guira" among güiro names. | MEINL-WIKI, GRIN-GUIRO | APPLIED |
+| GU-02 | L11 | 30–60 cm "from the center of the actual scraped area" | Kept as the band, measured from the middle of the scraped area; two viewpoints (more ridges, more body) | The lesson's own audition range, not a published standard. | LESSON-GUIRO | APPLIED |
+| GU-03 | (geometry) | — | Length 381.0 mm (a museum example, 15 in); Ø 90 → 60, ridges over the middle 60 % at 3 mm, holes Ø 22, scraper 180, overshoot 60 — drawing defaults | Only the length is measured. | MET-GUIRO | APPLIED · OWNER: diameter, ridge layout |
+| GU-04 | L5, L73 | "Students should…", "The student covers…" | "you" / no institutional words in the app | House wording rule. | — | APPLIED |

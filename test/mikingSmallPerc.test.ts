@@ -151,7 +151,11 @@ describe('each lesson validates and its zones are reachable', () => {
       // Two answers, both taught: tilt a cardioid's back toward the wedge, or
       // choose a pattern whose null sits off to the side of the rear.
       assert.ok(can('hypercardioid') || can('supercardioid'), `${id}: an off-axis null reaches the wedge`);
-      assert.ok(can('cardioid'), `${id}: a tilted cardioid's rear reaches it too`);
+      // The cowbell's spot looks across from the side or down from above: no
+      // tilt within the AIM range brings a cardioid's rear to the downstage
+      // wedge — the lesson's own answer is the tighter pattern. Pinned both ways.
+      if (id === 'I05a') assert.ok(!can('cardioid'), `${id}: only a tighter pattern reaches it`);
+      else assert.ok(can('cardioid'), `${id}: a tilted cardioid's rear reaches it too`);
     });
   }
 });
@@ -352,7 +356,7 @@ describe('the internal record (research mandatory, never shown)', () => {
   }
   it('the corrections log lists the Lab 2 hand-percussion fixes and build defaults', () => {
     const LOG = read('docs/labs/miking/CORRECTIONS_LOG.md');
-    for (const k of ['SH-01', 'EG-01', 'MR-01', 'SP-01']) assert.match(LOG, new RegExp(`\\| ${k} \\|`), k);
+    for (const k of ['SH-01', 'EG-01', 'MR-01', 'SP-01', 'HT-01', 'CB-01', 'CV-01', 'WB-01', 'GU-01']) assert.match(LOG, new RegExp(`\\| ${k} \\|`), k);
   });
 });
 

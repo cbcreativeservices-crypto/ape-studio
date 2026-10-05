@@ -53,6 +53,11 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'I03a', labId: 'percussion', title: 'Handheld Shaker', subtitle: 'A moving source: one mic outside the arc — toward the mic or side to side', status: 'ready' },
   { id: 'I03b', labId: 'percussion', title: 'Egg Shaker', subtitle: 'No handle: one egg, two close, or hands apart — the grip is part of it', status: 'ready' },
   { id: 'I03c', labId: 'percussion', title: 'Maracas', subtitle: 'A pair, two arms: one mic centred on the heads, a spot each, or a singer’s pair', status: 'ready' },
+  { id: 'I04', labId: 'percussion', title: 'Headless Tambourine and Jingles', subtitle: 'No head, just jingles: from the instrument as played — and a clear gap to the nearest stroke', status: 'ready' },
+  { id: 'I05a', labId: 'percussion', title: 'Cowbell', subtitle: 'Struck steel: overheads first, a spot outside the stick’s path, open or muted', status: 'ready' },
+  { id: 'I05b', labId: 'percussion', title: 'Claves', subtitle: 'Two sticks of wood: cradled to ring, never a mic between them', status: 'ready' },
+  { id: 'I05c', labId: 'percussion', title: 'Woodblock', subtitle: 'Space under the block first: the playing surface or the opening — never into the slot', status: 'ready' },
+  { id: 'I05d', labId: 'percussion', title: 'Güiro', subtitle: 'A scraped gourd: cover the whole stroke, both ways — never across the scraper’s path', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
