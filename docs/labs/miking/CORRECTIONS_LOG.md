@@ -693,3 +693,79 @@ Built 2026-10-05 (branch `miking-i1`, from `4334be8b` on `final-lab`). Research:
 | CY-09 | — | — | see CH-02 | | | |
 | CY-10 | (all) | "Pro Audio Training Academy", "Student" | Not used | House rule. | — | APPLIED |
 > **Ids (review Lab 1 minor 9, 2026-10-05).** The M11 kit rows were S-01/S-02 and the timpani rows T-01–T-03, repeating the snare's and toms' ids; they are now K11-01/K11-02 and TP-01–TP-03.
+
+## Lab 3 · the woodwinds: A06 Flute, A07 Piccolo, A08a Clarinet, A08b Bass Clarinet, A09a Oboe, A09b Bassoon
+
+Built 2026-10-05 on branch `miking-a4` from `BATCH3_RESEARCH_SUMMARY.md` and the six woodwind research folders. Learner text carries no source, brand or model; the starting points are worded as places to begin.
+
+### A06 Flute, metal and wooden (`source_text/Flute-Miking-Technique-Metal-and-Wooden.txt`, lesson id A06)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| A6-01 | (close zone) | Aim at "the embouchure" | Aim halfway between the lip plate and the left hand, 5–10 cm, angled out of the air jet | DPA says "halfway between the mouthpiece and the left hand", which is the same point. The zone's aim test uses it. | DPA-FLUTE | APPLIED |
+| A6-02 | (zones) | Close and a farther front view | Added: behind and a little above the head, aimed at the finger holes; about 1 m in front at head height (MDAT's 2–4 ft drawn as 0.6–1.2 m) | Rows the research confirmed and the lesson left out. | DPA-FLUTE, S-REC, S-LIVE, MDAT | APPLIED |
+| A6-03 | (how it sounds) | The sound leaves at the embouchure | The embouchure hole on every note, the first open hole for most of the rest, and the foot only when every hole is closed | Measured radiation and tone-hole physics. | PL-2010, UNSW-FLUTE | APPLIED |
+| A6-04 | L80 | "Identify the design first" | The variant is the design: a metal concert flute, a wooden keyed concert flute, or a simple-system wooden flute. ORIENT draws all three. | The lesson's own first step, made into the control. | Lesson | APPLIED |
+| A6-05 | (clip) | A clip on the flute | Offered on the keyed designs only. Never over a simple-system flute's open finger holes, and only with the player's (and for wood, the maker's) agreement. | A clip on an open-hole flute covers a hole. | DPA-FLUTE | APPLIED · OWNER: approve |
+
+### A07 Piccolo (`source_text/Piccolo-Miking-Technique.txt`, lesson id A07)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| A7-01 | L38 | "the supercardioid's side nulls" | The nulls sit toward the rear, near 125°, with a rear lobe, not at the sides | The research's correction 2. | S-HYPER | APPLIED |
+| A7-02 | L26 | Use the flute's positions | Kept. Every distance is labelled as the flute's figure, carried over, and is not a piccolo optimum (each zone's provenance says so) | The lesson's own caveat, kept visible. | DPA-FLUTE | APPLIED |
+| A7-03 | L26 | (no clip claim) | No clip zone. A flute clip is "only if it fits this piccolo", otherwise a stand (`pc.set.3`). | No source gives a piccolo clip fit. | piccolo/SOURCES.md | APPLIED |
+| A7-04 | (mic choice) | Vocal mics on the piccolo | A presence peak can turn a piccolo shrill. Compare responses at matched level; this is not a ban on a type of mic. | Shure's words, without the brand. | S-IVV | APPLIED |
+| A7-05 | (how it sounds) | — | Added in words: around 2 kHz the piccolo sends a fairly strong share of its sound to the front | Measured directivity (ADD). | PL-2010 §4.1 | APPLIED |
+| A7-06 | (hearing) | — | The player's right ear sits centimetres from the instrument. Hearing exposure is a page-3 item, a check card and a recall card. | Lesson's hearing material, made specific to the piccolo. | Lesson | APPLIED |
+| A7-07 | (drawing) | — | A wooden body with a silver head joint and keys, 330 mm long (13 in); holes placed by the semitone rule from D5 | Length sourced; the material is a drawing default, and the lesson says the material is not a mic recipe. | Y-HUB-PICC, DPA-TABLE | APPLIED · OWNER: approve |
+
+### A08a B♭ Clarinet (`source_text/Soprano-Clarinet-Miking-Technique.txt`, lesson id A08a)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| A8A-01 | L36 | Supercardioid "side" nulls | Nulls toward the rear, near 125° | Correction 2. | S-HYPER | APPLIED |
+| A8A-02 | (zones) | 15–20 cm, a third up from the bell | Kept, measured one third of the instrument's length up from the bell, toward the reed, facing the holes. MDAT's 2–4 ft front position added. | Correction 6 (orientation); MDAT row. | DPA-CL, MDAT | APPLIED |
+| A8A-03 | L6 | The bell carries the low notes | Said as physics: with every hole closed the bell leads, and otherwise the first open holes do. Upper partials travel on toward the bell. | Re-cited to tone-hole physics. | UNSW-CL | APPLIED |
+| A8A-04 | (how it sounds) | — | The clarinet's registers sit a twelfth apart on the same fingering (a closed cylinder carries odd harmonics) | Physics drawn on page 2 (PIPE step). | UNSW-CL | APPLIED |
+
+### A08b Bass Clarinet (`source_text/Bass-Clarinet-Miking-Technique.txt`, lesson id A08b)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| A8B-01 | L14, L28 | "no sourced bass-clarinet number" | MDAT's 2–4 ft (0.6–1.2 m) in front is the worked starting point | A sourced figure exists. | MDAT | APPLIED |
+| A8B-02 | L39 | Supercardioid side nulls | Nulls toward the rear, near 125° | Correction 2. | S-HYPER | APPLIED |
+| A8B-03 | L26 | The soprano's 15–20 cm is not transferred | Kept. No close number is borrowed. The blend and bell zones are drawing bands and are labelled that way. | The lesson's own caution. | Lesson | APPLIED |
+| A8B-04 | (geometry) | A low-C model "about 120 mm longer" | The low-C extension is drawn 250 mm longer in tube, derived from the semitone rule (three semitones below low E♭ at the same rule) | +120 mm cannot give three semitones on this bore. The figure is derived. | bass_clarinet/GEOMETRY_PROPOSAL.md; semitone rule | APPLIED · OWNER: approve |
+| A8B-05 | (clip) | The clip's angle | Kept as an inference to test by ear: aim it between the bell and the lower holes | No source gives the angle. | bass_clarinet/SOURCES.md | APPLIED |
+| A8B-06 | (drawing) | — | The floor peg reaches the floor in both models. The bow and the upturned bell are silver-plated; the body is black. | Posture defaults. | bass_clarinet/GEOMETRY_PROPOSAL.md | APPLIED |
+
+### A09a Oboe (`source_text/Oboe-Miking-Technique.txt`, lesson id A09a)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| A9A-01 | (range) | Lowest note C4 (DPA's table) | B♭3 (about 233 Hz); filters are set from the player's part | The modern oboe reaches B♭3. Logged as D-OB1. | DPA-TABLE; Y-OB-MAN2 | APPLIED |
+| A9A-02 | (zones) | 15–20 cm, a third up from the bell | Kept, with the same orientation as the clarinet. MDAT's 2–4 ft added. | Corrections 3 and 6. | DPA-OB, MDAT | APPLIED |
+| A9A-03 | (parts) | — | The oboe's tone holes are small (the smallest about 2 mm). This is said in the parts and drawn. | Maker's manual. | Y-OB-MAN2 | APPLIED |
+| A9A-04 | (how it sounds) | — | A conical bore: it overblows an octave and has all the harmonics. The PIPE step compares a cone with a closed cylinder. | Physics (a conical bore). | — | APPLIED |
+
+### A09b Bassoon (`source_text/Bassoon-Miking-Technique.txt`, lesson id A09b)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| A9B-01 | L13 | "a third of the way down from the bell" | Kept. DPA's "up from the bell" names the same point. Because the bassoon's bell points up, the point sits BELOW the bell top. This is said once, plainly. | Correction 6. A test pins the orientation for every instrument. | DPA-BSN | APPLIED |
+| A9B-02 | (clip) | The gooseneck "back toward the upper joint" | DOWN the instrument from the clip on the bell | On a bell-up bassoon, the upper joint lies below the bell. | DPA-BSN | APPLIED |
+| A9B-03 | L37 | Supercardioid side nulls | Nulls toward the rear, near 125° | Correction 2. | S-HYPER | APPLIED |
+| A9B-04 | (zones) | — | MDAT's 3–4 ft on the player's right, aimed about 45° down, added as the side zone | Sourced row. | MDAT | APPLIED |
+| A9B-05 | (drawing) | — | Bocal, wing, boot (with its U-turn) and long joint drawn from the unfolded tube. The seat strap is drawn seated and the harness standing. The ivory bell ring is a drawing default. | Geometry proposal. | bassoon/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve |
+
+### Shared across the woodwinds (`lessons/shared/woodwinds/`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| W-01 | (mics) | A miniature on the instrument; a flute headset | Two new generic types: "Miniature condenser on an instrument clip" (`wwMini`) and "Headset miniature" (`wwHeadset`). Sizes and reach are drawing defaults. | The example rows were added to SOURCES_SHARED (DPA-CLIPS, DPA-FLUTE). | DPA-CLIPS, DPA-FLUTE | APPLIED |
+| W-02 | (holes) | — | Tone holes are placed by the semitone rule, sₖ = A·2^(−k/12) + B (DERIVED), with one hole per semitone in a simplified fingering | Real fingerings vent and cross-finger. This is said under each figure. | Physics | APPLIED |
+| W-03 | (postures) | — | Seated and standing holds are drawing defaults: flute 10° forward and 8° down; clarinet 35° and oboe 40° from vertical; bass clarinet on its peg; bassoon on a strap or harness | No source gives the holds. | GEOMETRY_PROPOSALs | APPLIED · OWNER: approve |
+| W-04 | (how it sounds) | — | Every step is user-started and finite (STEP / PLAY ONCE), and nothing plays. The air column is drawn as an ideal pipe. Cut-off counts are shown only where the cut-off is measured. | House rules (silent, no loops). | — | APPLIED |
+| W-05 | (sax wording) | "last open holes" | The woodwinds say "the first open hole" throughout | Correction 1 applies to the whole family. | UNSW-SAX | APPLIED |
+| W-06 | (hearing) | — | Each lesson has a hearing line (85 dBA over 8 hours, halved every 3 dBA, a limit for people, not for a mic), a setting check and a critical quick-check item | House rule. | NIOSH | APPLIED |

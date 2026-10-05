@@ -14,7 +14,7 @@ export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtit
 export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn cymbals and percussion — the kit’s cymbals, hanging metal and the gong, the mallet keyboards and the electric pianos: how each one rings, recommended starting points, the swing, the sticks and the mallets’ travel, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.' },
-  { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
+  { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind instruments and their players — where the sound leaves (the first open holes, the bell, the embouchure), recommended starting points that keep clear of the hands, the keys and the breath, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '' },
@@ -60,6 +60,13 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C13', labId: 'strings', title: 'Oud', subtitle: 'A fretless lute with a deep bowl — the upper face, the face, the rose', status: 'ready' },
   { id: 'C14', labId: 'strings', title: 'Sitar', subtitle: 'Low by the bridge, high by the neck — and the sympathetic strings', status: 'ready' },
   { id: 'C15', labId: 'strings', title: 'Saraswati Veena', subtitle: 'Over the top plate, out of the hand’s reach — the resonator, the drone, the yali', status: 'ready' },
+  // Lab 3 (winds), the woodwinds (each lesson on its own line: lessons are built in parallel).
+  { id: 'A06', labId: 'winds', title: 'Flute', subtitle: 'Metal or wooden — identify the design, then close, behind the head, in front, or a headset', status: 'ready' },
+  { id: 'A07', labId: 'winds', title: 'Piccolo', subtitle: 'Half a flute, an octave up: the flute’s starting points, the ensemble first, your ears protected', status: 'ready' },
+  { id: 'A08a', labId: 'winds', title: 'Clarinet', subtitle: 'The B♭ clarinet: facing the holes a third up from the bell, farther back, or a clip', status: 'ready' },
+  { id: 'A08b', labId: 'winds', title: 'Bass clarinet', subtitle: 'Bell and holes together: in front, the body-and-bell blend, the bell to compare, or a clip', status: 'ready' },
+  { id: 'A09a', labId: 'winds', title: 'Oboe', subtitle: 'Facing the holes a third up from the bell, a foot away, near the bell, or a clip', status: 'ready' },
+  { id: 'A09b', labId: 'winds', title: 'Bassoon', subtitle: 'A third of the way down from the bell, a foot from the holes, high on the right, or a clip', status: 'ready' },
   // Lab 2 (percussion), in catalogue order: I01a–e cymbals, I02 cajón, I03 shakers, I04 tambourine, I05 wood and bell, I06a–c, I07–I10, I11a/b, I12.
   { id: 'I01a', labId: 'percussion', title: 'Hi-Hat', subtitle: 'Above the pair, away from the snare — or underneath on a clip', status: 'ready' },
   { id: 'I01b', labId: 'percussion', title: 'Ride Cymbal', subtitle: 'A spot over the bow, a mic a foot or two above, or one underneath', status: 'ready' },

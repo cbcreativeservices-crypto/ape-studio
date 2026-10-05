@@ -122,3 +122,6 @@ ART.I12 = { ...GONG_ART, pages: GONG_PAGES, stepCounts: GONG_STEP_COUNTS };
 /* Lab 2 cymbals (I01a–e): appended so other lessons merge cleanly. */
 import { CYMBAL_ART } from '../lessons/shared/cymbals/artRegistry';
 Object.assign(ART, CYMBAL_ART);
+/* Lab 3 (winds), the woodwinds (A06–A09b): appended so other lessons merge cleanly. */
+import { WOODWIND_ART } from '../lessons/shared/woodwinds/artRegistry';
+Object.assign(ART, WOODWIND_ART);
