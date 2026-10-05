@@ -12,7 +12,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Canvas, Circle, DashPathEffect, Group, Line, Path, Skia, vec } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../../theme/tokens';
 import { useStageTextScale } from '../../../rack/stageAspect';
-import { BoundaryMic, KickDynamicMic, SdcMic } from '../../../../../features/lab/micDrawings';
+import { BoundaryMic, InstrumentDynamicMic, KickDynamicMic, SdcMic } from '../../../../../features/lab/micDrawings';
 import type { MicPattern } from '../model/types.ts';
 import { gain, isModelled, nullAngles } from '../physics/polar.ts';
 import { micType } from '../../data/micTypes.ts';
@@ -83,7 +83,7 @@ export function PolarCompare({ w, h, typeId, pattern, angle, label }: { w: numbe
           </>
         ) : null}
         <Group transform={[{ translateX: cx }, { translateY: cy }, { rotate: Math.PI / 2 }, { scale: k }]}>
-          {t.art === 'boundary' ? <BoundaryMic len={len} cross={r * 2} /> : t.art === 'sdc' ? <SdcMic r={r} len={len} /> : <KickDynamicMic r={r} len={len} />}
+          {t.art === 'boundary' ? <BoundaryMic len={len} cross={r * 2} /> : t.art === 'sdc' ? <SdcMic r={r} len={len} /> : t.art === 'instDynamic' ? <InstrumentDynamicMic r={r} len={len} /> : <KickDynamicMic r={r} len={len} />}
         </Group>
         <Line p1={vec(cx, cy)} p2={vec(sx, sy)} color={AMBER} strokeWidth={1.4} opacity={0.8}>
           <DashPathEffect intervals={[6, 5]} />

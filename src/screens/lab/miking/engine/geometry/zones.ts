@@ -10,7 +10,7 @@
  * No magnetic snapping: the zone only lights up.
  */
 import type { CompiledScene, DocumentedZone, MicPose, RefLine, ReferenceSurface, VariantId } from '../model/types.ts';
-import { aimVec, angleBetween, distToLine, dot, sub } from './vec.ts';
+import { aimVec, angleBetween, distToLine, dot, len, sub } from './vec.ts';
 import { isInside } from './collision.ts';
 
 export type ZoneCtx = {
@@ -33,11 +33,21 @@ function findLine(list: RefLine[], id: string): RefLine | null {
   return null;
 }
 
-/** Signed distance of the pose from a surface (NaN when the id is unknown). */
+/** Signed distance of the pose from a surface (NaN when the id is unknown);
+ *  from a TARGET point, the plain distance to it. */
 export function surfaceDistance(surfaces: ReferenceSurface[], id: string, pose: MicPose): number {
   'worklet';
   const s = findSurface(surfaces, id);
-  return s ? dot(sub(pose.p, s.point), s.normal) : NaN;
+  if (!s) return NaN;
+  return s.target ? len(sub(pose.p, s.point)) : dot(sub(pose.p, s.point), s.normal);
+}
+
+/** The mic's front axis off its reference: −normal for a plane, the
+ *  direction to the point for a TARGET (degrees). */
+export function aimOff(s: ReferenceSurface, pose: MicPose): number {
+  'worklet';
+  const a = aimVec(pose.az, pose.el);
+  return s.target ? angleBetween(a, sub(s.point, pose.p)) : angleBetween(a, { x: -s.normal.x, y: -s.normal.y, z: -s.normal.z });
 }
 
 /** Distance of the pose from a reference line (NaN when unknown). */
@@ -69,11 +79,18 @@ export function inZone(zone: DocumentedZone, ctx: ZoneCtx, pose: MicPose): boole
     if (zone.side === 'inside' && !inside) return false;
     if (zone.side === 'outside' && inside) return false;
   }
+  if (zone.cone) {
+    const s = findSurface(ctx.surfaces, zone.refSurface);
+    if (!s) return false;
+    const dv = sub(pose.p, s.point);
+    const a = angleBetween(dv, s.normal);
+    if (a < zone.cone.min - EPS || a > zone.cone.max + EPS) return false;
+    if (zone.cone.toward && dot(dv, zone.cone.toward) < 0) return false;
+  }
   if (zone.aim) {
     const s = findSurface(ctx.surfaces, zone.refSurface);
     if (!s) return false;
-    const off = angleBetween(aimVec(pose.az, pose.el), { x: -s.normal.x, y: -s.normal.y, z: -s.normal.z });
-    if (off > zone.aim.maxOffAxis + EPS) return false;
+    if (aimOff(s, pose) > zone.aim.maxOffAxis + EPS) return false;
   }
   if (zone.radial) {
     const r = lineDistance(ctx.lines, zone.radial.line, pose);

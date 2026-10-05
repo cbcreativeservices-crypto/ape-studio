@@ -36,7 +36,7 @@ import { fitValue } from '../../../../../theme/legibility';
 import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
 import { useScrollLock } from '../../../scrollLock';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../../modules/ape-gesture-exclusion';
-import { BoundaryMic, KickDynamicMic, SdcMic } from '../../../../../features/lab/micDrawings';
+import { BoundaryMic, InstrumentDynamicMic, KickDynamicMic, SdcMic } from '../../../../../features/lab/micDrawings';
 import type { DocumentedZone, MicPattern, MicPose, MicSlot, Shape3, VariantId, Vec3, ViewBox, ViewId } from '../model/types.ts';
 import { aimVec, angleBetween, clamp, sub } from '../geometry/vec.ts';
 import { fitXform, project, unprojectDelta, zoomAbout, type ViewXform } from '../geometry/frame.ts';
@@ -141,6 +141,27 @@ function shapeOutline(shape: Shape3, view: ViewId): ReturnType<typeof Skia.Path.
       p.close();
       return p;
     }
+    case 'cyl': {
+      // The cylinder's silhouette in this view: a band of half-width r round
+      // the projected axis (end-on, a circle).
+      const au = shape.a.x;
+      const av = view === 'side' ? shape.a.y : shape.a.z;
+      const bu = shape.b.x;
+      const bv = view === 'side' ? shape.b.y : shape.b.z;
+      const L = Math.hypot(bu - au, bv - av);
+      if (L < 1) {
+        p.addCircle(au, av, shape.r);
+        return p;
+      }
+      const nu = (-(bv - av) / L) * shape.r;
+      const nv = ((bu - au) / L) * shape.r;
+      p.moveTo(au + nu, av + nv);
+      p.lineTo(bu + nu, bv + nv);
+      p.lineTo(bu - nu, bv - nv);
+      p.lineTo(au - nu, av - nv);
+      p.close();
+      return p;
+    }
     default:
       return null;
   }
@@ -218,6 +239,8 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
           <BoundaryMic len={len} cross={cross} />
         ) : t.art === 'sdc' ? (
           <SdcMic r={r} len={len} />
+        ) : t.art === 'instDynamic' ? (
+          <InstrumentDynamicMic r={r} len={len} />
         ) : (
           <KickDynamicMic r={r} len={len} />
         )}
@@ -447,11 +470,21 @@ function PathsOverlay({ rig, view, from }: { rig: Rig; view: ViewId; from: Vec3 
 
 function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view: ViewId; zoneSV: SharedValue<string | null> }) {
   const r = zoneRect(z, view, rig);
+  const drawn = z.draw?.[view];
   const path = useMemo(() => {
     const p = Skia.Path.Make();
+    // A zone that carries its own drawing (the lesson's geometry computes it
+    // from the same numbers): those polygons, not the plane band.
+    if (drawn) {
+      for (const g of drawn) {
+        g.poly.forEach(([u, v], i) => (i === 0 ? p.moveTo(u, v) : p.lineTo(u, v)));
+        p.close();
+      }
+      return p;
+    }
     p.addRRect(Skia.RRectXY(Skia.XYWHRect(r.u0, r.v0, Math.max(4, r.u1 - r.u0), r.v1 - r.v0), 10, 10));
     return p;
-  }, [r.u0, r.u1, r.v0, r.v1]);
+  }, [r.u0, r.u1, r.v0, r.v1, drawn]);
   // One consistent style for every recommended starting point (owner ruling
   // 2026-10-04): the same blue band, the same solid edge.
   const tone = BLUE;
@@ -627,6 +660,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const surfA = bodies.A.mount === 'surface';
   const surfB = bodies.B.mount === 'surface';
   const live = slots;
+  const azLimit = model.aimAzLimit ?? 80;
   const hasB = live.includes('B');
   const hasA = live.includes('A');
 
@@ -726,11 +760,19 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           const ay = f.sy - e.y;
           if (Math.abs(ax) + Math.abs(ay) < 2) return;
           if (view === 'side') {
-            const el = (Math.atan2(-ay * Math.cos((st.az * Math.PI) / 180), -ax) * 180) / Math.PI;
+            // |cos az| and its sign keep a mic turned to face +x (az near
+            // 180°, a mic behind an open-backed cabinet) tilting the right way;
+            // for |az| < 90° this is the original formula.
+            const c = Math.cos((st.az * Math.PI) / 180);
+            const el = (Math.atan2(-ay * Math.abs(c), c < 0 ? ax : -ax) * 180) / Math.PI;
             to = { p: st.p, az: st.az, el: clamp(el, -80, 80) };
           } else {
-            const az = (Math.atan2(ay, -ax) * 180) / Math.PI;
-            to = { p: st.p, az: clamp(az, -80, 80), el: st.el };
+            let az = (Math.atan2(ay, -ax) * 180) / Math.PI;
+            // Unwrap toward the current aim, then hold the model's limit
+            // (±80° unless the lesson allows a mic to face the other way).
+            while (az - st.az > 180) az -= 360;
+            while (az - st.az < -180) az += 360;
+            to = { p: st.p, az: clamp(az, -azLimit, azLimit), el: st.el };
           }
         } else {
           const d = unprojectDelta(cur, e.x - startTouch.value.x, e.y - startTouch.value.y);
@@ -778,7 +820,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         scheduleOnRN(tapAt, e.x, e.y);
       });
     return Gesture.Simultaneous(pinch, Gesture.Exclusive(pan, reset, tap));
-  }, [xf, hasA, hasB, poseA, poseB, lenA, lenB, rA, rB, surfA, surfB, interactive, mini, grab, startTouch, startPose, setLock, bodies, pins, view, scene, bounds, blockedA, blockedB, finish, pinchStart, pinchFocal, base, onTapPart, tapAt]);
+  }, [xf, hasA, hasB, poseA, poseB, lenA, lenB, rA, rB, surfA, surfB, interactive, mini, grab, startTouch, startPose, setLock, bodies, pins, view, scene, bounds, blockedA, blockedB, finish, pinchStart, pinchFocal, base, onTapPart, tapAt, azLimit]);
 
   // ── what is drawn ──
   const zones = useMemo(() => {
@@ -889,7 +931,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       ) : null}
       {!mini ? (
         <Text pointerEvents="none" style={[styles.viewTag, { fontSize: Math.max(9, 9 * textScale) }]}>
-          {view === 'side' ? 'SIDE · CUTAWAY' : 'TOP · CUTAWAY'}
+          {model.viewTags?.[view] ?? (view === 'side' ? 'SIDE · CUTAWAY' : 'TOP · CUTAWAY')}
         </Text>
       ) : null}
     </View>
