@@ -31,7 +31,25 @@ export type ReadoutWords = {
   /** A negative distance in words / as a bezel key (default behind / BEHIND). */
   minusWords?: string;
   minusKey?: string;
+  /** A positive distance in words / as a bezel key (default from / FROM). */
+  plusWords?: string;
+  plusKey?: string;
+  /** A SIGNED radial (a line with an offset): its words and keys. */
+  lineWords?: { plus: string; minus: string; keyPlus: string; keyMinus: string };
 };
+
+/** "≈ 5 cm above the rim" — the distance from the reference surface. */
+function distWords(r: Readouts, w: ReadoutWords): string {
+  'worklet';
+  return `${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? w.plusWords ?? 'from' : w.minusWords ?? 'behind'} ${w.surfaceLabel}`;
+}
+
+/** "≈ 2 cm off the beater line", or, signed, "≈ 2 cm in from the rim edge". */
+export function radialWords(r: Readouts, w: Pick<ReadoutWords, 'lineLabel' | 'lineWords'>): string {
+  'worklet';
+  if (w.lineWords) return `${fmtLen(Math.abs(r.radial))} ${r.radial >= 0 ? w.lineWords.plus : w.lineWords.minus} ${w.lineLabel}`;
+  return `${fmtLen(r.radial)} off ${w.lineLabel}`;
+}
 
 /** The readouts as shown: an actual intersection wins, else the stop reason. */
 export function withStop(r: Readouts, stop: Stop): Readouts {
@@ -43,7 +61,7 @@ export function withStop(r: Readouts, stop: Stop): Readouts {
 /** The live strip over the canvas (one line per mic). */
 export function liveLine(r: Readouts, w: ReadoutWords): string {
   'worklet';
-  const dist = `${w.slot} · ${fmtLen(Math.abs(r.distance))} ${r.distance >= 0 ? 'from' : w.minusWords ?? 'behind'} ${w.surfaceLabel} · ${fmtLen(r.radial)} off ${w.lineLabel}${w.showAim ? ` · aim ${fmtAngle(r.offAxis)}` : ''}`;
+  const dist = `${w.slot} · ${distWords(r, w)} · ${radialWords(r, w)}${w.showAim ? ` · aim ${fmtAngle(r.offAxis)}` : ''}`;
   return r.blocked ? `${dist} · ✕ ${r.blocked.label}` : dist;
 }
 
@@ -82,12 +100,13 @@ export function zoneMark(zone: DocumentedZone | null): string {
  *  aim, zone — all from the SAME shown readouts as the strip and NOW line. */
 export function placementBezel(r: Readouts, w: ReadoutWords, zone: DocumentedZone | null, partShort: (partId: string) => string = (id) => id): BezelCell[] {
   const d = lenCell(Math.abs(r.distance));
-  const off = lenCell(r.radial);
+  const off = lenCell(w.lineWords ? Math.abs(r.radial) : r.radial);
+  const offKey = w.lineWords ? (r.radial >= 0 ? w.lineWords.keyPlus : w.lineWords.keyMinus) : `OFF ${lineRef(w.lineLabel)}`;
   return [
     // The slot letter lives in the strip ("A · …"); one mic per page-3 bezel,
     // so the key spends its width on the head it is measured from.
-    { k: `${r.distance >= 0 ? 'FROM' : w.minusKey ?? 'BEHIND'} ${shortRef(w.surfaceLabel)}`, v: d.v, sub: d.sub, flex: 1.4 },
-    { k: `OFF ${lineRef(w.lineLabel)}`, v: off.v, sub: off.sub, flex: 1.5 },
+    { k: `${r.distance >= 0 ? w.plusKey ?? 'FROM' : w.minusKey ?? 'BEHIND'} ${shortRef(w.surfaceLabel)}`, v: d.v, sub: d.sub, flex: 1.4 },
+    { k: offKey, v: off.v, sub: off.sub, flex: 1.5 },
     { k: 'AIM', v: w.showAim ? fmtAngle(r.offAxis) : 'FLAT', flex: 0.8 },
     // The stop names the PART (its short name), in red, with the ✕ in the
     // key — colour is never the only signal (charter §8).

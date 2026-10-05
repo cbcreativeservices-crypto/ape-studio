@@ -14,8 +14,8 @@
  * are that page's contract, so this lesson uses the same ids.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
-import type { HandLesson } from '../shared/handdrums/family.ts';
-import { CONGA_MODEL } from './geometry.ts';
+import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
+import { CONGA_MODEL, CONGA_WORDS } from './geometry.ts';
 import { CONGA, CONGA_DIMS as D, CONGA_ZONES, HEAD_Y, TUMBA } from './model.ts';
 
 const pages: Record<PageId, PageContent> = {
@@ -644,6 +644,7 @@ export const M04A_LESSON: HandLesson = {
   title: 'Congas',
   subtitle: 'A pair of hand drums: one mic or one each, top or bottom',
   noun: { one: 'conga', many: 'congas' },
+  copy: handCopy(CONGA_WORDS),
   model: CONGA_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc', 'hdClip'],
   zones: CONGA_ZONES,

@@ -10,6 +10,7 @@
  */
 import type { InstrumentModel, Part, Vec3 } from '../../engine/model/types.ts';
 import { axisLine, box, headCentre, headPart, headSurface, ill, rimOf, shellPart, shellRadiusAt, UP } from '../shared/handdrums/handDrumModel.ts';
+import type { HandWords } from '../shared/handdrums/family.ts';
 import { BETWEEN, CONGA, CONGA_DIMS as D, HEAD_Y, LOW, TUMBA } from './model.ts';
 
 export const DRUMS = [CONGA, TUMBA] as const;
@@ -91,17 +92,19 @@ export const CONGA_MODEL: InstrumentModel = {
   ports: { floor: null, raised: null },
   mountRule: { boom: 'level', fallback: { x: 1, y: 0, z: 0 }, length: 300 },
   rims: DRUMS.map(rimOf),
-  words: {
-    subject: {
-      floor: 'a pair of congas standing on the floor — the conga on the player’s left, the tumba on the right',
-      raised: 'a pair of congas raised on stands — the conga on the player’s left, the tumba on the right',
-    },
-    viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
-    axes: {
-      x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centres (x).', plus: 'front of', minus: 'behind', from: 'centre' },
-      y: { label: 'HEIGHT', blurb: 'Up or down, measured from the drums’ lower edge. Distances in the bezel are read from the head the zone names.', plus: 'below', minus: 'above', from: 'base' },
-      z: { label: 'ACROSS', blurb: 'Toward the player’s left (the conga) or right (the tumba).', plus: 'right of', minus: 'left of', from: 'centre' },
-    },
-    where: { inside: 'inside a drum', outside: 'outside the drums' },
+};
+
+/** The scene's words (the lesson's copy: family.ts handCopy). */
+export const CONGA_WORDS: HandWords = {
+  subject: {
+    floor: 'a pair of congas standing on the floor — the conga on the player’s left, the tumba on the right',
+    raised: 'a pair of congas raised on stands — the conga on the player’s left, the tumba on the right',
   },
+  viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
+  axes: {
+    x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centres (x).', plus: 'front of', minus: 'behind', from: 'centre' },
+    y: { label: 'HEIGHT', blurb: 'Up or down, measured from the drums’ lower edge. Distances in the bezel are read from the head the zone names.', plus: 'below', minus: 'above', from: 'base' },
+    z: { label: 'ACROSS', blurb: 'Toward the player’s left (the conga) or right (the tumba).', plus: 'right of', minus: 'left of', from: 'centre' },
+  },
+  where: { inside: 'inside a drum', outside: 'outside the drums' },
 };

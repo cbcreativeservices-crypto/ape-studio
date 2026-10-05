@@ -35,15 +35,24 @@ import { placementParams, type AimAxis, type PosAxis } from '../engine/scene/pla
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../engine/kit';
 import { MIC_TYPES, micType } from '../data/micTypes';
+import { copyOf } from '../engine/model/copy.ts';
 import type { PageProps } from './pageTypes';
 
+/** "{line}" / "{head}" / "{tol}" in a copy line. */
+const fill = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? '');
+
 export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
+  const C = copyOf(lesson);
+  // The worked example's zone for a variant (the lesson's choice; else the
+  // first zone available in it).
+  const workedFor = (v: string) => lesson.zones.find((q) => q.id === C.placement.workedZone[v]) ?? lesson.zones.find((q) => !q.requires || ((!q.requires.variant || q.requires.variant === v) && (!q.requires.variants || q.requires.variants.includes(v)))) ?? lesson.zones[0];
   const start = useMemo(() => {
-    const z = lesson.zones.find((q) => q.id === (variant === 'ported' ? 'in.near' : 'reso.level')) ?? lesson.zones[0];
+    const z = workedFor(variant);
     const typeId = z.requires?.micTypeIds?.[0] ?? lesson.micTypeIds[0];
     return { typeId, pose: z.start };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const variantShort = C.variantShort[variant] ?? (lesson.model.variants.find((v) => v.id === variant)?.label ?? '').toLowerCase();
   const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: start.typeId, pattern: micType(start.typeId).patterns[0].id, pose: start.pose }] });
   useEffect(() => {
     if (rig.variant !== variant) rig.setVariant(variant);
@@ -57,7 +66,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const t = micType(mic.typeId);
 
   /* ── WATCH: the worked example, on its own rig (never credit) ── */
-  const exZone = lesson.zones.find((q) => q.id === (variant === 'ported' ? 'in.near' : 'reso.level')) ?? lesson.zones[0];
+  const exZone = workedFor(variant);
   const exType = exZone.requires?.micTypeIds?.[0] ?? lesson.micTypeIds[0];
   const ex = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: exType, pattern: micType(exType).patterns[0].id, pose: exZone.start }] });
   const [exView, setExView] = useState<ViewId>('side');
@@ -82,9 +91,9 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     { title: 'WHERE TO BEGIN', text: `${exZone.label}. After our research, this is one place we recommend you begin with this kind of mic — a starting point, not a rule, and not a promise of a sound.`, cell: 3 },
     { title: 'THE HEAD', text: `The distance is measured from ${exHead}. The same number from the other head would put the mic somewhere else entirely.`, cell: 0 },
     { title: 'THE DISTANCE', text: `${exZone.band} The readout measures to the mic’s FRONT, rounded to ≈ 5 mm, and it reads inside that range.`, cell: 0 },
-    { title: 'OFF THE LINE', text: exLine ? `This starting point also places the mic relative to ${exLine}: “a little off the line” is drawn as a range you can see.` : 'This starting point names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
-    { title: 'THE AIM', text: exZone.aim ? `Face the mic toward ${exHead} — the lab counts anything within ±${exZone.aim.maxOffAxis}°. Distance, height and angle are separate things to try.` : 'This starting point gives no aim, so the mic simply faces the drum. Distance, height and angle are still separate things to try.', cell: 2 },
-    { title: 'CLEARANCE', text: 'Clear of every part — heads, beater, damping, port edge and pedal. Clearance comes first, before any number, and the drummer stops before a real mic moves.', cell: 3 },
+    { title: 'OFF THE LINE', text: exLine ? fill(C.placement.workedLine, { line: exLine }) : 'This starting point names no line to measure from, so only the head and the distance place the mic.', cell: 1 },
+    { title: 'THE AIM', text: exZone.aim || exZone.aimAt ? fill(C.placement.workedAim, { head: exHead, tol: `${exZone.aim?.maxOffAxis ?? ''}` }) : 'This starting point gives no aim, so the mic simply faces the drum. Distance, height and angle are still separate things to try.', cell: 2 },
+    { title: 'CLEARANCE', text: C.placement.workedClear, cell: 3 },
   ];
   const wk = worked[exStep];
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, (id) => lesson.model.parts.find((p) => p.id === id)?.short ?? id).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
@@ -141,7 +150,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
               <Chip key={id} on={id === mic.typeId} label={MIC_TYPES[id].label} onPress={() => rig.setType('A', id)} />
             ))}
           </View>
-          <Text style={styles.trayHead}>FRONT HEAD</Text>
+          <Text style={styles.trayHead}>{C.variantKey}</Text>
           <View style={styles.chips}>
             {lesson.model.variants.map((v) => (
               <Chip key={v.id} on={v.id === variant} label={v.label} onPress={() => setVariant(v.id)} />
@@ -149,9 +158,11 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
           </View>
           <Text style={styles.trayHead}>MEASURE FROM (when not in a zone)</Text>
           <View style={styles.chips}>
-            {lesson.model.surfaces.map((s) => (
-              <Chip key={s.id} on={s.id === rig.surfaceId} label={s.label} onPress={() => rig.setSurfaceId(s.id)} />
-            ))}
+            {lesson.model.surfaces
+              .filter((s) => !s.variants || s.variants.includes(variant))
+              .map((s) => (
+                <Chip key={s.id} on={s.id === rig.surfaceId} label={s.label} onPress={() => rig.setSurfaceId(s.id)} />
+              ))}
           </View>
         </View>
       ),
@@ -190,7 +201,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       },
       well: (
         <>
-          <Landing looking={`Worked example · ${micType(exType).short} · ${variant === 'ported' ? 'ported' : 'intact'} front head`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel is the piece being read." />
+          <Landing looking={`Worked example · ${micType(exType).short} · ${variantShort}`} prompt="Step through how this starting point is read, piece by piece. The lit cell on the bezel is the piece being read." />
           <Card>
             <Point title={`${exStep + 1} · ${wk.title}`}>{wk.text}</Point>
           </Card>
@@ -213,14 +224,14 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${t.short} · ${variant === 'ported' ? 'ported' : 'intact'} front head`} prompt="Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it around and see what changes." />
+          <Landing looking={`${t.short} · ${variantShort}`} prompt="Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it around and see what changes." />
           <NowLine text={nowText(rig, ['A'])} />
-          {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.${variant === 'intact' && t.mount === 'stand' ? ' A stand mic cannot pass an intact head: mic it from outside.' : ''}`}</Note> : null}
-          {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a recommended starting point. Starting points for this mic and head: ${available.map((z) => z.label).join('; ') || 'none — try another mic type or front head'}.`}</Body>}
+          {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.${t.mount === 'stand' ? C.placement.blocked[variant] ?? '' : ''}`}</Note> : null}
+          {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a recommended starting point. ${C.placement.availableLead}: ${available.map((z) => z.label).join('; ') || `none — try another mic type or ${C.variantKey.toLowerCase()}`}.`}</Body>}
           <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
-          {tried ? <Note tone="ok">{`You predicted “${predicted}”. Moving toward the front head tends to bring more resonance — and drums vary, so “it depends on this drum” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.`}</Note> : null}
-          {mic.typeId === 'kickDynCard' ? <Note>Ideas to try with this kind of mic: a few centimetres from the batter head (lots of attack, dry), or midway between the heads (less attack). Another experiment on a real drum: turn the mic away from where the beater strikes, and listen for whether the attack eases.</Note> : null}
-          <Note>Clearance comes first: stop the drummer before moving a real mic. Port air can pop a mic — try changing the mic’s angle in the hole rather than pushing it farther in, if that would narrow the clearance.</Note>
+          {tried && C.placement.reveal ? <Note tone="ok">{`You predicted “${predicted}”. ${C.placement.reveal}`}</Note> : null}
+          {C.placement.typeNotes[mic.typeId] ? <Note>{C.placement.typeNotes[mic.typeId]}</Note> : null}
+          <Note>{C.placement.note}</Note>
         </>
       ),
     },
@@ -231,10 +242,10 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       layout: 'read',
       body: (
         <>
-          <Body>What you just did, in words. After our research, each blue zone is where we recommend you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum is different.</Body>
-          <Body>Height, distance and angle are separate variables: change one at a time. A starting point that names an aim (“facing the beater”) counts only while the mic faces that head. Distances are measured to the mic’s FRONT and rounded to ≈ 5 mm — a mic’s acoustic centre is not the visible end of its grille, so no millimetre claim is made.</Body>
-          <Note tone="warn">Clearance comes first. Stop the drummer before moving a mic; keep the mic, stand and cable clear of both heads, the beater, the port edge, the damping and the pedal. The grey hatched areas show roughly where to keep clear — leave more room on a real kit.</Note>
-          <Body>Moving toward the beater side often increases the emphasis of attack; toward the front head can reveal more resonance — tendencies, and drums vary. With a directional mic, proximity effect also changes the lows as it nears a radiating surface; how much depends on the source’s size and the mic, and close to a large head it is usually less than a point-source chart suggests.</Body>
+          <Body>{C.placement.learn.intro}</Body>
+          <Body>{C.placement.learn.separate}</Body>
+          <Note tone="warn">{C.placement.learn.clearance}</Note>
+          <Body>{C.placement.learn.tendencies}</Body>
         </>
       ),
     },

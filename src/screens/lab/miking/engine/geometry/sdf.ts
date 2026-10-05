@@ -51,27 +51,70 @@ export function segDist(p: Vec3, a: Vec3, b: Vec3): number {
   return Math.sqrt(dx * dx + dy * dy + dz * dz);
 }
 
+/**
+ * A point in a cylinder's own terms: `along` its axis and `radial` distance
+ * from it. No `axis` = the legacy x-axis cylinder (along = the ABSOLUTE x,
+ * radial from (c.y, c.z)) — the kick's frame, unchanged. With `axis` (unit),
+ * along is measured from `c`.
+ */
+export function cylCoords(c: Vec3, axis: Vec3 | undefined, p: Vec3): { along: number; radial: number } {
+  'worklet';
+  if (!axis) {
+    const dy = p.y - c.y;
+    const dz = p.z - c.z;
+    return { along: p.x, radial: Math.sqrt(dy * dy + dz * dz) };
+  }
+  const wx = p.x - c.x;
+  const wy = p.y - c.y;
+  const wz = p.z - c.z;
+  const t = wx * axis.x + wy * axis.y + wz * axis.z;
+  const rx = wx - axis.x * t;
+  const ry = wy - axis.y * t;
+  const rz = wz - axis.z * t;
+  return { along: t, radial: Math.sqrt(rx * rx + ry * ry + rz * rz) };
+}
+
 export function sdf(shape: Shape3, p: Vec3): number {
   'worklet';
   switch (shape.kind) {
     case 'tube': {
-      const dy = p.y - shape.c.y;
-      const dz = p.z - shape.c.z;
-      const rr = Math.sqrt(dy * dy + dz * dz);
-      const dr = Math.max(shape.rIn - rr, rr - shape.rOut);
-      const da = Math.max(shape.x0 - p.x, p.x - shape.x1);
+      const q = cylCoords(shape.c, shape.axis, p);
+      const dr = Math.max(shape.rIn - q.radial, q.radial - shape.rOut);
+      const da = Math.max(shape.x0 - q.along, q.along - shape.x1);
       return combine2(dr, da);
     }
     case 'slab': {
-      const dy = p.y - shape.c.y;
-      const dz = p.z - shape.c.z;
-      const rr = Math.sqrt(dy * dy + dz * dz);
-      const disc = combine2(rr - shape.r, Math.max(shape.x0 - p.x, p.x - shape.x1));
+      const q = cylCoords(shape.c, shape.axis, p);
+      const disc = combine2(q.radial - shape.r, Math.max(shape.x0 - q.along, q.along - shape.x1));
       if (!shape.hole) return disc;
-      const hy = p.y - shape.hole.c.y;
-      const hz = p.z - shape.hole.c.z;
-      const inHole = Math.sqrt(hy * hy + hz * hz) - shape.hole.r; // < 0 inside the hole's cylinder
+      const h = cylCoords(shape.hole.c, shape.axis, p);
+      const inHole = h.radial - shape.hole.r; // < 0 inside the hole's cylinder
       return Math.max(disc, -inHole);
+    }
+    case 'sector': {
+      // In plan (x–z) a pie slice between radii r0..r1 and angles a0..a1;
+      // vertically between y0 and y1.
+      const px = p.x - shape.c.x;
+      const pz = p.z - shape.c.z;
+      const rr = Math.sqrt(px * px + pz * pz);
+      let ang = Math.atan2(pz, px);
+      // Bring the angle into [a0, a0 + 2π).
+      while (ang < shape.a0) ang += Math.PI * 2;
+      while (ang >= shape.a0 + Math.PI * 2) ang -= Math.PI * 2;
+      let d2: number;
+      if (ang <= shape.a1) {
+        d2 = Math.max(shape.r0 - rr, rr - shape.r1);
+      } else {
+        const c0 = Math.cos(shape.a0);
+        const s0 = Math.sin(shape.a0);
+        const c1 = Math.cos(shape.a1);
+        const s1 = Math.sin(shape.a1);
+        d2 = Math.min(
+          segDist2D(px, pz, c0 * shape.r0, s0 * shape.r0, c0 * shape.r1, s0 * shape.r1),
+          segDist2D(px, pz, c1 * shape.r0, s1 * shape.r0, c1 * shape.r1, s1 * shape.r1),
+        );
+      }
+      return combine2(d2, Math.max(shape.y0 - p.y, p.y - shape.y1));
     }
     case 'box': {
       const cx = (shape.min.x + shape.max.x) / 2;

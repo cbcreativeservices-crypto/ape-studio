@@ -98,7 +98,7 @@ export const DJ_ZONES: DocumentedZone[] = [
     distance: DUVEL_TOP,
     requires: { micTypeIds: STAND },
     aim: { maxOffAxis: 60, minOffAxis: 40, prov: ill('"at a 40–60 degree angle": the reference is not stated; measured from the head’s normal (the geometry file’s default)') },
-    draw: {
+    drawn: {
       side: { u0: 0, u1: R + 60, v0: HEAD_Y - DUVEL_TOP.max, v1: HEAD_Y - DUVEL_TOP.min },
       top: { u0: 0, u1: R + 60, v0: -R, v1: R },
     },
@@ -120,7 +120,7 @@ export const DJ_ZONES: DocumentedZone[] = [
     radial: { line: 'diag', max: 80, prov: ill('"near the outer edge": within 8 cm of the line from the centre up over the edge is the lab’s drawing of it') },
     requires: { micTypeIds: STAND },
     aim: { maxOffAxis: 30, prov: ill('"pointing across to the center": ±30° is the lab’s tolerance') },
-    draw: {
+    drawn: {
       side: { u0: DIAG_N.x * COP_DIST - 80, u1: DIAG_N.x * COP_DIST + 80, v0: HEAD_Y + DIAG_N.y * COP_DIST - 60, v1: HEAD_Y + DIAG_N.y * COP_DIST + 60, round: true },
       top: { u0: DIAG_N.x * COP_DIST - 80, u1: DIAG_N.x * COP_DIST + 80, v0: -80, v1: 80, round: true },
     },
@@ -142,7 +142,7 @@ export const DJ_ZONES: DocumentedZone[] = [
     radial: { line: 'axis', min: R_FOOT + 10, max: 400, prov: ill('"at the bottom of the drum": beside the foot, within 40 cm of the centre line, is the lab’s drawing of it') },
     requires: { variant: 'raised', micTypeIds: SHORT },
     aim: { maxOffAxis: 30, dir: LOW_AIM, prov: ill('"aimed directly at the opening": within 30° of the line to the opening’s centre is the lab’s tolerance') },
-    draw: {
+    drawn: {
       side: { u0: R_FOOT + 10, u1: 400, v0: SUPPORT - DUVEL_LOW.max, v1: SUPPORT - DUVEL_LOW.min },
       top: { u0: -400, u1: 400, v0: -400, v1: 400, round: true },
     },
@@ -163,7 +163,7 @@ export const DJ_ZONES: DocumentedZone[] = [
     bandProv: ill('"8 inches from the bottom rim": on this drawing a mic under the opening sits 12–19 cm below it, about 20 cm from the rim'),
     radial: { line: 'axis', max: 160, prov: ill('"placed under": within 16 cm of the centre line is the lab’s drawing of it') },
     requires: { variant: 'raised', micTypeIds: SHORT },
-    draw: {
+    drawn: {
       side: { u0: -160, u1: 160, v0: 120, v1: 190 },
       top: { u0: -160, u1: 160, v0: -160, v1: 160, round: true },
     },

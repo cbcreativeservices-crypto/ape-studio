@@ -100,6 +100,80 @@ export const MIC_TYPES: Record<string, MicType> = {
   },
 };
 
+/* ── Lab 1: the snare and the toms (snare/SOURCES.md, toms/SOURCES.md §b) ── */
+const placeholder = (mm: number, needed: string) => ({ mm, prov: { kind: 'unknown', needed } as const, placeholder: true });
+
+Object.assign(MIC_TYPES, {
+  smallDynCard: {
+    id: 'smallDynCard',
+    label: 'End-address dynamic, small, cardioid',
+    short: 'DYN · CARD',
+    transducer: 'dynamic',
+    address: 'end',
+    patterns: [{ id: 'cardioid', label: 'cardioid', prov: { kind: 'sourced', src: 'S-SM57-UG', quote: 'Cardioid' } }],
+    body: {
+      length: { mm: 157, prov: { kind: 'sourced', src: 'S-SM57-UG', quote: '157 mm (6 3/16 in.) overall length (p.6 drawing)' } },
+      radius: { mm: 16, prov: { kind: 'sourced', src: 'S-SM57-UG', quote: '32 mm (1 1/4 in.) front diameter (p.6 drawing)' } },
+    },
+    power: 'none needed (dynamic)',
+    mount: 'stand',
+    examples: [{ model: 'Shure SM57', fact: '"Dynamic (moving coil)"; "Cardioid"; 157 mm long, Ø 32 mm front, Ø 23 mm tail; 284 g; no maximum SPL is printed.', src: 'S-SM57-UG' }],
+    art: 'smallDynamic',
+    blurb: 'The common small instrument dynamic, on a stand. Needs no power. Its grille is not made to be struck: keep it out of the sticks’ path.',
+  },
+  tomDynSuper: {
+    id: 'tomDynSuper',
+    label: 'End-address dynamic, supercardioid',
+    short: 'DYN · SUPER',
+    transducer: 'dynamic',
+    address: 'end',
+    patterns: [{ id: 'supercardioid', label: 'supercardioid', prov: { kind: 'sourced', src: 'S-B56A-UG', quote: 'Supercardioid; greatest sound rejection at points 120° toward the rear' } }],
+    // Its outline is not published: drawn as the small dynamic's silhouette
+    // with a wider grille (toms/GEOMETRY_PROPOSAL.md §4, drawing default).
+    body: { length: placeholder(157, 'supercardioid drum dynamic length (no drawing published)'), radius: placeholder(25, 'supercardioid drum dynamic grille (no drawing published)') },
+    power: 'none needed (dynamic)',
+    mount: 'stand',
+    examples: [{ model: 'Shure Beta 56A', fact: '"Supercardioid"; null "120° toward the rear"; integrated locking stand adapter; 468 g; dimensions not published.', src: 'S-B56A-UG' }],
+    art: 'smallDynamic',
+    blurb: 'A drum dynamic with a supercardioid pattern and a built-in stand adapter. Needs no power. Its deepest rejection is off to each side of the rear, not straight behind.',
+  },
+  clipDynCard: {
+    id: 'clipDynCard',
+    label: 'Clip-on dynamic, cardioid, on a rim clamp',
+    short: 'CLIP · CARD',
+    transducer: 'dynamic',
+    address: 'end',
+    patterns: [{ id: 'cardioid', label: 'cardioid', prov: { kind: 'sourced', src: 'SN-904-2019', quote: 'Pick-up pattern cardioid' } }],
+    body: {
+      length: { mm: 63, prov: { kind: 'sourced', src: 'SN-904-2019', quote: 'Ø 41 mm, length 63 mm' } },
+      radius: { mm: 20.5, prov: { kind: 'sourced', src: 'SN-904-2019', quote: 'Ø 41 mm' } },
+    },
+    power: 'none needed (dynamic)',
+    mount: 'clip',
+    clip: { reach: placeholder(120, 'the rim clamp’s reach from the hoop to the mic') },
+    examples: [{ model: 'Sennheiser e 904', fact: '"cardioid"; Ø 41 × 63 mm; 125 g; delivered with its MZH 604 rim clamp (clamp size not published).', src: 'SN-904-2019' }],
+    art: 'clipDynamic',
+    blurb: 'A compact dynamic that rides a clamp on the drum’s hoop. Needs no power. Low profile and out of the stand forest — check the clamp suits the hoop and the player agrees.',
+  },
+  rimCondenser: {
+    id: 'rimCondenser',
+    label: 'Condenser on a gooseneck, rim-mounted, cardioid',
+    short: 'COND · RIM',
+    transducer: 'condenser',
+    address: 'end',
+    patterns: [{ id: 'cardioid', label: 'cardioid', prov: { kind: 'sourced', src: 'EW-DM20', quote: 'Polar Pattern Cardioid' } }],
+    // The head is the body that collides; the gooseneck (sourced) is the
+    // reach back to the rim mount.
+    body: { length: placeholder(40, 'the condenser head’s length on its gooseneck'), radius: { mm: 11, prov: { kind: 'sourced', src: 'EW-DM20', quote: 'Dimensions L x D 11.12 x .860 inches (282.44mm x 22mm)' } } },
+    power: 'phantom power (24–48 V)',
+    mount: 'clip',
+    clip: { reach: { mm: 160, prov: { kind: 'trial', src: 'EW-DM20', note: 'the 120.65 mm gooseneck plus a drawing default for the rim mount' } } },
+    examples: [{ model: 'Earthworks DM20 on RM1', fact: '"Cardioid"; 282.44 × 22 mm; gooseneck 120.65 × 9.53 mm; "Peak Acoustic Input 150dB SPL"; "24-48V Phantom"; RM1 rim mount, top or bottom of a tom or snare.', src: 'EW-DM20' }],
+    art: 'gooseneck',
+    blurb: 'A slim condenser on a short gooseneck that clamps to the hoop. Needs phantom power. Keep its head angled toward the drumhead, never flat to it.',
+  },
+} satisfies Record<string, MicType>);
+
 export function micType(id: string): MicType {
   return MIC_TYPES[id] ?? MIC_TYPES.kickDynCard;
 }

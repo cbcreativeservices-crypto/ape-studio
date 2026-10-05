@@ -12,6 +12,7 @@
  */
 import type { InstrumentModel, Part, Shape3, Vec3 } from '../../engine/model/types.ts';
 import { axisLine, box, headCentre, headPart, headSurface, ill, rimOf, shellPart, src, UP } from '../shared/handdrums/handDrumModel.ts';
+import type { HandWords } from '../shared/handdrums/family.ts';
 import { BETWEEN, BONGO_DIMS as D, HEAD_Y, HEMBRA, MACHO, STAND_FLOOR } from './model.ts';
 
 export const DRUMS = [MACHO, HEMBRA] as const;
@@ -96,17 +97,19 @@ export const BONGO_MODEL: InstrumentModel = {
   ports: { knees: null, stand: null },
   mountRule: { boom: 'level', fallback: { x: 1, y: 0, z: 0 }, length: 300 },
   rims: DRUMS.map(rimOf),
-  words: {
-    subject: {
-      knees: 'a pair of bongos held between a seated player’s knees — the macho on the player’s left, the hembra on the right',
-      stand: 'a pair of bongos on a stand — the macho on the player’s left, the hembra on the right',
-    },
-    viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
-    axes: {
-      x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centres (x).', plus: 'front of', minus: 'behind', from: 'centre' },
-      y: { label: 'HEIGHT', blurb: 'Up or down, measured from the seated player’s floor. Distances in the bezel are read from the head the zone names.', plus: 'below', minus: 'above', from: 'the floor line' },
-      z: { label: 'ACROSS', blurb: 'Toward the player’s left (the macho) or right (the hembra).', plus: 'right of', minus: 'left of', from: 'centre' },
-    },
-    where: { inside: 'inside a drum', outside: 'outside the drums' },
+};
+
+/** The scene's words (the lesson's copy: family.ts handCopy). */
+export const BONGO_WORDS: HandWords = {
+  subject: {
+    knees: 'a pair of bongos held between a seated player’s knees — the macho on the player’s left, the hembra on the right',
+    stand: 'a pair of bongos on a stand — the macho on the player’s left, the hembra on the right',
   },
+  viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
+  axes: {
+    x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centres (x).', plus: 'front of', minus: 'behind', from: 'centre' },
+    y: { label: 'HEIGHT', blurb: 'Up or down, measured from the seated player’s floor. Distances in the bezel are read from the head the zone names.', plus: 'below', minus: 'above', from: 'the floor line' },
+    z: { label: 'ACROSS', blurb: 'Toward the player’s left (the macho) or right (the hembra).', plus: 'right of', minus: 'left of', from: 'centre' },
+  },
+  where: { inside: 'inside a drum', outside: 'outside the drums' },
 };

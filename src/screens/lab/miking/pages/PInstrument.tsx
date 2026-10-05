@@ -21,6 +21,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { DockParam } from '../../rack/rackTypes';
 import type { ViewId } from '../engine/model/types.ts';
+import { copyOf } from '../engine/model/copy.ts';
 import { useRig } from '../engine/scene/useRig.ts';
 import { DualView } from '../engine/scene/DualView';
 import { InstrumentFigure } from '../engine/scene/InstrumentFigure';
@@ -32,6 +33,7 @@ import type { PageProps } from './pageTypes';
 
 export function PInstrument({ lesson, art, variant, setVariant, hidden, journey }: PageProps) {
   const model = lesson.model;
+  const C = copyOf(lesson);
   const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: lesson.micTypeIds[0], pattern: 'supercardioid', pose: lesson.zones[0].start }] });
   useEffect(() => {
     if (rig.variant !== variant) rig.setVariant(variant);
@@ -40,7 +42,8 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
   const [partId, setPartId] = useState<string | null>(null);
   const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
   const regions = model.regions;
-  const parts = model.parts.filter((p) => !p.variants || p.variants.includes(variant));
+  const parts = model.parts.filter((p) => (!p.variants || p.variants.includes(variant)) && (!p.listIn || p.listIn.includes(variant)));
+  const variantLabel = model.variants.find((v) => v.id === variant)?.label ?? variant.toUpperCase();
   const partIdx = Math.max(0, parts.findIndex((p) => p.id === partId || (partId === 'kick.reso' && p.id === 'kick.resoPorted')));
 
   const pick = (id: string) => {
@@ -69,15 +72,15 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       {
         kind: 'options',
         id: 'head',
-        label: 'FRONT HEAD',
-        valueLabel: variant === 'ported' ? 'PORTED' : 'INTACT',
+        label: C.variantKey,
+        valueLabel: variantLabel,
         selectedId: variant,
         onSelect: (id) => setVariant(id),
         options: model.variants.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [parts, partIdx, shownPart, seen, view, variant, model.variants],
+    [parts, partIdx, shownPart, seen, view, variant, model.variants, C.variantKey, variantLabel],
   );
 
   const labelFor = (v: ViewId) => sceneLabel(rig, v, [], partId ? `Highlighted: ${shownPart?.label ?? partId}.` : undefined);
@@ -110,8 +113,8 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
             view="side"
             variant={variant}
             title={lesson.title.toUpperCase()}
-            badge="A 22 × 18 in kick, cut open so you can see inside"
-            label={`Side view of a ${model.name}, cut open: the batter head on the player's side with the pedal and beater, the shell, and the front head facing the audience.`}
+            badge={C.instrument.figureBadge}
+            label={C.instrument.figureLabel}
           />
           {lesson.orient.map((f) => (
             <Card key={f.title}>
@@ -130,27 +133,27 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
         render: (w, h) => (
           <DualView rig={rig} art={art} view={view} setView={setView} w={w} h={h} slots={[]} showZones={false} showPolar={false} interactive={!hidden} highlight={partId} onTapPart={pick} labelFor={labelFor} />
         ),
-        badge: 'A 22 × 18 in kick, cut open · tap a part to name it',
+        badge: C.instrument.partsBadge,
         bezel: [
           { k: 'PART', v: shownPart ? shownPart.short.toUpperCase() : 'TAP ONE', flex: 1.4 },
           { k: 'LOOKED AT', v: `${seen.size} / ${parts.length}` },
-          { k: 'FRONT HEAD', v: variant === 'ported' ? 'PORTED' : 'INTACT' },
+          { k: C.variantKey, v: variantLabel },
         ],
         params,
         initialParam: 'part',
       },
       well: (
         <>
-          <Landing looking={`${view === 'side' ? 'Side' : 'Top'} view · the drum cut open`} prompt="Tap any part — or step through PART — to see what it is and what it does. There is nothing to answer on this page." />
+          <Landing looking={C.instrument.partsLooking[view]} prompt="Tap any part — or step through PART — to see what it is and what it does. There is nothing to answer on this page." />
           {shownPart ? (
             <Card>
               <Point title={shownPart.label.toUpperCase()}>{shownPart.role}</Point>
               {region ? <Body>{`WHERE SOUND COMES FROM · ${region.note}`}</Body> : null}
             </Card>
           ) : (
-            <Note>The beater strikes the batter head. Both heads, the air inside, the shell, the tuning and any damping all shape what you hear — the next page shows how.</Note>
+            <Note>{C.instrument.partsIdle}</Note>
           )}
-          {variant === 'intact' ? <Note>An INTACT front head has no port. Switch FRONT HEAD to see a ported one. Work with the drum as the player brings it — no need to cut a port to match a diagram.</Note> : null}
+          {C.instrument.variantNotes[variant] ? <Note>{C.instrument.variantNotes[variant]}</Note> : null}
         </>
       ),
     },

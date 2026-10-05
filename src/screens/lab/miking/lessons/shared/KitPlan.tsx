@@ -1,11 +1,15 @@
 /**
- * KitPlan — the kit seen from above, with the stage or the studio around it
- * (LESSON_JOURNEY §6 stage 3). The lesson's own drum is drawn with ITS art
- * (the kick's top cutaway, unchanged); every neighbour is an illustrated real
- * object built from kitPlanModel.ts — coated heads with their hoops and lugs,
- * a lathed bronze hi-hat on its stand, a padded throne on a tripod, the
- * lesson's two floor monitors — lit from the upper left like the rest of the
- * lab. Positions are ILLUSTRATIVE (said in the badge and the labels).
+ * KitPlan — the shared 5-piece kit seen from above, with the stage or the
+ * studio around it (LESSON_JOURNEY §6 stage 3, §8). Every Lab 1 drum lesson
+ * shows THIS kit (owner ruling 2026-10-05) and lights its own drum.
+ *
+ * Every object is an illustrated real object from the shared drum family
+ * (drums/DrumArt.tsx): coated heads on chrome hoops with their lugs and rods,
+ * the rack toms tilted toward the player on their mount, the floor tom on its
+ * legs, lathed bronze cymbals on boom stands, the hi-hat and its pedal, the
+ * kick and its pedal, a padded throne — lit from the upper left. M01 draws
+ * its own kick with its own art (its top cutaway, the drawing every M01 page
+ * uses). Positions are a typical right-handed layout (the badge says so).
  *
  * Nothing moves (D8). A tap names an item; the dock's ITEM fader is the
  * no-tap path to the same cards.
@@ -14,10 +18,12 @@ import { useMemo, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../rack/stageAspect';
-import type { VariantId, Vec3, Wedge } from '../../engine/model/types.ts';
+import type { SettingItem, VariantId, Vec3, Wedge } from '../../engine/model/types.ts';
 import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
-import { KIT_PLAN as K, PLAN_BOX, planHitTest, type PlanDrum } from './kitPlanModel.ts';
+import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_BOX, PLAN_HARDWARE, planHitTest, planLabelAt, type KitDrumId, type PlanId } from './kitPlanModel.ts';
+import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from './drums/DrumArt';
+import { KICK_22x18 } from './drums/drumSpec.ts';
 
 const AMBER = '#ffc64d';
 const GREY = '#8a8f9c';
@@ -29,36 +35,22 @@ export type KitPlanProps = {
   h: number;
   scene: KitPlanScene;
   variant: VariantId;
-  /** The lesson's own drum, drawn by its art in the TOP view. */
-  Drum: (p: { view: 'top'; variant: VariantId }) => ReactElement;
-  drumBox: { u0: number; u1: number; halfW: number };
-  pedalBox: { u0: number; u1: number; halfW: number };
+  /** The lesson's setting items (labels, and which plan items each stands for). */
+  items: readonly SettingItem[];
+  /** The plan item that is the lesson's own drum (always named). */
+  own: PlanId | readonly PlanId[];
+  /** M01: its own art draws its drum on the plan (the kick's top cutaway). */
+  OwnArt?: (p: { view: 'top'; variant: VariantId }) => ReactElement;
+  /** Where the lesson's frame origin sits on the plan (its wedges are in it). */
+  offset?: Vec3;
   wedges: readonly Wedge[];
-  /** id → the short label to print (from lesson.setting.items). */
-  shortOf: (id: string) => string;
+  /** The chosen ITEM id (lesson.setting.items), or null. */
   highlight: string | null;
-  onTap: (id: string) => void;
+  onTap: (itemId: string) => void;
   accessibilityLabel: string;
 };
 
 /* ── builders (mm) ── */
-function lugsPath(d: PlanDrum): SkPath {
-  const p = Skia.Path.Make();
-  for (let k = 0; k < d.lugs; k++) {
-    const a = (k / d.lugs) * 2 * Math.PI + Math.PI / d.lugs;
-    const c = Math.cos(a);
-    const s = Math.sin(a);
-    const r0 = d.r + 10;
-    const r1 = d.r + 34;
-    const hw = 9;
-    const pt = (r: number, t: number) => ({ x: d.c.u + c * r - s * t, y: d.c.v + s * r + c * t });
-    const q = [pt(r0, -hw), pt(r1, -hw), pt(r1, hw), pt(r0, hw)];
-    p.moveTo(q[0].x, q[0].y);
-    for (const z of q.slice(1)) p.lineTo(z.x, z.y);
-    p.close();
-  }
-  return p;
-}
 function legsPath(c: { u: number; v: number }, r0: number, r1: number, n: number, phase: number): SkPath {
   const p = Skia.Path.Make();
   for (let k = 0; k < n; k++) {
@@ -73,7 +65,7 @@ function lathe(c: { u: number; v: number }, r: number): SkPath {
   for (let q = r * 0.3; q < r - 4; q += 11) p.addCircle(c.u, c.v, q);
   return p;
 }
-function poly(pts: { u: number; v: number }[]): SkPath {
+function poly(pts: readonly { u: number; v: number }[]): SkPath {
   const p = Skia.Path.Make();
   pts.forEach((q, i) => (i === 0 ? p.moveTo(q.u, q.v) : p.lineTo(q.u, q.v)));
   p.close();
@@ -96,71 +88,42 @@ function hatchPath(): SkPath {
   return p;
 }
 
-function PlanDrumArt({ d, hi }: { d: PlanDrum; hi: boolean }) {
-  const lugs = useMemo(() => lugsPath(d), [d]);
-  const legs = useMemo(() => (d.legs ? legsPath(d.c, d.r * 0.4, d.r + 95, d.legs, -Math.PI / 2) : null), [d]);
-  const { u, v } = d.c;
-  return (
-    <Group opacity={d.above ? 0.55 : 1}>
-      <Circle cx={u + 12} cy={v + 16} r={d.r + 30} color="#000" opacity={0.55}>
-        <BlurMask blur={14} style="normal" />
-      </Circle>
-      {legs ? <Path path={legs} style="stroke" strokeWidth={9} color="#9aa0ab" strokeCap="round" /> : null}
-      <Path path={lugs}>
-        <LinearGradient start={vec(u - d.r, v - d.r)} end={vec(u + d.r, v + d.r)} colors={['#eef1f6', '#9aa0ab', '#4a4e57']} />
-      </Path>
-      {/* chrome hoop */}
-      <Circle cx={u} cy={v} r={d.r + 12}>
-        <LinearGradient start={vec(u - d.r, v - d.r)} end={vec(u + d.r, v + d.r)} colors={['#eef1f6', '#9aa0ab', '#3a3d45', '#c8ccd4']} />
-      </Circle>
-      {/* coated head, upper-left light */}
-      <Circle cx={u} cy={v} r={d.r}>
-        <RadialGradient c={vec(u - d.r * 0.35, v - d.r * 0.4)} r={d.r * 1.7} colors={['#fbf8f0', '#ece5d5', '#bdb29c']} />
-      </Circle>
-      <Circle cx={u} cy={v} r={d.r - 14} style="stroke" strokeWidth={2} color="#a99f88" opacity={0.6} />
-      {d.above ? (
-        <Circle cx={u} cy={v} r={d.r + 12} style="stroke" strokeWidth={4} color="#e8eaee">
-          <DashPathEffect intervals={[18, 12]} />
-        </Circle>
-      ) : null}
-      {hi ? <Circle cx={u} cy={v} r={d.r + 46} style="stroke" strokeWidth={9} color={AMBER} /> : null}
-    </Group>
-  );
-}
+export { PLAN_HARDWARE } from './kitPlanModel.ts';
 
 function HiHatArt({ hi }: { hi: boolean }) {
-  const h = K.hihat;
-  const legs = useMemo(() => legsPath(h.c, 30, h.r + 110, 3, Math.PI / 2), []);
-  const rings = useMemo(() => lathe(h.c, h.r), []);
-  const pedal = h.pedal;
+  const h = KIT_CYMBALS.hihat;
+  const c = { u: h.c.x, v: h.c.z };
+  const r = h.d / 2;
+  const legs = useMemo(() => legsPath(c, 30, r + 110, 3, Math.PI / 2), []); // eslint-disable-line react-hooks/exhaustive-deps
+  const rings = useMemo(() => lathe(c, r), []); // eslint-disable-line react-hooks/exhaustive-deps
+  const pedal = KIT.hihatPedal;
   return (
     <Group>
-      <Circle cx={h.c.u + 14} cy={h.c.v + 18} r={h.r + 10} color="#000" opacity={0.5}>
+      <Circle cx={c.u + 14} cy={c.v + 18} r={r + 10} color="#000" opacity={0.5}>
         <BlurMask blur={16} style="normal" />
       </Circle>
       <Path path={legs} style="stroke" strokeWidth={9} color="#9aa0ab" strokeCap="round" />
-      {/* footboard toward the throne (ILLUSTRATIVE) */}
+      {/* footboard toward the throne */}
       <Path path={rr(pedal.u0, pedal.v - pedal.halfW, pedal.u1 - pedal.u0, pedal.halfW * 2, 14)}>
         <LinearGradient start={vec(pedal.u0, pedal.v - pedal.halfW)} end={vec(pedal.u1, pedal.v + pedal.halfW)} colors={['#c8ccd4', '#6c717c', '#2a2c32']} />
       </Path>
-      {/* the top cymbal: lathed bronze, a raised bell, the clutch */}
-      <Circle cx={h.c.u} cy={h.c.v} r={h.r}>
-        <RadialGradient c={vec(h.c.u - h.r * 0.4, h.c.v - h.r * 0.45)} r={h.r * 1.8} colors={['#f6d58f', '#d2a04a', '#9a6a24', '#5e3e12']} />
+      <Circle cx={c.u} cy={c.v} r={r}>
+        <RadialGradient c={vec(c.u - r * 0.4, c.v - r * 0.45)} r={r * 1.8} colors={['#f6d58f', '#d2a04a', '#9a6a24', '#5e3e12']} />
       </Circle>
       <Path path={rings} style="stroke" strokeWidth={1.6} color="#5e3e12" opacity={0.4} />
-      <Circle cx={h.c.u} cy={h.c.v} r={h.r * 0.27}>
-        <RadialGradient c={vec(h.c.u - 14, h.c.v - 16)} r={h.r * 0.4} colors={['#fff0c4', '#d9a85a', '#8a5e1e']} />
+      <Circle cx={c.u} cy={c.v} r={r * 0.27}>
+        <RadialGradient c={vec(c.u - 14, c.v - 16)} r={r * 0.4} colors={['#fff0c4', '#d9a85a', '#8a5e1e']} />
       </Circle>
-      <Circle cx={h.c.u} cy={h.c.v} r={14} color="#1a1b1f" />
-      <Circle cx={h.c.u} cy={h.c.v} r={h.r} style="stroke" strokeWidth={3} color="#7a5418" />
-      {hi ? <Circle cx={h.c.u} cy={h.c.v} r={h.r + 40} style="stroke" strokeWidth={9} color={AMBER} /> : null}
+      <Circle cx={c.u} cy={c.v} r={14} color="#1a1b1f" />
+      <Circle cx={c.u} cy={c.v} r={r} style="stroke" strokeWidth={3} color="#7a5418" />
+      {hi ? <Circle cx={c.u} cy={c.v} r={r + 40} style="stroke" strokeWidth={9} color={AMBER} /> : null}
     </Group>
   );
 }
 
 function ThroneArt({ hi }: { hi: boolean }) {
-  const t = K.throne;
-  const legs = useMemo(() => legsPath(t.c, 40, t.r + 120, 3, Math.PI / 6), []);
+  const t = KIT.throne;
+  const legs = useMemo(() => legsPath(t.c, 40, t.r + 120, 3, Math.PI / 6), [t]);
   return (
     <Group>
       <Path path={legs} style="stroke" strokeWidth={11} color="#7a7f8a" strokeCap="round" />
@@ -174,6 +137,33 @@ function ThroneArt({ hi }: { hi: boolean }) {
         <DashPathEffect intervals={[8, 7]} />
       </Circle>
       {hi ? <Circle cx={t.c.u} cy={t.c.v} r={t.r + 40} style="stroke" strokeWidth={9} color={AMBER} /> : null}
+    </Group>
+  );
+}
+
+/** The double tom holder on the kick: a post and an arm to each rack tom. */
+function TomMountPlan() {
+  const p = useMemo(() => {
+    const post = PLAN_HARDWARE.tomPost;
+    const arms = Skia.Path.Make();
+    for (const id of ['tom1', 'tom2'] as const) {
+      const d = KIT_DRUMS[id];
+      const R = d.spec.d.mm / 2;
+      const dx = post.u - d.c.x;
+      const dz = post.v - d.c.z;
+      const l = Math.hypot(dx, dz);
+      arms.moveTo(post.u, post.v);
+      arms.lineTo(d.c.x + (dx / l) * (R + 20), d.c.z + (dz / l) * (R + 20));
+    }
+    return arms;
+  }, []);
+  const post = PLAN_HARDWARE.tomPost;
+  return (
+    <Group>
+      <Path path={p} style="stroke" strokeWidth={15} strokeCap="round" color="#16171b" />
+      <Path path={p} style="stroke" strokeWidth={10} strokeCap="round" color="#8a8f99" />
+      <Circle cx={post.u} cy={post.v} r={22} color="#1b1c21" />
+      <Circle cx={post.u} cy={post.v} r={22} style="stroke" strokeWidth={4} color="#b6bbc5" />
     </Group>
   );
 }
@@ -209,16 +199,23 @@ function WedgePlan({ at, faces, hi }: { at: Vec3; faces: Vec3; hi: boolean }) {
   );
 }
 
-export function KitPlan({ w, h, scene, variant, Drum, drumBox, pedalBox, wedges, shortOf, highlight, onTap, accessibilityLabel }: KitPlanProps) {
+/** The plan items an item stands for (default: its own id). */
+export function planIdsOf(it: Pick<SettingItem, 'id' | 'planIds'>): readonly string[] {
+  return it.planIds && it.planIds.length ? it.planIds : [it.id];
+}
+
+export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offset = { x: 0, y: 0, z: 0 }, wedges, highlight, onTap, accessibilityLabel }: KitPlanProps) {
   const textScale = useStageTextScale();
   const box = scene === 'kit' ? PLAN_BOX.kit : PLAN_BOX.wide;
   const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
-  const space = useMemo(() => poly(K.playerSpace), []);
-  const stageWedges = scene === 'stage' ? wedges : [];
-  const rug = useMemo(() => rr(-1010, -790, 1700, 1500, 30), []);
+  const space = useMemo(() => poly(KIT.playerSpace), []);
+  const isOwn = (id: string) => (typeof ownIn === 'string' ? ownIn === id : ownIn.includes(id));
+  // The lesson's wedges are in its own frame: onto the plan.
+  const stageWedges = scene === 'stage' ? wedges.filter((wd) => wd.glyph !== 'none').map((wd) => ({ ...wd, p: { x: wd.p.x + offset.x, y: wd.p.y + offset.y, z: wd.p.z + offset.z } })) : [];
+  const rug = useMemo(() => rr(-1010, -790, 1780, 1640, 30), []);
   const audience = useMemo(() => {
     const p = Skia.Path.Make();
-    const u = K.audienceU;
+    const u = KIT.audienceU;
     for (const v of [-420, 0, 420]) {
       p.moveTo(u - 170, v);
       p.lineTo(u + 40, v);
@@ -229,13 +226,13 @@ export function KitPlan({ w, h, scene, variant, Drum, drumBox, pedalBox, wedges,
     return p;
   }, []);
   const walls = useMemo(() => {
-    const r = K.room;
+    const r = KIT.room;
     const p = Skia.Path.Make();
     p.addRect(Skia.XYWHRect(r.u0, r.v0, r.u1 - r.u0, r.v1 - r.v0));
     return p;
   }, []);
   const panels = useMemo(() => {
-    const r = K.room;
+    const r = KIT.room;
     const p = Skia.Path.Make();
     for (let u = r.u0 + 220; u < r.u1 - 200; u += 520) {
       p.addRRect(Skia.RRectXY(Skia.XYWHRect(u, r.v0 + 10, 300, 46), 8, 8));
@@ -243,54 +240,74 @@ export function KitPlan({ w, h, scene, variant, Drum, drumBox, pedalBox, wedges,
     }
     return p;
   }, []);
-  const hi = (id: string) => highlight === id;
+  const booms = useMemo(() => {
+    const p = Skia.Path.Make();
+    const feet = Skia.Path.Make();
+    for (const id of ['crash1', 'crash2', 'ride'] as const) {
+      const f = PLAN_HARDWARE.booms[id];
+      const c = KIT_CYMBALS[id].c;
+      p.moveTo(f.u, f.v);
+      p.lineTo(c.x, c.z);
+      for (let k = 0; k < 3; k++) {
+        const a = Math.PI / 6 + (k * 2 * Math.PI) / 3;
+        feet.moveTo(f.u, f.v);
+        feet.lineTo(f.u + Math.cos(a) * 120, f.v + Math.sin(a) * 120);
+      }
+    }
+    return { p, feet };
+  }, []);
+
+  // Which plan items are lit: those of the chosen item, and the lesson's own drum.
+  const chosen = items.find((i) => i.id === highlight);
+  const litIds = new Set<string>(chosen ? planIdsOf(chosen) : []);
+  const hi = (id: string) => litIds.has(id);
+  const shownHere = (i: SettingItem) => i.scene === 'all' || i.scene === scene;
+  const itemOfPlan = (pid: string) => items.find((i) => shownHere(i) && planIdsOf(i).includes(pid)) ?? null;
 
   const labels: StaticLabel[] = [];
-  const add = (id: string, u: number, v: number, align: StaticLabel['align'], tone?: StaticLabel['tone']) => labels.push({ id, text: shortOf(id), u, v, align, tone: highlight === id ? 'amber' : tone });
-  if (highlight) {
-    // The chosen item's label first: it wins every collision.
-    const at: Record<string, [number, number, StaticLabel['align']]> = {
-      kick: [drumBox.u1 * 0.5, -drumBox.halfW - 60, 'center'],
-      pedal: [pedalBox.u0 + 40, pedalBox.halfW + 70, 'center'],
-      throne: [K.throne.c.u, K.throne.c.v + K.throne.r + 75, 'center'],
-      hihat: [K.hihat.c.u, K.hihat.c.v - K.hihat.r - 40, 'center'],
-      snare: [K.snare.c.u + K.snare.r + 40, K.snare.c.v + 40, 'left'],
-      tom: [K.rackTom.c.u, K.rackTom.c.v - K.rackTom.r - 50, 'center'],
-      floor: [K.floorTom.c.u, K.floorTom.c.v + K.floorTom.r + 75, 'center'],
-      audience: [K.audienceU + 40, 600, 'right'],
-      room: [K.room.u0 + 40, K.room.v0 + 110, 'left'],
-    };
-    for (const wd of stageWedges) at[wd.id] = [wd.p.x, wd.p.z + 340, 'center'];
-    const a = at[highlight];
-    if (a) add(highlight, a[0], a[1], a[2]);
-  }
-  add('kick', drumBox.u1 * 0.5, drumBox.halfW + 70, 'center');
-  add('throne', K.throne.c.u, K.throne.c.v + K.throne.r + 75, 'center');
-  add('hihat', K.hihat.c.u, K.hihat.c.v - K.hihat.r - 40, 'center');
-  add('snare', K.snare.c.u + K.snare.r + 30, K.snare.c.v - 20, 'left');
-  add('floor', K.floorTom.c.u, K.floorTom.c.v + K.floorTom.r + 75, 'center');
-  add('tom', K.rackTom.c.u, K.rackTom.c.v - K.rackTom.r - 50, 'center');
-  add('pedal', pedalBox.u0 + 40, pedalBox.halfW + 70, 'center');
-  for (const wd of stageWedges) add(wd.id, wd.p.x, wd.p.z + 340, 'center');
-  if (scene === 'stage') add('audience', K.audienceU + 40, 600, 'right');
-  if (scene === 'studio') add('room', K.room.u0 + 40, K.room.v0 + 110, 'left');
+  const addItem = (it: SettingItem) => {
+    for (const pid of planIdsOf(it)) {
+      let at = planLabelAt(pid);
+      const wd = stageWedges.find((x) => x.id === pid);
+      if (wd) at = { u: wd.p.x, v: wd.p.z + 340, align: 'center' };
+      if (!at) continue;
+      labels.push({ id: `${it.id}:${pid}`, text: it.short, u: at.u, v: at.v, align: at.align, tone: highlight === it.id ? 'amber' : undefined });
+      break;
+    }
+  };
+  // The chosen item first (it wins every collision), then the lesson's own drum.
+  const visible = items.filter(shownHere);
+  if (chosen) addItem(chosen);
+  const ownItem = visible.find((i) => planIdsOf(i).some((p) => isOwn(p)));
+  if (ownItem) addItem(ownItem);
+  for (const it of visible) addItem(it);
   labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'PLAYER', u: -1000, v: 125, align: 'left', tone: 'illustrative' });
   const seen = new Set<string>();
-  const uniq = labels.filter((l) => (seen.has(l.id) ? false : (seen.add(l.id), true)));
+  const uniq = labels.filter((l) => {
+    const k = l.id.split(':')[0];
+    return seen.has(k) ? false : (seen.add(k), true);
+  });
 
   const tap = (x: number, y: number) => {
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;
-    const id = planHitTest({ kick: drumBox, pedal: pedalBox, wedges: stageWedges.map((wd) => ({ id: wd.id, u: wd.p.x, v: wd.p.z })), scene }, u, v, 20 / xf.s);
-    if (id) onTap(id);
+    const pid = planHitTest({ wedges: stageWedges.map((wd) => ({ id: wd.id, u: wd.p.x, v: wd.p.z })), scene }, u, v, 20 / xf.s);
+    const it = pid ? itemOfPlan(pid) : null;
+    if (it) onTap(it.id);
   };
+  // The lesson's own drum is ringed in amber always (unless its own art draws
+  // it, as M01's kick does); a chosen item is ringed too.
+  const drum = (id: KitDrumId, dim = 1, dashed = false) => (
+    <Group key={id} transform={topTransform(KIT_DRUMS[id])}>
+      <DrumPlan drum={KIT_DRUMS[id]} highlight={hi(id) || (isOwn(id) && !OwnArt)} dim={dim} dashed={dashed} />
+    </Group>
+  );
 
   return (
     <View style={{ width: w, height: h }}>
       <Pressable onPress={(e) => tap(e.nativeEvent.locationX, e.nativeEvent.locationY)} accessible={false} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-            {/* the floor: a rug under the kit (ILLUSTRATIVE), the room's walls in a studio */}
             {scene === 'studio' ? (
               <>
                 <Path path={walls} style="stroke" strokeWidth={40} color="#2a2c32" />
@@ -300,29 +317,37 @@ export function KitPlan({ w, h, scene, variant, Drum, drumBox, pedalBox, wedges,
             ) : null}
             {scene === 'stage' ? (
               <>
-                <Line p1={vec(K.audienceU - 230, -840)} p2={vec(K.audienceU - 230, 940)} color="#5d616c" strokeWidth={8}>
+                <Line p1={vec(KIT.audienceU - 230, -840)} p2={vec(KIT.audienceU - 230, 940)} color="#5d616c" strokeWidth={8}>
                   <DashPathEffect intervals={[40, 26]} />
                 </Line>
                 <Path path={audience} style="stroke" strokeWidth={14} color="#aab0bd" strokeCap="round" strokeJoin="round" />
               </>
             ) : null}
             <Path path={rug}>
-              <LinearGradient start={vec(-1010, -790)} end={vec(690, 710)} colors={['#3a1c1f', '#2a1416', '#1c0d0f']} />
+              <LinearGradient start={vec(-1010, -790)} end={vec(770, 850)} colors={['#3a1c1f', '#2a1416', '#1c0d0f']} />
             </Path>
             <Path path={rug} style="stroke" strokeWidth={6} color="#5a2c30" opacity={0.8} />
-            {/* the player's space (ILLUSTRATIVE keep-out, the lab's grey hatch) */}
+            {/* the player's space (a keep-out, the lab's grey hatch) */}
             <Group clip={space}>
               <Path path={hatchPath()} style="stroke" strokeWidth={4} color={GREY} opacity={0.45} />
             </Group>
             <Path path={space} style="stroke" strokeWidth={4} color={GREY} opacity={0.7} />
+            {/* cymbal stand feet and booms, under everything above them */}
+            <Path path={booms.feet} style="stroke" strokeWidth={9} strokeCap="round" color="#7a7f8a" />
+            <Path path={booms.p} style="stroke" strokeWidth={10} strokeCap="round" color="#5b5f69" />
             <ThroneArt hi={hi('throne')} />
-            <PlanDrumArt d={K.floorTom} hi={hi('floor')} />
-            <PlanDrumArt d={K.snare} hi={hi('snare')} />
-            <Drum view="top" variant={variant} />
-            {hi('kick') ? <Path path={rr(drumBox.u0 - 30, -drumBox.halfW - 30, drumBox.u1 - drumBox.u0 + 60, drumBox.halfW * 2 + 60, 30)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
-            {hi('pedal') ? <Path path={rr(pedalBox.u0 - 24, -pedalBox.halfW - 24, pedalBox.u1 - pedalBox.u0 + 48, pedalBox.halfW * 2 + 48, 20)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
-            <PlanDrumArt d={K.rackTom} hi={hi('tom')} />
+            {drum('floor')}
+            {drum('snare')}
+            {OwnArt && isOwn('kick') ? <OwnArt view="top" variant={variant} /> : <KickFromAbove spec={KICK_22x18} u0={0} z={0} pedal={KIT.kick.pedal} />}
+            {hi('kick') || (isOwn('kick') && !OwnArt) ? <Path path={rr(KIT.kick.hoop.u0 - 30, -KIT.kick.hoop.halfW - 30, KIT.kick.hoop.u1 - KIT.kick.hoop.u0 + 60, KIT.kick.hoop.halfW * 2 + 60, 30)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
+            {hi('pedal') ? <Path path={rr(KIT.kick.pedal.u0 - 24, -KIT.kick.pedal.halfW - 24, KIT.kick.pedal.u1 - KIT.kick.pedal.u0 + 48, KIT.kick.pedal.halfW * 2 + 48, 20)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
+            <TomMountPlan />
+            {drum('tom1', isOwn('kick') ? 0.8 : 1, isOwn('kick'))}
+            {drum('tom2', isOwn('kick') ? 0.8 : 1, isOwn('kick'))}
             <HiHatArt hi={hi('hihat')} />
+            {(['crash1', 'crash2', 'ride'] as const).map((id) => (
+              <CymbalPlan key={id} cx={KIT_CYMBALS[id].c.x} cz={KIT_CYMBALS[id].c.z} d={KIT_CYMBALS[id].d} tiltDeg={KIT_CYMBALS[id].tiltDeg} highlight={hi(id)} dim={hi(id) ? 0.85 : 0.36} />
+            ))}
             {stageWedges.map((wd) => (
               <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={hi(wd.id)} />
             ))}

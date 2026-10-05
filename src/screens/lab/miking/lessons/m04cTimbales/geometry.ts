@@ -8,6 +8,7 @@
  */
 import type { InstrumentModel, Part, Vec3 } from '../../engine/model/types.ts';
 import { axisLine, box, headCentre, headPart, headSurface, ill, rimOf, shellPart, src, UP } from '../shared/handdrums/handDrumModel.ts';
+import type { HandWords } from '../shared/handdrums/family.ts';
 import { BELL, BETWEEN, HEAD_Y, LARGE, LOW_NORMAL, SMALL, TIMB_DIMS as D } from './model.ts';
 
 export const DRUMS = [SMALL, LARGE] as const;
@@ -79,17 +80,19 @@ export const TIMB_MODEL: InstrumentModel = {
   ports: { bell: null, plain: null },
   mountRule: { boom: 'level', fallback: { x: 1, y: 0, z: 0 }, length: 300 },
   rims: DRUMS.map(rimOf),
-  words: {
-    subject: {
-      bell: 'a pair of timbales on their stand with a cowbell on the bracket — the 14 in on the player’s left, the 15 in on the right',
-      plain: 'a pair of timbales on their stand — the 14 in on the player’s left, the 15 in on the right',
-    },
-    viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
-    axes: {
-      x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centres (x).', plus: 'front of', minus: 'behind', from: 'centre' },
-      y: { label: 'HEIGHT', blurb: 'Up or down, measured from the floor. Distances in the bezel are read from the head or edge the zone names.', plus: 'below', minus: 'above', from: 'the floor' },
-      z: { label: 'ACROSS', blurb: 'Toward the player’s left (14 in) or right (15 in).', plus: 'right of', minus: 'left of', from: 'centre' },
-    },
-    where: { inside: 'inside a drum', outside: 'outside the drums' },
+};
+
+/** The scene's words (the lesson's copy: family.ts handCopy). */
+export const TIMB_WORDS: HandWords = {
+  subject: {
+    bell: 'a pair of timbales on their stand with a cowbell on the bracket — the 14 in on the player’s left, the 15 in on the right',
+    plain: 'a pair of timbales on their stand — the 14 in on the player’s left, the 15 in on the right',
   },
+  viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
+  axes: {
+    x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drums’ centres (x).', plus: 'front of', minus: 'behind', from: 'centre' },
+    y: { label: 'HEIGHT', blurb: 'Up or down, measured from the floor. Distances in the bezel are read from the head or edge the zone names.', plus: 'below', minus: 'above', from: 'the floor' },
+    z: { label: 'ACROSS', blurb: 'Toward the player’s left (14 in) or right (15 in).', plus: 'right of', minus: 'left of', from: 'centre' },
+  },
+  where: { inside: 'inside a drum', outside: 'outside the drums' },
 };

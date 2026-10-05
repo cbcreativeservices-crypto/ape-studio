@@ -10,6 +10,7 @@
  */
 import type { InstrumentModel, Part } from '../../engine/model/types.ts';
 import { box, headCentre, headPart, ill, rimOf, src, UP, DOWN } from '../shared/handdrums/handDrumModel.ts';
+import type { HandWords } from '../shared/handdrums/family.ts';
 import { BELLY, COP_DIST, DIAG_N, DJEMBE, DJ_DIMS as D, HEAD_Y, PROFILE, R, R_FOOT, R_OPEN, R_WAIST, SUPPORT, WAIST_Y } from './model.ts';
 
 /** The four foam blocks of the raised setup (ILLUSTRATIVE size 70 × 70 mm). */
@@ -69,19 +70,21 @@ export const DJ_MODEL: InstrumentModel = {
   ports: { floor: null, raised: null },
   mountRule: { boom: 'level', fallback: { x: 1, y: 0, z: 0 }, length: 300 },
   rims: [rimOf(DJEMBE)],
-  words: {
-    subject: {
-      floor: 'a djembe standing upright on the floor, its opening resting on it',
-      raised: 'a djembe raised on four foam blocks, its opening clear of the floor',
-    },
-    viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
-    axes: {
-      x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drum’s centre (x).', plus: 'front of', minus: 'behind', from: 'centre' },
-      y: { label: 'HEIGHT', blurb: 'Up or down, measured from the drum’s foot. Distances in the bezel are read from the surface the zone names.', plus: 'below', minus: 'above', from: 'the foot' },
-      z: { label: 'ACROSS', blurb: 'Toward the player’s left or right.', plus: 'right of', minus: 'left of', from: 'centre' },
-    },
-    where: { inside: 'inside the drum', outside: 'outside the drum' },
+};
+
+/** The scene's words (the lesson's copy: family.ts handCopy). */
+export const DJ_WORDS: HandWords = {
+  subject: {
+    floor: 'a djembe standing upright on the floor, its opening resting on it',
+    raised: 'a djembe raised on four foam blocks, its opening clear of the floor',
   },
+  viewTag: { side: 'SIDE · FROM THE PLAYER’S RIGHT', top: 'TOP · FROM ABOVE' },
+  axes: {
+    x: { label: 'FRONT–BACK', blurb: 'Toward the audience (front) or toward the player (back), measured from the drum’s centre (x).', plus: 'front of', minus: 'behind', from: 'centre' },
+    y: { label: 'HEIGHT', blurb: 'Up or down, measured from the drum’s foot. Distances in the bezel are read from the surface the zone names.', plus: 'below', minus: 'above', from: 'the foot' },
+    z: { label: 'ACROSS', blurb: 'Toward the player’s left or right.', plus: 'right of', minus: 'left of', from: 'centre' },
+  },
+  where: { inside: 'inside the drum', outside: 'outside the drum' },
 };
 
 /** For the tests and the art: the Coppinger line's mic point. */

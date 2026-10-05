@@ -14,8 +14,10 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 import type { CompiledScene, Lesson, MicBody, MicPattern, MicPose, MicSlot, MicState, Readouts, VariantId, Vec3 } from '../model/types.ts';
+import { lineFor, viewsOf } from '../model/types.ts';
 import { checkAssembly, compileScene, constrainMove, pinToSurface, type Blocked, type Bounds } from '../geometry/collision.ts';
 import { deriveReadouts, type ReadoutCtx } from '../geometry/readouts.ts';
+import { zonesAvailable } from '../geometry/zones.ts';
 import { micBodyOf } from '../model/validate.ts';
 import { micType } from '../../data/micTypes.ts';
 import { withStop } from './readoutText.ts';
@@ -53,6 +55,8 @@ export type Rig = {
   setPolarity: (slot: MicSlot, pol: 1 | -1) => void;
   setOn: (slot: MicSlot, on: boolean) => void;
   readouts: (slot: MicSlot) => Readouts;
+  /** The head and line a slot's readouts measure from (usually the shared ones). */
+  refOf: (slot: MicSlot) => { surfaceId: string; lineId: string };
   /** The part that STOPPED the last move (a clear pose that a drag, a fader
    *  or a zone jump could not take further), committed with the pose. The
    *  live strip reads the same value from `blocked`; `shown()` folds it in so
@@ -65,7 +69,9 @@ export type Rig = {
   version: number;
 };
 
-export type RigInit = { variant?: VariantId; mics: { slot: MicSlot; typeId: string; pattern: MicPattern; pose: MicPose; polarity?: 1 | -1; on?: boolean }[] };
+/** `surfaceId`: the head this mic's readouts measure from when it is not the
+ *  rig's shared reference (a bottom mic beside a top one). */
+export type RigInit = { variant?: VariantId; mics: { slot: MicSlot; typeId: string; pattern: MicPattern; pose: MicPose; polarity?: 1 | -1; on?: boolean; surfaceId?: string }[] };
 
 function pinFor(lesson: Lesson, typeId: string): SurfacePin {
   const t = micType(typeId);
@@ -75,17 +81,24 @@ function pinFor(lesson: Lesson, typeId: string): SurfacePin {
   return { top: { min: part.solid.min, max: part.solid.max }, halfWidth: (t.body.width?.mm ?? 0) / 2 };
 }
 
-/** Bounds a mic's front may occupy: the side and top view boxes together. */
-function boundsOf(lesson: Lesson): Bounds {
-  const s = lesson.model.views.side!;
-  const t = lesson.model.views.top!;
+/** Bounds a mic's front may occupy: the side and top view boxes together
+ *  (the variant's own boxes, when it frames another drum). */
+export function boundsOf(lesson: Lesson, variant: VariantId): Bounds {
+  const v = viewsOf(lesson.model, variant);
+  const s = v.side!;
+  const t = v.top!;
   return { min: { x: Math.max(s.u0, t.u0) + 20, y: s.v0 + 20, z: t.v0 + 20 }, max: { x: Math.min(s.u1, t.u1) - 20, y: s.v1 - 20, z: t.v1 - 20 } };
+}
+
+/** The first reference surface / line offered in a variant. */
+function firstSurface(lesson: Lesson, v: VariantId): string {
+  return (lesson.model.surfaces.find((s) => !s.variants || s.variants.includes(v)) ?? lesson.model.surfaces[0])?.id ?? '';
 }
 
 export function useRig(lesson: Lesson, init: RigInit): Rig {
   const [variant, setVariantRaw] = useState<VariantId>(init.variant ?? lesson.model.defaultVariant);
   const scene = useMemo(() => compileScene(lesson.model, variant), [lesson, variant]);
-  const bounds = useMemo(() => boundsOf(lesson), [lesson]);
+  const bounds = useMemo(() => boundsOf(lesson, variant), [lesson, variant]);
   // A surface mic STARTS on its surface, like every later move (a zone's
   // start pose is a point in the zone; the plate rests on the pillow's top).
   // Before this, page 5's boundary plate began floating at the drum's centre
@@ -106,7 +119,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const blockedB = useSharedValue<Blocked>(null);
   const pose = useMemo(() => ({ A: poseA, B: poseB }), [poseA, poseB]);
   const blocked = useMemo(() => ({ A: blockedA, B: blockedB }), [blockedA, blockedB]);
-  const [surfaceId, setSurfaceId] = useState(lesson.model.surfaces[0]?.id ?? '');
+  const [surfaceId, setSurfaceId] = useState(() => firstSurface(lesson, init.variant ?? lesson.model.defaultVariant));
   const [active, setActive] = useState<MicSlot>('A');
   const [version, setVersion] = useState(0);
   const [stop, setStop] = useState<Record<MicSlot, Blocked>>({ A: null, B: null });
@@ -116,7 +129,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const typeB = first('B').typeId;
   const body = useMemo(() => ({ A: micBodyOf(micType(typeA)), B: micBodyOf(micType(typeB)) }), [typeA, typeB]);
   const pin = useMemo(() => ({ A: pinFor(lesson, typeA), B: pinFor(lesson, typeB) }), [lesson, typeA, typeB]);
-  const lineId = lesson.model.lines[0]?.id ?? '';
+  const lineId = useMemo(() => lineFor(lesson.model, variant, surfaceId), [lesson, variant, surfaceId]);
   const ctx = useMemo(() => {
     const mk = (typeId: string, b: MicBody): ReadoutCtx => ({ scene, surfaces: lesson.model.surfaces, lines: lesson.model.lines, zones: lesson.zones, variant, micTypeId: typeId, body: b });
     return { A: mk(typeA, body.A), B: mk(typeB, body.B) };
@@ -174,7 +187,8 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const settle = useCallback(
     (slot: MicSlot, typeId: string, sc: CompiledScene) => {
       const sv = slot === 'A' ? poseA : poseB;
-      const b = micBodyOf(micType(typeId));
+      const t = micType(typeId);
+      const b = micBodyOf(t);
       const pn = pinFor(lesson, typeId);
       let p = sv.value;
       if (pn) p = pinToSurface(p, pn.top, b, pn.halfWidth);
@@ -182,6 +196,14 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
         // Leaving the pillow: lift a stand mic to where a stand mic starts.
         const z = lesson.zones.find((q) => q.requires?.micTypeIds?.includes(typeId) && q.requires?.mount !== 'surface');
         if (z) p = z.start;
+      }
+      // Off this variant's picture (another drum), or a clamp that cannot
+      // reach a hoop from here: start where this mic starts on this drum.
+      const bd = boundsOf(lesson, sc.variant);
+      const off = p.p.x < bd.min.x || p.p.x > bd.max.x || p.p.y < bd.min.y || p.p.y > bd.max.y || p.p.z < bd.min.z || p.p.z > bd.max.z;
+      if (off || (t.mount === 'clip' && checkAssembly(sc, p, b)?.partId === 'clamp')) {
+        const z = zonesAvailable(lesson.zones, sc.variant, typeId, t.mount)[0];
+        if (z) p = pn ? pinToSurface(z.start, pn.top, b, pn.halfWidth) : z.start;
       }
       sv.value = p;
       const hit = checkAssembly(sc, p, b);
@@ -204,8 +226,12 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const setVariant = useCallback(
     (v: VariantId) => {
       const sc = compileScene(lesson.model, v);
-      for (const m of micsRef.current) settle(m.slot, m.typeId, sc);
+      const moved: Partial<Record<MicSlot, MicPose>> = {};
+      for (const m of micsRef.current) moved[m.slot] = settle(m.slot, m.typeId, sc);
+      setMics((prev) => prev.map((m) => (moved[m.slot] ? { ...m, pose: moved[m.slot]! } : m)));
       setVariantRaw(v);
+      // A head that is not on this variant's drum gives way to its first one.
+      setSurfaceId((cur) => (lesson.model.surfaces.some((s) => s.id === cur && (!s.variants || s.variants.includes(v))) ? cur : firstSurface(lesson, v)));
       setVersion((n) => n + 1);
     },
     [lesson, settle],
@@ -218,11 +244,22 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const setOn = useCallback((slot: MicSlot, on: boolean) => setMics((prev) => prev.map((m) => (m.slot === slot ? { ...m, on } : m))), []);
 
   // From the COMMITTED pose (React state), never `.value` during a render.
+  // A slot may read from its own head (a bottom mic beside a top one).
+  const ownB = init.mics.find((m) => m.slot === 'B')?.surfaceId;
+  const ownA = init.mics.find((m) => m.slot === 'A')?.surfaceId;
+  const refs = useMemo(() => {
+    const of = (own: string | undefined) => {
+      const sid = own && lesson.model.surfaces.some((s) => s.id === own && (!s.variants || s.variants.includes(variant))) ? own : surfaceId;
+      return { surfaceId: sid, lineId: sid === surfaceId ? lineId : lineFor(lesson.model, variant, sid) };
+    };
+    return { A: of(ownA), B: of(ownB) };
+  }, [lesson, variant, surfaceId, lineId, ownA, ownB]);
+  const refOf = useCallback((slot: MicSlot) => refs[slot], [refs]);
   const readouts = useCallback(
-    (slot: MicSlot) => deriveReadouts(ctx[slot], (mics.find((m) => m.slot === slot) ?? mics[0]).pose, surfaceId, lineId),
-    [ctx, mics, surfaceId, lineId],
+    (slot: MicSlot) => deriveReadouts(ctx[slot], (mics.find((m) => m.slot === slot) ?? mics[0]).pose, refs[slot].surfaceId, refs[slot].lineId),
+    [ctx, mics, refs],
   );
   const shown = useCallback((slot: MicSlot) => withStop(readouts(slot), stop[slot]), [readouts, stop]);
 
-  return { lesson, variant, setVariant, scene, bounds, mics, pose, blocked, body, pin, ctx, surfaceId, setSurfaceId, lineId, active, setActive, moveTo, jumpTo, commit, setType, setPattern, setPolarity, setOn, readouts, stop, shown, version };
+  return { lesson, variant, setVariant, scene, bounds, mics, pose, blocked, body, pin, ctx, surfaceId, setSurfaceId, lineId, refOf, active, setActive, moveTo, jumpTo, commit, setType, setPattern, setPolarity, setOn, readouts, stop, shown, version };
 }

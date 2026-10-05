@@ -30,6 +30,7 @@ import { gradeSetup } from '../src/screens/lab/miking/engine/progress/setupGrade
 import { validateQuickCheck } from '../src/screens/lab/miking/engine/journey.ts';
 import { PAGE_IDS, type PatternId, type Shape3 } from '../src/screens/lab/miking/engine/model/types.ts';
 import { MIC_TYPES } from '../src/screens/lab/miking/data/micTypes.ts';
+import { copyOf } from '../src/screens/lab/miking/engine/model/copy.ts';
 import { LESSONS } from '../src/screens/lab/miking/data/registry.ts';
 import { lessonById } from '../src/screens/lab/miking/data/lessons.ts';
 import { HAND_DRUM_CONTENT } from '../src/screens/lab/miking/lessons/shared/handdrums/content.ts';
@@ -100,11 +101,13 @@ describe('each lesson validates and its zones are reachable', () => {
     });
     it(`${id}: each zone is drawn where it is tested (the start sits inside its drawn region, both views)`, () => {
       for (const z of lesson.zones) {
-        assert.ok(z.draw?.side && z.draw?.top, `${z.id} draws itself`);
+        const side = z.drawn?.side;
+        const top = z.drawn?.top;
+        assert.ok(side && top && 'u0' in side && 'u0' in top, `${z.id} draws itself as a region`);
         const p = z.start.p;
         const inside = (r: { u0: number; u1: number; v0: number; v1: number }, u: number, v: number) => u >= r.u0 - 1 && u <= r.u1 + 1 && v >= r.v0 - 1 && v <= r.v1 + 1;
-        assert.ok(inside(z.draw.side, p.x, p.y), `${z.id} side`);
-        assert.ok(inside(z.draw.top, p.x, p.z), `${z.id} top`);
+        assert.ok(inside(side, p.x, p.y), `${z.id} side`);
+        assert.ok(inside(top, p.x, p.z), `${z.id} top`);
       }
     });
     it(`${id}: with the default mic, two different zones can be rested in (the placement activity is reachable)`, () => {
@@ -220,7 +223,8 @@ describe('the engine extensions (frustum, outline, mounts)', () => {
     const ok = lesson.zones.find((z) => z.id === 'cg.clip.tumba')!.start;
     assert.equal(checkAssembly(scene, ok, body), null);
     const far = { ...ok, p: { ...ok.p, x: ok.p.x + 300, y: ok.p.y - 200 } };
-    assert.equal(checkAssembly(scene, far, body)?.partId, 'gooseneck');
+    assert.equal(body.reach, 140, 'the gooseneck is the clamp’s reach');
+    assert.equal(checkAssembly(scene, far, body)?.partId, 'clamp');
   });
   it('a zone’s aim band: “40–60°” refuses 30° and 70°, takes 50°', () => {
     const lesson = L('M05');
@@ -278,6 +282,10 @@ describe('the checks follow the item-writing rules (LESSON_JOURNEY §5)', () => 
     it(`${id}: the practice page’s contract — the ids PPractice reads, both briefs pass ≥ 2 setups on their reasons`, () => {
       for (const k of ['k.prac.gain', 'k.prac.3', 'k.mix.1', 'k.mix.2', 'k.mix.3']) assert.ok(lesson.scenarios.some((s) => s.id === k && s.page === 'practice'), k);
       assert.ok(lesson.orderTasks.some((t) => t.id === 'k.prac.order'));
+      // The shared practice page reads its card ids from the lesson's copy.
+      const P = copyOf(lesson).practice;
+      for (const k of [P.gain, P.second, ...P.mixed]) assert.ok(lesson.scenarios.some((s) => s.id === k && s.page === 'practice'), `copy.practice ${k}`);
+      assert.equal(P.mixed.length, 3);
       const REQUIRED = ['r.doc', 'r.clear', 'r.power'];
       for (const t of lesson.setupTasks) {
         const ok = t.setups.filter((s) => s.ok);

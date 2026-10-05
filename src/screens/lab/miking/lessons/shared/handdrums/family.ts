@@ -5,7 +5,39 @@
  * the learner-text test walks it with the rest of the lesson data. Pure data.
  */
 import type { Lesson, MicPattern, MicPose, VariantId, ViewId } from '../../../engine/model/types.ts';
+import type { LessonCopy } from '../../../engine/model/copy.ts';
 import type { HandDrum } from './handDrumModel.ts';
+
+/** A hand-drum scene in words (each lesson's geometry.ts): the subject per
+ *  setup, the view tags, POSITION's axes ("86 cm above base": `plus` /
+ *  `minus` and the point measured `from`), and inside / outside. */
+export type HandWords = {
+  subject: Partial<Record<VariantId, string>>;
+  viewTag: Record<ViewId, string>;
+  axes: Record<'x' | 'y' | 'z', { label: string; blurb: string; plus: string; minus: string; from: string }>;
+  where: { inside: string; outside: string };
+};
+
+/** The lesson's copy (engine/model/copy.ts) from its scene words. The pages
+ *  the family shares with the kit drums (microphone, troubleshoot, practice)
+ *  read the practice ids; the family's own pages carry their words in `hand`. */
+export function handCopy(w: HandWords): Partial<LessonCopy> {
+  const ax = (a: HandWords['axes']['x']) => ({ label: a.label, blurb: a.blurb, plus: `${a.plus} ${a.from}`, minus: `${a.minus} ${a.from}` });
+  return {
+    sceneSubject: w.subject,
+    viewTag: w.viewTag,
+    axes: { x: ax(w.axes.x), y: ax(w.axes.y), z: ax(w.axes.z) },
+    where: w.where,
+    // The drums are drawn whole, not cut open.
+    viewWords: { side: 'Side view,', top: 'Top view,' },
+    practice: {
+      gain: 'k.prac.gain',
+      second: 'k.prac.3',
+      mixed: ['k.mix.1', 'k.mix.2', 'k.mix.3'],
+      mixedIntro: 'Three cards from earlier pages, mixed: a reference head, a pattern’s null, and polarity versus delay.',
+    },
+  };
+}
 
 /** One way of striking, on the head seen from above (HOW IT SOUNDS). `frac`
  *  = how far from the centre the strike lands (0 centre … 1 edge) — a

@@ -82,7 +82,7 @@ export function axisLine(d: HandDrum): RefLine {
 
 /** The rim a clip mount clamps to (its top edge). */
 export function rimOf(d: HandDrum): Rim {
-  return { c: { x: d.c.x, y: d.headY - d.rim.rise, z: d.c.z }, r: d.R + d.rim.t };
+  return { id: `${d.id}.rim`, label: `the ${d.name}’s rim`, c: { x: d.c.x, y: d.headY - d.rim.rise, z: d.c.z }, axis: UP, r: d.R + d.rim.t };
 }
 
 /** The rim's top, y. */

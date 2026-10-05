@@ -40,21 +40,48 @@ export function surfaceDistance(surfaces: ReferenceSurface[], id: string, pose: 
   return s ? dot(sub(pose.p, s.point), s.normal) : NaN;
 }
 
-/** Distance of the pose from a reference line (NaN when unknown). */
+/** Distance of the pose from a reference line (NaN when unknown). A line
+ *  with an `offset` reads SIGNED: the distance minus the offset (a drum's
+ *  centre line with offset = its radius: negative = in over the head). */
 export function lineDistance(lines: RefLine[], id: string, pose: MicPose): number {
   'worklet';
   const l = findLine(lines, id);
-  return l ? distToLine(pose.p, l.point, l.dir) : NaN;
+  return l ? distToLine(pose.p, l.point, l.dir) - (l.offset ?? 0) : NaN;
+}
+
+/** Does the mic's front axis, followed forward, meet the surface's plane
+ *  within `r` of its point? (A ray–disc test; false when it points away.) */
+export function aimsAt(s: ReferenceSurface, r: number, pose: MicPose): boolean {
+  'worklet';
+  const a = aimVec(pose.az, pose.el);
+  const den = dot(a, s.normal);
+  if (Math.abs(den) < 1e-9) return false;
+  const t = dot(sub(s.point, pose.p), s.normal) / den;
+  if (t <= 0) return false;
+  const hit = { x: pose.p.x + a.x * t, y: pose.p.y + a.y * t, z: pose.p.z + a.z * t };
+  const d = sub(hit, s.point);
+  return Math.sqrt(dot(d, d)) <= r;
 }
 
 /** Inclusive band edges, with 0.01 mm of float slack. */
 const EPS = 0.01;
 
+function variantOk(rq: NonNullable<DocumentedZone['requires']>, v: VariantId): boolean {
+  'worklet';
+  if (rq.variant && rq.variant !== v) return false;
+  if (rq.variants) {
+    let ok = false;
+    for (let i = 0; i < rq.variants.length; i++) if (rq.variants[i] === v) ok = true;
+    if (!ok) return false;
+  }
+  return true;
+}
+
 export function inZone(zone: DocumentedZone, ctx: ZoneCtx, pose: MicPose): boolean {
   'worklet';
   const rq = zone.requires;
   if (rq) {
-    if (rq.variant && rq.variant !== ctx.variant) return false;
+    if (!variantOk(rq, ctx.variant)) return false;
     if (rq.mount && rq.mount !== ctx.mount) return false;
     if (rq.micTypeIds) {
       let ok = false;
@@ -77,6 +104,15 @@ export function inZone(zone: DocumentedZone, ctx: ZoneCtx, pose: MicPose): boole
     if (off > zone.aim.maxOffAxis + EPS) return false;
     if (zone.aim.minOffAxis != null && off < zone.aim.minOffAxis - EPS) return false;
   }
+  if (zone.aimAt) {
+    const s = findSurface(ctx.surfaces, zone.aimAt.surface);
+    if (!s || !aimsAt(s, zone.aimAt.r, pose)) return false;
+  }
+  if (zone.box) {
+    const b = zone.box;
+    const p = pose.p;
+    if (p.x < b.min.x - EPS || p.x > b.max.x + EPS || p.y < b.min.y - EPS || p.y > b.max.y + EPS || p.z < b.min.z - EPS || p.z > b.max.z + EPS) return false;
+  }
   if (zone.radial) {
     const r = lineDistance(ctx.lines, zone.radial.line, pose);
     if (!(r === r)) return false;
@@ -98,7 +134,7 @@ export function zonesAvailable(zones: DocumentedZone[], variant: VariantId, micT
   return zones.filter((z) => {
     const rq = z.requires;
     if (!rq) return true;
-    if (rq.variant && rq.variant !== variant) return false;
+    if (!variantOk(rq, variant)) return false;
     if (rq.mount && rq.mount !== mount) return false;
     if (rq.micTypeIds && !rq.micTypeIds.includes(micTypeId)) return false;
     return true;

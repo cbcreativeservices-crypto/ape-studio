@@ -9,8 +9,8 @@
  * that page's contract.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
-import type { HandLesson } from '../shared/handdrums/family.ts';
-import { DJ_MODEL } from './geometry.ts';
+import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
+import { DJ_MODEL, DJ_WORDS } from './geometry.ts';
 import { DJEMBE, DJ_DIMS as D, DJ_ZONES, HEAD_Y } from './model.ts';
 
 const pages: Record<PageId, PageContent> = {
@@ -635,6 +635,7 @@ export const M05_LESSON: HandLesson = {
   title: 'Djembe',
   subtitle: 'A goblet drum: one mic above first, a low mic only if it helps',
   noun: { one: 'djembe', many: 'djembes' },
+  copy: handCopy(DJ_WORDS),
   model: DJ_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc'],
   zones: DJ_ZONES,

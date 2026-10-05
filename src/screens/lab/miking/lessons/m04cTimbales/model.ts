@@ -75,7 +75,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
     radial: { line: 'between', max: BETWEEN.r, prov: ill('"between pair of drums": a 4 cm radius about x = 4.5 cm, on the audience side, is the lab’s drawing of it') },
     requires: { micTypeIds: STAND },
     aim: aim(30, '"aiming down": ±30° of straight down is the lab’s tolerance'),
-    draw: drawAbove(HEAD_Y, JUST_ABOVE, { u0: BETWEEN.x - BETWEEN.r, u1: BETWEEN.x + BETWEEN.r }, { u0: BETWEEN.x - BETWEEN.r, u1: BETWEEN.x + BETWEEN.r, v0: -BETWEEN.r, v1: BETWEEN.r, round: true }),
+    drawn: drawAbove(HEAD_Y, JUST_ABOVE, { u0: BETWEEN.x - BETWEEN.r, u1: BETWEEN.x + BETWEEN.r }, { u0: BETWEEN.x - BETWEEN.r, u1: BETWEEN.x + BETWEEN.r, v0: -BETWEEN.r, v1: BETWEEN.r, round: true }),
     start: { p: { x: 62, y: HEAD_Y - 100, z: 0 }, az: 0, el: -80 },
     tendency: 'A coherent pair on one channel with the fewest mics. Bells and spill may be strong in it; shift or re-aim if one drum or the shell pattern is weak — and check the whole phrase.',
     checks: ['Clear of every stick stroke — heads, rims and shells', 'Both drums, rimshots and the cáscara', 'How loud the bell is in it'],
@@ -93,7 +93,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
     bandProv: ill('"right in between the shells": the shells’ depth below the heads (sourced, 6½ in) is drawn as the height band'),
     radial: { line: 'centre', max: SMALL.R, prov: ill('"in between the shells": within the smaller drum’s radius of the pair’s centre line — the shells themselves bound it') },
     requires: { micTypeIds: STAND },
-    draw: {
+    drawn: {
       side: { u0: 40, u1: SMALL.R, v0: HEAD_Y, v1: HEAD_Y + TIMB_DIMS.depth.mm },
       top: { u0: 40, u1: SMALL.R, v0: -55, v1: 45 },
     },
@@ -115,7 +115,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
     radial: { line: `${d.id}.axis`, max: d.R, prov: ill('"beneath": within the drum’s radius of its centre line') },
     requires: { micTypeIds: STAND },
     aim: { maxOffAxis: 60, prov: ill('"pointed outwards towards their rims": within 60° of straight up is the lab’s tolerance') },
-    draw: {
+    drawn: {
       side: { u0: d.c.x - d.R, u1: d.c.x + d.R, v0: d.bottomY + JUST_BELOW.min, v1: d.bottomY + JUST_BELOW.max },
       top: { u0: d.c.x - d.R, u1: d.c.x + d.R, v0: d.c.z - d.R, v1: d.c.z + d.R, round: true },
     },
@@ -137,7 +137,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
     radial: { line: `${d.id}.axis`, min: d.R * 0.5, max: d.R + 40, prov: ill('"at the rim": the outer half of the head to 4 cm past the rim is the lab’s drawing of it') },
     requires: { micTypeIds: ['hdClip'] },
     aim: aim(60, 'aimed across the head: ±60° of straight down is the lab’s tolerance'),
-    draw: drawAbove(HEAD_Y, JUST_ABOVE, { u0: d.c.x + d.R * 0.5, u1: d.c.x + d.R + 40 }, { u0: d.c.x - d.R - 40, u1: d.c.x + d.R + 40, v0: d.c.z - d.R - 40, v1: d.c.z + d.R + 40, round: true }),
+    drawn: drawAbove(HEAD_Y, JUST_ABOVE, { u0: d.c.x + d.R * 0.5, u1: d.c.x + d.R + 40 }, { u0: d.c.x - d.R - 40, u1: d.c.x + d.R + 40, v0: d.c.z - d.R - 40, v1: d.c.z + d.R + 40, round: true }),
     start: { p: { x: d.c.x + d.R - 25, y: HEAD_Y - 70, z: d.c.z }, az: 0, el: -50 },
     tendency: 'Independent control of each drum; the mic confirms the count, not a geometry. Check the clamp, the stick path and the combined sound.',
     checks: ['The player agrees, and the clamp fits', 'Clear of the stick on the head, the rim and the shell', 'Stand or clamp noise; the pair in mono'],

@@ -13,6 +13,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../../theme/tokens';
 import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
 import type { ViewId } from '../model/types.ts';
+import { viewsOf } from '../model/types.ts';
 import { fitPair } from '../geometry/frame.ts';
 import { PlacementScene, liveReserve, type PlacementSceneProps } from './PlacementScene';
 
@@ -29,7 +30,7 @@ export function DualView(props: DualViewProps) {
   const { rig, w, h, view, setView, labelFor } = props;
   const inFull = useContext(StageInFullScreen);
   const textScale = useStageTextScale();
-  const box = rig.lesson.model.views;
+  const box = viewsOf(rig.lesson.model, rig.variant);
   const other: ViewId = view === 'side' ? 'top' : 'side';
   const stacked = inFull && box.side && box.top;
   const portrait = h >= w * 0.75;

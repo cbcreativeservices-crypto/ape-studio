@@ -9,8 +9,8 @@
  * that page's contract.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
-import type { HandLesson } from '../shared/handdrums/family.ts';
-import { TIMB_MODEL } from './geometry.ts';
+import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
+import { TIMB_MODEL, TIMB_WORDS } from './geometry.ts';
 import { HEAD_Y, LARGE, SMALL, TIMB_DIMS as D, TIMB_ZONES } from './model.ts';
 
 const pages: Record<PageId, PageContent> = {
@@ -636,6 +636,7 @@ export const M04C_LESSON: HandLesson = {
   title: 'Timbales',
   subtitle: 'Heads, rims and shells: one mic above, spots, or under',
   noun: { one: 'pair of timbales', many: 'timbales' },
+  copy: handCopy(TIMB_WORDS),
   model: TIMB_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc', 'hdClip'],
   zones: TIMB_ZONES,

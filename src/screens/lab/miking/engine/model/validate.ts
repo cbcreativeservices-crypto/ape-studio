@@ -10,7 +10,7 @@ import { inZone } from '../geometry/zones.ts';
 import { validateQuickCheck } from '../journey.ts';
 
 export function micBodyOf(t: MicType): MicBody {
-  return { length: t.body.length.mm, radius: t.body.radius.mm, mount: t.mount, surfacePartId: t.surfacePartId, ...(t.neck ? { neck: t.neck.mm } : {}) };
+  return { length: t.body.length.mm, radius: t.body.radius.mm, mount: t.mount, surfacePartId: t.surfacePartId, ...(t.clip ? { reach: t.clip.reach.mm } : {}) };
 }
 
 export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>): string[] {
@@ -58,7 +58,8 @@ export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>
     if (!t) continue;
     if (z.requires?.mount && z.requires.mount !== t.mount) out.push(`zone ${z.id}: first mic type's mount is not ${z.requires.mount}`);
     const body = micBodyOf(t);
-    const variants = z.requires?.variant ? [z.requires.variant] : [...variantIds];
+    const variants = z.requires?.variant ? [z.requires.variant] : z.requires?.variants ? [...z.requires.variants] : [...variantIds];
+    for (const v of variants) if (!variantIds.has(v)) out.push(`zone ${z.id}: variant ${v} is not a variant`);
     for (const v of variants) {
       const scene = compileScene(m, v);
       let pose = z.start;

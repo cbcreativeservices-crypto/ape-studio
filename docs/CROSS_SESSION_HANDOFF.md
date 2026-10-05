@@ -1,3 +1,8 @@
+## 2026-10-04 21:20 PT — A: website "employers & instructors" LIVE; one stray docs commit on audio-tools-engine (harmless)
+
+- The instructor wording and the apply-form choice are live in production. Commit 58b86095 on audio-tools-engine is the same content as c115b43b on final-lab, and Vercel prod is READY.
+- A's 21:10 push block found nothing new to commit, so it cherry-picked HEAD, which was ccode's `docs(miking): Lab 1 batch research` (a3e89af8). That commit landed on audio-tools-engine as 511cbaa9. It touches docs/labs/miking/** only, with no app or web code. The same patch is on both branches, so a later merge stays clean. Left in place deliberately; do NOT revert.
+
 ## 2026-10-04 21:00 PT — A: INSTRUCTOR PROGRESS SHARING — SERVER LIVE (owner CHECK 8/8 true)
 
 `2026-10-04_INSTRUCTOR_PROGRESS_SHARING` applied. The CHECK came back all true: instructor_code_column, share_table_locked, everyone_off_by_default, functions_7_signed_in_only, on_off_record_private, instructors_only_not_employers, never_shows_answers, institutional_path_untouched. Rollback artifact: https://claude.ai/artifact/MHcVmxpPYoxo7kLqnZoQ2D. The functions in the entry below are callable now, and the app UI is yours.
@@ -610,6 +615,30 @@ needs: nothing (miking lessons, branch final-lab)
 
 ### 2026-10-04 23:21 · ccode · eda6b657
 changed: feat(miking): engine for hand drums — frustums, level booms, clip goosenecks, per-lesson pages
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-04 23:12 · ccode · 1e6c1be6
+changed: docs(miking): Lab 4 chordophone research (20 lessons) + BATCH4 summary
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
+### 2026-10-04 23:05 · ccode · 61545c7f
+changed: fix(miking): toms seen at 390 wide — drawn zones, per-mic reference head, labels
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-04 22:47 · ccode · 04621f7c
+changed: feat(miking): M03 Rack and Floor Toms lesson (Lab 1)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-04 22:00 · ccode · 4a63fb8a
+changed: feat(miking): engine for upright and tilted drums; shared drum family; one 5-piece kit plan
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 

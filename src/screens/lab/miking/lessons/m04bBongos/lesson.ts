@@ -9,8 +9,8 @@
  * that page's contract.
  */
 import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
-import type { HandLesson } from '../shared/handdrums/family.ts';
-import { BONGO_MODEL } from './geometry.ts';
+import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
+import { BONGO_MODEL, BONGO_WORDS } from './geometry.ts';
 import { BETWEEN, BONGO_DIMS as D, BONGO_ZONES, HEAD_Y, HEMBRA, MACHO } from './model.ts';
 
 const pages: Record<PageId, PageContent> = {
@@ -636,6 +636,7 @@ export const M04B_LESSON: HandLesson = {
   title: 'Bongos',
   subtitle: 'A small pair: one mic between, two spots, or clip-ons',
   noun: { one: 'pair of bongos', many: 'bongos' },
+  copy: handCopy(BONGO_WORDS),
   model: BONGO_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc', 'hdClip'],
   zones: BONGO_ZONES,

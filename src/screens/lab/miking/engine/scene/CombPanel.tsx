@@ -17,7 +17,7 @@ import { useDerivedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../../../theme/tokens';
 import type { MicPattern, Vec3 } from '../model/types.ts';
 import { isModelled } from '../physics/polar.ts';
-import { C20, COMB_FLOOR_DB, EQUAL_PATH_MM, combDb, deltaTms, effectivePolarity, micGain, notchesHz, pathDiffMm } from '../physics/twoMic.ts';
+import { C20, COMB_FLOOR_DB, EQUAL_PATH_MM, combDb, deltaTms, effectivePolarity, micGain, notchesHz, oppositeSign, pathDiffMm, type OppositePlane } from '../physics/twoMic.ts';
 import { dist } from '../geometry/vec.ts';
 import type { Rig } from './useRig.ts';
 
@@ -28,7 +28,7 @@ const N = 256;
 const BLUE = '#6fa8ff';
 const AMBER = '#ffc64d';
 
-export function CombPanel({ rig, source, w, h, label }: { rig: Rig; source: Vec3; w: number; h: number; label: string }) {
+export function CombPanel({ rig, source, w, h, label, opposite = null }: { rig: Rig; source: Vec3; w: number; h: number; label: string; opposite?: OppositePlane }) {
   const a = rig.pose.A;
   const b = rig.pose.B;
   const mA = rig.mics.find((m) => m.slot === 'A');
@@ -53,7 +53,8 @@ export function CombPanel({ rig, source, w, h, label }: { rig: Rig; source: Vec3
     const pb = b.value;
     const gA = isModelled(patA) ? micGain(patA, pa, source) : 1000 / Math.max(1, dist(pa.p, source));
     const gB = isModelled(patB) ? micGain(patB, pb, source) : 1000 / Math.max(1, dist(pb.p, source));
-    return { gA: Math.abs(gA), gB: Math.abs(gB), s: effectivePolarity(pol, gA, gB) };
+    const side = oppositeSign(opposite, pa.p, pb.p);
+    return { gA: Math.abs(gA), gB: Math.abs(gB), s: (effectivePolarity(pol, gA, gB) * side) as 1 | -1 };
   });
   const curve = useDerivedValue(() => {
     const p = Skia.Path.Make();

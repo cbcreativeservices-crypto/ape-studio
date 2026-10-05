@@ -31,7 +31,7 @@ export const HAND_DRUM_MIC_TYPES: Record<string, MicType> = {
     power: 'none needed (dynamic)',
     mount: 'stand',
     examples: [{ model: 'Shure SM57', fact: '"Dynamic (moving coil)"; "Cardioid"; 157 mm long, 32 mm grille, 23 mm tail; no max SPL printed.', src: 'S-SM57-UG' }],
-    art: 'kickDynamic',
+    art: 'smallDynamic',
     blurb: 'A rugged, compact dynamic with a cardioid pattern — a practical close choice amid a loud band. Needs no power.',
   },
   hdDynHyper: {
@@ -51,7 +51,7 @@ export const HAND_DRUM_MIC_TYPES: Record<string, MicType> = {
       { model: 'Audix D2', fact: 'hypercardioid; 100 mm × Ø 39 mm (widest); applications "Rack tom, floor tom congas"; "in excess of 144 dB".', src: 'AX-D2' },
       { model: 'Audix D4', fact: 'same body; applications include "djembe".', src: 'AX-D4' },
     ],
-    art: 'kickDynamic',
+    art: 'smallDynamic',
     blurb: 'A short-bodied dynamic with a tight hypercardioid pattern, made to sit close to a drumhead without crowding the player. Needs no power.',
   },
   hdSdc: {
@@ -85,11 +85,12 @@ export const HAND_DRUM_MIC_TYPES: Record<string, MicType> = {
       length: { mm: 50, prov: src('MKT-4099', 'Microphone Length: "1.97" (50mm)" (retailer listing)') },
       radius: { mm: 9, prov: unk('the capsule’s diameter (the listing’s 5.7 mm looks like the gooseneck; drawing default Ø 18 mm)'), placeholder: true },
     },
-    neck: { mm: 140, prov: src('MKT-4099', 'Gooseneck Length: "5.5" (140mm)" (retailer listing)') },
     power: 'phantom power through its adapter',
     mount: 'clip',
+    // The gooseneck is the clamp's reach from the rim to the capsule.
+    clip: { reach: { mm: 140, prov: src('MKT-4099', 'Gooseneck Length: "5.5" (140mm)" (retailer listing)') } },
     examples: [{ model: 'DPA 4099', fact: 'touring case: "4099s on high and low congas, the bongos, two toms and two timbales"; listing: supercardioid, 50 mm, gooseneck 140 mm, 145 dB SPL peak.', src: 'DPA-JB' }],
-    art: 'clipMini',
+    art: 'gooseneck',
     blurb: 'A tiny condenser on a short gooseneck that clips to the rim and moves with the drum — little stage space, independent control. Needs phantom power through its adapter.',
   },
 };
