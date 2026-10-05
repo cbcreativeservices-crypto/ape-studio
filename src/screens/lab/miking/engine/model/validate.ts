@@ -10,7 +10,7 @@ import { inZone } from '../geometry/zones.ts';
 import { validateQuickCheck } from '../journey.ts';
 
 export function micBodyOf(t: MicType): MicBody {
-  return { length: t.body.length.mm, radius: t.body.radius.mm, mount: t.mount, surfacePartId: t.surfacePartId };
+  return { length: t.body.length.mm, radius: t.body.radius.mm, mount: t.mount, surfacePartId: t.surfacePartId, ...(t.neck ? { neck: t.neck.mm } : {}) };
 }
 
 export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>): string[] {

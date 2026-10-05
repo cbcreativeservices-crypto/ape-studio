@@ -27,6 +27,7 @@ export function readoutWords(rig: Rig, slot: MicSlot): ReadoutWords {
 }
 
 export function micWords(rig: Rig, slot: MicSlot): MicDescription {
+  const where = rig.lesson.model.words?.where;
   const m = rig.mics.find((q) => q.slot === slot) ?? rig.mics[0];
   const t = micType(m.typeId);
   // The readouts as SHOWN (with the stop reason): the same value the bezel
@@ -41,13 +42,16 @@ export function micWords(rig: Rig, slot: MicSlot): MicDescription {
     ...refLabels(rig),
     zoneLabel: z ? `${z.label}, ${z.band}` : null,
     showAim: t.mount !== 'surface',
+    ...(where ? { where } : {}),
   };
 }
 
 export function sceneDescription(rig: Rig, view: ViewId, slots: MicSlot[], extra?: string): SceneDescription {
   const variant = rig.lesson.model.variants.find((v) => v.id === rig.variant);
-  const subject = `a ${rig.lesson.model.name} with ${variant?.id === 'intact' ? 'an intact' : 'a ported'} front head`;
-  return { view, subject, mics: slots.filter((s) => rig.mics.some((m) => m.slot === s && m.on)).map((s) => micWords(rig, s)), extra };
+  const w = rig.lesson.model.words;
+  const subject = w?.subject?.[rig.variant] ?? `a ${rig.lesson.model.name} with ${variant?.id === 'intact' ? 'an intact' : 'a ported'} front head`;
+  const viewWords = w?.viewTag ? (view === 'side' ? 'Side view' : 'Top view') + ',' : undefined;
+  return { view, subject, mics: slots.filter((s) => rig.mics.some((m) => m.slot === s && m.on)).map((s) => micWords(rig, s)), extra, ...(viewWords ? { viewWords } : {}) };
 }
 
 export function sceneLabel(rig: Rig, view: ViewId, slots: MicSlot[], extra?: string): string {

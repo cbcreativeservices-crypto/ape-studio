@@ -72,8 +72,10 @@ export function inZone(zone: DocumentedZone, ctx: ZoneCtx, pose: MicPose): boole
   if (zone.aim) {
     const s = findSurface(ctx.surfaces, zone.refSurface);
     if (!s) return false;
-    const off = angleBetween(aimVec(pose.az, pose.el), { x: -s.normal.x, y: -s.normal.y, z: -s.normal.z });
+    const want = zone.aim.dir ?? { x: -s.normal.x, y: -s.normal.y, z: -s.normal.z };
+    const off = angleBetween(aimVec(pose.az, pose.el), want);
     if (off > zone.aim.maxOffAxis + EPS) return false;
+    if (zone.aim.minOffAxis != null && off < zone.aim.minOffAxis - EPS) return false;
   }
   if (zone.radial) {
     const r = lineDistance(ctx.lines, zone.radial.line, pose);

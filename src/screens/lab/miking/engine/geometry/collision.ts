@@ -38,15 +38,18 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     if (e.variants && !e.variants.includes(variant)) continue;
     solids.push({ partId: e.id, label: e.label, shape: e.shape, clearance: e.clearance ?? 0 });
   }
-  solids.push({ partId: 'floor', label: 'floor', shape: { kind: 'floor', y: model.yFloor.mm }, clearance: 0 });
+  const yFloor = model.floorByVariant?.[variant] ?? model.yFloor.mm;
+  solids.push({ partId: 'floor', label: 'floor', shape: { kind: 'floor', y: yFloor }, clearance: 0 });
   return {
     variant,
     solids,
     port: model.ports[variant] ?? null,
     interior: model.interior,
-    yFloor: model.yFloor.mm,
-    boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: BOOM_BEHIND },
+    yFloor,
+    boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: model.mountRule?.length ?? BOOM_BEHIND },
     standRadius: STAND_RADIUS,
+    ...(model.mountRule ? { mountRule: model.mountRule } : {}),
+    ...(model.rims ? { rims: model.rims } : {}),
   };
 }
 
@@ -60,7 +63,33 @@ export function isInside(scene: CompiledScene, p: Vec3): boolean {
   return Math.sqrt(dy * dy + dz * dz) < it.rIn;
 }
 
-export type Seg = { a: Vec3; b: Vec3; r: number; piece: 'body' | 'boom' | 'stand' };
+/** 'neck' = a clip mic's gooseneck: drawn, never collision-checked (it is
+ *  clamped to the rim, so it touches the instrument by design). */
+export type Seg = { a: Vec3; b: Vec3; r: number; piece: 'body' | 'boom' | 'stand' | 'neck' };
+
+/** The nearest point on any of the scene's rims to `p` (null: no rims).
+ *  Declared BEFORE `assembly`: a worklet captures what it calls when it is
+ *  created. */
+export function rimPoint(scene: CompiledScene, p: Vec3): Vec3 | null {
+  'worklet';
+  const rims = scene.rims;
+  if (!rims || !rims.length) return null;
+  let best: Vec3 | null = null;
+  let bd = 1e12;
+  for (let i = 0; i < rims.length; i++) {
+    const rm = rims[i];
+    const dx = p.x - rm.c.x;
+    const dz = p.z - rm.c.z;
+    const l = Math.sqrt(dx * dx + dz * dz);
+    const q = l > 1e-9 ? { x: rm.c.x + (dx / l) * rm.r, y: rm.c.y, z: rm.c.z + (dz / l) * rm.r } : { x: rm.c.x + rm.r, y: rm.c.y, z: rm.c.z };
+    const d = len(sub(p, q));
+    if (d < bd) {
+      bd = d;
+      best = q;
+    }
+  }
+  return best;
+}
 
 /** The capsules that make up a mic on its mount at `pose`. */
 export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Seg[] {
@@ -82,8 +111,21 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
   const b = sub(p, scale(aim, Math.max(r, L - r)));
   const tail = sub(p, scale(aim, L));
   const out: Seg[] = [{ a, b, r, piece: 'body' }];
+  if (body.mount === 'clip') {
+    // The gooseneck runs from the tail to the nearest rim it can clamp to.
+    out.push({ a: tail, b: rimPoint(scene, tail) ?? sub(tail, scale(aim, body.neck ?? 0)), r: 3, piece: 'neck' });
+    return out;
+  }
   let q: Vec3;
-  if (scene.port && isInside(scene, tail)) {
+  const rule = scene.mountRule;
+  if (rule && rule.boom === 'level') {
+    // Level boom (ILLUSTRATIVE): horizontally away from the tail, or along
+    // the model's fallback when the mic points nearly straight up or down.
+    const h = { x: -aim.x, y: 0, z: -aim.z };
+    const hl = len(h);
+    const d = hl > 0.25 ? scale(h, 1 / hl) : norm(rule.fallback);
+    q = add(tail, scale(d, rule.length));
+  } else if (scene.port && isInside(scene, tail)) {
     const toPort = sub(scene.port.c, tail);
     const d = len(toPort);
     q = add(tail, scale(norm(toPort), d + scene.boom.outside));
@@ -97,14 +139,22 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
   return out;
 }
 
-export type Blocked = { partId: string; label: string; piece: 'body' | 'boom' | 'stand' } | null;
+export type Blocked = { partId: string; label: string; piece: Seg['piece'] } | null;
 
 /** The first solid the assembly enters, or null when it is clear. */
 export function checkAssembly(scene: CompiledScene, pose: MicPose, body: MicBody): Blocked {
   'worklet';
   const segs = assembly(scene, pose, body);
+  if (body.mount === 'clip') {
+    // A gooseneck reaches only so far from its clamp on the rim.
+    for (let si = 0; si < segs.length; si++) {
+      const sg = segs[si];
+      if (sg.piece === 'neck' && len(sub(sg.b, sg.a)) > (body.neck ?? 0) + 0.5) return { partId: 'gooseneck', label: 'gooseneck’s reach', piece: 'neck' };
+    }
+  }
   for (let si = 0; si < segs.length; si++) {
     const sg = segs[si];
+    if (sg.piece === 'neck') continue;
     const dx = sg.b.x - sg.a.x;
     const dy = sg.b.y - sg.a.y;
     const dz = sg.b.z - sg.a.z;

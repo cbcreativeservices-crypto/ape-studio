@@ -31,19 +31,30 @@ export function plainLines(m: MicType): { power: string; mount: string; pattern:
   const p = m.patterns[0].id;
   return {
     power: m.transducer === 'dynamic' ? 'Power: none needed' : 'Power: needs phantom power from the desk',
-    mount: m.mount === 'surface' ? 'Mount: rests on the pillow — it is made for that' : 'Mount: a stand or a suitable mount, kept off the heads and damping',
+    mount:
+      m.mount === 'surface'
+        ? 'Mount: rests on the pillow — it is made for that'
+        : m.mount === 'clip'
+          ? 'Mount: clips to the rim on a short gooseneck — only with the player’s OK, and only a clip made for that drum'
+          : 'Mount: a stand or a suitable mount, kept off the heads and damping',
     pattern:
       p === 'cardioid'
         ? 'Pattern: cardioid — rejects most directly behind'
         : p === 'supercardioid'
           ? 'Pattern: supercardioid — rejects most off to each side of the rear'
-          : p === 'halfCardioid'
-            ? 'Pattern: half-cardioid — picks up the half-space above its surface'
-            : 'Pattern: open cardioid — not drawn here',
+          : p === 'hypercardioid'
+            ? 'Pattern: hypercardioid — narrower still, rejects most toward the rear sides'
+            : p === 'figure8'
+              ? 'Pattern: figure-8 — hears front and back equally, rejects at the sides'
+              : p === 'halfCardioid'
+                ? 'Pattern: half-cardioid — picks up the half-space above its surface'
+                : 'Pattern: open cardioid — not drawn here',
   };
 }
 
 function sizeLine(m: MicType): string {
+  // A size no maker sheet confirmed (a drawing default) is never printed as a spec.
+  if (m.body.length.placeholder || m.body.radius.placeholder) return 'Drawn size: an approximate drawing size for this type';
   // A typical product size for the type, in both units (not rounded to the
   // readouts' 5 mm; the products it comes from are the internal record).
   const cm = (mm: number) => `${(mm / 10).toFixed(1)}`;
@@ -142,7 +153,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
           {deep || nearNullNow ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — use a null to aim, not to promise silence.</Note> : null}
           {tried ? (
             pat === 'supercardioid' ? (
-              <Note>{`What you just saw: a supercardioid rejects most at ≈ 125° — toward the rear but OFF the axis — with a small inverted lobe directly behind (${fmtDb(gainDb('supercardioid', 180))}). Real supercardioid kick mics put their deepest rejection somewhere around 120°–126°, and a real pattern changes with pitch.`}</Note>
+              <Note>{`What you just saw: a supercardioid rejects most at ≈ 125° — toward the rear but OFF the axis — with a small inverted lobe directly behind (${fmtDb(gainDb('supercardioid', 180))}). Real supercardioid mics put their deepest rejection somewhere around 120°–126°, and a real pattern changes with pitch.`}</Note>
             ) : pat === 'cardioid' ? (
               <Note>What you just saw: a cardioid rejects most directly behind (180°).</Note>
             ) : !isModelled(pat) ? null : (

@@ -47,6 +47,8 @@ import { gain, isModelled } from '../physics/polar.ts';
 import { micType } from '../../data/micTypes.ts';
 import type { Rig } from './useRig.ts';
 import { liveLine, withStop } from './readoutText.ts';
+import { frustumOutline } from '../geometry/outline.ts';
+import { ClipMiniMic } from '../../lessons/shared/handdrums/handMicArt';
 import { refLabels } from './sceneWords.ts';
 import { fitLabels, labelWidth } from './labelLayout.ts';
 import type { LessonArt } from './sceneTypes.ts';
@@ -91,6 +93,8 @@ export type PlacementSceneProps = SceneOptions & {
   mini?: boolean;
   /** A fixed transform (DualView aligns two views on x); default = fit. */
   baseXf?: ViewXform;
+  /** A rectangle part labels must not cover (DualView's inset), in px. */
+  avoid?: { x0: number; y0: number; x1: number; y1: number };
   /** A wider model box than the lesson's view (page 4's plan with a wedge). */
   boxOverride?: ViewBox;
   /** The art's part labels (off where the drawing is too small for them). */
@@ -141,6 +145,12 @@ function shapeOutline(shape: Shape3, view: ViewId): ReturnType<typeof Skia.Path.
       p.close();
       return p;
     }
+    case 'frustum': {
+      const pts = frustumOutline(shape, view);
+      pts.forEach((q, i) => (i === 0 ? p.moveTo(q.u, q.v) : p.lineTo(q.u, q.v)));
+      p.close();
+      return p;
+    }
     default:
       return null;
   }
@@ -157,7 +167,10 @@ function hatch(box: ViewBox): ReturnType<typeof Skia.Path.Make> {
 }
 
 /** A zone's projection into a view: the distance band × the radial band. */
-function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: number; v0: number; v1: number } {
+function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: number; v0: number; v1: number; round?: boolean } {
+  // A zone that says how it is drawn (built from the same anchors as its test).
+  const own = z.draw?.[view];
+  if (own) return own;
   const m = rig.lesson.model;
   const s = m.surfaces.find((q) => q.id === z.refSurface)!;
   const a = s.point.x + s.normal.x * z.distance.min;
@@ -216,6 +229,8 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
       <Group transform={transform}>
         {t.art === 'boundary' ? (
           <BoundaryMic len={len} cross={cross} />
+        ) : t.art === 'clipMini' ? (
+          <ClipMiniMic r={r} len={len} />
         ) : t.art === 'sdc' ? (
           <SdcMic r={r} len={len} />
         ) : (
@@ -322,6 +337,7 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
   const jOn = useDerivedValue(() => geo.value.joint);
   const footXf = useDerivedValue(() => [{ translateX: geo.value.fx }, { translateY: geo.value.fv }]);
   const footOn = useDerivedValue(() => geo.value.stand);
+  if (body.mount === 'clip') return <NeckPath rig={rig} slot={slot} pose={pose} view={view} />;
   if (body.mount !== 'stand') return null;
   return (
     <>
@@ -358,6 +374,41 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
         <Circle cx={jx} cy={jv} r={13} color="#16171b" />
         <Circle cx={jx} cy={jv} r={13} style="stroke" strokeWidth={2.4} color="#8a8f99" />
         <Circle cx={jx} cy={jv} r={4.5} color="#d4d8e0" />
+      </Group>
+    </>
+  );
+}
+
+/** A clip mic's gooseneck (the `neck` capsule of `assembly`), drawn as a
+ *  ribbed flexible arm ending in the clamp at the rim (ILLUSTRATIVE run). */
+function NeckPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId }) {
+  const scene = rig.scene;
+  const body = rig.body[slot];
+  const path = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    const segs = assembly(scene, pose.value, body);
+    for (let i = 0; i < segs.length; i++) {
+      if (segs[i].piece !== 'neck') continue;
+      p.moveTo(segs[i].a.x, vOf(view, segs[i].a));
+      p.lineTo(segs[i].b.x, vOf(view, segs[i].b));
+    }
+    return p;
+  });
+  const clamp = useDerivedValue(() => {
+    const segs = assembly(scene, pose.value, body);
+    for (let i = 0; i < segs.length; i++) if (segs[i].piece === 'neck') return [{ translateX: segs[i].b.x }, { translateY: vOf(view, segs[i].b) }];
+    return [{ translateX: 0 }, { translateY: 0 }];
+  });
+  return (
+    <>
+      <Path path={path} style="stroke" strokeWidth={9} strokeCap="round" color="#0b0c0f" />
+      <Path path={path} style="stroke" strokeWidth={6} strokeCap="round" color="#3d4049" />
+      <Path path={path} style="stroke" strokeWidth={6} strokeCap="butt" color="#6c717c">
+        <DashPathEffect intervals={[2.2, 2.2]} />
+      </Path>
+      <Group transform={clamp}>
+        <Circle cx={0} cy={0} r={11} color="#16171b" />
+        <Circle cx={0} cy={0} r={11} style="stroke" strokeWidth={2} color="#8a8f99" />
       </Group>
     </>
   );
@@ -411,8 +462,11 @@ function LobeTag({ pose, view, xf, scale, maxX, maxY }: { pose: SharedValue<MicP
     const inInset = left + W > maxX * 0.7 && above < maxY * 0.62;
     const y = inInset ? below : above;
     // No clean spot (the badge still says it): hidden rather than on top of
-    // another label.
-    const ok = y > 4 && y < maxY - 34;
+    // another label. A mic tilted well down seen from the side (a hand
+    // drum's, aimed at a head) has its body, handle and boom rising out of
+    // the lobe, and the part labels sit beside it: no clean spot either.
+    const steep = view === 'side' && Math.abs(p.el) > 30;
+    const ok = !steep && y > 4 && y < maxY - 34;
     return { opacity: ok ? 1 : 0, transform: [{ translateX: left }, { translateY: y }] };
   });
   return (
@@ -449,9 +503,11 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
   const r = zoneRect(z, view, rig);
   const path = useMemo(() => {
     const p = Skia.Path.Make();
-    p.addRRect(Skia.RRectXY(Skia.XYWHRect(r.u0, r.v0, Math.max(4, r.u1 - r.u0), r.v1 - r.v0), 10, 10));
+    const rect = Skia.XYWHRect(r.u0, r.v0, Math.max(4, r.u1 - r.u0), r.v1 - r.v0);
+    if (r.round) p.addOval(rect);
+    else p.addRRect(Skia.RRectXY(rect, 10, 10));
     return p;
-  }, [r.u0, r.u1, r.v0, r.v1]);
+  }, [r.u0, r.u1, r.v0, r.v1, r.round]);
   // One consistent style for every recommended starting point (owner ruling
   // 2026-10-04): the same blue band, the same solid edge.
   const tone = BLUE;
@@ -581,7 +637,7 @@ export function PlacementScene(props: PlacementSceneProps) {
   return inFull ? <GestureHandlerRootView style={{ width: props.w, height: props.h }}>{body}</GestureHandlerRootView> : body;
 }
 
-function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
+function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, avoid, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
   const model = rig.lesson.model;
   const box = boxOverride ?? model.views[view]!;
   const textScale = useStageTextScale();
@@ -806,8 +862,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   // Part labels only where the drawing is big enough to carry them (a short
   // landscape glass drew them on top of each other); full screen always has them.
   const labels = useMemo(
-    () => (mini || !showLabels || base.s < LABEL_MIN_S ? [] : fitLabels(art.labels(view, variant), base, textScale, w)),
-    [mini, showLabels, art, view, variant, base, textScale, w],
+    () => (mini || !showLabels || base.s < LABEL_MIN_S ? [] : fitLabels(art.labels(view, variant), base, textScale, w, avoid)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
+    [mini, showLabels, art, view, variant, base, textScale, w, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1],
   );
   const Instrument = art.Instrument;
   const highlightPath = useMemo(() => {
@@ -889,7 +946,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       ) : null}
       {!mini ? (
         <Text pointerEvents="none" style={[styles.viewTag, { fontSize: Math.max(9, 9 * textScale) }]}>
-          {view === 'side' ? 'SIDE · CUTAWAY' : 'TOP · CUTAWAY'}
+          {model.words?.viewTag?.[view] ?? (view === 'side' ? 'SIDE · CUTAWAY' : 'TOP · CUTAWAY')}
         </Text>
       ) : null}
     </View>

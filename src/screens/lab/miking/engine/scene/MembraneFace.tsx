@@ -16,7 +16,7 @@
  *   • the beater's strike point, above the centre by the lesson's distance.
  * Nothing moves by itself (D8): SWING is a fader the learner drags.
  */
-import { useMemo } from 'react';
+import { useMemo, type ReactElement } from 'react';
 import { View } from 'react-native';
 import { Canvas, Circle, DashPathEffect, Group, Line, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../rack/stageAspect';
@@ -42,6 +42,11 @@ export type MembraneFaceProps = {
   /** −1 … 1: where in its cycle the shape is drawn (0 = passing through flat). */
   swing: number;
   accessibilityLabel: string;
+  /** A head that is not the kick's coated film on a wood hoop (the hand-drum
+   *  family): the rim drawn UNDER the head (replaces the hoop and its shadow),
+   *  the hardware drawn OVER it (replaces the claws and T-rods), the head's
+   *  gradient, and the strike mark's word (default BEATER). All in mm. */
+  look?: { under?: ReactElement; over?: ReactElement; head?: string[]; strikeLabel?: string };
 };
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -103,7 +108,7 @@ function regionMarks(sh: HeadShape): { r: number; t: number; sign: number }[] {
   return out;
 }
 
-export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, accessibilityLabel }: MembraneFaceProps) {
+export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, accessibilityLabel, look }: MembraneFaceProps) {
   const R = diameterMm / 2;
   const hoopIn = R + 3;
   const hoopOut = hoopIn + 9;
@@ -145,7 +150,7 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
     return { claws, rodsP };
   }, [rods, hoopIn, hoopOut]);
   const marks = useMemo(() => regionMarks(shape), [shape]);
-  const labels: StaticLabel[] = [{ id: 'beater', text: 'BEATER', u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
+  const labels: StaticLabel[] = [{ id: 'beater', text: look?.strikeLabel ?? 'BEATER', u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
   // + / − in every region, drawn as strokes (crisp at any size; colour is
   // never the only signal, charter §8).
   const signs = useMemo(() => {
@@ -171,15 +176,19 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          {/* shadow and hoop (wood: a cosmetic finish, not a sourced colour) */}
-          <Circle cx={10} cy={14} r={hoopOut + 6} color="#000" opacity={0.55} />
-          <Circle cx={0} cy={0} r={hoopOut}>
-            <RadialGradient c={vec(-R * 0.4, -R * 0.45)} r={hoopOut * 1.5} colors={['#d9a766', '#9c6631', '#4a2a12']} />
-          </Circle>
-          <Circle cx={0} cy={0} r={hoopIn} color="#1a1008" />
-          {/* the coated head, lit from the upper left */}
+          {look?.under ?? (
+            <>
+              {/* shadow and hoop (wood: a cosmetic finish, not a sourced colour) */}
+              <Circle cx={10} cy={14} r={hoopOut + 6} color="#000" opacity={0.55} />
+              <Circle cx={0} cy={0} r={hoopOut}>
+                <RadialGradient c={vec(-R * 0.4, -R * 0.45)} r={hoopOut * 1.5} colors={['#d9a766', '#9c6631', '#4a2a12']} />
+              </Circle>
+              <Circle cx={0} cy={0} r={hoopIn} color="#1a1008" />
+            </>
+          )}
+          {/* the head, lit from the upper left (coated film by default) */}
           <Circle cx={0} cy={0} r={R}>
-            <RadialGradient c={vec(-R * 0.35, -R * 0.4)} r={R * 1.6} colors={['#fbf8f0', '#ece5d5', '#cfc4ad']} />
+            <RadialGradient c={vec(-R * 0.35, -R * 0.4)} r={R * 1.6} colors={look?.head ?? ['#fbf8f0', '#ece5d5', '#cfc4ad']} />
           </Circle>
           {field.pos.map((p, i) => (
             <Path key={`p${i}`} path={p} color={BLUE[i]} />
@@ -193,10 +202,14 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
             <DashPathEffect intervals={[16, 10]} />
           </Path>
           <Circle cx={0} cy={0} r={R} style="stroke" strokeWidth={3} color="#8a7f6c" />
-          {/* claws and T-rods (positions ILLUSTRATIVE) */}
-          <Path path={hw.rodsP} style="stroke" strokeWidth={6} color="#c8ccd4" />
-          <Path path={hw.claws} color="#9aa0ab" />
-          <Path path={hw.claws} style="stroke" strokeWidth={2} color="#eef1f6" opacity={0.7} />
+          {look?.over ?? (
+            <>
+              {/* claws and T-rods (positions ILLUSTRATIVE) */}
+              <Path path={hw.rodsP} style="stroke" strokeWidth={6} color="#c8ccd4" />
+              <Path path={hw.claws} color="#9aa0ab" />
+              <Path path={hw.claws} style="stroke" strokeWidth={2} color="#eef1f6" opacity={0.7} />
+            </>
+          )}
           {/* the strike point */}
           <Line p1={vec(0, -strikeMm - 20)} p2={vec(0, -strikeMm + 20)} color="#ffc64d" strokeWidth={3} />
           <Circle cx={0} cy={-strikeMm} r={20} style="stroke" strokeWidth={5} color="#ffc64d" />

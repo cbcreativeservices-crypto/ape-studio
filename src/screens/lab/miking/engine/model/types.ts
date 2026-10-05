@@ -43,7 +43,11 @@ export type Shape3 =
    *  ±halfW in z. Beater / pedal travel. */
   | { kind: 'sweep'; pivot: Vec3; r0: number; r1: number; a0: number; a1: number; halfW: number }
   /** The floor half-space: solid where y > y (y-down). */
-  | { kind: 'floor'; y: number };
+  | { kind: 'floor'; y: number }
+  /** A solid capped cone (a cylinder when ra = rb) along a → b, at ANY
+   *  orientation: radius ra at a, rb at b. Upright and tilted drums (the
+   *  hand-drum family), stands' columns, hand envelopes. */
+  | { kind: 'frustum'; a: Vec3; b: Vec3; ra: number; rb: number };
 
 /* ── the instrument model ── */
 export type PartId = string;
@@ -92,6 +96,8 @@ export type RefLine = { id: string; label: string; point: Vec3; dir: Vec3 };
 export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
 
 export type ZoneKind = 'sourced' | 'trial';
+/** A zone's drawn region in one view (mm; u/v of that view). */
+export type ZoneDraw = { u0: number; u1: number; v0: number; v1: number; round?: boolean };
 /**
  * A RECOMMENDED STARTING POINT (owner ruling 2026-10-04). Learner-facing:
  * `label`, `band`, `tendency`, `checks` — plain starting-point words, no
@@ -123,7 +129,19 @@ export type DocumentedZone = {
    *  "facing the beater head"): the mic's front axis must be within
    *  `maxOffAxis` degrees of −normal of the zone's own head. The tolerance is
    *  the lab's (ILLUSTRATIVE unless a source gives one). */
-  aim?: { maxOffAxis: number; prov: Provenance };
+  aim?: {
+    maxOffAxis: number;
+    prov: Provenance;
+    /** A lower bound too ("at a 40–60° angle"): the aim must be at least this far off. */
+    minOffAxis?: number;
+    /** Test the aim against this direction instead of −normal (a zone aimed
+     *  ACROSS its reference surface, e.g. "aimed at the bottom opening"). */
+    dir?: Vec3;
+  };
+  /** The zone as each view DRAWS it (mm, the view's u/v), built from the
+   *  same anchors as the test. Without it the engine projects the distance
+   *  band along an x-normal (the kick's heads). `round` draws an ellipse. */
+  draw?: Partial<Record<ViewId, ZoneDraw>>;
   /** "Go to zone" pose: inside the zone and collision-free (tested). */
   start: MicPose;
   /** What to listen for, in words ("tendency", never "result"). */
@@ -136,7 +154,7 @@ export type PatternId = 'omni' | 'cardioid' | 'supercardioid' | 'hypercardioid' 
 /** 'unstated' / 'halfCardioid' draw NO free-field lobe. */
 export type MicPattern = PatternId | 'unstated' | 'halfCardioid';
 export type MountKind = 'stand' | 'surface' | 'clip';
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary';
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'clipMini';
 export type MicType = {
   id: string;
   label: string;
@@ -156,6 +174,8 @@ export type MicType = {
   art: MicArtId;
   /** One sentence for page 2. */
   blurb: string;
+  /** A clip mount's gooseneck length, mm (drawn; it holds the capsule off the rim). */
+  neck?: Dim;
 };
 
 /* ── state ── */
@@ -171,7 +191,7 @@ export type Wedge = { id: string; label: string; short: string; p: Vec3; lift: n
 /** One collision solid, flattened for the worklets (plain data only). */
 export type Solid = { partId: string; label: string; shape: Shape3; clearance: number };
 /** What `checkAssembly` needs to know about the mic (plain data). */
-export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string };
+export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string; neck?: number };
 /** The scene a lesson variant compiles to: solids + the routing anchors. */
 export type CompiledScene = {
   variant: VariantId;
@@ -184,6 +204,32 @@ export type CompiledScene = {
   /** Illustrative mount geometry. */
   boom: { radius: number; outside: number; behind: number };
   standRadius: number;
+  /** The model's boom rule (InstrumentModel.mountRule), when it has one. */
+  mountRule?: MountRule;
+  /** Rims a clip mic can clamp to (InstrumentModel.rims). */
+  rims?: Rim[];
+};
+/** A horizontal rim circle a clip mount clamps to: centre and radius, mm. */
+export type Rim = { c: Vec3; r: number };
+/**
+ * How a stand mic's boom leaves its tail (ILLUSTRATIVE mount geometry). The
+ * default (no rule) is the kick's: straight back along the mic's axis, or out
+ * through the port. 'level': the boom runs HORIZONTALLY away from the mic's
+ * tail (the horizontal part of −aim), or along `fallback` when the mic points
+ * nearly straight up or down — so a mic aimed down at a hand drum hangs from a
+ * boom beside the drums instead of a stand dropping through it.
+ */
+export type MountRule = { boom: 'level'; fallback: Vec3; length: number };
+/** On-screen words a non-kick model supplies (the kick's are the defaults). */
+export type ModelWords = {
+  /** The scene description's subject per variant ("a pair of congas on the floor"). */
+  subject?: Partial<Record<VariantId, string>>;
+  /** The view tags on the canvas ("SIDE · CUTAWAY"). */
+  viewTag?: Partial<Record<ViewId, string>>;
+  /** POSITION's three axes: the chooser's words, and how a value is said. */
+  axes?: Record<'x' | 'y' | 'z', { label: string; blurb: string; plus: string; minus: string; from: string }>;
+  /** How a mic inside / outside the interior is said (default "inside / outside the drum"). */
+  where?: { inside: string; outside: string };
 };
 
 /* ── derived (never stored) ── */
@@ -226,6 +272,13 @@ export type InstrumentModel = {
   interior: { x0: number; x1: number; rIn: number; c: Vec3 };
   /** Port per variant (none = intact). */
   ports: Record<VariantId, { c: Vec3; r: number } | null>;
+  /** A floor that moves with the variant (a drum raised on a stand): y per
+   *  variant; others use `yFloor`. */
+  floorByVariant?: Partial<Record<VariantId, number>>;
+  mountRule?: MountRule;
+  /** Rims a clip-on mic's gooseneck can clamp to (drawn ILLUSTRATIVE reach). */
+  rims?: Rim[];
+  words?: ModelWords;
 };
 /** A wrong option -> why it is wrong (elaborated feedback: the misconception
  *  the learner just chose is answered, not only "try again"). */

@@ -63,7 +63,7 @@ import { PContext } from './pages/PContext';
 import { PTwoMic } from './pages/PTwoMic';
 import { PPractice, PTroubleshoot } from './pages/PReadPages';
 
-const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
+const SHARED_PAGES: Record<PageId, (p: PageProps) => ReactNode> = {
   instrument: PInstrument,
   sound: PSound,
   setting: PSetting,
@@ -130,6 +130,8 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   const hydrated = useMikingHydrated();
   const unreadable = useMikingUnreadable();
   const lp = lessonProgress(progress, lesson.id);
+  // A lesson family may supply its own page for an id (art.pages); the rest are shared.
+  const PAGE_COMPONENTS = useMemo(() => ({ ...SHARED_PAGES, ...(art.pages as Partial<Record<PageId, (p: PageProps) => ReactNode>> | undefined) }), [art]);
   // What happened ON SCREEN this session, kept beside the record: a preview
   // writes nothing, yet the journey must still follow what the learner did.
   const [localAnswers, setLocalAnswers] = useState<Record<string, boolean>>({});
@@ -218,14 +220,17 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
     if (complete || banksOnNext(lesson, page)) markMet(page);
   }, [lesson, done, complete, page, markMet]);
 
-  const stepCount = stepTitles.length || STEP_COUNTS[page];
+  // A family's own pages (the hand drums) may have their own step counts.
+  const countOf = (id: PageId) => art.stepCounts?.[id] ?? STEP_COUNTS[id];
+  const stepCount = stepTitles.length || countOf(page);
   const stepIdx = Math.min(step, Math.max(0, stepCount - 1));
   const sub = useMemo(
     () =>
       stepCount > 1
-        ? { index: stepIdx, count: stepCount, titles: stepTitles, go: setStep, onRollPrev: () => goPage(pageIdx - 1, Math.max(0, STEP_COUNTS[PAGE_IDS[Math.max(0, pageIdx - 1)]] - 1)) }
+        ? { index: stepIdx, count: stepCount, titles: stepTitles, go: setStep, onRollPrev: () => goPage(pageIdx - 1, Math.max(0, countOf(PAGE_IDS[Math.max(0, pageIdx - 1)]) - 1)) }
         : undefined,
-    [stepCount, stepIdx, stepTitles, setStep, goPage, pageIdx],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [stepCount, stepIdx, stepTitles, setStep, goPage, pageIdx, art],
   );
   const units = useMemo(() => PAGE_IDS.map((id) => ({ id, title: lesson.pages[id].title, done: doneIds.has(id) })), [lesson, doneIds]);
 
