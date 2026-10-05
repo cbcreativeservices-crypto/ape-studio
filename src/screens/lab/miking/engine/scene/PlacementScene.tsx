@@ -50,6 +50,7 @@ import { micType } from '../../data/micTypes.ts';
 import type { Rig } from './useRig.ts';
 import { liveLine, withStop } from './readoutText.ts';
 import { frustumOutline } from '../geometry/outline.ts';
+import { sdf } from '../geometry/sdf.ts';
 import { refLabels } from './sceneWords.ts';
 import { fitLabels, labelWidth } from './labelLayout.ts';
 import type { LessonArt } from './sceneTypes.ts';
@@ -730,6 +731,32 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
   );
 }
 
+/**
+ * A keep-out drawn ONLY on approach (Envelope.approach, Lab 3's saxophones):
+ * hidden while every live mic is farther than `approach` mm from it, fading
+ * in as one comes closer (full at half the distance). The solid blocks the
+ * mic either way; this only keeps the picture clear until it matters.
+ */
+function ApproachEnvelope({ path, shape, approach, hatch: hatchP, poseA, poseB }: { path: ReturnType<typeof Skia.Path.Make>; shape: Shape3; approach: number; hatch: ReturnType<typeof Skia.Path.Make>; poseA: SharedValue<MicPose> | null; poseB: SharedValue<MicPose> | null }) {
+  const near = useDerivedValue(() => {
+    let d = 1e9;
+    if (poseA) d = Math.min(d, sdf(shape, poseA.value.p));
+    if (poseB) d = Math.min(d, sdf(shape, poseB.value.p));
+    const t = (approach - d) / (approach * 0.5);
+    return t <= 0 ? 0 : t >= 1 ? 1 : t;
+  });
+  const fill = useDerivedValue(() => near.value * 0.55);
+  const edge = useDerivedValue(() => near.value * 0.75);
+  return (
+    <>
+      <Group clip={path} opacity={fill}>
+        <Path path={hatchP} style="stroke" strokeWidth={2} color={GREY} />
+      </Group>
+      <Path path={path} style="stroke" strokeWidth={2.5} color={GREY} opacity={edge} />
+    </>
+  );
+}
+
 /* ── RN labels over the canvas, following the same transform ─────────── */
 
 /** The mics a label yields to (LessonArt.labelsYieldToMic): each pose and
@@ -1146,8 +1173,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     if (!showEnvelopes) return [];
     return model.envelopes
       .filter((e) => !e.variants || e.variants.includes(variant))
-      .map((e) => ({ id: e.id, path: shapeOutline(e.shape, view) }))
-      .filter((e): e is { id: string; path: ReturnType<typeof Skia.Path.Make> } => !!e.path);
+      .map((e) => ({ id: e.id, path: shapeOutline(e.shape, view), shape: e.shape, approach: e.approach }))
+      .filter((e): e is { id: string; path: ReturnType<typeof Skia.Path.Make>; shape: Shape3; approach: number | undefined } => !!e.path);
   }, [showEnvelopes, model.envelopes, variant, view]);
   const hatchPath = useMemo(() => hatch(box), [box]);
   // Part labels only where the drawing is big enough to carry them (a short
@@ -1199,14 +1226,18 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         <Group transform={matrix}>
           <Instrument view={view} variant={variant} />
           <LeaderLines labels={labels} xf={xf} scale={textScale} maxX={w} />
-          {envelopes.map((e) => (
-            <Group key={e.id} clip={e.path}>
-              <Path path={hatchPath} style="stroke" strokeWidth={2} color={GREY} opacity={0.55} />
-            </Group>
-          ))}
-          {envelopes.map((e) => (
-            <Path key={`${e.id}:o`} path={e.path} style="stroke" strokeWidth={2.5} color={GREY} opacity={0.7} />
-          ))}
+          {envelopes.map((e) =>
+            e.approach ? (
+              <ApproachEnvelope key={e.id} path={e.path} shape={e.shape} approach={e.approach} hatch={hatchPath} poseA={hasA ? poseA : null} poseB={hasB ? poseB : null} />
+            ) : (
+              <Group key={e.id}>
+                <Group clip={e.path}>
+                  <Path path={hatchPath} style="stroke" strokeWidth={2} color={GREY} opacity={0.55} />
+                </Group>
+                <Path path={e.path} style="stroke" strokeWidth={2.5} color={GREY} opacity={0.7} />
+              </Group>
+            ),
+          )}
           {zones.map((z) => (
             <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} />
           ))}

@@ -125,3 +125,13 @@ snare's `smallDynCard` (same S-SM57-UG body and pattern), so M06–M08 now use `
 | S-SM57-UG | Shure, SM57 User Guide 3.6 (2025-A): "Dynamic (moving coil)"; "Cardioid"; 157 mm overall, 32 mm grille | see `snare/SOURCES.md` | read in the snare pass (2026-10-04) |
 | AX-DPE8 | Audix DP Elite 8 sheet (archived): SCX1 length "104 mm / 4.1 in" (the pencil condenser's drawn length; Ø 21 mm is a drawing default) | see `snare/SOURCES.md`, `overheads/GEOMETRY_PROPOSAL.md` §5 | archived copy read (2026-10-04) |
 | LESSON-TIMP | The owner's timpani lesson, L35: "A cardioid condenser is well documented for spots in both small orchestras and amplified shows." | `source_text/Timpani-Miking-Technique-Research.txt` | the lesson's own words |
+
+## 8. Mic types for Lab 3's saxophones (A05a–d, `lessons/shared/sax/saxMics.ts`)
+
+Added 2026-10-05 by the saxophone builder (branch miking-a3). The full family register is
+`alto_sax/SOURCES.md` §0; these are the keys the shared mic types name.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| S-SAX | Shure, D. Rochman, "Choosing a Saxophone Microphone for Recording and Live Sound" (engineers name condensers for detail, dynamics for close live work, ribbons for a rounded top) | https://www.shure.com/en-EU/insights/choosing-a-saxophone-microphone | 200, read (Batch 3) |
+| S-POLAR | Shure, "Microphone Directionality and Polar Pattern Basics": "the supercardioid is least sensitive at 125 degrees and the hypercardioid at 110 degrees" | https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics | 200, read (Batch 3, `trumpet/SOURCES.md` §0.1) |

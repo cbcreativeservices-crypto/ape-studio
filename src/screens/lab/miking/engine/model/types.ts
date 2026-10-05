@@ -153,7 +153,10 @@ export type RefLine = {
    *  `offset`) — a piano's hammer line read "toward the tail / the keys". */
   plane?: boolean;
 };
-export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
+/** `approach` (added 2026-10-05 for Lab 3's saxophones): the envelope is
+ *  DRAWN only while a mic comes within this many mm of it (it fades in on
+ *  approach); it is a solid either way. Absent = always drawn. */
+export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number; approach?: number };
 
 export type ZoneKind = 'sourced' | 'trial';
 /** How a zone is drawn in one view: a rectangle (u/v, mm; `round` draws the

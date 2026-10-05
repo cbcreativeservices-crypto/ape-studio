@@ -76,7 +76,7 @@ export type BowedSettingConfig = {
 const DEG = Math.PI / 180;
 const make = () => Skia.Path.Make();
 
-function MusicStand() {
+export function MusicStand() {
   const p = useMemo(() => {
     const desk = make();
     desk.addRRect(Skia.RRectXY(Skia.XYWHRect(-60, -250, 120, 500), 10, 10));
@@ -139,7 +139,7 @@ function GrandPiano() {
 }
 
 /** A main stereo pair on a tall stand, from above: tripod, bar, two mics. */
-function MainPair() {
+export function MainPair() {
   const p = useMemo(() => {
     const legs = make();
     for (let k = 0; k < 3; k++) {
@@ -169,7 +169,7 @@ function MainPair() {
 }
 
 /** Lab 1's shared kit (drum family art), placed by its kick's batter centre. */
-function Kit() {
+export function Kit() {
   return (
     <Group opacity={0.85}>
       <KickFromAbove spec={KICK_22x18} u0={0} z={0} />
@@ -186,7 +186,7 @@ function Kit() {
 }
 
 /** A floor wedge from above: the sloped baffle (facing `faces`) behind a grille. */
-function WedgeTop({ at, faces }: { at: { x: number; z: number }; faces: { x: number; z: number } }) {
+export function WedgeTop({ at, faces }: { at: { x: number; z: number }; faces: { x: number; z: number } }) {
   const ang = Math.atan2(faces.z, faces.x);
   const p = useMemo(() => {
     const cab = make();
