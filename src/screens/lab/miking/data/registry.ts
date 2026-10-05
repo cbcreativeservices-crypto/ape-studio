@@ -14,7 +14,7 @@ export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtit
 export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn cymbals and percussion — the kit’s cymbals, hanging metal and the gong, the mallet keyboards and the electric pianos: how each one rings, recommended starting points, the swing, the sticks and the mallets’ travel, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.' },
-  { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
+  { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind and brass instruments and their players — where each one’s sound leaves (a bell, the open holes), recommended starting points that keep clear of the hands, the bell and the player’s movement, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '' },
@@ -76,6 +76,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'I11a', labId: 'percussion', title: 'Rhodes (Tine Piano)', subtitle: 'Mic the speaker it plays through — the direct signal compared alongside', status: 'ready' },
   { id: 'I11b', labId: 'percussion', title: 'Wurlitzer (Reed Piano)', subtitle: 'Two small oval speakers that face the player — a close mic in a narrow gap', status: 'ready' },
   { id: 'I12', labId: 'percussion', title: 'Gong', subtitle: 'Tam-tam or bossed gong: identify it, then a front view, a closer spot or the room', status: 'ready' },
+  // Lab 3 (winds), low / coiled brass (each lesson on its own line).
+  { id: 'A03', labId: 'winds', title: 'French Horn', subtitle: 'A bell that faces back: the room in front, or a mic beside the bell', status: 'ready' },
+  { id: 'A04a', labId: 'winds', title: 'Tuba', subtitle: 'Bell up or bell front: above the bell, a little off to the side, or farther back', status: 'ready' },
+  { id: 'A04b', labId: 'winds', title: 'Euphonium', subtitle: 'Bell up or bell front: above the bell toward its edge, a little off axis, or farther back', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

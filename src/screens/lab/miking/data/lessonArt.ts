@@ -122,3 +122,10 @@ ART.I12 = { ...GONG_ART, pages: GONG_PAGES, stepCounts: GONG_STEP_COUNTS };
 /* Lab 2 cymbals (I01a–e): appended so other lessons merge cleanly. */
 import { CYMBAL_ART } from '../lessons/shared/cymbals/artRegistry';
 Object.assign(ART, CYMBAL_ART);
+/* Lab 3 (winds), low / coiled brass: A03 horn, A04a tuba, A04b euphonium (each on its own line). */
+import { HORN_ART } from '../lessons/a03Horn/art';
+ART.A03 = HORN_ART;
+import { TUBA_ART } from '../lessons/a04aTuba/art';
+ART.A04a = TUBA_ART;
+import { EUPH_ART } from '../lessons/a04bEuphonium/art';
+ART.A04b = EUPH_ART;

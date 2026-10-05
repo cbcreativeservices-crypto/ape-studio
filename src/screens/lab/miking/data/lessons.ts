@@ -108,3 +108,10 @@ LESSON_CONTENT.I12 = I12_LESSON;
 /* Lab 2 cymbals (I01a–e): appended so other lessons merge cleanly. */
 import { CYMBAL_CONTENT } from '../lessons/shared/cymbals/content.ts';
 Object.assign(LESSON_CONTENT, CYMBAL_CONTENT);
+/* Lab 3 (winds), low / coiled brass: A03 horn, A04a tuba, A04b euphonium (each on its own line). */
+import { A03_LESSON } from '../lessons/a03Horn/lesson.ts';
+LESSON_CONTENT.A03 = A03_LESSON;
+import { A04A_LESSON } from '../lessons/a04aTuba/lesson.ts';
+LESSON_CONTENT.A04a = A04A_LESSON;
+import { A04B_LESSON } from '../lessons/a04bEuphonium/lesson.ts';
+LESSON_CONTENT.A04b = A04B_LESSON;
