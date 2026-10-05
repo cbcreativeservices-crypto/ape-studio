@@ -27,6 +27,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { Card } from '../../mastering/kit';
 import type { DocumentedZone, OrderTask, Prediction, SetupTask, Symptom, WhyWrong } from './model/types.ts';
 import { gradeSetup, type SetupGrade } from './progress/setupGrade.ts';
+import { hashText, optionOrder, shuffled } from './model/itemOrder.ts';
 
 export { Body, Card, Point, SectionTitle, TakeawayCard, KeyButton } from '../../mastering/kit';
 
@@ -45,26 +46,12 @@ export function ZoneCard({ z }: { z: DocumentedZone }) {
   );
 }
 
-function hashId(id: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619);
-  return h >>> 0;
-}
-export function shuffled(n: number, seed: number): number[] {
-  const a = Array.from({ length: n }, (_, i) => i);
-  let s = seed >>> 0 || 1;
-  for (let i = n - 1; i > 0; i--) {
-    s = (s * 1664525 + 1013904223) >>> 0;
-    const j = s % (i + 1);
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+export { shuffled } from './model/itemOrder.ts';
 
 type Pickable = { id: string; prompt: string; options: readonly string[]; correct: string; explain: string; why?: WhyWrong };
 
 export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; onAnswered: (firstRight: boolean) => void; answered?: boolean }) {
-  const order = useMemo(() => shuffled(s.options.length, hashId(s.id)), [s]);
+  const order = useMemo(() => optionOrder(s), [s]);
   const [picked, setPicked] = useState<string | null>(answered ? s.correct : null);
   const [wrong, setWrong] = useState<string[]>([]);
   const reported = useRef(!!answered);
@@ -163,7 +150,7 @@ export function PredictCard({ p, value, onPick }: { p: Prediction; value: string
  * when no step was tapped early. A retry is never penalised.
  */
 export function OrderTaskCard({ t, answered, onAnswered }: { t: OrderTask; answered: boolean; onAnswered: (firstRight: boolean) => void }) {
-  const order = useMemo(() => shuffled(t.steps.length, hashId(t.id)), [t]);
+  const order = useMemo(() => shuffled(t.steps.length, hashText(t.id)), [t]);
   const [placed, setPlaced] = useState(answered ? t.steps.length : 0);
   const [note, setNote] = useState<string | null>(null);
   const early = useRef(false);

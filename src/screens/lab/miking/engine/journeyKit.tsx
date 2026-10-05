@@ -19,7 +19,8 @@ import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-nati
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DiagnosticItem, PageId } from './model/types.ts';
 import { FOUNDATION_PAGES, gradeQuickCheck, QUICK_CHECK_PASS, STAGES, type LearnerPath, type QuickCheckResult } from './journey.ts';
-import { Card, shuffled } from './kit';
+import { Card } from './kit';
+import { optionOrder } from './model/itemOrder.ts';
 
 export type JourneyProps = {
   path: LearnerPath | null;
@@ -80,14 +81,8 @@ export function PathChooser({ journey }: { journey: JourneyProps }) {
   );
 }
 
-function hashId(id: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619);
-  return h >>> 0;
-}
-
 function QuickItem({ it, n, pick, onPick }: { it: DiagnosticItem; n: number; pick: string | undefined; onPick: (o: string) => void }) {
-  const order = useMemo(() => shuffled(it.options.length, hashId(it.id)), [it]);
+  const order = useMemo(() => optionOrder(it), [it]);
   const right = pick === it.correct;
   return (
     <Card tone="accent">

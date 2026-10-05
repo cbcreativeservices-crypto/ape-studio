@@ -108,6 +108,9 @@ export const BANNED_FORMS: readonly RegExp[] = [
   /\bdocumented\b/i,
   /\bcited\b/i,
   /\b(?:the|a|its|this|each) guides?(?:’s|'s)?\b/i,
+  // Review Lab 1 M9: citation voice that slipped past the list above ("a
+  // mic's published response" is a spec sheet, not a citation, and stays).
+  /\b(?:one engineer|engineer’s account|no published|published (?:source|guidance|example|starting|distance|top))/i,
 ];
 
 const BRAND_RE = new RegExp(`\\b(?:${BRAND_NAMES.join('|')})\\b`);
@@ -154,7 +157,7 @@ describe('learner-facing text names no source and carries no badge (owner ruling
   });
 
   it('the patterns catch what the ruling removed, and pass plain starting-point words', () => {
-    for (const s of ['SOURCED*', 'TRIAL reading', 'PEDAL · ILLUSTRATIVE', 'Beta 52A guide · near', 'kick L39 (L39)', 'Sources', 'a documented zone']) assert.ok(ALL.some((re) => re.test(s)), s);
+    for (const s of ['SOURCED*', 'TRIAL reading', 'PEDAL · ILLUSTRATIVE', 'Beta 52A guide · near', 'kick L39 (L39)', 'Sources', 'a documented zone', 'No published source gives it', 'one engineer’s account']) assert.ok(ALL.some((re) => re.test(s)), s);
     for (const s of ['Inside, near the batter head', 'Start about 5–7.5 cm (2–3 in) from the batter head.', 'After our research, here is where we recommend you begin.', 'follow the manual for your own equipment', 'A widely used guideline: 85 dBA']) assert.deepEqual(ALL.filter((re) => re.test(s)), [], s);
   });
 
