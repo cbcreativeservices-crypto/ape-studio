@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 03:47 · ccode · 98a2b9f5
+changed: fix(miking): crash boom-stand label clear of the hi-hats at 390 x 844
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 03:35 · ccode · 99e79049
 changed: feat(miking): Lab 2 cymbals — I01a Hi-Hat, I01b Ride, I01c Crash, I01d Splash, I01e China
 affects other side: nothing (miking lessons, branch final-lab)

@@ -16,7 +16,7 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, StickTo, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
 import { PiggybackSide, PiggybackTop, SplashArmSide, SplashArmTop } from '../shared/cymbals/CymbalFxArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
@@ -31,7 +31,8 @@ const C2 = KIT.cymbals.crash2;
 
 export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   if (isPig(variant)) {
-    const around: Partial<Record<KitPiece, number>> = { tom1: 0.4, kick: 0.5, holder: 0.5, tom2: 0.75, floor: 0.5, ride: 0.45 };
+    const near: Partial<Record<KitPiece, number>> = { tom1: 0.4, kick: 0.5, holder: 0.5, tom2: 0.75, floor: 0.5, ride: 0.45 };
+    const around = view === 'side' ? near : kitShow(['crash2'], near);
     if (view === 'side') {
       const own = (
         <Group>
@@ -52,7 +53,8 @@ export function SplashArt({ view, variant }: { view: ViewId; variant: VariantId 
       </Group>
     );
   }
-  const around: Partial<Record<KitPiece, number>> = { hihat: 0.4, snare: 0.5, tom1: 0.85, kick: 0.55, holder: 0.85, tom2: 0.55 };
+  const near: Partial<Record<KitPiece, number>> = { hihat: 0.4, snare: 0.5, tom1: 0.85, kick: 0.55, holder: 0.85, tom2: 0.55 };
+  const around = view === 'side' ? near : kitShow(['crash1'], near);
   if (view === 'side') {
     const own = (
       <Group>

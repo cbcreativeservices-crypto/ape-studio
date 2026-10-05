@@ -16,7 +16,7 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, SwingFan, plateTransform } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, StickTo, SwingFan, kitShow, plateTransform } from '../shared/cymbals/CymbalKitArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
@@ -40,15 +40,15 @@ export function RideArt({ view }: { view: ViewId; variant: VariantId }) {
         <StickTo from={{ x: STRIKE_BOW.x - 300, y: STRIKE_BOW.y - 250 }} to={{ x: STRIKE_BOW.x - 4, y: STRIKE_BOW.y - 6 }} />
       </Group>
     );
-    return <KitAround view="side" show={{ floor: 0.8, crash2: 0.5 }} own={own} ownZ={C.z} />;
+    return <KitAround view="side" show={{ floor: 0.8, crash2: 0.5, tom2: 0.35, kick: 0.3 }} own={own} ownZ={C.z} />;
   }
   return (
     <Group>
-      <KitAround view="top" show={{ floor: 0.85 }} />
+      <KitAround view="top" show={kitShow(['ride', 'crash1', 'crash2', 'hihat'], { floor: 0.85 })} />
       <BoomStandTop id="ride" />
       <CymbalTop spec={RIDE.spec} cx={C.x} cz={C.z} tiltDeg={RIDE.tiltDeg} areas dim={0.92} />
       <StickTo from={{ x: STRIKE_BOW.x - 260, y: STRIKE_BOW.z - 200 }} to={{ x: STRIKE_BOW.x - 4, y: STRIKE_BOW.z - 3 }} />
-      <KitAround view="top" show={{ crash2: 0.42 }} />
+      <KitAround view="top" show={{ hihat: 0.3, crash1: 0.3, crash2: 0.42 }} />
     </Group>
   );
 }

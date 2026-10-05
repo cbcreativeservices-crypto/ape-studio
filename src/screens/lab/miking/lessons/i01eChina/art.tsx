@@ -17,7 +17,7 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, StickTo, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
 import { ChinaSide, ChinaTop } from '../shared/cymbals/CymbalFxArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
@@ -27,7 +27,8 @@ import { AREAS, CHINA_OF, R, STRIKE_INV, STRIKE_UP } from './model.ts';
 
 const DEG = Math.PI / 180;
 const isInv = (v: VariantId) => v === 'inverted';
-const AROUND: Partial<Record<KitPiece, number>> = { tom1: 0.4, kick: 0.5, holder: 0.5, tom2: 0.8, floor: 0.55, ride: 0.5 };
+const NEAR: Partial<Record<KitPiece, number>> = { tom1: 0.4, kick: 0.5, holder: 0.5, tom2: 0.8, floor: 0.55, ride: 0.5 };
+const AROUND_TOP = kitShow(['crash2'], NEAR);
 
 export function ChinaArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const p = CHINA_OF(variant);
@@ -41,11 +42,11 @@ export function ChinaArt({ view, variant }: { view: ViewId; variant: VariantId }
         <StickTo from={{ x: s.x - 280, y: s.y - 230 }} to={{ x: s.x - 4, y: s.y - 4 }} />
       </Group>
     );
-    return <KitAround view="side" show={AROUND} own={own} ownZ={p.c.z} />;
+    return <KitAround view="side" show={NEAR} own={own} ownZ={p.c.z} />;
   }
   return (
     <Group>
-      <KitAround view="top" show={AROUND} />
+      <KitAround view="top" show={AROUND_TOP} />
       <BoomStandTop id="crash2" />
       <ChinaTop place={p} />
       <StickTo from={{ x: s.x - 250, y: s.z - 170 }} to={{ x: s.x - 4, y: s.z }} />

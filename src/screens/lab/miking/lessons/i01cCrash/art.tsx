@@ -16,7 +16,7 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop } from '../shared/cymbals/CymbalArt';
-import { KitAround, PlateGlow, StickTo, SwingFan, plateTransform, type KitPiece } from '../shared/cymbals/CymbalKitArt';
+import { KitAround, PlateGlow, StickTo, SwingFan, kitShow, plateTransform, type KitPiece } from '../shared/cymbals/CymbalKitArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
@@ -32,9 +32,10 @@ export function CrashArt({ view, variant }: { view: ViewId; variant: VariantId }
   const id = two ? 'crash2' : 'crash1';
   const strike = two ? STRIKE2 : STRIKE1;
   const R = c.spec.d.mm / 2;
-  const around: Partial<Record<KitPiece, number>> = two
+  const near: Partial<Record<KitPiece, number>> = two
     ? { tom1: 0.45, kick: 0.5, holder: 0.55, tom2: 0.8, floor: 0.6, ride: 0.45, crash1: 0.35 }
     : { hihat: 0.6, snare: 0.6, tom1: 0.8, kick: 0.5, holder: 0.55, tom2: 0.45, crash2: 0.35 };
+  const around = view === 'side' ? near : kitShow([two ? 'crash2' : 'crash1'], near);
   if (view === 'side') {
     const own = (
       <Group>

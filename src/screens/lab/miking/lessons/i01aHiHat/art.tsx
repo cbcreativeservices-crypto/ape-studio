@@ -17,7 +17,7 @@ import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { KIT, KIT_DRUMS, KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
 import { HiHatSide, HiHatTop } from '../shared/cymbals/CymbalArt';
 import { HIHAT_HARDWARE as HH } from '../shared/cymbals/cymbalSpec.ts';
-import { AirRing, KitAround, StickTo } from '../shared/cymbals/CymbalKitArt';
+import { AirRing, KitAround, StickTo, kitShow } from '../shared/cymbals/CymbalKitArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
@@ -39,7 +39,7 @@ export function HiHatArt({ view, variant }: { view: ViewId; variant: VariantId }
         <StickTo from={{ x: STRIKE.x - 330, y: STRIKE.y - 230 }} to={{ x: STRIKE.x - 4, y: STRIKE.y - 6 }} />
       </Group>
     );
-    return <KitAround view="side" show={{ snare: 0.62, crash1: 0.5 }} own={own} ownZ={C.z} />;
+    return <KitAround view="side" show={{ snare: 0.62, crash1: 0.5, tom1: 0.35, kick: 0.3 }} own={own} ownZ={C.z} />;
   }
   const own = (
     <Group>
@@ -50,9 +50,9 @@ export function HiHatArt({ view, variant }: { view: ViewId; variant: VariantId }
   );
   return (
     <Group>
-      <KitAround view="top" show={{ snare: 0.75 }} />
+      <KitAround view="top" show={kitShow(['hihat', 'crash1', 'crash2', 'ride'], { snare: 0.75 })} />
       {own}
-      <KitAround view="top" show={{ crash1: 0.45 }} />
+      <KitAround view="top" show={{ crash1: 0.45, crash2: 0.3, ride: 0.3 }} />
     </Group>
   );
 }

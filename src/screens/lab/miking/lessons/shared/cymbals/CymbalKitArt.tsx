@@ -454,3 +454,13 @@ export function PlateGlow({ c, tiltDeg, R, rise }: { c: { x: number; y: number }
     </Group>
   );
 }
+
+const ALL_PIECES: readonly KitPiece[] = ['hihat', 'crash1', 'crash2', 'ride', 'snare', 'tom1', 'tom2', 'floor', 'kick', 'holder'];
+/** The whole kit, faint (`base`), with the lesson's neighbours brighter and
+ *  its own cymbal (`omit`) left for the lesson to draw — so a wide view
+ *  (studio or live) still shows the kit around the cymbal. */
+export function kitShow(omit: readonly KitPiece[], near: Partial<Record<KitPiece, number>>, base = 0.32): Partial<Record<KitPiece, number>> {
+  const out: Partial<Record<KitPiece, number>> = {};
+  for (const k of ALL_PIECES) if (!omit.includes(k)) out[k] = near[k] ?? base;
+  return out;
+}
