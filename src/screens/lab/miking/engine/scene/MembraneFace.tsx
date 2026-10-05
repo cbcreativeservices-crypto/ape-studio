@@ -42,6 +42,8 @@ export type MembraneFaceProps = {
   /** −1 … 1: where in its cycle the shape is drawn (0 = passing through flat). */
   swing: number;
   accessibilityLabel: string;
+  /** The strike mark's word (default BEATER; a hand drum says STROKE). */
+  strikeWord?: string;
 };
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -103,7 +105,7 @@ function regionMarks(sh: HeadShape): { r: number; t: number; sign: number }[] {
   return out;
 }
 
-export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, accessibilityLabel }: MembraneFaceProps) {
+export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, accessibilityLabel, strikeWord = 'BEATER' }: MembraneFaceProps) {
   const R = diameterMm / 2;
   const hoopIn = R + 3;
   const hoopOut = hoopIn + 9;
@@ -145,7 +147,7 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
     return { claws, rodsP };
   }, [rods, hoopIn, hoopOut]);
   const marks = useMemo(() => regionMarks(shape), [shape]);
-  const labels: StaticLabel[] = [{ id: 'beater', text: 'BEATER', u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
+  const labels: StaticLabel[] = [{ id: 'beater', text: strikeWord, u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
   // + / − in every region, drawn as strokes (crisp at any size; colour is
   // never the only signal, charter §8).
   const signs = useMemo(() => {

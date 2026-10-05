@@ -21,6 +21,7 @@ import { registerHooks } from 'node:module';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { itemRules, learnerStrings, RESEARCH_NAMES } from './_mikingItemRules.ts';
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -249,29 +250,8 @@ describe('engine additions: a cylinder on any axis, a target point, an approach 
   });
 });
 
-/* ── the checks and the words ── */
-export const RESEARCH_NAMES = /\b(Hammond|Celestion|Marshall|Ampeg|Fender|Shure|Audix|122H|122A|147A|V30|Vintage 30|SM57|SM58|SM81|KSM\d*|PGA27|Beta ?5\d|Mills|Byrne|Michaels|Mishur|Zito|Gilbert|Heritage|Metropolitan|Met|Duvel|Brush|Patranabis|Raman)\b/;
-const INTERNAL = new Set(['src', 'quote', 'prov', 'bandProv', 'strikeSrc', 'unknowns', 'examples', 'kind']);
-function strings(v: unknown, out: string[]): void {
-  if (typeof v === 'string') out.push(v);
-  else if (Array.isArray(v)) v.forEach((x) => strings(x, out));
-  else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) if (!INTERNAL.has(k)) strings(x, out);
-}
-export function itemRules(lesson: { scenarios: readonly { id: string; options: readonly string[]; correct: string; why: Readonly<Record<string, string>> }[]; symptoms: readonly { id: string; options: readonly string[]; correct: string; why: Readonly<Record<string, string>> }[]; diagnostic: readonly { id: string; options: readonly string[]; correct: string; why: Readonly<Record<string, string>> }[] }) {
-  const items = [...lesson.scenarios, ...lesson.symptoms, ...lesson.diagnostic];
-  for (const s of items) {
-    const others = s.options.filter((o) => o !== s.correct);
-    const mean = others.reduce((a, o) => a + o.length, 0) / others.length;
-    assert.ok(s.correct.length <= 1.6 * mean, `${s.id}: correct ${s.correct.length} vs mean ${mean.toFixed(1)}`);
-    assert.ok(s.options.length >= 3, s.id);
-    for (const o of others) {
-      assert.doesNotMatch(o, /\b(always|any|never|every)\b/i, `${s.id}: "${o}"`);
-      assert.ok(s.why[o] && s.why[o].length > 20, `${s.id}: no why for "${o}"`);
-    }
-  }
-  const longest = items.filter((s) => s.options.every((o) => o === s.correct || o.length < s.correct.length)).length;
-  assert.ok(longest <= items.length / 4, `correct is the longest in ${longest} of ${items.length}`);
-}
+/* ── the checks and the words (shared rules: test/_mikingItemRules.ts) ── */
+const strings = (v: unknown, out: string[]): void => void learnerStrings(v, out);
 
 describe('SPK: the checks follow the item-writing rules; the words name nobody', () => {
   it('item-writing rules (LESSON_JOURNEY §5)', () => itemRules(SPK_LESSON));
