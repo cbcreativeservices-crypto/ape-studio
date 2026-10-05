@@ -77,7 +77,10 @@ export function playerFit(g: GuitarGeom, posture: Posture, floorY: number): Play
   const lh = g.lowerH;
   const sh = g.spec.body.pot ? g.spec.body.pot.cx.mm : g.spec.body.xLower.mm;
   const hole = g.hole.x;
-  const pickX1 = g.spec.opening.kind === 'round' || g.spec.opening.kind === 'oval' ? hole - g.hole.r * 0.25 : g.spec.body.pot ? 60 : Math.min(160, g.edge - 100);
+  // The picking hand over the top: short of the hole's neck side; over a
+  // resonator's coverplate (x −60 … +120, resonator_dobro proposal); over a
+  // banjo head up to the bridge's neck side.
+  const pickX1 = g.spec.opening.kind === 'round' || g.spec.opening.kind === 'oval' ? hole - g.hole.r * 0.25 : g.spec.body.pot ? 60 : g.spec.opening.kind === 'coverplate' ? 120 : Math.min(160, g.edge - 100);
   const pick: Box = { min: v(-60, -(lh - 22), 0), max: v(pickX1, lh - 22, 130) };
   const fret: Box = { min: v(g.edge - 20, -70, -90), max: v(g.L + 20, 100, 110) };
   if (posture === 'lap') {
@@ -87,7 +90,7 @@ export function playerFit(g: GuitarGeom, posture: Posture, floorY: number): Play
       head,
       mouth: v(140, -lh - 150, 520),
       torso: { min: v(-300, -lh - 420, -D - 60), max: v(320, -lh - 70, 520) },
-      legs: { min: v(-320, -lh - 300, -floorY), max: v(420, lh + 260, -D - 4) },
+      legs: { min: v(-320, -lh - 300, -floorY), max: v(420, lh + 90, -D - 4) },
       feet: null,
       pick: { min: v(-60, -80, 0), max: v(120, 80, 110) },
       arm: { a: v(-40, -lh - 120, 200), b: v(30, -40, 70), r: 42 },

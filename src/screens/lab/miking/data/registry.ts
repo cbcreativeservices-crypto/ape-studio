@@ -28,6 +28,7 @@ export const LESSONS: readonly LessonMeta[] = [
   // Lab 4 (strings): the guitar family — each lesson on its own line (built in parallel).
   { id: 'C01', labId: 'strings', title: 'Acoustic Guitar', subtitle: 'Steel-string, twelve-string and nylon — near the 12th fret, then move', status: 'ready' },
   { id: 'C07', labId: 'strings', title: 'Acoustic Bass Guitar', subtitle: 'A hollow-body bass: one mic, the pickup, and the lowest notes', status: 'ready' },
+  { id: 'C03', labId: 'strings', title: 'Resonator Guitar', subtitle: 'Square neck in the lap, round neck upright — the cone under the coverplate', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

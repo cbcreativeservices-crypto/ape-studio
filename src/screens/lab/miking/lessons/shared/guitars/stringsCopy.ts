@@ -13,6 +13,8 @@ export type StringsCopyOpts = {
   /** "a seated player with an acoustic bass guitar" per variant. */
   subject: Record<VariantId, string>;
   variantKey: string;
+  /** The view tags (default FRONT / FROM ABOVE: an upright instrument). */
+  viewTag?: { side: string; top: string };
   variantShort: Record<VariantId, string>;
   variantNotes?: Partial<Record<VariantId, string>>;
   figureLabel: string;
@@ -53,11 +55,12 @@ export function stringsCopy(o: StringsCopyOpts): LessonCopy {
     variantKey: o.variantKey,
     variantShort: o.variantShort,
     sceneSubject: o.subject,
-    viewTag: { side: 'FRONT', top: 'FROM ABOVE' },
+    viewTag: o.viewTag ?? { side: 'FRONT', top: 'FROM ABOVE' },
     axes: {
       x: { plus: 'toward the headstock', minus: 'toward the tail', label: 'ALONG', blurb: 'Along the strings, toward the headstock or the tail end (x).' },
-      y: { plus: 'down (treble side)', minus: 'up (bass side)', label: 'UP–DOWN', blurb: 'Up toward the bass edge or down toward the treble edge and the floor (y).' },
-      z: { plus: `out in front of the ${o.radiator}`, minus: `behind the ${o.radiator}`, label: 'DISTANCE', blurb: `Out from the ${n.one}’s ${o.radiator} toward the audience, or back toward it (z). Distances are read from the point the zone names.` },
+      // Engine words that hold in every posture (upright or lap style).
+      y: { plus: 'lower', minus: 'higher', label: 'UP–DOWN', blurb: 'Up or down, toward the floor (y).' },
+      z: { plus: 'toward the audience', minus: 'toward the player', label: 'FRONT–BACK', blurb: `Toward the audience or back toward the player (z). Distances are read from the point the zone names on the ${n.one}’s ${o.radiator}.` },
     },
     instrument: {
       figureBadge: 'Drawn to scale from the front, with the player',

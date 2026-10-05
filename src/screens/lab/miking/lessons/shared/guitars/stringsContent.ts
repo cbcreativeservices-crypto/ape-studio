@@ -178,11 +178,11 @@ export function practiceChecks(p: string, n: Noun, refExample: { quote: string; 
       id: `${p}.prac.gain`,
       page: 'practice',
       prompt: `The quiet passages sit well below the overload light, but the player’s strongest notes light it. What do you do?`,
-      options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader well down until the hard notes sound clean', 'Ask the player to play much more softly once the show has started'],
+      options: ['Lower the input gain, or use a pad its manual allows, and re-check', 'Pull the channel fader well down until the hard notes sound clean again', 'Ask the player to play much more softly once the show has started'],
       correct: 'Lower the input gain, or use a pad its manual allows, and re-check',
       explain: 'Set input gain for the loudest passage the player intends, with headroom, and check that soft notes still sit above the noise. A lowered fader does not undo clipping at the input.',
       why: {
-        'Pull the channel fader well down until the hard notes sound clean': 'The overload happens at the input, before the fader. A lower fader only makes the clipped sound quieter.',
+        'Pull the channel fader well down until the hard notes sound clean again': 'The overload happens at the input, before the fader. A lower fader only makes the clipped sound quieter.',
         'Ask the player to play much more softly once the show has started': 'Set gain for the playing they intend — not for a gentler soundcheck.',
       },
     },

@@ -221,6 +221,10 @@ export const RESO_SINGLE: GuitarSpec = {
   pickguard: false,
 };
 
+/** The round-neck resonator: a biscuit bridge on the single cone (BEARD
+ *  lists a 9.5 in biscuit cone); otherwise the same drawing defaults. */
+export const RESO_ROUND: GuitarSpec = { ...RESO_SINGLE, id: 'resoRound', name: 'round-neck single-cone resonator guitar', bridge: { ...RESO_SINGLE.bridge, kind: 'biscuit' } };
+
 /* ── C05a banjo (banjo/GEOMETRY_PROPOSAL.md): origin at the bridge foot ── */
 const BANJO_POT_CX = -95;
 const BANJO_D = 285;

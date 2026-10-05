@@ -341,7 +341,7 @@ function buildFace(sc: GuitarScene) {
 }
 
 export function GuitarFace({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
-  const key = sc.variant.id;
+  const key = `${sc.variant.spec.id}|${sc.variant.id}|${sc.variant.posture}`;
   let P = faceCache.get(key);
   if (!P) {
     P = buildFace(sc);
@@ -508,7 +508,7 @@ function buildEdge(sc: GuitarScene) {
 }
 
 export function GuitarEdge({ sc, dim = 1 }: { sc: GuitarScene; dim?: number }) {
-  const key = sc.variant.id;
+  const key = `${sc.variant.spec.id}|${sc.variant.id}|${sc.variant.posture}`;
   let P = edgeCache.get(key);
   if (!P) {
     P = buildEdge(sc);
