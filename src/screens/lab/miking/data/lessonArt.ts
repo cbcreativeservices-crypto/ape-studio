@@ -122,3 +122,10 @@ ART.I12 = { ...GONG_ART, pages: GONG_PAGES, stepCounts: GONG_STEP_COUNTS };
 /* Lab 2 cymbals (I01a–e): appended so other lessons merge cleanly. */
 import { CYMBAL_ART } from '../lessons/shared/cymbals/artRegistry';
 Object.assign(ART, CYMBAL_ART);
+/* Lab 3 (winds), the free reeds and the organ: A10–A12 (each lesson on its own line). */
+import { A10_LESSON_ART } from '../lessons/a10Harmonica/pages';
+ART.A10 = A10_LESSON_ART;
+import { A11_LESSON_ART } from '../lessons/a11Accordion/pages';
+ART.A11 = A11_LESSON_ART;
+import { A12_LESSON_ART } from '../lessons/a12Organ/pages';
+ART.A12 = A12_LESSON_ART;

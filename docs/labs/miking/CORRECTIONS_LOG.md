@@ -693,3 +693,51 @@ Built 2026-10-05 (branch `miking-i1`, from `4334be8b` on `final-lab`). Research:
 | CY-09 | — | — | see CH-02 | | | |
 | CY-10 | (all) | "Pro Audio Training Academy", "Student" | Not used | House rule. | — | APPLIED |
 > **Ids (review Lab 1 minor 9, 2026-10-05).** The M11 kit rows were S-01/S-02 and the timpani rows T-01–T-03, repeating the snare's and toms' ids; they are now K11-01/K11-02 and TP-01–TP-03.
+
+---
+
+## Lab 3 · the reed instruments and the organ: A10 Harmonica, A11 Accordion, A12 Acoustic Pipe Organ (branch miking-a5, 2026-10-05)
+
+Research: `BATCH3_RESEARCH_SUMMARY.md` §2 and the `harmonica/`, `accordion/`, `pipe_organ/` folders. The
+lesson headers ("Pro Audio Training Academy … Studio and Live Sound") are not used anywhere (house rule).
+
+### A10 Harmonica (`source_text/Harmonica-Miking-Technique.txt`, lesson id A10)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| HM-01 | L36 / [7] | "start near the boundary between dust cap and cone, about 2–5 cm from the grille cloth" | The harp amp is the speaker family's combo with the SPEAKER MODULE's starting points, unchanged: the dust cap's edge "about 2.5–5 cm (1–2 in) from the grille", then the centre, the edge, 15–30 cm and 60–90 cm; their words are the harp amp's | The figure is a guitar-amp engineer's 1–2 in (25.4–50.8 mm), measured from the dust-cap/cone line of the SPEAKER; "2–5 cm from the grille cloth" mixed two reference points and rounded 25.4 to 20. The lab reads speaker rows at the cloth (SPK-04), so the module's zone is reused, not re-derived | harmonica/SOURCES.md (S-MILLS row); speaker_leslie/SOURCES.md | APPLIED (`a10Harmonica/geometry.ts`) |
+| HM-02 | L25 | "A distance around 15–30 cm is a practical trial, not a published harmonica standard" | Kept as the acoustic starting point, measured from the harmonica (the hole face) at mouth and hand height, just beyond the hands' envelope; said as "a practical starting experiment" | No source gives a number; the lesson labels it honestly | harmonica/SOURCES.md L25 row | APPLIED |
+| HM-03 | L25 | "Aim slightly off the breath stream if bursts dominate" | A second zone: the same 15–30 cm, 20–40° off the line straight out (just outside the drawn 20° breath cone), still aimed at the harmonica | The breath cone's 20° is the proposal's drawing default; 40° is the lab's band | harmonica/GEOMETRY_PROPOSAL.md §2 | APPLIED · OWNER: approve the band |
+| HM-04 | L30 | The HB52 "is a high-impedance omnidirectional dynamic mic with an XLR connector" | The XLR caution is kept in words ("a connector alone does not prove compatibility"); only the first harp mic's published size (Ø 63 × 82.6 mm) is drawn | The HB52 manual was unreachable (403); retailer snippets are Low confidence | harmonica/SOURCES.md | APPLIED · OWNER: re-read the HB52 manual |
+| HM-05 | L32-L33 | Volume down before plugging in; no feedback at the maximum knob position | Kept, and the setting page's patch tracer checks the harp mic's input (amp OK; desk mic input CHECK FIRST — a matching transformer; speaker output STOP) | Confirmed in the harp mic's user guide; the patch rule is the speaker family's | S-520DX; `shared/speakers/signalChain.ts` | APPLIED (`a10Harmonica/paths.tsx`) |
+| HM-06 | (geometry) | — | The player stands 1.35 m in front of the amp and 0.75 m to its side (29° off its axis), mouth 1550 mm up; harmonica 26 × 28 mm; hands' envelope 140 × 120 × 120 | All drawing defaults (proposal §1 and the amp's frame C) | harmonica/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve |
+| HM-07 | (all) | Hygiene for a shared, mouth-proximate mic | Not said | No source in the lesson or the research | BATCH3 §2 "Hygiene" | OWNER: decide |
+
+### A11 Accordion (`source_text/Accordion-Miking-Technique.txt`, lesson id A11)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| AC-01 | L25 | "an 18-inch dynamic microphone facing the grille" | "A dynamic facing the treble grille: start about 46 cm (18 in) from the centre of the treble grille" — measured to the grille's centre point | The test was "SM57 — About 18" from the center of the grille"; the lesson's own L28 already says it correctly | accordion/SOURCES.md test 4 | APPLIED (`a11Accordion/geometry.ts`) |
+| AC-02 | L25, L33 | "about 10–15 cm from a bellows-side view" | Measured from the bass side AT ITS FULLEST OPENING, so the stand stays outside the whole travel; the readouts and the two-mic page show the distance changing over the cycle | The bass side moves; a stand 10–15 cm from it at rest would be struck on a full pull — the lesson's own safety rule (L28 "Keep stands away from … full bellows extension") wins | accordion/SOURCES.md tests 2/3; GEOMETRY_PROPOSAL.md §4 | APPLIED · OWNER: approve the reading |
+| AC-03 | L38 | "Do not … tape a grille" | Kept; the research's test that taped a miniature to the grille is not shown | A listening test, not a practice to teach | accordion/SOURCES.md (test 7, ADD) | APPLIED |
+| AC-04 | (frame) | Proposal frame A: +z toward the bass side (the player's left) | The engine's convention: +z to the player's right — the same frame mirrored, no size changed | The side view looks from the player's right in every lesson | engine/geometry/frame.ts | APPLIED |
+| AC-05 | (geometry) | — | Treble box 480 × 200 × 180, bass box 480 × 140 × 180, grille 300 × 80 with its centre 1150 mm up; bellows closed 100, half open 175/350, fully open 264/600 (a 35° fan) | Drawing defaults; only the 41 keys and 120 buttons are published | accordion/GEOMETRY_PROPOSAL.md §2 | APPLIED · OWNER: approve |
+
+### A12 Acoustic Pipe Organ (`source_text/Acoustic-Pipe-Organ-Miking-Technique.txt`, lesson id A12)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| ORG-01 | L4 | "Electronic organs and Leslie speakers are covered in their separate lesson" | A link to the Amplified speakers & Leslie module (SPK) on the setting page | The lesson named no lesson; the module exists | BATCH3 §2 item 7 | APPLIED (`a12Organ/pages.tsx`) |
+| ORG-02 | L28 / [4] | ORTF in the stereo-miking article: "110-degree angle … six inches apart" | "Two cardioids about 17 cm apart, splayed about 110° (some guides round the spacing to 15 cm)" | ORTF is 17 cm; the article rounds | pipe_organ/SOURCES.md D-ORG1 | APPLIED |
+| ORG-03 | L27 | "about 35 feet from that particular organ" | A case study with its height added ("about 2.4 m (8 ft) up, midway between the side walls"); the fourth pew is placed 10.7 m from the façade so the drawing agrees | The account gives the pew, the height and the side walls | pipe_organ/SOURCES.md (NEU-ORGAN) | APPLIED |
+| ORG-04 | L29 | "another used a very high overhead pair after on-site tests" | Said only in words, as a venue's installation by competent people — no zone | "10- to 15-meters above the organ" is that room's installation; an elevated mic is never dragged in the lab | pipe_organ/SOURCES.md (DPA-PETRUS) | APPLIED |
+| ORG-05 | (zones) | Congregation pair / division spot: no distances | Bands are the drawing's own: the pew area at 1.5–3.5 m up; a spot 3–6 m out (one to two of the drawn Great's widths) | No universal distance exists; said on screen | pipe_organ/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve |
+| ORG-06 | (room picture) | — | One lengthwise resonance of an ideal 30 m nave (f = n·c/2L) near a 32′/16′/8′ low C, labelled illustrative | The account's "move two feet … no pedal" is the evidence; the picture shows the mechanism, not a prediction | pipe_organ/GEOMETRY_PROPOSAL.md | APPLIED |
+| ORG-07 | (layout) | — | A stylised organ (case 8 × 10 m; Great, Swell, Pedal towers, Positive), a 30 × 15 × 14 m nave with two main aisles, side passages and a rear gallery with an antiphonal division | No organ is sourced; the layout is wholly a drawing default | pipe_organ/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve |
+
+### Shared across the three lessons
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| FR-01 | (sound) | "Air moving across free reeds produces the harmonica's sound" | HOW IT SOUNDS steps one reed through its slot (the air pushed through, the reed springing back, puffs) and draws an ideal clamped-free bar's shapes (ratios 1 : 6.27 : 17.55 : 34.39) | Standard beam physics; a real reed is tapered and weighted, said on screen | `shared/freereed/reedModel.ts` | APPLIED |
+| FR-02 | (wording) | "free reed" | On screen "reed instrument", "a reed that swings through its slot" | The house wording rule bars the word "free" from all lab copy | test/mikingWiring.test.ts | APPLIED |

@@ -125,3 +125,14 @@ snare's `smallDynCard` (same S-SM57-UG body and pattern), so M06–M08 now use `
 | S-SM57-UG | Shure, SM57 User Guide 3.6 (2025-A): "Dynamic (moving coil)"; "Cardioid"; 157 mm overall, 32 mm grille | see `snare/SOURCES.md` | read in the snare pass (2026-10-04) |
 | AX-DPE8 | Audix DP Elite 8 sheet (archived): SCX1 length "104 mm / 4.1 in" (the pencil condenser's drawn length; Ø 21 mm is a drawing default) | see `snare/SOURCES.md`, `overheads/GEOMETRY_PROPOSAL.md` §5 | archived copy read (2026-10-04) |
 | LESSON-TIMP | The owner's timpani lesson, L35: "A cardioid condenser is well documented for spots in both small orchestras and amplified shows." | `source_text/Timpani-Miking-Technique-Research.txt` | the lesson's own words |
+
+---
+
+## 8. Mic types shared by Lab 3’s free reeds (A10 harmonica, A11 accordion; `lessons/shared/freereed/freeReedMics.ts`)
+
+Added 2026-10-05 by the A10–A12 builder (branch miking-a5): the two mic types no stand placement offers.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| S-520DX | Shure, 520DX user guide: "Polar Pattern Omnidirectional"; "63 mm (2.5 in) max diameter, 82.6 mm (3 1/4 in) long"; high impedance, attached 1/4-in cable (the generic `harpBullet` type) | see `harmonica/SOURCES.md` | read in the Batch 3 research pass |
+| AKG-416 | AKG, C 416III user manual: "The C 416III is a miniature hypercardioid condenser microphone"; bass-side mount aimed at a sound hole (the generic `accMini` type) | see `accordion/SOURCES.md` | read in the Batch 3 research pass |
