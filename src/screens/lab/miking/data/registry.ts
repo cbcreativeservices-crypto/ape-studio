@@ -41,3 +41,13 @@ export function lessonMeta(id: string): LessonMeta | undefined {
 export function labMeta(id: string): MikingLabMeta | undefined {
   return MIKING_LABS.find((l) => l.id === id);
 }
+
+/* Lab 1 hand drums, after the kit drums — appended here (not in the table
+ * above) so lessons other builders add to the table merge cleanly. Inline on
+ * purpose: this file is in the app-start graph, so no extra module. */
+(LESSONS as LessonMeta[]).push(
+  { id: 'M04a', labId: 'drums', title: 'Congas', subtitle: 'A pair of hand drums: one mic or one each, top or bottom', status: 'ready' },
+  { id: 'M04b', labId: 'drums', title: 'Bongos', subtitle: 'A small pair: one mic between, two spots, or clip-ons', status: 'ready' },
+  { id: 'M04c', labId: 'drums', title: 'Timbales', subtitle: 'Heads, rims and shells: one mic above, spots, or under', status: 'ready' },
+  { id: 'M05', labId: 'drums', title: 'Djembe', subtitle: 'A goblet drum: one mic above first, a low mic only if it helps', status: 'ready' },
+);

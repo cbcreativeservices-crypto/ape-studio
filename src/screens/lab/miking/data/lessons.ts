@@ -11,3 +11,7 @@ const LESSON_CONTENT: Record<string, Lesson> = { M01: M01_LESSON };
 export function lessonById(id: string | undefined): Lesson | undefined {
   return id ? LESSON_CONTENT[id] : undefined;
 }
+
+/* Lab 1 hand drums (M04a–c, M05): appended so other lessons merge cleanly. */
+import { HAND_DRUM_CONTENT } from '../lessons/shared/handdrums/content.ts';
+Object.assign(LESSON_CONTENT, HAND_DRUM_CONTENT);

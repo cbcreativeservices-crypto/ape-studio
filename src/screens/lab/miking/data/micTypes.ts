@@ -103,3 +103,8 @@ export const MIC_TYPES: Record<string, MicType> = {
 export function micType(id: string): MicType {
   return MIC_TYPES[id] ?? MIC_TYPES.kickDynCard;
 }
+
+/* Lab 1 hand drums (M04a–c, M05): their mic types sit beside the kick’s.
+ * Registered here, after the table, so other lessons’ additions merge cleanly. */
+import { HAND_DRUM_MIC_TYPES } from '../lessons/shared/handdrums/handMics.ts';
+Object.assign(MIC_TYPES, HAND_DRUM_MIC_TYPES);
