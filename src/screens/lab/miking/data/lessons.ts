@@ -62,3 +62,7 @@ export function lessonById(id: string | undefined): Lesson | undefined {
 /* Lab 1 hand drums (M04a–c, M05): appended so other lessons merge cleanly. */
 import { HAND_DRUM_CONTENT } from '../lessons/shared/handdrums/content.ts';
 Object.assign(LESSON_CONTENT, HAND_DRUM_CONTENT);
+
+/* Lab 2 (percussion), suspended metal: I06a–c, I12 (each lesson on its own line). */
+import { I06A_LESSON } from '../lessons/i06aTriangle/lesson.ts';
+LESSON_CONTENT.I06a = I06A_LESSON;
