@@ -6,7 +6,7 @@
  */
 import type { ReactElement } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
-import type { VariantId, Vec3, ViewId } from '../model/types.ts';
+import type { SettingItem, VariantId, Vec3, ViewId, Wedge } from '../model/types.ts';
 
 /** `short`: the words to fall back to where the full label would collide. */
 export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
@@ -27,4 +27,23 @@ export type LessonArt = {
    *  KitPlan): its plan id, whether the lesson's own art draws it there (M01's
    *  kick), and where the lesson's frame origin sits on the plan (mm). */
   plan?: { own: string; useArt?: boolean; offset?: Vec3 };
+  /** THE SETTING for an instrument that does not sit on the kit (an
+   *  orchestra's percussion, a hand drum): the lesson's own plan, drawn in
+   *  place of the shared kit plan. Same contract as KitPlan. */
+  SettingPlan?: (props: SettingPlanProps) => ReactElement;
+};
+
+/** What PSetting hands a lesson's own SettingPlan (the KitPlan contract). */
+export type SettingPlanProps = {
+  w: number;
+  h: number;
+  /** 'kit' = the instrument among its neighbours (the ensemble); 'stage' and
+   *  'studio' as for the kit. */
+  scene: 'kit' | 'stage' | 'studio';
+  variant: VariantId;
+  items: readonly SettingItem[];
+  wedges: readonly Wedge[];
+  highlight: string | null;
+  onTap: (itemId: string) => void;
+  accessibilityLabel: string;
 };

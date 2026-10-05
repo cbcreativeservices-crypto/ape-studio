@@ -84,3 +84,14 @@ mic is named (ruling §16.13 D2 in ENGINE_BLUEPRINT.md). The 2 older app copies 
 - One temperature (20 °C).
 - Distances displayed to ≈ 5 mm and angles to ≈ 5° (ruling §16.11); the acoustic centre is not
   the grille front (lesson L39), so no millimetre claim is made.
+
+## 6. Mic types shared by Lab 1's concert lessons (M06–M08, `data/micTypesConcert.ts`)
+
+Added 2026-10-05 by the M06–M08 builder (branch miking-w4). Keys already read in other
+lessons' passes are listed here so the shared mic types resolve from one table.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| S-SM57-UG | Shure, SM57 User Guide 3.6 (2025-A): "Dynamic (moving coil)"; "Cardioid"; 157 mm overall, 32 mm grille | see `snare/SOURCES.md` | read in the snare pass (2026-10-04) |
+| AX-DPE8 | Audix DP Elite 8 sheet (archived): SCX1 length "104 mm / 4.1 in" (the pencil condenser's drawn length; Ø 21 mm is a drawing default) | see `snare/SOURCES.md`, `overheads/GEOMETRY_PROPOSAL.md` §5 | archived copy read (2026-10-04) |
+| LESSON-TIMP | The owner's timpani lesson, L35: "A cardioid condenser is well documented for spots in both small orchestras and amplified shows." | `source_text/Timpani-Miking-Technique-Research.txt` | the lesson's own words |

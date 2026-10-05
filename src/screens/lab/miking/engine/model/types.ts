@@ -330,7 +330,7 @@ export type SoundContent = {
   body: string;
   /** The head drawn face-on on the shapes step: its nominal diameter and rod
    *  count (`strikeSrc` is the internal record). */
-  head: { diameterMm: number; rods: number; label: string; strikeSrc: SrcKey; hoop?: 'wood' | 'metal' };
+  head: { diameterMm: number; rods: number; label: string; strikeSrc: SrcKey; hoop?: 'wood' | 'metal'; /** 'kettle': a timpani's measured pitch ratios (engine/physics/kettle.ts); default the ideal membrane. */ shapes?: 'ideal' | 'kettle' };
 };
 /** THE SETTING: a neighbour of the instrument on the plan, and what it means
  *  for a mic on this instrument. Positions are the art's (`prov` internal). */

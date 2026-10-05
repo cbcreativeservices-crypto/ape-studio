@@ -11,6 +11,7 @@
  * plate) — not its acoustic centre (Kick L39; GEOMETRY_PROPOSAL §5).
  */
 import type { MicType } from '../engine/model/types.ts';
+import { CONCERT_MIC_TYPES } from './micTypesConcert.ts';
 
 const generic = { kind: 'sourced', src: 'WP-MIC', quote: 'a superposition of an omnidirectional (pressure) and a figure-8 (pressure gradient)' } as const;
 
@@ -98,6 +99,8 @@ export const MIC_TYPES: Record<string, MicType> = {
     art: 'sdc',
     blurb: 'A high-SPL condenser — a flatter-response approach some engineers like on kick. One tonal aim, not proof that condensers are better. Needs phantom power.',
   },
+  // Lab 1's concert lessons (M06–M08): data/micTypesConcert.ts.
+  ...CONCERT_MIC_TYPES,
 };
 
 export function micType(id: string): MicType {

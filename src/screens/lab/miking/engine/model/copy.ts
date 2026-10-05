@@ -12,6 +12,37 @@
  */
 import type { MicPattern, MicPose, PatternId, VariantId, Vec3, ViewBox, ViewId } from './types.ts';
 
+/** One of HOW IT SOUNDS step 3's two motions (`together` / `opposed`). */
+export type PairMode = {
+  /** The PAIR option and its blurb. */
+  option: string;
+  blurb: string;
+  /** The dock's value word and the card's title. */
+  short: string;
+  title: string;
+  card: string;
+  /** The first two bezel values (keys in PairCopy.cells). */
+  v0: string;
+  sub0?: string;
+  v1: string;
+  /** The third cell, by the swing's sign (AT REST near zero). */
+  air: { plus: string; minus: string; rest: string };
+};
+/** HOW IT SOUNDS step 3's words (see LessonCopy.sound.pair). */
+export type PairCopy = {
+  title: string;
+  badge: string;
+  looking: string;
+  prompt: string;
+  /** The dock key ("PAIR"). */
+  key: string;
+  /** The fader's words at rest. */
+  rest: string;
+  cells: readonly [string, string, string];
+  together: PairMode;
+  opposed: PairMode;
+};
+
 /** A strike-sequence bezel cell: its value at each event (index = event − 1). */
 export type CopyCell = { k: string; at: readonly string[]; byVariant?: Readonly<Partial<Record<VariantId, readonly string[]>>>; flex?: number };
 /** The words for one POSITION axis on the dock (placementDock). */
@@ -57,6 +88,13 @@ export type LessonCopy = {
     coupledSubject: string;
     coupledNote: string;
     silentNote: string;
+    /** HOW IT SOUNDS step 3 for an instrument that is not two heads round
+     *  one air (a kettle under one head, a frame with jingles): the step's
+     *  words. None = the two-headed drum's words (PSound's TWO_HEADS). */
+    pair?: PairCopy;
+    /** Step 2's shape card, when the lesson's shapes are not the ideal
+     *  membrane's (a timpani's kettle): `{ratio}` is filled in. */
+    shapeWords?: { lowest: string; other: string; ratioSub: string; badge?: string };
   };
   setting: {
     kitA11y: string;
@@ -68,6 +106,18 @@ export type LessonCopy = {
     stageIdle: string;
     studioIdle: string;
     before: readonly { title: string; text: string }[];
+    /** The plan's words for an instrument that is not on the kit (a lesson
+     *  with its own SettingPlan). None = the kit's words. */
+    plan?: {
+      title: string;
+      badge: string;
+      looking: string;
+      stageBadge: string;
+      studioBadge: string;
+      stageLooking: string;
+      studioLooking: string;
+      widePrompt: string;
+    };
   };
   placement: {
     /** The worked example's zone, per variant. */
