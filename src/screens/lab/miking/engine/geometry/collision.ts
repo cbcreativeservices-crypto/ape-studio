@@ -47,7 +47,9 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     if (e.variants && !e.variants.includes(variant)) continue;
     solids.push({ partId: e.id, label: e.label, shape: e.shape, clearance: e.clearance ?? 0 });
   }
-  const yFloor = model.floorByVariant?.[variant] ?? model.yFloor.mm;
+  // A variant may stand the instrument at another height above the floor (a
+  // drum raised on a stand; a violinist standing or seated).
+  const yFloor = model.floorByVariant?.[variant] ?? model.yFloorByVariant?.[variant] ?? model.yFloor.mm;
   solids.push({ partId: 'floor', label: 'floor', shape: { kind: 'floor', y: yFloor }, clearance: 0 });
   return {
     variant,

@@ -24,8 +24,9 @@ Source keys (used by `src/screens/lab/miking/data/sources.ts` and by `model.ts` 
 | MATH | Derivation from the stated formula (shown in the row) | — | derived; checked by test |
 | S-SM57-UG | Shure, SM57 User Guide 3.6 (2025-A): the instrument-dynamic outline (157 mm long, 32 mm grille, 23 mm tail; "Cardioid") used by the generic `instDynCard` type | see `snare/SOURCES.md` | read 2026-10-04 in the snare pass; added here 2026-10-05 (mic family, speaker / Leslie module) |
 | AX-SCX1 | Audix SCX1 pencil condenser length "104 mm / 4.1 in" (the generic `sdcCard` type's length; Ø 21 mm is a drawing default) | as quoted in `overheads/GEOMETRY_PROPOSAL.md` §(mic family) | quoted in the research pass; the sheet itself not re-read 2026-10-05 — re-verify |
-| DPA-MOUNT | DPA, "How to mount the 4099 instrument microphone on various instruments": the guitar clip's fit ("body depth between 35 mm (1.4 in) and 122 mm (4.8 in)") for the generic `clipCond` type | see `acoustic_guitar/SOURCES.md` §0 | read 2026-10-04 in the Lab 4 pass; added here for the guitar family's mic type |
+| DPA-MOUNT | DPA, "How to mount the 4099 instrument microphone on various instruments": the guitar clip's fit ("body depth between 35 mm (1.4 in) and 122 mm (4.8 in)") for the generic `clipCond` type, and the bowed strings' clips (the `strMini` type) | see `acoustic_guitar/SOURCES.md` §0 | read 2026-10-04 in the Lab 4 pass; added here for the guitar family's mic type |
 | DPA-UKE | DPA, "How to mic the ukulele": "The miniature supercardioid 4099 CORE+ Instrument Microphone" (the `clipCond` type's pattern) | see `ukulele/SOURCES.md` | read 2026-10-04 in the Lab 4 pass |
+| DPA-VLA | DPA, "How to mic a viola" — the compact-cardioid and supercardioid-miniature facts behind the Lab 4 string mic family | see `violin/SOURCES.md` §0 | read 2026-10-04 in the Lab 4 research pass |
 
 ---
 

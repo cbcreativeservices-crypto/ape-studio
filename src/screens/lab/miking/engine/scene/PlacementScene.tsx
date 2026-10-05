@@ -201,6 +201,73 @@ function shapeOutline(shape: Shape3, view: ViewId): ReturnType<typeof Skia.Path.
       p.close();
       return p;
     }
+    case 'capsule': {
+      // A limb, a string, a neck: the band of half-width r round the
+      // projected segment, with round ends (added 2026-10-05 for the bowed
+      // strings, so a tapped part on a capsule is outlined).
+      const au = shape.a.x;
+      const av = view === 'side' ? shape.a.y : shape.a.z;
+      const bu = shape.b.x;
+      const bv = view === 'side' ? shape.b.y : shape.b.z;
+      const L = Math.hypot(bu - au, bv - av);
+      if (L < 1) {
+        p.addCircle(au, av, shape.r);
+        return p;
+      }
+      const a0 = Math.atan2(bv - av, bu - au);
+      // Round the far end (−90° … +90° about the axis), then the near end.
+      for (let i = 0; i <= 10; i++) {
+        const t = a0 - Math.PI / 2 + (Math.PI * i) / 10;
+        const q = { u: bu + shape.r * Math.cos(t), v: bv + shape.r * Math.sin(t) };
+        if (i === 0) p.moveTo(q.u, q.v);
+        else p.lineTo(q.u, q.v);
+      }
+      for (let i = 0; i <= 10; i++) {
+        const t = a0 + Math.PI / 2 + (Math.PI * i) / 10;
+        p.lineTo(au + shape.r * Math.cos(t), av + shape.r * Math.sin(t));
+      }
+      p.close();
+      return p;
+    }
+    case 'fan': {
+      // The fan's silhouette: its rim and pivot, both faces, projected.
+      const pts: { u: number; v: number }[] = [];
+      const sides = shape.twoSided ? [1, -1] : [1];
+      for (const sd of sides) {
+        for (let i = 0; i <= 12; i++) {
+          const a = -shape.ang + (2 * shape.ang * i) / 12;
+          const ca = Math.cos(a) * sd;
+          const sa = Math.sin(a);
+          for (const w of [-shape.halfW, shape.halfW]) {
+            const q = {
+              x: shape.c.x + (shape.u.x * ca + shape.v.x * sa) * (shape.r + shape.round) + shape.axis.x * w,
+              y: shape.c.y + (shape.u.y * ca + shape.v.y * sa) * (shape.r + shape.round) + shape.axis.y * w,
+              z: shape.c.z + (shape.u.z * ca + shape.v.z * sa) * (shape.r + shape.round) + shape.axis.z * w,
+            };
+            pts.push({ u: q.x, v: view === 'side' ? q.y : q.z });
+          }
+        }
+      }
+      for (const w of [-shape.halfW, shape.halfW]) pts.push({ u: shape.c.x + shape.axis.x * w, v: (view === 'side' ? shape.c.y : shape.c.z) + (view === 'side' ? shape.axis.y : shape.axis.z) * w });
+      // Convex hull (monotone chain).
+      pts.sort((a, b) => a.u - b.u || a.v - b.v);
+      const cr = (o: { u: number; v: number }, a: { u: number; v: number }, b: { u: number; v: number }) => (a.u - o.u) * (b.v - o.v) - (a.v - o.v) * (b.u - o.u);
+      const lo: { u: number; v: number }[] = [];
+      for (const q of pts) {
+        while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop();
+        lo.push(q);
+      }
+      const hi: { u: number; v: number }[] = [];
+      for (let i = pts.length - 1; i >= 0; i--) {
+        const q = pts[i];
+        while (hi.length >= 2 && cr(hi[hi.length - 2], hi[hi.length - 1], q) <= 0) hi.pop();
+        hi.push(q);
+      }
+      const hull = [...lo.slice(0, -1), ...hi.slice(0, -1)];
+      hull.forEach((q, i) => (i === 0 ? p.moveTo(q.u, q.v) : p.lineTo(q.u, q.v)));
+      p.close();
+      return p;
+    }
     default:
       return null;
   }

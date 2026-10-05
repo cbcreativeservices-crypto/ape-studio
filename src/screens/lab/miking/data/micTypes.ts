@@ -222,6 +222,30 @@ Object.assign(MIC_TYPES, {
 
 /* ── Lab 4: the plucked strings (data/micTypesStrings.ts) ── */
 Object.assign(MIC_TYPES, STRINGS_MIC_TYPES);
+/* ── Lab 4: the bowed strings (violin/SOURCES.md, viola, cello, upright bass).
+ * Their stand condenser is the shared `sdcCard` (the same type; was `strSdc`). ── */
+Object.assign(MIC_TYPES, {
+  strMini: {
+    id: 'strMini',
+    label: 'Miniature condenser on a clip or holder, supercardioid',
+    short: 'MINI CLIP',
+    transducer: 'condenser',
+    address: 'end',
+    patterns: [
+      { id: 'supercardioid', label: 'supercardioid', prov: { kind: 'sourced', src: 'DPA-VLA', quote: 'a supercardioid 4099 miniature (lesson L33; DPA mounting guide)' } },
+      { id: 'omni', label: 'omni capsule (textbook shape)', prov: generic },
+    ],
+    body: { length: placeholder(32, 'a miniature capsule’s length on its gooseneck'), radius: placeholder(4.5, 'a miniature capsule’s radius') },
+    power: 'phantom power through its adapter',
+    mount: 'clip',
+    clip: { reach: placeholder(170, 'the gooseneck’s reach from the clip or holder to the capsule') },
+    examples: [
+      { model: 'DPA 4099 with VC4099 / C-CLIP / BC4099, MHS6005; Neumann MCM with MC 1–4', fact: 'VC4099 fits bodies 35–55 mm deep; C-CLIP on the C and A strings below the bridge; BC4099 on the E and G strings; MHS6005 grips two strings between tailpiece and bridge; MC 2 for strings 0.6–2.3 mm', src: 'DPA-MOUNT' },
+    ],
+    art: 'gooseneck',
+    blurb: 'A tiny condenser on a short gooseneck, held by a clip made for this instrument — on the ribs or on two strings behind the bridge. It moves with the player. Needs phantom power through its adapter.',
+  },
+} satisfies Record<string, MicType>);
 
 export function micType(id: string): MicType {
   return MIC_TYPES[id] ?? MIC_TYPES.kickDynCard;

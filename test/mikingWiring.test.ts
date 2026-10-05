@@ -67,6 +67,7 @@ describe('listing (owner: Training Labs → Instruments & Recording, members onl
     const fam = cat.families!.find((f) => f.name === 'Miking Labs')!;
     assert.deepEqual(fam.labs.map((l) => l.params!.lab), readyLabs().map((l: { id: string }) => l.id));
     assert.deepEqual(readyLabs().map((l: { id: string }) => l.id), ['drums', 'strings'], 'Lab 1 and Lab 4 have ready lessons today');
+    for (const l of readyLabs()) assert.ok((l as { blurb: string }).blurb.length > 40, `${l.id}: a listed lab has its blurb`);
     assert.ok(LESSONS.every((l: { status: string }) => l.status === 'ready'));
     assert.ok(categoryLeaves(cat as never).some((l: { route?: string }) => l.route === 'MikingHub'));
   });

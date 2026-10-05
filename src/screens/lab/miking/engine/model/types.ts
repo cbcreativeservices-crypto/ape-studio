@@ -60,7 +60,14 @@ export type Shape3 =
   /** A solid capped cone (a cylinder when ra = rb) along a → b, at ANY
    *  orientation: radius ra at a, rb at b. Upright and tilted drums (the
    *  hand-drum family), stands' columns, hand envelopes. */
-  | { kind: 'frustum'; a: Vec3; b: Vec3; ra: number; rb: number };
+  | { kind: 'frustum'; a: Vec3; b: Vec3; ra: number; rb: number }
+  /** A FAN (added 2026-10-05 for the bowed strings): the sector of half-angle
+   *  `ang` (radians) about the unit direction `u`, radius `r`, in the plane
+   *  spanned by `u` and `v` (unit, ⊥ u) through the pivot `c`, ±`halfW` along
+   *  `axis` (unit, ⊥ the plane), every edge rounded by `round`. `twoSided`
+   *  mirrors it through the pivot (a bow crossing the strings: the stick
+   *  reaches both ways). A bow's sweep, a bowing hand's travel. */
+  | { kind: 'fan'; c: Vec3; axis: Vec3; u: Vec3; v: Vec3; r: number; ang: number; halfW: number; round: number; twoSided?: boolean };
 
 /* ── the instrument model ── */
 export type PartId = string;
@@ -333,16 +340,19 @@ export type InstrumentModel = {
   variants: Variant[];
   defaultVariant: VariantId;
   views: Partial<Record<ViewId, ViewBox>>;
+  /** How far the aim may swing left–right by drag (deg; default 80). 180
+   *  lets a mic face the other way (behind an open-backed cabinet). */
+  aimAzLimit?: number;
   /** A variant that shows a different drum (the tom lesson's rack pair or
    *  floor tom) frames its own boxes. */
   viewsByVariant?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
   /** What each view is called on screen (default "SIDE · CUTAWAY" / "TOP ·
    *  CUTAWAY"): a hand drum's side view is an elevation, not a cut. */
   viewTags?: Partial<Record<ViewId, string>>;
-  /** How far the aim may swing left–right by drag (deg; default 80). 180
-   *  lets a mic face the other way (behind an open-backed cabinet). */
-  aimAzLimit?: number;
   yFloor: Dim;
+  /** A variant's own floor line, when it differs (a violinist standing or
+   *  seated: the instrument's frame stays put, the floor moves). */
+  yFloorByVariant?: Partial<Record<VariantId, number>>;
   /** The interior a mic counts as "inside". */
   interior: Interior;
   interiors?: Interior[];

@@ -81,18 +81,20 @@ export function placementParams(opts: {
   ];
   if (!surface) {
     // The lane turns the mic about the model's aim home (a guitar mic faces
-    // the top at az = −90°); the kick's home is 0, 0.
+    // the top at az = −90°); the kick's home is 0, 0. A lesson may let a mic
+    // swing further left–right (aimAzLimit, up to 180°: face the other way).
     const home = rig.lesson.model.aimHome ?? { az: 0, el: 0 };
     const h0 = aimAxis === 'az' ? home.az : home.el;
     const a = (aimAxis === 'az' ? pose.az : pose.el) - h0;
+    const lim = aimAxis === 'az' ? rig.lesson.model.aimAzLimit ?? AIM_MAX : AIM_MAX;
     out.push({
       kind: 'fader',
       id: 'aim',
       label: 'AIM',
-      value: Math.min(1, Math.max(0, (a + AIM_MAX) / (2 * AIM_MAX))),
+      value: Math.min(1, Math.max(0, (a + lim) / (2 * lim))),
       home: 0.5,
       onChange: (v) => {
-        const ang = Math.round((v * 2 - 1) * AIM_MAX) + h0;
+        const ang = Math.round((v * 2 - 1) * lim) + h0;
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
         rig.moveTo(slot, to);
       },

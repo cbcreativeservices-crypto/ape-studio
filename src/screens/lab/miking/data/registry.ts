@@ -15,7 +15,7 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: '' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
-  { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments — the guitar family first: front view and from above, recommended starting points, the player’s space, studio or live, and what a second mic does. Silent; tendencies in words.' },
+  { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments and their players — the guitar family, the amplified chain and the bowed strings: recommended starting points, the player’s space and the bow’s sweep, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '' },
   { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '' },
@@ -47,8 +47,13 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C05A', labId: 'strings', title: 'Banjo', subtitle: 'A drumhead driven by a bridge — head, neck junction, or a clip', status: 'ready' },
   { id: 'C05B', labId: 'strings', title: 'Mandolin', subtitle: 'A-style or F-style — the neck junction, the opening, or a clip', status: 'ready' },
   { id: 'C05C', labId: 'strings', title: 'Ukulele', subtitle: 'A small body, a voice above — the upper body, the hole, or a clip', status: 'ready' },
+  { id: 'C06a', labId: 'strings', title: 'Upright Bass, Plucked', subtitle: 'In front just above the bridge, an f-hole, or a clip on the strings', status: 'ready' },
+  { id: 'C06b', labId: 'strings', title: 'Upright Bass, Bowed', subtitle: 'In front outside the bow’s sweep, an f-hole, a clip, or a section spot', status: 'ready' },
   { id: 'C07', labId: 'strings', title: 'Acoustic Bass Guitar', subtitle: 'A hollow-body bass: one mic, the pickup, and the lowest notes', status: 'ready' },
   { id: 'C08', labId: 'strings', title: 'Electric Bass', subtitle: 'Fretted and fretless: one woofer, room to breathe, mic and DI', status: 'ready' },
+  { id: 'C09a', labId: 'strings', title: 'Violin and Fiddle', subtitle: 'In front and a little above, closer to the bow, or a clip on the violin', status: 'ready' },
+  { id: 'C09b', labId: 'strings', title: 'Viola', subtitle: 'A stand in front, a cardioid aimed at one area, or a miniature', status: 'ready' },
+  { id: 'C09c', labId: 'strings', title: 'Cello', subtitle: 'A foot from the bridge, a farther view, or a clip on the strings', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

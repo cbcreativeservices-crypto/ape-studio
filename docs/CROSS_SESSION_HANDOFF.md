@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 01:49 · ccode · 65ceb2d4
+changed: fix(miking): Lab 4 strings review pass — bass views, trio plan, sound labels, corrections log
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 01:38 · ccode · 7fbad8ca
 changed: Merge branch 'miking-c3' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
@@ -621,6 +627,18 @@ needs: nothing (miking merge, branch final-lab)
 
 ### 2026-10-05 01:31 · ccode · 2548fd26
 changed: fix(miking): M08 placement mic clear of the top-view inset at phone width
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:27 · ccode · b0f3b363
+changed: feat(miking): C09a Violin, C09b Viola, C06a/C06b Upright Bass (Lab 4 Strings)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:20 · ccode · 4b6d9544
+changed: feat(miking): bowed family — seated violin option, variant floors, plucking hand
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
@@ -653,6 +671,18 @@ needs: nothing.
 changed: Merge branch 'miking-c1' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
+
+
+### 2026-10-05 00:48 · ccode · 24d5d976
+changed: feat(miking): C09c Cello lesson (Lab 4 Strings), on the bowed family
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 00:47 · ccode · fcac076e
+changed: feat(miking): engine additions for the bowed strings (additive, optional)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
 
 
 ### 2026-10-05 00:39 · ccode · 7a77984c

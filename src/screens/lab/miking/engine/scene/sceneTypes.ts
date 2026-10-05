@@ -29,12 +29,16 @@ export type LessonArt = {
   plan?: { own: string | readonly string[]; useArt?: boolean; offset?: Vec3 };
   /** A lesson's or family's OWN page for a page id, where the kick-shaped
    *  default does not fit its instrument (the speaker / Leslie module, tonbak,
-   *  tabla; the hand-drum family: no pedal, no front head, no kit plan). The
-   *  host falls back to the shared page for every id not given. Typed loosely
-   *  here (the page props live above the engine). */
+   *  tabla; the hand drums; the guitar and bowed families). The host falls
+   *  back to the shared page for every id not given. Typed loosely here (the
+   *  page props live above the engine). */
   pages?: Partial<Record<PageId, (props: never) => ReactNode>>;
   /** Steps per page for those family pages (the strip's count before a page reports). */
   stepCounts?: Partial<Record<PageId, number>>;
+  /** ORIENT's "What it is" figure, when the lesson's own drawing reads
+   *  better than its side view (added 2026-10-05: a string instrument seen
+   *  face-on). `render` draws it at (w, h); `aspect` = w ÷ h. */
+  figure?: { aspect: number; render: (w: number, h: number) => ReactNode };
   /** THE SETTING for an instrument that does not sit on the kit (an
    *  orchestra's percussion, a hand drum): the lesson's own plan, drawn in
    *  place of the shared kit plan. Same contract as KitPlan. */

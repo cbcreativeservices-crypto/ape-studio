@@ -185,7 +185,11 @@ export type LessonCopy = {
   viewWords?: Readonly<Record<ViewId, string>>;
   /** The instrument family's words where a shared page would otherwise say
    *  "drum" (added with the guitar family; the drum words are the default). */
-  words?: FamilyWords;
+  words?: Partial<FamilyWords>;
+  /** The bowed strings' words (same purpose, its own names). Folded into
+   *  `words` by copyOf (termsToWords); the fields `words` has no slot for
+   *  (startIntro, startNew, refTitle, otherRef, noAim) are read as terms. */
+  terms?: LessonTerms;
 };
 
 export type FamilyWords = {
@@ -213,6 +217,46 @@ export type FamilyWords = {
   viewSide: string;
   viewTop: string;
 };
+
+export type LessonTerms = {
+  /** "the instrument" — "inside / outside the instrument" in the scene words. */
+  instrument: string;
+  /** What a mic's aim is read against ("the bridge"): "aimed 20° off <aimRef>". */
+  aimRef: string;
+  /** START: what the lesson covers first ("first the instrument itself: …"). */
+  startIntro: string;
+  /** START, the NEW path's note. */
+  startNew: string;
+  /** PLACEMENT's worked example: the second piece's title ("THE HEAD"). */
+  refTitle: string;
+  /** … and its sentence after "The distance is measured from X." */
+  otherRef: string;
+  /** … when the starting point gives no aim. */
+  noAim: string;
+  /** MICROPHONES: a clip mount's and a stand mount's plain line. */
+  clipMount: string;
+  standMount: string;
+  /** STUDIO OR LIVE: the instrument in the path, and the aim at rest. */
+  inPath: string;
+  facing: string;
+  /** PRACTICE: the optional observation sheet. */
+  observation: string;
+};
+
+/** The bowed family's terms as family words (one vocabulary for the pages). */
+export function termsToWords(t: LessonTerms): Partial<FamilyWords> {
+  return {
+    instrument: t.instrument.replace(/^the /, ''),
+    inside: `inside ${t.instrument}`,
+    outside: `outside ${t.instrument}`,
+    axis: t.aimRef,
+    facing: t.facing,
+    shield: t.inPath,
+    mountStand: t.standMount,
+    mountClip: t.clipMount,
+    sheet: t.observation,
+  };
+}
 
 export const DRUM_WORDS: FamilyWords = {
   instrument: 'drum',
@@ -346,6 +390,7 @@ export function copyOf(lesson: { copy?: Partial<LessonCopy> }): LessonCopy & { w
     context: { ...NEUTRAL_COPY.context, ...(c.context ?? {}) },
     twoMic: { ...NEUTRAL_COPY.twoMic, ...(c.twoMic ?? {}) },
     practice: { ...NEUTRAL_COPY.practice, ...(c.practice ?? {}) },
-    words: { ...DRUM_WORDS, ...(c.words ?? {}) },
+    words: { ...DRUM_WORDS, ...(c.terms ? termsToWords(c.terms) : {}), ...(c.words ?? {}) },
+    ...(c.terms ? { terms: c.terms } : {}),
   };
 }
