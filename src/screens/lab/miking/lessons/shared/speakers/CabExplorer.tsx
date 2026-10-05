@@ -6,7 +6,7 @@
  * it; the page names it in the well. Static: it changes only when the
  * learner taps or switches (D8).
  */
-import { useMemo } from 'react';
+import { useMemo, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
 import { Canvas, Group, Path, Skia } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
@@ -46,18 +46,29 @@ function faceLabels(): StaticLabel[] {
   ];
 }
 
-export function CabExplorer({ w, h, kind, back, view, frontMode = 'cloth', highlight, spot, onTapPart, accessibilityLabel }: { w: number; h: number; kind: CabKind; back: Back; view: CabExplorerView; frontMode?: FrontMode; highlight?: string | null; spot?: 'centre' | 'boundary' | 'edge' | null; onTapPart?: (id: string) => void; accessibilityLabel: string }) {
+/** A lesson's own additions to the drawing (Lab 4's amplified chain, added
+ *  2026-10-05): drawn inside the same transform, a taller box, tapped first. */
+export type CabExtras = {
+  /** Extra room above the cabinet (mm) — e.g. a head resting on it. */
+  above?: number;
+  render?: (view: CabExplorerView) => ReactElement | null;
+  hit?: (view: CabExplorerView, u: number, v: number, tol: number) => string | null;
+  labels?: (view: CabExplorerView) => StaticLabel[];
+};
+
+export function CabExplorer({ w, h, kind, back, view, frontMode = 'cloth', highlight, spot, onTapPart, accessibilityLabel, extras }: { w: number; h: number; kind: CabKind; back: Back; view: CabExplorerView; frontMode?: FrontMode; highlight?: string | null; spot?: 'centre' | 'boundary' | 'edge' | null; onTapPart?: (id: string) => void; accessibilityLabel: string; extras?: CabExtras }) {
   const ts = useStageTextScale();
-  const box = view === 'front' ? frontBox(kind) : view === 'face' ? faceBox() : sectionBox(kind, view);
+  const box0 = view === 'front' ? frontBox(kind) : view === 'face' ? faceBox() : sectionBox(kind, view);
+  const box = extras?.above && (view === 'front' || view === 'side') ? { ...box0, v0: box0.v0 - extras.above } : box0;
   const xf = useMemo(() => fitXform(view === 'side' ? 'side' : 'top', box, w, h, 6), [w, h, box.u0, box.u1, box.v0, box.v1, view]); // eslint-disable-line react-hooks/exhaustive-deps
-  const labels: StaticLabel[] = view === 'face' ? faceLabels() : (cabLabels(kind, back, view).filter((l) => l.id !== 'axis' && l.id !== 'floor') as StaticLabel[]);
+  const labels: StaticLabel[] = [...(view === 'face' ? faceLabels() : (cabLabels(kind, back, view).filter((l) => l.id !== 'axis' && l.id !== 'floor') as StaticLabel[])), ...(extras?.labels?.(view) ?? [])];
   const hi = useMemo(() => highlightPath(kind, back, view, highlight ?? null), [kind, back, view, highlight]);
   const tap = (x: number, y: number) => {
     if (!onTapPart) return;
     const u = (x - xf.ox) / xf.s;
     const v = (y - xf.oy) / xf.s;
     const tol = 22 / xf.s;
-    const id = view === 'face' ? faceHit(u, v, tol) : view === 'front' ? cabFrontHit(kind, u, v, tol) : cabHitTest(kind, back, view, u, v, tol);
+    const id = extras?.hit?.(view, u, v, tol) ?? (view === 'face' ? faceHit(u, v, tol) : view === 'front' ? cabFrontHit(kind, u, v, tol) : cabHitTest(kind, back, view, u, v, tol));
     if (id) onTapPart(id);
   };
   return (
@@ -66,6 +77,7 @@ export function CabExplorer({ w, h, kind, back, view, frontMode = 'cloth', highl
         <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
             {view === 'front' ? <CabFront kind={kind} mode={frontMode} spot={spot ?? null} /> : view === 'face' ? <SpeakerFace spot={spot ?? null} /> : <CabSection kind={kind} back={back} view={view} showAxis={false} />}
+            {extras?.render?.(view) ?? null}
             {hi ? <Path path={hi} style="stroke" strokeWidth={3.5 / xf.s} color={AMBER} /> : null}
           </Group>
         </Canvas>

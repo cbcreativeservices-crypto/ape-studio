@@ -23,6 +23,9 @@ import { C05B_LESSON } from '../lessons/c05bMandolin/lesson.ts';
 import { C05A_LESSON } from '../lessons/c05aBanjo/lesson.ts';
 import { C03_LESSON } from '../lessons/c03Resonator/lesson.ts';
 import { C07_LESSON } from '../lessons/c07AcousticBass/lesson.ts';
+import { C02_LESSON } from '../lessons/c02GuitarAmp/lesson.ts';
+import { C08_LESSON } from '../lessons/c08BassAmp/lesson.ts';
+import { C04_LESSON } from '../lessons/c04Steel/lesson.ts';
 
 const LESSON_CONTENT: Record<string, Lesson> = {
   M01: M01_LESSON,
@@ -47,6 +50,10 @@ LESSON_CONTENT.C05B = C05B_LESSON;
 LESSON_CONTENT.C05A = C05A_LESSON;
 LESSON_CONTENT.C03 = C03_LESSON;
 LESSON_CONTENT.C07 = C07_LESSON;
+// Lab 4, the amplified chain (each lesson on its own line).
+LESSON_CONTENT.C02 = C02_LESSON;
+LESSON_CONTENT.C08 = C08_LESSON;
+LESSON_CONTENT.C04 = C04_LESSON;
 
 export function lessonById(id: string | undefined): Lesson | undefined {
   return id ? LESSON_CONTENT[id] : undefined;

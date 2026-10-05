@@ -619,6 +619,18 @@ affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
 
+### 2026-10-05 01:17 · ccode · de79f1c7
+changed: feat(miking): Lab 4 amplified chain — C02 Electric Guitar, C08 Electric Bass, C04 Pedal and Lap Steel
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:17 · ccode · 938a9224
+changed: feat(miking): amplified-chain kit beside the speaker family (Lab 4)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 00:58 · ccode · 8734881b
 changed: Merge branch 'final-lab' into integ-c1
 affects other side: nothing (miking merge, branch final-lab)
