@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 00:39 · ccode · 7a77984c
+changed: docs(miking): Lab 4 guitar-family corrections (RS, BJ, MD, UK, AB, L4); brand list
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 00:33 · ccode · e42e07d0
 changed: feat(miking): C05b Mandolin lesson
 affects other side: nothing (miking lessons, branch final-lab)
