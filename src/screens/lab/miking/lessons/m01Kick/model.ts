@@ -44,9 +44,14 @@ export const KICK_DIMS = {
   beaterHeadR: placeholder(30, 'beater head diameter'),
   beaterLen: placeholder(240, 'beater shaft length and pedal axle position'),
   beaterSwingDeg: placeholder(50, 'beater swing arc'),
-  pillowLen: placeholder(300, 'pillow size and shape'),
-  pillowH: placeholder(100, 'pillow size and shape'),
-  pillowHalfW: placeholder(180, 'pillow size and shape'),
+  /** A standard kick pillow (owner 2026-10-04: "use a standard kick pillow"):
+   *  the DW 18 in pillow (DW: "Fits 18″ depth kick drums"; no dimensions on
+   *  DW's page). Size from the RETAILER listing, 18.1 × 15.8 × 4.8 in —
+   *  length along the drum axis × width × height. Cross-check: KickPro
+   *  "Standard Size 17"x11"", 3 in thick (retailer). */
+  pillowLen: { mm: 18.1 * IN, prov: src('DW-PILLOW', '18.1 × 15.8 × 4.8 in (retailer listing of the DW 18 in pillow)') } as Dim,
+  pillowH: { mm: 4.8 * IN, prov: src('DW-PILLOW', '18.1 × 15.8 × 4.8 in (retailer listing of the DW 18 in pillow)') } as Dim,
+  pillowHalfW: { mm: (15.8 * IN) / 2, prov: src('DW-PILLOW', '18.1 × 15.8 × 4.8 in (retailer listing of the DW 18 in pillow)') } as Dim,
   spurX: placeholder(120, 'spur mount position, angle and length'),
   /** Floor: both hoops tangent to it would put it at R + c + t (proposal §2) — placeholder. */
   yFloor: placeholder(279.4 + 3 + 8, 'the floor line (do the hoops touch the floor? how much do the spurs lift the drum?)'),
@@ -60,6 +65,10 @@ export const L = KICK_DIMS.L.mm;
 export const R_IN = R - KICK_DIMS.tShell.mm;
 export const STRIKE_Y = KICK_DIMS.strikeY.mm;
 export const PILLOW_TOP = R_IN - KICK_DIMS.pillowH.mm;
+/** The pillow's far end. Its 18.1 in length is longer than the drum's 18 in
+ *  inside depth: a soft pillow made to "fit 18″ depth kick drums" is drawn
+ *  pressed between the heads (1 mm short of each head plane). */
+export const PILLOW_X1 = Math.min(KICK_DIMS.pillowLen.mm, KICK_DIMS.L.mm - 1);
 
 /* ── DOCUMENTED ZONES (lesson table L19-37; corrections K-01, K-02, K-09) ── */
 const DYN_STAND = ['kickDynCard', 'kickDynSuper', 'sdc'];

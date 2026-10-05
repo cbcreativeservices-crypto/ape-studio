@@ -21,7 +21,7 @@
  * (cut faces 1.6, edges 1, detail 0.6 mm-equivalents). Rules kept:
  *   • nothing here moves (D8) — every path is built ONCE per view and cached
  *     at module scope (`built`), no per-render allocation;
- *   • parts whose geometry is unknown (pedal, beater, pillow size, port
+ *   • parts whose geometry is unknown (pedal, beater, port
  *     position, floor, spurs) stay where the model puts them and stay tagged
  *     ILLUSTRATIVE by the labels;
  *   • HARDWARE: Yamaha's RBB-2218 lists 10 tuning bolts (YMH-RC; read as per

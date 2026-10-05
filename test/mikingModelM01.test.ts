@@ -126,6 +126,37 @@ describe('the documented zones', () => {
       assert.equal(checkAssembly(compileScene(m, v), pose, micBodyOf(t)), null, v);
     }
   });
+  it('the pillow is the DW 18 in pillow (owner 2026-10-04, K-28): retailer size, sourced, inside the drum, against the batter head', () => {
+    const IN = 25.4;
+    assert.ok(Math.abs(KICK_DIMS.pillowLen.mm - 18.1 * IN) < 1e-9 && Math.abs(KICK_DIMS.pillowH.mm - 4.8 * IN) < 1e-9 && Math.abs(2 * KICK_DIMS.pillowHalfW.mm - 15.8 * IN) < 1e-9);
+    for (const d of [KICK_DIMS.pillowLen, KICK_DIMS.pillowH, KICK_DIMS.pillowHalfW]) {
+      assert.equal(d.placeholder, undefined, 'no longer a placeholder');
+      assert.equal(d.prov.kind, 'sourced');
+      assert.ok(d.prov.kind === 'sourced' && d.prov.src === 'DW-PILLOW');
+    }
+    assert.match(KICK_SOURCES, /\| DW-PILLOW \|/);
+    assert.match(LOG, /\| K-28 \|/);
+    const g = KICK_GEOM.pillow;
+    // On the shell bottom, against the batter head, never through a head:
+    assert.equal(g.bottom, KICK_GEOM.rIn);
+    assert.ok(g.x0 > 0.5 && g.x0 <= 1, 'against the batter head, not through it');
+    assert.ok(g.x1 < KICK_GEOM.L - 0.5, 'its 18.1 in is pressed inside the 18 in depth, short of the front head');
+    assert.ok(Math.abs(g.bottom - g.top - 4.8 * IN) < 1e-9);
+    assert.ok(g.halfW < KICK_GEOM.rIn, 'narrower than the inside of the shell');
+    // The pillow collides with neither head in either variant (it is a part, not a pose):
+    // a stand mic resting at the pillow's far end is still blocked by the pillow, not a head.
+    const scene = compileScene(m, 'intact');
+    const hit = checkAssembly(scene, { p: { x: g.x1 - 40, y: g.top - 10, z: 0 }, az: 0, el: 0 }, micBodyOf(MIC_TYPES.kickDynSuper));
+    assert.ok(hit, 'blocked');
+  });
+  it('review m16, computed: the strike sits 82° / 72° / 51° above a plate on the pillow at 25 / 60 / 152 mm', () => {
+    const top = KICK_GEOM.pillow.top;
+    const el = (d: number) => (Math.atan2(top - KICK_GEOM.strikeY, d) * 180) / Math.PI;
+    assert.equal(Math.round(el(25)), 82);
+    assert.equal(Math.round(el(60)), 72);
+    assert.equal(Math.round(el(152)), 51);
+    for (const d of [25, 60, 100, 152]) assert.ok(el(d) >= 30, 'within 60° of the plate perpendicular across the whole band');
+  });
   it('a stand mic may NOT touch the pillow (S-B52-UG: "does not touch … damping")', () => {
     const scene = compileScene(m, 'ported');
     const hit = checkAssembly(scene, { p: { x: 100, y: KICK_GEOM.pillow.top - 20, z: 0 }, az: 0, el: 0 }, micBodyOf(MIC_TYPES.kickDynSuper));

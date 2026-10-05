@@ -53,6 +53,8 @@ Source keys (used by `GEOMETRY_PROPOSAL.md` and later by `model.ts` `src` fields
 | AQ-SOP | Aquarian, Small Offset Port Resonant Gloss Black | https://shop.aquariandrumheads.com/products/small-offset-port-resonant-gloss-black | 200 |
 | AQ-COLL | Aquarian, Regulator Series collection page | https://shop.aquariandrumheads.com/collections/regulator-series | 200 |
 | KP-ACC | KickPort International, Accessories page (T-Ring) | https://www.kickport.com/accessories | 200 |
+| DW-PILLOW | DW, "Bass Drum Dampening Pillow 18″" (DSCPBDP18): "Fits 18″ depth kick drums" — no dimensions on DW's page; SIZE from the retailer listing of the same item, 18.1 × 15.8 × 4.8 in | https://www.dwdrums.com/products/dscpbdp18-bass-drum-dampening-pillow-18/ · retailer: https://www.amazon.com/DW-Bass-Drum-Muffling-Pillow/dp/B0002E2SCW | lead's sourcing 2026-10-04 (not re-read in this run); owner ruling "use a standard kick pillow" |
+| KICKPRO | KickPro bass drum pillow, maker page "Standard Size 17"x11""; retailer thickness 3 in (cross-check only, not drawn) | https://bigbangdist.com/product/kickpro-bass-drum-pillow/ | lead's sourcing 2026-10-04 (not re-read in this run) |
 | PEARL-EXX | Pearl, Export EXX product page | https://pearldrum.com/en/products/drum-set/export-exx/export | **UNREACHABLE**: HTTP 403 (Cloudflare "Just a moment..."). Not used. |
 
 ---
@@ -217,6 +219,14 @@ Survey items (lab1.md) answered: the Beta 91A pattern IS stated by Shure (half-c
 | Placing mic just outside the resonant head | "Sometimes placing a kick drum mic just outside the drum, on the edge of the resonator head, gives more impact." | DPA-KICK | 2026-10-04 | High | No distance given. |
 | Room/kit stereo pair | "a stereo kit of omnidirectional microphones placed approximately 1 meter in front of the kit, low, in front of the kick drum" | DPA-KICK | 2026-10-04 | High | Out of scope for M01 geometry; noted for M10/M11. |
 | Kick level warning | "It is not unusual to see levels in excess 156 dB at close range." | DPA-KICK | 2026-10-04 | High | DPA's wording ("in excess 156 dB"). No measurement method given. |
+
+## h. Damping pillow (owner 2026-10-04: "use a standard kick pillow")
+
+| Fact | Value | Source | Checked | Confidence | Notes |
+|---|---|---|---|---|---|
+| Pillow made for an 18 in deep kick | "Fits 18″ depth kick drums" | DW-PILLOW (maker page) | lead, 2026-10-04 | Medium | DW gives no dimensions. |
+| Pillow size (length × width × height) | 18.1 × 15.8 × 4.8 in = 459.7 × 401.3 × 121.9 mm (conv.) | DW-PILLOW (retailer listing) | lead, 2026-10-04 | Medium (retailer, not maker) | Drawn length along the drum axis, resting on the shell bottom against the batter head (S-B52-UG: "place a pillow or blanket on bottom of the drum against the beater head"). Its 18.1 in is longer than the 18 in inside depth: a soft pillow, drawn pressed between the heads (1 mm short of each head plane). |
+| Cross-check | "Standard Size 17"x11"", 3 in thick | KICKPRO | lead, 2026-10-04 | Low (thickness retailer) | Another standard pillow is a little smaller and thinner; the DW size is drawn. |
 
 ## Disagreements log (both sides kept; nothing resolved by guessing)
 

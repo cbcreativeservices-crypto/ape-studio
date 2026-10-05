@@ -5,7 +5,7 @@
  * every zoom. Anchor ids follow kick/GEOMETRY_PROPOSAL.md §3.
  */
 import type { InstrumentModel, Part, Provenance, Vec3 } from '../../engine/model/types.ts';
-import { KICK_DIMS as D, L, PILLOW_TOP, R, R_IN, STRIKE_Y } from './model.ts';
+import { KICK_DIMS as D, L, PILLOW_TOP, PILLOW_X1, R, R_IN, STRIKE_Y } from './model.ts';
 
 const DEG = Math.PI / 180;
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
@@ -33,7 +33,7 @@ export const KICK_ANCHORS = {
   'pedal.beater.headAtRest': { x: axle.x + beaterLen * Math.cos(restAngle), y: axle.y + beaterLen * Math.sin(restAngle), z: 0 },
   'pedal.axle': axle,
   'bd.shell.innerBottom': { x: L / 2, y: R_IN, z: 0 },
-  'damping.pillow.top': { x: D.pillowLen.mm / 2, y: PILLOW_TOP, z: 0 },
+  'damping.pillow.top': { x: PILLOW_X1 / 2, y: PILLOW_TOP, z: 0 },
 } as const satisfies Record<string, Vec3>;
 
 export const KICK_GEOM = {
@@ -47,7 +47,7 @@ export const KICK_GEOM = {
   portR,
   strikeY: STRIKE_Y,
   beater: { axle, headR, len: beaterLen, strikeAngle, restAngle },
-  pillow: { x0: 1, x1: D.pillowLen.mm, top: PILLOW_TOP, bottom: R_IN, halfW: D.pillowHalfW.mm },
+  pillow: { x0: 1, x1: PILLOW_X1, top: PILLOW_TOP, bottom: R_IN, halfW: D.pillowHalfW.mm },
   yFloor: D.yFloor.mm,
   /** Tension rods per head at φ0 + k·36° (φ measured from +y (bottom) toward +z). */
   rodAngles: Array.from({ length: D.nRods.mm }, (_, k) => D.rodPhaseDeg.mm + (k * 360) / D.nRods.mm),
@@ -69,7 +69,7 @@ const parts: Part[] = [
   { id: 'kick.shell', label: 'shell', short: 'shell', role: 'The wooden cylinder between the heads. With the air inside, it shapes the drum’s resonance.', prov: D.tShell.prov, solid: { kind: 'tube', c: { x: 0, y: 0, z: 0 }, rIn: R_IN, rOut: R, x0: 0, x1: L } },
   { id: 'kick.hoopBatter', label: 'batter hoop', short: 'hoop', role: 'The wood hoop holding the batter head; the pedal clamps to it.', prov: D.tHoop.prov, solid: { kind: 'tube', c: { x: 0, y: 0, z: 0 }, rIn: hoopIn, rOut: hoopOut, x0: -(D.hHoop.mm - D.hoopInset.mm), x1: D.hoopInset.mm } },
   { id: 'kick.hoopReso', label: 'front hoop', short: 'hoop', role: 'The wood hoop holding the front head.', prov: D.tHoop.prov, solid: { kind: 'tube', c: { x: 0, y: 0, z: 0 }, rIn: hoopIn, rOut: hoopOut, x0: L - D.hoopInset.mm, x1: L + D.hHoop.mm - D.hoopInset.mm } },
-  { id: 'kick.pillow', label: 'damping pillow (size illustrative)', short: 'pillow', role: 'Damping on the bottom of the drum, against the beater head. Mics stay off it — except a boundary mic made to rest on it.', clearance: D.dampClear, prov: { kind: 'sourced', src: 'S-B52-UG', quote: 'place a pillow or blanket on bottom of the drum against the beater head' }, solid: { kind: 'box', min: { x: 1, y: PILLOW_TOP, z: -D.pillowHalfW.mm }, max: { x: D.pillowLen.mm, y: R_IN, z: D.pillowHalfW.mm } } },
+  { id: 'kick.pillow', label: 'damping pillow (DW 18 in; size from a retailer listing)', short: 'pillow', role: 'Damping on the bottom of the drum, against the beater head. Mics stay off it — except a boundary mic made to rest on it.', clearance: D.dampClear, prov: { kind: 'sourced', src: 'S-B52-UG', quote: 'place a pillow or blanket on bottom of the drum against the beater head' }, solid: { kind: 'box', min: { x: 1, y: PILLOW_TOP, z: -D.pillowHalfW.mm }, max: { x: PILLOW_X1, y: R_IN, z: D.pillowHalfW.mm } } },
   ...KICK_GEOM.spurs.map<Part>((s) => ({ id: s.side < 0 ? 'kick.spurL' : 'kick.spurR', label: s.side < 0 ? 'left spur (illustrative)' : 'right spur (illustrative)', short: 'spur', role: 'A leg on each side of the shell that keeps the drum from creeping.', prov: { kind: 'sourced', src: 'YMH-HUB', quote: 'attached to each side of the shell' }, solid: { kind: 'capsule', a: s.top, b: s.foot, r: 8 } })),
   { id: 'kick.beater', label: 'beater (illustrative)', short: 'beater', role: 'Driven by the pedal; it strikes the batter head at the centre or 1–2 in above it.', moving: true, prov: D.strikeY.prov },
   { id: 'kick.pedal', label: 'pedal (illustrative)', short: 'pedal', role: 'The player’s foot drives the beater. Cables and stands keep clear of its action.', prov: ill('no source gives pedal dimensions'), solid: { kind: 'box', min: { x: KICK_GEOM.pedal.x0, y: KICK_GEOM.pedal.top, z: -45 }, max: { x: KICK_GEOM.pedal.x1, y: D.yFloor.mm, z: 45 } } },
