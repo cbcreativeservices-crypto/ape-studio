@@ -180,7 +180,7 @@ function brk(x: number, w: number) {
 }
 
 /* ── one ideal string, shape n ── */
-function StringShapesCanvas({ w, h, n, swing, pFrac, label, endWords }: { w: number; h: number; n: number; swing: number; pFrac: number; label: string; endWords: [string, string] }) {
+export function StringShapesCanvas({ w, h, n, swing, pFrac, label, endWords }: { w: number; h: number; n: number; swing: number; pFrac: number; label: string; endWords: [string, string] }) {
   const L = 1000;
   const A = 150;
   const box = { u0: -60, u1: L + 60, v0: -A - 70, v1: A + 90 };
