@@ -746,7 +746,7 @@ export const M01_LESSON: Lesson = {
     { text: 'Where an offset port sits (its distance from the centre and its clock angle) — drawn illustratively; never a readout reference.', dims: ['portY', 'portZ'] },
     { text: 'The pedal: shaft length and axle, beater head size, swing and footboard — drawn as an ILLUSTRATIVE envelope.', dims: ['beaterLen', 'beaterHeadR', 'beaterSwingDeg'] },
     { text: 'The pillow’s size and shape — it sets the boundary mic’s height.', dims: ['pillowLen', 'pillowH', 'pillowHalfW'] },
-    { text: 'The tension-rod positions: is a rod at bottom centre? And is “10 tuning bolts” per head?', dims: ['rodPhaseDeg'] },
+    { text: 'The tension-rod positions: is a rod at bottom centre? (The count — 10 per head — is confirmed.)', dims: ['rodPhaseDeg'] },
     { text: 'Where each mic’s distances are measured from, and its acoustic centre — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
     { text: 'Head excursion and every keep-out clearance — ILLUSTRATIVE values for the owner to approve.', dims: ['kick.batter', 'kick.reso', 'kick.resoPorted', 'kick.pillow'] },
   ],
@@ -801,5 +801,5 @@ export const M01_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'This lab is SILENT, and it DRAWS a model: a 22 × 18 in kick built from manufacturer dimensions, with the unknown parts (floor, port position, pedal, pillow, hoop details) drawn ILLUSTRATIVE. The placement zones are manufacturers’ documented starting points for particular products, measured from the head each one names; clearances, the boom and the pedal envelope are ILLUSTRATIVE. Distances are rounded to ≈ 5 mm and measured to the mic’s front, not its acoustic centre. Patterns and the two-mic comb are IDEAL models, not measurements of any drum. Learn the reasoning here; place real mics with the drummer stopped, and trust the drum, your ears and a calibrated measurement.',
+    'This lab is SILENT, and it DRAWS a model: a 22 × 18 in kick built from manufacturer dimensions, with the unknown parts (floor, port position, pedal, pillow, hoop details) drawn ILLUSTRATIVE. The placement zones are manufacturers’ documented starting points for particular products, measured from the head each one names; clearances, the boom and the pedal envelope are ILLUSTRATIVE. Distances are rounded to ≈ 5 mm and measured to the mic’s front, not its acoustic centre. Patterns and the two-mic comb are IDEAL models, not measurements of any drum. On the first pages, head motion is drawn EXAGGERATED from the ideal membrane, arrows show the order of events (never speed or level), and the kit plan’s positions are ILLUSTRATIVE. Learn the reasoning here; place real mics with the drummer stopped, and trust the drum, your ears and a calibrated measurement.',
 };

@@ -538,8 +538,8 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ### 2026-10-04 18:05 · ccode · 9301bab4
 changed: web: launch overlay over the blurred live home page (gate on)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
 
 
 ### 2026-10-04 18:10 · ccode · abee545b

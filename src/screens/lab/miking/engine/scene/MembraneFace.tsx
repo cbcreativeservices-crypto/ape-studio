@@ -5,7 +5,7 @@
  *
  * What is drawn, and how honestly:
  *   • the head, its wood hoop and the claws at each tension rod (count from
- *     the lesson: Yamaha's 10, read as per head; the rod PHASE is the lesson's
+ *     the lesson: Yamaha's 10 per head, owner-confirmed; the rod PHASE is the lesson's
  *     placeholder, so the claws are ILLUSTRATIVE positions);
  *   • the shape's displacement at one instant as BANDS — blue moving toward
  *     you, amber away — with a + / − mark in every region, so colour is never

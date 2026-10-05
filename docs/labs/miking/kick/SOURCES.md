@@ -62,7 +62,7 @@ Source keys (used by `GEOMETRY_PROPOSAL.md` and later by `model.ts` `src` fields
 | Fact | Value (exact, units) | Source (key, location) | Checked | Confidence | Notes |
 |---|---|---|---|---|---|
 | Recording Custom bass drum sizes (diameter × depth) | 24"×14" (RBB-2414), 22"×18" (RBB-2218), 22"×16" (RBB-2216), 22"×14" (RBB-2214), 20"×16" (RBB-2016), 18"×14" (RBB-1814) | YMH-RC, Specs, "Components / Bass Drum" table | 2026-10-04 | High | The table prints diameters and depths in two rows; I paired them by model number, which encodes both (RBB-DDdd). |
-| Recording Custom bass drum "No. of Tuning Bolts" | 10 for RBB-2414, -2218, -2216, -2214, -2016; 8 for RBB-1814 | YMH-RC, same table | 2026-10-04 | Medium | The table does not say "per head" or "per side". I read it as tension rods per head (one head side), which is how a single drum's bolt count is normally given. Owner to confirm. |
+| Recording Custom bass drum "No. of Tuning Bolts" | 10 for RBB-2414, -2218, -2216, -2214, -2016; 8 for RBB-1814 | YMH-RC, same table | 2026-10-04 | Medium | The table does not say "per head" or "per side". I read it as tension rods per head (one head side), which is how a single drum's bolt count is normally given. **OWNER-CONFIRMED 2026-10-04: 10 tension rods per head.** |
 | Recording Custom BD hoop | "Wood hoop" | YMH-RC, "BD Hoop" | 2026-10-04 | High | No hoop thickness or height given. |
 | Recording Custom BD leg (spur) | "Convertible type" | YMH-RC, "BD Leg" | 2026-10-04 | High | No count, length or angle given. |
 | Recording Custom shell | "100% Birch, 6-ply (with inner dark brown paint)"; bearing edge "30-Degree/R1.5" | YMH-RC | 2026-10-04 | High | No shell thickness on this page. |
@@ -245,3 +245,21 @@ Survey items (lab1.md) answered: the Beta 91A pattern IS stated by Shure (half-c
 - Microphone outlines are simplified silhouettes at sourced overall dimensions (see the
   geometry proposal); distances are measured to a stated reference point, not the acoustic
   centre (lesson L39).
+- HOW IT SOUNDS (journey stage 2, 2026-10-04):
+  - Head motion is drawn as the IDEAL membrane's lowest shape, J0(2.405 r/R), EXAGGERATED
+    (55 mm batter, 40 mm front at the centre; a real head moves a small fraction of that). The
+    rest plane stays drawn; the canvas says "MOTION EXAGGERATED" and the badge says so.
+  - The strike-sequence arrows and arcs show the ORDER and DIRECTION of events only — never a
+    speed, a pressure or a level. PLAY ONCE is a staged reveal at 1.3 s per event, a teaching
+    pace, not the drum's timing (which takes milliseconds).
+  - The face-on head shapes are the ideal clamped membrane in a vacuum (MEMBRANE row in the
+    lesson's sources: the Cymatics / Drum Tuning Bessel tables). Air loading and the second
+    head shift the real ratios; the page says so. "Under the beater" = |W at the strike| ÷ the
+    shape's own peak — a geometric share, not an excitation level.
+  - The two-head pair is drawn with EQUAL head motion (a symmetric ideal); the ordering
+    (heads together = lower, heads opposed = higher and the stronger radiator) is the Drum
+    Tuning engine's coupledModes, pinned by test/mikingJourney.test.ts.
+  - Attack versus body is in WORDS only: no curve, no time scale (LESSON_JOURNEY §11 q2).
+- THE SETTING (journey stage 3): every position on the kit plan is ILLUSTRATIVE (a typical
+  right-handed layout; no source gives one). Neighbour sizes are common nominal sizes (14 in
+  snare and hi-hat, 12 in rack tom, 16 in floor tom); the throne, rug and room are generic.

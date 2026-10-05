@@ -43,7 +43,8 @@ describe('cutaway hardware comes from the model', () => {
     });
   }
   it('the art states the count in words and marks it to confirm', () => {
-    assert.match(ART, /'10 RODS PER HEAD · TO CONFIRM'/);
+    assert.match(ART, /'10 RODS PER HEAD'/);
+    assert.doesNotMatch(ART, /TO CONFIRM|RODS\/HEAD\?/, 'owner-confirmed 2026-10-04');
   });
 });
 

@@ -25,7 +25,7 @@
  *     position, floor, spurs) stay where the model puts them and stay tagged
  *     ILLUSTRATIVE by the labels;
  *   • HARDWARE: Yamaha's RBB-2218 lists 10 tuning bolts (YMH-RC; read as per
- *     head, owner to confirm) and the rod PHASE is a placeholder. A cutaway
+ *     head, owner-confirmed 2026-10-04) and the rod PHASE is a placeholder. A cutaway
  *     shows only the rods at its silhouette (2 per head in each view; the
  *     others are behind the far wall or removed with the near half), so they
  *     are drawn at the silhouette and the count is stated in a label —
@@ -503,7 +503,7 @@ export function kickLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     out.push({ id: 'pillow', text: 'PILLOW (BELOW)', short: 'PILLOW', u: 150, v: G.pillow.halfW - 40, align: 'center', tone: 'muted' });
     out.push({ id: 'player', text: '← PLAYER', u: -300, v: -170, align: 'center', tone: 'muted' });
     // The hardware's sourced COUNT, said in words (the cut shows only 2 per head).
-    out.push({ id: 'rods', text: '10 RODS PER HEAD · TO CONFIRM', short: '10 RODS/HEAD?', u: G.spurs[1].top.x + 40, v: G.hoopOut + 46, align: 'left', tone: 'illustrative' });
+    out.push({ id: 'rods', text: '10 RODS PER HEAD', short: '10 RODS/HEAD', u: G.spurs[1].top.x + 40, v: G.hoopOut + 46, align: 'left', tone: 'illustrative' });
     out.push({ id: 'spur', text: 'SPURS · ILLUSTRATIVE', short: 'SPURS · ILLUS.', u: G.spurs[1].foot.x + 30, v: G.spurs[1].foot.z + 2, align: 'left', tone: 'illustrative' });
   }
   if (variant === 'ported') out.push({ id: 'port', text: 'PORT · ILLUSTRATIVE', short: 'PORT · ILLUS.', u: G.L + 30, v: (view === 'side' ? PORT.y : PORT.z) + G.portR + 40, align: 'left', tone: 'illustrative' });

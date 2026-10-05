@@ -32,7 +32,7 @@ export const KICK_DIMS = {
   hHoop: placeholder(25, 'hoop height (axial width)'),
   cHoop: placeholder(3, 'gap between shell and hoop'),
   hoopInset: placeholder(6, 'how far the hoop stands past the head plane'),
-  nRods: { mm: 10, prov: src('YMH-RC', 'No. of Tuning Bolts 10 (read as per head; owner to confirm)') } as Dim,
+  nRods: { mm: 10, prov: src('YMH-RC', 'No. of Tuning Bolts 10 (per head; owner-confirmed 2026-10-04)') } as Dim,
   rodPhaseDeg: placeholder(18, 'tension-rod phase (is a rod at bottom centre?)'),
   /** Remo 5 in offset port — the default head (ruling §16.12). */
   portD: { mm: 5 * IN, prov: src('REMO-OH', '5" Offset Hole') } as Dim,
