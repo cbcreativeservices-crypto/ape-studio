@@ -536,6 +536,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 18:45 · ccode · 81e94112
+changed: Android back-gesture exclusion on the remaining lab drag surfaces (10 labs + Tube card); TubeCard route loses iOS swipe-back (‹ button stays). Native zone ships in the next Android build; no-op on current builds, iOS, web.
+affects other side: nothing (client only, branch final-lab).
+needs: nothing.
+
+
 ### 2026-10-04 18:05 · ccode · 9301bab4
 changed: web: launch overlay over the blurred live home page (gate on)
 affects other side: nothing (branch final-lab, miking lab work).
