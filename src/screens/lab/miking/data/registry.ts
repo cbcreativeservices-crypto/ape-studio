@@ -15,7 +15,7 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: '' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
-  { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: '' },
+  { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments — the guitar family first: front view and from above, recommended starting points, the player’s space, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '' },
   { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '' },
@@ -26,6 +26,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'SPK', labId: 'drums', title: 'Amplified speakers & Leslie', subtitle: 'Guitar and bass cabinets, and the rotary cabinet — from outside', status: 'ready' },
   { id: 'M12', labId: 'drums', title: 'Tonbak', subtitle: 'The Persian goblet drum: one head, many strokes', status: 'ready' },
   { id: 'M13', labId: 'drums', title: 'Tabla', subtitle: 'Two drums, one instrument: the dayan and the bayan', status: 'ready' },
+  // Lab 4 (strings): the amplified chain — each lesson on its own line (built in parallel).
+  { id: 'C02', labId: 'strings', title: 'Electric Guitar', subtitle: 'The guitar amp: across the cone, close or back, front and rear', status: 'ready' },
+  { id: 'C08', labId: 'strings', title: 'Electric Bass', subtitle: 'Fretted and fretless: one woofer, room to breathe, mic and DI', status: 'ready' },
+  { id: 'C04', labId: 'strings', title: 'Pedal Steel and Lap Steel', subtitle: 'Mic the amp; keep the pedals and knee levers clear', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
