@@ -100,6 +100,8 @@ export const SPK_CABS: Record<CabKind, SpkCab> = {
   '1x12': { kind: '1x12', model: modelFor('1x12'), zones: zonesFor('1x12') },
   '4x12': { kind: '4x12', model: modelFor('4x12'), zones: zonesFor('4x12') },
   bass410: { kind: 'bass410', model: modelFor('bass410'), zones: zonesFor('bass410') },
+  // Lab 4's combo (the amplified-chain lessons); not offered on this module's pages.
+  combo12: { kind: 'combo12', model: modelFor('combo12'), zones: zonesFor('combo12') },
 };
 
 export const CAB_ORDER: readonly CabKind[] = ['1x12', '4x12', 'bass410'];

@@ -65,7 +65,7 @@ export const GRILLE_X = placeholder(15, 'how far the grille cloth stands proud o
 export const PANEL = placeholder(18, 'cabinet panel thickness: drawing default 18');
 
 /* ── the cabinets (outer boxes SOURCED; driver layout a drawing default) ── */
-export type CabKind = '1x12' | '4x12' | 'bass410';
+export type CabKind = '1x12' | '4x12' | 'bass410' | 'combo12';
 export type CabSpec = {
   kind: CabKind;
   label: string;
@@ -137,6 +137,24 @@ export const CABINETS: Record<CabKind, CabSpec> = {
     horn: { y: -150, z: 0, w: 66, h: 66, prov: ill('"1 high frequency horn" (AMP-410); its position between the top pair and its size are drawing defaults') },
     backs: ['closed'],
     backProv: ill('drawn closed (drawing default)'),
+  },
+  // Lab 4 (2026-10-05, the amplified-chain lessons): a 1 × 12 COMBO — amp and
+  // speaker in one box (electric_guitar_amp/GEOMETRY_PROPOSAL.md §2). Outer
+  // size from the maker's manual; the speaker's place on the baffle and the
+  // open back are drawing defaults (the manual has no drawing). Its control
+  // panel, chassis and rear vent clearance: shared/speakers/ampModel.ts.
+  combo12: {
+    kind: 'combo12',
+    label: '1 × 12 in combo amp',
+    short: 'COMBO',
+    w: { mm: 24.5 * IN, prov: src('FEN-65DR-MAN', 'WIDTH: 24-1/2 in (62.2 cm)') },
+    h: { mm: 17.5 * IN, prov: src('FEN-65DR-MAN', 'HEIGHT: 17-1/2 in (44.5 cm)') },
+    d: { mm: 9.5 * IN, prov: src('FEN-65DR-MAN', 'DEPTH: 9-1/2 in (24.1 cm)') },
+    // The speaker 60 mm right of the centre line and 255 mm below the top.
+    drivers: [{ y: 255 - (17.5 * IN) / 2, z: 60, nominal: 12 }],
+    layoutProv: ill('speaker centre 60 mm right of the centre line, 255 mm below the top: drawing default (electric_guitar_amp GEOMETRY §2)'),
+    backs: ['open'],
+    backProv: ill('back type not stated in the manual: drawn open (drawing default; the rear-mic step needs one)'),
   },
 };
 
