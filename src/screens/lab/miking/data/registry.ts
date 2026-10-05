@@ -13,7 +13,7 @@ export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtit
 
 export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
-  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: '' },
+  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn percussion — the mallet keyboards first: from the front and from above, recommended starting points, the mallets’ travel, studio or live, and spaced or coincident pairs. Silent; tendencies in words.' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments — the guitar family first: front view and from above, recommended starting points, the player’s space, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
@@ -49,6 +49,11 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C05C', labId: 'strings', title: 'Ukulele', subtitle: 'A small body, a voice above — the upper body, the hole, or a clip', status: 'ready' },
   { id: 'C07', labId: 'strings', title: 'Acoustic Bass Guitar', subtitle: 'A hollow-body bass: one mic, the pickup, and the lowest notes', status: 'ready' },
   { id: 'C08', labId: 'strings', title: 'Electric Bass', subtitle: 'Fretted and fretless: one woofer, room to breathe, mic and DI', status: 'ready' },
+  // Lab 2 (percussion), the mallet keyboards — each lesson on its own line.
+  { id: 'I07', labId: 'percussion', title: 'Vibraphone', subtitle: 'Metal bars, tubes and fans: one mic above, or a spaced or coincident pair', status: 'ready' },
+  { id: 'I08', labId: 'percussion', title: 'Marimba', subtitle: 'Wooden bars over pipes, five octaves wide: one mic, or a spaced or coincident pair', status: 'ready' },
+  { id: 'I09', labId: 'percussion', title: 'Xylophone', subtitle: 'Hard, bright bars: one mic above, off-axis, or a spaced or coincident pair', status: 'ready' },
+  { id: 'I10', labId: 'percussion', title: 'Glockenspiel', subtitle: 'Steel bars that ring long: a safe view above, the close example that conflicts, one mic or two', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

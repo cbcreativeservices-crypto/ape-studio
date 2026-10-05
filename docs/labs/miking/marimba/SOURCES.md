@@ -34,3 +34,9 @@ Lesson: `source_text/Marimba-Miking-Technique-Research.txt`. Keys: `vibraphone/S
 ## Disagreements
 - MAR-D1 lowest-bar width: Yamaha generic "80 mm"; Adams Alpha "72"; YM-5100A 2 7/8 in = 73.025;
   YM-6100 3 1/8 in = 79.375. Model differences — the drawing uses Adams (72) with Yamaha's 620 length.
+
+## Lesson key (added by the I2 builder, 2026-10-05)
+
+| Key | Source | URL | Status |
+|---|---|---|---|
+| LESSON-MAR | The owner's lesson text itself (`source_text/Marimba-Miking-Technique-Research.txt`), for the lab's own trial positions and words (the one-mic trial bands, the under-the-tubes alternative) | (in the repo) | the lesson's own words |

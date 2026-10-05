@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 03:02 · ccode · c06aa406
+changed: feat(miking): mallet-bar family for Lab 2 (bars, resonators, frames, fans, case)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 01:38 · ccode · 7fbad8ca
 changed: Merge branch 'miking-c3' into final-lab
 affects other side: nothing (miking merge, branch final-lab)

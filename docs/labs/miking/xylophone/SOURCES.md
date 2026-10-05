@@ -38,3 +38,9 @@ capture of 2025-10-07: https://web.archive.org/web/20251007030852/https://au.yam
 | L74 exercise "near-coincident pair" | **WRONG TERM** → "coincident" (Shure lists 135° under "Coincident Techniques"). |
 | Header date "October 4, 2026" | Out of line with the other lessons (survey) — harmless. |
 | URLs | [1]–[4], [6]–[8] 200; [5] DEAD (archive read); [9] NIOSH-TID via WebFetch. |
+
+## Lesson key (added by the I2 builder, 2026-10-05)
+
+| Key | Source | URL | Status |
+|---|---|---|---|
+| LESSON-XYL | The owner's lesson text itself (`source_text/Xylophone-Miking-Technique-Research.txt`), for the lab's own trial positions and words (the one-mic trial bands, the under-the-tubes alternative) | (in the repo) | the lesson's own words |

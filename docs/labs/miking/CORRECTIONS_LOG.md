@@ -365,3 +365,61 @@ Built 2026-10-05 (branch `miking-c3`, from `miking-w5`). Research: `electric_gui
 | PS-05 | (geometry) | pedal-steel layout | Every dimension (body 900 × 300 × 90, top 700, 3 pedals, 4 knee levers hanging 150, seat 550, 24 in scale, keep-clear zone 1000 × 600, ten-string tuning) is a flagged drawing default; only the part NAMES are sourced | No dimension in the research. | SGF-MAP | APPLIED · OWNER: a steel player's look at the drawings |
 | PS-06 | L45 | OSHA line | As EG-08 (and a CRITICAL quick-check item) | As EG-08. | OSHA, NIOSH | APPLIED |
 | PS-07 | (whole lesson) | "Pro Audio Training Academy" | Not used (house rule) | House rule. | — | APPLIED |
+
+## Lab 2 · the mallet keyboards: I07 Vibraphone, I08 Marimba, I09 Xylophone, I10 Glockenspiel
+
+Built 2026-10-05 (branch `miking-i2`, from `4334be8b`). Research: `vibraphone/` (SOURCES §0–§1, GEOMETRY_PROPOSAL §A the family), `marimba/`, `xylophone/`, `glockenspiel/`, `BATCH2_RESEARCH_SUMMARY.md`. Shared family: `lessons/shared/mallets/` (malletSpec, malletModel, MalletArt, MalletSound, MSound, MTwoMic, MalletPlan, content, malletMics). Lesson keys `LESSON-VIBE` / `LESSON-MAR` / `LESSON-XYL` / `LESSON-GLK` added to each folder's SOURCES.md.
+
+### Shared across the four lessons
+
+| id | Where | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| I2-F1 | (frame) | frame M: +x toward the audience, +z toward the treble | +x toward the LOW end, +z toward the AUDIENCE (same origin, same numbers) | Both engine views read from the audience side, where the stands are: the side view is the front elevation (low end on the right), the top view the plan with the audience below. A relabel — no dimension changes | vibraphone/GEOMETRY_PROPOSAL.md §A1 | APPLIED · OWNER: confirm the audience-side views |
+| I2-F2 | (layout) | row lines at 0.22 × the mean depth | held to at most (Dlow − longest bar) ÷ 2 − 10 mm so the longest bar stays inside the frame (the 3½-octave xylophone's rectangle would otherwise let it overhang by 15 mm) | Drawing default refined | §A3 | APPLIED |
+| I2-F3 | (layout) | Helmholtz box 150 × 120 cross-section | 150 mm deep (across the rows) × as wide as the bar pitch allows (≤ 120), down to 150 mm above the floor | A 120 mm box is wider than the 78 mm bar pitch | marimba/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: box size |
+| I2-F4 | (mount) | — | Every stand stands on the audience side; its boom runs level over the keyboard whatever the mic's aim (engine `MountRule.fixed`, added) | A coincident mic tilted along the keyboard would otherwise drop its stand into the instrument | — | APPLIED |
+| I2-F5 | Shure two-mic row | "about 1 1/2 feet above it, spaced 2 feet apart, or angled 135° apart with grilles touching" | "about 46 cm (1½ ft) … about 61 cm (2 ft)"; the 135° pair is called COINCIDENT and drawn grilles together, each mic 67.5° from straight down | 457.2 / 609.6 mm exact; the guide lists 135° under "Coincident Techniques" | S-LIVE, S-RECBK | APPLIED |
+| I2-F6 | (sound) | — | HOW IT SOUNDS shows a PLAIN (uniform) bar's first three shapes (free–free beam: 1 : 2.76 : 5.40, still points at 0.224) and says real bars are tuned by shaping; the resonator as a quarter wave c ÷ 4f at A = 442 Hz, 20 °C | Textbook physics + the makers' tuning pitch; the maker's mode figure (YMH-MG3) was not read | YMH-MG2, YMH-YV2700, CALC-C | APPLIED |
+| I2-F7 | Hearing lines | NIOSH-TID "Turn It Down" (no exchange rate in it) | "a widely used guideline: 85 dBA averaged over 8 hours, halving the time for every 3 dBA more" — as every miking lesson | Parity with EG-08 | NIOSH-TID, kick NIOSH | APPLIED |
+| I2-F8 | All four | "Pro Audio Training Academy", "No audio examples" | Not used; fully silent | House rule; owner ruling | — | APPLIED |
+| I2-F9 | Mic types | — | Two family types: a pencil condenser (cardioid / omni) and a compact cardioid dynamic, with mallet words | "Condenser mics are a common practical option … A suitable dynamic can also work in a difficult live setup" | LESSON-VIBE L13, S-SM57-UG, AX-SCX1 | APPLIED |
+
+### I07 Vibraphone (`source_text/Vibraphone-Miking-Technique-Research.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| I2-V1 | L10 | one mic 45–75 cm "reasoned trial" | zone "One mic above the middle of the keyboard", 450–750 mm, within 30 cm of the middle, aimed within 30° of down | The lesson's own band; tolerances the lab's | LESSON-VIBE | APPLIED |
+| I2-V2 | L11 | resonator openings "from underneath" as a deliberate alternative | zone "Under the tubes, aimed up — an alternative", under the high third, 25 cm above the floor to 12 cm below the tube ends | The tube's mouth is at the TOP (closed bottom, YMH-MG2): "underneath" read as under the instrument | LESSON-VIBE, YMH-MG2 | APPLIED · OWNER: keep this zone? |
+| I2-V3 | L6 | motor speed | "about 25–150 turns a minute"; fans drawn as one disc per tube on a shaft per row, opening the tube twice a turn (DERIVED); run 8 s, pausable | The maker prints "25-150 rmp" [sic]; fan size UNKNOWN (drawing default 0.9 × tube) | ADAMS-VIBC, YMH-FANS | APPLIED |
+| I2-V4 | L4, L6 | "optional or absent motor" | a NO MOTOR setup, drawn without fans | Whether a no-motor model keeps fan shafts is not in the research | YMH-YVRD2700, ADAMS-VIBC | APPLIED · OWNER: confirm |
+
+### I08 Marimba (`source_text/Marimba-Miking-Technique-Research.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| I2-M1 | L7 | hard mallets "especially on thin low-register bars" | "a hard head can damage wooden bars" (no register named) | Not on the maker's mallet page | YMH-MAL | APPLIED |
+| I2-M2 | L76 | "a near-coincident pair" | "a coincident pair (grilles together, 135°)" | Survey flag resolved (I2-F5) | S-LIVE | APPLIED |
+| I2-M3 | L17 | "60 cm may be too narrow" | a third TWO MICROPHONES setup, "wider spaced pair — to try": 120 cm apart, 70 cm high | Drawing default for the lesson's advice | LESSON-MAR | APPLIED · OWNER: approve |
+| I2-M4 | (drawing) | lowest bar 80 mm (one maker) vs 72 mm (another) | 72 mm (the drawn model's) with the other maker's ~620 mm length | MAR-D1 | ADAMS-ALPHA, YMH-MG1 | APPLIED |
+| I2-M5 | (drawing) | Helmholtz C2–F2 | boxes C2–F2; F♯2 upward straight pipes (the lowest end ~35 mm above the floor) | The maker's split; arches not drawn ("visible pipe ≠ pitch" said in words) | YMH-YM5100A, YMH-MG2 | APPLIED |
+
+### I09 Xylophone (`source_text/Xylophone-Miking-Technique-Research.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| I2-X1 | L74 | "a near-coincident pair" | "a coincident pair" | I2-F5 | S-LIVE | APPLIED |
+| I2-X2 | L7, L46 | plastic mallets "differ in specificity" | "Advice on other materials differs between documents: this instrument's maker and its owner decide" — taught as a disagreement; never metal | One educator PDF: "Plastic mallets damage bars and must be avoided!"; another page: "on rosewood xylophones, use plastic, not metal" (XYL-D2) | YMH-JENKS-ARC, YMH-DECON, YMH-CARE | APPLIED |
+| I2-X3 | (pitch) | — | the range is the SOUNDING F4–C8 ("an octave higher than written"); tube lengths use sounding pitch | Jenks: "sound one octave higher than written" | YMH-JENKS-ARC | APPLIED |
+| I2-X4 | L10 | "a safe off-axis position" | zone on the audience side, 60–90 cm from the middle, 35–55° from straight up, aimed back | Drawing default for the lesson's words | LESSON-XYL | APPLIED · OWNER: approve |
+| I2-X5 | ref [5] | dead link | (no links on screen) internal record points to the archive copy | | YMH-JENKS-ARC | APPLIED |
+
+### I10 Glockenspiel (`source_text/Glockenspiel-Miking-Technique-Research.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| I2-G1 | L9 | Shure "4 - 6 inches above bars" | drawn as a RED band over the played bars, inside the mallets' travel (25 cm drawing default); never a zone; a check and the placement words say "only if the player proves every stroke clears it" | The lesson's own point; the geometry file asks the app to show the conflict | S-LIVE, S-RECBK | APPLIED |
+| I2-G2 | L11 | 30–60 cm trial | two zones, "Closer" 30–45 cm and "Higher" 45–60 cm (5–35° from straight up, toward the audience), plus a lateral angle (40–70 cm, 45–65°) on the frame model | L12 "compare a higher, more integrated view with a closer, more immediate view"; L11 "compare with a safe lateral angle"; the case model's open lid blocks the low lateral view | LESSON-GLK | APPLIED · OWNER: approve |
+| I2-G3 | L82 | aluminium vs steel | steel bars | GLK-D1: the general article says aluminium; the YG-2500 manual, YG-1210, Adams and the educator PDF say steel | YMH-YG2500-OM | APPLIED |
+| I2-G4 | (range) | "4 1/3 octaves" (spec page) | "about three and a third octaves (C5 to E8)" | GLK-D2 | YMH-YG2500 | APPLIED |
+| I2-G5 | L16 | near-coincident pair, no dimension | near-coincident 17 cm / 110° and spaced 40 cm, both 45 cm above the bars — drawing defaults, said so on the page | No published glockenspiel pair | LESSON-GLK | APPLIED · OWNER: approve |
+| I2-G6 | (drawing) | YG-1210 case | the case on a 760 mm table, 78 mm base + 30 mm lid, the lid open 90° on the audience side (drawn see-through in the front view); the floor moves so the bars keep one plane | Drawing defaults | YMH-YG1210 | APPLIED · OWNER: lid hinge side |
