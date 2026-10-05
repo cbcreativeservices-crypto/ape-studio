@@ -89,7 +89,7 @@ export function StringDisplay({ w, h, L, bar, n, swing, pickups, lit, accessibil
     { id: 'nut', text: bar == null ? 'NUT' : 'BAR', u: X(b), v: yS - amp - 14 * ts, align: 'center', tone: bar == null ? 'muted' : 'amber' },
     { id: 'bridge', text: 'BRIDGE', u: X(L) - 2, v: yS - amp - 14 * ts, align: 'right', tone: 'muted' },
     ...pickups.map((p) => ({ id: `pu.${p.id}`, text: p.short, u: X(L - p.fromBridge), v: yS + amp + 34 * ts, align: 'center' as const, tone: p.id === lit ? ('amber' as const) : ('muted' as const) })),
-    { id: 'chart', text: `WHAT THE ${pickups.find((p) => p.id === lit)?.short ?? 'PICKUP'} PICKUP SENSES, BY HARMONIC`, short: 'BY HARMONIC', u: x0, v: chartTop - 12 * ts, align: 'left', tone: 'illustrative' },
+    { id: 'chart', text: pickups.length > 1 ? `WHAT THE ${pickups.find((p) => p.id === lit)?.short ?? ''} PICKUP SENSES, BY HARMONIC` : 'WHAT THE PICKUP SENSES, BY HARMONIC', short: 'BY HARMONIC', u: x0, v: chartTop - 12 * ts, align: 'left', tone: 'illustrative' },
     ...bars.map((_, i) => ({ id: `h${i}`, text: `${i + 1}`, u: x0 + bw * (i + 0.5), v: chartTop + chartH + 10 * ts, align: 'center' as const, tone: i + 1 === n ? ('amber' as const) : ('muted' as const) })),
   ];
   return (

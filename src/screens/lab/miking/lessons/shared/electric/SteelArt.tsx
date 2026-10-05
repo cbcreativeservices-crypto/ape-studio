@@ -145,8 +145,8 @@ function SteelSide({ hi }: { hi: string | null }) {
         <Path key={`f${i}`} path={p} color="#202226" />
       ))}
       {/* Pedal rods, the rack and its pedals, the volume pedal. */}
-      <Path path={rods} style="stroke" strokeWidth={5} color="#2a2c32" />
-      <Path path={rods} style="stroke" strokeWidth={1.6} color="#c8ccd4" opacity={0.75} />
+      <Path path={rods} style="stroke" strokeWidth={9} color="#2a2c32" />
+      <Path path={rods} style="stroke" strokeWidth={4} color="#c8ccd4" opacity={0.8} />
       <Path path={rack}>
         <LinearGradient start={vec(0, -70)} end={vec(0, -44)} colors={[...EL.chrome]} />
       </Path>
@@ -165,8 +165,8 @@ function SteelSide({ hi }: { hi: string | null }) {
       {/* Knee levers hanging under the body. */}
       {knee.map((p, i) => (
         <Group key={`k${i}`}>
-          <Path path={p} style="stroke" strokeWidth={7} strokeCap="round" strokeJoin="round" color="#2a2c32" />
-          <Path path={p} style="stroke" strokeWidth={2.4} strokeCap="round" strokeJoin="round" color="#c8ccd4" />
+          <Path path={p} style="stroke" strokeWidth={16} strokeCap="round" strokeJoin="round" color="#2a2c32" />
+          <Path path={p} style="stroke" strokeWidth={8} strokeCap="round" strokeJoin="round" color="#c8ccd4" />
         </Group>
       ))}
       {/* The body (lacquered wood), its apron, keyhead and changer. */}

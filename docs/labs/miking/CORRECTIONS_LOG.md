@@ -116,3 +116,46 @@ Built 2026-10-05 (branch `final-lab`, builder w5). Research: `tabla/SOURCES.md`,
 | TA-06 | Methods A, C, D | Trials 30–50 cm, 50–80 cm, 1–2 m | Shown as recommended starting points measured from the area between the heads; drawn as a half-ring on the audience side (the zone has no azimuth) | Owner ruling (starting-points voice). | LESSON-M13 | APPLIED |
 | TA-07 | (omission) | No hearing-safety figure | Setting page + a CRITICAL quick-check item (85 dBA / 8 h, 3 dB exchange; a mic's max SPL is not a hearing limit) | Parity with every lesson. | NIOSH row in `kick/SOURCES.md` | APPLIED |
 | TA-08 | (whole lesson) | "Pro Audio Training Academy", "students", "instructor", "classroom" | Not used (house rule) | House rule. | — | APPLIED |
+
+## Lab 4 · the amplified chain: C02 Electric Guitar, C08 Electric Bass, C04 Pedal and Lap Steel
+
+Built 2026-10-05 (branch `miking-c3`, from `miking-w5`). Research: `electric_guitar_amp/`, `electric_bass_amp/`, `pedal_steel/` (SOURCES.md, GEOMETRY_PROPOSAL.md), `BATCH4_RESEARCH_SUMMARY.md`. Shared pieces: `lessons/shared/speakers/ampModel.ts`, `ampZones.ts`, `signalChain.ts`; `lessons/shared/electric/`.
+
+### C02 Electric Guitar (`source_text/Electric-Guitar-Amplifier-Miking-Technique.txt`, lesson id C02)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| EG-01 | L28 | "Some flat side-address mics are designed to hang in front of an amp … [2]" | Dropped. The mic page teaches the maker's own instruction in general form: a side-address mic hears through its marked front side — face that side to the speaker (check `eg.mic.3`) | Not in either e 906 manual; the manual says "The front of the microphone must face the guitar amplifier." | SN-906-2020 (archived), SN-906-DOC | APPLIED · OWNER: drop "designed to hang" or source it (product page not checked) |
+| EG-02 | L7, L86 / ref [2] | e 906 manual PDF link | Not linked (no sources on screen); internal record points to the archived copy and the online manual v1.3 04/2026 | The lesson URL returns 404. | SN-906-2020, SN-906-DOC | APPLIED · OWNER: replace the link |
+| EG-03 | L7 | e 906 "region between the dome and cone edge" taken as the same start as Shure's dust-cap/cone line | Two adjacent zones: "Close, at the edge of the dust cap" (r = dust-cap radius) and "Close, half-way out across the cone" (r = 89 mm, half-way between dust cap and surround, optional ~30° turn toward the edge) | The e 906's B position is the MIDDLE between dome and edge, not the dust-cap line (D-EG2). | S-MILLS, SN-906 | APPLIED (`ampZones.ts` eg.boundary, eg.midway) |
+| EG-04 | L7, L19 | "toward the edge for a smoother sound" | "smoother and darker" — a tendency to check | The engineer says "duller", the guide "mellow", the e 906 "smoother"; the SM57 guide's table says the opposite direction (D-EG1). Majority kept, said as a tendency. | S-MILLS, S-PGA27, SN-906 | APPLIED |
+| EG-05 | (survey) | the wider 10–45 cm (4–18 in) band | Used in the BASS lesson only; the guitar keeps its own rows: close ½–2 in, 2–15 cm, 15–30 cm, 60–90 cm | 4–18 in is the bass article's figure; no guitar source gives it. | S-BASSREC vs S-PGA27 / S-SM57-UG | APPLIED |
+| EG-06 | L38 | rear mic, no distance | "Try about 15–30 cm (6–12 in) behind the open back … outside the air space the amp needs", polarity flipped; a hatched keep-out of 6 in behind the combo | No rear distance exists in the research; the maker asks for "at least 6 inches (15.25 cm) of unobstructed air space behind the unit". The band is a drawing default that starts outside it. | S-MILLS, FEN-65DR-MAN | APPLIED · OWNER: confirm the 15–30 cm default |
+| EG-07 | L47 | the '65 Deluxe Reverb speaker-load rule, by name | Taught generically: "some amps must never run without their speaker connected — read the amp's own manual" | Model-specific (the lesson itself says so) and no model names on screen. | FEN-65DR-MAN | APPLIED |
+| EG-08 | L46 | "OSHA … 85 dBA … action level, not a guarantee" | "A widely used guideline: no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA above that — and below it is not a promise of safety"; not named | OSHA's 85 dBA TWA is its hearing-conservation ACTION level (its PEL is 90 dBA with a 5 dB exchange). The app teaches the more protective 85 dBA / 3 dB guideline used in every miking lesson, keeping the lesson's point that it is no guarantee. | OSHA (acoustic_guitar/SOURCES.md §c), NIOSH (kick/SOURCES.md) | APPLIED |
+| EG-09 | (whole lesson) | "Pro Audio Training Academy", "learner" | Not used (house rule) | House rule. | — | APPLIED |
+
+### C08 Electric Bass (`source_text/Electric-Bass-Amplifier-Miking-Technique.txt`, lesson id C08)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| BA-01 | L9 | "10–45 cm (4–18 in)" | 101.6–457.2 mm (exactly 4–18 in): "A little farther — room to breathe" | Conversion of the source's own inches. | S-BASSREC | APPLIED |
+| BA-02 | L9 | the dust-cap/cone boundary start attributed to the bass article | Kept as the first zone, but the internal record says the boundary is borrowed from the guitar-amp engineer; the bass article names centre ("bite") and edge ("warm") only | The bass article does not name the boundary. | S-BASSREC, S-MILLS | APPLIED · OWNER: re-cite in the document |
+| BA-03 | L38 | lowest E "about 41 Hz" only | Adds the five-string low B ≈ 30.9 Hz (and E1 ≈ 41.2 Hz), in the facts, a check and the quick check | Survey flag: the 5-string B is missing; the DI's low-cut matters more for it. | PHYS-ET (440·2^(−46/12)) | APPLIED |
+| BA-04 | L44 | "Ampeg states that its tube-output models generally require a speaker load …" | Taught generically: "some heads must never run without their speaker load — read the manual; when unsure, stop and ask a technician" | The FAQ text fetched did not contain the statement (it may sit in a collapsed answer). | AMP-FAQ (unconfirmed) | APPLIED · OWNER: re-check the FAQ in a browser |
+| BA-05 | L6 | Venture Pre/Post definition by name | "Which circuits PRE and POST include is in that head's manual" | Model-specific; no model names on screen. | AMP-VEN | APPLIED |
+| BA-06 | L36, L38 | J48 by name: phantom, −15 dB pad, −6 dB at 80 Hz low-cut | Generic DI box: "some need 48 V phantom power"; the low-cut "about 6 dB down at 80 Hz" kept as a number, with the 41 / 31 Hz notes beside it | No model names on screen; the numbers are confirmed. | RAD-J48 | APPLIED |
+| BA-07 | (geometry) | a 1 × 15 for the 10/15 comparison | Not drawn; the 10-vs-15 point is in words only ("on some mixed-driver cabinets") | No 15 in cabinet sourced (GEOMETRY_PROPOSAL §1 allows "teach in words"). | S-RHYTHM | APPLIED · OWNER: draw a 1 × 15? |
+| BA-08 | L45 | OSHA line | As EG-08 | As EG-08. | OSHA, NIOSH | APPLIED |
+
+### C04 Pedal Steel and Lap Steel (`source_text/Pedal-Steel-and-Lap-Steel-Miking-Technique.txt`, lesson id C04)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| PS-01 | L36 | Peavey XLR "microphone-simulated direct interface" | "Some steel amps have an XLR output that imitates a miked speaker … still electrical" | The Peavey manual (ref [4]) is unreachable (404 / moved); keep model-specific wording out until re-sourced. | PV-NASH (UNREACHABLE) | APPLIED · OWNER: re-find the manual |
+| PS-02 | L39 | Peavey tilt-foot warning | "A tilted amp must stand firm and cannot tip if bumped — follow its own manual" | As PS-01. | PV-NASH (UNREACHABLE) | APPLIED |
+| PS-03 | L44 | speaker-free operation and speaker-cable note, by model | "Some amps allow running without a speaker under stated conditions; others need their load. Only the model's manual says which"; speaker cable for speaker connections | As PS-01. | PV-NASH (UNREACHABLE) | APPLIED |
+| PS-04 | L9 | Shure amp starting points "not steel-specific" | Kept and said on screen ("general amp starting points, tested on a steel's amp — not steel-specific coordinates"); the guitar lesson's combo and zones stand in for the steel amp | The proposal reuses the C02 amp unchanged; the steel amp itself is unsourced. | S-MILLS, S-PGA27 | APPLIED |
+| PS-05 | (geometry) | pedal-steel layout | Every dimension (body 900 × 300 × 90, top 700, 3 pedals, 4 knee levers hanging 150, seat 550, 24 in scale, keep-clear zone 1000 × 600, ten-string tuning) is a flagged drawing default; only the part NAMES are sourced | No dimension in the research. | SGF-MAP | APPLIED · OWNER: a steel player's look at the drawings |
+| PS-06 | L45 | OSHA line | As EG-08 (and a CRITICAL quick-check item) | As EG-08. | OSHA, NIOSH | APPLIED |
+| PS-07 | (whole lesson) | "Pro Audio Training Academy" | Not used (house rule) | House rule. | — | APPLIED |

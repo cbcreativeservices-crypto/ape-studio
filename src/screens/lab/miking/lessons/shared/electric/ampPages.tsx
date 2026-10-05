@@ -252,7 +252,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
                 <Point title={aShown.label.toUpperCase()}>{aShown.role}</Point>
               </Card>
             ) : (
-              <Note>{`The instrument makes a small electrical signal; ${spec.ampNoun} turns it into the power that moves a speaker cone; the cone pushes the air; the mic hears the air. The grille cloth hides the speaker — find it before you place a mic.`}</Note>
+              <Note>{`The instrument makes a small electrical signal; the amplifier turns it into the power that moves a speaker cone; the cone pushes the air; the mic hears the air. The grille cloth hides the speaker — find it before you place a mic.`}</Note>
             )}
             {spec.rig === 'bass' ? <Note>In a cabinet with several speakers, close in a mic hears mostly the one it faces, and the middle of the grille may fall between two of them. Ask which speaker is active, and mark it from outside with the amp off or muted.</Note> : <Note>The combo’s speaker sits off-centre, under the controls: the middle of the grille is not the middle of the speaker. Find the speaker itself.</Note>}
             <Note tone="warn">Never open an amp’s chassis or change its speaker wiring to place a mic: the inside is hot and carries dangerous voltages.</Note>
@@ -281,7 +281,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
     const [pedal, setPedal] = useState(false);
     const [hSeen, setHSeen] = useState<ReadonlySet<number>>(() => new Set([1]));
     const [puSeen, setPuSeen] = useState<ReadonlySet<string>>(() => new Set([st.spec.pickups[st.spec.pickups.length - 1].id]));
-    const bar = st.steel ? barFor(frets, L) : null;
+    const bar = st.steel && frets > 0 ? barFor(frets, L) : null;
     const f0 = openHz(st.spec)[st.idx] * (pedal ? Math.pow(2, 2 / 12) : 1);
     const f = bar == null ? f0 : barHz(f0, L, bar);
     const q = st.spec.pickups.find((p) => p.id === pu)!.fromBridge;
@@ -461,8 +461,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
               selectedId: coneBack,
               onSelect: (id) => setConeBack(id as Back),
               options: [
-                { id: 'open', label: 'OPEN BACK', blurb: 'Like most guitar combos: the back of the cone sounds out behind, opposite in polarity.' },
-                { id: 'closed', label: 'CLOSED BACK', blurb: 'Like most bass cabinets: the sound from the back of the cone stays in the box.' },
+                { id: 'open', label: 'OPEN BACK', blurb: 'As on many guitar combos: the back of the cone sounds out behind, opposite in polarity.' },
+                { id: 'closed', label: 'CLOSED BACK', blurb: 'As on many bass cabinets: the sound from the back of the cone stays in the box.' },
               ],
             },
           ],
@@ -1104,13 +1104,13 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
       ? [
           { k: 'PATH Δd R−F', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
           { k: 'DELAY Δt', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'rear later' : 'rear earlier', flex: 1.3 },
-          { k: '1ST NOTCH', v: equal ? (sEff === -1 ? 'CANCELS' : 'NO COMB') : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
+          { k: 'NOTCH', v: equal ? (sEff === -1 ? 'CANCELS' : 'NO COMB') : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
           { k: 'REAR', v: switchB === 1 ? 'SWITCH +' : 'SWITCH −', sub: sEff === 1 ? 'sum: in step' : 'sum: opposed', tint: sEff === 1 ? '#5bff85' : '#ff6b5e', flex: 1.2 },
         ]
       : [
           { k: 'MIC PATH', v: dCell.v, sub: 'cone to mic', flex: 1.2 },
           { k: 'MIC LATER BY', v: fmtMs(dt), sub: 'than the DI', flex: 1.3 },
-          { k: '1ST NOTCH', v: first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
+          { k: 'NOTCH', v: first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.15 },
           { k: 'DI', v: switchB === 1 ? 'SWITCH +' : 'SWITCH −', sub: switchB === 1 ? 'as wired' : 'flipped', flex: 1.1 },
         ];
     const [wellW, setWellW] = useState(0);

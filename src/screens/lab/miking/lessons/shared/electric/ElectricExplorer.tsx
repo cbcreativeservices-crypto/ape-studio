@@ -40,7 +40,7 @@ function labelsFor(show: ElectricShow): StaticLabel[] {
       { id: 'kh', text: 'KEYHEAD', u: 0, v: -790, align: 'center', tone: 'muted' },
       { id: 'kn', text: 'KNEE LEVERS', short: 'KNEES', u: STEEL.kneeU[3] + 40, v: -480, align: 'left', tone: 'amber' },
       { id: 'pd', text: 'PEDALS', u: 450, v: 30, align: 'center', tone: 'amber' },
-      { id: 'vp', text: 'VOLUME PEDAL', short: 'VOLUME', u: STEEL.volumeU[1] + 10, v: -40, align: 'left', tone: 'muted' },
+      { id: 'vp', text: 'VOLUME PEDAL', short: 'VOLUME', u: STEEL.volumeU[0] + 50, v: -120, align: 'center', tone: 'muted' },
     ];
   if (show === 'steelTop')
     return [

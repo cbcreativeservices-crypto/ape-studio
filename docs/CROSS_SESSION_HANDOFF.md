@@ -602,6 +602,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 01:17 · ccode · de79f1c7
+changed: feat(miking): Lab 4 amplified chain — C02 Electric Guitar, C08 Electric Bass, C04 Pedal and Lap Steel
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:17 · ccode · 938a9224
+changed: feat(miking): amplified-chain kit beside the speaker family (Lab 4)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 23:37 · ccode · d93863dc
 changed: feat(miking): shared hand-drum journey kit (tonbak, tabla)
 affects other side: nothing (miking lessons, branch final-lab)

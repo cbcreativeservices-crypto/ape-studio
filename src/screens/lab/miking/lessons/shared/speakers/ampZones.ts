@@ -12,8 +12,8 @@
  * ONE VARIABLE AT A TIME: the three close guitar zones (dust-cap edge,
  * centre, toward the edge) share ONE distance band and differ only across
  * the cone, so sliding across keeps the distance (the lesson's procedure,
- * step 3). Distances are measured from the GRILLE CLOTH (CORRECTIONS_LOG
- * EG-04: "from speaker" rows read as "at the cloth, not touching").
+ * step 3). Distances are measured from the GRILLE CLOTH (as in the
+ * speaker module, SPK-04: "from speaker" rows read as "at the cloth").
  *
  * CENTRE vs EDGE (D-EG1): most of the research puts the BRIGHTER sound toward
  * the centre and the DULLER / mellower / smoother one toward the edge; one
@@ -157,7 +157,7 @@ export const GUITAR_ZONES: readonly DocumentedZone[] = [
 ];
 
 /** Behind the combo's OPEN back. The research gives no distance; the band
- *  starts outside the 6 in the maker asks for behind the amp (EG-07). */
+ *  starts outside the 6 in the maker asks for behind the amp (EG-06). */
 export function guitarRearZone(): DocumentedZone {
   const vent = COMBO.ventBehind.mm;
   return {

@@ -41,7 +41,7 @@ export const BACKLINE_POS = {
   otherAmp: { u: -60, v: 1750 },
   audience: 3300,
 } as const;
-export const BACKLINE_BOX = { stage: { u0: -1000, u1: 3750, v0: -2350, v1: 2350 }, studio: { u0: -1000, u1: 3100, v0: -2200, v1: 2300 } } as const;
+export const BACKLINE_BOX = { stage: { u0: -800, u1: 3650, v0: -2100, v1: 2150 }, studio: { u0: -1000, u1: 3100, v0: -2200, v1: 2300 } } as const;
 
 /** Item ids on the plan and where each sits (taps and highlights). */
 export function backlineItems(who: Backline, scene: BacklineScene, wedges: readonly Wedge[]): { id: string; u: number; v: number; r: number }[] {
