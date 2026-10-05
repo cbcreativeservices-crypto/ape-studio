@@ -70,10 +70,10 @@ export function ConcertBassDrumStrike({ w, h, variant, reveal, shown, accessibil
   const fOn = useDerivedValue(() => clamp01(reveal.value - 2));
   const labels: StaticLabel[] = [];
   if (shown >= 1) labels.push({ id: 's1', text: '① MALLET STRIKES', short: '① STRIKE', u: 420, v: 120, align: 'center', tone: 'amber' });
-  if (shown >= 2) labels.push({ id: 's2', text: '② PLAYING HEAD PUSHED IN', short: '② PUSHED IN', u: -20, v: -HOOP.rOut - 40, align: 'right', tone: 'blue' });
+  if (shown >= 2) labels.push({ id: 's2', text: '② PLAYING HEAD PUSHED IN', short: '② PUSHED IN', u: 30, v: -HOOP.rOut - 40, align: 'left', tone: 'blue' });
   if (shown >= 3) labels.push({ id: 's3', text: '③ AIR PUSHES THE FAR HEAD', short: '③ AIR → FAR', u: -D / 2, v: R - 60, align: 'center', tone: 'blue' });
   if (shown >= 4) {
-    labels.push({ id: 's4a', text: '④ PLAYER’S SIDE', short: '④ PLAYER', u: 340, v: -R - 60, align: 'center', tone: 'blue' });
+    labels.push({ id: 's4a', text: '④ PLAYER’S SIDE', short: '④ PLAYER', u: 360, v: -R - 125, align: 'center', tone: 'blue' });
     labels.push({ id: 's4b', text: '④ FAR SIDE', short: '④ FAR', u: -D - 320, v: -R - 60, align: 'center', tone: 'blue' });
   }
   labels.push({ id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: SOUND_BOX.u1 - 20, v: SOUND_BOX.v1 - 30, align: 'right', tone: 'illustrative' });

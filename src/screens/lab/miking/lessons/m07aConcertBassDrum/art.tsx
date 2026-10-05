@@ -15,7 +15,7 @@ import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, vec } fr
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { Mallet } from '../shared/concert/Mallets';
-import { CAVITY, CHROME, CHROME_DARK, FLOOR, HEAD_CALF, HEAD_COATED, HOOP_CUT, HOOP_FAR, INK, PLY, PLY_LINE, make, oval, rect, rrect, seg, type SkPath } from '../shared/concert/paths.ts';
+import { CAVITY, CHROME, CHROME_DARK, FLOOR, HEAD_CALF, HEAD_COATED, HOOP_CUT, HOOP_FAR, INK, PLY, PLY_LINE, make, oval, rect, rrect, seg } from '../shared/concert/paths.ts';
 import { HOOP, HOOP_X, MALLET, STAND } from './geometry.ts';
 import { D, FLOOR_Y, MID_X, R, SPEC } from './model.ts';
 
@@ -225,4 +225,3 @@ export function concertBassDrumHitTest(view: ViewId, _variant: VariantId, u: num
   return null;
 }
 
-export type { SkPath };

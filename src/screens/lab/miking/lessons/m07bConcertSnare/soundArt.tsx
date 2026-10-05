@@ -82,7 +82,7 @@ export function ConcertSnareStrike({ w, h, variant, reveal, shown, accessibility
   const labels: StaticLabel[] = [];
   if (shown >= 1) labels.push({ id: 's1', text: '① STICK STRIKES', short: '① STRIKE', u: -330, v: -250, align: 'center', tone: 'amber' });
   if (shown >= 2) labels.push({ id: 's2', text: '② BATTER PUSHED IN', short: '② PUSHED IN', u: 90, v: -60, align: 'left', tone: 'blue' });
-  if (shown >= 3) labels.push({ id: 's3', text: on ? '③ AIR → SNARE HEAD → SNARES' : '③ AIR → SNARE HEAD', short: '③ AIR', u: 90, v: D + 105, align: 'left', tone: 'blue' });
+  if (shown >= 3) labels.push({ id: 's3', text: on ? '③ AIR → SNARES' : '③ AIR → SNARE HEAD', short: '③ AIR', u: 90, v: D + 105, align: 'left', tone: 'blue' });
   if (shown >= 4) {
     labels.push({ id: 's4a', text: '④ UP, FROM THE BATTER', short: '④ UP', u: 0, v: RIM_Y - 245, align: 'center', tone: 'blue' });
     labels.push({ id: 's4b', text: on ? '④ DOWN, THE SNARES' : '④ DOWN', short: '④ DOWN', u: -200, v: D + 175, align: 'center', tone: 'blue' });

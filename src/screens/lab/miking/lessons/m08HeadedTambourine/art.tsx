@@ -144,10 +144,10 @@ function FromAbove({ p, opacity = 1 }: { p: Pose; opacity?: number }) {
 
 /** The mount (mounted state): a stand tube under the frame's player-side
  *  edge and a clamp arm (drawing defaults). */
+let mountCache: { tube: SkPath; arm: SkPath } | null = null;
 function MountSide({ p }: { p: Pose }) {
   const x = p.c.x - R - 30;
-  const tube = seg(make(), x, p.c.y + 30, x, -40);
-  const arm = rrect(make(), x - 10, p.c.y + DEPTH * 0.3, p.c.x - R + 16, p.c.y + DEPTH * 0.7, 4);
+  const { tube, arm } = (mountCache ??= { tube: seg(make(), x, p.c.y + 30, x, -40), arm: rrect(make(), x - 10, p.c.y + DEPTH * 0.3, p.c.x - R + 16, p.c.y + DEPTH * 0.7, 4) });
   return (
     <>
       <Path path={tube} style="stroke" strokeWidth={24} strokeCap="round" color="#2a2c32" />
