@@ -31,29 +31,31 @@ import { fmtAngle, fmtDb, fmtIdealPickup, isDeepNull } from '../engine/model/uni
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../engine/kit';
 import type { PageProps } from './pageTypes';
+import { copyOf } from '../engine/model/copy.ts';
 
 const NULL_TOL = 15; // deg: "in the null" tolerance (the lab's, ruling §16.4)
-const AZ_MAX = 45; // deg: the mic still faces the front head
-const EL_MAX = 30;
-const PLAN: ViewBox = { u0: -800, u1: 1650, v0: -780, v1: 1060 };
-const SIDE: ViewBox = { u0: -750, u1: 1650, v0: -420, v1: 330 };
-const PATTERNS: { id: PatternId; label: string; typeId: string }[] = [
-  { id: 'cardioid', label: 'cardioid', typeId: 'kickDynCard' },
-  { id: 'supercardioid', label: 'supercardioid', typeId: 'kickDynSuper' },
-  { id: 'hypercardioid', label: 'hypercardioid', typeId: 'kickDynSuper' },
-];
-/** The drum parts that shield a mic (the shell and both heads). */
-const DRUM_PARTS = ['kick.shell', 'kick.batter', 'kick.reso', 'kick.resoPorted'] as const;
 
-export function PContext({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant }: PageProps) {
-  const z = lesson.zones.find((q) => q.id === 'out.edge') ?? lesson.zones[0];
-  const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: 'kickDynSuper', pattern: 'supercardioid', pose: z.start }] });
+export function PContext({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant: shared }: PageProps) {
+  const C = copyOf(lesson);
+  const X = C.context;
+  // A lesson may fix this page's drum (the toms: the rack pair under a crash).
+  const variant = X.variant ?? shared;
+  const AZ_MAX = X.azMax; // deg: the mic still faces its head
+  const EL_MAX = X.elMax;
+  const PLAN: ViewBox = X.plan;
+  const SIDE: ViewBox = X.side;
+  const PATTERNS = X.patterns;
+  /** The drum parts that shield a mic (its shell and heads). */
+  const DRUM_PARTS = X.shield;
+  const z = lesson.zones.find((q) => q.id === X.zone) ?? lesson.zones[0];
+  const startPattern: PatternId = PATTERNS.find((p) => p.typeId === X.typeId)?.id ?? 'supercardioid';
+  const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: X.typeId, pattern: startPattern, pose: z.start }] });
   useEffect(() => {
     if (rig.variant !== variant) rig.setVariant(variant);
   }, [variant, rig]);
   const [live, setLive] = useState(true);
-  const [pattern, setPattern] = useState<PatternId>('supercardioid');
-  const [wedgeId, setWedgeId] = useState(lesson.live.wedges[0]?.id ?? '');
+  const [pattern, setPattern] = useState<PatternId>(startPattern);
+  const [wedgeId, setWedgeId] = useState(lesson.live.wedges.find((w) => w.id === X.target)?.id ?? lesson.live.wedges[0]?.id ?? '');
   const [view, setView] = useState<ViewId>('top');
   const [aimAxis, setAimAxis] = useState<'az' | 'el'>('az');
   const [predicted, setPredicted] = useState<string | null>(null);
@@ -69,8 +71,8 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const shield = useMemo(() => solidOnPath(rig.scene, pose.p, src, DRUM_PARTS), [rig.scene, pose.p, src]);
   const tried = predicted != null && aimed;
   useEffect(() => {
-    if (live && wedge.id === 'downstage' && inNull && aimed && !interactiveDone.has('wedgeInNull')) onInteractive('wedgeInNull');
-  }, [live, wedge.id, inNull, aimed, interactiveDone, onInteractive]);
+    if (live && wedge.id === X.target && inNull && !shield && aimed && !interactiveDone.has('wedgeInNull')) onInteractive('wedgeInNull');
+  }, [live, wedge.id, X.target, inNull, shield, aimed, interactiveDone, onInteractive]);
 
   const choosePattern = (id: PatternId) => {
     setPattern(id);
@@ -107,7 +109,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
         selectedId: aimAxis,
         onSelect: (id) => setAimAxis(id as 'az' | 'el'),
         options: [
-          { id: 'az', label: 'LEFT–RIGHT', blurb: `Swing the front up to ${AZ_MAX}° either way — it still faces the front head.` },
+          { id: 'az', label: 'LEFT–RIGHT', blurb: X.aimBlurb },
           { id: 'el', label: 'UP–DOWN', blurb: `Tilt the front up to ${EL_MAX}° up or down.` },
         ],
       },
@@ -120,7 +122,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       selectedId: pattern,
       onSelect: (id) => choosePattern(id as PatternId),
       sticky: true,
-      options: PATTERNS.map((p) => ({ id: p.id, label: p.label, blurb: `A kick dynamic with a ${p.id} pattern, drawn as a simplified shape. Its null sits at ≈ ${Math.round(nullAngles(p.id)[0])}° off the front axis.` })),
+      options: PATTERNS.map((p) => ({ id: p.id, label: p.label, blurb: `${X.micNoun} with a ${p.id} pattern, drawn as a simplified shape. Its null sits at ≈ ${Math.round(nullAngles(p.id)[0])}° off the front axis.` })),
     },
     {
       kind: 'options',
@@ -143,7 +145,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 };
   const bezel: BezelItem[] = live
     ? [
-        { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: 'monitor', flex: 1 },
+        { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: wedge.glyph === 'none' ? wedge.short.toLowerCase() : X.targetWord, flex: 1 },
         pickupCell,
         { k: 'NULL', v: tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
         { k: 'REJECTION', v: inNull && !shield ? 'IN NULL' : 'NO', tint: inNull && !shield ? '#5bff85' : undefined, flex: 1.15 },
@@ -161,7 +163,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       : 'Studio: no monitor.',
   );
   const pred = lesson.predictions.context;
-  const studioCard = lesson.scenarios.filter((s) => s.id === 'k.ctx.studio');
+  const studioCard = lesson.scenarios.filter((s) => s.id === X.studioId);
 
   const steps: MikingStep[] = [
     {
@@ -181,7 +183,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
             showZones={false}
             interactive={false}
             boxOverride={view === 'top' ? PLAN : SIDE}
-            wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null}
+            wedge={live ? { at: wedge.p, faces: wedge.faces, src, glyph: wedge.glyph } : null}
             showLabels={false}
             accessibilityLabel={label}
           />
@@ -194,28 +196,28 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       well: live ? (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`Top view · mic just outside the front head · ${wedge.short.toLowerCase()}`} prompt="The monitor stays where the stage needs it. Turn the MIC (AIM) or change its PATTERN until the downstage wedge sits in the rejection." />
-          <Body>{`Activity: ${interactiveDone.has('wedgeInNull') ? 'done — the downstage wedge sat in a null by your aim or pattern' : 'not yet'}.`}</Body>
+          <Landing looking={`${X.looking} · ${wedge.short.toLowerCase()}`} prompt={X.prompt} />
+          <Body>{`Activity: ${interactiveDone.has('wedgeInNull') ? X.activityDone : 'not yet'}.`}</Body>
           {shield ? (
             <Note tone="warn">{`The ${shield.label} lies between this mic and the ${wedge.short.toLowerCase()}. ${wedge.note} The free-field pattern ignores that shielding, so no pickup number is shown.`}</Note>
-          ) : wedge.id === 'fill' ? (
+          ) : X.frontIds.includes(wedge.id) ? (
             <Note tone="warn">{wedge.note}</Note>
           ) : null}
-          {isDeepNull(db) && !shield ? <Note>On this simplified pattern a null looks infinitely deep. Real microphones reject far less there, and least at low frequencies — where kick feedback lives. Use the null to aim, not to promise silence.</Note> : null}
+          {isDeepNull(db) && !shield ? <Note>{X.deepNull}</Note> : null}
           {tried ? (
             pattern === 'cardioid' ? (
-              <Note tone="ok">{`What you just saw: a cardioid rejects most directly behind (180°). The downstage wedge sits below the mic too, so with a cardioid only a tilt brings it near the null.`}</Note>
+              <Note tone="ok">{X.cardioidReveal}</Note>
             ) : (
               <Note tone="ok">{`What you just saw: a ${pattern} rejects most at ≈ ${Math.round(nulls[0])}° — toward the rear but OFF the axis — and has a pickup lobe directly behind (${fmtDb(gainDb(pattern, 180))} there). The rear is not a universal rejection zone.`}</Note>
             )
           ) : null}
-          <Note>A mic INSIDE the drum is also shielded by the shell and both heads, which a free-field pattern ignores. Check placement before the performance; real patterns change with pitch and the stage reflects sound — this is the reasoning, not a prediction.</Note>
+          <Note>{X.shieldNote}</Note>
         </>
       ) : (
         <>
-          <Landing looking="Studio · no monitor" prompt="A studio session has no wedge to reject. The decision changes: what is the room worth?" />
+          <Landing looking="Studio · no monitor" prompt={X.studioPrompt} />
           <ScenarioList items={studioCard} answers={answers} onAnswered={onAnswered} />
-          <Note>In the studio, repeated trials are practical when the performer stops; a second mic can offer a complementary perspective if it improves the combined sound. Switch back to LIVE for the monitor exercise.</Note>
+          <Note>{X.studioNote}</Note>
         </>
       ),
     },
@@ -226,15 +228,16 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       layout: 'read',
       body: (
         <>
-          <Body>These are scenario-based comparisons, not restrictions: an intact front head may be miked from outside on stage, and an internal close mic may suit a studio session.</Body>
+          <Body>{X.learn.intro}</Body>
           <Card>
-            <Point title="HOW MUCH ROOM">Studio: an outside or more distant perspective may help when the room contributes usefully. Live: stage spill and the available gain before feedback may favour close, directional pickup.</Point>
-            <Point title="HOW MANY MICS">Studio: a second mic can offer a complementary perspective if it improves the combined sound. Live: start with the open mics actually needed — extra channels add spill and acoustic interactions.</Point>
-            <Point title="WHAT THE KICK NEEDS TO DO">Studio: judge it against the bass and the kit perspective. Live: first consider the acoustic kick the audience already hears, and what the PA needs to add.</Point>
-            <Point title="MOUNTING">Studio: repeated trials are practical when the performer stops. Live: stable, repeatable mounting and a protected cable route matter most during a show.</Point>
+            {X.learn.points.map((p) => (
+              <Point key={p.title} title={p.title}>
+                {p.text}
+              </Point>
+            ))}
           </Card>
-          <Body>On a real stage the monitors stay where the players need them: you turn the mic or choose its pattern so that a null faces a loud unwanted source. A drummer’s own fill usually sits in front of a kick mic aimed at the drum, where no pattern rejects; the drum itself shields an inside mic.</Body>
-          <Note tone="warn">No kick-mic position alone prevents feedback: the monitors and PA, channel gain and EQ, the room and the open mics all matter. Never create feedback deliberately — not as an exercise, not to “find” a frequency.</Note>
+          {X.learn.body ? <Body>{X.learn.body}</Body> : null}
+          <Note tone="warn">{X.learn.warn}</Note>
         </>
       ),
     },
@@ -243,7 +246,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       title: 'Check',
       kind: 'CHECK',
       layout: 'read',
-      body: <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'context' && s.id !== 'k.ctx.studio')} answers={answers} onAnswered={onAnswered} />,
+      body: <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'context' && s.id !== X.studioId)} answers={answers} onAnswered={onAnswered} />,
     },
   ];
   return <PageSteps steps={steps} />;

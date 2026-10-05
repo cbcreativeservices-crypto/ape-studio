@@ -6,7 +6,7 @@
  */
 import type { ReactElement } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
-import type { VariantId, ViewId } from '../model/types.ts';
+import type { VariantId, Vec3, ViewId } from '../model/types.ts';
 
 /** `short`: the words to fall back to where the full label would collide. */
 export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
@@ -23,6 +23,8 @@ export type LessonArt = {
   StrikeSequence?: (props: { w: number; h: number; variant: VariantId; reveal: SharedValue<number>; shown: number; accessibilityLabel: string }) => ReactElement;
   /** … and the two heads coupled through the air, swung by hand. */
   CoupledHeads?: (props: { w: number; h: number; variant: VariantId; mode: 'together' | 'opposed'; swing: number; accessibilityLabel: string }) => ReactElement;
-  /** THE SETTING: the instrument's footprint on the kit plan (top view, mm). */
-  plan?: { drum: { u0: number; u1: number; halfW: number }; pedal: { u0: number; u1: number; halfW: number } };
+  /** THE SETTING: the lesson's drum on the shared kit plan (lessons/shared/
+   *  KitPlan): its plan id, whether the lesson's own art draws it there (M01's
+   *  kick), and where the lesson's frame origin sits on the plan (mm). */
+  plan?: { own: string; useArt?: boolean; offset?: Vec3 };
 };

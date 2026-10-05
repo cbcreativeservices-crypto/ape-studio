@@ -22,6 +22,7 @@ import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, KeyButton, Note, OrderTaskCard, Point, ScenarioList, SetupTaskCard, SymptomCard } from '../engine/kit';
 import { saveObservation, useObservations } from '../engine/progress/observations';
 import type { PageProps } from './pageTypes';
+import { copyOf } from '../engine/model/copy.ts';
 
 export function PTroubleshoot({ lesson, answers, onAnswered, onInteractive, interactiveDone }: PageProps) {
   const all = lesson.symptoms.every((s) => s.id in answers);
@@ -59,7 +60,8 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
   });
   const order = lesson.orderTasks.filter((t) => t.page === 'practice');
   const setups = lesson.setupTasks.filter((t) => t.page === 'practice');
-  const pick = (ids: string[]) => lesson.scenarios.filter((s) => ids.includes(s.id));
+  const pick = (ids: readonly string[]) => lesson.scenarios.filter((s) => ids.includes(s.id));
+  const P = copyOf(lesson).practice;
   const steps: MikingStep[] = [
     {
       key: 'order',
@@ -72,7 +74,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
           {order.map((t) => (
             <OrderTaskCard key={t.id} t={t} answered={t.id in answers} onAnswered={(ok) => onAnswered(t.id, ok)} />
           ))}
-          <ScenarioList items={pick(['k.prac.gain'])} answers={answers} onAnswered={onAnswered} />
+          <ScenarioList items={pick([P.gain])} answers={answers} onAnswered={onAnswered} />
           <Note tone="warn">Protect your hearing through all of this: keep levels and repetitions down during soundcheck, and use hearing protection.</Note>
         </>
       ),
@@ -89,7 +91,7 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
           {setups.map((t) => (
             <SetupTaskCard key={t.id} t={t} answered={t.id in answers} onAnswered={(ok) => onAnswered(t.id, ok)} />
           ))}
-          <ScenarioList items={pick(['k.prac.3'])} answers={answers} onAnswered={onAnswered} />
+          <ScenarioList items={pick([P.second])} answers={answers} onAnswered={onAnswered} />
         </>
       ),
     },
@@ -100,8 +102,8 @@ export function PPractice({ lesson, answers, onAnswered, canSave, preview }: Pag
       layout: 'read',
       body: (
         <>
-          <Body>Three cards from earlier pages, mixed: a reference head, a pattern’s null, and polarity versus delay.</Body>
-          <ScenarioList items={pick(['k.mix.1', 'k.mix.2', 'k.mix.3'])} answers={answers} onAnswered={onAnswered} />
+          <Body>{P.mixedIntro}</Body>
+          <ScenarioList items={pick(P.mixed)} answers={answers} onAnswered={onAnswered} />
           <Card>
             <Point title="OBSERVATION SHEET · OPTIONAL">For a real drum, with the drummer’s agreement and the drummer stopped while anything moves. Write tendencies in words — what you heard, not a promised result.</Point>
             {lesson.practice.fields.map((f) =>

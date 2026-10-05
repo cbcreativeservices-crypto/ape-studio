@@ -21,7 +21,8 @@ import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicSlot, ViewId } from '../engine/model/types.ts';
 import { dist } from '../engine/geometry/vec.ts';
-import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchesHz, pathDiffMm } from '../engine/physics/twoMic.ts';
+import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchesHz, oppositeSign, pathDiffMm, type OppositePlane } from '../engine/physics/twoMic.ts';
+import { copyOf } from '../engine/model/copy.ts';
 import { isModelled } from '../engine/physics/polar.ts';
 import { fmtHz, fmtLen, fmtMs } from '../engine/model/units.ts';
 import { lenCell } from '../engine/scene/readoutText.ts';
@@ -35,17 +36,24 @@ import { Body, Landing, Note, NowLine, PredictCard, ScenarioList } from '../engi
 import { micType } from '../data/micTypes';
 import type { PageProps } from './pageTypes';
 
-export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, hidden }: PageProps) {
+export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant: shared, hidden }: PageProps) {
   const model = lesson.model;
-  const inside = lesson.zones.find((z) => z.id === 'in.pillow') ?? lesson.zones[0];
-  const port = model.ports.ported?.c ?? { x: model.interior.x1, y: 0, z: 0 };
+  const T = copyOf(lesson).twoMic;
+  // A lesson may fix this page's drum (the toms: the floor tom's top and bottom).
+  const variant = T.variant ?? shared;
+  const zA = lesson.zones.find((z) => z.id === T.A.zone) ?? lesson.zones[0];
+  const zB = T.B.zone ? lesson.zones.find((z) => z.id === T.B.zone) : undefined;
+  const poseB = T.B.pose ?? zB?.start ?? zA.start;
   const rig = useRig(lesson, {
     variant,
     mics: [
-      { slot: 'A', typeId: inside.requires?.micTypeIds?.[0] ?? 'boundaryHalf', pattern: 'halfCardioid', pose: inside.start },
-      { slot: 'B', typeId: 'kickDynSuper', pattern: 'supercardioid', pose: { p: { x: port.x + 90, y: port.y, z: port.z }, az: 0, el: 0 } },
+      { slot: 'A', typeId: T.A.typeId || zA.requires?.micTypeIds?.[0] || lesson.micTypeIds[0], pattern: T.A.pattern, pose: zA.start },
+      { slot: 'B', typeId: T.B.typeId || lesson.micTypeIds[0], pattern: T.B.pattern, pose: poseB },
     ],
   });
+  // Opposite heads (the lesson's surface): mics on either side of the drum.
+  const oppSurface = T.opposite ? model.surfaces.find((s) => s.id === T.opposite!.surface) : undefined;
+  const plane: OppositePlane = oppSurface ? { point: oppSurface.point, normal: oppSurface.normal } : null;
   useEffect(() => {
     if (rig.variant !== variant) rig.setVariant(variant);
   }, [variant, rig]);
@@ -66,8 +74,10 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
   // inverted, so the notch set follows the EFFECTIVE polarity, not the switch.
   const gA = isModelled(A.pattern) ? micGain(A.pattern, A.pose, src) : 1000 / Math.max(1, dist(A.pose.p, src));
   const gB = isModelled(B.pattern) ? micGain(B.pattern, B.pose, src) : 1000 / Math.max(1, dist(B.pose.p, src));
-  const sEff = effectivePolarity(B.polarity, gA, gB);
-  const rearFlip = sEff !== B.polarity;
+  const side = oppositeSign(plane, A.pose.p, B.pose.p);
+  const sEff = (effectivePolarity(B.polarity, gA, gB) * side) as 1 | -1;
+  const rearFlip = sEff !== B.polarity && side === 1;
+  const sideFlip = side === -1;
   const first = equal ? null : notchesHz(dt, sEff, 20000, 4)[sEff === 1 ? 0 : 1] ?? null;
   // No 3:1 readout here: both mics hear ONE source (levels.threeToOneReading
   // is null for that), and the ratio would invite "fixing" it (reviews M7/M11).
@@ -112,12 +122,12 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
     { k: 'PATH Δd B−A', v: equal ? 'NONE' : dCell.v, sub: equal ? 'same path' : dCell.sub, flex: 1.35 },
     { k: 'DELAY Δt B−A', v: equal ? '0 ms' : fmtMs(dt).replace('≈ ', `≈ ${dt > 0 ? '+' : '−'}`), sub: equal ? 'no comb' : dt > 0 ? 'B later' : 'B earlier', flex: 1.35 },
     { k: '1ST NOTCH', v: equal ? 'NO COMB' : first == null ? 'OVER 20 kHz' : `≈ ${fmtHz(first)}`, flex: 1.2 },
-    { k: 'POLARITY', v: `B ${B.polarity === 1 ? '+' : '−'}`, sub: rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
+    { k: 'POLARITY', v: `B ${B.polarity === 1 ? '+' : '−'}`, sub: sideFlip ? 'opposite heads' : rearFlip ? 'rear lobe: −' : 'switch', flex: 0.95 },
   ];
   const [wellW, setWellW] = useState(0);
   const label = useMemo(
-    () => `Ideal two-mic sum, ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}, mic B polarity switch ${B.polarity === 1 ? 'normal' : 'inverted'}${rearFlip ? ', but the source is in a rear lobe, so the sum behaves as inverted' : ''}.`,
-    [equal, dMm, dt, first, B.polarity, rearFlip],
+    () => `Ideal two-mic sum, ${equal ? 'no path difference, no comb' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}, first notch about ${first == null ? 'above 20 kHz' : fmtHz(first)}`}, mic B polarity switch ${B.polarity === 1 ? 'normal' : 'inverted'}${sideFlip ? ', and the mics face opposite heads, so the sum behaves as ' + (sEff === 1 ? 'same-polarity' : 'inverted') : rearFlip ? ', but the source is in a rear lobe, so the sum behaves as inverted' : ''}.`,
+    [equal, dMm, dt, first, B.polarity, rearFlip, sideFlip, sEff],
   );
   const labelFor = (v: ViewId) => sceneLabel(rig, v, ['A', 'B'], `Paths from the ${regions.find((r) => r.id === srcId)?.label ?? 'source'} are drawn as an overlay.`);
 
@@ -146,12 +156,13 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
           </Text>
           <NowLine text={nowText(rig, ['A', 'B'])} />
           <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>
-            {wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={label} /> : null}
+            {wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={label} opposite={plane} /> : null}
           </View>
           <Body>{equal ? 'No path difference, no comb: the source reaches both mics at the same instant.' : `B hears it ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+          {sideFlip && T.opposite ? <Note>{T.opposite.note}</Note> : null}
           {rearFlip ? <Note>{`The source is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches follow the ${sEff === 1 ? 'same-polarity' : 'inverted'} set even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
           {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: it moves the notches, it does not remove the delay.`}</Note> : null}
-          <Note tone="warn">The inside and outside mics hear DIFFERENT surfaces of the drum, so this simplified graph shows only the shared part of the sound — not what the pair will sound like. Judge the pair by ear, in mono, at matched levels. The notch POSITIONS follow from the arrival-time difference; their DEPTH depends on the two levels, which this model takes from distance alone (1/r) — that does not hold a few centimetres from a 56 cm head, so read the depths as illustrative only. 3:1 is a spill guideline for mics on different sources; it says nothing about this pair.</Note>
+          <Note tone="warn">{T.warn}</Note>
           {micType(A.typeId).mount === 'surface' ? <Body>Mic A’s pattern is a half-cardioid boundary — not modelled; its level here follows distance only.</Body> : null}
         </>
       ),
@@ -163,8 +174,9 @@ export function PTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       layout: 'read',
       body: (
         <>
-          <Body>A common idea: a boundary mic inside for the attack, and a kick dynamic near the port for low-frequency weight. The point is to blend two different perspectives — two mics are not automatically better. Start with each mic useful on its own.</Body>
-          <Body>When the second channel goes in: hear the pair at the intended levels in MONO, compare both polarity states at a controlled, matched level — a louder state almost always sounds “better” at first — and check it with the rest of the kit. If it loses body or turns uneven, adjust position and level, or leave the second mic out.</Body>
+          {T.learn.map((t) => (
+            <Body key={t.slice(0, 24)}>{t}</Body>
+          ))}
           <Note>What you just saw: sound reaches two mics at different times. Summed, the delayed copy cancels where it is half a period late: comb-filter notches. Polarity inversion flips the sign — it moves the notches; it does not remove the delay. 0 dB on the graph is the two arrivals in step: at equal level that is 6 dB above either mic alone, so a comb both lifts and cuts.</Note>
         </>
       ),

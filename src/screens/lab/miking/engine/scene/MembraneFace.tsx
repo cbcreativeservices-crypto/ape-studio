@@ -42,6 +42,10 @@ export type MembraneFaceProps = {
   /** −1 … 1: where in its cycle the shape is drawn (0 = passing through flat). */
   swing: number;
   accessibilityLabel: string;
+  /** The strike mark's word (default "BEATER"; a snare's "STICK"). */
+  striker?: string;
+  /** The hoop: wood (a kick) or a chrome triple-flange hoop (default wood). */
+  hoop?: 'wood' | 'metal';
 };
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -103,7 +107,7 @@ function regionMarks(sh: HeadShape): { r: number; t: number; sign: number }[] {
   return out;
 }
 
-export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, accessibilityLabel }: MembraneFaceProps) {
+export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, accessibilityLabel, striker = 'BEATER', hoop = 'wood' }: MembraneFaceProps) {
   const R = diameterMm / 2;
   const hoopIn = R + 3;
   const hoopOut = hoopIn + 9;
@@ -145,7 +149,7 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
     return { claws, rodsP };
   }, [rods, hoopIn, hoopOut]);
   const marks = useMemo(() => regionMarks(shape), [shape]);
-  const labels: StaticLabel[] = [{ id: 'beater', text: 'BEATER', u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
+  const labels: StaticLabel[] = [{ id: 'beater', text: striker, u: -30, v: -strikeMm, align: 'right', tone: 'amber' }];
   // + / − in every region, drawn as strokes (crisp at any size; colour is
   // never the only signal, charter §8).
   const signs = useMemo(() => {
@@ -174,7 +178,7 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
           {/* shadow and hoop (wood: a cosmetic finish, not a sourced colour) */}
           <Circle cx={10} cy={14} r={hoopOut + 6} color="#000" opacity={0.55} />
           <Circle cx={0} cy={0} r={hoopOut}>
-            <RadialGradient c={vec(-R * 0.4, -R * 0.45)} r={hoopOut * 1.5} colors={['#d9a766', '#9c6631', '#4a2a12']} />
+            <RadialGradient c={vec(-R * 0.4, -R * 0.45)} r={hoopOut * 1.5} colors={hoop === 'metal' ? ['#f2f4f8', '#9aa0ab', '#3a3d45'] : ['#d9a766', '#9c6631', '#4a2a12']} />
           </Circle>
           <Circle cx={0} cy={0} r={hoopIn} color="#1a1008" />
           {/* the coated head, lit from the upper left */}

@@ -17,15 +17,18 @@
  * intact head makes every stand-mounted inside position impossible — the boom
  * cannot get out — with no special case.
  */
-import type { CompiledScene, InstrumentModel, MicBody, MicPose, Solid, Vec3, VariantId } from '../model/types.ts';
+import type { CompiledScene, InstrumentModel, Interior, MicBody, MicPose, Rim, Solid, Vec3, VariantId } from '../model/types.ts';
 import { aimVec, add, clamp, len, norm, scale, sub } from './vec.ts';
-import { sdf } from './sdf.ts';
+import { cylCoords, sdf } from './sdf.ts';
 
 /** Illustrative mount geometry (mm). */
 export const BOOM_RADIUS = 8;
 export const BOOM_OUTSIDE = 200;
 export const BOOM_BEHIND = 250;
 export const STAND_RADIUS = 10;
+/** How far a rim clamp's arm reaches from the hoop to the mic's tail (mm).
+ *  ILLUSTRATIVE: no source gives a clamp's reach. */
+export const CLIP_REACH = 120;
 
 export function compileScene(model: InstrumentModel, variant: VariantId): CompiledScene {
   const solids: Solid[] = [];
@@ -44,6 +47,8 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     solids,
     port: model.ports[variant] ?? null,
     interior: model.interior,
+    interiors: model.interiors ?? [],
+    rims: (model.rims ?? []).filter((r) => !r.variants || r.variants.includes(variant)),
     yFloor: model.yFloor.mm,
     boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: BOOM_BEHIND },
     standRadius: STAND_RADIUS,
@@ -51,16 +56,53 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
 }
 
 /** Inside the instrument's interior (between the heads, inside the shell). */
-export function isInside(scene: CompiledScene, p: Vec3): boolean {
+function inInterior(it: Interior, p: Vec3): boolean {
   'worklet';
-  const it = scene.interior;
-  if (p.x <= it.x0 || p.x >= it.x1) return false;
-  const dy = p.y - it.c.y;
-  const dz = p.z - it.c.z;
-  return Math.sqrt(dy * dy + dz * dz) < it.rIn;
+  const q = cylCoords(it.c, it.axis, p);
+  return q.along > it.x0 && q.along < it.x1 && q.radial < it.rIn;
 }
 
-export type Seg = { a: Vec3; b: Vec3; r: number; piece: 'body' | 'boom' | 'stand' };
+export function isInside(scene: CompiledScene, p: Vec3): boolean {
+  'worklet';
+  if (inInterior(scene.interior, p)) return true;
+  const more = scene.interiors ?? [];
+  for (let i = 0; i < more.length; i++) if (inInterior(more[i], p)) return true;
+  return false;
+}
+
+/** The nearest point on a rim circle to p (the clamp's grip), and its distance. */
+export function nearestRimPoint(rims: Rim[], p: Vec3): { q: Vec3; d: number; rim: Rim } | null {
+  'worklet';
+  let best: { q: Vec3; d: number; rim: Rim } | null = null;
+  for (let i = 0; i < rims.length; i++) {
+    const rim = rims[i];
+    const a = rim.axis;
+    const wx = p.x - rim.c.x;
+    const wy = p.y - rim.c.y;
+    const wz = p.z - rim.c.z;
+    const t = wx * a.x + wy * a.y + wz * a.z;
+    // The point's direction in the rim's plane (any, if it is on the axis).
+    let rx = wx - a.x * t;
+    let ry = wy - a.y * t;
+    let rz = wz - a.z * t;
+    let rl = Math.sqrt(rx * rx + ry * ry + rz * rz);
+    if (rl < 1e-9) {
+      rx = Math.abs(a.x) < 0.9 ? 1 : 0;
+      ry = 0;
+      rz = Math.abs(a.x) < 0.9 ? 0 : 1;
+      rl = 1;
+    }
+    const q = { x: rim.c.x + (rx / rl) * rim.r, y: rim.c.y + (ry / rl) * rim.r, z: rim.c.z + (rz / rl) * rim.r };
+    const dx = p.x - q.x;
+    const dy = p.y - q.y;
+    const dz = p.z - q.z;
+    const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    if (!best || d < best.d) best = { q, d, rim };
+  }
+  return best;
+}
+
+export type Seg = { a: Vec3; b: Vec3; r: number; piece: 'body' | 'boom' | 'stand' | 'arm' };
 
 /** The capsules that make up a mic on its mount at `pose`. */
 export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Seg[] {
@@ -82,6 +124,13 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
   const b = sub(p, scale(aim, Math.max(r, L - r)));
   const tail = sub(p, scale(aim, L));
   const out: Seg[] = [{ a, b, r, piece: 'body' }];
+  if (body.mount === 'clip') {
+    // A rim clamp: the body, and an arm from its tail to the nearest hoop
+    // point (no rims on the scene: the body alone).
+    const g = nearestRimPoint(scene.rims ?? [], tail);
+    if (g) out.push({ a: tail, b: g.q, r: 6, piece: 'arm' });
+    return out;
+  }
   let q: Vec3;
   if (scene.port && isInside(scene, tail)) {
     const toPort = sub(scene.port.c, tail);
@@ -97,14 +146,23 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
   return out;
 }
 
-export type Blocked = { partId: string; label: string; piece: 'body' | 'boom' | 'stand' } | null;
+export type Blocked = { partId: string; label: string; piece: 'body' | 'boom' | 'stand' | 'arm' } | null;
 
-/** The first solid the assembly enters, or null when it is clear. */
+/** The first solid the assembly enters, or null when it is clear. A clamp's
+ *  arm is not tested against the hoop it grips; it may not be longer than
+ *  the clamp's reach (CLIP_REACH). */
 export function checkAssembly(scene: CompiledScene, pose: MicPose, body: MicBody): Blocked {
   'worklet';
   const segs = assembly(scene, pose, body);
   for (let si = 0; si < segs.length; si++) {
     const sg = segs[si];
+    if (sg.piece === 'arm') {
+      const ax = sg.b.x - sg.a.x;
+      const ay = sg.b.y - sg.a.y;
+      const az = sg.b.z - sg.a.z;
+      if (Math.sqrt(ax * ax + ay * ay + az * az) > CLIP_REACH) return { partId: 'clamp', label: 'the clamp’s reach', piece: 'arm' };
+      continue;
+    }
     const dx = sg.b.x - sg.a.x;
     const dy = sg.b.y - sg.a.y;
     const dz = sg.b.z - sg.a.z;

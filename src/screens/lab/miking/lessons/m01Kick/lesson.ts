@@ -17,6 +17,7 @@
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { KICK_MODEL } from './geometry.ts';
 import { KICK_DIMS, KICK_ZONES, L } from './model.ts';
+import { KICK_COPY } from './copy.ts';
 
 const pages: Record<PageId, PageContent> = {
   instrument: {
@@ -685,8 +686,9 @@ export const M01_LESSON: Lesson = {
       { id: 'throne', label: 'drum throne (the player’s seat)', short: 'THRONE', note: 'The space between the throne, the pedals and the drum is the player’s. Nothing of yours goes through it, and the walking path to the throne stays clear.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'hihat', label: 'hi-hat (left foot)', short: 'HI-HAT', note: 'Played with the left foot and the sticks, to the player’s left. A loud neighbour: a mic outside the drum hears more of the kit around it than one inside.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
       { id: 'snare', label: 'snare drum', short: 'SNARE', note: 'Between the player’s knees, just above the pedal side — a loud neighbour close to the batter side of the kick.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
-      { id: 'tom', label: 'rack tom (mounted above the kick)', short: 'RACK TOM', note: 'Often mounted on or above the kick. Its mount takes room over the shell: a boom’s path has to go around it.', prov: { kind: 'illustrative', reason: 'a typical layout; no source gives positions' }, tag: 'BOOM PATH', scene: 'kit' },
+      { id: 'tom', label: 'two rack toms (mounted above the kick)', short: 'RACK TOMS', note: 'A 10 in and a 12 in tom on a holder that stands on the kick’s shell. The holder and the toms take room over the drum: a boom’s path has to go around them.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit (kit/GEOMETRY_PROPOSAL.md §2); no source gives positions' }, tag: 'BOOM PATH', scene: 'kit', planIds: ['tom2', 'tom1'] },
       { id: 'floor', label: 'floor tom', short: 'FLOOR TOM', note: 'On the player’s right. Another neighbour a kick mic can hear.', prov: { kind: 'illustrative', reason: 'a typical right-handed layout; no source gives positions' }, tag: 'SPILL', scene: 'kit' },
+      { id: 'cymbals', label: 'crash and ride cymbals (above the kit)', short: 'CYMBALS', note: 'Two crashes and a ride on boom stands, well above the drums. Loud and bright; their stands take floor space a kick mic’s stand must share.', prov: { kind: 'illustrative', reason: 'the shared 5-piece kit (kit/GEOMETRY_PROPOSAL.md §2); no source gives positions' }, tag: 'SPILL', scene: 'kit', planIds: ['crash2', 'crash1', 'ride'] },
       { id: 'fill', label: 'the drummer’s fill (monitor)', short: 'DRUM FILL', note: 'A floor monitor beside the throne so the drummer can hear the band. It sits on the drummer’s side of the kick — you will see later why no pattern rejects it there.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'downstage', label: 'a downstage wedge (another player’s monitor)', short: 'WEDGE', note: 'On the audience side of the kick, facing back toward the stage. A loud source an outside kick mic can face away from.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'audience', label: 'audience and the PA', short: 'AUDIENCE · PA', note: 'The front head faces the audience. Live, the PA adds to the kick the audience already hears from the drum itself.', prov: { kind: 'illustrative', reason: 'direction only' }, tag: 'FRONT SIDE', scene: 'stage' },
@@ -750,4 +752,6 @@ export const M01_LESSON: Lesson = {
   },
   accuracyDetail:
     'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a 22 × 18 in kick, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the drummer stopped.',
+  // The pages' kick words (moved verbatim from the shared pages, 2026-10-04).
+  copy: KICK_COPY,
 };

@@ -22,9 +22,11 @@ import type { SettingItem } from '../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../engine/kit';
 import { KitPlan, type KitPlanScene } from '../lessons/shared/KitPlan';
+import { copyOf } from '../engine/model/copy.ts';
 import type { PageProps } from './pageTypes';
 
 export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProps) {
+  const C = copyOf(lesson);
   const items = lesson.setting.items;
   const kitItems = items.filter((i) => i.scene === 'all' || i.scene === 'kit');
   const [kitSel, setKitSel] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
 
   const render = (scene: KitPlanScene, sel: string | null, onTap: (id: string) => void, label: string) => (w: number, h: number) =>
     plan ? (
-      <KitPlan w={w} h={h} scene={scene} variant={variant} Drum={art.Instrument} drumBox={plan.drum} pedalBox={plan.pedal} wedges={wedges} shortOf={shortOf} highlight={sel} onTap={onTap} accessibilityLabel={label} />
+      <KitPlan w={w} h={h} scene={scene} variant={variant} items={items} own={plan.own} OwnArt={plan.useArt ? art.Instrument : undefined} offset={plan.offset} wedges={wedges} highlight={sel} onTap={onTap} accessibilityLabel={label} />
     ) : (
       <Text style={styles.missing}>No plan for this lesson.</Text>
     );
@@ -111,7 +113,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: render('kit', kitSel, pickKit, `The drum kit from above: the kick in the middle, its pedal and the throne behind it, the hi-hat and snare to the player's left, the floor tom to the right, a rack tom over the kick. ${kitSelItem ? `Highlighted: ${kitSelItem.label}.` : ''} A typical layout.`),
+        render: render('kit', kitSel, pickKit, `${C.setting.kitA11y} ${kitSelItem ? `Highlighted: ${kitSelItem.label}.` : ''} A typical layout.`),
         badge: 'The kit from above · a typical right-handed layout · grey hatch = the player’s space',
         bezel: bezel(kitSelItem, { k: 'LOOKED AT', v: `${kitSeen.size} / ${kitItems.length}`, flex: 1 }),
         params: kitParams,
@@ -119,9 +121,9 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       },
       well: (
         <>
-          <Landing looking="Plan · the kit from above · the player sits at the left" prompt="Tap anything around the kick — or step through ITEM — to see what it means for a kick mic. There is nothing to answer yet." />
-          {card(kitSelItem, 'The kick sits in the middle of the kit, on the floor, with the player behind its batter head. Everything around it is either the player’s space or a loud neighbour.')}
-          <Note>Left-handed players set the kit up mirrored — the hi-hat on the right, the floor tom on the left.</Note>
+          <Landing looking="Plan · the kit from above · the player sits at the left" prompt={C.setting.kitLanding} />
+          {card(kitSelItem, C.setting.kitIdle)}
+          <Note>{C.setting.leftHanded}</Note>
         </>
       ),
     },
@@ -131,7 +133,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       kind: 'LEARN',
       layout: 'rack',
       rack: {
-        render: render(where, wideSel, pickWide, where === 'stage' ? `The kit on a stage, from above: the drummer's fill monitor beside the throne, a downstage wedge on the audience side of the kick, and the audience and PA to the right. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}` : `The kit in a studio room, from above: no monitors on the floor; the room's walls around it. ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
+        render: render(where, wideSel, pickWide, `${where === 'stage' ? C.setting.stageA11y : C.setting.studioA11y} ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
         badge: where === 'stage' ? 'From above · two monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
         bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
         params: wideParams,
@@ -141,7 +143,7 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
         <>
           <Landing looking={where === 'stage' ? 'Plan · the kit on a stage' : 'Plan · the kit in a studio'} prompt="Switch STAGE / STUDIO, and tap what is new around the kit." />
           <Body>{where === 'stage' ? lesson.setting.stage : lesson.setting.studio}</Body>
-          {card(wideSelItem, where === 'stage' ? 'Two floor monitors: the drummer’s own fill beside the throne, and another player’s wedge on the audience side. The front head faces the audience and the PA.' : 'No monitors on the floor. The room itself is part of the picture now.')}
+          {card(wideSelItem, where === 'stage' ? C.setting.stageIdle : C.setting.studioIdle)}
         </>
       ),
     },
@@ -153,8 +155,11 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       body: (
         <>
           <Card>
-            <Point title="ASK THE PLAYER FIRST">Is the front head intact or ported, and what should the kick do — a supportive pulse, a defined attack, a resonant note, or a mix? Hear the drum without reinforcement first. If its tuning or damping needs work, agree it with the player (the Drum Tuning Lab covers that): mic placement cannot fix a drum that does not make the wanted sound acoustically.</Point>
-            <Point title="WORK WITH THE DRUM AS IT IS">The drum is the player’s. Mic the drum they bring — no need to cut a port or change the drum to match a diagram.</Point>
+            {C.setting.before.map((b) => (
+              <Point key={b.title} title={b.title}>
+                {b.text}
+              </Point>
+            ))}
           </Card>
           <Note tone="warn">Protect your hearing during repeated hits and soundcheck. A widely used guideline: no more than 85 dBA averaged over an 8-hour day, and halve the time for every 3 dBA above that. That is a limit for PEOPLE, measured where a person listens. It has nothing to do with a microphone’s maximum SPL rating, and a mic inside a drum is not a hearing meter. Keep levels and repetitions down, and use hearing protection.</Note>
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'setting')} answers={answers} onAnswered={onAnswered} />

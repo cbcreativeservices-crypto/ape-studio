@@ -36,11 +36,13 @@ import { fitValue } from '../../../../../theme/legibility';
 import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
 import { useScrollLock } from '../../../scrollLock';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../../modules/ape-gesture-exclusion';
-import { BoundaryMic, KickDynamicMic, SdcMic } from '../../../../../features/lab/micDrawings';
+import { MikingMicArt } from '../../../../../features/lab/micDrawings';
 import type { DocumentedZone, MicPattern, MicPose, MicSlot, Shape3, VariantId, Vec3, ViewBox, ViewId } from '../model/types.ts';
+import { viewsOf } from '../model/types.ts';
+import { copyOf } from '../model/copy.ts';
 import { aimVec, angleBetween, clamp, sub } from '../geometry/vec.ts';
 import { fitXform, project, unprojectDelta, zoomAbout, type ViewXform } from '../geometry/frame.ts';
-import { assembly, constrainMove, pinToSurface, type Blocked } from '../geometry/collision.ts';
+import { assembly, CLIP_REACH, constrainMove, pinToSurface, type Blocked } from '../geometry/collision.ts';
 import { deriveReadouts } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
 import { gain, isModelled } from '../physics/polar.ts';
@@ -76,7 +78,7 @@ export type SceneOptions = {
   pathsFrom?: Vec3 | null;
   /** Page 4: a floor monitor — drawn on the floor at `at`, facing `faces`;
    *  the dashed sight line runs from the mic to `src` (its baffle). */
-  wedge?: { at: Vec3; faces: Vec3; src: Vec3 } | null;
+  wedge?: { at: Vec3; faces: Vec3; src: Vec3; glyph?: 'wedge' | 'none' } | null;
   highlight?: string | null;
   onTapPart?: (partId: string) => void;
 };
@@ -141,9 +143,51 @@ function shapeOutline(shape: Shape3, view: ViewId): ReturnType<typeof Skia.Path.
       p.close();
       return p;
     }
+    case 'sector': {
+      if (view === 'side') {
+        // The slice's x-extent (arc samples and the centre), between y0 and y1.
+        const xs: number[] = [];
+        for (let i = 0; i <= 24; i++) {
+          const a = shape.a0 + ((shape.a1 - shape.a0) * i) / 24;
+          xs.push(shape.c.x + shape.r1 * Math.cos(a), shape.c.x + shape.r0 * Math.cos(a));
+        }
+        const x0 = Math.min(...xs);
+        const x1 = Math.max(...xs);
+        p.addRect(Skia.XYWHRect(x0, shape.y0, x1 - x0, shape.y1 - shape.y0));
+        return p;
+      }
+      const n = 24;
+      for (let i = 0; i <= n; i++) {
+        const a = shape.a0 + ((shape.a1 - shape.a0) * i) / n;
+        const x = shape.c.x + shape.r1 * Math.cos(a);
+        const z = shape.c.z + shape.r1 * Math.sin(a);
+        if (i === 0) p.moveTo(x, z);
+        else p.lineTo(x, z);
+      }
+      for (let i = n; i >= 0; i--) {
+        const a = shape.a0 + ((shape.a1 - shape.a0) * i) / n;
+        p.lineTo(shape.c.x + shape.r0 * Math.cos(a), shape.c.z + shape.r0 * Math.sin(a));
+      }
+      p.close();
+      return p;
+    }
     default:
       return null;
   }
+}
+
+/** The view-rect a cylinder (a tube or slab, any axis) projects to (mm). */
+function cylinderRect(sol: Extract<Shape3, { kind: 'tube' | 'slab' }>, view: ViewId): { u0: number; u1: number; v0: number; v1: number } {
+  const r = sol.kind === 'slab' ? sol.r : sol.rOut;
+  if (!sol.axis) return { u0: sol.x0, u1: sol.x1, v0: (view === 'side' ? sol.c.y : sol.c.z) - r, v1: (view === 'side' ? sol.c.y : sol.c.z) + r };
+  const a = sol.axis;
+  const ends = [sol.x0, sol.x1].map((t) => ({ x: sol.c.x + a.x * t, y: sol.c.y + a.y * t, z: sol.c.z + a.z * t }));
+  const av = view === 'side' ? a.y : a.z;
+  const eu = r * Math.sqrt(Math.max(0, 1 - a.x * a.x));
+  const ev = r * Math.sqrt(Math.max(0, 1 - av * av));
+  const us = ends.map((e) => e.x);
+  const vs = ends.map((e) => (view === 'side' ? e.y : e.z));
+  return { u0: Math.min(...us) - eu, u1: Math.max(...us) + eu, v0: Math.min(...vs) - ev, v1: Math.max(...vs) + ev };
 }
 
 function hatch(box: ViewBox): ReturnType<typeof Skia.Path.Make> {
@@ -158,6 +202,9 @@ function hatch(box: ViewBox): ReturnType<typeof Skia.Path.Make> {
 
 /** A zone's projection into a view: the distance band × the radial band. */
 function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: number; v0: number; v1: number } {
+  // An upright or tilted drum's zone brings its own projection (geometry.ts).
+  const own = z.drawn?.[view];
+  if (own) return own;
   const m = rig.lesson.model;
   const s = m.surfaces.find((q) => q.id === z.refSurface)!;
   const a = s.point.x + s.normal.x * z.distance.min;
@@ -214,13 +261,7 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
   return (
     <Group>
       <Group transform={transform}>
-        {t.art === 'boundary' ? (
-          <BoundaryMic len={len} cross={cross} />
-        ) : t.art === 'sdc' ? (
-          <SdcMic r={r} len={len} />
-        ) : (
-          <KickDynamicMic r={r} len={len} />
-        )}
+        <MikingMicArt art={t.art} r={r} len={len} cross={cross} />
         {/* Collision: a red outline + the scene's ✕ label (colour never alone). */}
         <Path path={outlineOf(len, cross)} style="stroke" strokeWidth={5} color={RED} opacity={redOpacity} />
       </Group>
@@ -360,6 +401,56 @@ function MountPath({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: S
         <Circle cx={jx} cy={jv} r={4.5} color="#d4d8e0" />
       </Group>
     </>
+  );
+}
+
+/**
+ * A RIM CLAMP's arm, from the mic's tail to its grip on the hoop — the same
+ * capsule `assembly` uses (the clamp's look is ILLUSTRATIVE: a jaw on the
+ * hoop, a short swivel arm). Red when the hoop is out of the clamp's reach.
+ */
+function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId }) {
+  const scene = rig.scene;
+  const body = rig.body[slot];
+  const geo = useDerivedValue(() => {
+    const segs = assembly(scene, pose.value, body);
+    for (let i = 0; i < segs.length; i++) {
+      if (segs[i].piece !== 'arm') continue;
+      const a = segs[i].a;
+      const b = segs[i].b;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dz = b.z - a.z;
+      return { ax: a.x, av: vOf(view, a), bx: b.x, bv: vOf(view, b), on: 1, far: Math.sqrt(dx * dx + dy * dy + dz * dz) > CLIP_REACH ? 1 : 0 };
+    }
+    return { ax: 0, av: 0, bx: 0, bv: 0, on: 0, far: 0 };
+  });
+  const path = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    if (!geo.value.on) return p;
+    p.moveTo(geo.value.ax, geo.value.av);
+    p.lineTo(geo.value.bx, geo.value.bv);
+    return p;
+  });
+  const jaw = useDerivedValue(() => [{ translateX: geo.value.bx }, { translateY: geo.value.bv }]);
+  const on = useDerivedValue(() => geo.value.on);
+  const red = useDerivedValue(() => geo.value.far * 0.9);
+  if (body.mount !== 'clip') return null;
+  return (
+    <Group opacity={on}>
+      <Path path={path} style="stroke" strokeWidth={11} strokeCap="round" color="#0b0c0f" />
+      <Path path={path} style="stroke" strokeWidth={7} strokeCap="round" color="#4d515b" />
+      <Group transform={[{ translateX: -1 }, { translateY: -1.5 }]}>
+        <Path path={path} style="stroke" strokeWidth={2} strokeCap="round" color="#d4d8e0" opacity={0.5} />
+      </Group>
+      <Path path={path} style="stroke" strokeWidth={9} strokeCap="round" color="#ff6b5e" opacity={red} />
+      {/* The jaw gripping the hoop. */}
+      <Group transform={jaw}>
+        <Circle cx={0} cy={0} r={9} color="#16171b" />
+        <Circle cx={0} cy={0} r={9} style="stroke" strokeWidth={2} color="#8a8f99" />
+        <Circle cx={0} cy={0} r={3} color="#d4d8e0" />
+      </Group>
+    </Group>
   );
 }
 
@@ -583,8 +674,9 @@ export function PlacementScene(props: PlacementSceneProps) {
 
 function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
   const model = rig.lesson.model;
-  const box = boxOverride ?? model.views[view]!;
+  const box = boxOverride ?? viewsOf(model, rig.variant)[view]!;
   const textScale = useStageTextScale();
+  const viewTag = copyOf(rig.lesson).viewTag[view];
   // The live strip owns a band at the top: the drawing is fitted BELOW it, so
   // the strip never sits on the heads or their labels (layout pass 2026-10-04).
   const liveCount = !mini && interactive && showLive ? rig.mics.filter((m) => slots.includes(m.slot) && m.on).length : 0;
@@ -817,8 +909,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     const p = Skia.Path.Make();
     const sol = part?.solid;
     if (sol && (sol.kind === 'slab' || sol.kind === 'tube')) {
-      const r = sol.kind === 'slab' ? sol.r : sol.rOut;
-      p.addRRect(Skia.RRectXY(Skia.XYWHRect(sol.x0 - 14, -r - 14, sol.x1 - sol.x0 + 28, 2 * r + 28), 10, 10));
+      const q = cylinderRect(sol, view);
+      p.addRRect(Skia.RRectXY(Skia.XYWHRect(q.u0 - 14, q.v0 - 14, q.u1 - q.u0 + 28, q.v1 - q.v0 + 28), 10, 10));
       return p;
     }
     if (sol) {
@@ -858,11 +950,14 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
               <Line p1={vec(rig.mics[0]?.pose.p.x ?? 0, vOf(view, rig.mics[0]?.pose.p ?? wedge.src))} p2={vec(wedge.src.x, vOf(view, wedge.src))} color={AMBER} strokeWidth={5} opacity={0.8}>
                 <DashPathEffect intervals={[30, 20]} />
               </Line>
-              <WedgeGlyph at={wedge.at} view={view} faces={wedge.faces} />
+              {wedge.glyph !== 'none' ? <WedgeGlyph at={wedge.at} view={view} faces={wedge.faces} /> : <Circle cx={wedge.src.x} cy={vOf(view, wedge.src)} r={16} style="stroke" strokeWidth={5} color={AMBER} />}
             </>
           ) : null}
           {micsShown.map((m) => (
             <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
+          ))}
+          {micsShown.map((m) => (
+            <ClampArm key={`clamp:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
           ))}
           {showPolar
             ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} />)
@@ -889,7 +984,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       ) : null}
       {!mini ? (
         <Text pointerEvents="none" style={[styles.viewTag, { fontSize: Math.max(9, 9 * textScale) }]}>
-          {view === 'side' ? 'SIDE · CUTAWAY' : 'TOP · CUTAWAY'}
+          {viewTag}
         </Text>
       ) : null}
     </View>
