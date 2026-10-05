@@ -82,11 +82,13 @@ const NAME_HITS = new Map<string, { id: string; term: string; plainNull: boolean
 
 /** True when this reader already opened (paid for) the term with this NAME
  *  this session — a re-open is free (D50), so Start Here does not ask first.
- *  Also true for a sent-but-unanswered open, which is never re-sent. */
+ *  A sent-but-unanswered open is NOT counted as paid (2026-10-04): it is read
+ *  again now, and a call that never reached the server is charged when it is
+ *  first answered — so the learner is asked first (D55). */
 export function termPaidThisSession(termName: string): boolean {
   const known = NAME_HITS.get(termName);
   if (!known) return false;
-  return sessionDefinition(known.id) != null || sessionChargeUnanswered(known.id);
+  return sessionDefinition(known.id) != null;
 }
 
 export function GlossaryTermPopup({
@@ -300,9 +302,9 @@ export function GlossaryTermPopup({
         // note told a paying member their full entry was "the opening" that
         // "isn't fetched again… so you're never charged twice".
         if (gate === 'open') return;
-        // Its open was sent and never answered (owner 2026-10-03 #2): it is not
-        // read again this session, so "try again" would be a promise that
-        // either fails or charges twice.
+        // Its open was sent and never answered (owner 2026-10-03 #2). Since
+        // the server's 24 h ledger went live a re-open IS read again and a
+        // counted term costs nothing the second time — the note says so.
         else if (full.fault === 'error' && sessionChargeUnanswered(hit.id)) setPartial('unanswered');
         else if (full.fault === 'denied' || full.fault === 'error') setPartial('other');
         return;
@@ -378,7 +380,7 @@ export function GlossaryTermPopup({
                   : partial === 'checking'
                   ? 'This is the opening of the entry. Your account is still being checked — try this term again in a moment.'
                   : partial === 'unanswered'
-                  ? 'This is the opening of the entry — the full definition didn’t arrive when this term was opened. So you’re never charged twice, it isn’t fetched again until you next open the app.'
+                  ? 'This is the opening of the entry — the full definition didn’t arrive. Close the term and open it again to retry: a term you opened in the last 24 hours is never charged twice.'
                   : 'This is the opening of the entry — the full definition couldn’t be loaded just now. Open the Glossary to try again.'}
               </Text>
             ) : null}

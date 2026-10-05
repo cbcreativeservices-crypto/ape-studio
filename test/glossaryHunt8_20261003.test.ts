@@ -68,7 +68,7 @@ describe('GlossaryScreen: a failed metered read says the definition is only the 
 
   it("the 'unanswered' words are the term popup's own (one voice for one rule)", () => {
     const words =
-      'This is the opening of the entry — the full definition didn’t arrive when this term was opened. So you’re never charged twice, it isn’t fetched again until you next open the app.';
+      'This is the opening of the entry — the full definition didn’t arrive. Close the term and open it again to retry: a term you opened in the last 24 hours is never charged twice.';
     assert.ok(POPUP.includes(words));
     const note = SRC.slice(SRC.indexOf('function ShortReadNote('), SRC.indexOf('function ShortReadNote(') + 900);
     assert.ok(note.includes(words));

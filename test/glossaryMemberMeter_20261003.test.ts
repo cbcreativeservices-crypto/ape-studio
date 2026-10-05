@@ -18,6 +18,10 @@
  *    re-open is one that is not sent. readDefinitionOnce now answers a term
  *    whose read was sent and never answered with the same fault, unsent —
  *    except for a confirmed member, whom the server never meters.
+ *    SUPERSEDED 2026-10-04: the server's 24 h per-term ledger is LIVE
+ *    (glossary_term_reads, 2026100301; Comp A, CHECK all true), so the
+ *    client guard is removed — a re-open is SENT, and a counted term is
+ *    answered without spending. The #2 tests below now prove the re-send.
  *
  * Receipts: these tests FAILED on HEAD (fb34b850) — the gateway re-sent the
  * read, GlossaryScreen capped on `resolved && !isMember` and locked on any
@@ -77,20 +81,21 @@ const between = (src: string, a: string, b: string) => {
   return src.slice(i, j);
 };
 
-describe('#2 · a re-open after a timed-out read is not sent again (no second charge)', () => {
-  it('free reader: timeout, then re-open (screen AND popup) → still exactly one RPC', async () => {
+describe('#2 · a re-open after a timed-out read is SENT again (the server ledger makes it free)', () => {
+  it('free reader: timeout, then re-open → read again and opened; then cached (popup sends nothing)', async () => {
     signIn('mm-free-1');
     rpc().length = 0;
     g.__GMM_FAULT__ = 'gateway timeout';
     const first = await gw.readDefinitionOnce('t1', false);
     g.__GMM_FAULT__ = null;
     assert.equal(first.state, 'fault');
+    assert.equal(gw.sessionChargeUnanswered('t1'), true);
     const again = await gw.readDefinitionOnce('t1', false); // Glossary re-open, next visit
     const popup = await gw.readDefinitionOnce('t1'); //         a lab / calculator term popup
-    assert.deepEqual(rpc(), ['t1'], 'the re-open spent a second lookup on the same term');
-    assert.equal(again.state, 'fault');
-    assert.equal(popup.state, 'fault');
-    assert.equal(gw.sessionChargeUnanswered('t1'), true);
+    assert.deepEqual(rpc(), ['t1', 't1'], 'the re-open is asked again; the popup then reads the session copy');
+    assert.equal(again.state, 'ok');
+    assert.equal(popup.state, 'ok');
+    assert.equal(gw.sessionChargeUnanswered('t1'), false);
   });
 
   it('a confirmed member still re-reads (the server never meters them)', async () => {
@@ -128,10 +133,12 @@ describe('#2 · a re-open after a timed-out read is not sent again (no second ch
     assert.deepEqual(rpc(), ['t4', 't4']);
   });
 
-  it('the term popup does not promise "try again" for such a term', () => {
+  it('the term popup words such a term: retry, and never charged twice within 24 hours', () => {
     const p = read('src/features/glossary/GlossaryTermPopup.tsx');
     assert.match(p, /else if \(full\.fault === 'error' && sessionChargeUnanswered\(hit\.id\)\) setPartial\('unanswered'\);/);
-    assert.match(p, /partial === 'unanswered'\s*\?\s*'[^']*never charged twice/);
+    assert.match(p, /partial === 'unanswered'\s*\?\s*'[^']*open it again to retry[^']*never charged twice/);
+    // Start Here asks first (D55) for such a term: it may still be charged.
+    assert.match(p, /export function termPaidThisSession[\s\S]{0,160}?return sessionDefinition\(known\.id\) != null;\n\}/);
   });
 });
 

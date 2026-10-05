@@ -278,14 +278,18 @@ const READ_PENDING = new Map<string, Promise<DefinitionResult>>();
  * been COUNTED by the server: it counts the call, not the answer. SHARE must
  * not be the thing that spends a second lookup on a term the reader already
  * paid to open — and neither may a RE-OPEN (owner ruling 2026-10-03 #2: a
- * re-open after a timed-out read is free for the session, like Share). The
- * server has no per-term ledger (2026092502_glossary_meter_per_device.sql:
- * get_glossary_definition charges glossary_consume on every call), so the
- * only free re-open is one that does not call: `readDefinitionOnce` answers
- * such a term with the same 'error' fault, unsent, and the caller shows what
- * it already shows after a timeout (the browse teaser + the free study-view
- * detail). A confirmed member (`member === true`) still re-reads: the server
- * never meters them.
+ * re-open after a timed-out read is free for the session, like Share).
+ *
+ * RE-OPEN IS NOW SENT (2026-10-04): the server keeps a per-term 24 h ledger
+ * (glossary_term_reads, migration 2026100301, LIVE since 2026-10-03 — Comp A;
+ * read back from the live get_glossary_definition and its Start Here twin):
+ * a term charged in the last 24 hours is answered without spending. So a
+ * call that WAS counted re-opens free, and one that never reached the server
+ * is charged once, when it is first answered — the client-side "never ask
+ * again this session" guard that stood in for the ledger is removed, and
+ * the reader gets the definition instead of the teaser. The record below is
+ * kept for the callers that word a still-unanswered term ('unanswered') and
+ * for Share, which still never re-reads one.
  * Refusals ('limit-reached', 'sign-in-required', 'denied', 'not-deployed')
  * are not charges and are not recorded. Cleared by a good read of the term
  * and by any identity change, like READ_OK.
@@ -345,12 +349,8 @@ export function readDefinitionOnce(id: string, member?: boolean, via: MeterVia =
   if (row) return Promise.resolve({ state: 'ok', row });
   const pending = READ_PENDING.get(id);
   if (pending) return pending;
-  // Sent once, maybe charged, never answered: not sent again this session
-  // unless the reader is a CONFIRMED member (see READ_UNANSWERED). `member`
-  // undefined (the term popup) is treated as "not confirmed".
-  if (member !== true && sessionChargeUnanswered(id)) {
-    return Promise.resolve({ state: 'fault', fault: 'error' });
-  }
+  // A term sent before and never answered IS asked again: the server's 24 h
+  // ledger answers a counted one without spending (see READ_UNANSWERED).
   const gen = readsGen;
   const p = fetchDefinitionViaGateway(id, via).then((r) => {
     if (READ_PENDING.get(id) === p) READ_PENDING.delete(id);
