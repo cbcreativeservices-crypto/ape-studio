@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 01:31 · ccode · 2548fd26
+changed: fix(miking): M08 placement mic clear of the top-view inset at phone width
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 00:56 · ccode · 32fdb87e
 changed: docs(miking): Lab 2 idiophone research (24 lessons) + BATCH2 summary
 affects other side: nothing (branch final-lab, miking lab work).
