@@ -29,6 +29,9 @@ import { I05C_LESSON } from '../../i05cWoodblock/lesson.ts';
 import { GU_ART } from '../../i05dGuiro/art';
 import { GuiroScrape, GuiroLength } from '../../i05dGuiro/soundArt';
 import { I05D_LESSON } from '../../i05dGuiro/lesson.ts';
+import { CAJ_ART } from '../../i02Cajon/art';
+import { CajonStroke, CajonPlace } from '../../i02Cajon/soundArt';
+import { I02_LESSON } from '../../i02Cajon/lesson.ts';
 import { SSound } from './pages/SSound';
 import { SInstrument } from './pages/SInstrument';
 import { stationPlanFor } from './StationPlan';
@@ -49,4 +52,5 @@ export const SMALL_PERC_ART: Record<string, LessonArt> = {
   I05b: withFamily(I05B_LESSON, { ...CLV_ART, StrikeSequence: ClavesStrike, CoupledHeads: ClavesGrip }),
   I05c: withFamily(I05C_LESSON, { ...WB_ART, StrikeSequence: WoodblockStrike, CoupledHeads: WoodblockSupport }),
   I05d: withFamily(I05D_LESSON, { ...GU_ART, StrikeSequence: GuiroScrape, CoupledHeads: GuiroLength }),
+  I02: withFamily(I02_LESSON, { ...CAJ_ART, StrikeSequence: CajonStroke, CoupledHeads: CajonPlace }),
 };

@@ -50,6 +50,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C07', labId: 'strings', title: 'Acoustic Bass Guitar', subtitle: 'A hollow-body bass: one mic, the pickup, and the lowest notes', status: 'ready' },
   { id: 'C08', labId: 'strings', title: 'Electric Bass', subtitle: 'Fretted and fretless: one woofer, room to breathe, mic and DI', status: 'ready' },
   // Lab 2 (percussion), hand percussion — each lesson on its own line (lessons are built in parallel).
+  { id: 'I02', labId: 'percussion', title: 'Cajón', subtitle: 'A box you sit on: find the port first — front, back, or both — outside the hands, knees and the way off', status: 'ready' },
   { id: 'I03a', labId: 'percussion', title: 'Handheld Shaker', subtitle: 'A moving source: one mic outside the arc — toward the mic or side to side', status: 'ready' },
   { id: 'I03b', labId: 'percussion', title: 'Egg Shaker', subtitle: 'No handle: one egg, two close, or hands apart — the grip is part of it', status: 'ready' },
   { id: 'I03c', labId: 'percussion', title: 'Maracas', subtitle: 'A pair, two arms: one mic centred on the heads, a spot each, or a singer’s pair', status: 'ready' },

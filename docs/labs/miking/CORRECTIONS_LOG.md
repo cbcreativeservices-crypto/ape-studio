@@ -459,3 +459,16 @@ station plan); each lesson in `lessons/i0x…/`.
 | GU-02 | L11 | 30–60 cm "from the center of the actual scraped area" | Kept as the band, measured from the middle of the scraped area; two viewpoints (more ridges, more body) | The lesson's own audition range, not a published standard. | LESSON-GUIRO | APPLIED |
 | GU-03 | (geometry) | — | Length 381.0 mm (a museum example, 15 in); Ø 90 → 60, ridges over the middle 60 % at 3 mm, holes Ø 22, scraper 180, overshoot 60 — drawing defaults | Only the length is measured. | MET-GUIRO | APPLIED · OWNER: diameter, ridge layout |
 | GU-04 | L5, L73 | "Students should…", "The student covers…" | "you" / no institutional words in the app | House wording rule. | — | APPLIED |
+
+### I02 Cajón (`source_text/Cajon-Miking-Technique-Research.txt`, lesson id I02)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CJ-01 | L11 | one front mic "about 6–7 inches away at a slight angle" | "About 15–18 cm (6–7 in) from the middle of the plate, dead centre, at a slight angle" | The source says "dead center". | S-DUVEL | APPLIED |
+| CJ-02 | L12 | a second mic "just inside a rear hole" | A clip-on mic on a padded port clamp at the port's mouth, a little off its axis; never a loose mic inside | The lab models no inside; the lesson's own rule forbids a loose mic in the box, and the clamp is the product made for it. The source also cautions the port puts "a great deal of pressure on the mic". | S-DUVEL, MEINL-MPMCC | APPLIED · OWNER: confirm the drawn mouth position |
+| CJ-03 | L12 | White's rear mic "about 20 cm away" | "About 20 cm out from the back, offset to one side by about 45°, pointing toward the port" | The source gives the 45° offset. | SOS-WHITE | APPLIED |
+| CJ-04 | L12, L84 | "front-facing port" | "upward-facing front port"; the front-port model is drawn with its playing surface set back above a low ledge, the port facing up | The maker's words. The real surface slants toward the player; the lab draws it vertical (a simplification, in the accuracy note). | MEINL-SLAP | APPLIED · OWNER: ledge and port sizes |
+| CJ-05 | refs [5], [8] | two references | One (internal record) | Same URL. | MEINL-BUL | APPLIED · OWNER: merge in the document |
+| CJ-06 | L13, L85 | White flips one channel's polarity | "Compare BOTH polarities in mono and move a mic — flipping one is an example, not a rule" | The lesson's own audit. | SOS-WHITE, SOS-PHASE | APPLIED |
+| CJ-07 | (geometry) | — | The hands' strike volume drawn out to 130 mm from the plate (the proposal's 400 mm would cover the published close point) | Shown so the published close spot can be seen; the player check decides. | proposal | APPLIED · OWNER: hands volume |
+| CJ-08 | (geometry) | — | Rear port at h 300, plate 4 mm, feet 8 mm, the seated posture, the box rocking back (15°), the exit path — drawing defaults / ILLUSTRATIVE | No source gives them. | proposal | APPLIED · OWNER: port height, posture |

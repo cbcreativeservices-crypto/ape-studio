@@ -356,7 +356,7 @@ describe('the internal record (research mandatory, never shown)', () => {
   }
   it('the corrections log lists the Lab 2 hand-percussion fixes and build defaults', () => {
     const LOG = read('docs/labs/miking/CORRECTIONS_LOG.md');
-    for (const k of ['SH-01', 'EG-01', 'MR-01', 'SP-01', 'HT-01', 'CB-01', 'CV-01', 'WB-01', 'GU-01']) assert.match(LOG, new RegExp(`\\| ${k} \\|`), k);
+    for (const k of ['SH-01', 'EG-01', 'MR-01', 'SP-01', 'HT-01', 'CB-01', 'CV-01', 'WB-01', 'GU-01', 'CJ-01']) assert.match(LOG, new RegExp(`\\| ${k} \\|`), k);
   });
 });
 

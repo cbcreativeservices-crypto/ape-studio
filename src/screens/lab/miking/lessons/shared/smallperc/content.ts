@@ -11,6 +11,7 @@ import { I05A_LESSON } from '../../i05aCowbell/lesson.ts';
 import { I05B_LESSON } from '../../i05bClaves/lesson.ts';
 import { I05C_LESSON } from '../../i05cWoodblock/lesson.ts';
 import { I05D_LESSON } from '../../i05dGuiro/lesson.ts';
+import { I02_LESSON } from '../../i02Cajon/lesson.ts';
 
 export const SMALL_PERC_CONTENT: Record<string, Lesson> = {
   I03a: I03A_LESSON,
@@ -21,4 +22,5 @@ export const SMALL_PERC_CONTENT: Record<string, Lesson> = {
   I05b: I05B_LESSON,
   I05c: I05C_LESSON,
   I05d: I05D_LESSON,
+  I02: I02_LESSON,
 };
