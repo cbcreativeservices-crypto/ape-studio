@@ -34,9 +34,11 @@ import {
   prefsFromRow,
   type CommunityNotifyPrefs,
 } from './communityRules';
+import { deviceTimeZone, isUnknownTimeZone, quietFromRow, type QuietWindow } from './quietHours';
+import { rememberQuietWindow, resyncLocalNotifications } from './localSchedule';
 
 export type CommunityPrefsLoad =
-  | { status: 'ok'; prefs: CommunityNotifyPrefs }
+  | { status: 'ok'; prefs: CommunityNotifyPrefs; quiet: QuietWindow }
   /** The server does not have the feature yet — do not offer it. */
   | { status: 'unsupported' }
   /** No account (guest / anonymous device key) — guests receive nothing. */
@@ -61,30 +63,99 @@ export async function fetchCommunityPrefs(): Promise<CommunityPrefsLoad> {
     if (error) return isMissingRpc(error) ? { status: 'unsupported' } : { status: 'error' };
     const row = (data as unknown[] | null)?.[0];
     if (!row) return { status: 'signedOut' };
-    return { status: 'ok', prefs: prefsFromRow(row) };
+    const quiet = quietFromRow(row);
+    adoptQuietWindow(quiet);
+    return { status: 'ok', prefs: prefsFromRow(row), quiet };
   } catch {
     return { status: 'error' };
   }
 }
 
-/** Save part of the choices. `prefs` is what the SERVER now holds — the
- *  switches show that, never the request. */
+/** What a save may change: any of the switches, and the quiet-hours window. */
+export type CommunityPrefsPatch = Partial<CommunityNotifyPrefs> & { quiet?: Partial<QuietWindow> };
+
+/**
+ * The `community_notify_prefs_set` arguments for a patch. Every call carries
+ * the phone's time zone as `p_tz` (Comp A's quiet-hours contract), so the
+ * window is applied in the zone the member is in; NULL means "unchanged" for
+ * every other argument. Pure — tested directly.
+ */
+export function prefsSetArgs(patch: CommunityPrefsPatch, tz: string | null): Record<string, unknown> {
+  return {
+    p_push_enabled: patch.pushEnabled ?? null,
+    p_messages: patch.messages ?? null,
+    p_requests: patch.requests ?? null,
+    p_show_preview: patch.showPreview ?? null,
+    p_quiet_enabled: patch.quiet?.enabled ?? null,
+    p_quiet_start: patch.quiet?.start ?? null,
+    p_quiet_end: patch.quiet?.end ?? null,
+    p_tz: tz,
+  };
+}
+
+/**
+ * One `community_notify_prefs_set` call. A zone the server does not know
+ * (`unknown time zone`) is retried ONCE without it, so an odd zone name never
+ * stops the member saving their other choices.
+ */
+async function callPrefsSet(patch: CommunityPrefsPatch): Promise<{ row: unknown | null; error: { code?: string | null; message?: string | null } | null }> {
+  const tz = deviceTimeZone();
+  let { data, error } = await supabase.rpc('community_notify_prefs_set', prefsSetArgs(patch, tz));
+  if (error && tz && isUnknownTimeZone(error)) {
+    ({ data, error } = await supabase.rpc('community_notify_prefs_set', prefsSetArgs(patch, null)));
+  }
+  return { row: (data as unknown[] | null)?.[0] ?? null, error };
+}
+
+/** Save part of the choices. `prefs` / `quiet` are what the SERVER now holds —
+ *  the switches and times show that, never the request. */
 export async function saveCommunityPrefs(
-  patch: Partial<CommunityNotifyPrefs>,
-): Promise<{ ok: true; prefs: CommunityNotifyPrefs } | { ok: false }> {
+  patch: CommunityPrefsPatch,
+): Promise<{ ok: true; prefs: CommunityNotifyPrefs; quiet: QuietWindow } | { ok: false }> {
   try {
-    const { data, error } = await supabase.rpc('community_notify_prefs_set', {
-      p_push_enabled: patch.pushEnabled ?? null,
-      p_messages: patch.messages ?? null,
-      p_requests: patch.requests ?? null,
-      p_show_preview: patch.showPreview ?? null,
-    });
-    const row = (data as unknown[] | null)?.[0];
+    const { row, error } = await callPrefsSet(patch);
     if (error || !row) return { ok: false };
-    return { ok: true, prefs: prefsFromRow(row) };
+    const quiet = quietFromRow(row);
+    adoptQuietWindow(quiet);
+    return { ok: true, prefs: prefsFromRow(row), quiet };
   } catch {
     return { ok: false };
   }
+}
+
+/** The server's window → this device's copy; a change re-books the local
+ *  reminders so they follow it (localSchedule.ts, "quiet hours"). */
+function adoptQuietWindow(w: QuietWindow): void {
+  void rememberQuietWindow(w)
+    .then((changed) => {
+      if (changed) resyncLocalNotifications();
+    })
+    .catch(() => {});
+}
+
+/**
+ * Once per account (and zone) per app run: tell the server this phone's time
+ * zone — the call with ONLY `p_tz` set — so a member who never opens
+ * Settings has quiet hours in the right zone. Not on web (alerts reach the
+ * phone app only, and a browser elsewhere must not move the phone's zone).
+ * A server without the feature, or a zone it refuses, is not asked again
+ * this run; any other failure is retried on the next foreground.
+ */
+let tzSentFor: string | null = null;
+
+export async function syncQuietTimeZone(uid: string): Promise<void> {
+  const tz = deviceTimeZone();
+  if (!tz) return;
+  const key = `${uid}|${tz}`;
+  if (tzSentFor === key) return;
+  const { data, error } = await supabase.rpc('community_notify_prefs_set', { p_tz: tz });
+  if (error) {
+    if (isMissingRpc(error) || isUnknownTimeZone(error)) tzSentFor = key;
+    return;
+  }
+  tzSentFor = key;
+  const row = (data as unknown[] | null)?.[0];
+  if (row) adoptQuietWindow(quietFromRow(row));
 }
 
 export type OsPermission = 'granted' | 'denied' | 'blocked' | 'unavailable';
@@ -152,7 +223,8 @@ export async function releaseCommunityDevice(): Promise<boolean> {
 }
 
 /**
- * Once per account per app run (on launch / first foreground): keep this
+ * Once per account per app run (on launch / first foreground): send this
+ * phone's time zone for quiet hours (syncQuietTimeZone), and keep this
  * phone's registration true to the signed-in account's choice.
  *  - alerts ON and permission already granted → register (refreshes a rotated
  *    push address, and takes the phone over from a previous account);
@@ -167,7 +239,9 @@ export function syncCommunityDevice(): Promise<void> {
   if (Platform.OS === 'web') return Promise.resolve();
   syncing ??= (async () => {
     const who = await accountUid('communityDeviceSync');
-    if (who.unknown || !who.uid || syncedFor === who.uid) return;
+    if (who.unknown || !who.uid) return;
+    await syncQuietTimeZone(who.uid).catch(() => {});
+    if (syncedFor === who.uid) return;
     const load = await fetchCommunityPrefs();
     if (load.status !== 'ok') return;
     let ok: boolean;
@@ -188,5 +262,6 @@ export function syncCommunityDevice(): Promise<void> {
 /** Account wipe: the next account syncs afresh. */
 export function resetCommunityDeviceSync(): void {
   syncedFor = null;
+  tzSentFor = null;
 }
 registerLocalStoreReset(resetCommunityDeviceSync);

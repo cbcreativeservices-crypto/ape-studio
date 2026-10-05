@@ -13,6 +13,13 @@
  *    nothing.
  *  - Until Comp A applies migration 2026100401 the server has no such setting;
  *    the section is then not shown (no promise of a future feature).
+ *  - QUIET HOURS (owner 2026-10-04; server live): a switch plus FROM / TO
+ *    times, default ON 10:00 PM – 7:00 AM. Alerts inside the window are held
+ *    by the server and arrive together when it ends. Not tied to the alert
+ *    switch above: the same window also holds the weekly concept and this
+ *    phone's study reminders (localSchedule.ts). A time is picked in the
+ *    Settings time popup (NotifyScheduleModal) as a draft and saved ONCE when
+ *    the popup closes; the row then shows what the server returned.
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -29,8 +36,11 @@ import {
   releaseCommunityDevice,
   saveCommunityPrefs,
   type CommunityPrefsLoad,
+  type CommunityPrefsPatch,
 } from './communityPush';
 import { COMMUNITY_COPY as C, type CommunityNotifyPrefs } from './communityRules';
+import { QUIET_COPY as Q, clock12, quietActive, type QuietWindow } from './quietHours';
+import { NotifyScheduleModal } from '../settings/NotifyScheduleModal';
 
 type Load = CommunityPrefsLoad | { status: 'loading' };
 
@@ -58,10 +68,14 @@ export function CommunityNotifySection() {
   }, [reload]);
 
   /** Show what the server now holds; any read still out is older than it. */
-  const showSaved = (prefs: CommunityNotifyPrefs) => {
+  const showSaved = (saved: { prefs: CommunityNotifyPrefs; quiet: QuietWindow }) => {
     readTicket.current += 1;
-    setLoad({ status: 'ok', prefs });
+    setLoad({ status: 'ok', prefs: saved.prefs, quiet: saved.quiet });
   };
+
+  // The quiet-hours time being picked: a DRAFT while the popup is open,
+  // saved once when it closes (never one server write per stepper tap).
+  const [picking, setPicking] = useState<{ which: 'start' | 'end'; draft: string } | null>(null);
 
   /** One write at a time across every switch here (latched: a same-frame
    *  second tap is refused, not queued). */
@@ -104,7 +118,7 @@ export function CommunityNotifySection() {
       handoff(() => notify(C.noticeTitle, C.onFailed));
       return;
     }
-    showSaved(saved.prefs);
+    showSaved(saved);
   };
 
   const turnOff = async () => {
@@ -115,17 +129,27 @@ export function CommunityNotifySection() {
       notify(C.noticeTitle, C.offFailed);
       return;
     }
-    showSaved(saved.prefs);
+    showSaved(saved);
     void releaseCommunityDevice();
   };
 
-  const setOne = async (patch: Partial<CommunityNotifyPrefs>) => {
+  const setOne = async (patch: CommunityPrefsPatch) => {
     const saved = await saveCommunityPrefs(patch);
     if (!saved.ok) {
-      notify(C.noticeTitle, C.changeFailed);
+      // Handed off: a quiet-hours time is saved as its popup closes, and a
+      // notice must never open under a Modal still on its way out.
+      handoff(() => notify(C.noticeTitle, C.changeFailed));
       return;
     }
-    showSaved(saved.prefs);
+    showSaved(saved);
+  };
+
+  /** The time popup closed: save the draft if it differs from the server's. */
+  const closePicker = (quiet: QuietWindow) => {
+    const p = picking;
+    setPicking(null);
+    if (!p || p.draft === quiet[p.which]) return;
+    write(() => setOne({ quiet: { [p.which]: p.draft } }));
   };
 
   // Not offered: the server has no such setting yet, or there is no account.
@@ -135,6 +159,7 @@ export function CommunityNotifySection() {
   }
 
   const prefs = load.status === 'ok' ? load.prefs : null;
+  const quiet = load.status === 'ok' ? load.quiet : null;
   const on = !!prefs?.pushEnabled;
   return (
     <>
@@ -184,10 +209,58 @@ export function CommunityNotifySection() {
                 />
               </Row>
             </View>
+            {quiet ? (
+              <View style={st.quietBlock}>
+                <Row label={Q.label} hint={Q.hint}>
+                  <Toggle
+                    on={quiet.enabled}
+                    disabled={busy}
+                    label={Q.label}
+                    onChange={(v) => write(() => setOne({ quiet: { enabled: v } }))}
+                  />
+                </Row>
+                <View style={[st.timeRow, !quiet.enabled && st.groupOff]} pointerEvents={quiet.enabled ? 'auto' : 'none'}>
+                  {(['start', 'end'] as const).map((which) => {
+                    const label = which === 'start' ? Q.fromLabel : Q.toLabel;
+                    const shown = clock12(quiet[which]);
+                    return (
+                      <Pressable
+                        key={which}
+                        style={st.timeBtn}
+                        disabled={busy || !quiet.enabled}
+                        onPress={() => setPicking({ which, draft: quiet[which] })}
+                        hitSlop={4}
+                        accessibilityRole="button"
+                        accessibilityState={{ disabled: busy || !quiet.enabled }}
+                        accessibilityLabel={`Quiet hours ${which}, ${shown}. Change`}
+                      >
+                        <Text style={st.timeLabel}>{label}</Text>
+                        <Text style={st.timeValue}>{shown}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                {quiet.enabled && !quietActive(quiet) ? <Text style={st.note}>{Q.sameTime}</Text> : null}
+              </View>
+            ) : null}
             <Text style={st.footer}>{C.footer}</Text>
           </>
         ) : null}
       </SettingsSection>
+      {picking && quiet ? (
+        <NotifyScheduleModal
+          visible
+          title={picking.which === 'start' ? Q.fromTitle : Q.toTitle}
+          mode="time"
+          time={picking.draft}
+          day="Monday"
+          days={1}
+          onSetTime={(hhmm) => setPicking((p) => (p ? { ...p, draft: hhmm } : p))}
+          onSetDay={() => {}}
+          onSetDays={() => {}}
+          onClose={() => closePicker(quiet)}
+        />
+      ) : null}
       <PermissionPrompt {...flow.promptProps} />
     </>
   );
@@ -213,6 +286,21 @@ const st = StyleSheet.create({
   rowLabel: { fontFamily: fonts.barlowSemiBold, fontSize: 15, color: colors.textSecondary },
   rowHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textMuted, marginTop: 3 },
   groupOff: { opacity: 0.4 },
+  quietBlock: { borderTopWidth: 1, borderTopColor: '#1f1f24', paddingBottom: 4 },
+  timeRow: { flexDirection: 'row', gap: 10 },
+  timeBtn: {
+    flex: 1,
+    minHeight: 52,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#131313',
+    justifyContent: 'center',
+  },
+  timeLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.2, color: colors.amberLabel },
+  timeValue: { fontFamily: fonts.mono, fontSize: 17, color: colors.textPrimary, marginTop: 2 },
   footer: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, color: colors.textMuted, marginTop: 10 },
   note: { flex: 1, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.amberLabel },
   errorRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 10 },
