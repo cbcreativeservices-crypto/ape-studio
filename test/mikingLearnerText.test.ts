@@ -58,6 +58,18 @@ export const BRAND_NAMES: readonly string[] = [
   '4055',
   'NIOSH',
   'Rossing',
+  // Lab 1 snare and toms research (docs/labs/miking/snare, toms, kit).
+  'SM ?57',
+  'Beta ?56A?',
+  'e ?904',
+  'DM ?20',
+  'i5',
+  'D[246]',
+  'MZH ?604',
+  '4099',
+  'Earthworks',
+  'Zildjian',
+  'Sabian',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */
@@ -101,7 +113,7 @@ function offences(items: { path: string; text: string }[]): string[] {
 const ROOT = process.cwd();
 const MIKING = join(ROOT, 'src/screens/lab/miking');
 /** .ts files that BUILD on-screen words (the rest of the .ts are data — walked — or pure maths). */
-const TS_PRESENTATION = ['engine/journey.ts', 'engine/scene/readoutText.ts', 'engine/scene/sceneWords.ts', 'engine/a11y/describe.ts', 'engine/model/units.ts'];
+const TS_PRESENTATION = ['engine/journey.ts', 'engine/scene/readoutText.ts', 'engine/scene/sceneWords.ts', 'engine/a11y/describe.ts', 'engine/model/units.ts', 'engine/model/copy.ts', 'engine/scene/placementDock.ts'];
 const stripComments = (s: string) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1');
 
 function tsxFiles(dir: string): string[] {
