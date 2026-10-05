@@ -4,9 +4,10 @@
  * millimetres of the view's (u, v) plane — side u = x, v = y; top u = x,
  * v = z — and is drawn under the scene's single transform.
  */
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
-import type { VariantId, Vec3, ViewId } from '../model/types.ts';
+import type { PageId, VariantId, Vec3, ViewId } from '../model/types.ts';
+import type { PageProps } from '../../pages/pageTypes';
 
 /** `short`: the words to fall back to where the full label would collide. */
 export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
@@ -27,4 +28,8 @@ export type LessonArt = {
    *  KitPlan): its plan id, whether the lesson's own art draws it there (M01's
    *  kick), and where the lesson's frame origin sits on the plan (mm). */
   plan?: { own: string; useArt?: boolean; offset?: Vec3 };
+  /** A page the lesson draws itself (the kit-level lessons: overheads, room,
+   *  complete kit — their foundations are a whole kit, not one drum). The
+   *  journey, the credit and the strip are the host's, as for every page. */
+  pages?: Partial<Record<PageId, (p: PageProps) => ReactNode>>;
 };

@@ -107,6 +107,12 @@ export function inZone(zone: DocumentedZone, ctx: ZoneCtx, pose: MicPose): boole
     const s = findSurface(ctx.surfaces, zone.aimAt.surface);
     if (!s || !aimsAt(s, zone.aimAt.r, pose)) return false;
   }
+  if (zone.near) {
+    const q = pose.p;
+    const c = zone.near.point;
+    const dn = Math.sqrt((q.x - c.x) * (q.x - c.x) + (q.y - c.y) * (q.y - c.y) + (q.z - c.z) * (q.z - c.z));
+    if (dn < zone.near.min - EPS || dn > zone.near.max + EPS) return false;
+  }
   if (zone.box) {
     const b = zone.box;
     const p = pose.p;

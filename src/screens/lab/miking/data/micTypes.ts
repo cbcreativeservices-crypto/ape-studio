@@ -11,10 +11,13 @@
  * plate) — not its acoustic centre (Kick L39; GEOMETRY_PROPOSAL §5).
  */
 import type { MicType } from '../engine/model/types.ts';
+import { KIT_MIC_TYPES } from './micTypesKit.ts';
 
 const generic = { kind: 'sourced', src: 'WP-MIC', quote: 'a superposition of an omnidirectional (pressure) and a figure-8 (pressure gradient)' } as const;
 
 export const MIC_TYPES: Record<string, MicType> = {
+  // Lab 1's kit-level lessons (overheads, room, complete kit): micTypesKit.ts.
+  ...KIT_MIC_TYPES,
   kickDynSuper: {
     id: 'kickDynSuper',
     label: 'End-address dynamic, large head, supercardioid',

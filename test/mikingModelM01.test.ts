@@ -32,6 +32,8 @@ import { PAGE_IDS } from '../src/screens/lab/miking/engine/model/types.ts';
 
 const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8').replace(/\r\n/g, '\n');
 const KICK_SOURCES = read('docs/labs/miking/kick/SOURCES.md');
+// The shared mic list also carries Lab 1's snare and tom mics (their keys).
+const LAB1_SOURCES = ['snare', 'toms', 'kit'].map((d) => read(`docs/labs/miking/${d}/SOURCES.md`)).join('\n');
 const SHARED = read('docs/labs/miking/SOURCES_SHARED.md');
 const LOG = read('docs/labs/miking/CORRECTIONS_LOG.md');
 const lesson = M01_LESSON;
@@ -173,7 +175,7 @@ describe('the documented zones', () => {
 
 describe('sources and unknowns', () => {
   const keys = new Set<string>();
-  for (const mm of (KICK_SOURCES + SHARED).matchAll(/^\| ([A-Z0-9][A-Z0-9-]+) \|/gm)) keys.add(mm[1]);
+  for (const mm of (KICK_SOURCES + SHARED + LAB1_SOURCES).matchAll(/^\| ([A-Z0-9][A-Z0-9-]+) \|/gm)) keys.add(mm[1]);
   it('the source tables were parsed', () => assert.ok(keys.size > 30 && keys.has('S-B52-UG') && keys.has('CALC-C')));
   it('every zone, mic-type and part src resolves to a SOURCES key', () => {
     const srcs: string[] = [];
@@ -204,6 +206,8 @@ describe('sources and unknowns', () => {
     const reso = lesson.zones.find((z) => z.id === 'reso.level')!;
     assert.doesNotMatch(reso.label + reso.band, /port/i, 'K-02: the front-head starting point never mentions a port');
   });
+  // The kit-level lessons' mics (overheads, room) carry their own keys.
+  for (const d of ['overheads', 'room']) for (const mm of read(`docs/labs/miking/${d}/SOURCES.md`).matchAll(/^\| ([A-Z0-9][A-Z0-9-]+) \|/gm)) keys.add(mm[1]);
 });
 
 describe('wording', () => {

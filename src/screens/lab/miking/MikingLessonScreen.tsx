@@ -63,7 +63,8 @@ import { PContext } from './pages/PContext';
 import { PTwoMic } from './pages/PTwoMic';
 import { PPractice, PTroubleshoot } from './pages/PReadPages';
 
-const PAGE_COMPONENTS: Record<PageId, (p: PageProps) => ReactNode> = {
+/** The shared pages; a lesson's art may draw some itself (LessonArt.pages). */
+const BASE_PAGES: Record<PageId, (p: PageProps) => ReactNode> = {
   instrument: PInstrument,
   sound: PSound,
   setting: PSetting,
@@ -118,6 +119,14 @@ function devStartPage(fromParams?: string): PageId | null {
   return null;
 }
 
+/** The web preview harness only: `&step=<n>` opens that step of the page,
+ *  `&variant=<id>` that setup (captures of every stage). */
+function devParam(key: 'step' | 'variant'): string | null {
+  if (!(__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined')) return null;
+  const m = new RegExp(`[?&]${key}=([A-Za-z0-9]+)`).exec(window.location.search);
+  return m ? m[1] : null;
+}
+
 function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt; startPage?: string }) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -148,11 +157,14 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
 
   const dev = useMemo(() => devStartPage(startPage), [startPage]);
   const [pageIdx, setPageIdx] = useState(() => (dev ? PAGE_IDS.indexOf(dev) : 0));
-  const [step, setStepRaw] = useState(0);
+  const [step, setStepRaw] = useState(() => Number(devParam('step') ?? 0) || 0);
   const [stepTitles, setStepTitles] = useState<string[]>([]);
   const [ending, setEnding] = useState(false);
   const [runId, setRunId] = useState(0);
-  const [variant, setVariant] = useState<VariantId>(lesson.model.defaultVariant);
+  const [variant, setVariant] = useState<VariantId>(() => {
+    const v = devParam('variant');
+    return v && lesson.model.variants.some((x) => x.id === v) ? v : lesson.model.defaultVariant;
+  });
   const page = PAGE_IDS[pageIdx];
   const content = lesson.pages[page];
 
@@ -309,6 +321,8 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
     noun: lesson.noun,
     here: page,
   };
+  // The kit-level lessons draw their own ORIENT / HOW IT SOUNDS / … pages.
+  const PAGE_COMPONENTS = useMemo<Record<PageId, (p: PageProps) => ReactNode>>(() => ({ ...BASE_PAGES, ...(art.pages ?? {}) }), [art]);
   const gated = pageGate(page, met, quickPassed) === 'foundations';
   const host: StepHost = { step: stepIdx, setStep, onSteps, head, tail: gated ? null : tail, readWrap, hidden: ending };
   const Page = gated ? FoundationsPage : PAGE_COMPONENTS[page];

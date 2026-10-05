@@ -29,6 +29,12 @@ export const STAND_RADIUS = 10;
 /** How far a rim clamp's arm reaches from the hoop to the mic's tail (mm).
  *  ILLUSTRATIVE: no source gives a clamp's reach. */
 export const CLIP_REACH = 120;
+/** An overhead ('boom') mount: the boom's reach from the mic's tail to the
+ *  stand, and the tube radii. ILLUSTRATIVE (no source gives a boom stand's
+ *  size; the overheads lesson lists it with its drawing defaults). */
+export const OVERHEAD_BOOM = 750;
+export const OVERHEAD_BOOM_RADIUS = 12;
+export const OVERHEAD_STAND_RADIUS = 18;
 
 export function compileScene(model: InstrumentModel, variant: VariantId): CompiledScene {
   const solids: Solid[] = [];
@@ -52,6 +58,7 @@ export function compileScene(model: InstrumentModel, variant: VariantId): Compil
     yFloor: model.yFloor.mm,
     boom: { radius: BOOM_RADIUS, outside: BOOM_OUTSIDE, behind: BOOM_BEHIND },
     standRadius: STAND_RADIUS,
+    ...(model.boomHub ? { boomHub: model.boomHub } : {}),
   };
 }
 
@@ -129,6 +136,30 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
     // point (no rims on the scene: the body alone).
     const g = nearestRimPoint(scene.rims ?? [], tail);
     if (g) out.push({ a: tail, b: g.q, r: 6, piece: 'arm' });
+    return out;
+  }
+  if (body.mount === 'boom') {
+    // An overhead boom stand: the boom runs LEVEL from the tail, out of the
+    // kit — straight back from the mic when it is aimed across (its tail
+    // points out), else away from the kit's centre (a mic aimed down) — and
+    // the stand drops from the boom's far end to the floor.
+    let hx = -aim.x;
+    let hz = -aim.z;
+    let hl = Math.sqrt(hx * hx + hz * hz);
+    if (hl < 0.35) {
+      const hub = scene.boomHub ?? { x: 0, y: 0, z: 0 };
+      hx = tail.x - hub.x;
+      hz = tail.z - hub.z;
+      hl = Math.sqrt(hx * hx + hz * hz);
+      if (hl < 1e-6) {
+        hx = 1;
+        hz = 0;
+        hl = 1;
+      }
+    }
+    const end = { x: tail.x + (hx / hl) * OVERHEAD_BOOM, y: tail.y, z: tail.z + (hz / hl) * OVERHEAD_BOOM };
+    out.push({ a: tail, b: end, r: OVERHEAD_BOOM_RADIUS, piece: 'boom' });
+    if (end.y < scene.yFloor) out.push({ a: end, b: { x: end.x, y: scene.yFloor, z: end.z }, r: OVERHEAD_STAND_RADIUS, piece: 'stand' });
     return out;
   }
   let q: Vec3;
