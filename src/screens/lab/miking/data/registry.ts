@@ -13,7 +13,7 @@ export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtit
 
 export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
-  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: '' },
+  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn percussion that is struck, shaken or scraped — the cajón and hand percussion first: recommended starting points, the player’s whole motion, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments — the guitar family first: front view and from above, recommended starting points, the player’s space, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
@@ -49,6 +49,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C05C', labId: 'strings', title: 'Ukulele', subtitle: 'A small body, a voice above — the upper body, the hole, or a clip', status: 'ready' },
   { id: 'C07', labId: 'strings', title: 'Acoustic Bass Guitar', subtitle: 'A hollow-body bass: one mic, the pickup, and the lowest notes', status: 'ready' },
   { id: 'C08', labId: 'strings', title: 'Electric Bass', subtitle: 'Fretted and fretless: one woofer, room to breathe, mic and DI', status: 'ready' },
+  // Lab 2 (percussion), hand percussion — each lesson on its own line (lessons are built in parallel).
+  { id: 'I03a', labId: 'percussion', title: 'Handheld Shaker', subtitle: 'A moving source: one mic outside the arc — toward the mic or side to side', status: 'ready' },
+  { id: 'I03b', labId: 'percussion', title: 'Egg Shaker', subtitle: 'No handle: one egg, two close, or hands apart — the grip is part of it', status: 'ready' },
+  { id: 'I03c', labId: 'percussion', title: 'Maracas', subtitle: 'A pair, two arms: one mic centred on the heads, a spot each, or a singer’s pair', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

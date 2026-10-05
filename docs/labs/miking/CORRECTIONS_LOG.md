@@ -365,3 +365,49 @@ Built 2026-10-05 (branch `miking-c3`, from `miking-w5`). Research: `electric_gui
 | PS-05 | (geometry) | pedal-steel layout | Every dimension (body 900 × 300 × 90, top 700, 3 pedals, 4 knee levers hanging 150, seat 550, 24 in scale, keep-clear zone 1000 × 600, ten-string tuning) is a flagged drawing default; only the part NAMES are sourced | No dimension in the research. | SGF-MAP | APPLIED · OWNER: a steel player's look at the drawings |
 | PS-06 | L45 | OSHA line | As EG-08 (and a CRITICAL quick-check item) | As EG-08. | OSHA, NIOSH | APPLIED |
 | PS-07 | (whole lesson) | "Pro Audio Training Academy" | Not used (house rule) | House rule. | — | APPLIED |
+
+## Lab 2 · hand percussion: I02 Cajón, I03a Shaker, I03b Egg shaker, I03c Maracas, I04 Headless tambourine, I05a Cowbell, I05b Claves, I05c Woodblock, I05d Güiro (branch miking-i4, 2026-10-05)
+
+Research: `docs/labs/miking/<folder>/SOURCES.md` + `GEOMETRY_PROPOSAL.md` and BATCH2_RESEARCH_SUMMARY.md §2.
+The family lives in `lessons/shared/smallperc/` (objects, hands, player, states, sound page,
+station plan); each lesson in `lessons/i0x…/`.
+
+### Shared (all nine lessons)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| SP-01 | (header) | "Pro Audio Training Academy", "Student …" | Not used | House rule (BATCH2 §2). | — | APPLIED |
+| SP-02 | each lesson's start range | distances "from the center of the playing arc / area" vs the maker's "a gap of at least 12” / 30cm" from the instrument | The lessons' own reference is kept for the starting points ("from the middle of the playing area"); the maker's floor is said once, in words, in each Placement summary ("a common minimum for percussion is about 30 cm between mic and instrument"); a separate CLEAR readout gives the distance from the drawn motion envelope ("nearest stroke") | Two references are easy to mix up (BATCH2 §2, I04 flag); one is a starting distance, the other a clearance. | S-HOME (shaker/SOURCES.md §0); proposal §A | APPLIED (`smallperc/geom.ts` clearLine, every lesson's copy) |
+| SP-03 | shaker [5], egg [6], maracas [8], tambourine [7] | "a separate direct pickup for shakers and tambourine" / one per instrument | "One dedicated directional mic for the station" — ONE shared mic for shakers and tambourine | The touring account used ONE 4011A "as a direct source for shakers and tambourine". | DPA-JONAS | APPLIED |
+| SP-04 | each lesson's safety section | NIOSH cited without its number | The shared hearing check and the critical quick-check item carry "85 dBA averaged over 8 hours, halving the time for every 3 dBA more" — as plain advice, never as a mic limit | Survey: the small-percussion lessons cite the bulletin without the number. | NIOSH-TID (shaker/SOURCES.md §0) | APPLIED (`smallperc/commonItems.ts`) |
+| SP-05 | (Yamaha row) | "have the player stand about eight inches from the mic" | Not drawn as a zone | It is measured from the PLAYER; at the lab's drawn posture (chest 250 mm behind the playing area) the point falls inside the motion envelope. | YMH-REC3 | OWNER: show the 8 in point as a "check it against the motion" marker? |
+| SP-06 | (Yamaha row) | toward/away vs side-to-side motion | The shaker's two states ARE the motion direction ("each forward stroke comes closer" / "steadier"); the other lessons say it in words | Sourced words, made a variable the learner switches. | YMH-REC3 | APPLIED |
+| SP-07 | (build) | — | HOW IT SOUNDS for idiophones has three steps — the event sequence, the lesson's own pair of motions, attack and body — and no membrane step | Idiophones have no drumhead; LESSON_JOURNEY §7 keeps physics to what a model or words can carry. | LESSON_JOURNEY §7 | APPLIED (`smallperc/pages/SSound.tsx`) |
+| SP-08 | (build) | — | The motion envelopes, the arms, the playing height (h 1150) and the player's chest plane (250 mm behind) are drawing defaults / ILLUSTRATIVE, listed in each lesson's unknowns | No source gives any stick, hand or motion clearance (BATCH2 §2). | proposal §A | APPLIED · OWNER: envelope sizes, posture |
+| SP-09 | (build, engine) | — | A reference line may be FINITE (`RefLine.segment`): the CLEAR readout is the distance to the motion capsule | Additive; infinite lines read exactly as before (tested). | — | APPLIED (`engine/geometry/zones.ts`, `engine/model/types.ts`) |
+
+### I03a Handheld Shaker (`source_text/Shaker-Miking-Technique-Research.txt`, lesson id I03a)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| SH-01 | L9, ref [1] | "Meinl sells softer studio and louder live versions"; [1] "Studio and Live product pages" | "Shakers of different sizes and sounds suit different settings"; no studio/live version is claimed | The pages are Small ("Soft and clear sound") and Large ("Rich and clear sound"), both "Perfect for live and studio playing". | MEINL-SH26S, MEINL-SH26L | APPLIED · OWNER: fix [1] in the document |
+| SH-02 | L16 | 30–60 cm "from the center of the playing arc" | Kept as the starting band, said as a starting point, with the maker's 30 cm floor in words (SP-02) | The 30–60 cm is the lesson's own audition range. | LESSON-SHAKER, S-HOME | APPLIED |
+| SH-03 | (geometry) | — | Shell Ø 45 × 160 mm, envelope ±150 / ±60 mm, the right-hand grip — drawing defaults | Meinl prints no size. | shaker/GEOMETRY_PROPOSAL.md §B | APPLIED · OWNER: sizes |
+
+### I03b Egg Shaker (`source_text/Egg-Shaker-Miking-Technique-Research.txt`, lesson id I03b)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| EG-01 | L9 | soft / medium / loud / extra-loud eggs | Kept as relative choices, "not calibrated levels" (a check and a quick-check item) | The set's page prints labels and the SET's weight (110 g) only. | MEINL-ES4 | APPLIED |
+| EG-02 | (geometry) | — | Egg 58 × 45 mm, hands ±180 mm (close) and ±260 mm (apart), the palm cover — drawing defaults | Egg size UNKNOWN. | egg_shaker/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: egg size |
+| EG-03 | L28 | separate spots for widely separated hands (no number) | One spot per hand, "about 30–60 cm from that egg" | The 30–60 cm band is reused for the split (proposal), recorded as a drawing default in the zone's internal record. | proposal | APPLIED |
+| EG-04 | L76 | "keep small loose parts away from children" | Kept as a safety line and a THE SETTING check | The lesson's own safety rule. | LESSON-EGG | APPLIED |
+
+### I03c Maracas (`source_text/Maracas-Miking-Technique-Research.txt`, lesson id I03c)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| MR-01 | (geometry) | — | A pair 284.48 mm (11.2 in) long; head 75 × 95 and handle Ø 25 are drawing defaults | Grinnell's measured lengths are the only sizes. | GRIN-MAR | APPLIED · OWNER: head size |
+| MR-02 | L9 | up/down strokes, "a meaningful sound on both upward and downward motions" | HOW IT SOUNDS adds a circular wrist (the seeds rolling round the wall: a longer sustain) as the second motion | The performer's article describes the circular motion and its sustain. | RANGEL | APPLIED |
+| MR-03 | L26 | a spot per head (no number) | "About 30–60 cm from that head's working area" | Drawing default from the proposal; recorded in the zone. | proposal | APPLIED |
+| MR-04 | L42-L44 | the singer: "place the two microphones and performer to reduce unwanted pickup" | A maraca spot "a little higher, angled down to the heads — which puts the singer's mouth farther off the mic's front than a low mic would" | The lab's geometric reading of the lesson's sentence (ILLUSTRATIVE); the vocal mic's own spill is taught as unavoidable. | LESSON-MARACAS | APPLIED · OWNER: a vocal engineer's look |

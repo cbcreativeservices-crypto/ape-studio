@@ -56,7 +56,16 @@ export function aimOff(s: ReferenceSurface, pose: MicPose): number {
 export function lineDistance(lines: RefLine[], id: string, pose: MicPose): number {
   'worklet';
   const l = findLine(lines, id);
-  return l ? distToLine(pose.p, l.point, l.dir) - (l.offset ?? 0) : NaN;
+  if (!l) return NaN;
+  if (l.segment != null) {
+    // A finite line: the nearest point of the segment (dir a unit vector).
+    const w = sub(pose.p, l.point);
+    let t = dot(w, l.dir);
+    if (t > l.segment) t = l.segment;
+    if (t < -l.segment) t = -l.segment;
+    return len({ x: w.x - l.dir.x * t, y: w.y - l.dir.y * t, z: w.z - l.dir.z * t }) - (l.offset ?? 0);
+  }
+  return distToLine(pose.p, l.point, l.dir) - (l.offset ?? 0);
 }
 
 /** Does the mic's front axis, followed forward, meet the surface's plane

@@ -129,6 +129,11 @@ export type RefLine = {
   point: Vec3;
   dir: Vec3;
   offset?: number;
+  /** A FINITE line (added 2026-10-05, Lab 2's small percussion): the readout
+   *  is the distance to the segment from point − dir·segment to point +
+   *  dir·segment (dir a unit vector) — with `offset`, the CLEARANCE from a
+   *  motion envelope drawn as a capsule round that segment. */
+  segment?: number;
   words?: { plus: string; minus: string; keyPlus: string; keyMinus: string };
   variants?: VariantId[];
   /** The reference surfaces this line belongs to: choosing one of them as the

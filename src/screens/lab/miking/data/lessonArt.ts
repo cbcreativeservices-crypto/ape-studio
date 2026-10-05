@@ -77,3 +77,7 @@ export function lessonArt(id: string): LessonArt | undefined {
 /* Lab 1 hand drums (M04a–c, M05): appended so other lessons merge cleanly. */
 import { HAND_DRUM_ART } from '../lessons/shared/handdrums/artRegistry';
 Object.assign(ART, HAND_DRUM_ART);
+
+/* Lab 2 small percussion (I02–I05): appended so other lessons merge cleanly. */
+import { SMALL_PERC_ART } from '../lessons/shared/smallperc/artRegistry';
+Object.assign(ART, SMALL_PERC_ART);
