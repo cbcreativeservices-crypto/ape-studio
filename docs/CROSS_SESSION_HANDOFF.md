@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 04:07 · ccode · 5bbc885d
+changed: fix(miking): Lab 4 review fixes — labels clear of the instrument, piano polarity, DI hum, sitar shimmer, answer balance
+affects other side: nothing (miking fixes, branch final-lab)
+needs: nothing (miking fixes, branch final-lab)
+
+
 ### 2026-10-05 02:29 · ccode · 039ad71c
 changed: Merge branch 'miking-c4' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
