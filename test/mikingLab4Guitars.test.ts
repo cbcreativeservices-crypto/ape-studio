@@ -33,6 +33,7 @@ import { gradeSetup } from '../src/screens/lab/miking/engine/progress/setupGrade
 import { fretX, geomOf, NYLON_C5, onBody, STEEL_DREAD, TWELVE_HD } from '../src/screens/lab/miking/lessons/shared/guitars/guitarSpec.ts';
 import { modeShape, pluckShare, pluckSum, relativeToLowest, stillPoints } from '../src/screens/lab/miking/lessons/shared/guitars/stringPhysics.ts';
 import { C01_LESSON } from '../src/screens/lab/miking/lessons/c01Guitar/lesson.ts';
+import { C07_LESSON } from '../src/screens/lab/miking/lessons/c07AcousticBass/lesson.ts';
 
 const r2 = (x: number) => Math.round(x * 100) / 100;
 
@@ -202,7 +203,7 @@ function copyIds(lesson: Lesson) {
   });
 }
 
-for (const lesson of [C01_LESSON]) {
+for (const lesson of [C01_LESSON, C07_LESSON]) {
   describe(`${lesson.id} ${lesson.title} validates`, () => {
     it('validateLesson returns no problems', () => assert.deepEqual(validateLesson(lesson, MIC_TYPES), []));
     it('the 9 pages are present', () => assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort()));
