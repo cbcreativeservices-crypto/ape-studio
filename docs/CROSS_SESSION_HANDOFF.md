@@ -602,6 +602,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 00:07 · ccode · f1821ed1
+changed: feat(miking): shared cymbal family, kit scene and kit pages; engine hooks for kit lessons
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing
+
+
 ### 2026-10-04 21:21 · ccode · 0b64ea25
 changed: docs(miking): builder brief for the lesson rollout
 affects other side: nothing (branch final-lab, miking lab work).
