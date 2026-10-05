@@ -247,6 +247,28 @@ Object.assign(MIC_TYPES, {
   },
 } satisfies Record<string, MicType>);
 
+/* ── Lab 4: keyboards and harp (harp/SOURCES.md; the miniature's size is a
+ *  drawing default — no source read gives one). ── */
+Object.assign(MIC_TYPES, {
+  miniOmni: {
+    id: 'miniOmni',
+    label: 'Miniature omni condenser, on an approved holder',
+    short: 'MINI · OMNI',
+    transducer: 'condenser',
+    address: 'end',
+    patterns: [{ id: 'omni', label: 'omni', prov: { kind: 'sourced', src: 'DPA-HARP', quote: 'an omnidirectional miniature (concealed within one of the harp’s sound holes)' } }],
+    // A capsule a few millimetres across on a short flexible holder: both
+    // sizes are drawing defaults (lessons/c10Harp unknowns).
+    body: { length: placeholder(60, 'a miniature mic and its short holder: overall length'), radius: placeholder(3.5, 'a miniature capsule’s diameter') },
+    power: 'phantom power, often through an adapter (follow its manual)',
+    mount: 'clip',
+    clip: { reach: placeholder(110, 'the holder’s reach from the opening’s edge to the capsule') },
+    examples: [{ model: 'DPA 4060 class (named in the DPA harp article)', fact: 'an omnidirectional miniature placed at a harp sound hole; sizes not read — drawn as a drawing default.', src: 'DPA-HARP' }],
+    art: 'gooseneck',
+    blurb: 'A tiny omni condenser on a small holder: it can sit at an opening without touching the finish. Needs phantom power (often through an adapter). Only with the owner’s agreement.',
+  },
+} satisfies Record<string, MicType>);
+
 export function micType(id: string): MicType {
   return MIC_TYPES[id] ?? MIC_TYPES.kickDynCard;
 }

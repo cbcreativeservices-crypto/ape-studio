@@ -67,7 +67,13 @@ export type Shape3 =
    *  `axis` (unit, ⊥ the plane), every edge rounded by `round`. `twoSided`
    *  mirrors it through the pivot (a bow crossing the strings: the stick
    *  reaches both ways). A bow's sweep, a bowing hand's travel. */
-  | { kind: 'fan'; c: Vec3; axis: Vec3; u: Vec3; v: Vec3; r: number; ang: number; halfW: number; round: number; twoSided?: boolean };
+  | { kind: 'fan'; c: Vec3; axis: Vec3; u: Vec3; v: Vec3; r: number; ang: number; halfW: number; round: number; twoSided?: boolean }
+  /** A PRISM: a polygon in plan (x, z) extruded between y0 and y1 (y-down,
+   *  y0 < y1). With `hinge`, the prism is turned about the line parallel to
+   *  x through (y, z) = (hinge.y, hinge.z) by `deg`, its +z side lifting
+   *  toward −y (a grand piano's lid on its stick). Added for Lab 4 (the
+   *  pianos: a curved case outline, a lid). */
+  | { kind: 'prism'; pts: readonly (readonly [number, number])[]; y0: number; y1: number; hinge?: { y: number; z: number; deg: number } };
 
 /* ── the instrument model ── */
 export type PartId = string;
@@ -142,6 +148,10 @@ export type RefLine = {
    *  reference head makes this the line readouts measure from (several drums
    *  in one scene). Absent = the variant's first line, whatever the head. */
   surfaces?: string[];
+  /** A reference PLANE, not a line (Lab 4): the reading is the SIGNED
+   *  distance from the plane through `point` whose normal is `dir` (minus
+   *  `offset`) — a piano's hammer line read "toward the tail / the keys". */
+  plane?: boolean;
 };
 export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
 
@@ -287,8 +297,8 @@ export type CompiledScene = {
   /** Hoops a clip mount may clamp to. */
   rims: Rim[];
   yFloor: number;
-  /** Illustrative mount geometry. */
-  boom: { radius: number; outside: number; behind: number };
+  /** Illustrative mount geometry (`route`: the variant's BoomRoute). */
+  boom: { radius: number; outside: number; behind: number; route?: BoomRoute | null };
   standRadius: number;
   /** The model's boom rule (InstrumentModel.mountRule), when it has one. */
   mountRule?: MountRule;
@@ -304,6 +314,17 @@ export type CompiledScene = {
  * boom beside the drums instead of a stand dropping through it.
  */
 export type MountRule = { boom: 'level'; fallback: Vec3; length: number };
+/**
+ * How a stand's boom reaches a mic that hangs over or inside an instrument
+ * (Lab 4: a mic over a grand's strings is held from the open, curved side; a
+ * mic inside an upright's open top comes up out of it first). The boom runs
+ * from the mic's tail leg by leg: along `dir` until the point is `past` mm
+ * along `dir` (the first leg at least the usual reach); a point already more
+ * than `back` mm on the −dir side runs along −dir instead. The stand drops
+ * from the last leg's end. ILLUSTRATIVE.
+ */
+export type BoomLeg = { dir: Vec3; past: number; back?: number };
+export type BoomRoute = { legs: readonly BoomLeg[] };
 
 /* ── derived (never stored) ── */
 export type Readouts = {
@@ -373,6 +394,9 @@ export type InstrumentModel = {
    *  mic seen end-on in the side view is moved, not turned, by a drag.
    *  Absent: the kick's behaviour, unchanged. */
   aimHome?: { az: number; el: number };
+  /** How a stand's boom is routed, per variant (none = straight behind the
+   *  mic, the drums' rule). */
+  boomRoute?: Partial<Record<VariantId, BoomRoute>>;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */

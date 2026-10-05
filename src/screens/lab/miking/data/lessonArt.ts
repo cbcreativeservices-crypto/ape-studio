@@ -40,6 +40,9 @@ import { BASS_BOWED_ART } from '../lessons/c06bBassBowed/art';
 import { C13_ART } from '../lessons/c13Oud/art';
 import { C14_ART } from '../lessons/c14Sitar/art';
 import { C15_ART } from '../lessons/c15Veena/art';
+import { PIANO_ART } from '../lessons/c11Piano/pages';
+import { HARP_ART } from '../lessons/c10Harp/pages';
+import { CLAV_ART } from '../lessons/c12Clavinet/pages';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -87,6 +90,9 @@ ART.C09b = VIOLA_ART;
 ART.C09c = CELLO_ART;
 ART.C06a = BASS_PLUCKED_ART;
 ART.C06b = BASS_BOWED_ART;
+ART.C11 = PIANO_ART;
+ART.C10 = HARP_ART;
+ART.C12 = CLAV_ART;
 
 export function lessonArt(id: string): LessonArt | undefined {
   return ART[id];

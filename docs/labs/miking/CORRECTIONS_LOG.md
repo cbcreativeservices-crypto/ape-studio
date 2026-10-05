@@ -232,6 +232,47 @@ Research: BATCH4_RESEARCH_SUMMARY.md and violin/, viola/, cello/, upright_bass_p
 | B-06 | family | — | The bow's sweep is a two-sided fan ±25° about the bowing point, radius the bow (bass: hair + 20 mm), rounded 25 mm | The proposal's swept volume, simplified so the starts can be tested against it | violin/GEOMETRY_PROPOSAL.md (bow envelope) | APPLIED (`shared/bowed/bowedModel.ts`) |
 | B-07 | family | Bass player turned 20° | The turn left out; the bassist is placed from the back of the bass | A simplification of the drawing; the zones and the bow's sweep are tested in this posture | upright_bass_*/GEOMETRY_PROPOSAL.md | APPLIED (`shared/bowed/posture.ts` standing) |
 
+## C11 Piano (`source_text/Acoustic-Piano-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| C11-01 | L31 | DPA "ORTF cardioid pair around 30 cm (12 in) above strings at mid frame, aimed down toward the pianist" (no angle) | The ORTF-over-the-strings zones carry DPA's angle: aimed about 45° down, toward the pianist | DPA gives the angle; the lesson dropped it, and the zone's aim depends on it. | DPA piano guide: "pointed at 45° downwards, towards the pianist" (acoustic_piano/SOURCES.md) | APPLIED (`lessons/c11Piano/model.ts` zones `gp.ortf`, `bg.ortf`) |
+| C11-02 | L30–L31 | "ORTF" (no geometry) | ORTF stated as 17 cm between the capsules, 110° included | DPA's own page writes "±110°", a slip for 110° included (±55°). | acoustic_piano/SOURCES.md (DPA ORTF row) | APPLIED (`lessons/c11Piano/model.ts`, `lesson.ts`) |
+| C11-03 | — | No hearing line | Hearing note on page 3 with the 85 dBA / 3 dB guideline, and "close to the hammers a piano can pass 130 dB" | Batch 4 summary: every Lab 4 lesson needs the hearing line; DPA gives the 130 dB figure. | OSHA, NIOSH; DPA ("more than 130 dB close to the hammers") | APPLIED (`lessons/c11Piano/pages.tsx` `hearing`, `lesson.ts` q.6) |
+| C11-04 | L31, L35, L37 | Shure placements without numbers | The Shure booklets' numbered rows are offered as zones: 12 in above the middle strings and 8 in from the hammers; 8 in above the treble or bass strings; 6 in over the middle strings on the short stick; underneath, aiming up at the soundboard; the upright's open top, 8 in from the back of its soundboard, and at the hammers with the front panel off | Numbers the lesson did not carry; each zone records its source row internally. | acoustic_piano/SOURCES.md (Shure rows) | APPLIED (`lessons/c11Piano/model.ts`) |
+| C11-05 | L70 | No attachment without the owner's approval | Kept. Shure's booklet suggests a soundboard clamp; the app does not offer it | The lesson's safety rule is stricter; noted so the owner can decide. | acoustic_piano/SOURCES.md | APPLIED (rule kept) · OWNER: confirm |
+| C11-06 | L2 | "Pro Audio Training Academy" | Removed | House rule (as Batch 1). | — | APPLIED |
+| C11-07 | L6 | A0 at 27.5 Hz | Kept | Correct (equal temperament, A4 = 440 Hz). | PHYS-ET | APPLIED (no change) |
+| C11-D1 | — | One lesson for grand, baby grand and upright | One lesson with a piano selector (grand full stick, short stick, baby grand, upright top-open, upright front panel off) | The techniques share the same reasoning (lid, soundboard, hammers, holes); the selector changes the geometry and the zones offered. | — | APPLIED · OWNER: confirm or ask for a split |
+| C11-G1 | — | — | The rim top is drawn 150 mm above the string plane; the lid opens 26° on the full stick and 11° on the short stick | Drawing defaults (no source gives them); named in the lesson's unknowns. | acoustic_piano/GEOMETRY_PROPOSAL.md | OWNER: approve the defaults |
+| C11-G2 | — | — | The upright's interior is redrawn: strings and soundboard at the back, the action in front, the front panel removable | The proposal's frame kept, the drawing simplified. | acoustic_piano/GEOMETRY_PROPOSAL.md | OWNER: approve |
+| C11-G3 | L70 | "All hardware must clear the grand lid through its entire intended travel" | Read as a keep-out: the lid and the stick are solids at their set position; no zone sits where the lid would close | The lab cannot animate the lid's travel; the lesson's rule is said in words on the setting page. | — | APPLIED |
+
+## C10 Harp (`source_text/Harp-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| C10-01 | — | No hearing line | Hearing note on page 3 (85 dBA / 3 dB, people not mics) and the critical quick-check item | Batch 4 summary: every Lab 4 lesson needs it. | OSHA, NIOSH | APPLIED (`lessons/c10Harp/pages.tsx`, `lesson.ts` q.6) |
+| C10-02 | L37 | A miniature "concealed at an existing harp sound hole" | "the second sound hole from the bottom" | DPA names the hole. | DPA-HARP: "try the second sound hole from the bottom" | APPLIED (`lessons/c10Harp/model.ts` zones `hp.hole`, `lv.hole`) |
+| C10-03 | L35 | Two cardioids, "the upper spot" favoured (no figure) | "the top mic about twice as loud (roughly 6 dB) — a starting point, not a rule" | DPA's figure. | DPA-HARP: "mixed with the top microphone twice as loud as the lower one" | APPLIED (`lessons/c10Harp/copy.ts` twoMic) |
+| C10-04 | L37, L65 | No foam in the sound holes | Kept as "nothing pushed in unless the owner asks for that technique" | DPA suggests partly stuffing holes with foam; the lesson's safety rule wins, with the owner's consent as the exception. | DPA-HARP | APPLIED · OWNER: confirm |
+| C10-05 | L16, L31 | "Around 2 m or more" | Kept: a spaced pair about 2 m or more from a full-size harp, toward the room's centre, not too low | Confirmed. | DPA-HARP: "a distance of about 200 cm is recommended as minimum distance" | APPLIED |
+| C10-06 | L2 | "Pro Audio Training Academy" | Removed | House rule. | — | APPLIED |
+| C10-G1 | — | — | The lever harp is drawn at 0.75 of the pedal harp (about 1.4 m), 34 strings; the soundboard's lean, the box depths, five sound holes and seven pedals are drawing defaults | No source gives them; named in the unknowns. | harp/GEOMETRY_PROPOSAL.md | OWNER: approve the defaults |
+| C10-G2 | — | — | A harp wedge in front of a mic that looks DOWN at the board sits about 105° off its axis — near a supercardioid's or hypercardioid's null, nowhere near a cardioid's rear; the context page says so | The geometry, said plainly rather than promising a cardioid null that the drawing cannot show. | — | APPLIED (`lessons/c10Harp/copy.ts` context) |
+
+## C12 Clavinet (`source_text/Clavinet-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| C12-01 | L6 | "a hammer presses a string against a pickup-facing surface" | A tangent (a small plunger) presses the string onto an anvil; the string rings between the anvil and the bridge; magnetic pickups at that end make the signal; on release the yarn-wound part of the string mutes it | The leaflet describes a plunger and an anvil, not a hammer. | HOH-D6 p.5: "a plunger underneath touches the string and presses it on to an anvil"; "Magnetic pick-ups are situated at the other end of the string" | APPLIED (`lessons/c12Clavinet/soundArt.tsx`, `lesson.ts` sound stages) |
+| C12-02 | L41 | "aim the rejection null away from the loudest monitor" | Aim the null TOWARD the loudest monitor, by the mic's actual pattern | Wrong direction: the null is where the mic hears least, so it must face the monitor. | SN-906-2020 p.5: "postion your monitor loudspeakers in the angle area of the highest cancellation" | APPLIED (`lessons/c12Clavinet/copy.ts` context, `lesson.ts` cv.ctx.1, setup brief 2) |
+| C12-03 | — | No hearing line (the only amp lesson without one) | Hearing note on page 3 and the critical quick-check item | Batch 4 summary. | OSHA, NIOSH | APPLIED (`lessons/c12Clavinet/pages.tsx`, `lesson.ts` q.6) |
+| C12-04 | L9–L12, L36 | The direct path taught alongside the mic | Kept as the supporting option: the signal path drawn (DI before or after the pedals), "never a mic input or phantom on the clavinet's output" | The leaflet's "Output 100 mV" is an instrument-level output; the no-phantom rule is an electrical precaution (no source says it). | HOH-D6 p.3 | APPLIED (`lessons/c12Clavinet/soundArt.tsx` `ClavinetPath`, `copy.ts`) |
+| C12-05 | L14–L34 | Centre, edge, off axis, "a little farther back" (no numbers) | The amp zones carry the guides' numbers: 2–15 cm (centre, edge), the dust-cap line at the grille, about 30° off axis, 15–30 cm back on axis, behind an open back (no source distance) | The lesson has no numbers; clavinet/GEOMETRY_PROPOSAL.md maps its moves onto the amp guides. | S-PGA27, S-MILLS, SN-906-2020, S-SM57-UG | APPLIED (`lessons/c12Clavinet/model.ts`) |
+| C12-06 | L2 | "Pro Audio Training Academy" | Removed | House rule. | — | APPLIED |
+| C12-G1 | — | — | The amp is drawn generically (an open-backed 1×12 combo and a closed 1×12 cabinet, frame C) inside the lesson, not from the shared speaker family | The shared speaker family is on another branch (miking-w5); same frame and numbers, so it can be swapped in after the merge. | speaker_leslie/GEOMETRY_PROPOSAL.md | OWNER/LEAD: swap after merge |
+
 ## Shared (all lessons)
 
 | id | Where | Says | Correction | Why | Source | Status |

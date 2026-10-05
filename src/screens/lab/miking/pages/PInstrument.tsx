@@ -93,11 +93,11 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       layout: 'read',
       body: (
         <>
-          <Body>{C.terms?.startIntro ?? `This lesson is about putting a microphone on ${/^[aeiou]/i.test(lesson.noun.one) ? 'an' : 'a'} ${lesson.noun.one} — but first the ${C.words.instrument} itself: what it is, how it makes its sound, and where it sits. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.`}</Body>
+          <Body>{C.terms?.startIntro ?? C.words.intro ?? `This lesson is about putting a microphone on ${/^[aeiou]/i.test(lesson.noun.one) ? 'an' : 'a'} ${lesson.noun.one} — but first the ${C.words.instrument} itself: what it is, how it makes its sound, and where it sits. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.`}</Body>
           <JourneyMap met={journey.met} here="instrument" />
           <PathChooser journey={journey} />
           {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
-          {journey.path === 'new' ? <Note tone="ok">{C.terms?.startNew ?? `Good — NEXT takes you through the ${C.words.instrument} first. You can change how you started here at any time.`}</Note> : null}
+          {journey.path === 'new' ? <Note tone="ok">{C.terms?.startNew ?? C.words.newNote ?? `Good — NEXT takes you through the ${C.words.instrument} first. You can change how you started here at any time.`}</Note> : null}
         </>
       ),
     },

@@ -27,6 +27,8 @@ Source keys (used by `src/screens/lab/miking/data/sources.ts` and by `model.ts` 
 | DPA-MOUNT | DPA, "How to mount the 4099 instrument microphone on various instruments": the guitar clip's fit ("body depth between 35 mm (1.4 in) and 122 mm (4.8 in)") for the generic `clipCond` type, and the bowed strings' clips (the `strMini` type) | see `acoustic_guitar/SOURCES.md` §0 | read 2026-10-04 in the Lab 4 pass; added here for the guitar family's mic type |
 | DPA-UKE | DPA, "How to mic the ukulele": "The miniature supercardioid 4099 CORE+ Instrument Microphone" (the `clipCond` type's pattern) | see `ukulele/SOURCES.md` | read 2026-10-04 in the Lab 4 pass |
 | DPA-VLA | DPA, "How to mic a viola" — the compact-cardioid and supercardioid-miniature facts behind the Lab 4 string mic family | see `violin/SOURCES.md` §0 | read 2026-10-04 in the Lab 4 research pass |
+| DPA-HARP | DPA, "How to mic a harp": the generic `miniOmni` type (an omnidirectional miniature at a harp's sound hole; its size is a drawing default) | see `harp/SOURCES.md` | read 2026-10-04 in the Lab 4 research pass; added here 2026-10-05 (Lab 4 mic family) |
+| PHYS-STRING | The ideal flexible string fixed at both ends: shapes sin(nπx/L), pitch ratios n, n − 1 still points; a stiff real string's upper shapes run sharp (standard string physics, Fletcher & Rossing, *The Physics of Musical Instruments*; from standard texts, not re-checked online) | — | engine `physics/stringModes.ts`, test `mikingLab4Keys.test.ts` (Lab 4, 2026-10-05) |
 
 ---
 

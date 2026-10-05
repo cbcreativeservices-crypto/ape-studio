@@ -268,6 +268,27 @@ function shapeOutline(shape: Shape3, view: ViewId): ReturnType<typeof Skia.Path.
       p.close();
       return p;
     }
+    case 'prism': {
+      // Lab 4. No hinge: the plan polygon (top), its x-extent × [y0, y1]
+      // (side). Hinged (a lid): the turned face polygon, in either view.
+      const hg = shape.hinge;
+      if (!hg && view === 'side') {
+        const xs = shape.pts.map((q) => q[0]);
+        p.addRect(Skia.XYWHRect(Math.min(...xs), shape.y0, Math.max(...xs) - Math.min(...xs), shape.y1 - shape.y0));
+        return p;
+      }
+      const a = ((hg?.deg ?? 0) * Math.PI) / 180;
+      shape.pts.forEach(([x, z], i) => {
+        const dz = z - (hg?.z ?? 0);
+        const vz = (hg?.z ?? 0) + dz * Math.cos(a);
+        const vy = (hg?.y ?? shape.y0) - dz * Math.sin(a);
+        const v = view === 'side' ? vy : hg ? vz : z;
+        if (i === 0) p.moveTo(x, v);
+        else p.lineTo(x, v);
+      });
+      p.close();
+      return p;
+    }
     default:
       return null;
   }

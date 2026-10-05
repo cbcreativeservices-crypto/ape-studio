@@ -10,7 +10,7 @@
  * charter §12) applies: no source, brand or model names, no badges. Pinned by
  * test/mikingLearnerText.test.ts (lesson data walk). Pure data; no React.
  */
-import type { MicPattern, MicPose, PatternId, VariantId, Vec3, ViewBox, ViewId } from './types.ts';
+import type { MicPattern, MicPose, MountKind, PatternId, VariantId, Vec3, ViewBox, ViewId } from './types.ts';
 
 /** One of HOW IT SOUNDS step 3's two motions (`together` / `opposed`). */
 export type PairMode = {
@@ -216,6 +216,20 @@ export type FamilyWords = {
   /** The canvas description's view words. */
   viewSide: string;
   viewTop: string;
+  /* The keyboard and harp lessons' page words (miking-c4), all optional:
+   * absent = each page's own words. */
+  /** ORIENT, START: the lesson's opening paragraph. */
+  intro?: string;
+  /** ORIENT, START: the note once NEW is chosen. */
+  newNote?: string;
+  /** MICROPHONES: the mount line, per mount (wins over mountStand / mountClip). */
+  mount?: Readonly<Partial<Record<MountKind, string>>>;
+  /** PLACEMENT, worked example: THE SURFACE ({head} = its label). */
+  workedHead?: string;
+  /** PLACEMENT, worked example: THE AIM when the zone names none. */
+  workedNoAim?: string;
+  /** STUDIO OR LIVE: what lies in the path (the SHIELDED cell) — `shield`'s other name. */
+  inPath?: string;
 };
 
 export type LessonTerms = {
@@ -390,7 +404,7 @@ export function copyOf(lesson: { copy?: Partial<LessonCopy> }): LessonCopy & { w
     context: { ...NEUTRAL_COPY.context, ...(c.context ?? {}) },
     twoMic: { ...NEUTRAL_COPY.twoMic, ...(c.twoMic ?? {}) },
     practice: { ...NEUTRAL_COPY.practice, ...(c.practice ?? {}) },
-    words: { ...DRUM_WORDS, ...(c.terms ? termsToWords(c.terms) : {}), ...(c.words ?? {}) },
+    words: { ...DRUM_WORDS, ...(c.terms ? termsToWords(c.terms) : {}), ...(c.words ?? {}), ...(c.words?.inPath ? { shield: c.words.inPath } : {}) },
     ...(c.terms ? { terms: c.terms } : {}),
   };
 }

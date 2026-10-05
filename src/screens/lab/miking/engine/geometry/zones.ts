@@ -10,7 +10,7 @@
  * No magnetic snapping: the zone only lights up.
  */
 import type { CompiledScene, DocumentedZone, MicPose, RefLine, ReferenceSurface, VariantId } from '../model/types.ts';
-import { aimVec, angleBetween, distToLine, dot, len, sub } from './vec.ts';
+import { aimVec, angleBetween, distToLine, dot, len, norm, sub } from './vec.ts';
 import { isInside } from './collision.ts';
 
 export type ZoneCtx = {
@@ -56,7 +56,10 @@ export function aimOff(s: ReferenceSurface, pose: MicPose): number {
 export function lineDistance(lines: RefLine[], id: string, pose: MicPose): number {
   'worklet';
   const l = findLine(lines, id);
-  return l ? distToLine(pose.p, l.point, l.dir) - (l.offset ?? 0) : NaN;
+  if (!l) return NaN;
+  // A reference PLANE (Lab 4): the signed distance along its normal.
+  if (l.plane) return dot(sub(pose.p, l.point), norm(l.dir)) - (l.offset ?? 0);
+  return distToLine(pose.p, l.point, l.dir) - (l.offset ?? 0);
 }
 
 /** Does the mic's front axis, followed forward, meet the surface's plane

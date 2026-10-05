@@ -28,12 +28,13 @@ import type { PageProps } from './pageTypes';
 import { copyOf, DRUM_WORDS, type FamilyWords } from '../engine/model/copy.ts';
 
 /** Three plain lines per mic type: what the choice needs (review M3). */
-export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | 'mountClip'> = DRUM_WORDS): { power: string; mount: string; pattern: string } {
+export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | 'mountClip' | 'mount'> = DRUM_WORDS): { power: string; mount: string; pattern: string } {
   const p = m.patterns[0].id;
   return {
     power: m.transducer === 'condenser' ? 'Power: needs phantom power from the desk' : 'Power: none needed',
     mount:
-      m.mount === 'boom'
+      words.mount?.[m.mount] ??
+      (m.mount === 'boom'
         ? 'Mount: an overhead boom stand, counterweighted, its boom clear of the cymbals and the player'
         : m.address === 'side'
           ? 'Mount: a floor stand — aim the FACE of the body at the source, not its end'
@@ -41,7 +42,7 @@ export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | '
             ? 'Mount: rests on the pillow — it is made for that'
             : m.mount === 'clip'
               ? words.mountClip
-              : words.mountStand,
+              : words.mountStand),
     pattern:
       p === 'cardioid'
         ? 'Pattern: cardioid — rejects most directly behind'
