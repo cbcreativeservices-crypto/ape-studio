@@ -88,7 +88,7 @@ export const FC_ZONES: DocumentedZone[] = [
   z({
     id: 'fc.high',
     label: 'High and in front, outside the dance',
-    band: 'For a dancer, try a mic about 1.3–1.9 m (4–6 ft) from the dancer’s hands, high and in front — well outside the whole route.',
+    band: 'For a dancer, try a mic high and in front, well outside the whole route — in this drawing about 1.3–1.9 m (4–6 ft) from the dancer’s hands.',
     quote: 'for dance, a wider or overhead position may be safer and more consistent … A safe overhead or broader pickup may cover the performance better if the stage is quiet enough',
     refSurface: 'dance',
     distance: { min: 1300, max: 1900 },
@@ -104,7 +104,7 @@ export const FC_ZONES: DocumentedZone[] = [
   z({
     id: 'fc.far',
     label: 'Farther out, a wider view',
-    band: 'Or try a wider view about 1.9–2.6 m (6–8½ ft) away, a little above the dancer — covering the whole route.',
+    band: 'Or try a wider view a little above the dancer, covering the whole route — in this drawing about 1.9–2.6 m (6–8½ ft) away.',
     quote: 'Increase coverage or use a safe elevated position; mark the playing zone.',
     refSurface: 'dance',
     distance: { min: 1900, max: 2600 },

@@ -380,7 +380,7 @@ function StrikeCanvas({ w, h, variant, shown, label }: { w: number; h: number; v
     { id: 'n1', text: held ? '① BEATER' : '① BEATERS', u: -150, v: (held ? BASE_Y : lowL[1]) + 100, align: 'right', tone: shown === 1 ? 'amber' : 'muted' },
     { id: 'n2', text: shown >= 3 ? '③ RINGS IN MANY SHAPES' : '② THE BAR BENDS', short: shown >= 3 ? '③ RINGS' : '② BENDS', u: 125, v: P0.y + 70, align: 'left', tone: shown === 2 || shown === 3 ? 'amber' : 'muted' },
     { id: 'n4', text: '④ SOUND LEAVES ALL ROUND', short: '④ ALL ROUND', u: 0, v: TOP_Y - 100, align: 'center', tone: shown === 4 ? 'amber' : 'muted' },
-    { id: 'clip', text: held ? 'HANGS FREE' : 'TWO CLIPS', u: held ? 24 : SIDE / 2 + 24, v: held ? CLIP_Y + 12 : STAND.barY + 8, align: 'left', tone: 'muted' },
+    { id: 'clip', text: held ? 'HANGS FREELY' : 'TWO CLIPS', u: held ? 24 : SIDE / 2 + 24, v: held ? CLIP_Y + 12 : STAND.barY + 8, align: 'left', tone: 'muted' },
   ];
   return (
     <View style={{ width: w, height: h }}>

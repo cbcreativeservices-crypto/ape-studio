@@ -81,7 +81,7 @@ export const BC_ZONES: DocumentedZone[] = [
   {
     id: 'bc.endL',
     label: 'Beyond the long end (one of a pair)',
-    band: 'As one of two end mics, try about 30–50 cm (12–20 in) beyond the long end of the row, outside the swing.',
+    band: 'As one of two end mics, try a mic beyond the long end of the row, outside the swing — in this drawing about 30–50 cm (12–20 in) from the end bars.',
     kind: 'trial',
     src: 'LESSON-BC',
     quote: 'A separate mic at each end is an option for a deliberately wide or difficult setup, but raises open-mic count, spill and combined-mic complexity.',
@@ -99,7 +99,7 @@ export const BC_ZONES: DocumentedZone[] = [
   {
     id: 'bc.endR',
     label: 'Beyond the short end (one of a pair)',
-    band: 'As the other end mic, try about 30–50 cm (12–20 in) beyond the short end, outside the swing and clear of the stand.',
+    band: 'As the other end mic, try a mic beyond the short end, outside the swing and clear of the stand — in this drawing about 30–50 cm (12–20 in) away.',
     kind: 'trial',
     src: 'LESSON-BC',
     quote: 'A separate mic at each end is an option for a deliberately wide or difficult setup',

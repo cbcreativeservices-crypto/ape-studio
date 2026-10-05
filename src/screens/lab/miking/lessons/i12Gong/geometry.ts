@@ -9,7 +9,7 @@
  *   axis   the line straight out of the face's centre: the readout's
  *          "off the centre line"
  *   swing  the face's free swing (fore and aft, and a little turn) + 100 mm:
- *          nothing goes in it — the gong must hang free of everything
+ *          nothing goes in it — the gong must hang freely of everything
  */
 import type { DocumentedZone, Envelope, InstrumentModel, Part, Provenance, Vec3 } from '../../engine/model/types.ts';
 import { aimTo, approachPose, sub, v3 } from '../shared/handGeom.ts';
@@ -36,7 +36,7 @@ function frameParts(v: string): Part[] {
   const r = GONG.post.mm / 2;
   const prov = ill('a frame stand of the rated type: its sizes are drawing defaults');
   return [
-    { id: `gg.frame${s}`, label: 'frame stand', short: 'frame', role: 'A square frame stand the gong hangs in, free to swing. It must be stable and rated for the gong — check its locks and feet with the owner or the venue’s crew. Nothing is clamped to it for a mic without their approval.', solid: { kind: 'capsule', a: v3(0, top, -W), b: v3(0, top, W), r }, variants: [v], prov },
+    { id: `gg.frame${s}`, label: 'frame stand', short: 'frame', role: 'A square frame stand the gong hangs in, swinging freely. It must be stable and rated for the gong — check its locks and feet with the owner or the venue’s crew. Nothing is clamped to it for a mic without their approval.', solid: { kind: 'capsule', a: v3(0, top, -W), b: v3(0, top, W), r }, variants: [v], prov },
     { id: `gg.postL${s}`, label: 'frame post', short: 'post', role: 'One of the frame’s uprights.', solid: { kind: 'capsule', a: v3(0, -20, -W), b: v3(0, top, -W), r }, variants: [v], listIn: [], prov },
     { id: `gg.postR${s}`, label: 'frame post', short: 'post', role: 'One of the frame’s uprights.', solid: { kind: 'capsule', a: v3(0, -20, W), b: v3(0, top, W), r }, variants: [v], listIn: [], prov },
     { id: `gg.footL${s}`, label: 'frame foot', short: 'foot', role: 'A foot of the frame.', solid: { kind: 'capsule', a: v3(-F, -20, -W), b: v3(F, -20, -W), r }, variants: [v], listIn: [], prov },
@@ -48,7 +48,7 @@ const parts: Part[] = [
   { id: 'gg.face', label: 'face (tam-tam)', short: 'face', role: 'The broad face of a large orchestral tam-tam — no boss. Struck a little off centre with a soft mallet, it swells after the stroke into a broad, complex bloom rather than one clear note.', solid: { kind: 'cyl', a: v3(-RIM, CY, 0), b: v3(DOME, CY, 0), r: radiusOf('tamtam') }, variants: ['tamtam'], moving: true, prov: GONG.tamtamD.prov },
   { id: 'gg.faceB', label: 'face (bossed gong)', short: 'face', role: 'The face round the raised boss. Struck near the boss, it brings out a thicker mix of tones.', solid: { kind: 'cyl', a: v3(-RIM, CY, 0), b: v3(DOME, CY, 0), r: radiusOf('bossed') }, variants: ['bossed'], moving: true, prov: GONG.bossedD.prov },
   { id: 'gg.boss', label: 'boss', short: 'boss', role: 'The raised centre of a bossed gong — the part meant to be struck, for a more pitch-centred sound.', solid: { kind: 'cyl', a: v3(DOME, CY, 0), b: v3(BOSS_H, CY, 0), r: GONG.bossD.mm / 2 }, variants: ['bossed'], moving: true, prov: { kind: 'sourced', src: 'SONVO', quote: 'They have a rather large protrusion in the middle that is meant to be struck' } },
-  { id: 'gg.rim', label: 'turned rim', short: 'rim', role: 'The edge, turned back into a flange. The cords pass through holes in it, so the gong hangs free.', prov: ill('the rim’s depth is a drawing default') },
+  { id: 'gg.rim', label: 'turned rim', short: 'rim', role: 'The edge, turned back into a flange. The cords pass through holes in it, so the gong hangs freely.', prov: ill('the rim’s depth is a drawing default') },
   { id: 'gg.cords', label: 'suspension cords', short: 'cords', role: 'Cords — gut is common — from the frame to holes in the rim. The gong should swing freely forward, back and to the sides without touching the stand. Inspect them before playing; the gong and its suspension are the owner’s.', prov: { kind: 'sourced', src: 'PAI-SUP', quote: 'Each Gong should be suspended so that it may swing freely forward, back, and to the sides without touching the stand.' } },
   ...VARIANTS.flatMap(frameParts),
   { id: 'gg.mallet', label: 'mallet', short: 'mallet', role: 'A soft, heavy mallet. Its size, weight and covering — and where it lands — change the sound; the whole arc, with the follow-through, is the player’s space.', prov: { kind: 'sourced', src: 'PAI-GONG', quote: 'The sound of these gongs can be influenced and varied through the nature of the stroke, as well as the size, weight, and composition of the mallets.' } },
@@ -57,7 +57,7 @@ const parts: Part[] = [
 /** The face's swept volume as it swings, + 100 mm (a solid cylinder along x). */
 function swingEnv(v: 'tamtam' | 'bossed'): Envelope {
   const front = (v === 'bossed' ? BOSS_H : DOME) + GONG.swing.mm + 100;
-  return { id: `env.swing${sfx(v)}`, label: 'the gong’s free swing', shape: { kind: 'cyl', a: v3(-RIM - GONG.swing.mm - 100, CY, 0), b: v3(front, CY, 0), r: radiusOf(v) + 100 }, prov: ill('the free swing (±80 mm at the rim, drawing default) plus 100 mm'), variants: [v] };
+  return { id: `env.swing${sfx(v)}`, label: 'the gong’s swing', shape: { kind: 'cyl', a: v3(-RIM - GONG.swing.mm - 100, CY, 0), b: v3(front, CY, 0), r: radiusOf(v) + 100 }, prov: ill('the swing (±80 mm at the rim, drawing default) plus 100 mm'), variants: [v] };
 }
 function malletEnv(v: 'tamtam' | 'bossed'): Envelope {
   const sp = strikePoint(v);
@@ -145,7 +145,7 @@ export const GONG_ZONES: DocumentedZone[] = [
   {
     id: 'gg.D',
     label: 'A room mic, farther out',
-    band: 'With a front mic working first, try a second mic about 1.8–2.6 m (6–8½ ft) out, in a good-sounding room, secure and clear of traffic.',
+    band: 'With a front mic working first, try a second mic farther into a good-sounding room, secure and clear of traffic — in this drawing about 1.8–2.6 m (6–8½ ft) out.',
     kind: 'trial',
     src: 'LESSON-GONG',
     quote: 'Establish A or B first, then place a second mic or pair farther into a good-sounding room, securely and clear of traffic.',

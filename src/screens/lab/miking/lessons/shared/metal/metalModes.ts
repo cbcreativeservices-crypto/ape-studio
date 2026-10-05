@@ -141,7 +141,7 @@ const DISC_K: Readonly<Record<string, number>> = {
 
 /** The free disc's shapes, ascending — the Cymatics Lab's circle, edge free. */
 export const DISC_SHAPES: readonly DiscShape[] = (() => {
-  const ms = plateModes({ ...DEFAULT_PLATE, shape: 'circle', edge: 'free', sizeMm: 812.8, aspect: 1, thicknessMm: 2, material: 'brass', exciter: { x: 0.5, y: 0.5 }, support: null }, 15);
+  const ms = plateModes({ ...DEFAULT_PLATE, shape: 'circle', sizeMm: 812.8, aspect: 1, thicknessMm: 2, material: 'brass', exciter: { x: 0.5, y: 0.5 }, support: null }, 15);
   const base = ms[0].lam2;
   return ms.map((m) => {
     const [, n, s] = m.id.split('-').map(Number);

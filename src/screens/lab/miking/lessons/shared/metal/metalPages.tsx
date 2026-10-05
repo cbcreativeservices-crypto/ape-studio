@@ -210,8 +210,8 @@ export type BarShapesSpec = {
 };
 export type DiscShapesSpec = {
   kind: 'disc';
-  /** 'free': hung by its rim (a gong); 'centreHeld': held at a centre strap. */
-  set: 'free' | 'centreHeld';
+  /** 'rimHung': hung by its rim, the edge unsupported (a gong); 'centreHeld': held at a centre strap. */
+  set: 'rimHung' | 'centreHeld';
   diameterMm: (variant: VariantId) => number;
   strikes: (variant: VariantId) => readonly (StrikePick & { r: number })[];
   metal: readonly string[];
@@ -236,8 +236,8 @@ export type SoundSpec = {
 function barViews(): ShapeView[] {
   return BAR_SHAPES.map((b) => ({ label: `${b.n}`, still: `${b.nodes.length} still points`, ratio: b.ratio, at: (x) => barAt(b, x), share: (x) => barStrikeShare(b, x), rings: [], diams: [], nodes: b.nodes }));
 }
-function discViews(set: 'free' | 'centreHeld'): ShapeView[] {
-  if (set === 'free') return DISC_SHAPES.slice(0, 9).map((d) => ({ label: d.label, still: d.still, ratio: d.ratio, at: (r, t) => discAt(d, r, t) / discPeak(d), share: (r) => discStrikeShare(d, r), rings: discStillRings(d), diams: discStillDiameters(d), nodes: [] }));
+function discViews(set: 'rimHung' | 'centreHeld'): ShapeView[] {
+  if (set === 'rimHung') return DISC_SHAPES.slice(0, 9).map((d) => ({ label: d.label, still: d.still, ratio: d.ratio, at: (r, t) => discAt(d, r, t) / discPeak(d), share: (r) => discStrikeShare(d, r), rings: discStillRings(d), diams: discStillDiameters(d), nodes: [] }));
   return CYMBAL_SHAPES.map((c) => ({ label: c.label, still: c.still, ratio: c.ratio, at: (r, t) => cymbalShapeAt(c, r, t) / cymbalShapePeak(c), share: (r) => cymbalStrikeShare(c, r), rings: cymbalStillRings(c), diams: cymbalStillDiameters(c), nodes: [] }));
 }
 

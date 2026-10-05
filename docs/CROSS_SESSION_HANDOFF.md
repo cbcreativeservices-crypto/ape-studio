@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 03:07 · ccode · ab6430b0
+changed: miking(lab2): I12 Gong lesson — tam-tam or bossed gong
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 02:37 · ccode · 08fc2f9a
 changed: miking(lab2): suspended-metal family + I06a Triangle lesson
 affects other side: nothing (miking lessons, branch final-lab)

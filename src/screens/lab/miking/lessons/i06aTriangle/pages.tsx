@@ -39,7 +39,7 @@ const HAND: HandSpec = {
     first: 'The player stands with the triangle in front of the chest; the beater and both hands work round it. Everything else fits round that.',
     before: [
       { title: 'ASK FOR THE WHOLE PASSAGE', text: 'Soft and strong strokes, rolls and the cutoffs — held or mounted, and the moves to other instruments. Which beater, and where on the bar? The source changes before the mic does.' },
-      { title: 'CHECK THE SUSPENSION', text: 'Ask the player to check the clip, the main line and the catch line: a worn line can drop the instrument. The triangle must hang free — no mic position restores a ring a poor suspension has already damped. The triangle and its care are the player’s.' },
+      { title: 'CHECK THE SUSPENSION', text: 'Ask the player to check the clip, the main line and the catch line: a worn line can drop the instrument. The triangle must hang freely — no mic position restores a ring a poor suspension has already damped. The triangle and its care are the player’s.' },
       { title: 'LISTEN IN THE ROOM', text: 'From a safe point in front and a little to one side, hear the attack and the ring unamplified, at soft and strong levels, before any mic goes up.' },
     ],
   },
@@ -129,7 +129,7 @@ const SPEC: MetalSpec = {
     figure: { title: 'TRIANGLE', badge: 'An 8 in steel triangle, face-on from the audience · the hold is a drawing choice', label: (v) => (v === 'mounted' ? 'An 8 inch triangle seen face-on, hung on a stand by two clips at its closed corners, the closed side on top and the open corner at the bottom, with two beaters.' : 'An 8 inch steel triangle seen face-on from the audience, hanging from a clip and a thin line held by the player’s left hand, the open corner at the bottom on the player’s left, and a steel beater from the player’s right hand at the base.') },
     partsBadge: 'An 8 in steel triangle, face-on · tap a part to name it',
     partsLooking: (v) => (v === 'mounted' ? 'From the audience · the triangle on its stand' : 'From the audience · the triangle face-on, the player behind'),
-    partsNote: 'One steel rod, bent round two closed corners, with one corner left open. It hangs free so the whole bar can ring. Switch PLAYED to see it mounted.',
+    partsNote: 'One steel rod, bent round two closed corners, with one corner left open. It hangs freely so the whole bar can ring. Switch PLAYED to see it mounted.',
     partsWarn: 'The triangle and its clip and lines are the player’s: never clip a mic to them, and never hold the metal — a hand on it stops the ring.',
     variantKey: 'PLAYED',
   },
@@ -162,7 +162,7 @@ const SPEC: MetalSpec = {
       subject: 'The 8 inch triangle face-on, drawn as the bar it was bent from',
       notes: () => [
         'A shape is set moving only as much as the bar moves where the stroke lands. Each shape has still points (white); a stroke on one drives that shape hardly at all — so the spot changes the mix of shapes, and the colour of the sound.',
-        'This is a bar free at both ends, drawn round the triangle’s corners. The real bends shift these numbers and add shapes that swing out of the triangle’s plane — part of the shimmer.',
+        'This is a bar held at neither end, drawn round the triangle’s corners. The real bends shift these numbers and add shapes that swing out of the triangle’s plane — part of the shimmer.',
       ],
       tried: 'Each spot drives a different mix of shapes — that is one reason players choose where to strike. Some shapes barely move at a given spot.',
     },

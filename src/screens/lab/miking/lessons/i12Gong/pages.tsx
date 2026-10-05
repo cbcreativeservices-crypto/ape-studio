@@ -39,7 +39,7 @@ const HAND: HandSpec = {
     ],
     label: (scene, sel) => (scene === 'stage' ? `A stage from above: the gong in its frame with the player beside its struck face; a wedge downstage in front, the band upstage, and the audience and PA to the right.${sel ? ` Highlighted: ${sel}.` : ''}` : `A studio room from above: the gong in its frame and the player, no monitors on the floor, the room's walls around.${sel ? ` Highlighted: ${sel}.` : ''}`),
     looking: (scene) => (scene === 'stage' ? 'Plan · a stage from above, the audience at the right' : 'Plan · a studio room from above'),
-    first: 'The gong hangs in its frame, free to swing; the player stands beside the struck face with the mallet. Everything else fits round the swing and the mallet’s arc.',
+    first: 'The gong hangs in its frame, swinging freely; the player stands beside the struck face with the mallet. Everything else fits round the swing and the mallet’s arc.',
     before: [
       { title: 'IDENTIFY THE GONG', text: 'An orchestral tam-tam (no boss, a broad bloom) or a bossed gong (a raised centre, a more pitch-centred sound)? Do not assume all gongs behave the same. Then ask for quiet and forceful strokes, rolls, the intended decay and any damping.' },
       { title: 'THE SWING AND THE SUSPENSION', text: 'The gong must swing freely without touching the stand. Check the cords, the stand’s rating, locks and feet with the owner or the venue’s crew — the gong and its suspension are theirs. Mark the full swing and the mallet’s arc.' },
@@ -151,7 +151,7 @@ const SPEC: MetalSpec = {
     variantKey: 'GONG',
     shapes: {
       kind: 'disc',
-      set: 'free',
+      set: 'rimHung',
       diameterMm: (v) => diameterOf(v),
       strikes: (v) =>
         kindOf(v) === 'bossed'
@@ -169,7 +169,7 @@ const SPEC: MetalSpec = {
       boss: (v) => (kindOf(v) === 'bossed' ? GONG.bossD.mm / 2 : undefined),
       rim: true,
       title: 'The face’s shapes',
-      badge: 'A simplified picture: a flat disc free at its edge · blue + toward you, amber − away · white dashes = still lines',
+      badge: 'A simplified picture: a flat disc unsupported at its edge · blue + toward you, amber − away · white dashes = still lines',
       looking: (v) => `The face, face-on · ${Math.round(diameterOf(v) / 10)} cm across · one vibration shape`,
       prompt: 'Step through SHAPE, then move the STROKE: off centre, the exact centre, out toward the rim. Which shapes does a centre stroke leave still?',
       strikeWord: 'STROKE',
@@ -178,7 +178,7 @@ const SPEC: MetalSpec = {
         'A shape is set moving only as much as the face moves where the mallet lands. At the exact centre, every shape with a still line across the face stands still — so a centre stroke drives only the ring-shaped ones: fewer shapes, a more centred pitch. Off centre, many more move.',
         kindOf(v) === 'bossed'
           ? 'This is a flat disc of even thickness. A real bossed gong’s boss and shoulder shape and concentrate its main tone, so its numbers differ — the picture shows which shapes a stroke can reach.'
-          : 'This is a flat disc of even thickness, hung free by its rim. A real tam-tam is slightly domed with a turned rim, and hit hard its energy spreads into finer shapes after the stroke — the build-up you stepped through.',
+          : 'This is a flat disc of even thickness, hung by its rim. A real tam-tam is slightly domed with a turned rim, and hit hard its energy spreads into finer shapes after the stroke — the build-up you stepped through.',
       ],
       tried: 'At the exact centre only the ring-shaped shapes move; off centre, nearly all of them do. Where the mallet lands is part of the gong’s colour.',
     },

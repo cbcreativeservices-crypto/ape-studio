@@ -134,7 +134,7 @@ const scenarios: MikingScenario[] = [
     correct: 'The straps or loops, so no cymbal flies off',
     explain: 'A loose cymbal can fall or fly from the hand. Confirm the attachment with the musician — and keep stands and cables clear of the route so nothing snags.',
     why: {
-      'That they are tied tightly to the player’s hand': 'The straps hold them; the plates must still ring free.',
+      'That they are tied tightly to the player’s hand': 'The straps hold them; the plates must still ring freely.',
       'That the pair is polished and bright': 'Polish is cosmetic; the attachment is the safety check.',
     },
   },

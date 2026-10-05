@@ -9,7 +9,7 @@
  *
  * First identify the instrument — an orchestral tam-tam or a bossed gong —
  * then choose an approach (the selector on every page). The A/B distances
- * are the lesson's own classroom trials; no maker prescribes them.
+ * are the lesson's own teaching trials; no maker prescribes them.
  */
 import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, PLAYER_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, type MetalWords } from '../shared/metal/metalItems.ts';
@@ -23,7 +23,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Meet the gong',
     goal: 'Get to know the gong — which kind you have (an orchestral tam-tam or a bossed gong), where you meet it, what it does in the music, and its parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A large bronze plate hanging free on cords in a frame, struck with a soft mallet. A tam-tam has no boss and blooms; a bossed gong is struck on its raised centre for a more pitch-centred sound. Identify it first.',
+    takeaway: 'A large bronze plate hanging freely on cords in a frame, struck with a soft mallet. A tam-tam has no boss and blooms; a bossed gong is struck on its raised centre for a more pitch-centred sound. Identify it first.',
   },
   sound: {
     title: 'How it makes its sound',
@@ -33,7 +33,7 @@ const pages: Record<PageId, PageContent> = {
   },
   setting: {
     title: 'Where it sits',
-    goal: 'Know where the gong sits — its frame and free swing, the player and the mallet, its neighbours, what a stage and a studio add — and what to do before any mic.',
+    goal: 'Know where the gong sits — its frame and its swing, the player and the mallet, its neighbours, what a stage and a studio add — and what to do before any mic.',
     credit: { scenarios: ['gg.set.1', 'gg.set.hear', 'gg.set.2'], note: 'Answer the three checks.' },
     takeaway: 'Ask for quiet and forceful strokes, rolls, the intended decay and damping. Mark the full swing and the mallet’s arc; never attach a mic to the gong, its cords or the frame without the owner’s approval. Protect your hearing.',
   },
@@ -133,10 +133,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'A clamp would hold a mic right on the gong’s frame. Is that a good idea?',
     options: ['Only with the maker’s and the owner’s approval', 'Yes — on the frame the mic stays at the same distance', 'Yes, if the clamp is small and light'],
     correct: 'Only with the maker’s and the owner’s approval',
-    explain: 'A mic stand must be separately stable; nothing is attached to the gong, its cords or the frame without the maker’s and the owner’s approval — and the gong must still hang free.',
+    explain: 'A mic stand must be separately stable; nothing is attached to the gong, its cords or the frame without the maker’s and the owner’s approval — and the gong must still hang freely.',
     why: {
       'Yes — on the frame the mic stays at the same distance': 'Approval comes first, and a clamp can add noise or load the frame.',
-      'Yes, if the clamp is small and light': 'Size is not the question: approval and the free swing are.',
+      'Yes, if the clamp is small and light': 'Size is not the question: approval and the open swing are.',
     },
   },
   {
@@ -217,7 +217,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The level jumps with each swing of the gong. What do you do?',
     options: ['Move outside the swing and aim at a wider region', 'Tie the gong so that it cannot swing toward the mic', 'Compress the channel hard to hide it'],
     correct: 'Move outside the swing and aim at a wider region',
-    explain: 'The gong must hang free — never restrain it to protect a mic. Move outside the swing envelope and aim at a wider part of the face.',
+    explain: 'The gong must hang freely — never restrain it to protect a mic. Move outside the swing envelope and aim at a wider part of the face.',
     why: {
       'Tie the gong so that it cannot swing toward the mic': 'Never restrain the gong: it must swing freely, and restraint changes its sound.',
       'Compress the channel hard to hide it': 'Processing hides a placement problem; move the mic.',
@@ -382,7 +382,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'Is the mic inside or near the swing? Move outside it and aim at a wider region.',
     options: ['Move outside the swing; aim at a wider region', 'Restrain the gong so it swings less', 'Compress hard so the level stays even'],
     correct: 'Move outside the swing; aim at a wider region',
-    explain: 'Do not restrain the gong to protect a mic: it must hang free. Move outside the swing envelope.',
+    explain: 'Do not restrain the gong to protect a mic: it must hang freely. Move outside the swing envelope.',
     why: {
       'Restrain the gong so it swings less': 'Never restrain it: it must swing freely, and restraint changes its sound.',
       'Compress hard so the level stays even': 'Processing hides a placement problem.',
@@ -417,7 +417,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A coincident pair at the front, compared with one mic, in the good room', ok: true, power: 'phantom', feedback: 'A fair studio choice for size, if it stays solid in mono.' },
       { id: 'c', label: 'A mic 5 cm from the face, at its centre', ok: false, power: 'phantom', feedback: 'Inside the swing, against the gong — never.' },
       { id: 'd', label: 'A clamp on the frame holding the mic, without asking', ok: false, power: 'phantom', feedback: 'Nothing is attached to the frame without the owner’s approval.' },
-      { id: 'e', label: 'Tie the gong still so the level does not change', ok: false, power: 'none', feedback: 'The gong must hang free.' },
+      { id: 'e', label: 'Tie the gong still so the level does not change', ok: false, power: 'none', feedback: 'The gong must hang freely.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, KIND_REASON, BRAND_REASON, PLAYER_REASON],
     explain: 'More than one setup passes. What passes is the reasoning: a starting point from the face at rest, outside the swing and the mallet, with the power the mic needs.',
@@ -463,11 +463,11 @@ const diagnostic: DiagnosticItem[] = [
     id: 'gg.q.2',
     covers: 'instrument',
     prompt: 'How should a gong hang in its frame?',
-    options: ['Free to swing without touching the stand', 'Clamped firmly so it cannot move', 'Resting on the frame’s bottom bar'],
-    correct: 'Free to swing without touching the stand',
+    options: ['Swinging freely without touching the stand', 'Clamped firmly so it cannot move', 'Resting on the frame’s bottom bar'],
+    correct: 'Swinging freely without touching the stand',
     explain: 'It hangs on cords and swings freely forward, back and sideways without touching the stand — inspect the cords before playing.',
     why: {
-      'Clamped firmly so it cannot move': 'A clamped gong is damped; it must hang free.',
+      'Clamped firmly so it cannot move': 'A clamped gong is damped; it must hang freely.',
       'Resting on the frame’s bottom bar': 'Touching the frame damps it and transfers vibration.',
     },
   },
@@ -545,7 +545,7 @@ export const I12_LESSON: Lesson = {
   },
   setting: {
     items: [
-      { id: 'gong', label: 'the gong in its frame', short: 'GONG', note: 'Hanging on cords in a frame stand, free to swing. Leave the gong and its suspension to the owner or the venue’s technician.', prov: { kind: 'illustrative', reason: 'a typical position: a drawing default' }, tag: 'THE INSTRUMENT', scene: 'all' },
+      { id: 'gong', label: 'the gong in its frame', short: 'GONG', note: 'Hanging on cords in a frame stand, swinging freely. Leave the gong and its suspension to the owner or the venue’s technician.', prov: { kind: 'illustrative', reason: 'a typical position: a drawing default' }, tag: 'THE INSTRUMENT', scene: 'all' },
       { id: 'player', label: 'the player and the mallet', short: 'PLAYER', note: 'Beside the struck face, with the mallet’s whole arc and follow-through. Their space, and the gong’s swing, come before any mic.', prov: { kind: 'illustrative', reason: 'a standing player: a drawing default' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'wedge', label: 'a floor wedge downstage', short: 'WEDGE', note: 'Live, a floor monitor in front, facing back toward the player — behind a mic that faces the gong, where a pattern’s null can help.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'MONITOR', scene: 'stage' },
       { id: 'band', label: 'the rest of the percussion and the band', short: 'BAND', note: 'Loud neighbours: a closer directional mic outside the swing helps more than gain.', prov: { kind: 'illustrative', reason: 'a typical stage layout' }, tag: 'SPILL', scene: 'stage' },
@@ -571,7 +571,7 @@ export const I12_LESSON: Lesson = {
     { text: 'The boss (Ø 90 × 35 mm), the rim’s depth (40 mm), the face’s dome (8 mm), the centre height (1300 mm) and the swing (±80 mm) — drawing defaults.', dims: ['bossD', 'bossH', 'rim', 'dome', 'centreH', 'swing'] },
     { text: 'The mallet (head Ø 120 mm, handle 400 mm) and the frame (feet 600 mm, posts 40 mm, the inner width) — drawing defaults; the stand type is a rated frame for gongs up to 100 cm.', dims: ['malletHead', 'malletHandle', 'feet', 'post'] },
     { text: 'Where a tam-tam is struck: a little off centre (0.25 R) is a drawing default — a maker’s figure shows an ideal point that was not read as text. The build-up is drawn as which shapes hold the energy, never as a time or a level.', dims: [] },
-    { text: 'The 60–120 cm and 30–60 cm starting points and the room mic are the lesson’s own classroom trials; no maker prescribes them. One recording account placed mics about 30 cm from the gongs in a large room — specific to that room.', dims: [] },
+    { text: 'The 60–120 cm and 30–60 cm starting points and the room mic are the lesson’s own teaching trials; no maker prescribes them. One recording account placed mics about 30 cm from the gongs in a large room — specific to that room.', dims: [] },
   ],
   live: {
     wedges: [
@@ -580,6 +580,6 @@ export const I12_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. No gong maker prescribes a mic position: these starting points come from how microphones behave and source-focused versus room-focused pickup, and every gong, mallet, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: a 32 in tam-tam and an 18 in bossed gong, the face’s shapes on a flat disc free at its edge, the build-up as which shapes hold the energy (never a speed or a level), mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured from the face at rest to the mic’s front. Keep clear of the swing and the mallet.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. No gong maker prescribes a mic position: these starting points come from how microphones behave and source-focused versus room-focused pickup, and every gong, mallet, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: a 32 in tam-tam and an 18 in bossed gong, the face’s shapes on a flat disc unsupported at its edge, the build-up as which shapes hold the energy (never a speed or a level), mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured from the face at rest to the mic’s front. Keep clear of the swing and the mallet.',
   copy: { words: metalWords('gong', 'player') },
 };

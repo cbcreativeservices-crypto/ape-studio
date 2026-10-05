@@ -23,13 +23,13 @@ const pages: Record<PageId, PageContent> = {
     title: 'Meet the triangle',
     goal: 'Get to know the triangle — what it is, where you meet it, what it does in the music, its parts and how it is held — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A steel rod bent into a triangle with one open corner, hung free from a clip and struck with a steel beater. It rings long and bright with no single fixed pitch — and the end of each note is played too.',
+    takeaway: 'A steel rod bent into a triangle with one open corner, hung freely from a clip and struck with a steel beater. It rings long and bright with no single fixed pitch — and the end of each note is played too.',
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound — the bar bends, rings in many shapes at once, and sends sound out all round — and why it must hang free. Shown, never played.',
+    goal: 'See how a stroke becomes sound — the bar bends, rings in many shapes at once, and sends sound out all round — and why it must hang freely. Shown, never played.',
     credit: { scenarios: ['tri.snd.1', 'tri.snd.2', 'tri.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'The triangle is a bar, bent: struck, it rings in many shapes at once whose pitches are not whole-number steps apart — a shimmer, not one note. It rings only while it hangs free; a hand on the metal stops it.',
+    takeaway: 'The triangle is a bar, bent: struck, it rings in many shapes at once whose pitches are not whole-number steps apart — a shimmer, not one note. It rings only while it hangs freely; a hand on the metal stops it.',
   },
   setting: {
     title: 'Where it sits',
@@ -65,13 +65,13 @@ const pages: Record<PageId, PageContent> = {
     title: 'Troubleshoot',
     goal: 'Match each symptom to the first things to check.',
     credit: { scenarios: [], interactive: 'symptoms', note: 'Choose the first checks for all seven symptoms (a retry is explained, never penalised).' },
-    takeaway: 'Look at the instrument first — free suspension, the beater and the playing spot, a rattling clip — then the mic’s angle and distance, other open mics and the monitors, before reaching for EQ or a gate.',
+    takeaway: 'Look at the instrument first — a freely hanging suspension, the beater and the playing spot, a rattling clip — then the mic’s angle and distance, other open mics and the monitors, before reaching for EQ or a gate.',
   },
   practice: {
     title: 'Practice',
     goal: 'Set up one mic in the right order, choose and justify a setup for two different briefs, and say what would justify a second mic.',
     credit: { scenarios: ['tri.prac.order', 'tri.prac.gain', 'tri.prac.setup1', 'tri.prac.setup2', 'tri.prac.3', 'tri.mix.1', 'tri.mix.2', 'tri.mix.3'], note: 'Put the setup in order, answer the gain check, complete both setup briefs, and answer the four reasoning cards. The observation sheet is optional.' },
-    takeaway: 'A free and safe suspension, equipment clear of the whole gesture, the player’s tone told apart from the mic’s balance, and a studio or live setup that passes the real passage — more than one setup can pass.',
+    takeaway: 'A freely hanging, safe suspension, equipment clear of the whole gesture, the player’s tone told apart from the mic’s balance, and a studio or live setup that passes the real passage — more than one setup can pass.',
   },
 };
 
@@ -84,7 +84,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Why does a triangle sound like a shimmer rather than one clear note?',
     options: ['Its bar rings in many shapes whose pitches are not whole-number steps apart', 'The open corner lets air rush out of the triangle and whistle at its own pitch', 'The beater bounces several times on each single stroke'],
     correct: 'Its bar rings in many shapes whose pitches are not whole-number steps apart',
-    explain: 'A struck bar rings in many shapes at once. For a bar free at both ends their pitches sit about 1 : 2.76 : 5.40 … — not the 1 : 2 : 3 of a plain note — so the ear hears a bright shimmer with no single fixed pitch.',
+    explain: 'A struck bar rings in many shapes at once. For a bar held at neither end their pitches sit about 1 : 2.76 : 5.40 … — not the 1 : 2 : 3 of a plain note — so the ear hears a bright shimmer with no single fixed pitch.',
     why: {
       'The open corner lets air rush out of the triangle and whistle at its own pitch': 'There is no air column: the metal bar itself vibrates. The open corner lets the bar ring freely round its bends.',
       'The beater bounces several times on each single stroke': 'One clean stroke still shimmers: the shimmer is in the bar’s own shapes.',
@@ -96,10 +96,10 @@ const scenarios: MikingScenario[] = [
     prompt: 'The player holds the triangle by its metal instead of by the clip. What happens?',
     options: ['The hand damps the bar, so the ring dies away much sooner', 'Nothing changes: the hand is far too soft to affect steel', 'It rings longer, because the hand holds it steadier'],
     correct: 'The hand damps the bar, so the ring dies away much sooner',
-    explain: 'A hand on the metal soaks up its motion: overtones and ring are lost. That is why it hangs free from a clip and a thin line — and why players close their fingers round it to stop a note on purpose.',
+    explain: 'A hand on the metal soaks up its motion: overtones and ring are lost. That is why it hangs freely from a clip and a thin line — and why players close their fingers round it to stop a note on purpose.',
     why: {
       'Nothing changes: the hand is far too soft to affect steel': 'A soft hand is exactly what damps: players stop the ring this way on purpose.',
-      'It rings longer, because the hand holds it steadier': 'Holding the metal damps it; a free suspension lets it ring.',
+      'It rings longer, because the hand holds it steadier': 'Holding the metal damps it; hanging freely lets it ring.',
     },
   },
   {
@@ -344,9 +344,9 @@ const symptoms: Symptom[] = [
     id: 'tri.s.dull',
     observation: 'Dull, short ring',
     firstChecks: 'Is the triangle touching a hand or a thick support? Is the line in good order?',
-    options: ['Whether it hangs free, and the line and grip', 'Turn the mic toward the triangle a little more', 'Add high-frequency EQ to bring the ring back'],
-    correct: 'Whether it hangs free, and the line and grip',
-    explain: 'No mic position restores overtones a poor suspension has already damped. Restore free suspension first.',
+    options: ['Whether it hangs freely, and the line and grip', 'Turn the mic toward the triangle a little more', 'Add high-frequency EQ to bring the ring back'],
+    correct: 'Whether it hangs freely, and the line and grip',
+    explain: 'No mic position restores overtones a poor suspension has already damped. Let it hang freely again first.',
     why: {
       'Turn the mic toward the triangle a little more': 'The ring is missing at the source; aiming cannot bring it back.',
       'Add high-frequency EQ to bring the ring back': 'EQ cannot restore a ring the metal never made.',
@@ -451,12 +451,12 @@ const diagnostic: DiagnosticItem[] = [
     id: 'tri.q.1',
     covers: 'instrument',
     prompt: 'How is a concert triangle held so that it rings?',
-    options: ['Hung free from a clip by a thin line', 'Gripped firmly by one of its corners', 'Laid flat on a padded table'],
-    correct: 'Hung free from a clip by a thin line',
-    explain: 'It hangs free from a clip and a thin line (with a catch line as a backup); holding the metal damps it.',
+    options: ['Hung freely from a clip by a thin line', 'Gripped firmly by one of its corners', 'Laid flat on a padded table'],
+    correct: 'Hung freely from a clip by a thin line',
+    explain: 'It hangs freely from a clip and a thin line (with a catch line as a backup); holding the metal damps it.',
     why: {
       'Gripped firmly by one of its corners': 'A hand on the metal damps the ring.',
-      'Laid flat on a padded table': 'Padding damps it too; it hangs free to ring.',
+      'Laid flat on a padded table': 'Padding damps it too; it hangs freely to ring.',
     },
   },
   {
@@ -515,7 +515,7 @@ export const I06A_LESSON: Lesson = {
   id: 'I06a',
   labId: 'percussion',
   title: 'Triangle',
-  subtitle: 'A bent steel bar hung free: attack, a long ring and the cutoff',
+  subtitle: 'A bent steel bar hung freely: attack, a long ring and the cutoff',
   noun: { one: 'triangle', many: 'triangles' },
   model: TRI_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard'],
@@ -527,7 +527,7 @@ export const I06A_LESSON: Lesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'A steel rod bent into a triangle, with one corner left open. It hangs free from a clip by a thin line and is struck with a steel beater. The metal itself vibrates: an idiophone.', src: 'PAS-ECV01' },
+    { title: 'WHAT IT IS', text: 'A steel rod bent into a triangle, with one corner left open. It hangs freely from a clip by a thin line and is struck with a steel beater. The metal itself vibrates: an idiophone.', src: 'PAS-ECV01' },
     { title: 'WHERE YOU MEET IT', text: 'In orchestras, concert bands and percussion sections, in the studio and on stage — often one of several small instruments a percussionist moves between. (Whole percussion sections and the orchestra come later, in Lab 5.)', src: 'LESSON-TRI' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Bright accents, a long shimmering ring, rolls inside a closed corner — and cutoffs, when the player closes their fingers round it. The end of each note is played too.', src: 'PAS-1906' },
     { title: 'ITS SIZE', text: 'Concert triangles run from about 10 to 30 cm (4–12 in) a side; 15–23 cm (6–9 in) is typical. This lab draws an 8 in (20 cm) triangle of ½ in (13 mm) steel rod.', src: 'PAS-ECV01' },
@@ -537,7 +537,7 @@ export const I06A_LESSON: Lesson = {
       { title: 'The beater strikes', text: 'The steel beater strikes the base with a push away from the player. That brief contact is where the ATTACK begins.', byVariant: { mounted: 'A beater (or two) strikes a lower side of the mounted triangle. That brief contact is where the ATTACK begins.' } },
       { title: 'The bar bends', text: 'The rod bends in its lowest shapes — drawn here much larger than it really moves. The triangle is a bar, bent round two corners.' },
       { title: 'It rings in many shapes', text: 'The whole rod rings in many shapes at once. Their pitches are not whole-number steps apart, so the ear hears a bright shimmer — no single fixed pitch.' },
-      { title: 'Sound leaves all round', text: 'Sound leaves all along the rod, in many directions. Hanging free from its line, it rings on — until the player lets it fade or closes their fingers round it.' },
+      { title: 'Sound leaves all round', text: 'Sound leaves all along the rod, in many directions. Hanging freely from its line, it rings on — until the player lets it fade or closes their fingers round it.' },
     ],
     attack: 'The start of each stroke: the steel beater’s brief contact with the bar. A mic close to where the beater lands, or aimed straight at it, tends to hear more of a metallic tick; the beater and the spot change it before the mic does.',
     body: 'The long ring after the stroke: the whole bent bar shimmering, from all along its length — until the player lets it fade or damps it. A mic aimed at the bars as a whole hears attack and ring together. Tendencies — triangles, beaters and players vary.',
@@ -557,7 +557,7 @@ export const I06A_LESSON: Lesson = {
   },
   diagnostic,
   practice: {
-    task: 'Keep the suspension free and safe, keep the equipment clear of the whole gesture, tell the player’s tone from the mic’s balance, and choose a studio or live setup that passes the real passage. With a player’s agreement, log what you tried below.',
+    task: 'Keep the suspension freely hanging and safe, keep the equipment clear of the whole gesture, tell the player’s tone from the mic’s balance, and choose a studio or live setup that passes the real passage. With a player’s agreement, log what you tried below.',
     fields: [
       { id: 'inst', label: 'Triangle (size, how it hung, beater)', kind: 'text' },
       { id: 'played', label: 'How it was played', kind: 'choice', choices: ['held', 'mounted', 'both in the piece'] },

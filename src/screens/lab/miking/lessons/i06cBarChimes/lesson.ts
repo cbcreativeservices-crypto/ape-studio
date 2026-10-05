@@ -22,13 +22,13 @@ const pages: Record<PageId, PageContent> = {
     title: 'Meet the bar chimes',
     goal: 'Get to know bar chimes — what they are, where you meet them, what they do in the music and their parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'A straight row of graduated metal bars, each hung free on its own filament from a wooden rail, swept by the hand. Not wind chimes (a circle) and not a bell tree (nested bells).',
+    takeaway: 'A straight row of graduated metal bars, each hung freely on its own filament from a wooden rail, swept by the hand. Not wind chimes (a circle) and not a bell tree (nested bells).',
   },
   sound: {
     title: 'How they make their sound',
     goal: 'See how a sweep becomes sound — bars struck one after another, each ringing on and swinging — and why the long bars sound lower. Shown, never played.',
     credit: { scenarios: ['bc.snd.1', 'bc.snd.2', 'bc.snd.3'], interactive: 'soundPath', note: 'Step the sweep through to the end (or play it once), and answer the three checks.' },
-    takeaway: 'A sweep is a run of brief attacks with overlapping rings: the shimmer. Each bar is a bar free at both ends; a shorter bar of the same thickness rings higher — half the length, four times the pitch.',
+    takeaway: 'A sweep is a run of brief attacks with overlapping rings: the shimmer. Each bar is a bar held at neither end; a shorter bar of the same thickness rings higher — half the length, four times the pitch.',
   },
   setting: {
     title: 'Where they sit',
@@ -109,7 +109,7 @@ const scenarios: MikingScenario[] = [
     correct: 'Every struck bar, ringing and swinging on',
     explain: 'Each bar keeps ringing after the hand passes — unless the player or a damper stops it. The end of a sweep is part of the music.',
     why: {
-      'Nothing: each bar stops as the hand leaves it': 'The bars hang free: they ring on unless something damps them.',
+      'Nothing: each bar stops as the hand leaves it': 'The bars hang freely: they ring on unless something damps them.',
       'Only the very last bar the hand touched': 'All the struck bars ring on, the earlier ones fading first.',
     },
   },
@@ -132,9 +132,9 @@ const scenarios: MikingScenario[] = [
     prompt: 'Before the soundcheck, what do you check on the instrument?',
     options: ['The filaments, the rail, the clamp and the stand', 'That the bars are tied tightly up against the wooden rail', 'That the bars are cleaned and polished'],
     correct: 'The filaments, the rail, the clamp and the stand',
-    explain: 'A loose bar or an overloaded clamp can fall. Use hardware rated for the assembly on a stable stand — and leave the bars free to swing.',
+    explain: 'A loose bar or an overloaded clamp can fall. Use hardware rated for the assembly on a stable stand — and leave the bars room to swing.',
     why: {
-      'That the bars are tied tightly up against the wooden rail': 'The bars must hang free on their filaments, or they cannot ring.',
+      'That the bars are tied tightly up against the wooden rail': 'The bars must hang freely on their filaments, or they cannot ring.',
       'That the bars are cleaned and polished': 'Polish is cosmetic; the suspension and the stand are the safety check.',
     },
   },
@@ -357,10 +357,10 @@ const symptoms: Symptom[] = [
     firstChecks: 'Do bars hit hardware or a damper they should not?',
     options: ['Whether bars touch hardware or a damper', 'Move the mic much closer to catch the ring', 'Add reverb to lengthen the ring of each bar'],
     correct: 'Whether bars touch hardware or a damper',
-    explain: 'Restore the bars’ intended free travel and inspect the suspension.',
+    explain: 'Restore the bars’ intended room to swing and inspect the suspension.',
     why: {
       'Move the mic much closer to catch the ring': 'The ring is lost at the source; distance cannot restore it.',
-      'Add reverb to lengthen the ring of each bar': 'Reverb hides the cause; free the bars first.',
+      'Add reverb to lengthen the ring of each bar': 'Reverb hides the cause; release the bars first.',
     },
   },
   {
@@ -523,7 +523,7 @@ export const I06C_LESSON: Lesson = {
     stages: [
       { title: 'The hand enters', text: 'The hand meets the first bar at the long end of the row.' },
       { title: 'One bar after another', text: 'The hand strikes the bars in turn: a run of brief ATTACKS. Each struck bar swings away on its filament — drawn larger than life.' },
-      { title: 'They ring on, overlapping', text: 'Every struck bar keeps ringing and swinging after the hand has passed; the rings overlap — the shimmer. Each bar is a bar free at both ends, its pitch set by its length.' },
+      { title: 'They ring on, overlapping', text: 'Every struck bar keeps ringing and swinging after the hand has passed; the rings overlap — the shimmer. Each bar is a bar held at neither end, its pitch set by its length.' },
       { title: 'Sound along the row', text: 'Sound leaves all along the row, until the bars fade or the player or a damper stops them. A mic near one end hears that end louder.' },
     ],
     attack: 'The run of brief strikes as the hand passes each bar. A close mic, or one aimed at part of the row, tends to hear more of the strikes near it; a faster or stronger sweep changes them before the mic does.',
@@ -566,6 +566,6 @@ export const I06C_LESSON: Lesson = {
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. There is no published bar-chime miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every row, mount, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 27-bar row with drawn bar sizes, a bar free at both ends for its shapes, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the swing and the hand.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we recommend you begin — ideas and concepts to consider, not rules. There is no published bar-chime miking standard: these starting points come from how microphones behave and a general 30 cm floor for percussion, and every row, mount, player and room is different. Move the mic, experiment, and trust your ears. The lab is silent and draws a simplified picture: one 27-bar row with drawn bar sizes, a bar held at neither end for its shapes, motion drawn larger, mic patterns as textbook shapes. Distances are rounded to about 5 mm and measured to the mic’s front. Keep clear of the swing and the hand.',
   copy: { words: metalWords('bar chimes', 'player') },
 };
