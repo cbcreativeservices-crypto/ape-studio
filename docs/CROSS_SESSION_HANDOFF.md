@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 06:56 · ccode · ec7abbbe
+changed: docs(miking): Lab 5 ensembles+voice research (16 lessons) + BATCH5 summary
+affects other side: nothing (miking docs, branch final-lab)
+needs: nothing (miking docs, branch final-lab)
+
+
 ### 2026-10-05 06:47 · ccode · 0b2c1243
 changed: Merge miking-a4 (A06-A09b woodwinds) into final-lab
 affects other side: nothing (miking merge, branch final-lab)
