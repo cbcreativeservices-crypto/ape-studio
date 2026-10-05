@@ -27,3 +27,19 @@ Lesson: `source_text/Headed-Tambourine-Miking-Technique-Research.txt`. Rules: `s
 | L-: DPA tour, one cardioid for shakers and tambourine | **CONFIRMED** | "two 4011As for percussion overheads, above the cymbals and chimes, another as a direct source for shakers and tambourine" (one shared 4011A) | High |
 | "last named instrument" claim | **WRONG** | M09–M13 follow in the plan | — |
 | Number of jingle pairs, frame depth | **UNKNOWN** | — | — |
+
+## Builder additions (2026-10-05, branch miking-w4: the M08 build)
+
+| Key | Source | URL | Status |
+|---|---|---|---|
+| S-DRUMS | Shure, *Microphone Techniques for Drums* (the tambourine row: "One microphone placed 6 to 12 inches from instrument") — the same row is in S-REC and S-LIVE | see `congas/SOURCES.md` | read in the batch pass |
+| LESSON-TAMB | The owner's lesson text itself (`source_text/Headed-Tambourine-Miking-Technique-Research.txt`), for the head-forward, jingle-forward and mounted positions | (in the repo) | the lesson's own words |
+
+- Simplifications register (M08): one instrument in three POSES (held at 45°, shaken, mounted flat at
+  900 mm); 15–30 cm is measured from the nearest part of the instrument in its pose (the front plane,
+  the head along its axis, or the rim edge-on — a drawing default, the proposal's open question); the
+  frame depth (55 mm), 8 slots per row and Ø 50 mm jingles are drawing defaults; the striking hand's
+  path, the ±150 mm shake and the sticks' reach are ILLUSTRATIVE; HOW IT SOUNDS draws the jingles'
+  and the frame's motion as positions, not a measured motion.
+- Yamaha's "about eight inches" is player-to-mic (YMH-HUB-REC3), not instrument-to-mic: the app does
+  not present it as a tambourine distance (TB-02).

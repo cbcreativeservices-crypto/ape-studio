@@ -119,6 +119,21 @@ method with a mic by the drummer's shoulder is the **shoulder method**.
 |---|---|---|---|---|---|---|
 | S-01 | (plan) | Stages one mic → extensive | The stages are shown as functional examples, never a fixed order to add mics; the counters describe a plan and never grade it. | The lesson's own caution; the stepper could read as a ladder. | M11 lesson | APPLIED (`m11Kit/copy.ts` `PLAN_WORDS`) |
 | S-02 | (drawing) | Hi-hat and ride spot mics | Drawn on booms (a floor stand straight under them passes through the cymbal); the floor-tom spot sits over the rim away from the rack tom's stand. | Collision check: the first drawing put stands through hardware. | kit plan; test `mikingModelM11` | APPLIED (`m11Kit/plan.ts`) |
+## M06 Timpani, M07a Concert bass drum, M07b Concert snare, M08 Headed tambourine (branch miking-w4, 2026-10-05)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| T-01 | L18 / ref [6] | "A documented classical-recording approach … about 1 m above the heads" (cites ebrary) | "about 1 m (3 ft 3 in) above the heads, between the two drums" — the book's own "(3'4")" kept in the record; no source named on screen | The batch research: cite the book (*Classical Recording*), not the ebrary mirror; 1 m = 3 ft 3.4 in | timpani/SOURCES.md DECCA | APPLIED (`m06Timpani/model.ts`) · OWNER: replace ref [6] with the book |
+| T-02 | ref [9] | Neumann MCM newsroom case | Not used | The URL returns 404 | timpani/SOURCES.md | APPLIED · OWNER: find the current URL |
+| T-03 | L20 | "Arrange according to the player's real drum order rather than assuming a fixed left-to-right pitch map" | Kept, and the lab draws the international order with the German order named as its mirror | Yamaha's placement page gives both orders | YMH-TIMP-PLACE | APPLIED (`m06Timpani/copy.ts`) |
+| B-01 | ref [1] | cites the ebrary mirror | The book is the record | as T-01 | concert_bass_drum/SOURCES.md DECCA | OWNER: replace the link |
+| B-02 | L18 | "just above … looking diagonally downwards … about 45 cm" | "above the playing head, about 45 cm from it, looking diagonally down at it" — the drawing puts the mic 450 mm from the head centre at 45° (a drawing default), which is not literally above the rim | At 45 cm from the head centre no position is above a 36 in drum's rim; "about 45 cm" is read from the head centre (proposal) and the elevation is the owner's call | concert_bass_drum/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve the 45° and the reading of "just above" |
+| B-03 | L26 | "The source's possible suggestion of rotating the drum" | Said as a real suggestion the source makes — and a decision for the player and crew under the stand's manual, never the engineer's | The Decca text does say it ("you could consider turning the drum sideways") | DECCA | APPLIED (`m07aConcertBassDrum/lesson.ts` cbd.ctx.studio) |
+| CS-01 | L24 | Shure tutorial "about 10 cm (4 in)" | "about 10 cm (4 in) or a little more" (the zone starts at 4 in exactly) | Shure's words are "a good 4 inches" (at least about 4 in) | S-SM57-ART | APPLIED (`m07bConcertSnare/model.ts` csn.whole) |
+| CS-02 | L55, L98 | top and bottom "invariably out of phase … usually produce a better result" | "engineers try the polarity switch on a bottom mic. Try it; never assume it" — opposite-head motion shown on the two-mic page | Both halves of Shure's sentence are kept in the record; the app teaches the check | S-SM57-ART | APPLIED (`m07bConcertSnare/copy.ts` twoMic.opposite) |
+| TB-01 | header | "last named instrument in the Membranophones list" | Not said | M09–M13 follow in the plan | headed_tambourine/SOURCES.md | APPLIED · OWNER: fix the header |
+| TB-02 | L15 | "Yamaha suggests about 8 in (20 cm) for hand percussion" (as an instrument distance) | Not shown as a tambourine distance; the starting point is 15–30 cm from the instrument | Yamaha's words are player-to-mic ("have the player stand about eight inches from the mic") | YMH-HUB-REC3 | APPLIED (`m08HeadedTambourine/copy.ts`) · OWNER: reword L15 |
+| TB-03 | L15 | Shure "6–12 in (15–30 cm)" | Kept; all three Shure booklets carry the row | — (recorded so it is not "fixed" later) | S-DRUMS, S-REC, S-LIVE | APPLIED (no change) |
 
 ## Shared (all lessons)
 

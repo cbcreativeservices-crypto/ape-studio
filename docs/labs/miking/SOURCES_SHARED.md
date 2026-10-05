@@ -108,3 +108,15 @@ Simplifications: the compact dynamics are drawn with the kick dynamic's generic 
 own sourced length and front diameter; the clip-on condenser's gooseneck is drawn as a straight
 run from its clamp at the nearest rim, and its reach (140 mm) is enforced — a clip mic cannot
 sit farther from a rim than its gooseneck allows.
+## 7. Mic types shared by Lab 1’s concert lessons (M06–M08, `data/micTypesConcert.ts`)
+
+Added 2026-10-05 by the M06–M08 builder (branch miking-w4). Keys already read in other
+lessons' passes are listed here so the shared mic types resolve from one table.
+At the merge into final-lab the small cardioid dynamic (`orchDyn`) was the same type as the
+snare's `smallDynCard` (same S-SM57-UG body and pattern), so M06–M08 now use `smallDynCard`.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| S-SM57-UG | Shure, SM57 User Guide 3.6 (2025-A): "Dynamic (moving coil)"; "Cardioid"; 157 mm overall, 32 mm grille | see `snare/SOURCES.md` | read in the snare pass (2026-10-04) |
+| AX-DPE8 | Audix DP Elite 8 sheet (archived): SCX1 length "104 mm / 4.1 in" (the pencil condenser's drawn length; Ø 21 mm is a drawing default) | see `snare/SOURCES.md`, `overheads/GEOMETRY_PROPOSAL.md` §5 | archived copy read (2026-10-04) |
+| LESSON-TIMP | The owner's timpani lesson, L35: "A cardioid condenser is well documented for spots in both small orchestras and amplified shows." | `source_text/Timpani-Miking-Technique-Research.txt` | the lesson's own words |

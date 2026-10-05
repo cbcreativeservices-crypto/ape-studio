@@ -6,7 +6,7 @@
  */
 import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
-import type { PageId, VariantId, Vec3, ViewId } from '../model/types.ts';
+import type { PageId, SettingItem, VariantId, Vec3, ViewId, Wedge } from '../model/types.ts';
 
 /** `short`: the words to fall back to where the full label would collide. */
 export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
@@ -35,4 +35,23 @@ export type LessonArt = {
   pages?: Partial<Record<PageId, (props: never) => ReactNode>>;
   /** Steps per page for those family pages (the strip's count before a page reports). */
   stepCounts?: Partial<Record<PageId, number>>;
+  /** THE SETTING for an instrument that does not sit on the kit (an
+   *  orchestra's percussion, a hand drum): the lesson's own plan, drawn in
+   *  place of the shared kit plan. Same contract as KitPlan. */
+  SettingPlan?: (props: SettingPlanProps) => ReactElement;
+};
+
+/** What PSetting hands a lesson's own SettingPlan (the KitPlan contract). */
+export type SettingPlanProps = {
+  w: number;
+  h: number;
+  /** 'kit' = the instrument among its neighbours (the ensemble); 'stage' and
+   *  'studio' as for the kit. */
+  scene: 'kit' | 'stage' | 'studio';
+  variant: VariantId;
+  items: readonly SettingItem[];
+  wedges: readonly Wedge[];
+  highlight: string | null;
+  onTap: (itemId: string) => void;
+  accessibilityLabel: string;
 };

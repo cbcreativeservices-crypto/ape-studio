@@ -10,6 +10,10 @@ import { M03_LESSON } from '../lessons/m03Toms/lesson.ts';
 import { M09_LESSON } from '../lessons/m09Overheads/lesson.ts';
 import { M10_LESSON } from '../lessons/m10Room/lesson.ts';
 import { M11_LESSON } from '../lessons/m11Kit/lesson.ts';
+import { M06_LESSON } from '../lessons/m06Timpani/lesson.ts';
+import { M07A_LESSON } from '../lessons/m07aConcertBassDrum/lesson.ts';
+import { M07B_LESSON } from '../lessons/m07bConcertSnare/lesson.ts';
+import { M08_LESSON } from '../lessons/m08HeadedTambourine/lesson.ts';
 import { SPK_LESSON } from '../lessons/spk/lesson.ts';
 import { M12_LESSON } from '../lessons/m12Tonbak/lesson.ts';
 import { M13_LESSON } from '../lessons/m13Tabla/lesson.ts';
@@ -21,6 +25,10 @@ const LESSON_CONTENT: Record<string, Lesson> = {
   M09: M09_LESSON,
   M10: M10_LESSON,
   M11: M11_LESSON,
+  M06: M06_LESSON,
+  M07a: M07A_LESSON,
+  M07b: M07B_LESSON,
+  M08: M08_LESSON,
 };
 // Each further lesson on its own line (lessons are built in parallel).
 LESSON_CONTENT.SPK = SPK_LESSON;

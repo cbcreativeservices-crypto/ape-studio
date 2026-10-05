@@ -23,7 +23,7 @@ import { J_ZEROS } from '../../../../../features/cymatics/faraday';
 
 export type HeadShape = { n: number; s: number; j: number; ratio: number; label: string; still: string };
 
-function stillWords(n: number, s: number): string {
+export function stillWords(n: number, s: number): string {
   const d = n === 0 ? '' : `${n} still line${n === 1 ? '' : 's'} across`;
   const c = s - 1 === 0 ? '' : `${s - 1} still ring${s - 1 === 1 ? '' : 's'}`;
   return [d, c].filter(Boolean).join(' and ') || 'no still lines — the whole head moves together';

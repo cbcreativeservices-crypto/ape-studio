@@ -48,8 +48,12 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
     if (wideItems.some((i) => i.id === id)) setWideSel(id);
   };
 
+  const Own = art.SettingPlan;
+  const PW = C.setting.plan;
   const render = (scene: KitPlanScene, sel: string | null, onTap: (id: string) => void, label: string) => (w: number, h: number) =>
-    plan ? (
+    Own ? (
+      <Own w={w} h={h} scene={scene} variant={variant} items={items} wedges={wedges} highlight={sel} onTap={onTap} accessibilityLabel={label} />
+    ) : plan ? (
       <KitPlan w={w} h={h} scene={scene} variant={variant} items={items} own={plan.own} OwnArt={plan.useArt ? art.Instrument : undefined} offset={plan.offset} wedges={wedges} highlight={sel} onTap={onTap} accessibilityLabel={label} />
     ) : (
       <Text style={styles.missing}>No plan for this lesson.</Text>
@@ -109,19 +113,19 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
   const steps: MikingStep[] = [
     {
       key: 'kit',
-      title: 'On the kit',
+      title: PW?.title ?? 'On the kit',
       kind: 'LEARN',
       layout: 'rack',
       rack: {
         render: render('kit', kitSel, pickKit, `${C.setting.kitA11y} ${kitSelItem ? `Highlighted: ${kitSelItem.label}.` : ''} A typical layout.`),
-        badge: 'The kit from above · a typical right-handed layout · grey hatch = the player’s space',
+        badge: PW?.badge ?? 'The kit from above · a typical right-handed layout · grey hatch = the player’s space',
         bezel: bezel(kitSelItem, { k: 'LOOKED AT', v: `${kitSeen.size} / ${kitItems.length}`, flex: 1 }),
         params: kitParams,
         initialParam: 'item',
       },
       well: (
         <>
-          <Landing looking="Plan · the kit from above · the player sits at the left" prompt={C.setting.kitLanding} />
+          <Landing looking={PW?.looking ?? 'Plan · the kit from above · the player sits at the left'} prompt={C.setting.kitLanding} />
           {card(kitSelItem, C.setting.kitIdle)}
           <Note>{C.setting.leftHanded}</Note>
         </>
@@ -134,14 +138,14 @@ export function PSetting({ lesson, art, answers, onAnswered, variant }: PageProp
       layout: 'rack',
       rack: {
         render: render(where, wideSel, pickWide, `${where === 'stage' ? C.setting.stageA11y : C.setting.studioA11y} ${wideSelItem ? `Highlighted: ${wideSelItem.label}.` : ''}`),
-        badge: where === 'stage' ? 'From above · two monitors where a stage often puts them · audience side to the right' : 'From above · a typical studio room',
+        badge: where === 'stage' ? PW?.stageBadge ?? 'From above · two monitors where a stage often puts them · audience side to the right' : PW?.studioBadge ?? 'From above · a typical studio room',
         bezel: bezel(wideSelItem, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),
         params: wideParams,
         initialParam: 'item',
       },
       well: (
         <>
-          <Landing looking={where === 'stage' ? 'Plan · the kit on a stage' : 'Plan · the kit in a studio'} prompt="Switch STAGE / STUDIO, and tap what is new around the kit." />
+          <Landing looking={where === 'stage' ? PW?.stageLooking ?? 'Plan · the kit on a stage' : PW?.studioLooking ?? 'Plan · the kit in a studio'} prompt={PW?.widePrompt ?? 'Switch STAGE / STUDIO, and tap what is new around the kit.'} />
           <Body>{where === 'stage' ? lesson.setting.stage : lesson.setting.studio}</Body>
           {card(wideSelItem, where === 'stage' ? C.setting.stageIdle : C.setting.studioIdle)}
         </>

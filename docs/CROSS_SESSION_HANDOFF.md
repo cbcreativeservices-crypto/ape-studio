@@ -613,6 +613,12 @@ affects other side: nothing (miking merge, branch final-lab)
 needs: nothing (miking merge, branch final-lab)
 
 
+### 2026-10-05 00:19 · ccode · bd639888
+changed: fix(miking): concert sound-step labels clear of the art; tidy M07a/M08 art
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 00:18 · ccode · 00c89f56
 changed: Merge branch 'miking-w3-on-final' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
@@ -631,6 +637,12 @@ affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing
 
 
+### 2026-10-05 00:00 · ccode · 7f90efa3
+changed: feat(miking): M07a concert bass drum and M08 headed tambourine lessons
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 23:53 · ccode · 6c7351f3
 changed: Merge branch 'miking-w5' into final-lab
 affects other side: nothing (miking merge, branch final-lab)
@@ -645,6 +657,12 @@ needs: nothing (miking lessons, branch final-lab)
 
 ### 2026-10-04 23:37 · ccode · d93863dc
 changed: feat(miking): shared hand-drum journey kit (tonbak, tabla)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-04 23:25 · ccode · 3192c7d9
+changed: feat(miking): concert-lesson extensions - own setting plan, kettle shapes, step-3 words, orchestra plan
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 

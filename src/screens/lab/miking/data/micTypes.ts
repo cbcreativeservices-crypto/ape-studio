@@ -12,6 +12,7 @@
  */
 import type { MicType } from '../engine/model/types.ts';
 import { KIT_MIC_TYPES } from './micTypesKit.ts';
+import { CONCERT_MIC_TYPES } from './micTypesConcert.ts';
 
 const generic = { kind: 'sourced', src: 'WP-MIC', quote: 'a superposition of an omnidirectional (pressure) and a figure-8 (pressure gradient)' } as const;
 
@@ -140,6 +141,8 @@ export const MIC_TYPES: Record<string, MicType> = {
     art: 'sdc',
     blurb: 'A slim small-diaphragm condenser, usually cardioid (some take an omni capsule): detailed, light, easy to place. Needs phantom power.',
   },
+  // Lab 1's concert lessons (M06–M08): data/micTypesConcert.ts.
+  ...CONCERT_MIC_TYPES,
 };
 
 /* ── Lab 1: the snare and the toms (snare/SOURCES.md, toms/SOURCES.md §b) ── */

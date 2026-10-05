@@ -26,3 +26,15 @@ Lesson: `source_text/Concert-Snare-Miking-Technique-Research.txt`. Rules: `snare
 | L24: Shure tutorial "about 10 cm (4 in)" | **DIFFERENT (detail)** | Shure: "a good 4 inches away from the snare" (no metric value printed by Shure; 4 in = 10.16 cm). "a good" ≈ at least. | High |
 | Audit: Shure says top and bottom "invariably out of phase" | **CONFIRMED** | "The phase relationship between top and bottom is invariably out of phase and inverting this on one channel will usually produce a better result" — the same sentence the kit-snare lesson quotes as "usually". Both lessons are right; quote the full sentence in both. | High |
 | No concert-specific mic number exists | correct | — | — |
+
+## Builder additions (2026-10-05, branch miking-w4: the M07b build)
+
+| Key | Source | URL | Status |
+|---|---|---|---|
+| LESSON-CSN | The owner's lesson text itself (`source_text/Concert-Snare-Miking-Technique-Research.txt`), for the broad spot ("above and to one side … aiming across the batter head") and the lab's words | (in the repo) | the lesson's own words |
+
+- Simplifications register (M07b): the close zones borrow the KIT-snare figures (2.5–7.5 cm above the
+  rim; "a good 4 inches" read as 101.6–160 mm above the rim); the bottom zone's 3–8 cm is the batch
+  research's drawing default for M02; batter height 800 mm, the stand, the sticks' reach (450 mm on the
+  player's side) and the player box are drawing defaults / ILLUSTRATIVE; shell thickness, hoop height,
+  lug size, rod phase and the snare set's size are drawing defaults (`shared/drums/concertSpec.ts`).

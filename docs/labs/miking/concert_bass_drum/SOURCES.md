@@ -24,3 +24,16 @@ Lesson: `source_text/Concert-Bass-Drum-Miking-Technique-Research.txt`. Rules: `s
 | Drum sizes | CB 636 "36"16"" (36 × 16 in = 914.4 × 406.4 mm); CB 632 "32"16""; CB 640 "40"18""; CB 840B "40"22"" | YMH-CPCAT p.19 | High |
 | CB-9036 size | "36" x 22" (91 x 56 cm)" | YMH-CB9 (search snippet) | Low — not used for geometry |
 | Stand height, pivot height | **UNKNOWN** | — | — |
+
+## Builder additions (2026-10-05, branch miking-w4: the M07a build)
+
+| Key | Source | URL | Status |
+|---|---|---|---|
+| LESSON-CBD | The owner's lesson text itself (`source_text/Concert-Bass-Drum-Miking-Technique-Research.txt`), for the live "as near as safely useful" spot and the lab's words | (in the repo) | the lesson's own words |
+
+- Simplifications register (M07a): the lab's frame puts the player at +x (every mic faces −x, the
+  engine's aim convention); the 45 cm spot is drawn 450 mm from the playing-head centre at a 45°
+  elevation (the proposal's drawing default — "just above the instrument" is not literal at that
+  distance, logged as B-02); the stand (uprights at the pivots, base rails, four casters), the hoop
+  material (drawn as wood), 12 rods per head, the mallet's sweep, both damping hands and the player box
+  are drawing defaults / ILLUSTRATIVE; the drum is never shown unlocked, tilted or moved.
