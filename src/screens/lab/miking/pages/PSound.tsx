@@ -241,7 +241,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
           ) : (
             <Text style={styles.missing}>No drawing for this step.</Text>
           ),
-        badge: 'EXPLANATORY OVERLAY · the ORDER of events, not their speed or size · head motion EXAGGERATED (ideal membrane’s lowest shape) · silent',
+        badge: 'OVERLAY · the order of events, not their speed or size · motion EXAGGERATED · silent',
         bezel: strikeBezel,
         params: strikeParams,
         initialParam: 'step',
@@ -288,7 +288,7 @@ export function PSound({ lesson, art, answers, onAnswered, onInteractive, intera
           <Landing looking={`${S.head.label} · shape ${shape.label}`} prompt="Step through SHAPE, then try each STRIKE point. Which shapes does a centre strike leave still?" />
           <Card>
             <Point title={`SHAPE ${shape.label} · ${shape.still.toUpperCase()}`}>
-              {`A struck head vibrates in several shapes at once; this is one of them. Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on an ideal head — not a whole number, which is part of why a drum sounds less “pitched” than a string. Under the beater (${strike.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? 'does not drive this shape at all: the beater is on a still line' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}
+              {`A struck head vibrates in several shapes at once; this is one of them. ${shapeIdx === 0 ? 'It is the lowest shape — the others are measured against it, and none of them is a whole-number multiple, which is part of why a drum sounds less “pitched” than a string.' : `Its pitch is ${shape.ratio.toFixed(2)} times the lowest shape’s on an ideal head — not a whole number, which is part of why a drum sounds less “pitched” than a string.`} Under the beater (${strike.label.toLowerCase()}) the head moves ${sharePct} % of this shape’s peak, so the strike ${share < 0.05 ? 'does not drive this shape at all: the beater is on a still line' : share < 0.4 ? 'drives it only a little' : 'drives it strongly'}.`}
             </Point>
             <ProvenanceTag kind="ideal" />
           </Card>

@@ -536,6 +536,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 19:01 · ccode · 5cdb6b39
+changed: web: compact launch panel, lighter blur so the live site shows through
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
+### 2026-10-04 18:48 · ccode · 2896a278
+changed: feat(miking): a standard kick pillow — DW 18 in, 459.7 × 401.3 × 121.9 mm (retailer size)
+affects other side: nothing (branch final-lab, miking lab work).
+needs: nothing.
+
+
 ### 2026-10-04 18:45 · ccode · 81e94112
 changed: Android back-gesture exclusion on the remaining lab drag surfaces (10 labs + Tube card); TubeCard route loses iOS swipe-back (‹ button stays). Native zone ships in the next Android build; no-op on current builds, iOS, web.
 affects other side: nothing (client only, branch final-lab).

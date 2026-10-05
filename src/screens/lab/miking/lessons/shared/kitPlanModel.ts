@@ -52,7 +52,7 @@ export const KIT_PLAN: PlanKit = {
 /** The scene boxes (plan): the kit alone, and the kit on a stage / in a room. */
 export const PLAN_BOX = {
   kit: { u0: -1050, u1: 650, v0: -880, v1: 720 },
-  wide: { u0: -1150, u1: 1760, v0: -860, v1: 960 },
+  wide: { u0: -1150, u1: 1760, v0: -860, v1: 1150 },
 } as const;
 
 /** Distance from a point to a polygon's inside (≤ 0 inside), for the tap test. */

@@ -145,11 +145,11 @@ export function MembraneFace({ w, h, diameterMm, rods, shape, strikeMm, swing, a
   }, [rods, hoopIn, hoopOut]);
   const marks = useMemo(() => regionMarks(shape), [shape]);
   const labels: StaticLabel[] = [
-    { id: 'beater', text: 'BEATER', u: 0, v: -strikeMm - 34, align: 'center', tone: 'amber' },
+    { id: 'beater', text: 'BEATER', u: -30, v: -strikeMm, align: 'right', tone: 'amber' },
     ...(Math.abs(swing) > 0.12
       ? marks.map((m, i) => {
           const sg = m.sign * Math.sign(swing);
-          return { id: `m${i}`, text: sg > 0 ? '+' : '−', u: Math.sin(m.t) * m.r * R, v: -Math.cos(m.t) * m.r * R, align: 'center' as const, tone: (sg > 0 ? 'blue' : 'amber') as 'blue' | 'amber' };
+          return { id: `m${i}`, text: sg > 0 ? '+' : '−', u: Math.sin(m.t) * m.r * R, v: -Math.cos(m.t) * m.r * R, align: 'center' as const, tone: (sg > 0 ? 'inkBlue' : 'inkAmber') as 'inkBlue' | 'inkAmber' };
         })
       : []),
   ];

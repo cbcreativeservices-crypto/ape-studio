@@ -11,9 +11,10 @@ import { fitValue } from '../../../../../theme/legibility';
 import type { ViewXform } from '../geometry/frame.ts';
 import { fitLabels, labelWidth } from './labelLayout.ts';
 
-export type StaticLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' | 'amber' | 'blue' };
+export type StaticLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' | 'amber' | 'blue' | 'inkBlue' | 'inkAmber' };
 
-const TONE = { muted: colors.textMuted, illustrative: '#aab0bd', amber: '#ffc64d', blue: '#8fbcff' } as const;
+/** ink* = dark marks for a LIGHT surface (a coated drumhead), with a light halo. */
+const TONE = { muted: colors.textMuted, illustrative: '#aab0bd', amber: '#ffc64d', blue: '#8fbcff', inkBlue: '#123f8c', inkAmber: '#7a4a00' } as const;
 
 export function StaticLabels({ labels, xf, scale, w }: { labels: StaticLabel[]; xf: ViewXform; scale: number; w: number }) {
   const kept = fitLabels(labels, xf, scale, w);
@@ -27,7 +28,7 @@ export function StaticLabels({ labels, xf, scale, w }: { labels: StaticLabel[]; 
         return (
           <Text
             key={l.id}
-            style={[styles.label, { left, top, width: W, fontSize: Math.max(9, 9.5 * scale), textAlign: l.align, color: l.tone ? TONE[l.tone] : colors.textPrimary }]}
+            style={[styles.label, { left, top, width: W, fontSize: Math.max(9, 9.5 * scale), textAlign: l.align, color: l.tone ? TONE[l.tone] : colors.textPrimary }, (l.tone === 'inkBlue' || l.tone === 'inkAmber') && styles.ink]}
             {...fitValue(Math.max(9, 9.5 * scale))}
           >
             {l.text}
@@ -39,5 +40,6 @@ export function StaticLabels({ labels, xf, scale, w }: { labels: StaticLabel[]; 
 }
 
 const styles = StyleSheet.create({
+  ink: { textShadowColor: 'rgba(255,255,255,0.9)', fontFamily: fonts.oswaldSemiBold },
   label: { position: 'absolute', fontFamily: fonts.oswaldMedium, letterSpacing: 0.8, textShadowColor: 'rgba(0,0,0,0.95)', textShadowRadius: 3, textShadowOffset: { width: 0, height: 0 } },
 });

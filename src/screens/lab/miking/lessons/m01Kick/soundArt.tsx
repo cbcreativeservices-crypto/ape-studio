@@ -163,8 +163,8 @@ export function StrikeSequence({ w, h, variant, reveal, shown, accessibilityLabe
   if (shown >= 3) labels.push({ id: 's3', text: '③ AIR PUSHES FRONT HEAD', short: '③ AIR → FRONT', u: G.L / 2, v: -215, align: 'center', tone: 'blue' });
   if (shown >= 3 && ported) labels.push({ id: 'p3', text: 'AIR OUT OF PORT', short: 'PORT AIR', u: G.L + 160, v: po.hi + 40, align: 'left', tone: 'blue' });
   if (shown >= 4) {
-    labels.push({ id: 's4a', text: '④ TO THE AUDIENCE', short: '④ AUDIENCE', u: G.L + 295, v: -265, align: 'right', tone: 'blue' });
-    labels.push({ id: 's4b', text: 'TO THE PLAYER', short: 'PLAYER', u: -260, v: -300, align: 'center', tone: 'blue' });
+    labels.push({ id: 's4a', text: '④ AUDIENCE SIDE', short: '④ AUDIENCE', u: G.L + 60, v: -G.hoopOut - 30, align: 'left', tone: 'blue' });
+    labels.push({ id: 's4b', text: '④ PLAYER SIDE', short: '④ PLAYER', u: -250, v: -300, align: 'center', tone: 'blue' });
   }
   labels.push({ id: 'ex', text: 'MOTION EXAGGERATED', short: 'EXAGGERATED', u: SOUND_BOX.u1 - 20, v: G.yFloor - 18, align: 'right', tone: 'illustrative' });
 

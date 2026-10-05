@@ -101,7 +101,7 @@ function PlanDrumArt({ d, hi }: { d: PlanDrum; hi: boolean }) {
   const legs = useMemo(() => (d.legs ? legsPath(d.c, d.r * 0.4, d.r + 95, d.legs, -Math.PI / 2) : null), [d]);
   const { u, v } = d.c;
   return (
-    <Group opacity={d.above ? 0.72 : 1}>
+    <Group opacity={d.above ? 0.55 : 1}>
       <Circle cx={u + 12} cy={v + 16} r={d.r + 30} color="#000" opacity={0.55}>
         <BlurMask blur={14} style="normal" />
       </Circle>
