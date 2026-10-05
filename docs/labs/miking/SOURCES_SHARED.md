@@ -22,6 +22,9 @@ Source keys (used by `src/screens/lab/miking/data/sources.ts` and by `model.ts` 
 | DPA-31 | DPA Microphones, "3:1 rule" (lesson ref [12a]) | https://www.dpamicrophones.com/dictionary/0-9/31-rule/ | URL resolves (kick pass); content not re-audited |
 | DPA-PPD | DPA Microphones, "Polarity, phase and delay" (lesson ref [6]) | https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/ | URL resolves (kick pass); content not re-audited |
 | MATH | Derivation from the stated formula (shown in the row) | — | derived; checked by test |
+| AX-SCX1 | Audix SCX1 pencil condenser length "104 mm / 4.1 in" (the generic `sdcCard` type's length; Ø 21 mm is a drawing default) | as quoted in `overheads/GEOMETRY_PROPOSAL.md` §(mic family) | quoted in the research pass; the sheet itself not re-read 2026-10-05 — re-verify |
+| DPA-MOUNT | DPA, "How to mount the 4099 instrument microphone on various instruments" — the string-family clips (the Lab 4 `strMini` type) | see `acoustic_guitar/SOURCES.md` §0 | read 2026-10-04 in the Lab 4 research pass |
+| DPA-VLA | DPA, "How to mic a viola" — the compact-cardioid and supercardioid-miniature facts behind the Lab 4 string mic family | see `violin/SOURCES.md` §0 | read 2026-10-04 in the Lab 4 research pass |
 
 ---
 
