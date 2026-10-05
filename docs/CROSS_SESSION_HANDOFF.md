@@ -607,6 +607,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 03:35 · ccode · 99e79049
+changed: feat(miking): Lab 2 cymbals — I01a Hi-Hat, I01b Ride, I01c Crash, I01d Splash, I01e China
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 03:34 · ccode · 2ed789e1
+changed: feat(miking): Lab 2 cymbal family additions — splash, China, kit scene, sound page
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 01:38 · ccode · 7fbad8ca
 changed: Merge branch 'miking-c3' into final-lab
 affects other side: nothing (miking merge, branch final-lab)

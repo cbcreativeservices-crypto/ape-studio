@@ -365,3 +365,79 @@ Built 2026-10-05 (branch `miking-c3`, from `miking-w5`). Research: `electric_gui
 | PS-05 | (geometry) | pedal-steel layout | Every dimension (body 900 × 300 × 90, top 700, 3 pedals, 4 knee levers hanging 150, seat 550, 24 in scale, keep-clear zone 1000 × 600, ten-string tuning) is a flagged drawing default; only the part NAMES are sourced | No dimension in the research. | SGF-MAP | APPLIED · OWNER: a steel player's look at the drawings |
 | PS-06 | L45 | OSHA line | As EG-08 (and a CRITICAL quick-check item) | As EG-08. | OSHA, NIOSH | APPLIED |
 | PS-07 | (whole lesson) | "Pro Audio Training Academy" | Not used (house rule) | House rule. | — | APPLIED |
+
+## Lab 2 · the cymbals on the shared kit: I01a Hi-Hat, I01b Ride, I01c Crash, I01d Splash, I01e China
+
+Built 2026-10-05 (branch `miking-i1`, from `4334be8b` on `final-lab`). Research: `hihat/`, `ride_cymbal/`, `crash_cymbal/`, `splash_cymbal/`, `china_cymbal/` (SOURCES.md, GEOMETRY_PROPOSAL.md) and `BATCH2_RESEARCH_SUMMARY.md`. Shared: `lessons/shared/cymbals/` — the family files `cymbalSpec.ts`, `CymbalArt.tsx`, `cymbalModes.ts` unchanged; the Lab 2 additions in NEW files beside them (`cymbalFx.ts`, `CymbalFxArt.tsx`, `CymbalKitArt.tsx`, `CymbalStrikeFx.tsx`, `CymbalSound.tsx`, `CymbalSettingPlan.tsx`, `cymbalLesson.ts`, `cymbalItems.ts`, `cymbalCommon.ts`, `cymbalCopy.ts`, `cymbalMics.ts`).
+
+### I01a Hi-Hat (`source_text/Hi-Hat-Miking-Technique-Research.txt`, lesson id I01a)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| HH-01 | L21, L52 | "Shure explicitly describes angling a snare mic somewhat toward the hi-hat", set against LEWITT's rear rejection as if the makers disagree | Both snare-mic strategies are taught as one choice by goal: angle the snare mic a little toward the hats to cover both on one channel, OR aim its rejection at the hats to keep them apart (card `hh.mix.3`, placement LEARN) | The same Shure booklet gives BOTH strategies: "aim the null of the snare mic towards the hi-hat" and "angle snare drum microphone slightly toward hi-hat" (HH-D2). It is not Shure vs LEWITT. | S-LIVE (drum-kit intro; item 5); LW-1MIC | APPLIED (`i01aHiHat/copy.ts`, `lesson.ts`) |
+| HH-02 | L36 | Shure article: pencil condenser "roughly 10–15 cm away, pointing down near the far edge away from the snare" | Zone "Over the far edge, away from the snare": 10–15 cm above, directly over the edge on the far side, pointing straight down | Shure's words are "pointing directly down at the edge on the far side, away from the snare". | S-REC1 (Nov 06 2022) | APPLIED (`i01aHiHat/model.ts` `hh.farEdge`) |
+| HH-03 | L36, L42 | "away from the snare" and "a few inches over edge away from drummer" read as one position | Two different directions: the lab draws the far side, away from the snare (and from the player); "away from the drummer" is said in words | S-REC1 says away from the snare; S-LIVE says away from the drummer. On the shared kit the 16 in crash hangs over the hats' audience side, so a stand mic there runs into it. | S-REC1; S-LIVE item 5 | APPLIED · OWNER: confirm |
+| HH-04 | L36, L39, L42 | Six close starting points | Four zones (above the bow with the snare hidden; over the far edge; a few centimetres over the outer edge; under the bottom cymbal on a clip). "Within four inches" and "just below the cup" are said in words (the closeness limit; the aim idea) | Proposal §7 owner question 3: show the ones that are different places to begin. | S-RECBK; S-RHYTHM; DPA-HH; SN-E914 | APPLIED · OWNER: which to show |
+| HH-05 | L42 | "a few centimetres above the outer edge" | "a few centimetres — about 4.5–6.5 cm (2–2.5 in)" | No number is published; the band starts where a small dynamic's body clears the top cymbal and its opening travel. A drawing default. | SN-E914 (archived PDF; online manual same text) | APPLIED (`hh.edgeLow`) · OWNER: approve |
+| HH-06 | L28 | Underside mic, no distance | "about 5–8.5 cm under the bottom cymbal, 10–15 cm out from the stand, on the audience side", on a stand clip | No distance is published for the underside (drawing default); the clip on the stand is the maker's own suggestion. | DPA-HH | APPLIED (`hh.under`, `hh.underOpen`) · OWNER: approve |
+| HH-07 | L42 / ref [6] | e 914 PDF link | Not linked (no sources on screen); the internal record points to the archived copy and the online manual | The lesson URL returns 404 (HH-D3). | SN-E914, SN-E914-DOC | APPLIED · OWNER: replace the link |
+| HH-08 | L10 | NIOSH 85 dBA line | Kept as plain advice, not named: "a widely used guideline: no more than 85 dBA averaged over 8 hours, halving the time for every 3 dBA more"; a CRITICAL quick-check item (hearing) in every cymbal lesson | The hearing line stays (owner: safety stays, in plain words). | NIOSH | APPLIED (`shared/cymbals/cymbalItems.ts`) |
+| HH-09 | (drawing) | — | The family draws the OPEN pair with the bottom cymbal lowered ½ in; the words say the TOP cymbal moves (the pull rod) | The shared family's drawing convention (unchanged); on a real stand the top cymbal rises. The gap is what the lesson uses. | DPA-HH (pair); cymbalSpec.ts | APPLIED · OWNER: redraw the family's open pair? |
+| HH-10 | (geometry) | "5–10 cm from the top of the hi-hat cymbal" | Measured square to the top cymbal's EDGE PLANE (the plate's surface is ≤ 8 mm above it over the bow) | The engine measures from a plane; the bow's height above the edge plane is a family drawing default. | DPA-HH; cymbalSpec.ts | APPLIED |
+| HH-11 | L2 | "Pro Audio Training Academy", "Student" | Not used | House rule. | — | APPLIED |
+
+### I01b Ride Cymbal (`source_text/Ride-Cymbal-Miking-Technique-Research.txt`, lesson id I01b)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| RD-01 | L23 | Shure: condenser "about 1–2 ft above" the ride | A zone "A foot or two above, for the cymbals", taught as a mic for the ride AND the other cymbals (not a spot), 30.5–61 cm | Shure's sentence: "To pick up the rest of cymbals, place another condenser near the ride cymbal, a foot or two above." | S-AL1568 | APPLIED (`i01bRide/model.ts` `ride.area`) |
+| RD-02 | L11 / [6] | "a separate small condenser" (unnamed) | No model on screen; the internal record names it | The interview names the model (RIDE-D1). | S-BEYOND | APPLIED (internal only) |
+| RD-03 | L29 / [8] | "4015 tucked underneath every single cymbal" attributed to & Juliet | The under-mic is taught generically ("some engineers mic cymbals from below"); no show named | The quote is about a different show in the same article (RIDE-D2). | DPA-JULIET | APPLIED · OWNER: fix the attribution in the document |
+| RD-04 | L26, L29 | Spot over the bow; underneath — no distances | "15–30 cm above the bow"; "8–15 cm under the ride" | Drawing defaults (proposal: "no source gives a spot distance"). | ride_cymbal/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve |
+| RD-05 | (sound) | — | "Near the held centre, MOST shapes barely move (a few, with a still ring, do)" | The plate model's (1,1) and (2,1) shapes move near the bell; "all shapes" would be wrong. | cymbalModes.ts (the Cymatics plate model) | APPLIED (`rd.snd.3`, shapes note) |
+| RD-06 | L13 | No universal safe clearance | Kept: the swing and the stick's side are the lab's drawn keep-outs, said once | Consistent with the research. | — | APPLIED |
+
+### I01c Crash Cymbal (`source_text/Crash-Cymbal-Miking-Technique-Research.txt`, lesson id I01c)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CR-01 | (whole lesson) | No published distance for a crash | Said in plain words ("no one number is published for a crash"); above 20–35 cm and under 12–20 cm as places to begin | No source gives a number; the bands are drawing defaults. | crash_cymbal/SOURCES.md | APPLIED · OWNER: approve the bands |
+| CR-02 | L8 | Overheads first | "The overheads usually carry the crashes first" — a check to make, not a rule | No maker sentence says it of crashes (Shure's line is about the hi-hat); the lesson's generalisation is kept as a tendency. | S-REC1 | APPLIED |
+| CR-03 | L31 / [6] | A touring account: compact directional mics under the cymbals because of wedge spill | STUDIO OR LIVE teaches the reason generically: under a cymbal, aimed up, the mic's rejection faces the floor wedges | The account names the model (internal only). | DPA-KILLERS | APPLIED |
+| CR-04 | (geometry) | Glancing blow / "J" stroke | The stick's side reaches 25 cm past the edge and 15 cm down | The proposal's ko.stroke (ILLUSTRATIVE). | ZIL-L11, ZIL-FAQ | APPLIED · OWNER: approve |
+| CR-05 | L15 | "the plate can flex downward or rock toward it" | The under band starts below the ± 60 mm swing and the proposal's 80 mm downward flex band | Drawing defaults. | crash_cymbal/GEOMETRY_PROPOSAL.md | APPLIED |
+
+### I01d Splash Cymbal (`source_text/Splash-Cymbal-Miking-Technique-Research.txt`, lesson id I01d)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| SP-01 | (geometry) | Arm splash at (−150, h 1000, −380) | At (−20, h 1050, −200), its arm clamped to the tom holder's post (CY-07) | At the proposal's position a mic 15–25 cm above the splash would sit inside the 16 in crash and its swing. | splash_cymbal/GEOMETRY_PROPOSAL.md; kit plan | APPLIED · OWNER: approve |
+| SP-02 | (mounts) | Standalone / piggyback / stack | Arm and piggyback drawn; the stack said in words | The proposal: "the stack is the hardest art in I01 — build mount.arm first". | ZIL-FXS | APPLIED · OWNER: draw the stack? |
+| SP-03 | (assessment) | An 8 in splash on an arm | A 10 in on the arm, an 8 in upside down on the 18 in crash (both sizes sourced) | The proposal's default; the 8 in serves the piggyback. | ZIL-ASPL, ZIL-KSPL, ZIL-BARATA | APPLIED |
+| SP-04 | (whole lesson) | No published distance | Above 15–25 cm and under 8–13 cm said as places to begin | Drawing defaults. | splash_cymbal/SOURCES.md | APPLIED · OWNER: approve |
+| SP-05 | (stack) | "do not loosen a deliberately tensioned stack" | Kept as a setting check (`sp.set.2`) and a quick-check item | Consistent with the maker's tension adjustment. | ZIL-FXS | APPLIED |
+
+### I01e China Cymbal (`source_text/China-Cymbal-Miking-Technique-Research.txt`, lesson id I01e)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CH-01 | (geometry) | Proposal position 2: a new stand beside the ride at (150, h 1150, 700) | The China takes the 18 in crash's stand, in its place (the proposal's first option) (CY-08) | Position 2 overlaps the 18 in crash in plan and height. | china_cymbal/GEOMETRY_PROPOSAL.md; kit plan | APPLIED · OWNER: approve |
+| CH-02 | (geometry) | "inverted (cup down, lip pointing up toward the stick)" | Turned over, the valley becomes a raised ring and the lip turns DOWN (CY-09) | The proposal's own profile, turned over: heights negate, so the valley (−18 mm) becomes +18 mm and the lip slopes down to the rim. The two statements cannot both hold. | china_cymbal/GEOMETRY_PROPOSAL.md profile | APPLIED · OWNER: confirm with a real China |
+| CH-03 | [11] | A side-address underhead mic, by model | "a side-address mic can do this job too" — no model; the under zone uses the small condenser | No model names on screen; the side-address body is large for the drawn space. | S-B181 | APPLIED |
+| CH-04 | (whole lesson) | A jazz player's upright ride | The shoulder strike "about an inch above the valley" is a strike point on screen; no name | Starting-points voice. | SAB-JH | APPLIED |
+| CH-05 | (whole lesson) | No published distance; the profile | Above 20–30 cm and under 8–15 cm (below the lowest point in the mount) as places to begin; the China's shape said to be a drawing | Drawing defaults (the whole profile). | china_cymbal/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: approve |
+
+### Shared across the five lessons
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| CY-01 | (family) | — | `cymbalSpec.ts`, `CymbalArt.tsx`, `cymbalModes.ts` unchanged; the Lab 2 additions in new files beside them | Builder brief: extend only in new files. | — | APPLIED |
+| CY-02 | (mics) | A miniature clip-on under the hi-hat | A new generic type, "Miniature condenser on a stand clip, supercardioid" (`standClip`); its size and reach are drawing defaults | The guitar clip-on's words describe a body edge; a cymbal clip holds a stand. | DPA-HH | APPLIED (`shared/cymbals/cymbalMics.ts`) |
+| CY-03 | (two mics) | — | Over and under face opposite sides of the plate: the pair starts in opposite polarity (the toms' "opposite heads" rule) | A plate moving between two mics; said as a simplified picture. | — | APPLIED |
+| CY-04 | (studio or live) | — | The exercise uses the under-mic aimed up and the drummer's fill: its rear faces the floor | The research's reason for under-miking on loud stages, taught generically. | DPA-KILLERS | APPLIED |
+| CY-05 | (all) | — | The overheads (Lab 1 M09) and complete-kit (M11) lessons are named as places to go next, in words | Cross-links without citations. | — | APPLIED |
+| CY-06 | (how it sounds) | — | The shapes are the Cymatics Lab's flat, centre-held disc; for the China the step says the flat disc simplifies its cup and lip | No China mode data exists; the topology is what the picture teaches. | cymbalModes.ts | APPLIED |
+| CY-07 | — | — | see SP-01 | | | |
+| CY-08 | — | — | see CH-01 | | | |
+| CY-09 | — | — | see CH-02 | | | |
+| CY-10 | (all) | "Pro Audio Training Academy", "Student" | Not used | House rule. | — | APPLIED |
