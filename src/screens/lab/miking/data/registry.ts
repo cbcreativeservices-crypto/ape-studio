@@ -13,7 +13,7 @@ export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtit
 
 export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
-  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: '' },
+  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn cymbals and percussion — the hi-hat, ride, crash, splash and China on the shared kit first: recommended starting points, the swing and the stick’s path, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: '' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments — the guitar family first: front view and from above, recommended starting points, the player’s space, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
@@ -49,6 +49,12 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C05C', labId: 'strings', title: 'Ukulele', subtitle: 'A small body, a voice above — the upper body, the hole, or a clip', status: 'ready' },
   { id: 'C07', labId: 'strings', title: 'Acoustic Bass Guitar', subtitle: 'A hollow-body bass: one mic, the pickup, and the lowest notes', status: 'ready' },
   { id: 'C08', labId: 'strings', title: 'Electric Bass', subtitle: 'Fretted and fretless: one woofer, room to breathe, mic and DI', status: 'ready' },
+  // Lab 2 (percussion), the cymbals on the shared kit: I01a hi-hat, I01b ride, I01c crash, I01d splash, I01e China.
+  { id: 'I01a', labId: 'percussion', title: 'Hi-Hat', subtitle: 'Above the pair, away from the snare — or underneath on a clip', status: 'ready' },
+  { id: 'I01b', labId: 'percussion', title: 'Ride Cymbal', subtitle: 'A spot over the bow, a mic a foot or two above, or one underneath', status: 'ready' },
+  { id: 'I01c', labId: 'percussion', title: 'Crash Cymbal', subtitle: 'Overheads first — then above the plate, or underneath', status: 'ready' },
+  { id: 'I01d', labId: 'percussion', title: 'Splash Cymbal', subtitle: 'On an arm or on top of a crash — a short cue among loud neighbours', status: 'ready' },
+  { id: 'I01e', labId: 'percussion', title: 'China Cymbal', subtitle: 'Upright or turned over — above it, or under its lowest point', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
