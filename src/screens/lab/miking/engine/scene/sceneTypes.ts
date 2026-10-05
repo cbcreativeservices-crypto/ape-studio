@@ -8,8 +8,24 @@ import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 import type { PageId, SettingItem, VariantId, Vec3, ViewId, Wedge } from '../model/types.ts';
 
-/** `short`: the words to fall back to where the full label would collide. */
-export type ArtLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
+/** `short`: the words to fall back to where the full label would collide.
+ *  `alts`: other places it may sit (tried before the short form); `at`: the
+ *  part's own point — a label moved away from it gets a thin leader to it
+ *  (labelLayout.fitLabels; strings art pass 2026-10-05). */
+export type ArtLabel = {
+  id: string;
+  text: string;
+  short?: string;
+  u: number;
+  v: number;
+  align: 'left' | 'center' | 'right';
+  tone?: 'muted' | 'illustrative';
+  alts?: readonly { u: number; v: number; align: 'left' | 'center' | 'right' }[];
+  at?: { u: number; v: number };
+};
+
+/** A rectangle in mm of a view's (u, v) plane. */
+export type ViewRect = { u0: number; u1: number; v0: number; v1: number };
 
 export type LessonArt = {
   /** The instrument (static; Skia elements in mm). */
@@ -17,6 +33,14 @@ export type LessonArt = {
   labels: (view: ViewId, variant: VariantId) => ArtLabel[];
   /** The part under a model point (u, v), `tol` in mm; null = none. */
   hitTest: (view: ViewId, variant: VariantId, u: number, v: number, tol: number) => string | null;
+  /** Opt-in label manners (strings art pass 2026-10-05): rectangles (mm)
+   *  the part labels keep off — the boxes of the recommended starting points
+   *  the scene is showing (`shown`: their ids) — and whether a label fades
+   *  while a mic sits under it (the lobe's tag also steps round the labels),
+   *  so the words never hide the mic, a zone or a readout. A lesson that
+   *  gives neither is unchanged. */
+  labelObstacles?: (view: ViewId, variant: VariantId, shown: readonly string[]) => readonly ViewRect[];
+  labelsYieldToMic?: boolean;
   /** HOW IT SOUNDS (LESSON_JOURNEY §6 stage 2): the strike sequence revealed
    *  by `reveal` (1 … n, a shared value: stepped, or played ONCE by the
    *  page), with `shown` (an integer, for the labels) … */

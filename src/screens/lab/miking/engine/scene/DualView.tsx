@@ -14,8 +14,9 @@ import { colors, fonts } from '../../../../../theme/tokens';
 import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
 import type { ViewId } from '../model/types.ts';
 import { viewsOf } from '../model/types.ts';
-import { fitPair } from '../geometry/frame.ts';
+import { fitPair, fitXform } from '../geometry/frame.ts';
 import { PlacementScene, liveReserve, type PlacementSceneProps } from './PlacementScene';
+import { chooseInsetCorner } from './labelLayout.ts';
 
 export type DualViewProps = Omit<PlacementSceneProps, 'view' | 'baseXf' | 'mini' | 'accessibilityLabel'> & {
   view: ViewId;
@@ -74,7 +75,23 @@ export function DualView(props: DualViewProps) {
   // are empty there (right of the front hoop, above the port), while the
   // bottom-left — where it used to sit — holds the pedal, the beater and the
   // player's keep-out (layout pass 2026-10-04).
-  const top = band + 2;
+  // (A model may ask for the bottom-right instead: the guitar family, whose
+  // headstock fills the top-right of its frame. The view tag sits bottom-left.)
+  const at = rig.lesson.model.insetAt;
+  const prefer = (typeof at === 'string' ? at : at?.[rig.variant]) ?? 'top';
+  // A model's keep-clear rectangle (the guitars' headstock) decides between
+  // the two corners at this glass's own fit — the live strip's band moves
+  // the drawing down on some pages.
+  const keep = rig.lesson.model.insetKeepClear?.[rig.variant]?.[view];
+  const rects = {
+    top: { x0: w - 4 - iw, y0: band + 2, x1: w - 4, y1: band + 2 + ih + 14 },
+    bottom: { x0: w - 4 - iw, y0: Math.max(band + 2, h - ih - 14 - 4), x1: w - 4, y1: Math.max(band + 2, h - ih - 14 - 4) + ih + 14 },
+  };
+  const corner = keep && vb ? chooseInsetCorner(keep, (() => {
+    const f = fitXform(view, props.boxOverride ?? vb, w, h - band, 8);
+    return { ...f, oy: f.oy + band };
+  })(), rects, prefer) : prefer;
+  const top = rects[corner].y0;
   const avoid = showInset ? { x0: w - 4 - iw, y0: top, x1: w - 4, y1: top + ih + 14 } : undefined;
   return (
     <View style={{ width: w, height: h }}>

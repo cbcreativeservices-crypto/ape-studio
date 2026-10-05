@@ -558,25 +558,42 @@ function PolarSlice({ pose, view, pattern }: { pose: SharedValue<MicPose>; view:
 }
 
 /** The lobe's in-canvas tag, following the mic (UI thread; no React work). */
-function LobeTag({ pose, view, xf, scale, maxX, maxY }: { pose: SharedValue<MicPose>; view: ViewId; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number }) {
+/** A kept part label's place, for the lobe tag to step round (opt-in). */
+type LabelBox = { u: number; v: number; W: number; align: 'left' | 'center' | 'right' };
+
+function LobeTag({ pose, view, xf, scale, maxX, maxY, labelBoxes = null }: { pose: SharedValue<MicPose>; view: ViewId; xf: SharedValue<ViewXform>; scale: number; maxX: number; maxY: number; labelBoxes?: LabelBox[] | null }) {
   const text = 'PATTERN SHAPE, NOT RANGE';
   const W = labelWidth(text, scale, maxX);
+  const H = 9.5 * scale * 1.25;
   const style = useAnimatedStyle(() => {
     const p = pose.value;
-    const x = xf.value.ox + p.p.x * xf.value.s;
-    const above = xf.value.oy + (vOf(view, p.p) - POLAR_R) * xf.value.s - 14 * scale;
-    const below = xf.value.oy + (vOf(view, p.p) + POLAR_R) * xf.value.s + 2;
+    const c = xf.value;
+    const x = c.ox + p.p.x * c.s;
+    const above = c.oy + (vOf(view, p.p) - POLAR_R) * c.s - 14 * scale;
+    const below = c.oy + (vOf(view, p.p) + POLAR_R) * c.s + 2;
     const left = Math.max(2, Math.min(maxX - W - 2, x - W / 2));
     // Above the lobe, unless that lands in the top-right corner the glass's
     // inset owns — then below it.
     const inInset = left + W > maxX * 0.7 && above < maxY * 0.62;
-    const y = inInset ? below : above;
+    // A lesson whose labels yield to the mic also keeps this tag off them.
+    const hitsLabel = (y: number) => {
+      if (!labelBoxes) return false;
+      for (const b of labelBoxes) {
+        const bx = c.ox + b.u * c.s;
+        const bl = Math.max(2, Math.min(maxX - b.W - 2, b.align === 'left' ? bx : b.align === 'right' ? bx - b.W : bx - b.W / 2));
+        const bt = c.oy + b.v * c.s - 7 * scale;
+        if (left < bl + b.W && left + W > bl && y < bt + H && y + H > bt) return true;
+      }
+      return false;
+    };
+    let y = inInset ? below : above;
+    if (hitsLabel(y)) y = y === above ? below : above;
     // No clean spot (the badge still says it): hidden rather than on top of
     // another label. A mic tilted well down seen from the side (a hand
     // drum's, aimed at a head) has its body, handle and boom rising out of
     // the lobe, and the part labels sit beside it: no clean spot either.
     const steep = view === 'side' && Math.abs(p.el) > 30;
-    const ok = !steep && y > 4 && y < maxY - 34;
+    const ok = !steep && y > 4 && y < maxY - 34 && !hitsLabel(y) && !(y === above && inInset);
     return { opacity: ok ? 1 : 0, transform: [{ translateX: left }, { translateY: y }] };
   });
   return (
@@ -627,15 +644,40 @@ function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view:
 
 /* ── RN labels over the canvas, following the same transform ─────────── */
 
-function SceneLabel({ xf, u, v, text, align, tone, scale, maxX }: { xf: SharedValue<ViewXform>; u: number; v: number; text: string; align: 'left' | 'center' | 'right'; tone?: string; scale: number; maxX: number }) {
+/** The mics a label yields to (LessonArt.labelsYieldToMic): each pose and
+ *  its body length (mm), so the label can tell when a mic sits under it. */
+type MicYield = { poses: SharedValue<MicPose>[]; lens: number[]; surf: boolean[] } | null;
+
+function SceneLabel({ xf, u, v, text, align, tone, scale, maxX, yieldTo = null, view }: { xf: SharedValue<ViewXform>; u: number; v: number; text: string; align: 'left' | 'center' | 'right'; tone?: string; scale: number; maxX: number; yieldTo?: MicYield; view: ViewId }) {
   // Width from the text (Oswald ≈ 0.55 em per glyph), so a label can be kept
   // wholly inside the canvas instead of running off its edge.
   const W = labelWidth(text, scale, maxX);
+  const H = 9.5 * scale * 1.25;
   const style = useAnimatedStyle(() => {
     const x = xf.value.ox + u * xf.value.s;
     const y = xf.value.oy + v * xf.value.s;
-    const left = align === 'left' ? x : align === 'right' ? x - W : x - W / 2;
-    return { transform: [{ translateX: Math.max(2, Math.min(maxX - W - 2, left)) }, { translateY: y - 7 * scale }] };
+    const left = Math.max(2, Math.min(maxX - W - 2, align === 'left' ? x : align === 'right' ? x - W : x - W / 2));
+    const top = y - 7 * scale;
+    // A mic under the words: the label steps back (the mic, its lobe and the
+    // readout it drives are the lesson; the part's name can wait).
+    let opacity = 1;
+    if (yieldTo) {
+      for (let i = 0; i < yieldTo.poses.length; i++) {
+        const p = yieldTo.poses[i].value;
+        const aim = aimVec(p.az, yieldTo.surf[i] ? 0 : p.el);
+        const fx = xf.value.ox + p.p.x * xf.value.s;
+        const fy = xf.value.oy + (view === 'side' ? p.p.y : p.p.z) * xf.value.s;
+        const tx = fx - aim.x * yieldTo.lens[i] * xf.value.s;
+        const ty = fy - (view === 'side' ? aim.y : aim.z) * yieldTo.lens[i] * xf.value.s;
+        // Sample the body from front to tail against the label's box (+ a margin).
+        for (let k = 0; k <= 6; k++) {
+          const sx = fx + ((tx - fx) * k) / 6;
+          const sy = fy + ((ty - fy) * k) / 6;
+          if (sx > left - 10 && sx < left + W + 10 && sy > top - 10 && sy < top + H + 10) opacity = 0.14;
+        }
+      }
+    }
+    return { opacity, transform: [{ translateX: left }, { translateY: top }] };
   });
   const color = tone === 'illustrative' ? '#aab0bd' : tone === 'muted' ? colors.textMuted : colors.amberLabel;
   return (
@@ -644,6 +686,42 @@ function SceneLabel({ xf, u, v, text, align, tone, scale, maxX }: { xf: SharedVa
         {text}
       </Text>
     </Animated.View>
+  );
+}
+
+/** Thin leaders from a part to its label where the label had to move off it
+ *  (labelLayout: `leader`). Drawn INSIDE the scene's transform — under the
+ *  zones, the stands and the mics — with the label's end worked out in
+ *  screen px each frame, so both ends stay attached at every zoom. */
+function LeaderLines({ labels, xf, scale, maxX }: { labels: { u: number; v: number; text: string; align: 'left' | 'center' | 'right'; leader?: { u: number; v: number } }[]; xf: SharedValue<ViewXform>; scale: number; maxX: number }) {
+  const items = useMemo(() => labels.filter((l) => l.leader).map((l) => ({ u: l.u, v: l.v, align: l.align, W: labelWidth(l.text, scale, maxX), au: l.leader!.u, av: l.leader!.v })), [labels, scale, maxX]);
+  const H = 9.5 * scale * 1.25;
+  const path = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    const c = xf.value;
+    for (const it of items) {
+      const x = c.ox + it.u * c.s;
+      const left = Math.max(2, Math.min(maxX - it.W - 2, it.align === 'left' ? x : it.align === 'right' ? x - it.W : x - it.W / 2));
+      const top = c.oy + it.v * c.s - 7 * scale;
+      const ax = c.ox + it.au * c.s;
+      const ay = c.oy + it.av * c.s;
+      const ex = Math.max(left + 3, Math.min(left + it.W - 3, ax));
+      const ey = Math.max(top + 2, Math.min(top + H - 2, ay));
+      // Back into mm (the group's transform draws them).
+      p.moveTo(it.au, it.av);
+      p.lineTo((ex - c.ox) / c.s, (ey - c.oy) / c.s);
+      p.addCircle(it.au, it.av, 2.4 / c.s);
+    }
+    return p;
+  }, [items]);
+  const halo = useDerivedValue(() => 3 / xf.value.s);
+  const line = useDerivedValue(() => 1.1 / xf.value.s);
+  if (!items.length) return null;
+  return (
+    <>
+      <Path path={path} style="stroke" strokeWidth={halo} color="#000" opacity={0.5} />
+      <Path path={path} style="stroke" strokeWidth={line} color={colors.amberLabel} opacity={0.8} />
+    </>
   );
 }
 
@@ -986,11 +1064,13 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   const hatchPath = useMemo(() => hatch(box), [box]);
   // Part labels only where the drawing is big enough to carry them (a short
   // landscape glass drew them on top of each other); full screen always has them.
-  const labels = useMemo(
-    () => (mini || !showLabels || base.s < LABEL_MIN_S ? [] : fitLabels(art.labels(view, variant), base, textScale, w, avoid)),
+  const labels = useMemo(() => {
+    if (mini || !showLabels || base.s < LABEL_MIN_S) return [];
+    // The lesson's own keep-off rectangles (its zones), in px at the fit.
+    const obstacles = showZones && art.labelObstacles ? art.labelObstacles(view, variant, zones.map((z) => z.id)).map((r) => ({ x0: base.ox + r.u0 * base.s, x1: base.ox + r.u1 * base.s, y0: base.oy + r.v0 * base.s, y1: base.oy + r.v1 * base.s })) : undefined;
+    return fitLabels(art.labels(view, variant), base, textScale, w, avoid, obstacles);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
-    [mini, showLabels, art, view, variant, base, textScale, w, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1],
-  );
+  }, [mini, showLabels, showZones, zones, art, view, variant, base, textScale, w, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
   const Instrument = art.Instrument;
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
@@ -1012,6 +1092,14 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   }, [highlight, model, view]);
 
   const micsShown = rig.mics.filter((m) => live.includes(m.slot) && m.on);
+  const labelBoxes = useMemo<LabelBox[] | null>(() => (art.labelsYieldToMic ? labels.map((l) => ({ u: l.u, v: l.v, W: labelWidth(l.text, textScale, w), align: l.align })) : null), [art.labelsYieldToMic, labels, textScale, w]);
+  // The mics the part labels step back from (opt-in per lesson).
+  const shownKey = micsShown.map((m) => `${m.slot}:${m.typeId}`).join(',');
+  const yieldTo = useMemo<MicYield>(
+    () => (art.labelsYieldToMic ? { poses: micsShown.map((m) => rig.pose[m.slot]), lens: micsShown.map((m) => micType(m.typeId).body.length.mm), surf: micsShown.map((m) => micType(m.typeId).mount === 'surface') } : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- by the shown mics' slots and types
+    [art.labelsYieldToMic, shownKey, rig.pose],
+  );
 
   const canvas = (
     <View style={{ width: w, height: h }}>
@@ -1022,6 +1110,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={matrix}>
           <Instrument view={view} variant={variant} />
+          <LeaderLines labels={labels} xf={xf} scale={textScale} maxX={w} />
           {envelopes.map((e) => (
             <Group key={e.id} clip={e.path}>
               <Path path={hatchPath} style="stroke" strokeWidth={2} color={GREY} opacity={0.55} />
@@ -1058,10 +1147,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         </Group>
       </Canvas>
       {labels.map((l) => (
-        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={textScale} maxX={w} />
+        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={textScale} maxX={w} yieldTo={yieldTo} view={view} />
       ))}
       {showPolar && !mini && showLabels
-        ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} />)
+        ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} labelBoxes={labelBoxes} />)
         : null}
       {!mini && interactive && showLive ? (
         <View pointerEvents="none" style={styles.liveWrap}>
