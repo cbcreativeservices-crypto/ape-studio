@@ -35,6 +35,8 @@ import { C05B_BUILT } from '../src/screens/lab/miking/lessons/c05bMandolin/geome
 import { C05C_BUILT } from '../src/screens/lab/miking/lessons/c05cUkulele/geometry.ts';
 import { C07_BUILT } from '../src/screens/lab/miking/lessons/c07AcousticBass/geometry.ts';
 import type { BuiltGuitarModel } from '../src/screens/lab/miking/lessons/shared/guitars/guitarModel.ts';
+import { guitarPlayerPose } from '../src/screens/lab/miking/lessons/shared/guitars/guitarPlayer.ts';
+import { BODY } from '../src/screens/lab/miking/lessons/shared/players/playerPose.ts';
 
 const LESSONS: [Lesson, BuiltGuitarModel][] = [
   [C01_LESSON, C01_BUILT],
@@ -87,6 +89,52 @@ describe('framing: each instrument fills its stage (frameGuitarViews)', () => {
           assert.ok(inside(views.top!, p.x, p.z, 20), `${z.id} start in top roam`);
         }
       });
+    }
+  }
+});
+
+describe('the shared player: joints from the model, at true size (guitarPlayer.ts)', () => {
+  const inBox = (b: { min: { x: number; y: number; z: number }; max: { x: number; y: number; z: number } }, u: number, v: number, axis: 'y' | 'z', pad = 0) =>
+    u >= b.min.x - pad && u <= b.max.x + pad && v >= b.min[axis] - pad && v <= b.max[axis] + pad;
+  for (const [lesson, built] of LESSONS) {
+    for (const v of lesson.model.variants) {
+      const sc = built.scenes[v.id];
+      const front = guitarPlayerPose(sc, 'side');
+      const above = guitarPlayerPose(sc, 'top');
+      it(`${lesson.id}/${v.id}: the head sits on the head envelope; the shoulders are an adult's, whatever the instrument`, () => {
+        const hc = sc.o.P(sc.fit.head.c);
+        assert.equal(front.head.c.u, hc.x);
+        assert.equal(front.head.c.v, sc.o.lap ? hc.y : sc.fit.head.c.y);
+        assert.equal(front.shoulderL.u - front.shoulderR.u, 2 * BODY.shoulderHalf);
+        assert.equal(above.shoulderL.u - above.shoulderR.u, 2 * BODY.shoulderHalf);
+        assert.equal(front.head.r, sc.fit.head.r);
+      });
+      if (!sc.o.lap) {
+        it(`${lesson.id}/${v.id}: the fretting fingertips stop on the board, in four neighbouring fret spaces within a hand's reach`, () => {
+          const b = front.handL.board!;
+          assert.equal(b.tips.length, 4);
+          assert.ok(Math.max(...b.tips) - Math.min(...b.tips) <= 100);
+          for (const t of b.tips) {
+            assert.ok(t > sc.g.edge && t < sc.g.L, 'on the neck');
+            assert.ok(inBox(sc.fit.fret, t, 0, 'y'), 'inside the fretting hand’s keep-out');
+          }
+        });
+        it(`${lesson.id}/${v.id}: the picking hand is drawn round the picking envelope's far end, over the strings`, () => {
+          const c = { u: front.handR.wrist.u + Math.cos(front.handR.dir) * BODY.handLen * 0.42, v: front.handR.wrist.v + Math.sin(front.handR.dir) * BODY.handLen * 0.42 };
+          assert.ok(Math.hypot(c.u - sc.fit.arm.b.x, c.v - sc.fit.arm.b.y) < 20);
+          assert.ok(inBox(sc.fit.pick, c.u, c.v, 'y', 30));
+        });
+        it(`${lesson.id}/${v.id}: seen from above, the head and shoulders are behind the instrument's back`, () => {
+          assert.ok(above.head.c.v + above.head.r < 0);
+          assert.ok(above.shoulderR.v < -sc.g.depth);
+        });
+      } else {
+        it(`${lesson.id}/${v.id}: lap style, the bar lies across the strings over the neck`, () => {
+          const b = front.handL.board!;
+          assert.ok(b.tips[0] > sc.g.edge && b.tips[0] < sc.g.L);
+          assert.ok(b.v < 0, 'above the top (the top faces up, −v)');
+        });
+      }
     }
   }
 });

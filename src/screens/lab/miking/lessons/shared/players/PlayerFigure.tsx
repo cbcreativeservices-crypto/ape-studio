@@ -48,7 +48,7 @@ const SKIN_EDGE = '#24272d';
 const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
 /** The line-art head (house spec): a light neutral stroke. */
 const HEAD_LINE = '#cfd4dc';
-const HEAD_FILL = 'rgba(16,18,23,0.62)';
+const HEAD_FILL = 'rgba(16,18,23,0.8)';
 const CHROME = ['#f2f4f8', '#b9bec8', '#6b707b', '#d4d8df'];
 const PICK = ['#7a3a1a', '#4a200c'];
 
