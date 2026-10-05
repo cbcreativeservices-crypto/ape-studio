@@ -97,7 +97,7 @@ export default function Page() {
           href="/employers"
           className="text-amber underline underline-offset-2 hover:text-amber-deep"
         >
-          For employers
+          For employers &amp; instructors
         </Link>
         .
       </p>

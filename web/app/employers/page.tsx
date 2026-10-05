@@ -3,18 +3,18 @@ import { PageHero, Section, List, CTARow } from "@/components/content";
 import VerifyForm from "@/components/VerifyForm";
 
 export const metadata: Metadata = {
-  title: "For Employers",
+  title: "For Employers & Instructors",
   description:
-    "Verify a Pro Audio Training Academy credential and understand what it represents. Enter a credential code to confirm it is genuine and current.",
+    "Employers and audio instructors: verify a Pro Audio Training Academy credential and see what it represents. Enter a credential code to confirm it is genuine and current.",
 };
 
 export default function Page() {
   return (
     <div className="pb-16">
       <PageHero
-        eyebrow="For Employers"
+        eyebrow="For Employers & Instructors"
         title="Verify a credential"
-        lede="Confirm that a candidate’s Pro Audio Training Academy credential is genuine and current — and understand what it does and doesn’t tell you."
+        lede="Confirm that a candidate’s — or a student’s — Pro Audio Training Academy credential is genuine and current, and understand what it does and doesn’t tell you."
       />
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
@@ -50,6 +50,19 @@ export default function Page() {
         </div>
       </div>
 
+      <Section title="For instructors and schools">
+        <p>
+          Teaching audio? You can use Academy certificates as course work. Assign
+          a certificate to your students, then ask each student for their
+          verification code or QR code when it’s due. This page confirms which
+          certificates they have completed and when.
+        </p>
+        <p>
+          You see completion only — never their progress, quiz scores, or
+          personal details. No account is needed to check.
+        </p>
+      </Section>
+
       <Section title="What a credential represents">
         <p>
           An Academy credential verifies completion of defined educational
@@ -75,7 +88,9 @@ export default function Page() {
         />
         <p>
           Verification tells you the credential is real and current, and what it
-          covers. The hiring judgment remains yours.
+          covers. The hiring judgment remains yours. For instructors, it confirms
+          the student met the certificate’s requirements; your own grading
+          remains yours.
         </p>
       </Section>
 

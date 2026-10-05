@@ -78,7 +78,7 @@ export default function Page() {
 
       <CTARow
         primary={{ href: "/verify", label: "Verify a Credential" }}
-        secondary={{ href: "/employers", label: "For employers" }}
+        secondary={{ href: "/employers", label: "For employers & instructors" }}
       />
     </div>
   );
