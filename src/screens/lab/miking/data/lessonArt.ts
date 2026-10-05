@@ -8,6 +8,7 @@ import { CoupledHeads, StrikeSequence } from '../lessons/m01Kick/soundArt';
 import { SNARE_ART } from '../lessons/m02Snare/art';
 import { TOMS_ART } from '../lessons/m03Toms/art';
 import { C01_ART } from '../lessons/c01Guitar/art';
+import { C05C_ART } from '../lessons/c05cUkulele/art';
 import { C05B_ART } from '../lessons/c05bMandolin/art';
 import { C05A_ART } from '../lessons/c05aBanjo/art';
 import { C03_ART } from '../lessons/c03Resonator/art';
@@ -29,6 +30,7 @@ const ART: Record<string, LessonArt> = {
 
 // Lab 4, the guitar family (each lesson on its own line: lessons are built in parallel).
 ART.C01 = C01_ART;
+ART.C05C = C05C_ART;
 ART.C05B = C05B_ART;
 ART.C05A = C05A_ART;
 ART.C03 = C03_ART;

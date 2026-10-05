@@ -34,7 +34,7 @@ const pages: Record<PageId, PageContent> = {
     title: 'Choose the microphone',
     goal: 'Choose a mic for the acoustic bass by its properties — pattern, power, size and mount — not by its brand, and not by diaphragm size alone.',
     credit: { scenarios: [`${P}.mic.1`, `${P}.mic.2`, `${P}.mic.3`, `${P}.mic.4`, `${P}.rec.1`], note: 'Answer the five checks (one reaches back to how the bass sounds).' },
-    takeaway: 'Pattern, power, size and mount decide what a mic can do here. A larger diaphragm does not by itself mean better bass — check the mic’s documented response and listen. A mic’s maximum SPL is not a hearing limit.',
+    takeaway: 'Pattern, power, size and mount decide what a mic can do here. A larger diaphragm does not by itself mean better bass — check the mic’s published response and listen. A mic’s maximum SPL is not a hearing limit.',
   },
   placement: {
     title: 'Placement Studio',
@@ -146,11 +146,11 @@ const scenarios: MikingScenario[] = [
     id: `${P}.mic.1`,
     page: 'microphone',
     prompt: 'Does a larger diaphragm mean a mic will capture the bass’s low notes better?',
-    options: ['Not by itself: check its documented response and listen', 'Yes: the bigger the diaphragm, the deeper the bass it hears', 'Yes, as long as it is a condenser and not a dynamic'],
-    correct: 'Not by itself: check its documented response and listen',
+    options: ['Not by itself: check its published response and listen', 'Yes: the bigger the diaphragm, the deeper the bass it hears', 'Yes, as long as it is a condenser and not a dynamic'],
+    correct: 'Not by itself: check its published response and listen',
     explain: 'Diaphragm size alone does not settle it: the mic’s response, pattern, handling noise and the room all matter. Read the documentation, then listen on monitors that can reproduce the low notes.',
     why: {
-      'Yes: the bigger the diaphragm, the deeper the bass it hears': 'Size alone does not decide low-frequency response. Check the documented response.',
+      'Yes: the bigger the diaphragm, the deeper the bass it hears': 'Size alone does not decide low-frequency response. Check the published response.',
       'Yes, as long as it is a condenser and not a dynamic': 'The transducer type does not settle it either. Check and listen.',
     },
   },
@@ -290,7 +290,7 @@ const setupTasks: SetupTask[] = [
       { id: 'd', label: 'Small condenser 3 cm into the sound hole, for the most low end', ok: false, power: 'phantom', feedback: 'At the hole it booms unevenly and invites feedback, and it is in the plucking hand’s path.' },
       { id: 'e', label: 'Small omni 1 m away, to hear the whole instrument naturally', ok: false, power: 'phantom', feedback: 'On a loud stage an omni that far out hears the drums and the wedge as much as the bass.' },
     ],
-    reasons: [DOC_REASON, clearReason('both hands, the long neck and the player’s view'), POWER_REASON, { id: 'r.paths', label: 'The pickup and the mic are labelled as separate paths and checked together', role: 'optional', feedback: 'A fair reason: they interact, and they are not the same thing.' }, brandReason(BASS), { id: 'r.big', label: 'A large-diaphragm mic will capture the low end best', role: 'wrong', feedback: 'Diaphragm size alone does not decide low-end capture. Check the documented response and listen.' }],
+    reasons: [DOC_REASON, clearReason('both hands, the long neck and the player’s view'), POWER_REASON, { id: 'r.paths', label: 'The pickup and the mic are labelled as separate paths and checked together', role: 'optional', feedback: 'A fair reason: they interact, and they are not the same thing.' }, brandReason(BASS), { id: 'r.big', label: 'A large-diaphragm mic will capture the low end best', role: 'wrong', feedback: 'Diaphragm size alone does not decide low-end capture. Check the published response and listen.' }],
     explain: 'More than one setup passes this brief. What passes is the reasoning: a sensible starting point from its named point, clearance from the player, power that matches the mic — and honest labels for the pickup path.',
   },
   {

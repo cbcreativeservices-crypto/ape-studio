@@ -8,6 +8,7 @@ import { M01_LESSON } from '../lessons/m01Kick/lesson.ts';
 import { M02_LESSON } from '../lessons/m02Snare/lesson.ts';
 import { M03_LESSON } from '../lessons/m03Toms/lesson.ts';
 import { C01_LESSON } from '../lessons/c01Guitar/lesson.ts';
+import { C05C_LESSON } from '../lessons/c05cUkulele/lesson.ts';
 import { C05B_LESSON } from '../lessons/c05bMandolin/lesson.ts';
 import { C05A_LESSON } from '../lessons/c05aBanjo/lesson.ts';
 import { C03_LESSON } from '../lessons/c03Resonator/lesson.ts';
@@ -16,6 +17,7 @@ import { C07_LESSON } from '../lessons/c07AcousticBass/lesson.ts';
 const LESSON_CONTENT: Record<string, Lesson> = { M01: M01_LESSON, M02: M02_LESSON, M03: M03_LESSON };
 // Lab 4, the guitar family (each lesson on its own line: lessons are built in parallel).
 LESSON_CONTENT.C01 = C01_LESSON;
+LESSON_CONTENT.C05C = C05C_LESSON;
 LESSON_CONTENT.C05B = C05B_LESSON;
 LESSON_CONTENT.C05A = C05A_LESSON;
 LESSON_CONTENT.C03 = C03_LESSON;
