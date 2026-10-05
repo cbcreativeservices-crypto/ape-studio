@@ -104,6 +104,59 @@ From acoustic_guitar/SOURCES.md and BATCH4_RESEARCH_SUMMARY.md §2. Decision: ON
 | AG-07 | L34 | the side-address condenser note ("the address axis … must face the intended region") | The mic types are drawn end-address (small condenser, instrument dynamic, clip mini); the side-address point is not a placeable type | The engine places end-address bodies along the aim; a side-address large-diaphragm body would be drawn wrongly. | S-PGA27 | OWNER: add a side-address type later if wanted |
 | AG-08 | L44 | DPA stage option: a clip under the fingerboard, pointed up, away from the monitor | In words on the Studio-or-live page (not a zone) | It needs a reference surface facing down the guitar's side; kept as an idea to try. | DPA-AG | APPLIED (`copy.ts` context points) |
 
+## C03 Resonator Guitar (`source_text/Resonator-Guitar-Dobro-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| RS-01 | whole lesson | no fixed geometry beyond "20–45 cm" | Two postures drawn: square-neck lap style (face up, a boom from the side) and round-neck upright; the steel dreadnought outline stands in for the body | Resonator bodies are not sourced; the cone (9.5 in) is. | NAT-TECH, BEARD | APPLIED (`lessons/c03Resonator/model.ts`) · OWNER: check the lap posture on the phone |
+| RS-02 | L13 | "Shure's … flat-top guitar sound-hole illustration should not be transferred literally" | Kept — and a closer start added: about 20 cm (8 in) from the coverplate's centre, saying the guide groups the resonator with its guitar rows (TRIAL: the sound hole read as the cone's centre) | Shure itself lists the resonator under the guitar rows; the lesson's caution stays in the words. | S-REC, S-LIVE | APPLIED (zone `close`) · OWNER: keep this row? |
+| RS-03 | L9, L41 | names Jerry Douglas, KSM32/KSM44A, Fishman, DPA 4099G | Generic words ("one touring engineer", "an imaging pedal", "a clip made for this body") | Owner ruling 2026-10-04. | S-BLUEGRASS, FISH-AURA, DPA-MOUNT | APPLIED |
+| RS-04 | title, L5 | "Dobro" | "Resonator guitar" / "square-neck resonator" | "Dobro" is a maker's trademark; brand names stay off the learner's screen. | — | APPLIED · OWNER: approve the title |
+| RS-05 | L60 | OSHA line | Plain hearing line (85 dBA / 8 h, 3 dB), no agency named | Starting-points voice. | OSHA | APPLIED (`StagePlan.tsx`, `rs.set.1`, `q.6`) |
+
+## C05a Banjo (`source_text/Banjo-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| BJ-01 | L9 | "Shure's live-sound guide describes about 1 ft (30 cm) from the bridge" | "Start about 7.5 cm (3 in) out from the centre of the head" and "… from the edge of the head" (two zones); the mini mic "clipped by the tailpiece, aimed at the bridge" | Not in the booklet: 1 ft from the bridge is the CELLO row. The banjo rows are 3 in from the head's centre / edge and a miniature clipped to the tailpiece aiming at the bridge. | S-LIVE p.22, S-REC p.9 | APPLIED (`lessons/c05aBanjo/model.ts` zones `centre`, `edge`, `clip`) |
+| BJ-02 | L9, L23 | DPA's "two omnis at 30–40 cm … distance" used as a one-mic distance | Kept as the lesson's trial at the neck junction; the internal record notes "distance" may mean the pair's spacing | The quote is ambiguous. | DPA-BANJO | APPLIED (zone `joint` bandProv) · OWNER: confirm the reading |
+| BJ-03 | L39 | "Shure reports an engineer using a figure-eight ribbon" (unnamed model) | In words, unnamed ("one engineer … a figure-8 ribbon"); the model (KSM313) stays internal | Owner ruling; the research found the model named. | S-BLUEGRASS | APPLIED (`copy.ts` context points, `bj.mic.1`) |
+| BJ-04 | L37 | "a miniature mic attached near the strings between bridge and tailpiece" | "clipped by the tailpiece, aimed at the bridge" — never on a string | The booklet's banjo row; the "near the strings" wording is its all-strings row. | S-LIVE | APPLIED |
+| BJ-05 | L5 | "cross-link its head behaviour with the Membranophones Lab" | The sound page shows the head's own ideal-membrane shapes, driven off-centre at the bridge (the drum pages' Bessel tables) | Real physics already in the app; the bridge offset (95 mm) is the proposal's drawing default. | banjo/GEOMETRY_PROPOSAL.md | APPLIED (`StringSound.tsx` membrane step) |
+
+## C05b Mandolin (`source_text/Mandolin-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| MD-01 | L13 | DPA's two-omni "30–40 cm … distance" as a one-mic trial | Kept, aimed at the neck junction; the ambiguity (distance or spacing) noted internally | As BJ-02. | DPA-MANDO | APPLIED |
+| MD-02 | — (addition) | — | A second start: about 20 cm (8 in) toward the opening — the recording guide lists the mandolin under its guitar rows (TRIAL) | Gives the placement page two stand zones; the lesson's own "slightly toward an opening" row carries no number. | S-REC p.8 | APPLIED · OWNER: approve |
+| MD-03 | L30 | names KSM137, AKG C535 | Generic ("field examples") — not shown | Owner ruling. | S-BLUEGRASS | APPLIED |
+| MD-04 | — | no hearing number | Plain hearing line | Parity. | OSHA | APPLIED |
+
+## C05c Ukulele (`source_text/Ukulele-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| UK-01 | L9 | upper-body / neck-joint aim | Kept, and the app says it is borrowed from the guitar (the ukulele guide does not locate the sweet spot) | DPA-UKE: "a good blend of strings and fingers" with no location. | DPA-UKE | APPLIED (`c05cUkulele/model.ts`, `uk.place.1`) |
+| UK-02 | L33 | clip fit 35–55 / 35–122 mm | The fit rule in words; the app does NOT say which clip fits the drawn soprano (its 60 mm depth is a drawing default) | The fit rule is sourced; the depth is not. | DPA-UKE; ukulele/GEOMETRY_PROPOSAL.md | APPLIED |
+| UK-03 | — | four sizes | Only the soprano is drawn; the others are named | Only a museum soprano is sourced; the retailer sizes were a snippet (never drawn). | MET-UKE; ADO-KALA (Low) | APPLIED · OWNER: draw other sizes later? |
+
+## C07 Acoustic Bass Guitar (`source_text/Acoustic-Bass-Guitar-Miking-Technique.txt`)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| AB-01 | L33 | Taylor's engineer: "a microphone near the upper bout, about 12 inches away" | "The treble side of the upper bout (the cutaway), about 30 cm (12 in)", said to be a guitar start used by analogy | The quote names the treble side and the cutaway; metric added. | TAY-REC | APPLIED (`c07AcousticBass/model.ts` zone `upper`) |
+| AB-02 | L6 | "Martin's … onboard E1 electronics with volume, tone and phase controls" | No model or electronics named; "a pickup … its own path" | Brand rule; the phase-control wording was not re-verified on the page. | MAR-BC16E | APPLIED |
+| AB-03 | — | lowest note | "about 41 Hz" (open low E), in words | Derived (E1 = 41.20 Hz); avoids the "E1" name clash with the electronics. | PHYS-ET | APPLIED |
+
+## Lab 4 shared (the guitar family)
+
+| id | Where | Says | Correction | Why | Status |
+|---|---|---|---|---|---|
+| L4-01 | all Lab 4 lessons | "Pro Audio Training Academy" header | Removed | House rule (as Batch 1). | APPLIED |
+| L4-02 | test/mikingLearnerText.test.ts | BRAND_NAMES | Added Taylor, Martin, Cordoba, Gibson, National, Beard, Fishman, Deering, Kala, Eastman, Dobro, KSM…, PGA27, OSHA | The Lab 4 research met them. | APPLIED |
+| L4-03 | engine | a mic facing a guitar points along −z | `InstrumentModel.aimHome` (the AIM lane and the plan-view drag turn about it) | The guitar's front and from-above views need the mic to face the top. | APPLIED |
+
 ## Shared (all lessons)
 
 | id | Where | Says | Correction | Why | Source | Status |

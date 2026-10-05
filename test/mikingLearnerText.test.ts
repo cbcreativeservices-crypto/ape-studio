@@ -70,6 +70,21 @@ export const BRAND_NAMES: readonly string[] = [
   'Earthworks',
   'Zildjian',
   'Sabian',
+  // Lab 4 guitar-family research (docs/labs/miking/acoustic_guitar, resonator_dobro, banjo, mandolin, ukulele, acoustic_bass_guitar).
+  'Taylor',
+  'Martin',
+  'Cordoba',
+  'Gibson',
+  'National',
+  'Beard',
+  'Fishman',
+  'Deering',
+  'Kala',
+  'Eastman',
+  'Dobro',
+  'KSM ?\\d+',
+  'PGA ?27',
+  'OSHA',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */
