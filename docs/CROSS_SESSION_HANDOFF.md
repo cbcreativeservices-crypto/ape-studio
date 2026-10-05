@@ -1,3 +1,8 @@
+## 2026-10-04 21:20 PT — A: website "employers & instructors" LIVE; one stray docs commit on audio-tools-engine (harmless)
+
+- The instructor wording and the apply-form choice are live in production. Commit 58b86095 on audio-tools-engine is the same content as c115b43b on final-lab, and Vercel prod is READY.
+- A's 21:10 push block found nothing new to commit, so it cherry-picked HEAD, which was ccode's `docs(miking): Lab 1 batch research` (a3e89af8). That commit landed on audio-tools-engine as 511cbaa9. It touches docs/labs/miking/** only, with no app or web code. The same patch is on both branches, so a later merge stays clean. Left in place deliberately; do NOT revert.
+
 ## 2026-10-04 21:00 PT — A: INSTRUCTOR PROGRESS SHARING — SERVER LIVE (owner CHECK 8/8 true)
 
 `2026-10-04_INSTRUCTOR_PROGRESS_SHARING` applied. The CHECK came back all true: instructor_code_column, share_table_locked, everyone_off_by_default, functions_7_signed_in_only, on_off_record_private, instructors_only_not_employers, never_shows_answers, institutional_path_untouched. Rollback artifact: https://claude.ai/artifact/MHcVmxpPYoxo7kLqnZoQ2D. The functions in the entry below are callable now, and the app UI is yours.
