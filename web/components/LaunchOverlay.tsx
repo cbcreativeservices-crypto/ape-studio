@@ -11,42 +11,48 @@ import { TAGLINE } from "@/lib/brand";
  *  Remove at launch (turning the gate off removes it automatically).
  * ============================================================ */
 export function LaunchOverlay({ error }: { error: boolean }) {
+  // Owner 2026-10-04 (2nd pass): a compact panel and a light blur, so most of
+  // the screen shows the live site and carousel behind — "the full site is
+  // there, just waiting to be unlocked".
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="launch-title"
-      className="fixed inset-0 z-[1000] flex items-center justify-center overflow-y-auto px-4 py-8"
+      className="fixed inset-0 z-[1000] flex items-center justify-center overflow-y-auto px-4 py-6"
       style={{
-        background: "rgba(8, 8, 10, 0.45)",
-        backdropFilter: "blur(7px)",
-        WebkitBackdropFilter: "blur(7px)",
+        background: "rgba(8, 8, 10, 0.22)",
+        backdropFilter: "blur(3px)",
+        WebkitBackdropFilter: "blur(3px)",
       }}
     >
       <style>{"html, body { overflow: hidden; }"}</style>
-      <div className="w-full max-w-md rounded-2xl border border-border bg-[#151515]/95 px-6 py-8 text-center shadow-2xl sm:px-8">
-        <img src="/logo-hero.png" alt="Pro Audio Training Academy" className="mx-auto mb-5 h-auto w-24" />
-        <p className="font-display text-sm font-semibold uppercase tracking-[0.22em] text-text-sub">
-          Pro Audio Training Academy
-        </p>
-        <h1 id="launch-title" className="mt-4 font-display text-3xl font-semibold uppercase leading-tight tracking-wide text-foreground sm:text-4xl">
-          Coming soon
-          <span className="mt-1 block text-amber">Monday, October&nbsp;12</span>
+      <div
+        className="w-full max-w-[19rem] rounded-xl border border-amber/40 px-5 py-5 text-center shadow-2xl"
+        style={{
+          background: "rgba(12, 12, 12, 0.78)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+        }}
+      >
+        <p className="font-mono text-[0.65rem] uppercase tracking-[0.3em] text-amber">Coming soon</p>
+        <h1 id="launch-title" className="mt-1.5 font-display text-2xl font-semibold uppercase leading-tight tracking-wide text-foreground">
+          Monday, October&nbsp;12
         </h1>
-        <p className="mt-3 text-base text-text-sub">{TAGLINE}</p>
+        <p className="mt-1 text-xs text-text-sub">{TAGLINE}</p>
 
-        <nav aria-label="Legal and support" className="mt-6">
-          <ul className="flex flex-wrap justify-center gap-2">
+        <nav aria-label="Legal and support" className="mt-3">
+          <ul className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs">
             {[
-              ["/privacy", "Privacy Policy"],
-              ["/terms", "Terms of Service"],
+              ["/privacy", "Privacy"],
+              ["/terms", "Terms"],
               ["/support", "Support"],
               ["/accessibility", "Accessibility"],
             ].map(([href, label]) => (
               <li key={href}>
                 <a
                   href={href}
-                  className="inline-block rounded-lg border border-border bg-background/60 px-3.5 py-2 text-sm text-foreground transition-colors hover:border-amber hover:text-amber focus-visible:border-amber focus-visible:text-amber focus-visible:outline-none"
+                  className="text-foreground underline decoration-border underline-offset-4 hover:text-amber hover:decoration-amber focus-visible:text-amber focus-visible:outline-none"
                 >
                   {label}
                 </a>
@@ -55,34 +61,31 @@ export function LaunchOverlay({ error }: { error: boolean }) {
           </ul>
         </nav>
 
-        <p className="mt-6 text-sm text-text-sub">
-          Questions?{" "}
-          <a href="mailto:info@proaudiotrainingacademy.com" className="text-amber">
+        <p className="mt-2 text-[0.7rem] text-text-sub">
+          <a href="mailto:info@proaudiotrainingacademy.com" className="hover:text-amber">
             info@proaudiotrainingacademy.com
           </a>
         </p>
 
-        <details open={error} className="mx-auto mt-6 max-w-xs border-t border-border pt-4">
-          <summary className="cursor-pointer text-xs text-text-sub">Early access</summary>
-          <form method="POST" action="/api/unlock" autoComplete="off" className="mt-3 flex flex-col gap-2">
+        <details open={error} className="mt-3 border-t border-border pt-2">
+          <summary className="cursor-pointer text-[0.7rem] text-text-sub">Early access</summary>
+          <form method="POST" action="/api/unlock" autoComplete="off" className="mt-2 flex gap-2">
             <input
               type="password"
               name="key"
-              placeholder="Enter key"
+              placeholder="Key"
               aria-label="Access key"
-              className="w-full rounded-lg border border-border bg-background px-4 py-2.5 text-center text-base text-foreground outline-none focus:border-amber"
+              className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-center text-sm text-foreground outline-none focus:border-amber"
             />
             <button
               type="submit"
-              className="w-full rounded-lg bg-amber px-4 py-2.5 text-sm font-bold text-background hover:bg-amber-deep"
+              className="rounded-md bg-amber px-3 py-1.5 text-xs font-bold text-background hover:bg-amber-deep"
             >
               Enter
             </button>
-            {error ? <p className="text-sm text-[#ff4b3a]">Incorrect key. Try again.</p> : null}
           </form>
+          {error ? <p className="mt-1 text-xs text-[#ff4b3a]">Incorrect key. Try again.</p> : null}
         </details>
-
-        <p className="mt-6 text-xs text-text-sub">&copy; 2026 Pro Audio Training Academy LLC</p>
       </div>
     </div>
   );
