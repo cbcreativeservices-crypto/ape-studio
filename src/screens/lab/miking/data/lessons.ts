@@ -132,3 +132,10 @@ import { A05C_LESSON } from '../lessons/a05cTenorSax/lesson.ts';
 LESSON_CONTENT.A05c = A05C_LESSON;
 import { A05D_LESSON } from '../lessons/a05dBaritoneSax/lesson.ts';
 LESSON_CONTENT.A05d = A05D_LESSON;
+/* Lab 3 (winds), the free reeds and the organ: A10–A12 (each lesson on its own line). */
+import { A10_LESSON } from '../lessons/a10Harmonica/lesson.ts';
+LESSON_CONTENT.A10 = A10_LESSON;
+import { A11_LESSON } from '../lessons/a11Accordion/lesson.ts';
+LESSON_CONTENT.A11 = A11_LESSON;
+import { A12_LESSON } from '../lessons/a12Organ/lesson.ts';
+LESSON_CONTENT.A12 = A12_LESSON;

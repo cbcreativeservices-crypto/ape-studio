@@ -296,3 +296,6 @@ Object.assign(MIC_TYPES, LOW_BRASS_MIC_TYPES);
 /* Lab 3 saxophones (A05a–d): the supercardioid dynamic and the bell clip. Appended so other lessons merge cleanly. */
 import { SAX_MIC_TYPES } from '../lessons/shared/sax/saxMics.ts';
 Object.assign(MIC_TYPES, SAX_MIC_TYPES);
+/* Lab 3 free reeds (A10 harmonica, A11 accordion): the harp mic and the mini gooseneck. Appended so other lessons merge cleanly. */
+import { FREE_REED_MIC_TYPES } from '../lessons/shared/freereed/freeReedMics.ts';
+Object.assign(MIC_TYPES, FREE_REED_MIC_TYPES);

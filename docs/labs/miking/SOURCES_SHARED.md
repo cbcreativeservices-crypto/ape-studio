@@ -144,3 +144,13 @@ Added 2026-10-05 by the saxophone builder (branch miking-a3). The full family re
 |---|---|---|---|
 | S-SAX | Shure, D. Rochman, "Choosing a Saxophone Microphone for Recording and Live Sound" (engineers name condensers for detail, dynamics for close live work, ribbons for a rounded top) | https://www.shure.com/en-EU/insights/choosing-a-saxophone-microphone | 200, read (Batch 3) |
 | S-POLAR | Shure, "Microphone Directionality and Polar Pattern Basics": "the supercardioid is least sensitive at 125 degrees and the hypercardioid at 110 degrees" | https://www.shure.com/en-US/insights/microphone-directionality-polar-pattern-basics | 200, read (Batch 3, `trumpet/SOURCES.md` §0.1) |
+---
+
+## 10. Mic types shared by Lab 3’s free reeds (A10 harmonica, A11 accordion; `lessons/shared/freereed/freeReedMics.ts`)
+
+Added 2026-10-05 by the A10–A12 builder (branch miking-a5): the two mic types no stand placement offers.
+
+| Key | Source | URL | Status 2026-10-05 |
+|---|---|---|---|
+| S-520DX | Shure, 520DX user guide: "Polar Pattern Omnidirectional"; "63 mm (2.5 in) max diameter, 82.6 mm (3 1/4 in) long"; high impedance, attached 1/4-in cable (the generic `harpBullet` type) | see `harmonica/SOURCES.md` | read in the Batch 3 research pass |
+| AKG-416 | AKG, C 416III user manual: "The C 416III is a miniature hypercardioid condenser microphone"; bass-side mount aimed at a sound hole (the generic `accMini` type) | see `accordion/SOURCES.md` | read in the Batch 3 research pass |

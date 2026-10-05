@@ -14,7 +14,7 @@ export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtit
 export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn percussion that is struck, shaken or scraped — the kit’s cymbals, the cajón and hand percussion, hanging metal and the gong, the mallet keyboards and the electric pianos: how each one sounds, recommended starting points, the player’s whole motion, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.' },
-  { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind and brass instruments and their players — how the lips or the reed start the sound, where it leaves (a bell, the open holes), recommended starting points clear of the hands, the bell, the slide, the keys and the player’s movement, studio or live, and what a second mic does. Silent; tendencies in words.' },
+  { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind instruments and their players — brass and saxophones, the harmonica, the accordion and the pipe organ: how the lips, the reed or the moving air start the sound, where it leaves (a bell, the open holes, the reeds, the pipes), recommended starting points clear of the mouth, the hands, the bell, the slide, the keys, the bellows and the player’s movement, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '' },
@@ -95,6 +95,9 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'A05b', labId: 'winds', title: 'Alto Saxophone', subtitle: 'Above the bell toward the holes, into the bell, near the keys, or a clip', status: 'ready' },
   { id: 'A05c', labId: 'winds', title: 'Tenor Saxophone', subtitle: 'Above the bell, a third of the way up from farther off, or a clip', status: 'ready' },
   { id: 'A05d', labId: 'winds', title: 'Baritone Saxophone', subtitle: 'A big horn: above the bell, the triangle from farther off, and the lowest notes', status: 'ready' },
+  { id: 'A10', labId: 'winds', title: 'Harmonica', subtitle: 'Acoustic on a stand, cupped through an amp, or the amp’s speaker — three paths', status: 'ready' },
+  { id: 'A11', labId: 'winds', title: 'Accordion', subtitle: 'Two moving sides: one mic in front, one for each side, or a mount that moves with it', status: 'ready' },
+  { id: 'A12', labId: 'winds', title: 'Acoustic Pipe Organ', subtitle: 'A room-sized instrument: the main pair, a division spot, the stream and the PA', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

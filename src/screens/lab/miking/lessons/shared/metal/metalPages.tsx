@@ -76,8 +76,8 @@ function FrontStage({ w, h, front, variant, highlight, onTap, label }: { w: numb
 
 /* ═══════════════ the variant choice, shared by the pages ═══════════════ */
 
-type VariantCtx = { variant: VariantId; setVariant: (v: VariantId) => void; options: readonly { id: string; label: string; blurb: string }[]; key: string };
-const VariantContext = createContext<VariantCtx | null>(null);
+export type VariantCtx = { variant: VariantId; setVariant: (v: VariantId) => void; options: readonly { id: string; label: string; blurb: string }[]; key: string };
+export const VariantContext = createContext<VariantCtx | null>(null);
 
 /** The way of playing, as chips (the placement page's well). */
 export function VariantChips() {
@@ -120,7 +120,7 @@ export type MeetSpec = {
   variantKey: string;
 };
 
-function MetalInstrument(spec: MeetSpec) {
+export function MetalInstrument(spec: MeetSpec) {
   return function MInstrument(p: PageProps) {
     const { lesson, journey, variant } = p;
     const model = lesson.model;

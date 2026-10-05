@@ -146,3 +146,10 @@ import { A05C_ART } from '../lessons/a05cTenorSax/art';
 ART.A05c = A05C_ART;
 import { A05D_ART } from '../lessons/a05dBaritoneSax/art';
 ART.A05d = A05D_ART;
+/* Lab 3 (winds), the free reeds and the organ: A10–A12 (each lesson on its own line). */
+import { A10_LESSON_ART } from '../lessons/a10Harmonica/pages';
+ART.A10 = A10_LESSON_ART;
+import { A11_LESSON_ART } from '../lessons/a11Accordion/pages';
+ART.A11 = A11_LESSON_ART;
+import { A12_LESSON_ART } from '../lessons/a12Organ/pages';
+ART.A12 = A12_LESSON_ART;

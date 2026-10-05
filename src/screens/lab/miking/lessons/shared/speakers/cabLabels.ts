@@ -8,7 +8,7 @@ import { CABINETS, SPEAKER_12, type CabKind } from './speakerModel.ts';
 import { cabDraw, cutDrivers, frontDrivers, speakerSection, type Back } from './cabGeometry.ts';
 
 export type CabView = 'side' | 'top' | 'front';
-export type CabLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative' };
+export type CabLabel = { id: string; text: string; short?: string; u: number; v: number; align: 'left' | 'center' | 'right'; tone?: 'muted' | 'illustrative'; at?: { u: number; v: number } };
 
 export function cabLabels(kind: CabKind, back: Back, view: CabView): CabLabel[] {
   const c = cabDraw(kind, back);
@@ -29,7 +29,8 @@ export function cabLabels(kind: CabKind, back: Back, view: CabView): CabLabel[] 
   // the cone in front of the cloth, the back's beside the back panel.
   const out: CabLabel[] = [
     { id: 'grille', text: 'GRILLE CLOTH', short: 'GRILLE', u: c.grilleX + 14, v: Math.min(v1 - 40, s.rCut + 48), align: 'left' },
-    { id: 'speaker', text: 'SPEAKER', u: s.xMagnetBack - 10, v: -s.rFrame - 30, align: 'center', tone: 'muted' },
+    // Behind the cabinet, a leader to the magnet: a label inside the box sits on the cabinet's air.
+    { id: 'speaker', text: 'SPEAKER', u: c.box.x0 - 14, v: (v0 + v1) / 2 - 60, align: 'right', tone: 'muted', at: { u: s.xMagnetBack, v: 0 } },
     { id: 'back', text: back === 'open' ? 'OPEN BACK' : 'CLOSED BACK', short: back === 'open' ? 'OPEN' : 'BACK', u: c.box.x0 - 14, v: (v0 + v1) / 2 + 60, align: 'right', tone: 'muted' },
     { id: 'axis', text: 'CONE AXIS', u: 820, v: -26, align: 'right', tone: 'illustrative' },
   ];

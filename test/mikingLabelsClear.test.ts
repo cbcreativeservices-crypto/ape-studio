@@ -35,7 +35,7 @@ const bowedArt = R(await import('../src/screens/lab/miking/lessons/shared/bowed/
 const bowedSpec = R(await import('../src/screens/lab/miking/lessons/shared/bowed/bowedSpec.ts'));
 
 /** The player, not the instrument (bw.* the bowed family's figure, br.* the brass player's, pl.* the low-brass player's). */
-const PERSON = /^(bw\.(player|head|armR\d?a|leftHand|chair)(\.seated)?|br\.(player|head|armR\d?a|valveHands)(\.[a-z]+)?|sx\.(player|head|handR|armR\d?|thighR|strap|chair)(\.[a-z]+)?|pl\.[a-zA-Z]+|player\..*|chair|bench\..*|kit\.throne)$/;
+const PERSON = /^(bw\.(player|head|armR\d?a|leftHand|chair)(\.seated)?|br\.(player|head|armR\d?a|valveHands)(\.[a-z]+)?|sx\.(player|head|handR|armR\d?|thighR|strap|chair)(\.[a-z]+)?|hm\.(body|head)|ac\.(body|strap)|pl\.[a-zA-Z]+|player\..*|chair|bench\..*|kit\.throne)$/;
 const LABEL_MIN_S = 0.12; // PlacementScene: no labels below this fit scale
 
 type Hit = { lesson: string; where: string; text: string; parts: string[] };
@@ -86,18 +86,20 @@ const KNOWN: Record<string, number> = {
   // Lab 1 (drums, hand drums, concert percussion, speakers): many name a drum
   // or cymbal ON it in the kit plan — each to be moved off with a leader.
   M01: 16, M02: 56, M03: 83, M09: 62, M10: 6, M11: 82, M04a: 12, M04b: 13, M04c: 16, M05: 16,
-  M06: 9, M07a: 20, M07b: 24, M08: 20, SPK: 16, M12: 5,
+  M06: 9, M07a: 20, M07b: 24, M08: 20, M12: 5,
   // Lab 4: the guitar family's art (C01, C03, C05A–C, C07) is in an art pass
   // on another branch; the amps, the bowed family, harp, piano, clavinet, oud.
   // (C01, C03, C05A–C lowered at the merge with the guitar art pass, 2026-10-05.)
-  C01: 45, C02: 8, C03: 36, C04: 8, C05A: 40, C05B: 27, C05C: 5, C07: 20, C08: 16,
+  // (C02, C04, SPK, I11a to zero and C08 lowered at the miking-a5 merge: the shared
+  // cabinet's SPEAKER label moved behind the cabinet on a leader, 2026-10-05.)
+  C01: 45, C03: 36, C05A: 40, C05B: 27, C05C: 5, C07: 20, C08: 8,
   C09a: 32, C09b: 40, C09c: 12, C10: 47, C11: 229, C12: 16, C13: 25,
   // Lab 2 (percussion): merged into final-lab before this rule; RECORDED at the
   // fix4 merge (integrator, 2026-10-05) at the counts found then — new entries,
   // reported to the lead, to be worked down like the rest (cymbals name parts
   // and neighbours on the kit plan; the mallet keyboards their bars and pipes).
   I01a: 50, I01b: 36, I01c: 52, I01d: 37, I01e: 46, I06a: 4, I07: 50, I08: 40, I09: 37,
-  I10: 53, I11a: 8, I11b: 16, I12: 2,
+  I10: 53, I11b: 16, I12: 2,
 };
 
 const ids: string[] = LESSONS.map((m: { id: string }) => m.id);

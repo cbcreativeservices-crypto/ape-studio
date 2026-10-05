@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 06:25 · ccode · e957ccda
+changed: fix(miking): Lab 3 drawings after the 390 x 844 inspection
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 06:17 · ccode · 5a040f05
 changed: Merge miking-a3 (A05a-d saxophones) into final-lab
 affects other side: nothing (miking merge, branch final-lab)
@@ -627,6 +633,36 @@ needs: nothing (miking merge, branch final-lab)
 
 ### 2026-10-05 05:54 · ccode · 492d8ad3
 changed: fix(miking): saxophone mics speak of the horn; the plan's swing hatch reads at plan scale
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 05:49 · ccode · 814c566c
+changed: feat(miking): register Lab 3 (Winds) with A10–A12; tests, sources and corrections
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 05:49 · ccode · ec6aa1e5
+changed: feat(miking): A12 Acoustic Pipe Organ — a room-scale scene
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 05:49 · ccode · a9156fef
+changed: feat(miking): A11 Accordion — two moving sides, the bellows' travel kept clear
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 05:49 · ccode · 89b57833
+changed: feat(miking): A10 Harmonica — acoustic stand mic, cupped harp mic, the harp amp's speaker
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 05:49 · ccode · c3c442a2
+changed: feat(miking): Lab 3 reed-instrument family pieces (reed physics, profile player, pages)
 affects other side: nothing (miking lessons, branch final-lab)
 needs: nothing (miking lessons, branch final-lab)
 
