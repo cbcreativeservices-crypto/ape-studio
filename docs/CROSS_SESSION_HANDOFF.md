@@ -607,6 +607,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 01:04 · ccode · b1c45c27
+changed: feat(miking): C11 Piano lesson (Lab 4) — grand, baby grand and upright
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:04 · ccode · ca5a8c9c
+changed: feat(miking): Lab 4 engine additions and the shared piano and string families
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 23:12 · ccode · 1e6c1be6
 changed: docs(miking): Lab 4 chordophone research (20 lessons) + BATCH4 summary
 affects other side: nothing (branch final-lab, miking lab work).

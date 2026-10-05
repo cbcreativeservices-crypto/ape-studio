@@ -26,6 +26,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'M02', labId: 'drums', title: 'Snare Drum', subtitle: 'Top, bottom, clamp or stand — and the hi-hat beside it', status: 'ready' },
   { id: 'M03', labId: 'drums', title: 'Rack and Floor Toms', subtitle: 'One mic each, one for two, or none — under the cymbals', status: 'ready' },
   { id: 'C11', labId: 'strings', title: 'Piano', subtitle: 'Grand, baby grand and upright: lid, strings and soundboard', status: 'ready' },
+  { id: 'C10', labId: 'strings', title: 'Harp', subtitle: 'Concert pedal and lever harps: board, pillar and the room', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

@@ -228,7 +228,7 @@ Object.assign(MIC_TYPES, {
     body: { length: placeholder(60, 'a miniature mic and its short holder: overall length'), radius: placeholder(3.5, 'a miniature capsule’s diameter') },
     power: 'phantom power, often through an adapter (follow its manual)',
     mount: 'clip',
-    clip: { reach: placeholder(90, 'the holder’s reach from the opening’s edge to the capsule') },
+    clip: { reach: placeholder(110, 'the holder’s reach from the opening’s edge to the capsule') },
     examples: [{ model: 'DPA 4060 class (named in the DPA harp article)', fact: 'an omnidirectional miniature placed at a harp sound hole; sizes not read — drawn as a drawing default.', src: 'DPA-HARP' }],
     art: 'gooseneck',
     blurb: 'A tiny omni condenser on a small holder: it can sit at an opening without touching the finish. Needs phantom power (often through an adapter). Only with the owner’s agreement.',
