@@ -38,7 +38,7 @@ export type KitPlanProps = {
   /** The lesson's setting items (labels, and which plan items each stands for). */
   items: readonly SettingItem[];
   /** The plan item that is the lesson's own drum (always named). */
-  own: PlanId;
+  own: PlanId | readonly PlanId[];
   /** M01: its own art draws its drum on the plan (the kick's top cutaway). */
   OwnArt?: (p: { view: 'top'; variant: VariantId }) => ReactElement;
   /** Where the lesson's frame origin sits on the plan (its wedges are in it). */
@@ -204,11 +204,12 @@ export function planIdsOf(it: Pick<SettingItem, 'id' | 'planIds'>): readonly str
   return it.planIds && it.planIds.length ? it.planIds : [it.id];
 }
 
-export function KitPlan({ w, h, scene, variant, items, own, OwnArt, offset = { x: 0, y: 0, z: 0 }, wedges, highlight, onTap, accessibilityLabel }: KitPlanProps) {
+export function KitPlan({ w, h, scene, variant, items, own: ownIn, OwnArt, offset = { x: 0, y: 0, z: 0 }, wedges, highlight, onTap, accessibilityLabel }: KitPlanProps) {
   const textScale = useStageTextScale();
   const box = scene === 'kit' ? PLAN_BOX.kit : PLAN_BOX.wide;
   const xf = useMemo(() => fitXform('top', box, w, h, 6), [w, h, box]);
   const space = useMemo(() => poly(KIT.playerSpace), []);
+  const isOwn = (id: string) => (typeof ownIn === 'string' ? ownIn === id : ownIn.includes(id));
   // The lesson's wedges are in its own frame: onto the plan.
   const stageWedges = scene === 'stage' ? wedges.filter((wd) => wd.glyph !== 'none').map((wd) => ({ ...wd, p: { x: wd.p.x + offset.x, y: wd.p.y + offset.y, z: wd.p.z + offset.z } })) : [];
   const rug = useMemo(() => rr(-1010, -790, 1780, 1640, 30), []);
@@ -277,7 +278,7 @@ export function KitPlan({ w, h, scene, variant, items, own, OwnArt, offset = { x
   // The chosen item first (it wins every collision), then the lesson's own drum.
   const visible = items.filter(shownHere);
   if (chosen) addItem(chosen);
-  const ownItem = visible.find((i) => planIdsOf(i).includes(own));
+  const ownItem = visible.find((i) => planIdsOf(i).some((p) => isOwn(p)));
   if (ownItem) addItem(ownItem);
   for (const it of visible) addItem(it);
   labels.push({ id: 'space', text: 'PLAYER’S SPACE', short: 'PLAYER', u: -1000, v: 125, align: 'left', tone: 'illustrative' });
@@ -298,7 +299,7 @@ export function KitPlan({ w, h, scene, variant, items, own, OwnArt, offset = { x
   // it, as M01's kick does); a chosen item is ringed too.
   const drum = (id: KitDrumId, dim = 1, dashed = false) => (
     <Group key={id} transform={topTransform(KIT_DRUMS[id])}>
-      <DrumPlan drum={KIT_DRUMS[id]} highlight={hi(id) || (own === id && !OwnArt)} dim={dim} dashed={dashed} />
+      <DrumPlan drum={KIT_DRUMS[id]} highlight={hi(id) || (isOwn(id) && !OwnArt)} dim={dim} dashed={dashed} />
     </Group>
   );
 
@@ -337,12 +338,12 @@ export function KitPlan({ w, h, scene, variant, items, own, OwnArt, offset = { x
             <ThroneArt hi={hi('throne')} />
             {drum('floor')}
             {drum('snare')}
-            {OwnArt && own === 'kick' ? <OwnArt view="top" variant={variant} /> : <KickFromAbove spec={KICK_22x18} u0={0} z={0} pedal={KIT.kick.pedal} />}
-            {hi('kick') || (own === 'kick' && !OwnArt) ? <Path path={rr(KIT.kick.hoop.u0 - 30, -KIT.kick.hoop.halfW - 30, KIT.kick.hoop.u1 - KIT.kick.hoop.u0 + 60, KIT.kick.hoop.halfW * 2 + 60, 30)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
+            {OwnArt && isOwn('kick') ? <OwnArt view="top" variant={variant} /> : <KickFromAbove spec={KICK_22x18} u0={0} z={0} pedal={KIT.kick.pedal} />}
+            {hi('kick') || (isOwn('kick') && !OwnArt) ? <Path path={rr(KIT.kick.hoop.u0 - 30, -KIT.kick.hoop.halfW - 30, KIT.kick.hoop.u1 - KIT.kick.hoop.u0 + 60, KIT.kick.hoop.halfW * 2 + 60, 30)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
             {hi('pedal') ? <Path path={rr(KIT.kick.pedal.u0 - 24, -KIT.kick.pedal.halfW - 24, KIT.kick.pedal.u1 - KIT.kick.pedal.u0 + 48, KIT.kick.pedal.halfW * 2 + 48, 20)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
             <TomMountPlan />
-            {drum('tom1', own === 'kick' ? 0.8 : 1, own === 'kick')}
-            {drum('tom2', own === 'kick' ? 0.8 : 1, own === 'kick')}
+            {drum('tom1', isOwn('kick') ? 0.8 : 1, isOwn('kick'))}
+            {drum('tom2', isOwn('kick') ? 0.8 : 1, isOwn('kick'))}
             <HiHatArt hi={hi('hihat')} />
             {(['crash1', 'crash2', 'ride'] as const).map((id) => (
               <CymbalPlan key={id} cx={KIT_CYMBALS[id].c.x} cz={KIT_CYMBALS[id].c.z} d={KIT_CYMBALS[id].d} tiltDeg={KIT_CYMBALS[id].tiltDeg} highlight={hi(id)} dim={hi(id) ? 0.85 : 0.36} />

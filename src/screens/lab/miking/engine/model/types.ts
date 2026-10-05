@@ -119,6 +119,10 @@ export type RefLine = {
   offset?: number;
   words?: { plus: string; minus: string; keyPlus: string; keyMinus: string };
   variants?: VariantId[];
+  /** The reference surfaces this line belongs to: choosing one of them as the
+   *  reference head makes this the line readouts measure from (several drums
+   *  in one scene). Absent = the variant's first line, whatever the head. */
+  surfaces?: string[];
 };
 export type Envelope = { id: string; label: string; shape: Shape3; prov: Provenance; variants?: VariantId[]; clearance?: number };
 
@@ -299,6 +303,12 @@ export type InstrumentModel = {
 /** The model's view boxes for a variant (its own, else the model's). */
 export function viewsOf(model: Pick<InstrumentModel, 'views' | 'viewsByVariant'>, variant: VariantId): Partial<Record<ViewId, ViewBox>> {
   return { ...model.views, ...(model.viewsByVariant?.[variant] ?? {}) };
+}
+/** The line readouts measure from: the one belonging to the chosen reference
+ *  head when a line names it, else the variant's first line. */
+export function lineFor(model: Pick<InstrumentModel, 'lines'>, variant: VariantId, surfaceId: string): string {
+  const inV = model.lines.filter((l) => !l.variants || l.variants.includes(variant));
+  return (inV.find((l) => l.surfaces?.includes(surfaceId)) ?? inV[0] ?? model.lines[0])?.id ?? '';
 }
 /** A wrong option -> why it is wrong (elaborated feedback: the misconception
  *  the learner just chose is answered, not only "try again"). */

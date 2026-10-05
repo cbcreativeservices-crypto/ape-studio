@@ -14,7 +14,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 import type { CompiledScene, Lesson, MicBody, MicPattern, MicPose, MicSlot, MicState, Readouts, VariantId, Vec3 } from '../model/types.ts';
-import { viewsOf } from '../model/types.ts';
+import { lineFor, viewsOf } from '../model/types.ts';
 import { checkAssembly, compileScene, constrainMove, pinToSurface, type Blocked, type Bounds } from '../geometry/collision.ts';
 import { deriveReadouts, type ReadoutCtx } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
@@ -90,9 +90,6 @@ export function boundsOf(lesson: Lesson, variant: VariantId): Bounds {
 function firstSurface(lesson: Lesson, v: VariantId): string {
   return (lesson.model.surfaces.find((s) => !s.variants || s.variants.includes(v)) ?? lesson.model.surfaces[0])?.id ?? '';
 }
-function firstLine(lesson: Lesson, v: VariantId): string {
-  return (lesson.model.lines.find((l) => !l.variants || l.variants.includes(v)) ?? lesson.model.lines[0])?.id ?? '';
-}
 
 export function useRig(lesson: Lesson, init: RigInit): Rig {
   const [variant, setVariantRaw] = useState<VariantId>(init.variant ?? lesson.model.defaultVariant);
@@ -128,7 +125,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   const typeB = first('B').typeId;
   const body = useMemo(() => ({ A: micBodyOf(micType(typeA)), B: micBodyOf(micType(typeB)) }), [typeA, typeB]);
   const pin = useMemo(() => ({ A: pinFor(lesson, typeA), B: pinFor(lesson, typeB) }), [lesson, typeA, typeB]);
-  const lineId = useMemo(() => firstLine(lesson, variant), [lesson, variant]);
+  const lineId = useMemo(() => lineFor(lesson.model, variant, surfaceId), [lesson, variant, surfaceId]);
   const ctx = useMemo(() => {
     const mk = (typeId: string, b: MicBody): ReadoutCtx => ({ scene, surfaces: lesson.model.surfaces, lines: lesson.model.lines, zones: lesson.zones, variant, micTypeId: typeId, body: b });
     return { A: mk(typeA, body.A), B: mk(typeB, body.B) };

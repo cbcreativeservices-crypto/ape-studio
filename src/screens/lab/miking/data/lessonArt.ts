@@ -6,6 +6,7 @@ import type { LessonArt } from '../engine/scene/sceneTypes.ts';
 import { KickArt, kickHitTest, kickLabels } from '../lessons/m01Kick/art';
 import { CoupledHeads, StrikeSequence } from '../lessons/m01Kick/soundArt';
 import { SNARE_ART } from '../lessons/m02Snare/art';
+import { TOMS_ART } from '../lessons/m03Toms/art';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -18,6 +19,7 @@ const ART: Record<string, LessonArt> = {
     plan: { own: 'kick', useArt: true },
   },
   M02: SNARE_ART,
+  M03: TOMS_ART,
 };
 
 export function lessonArt(id: string): LessonArt | undefined {

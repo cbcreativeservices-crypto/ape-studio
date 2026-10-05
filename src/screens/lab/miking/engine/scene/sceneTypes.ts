@@ -26,5 +26,5 @@ export type LessonArt = {
   /** THE SETTING: the lesson's drum on the shared kit plan (lessons/shared/
    *  KitPlan): its plan id, whether the lesson's own art draws it there (M01's
    *  kick), and where the lesson's frame origin sits on the plan (mm). */
-  plan?: { own: string; useArt?: boolean; offset?: Vec3 };
+  plan?: { own: string | readonly string[]; useArt?: boolean; offset?: Vec3 };
 };
