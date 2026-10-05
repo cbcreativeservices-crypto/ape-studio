@@ -607,6 +607,42 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 01:50 · ccode · 75129217
+changed: fix(miking): yali carved relief; "an oud" on the shared start step
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:44 · ccode · e2618939
+changed: fix(miking): lute lessons, first visual pass at 390x844
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:33 · ccode · d33f8d04
+changed: feat(miking): C15 Saraswati Veena lesson on the lute family
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:33 · ccode · 4f6fc4fb
+changed: feat(miking): C14 Sitar lesson on the lute family
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:33 · ccode · 4802c5bb
+changed: feat(miking): C13 Oud lesson on the lute family
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
+### 2026-10-05 01:33 · ccode · 752c56b3
+changed: feat(miking): shared lute family for Lab 4 (oud, sitar, Saraswati veena)
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-05 00:07 · ccode · d76d5bca
 changed: feat(miking): C01 Acoustic Guitar lesson; Lab 4 Strings in the hub
 affects other side: nothing (miking lessons, branch final-lab)

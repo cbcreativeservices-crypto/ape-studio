@@ -427,7 +427,7 @@ export const C14_LESSON: Lesson = {
     { title: 'WHAT IT IS', text: 'A plucked, fretted lute: a large gourd with a thin wooden board (the tabli), a broad bone bridge, and a long hollow neck with arched frets. Many sitars carry melody strings, drone strings and sympathetic strings — this one seven main and thirteen sympathetic; another sitar may have none.', src: 'MET-ADHIKARI' },
     { title: 'WHERE YOU MEET IT', text: 'North Indian classical music, usually with tabla and a tanpura drone, and in film, fusion and many other styles — on concert stages and in studios. This lesson covers studio recording and live sound.', src: 'LESSON' },
     { title: 'WHAT IT DOES IN THE MUSIC', text: 'Melody, with bends pulled sideways across the frets, rhythmic drone strokes, and a shimmering decay from the sympathetic strings. The bridge’s buzzing brightness is part of it: ask what is intended.', src: 'LESSON' },
-    { title: 'ITS SIZE', text: 'This lab draws a sitar the size of one real concert instrument: about 125 cm long, its gourd about 34 cm across and 31 cm deep. Where things sit on it — the frets, the pegs, the second gourd — are drawn, not measured. Sitars vary.', src: 'MET-ADHIKARI' },
+    { title: 'ITS SIZE', text: 'This lab draws a sitar the size of one real sitar: about 125 cm long, its gourd about 34 cm across and 31 cm deep. Where things sit on it — the frets, the pegs, the second gourd — are drawn, not measured. Sitars vary.', src: 'MET-ADHIKARI' },
   ],
   sound: {
     stages: [
@@ -475,6 +475,6 @@ export const C14_LESSON: Lesson = {
     { text: 'The tabla, tanpura, wedge and PA positions — a typical layout.', dims: [] },
   ],
   live: { wedges: C14_WEDGES },
-  accuracyDetail: ACCURACY(SITAR_N, `one concert sitar (${SITAR.sympathetic.mm} sympathetic strings — some sitars have none)`),
+  accuracyDetail: ACCURACY(SITAR_N, `one real sitar (${SITAR.sympathetic.mm} sympathetic strings — some sitars have none)`),
   copy: C14_COPY,
 };

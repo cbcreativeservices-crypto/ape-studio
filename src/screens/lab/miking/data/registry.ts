@@ -29,6 +29,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'C01', labId: 'strings', title: 'Acoustic Guitar', subtitle: 'Steel-string, twelve-string and nylon — near the 12th fret, then move', status: 'ready' },
   { id: 'C07', labId: 'strings', title: 'Acoustic Bass Guitar', subtitle: 'A hollow-body bass: one mic, the pickup, and the lowest notes', status: 'ready' },
   { id: 'C03', labId: 'strings', title: 'Resonator Guitar', subtitle: 'Square neck in the lap, round neck upright — the cone under the coverplate', status: 'ready' },
+  // Lab 4 (strings): the lute family — oud, sitar, Saraswati veena (each on its own line).
+  { id: 'C13', labId: 'strings', title: 'Oud', subtitle: 'A fretless lute with a deep bowl — the upper face, the face, the rose', status: 'ready' },
+  { id: 'C14', labId: 'strings', title: 'Sitar', subtitle: 'Low by the bridge, high by the neck — and the sympathetic strings', status: 'ready' },
+  { id: 'C15', labId: 'strings', title: 'Saraswati Veena', subtitle: 'Over the top plate, out of the hand’s reach — the resonator, the drone, the yali', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

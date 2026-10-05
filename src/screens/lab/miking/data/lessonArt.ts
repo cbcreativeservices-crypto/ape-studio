@@ -10,6 +10,9 @@ import { TOMS_ART } from '../lessons/m03Toms/art';
 import { C01_ART } from '../lessons/c01Guitar/art';
 import { C03_ART } from '../lessons/c03Resonator/art';
 import { C07_ART } from '../lessons/c07AcousticBass/art';
+import { C13_ART } from '../lessons/c13Oud/art';
+import { C14_ART } from '../lessons/c14Sitar/art';
+import { C15_ART } from '../lessons/c15Veena/art';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -29,6 +32,10 @@ const ART: Record<string, LessonArt> = {
 ART.C01 = C01_ART;
 ART.C03 = C03_ART;
 ART.C07 = C07_ART;
+// Lab 4, the lute family (oud, sitar, veena).
+ART.C13 = C13_ART;
+ART.C14 = C14_ART;
+ART.C15 = C15_ART;
 
 export function lessonArt(id: string): LessonArt | undefined {
   return ART[id];
