@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 04:31 · ccode · 4d01722e
+changed: Merge branch 'miking-fix1' into final-lab
+affects other side: nothing (miking merge, branch final-lab)
+needs: nothing (miking merge, branch final-lab)
+
+
 ### 2026-10-05 04:10 · ccode · 0991da54
 changed: miking: Lab 1 review fixes (C1, C2, M1-M11, minors) and rebalanced items lab-wide
 affects other side: nothing (miking fixes, branch final-lab)
