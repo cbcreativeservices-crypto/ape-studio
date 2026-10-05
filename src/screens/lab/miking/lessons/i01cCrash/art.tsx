@@ -75,7 +75,7 @@ export function crashLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       { id: 'bow', text: 'BOW', u: c.c.x + R * 0.5, v: c.c.y - 90, align: 'center' },
       { id: 'bell', text: 'BELL', u: c.c.x, v: c.c.y - c.spec.rise.mm - 50, align: 'center', tone: 'muted' },
       { id: 'tom', text: two ? '12 IN TOM' : '10 IN TOM', short: 'TOM', u: tom.c.x + 40, v: tom.c.y + 150, align: 'center', tone: 'muted' },
-      { id: 'stand', text: 'BOOM STAND', short: 'STAND', u: st.foot.x - 30, v: st.joint.y + 60, align: 'right', tone: 'muted' },
+      { id: 'stand', text: 'BOOM STAND', short: 'STAND', u: st.joint.x + 40, v: st.joint.y + 70, align: 'left', tone: 'muted' },
       { id: 'stick', text: 'STICK', u: strike.x - 250, v: strike.y - 270, align: 'center', tone: 'illustrative' },
     ];
   }
