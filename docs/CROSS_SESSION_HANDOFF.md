@@ -616,19 +616,19 @@ needs: nothing.
 
 ### 2026-10-04 20:45 · ccode · c115b43b
 changed: web: employers & instructors - wording + instructor/school account choice on the apply form
-affects other side: nothing (branch final-lab, miking lab work).
+affects other side: web/ change made by another session (not ccode miking work); see the commit itself.
 needs: nothing.
 
 
 ### 2026-10-04 20:19 · ccode · 804883e2
 changed: web: employer verification page now addresses instructors and schools too
-affects other side: nothing (branch final-lab, miking lab work).
+affects other side: web/ change made by another session (not ccode miking work); see the commit itself.
 needs: nothing.
 
 
 ### 2026-10-04 19:27 · ccode · b8830559
 changed: web: halve the launch-overlay background blur (3px to 1.5px)
-affects other side: nothing (branch final-lab, miking lab work).
+affects other side: web/ change made by another session (not ccode miking work); see the commit itself.
 needs: nothing.
 
 
