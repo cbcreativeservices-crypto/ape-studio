@@ -143,7 +143,11 @@ function build(sc: LuteScene) {
   const yaliTongue = curve([Y(940, -13), Y(952, -12), Y(961, -17), Y(966, -12)]);
   const teeth = [945, 953, 961].map((x) => poly([Y(x - 3, -4), Y(x + 3, -4), Y(x, -10)]));
   const teethLow = [950, 958].map((x) => poly([Y(x - 3, -22), Y(x + 3, -22), Y(x, -16)]));
-  const yaliMane = [curve([Y(878, 24), Y(892, 4), Y(886, -30), Y(878, -58)]), curve([Y(896, 34), Y(908, 6), Y(902, -28), Y(894, -62)]), curve([Y(866, 0), Y(874, -30), Y(870, -60)])];
+  // Carved mane locks: small curls behind the eye and down the neck.
+  const curl = (cx: number, cz: number, r: number) => curve([Y(cx + r, cz + r * 0.2), Y(cx + r * 0.2, cz + r), Y(cx - r, cz + r * 0.1), Y(cx - r * 0.2, cz - r * 0.8), Y(cx + r * 0.5, cz - r * 0.4), Y(cx + r * 0.2, cz + r * 0.1)]);
+  const yaliMane = [curl(896, 20, 9), curl(886, -6, 10), curl(898, -34, 9), curl(882, -52, 9), curl(890, -76, 8)];
+  const yaliRidges = [curve([Y(946, 23), Y(962, 19), Y(977, 12)]), curve([Y(916, 2), Y(928, -5), Y(936, -13)])];
+  const yaliJawShade = smooth([Y(929, -52), Y(944, -43), Y(963, -39), Y(957, -31), Y(938, -24), Y(918, -40)]);
   const yaliScroll = curve([Y(912, -112), Y(916, -124), Y(926, -126), Y(930, -116), Y(922, -112)]);
   const yaliNostril = Y(973, 9);
   /* ── above ── */
@@ -219,6 +223,8 @@ function build(sc: LuteScene) {
     yaliEye,
     yaliBrow,
     yaliMane,
+    yaliRidges,
+    yaliJawShade,
     yaliMouth,
     yaliTongue,
     teeth,
@@ -353,10 +359,18 @@ export function VeenaFront({ sc, dim = 1 }: { sc: LuteScene; dim?: number }) {
       <Path path={B.yaliF}>
         <RadialGradient c={vec(B.yaliEye[0] - 20, B.yaliEye[1] - 10)} r={70} colors={['rgba(255,247,214,0.55)', 'rgba(255,247,214,0)']} />
       </Path>
+      {/* carved relief: the jaw's shadow, the snout and cheek ridges, the mane's curled locks */}
+      <Path path={B.yaliJawShade} color="#5e3d0c" opacity={0.35} />
+      {B.yaliRidges.map((p, i) => (
+        <Group key={`yr${i}`}>
+          <Path path={p} style="stroke" strokeWidth={3} strokeCap="round" color="#5e3d0c" opacity={0.6} />
+          <Path path={p} style="stroke" strokeWidth={1.2} strokeCap="round" color="#fff3c4" opacity={0.7} transform={[{ translateX: -0.8 }, { translateY: -1 }]} />
+        </Group>
+      ))}
       {B.yaliMane.map((p, i) => (
         <Group key={`ym${i}`}>
-          <Path path={p} style="stroke" strokeWidth={5} strokeCap="round" color="#5e3d0c" opacity={0.55} />
-          <Path path={p} style="stroke" strokeWidth={2.4} strokeCap="round" color={YRED} opacity={0.9} />
+          <Path path={p} style="stroke" strokeWidth={4.5} strokeCap="round" strokeJoin="round" color="#5e3d0c" opacity={0.6} />
+          <Path path={p} style="stroke" strokeWidth={2.2} strokeCap="round" strokeJoin="round" color={YRED} opacity={0.95} />
         </Group>
       ))}
       <Path path={B.yaliScroll} style="stroke" strokeWidth={3} strokeCap="round" color="#5e3d0c" />

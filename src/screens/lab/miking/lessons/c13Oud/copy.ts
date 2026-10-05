@@ -90,4 +90,5 @@ const base = stringsCopy({
 export const C13_COPY: LessonCopy = {
   ...base,
   axes: { ...base.axes, x: { plus: 'toward the pegbox', minus: 'toward the tail', label: 'ALONG', blurb: 'Along the strings, toward the pegbox or the tail of the bowl (x).' } },
+  setting: { ...base.setting, kitLanding: 'Tap anything round the player — or step through ITEM — to see what it means for an oud mic. There is nothing to answer yet.' },
 };

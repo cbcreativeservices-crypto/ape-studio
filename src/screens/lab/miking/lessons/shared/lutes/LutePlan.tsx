@@ -443,7 +443,7 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
     };
     const bezel = (sel: SettingItem | undefined, extra: BezelItem): BezelItem[] => [
       { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
-      { k: `FOR A ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
+      { k: `FOR ${/^[aeiou]/i.test(lesson.noun.one) ? 'AN' : 'A'} ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
       extra,
     ];
     const card = (it: SettingItem | undefined, idle: string) =>

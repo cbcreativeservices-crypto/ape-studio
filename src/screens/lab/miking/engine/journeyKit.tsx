@@ -74,7 +74,7 @@ export function PathChooser({ journey }: { journey: JourneyProps }) {
   return (
     <View style={{ gap: 8 }}>
       <Text style={styles.q}>How would you like to start?</Text>
-      {opt('new', `New to miking a ${noun.one}`, 'Start at the beginning: the instrument, how it makes its sound and where it sits, then the microphones.')}
+      {opt('new', `New to miking ${/^[aeiou]/i.test(noun.one) ? 'an' : 'a'} ${noun.one}`,'Start at the beginning: the instrument, how it makes its sound and where it sits, then the microphones.')}
       {opt('experienced', `I already mic ${noun.many}`, 'Take a six-question quick check. Pass it and every activity opens now; the first three pages stay here to earn their credit whenever you like.')}
     </View>
   );
