@@ -9,6 +9,7 @@ import { SNARE_ART } from '../lessons/m02Snare/art';
 import { TOMS_ART } from '../lessons/m03Toms/art';
 import { PIANO_ART } from '../lessons/c11Piano/pages';
 import { HARP_ART } from '../lessons/c10Harp/pages';
+import { CLAV_ART } from '../lessons/c12Clavinet/pages';
 
 const ART: Record<string, LessonArt> = {
   M01: {
@@ -25,6 +26,7 @@ const ART: Record<string, LessonArt> = {
 };
 ART.C11 = PIANO_ART;
 ART.C10 = HARP_ART;
+ART.C12 = CLAV_ART;
 
 export function lessonArt(id: string): LessonArt | undefined {
   return ART[id];

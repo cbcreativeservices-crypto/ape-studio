@@ -76,7 +76,9 @@ export function StringShapes({ w, h, n, swing, point, pointWord, ends, accessibi
   const px = point * LEN;
   const py = -AMP * swing * shapeAtFrac(n, point);
   const tone = ends.tone ?? 'piano';
-  const leftCols = tone === 'harp' ? ['#c7a466', '#8a6a3a'] : tone === 'clav' ? ['#9aa0ab', '#4a4e57'] : ['#f3d98d', '#8f6a22'];
+  // The clavinet's string runs from its bridge (left, wood) to the anvil (right, steel).
+  const leftCols = tone === 'harp' ? ['#c7a466', '#8a6a3a'] : tone === 'clav' ? ['#e8cf9c', '#9a7638'] : ['#f3d98d', '#8f6a22'];
+  const rightCols = tone === 'clav' ? ['#c9ced6', '#565b63'] : ['#e8cf9c', '#9a7638'];
   const labels: StaticLabel[] = [
     { id: 'l', text: ends.left, u: -35, v: 62, align: 'center', tone: 'muted' },
     { id: 'r', text: ends.right, u: LEN + 34, v: 92, align: 'center', tone: 'muted' },
@@ -109,7 +111,7 @@ export function StringShapes({ w, h, n, swing, point, pointWord, ends, accessibi
           </Path>
           <Circle cx={-14} cy={0} r={8} color="#d9dde5" />
           <Path path={paths.rightBlock}>
-            <LinearGradient start={vec(LEN, -14)} end={vec(LEN + 74, 60)} colors={['#e8cf9c', '#9a7638']} />
+            <LinearGradient start={vec(LEN, -14)} end={vec(LEN + 74, 60)} colors={rightCols} />
           </Path>
           <Circle cx={LEN + 14} cy={-8} r={7} color="#4b4f58" />
         </Group>

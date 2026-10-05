@@ -64,6 +64,10 @@ export type StringSoundSpec = {
     ends: StringEnds;
     /** What the string is in words ("one of the piano's strings"). */
     subject: string;
+    /** 'drive' (default): the point SETS shapes going (a hammer, a pluck);
+     *  'sense': the point HEARS them (a pickup) — the same physics read the
+     *  other way. */
+    role?: 'drive' | 'sense';
     notes: readonly string[];
   };
   radiate: {
@@ -312,7 +316,7 @@ export function makeStringSoundPage(spec: StringSoundSpec) {
             <Landing looking={`${SH.subject} · shape ${shape.n}`} prompt={`Step through SHAPE, then try each ${SH.word} point. Which shapes does each point leave still?`} />
             <Card>
               <Point title={`SHAPE ${shape.n} · ${shape.still.toUpperCase()}`}>
-                {`A plucked or struck string vibrates in several shapes at once; this is one of them. ${shape.n === 1 ? 'It is the lowest — the note you name.' : `Its pitch is exactly ${shape.n} times the lowest on an ideal string: a whole number, which is why a string sounds clearly pitched (a drumhead’s shapes are not whole numbers).`} At ${SH.phrase} (${pt.label.toLowerCase()}) the string moves ${pct} % of this shape’s peak, so ${share < 0.05 ? `${SH.phrase} is on a still point: it cannot set this shape going at all` : `it can set this shape going — the nearer to the shape’s peak, the harder; only a still point leaves a shape out`}.`}
+                {`A plucked or struck string vibrates in several shapes at once; this is one of them. ${shape.n === 1 ? 'It is the lowest — the note you name.' : `Its pitch is exactly ${shape.n} times the lowest on an ideal string: a whole number, which is why a string sounds clearly pitched (a drumhead’s shapes are not whole numbers).`} At ${SH.phrase} (${pt.label.toLowerCase()}) the string moves ${pct} % of this shape’s peak, so ${SH.role === 'sense' ? (share < 0.05 ? `${SH.phrase} is on a still point: it hears nothing of this shape` : `${SH.phrase} hears this shape — the nearer to the shape’s peak, the more; a still point hears nothing of it`) : share < 0.05 ? `${SH.phrase} is on a still point: it cannot set this shape going at all` : `it can set this shape going — the nearer to the shape’s peak, the harder; only a still point leaves a shape out`}.`}
               </Point>
             </Card>
             {SH.notes.map((t) => (
