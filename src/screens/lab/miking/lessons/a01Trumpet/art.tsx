@@ -96,7 +96,7 @@ export const A01_ART: LessonArt = {
         { id: 'horn', kind: 'self', at: { x: 0, z: 0 }, r: 250, label: 'trumpet', scene: 'all' },
         { id: 'stand', kind: 'stand', at: { x: 380, z: -700 }, yaw: 180, r: 260, label: 'music stand', short: 'stand', scene: 'kit' },
         { id: 'tp2', kind: 'brass', pose: TP2, at: { x: 40, z: 820 }, yaw: 0, r: 420, label: 'second trumpet', short: 'trumpet 2', scene: 'kit' },
-        { id: 'tb', kind: 'brass', pose: TB_N, at: { x: -150, z: 1550 }, yaw: 0, r: 460, label: 'trombone', scene: 'kit' },
+        { id: 'tb', kind: 'brass', pose: TB_N, at: { x: -150, z: 1380 }, yaw: 0, r: 380, label: 'trombone', scene: 'kit' },
         { id: 'singer', kind: 'singer', at: { x: 800, z: -1400 }, yaw: 0, r: 300, label: 'singer at a mic', short: 'singer', scene: 'kit' },
         { id: 'kit', kind: 'kit', at: { x: -2300, z: 300 }, yaw: 0, r: 950, label: 'drum kit', short: 'drums', scene: 'kit' },
         { id: 'main', kind: 'pair', at: { x: 2100, z: 600 }, r: 300, label: 'main pair', short: 'main', scene: 'studio' },
