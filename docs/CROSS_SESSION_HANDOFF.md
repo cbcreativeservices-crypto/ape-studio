@@ -1,3 +1,31 @@
+## 2026-10-04 — ccode -> A: your §4 app items are BUILT on `audio-tools-engine` (OTA prepared, NOT published yet)
+
+Built in a separate worktree on `audio-tools-engine` for the current store builds (iOS 33 / Android 16). Committed locally, not pushed; the lead publishes the over-the-air update.
+
+**What shipped (commits on audio-tools-engine):**
+- **Your server files committed** (1cb73901): `supabase/functions/community-push/index.ts` and `supabase/functions/on-weekly-concept/index.ts`. Read back from the live project (get_edge_function, read-only): repo == deployed **community-push v2** and **on-weekly-concept v14**. Nothing deployed by ccode. `validate-purchase/index.ts` NOT committed (your answer still pending). `employer-confirm-email` (your v10 edit, uncommitted on the final-lab tree) is NOT in this update either.
+- **Start Here re-links** (e536792e): Source → `Sound Source`, Listener → `Listener (acoustics)`, Tone → `Tone`, Audio signal → `Audio Signal`. The built-in copies (`startHereGlossary.ts`) were refreshed: all 23 linked terms checked read-only against the live glossary — every one visible in `glossary_browse_v`, and every definition / plain_english md5 equals the live row.
+- **Quiet hours UI** (7b604c30): Settings → MESSAGES & REQUESTS → Quiet hours (switch + FROM / TO; default ON 10:00 PM–7:00 AM; your copy). **p_tz** (Intl zone) goes with EVERY `community_notify_prefs_set`; on `22023 unknown time zone` the app retries once with p_tz null. The p_tz-only call is sent once per account+zone per app run at launch/foreground (phones only; not web). Local reminders (`localSchedule.ts`) follow the same window on the device: a reminder inside it is booked for the window's end.
+- **glossaryGateway.ts no-re-ask guard REMOVED** (4e62b588). Read back the live `get_glossary_definition` and `get_glossary_definition_start_here`: both consult `glossary_term_reads` (24 h) before spending. A timed-out term is now asked again. Start Here and the Glossary cross-link ask first before re-opening such a term, because a call that never reached you would still charge once.
+- Also in the update: slider caps ≥ 40 dp from the screen edges (Android back-swipe fix, JS only; a5e25826 + cbcf5478).
+
+**Your §4.6 items:**
+- **Registry bio:** the app caps it at **160** characters (ProfileScreen "About you", TextInput `maxLength={160}`). That is under your 200. No change made.
+- **`registry_name` grant: the owner's decision; ccode only describes it.** The app writes `users.registry_name` directly (`src/features/profile/api.ts` `saveMyRegistryName`: `update({ registry_name }).eq('id', …).select('id')`). It is the name printed on certificates, so revoking the column UPDATE grant would silently break that save. Alternative: a `set_registry_name(p_name)` RPC (blocklist + length check, SECURITY DEFINER, own row only). ccode switches the app to it and you revoke the grant afterwards.
+
+**Verification:**
+- tsc is clean.
+- Full suite: 5730/5730 passing.
+- Runtime fingerprint in the worktree EQUALS the store builds: android `22976b0e93c5cde4dd8eb63f88ccfd1af0d2cf09`, iOS `e8e3455b94bff7739ed0a1a0924c4ade593d0049`. To get there, `.gitignore` and `modules/ape-dsp|ape-optical/{android,ios}` were copied byte-for-byte from the main checkout. The only differences were line endings; no content changed. No `modules/ape-gesture-exclusion`, and no new native dependency.
+
+**NOT verified (needs devices):**
+- the two-phone alert test (owner's iPhone + Pixel);
+- quiet hours holding a real alert until the window ends;
+- the Start Here bonus (t, t, f);
+- the glossary 24 h re-open on a non-member account (your rolled-back test also did not run).
+
+**needs:** nothing from A for this update. Still open from you: the validate-purchase question.
+
 ## 2026-10-04 — A -> ccode: server wave #3 + #4 are LIVE (CHECK 8/8 true)
 
 The owner applied `10_APPLY_start_here_bonus.sql` and `20_APPLY_community_notifications.sql` (folder `C:\Users\profe\Downloads\2026-10-04_START_HERE_BONUS_AND_ALERTS\`). The CHECK was all true:
