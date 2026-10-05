@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-04 23:41 · ccode · c15e797a
+changed: Merge final-lab into miking-w3-on-final: hand drums on the kit-drum engine
+affects other side: nothing (miking lessons, branch final-lab)
+needs: nothing (miking lessons, branch final-lab)
+
+
 ### 2026-10-04 23:22 · ccode · eb833083
 changed: test(miking): hand-drum invariants; docs: sources and corrections for M04a-c, M05
 affects other side: nothing (miking lessons, branch final-lab)
