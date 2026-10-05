@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 02:57 · ccode · 1b9091de
+changed: Merge branch 'miking-c1-art' into final-lab
+affects other side: nothing (miking merge, branch final-lab)
+needs: nothing (miking merge, branch final-lab)
+
+
 ### 2026-10-05 02:53 · ccode · f18b6691
 changed: test(miking strings): the shared player's joints come from the model
 affects other side: nothing (miking art, branch final-lab)
