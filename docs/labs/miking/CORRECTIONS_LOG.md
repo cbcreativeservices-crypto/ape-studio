@@ -567,3 +567,52 @@ Built 2026-10-05 (branch `miking-i2`, from `4334be8b`). Research: `vibraphone/` 
 | I2-G4 | (range) | "4 1/3 octaves" (spec page) | "about three and a third octaves (C5 to E8)" | GLK-D2 | YMH-YG2500 | APPLIED |
 | I2-G5 | L16 | near-coincident pair, no dimension | near-coincident 17 cm / 110° and spaced 40 cm, both 45 cm above the bars — drawing defaults, said so on the page | No published glockenspiel pair | LESSON-GLK | APPLIED · OWNER: approve |
 | I2-G6 | (drawing) | YG-1210 case | the case on a 760 mm table, 78 mm base + 30 mm lid, the lid open 90° on the audience side (drawn see-through in the front view); the floor moves so the bars keep one plane | Drawing defaults | YMH-YG1210 | APPLIED · OWNER: lid hinge side |
+
+## Lab 2 · suspended metal: I06a Triangle, I06b Finger Cymbals, I06c Bar Chimes, I12 Gong
+
+Research: `triangle/`, `finger_cymbals/`, `bar_chimes/`, `gong/` (SOURCES.md + GEOMETRY_PROPOSAL.md) and
+BATCH2_RESEARCH_SUMMARY.md. The app shows starting points only (owner ruling 2026-10-04): the corrections
+below are applied to the APP text; nothing in `source_text/` is edited.
+
+### I06a Triangle (`source_text/Triangle-Miking-Technique-Research.txt`, lesson id I06a)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| TRI-01 | L43 | "a failed line can drop a heavy metal instrument" | "a worn line can drop the instrument; the catch line is the backup" (no "heavy") | An 8 in triangle of ½ in steel rod is about 0.6 kg (DERIVED order of magnitude) — "heavy" overstates it; the safety point (a catch line) stays. | triangle/SOURCES.md (DERIVED row), GROVER-TRI | APPLIED (`lessons/i06aTriangle/lesson.ts` tri.set.2, setting) |
+| TRI-02 | L6 | Grover "prefers playing handheld at eye level"; PAS mounting "when needed" | Both kept as the player's choice: HELD (in front of the chest, drawn) and MOUNTED variants; eye level in words; no "never" | Grover's primer says it "should never be played when mounted on a music stand"; PAS allows two clips at both closed vertices. The lab teaches neither as dogma. | GROVER-TRI, PAS-1906 | APPLIED · OWNER: TRI-D2 (which hold to draw by default) |
+| TRI-03 | L6 | suspension advice credited to PAS [1, 3] | The thin line AND the catch line are taught; internally sourced to Grover's primer as well | The catch-line sentence is in Grover's primer, not only PAS. | GROVER-TRI | APPLIED (internal `prov`) |
+| TRI-04 | L11 | "Shure's general beginner advice gives a 30 cm gap for percussion" | The 30 cm floor is every zone's minimum, said as a general starting floor, unbranded; measured from the triangle where it is played | No source names the reference point; "from the instrument" is the source's words. | S-HOME | APPLIED (`geometry.ts` tri.A/B/C) |
+| TRI-05 | (physics) | — | HOW IT SOUNDS draws the triangle as the straight bar it was bent from (free–free shapes 1 : 2.76 : 5.40 : 8.93 : 13.34), said once as a simplified picture | The lesson has no physics; the bar model is textbook and the app's own plate model uses the same beam constants. | metalModes.ts | APPLIED |
+| TRI-06 | header | "Pro Audio Training Academy", "Students" | Not used | House rule. | — | APPLIED |
+
+### I06b Finger Cymbals (`source_text/Finger-Cymbals-Miking-Technique-Research.txt`, lesson id I06b)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| FC-01 | L7 / ref [2] | PAS Educators' Companion "Volume II" | Internal record cites the extract as read (its page footer reads "Volume I 23") | Citation detail only; no source on screen. | finger_cymbals/SOURCES.md (FC-D1) | APPLIED (internal) · OWNER: fix the reference in the document |
+| FC-02 | L4 | "The Metropolitan Museum of Art classifies a pair of tal as an idiophone" | "concussion idiophones" in plain words; the drawn pair is a measured museum pair (5.5 / 4.8 cm, 2.4 cm high), said as "one measured pair, not a standard" | No institution names on screen; modern pairs' sizes are not printed by the makers read. | MET-TAL | APPLIED |
+| FC-03 | L8 | thick vs thin pair (one maker's line) | "one maker describes its thin pair as lower-pitched than its thick — compare the real pairs"; a check (fc.mix.1) teaches that it is not a rule across makers | Keeps the lesson's own caution; no brand on screen. | ZIL-FCTHIN, ZIL-FCTHICK | APPLIED |
+| FC-04 | L15, L42 | dance: "a wider or overhead position"; "a wearable mic … is not a default" | DANCE variant with its own zones (high and in front, 1.3–1.9 m; farther out, 1.9–2.6 m), all outside a drawn dance envelope and route; wearable mic said as not a default | Envelope and route are drawing defaults (owner to check). | finger_cymbals/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: dance envelope and route |
+| FC-05 | header | "Pro Audio Training Academy" | Not used | House rule. | — | APPLIED |
+
+### I06c Bar Chimes (`source_text/Bar-Chimes-Miking-Technique-Research.txt`, lesson id I06c)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| BC-01 | L8 | Grover's Spectrasound "title only" (survey) | The page's construction text is used internally: bars on filaments from a hardwood mantle, an optional damper | The page has the text (filament, damper). | GROVER-MT35 | APPLIED (internal `prov`) |
+| BC-02 | L5 / PAS | "any model … between the size of 12" – 16"" | A 38 cm rail, said as "a rail about 30–40 cm long" | Read as the rail's length — an interpretation, recorded in `unknowns`. | PAS-ECV02 | APPLIED · OWNER: confirm the reading |
+| BC-03 | (geometry) | — | Bar lengths (300 → 60 mm), Ø 10 mm, filaments 15 mm, rail section, swing ±20° — flagged drawing defaults | No source gives any bar size. | bar_chimes/SOURCES.md | APPLIED · OWNER: bar lengths |
+| BC-04 | (physics) | "Different bar lengths can produce different perceived pitches" | Pitch ∝ 1 ÷ length² for bars of one thickness and metal (half the length → four times the pitch), drawn per bar | Textbook free–free bar scaling; the lesson's qualitative line made exact. | metalModes.ts | APPLIED |
+| BC-05 | header | "Pro Audio Training Academy" | Not used | House rule. | — | APPLIED |
+
+### I12 Gong (`source_text/Gong-Miking-Technique.txt`, lesson id I12)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| GG-01 | (whole lesson) | no hearing line | A hearing check and a critical quick-check item (85 dBA / 8 h, 3 dB exchange, as plain advice; a mic's max SPL is not a hearing limit) | Survey/research: the gong lesson had none. | NIOSH-TID (shaker/SOURCES.md §0) | APPLIED |
+| GG-02 | L5 | "the Met describes a particular tuned Chinese luo" | No institution named; the two kinds the app draws are a 32 in symphonic tam-tam and an 18 in bossed gong | The luo is a particular object; the selector teaches tam-tam vs bossed. | MET-LUO, PAI-GONG, SONVO | APPLIED |
+| GG-03 | L30 | the practitioner's claim that a ribbon's pattern avoids phase issues | Taught as a misconception (gg.two.3): spaced mics still hear the gong at different times, whatever their patterns | The lesson already rejects it; the app makes it a check. | SOURCES_SHARED.md §2 | APPLIED |
+| GG-04 | L24 | A 60–120 cm and B 30–60 cm "proposed classroom starting ranges" | Recommended starting points, measured from the face at rest; the room mic drawn at 1.8–2.6 m (the proposal's 3000 mm shortened to fit the view) | Unsourced trials (the lesson says so); the room distance is a drawing default. | gong/GEOMETRY_PROPOSAL.md | APPLIED · OWNER: room-mic distance |
+| GG-05 | (geometry) | — | Strike point a little off centre (0.25 R) on a tam-tam — a drawing default; the maker's figure was not read as text | Recorded in `unknowns`. | PAI-SUP | APPLIED · OWNER: strike point |
+| GG-06 | (physics) | "broad, complex bloom" | The build-up drawn as which free-disc shapes hold the energy at each event (never a time or a level); a centre/boss stroke drives only the ring-shaped shapes (J_n(0) = 0, n ≥ 1) | Shown visually, never played (task brief); qualitative order of events only. | metalModes.ts | APPLIED |
+| GG-07 | header | "Pro Audio Training Academy" | Not used | House rule. | — | APPLIED |

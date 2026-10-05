@@ -90,6 +90,12 @@ export const BRAND_NAMES: readonly string[] = [
   'KSM ?\\d+',
   'PGA ?27',
   'OSHA',
+  // Lab 2 suspended-metal research (docs/labs/miking/triangle, finger_cymbals, bar_chimes, gong).
+  'Grover',
+  'Meinl',
+  'Paiste',
+  'Spectrasound',
+  'Son Vo',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */
