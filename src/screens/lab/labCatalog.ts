@@ -15,7 +15,7 @@
  */
 import type { RootStackParamList } from '../../navigation/types';
 import { computeLabRouteMembership } from './labMembership';
-import { readyLabs } from './miking/data/registry';
+import { lessonsOf, readyLabs } from './miking/data/registry';
 
 /**
  * The Calculator Laboratory's row count, worked out on first READ (perf start
@@ -66,6 +66,9 @@ export type LabLeaf = {
    *  require Academy membership. Lock = `leaf.member || section === 'training'`.
    *  Training-section labs don't need this (the section already gates them). */
   member?: boolean;
+  /** A count line under the blurb on the Labs menu tile — e.g. the Miking
+   *  family tiles' "17 Miking Lab Lessons" (owner 2026-10-06). */
+  countLine?: string;
 };
 
 /** An optional middle "Lab Family" grouping inside a category. */
@@ -125,6 +128,8 @@ export type LabCategory = Common &
   );
 
 const labsPlural = (n: number) => `${n} ${n === 1 ? 'Lab' : 'Labs'}`;
+/** A Miking family tile's count line (owner 2026-10-06): "17 Miking Lab Lessons", no chevron. */
+export const mikingLessonCount = (n: number) => `${n} Miking Lab ${n === 1 ? 'Lesson' : 'Lessons'}`;
 
 const RAW_LAB_CATEGORIES: LabCategory[] = [
   // ── AUDIO FUNDAMENTALS: Sound · Acoustics · Signal ───────────────────
@@ -432,13 +437,18 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       { name: 'Microphone Selection Lab', blurb: 'Read the specs, weigh the job, make a defensible choice — types, characteristics, patterns, and the Choose-the-Mic challenge.', route: 'MicSelectLab' },
     ],
     // MIKING LABS (owner GO 2026-10-04, plan §6: "inside Training Labs, as a
-    // Miking Labs section in the Instruments & Recording area"). One row per
-    // lab that has a READY lesson (data/registry.ts) — no placeholder rows.
-    // Each opens the lab's hub; members-only (ruling: members + grayed preview).
+    // Miking Labs section in the Instruments & Recording area"). One tile per
+    // instrument FAMILY, straight on this menu (owner 2026-10-06: "those
+    // tiles (membranophone, aerophone, etc.) should be on the member lab
+    // menu, not inside another menu") — Membranophones, Idiophones,
+    // Aerophones, Chordophones, then Voice & Ensemble and the rest — each the
+    // lab with a READY lesson (data/registry.ts), opening its lessons. No
+    // ready lab, no tile (no placeholder rows). Members-only (ruling:
+    // members + grayed preview).
     families: [
       {
         name: 'Miking Labs',
-        labs: readyLabs().map((l) => ({ name: l.name, blurb: l.blurb, route: 'MikingHub' as const, params: { lab: l.id }, member: true })),
+        labs: readyLabs().map((l) => ({ name: l.family, blurb: l.familyBlurb, countLine: mikingLessonCount(lessonsOf(l.id).length), route: 'MikingHub' as const, params: { lab: l.id }, member: true })),
       },
     ],
   },

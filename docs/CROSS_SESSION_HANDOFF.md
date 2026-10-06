@@ -631,6 +631,11 @@ changed: Remove V1/institutional leftovers and the commercialMode flag; map reti
 affects other side: retired_content / archived_quiz_retired now have quiz copy; store-notifications' institutional skip removed in code (see the 2026-10-06 entry at the top).
 needs: a redeploy of store-notifications; sequence_in_course / is_prerequisite drop still waits for the owner's next published build.
 
+### 2026-10-06 00:31 · ccode · 82738593
+changed: Miking: one tile per instrument family on the member Labs menu
+affects other side: nothing (client-only menu change; no DB, no route or lesson-id change)
+needs: nothing
+
 ### 2026-10-05 22:04 · ccode · 76234771
 changed: Remove remaining Curriculum V1 remnants from app code
 affects other side: the app no longer selects achievements.sequence_in_course or achievements.is_prerequisite (Dashboard); no DB change made
