@@ -7,8 +7,8 @@
  *
  * The LOOK is the shared player's (players/PlayerFigure, clarity pass
  * 2026-10-05): every body mass painted with FigureMass (form gradient, lit rim,
- * core shadow, contour), the hands with fingers (handShape), the head in line
- * art (LineHead) — so a lute player reads like the guitar family's players.
+ * core shadow, contour), the hands with fingers (handShape), the head as one
+ * more skin mass (FigureHead) — so a lute player reads like the guitar family's players.
  * The geometry below is unchanged: the same joints, the same widths.
  */
 import { Group, Line, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
@@ -16,14 +16,14 @@ import { useMemo } from 'react';
 import type { ViewId } from '../../../engine/model/types.ts';
 import type { LuteScene } from './luteModel.ts';
 import { DEG, ep, make, PAL, rr, smooth, type Pt, type SkPath } from './luteDraw';
-import { FIGURE_TONES, FigureMass, handShape, headAbove, headFront, limb as limbPath, LineHead } from '../players/PlayerFigure';
+import { FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headFront, limb as limbPath } from '../players/PlayerFigure';
 
-/** A head in the house line-art spec. Front: the face to the audience, its
- *  neck column down to `neckY` (default just below the jaw). Above: the
- *  cranium and the nose's tip toward +v (the audience). */
+/** The figure's own head (FigureHead: one skin mass, the same look as the
+ *  body). Front: facing the audience, its neck down to `neckY` (default just
+ *  below the jaw). Above: the cranium, the ears and the nose's tip toward +v. */
 export function Head({ cx, cy, r, above = false, neckY }: { cx: number; cy: number; r: number; above?: boolean; neckY?: number }) {
   const head = useMemo(() => (above ? headAbove({ u: cx, v: cy }, r) : headFront({ u: cx, v: cy }, r, neckY ?? cy + r * 1.35)), [cx, cy, r, above, neckY]);
-  return <LineHead head={head} c={{ u: cx, v: cy }} r={r} />;
+  return <FigureHead fill={head.fill} />;
 }
 
 /** A body mass (the torso, a leg) at the shared figure standard. */
