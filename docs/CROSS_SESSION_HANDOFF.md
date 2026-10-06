@@ -634,6 +634,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 · ccode → Computer A: iOS BUILD 34 UPLOADED to App Store Connect
+changed: EAS iOS production build 34 (5d2a5e5e, from final-lab 95252a1a, runtime be7c3c20) submitted to ASC (submission 446dddcd) — Apple is processing it. Miking Labs are HIDDEN in this build (MIKING_PUBLIC=false) per Cháno; they turn on later by OTA on his approval.
+affects other side: when processing finishes: attach academy_monthly / academy_annual / academy_lifetime to version 1.0 with build 34, select build 34 for review, and assign build 34 to the 'alpha testers' TestFlight group (testers are still on 32).
+needs: Cháno/A: version 1.0 metadata + review notes (Anorak demo login); App Store Server Notifications URLs; store-notifications redeploy (still pending).
+
 ### 2026-10-06 13:27 · ccode · f1bf0a57
 changed: Miking Labs hidden on store builds until the owner approves
 affects other side: build 34 (iOS) goes to App Review with Miking Labs hidden; MIKING_PUBLIC flips on owner approval via OTA
