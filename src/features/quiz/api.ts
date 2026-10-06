@@ -101,8 +101,26 @@ export type QuizStartError =
   | 'version_mismatch'
   | 'pool_too_small'
   | 'user_not_found'
+  // Retired content (server, 2026-10-05) — see RETIRED_CONTENT_COPY.
+  | 'retired_content'
+  | 'archived_quiz_retired'
   | 'offline'
   | 'unknown';
+
+/**
+ * ── RETIRED CONTENT (server, 2026-10-05) ────────────────────────────────────
+ * `start_quiz_attempt`, `submit_quiz`, `record_study_progress` and
+ * `credit_time_trial` raise `retired_content` for a topic that has been
+ * retired; `archived_quiz_retired` is the same answer for an archived quiz.
+ * Both read as one plain sentence wherever an error has copy.
+ */
+export const RETIRED_CONTENT_COPY = 'This topic has been retired.';
+const RETIRED_CONTENT_CODES = ['archived_quiz_retired', 'retired_content'] as const;
+export type RetiredContentCode = (typeof RETIRED_CONTENT_CODES)[number];
+/** The retired-content code a server message carries, or null. */
+export function retiredContentCode(message: string): RetiredContentCode | null {
+  return RETIRED_CONTENT_CODES.find((c) => message.includes(c)) ?? null;
+}
 
 /** RAISEd-error → user copy (routing table, Code brief §2.1). */
 /** Ratified quiz shape (Booth 2026-09-03): 30 questions, pass at 28. The
@@ -128,6 +146,8 @@ export const QUIZ_START_ERROR_COPY: Record<QuizStartError, string> = {
   version_mismatch: 'Content was updated — tap Back and reopen the quiz.',
   pool_too_small: 'This quiz is not available yet — email info@proaudiotrainingacademy.com so we can look at it.',
   user_not_found: 'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
+  retired_content: RETIRED_CONTENT_COPY,
+  archived_quiz_retired: RETIRED_CONTENT_COPY,
   offline: 'Quiz start requires a connection. Reconnect and try again.',
   unknown: 'Could not start the quiz. Try again.',
 };
@@ -142,6 +162,8 @@ const KNOWN_ERRORS: QuizStartError[] = [
   'version_mismatch',
   'pool_too_small',
   'user_not_found',
+  'archived_quiz_retired',
+  'retired_content',
 ];
 
 function parseStartError(message: string): QuizStartError {
@@ -484,6 +506,9 @@ export const QUIZ_SUBMIT_ERROR_COPY: Record<string, string> = {
   not_owner: 'This quiz belongs to a different account. Sign in as the account that started it.',
   user_not_found:
     'We could not find your account record. Sign out and back in, and email info@proaudiotrainingacademy.com if it continues.',
+  // Quiz-only codes, matched by retiredContentCode() before parseSubmitError.
+  retired_content: RETIRED_CONTENT_COPY,
+  archived_quiz_retired: RETIRED_CONTENT_COPY,
   // ⚠️ This used to say "Your answers are still here — try again". Both call
   // sites pass `() => navigation.goBack()` as the notify dismiss handler, so
   // tapping OK unmounts the screen and destroys `answers`. Until the callback

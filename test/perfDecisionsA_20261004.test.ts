@@ -102,7 +102,7 @@ const STUBS: Record<string, string> = {
     export async function loadLastTier(uid) { globalThis.__LT_CALLS__.push(uid); return globalThis.__LT__; }
     export async function saveLastTier() {}`,
   'ape-pda:devMode': `export const devBypass = () => false;`,
-  'ape-pda:flags': `export const DEV_COMMERCIAL_FLAG_KEY = 'x'; export const DEV_ENTITLEMENT_KEY = 'y'; export const FLAG_DEFAULTS = { commercialMode: true };`,
+  'ape-pda:flags': `export const DEV_ENTITLEMENT_KEY = 'y';`,
   'ape-pda:sb-provider': `
     const SB = () => globalThis.__SB__;
     export const supabase = {
@@ -297,7 +297,9 @@ test('1 · a failed or empty users read is not remembered; a read in flight acro
 
 /* ══ 2. Home paints on the remembered tier ══════════════════════════════ */
 
-const S = { entitlement: 1, resolved: 2, tierKnown: 3, tierReadFailed: 4 } as const;
+// useState order in EntitlementProvider: entitlement, resolved, tierKnown,
+// tierReadFailed.
+const S = { entitlement: 0, resolved: 1, tierKnown: 2, tierReadFailed: 3 } as const;
 type SessionResult = { data: { session: unknown }; error?: unknown };
 const RETRYABLE: SessionResult = { data: { session: null }, error: { name: 'AuthRetryableFetchError', message: 'Failed to fetch' } };
 const member = (id: string): SessionResult => ({ data: { session: { user: { id, is_anonymous: false } } }, error: null });

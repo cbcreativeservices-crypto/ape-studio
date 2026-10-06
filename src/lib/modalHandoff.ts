@@ -5,7 +5,7 @@
  * UIKit presents one modal at a time. Every app popup (AppDialog, the
  * membership card, PrePaywallPrompt, StudyAccessSheet, the glossary lock…) is
  * a DimModal, and Paywall / Settings / Help / About / WeeklyConcept /
- * Institutional / ExposureMonitor are `presentation: 'modal'` screens. Opening
+ * ExposureMonitor are `presentation: 'modal'` screens. Opening
  * one of those screens in the same tap that closes a popup is refused while
  * the popup's Modal is still fading out (HOST_DISMISS_MS) — the button reads
  * as dead on iPhone, and Android draws the screen BEHIND the popup.

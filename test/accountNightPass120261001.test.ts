@@ -71,7 +71,7 @@ test('a stalled getSession never asserts "guest" for a signed-in member', () => 
   assert.match(boot, /if \(timedOut\) return;/);
   assert.ok(boot.indexOf('if (timedOut) return;') < boot.indexOf('clearLocalOnUserChange(identityOf(data.session));'));
   // refreshEntitlement: no session while the provider knows an account → read failed, tier kept.
-  const refresh = body(provider, 'const refreshEntitlement = useCallback', 'const setCommercialMode');
+  const refresh = body(provider, 'const refreshEntitlement = useCallback', 'setMemberStanding(entitlement');
   assert.match(refresh, /if \(!isRealAccount\(sess\.session\)\) \{[\s\S]*?if \(lastUid\.current !== null\) return false;\s*setEntitlementState\('anonymous'\);/);
 });
 

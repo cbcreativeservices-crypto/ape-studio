@@ -1070,10 +1070,10 @@ export function AwardsScreen({ navigation, route }: Props) {
       {/* LEVEL 1 — choose one Specialization Certificate (user request 2026-07-18):
           each = the COREQ_TOPIC_GS core topics and lab + that certificate's own
           specialization topics. NOTE: the list rendered here is `specCertsAZ`,
-          which comes from the LIVE v3 backend (fetchV3Certs) — NOT the legacy
-          68-entry SPECIALIZED_CERTS array in awardsData.ts, which is marked
-          PARTIALLY DEAD. Don't restate "68", "3 core" or "3 specialization
-          topics" here; all three drifted and were corrected in [18]/[18b]. */}
+          which comes from the LIVE v3 backend (fetchV3Certs); the pre-v3 local
+          certificate list was deleted 2026-10-05. Don't restate counts such as
+          "3 core" or "3 specialization topics" here; they drifted and were
+          corrected in [18]/[18b]. */}
       <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={picker === 'specializations'} animationType="slide" transparent statusBarTranslucent onRequestClose={() => setPicker(null)}>
         <View style={[styles.pickerRoot, { paddingTop: insets.top }]}>
           <View style={styles.brandRow}>

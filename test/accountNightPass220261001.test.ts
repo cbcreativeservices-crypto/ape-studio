@@ -15,7 +15,7 @@ const wipe = read('src/features/account/clearLocalAccountData.ts');
 const body = (src: string, start: string, end: string) => src.slice(src.indexOf(start), src.indexOf(end, src.indexOf(start)));
 
 test('a sign-in that lands after its deadline is signed back out unless a newer attempt started', () => {
-  const fn = body(api, 'async function boundedSignIn', 'export const REGISTER_ERROR_COPY');
+  const fn = body(api, 'async function boundedSignIn', 'export { friendlyAuthError');
   assert.match(fn, /const mine = \+\+signInAttempt;/);
   assert.match(fn, /const call = run\(\);/);
   assert.match(fn, /catch \(e\) \{\s*void call\.then\(/);

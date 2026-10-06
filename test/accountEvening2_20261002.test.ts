@@ -78,7 +78,7 @@ test('settings: a device write that throws never rejects, and the reminders stil
 test('entitlement: a refresh that applies a tier arms the expires_at recheck, as the derive does', () => {
   const s = read('src/features/commercial/EntitlementProvider.tsx');
   assert.match(s, /armExpiryRef\.current = armExpiryRecheck;/);
-  const refresh = s.slice(s.indexOf('const refreshEntitlement = useCallback'), s.indexOf('const setCommercialMode = useCallback'));
+  const refresh = s.slice(s.indexOf('const refreshEntitlement = useCallback'), s.indexOf('setMemberStanding(entitlement'));
   assert.match(refresh, /const tier = academyTierFromRows\(rows\);/);
   assert.match(refresh, /setEntitlementState\(tier\);\s*armExpiryRef\.current\(tier === 'academy' \? accessEndsAt\(rows\) : null\);/);
 });

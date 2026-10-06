@@ -42,16 +42,16 @@ export function CalcLabScreen() {
   // Tablet (owner 2026-09-29): three calculator plates a row in the centred
   // card column instead of two ~490 pt plates. Phones keep two.
   const tablet = useIsTablet();
-  const { isMember, commercialMode, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  const { isMember, resolved, tierKnown, tierReadFailed } = useEntitlement();
 
   // ALL workflows are ACADEMY-ONLY (owner 2026-08-13): running a guided
   // multi-step sequence, using templates, AND building your own. Individual
-  // calculators stay open to everyone. Caps only bite in commercial mode.
+  // calculators stay open to everyone.
   // `!resolved` counts as allowed (entitlement roll-out 2026-09-11): the
   // provider boots at 'anonymous', so a member who opened a workflow before the
   // server read landed got the "Workflows are an Academy feature" sell for the
   // membership they already hold.
-  const workflowsAllowed = !commercialMode || !resolved || isMember;
+  const workflowsAllowed = !resolved || isMember;
   // A signed-in learner whose membership read FAILED (no remembered tier)
   // reads 'guest' on the resolved-based tier (hunt 4, 2026-10-03): they were
   // sold the membership they may already hold. Still no workflow (the labs'

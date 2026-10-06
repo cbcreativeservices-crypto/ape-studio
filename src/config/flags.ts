@@ -1,20 +1,11 @@
 /**
- * Feature flags (CM1, Booth 2026-07-11).
+ * Dev-only storage keys for the entitlement provider.
  *
- * `commercialMode` gates the commercial-first structure. Institutional mode is
- * RETIRED (owner 2026-08-06) — the app IS the commercial app, so this now
- * defaults ON at boot (dev AND release). The institutional code paths remain
- * only as dead branches reachable via the dev logo long-press for inspection.
+ * The app is commercial-only: the old `commercialMode` master flag and its dev
+ * long-press toggle were removed on 2026-10-05 (the institutional mode it
+ * switched to was retired 2026-08-06), so commercial behaviour is simply the
+ * code.
  */
-export const FLAG_DEFAULTS = {
-  /** Master switch for the commercial-first structure + entitlement gating.
-   *  Defaults ON (owner 2026-08-06); dev long-press-logo can toggle it off. */
-  commercialMode: true,
-} as const;
 
-export type FlagName = keyof typeof FLAG_DEFAULTS;
-
-/** AsyncStorage key for the dev-only commercialMode override. */
-export const DEV_COMMERCIAL_FLAG_KEY = 'ape:dev:commercialMode';
 /** AsyncStorage key for the dev-only mock entitlement state. */
 export const DEV_ENTITLEMENT_KEY = 'ape:dev:entitlement';

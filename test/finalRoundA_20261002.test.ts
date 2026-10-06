@@ -126,7 +126,7 @@ describe('4. the commitment intro is held until the tier is known', () => {
     assert.match(s, /<ScreenIntroOverlay introKey="commitment" delayMs=\{8000\} sessionOnly=\{entitlement !== 'academy'\} hold=\{!tierKnown\} \/>/);
     // Tier sweep 2026-10-03: isMember left this destructure (the Membership
     // link now reads useUpsellAllowed); tierKnown is still the screen's own.
-    assert.match(s, /const \{ commercialMode, entitlement, caps, resolved, setCommercialMode, setEntitlement, tierKnown \} = useEntitlement\(\);/);
+    assert.match(s, /const \{ entitlement, caps, resolved, setEntitlement, tierKnown \} = useEntitlement\(\);/);
   });
 });
 

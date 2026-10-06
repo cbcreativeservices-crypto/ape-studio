@@ -59,7 +59,7 @@ import {
 import { clearAttemptDraft, isAttemptDraftUnreadable, loadAttemptDraft, saveAttemptDraft } from '../../features/assess/attemptDraft';
 import type { StudyStackParamList } from '../../navigation/types';
 import { parseSubmitError } from '../../features/finalExam/api';
-import { QUIZ_SUBMIT_ERROR_COPY } from '../../features/quiz/api';
+import { QUIZ_SUBMIT_ERROR_COPY, retiredContentCode } from '../../features/quiz/api';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { useGuestWording, useTier } from '../../features/commercial/useTier';
@@ -292,9 +292,12 @@ export function QuizScreen({ navigation, route }: Props) {
           submitted.current = false;
           // ⛔ NOT THE RAW POSTGRES STRING. See QUIZ_SUBMIT_ERROR_COPY —
           //    the codes are shared with the Final Exam, the wording is not.
+          //    The retired-content codes are quiz-only and are matched first.
           notify(
             'Submit failed',
-            QUIZ_SUBMIT_ERROR_COPY[parseSubmitError((e as Error).message ?? '')] ?? QUIZ_SUBMIT_ERROR_COPY.unknown,
+            QUIZ_SUBMIT_ERROR_COPY[
+              retiredContentCode((e as Error).message ?? '') ?? parseSubmitError((e as Error).message ?? '')
+            ] ?? QUIZ_SUBMIT_ERROR_COPY.unknown,
             // STALE ONCE THE SCREEN IS GONE (bug pass 1, 2026-09-30). The latch
             // is released above, so the 0:00 force-submit (or a second app
             // switch) can still land while this dialog is open — and succeed,

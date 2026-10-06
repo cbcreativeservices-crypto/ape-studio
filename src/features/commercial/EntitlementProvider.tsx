@@ -7,15 +7,15 @@
  * grading/gating/entitlement decisions in consumers; branch on the reported
  * capabilities only.
  *
- * Also owns the `commercialMode` master flag (compile-time default OFF; dev
- * runtime override persisted). Flag OFF ⇒ consumers render today's app.
+ * The app is commercial-only: there is no institutional mode and no master
+ * flag (removed 2026-10-05) — every consumer renders the reported tier.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppState, Platform, type AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loadLastTier, saveLastTier } from './lastTierCache';
 import { devBypass } from '../../config/devMode';
-import { DEV_COMMERCIAL_FLAG_KEY, DEV_ENTITLEMENT_KEY, FLAG_DEFAULTS } from '../../config/flags';
+import { DEV_ENTITLEMENT_KEY } from '../../config/flags';
 import { supabase } from '../../lib/supabase';
 import { safeSession, safeSessionResult } from '../../lib/getSessionSafe';
 import { withDeadline } from '../../lib/boundedCall';
@@ -161,8 +161,6 @@ function readAcademyRows(): Promise<{ data: unknown[] | null; error: { message: 
 }
 
 type EntitlementContextValue = {
-  /** Master flag — OFF means render today's (institutional) app. */
-  commercialMode: boolean;
   /** Current (mock) entitlement state. */
   entitlement: Entitlement;
   /** Capabilities for the current state. */
@@ -188,8 +186,7 @@ type EntitlementContextValue = {
    *  is first. First paint must stay neutral rather than showing the
    *  'anonymous' rung to a member (M6, 2026-09-07). */
   resolved: boolean;
-  /** DEV-ONLY overrides (persisted). No-ops outside __DEV__. */
-  setCommercialMode: (on: boolean) => void;
+  /** DEV-ONLY override (persisted). No-op outside __DEV__. */
   setEntitlement: (state: Entitlement) => void;
   /** Re-read the server entitlement NOW (e.g. after redeeming an access code
    *  or completing a purchase). Real read on every build — unlike
@@ -241,12 +238,8 @@ const EntitlementContext = createContext<EntitlementContextValue | null>(null);
 
 
 export function EntitlementProvider({ children }: { children: ReactNode }) {
-  // Boot default (owner 2026-08-06): commercialMode is ON — institutional mode is
-  // retired and the app IS the commercial app (FLAG_DEFAULTS.commercialMode=true).
-  // Boot still routes to the finished login screen (Splash → Auth/Main); the WIP
-  // pre-auth Landing is not wired into startup. Long-press the logo to toggle the
-  // dead institutional path for inspection.
-  const [commercialMode, setCommercialModeState] = useState<boolean>(FLAG_DEFAULTS.commercialMode);
+  // Boot routes to the finished login screen (Splash → Auth/Main); the WIP
+  // pre-auth Landing is not wired into startup.
   const [entitlement, setEntitlementState] = useState<Entitlement>('anonymous');
   /** The current tier, readable synchronously — `refreshEntitlement` needs it
    *  when a dev override is driving, and state is not readable in time there. */
@@ -796,13 +789,6 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setCommercialMode = useCallback((on: boolean) => {
-    if (!__DEV__) return;
-    setCommercialModeState(on);
-    // Silent on purpose: a dev-only override (__DEV__).
-    void AsyncStorage.setItem(DEV_COMMERCIAL_FLAG_KEY, on ? '1' : '0').catch(() => {});
-  }, []);
-
   // Notifications are MEMBERS ONLY (owner 2026-09-01): mirror real standing
   // into the leaf the device scheduler reads, then re-run the scheduler so a
   // change takes effect NOW — a lapse cancels every booked reminder, a new
@@ -840,23 +826,15 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<EntitlementContextValue>(
     () => ({
-      commercialMode,
       entitlement,
-      // Caps ladder (owner 2026-08-06): the INSTITUTIONAL app (commercialMode
-      // OFF) always renders full academy caps — its access was never gated by
-      // this ladder. The COMMERCIAL app (flag ON) renders the reported tier's
-      // caps, so anonymous/free/academy/lapsed each show their real
-      // gates/veils/upsells. The dev bypass, if on, still forces academy for
-      // lock-free screen testing.
-      caps:
-        !commercialMode || devBypass('bypassAcademyLocks')
-          ? capsFor('academy')
-          : capsFor(entitlement),
+      // Caps ladder (owner 2026-08-06): the reported tier's caps, so
+      // anonymous/free/academy/lapsed each show their real gates/veils/upsells.
+      // The dev bypass, if on, forces academy for lock-free screen testing.
+      caps: devBypass('bypassAcademyLocks') ? capsFor('academy') : capsFor(entitlement),
       // Real standing (see the doc on isMember above) — deliberately NOT
       // bypass-aware, so member-perk gates stay testable-as-free.
       isMember: entitlement === 'academy',
       resolved,
-      setCommercialMode,
       setEntitlement,
       refreshEntitlement,
       tierKnown,
@@ -868,7 +846,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
     // `entitlement` flips in the same batch — and NOT masked on the
     // getSession()-rejects path this file documents, where it stuck false for the
     // whole run and Settings showed CHECKING… forever.
-    [commercialMode, entitlement, resolved, tierKnown, tierReadFailed, setCommercialMode, setEntitlement, refreshEntitlement],
+    [entitlement, resolved, tierKnown, tierReadFailed, setEntitlement, refreshEntitlement],
   );
 
   return <EntitlementContext.Provider value={value}>{children}</EntitlementContext.Provider>;
@@ -878,9 +856,4 @@ export function useEntitlement(): EntitlementContextValue {
   const ctx = useContext(EntitlementContext);
   if (!ctx) throw new Error('useEntitlement must be used within <EntitlementProvider>');
   return ctx;
-}
-
-/** Convenience: the master flag alone (most consumers gate on this first). */
-export function useCommercialMode(): boolean {
-  return useEntitlement().commercialMode;
 }

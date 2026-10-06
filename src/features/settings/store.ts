@@ -1,8 +1,10 @@
 /**
  * Settings — S11. Two backends:
  *  - Device/accessibility settings → AsyncStorage (local, immediate).
- *  - Notification toggles → notification_preferences (own row, created by
- *    register_student; the 6 LIVE columns only — r7/F-6 and C-5 exclusions).
+ *  - Notification toggles → notification_preferences (own row, created
+ *    server-side by the AFTER INSERT trigger on public.users when the account
+ *    is registered; the app only reads and updates it; the 6 LIVE columns
+ *    only — r7/F-6 and C-5 exclusions).
  * Immediate writes, no Save button (locked).
  *
  * TEXT SIZE, CONTRAST AND COLOUR-BLIND MODE ARE NOT STORED HERE (owner

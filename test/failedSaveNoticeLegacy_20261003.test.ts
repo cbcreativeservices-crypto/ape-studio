@@ -404,7 +404,7 @@ const SILENT: Record<string, { count: number; why: string }> = {
   },
   'features/audio/soundSafetyAck.ts': { count: 3, why: 'B: the damaged set-aside, and taking back a departing account’s acceptance after the wipe' },
   'features/celebration/useCredentialCelebration.ts': { count: 2, why: 'B: the app’s known-credentials seen-marker; a lost write costs a repeat celebration, never credit' },
-  'features/commercial/EntitlementProvider.tsx': { count: 2, why: 'B: dev-only overrides (__DEV__)' },
+  'features/commercial/EntitlementProvider.tsx': { count: 1, why: 'B: dev-only override (__DEV__)' },
   'features/commercial/lastTierCache.ts': { count: 2, why: 'B: a cache of the last confirmed tier, replaced by the next server answer' },
   'features/curriculum/academyStats.ts': { count: 1, why: 'B: an instant-paint cache of a server row' },
   'features/dashboard/api.ts': { count: 1, why: 'B: the resume position the app records as the learner moves (one value, replaced by the next move)' },

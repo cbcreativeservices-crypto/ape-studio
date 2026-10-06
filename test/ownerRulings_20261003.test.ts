@@ -233,7 +233,7 @@ describe('4 · tierReadFailed: set after the retries, cleared on success / ident
     assert.match(p, /const \[tierReadFailed, setTierReadFailed\] = useState\(false\);/);
     const memo = between(p, 'const value = useMemo<EntitlementContextValue>(', 'return <EntitlementContext.Provider');
     assert.match(memo, /tierKnown,\s*tierReadFailed,\s*\}\)/);
-    assert.match(memo, /\[commercialMode, entitlement, resolved, tierKnown, tierReadFailed, /);
+    assert.match(memo, /\[entitlement, resolved, tierKnown, tierReadFailed, /);
   });
   it('SET only when the retries are spent, for the generation that gave up', () => {
     const d = between(p, 'const deriveWithRetry = async', 'const identityOf');
@@ -248,7 +248,7 @@ describe('4 · tierReadFailed: set after the retries, cleared on success / ident
   });
   it('CLEARED by markKnown, by a successful refresh, and by an identity change', () => {
     assert.match(between(p, 'const markKnown = () => {', 'if (await deriveAndApply'), /setTierKnown\(true\);\s*setTierReadFailed\(false\);/);
-    assert.match(between(p, 'const refreshEntitlement = useCallback(', 'const setCommercialMode'), /setTierKnown\(true\);\s*setTierReadFailed\(false\);/);
+    assert.match(between(p, 'const refreshEntitlement = useCallback(', 'setMemberStanding(entitlement'), /setTierKnown\(true\);\s*setTierReadFailed\(false\);/);
     assert.match(between(p, 'if (uidSeeded.current && identity !== lastUid.current) {', 'clearLocalOnUserChange(identity);'), /setTierKnown\(false\);\s*setTierReadFailed\(false\);/);
   });
 });

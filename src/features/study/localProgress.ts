@@ -3,8 +3,8 @@
  *
  * The Dashboard's LED + START→CONTINUE state derive from `item_states`, which
  * normally round-trip through the server (record_study_progress). When that
- * write is slow, unavailable, or the user is in commercial mode without a
- * server row yet, the Dashboard would read 0 and never react to the work the
+ * write is slow, unavailable, or the user has no server row yet (a guest),
+ * the Dashboard would read 0 and never react to the work the
  * user just did. So each study screen ALSO writes its live `item_states` here,
  * and the Dashboard MERGES this local mirror over the server rows for DISPLAY
  * only — gates (completion/time/accuracy) still read server truth.

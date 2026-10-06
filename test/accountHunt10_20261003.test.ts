@@ -64,7 +64,7 @@ const STUBS: Record<string, string> = {
   `,
   'ape-h10:lastTier': `export async function loadLastTier() { return null; } export async function saveLastTier() {}`,
   'ape-h10:devMode': `export const devBypass = () => false;`,
-  'ape-h10:flags': `export const DEV_COMMERCIAL_FLAG_KEY = 'x'; export const DEV_ENTITLEMENT_KEY = 'y'; export const FLAG_DEFAULTS = { commercialMode: true };`,
+  'ape-h10:flags': `export const DEV_ENTITLEMENT_KEY = 'y';`,
   'ape-h10:supabase': `
     const SB = () => globalThis.__SB__;
     export const supabase = {
@@ -248,8 +248,8 @@ test('1 · accountLocalSync CONTROL: a true guest launch (read came back, no ses
 });
 
 /* ── 2. EntitlementProvider ──────────────────────────────────────────── */
-// useState order: commercialMode, entitlement, resolved, tierKnown, tierReadFailed.
-const S = { entitlement: 1, tierKnown: 3, tierReadFailed: 4 } as const;
+// useState order: entitlement, resolved, tierKnown, tierReadFailed.
+const S = { entitlement: 0, tierKnown: 2, tierReadFailed: 3 } as const;
 async function mountProvider(sessionNow: () => SessionResult) {
   const w = freshWorld(sessionNow);
   const { EntitlementProvider } = await import(PROVIDER_URL);

@@ -354,8 +354,8 @@ type RefundedRow = { id: string; user_id: string; member_since: string | null; c
  * certificates, from a previous paid run, are left alone.
  *
  * Skipped when the member still has academy access some other way (another
- * active academy entitlement, or an institutional account): those certificates
- * were not paid for only by the refunded purchase.
+ * active academy entitlement): those certificates were not paid for only by
+ * the refunded purchase.
  *
  * Never throws. A failure here is logged and the refund itself still stands.
  */
@@ -370,15 +370,6 @@ async function revokeRefundedCertificates(admin: Store, rows: RefundedRow[], why
       if (!prev || start < prev) startByUser.set(r.user_id, start);
     }
     for (const [userId, start] of startByUser) {
-      const { data: u, error: uErr } = await admin.from('users').select('audience').eq('id', userId).maybeSingle();
-      if (uErr) {
-        console.error('[store-notifications] certificate revoke skipped, user lookup failed:', uErr.message, why);
-        continue;
-      }
-      if ((u as { audience?: string } | null)?.audience === 'institutional') {
-        console.log(`[store-notifications] ${why}: certificates kept (institutional account)`);
-        continue;
-      }
       const nowIso = new Date().toISOString();
       const { data: other } = await admin
         .from('entitlements')

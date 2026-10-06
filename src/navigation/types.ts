@@ -145,10 +145,6 @@ export type RootStackParamList = {
     why_it_matters?: string;
     confidence?: string;
   };
-  /** Institutional Mode parked container (user request 2026-07-17) — the
-   *  academic/site-license modules, postponed until after commercial launch.
-   *  Reached from the Profile screen's Institutional Mode row. */
-  Institutional: undefined;
   About: undefined; // Credits/About/Contact — Dashboard logo tap (Booth 2026-07-08)
   /** Awards + Curriculum pager (Curriculum · Specialization · Program ·
    *  Directory · Enrollment), five side-by-side pages. `category` is the landing
