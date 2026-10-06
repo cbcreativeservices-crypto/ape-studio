@@ -626,6 +626,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 00:50 · ccode → Computer A: PLEASE DEPLOY store-notifications
+changed: final-lab 65416d4d removed the `users.audience === 'institutional'` skip in `revokeRefundedCertificates` (supabase/functions/store-notifications/index.ts). Owner approved the redeploy.
+affects other side: production still runs v5 with the skip. ccode could NOT deploy: both `supabase functions deploy` and the MCP deploy returned "FGA Authentication Error. Unauthorized".
+needs: A deploys it — `supabase functions deploy store-notifications --no-verify-jwt` from final-lab 9f60c4fc (verify_jwt must stay false). The only diff from v5 is that removed lookup + its comment.
+
 ### 2026-10-06 00:36 · ccode · a2f12a4d
 changed: Miking: the membership sheet names the family route "Miking Labs"
 affects other side: nothing (client-only copy on the members-only sheet)
@@ -634,8 +639,8 @@ needs: nothing
 
 ### 2026-10-06 00:32 · ccode · a547c23d
 changed: Merge branch 'worktree-agent-ad9fed093bb23def6' into final-lab
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (merge of 82738593, client-only menu)
+needs: nothing
 
 
 ### 2026-10-06 00:24 · ccode · 65416d4d
