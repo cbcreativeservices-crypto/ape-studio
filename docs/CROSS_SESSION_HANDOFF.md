@@ -607,6 +607,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-05 22:04 · ccode · 76234771
+changed: Remove remaining Curriculum V1 remnants from app code
+affects other side: the app no longer selects achievements.sequence_in_course or achievements.is_prerequisite (Dashboard); no DB change made
+needs: nothing now — owner to decide separately on the V1-looking DB objects listed in the agent report (register_student, users.audience='institutional', the two achievements columns)
+
+
 ### 2026-10-05 06:56 · ccode · ec7abbbe
 changed: docs(miking): Lab 5 ensembles+voice research (16 lessons) + BATCH5 summary
 affects other side: nothing (miking docs, branch final-lab)

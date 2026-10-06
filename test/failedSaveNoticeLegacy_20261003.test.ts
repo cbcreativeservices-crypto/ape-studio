@@ -407,7 +407,7 @@ const SILENT: Record<string, { count: number; why: string }> = {
   'features/commercial/EntitlementProvider.tsx': { count: 2, why: 'B: dev-only overrides (__DEV__)' },
   'features/commercial/lastTierCache.ts': { count: 2, why: 'B: a cache of the last confirmed tier, replaced by the next server answer' },
   'features/curriculum/academyStats.ts': { count: 1, why: 'B: an instant-paint cache of a server row' },
-  'features/dashboard/api.ts': { count: 2, why: 'B: the resume position the app records as the learner moves (one value, replaced by the next move)' },
+  'features/dashboard/api.ts': { count: 1, why: 'B: the resume position the app records as the learner moves (one value, replaced by the next move)' },
   'features/dev/DevVisualIndex.tsx': { count: 1, why: 'B: a dev-only tool that prints its own result line' },
   'features/dev/popupSuppressStore.ts': { count: 1, why: 'B: a dev-only switch' },
   'features/directory/legacyMigration.ts': { count: 1, why: 'B: a migration-done marker; a lost one only offers the carry-over again' },

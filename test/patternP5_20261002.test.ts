@@ -318,7 +318,7 @@ const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
   'src/screens/lab/cableinstall/CableInstallLabScreen.tsx': { count: 1, why: 'in-flow end-screen JOIN button, not a popup' },
   'src/screens/lab/tube/TubeCardScreen.tsx': { count: 1, why: 'UPGRADE button on the screen body' },
   'src/screens/lab/tube/TubeReferenceScreen.tsx': { count: 1, why: 'UPGRADE button on the locked screen body' },
-  'src/screens/profile/ProfileScreen.tsx': { count: 3, why: 'gear (×2 layouts) and UPGRADE button on the screen body' },
+  'src/screens/profile/ProfileScreen.tsx': { count: 2, why: 'gear and UPGRADE button on the screen body' },
   'src/screens/settings/SettingsScreen.tsx': {
     count: 4,
     why: 'MEMBERSHIP / Help / About rows on Settings itself (a stacked modal screen, not a DimModal)',
