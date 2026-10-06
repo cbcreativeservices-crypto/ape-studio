@@ -44,8 +44,8 @@ export type Caps = {
   freeTopics: boolean;
   /** Progress syncs to the server (vs device-local only). */
   syncedProgress: boolean;
-  /** Album + Achievements live. */
-  albumAchievements: boolean;
+  /** Achievements (trophies & records) open. */
+  achievements: boolean;
   /** Completion records available. */
   completionRecords: boolean;
 };
@@ -61,7 +61,7 @@ export function capsFor(state: Entitlement): Caps {
         allTopics: true,
         freeTopics: true,
         syncedProgress: true,
-        albumAchievements: true,
+        achievements: true,
         completionRecords: true,
       };
     case 'free':
@@ -71,11 +71,11 @@ export function capsFor(state: Entitlement): Caps {
         allTopics: false,
         freeTopics: true,
         syncedProgress: true,
-        albumAchievements: true,
+        achievements: true,
         completionRecords: false,
       };
     case 'lapsed':
-      // Trophies/Album/records stay visible; academy content + tools + Common
+      // Trophies/records stay visible; academy content + tools + Common
       // Mistakes re-lock; free topics still work.
       return {
         commonMistakes: false,
@@ -83,7 +83,7 @@ export function capsFor(state: Entitlement): Caps {
         allTopics: false,
         freeTopics: true,
         syncedProgress: true,
-        albumAchievements: true,
+        achievements: true,
         completionRecords: true,
       };
     case 'anonymous':
@@ -94,7 +94,7 @@ export function capsFor(state: Entitlement): Caps {
         allTopics: false,
         freeTopics: false,
         syncedProgress: false,
-        albumAchievements: false,
+        achievements: false,
         completionRecords: false,
       };
   }
@@ -309,7 +309,7 @@ export function EntitlementProvider({ children }: { children: ReactNode }) {
   // 'anonymous'; a signed-in account reads its real tier from the `entitlements`
   // table (RLS `ent_self_read` scopes it to the caller) — an ACTIVE academy
   // product ⇒ 'academy', an academy product that's inactive/expired ⇒ 'lapsed',
-  // otherwise ⇒ 'free' (save + album + achievements). Only genuine sign-in/out
+  // otherwise ⇒ 'free' (save + achievements). Only genuine sign-in/out
   // triggers a re-read — never a silent token refresh — and the dev tier toggle
   // always wins once used.
   useEffect(() => {

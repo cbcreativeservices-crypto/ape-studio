@@ -2,16 +2,13 @@
  * S17 — Glossary (visuals from 19-s17-glossary.dc.html) + Booth change order
  * 2026-07-07:
  *  - ALL = every term in the corpus (fetched in 1000-row pages past the
- *    PostgREST cap), not just enrolled courses.
+ *    PostgREST cap), not just enrolled topics.
  *  - TOPIC filter narrows in place via a topic-chip picker, showing only that
  *    topic's terms. The list is the LIVE v3 curriculum only (owner
  *    2026-08-06) — not a fixed topic count.
  *  - The chip row is ALL · Topic · Bookmarks · Custom · Recent (see `Filter`).
- *    There is NO course filter: the course chip was removed in July 2026 and
- *    its backing `courses` fetch (the archived v1 college catalog) went with
- *    it on 2026-09-03 — see the note at the load effect.
- *  - Reachable with no context (Glossary card on Course Selection); Dashboard
- *    entry preselects its course/topic.
+ *  - Reachable with no context (Glossary card on Home); Dashboard entry
+ *    preselects its topic.
  * Search by term · empty: "No results for [filter]" · bottom nav visible.
  */
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
@@ -876,7 +873,7 @@ function LinkedText({
     </Text>
   );
 }
-type TopicRef = { id: string; name: string; course_id: string; sequence_in_course: number };
+type TopicRef = { id: string; name: string };
 type Filter = 'all' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
 
 // Flagged-terms key now lives in features/flags/flaggedStore (FLAGGED_KEY) —
@@ -1430,8 +1427,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // in each term's icon row but the setting is GLOBAL — one flag for the whole
   // glossary — and is REMEMBERED across launches (defaults to showing links).
   const [linksOn, setLinksOn] = useGlossaryLinksPref();
-  // CM4: commercial rendering — Common Mistakes gating + no academic course
-  // filter in public UI (§1 naming rule). Server owns entitlement; we render.
+  // CM4: Common Mistakes gating. Server owns entitlement; we render.
   const { commercialMode, isMember, entitlement, resolved, tierReadFailed } = useEntitlement();
   // Membership copy (SEE MEMBERSHIP, 🔒 MEMBERS, the upgrade hint) only for a
   // KNOWN non-member (tier sweep 2026-10-03): `resolved && !isMember` also
@@ -2423,10 +2419,6 @@ ${COPY.glossaryFreeAllowance}`,
             setLocked(false); // member / dev / pre-resolve is never locked
           }
           lockDecided();
-          // Owner 2026-09-03: the `courses` fetch is gone. It read the archived
-          // v1 college catalog on every Glossary mount to feed a filter chip that
-          // was removed in July, and a term-chooser label that was wrong for
-          // 23,187 of the 26,847 entries.
           // ⛔ BOUNDED (full-app run 2, 2026-10-01). The corpus load used to wait
           // on this (it no longer does — perf hunt 2026-10-03), so a STALLED topic read (not a failed one) held the whole
           // Glossary on its loading card — the device copy included, which is
@@ -2471,7 +2463,7 @@ ${COPY.glossaryFreeAllowance}`,
           setTopicsUnreadable(false);
           setTopics(
             (topicRows as { id: string; name: string; global_sequence: number }[])
-              .map((t) => ({ id: t.id, name: t.name, course_id: '', sequence_in_course: t.global_sequence ?? 0 }))
+              .map((t) => ({ id: t.id, name: t.name }))
               .sort((a, b) => a.name.localeCompare(b.name)),
           );
 
@@ -2538,7 +2530,7 @@ ${COPY.glossaryFreeAllowance}`,
 
   const selTopic = topics.find((t) => t.id === selTopicId) ?? null;
   // DATA ISSUE (confirmed 2026-07-18): the `achievements` table has DUPLICATE
-  // rows — 28 topic names appear twice in the SAME course (2 different ids), and
+  // rows — 28 topic names appear twice (2 different ids), and
   // several hold terms under BOTH ids. The backend is frozen, so we can't merge
   // them; instead the picker shows each name ONCE and selecting it filters by
   // the UNION of every id with that name, so no terms are hidden.
@@ -2560,10 +2552,8 @@ ${COPY.glossaryFreeAllowance}`,
   // Free / lapsed / anonymous commercial users get the topic filter as VIEW-ONLY
   // (user request 2026-07-25): the A–Z list stays fully readable, but the rows
   // don't ACTIVATE the filter — each carries a MEMBERS lock and, on tap, a brief
-  // membership hint. Only SELECTING a topic is gated; viewing is fine. Gating
-  // applies in commercial mode only (flag OFF = today's institutional app, no
-  // gate — and note the __DEV__ bypass in EntitlementProvider forces academy
-  // caps, so this reads false on dev builds). Academy + institutional select normally.
+  // membership hint. Only SELECTING a topic is gated; viewing is fine. Academy
+  // members select normally.
   // Topic list is ALWAYS visible + readable to everyone (owner 2026-07-29);
   // only ACTIVATING a topic filter is member-gated. Gate on real entitlement
   // so free/lapsed/anonymous users see the readable A–Z list with 🔒 MEMBERS
@@ -3969,8 +3959,6 @@ ${COPY.glossaryFreeAllowance}`,
             setTopicPickerOpen(false);
           }}
         />
-        {/* The "Course" filter was removed (user request 2026-07-23) — the app is
-            commercial and has no academic course codes in the public glossary. */}
         <Chip
           // The topic LIST button (owner 2026-08-06): always reads "Topic" and
           // never morphs into "Equations ✓" — that relabel made the list button

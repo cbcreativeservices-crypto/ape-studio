@@ -40,7 +40,7 @@ export const colors = {
   greenBright: '#5bff85',
   purple: '#b45bff', // Scenarios / platinum accents
   programPurple: '#c4a2ff', // Programs (Awards/Achievements) — softer than `purple`; matches AwardsScreen PURPLE + Curriculum PROGRAMS AVAILABLE tile
-  gold: '#ffc233', // Achievements tab, fill-in-blank, gold album
+  gold: '#ffc233', // Achievements tab, fill-in-blank
   goldDeep: '#f0b429',
   red: '#ff4b3a', // Errors, REC cert, matching cable
   redAlt: '#ff3b30',
@@ -195,25 +195,3 @@ export const radius = {
   pill: 7,
   button: 8,
 } as const;
-
-/** Album tiers — thresholds locked (seed brief §1); denominator fixed at 50. */
-export const albumTiers = [
-  { name: 'Black', min: 0, max: 24, color: '#1a1a1a', navColor: '#bdbdbd', title: 'First Record' },
-  { name: 'Silver', min: 25, max: 49, color: '#c0c0c0', navColor: '#d8d8d8', title: 'Silver Record' },
-  { name: 'Gold', min: 50, max: 69, color: '#ffd700', navColor: '#ffc233', title: 'Gold Record' },
-  { name: 'Platinum', min: 70, max: 89, color: '#e5e4e1', navColor: '#c77dff', title: 'Platinum Record' },
-  { name: 'Diamond', min: 90, max: 100, color: '#e6e7ff', navColor: '#7fb8ff', title: 'Diamond Record' },
-] as const;
-
-export type AlbumTierName = (typeof albumTiers)[number]['name'];
-
-export function albumTierFor(pct: number) {
-  const clamped = Math.max(0, Math.min(100, pct));
-  return albumTiers.find((t) => clamped >= t.min && clamped <= t.max) ?? albumTiers[0];
-}
-
-/** The album's display TITLE for a tier (e.g. Black → "First Record") — shown
- *  on Profile as "ALBUM LEVEL: {title}" (Booth 2026-07-11). */
-export function albumTitleFor(name: AlbumTierName): string {
-  return albumTiers.find((t) => t.name === name)?.title ?? albumTiers[0].title;
-}

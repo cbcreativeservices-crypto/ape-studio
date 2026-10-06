@@ -8,9 +8,7 @@
  *
  * RLS-scoped reads only; no DB changes. Topics reuse `fetchV3Curriculum()` for
  * the Field→Subject→Topic shape; earned certs/programs reuse
- * `fetchMyCredentials()` (credential_awards, revoked_at IS NULL). This replaces
- * the v1-coupled `fetchAchievements`/`fetchGallery` in `features/profile/api.ts`
- * (which joined the retired `courses` table).
+ * `fetchMyCredentials()` (credential_awards, revoked_at IS NULL).
  */
 import { supabase } from '../../lib/supabase';
 import {
@@ -268,7 +266,7 @@ export type GalleryEntry = {
 };
 
 /** Earned topic trophies, newest first — the chronological "everything earned"
- *  wall. v3-scoped (replaces the v1 `courses`-joined fetchGallery). */
+ *  wall. v3-scoped. */
 export function fetchGalleryV3Shared(): Promise<GalleryEntry[]> {
   return shared(gallerySlot, fetchGalleryV3);
 }

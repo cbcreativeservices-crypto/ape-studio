@@ -10,11 +10,8 @@ import { getSupabaseBrowser } from "./supabase";
 export type Tier = "anonymous" | "free" | "academy" | "lapsed";
 
 /**
- * ⛔ v3 GROUPS BY SUBJECT, NOT BY COURSE. The course model was retired
- * 2026-09-03 and `achievements.course_id` is NULL on every live v3 topic, so
- * the old per-course panel returned nothing for everybody. The v3 curriculum is
- * Field → Subject → Topic, and the SUBJECT is the middle tier that reads like
- * the old course did.
+ * Progress GROUPS BY SUBJECT. The v3 curriculum is Field → Subject → Topic, and
+ * the SUBJECT is the middle tier.
  */
 export type SubjectProgress = {
   /** Stable key: the subject name is unique within the active curriculum. */
@@ -188,14 +185,6 @@ export async function fetchDashboardSummary(): Promise<DashboardSummary> {
   const tier = await deriveTier();
 
   // 2. The member's own enrolled topics (v3).
-  //
-  // ⛔ THIS REPLACED THE v1 COURSE WALK (2026-09-23). The old code read
-  // `enrollment` joined to the archived `courses` table and keyed topics on
-  // `achievements.course_id`. The app deleted its equivalent on 2026-09-03; the
-  // website kept it, and `course_id` is NULL on all 166 live v3 topics — so the
-  // panel reported "not enrolled in any topics yet / 0 of 0 / 0%" to 100% of
-  // signed-in members, while the credentials block beside it rendered
-  // correctly, which is exactly what made the empty progress read as TRUE.
   //
   // `user_topic_enrollments` is RLS-scoped to the caller's own rows, so no
   // user filter is passed here — see the `own_topic_enrollments` policy in

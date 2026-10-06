@@ -4,9 +4,6 @@
  * `register_commercial_user(p_nickname text, p_favorites jsonb)` RPC creates
  * the users row (audience='commercial', APE-C-... student id) and seeds the
  * free topics. `already_registered` is treated as success (idempotent re-auth).
- *
- * The class-code path (register_student) is UNTOUCHED — commercial users who
- * have a class code use the existing two-step verify/claim flow.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AUTH_CALL_MS, ensureSession } from '../auth/api';

@@ -5,7 +5,7 @@
  *   · Profile = green person. (The "Achievements" tab is LABELED "PROGRESS".)
  * Art replaced hand-drawn SVG/View glyphs with bundled transparent PNGs
  * (assets/icons/nav/*, owner 2026-08-13). The PROGRESS glyph never tracks/shows/
- * mutates any user progress (album/record progression retired for commercial).
+ * mutates any user progress.
  *
  * PROGRESS animation (owner 2026-08-16): when the Progress tab is the ACTIVE
  * tab, the white faders come alive — the three fader BLOCKS drift slowly up and

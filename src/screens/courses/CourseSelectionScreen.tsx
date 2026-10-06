@@ -1,18 +1,16 @@
 /**
- * S3* — Course Selection (LOCKED, MASTER; visuals from
- * 12-s3-course-selection.dc.html) + Booth change order 2026-07-07:
- *  - Card 1 = GLOSSARY (quick term lookup is a primary app use) → S17.
- *  - Card 2 = SAFETY, the prerequisite course card (its topic + quiz unlock
- *    everything to the right).
- *  - Cards 3+ = the 8 courses by sequence.
+ * S3* — Home (the card carousel):
+ *  - The Lab, Tools, Calculators, Glossary, Career Finder and Start Here
+ *    cards, the free topic tasters, then the study-area SHOWCASE cards (see
+ *    buildPublicCatalog). A member's Home Setup can place topic and
+ *    certificate/program cards of their own.
  *  - Carousel landing is per-SESSION (owner 2026-07-30, see `sessionLanded`):
  *    every cold app start opens on the DEFAULT card (Glossary, or the paid
  *    user's chosen/last-added Home card); an in-session return re-centers the
  *    card you last had centered. Position is deliberately NOT persisted across
  *    app restarts (the old write-only AsyncStorage key was removed 2026-09-11).
- * Enrolled = bright amber card + [Continue] → Dashboard at last topic;
- * locked = greyed "NOT ENROLLED", untappable. Snap-to-center, side peek,
- * dot indicator. Tab bar visible (Home tab — now the app's opening tab).
+ * Snap-to-center, side peek, dot indicator. Tab bar visible (Home tab — the
+ * app's opening tab).
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { officialTopicName } from '../../data/officialTopicNames';
@@ -39,14 +37,12 @@ import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
 import { CardArt } from '../../components/CardArt';
 import { StudioButton } from '../../components/StudioButton';
-import { SwitchButton } from '../../components/SwitchButton';
 import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
 import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
 import { dotRowFit, cardDimsFor, isCompactHeader, type CardDims } from './cardDims';
-import { setLastCourse } from '../../features/dashboard/api';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
@@ -105,18 +101,7 @@ type Card =
   | { kind: 'homeTopic'; id: string; gs: number; name: string; subject: string }
   /** A user-placed HOME cert/program BUNDLE card (user request 2026-07-22) —
    *  one card for the whole cert/program; opening it loads its topics + study. */
-  | { kind: 'homeBundle'; id: string; bundleKey: string; bundleKind: 'cert' | 'program' | 'subject'; name: string; topics: number[] }
-  | {
-      kind: 'course';
-      id: string;
-      code: string;
-      name: string;
-      achievement_count: number;
-      enrolled: boolean;
-      currentTopic: number;
-      isPrereq: boolean;
-      completed: boolean;
-    };
+  | { kind: 'homeBundle'; id: string; bundleKey: string; bundleKind: 'cert' | 'program' | 'subject'; name: string; topics: number[] };
 
 /**
  * CARD SIZE IS ROTATION- AND SPLIT-VIEW-INVARIANT BY CONSTRUCTION (2026-09-13).
@@ -397,7 +382,7 @@ const CARD_IMAGE: Record<string, string> = {
   'Audio Restoration & Archiving': 'area_audio-restoration-and-archiving.webp',
   'Acoustics Science': 'area_acoustics-science.webp',
 };
-/** Scroll-dot color by card TYPE (Booth 2026-07-15): free = green, course =
+/** Scroll-dot color by card TYPE (Booth 2026-07-15): free = green, program =
  *  purple, topic = amber — so the dot row reads as a color-coded map of the
  *  carousel. */
 
@@ -425,7 +410,6 @@ function rawCardTitle(item: Card): string | null {
     case 'comingTopic':
     case 'showcase':
     case 'programStub':
-    case 'course':
       return item.name;
     default:
       return null; // 'more'
@@ -454,8 +438,6 @@ function dotColorFor(card: Card): string {
       return colors.amber; // standalone topic / study-area showcase
     case 'programStub':
       return colors.purple; // purple program placeholder
-    case 'course':
-      return colors.purple; // full course
     case 'homeTopic':
       return colors.purple; // user-placed Home topic
     case 'homeBundle':
@@ -666,7 +648,6 @@ function Eyebrow({ text, color, w }: { text: string; color: string; w: number })
 /** One carousel card — full-bleed art (when available) + gradient + overlay. */
 function CourseCardView({
   item,
-  onOpenCourse,
   onOpenGlossary,
   onOpenTools,
   onOpenLab,
@@ -682,7 +663,6 @@ function CourseCardView({
   academy,
 }: {
   item: Card;
-  onOpenCourse: (c: Extract<Card, { kind: 'course' }>) => void;
   onOpenGlossary: () => void;
   onOpenTools: () => void;
   /** Open the Ear Training & Critical Listening Lab (Phase 1 SHELL). */
@@ -1063,16 +1043,13 @@ function CourseCardView({
   const isGlossary = item.kind === 'glossary';
   const free = item.kind === 'freeTopic' ? item : null;
   const coming = item.kind === 'comingTopic' ? item : null;
-  const course = item.kind === 'course' ? item : null;
   const key = isTools
     ? 'tools'
     : isGlossary
       ? 'glossary'
       : free
         ? `free${free.gs}`
-        : coming
-          ? coming.name
-          : course!.code;
+        : coming!.name;
   const url = cardImageUrl(key);
   // Dev diagnostic (owner report 2026-09-05: topic cards on a placeholder) —
   // a card with NO art url never even requests an image, so CardArt's own
@@ -1081,12 +1058,10 @@ function CourseCardView({
   // Free-topic tasters are ALWAYS unlocked + full-color (Booth 2026-07-11).
   // Audio-field topic cards are membership-locked for non-members (owner
   // 2026-08-10) — shown, but gated behind Academy access, never "coming soon".
-  const locked = (!!course && !course.enrolled) || !!coming;
-  const completed = !!course && course.enrolled && course.completed;
+  const locked = !!coming;
 
   // Whole-card tap (user request): pressing anywhere on the card does what its
-  // primary key does. `null` = a purely-locked course (disabled "Locked" key),
-  // which stays inert. Mirrors the button handlers in `inner` below exactly.
+  // primary key does. Mirrors the button handlers in `inner` below exactly.
   const onCardPress: (() => void) | null = free
     ? () => onOpenPublic(free.courseOrder, true, free.gs)
     : isTools
@@ -1097,14 +1072,7 @@ function CourseCardView({
           ? upsell
             ? onLockedPress
             : () => notify('Coming soon', `${coming.name} is on the way — it'll appear here when it's ready.`)
-          : locked
-            ? null
-            : () => onOpenCourse(course!);
-
-  // A locked TOPIC is GOLD; a locked COURSE stays PURPLE (Booth 2026-07-11).
-  const isTopicCard = !!coming;
-  const lockedAccent = isTopicCard ? 'rgba(255,180,0,.6)' : 'rgba(150,90,220,.6)';
-  const lockedEyebrow = isTopicCard ? '#ffc64d' : '#c4a2ff';
+          : null;
 
   // Audio-field topic cards match the Awards' Specialization Certificate BLUE
   // (user request 2026-07-18) — border + eyebrow, locked or not.
@@ -1117,18 +1085,14 @@ function CourseCardView({
       ? 'rgba(55,224,95,.6)'
       : isSpecCert
         ? 'rgba(91,176,255,.65)'
-        : locked
-          ? lockedAccent
-          : 'rgba(255,180,0,.6)';
+        : 'rgba(255,180,0,.6)';
   const eyebrowColor = isGlossary
     ? '#7fd4ff'
     : free || isTools
       ? '#5bff85'
       : isSpecCert
         ? '#5bb0ff'
-        : locked
-          ? lockedEyebrow
-          : '#ffc64d';
+        : '#ffc64d';
   // Cards the student can mark into their own deck (academy mode).
   // Members get plain descriptions, never "free"/"included" marketing
   // (owner 2026-09-29).
@@ -1138,15 +1102,11 @@ function CourseCardView({
       ? upsell ? 'INCLUDED FOR EVERYONE' : 'REFERENCE'
       : free
         ? upsell ? 'FREE TOPIC' : 'TOPIC' // keep the free-topic subtitle for free users (2026-07-18 fix)
-        : coming
-          ? // NEW COPY 2026-09-03, owner review. These cards used to read
-            // "Specialization Certificate", which the carousel rule now
-            // forbids: only topic cards belong here. They are topic cards, so
-            // they say so. Matches the "FREE TOPIC" eyebrow on the tasters.
-            'TOPIC'
-          : course!.isPrereq
-            ? 'SAFETY'
-            : course!.code;
+        : // NEW COPY 2026-09-03, owner review. The audio-field cards used to
+          // read "Specialization Certificate", which the carousel rule now
+          // forbids: only topic cards belong here. They are topic cards, so
+          // they say so. Matches the "FREE TOPIC" eyebrow on the tasters.
+          'TOPIC';
   // Title with the 2026-07-22 card renames applied (Career → "+ N programs").
   const title = displayCardTitle(item);
   const inner = (
@@ -1168,12 +1128,6 @@ function CourseCardView({
         {isTools && upsell ? (
           <Text style={styles.cardToolsSub} maxFontSizeMultiplier={HOME_MAX}>Learn how to use them with tutorials in Academy Mode</Text>
         ) : null}
-        {/* COURSE cards show their topic count below the title, in blue
-            (Booth 2026-07-15). */}
-        {(() => {
-          const n = course ? course.achievement_count : null;
-          return n ? <Text style={styles.cardTopicCount} maxFontSizeMultiplier={HOME_MAX}>{n} TOPICS</Text> : null;
-        })()}
       </View>
       <View>
         {/* Status subtitle removed (Booth 2026-07-09r). Card actions use the
@@ -1217,19 +1171,7 @@ function CourseCardView({
                 }
               />
             </View>
-          ) : locked ? (
-            // Sized to match the glass keys (Booth 2026-07-09r).
-            <SwitchButton label="🔒 Locked" variant="locked" width={cd.btnW} height={50} disabled />
-          ) : (
-            <View style={{ width: cd.btnW }}>
-              <GlassButton maxFontSizeMultiplier={HOME_MAX}
-                label={completed ? 'REVIEW' : 'CONTINUE'}
-                tint={completed ? 'green' : 'gold'}
-                height={50}
-                onPress={() => onOpenCourse(course!)}
-              />
-            </View>
-          )}
+          ) : null}
         </View>
       </View>
     </>
@@ -1360,9 +1302,8 @@ export function CourseSelectionScreen() {
   // fires instead (user request 2026-07-23).
   const lapsed = entitlement === 'lapsed';
 
-  // Academy signal (`caps.allTopics`) — drives the Home-Setup deck below. The
-  // legacy per-card "my courses" star was removed (user request 2026-07-24);
-  // course selection + default position now live in the Home Setup screen.
+  // Academy signal (`caps.allTopics`) — drives the Home-Setup deck below. Card
+  // selection + default position live in the Home Setup screen.
   const academy = caps.allTopics;
 
   const load = useCallback(async () => {
@@ -1376,10 +1317,9 @@ export function CourseSelectionScreen() {
       for (const f of fields) for (const s of f.subjects) for (const t of s.topics) m.set(t.gs, { name: t.name, subject: s.subject });
       setV3NameIndex(m);
     });
-    // A GUEST (no auth session) OR commercialMode seeds the carousel from the
-    // PUBLIC catalog — [Audio Tools] [Glossary] [Lab] + free topics + courses —
-    // with NO user/enrollment/progress queries. Those would throw 'user_not_found'
-    // for a guest, which used to blank the whole Home with a "complete registration"
+    // The carousel is seeded from the PUBLIC catalog — the utility cards + free
+    // topics + showcase cards — with NO user/enrollment/progress queries. Those
+    // would throw 'user_not_found' for a guest, which used to blank the whole Home with a "complete registration"
     // error (fix 2026-07-26: Guest Mode landed on the academy path). Keyed on the
     // real session, NOT entitlement, since returning authed users also default to
     // the mock 'anonymous' entitlement.
@@ -1456,18 +1396,14 @@ export function CourseSelectionScreen() {
         ...SHOWCASE_CARDS.filter((name) => !!CARD_IMAGE[name]).map((name, i) => ({ kind: 'showcase' as const, id: `show-${i}`, name })),
       ]);
     };
-    // COMMERCIAL-FIRST (institutional retired — owner 2026-08-06): the MENU
-    // ALWAYS builds the PUBLIC (commercial) catalog now, for guests AND signed-in
-    // users, regardless of the `commercialMode` boot flag. The old authed
-    // `courses` deck rendered ACADEMIC course codes/names (the reverted-names bug)
-    // and is removed. buildPublicCatalog only assembles static card descriptors
-    // now (no network), so this can't blank the carousel.
+    // The MENU ALWAYS builds the PUBLIC catalog, for guests AND signed-in users.
+    // buildPublicCatalog only assembles static card descriptors (no network),
+    // so this can't blank the carousel.
     try {
       await buildPublicCatalog();
     } catch {
       // buildPublicCatalog makes no network call (see above), so a failure
-      // here is a code fault, not the user's router. It also said "courses",
-      // which is retired vocabulary.
+      // here is a code fault, not the user's router.
       setError(
         'The menu could not be built. Restart the app, and email info@proaudiotrainingacademy.com if it happens again.',
       );
@@ -1584,9 +1520,8 @@ export function CourseSelectionScreen() {
         ...showcase,
       ];
     }
-    // No Home-Setup cards placed → the default deck from load(). The legacy
-    // per-card "my courses" star deck was removed (user request 2026-07-24);
-    // Home Setup now owns course selection + default position.
+    // No Home-Setup cards placed → the default deck from load(). Home Setup
+    // owns card selection + default position.
     return cards;
   }, [cards, entitlement, homeGs, homeOrder, homeBundleKeys, bundles, v3NameIndex]);
   const dotFit = dotRowFit(displayDeck?.length ?? 0, windowW);
@@ -1653,18 +1588,6 @@ export function CourseSelectionScreen() {
       if (id) lastCenteredId = id;
     }
   }).current;
-
-  const openCourse = useCallback(
-    async (course: Extract<Card, { kind: 'course' }>) => {
-      // setLastCourse is a bare AsyncStorage.setItem and CAN reject (a full or
-      // unavailable store). Unguarded, that rejection skipped the navigate
-      // below: tapping the course card did nothing at all, with no error. The
-      // remembered course is a convenience; opening the card is the intent.
-      await setLastCourse(course.id).catch(() => {});
-      (navigation as any).navigate('Study', { screen: 'Dashboard' });
-    },
-    [navigation],
-  );
 
   const openGlossary = useCallback(() => {
     // STUDY-tab regression #5, root fix v2 (Booth 2026-07-18): `initial: false`
@@ -1763,9 +1686,8 @@ export function CourseSelectionScreen() {
     [navigation, lapsed, membershipExpired],
   );
 
-  // Open a topic card on the Study tab. The commercial dashboard module was
-  // retired 2026-09-03, so nothing persists a "last public course" any more:
-  // the Study tab builds from v3 enrollments and the focused topic alone.
+  // Open a topic card on the Study tab. The Study tab builds from v3
+  // enrollments and the focused topic alone.
   const openPublicCourse = useCallback(
     async (_order: number, isFreeTopic = false, focusGs?: number) => {
       // A session-less GUEST may study the FREE topics only. Opening any non-free
@@ -1775,8 +1697,8 @@ export function CourseSelectionScreen() {
         setGuestGateOpen(true);
         return;
       }
-      // A single-topic card fronts its own topic (owner 2026-09-01); a
-      // multi-topic course card lands on that course's last-known topic.
+      // A single-topic card fronts its own topic (owner 2026-09-01); without
+      // a focus topic the Dashboard lands on the last-known topic.
       (navigation as any).navigate('Study', {
         screen: 'Dashboard',
         params: focusGs != null ? { focusGs } : undefined,
@@ -2007,7 +1929,6 @@ export function CourseSelectionScreen() {
           <View>
             <MemoCourseCardView
               item={item}
-              onOpenCourse={openCourse}
               onOpenGlossary={openGlossary}
               onOpenTools={openTools}
               onOpenLab={openLab}
@@ -2315,17 +2236,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: '#e6e6e6',
     marginTop: 5,
-    textShadowColor: 'rgba(0,0,0,.85)',
-    textShadowRadius: 6,
-    textShadowOffset: { width: 0, height: 1 },
-  },
-  // Topic count under a COURSE card's title — glossary blue over the art.
-  cardTopicCount: {
-    fontFamily: fonts.oswaldSemiBold,
-    fontSize: 13,
-    letterSpacing: 1.6,
-    color: '#5bb0ff',
-    marginTop: 6,
     textShadowColor: 'rgba(0,0,0,.85)',
     textShadowRadius: 6,
     textShadowOffset: { width: 0, height: 1 },

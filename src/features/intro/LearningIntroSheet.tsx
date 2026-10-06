@@ -1,6 +1,6 @@
 /**
- * LearningIntroSheet — the intro shown before a student begins a TOPIC or a
- * COURSE (user request 2026-07-18). Renders the fixed structure — what / why /
+ * LearningIntroSheet — the intro shown before a student begins a TOPIC (user
+ * request 2026-07-18). Renders the fixed structure — what / why /
  * where / who / importance / what you'll learn — from a LearningIntro. Fields
  * that aren't authored yet show a muted "Coming soon" so the shape is visible
  * during development.
@@ -24,13 +24,11 @@ const SECTIONS: { head: string; get: (i: LearningIntro) => string | undefined }[
 
 export function LearningIntroSheet({
   visible,
-  kind,
   title,
   intro,
   onBegin,
 }: {
   visible: boolean;
-  kind: 'topic' | 'course';
   title: string;
   intro: LearningIntro;
   /** Dismiss + mark seen; label reads "BEGIN". */
@@ -52,7 +50,7 @@ export function LearningIntroSheet({
       <Pressable accessibilityRole="button" style={styles.backdrop} onPress={onBegin} accessibilityLabel="Dismiss">
         <Pressable accessible={false} style={[styles.card, { maxHeight: `${88}%` }]} onPress={() => {}}>
           <View style={styles.head}>
-            <Text style={styles.eyebrow}>{kind === 'course' ? 'COURSE INTRO' : 'TOPIC INTRO'}</Text>
+            <Text style={styles.eyebrow}>TOPIC INTRO</Text>
             <Text style={styles.title}>{title}</Text>
             <View style={styles.rule} />
           </View>

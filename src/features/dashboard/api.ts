@@ -33,10 +33,8 @@ export type Course = {
 
 export type Topic = {
   id: string;
-  sequence_in_course: number;
   name: string;
   applicable_methods: string[];
-  is_prerequisite: boolean;
   icon_url: string | null;
   /** achievements.global_sequence — present on enrollment-driven topics so the
    *  Dashboard can map a topic back to its enrollment entry (active/inactive). */
@@ -80,7 +78,6 @@ export type StudyMethodConfig = {
 export type DashboardData = {
   userId: string;
   nickname: string | null;
-  courses: Course[];
   currentCourse: Course;
   topics: Topic[];
   progressByTopic: Map<string, TopicProgress>;
@@ -90,7 +87,6 @@ export type DashboardData = {
   itemCountByTopic: Map<string, number>;
 };
 
-const LAST_COURSE_KEY = 'ape:lastCourseId';
 const lastTopicKey = (courseId: string) => `ape:lastTopic:${courseId}`;
 
 /**
@@ -125,14 +121,6 @@ export async function setLastTopic(courseId: string, topicId: string): Promise<v
   // call sites are bare and unawaited).
   try {
     await AsyncStorage.setItem(lastTopicKey(courseId), `id:${topicId}`);
-  } catch {
-    /* resume convenience only */
-  }
-}
-
-export async function setLastCourse(courseId: string): Promise<void> {
-  try {
-    await AsyncStorage.setItem(LAST_COURSE_KEY, courseId);
   } catch {
     /* resume convenience only */
   }
@@ -354,7 +342,7 @@ export async function fetchEnrollmentDashboard(
       ? settle(
           supabase
             .from('achievements')
-            .select('id, sequence_in_course, name, applicable_methods, is_prerequisite, icon_url, global_sequence')
+            .select('id, name, applicable_methods, icon_url, global_sequence')
             .in('global_sequence', gsList),
         )
       : null;
@@ -417,7 +405,6 @@ export async function fetchEnrollmentDashboard(
   const empty: DashboardData = {
     userId,
     nickname,
-    courses: [currentCourse],
     currentCourse,
     topics: [],
     progressByTopic: new Map(),
@@ -437,10 +424,8 @@ export async function fetchEnrollmentDashboard(
     if (a.global_sequence == null || byGs.has(a.global_sequence)) continue;
     byGs.set(a.global_sequence, {
       id: a.id,
-      sequence_in_course: a.sequence_in_course,
       name: a.name,
       applicable_methods: a.applicable_methods ?? [],
-      is_prerequisite: !!a.is_prerequisite,
       icon_url: a.icon_url ?? null,
       global_sequence: a.global_sequence,
     });
@@ -493,7 +478,6 @@ export async function fetchEnrollmentDashboard(
   return {
     userId,
     nickname,
-    courses: [currentCourse],
     currentCourse,
     topics,
     progressByTopic,
@@ -502,10 +486,3 @@ export async function fetchEnrollmentDashboard(
     itemCountByTopic,
   };
 }
-
-// fetchDashboard() removed 2026-09-03 (owner decision "delete two dead entry
-// points"). It read `enrollment` joined to the archived `courses` table and
-// keyed topics on achievements.course_id — all v1. It was already unreachable:
-// its only caller sat on the false arm of a ternary behind commercialMode,
-// which is permanently true. Removing it is what lets the enrollment table
-// and achievements.course_id be dropped.

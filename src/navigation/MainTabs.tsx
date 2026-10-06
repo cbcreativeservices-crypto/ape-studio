@@ -1,8 +1,8 @@
 /**
  * MainTabs — bottom tab shell (Home / Study / Achievements / Profile) using the
  * custom studio TabBar. Default tab = Study (Dashboard) per the seed brief nav
- * map. (The Achievements/PROGRESS glyph is a fixed silver record — the album
- * tier no longer drives it; owner 2026-08-07.)
+ * map. The Achievements tab is labeled PROGRESS; its icon is static art and
+ * shows no user data (see NavIcon).
  */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { CommonActions } from '@react-navigation/native';

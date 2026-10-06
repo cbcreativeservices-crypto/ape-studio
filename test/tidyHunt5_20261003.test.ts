@@ -75,8 +75,8 @@ describe('tidy hunt 5 (2026-10-03)', () => {
   it('T7 Profile Trophies & records row hides only for a known non-member', () => {
     const src = read('src/screens/profile/ProfileScreen.tsx');
     assert.match(src, /const memberGate = useMemberGate\(\);/);
-    assert.match(src, /\{memberGate !== 'locked' \|\| caps\.albumAchievements \? \(/);
-    assert.doesNotMatch(src, /\{!resolved \|\| caps\.albumAchievements \? \(/);
+    assert.match(src, /\{memberGate !== 'locked' \|\| caps\.achievements \? \(/);
+    assert.doesNotMatch(src, /\{!resolved \|\| caps\.achievements \? \(/);
   });
 
   it('T8 Cymatics studios tell a failed OPEN IN STUDIO read', () => {

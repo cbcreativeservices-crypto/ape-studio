@@ -1,25 +1,18 @@
 /**
- * S10 — Profile / Digital ID (LOCKED June 7; fullscreen, zero scroll; visuals
- * from 17-s10-profile.dc.html): MIRAMAR COLLEGE header + gear → Settings ·
- * ID card (initials avatar 110 on amber gradient / photo when set, nickname —
- * PUBLIC nickname only, never first/last name (FERPA), AP&E ID mono, QR) ·
- * CERTIFICATIONS 4-grid (lit = earned badge) · Album Level card (tier + % +
- * MVP cap note + vinyl 60). Bottom nav visible.
- *
- * 🔒 QR — BLOCKED on Booth's C-3 ruling (qr_token vs APE:${id} vs raw id;
- * 120 vs 160px). Layout ships at 120×120 with a stub pattern; encoding wires
- * after the ruling (react-native-qrcode-svg already installed).
+ * Profile tab — MY PROFILE header + gear → Settings, the pinned digital ID card
+ * (name, membership status, verified credentials, ID number and the credential
+ * QR; tap for the full-screen ID), then the member's progress, public-profile
+ * and registry controls. One render for every user; a guest's edits just do
+ * not persist. Scrolls (KeyboardAwareScrollView). Bottom nav visible.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 // DimModal (bug pass 3): the full-screen ID is a HOST, so a root popup asked
 // for while it is up draws inside it instead of behind it (iOS: not at all).
 import { Modal } from '../../components/DimModal';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { AlbumDisc } from '../../components/AlbumDisc';
 import { CredentialQr } from '../../components/CredentialQr';
 import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
 import { EmployerSection } from './EmployerSection';
@@ -34,7 +27,7 @@ import { certificateNameFits } from '../../features/credentials/certificateHtml'
 import { GlassButton } from '../../components/GlassButton';
 import { Toggle } from '../../components/Toggle';
 import { Section } from '../../components/Section';
-import { albumTitleFor, colors, fonts } from '../../theme/tokens';
+import { colors, fonts } from '../../theme/tokens';
 import { fetchProfile, type ProfileData } from '../../features/profile/api';
 import {
   EMPTY_PUBLIC_PROFILE,
@@ -278,10 +271,7 @@ export function ProfileScreen() {
   // as a blank ID (no number, pending QR) — track it and offer a retry.
   const [profileError, setProfileError] = useState(false);
   const [shareMessage, setShareMessage] = useState<string | null>(null);
-  // CM7 (Booth 2026-07-11): commercial variant — nickname · Album · trophies ·
-  // completion records; HIDE the student-ID card (QR, AP&E ID) + MIC/PA/REC/MIX
-  // certs. Institutional users keep Screen 10 exactly.
-  const { commercialMode, caps, entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  const { caps, entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   const memberGate = useMemberGate();
   // Public / networking profile (device-local for now — backend frozen).
   const [pub, setPub] = useState<PublicProfile>(EMPTY_PUBLIC_PROFILE);
@@ -591,10 +581,6 @@ export function ProfileScreen() {
     });
   }, []);
 
-  // Institutional Mode is no longer a user-facing switch (user request
-  // 2026-07-23) — it will be triggered automatically when a user signs in with an
-  // institution access code, customised per client. The panel was removed.
-
   // Registry participation gate (user request 2026-07-23): the "show in registry"
   // toggle can only be turned on once the required identity fields are filled.
   const emailValid = /\S+@\S+\.\S+/.test(pub.email.trim());
@@ -758,935 +744,48 @@ export function ProfileScreen() {
     [setPubKey, pub, registryGuest, navigation, registryLatch],
   );
 
-  // This product ships COMMERCIAL-only: the institutional / "MIRAMAR COLLEGE" Profile
-  // variant (further below) is retired — EVERY user, including guests, gets this
-  // commercial profile (identical to a regular account; a guest just can't persist).
-  // Zero academic/institutional references (user request 2026-07-26). Typed `boolean`
-  // so the retained institutional variant stays reachable code (no unused-symbol churn);
-  // flip false only for an actual institutional deployment.
-  const commercialProfileOnly: boolean = true;
-  if (commercialProfileOnly || commercialMode) {
-    // REAL paid-member status — NOT the __DEV__-bypassed `caps` (which forces
-    // academy on in dev). Drives the membership tag + upgrade CTA (fix 2026-07-26).
-    const academy = entitlement === 'academy';
-    // FIRST-PAINT GUARD (M6 idiom, entitlement audit 2026-09-11). The provider
-    // defaults to 'anonymous' and only settles after the server read, so until
-    // `resolved` this screen asserted nothing-yet-known as fact: a PAYING member
-    // opened Profile, read "REFERENCE MODE", was told guest edits evaporate, and
-    // was offered "UPGRADE TO ACADEMY" — their own membership sold back to them
-    // for a frame. Settings already does exactly this (`!resolved ? 'CHECKING…'`);
-    // Profile is its parent screen and must not contradict it.
-    // `tierKnown`, not `resolved` (2026-09-30 day pass) — Settings moved to it
-    // on 2026-09-17 because `resolved` flips even when the read FAILED; here
-    // that still told an offline member "REFERENCE MODE" and sold them
-    // UPGRADE TO ACADEMY.
-    // Once the provider has given up (owner ruling 2026-10-03) it is NOT
-    // CONFIRMED — honest, and still no upsell.
-    const statusLabel = !tierKnown
-      ? tierReadFailed
-        ? 'NOT CONFIRMED'
-        : 'CHECKING…'
-      : academy
-        ? 'ACADEMY MEMBER'
-        : entitlement === 'lapsed'
-          ? 'MEMBERSHIP LAPSED'
-          : 'REFERENCE MODE';
-    const statusColor = !tierKnown
-      ? colors.textSubAlt
-      : academy
-        ? colors.green
-        : entitlement === 'lapsed'
-          ? colors.amber
-          : colors.textSubAlt;
-    const goalCount = certBundles.length + programBundles.length;
-    // Clamped ONCE, so the bar width and the value a screen reader hears can
-    // never disagree — they did on LedMeter, where the label and aria-valuenow
-    // were computed separately and drifted apart (2026-09-21).
-    const pctClamped = Math.min(100, Math.max(0, profile?.overallPct ?? 0));
-    return (
-      <View style={[styles.root, { paddingTop: insets.top }]}>
-        <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
-          <View style={styles.headerRow}>
-            <Text accessibilityRole="header" style={styles.college}>MY PROFILE</Text>
-            <Pressable
-              onPress={() => (navigation as any).navigate('Settings')}
-              hitSlop={8}
-              accessibilityRole="button"
-              accessibilityLabel="Settings"
-              style={styles.gear}
-            >
-              <Text style={styles.gearGlyph}>⚙</Text>
-            </Pressable>
-          </View>
-
-          {/* DIGITAL ID — pinned, never collapsible. Someone shows this at a
-              load-in, so it answers three questions in order: who is this, what
-              do they hold, how do I check. The QR was previously UNREACHABLE on
-              this screen (it existed only in the retired institutional branch
-              below), so the card that exists to be shown was the one thing you
-              could not show. */}
-          <Pressable
-            style={({ pressed }) => [styles.idCard, pressed && styles.idCardPressed]}
-            onPress={() => setFullIdOpen(true)}
-            accessibilityRole="button"
-            // An accessibilityLabel REPLACES the children for a screen reader,
-            // so a label naming only the action silently deletes the name,
-            // status, credential count and ID number from this card. Compose
-            // the content INTO the label, then say what tapping does.
-            accessibilityLabel={[
-              pub.registryName || pub.name || profile?.nickname || 'No name added yet',
-              statusLabel,
-              credentials.length > 0
-                ? `${credentials.length} verified credential${credentials.length === 1 ? '' : 's'}`
-                : null,
-              profile?.apeStudentId ? `ID ${profile.apeStudentId}` : null,
-            ]
-              .filter(Boolean)
-              .join('. ')}
-            accessibilityHint="Opens your ID full screen for scanning"
-          >
-            <View style={styles.idLeft}>
-              <Text style={styles.idName} numberOfLines={2}>
-                {pub.registryName || pub.name || profile?.nickname || 'Add your name'}
-              </Text>
-              <Text style={[styles.idStatus, { color: statusColor }]}>{statusLabel}</Text>
-              {credentials.length > 0 ? (
-                <Text style={styles.idHolds}>
-                  {credentials.length} verified credential{credentials.length === 1 ? '' : 's'}
-                </Text>
-              ) : null}
-              <View style={{ flex: 1 }} />
-              {profile?.apeStudentId ? (
-                <Text style={styles.idNumber}>ID {profile.apeStudentId}</Text>
-              ) : null}
-              <Text style={styles.idExpand}>SHOW FULL ID ›</Text>
-            </View>
-            <View style={styles.idRight}>
-              <CredentialQr token={profile?.qrToken} size={104} />
-              <Text style={styles.idScan}>SCAN TO VERIFY</Text>
-            </View>
-          </Pressable>
-
-          {/* Employer account (2026-09-18). Renders NOTHING for a member — it
-              returns null unless there is an application or a verified employer
-              profile — so a learner never scrolls past a recruiting panel. */}
-          {/* Standing comes FIRST: if something is wrong with the account,
-              that is the most important thing on the screen. Renders nothing
-              for an account in good standing. */}
-          <AccountStandingNotice />
-
-          <EmployerSection />
-
-          {/* Admin-only, and renders nothing for anyone else. The is_admin()
-              check here only decides whether to draw the row — every RPC
-              behind it re-checks in the database. */}
-          <AdminSection />
-
-          {/* Share the record itself — the link, and the QR as an image (owner
-              2026-09-18). This is where a member looks for their own ID, and
-              until now the QR could only leave the phone by somebody
-              photographing the screen. `credentialName` is null: this shares
-              the whole verified record, not one credential. */}
-          <CredentialShareRow credentialName={null} onMessage={setShareMessage} />
-          {shareMessage ? <Text style={styles.shareMessage}>{shareMessage}</Text> : null}
-
-          {/* [39] (2026-09-07): the ID card renders blank (no ID, pending QR) when
-              the profile read fails — say so and offer a retry instead of a
-              silent empty card. */}
-          {profileError ? (
-            <Pressable
-              style={styles.profileErrorRow}
-              onPress={loadProfile}
-              accessibilityRole="button"
-              accessibilityLabel="Couldn’t load your ID — retry"
-            >
-              <Text style={styles.profileErrorText}>Couldn’t load your ID — check your connection.</Text>
-              <Text style={styles.profileErrorRetry}>RETRY</Text>
-            </Pressable>
-          ) : null}
-
-          {/* AM I PUBLIC RIGHT NOW? — the answer, readable without opening
-              anything. Amber only in the one state the user can act on, where
-              the strip is itself the button that fixes it. */}
-          <Pressable
-            style={[
-              styles.strip,
-              registryActive ? styles.stripOn : !profileComplete ? styles.stripTodo : styles.stripOff,
-            ]}
-            disabled={profileComplete}
-            // Same jump the gap checklist's "ADD ›" rows make: open PUBLIC
-            // PROFILE and put the cursor in the first detail still missing.
-            onPress={() => {
-              const first = missing[0];
-              if (first) focusField(first.key);
-            }}
-            // `accessible` false + role text would still announce the Pressable's
-            // auto-merged disabled state. When there is nothing to fix this is a
-            // READOUT, so it carries no role and no hint — just its own words.
-            accessibilityRole={profileComplete ? undefined : 'button'}
-            accessibilityHint={profileComplete ? undefined : 'Opens the details you still need'}
-            accessibilityLabel={
-              registryActive
-                ? 'Listed. Your public page is live.'
-                : !profileComplete
-                  ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed before you can be listed. Opens the form.`
-                  : 'Private. You have no public page.'
-            }
-          >
-            <View
-              style={[
-                styles.stripDot,
-                {
-                  backgroundColor: registryActive
-                    ? colors.green
-                    : !profileComplete
-                      ? colors.amber
-                      : '#3a3a3a',
-                },
-              ]}
-            />
-            <Text
-              style={[
-                styles.stripText,
-                {
-                  color: registryActive
-                    ? colors.green
-                    : !profileComplete
-                      ? colors.amber
-                      : colors.textSubAlt,
-                },
-              ]}
-            >
-              {registryActive
-                ? 'LISTED — your public page is live'
-                : !profileComplete
-                  ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed to get listed ›`
-                  : 'PRIVATE — no public page'}
-            </Text>
-          </Pressable>
-
-          {/* Device controls stay on Profile (both were explicit owner requests)
-              but now sit BELOW the identity rather than above the user's own
-              name. Not collapsed: muting is a safety control. */}
-          <LowLightRow />
-          <AudioOutputRow />
-
-          {/* TEMPORARY dev tool (user request 2026-07-18) — visual index of every
-              screen + popup. Its own header says "REMOVE before release", but it
-              carried NO __DEV__ guard, so a paying student could open a master
-              index of every screen in the app from their own Profile (design
-              review 2026-08-30). Guarded now; delete the file and this block
-              when the tool is no longer wanted. */}
-          {__DEV__ ? <DevVisualIndex /> : null}
-
-          {/* ⛔ LABELS ON THIS SCREEN ARE FIRST PERSON (owner 2026-09-22).
-              The screen is MY PROFILE, and the directory beside it already said
-              MY AREAS OF AUDIO & ACOUSTICS, HOW I'M INVOLVED and ABOUT MY WORK —
-              but this screen answered with YOUR CERTIFICATES, YOUR NUMBERS,
-              YOUR USER NAME and WHAT YOU WORK IN, so the app changed voice
-              halfway down a single page.
-
-              The rule, applied here and in Settings: a LABEL naming something
-              that belongs to the user is first person ("My Certificates");
-              explanatory BODY copy stays second person ("Your display name will
-              be visible…"), because that is the app talking TO them and first
-              person reads bizarrely in a sentence. Third person is only ever
-              correct about OTHER members — see HOW THEY'RE INVOLVED in the
-              directory's Explore filters, which is not an inconsistency. */}
-          {/* —— MY PROGRESS —— retrospective only (owner 2026-09-04): what the
-              user has DONE. The Full Course line is a readout; each certificate /
-              program row opens its read-only AwardProgress view (which has a ‹
-              Back to Profile). Nothing here links to the Enrollments enroll page
-              — enrolling lives in Study — so no one lands there and gets stuck. */}
-          <Section
-            title="MY PROGRESS"
-            /* The collapsed header used to read "2% · 3 goals" — the academy-wide
-               figure, in the most prominent spot on the screen, before the
-               learner had opened anything. It now leads with the goals they
-               chose, and only carries the percentage once they have asked for
-               the big picture. */
-            summary={
-              goalCount
-                ? `${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}${showBigPicture ? ` · ${profile ? `${profile.overallPct}%` : '—'}` : ''}`
-                : showBigPicture
-                  ? (profile ? `${profile.overallPct}%` : '—')
-                  : ''
-            }
-          >
-            {/* Whole-curriculum progress — a readout, not a link. HIDDEN by
-                default; see the big-picture note above. */}
-            {showBigPicture ? (
-            <View style={styles.readoutRow}>
-              <View style={styles.readoutHead}>
-                {/* RENAMED 2026-09-17: this is completed-topics ÷ the live topic
-                    count, and there is no "Full Course Certification" award in
-                    the app — the label promised a credential never issued. */}
-                <Text style={styles.rowLabel}>Whole-curriculum progress</Text>
-                {/* SAY BOTH NUMBERS (owner 2026-09-22: "check the logic and how
-                    the my progress - progress bars show their readout"). A bare
-                    "98% complete" tells the learner nothing about the scale of
-                    what is left; "163 of 166 topics" does. The total is only
-                    printed once it is known — a denominator of 0 would render
-                    "0 of 0", which reads as a broken curriculum. */}
-                <Text style={styles.rowHint}>
-                  {/* Unread is not "Not started yet" (hunt 13): "—". */}
-                  {!profile
-                    ? '—'
-                    : profile.overallPct > 0
-                    ? `${profile.overallPct}% complete${
-                        profile?.topicTotal
-                          ? ` · ${profile.completeCount} of ${profile.topicTotal} topics`
-                          : ''
-                      }`
-                    : 'Not started yet'}
-                </Text>
-              </View>
-              {/* The bar carried NO accessible value, so a screen reader heard
-                  the label and nothing of the progress it exists to show — the
-                  same gap fixed on LedMeter on 2026-09-21. `progressbar` is not
-                  an RN accessibilityRole, so the value goes on the adjustable
-                  role, with aria-* for RN-web where the DOM takes it directly. */}
-              <View
-                style={styles.progressTrack}
-                accessibilityRole="adjustable"
-                accessibilityValue={{ min: 0, max: 100, now: pctClamped, text: profile ? `${pctClamped}% complete` : 'Progress not loaded' }}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={pctClamped}
-              >
-                <View style={[styles.progressFill, { width: `${pctClamped}%` }]} />
-              </View>
-            </View>
-            ) : null}
-
-            {/* SPLIT (owner 2026-09-22: "their enrolled programs and certs all
-                separately"). Certificates and programs were one merged list, so
-                a learner could not tell which of their goals was which — and the
-                two are different things: a certificate is a subject credential,
-                a program is a multi-certificate path. */}
-            <Text style={styles.groupLabel}>MY CERTIFICATES</Text>
-            {certBundles.length ? (
-              certBundles.map((b) => (
-                <CatalogRow
-                  key={b.key}
-                  name={b.name}
-                  done={bundleDone(b.topics)}
-                  total={b.topics.length}
-                  onPress={
-                    credIds.cert.get(b.name)
-                      ? () =>
-                          (navigation as any).navigate('AwardProgress', {
-                            awardType: 'certificate',
-                            awardId: credIds.cert.get(b.name),
-                            awardName: b.name,
-                          })
-                      : undefined
-                  }
-                />
-              ))
-            ) : !bundlesRead ? (
-              /* Not read (still loading, or the read failed) is not "none
-                 started" (hunt 13): true in both cases, never a false empty. */
-              <Text style={styles.rowHint}>Your certificates haven’t loaded yet.</Text>
-            ) : (
-              <Text style={styles.rowHint}>
-                No certificates started yet — enrol from Study, and your progress appears here.
-              </Text>
-            )}
-
-            <Text style={styles.groupLabel}>MY PROGRAMS</Text>
-            {programBundles.length ? (
-              programBundles.map((b) => (
-                <CatalogRow
-                  key={b.key}
-                  name={b.name}
-                  done={bundleDone(b.topics)}
-                  total={b.topics.length}
-                  onPress={
-                    credIds.program.get(b.name)
-                      ? () =>
-                          (navigation as any).navigate('AwardProgress', {
-                            awardType: 'program',
-                            awardId: credIds.program.get(b.name),
-                            awardName: b.name,
-                          })
-                      : undefined
-                  }
-                />
-              ))
-            ) : !bundlesRead ? (
-              <Text style={styles.rowHint}>Your programs haven’t loaded yet.</Text>
-            ) : (
-              <Text style={styles.rowHint}>
-                No programs started yet — enrol from Study, and your progress appears here.
-              </Text>
-            )}
-
-            {/* —— THE WHOLE CATALOGUE —— everything the academy offers, whether
-                or not this learner has enrolled in it. All three are collapsed,
-                so the screen opens at the length it always did, and none of the
-                catalogue progress is fetched until one is opened. */}
-            <Text style={styles.groupLabel}>EVERYTHING THE ACADEMY OFFERS</Text>
-            {catalog.state === 'loading' ? (
-              <Text style={styles.rowHint}>Loading the catalogue…</Text>
-            ) : catalog.state === 'unavailable' ? (
-              /* Not "there are none". A failed read is not an empty academy. */
-              <Text style={styles.rowHint}>
-                Couldn’t load the catalogue — check your connection and try again.
-              </Text>
-            ) : (
-              <>
-                <SubGroup
-                  label="WHOLE CURRICULUM"
-                  summary={`${curriculumTotals.fields} fields · ${curriculumTotals.topics} topics`}
-                  onFirstOpen={wantCatalog}
-                >
-                  {catalog.fields.map((f) => {
-                    const fieldGs = f.subjects.flatMap((su) => su.topics.map((t) => t.gs));
-                    return (
-                      <SubGroup
-                        key={f.field}
-                        label={f.field.toUpperCase()}
-                        summary={
-                          showBigPicture
-                            ? `${catalogDone(fieldGs) ?? '—'} / ${fieldGs.length}`
-                            : `${fieldGs.length} topics`
-                        }
-                        onFirstOpen={wantCatalog}
-                      >
-                        {f.subjects.map((su) => (
-                          <CatalogRow
-                            key={`${f.field}/${su.subject}`}
-                            name={su.subject}
-                            done={catalogDone(su.topics.map((t) => t.gs))}
-                            total={su.topics.length}
-                            showProgress={showBigPicture}
-                            indent
-                          />
-                        ))}
-                      </SubGroup>
-                    );
-                  })}
-                </SubGroup>
-
-                <SubGroup
-                  label="ALL CERTIFICATES"
-                  summary={String(catalog.certs.length)}
-                  onFirstOpen={wantCatalog}
-                >
-                  <PagedList count={catalog.certs.length}>
-                    {(limit) =>
-                      catalog.certs.slice(0, limit).map((c) => (
-                        <CatalogRow
-                          key={c.id}
-                          name={c.name}
-                          done={catalogDone(c.topicsGs)}
-                          total={c.topicsGs.length}
-                          showProgress={showBigPicture}
-                          onPress={() =>
-                            (navigation as any).navigate('AwardProgress', {
-                              awardType: 'certificate',
-                              awardId: c.id,
-                              awardName: c.name,
-                            })
-                          }
-                        />
-                      ))
-                    }
-                  </PagedList>
-                </SubGroup>
-
-                <SubGroup
-                  label="ALL PROGRAMS"
-                  summary={String(catalog.programs.length)}
-                  onFirstOpen={wantCatalog}
-                >
-                  <PagedList count={catalog.programs.length}>
-                    {(limit) =>
-                      catalog.programs.slice(0, limit).map((pr) => (
-                        <CatalogRow
-                          key={pr.id}
-                          name={pr.name}
-                          done={catalogDone(pr.topicsGs)}
-                          total={pr.topicsGs.length}
-                          showProgress={showBigPicture}
-                          onPress={() =>
-                            (navigation as any).navigate('AwardProgress', {
-                              awardType: 'program',
-                              awardId: pr.id,
-                              awardName: pr.name,
-                            })
-                          }
-                        />
-                      ))
-                    }
-                  </PagedList>
-                </SubGroup>
-              </>
-            )}
-
-            {/* THE OPT-IN ITSELF (owner 2026-09-22). Deliberately the last thing
-                in the section and written as an invitation, not a setting: the
-                default view is the learner's own goals, and the academy-wide
-                totals are something they can ask for and put away again. */}
-            <View style={styles.switchRow}>
-              <Text style={styles.switchLabel}>Show my progress across the whole academy</Text>
-              <Toggle
-                on={showBigPicture}
-                label="Show my progress across the whole academy"
-                onChange={toggleBigPicture}
-              />
-            </View>
-            <Text style={styles.rowHint}>
-              {showBigPicture
-                ? 'Whole-curriculum, certificate and program totals are shown below. My own certificates and programs stay either way.'
-                : 'Totals across all 166 topics, 124 certificates and 36 programs. They move slowly — most people find their own goals more useful.'}
-            </Text>
-
-            <Text style={styles.groupLabel}>MY NUMBERS</Text>
-            {/* "Quizzes passed" and "Study streak" REMOVED (design review
-                2026-08-30): both were literal em-dashes with no backend, which
-                made the two real numbers beside them look broken too. */}
-            {/* Unread is not zero (hunt 13): an unreadable "known" list or a
-                profile that has not loaded / could not load shows "—". */}
-            <StatRow label="Terms learned" value={knownUnreadable ? '—' : String(known.size)} />
-            <StatRow label="Topics completed" value={profile ? String(profile.completeCount) : '—'} last />
-            {/* [43] (2026-09-07): gated on albumAchievements, not completionRecords.
-                This row opens the Achievements hub, which the ladder grants to
-                'free' (albumAchievements: true) and which the bottom tab already
-                opens for them — keying it on completionRecords (false for free)
-                hid the shortcut to a screen they are entitled to. */}
-            {/* `!resolved ||` — pre-resolve the neutral view is the MEMBER one
-                (AudioLearningScreen's M6 rule). The row only opens the
-                Achievements tab, which the tab bar already gives everyone, so
-                showing it a frame early costs nothing while hiding it from a
-                member who is entitled to it costs trust.
-                `memberGate !== 'locked'` (tidy hunt 5, 2026-10-03): a failed
-                membership read flips `resolved` with guest caps, which hid the
-                row from a paying member. Only a KNOWN guest loses it now. */}
-            {memberGate !== 'locked' || caps.albumAchievements ? (
-              <Pressable
-                style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
-                onPress={() =>
-                  // Flag the origin so the grid shows a back button to Profile
-                  // (owner 2026-08-07 — there was no way back before).
-                  (navigation as any).navigate('Achievements', {
-                    screen: 'AchievementsHome',
-                    params: { from: 'profile' },
-                  })
-                }
-                accessibilityRole="button"
-                accessibilityLabel="View trophies and records"
-              >
-                <View style={styles.rowMain}>
-                  <Text style={styles.rowLabel}>Trophies &amp; records</Text>
-                </View>
-                <Text style={styles.chevron}>›</Text>
-              </Pressable>
-            ) : null}
-          </Section>
-
-          {/* —— PUBLIC PROFILE — the fields. Opens itself while something is
-              missing, so the fix is already in front of you. —— */}
-          {/* MY USER NAME lives OUTSIDE the public profile (owner 2026-09-17):
-              it is never published and never shown to another member, so
-              sitting under a heading that says PUBLIC was misleading. */}
-          <Section
-            key={`user-name-${nameSeq}-${hydrated}`}
-            title="MY USER NAME"
-            summary={pub.name.trim() ? 'set' : 'not set'}
-            defaultOpen={nameSeq > 0 || (hydrated && !pub.name.trim())}
-          >
-            <Text style={styles.fieldLabel}>Your user name</Text>
-            <TextInput
-              ref={nameRef}
-              style={styles.input}
-              value={pub.name}
-              onChangeText={(t) => setPubKey('name', t)}
-              placeholder="Your user name"
-              placeholderTextColor={colors.textMuted}
-              autoCapitalize="words"
-              returnKeyType="done"
-              accessibilityLabel="Your user name"
-            />
-            <Text style={styles.rowHint}>
-              Private. Used to greet you in the app. It is never published and never shown to
-              other members.
-            </Text>
-          </Section>
-
-          <Section
-            key={`public-profile-${ppSeq}-${hydrated}`}
-            title="PUBLIC PROFILE"
-            summary={profileComplete ? 'complete' : `${missing.length} to finish`}
-            defaultOpen={ppSeq > 0 || (hydrated && !profileComplete)}
-          >
-            <Text style={styles.sectionIntro}>
-              {tierKnown && entitlement === 'anonymous'
-                ? 'Guest changes stay on this device only until the app closes — create an account to keep them.'
-                : 'Changes save as you type.'}
-            </Text>
-
-            <Text style={styles.fieldLabel}>Name on your certificates</Text>
-            <TextInput
-              ref={registryNameRef}
-              style={styles.input}
-              value={pub.registryName}
-              onChangeText={(t) => setPubKey('registryName', t)}
-              placeholder="Your Preferred Name"
-              placeholderTextColor={colors.textMuted}
-              autoCapitalize="words"
-              returnKeyType="done"
-              accessibilityLabel="Name on your certificates"
-            />
-            {pub.registryName.trim().length > 0 && !registryNameFits ? (
-              <Text style={styles.fieldError}>
-                This is too long to print on a certificate. Shorten it, or put a space in it
-                so it can run over two lines.
-              </Text>
-            ) : (
-              <Text style={styles.rowHint}>
-                Printed on every certificate you earn, and shown when someone scans your code.
-                Spell it the way you want it on paper.
-              </Text>
-            )}
-
-            <Text style={styles.fieldLabel}>Contact email</Text>
-            <TextInput
-              ref={emailRef}
-              style={styles.input}
-              value={pub.email}
-              onChangeText={(t) => setPubKey('email', t)}
-              onBlur={() => setEmailTouched(true)}
-              placeholder="you@example.com"
-              placeholderTextColor={colors.textMuted}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              returnKeyType="done"
-              accessibilityLabel="Contact email"
-            />
-            {emailTouched && pub.email.trim().length > 0 && !emailValid ? (
-              <Text style={styles.fieldError}>Add a full address, like you@studio.com</Text>
-            ) : (
-              <Text style={styles.rowHint}>
-                Optional, and kept on this device only — never sent to us, never shown on
-                your public page. Members who find you in the directory reach you through
-                in-app contact requests, which never reveal your address.
-              </Text>
-            )}
-
-            <Text style={styles.fieldLabel}>About you</Text>
-            <TextInput
-              style={[styles.input, styles.bioInput]}
-              value={pub.bio}
-              onChangeText={(t) => setPubKey('bio', t)}
-              placeholder="e.g. FOH engineer, 6 years, clubs and worship"
-              placeholderTextColor={colors.textMuted}
-              multiline
-              maxLength={160}
-              returnKeyType="done"
-              accessibilityLabel="About you"
-            />
-            <Text style={styles.rowHint}>
-              {registryActive
-                ? 'Shown on your public page.'
-                : 'Private until you get listed, then shown on your public page.'}
-              {pub.bio.length > 120 ? `  ${pub.bio.length}/160` : ''}
-            </Text>
-          </Section>
-
-          {/* —— AUDIO COMMUNITY DIRECTORY — a separate concept from credential
-              verification (spec 2026-08-31 §4.4). Credentials are verified by
-              their own permanent link; the community profile is an opt-in
-              professional listing that can be published, hidden or deleted
-              without touching them. —— */}
-          <Section title="AUDIO COMMUNITY DIRECTORY" summary="opt-in">
-            <Text style={styles.sectionIntro}>
-              An optional professional listing: what you work in, what you specialise in, how
-              you&apos;re involved, and what members may contact you about.
-            </Text>
-            <Pressable
-              style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
-              onPress={() => (navigation as any).navigate('AudioCommunityDirectory')}
-              accessibilityRole="button"
-              accessibilityLabel="Open the Audio Community Directory"
-              accessibilityHint="Explore members, edit your community profile, and see contact requests"
-            >
-              <View style={styles.rowMain}>
-                <Text style={styles.rowLabel}>Open the Directory</Text>
-                <Text style={styles.rowHint}>Explore · My Profile · Requests</Text>
-              </View>
-              {/* Pending contact requests + unread messages (owner
-                  2026-10-04). Nothing when the count is unknown. */}
-              <CommunityBadge style={{ marginRight: 8 }} />
-              <Text style={styles.chevron}>›</Text>
-            </Pressable>
-          </Section>
-
-          {/* —— WHO CAN SEE ME — both publishing switches in ONE place, with a
-              literal manifest between them. People refuse these toggles because
-              they cannot tell what "listed" includes, not because they mind
-              being listed. —— */}
-          <Section
-            title="WHO CAN SEE ME"
-            summary={!profileComplete ? 'needs info' : registryActive ? 'LISTED' : 'private'}
-          >
-            <Text style={styles.sectionIntro}>
-              Everything here is private unless you switch it on.
-            </Text>
-
-            {!profileComplete ? (
-              <View style={styles.gapBox}>
-                <Text style={styles.groupLabel}>BEFORE I CAN BE LISTED</Text>
-                {gaps.map((g) => (
-                  <Pressable
-                    key={g.key}
-                    style={styles.gapRow}
-                    onPress={() => focusField(g.key)}
-                    disabled={g.done}
-                    accessibilityRole="button"
-                    accessibilityLabel={
-                      g.done ? `${g.label}, done` : `${g.label}, missing. Opens the field.`
-                    }
-                  >
-                    <Text style={[styles.gapMark, g.done && styles.gapMarkDone]}>
-                      {g.done ? '✓' : '○'}
-                    </Text>
-                    <Text style={[styles.gapLabel, g.done && styles.gapLabelDone]}>{g.label}</Text>
-                    <View style={{ flex: 1 }} />
-                    {g.done ? null : <Text style={styles.gapAction}>ADD ›</Text>}
-                  </Pressable>
-                ))}
-              </View>
-            ) : null}
-
-            <View style={styles.switchRow}>
-              <Text style={styles.switchLabel}>List me in the Professional Registry</Text>
-              <Toggle
-                on={pub.showInRegistry}
-                label="List me in the Professional Registry"
-                disabled={!profileComplete}
-                onChange={onRegistryToggle}
-              />
-            </View>
-            {hydrated && !registryVerified ? (
-              <Text style={styles.fieldError}>
-                We couldn't check this with the server just now, so the switch above is
-                showing what this phone last saved. Reopen this screen when you're back
-                online to confirm it.
-              </Text>
-            ) : null}
-            {registryGuest ? (
-              <Text style={styles.fieldError}>
-                Listing needs an account. Guests can’t be listed in the Professional Registry.
-              </Text>
-            ) : null}
-            <Text style={styles.rowHint}>
-              Publishes a page anyone with the link — or who scans your code — can open.
-            </Text>
-
-            <View style={styles.manifest}>
-              <Text style={styles.groupLabel}>ON MY PUBLIC PAGE</Text>
-              <Text style={styles.manifestOn}>
-                · {pub.registryName || pub.name || 'Your name'}
-              </Text>
-              <Text style={styles.manifestOn}>
-                {credsFailed
-                  ? '· The certificates you have earned (couldn’t be loaded just now)'
-                  : `· ${credentials.length} certificate${credentials.length === 1 ? '' : 's'} you have earned`}
-              </Text>
-              <Text style={styles.manifestOn}>
-                ·{' '}
-                {pub.interests.length
-                  ? `What you work in (${pub.interests.length})`
-                  : 'What you work in — none selected yet'}
-              </Text>
-              <Text style={styles.manifestOn}>
-                · {pub.bio.trim() ? 'Your About you line' : 'Your About you line — empty'}
-              </Text>
-              <Text style={[styles.groupLabel, { marginTop: 12 }]}>NEVER PUBLISHED</Text>
-              <Text style={styles.manifestOff}>· Your email address</Text>
-              <Text style={styles.manifestOff}>· Your progress, quiz scores and notes</Text>
-              <Text style={styles.manifestOff}>· The private name you are greeted by</Text>
-            </View>
-
-            {/* HONEST PRESENT TENSE: there is no Contact button and no message
-                relay yet, so this records a preference and says exactly that.
-                The old copy described a feature that did not exist. */}
-            <View style={styles.switchRow}>
-              <Text style={styles.switchLabel}>Open to being contacted about work</Text>
-              <Toggle
-                on={pub.contactConsent}
-                label="Open to being contacted about work"
-                onChange={(v) => setPubKey('contactConsent', v)}
-              />
-            </View>
-            <Text style={styles.rowHint}>
-              Saved as a preference for now. There is no message button yet — nobody can contact
-              you through the Academy, and your email address is never published either way.
-            </Text>
-
-            <Text style={[styles.rowHint, { marginTop: 12 }]}>
-              Turn listing off and your page goes offline and what was published is deleted.
-              Certificates you have already earned stay verifiable by QR.
-            </Text>
-          </Section>
-
-          {/* —— WHAT I WORK IN — published when listed, so the section says
-              so rather than leaving the user to guess. "Why you're studying"
-              was REMOVED entirely (owner 2026-08-30): one of its options was
-              Church, and a study goal attached to a published name is religious
-              affiliation — special-category data under GDPR Art. 9. It earned
-              nothing that justified carrying that. —— */}
-          <Section
-            title="WHAT I WORK IN"
-            summary={pub.interests.length ? `${pub.interests.length} selected` : 'none yet'}
-          >
-            <Text style={styles.sectionIntro}>
-              {registryActive
-                ? 'These appear on your public page.'
-                : 'These appear on your public page if you get listed. Private until then.'}
-            </Text>
-            <Text style={styles.rowHint}>
-              Tap to select. Press and hold one to make it your main field.
-            </Text>
-            <View style={{ height: 8 }} />
-            <ChoiceChips
-              options={INTEREST_TOPICS}
-              isOn={(o) => pub.interests.includes(o)}
-              onPick={toggleInterest}
-              onLongPick={promotePrimary}
-              starred={pub.primaryInterest}
-            />
-          </Section>
-
-          {/* —— CREDENTIALS — every non-revoked certificate/program the user
-              holds. Hidden entirely when none are earned: an empty trophy case
-              on a new account reads as a failure rather than a not-yet. —— */}
-          {credentials.length > 0 ? (
-            <Section title="CREDENTIALS" summary={String(credentials.length)}>
-              {credentials.map((c) => (
-                <View key={`${c.type}:${c.id}`} style={styles.credRow}>
-                  <View style={{ flex: 1, paddingRight: 12 }}>
-                    <Text style={styles.credName}>{c.name}</Text>
-                    <Text style={styles.credMeta}>
-                      {c.type === 'program' ? 'PROGRAM' : 'CERTIFICATE'}
-                      {c.levelOrTier ? ` · ${c.levelOrTier}` : ''}
-                      {c.awardedAt ? ` · ${fmtCredDate(c.awardedAt)}` : ''}
-                    </Text>
-                  </View>
-                  {certificateExportAvailable() && (
-                    <Pressable
-                      onPress={() => onExportCredential(c)}
-                      // Every PDF row waits while ONE is being prepared (bug
-                      // hunt 2026-09-29): a second export started mid-render
-                      // raced the first for the one share sheet, and the
-                      // `exportingId` it overwrote re-enabled the first row.
-                      disabled={exportingId !== null}
-                      style={styles.credButton}
-                      hitSlop={8}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Download the ${c.name} certificate`}
-                    >
-                      <Text style={styles.credAction}>
-                        {exportingId === c.id ? 'PREPARING…' : 'PDF'}
-                      </Text>
-                    </Pressable>
-                  )}
-                </View>
-              ))}
-              {!certificateExportAvailable() && (
-                <Text style={styles.rowHint}>Certificate download isn’t available on this device. Your certificate is safely recorded on your account.</Text>
-              )}
-              {credMessage != null && <Text style={styles.rowHint}>{credMessage}</Text>}
-            </Section>
-          ) : null}
-
-          {/* FULL-SCREEN ID — the point of a digital credential is that someone
-              else scans it, across a table, in a dark venue. The inline QR is a
-              preview; this is the one you hold up. */}
-          <Modal
-            visible={fullIdOpen}
-            transparent={false}
-            animationType="fade"
-            onRequestClose={closeFullId}
-            supportedOrientations={['portrait', 'landscape']}
-            // The low-light wash comes with DimModal; BRIGHTEN TO SCAN lifts it
-            // until the card closes (it was hand-mounted here before).
-            lowLightDim={!brightId}
-          >
-            <Pressable
-              style={styles.fullId}
-              onPress={closeFullId}
-              accessibilityRole="button"
-              accessibilityLabel="Close your ID"
-            >
-              <Text style={styles.fullIdName}>
-                {pub.registryName || pub.name || 'Add your name'}
-              </Text>
-              <Text style={[styles.idStatus, { color: statusColor, marginBottom: 22 }]}>
-                {statusLabel}
-              </Text>
-              <CredentialQr token={profile?.qrToken} size={248} />
-              {profile?.apeStudentId ? (
-                <Text style={styles.fullIdNumber}>ID {profile.apeStudentId}</Text>
-              ) : null}
-              {lowLight ? (
-                <Pressable
-                  style={styles.brighten}
-                  onPress={() => setBrightId((b) => !b)}
-                  accessibilityRole="button"
-                  accessibilityLabel={
-                    brightId
-                      ? 'Dim the ID again. Low-light is paused while this card is open.'
-                      : 'Brighten to scan. Lifts low-light until you close this card.'
-                  }
-                >
-                  <Text style={styles.brightenText}>
-                    {brightId ? 'DIM AGAIN' : 'BRIGHTEN TO SCAN'}
-                  </Text>
-                </Pressable>
-              ) : null}
-              <Text style={styles.fullIdHint}>
-                {brightId ? 'Low-light resumes when you close this' : 'Tap anywhere to close'}
-              </Text>
-              {/* A Modal renders in its OWN native view hierarchy, so the root
-                  LowLightDim does not reach it. DimModal mounts the wash for
-                  us (lowLightDim above): without it the ID is the one surface
-                  that ignores Low-Light Production Mode, and it opens
-                  full-bright white in a dark venue — exactly the flash the
-                  mode promises will not happen. */}
-            </Pressable>
-          </Modal>
-
-          {/* Upgrade CTA for non-academy (free / lapsed) → Paywall. Held back
-              until `resolved`: offering a member a purchase they already own is
-              the upsell-honesty failure, and it is cheaper to show the button a
-              beat late than to show it wrongly (entitlement audit 2026-09-11). */}
-          {tierKnown && !academy && (
-            <View style={{ marginTop: 4 }}>
-              <GlassButton
-                label={entitlement === 'lapsed' ? 'RENEW ACADEMY' : 'UPGRADE TO ACADEMY'}
-                // Glossary blue (Booth 2026-07-11 #2).
-                tint="blue"
-                height={52}
-                fontSize={14}
-                onPress={() => (navigation as any).navigate('Paywall')}
-              />
-            </View>
-          )}
-        </KeyboardAwareScrollView>
-      </View>
-    );
-  }
-
+  // REAL paid-member status — NOT the __DEV__-bypassed `caps` (which forces
+  // academy on in dev). Drives the membership tag + upgrade CTA (fix 2026-07-26).
+  const academy = entitlement === 'academy';
+  // FIRST-PAINT GUARD (M6 idiom, entitlement audit 2026-09-11). The provider
+  // defaults to 'anonymous' and only settles after the server read, so until
+  // `resolved` this screen asserted nothing-yet-known as fact: a PAYING member
+  // opened Profile, read "REFERENCE MODE", was told guest edits evaporate, and
+  // was offered "UPGRADE TO ACADEMY" — their own membership sold back to them
+  // for a frame. Settings already does exactly this (`!resolved ? 'CHECKING…'`);
+  // Profile is its parent screen and must not contradict it.
+  // `tierKnown`, not `resolved` (2026-09-30 day pass) — Settings moved to it
+  // on 2026-09-17 because `resolved` flips even when the read FAILED; here
+  // that still told an offline member "REFERENCE MODE" and sold them
+  // UPGRADE TO ACADEMY.
+  // Once the provider has given up (owner ruling 2026-10-03) it is NOT
+  // CONFIRMED — honest, and still no upsell.
+  const statusLabel = !tierKnown
+    ? tierReadFailed
+      ? 'NOT CONFIRMED'
+      : 'CHECKING…'
+    : academy
+      ? 'ACADEMY MEMBER'
+      : entitlement === 'lapsed'
+        ? 'MEMBERSHIP LAPSED'
+        : 'REFERENCE MODE';
+  const statusColor = !tierKnown
+    ? colors.textSubAlt
+    : academy
+      ? colors.green
+      : entitlement === 'lapsed'
+        ? colors.amber
+        : colors.textSubAlt;
+  const goalCount = certBundles.length + programBundles.length;
+  // Clamped ONCE, so the bar width and the value a screen reader hears can
+  // never disagree — they did on LedMeter, where the label and aria-valuenow
+  // were computed separately and drifted apart (2026-09-21).
+  const pctClamped = Math.min(100, Math.max(0, profile?.overallPct ?? 0));
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <View style={styles.body}>
-        {/* Header */}
+      <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
         <View style={styles.headerRow}>
-          <Text style={styles.college}>MIRAMAR COLLEGE</Text>
+          <Text accessibilityRole="header" style={styles.college}>MY PROFILE</Text>
           <Pressable
             onPress={() => (navigation as any).navigate('Settings')}
             hitSlop={8}
@@ -1698,60 +797,867 @@ export function ProfileScreen() {
           </Pressable>
         </View>
 
-        {/* Digital ID card */}
-        <View style={styles.idCardLegacy}>
-          <View style={[styles.pilotDot, { left: 7 }]} />
-          <View style={[styles.pilotDot, { right: 7 }]} />
-          {profile?.photoUrl ? (
-            <Image accessible
-              source={{ uri: profile.photoUrl }}
-              style={styles.avatarImg}
-              accessibilityRole="image"
-              accessibilityLabel="Your profile photo"
-            />
+        {/* DIGITAL ID — pinned, never collapsible. Someone shows this at a
+            load-in, so it answers three questions in order: who is this, what
+            do they hold, how do I check. */}
+        <Pressable
+          style={({ pressed }) => [styles.idCard, pressed && styles.idCardPressed]}
+          onPress={() => setFullIdOpen(true)}
+          accessibilityRole="button"
+          // An accessibilityLabel REPLACES the children for a screen reader,
+          // so a label naming only the action silently deletes the name,
+          // status, credential count and ID number from this card. Compose
+          // the content INTO the label, then say what tapping does.
+          accessibilityLabel={[
+            pub.registryName || pub.name || profile?.nickname || 'No name added yet',
+            statusLabel,
+            credentials.length > 0
+              ? `${credentials.length} verified credential${credentials.length === 1 ? '' : 's'}`
+              : null,
+            profile?.apeStudentId ? `ID ${profile.apeStudentId}` : null,
+          ]
+            .filter(Boolean)
+            .join('. ')}
+          accessibilityHint="Opens your ID full screen for scanning"
+        >
+          <View style={styles.idLeft}>
+            <Text style={styles.idName} numberOfLines={2}>
+              {pub.registryName || pub.name || profile?.nickname || 'Add your name'}
+            </Text>
+            <Text style={[styles.idStatus, { color: statusColor }]}>{statusLabel}</Text>
+            {credentials.length > 0 ? (
+              <Text style={styles.idHolds}>
+                {credentials.length} verified credential{credentials.length === 1 ? '' : 's'}
+              </Text>
+            ) : null}
+            <View style={{ flex: 1 }} />
+            {profile?.apeStudentId ? (
+              <Text style={styles.idNumber}>ID {profile.apeStudentId}</Text>
+            ) : null}
+            <Text style={styles.idExpand}>SHOW FULL ID ›</Text>
+          </View>
+          <View style={styles.idRight}>
+            <CredentialQr token={profile?.qrToken} size={104} />
+            <Text style={styles.idScan}>SCAN TO VERIFY</Text>
+          </View>
+        </Pressable>
+
+        {/* Employer account (2026-09-18). Renders NOTHING for a member — it
+            returns null unless there is an application or a verified employer
+            profile — so a learner never scrolls past a recruiting panel. */}
+        {/* Standing comes FIRST: if something is wrong with the account,
+            that is the most important thing on the screen. Renders nothing
+            for an account in good standing. */}
+        <AccountStandingNotice />
+
+        <EmployerSection />
+
+        {/* Admin-only, and renders nothing for anyone else. The is_admin()
+            check here only decides whether to draw the row — every RPC
+            behind it re-checks in the database. */}
+        <AdminSection />
+
+        {/* Share the record itself — the link, and the QR as an image (owner
+            2026-09-18). This is where a member looks for their own ID, and
+            until now the QR could only leave the phone by somebody
+            photographing the screen. `credentialName` is null: this shares
+            the whole verified record, not one credential. */}
+        <CredentialShareRow credentialName={null} onMessage={setShareMessage} />
+        {shareMessage ? <Text style={styles.shareMessage}>{shareMessage}</Text> : null}
+
+        {/* [39] (2026-09-07): the ID card renders blank (no ID, pending QR) when
+            the profile read fails — say so and offer a retry instead of a
+            silent empty card. */}
+        {profileError ? (
+          <Pressable
+            style={styles.profileErrorRow}
+            onPress={loadProfile}
+            accessibilityRole="button"
+            accessibilityLabel="Couldn’t load your ID — retry"
+          >
+            <Text style={styles.profileErrorText}>Couldn’t load your ID — check your connection.</Text>
+            <Text style={styles.profileErrorRetry}>RETRY</Text>
+          </Pressable>
+        ) : null}
+
+        {/* AM I PUBLIC RIGHT NOW? — the answer, readable without opening
+            anything. Amber only in the one state the user can act on, where
+            the strip is itself the button that fixes it. */}
+        <Pressable
+          style={[
+            styles.strip,
+            registryActive ? styles.stripOn : !profileComplete ? styles.stripTodo : styles.stripOff,
+          ]}
+          disabled={profileComplete}
+          // Same jump the gap checklist's "ADD ›" rows make: open PUBLIC
+          // PROFILE and put the cursor in the first detail still missing.
+          onPress={() => {
+            const first = missing[0];
+            if (first) focusField(first.key);
+          }}
+          // `accessible` false + role text would still announce the Pressable's
+          // auto-merged disabled state. When there is nothing to fix this is a
+          // READOUT, so it carries no role and no hint — just its own words.
+          accessibilityRole={profileComplete ? undefined : 'button'}
+          accessibilityHint={profileComplete ? undefined : 'Opens the details you still need'}
+          accessibilityLabel={
+            registryActive
+              ? 'Listed. Your public page is live.'
+              : !profileComplete
+                ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed before you can be listed. Opens the form.`
+                : 'Private. You have no public page.'
+          }
+        >
+          <View
+            style={[
+              styles.stripDot,
+              {
+                backgroundColor: registryActive
+                  ? colors.green
+                  : !profileComplete
+                    ? colors.amber
+                    : '#3a3a3a',
+              },
+            ]}
+          />
+          <Text
+            style={[
+              styles.stripText,
+              {
+                color: registryActive
+                  ? colors.green
+                  : !profileComplete
+                    ? colors.amber
+                    : colors.textSubAlt,
+              },
+            ]}
+          >
+            {registryActive
+              ? 'LISTED — your public page is live'
+              : !profileComplete
+                ? `${missing.length} detail${missing.length === 1 ? '' : 's'} needed to get listed ›`
+                : 'PRIVATE — no public page'}
+          </Text>
+        </Pressable>
+
+        {/* Device controls stay on Profile (both were explicit owner requests)
+            but now sit BELOW the identity rather than above the user's own
+            name. Not collapsed: muting is a safety control. */}
+        <LowLightRow />
+        <AudioOutputRow />
+
+        {/* TEMPORARY dev tool (user request 2026-07-18) — visual index of every
+            screen + popup. Its own header says "REMOVE before release", but it
+            carried NO __DEV__ guard, so a paying student could open a master
+            index of every screen in the app from their own Profile (design
+            review 2026-08-30). Guarded now; delete the file and this block
+            when the tool is no longer wanted. */}
+        {__DEV__ ? <DevVisualIndex /> : null}
+
+        {/* ⛔ LABELS ON THIS SCREEN ARE FIRST PERSON (owner 2026-09-22).
+            The screen is MY PROFILE, and the directory beside it already said
+            MY AREAS OF AUDIO & ACOUSTICS, HOW I'M INVOLVED and ABOUT MY WORK —
+            but this screen answered with YOUR CERTIFICATES, YOUR NUMBERS,
+            YOUR USER NAME and WHAT YOU WORK IN, so the app changed voice
+            halfway down a single page.
+
+            The rule, applied here and in Settings: a LABEL naming something
+            that belongs to the user is first person ("My Certificates");
+            explanatory BODY copy stays second person ("Your display name will
+            be visible…"), because that is the app talking TO them and first
+            person reads bizarrely in a sentence. Third person is only ever
+            correct about OTHER members — see HOW THEY'RE INVOLVED in the
+            directory's Explore filters, which is not an inconsistency. */}
+        {/* —— MY PROGRESS —— retrospective only (owner 2026-09-04): what the
+            user has DONE. The Full Course line is a readout; each certificate /
+            program row opens its read-only AwardProgress view (which has a ‹
+            Back to Profile). Nothing here links to the Enrollments enroll page
+            — enrolling lives in Study — so no one lands there and gets stuck. */}
+        <Section
+          title="MY PROGRESS"
+          /* The collapsed header used to read "2% · 3 goals" — the academy-wide
+             figure, in the most prominent spot on the screen, before the
+             learner had opened anything. It now leads with the goals they
+             chose, and only carries the percentage once they have asked for
+             the big picture. */
+          summary={
+            goalCount
+              ? `${goalCount} ${goalCount === 1 ? 'goal' : 'goals'}${showBigPicture ? ` · ${profile ? `${profile.overallPct}%` : '—'}` : ''}`
+              : showBigPicture
+                ? (profile ? `${profile.overallPct}%` : '—')
+                : ''
+          }
+        >
+          {/* Whole-curriculum progress — a readout, not a link. HIDDEN by
+              default; see the big-picture note above. */}
+          {showBigPicture ? (
+          <View style={styles.readoutRow}>
+            <View style={styles.readoutHead}>
+              {/* RENAMED 2026-09-17: this is completed-topics ÷ the live topic
+                  count, and there is no "Full Course Certification" award in
+                  the app — the label promised a credential never issued. */}
+              <Text style={styles.rowLabel}>Whole-curriculum progress</Text>
+              {/* SAY BOTH NUMBERS (owner 2026-09-22: "check the logic and how
+                  the my progress - progress bars show their readout"). A bare
+                  "98% complete" tells the learner nothing about the scale of
+                  what is left; "163 of 166 topics" does. The total is only
+                  printed once it is known — a denominator of 0 would render
+                  "0 of 0", which reads as a broken curriculum. */}
+              <Text style={styles.rowHint}>
+                {/* Unread is not "Not started yet" (hunt 13): "—". */}
+                {!profile
+                  ? '—'
+                  : profile.overallPct > 0
+                  ? `${profile.overallPct}% complete${
+                      profile?.topicTotal
+                        ? ` · ${profile.completeCount} of ${profile.topicTotal} topics`
+                        : ''
+                    }`
+                  : 'Not started yet'}
+              </Text>
+            </View>
+            {/* The bar carried NO accessible value, so a screen reader heard
+                the label and nothing of the progress it exists to show — the
+                same gap fixed on LedMeter on 2026-09-21. `progressbar` is not
+                an RN accessibilityRole, so the value goes on the adjustable
+                role, with aria-* for RN-web where the DOM takes it directly. */}
+            <View
+              style={styles.progressTrack}
+              accessibilityRole="adjustable"
+              accessibilityValue={{ min: 0, max: 100, now: pctClamped, text: profile ? `${pctClamped}% complete` : 'Progress not loaded' }}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={pctClamped}
+            >
+              <View style={[styles.progressFill, { width: `${pctClamped}%` }]} />
+            </View>
+          </View>
+          ) : null}
+
+          {/* SPLIT (owner 2026-09-22: "their enrolled programs and certs all
+              separately"). Certificates and programs were one merged list, so
+              a learner could not tell which of their goals was which — and the
+              two are different things: a certificate is a subject credential,
+              a program is a multi-certificate path. */}
+          <Text style={styles.groupLabel}>MY CERTIFICATES</Text>
+          {certBundles.length ? (
+            certBundles.map((b) => (
+              <CatalogRow
+                key={b.key}
+                name={b.name}
+                done={bundleDone(b.topics)}
+                total={b.topics.length}
+                onPress={
+                  credIds.cert.get(b.name)
+                    ? () =>
+                        (navigation as any).navigate('AwardProgress', {
+                          awardType: 'certificate',
+                          awardId: credIds.cert.get(b.name),
+                          awardName: b.name,
+                        })
+                    : undefined
+                }
+              />
+            ))
+          ) : !bundlesRead ? (
+            /* Not read (still loading, or the read failed) is not "none
+               started" (hunt 13): true in both cases, never a false empty. */
+            <Text style={styles.rowHint}>Your certificates haven’t loaded yet.</Text>
           ) : (
-            <LinearGradient colors={['#ffd35e', '#f09e1a']} style={styles.avatar}>
-              <Text style={styles.avatarInitials}>{profile?.initials ?? '–'}</Text>
-            </LinearGradient>
+            <Text style={styles.rowHint}>
+              No certificates started yet — enrol from Study, and your progress appears here.
+            </Text>
           )}
-          <Text style={styles.nickname}>{(profile?.nickname ?? '—').toUpperCase()}</Text>
-          <Text style={styles.apeId}>{profile?.apeStudentId ?? ''}</Text>
 
-          {/* Real credential QR (owner 2026-08-21): encodes the Academy Registry
-              lookup URL for this user's permanent qr_token. Falls back to an
-              honest pending tile when the token isn't loaded yet. */}
-          <CredentialQr token={profile?.qrToken} size={120} />
-        </View>
-
-        {/* CERTIFICATIONS grid (MIC/REC/MIX/PA) PARKED — a future academic-version
-            feature, not part of the current commercial product (user request
-            2026-07-26). Kept out of the render on purpose. */}
-
-        {/* Album Level */}
-        <View style={[styles.panel, styles.albumRow]}>
-          <View style={{ flexShrink: 1 }}>
-            {/* Subtitle sits ABOVE the album-level title (Booth 2026-07-11). */}
-            <Text style={styles.tierMeta}>
-              {profile?.overallPct ?? 0}% of the whole curriculum
+          <Text style={styles.groupLabel}>MY PROGRAMS</Text>
+          {programBundles.length ? (
+            programBundles.map((b) => (
+              <CatalogRow
+                key={b.key}
+                name={b.name}
+                done={bundleDone(b.topics)}
+                total={b.topics.length}
+                onPress={
+                  credIds.program.get(b.name)
+                    ? () =>
+                        (navigation as any).navigate('AwardProgress', {
+                          awardType: 'program',
+                          awardId: credIds.program.get(b.name),
+                          awardName: b.name,
+                        })
+                    : undefined
+                }
+              />
+            ))
+          ) : !bundlesRead ? (
+            <Text style={styles.rowHint}>Your programs haven’t loaded yet.</Text>
+          ) : (
+            <Text style={styles.rowHint}>
+              No programs started yet — enrol from Study, and your progress appears here.
             </Text>
-            <Text style={styles.tierName}>
-              ALBUM LEVEL: {albumTitleFor(profile?.tierName ?? 'Black').toUpperCase()}
+          )}
+
+          {/* —— THE WHOLE CATALOGUE —— everything the academy offers, whether
+              or not this learner has enrolled in it. All three are collapsed,
+              so the screen opens at the length it always did, and none of the
+              catalogue progress is fetched until one is opened. */}
+          <Text style={styles.groupLabel}>EVERYTHING THE ACADEMY OFFERS</Text>
+          {catalog.state === 'loading' ? (
+            <Text style={styles.rowHint}>Loading the catalogue…</Text>
+          ) : catalog.state === 'unavailable' ? (
+            /* Not "there are none". A failed read is not an empty academy. */
+            <Text style={styles.rowHint}>
+              Couldn’t load the catalogue — check your connection and try again.
             </Text>
-            <Text style={styles.tierNote}>Higher tiers unlock as you complete more of the curriculum</Text>
+          ) : (
+            <>
+              <SubGroup
+                label="WHOLE CURRICULUM"
+                summary={`${curriculumTotals.fields} fields · ${curriculumTotals.topics} topics`}
+                onFirstOpen={wantCatalog}
+              >
+                {catalog.fields.map((f) => {
+                  const fieldGs = f.subjects.flatMap((su) => su.topics.map((t) => t.gs));
+                  return (
+                    <SubGroup
+                      key={f.field}
+                      label={f.field.toUpperCase()}
+                      summary={
+                        showBigPicture
+                          ? `${catalogDone(fieldGs) ?? '—'} / ${fieldGs.length}`
+                          : `${fieldGs.length} topics`
+                      }
+                      onFirstOpen={wantCatalog}
+                    >
+                      {f.subjects.map((su) => (
+                        <CatalogRow
+                          key={`${f.field}/${su.subject}`}
+                          name={su.subject}
+                          done={catalogDone(su.topics.map((t) => t.gs))}
+                          total={su.topics.length}
+                          showProgress={showBigPicture}
+                          indent
+                        />
+                      ))}
+                    </SubGroup>
+                  );
+                })}
+              </SubGroup>
+
+              <SubGroup
+                label="ALL CERTIFICATES"
+                summary={String(catalog.certs.length)}
+                onFirstOpen={wantCatalog}
+              >
+                <PagedList count={catalog.certs.length}>
+                  {(limit) =>
+                    catalog.certs.slice(0, limit).map((c) => (
+                      <CatalogRow
+                        key={c.id}
+                        name={c.name}
+                        done={catalogDone(c.topicsGs)}
+                        total={c.topicsGs.length}
+                        showProgress={showBigPicture}
+                        onPress={() =>
+                          (navigation as any).navigate('AwardProgress', {
+                            awardType: 'certificate',
+                            awardId: c.id,
+                            awardName: c.name,
+                          })
+                        }
+                      />
+                    ))
+                  }
+                </PagedList>
+              </SubGroup>
+
+              <SubGroup
+                label="ALL PROGRAMS"
+                summary={String(catalog.programs.length)}
+                onFirstOpen={wantCatalog}
+              >
+                <PagedList count={catalog.programs.length}>
+                  {(limit) =>
+                    catalog.programs.slice(0, limit).map((pr) => (
+                      <CatalogRow
+                        key={pr.id}
+                        name={pr.name}
+                        done={catalogDone(pr.topicsGs)}
+                        total={pr.topicsGs.length}
+                        showProgress={showBigPicture}
+                        onPress={() =>
+                          (navigation as any).navigate('AwardProgress', {
+                            awardType: 'program',
+                            awardId: pr.id,
+                            awardName: pr.name,
+                          })
+                        }
+                      />
+                    ))
+                  }
+                </PagedList>
+              </SubGroup>
+            </>
+          )}
+
+          {/* THE OPT-IN ITSELF (owner 2026-09-22). Deliberately the last thing
+              in the section and written as an invitation, not a setting: the
+              default view is the learner's own goals, and the academy-wide
+              totals are something they can ask for and put away again. */}
+          <View style={styles.switchRow}>
+            <Text style={styles.switchLabel}>Show my progress across the whole academy</Text>
+            <Toggle
+              on={showBigPicture}
+              label="Show my progress across the whole academy"
+              onChange={toggleBigPicture}
+            />
           </View>
-          <View style={styles.albumBacking}>
-            <AlbumDisc level={profile?.tierName ?? 'Black'} size={60} />
+          <Text style={styles.rowHint}>
+            {showBigPicture
+              ? 'Whole-curriculum, certificate and program totals are shown below. My own certificates and programs stay either way.'
+              : 'Totals across all 166 topics, 124 certificates and 36 programs. They move slowly — most people find their own goals more useful.'}
+          </Text>
+
+          <Text style={styles.groupLabel}>MY NUMBERS</Text>
+          {/* "Quizzes passed" and "Study streak" REMOVED (design review
+              2026-08-30): both were literal em-dashes with no backend, which
+              made the two real numbers beside them look broken too. */}
+          {/* Unread is not zero (hunt 13): an unreadable "known" list or a
+              profile that has not loaded / could not load shows "—". */}
+          <StatRow label="Terms learned" value={knownUnreadable ? '—' : String(known.size)} />
+          <StatRow label="Topics completed" value={profile ? String(profile.completeCount) : '—'} last />
+          {/* [43] (2026-09-07): gated on `achievements`, not completionRecords.
+              This row opens the Achievements hub, which the ladder grants to
+              'free' (achievements: true) and which the bottom tab already
+              opens for them — keying it on completionRecords (false for free)
+              hid the shortcut to a screen they are entitled to. */}
+          {/* `!resolved ||` — pre-resolve the neutral view is the MEMBER one
+              (AudioLearningScreen's M6 rule). The row only opens the
+              Achievements tab, which the tab bar already gives everyone, so
+              showing it a frame early costs nothing while hiding it from a
+              member who is entitled to it costs trust.
+              `memberGate !== 'locked'` (tidy hunt 5, 2026-10-03): a failed
+              membership read flips `resolved` with guest caps, which hid the
+              row from a paying member. Only a KNOWN guest loses it now. */}
+          {memberGate !== 'locked' || caps.achievements ? (
+            <Pressable
+              style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
+              onPress={() =>
+                // Flag the origin so the grid shows a back button to Profile
+                // (owner 2026-08-07 — there was no way back before).
+                (navigation as any).navigate('Achievements', {
+                  screen: 'AchievementsHome',
+                  params: { from: 'profile' },
+                })
+              }
+              accessibilityRole="button"
+              accessibilityLabel="View trophies and records"
+            >
+              <View style={styles.rowMain}>
+                <Text style={styles.rowLabel}>Trophies &amp; records</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </Pressable>
+          ) : null}
+        </Section>
+
+        {/* —— PUBLIC PROFILE — the fields. Opens itself while something is
+            missing, so the fix is already in front of you. —— */}
+        {/* MY USER NAME lives OUTSIDE the public profile (owner 2026-09-17):
+            it is never published and never shown to another member, so
+            sitting under a heading that says PUBLIC was misleading. */}
+        <Section
+          key={`user-name-${nameSeq}-${hydrated}`}
+          title="MY USER NAME"
+          summary={pub.name.trim() ? 'set' : 'not set'}
+          defaultOpen={nameSeq > 0 || (hydrated && !pub.name.trim())}
+        >
+          <Text style={styles.fieldLabel}>Your user name</Text>
+          <TextInput
+            ref={nameRef}
+            style={styles.input}
+            value={pub.name}
+            onChangeText={(t) => setPubKey('name', t)}
+            placeholder="Your user name"
+            placeholderTextColor={colors.textMuted}
+            autoCapitalize="words"
+            returnKeyType="done"
+            accessibilityLabel="Your user name"
+          />
+          <Text style={styles.rowHint}>
+            Private. Used to greet you in the app. It is never published and never shown to
+            other members.
+          </Text>
+        </Section>
+
+        <Section
+          key={`public-profile-${ppSeq}-${hydrated}`}
+          title="PUBLIC PROFILE"
+          summary={profileComplete ? 'complete' : `${missing.length} to finish`}
+          defaultOpen={ppSeq > 0 || (hydrated && !profileComplete)}
+        >
+          <Text style={styles.sectionIntro}>
+            {tierKnown && entitlement === 'anonymous'
+              ? 'Guest changes stay on this device only until the app closes — create an account to keep them.'
+              : 'Changes save as you type.'}
+          </Text>
+
+          <Text style={styles.fieldLabel}>Name on your certificates</Text>
+          <TextInput
+            ref={registryNameRef}
+            style={styles.input}
+            value={pub.registryName}
+            onChangeText={(t) => setPubKey('registryName', t)}
+            placeholder="Your Preferred Name"
+            placeholderTextColor={colors.textMuted}
+            autoCapitalize="words"
+            returnKeyType="done"
+            accessibilityLabel="Name on your certificates"
+          />
+          {pub.registryName.trim().length > 0 && !registryNameFits ? (
+            <Text style={styles.fieldError}>
+              This is too long to print on a certificate. Shorten it, or put a space in it
+              so it can run over two lines.
+            </Text>
+          ) : (
+            <Text style={styles.rowHint}>
+              Printed on every certificate you earn, and shown when someone scans your code.
+              Spell it the way you want it on paper.
+            </Text>
+          )}
+
+          <Text style={styles.fieldLabel}>Contact email</Text>
+          <TextInput
+            ref={emailRef}
+            style={styles.input}
+            value={pub.email}
+            onChangeText={(t) => setPubKey('email', t)}
+            onBlur={() => setEmailTouched(true)}
+            placeholder="you@example.com"
+            placeholderTextColor={colors.textMuted}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="email-address"
+            returnKeyType="done"
+            accessibilityLabel="Contact email"
+          />
+          {emailTouched && pub.email.trim().length > 0 && !emailValid ? (
+            <Text style={styles.fieldError}>Add a full address, like you@studio.com</Text>
+          ) : (
+            <Text style={styles.rowHint}>
+              Optional, and kept on this device only — never sent to us, never shown on
+              your public page. Members who find you in the directory reach you through
+              in-app contact requests, which never reveal your address.
+            </Text>
+          )}
+
+          <Text style={styles.fieldLabel}>About you</Text>
+          <TextInput
+            style={[styles.input, styles.bioInput]}
+            value={pub.bio}
+            onChangeText={(t) => setPubKey('bio', t)}
+            placeholder="e.g. FOH engineer, 6 years, clubs and worship"
+            placeholderTextColor={colors.textMuted}
+            multiline
+            maxLength={160}
+            returnKeyType="done"
+            accessibilityLabel="About you"
+          />
+          <Text style={styles.rowHint}>
+            {registryActive
+              ? 'Shown on your public page.'
+              : 'Private until you get listed, then shown on your public page.'}
+            {pub.bio.length > 120 ? `  ${pub.bio.length}/160` : ''}
+          </Text>
+        </Section>
+
+        {/* —— AUDIO COMMUNITY DIRECTORY — a separate concept from credential
+            verification (spec 2026-08-31 §4.4). Credentials are verified by
+            their own permanent link; the community profile is an opt-in
+            professional listing that can be published, hidden or deleted
+            without touching them. —— */}
+        <Section title="AUDIO COMMUNITY DIRECTORY" summary="opt-in">
+          <Text style={styles.sectionIntro}>
+            An optional professional listing: what you work in, what you specialise in, how
+            you&apos;re involved, and what members may contact you about.
+          </Text>
+          <Pressable
+            style={({ pressed }) => [styles.navRow, pressed && styles.rowPressed]}
+            onPress={() => (navigation as any).navigate('AudioCommunityDirectory')}
+            accessibilityRole="button"
+            accessibilityLabel="Open the Audio Community Directory"
+            accessibilityHint="Explore members, edit your community profile, and see contact requests"
+          >
+            <View style={styles.rowMain}>
+              <Text style={styles.rowLabel}>Open the Directory</Text>
+              <Text style={styles.rowHint}>Explore · My Profile · Requests</Text>
+            </View>
+            {/* Pending contact requests + unread messages (owner
+                2026-10-04). Nothing when the count is unknown. */}
+            <CommunityBadge style={{ marginRight: 8 }} />
+            <Text style={styles.chevron}>›</Text>
+          </Pressable>
+        </Section>
+
+        {/* —— WHO CAN SEE ME — both publishing switches in ONE place, with a
+            literal manifest between them. People refuse these toggles because
+            they cannot tell what "listed" includes, not because they mind
+            being listed. —— */}
+        <Section
+          title="WHO CAN SEE ME"
+          summary={!profileComplete ? 'needs info' : registryActive ? 'LISTED' : 'private'}
+        >
+          <Text style={styles.sectionIntro}>
+            Everything here is private unless you switch it on.
+          </Text>
+
+          {!profileComplete ? (
+            <View style={styles.gapBox}>
+              <Text style={styles.groupLabel}>BEFORE I CAN BE LISTED</Text>
+              {gaps.map((g) => (
+                <Pressable
+                  key={g.key}
+                  style={styles.gapRow}
+                  onPress={() => focusField(g.key)}
+                  disabled={g.done}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    g.done ? `${g.label}, done` : `${g.label}, missing. Opens the field.`
+                  }
+                >
+                  <Text style={[styles.gapMark, g.done && styles.gapMarkDone]}>
+                    {g.done ? '✓' : '○'}
+                  </Text>
+                  <Text style={[styles.gapLabel, g.done && styles.gapLabelDone]}>{g.label}</Text>
+                  <View style={{ flex: 1 }} />
+                  {g.done ? null : <Text style={styles.gapAction}>ADD ›</Text>}
+                </Pressable>
+              ))}
+            </View>
+          ) : null}
+
+          <View style={styles.switchRow}>
+            <Text style={styles.switchLabel}>List me in the Professional Registry</Text>
+            <Toggle
+              on={pub.showInRegistry}
+              label="List me in the Professional Registry"
+              disabled={!profileComplete}
+              onChange={onRegistryToggle}
+            />
           </View>
-        </View>
-      </View>
+          {hydrated && !registryVerified ? (
+            <Text style={styles.fieldError}>
+              We couldn't check this with the server just now, so the switch above is
+              showing what this phone last saved. Reopen this screen when you're back
+              online to confirm it.
+            </Text>
+          ) : null}
+          {registryGuest ? (
+            <Text style={styles.fieldError}>
+              Listing needs an account. Guests can’t be listed in the Professional Registry.
+            </Text>
+          ) : null}
+          <Text style={styles.rowHint}>
+            Publishes a page anyone with the link — or who scans your code — can open.
+          </Text>
+
+          <View style={styles.manifest}>
+            <Text style={styles.groupLabel}>ON MY PUBLIC PAGE</Text>
+            <Text style={styles.manifestOn}>
+              · {pub.registryName || pub.name || 'Your name'}
+            </Text>
+            <Text style={styles.manifestOn}>
+              {credsFailed
+                ? '· The certificates you have earned (couldn’t be loaded just now)'
+                : `· ${credentials.length} certificate${credentials.length === 1 ? '' : 's'} you have earned`}
+            </Text>
+            <Text style={styles.manifestOn}>
+              ·{' '}
+              {pub.interests.length
+                ? `What you work in (${pub.interests.length})`
+                : 'What you work in — none selected yet'}
+            </Text>
+            <Text style={styles.manifestOn}>
+              · {pub.bio.trim() ? 'Your About you line' : 'Your About you line — empty'}
+            </Text>
+            <Text style={[styles.groupLabel, { marginTop: 12 }]}>NEVER PUBLISHED</Text>
+            <Text style={styles.manifestOff}>· Your email address</Text>
+            <Text style={styles.manifestOff}>· Your progress, quiz scores and notes</Text>
+            <Text style={styles.manifestOff}>· The private name you are greeted by</Text>
+          </View>
+
+          {/* HONEST PRESENT TENSE: there is no Contact button and no message
+              relay yet, so this records a preference and says exactly that.
+              The old copy described a feature that did not exist. */}
+          <View style={styles.switchRow}>
+            <Text style={styles.switchLabel}>Open to being contacted about work</Text>
+            <Toggle
+              on={pub.contactConsent}
+              label="Open to being contacted about work"
+              onChange={(v) => setPubKey('contactConsent', v)}
+            />
+          </View>
+          <Text style={styles.rowHint}>
+            Saved as a preference for now. There is no message button yet — nobody can contact
+            you through the Academy, and your email address is never published either way.
+          </Text>
+
+          <Text style={[styles.rowHint, { marginTop: 12 }]}>
+            Turn listing off and your page goes offline and what was published is deleted.
+            Certificates you have already earned stay verifiable by QR.
+          </Text>
+        </Section>
+
+        {/* —— WHAT I WORK IN — published when listed, so the section says
+            so rather than leaving the user to guess. "Why you're studying"
+            was REMOVED entirely (owner 2026-08-30): one of its options was
+            Church, and a study goal attached to a published name is religious
+            affiliation — special-category data under GDPR Art. 9. It earned
+            nothing that justified carrying that. —— */}
+        <Section
+          title="WHAT I WORK IN"
+          summary={pub.interests.length ? `${pub.interests.length} selected` : 'none yet'}
+        >
+          <Text style={styles.sectionIntro}>
+            {registryActive
+              ? 'These appear on your public page.'
+              : 'These appear on your public page if you get listed. Private until then.'}
+          </Text>
+          <Text style={styles.rowHint}>
+            Tap to select. Press and hold one to make it your main field.
+          </Text>
+          <View style={{ height: 8 }} />
+          <ChoiceChips
+            options={INTEREST_TOPICS}
+            isOn={(o) => pub.interests.includes(o)}
+            onPick={toggleInterest}
+            onLongPick={promotePrimary}
+            starred={pub.primaryInterest}
+          />
+        </Section>
+
+        {/* —— CREDENTIALS — every non-revoked certificate/program the user
+            holds. Hidden entirely when none are earned: an empty trophy case
+            on a new account reads as a failure rather than a not-yet. —— */}
+        {credentials.length > 0 ? (
+          <Section title="CREDENTIALS" summary={String(credentials.length)}>
+            {credentials.map((c) => (
+              <View key={`${c.type}:${c.id}`} style={styles.credRow}>
+                <View style={{ flex: 1, paddingRight: 12 }}>
+                  <Text style={styles.credName}>{c.name}</Text>
+                  <Text style={styles.credMeta}>
+                    {c.type === 'program' ? 'PROGRAM' : 'CERTIFICATE'}
+                    {c.levelOrTier ? ` · ${c.levelOrTier}` : ''}
+                    {c.awardedAt ? ` · ${fmtCredDate(c.awardedAt)}` : ''}
+                  </Text>
+                </View>
+                {certificateExportAvailable() && (
+                  <Pressable
+                    onPress={() => onExportCredential(c)}
+                    // Every PDF row waits while ONE is being prepared (bug
+                    // hunt 2026-09-29): a second export started mid-render
+                    // raced the first for the one share sheet, and the
+                    // `exportingId` it overwrote re-enabled the first row.
+                    disabled={exportingId !== null}
+                    style={styles.credButton}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Download the ${c.name} certificate`}
+                  >
+                    <Text style={styles.credAction}>
+                      {exportingId === c.id ? 'PREPARING…' : 'PDF'}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+            ))}
+            {!certificateExportAvailable() && (
+              <Text style={styles.rowHint}>Certificate download isn’t available on this device. Your certificate is safely recorded on your account.</Text>
+            )}
+            {credMessage != null && <Text style={styles.rowHint}>{credMessage}</Text>}
+          </Section>
+        ) : null}
+
+        {/* FULL-SCREEN ID — the point of a digital credential is that someone
+            else scans it, across a table, in a dark venue. The inline QR is a
+            preview; this is the one you hold up. */}
+        <Modal
+          visible={fullIdOpen}
+          transparent={false}
+          animationType="fade"
+          onRequestClose={closeFullId}
+          supportedOrientations={['portrait', 'landscape']}
+          // The low-light wash comes with DimModal; BRIGHTEN TO SCAN lifts it
+          // until the card closes (it was hand-mounted here before).
+          lowLightDim={!brightId}
+        >
+          <Pressable
+            style={styles.fullId}
+            onPress={closeFullId}
+            accessibilityRole="button"
+            accessibilityLabel="Close your ID"
+          >
+            <Text style={styles.fullIdName}>
+              {pub.registryName || pub.name || 'Add your name'}
+            </Text>
+            <Text style={[styles.idStatus, { color: statusColor, marginBottom: 22 }]}>
+              {statusLabel}
+            </Text>
+            <CredentialQr token={profile?.qrToken} size={248} />
+            {profile?.apeStudentId ? (
+              <Text style={styles.fullIdNumber}>ID {profile.apeStudentId}</Text>
+            ) : null}
+            {lowLight ? (
+              <Pressable
+                style={styles.brighten}
+                onPress={() => setBrightId((b) => !b)}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  brightId
+                    ? 'Dim the ID again. Low-light is paused while this card is open.'
+                    : 'Brighten to scan. Lifts low-light until you close this card.'
+                }
+              >
+                <Text style={styles.brightenText}>
+                  {brightId ? 'DIM AGAIN' : 'BRIGHTEN TO SCAN'}
+                </Text>
+              </Pressable>
+            ) : null}
+            <Text style={styles.fullIdHint}>
+              {brightId ? 'Low-light resumes when you close this' : 'Tap anywhere to close'}
+            </Text>
+            {/* A Modal renders in its OWN native view hierarchy, so the root
+                LowLightDim does not reach it. DimModal mounts the wash for
+                us (lowLightDim above): without it the ID is the one surface
+                that ignores Low-Light Production Mode, and it opens
+                full-bright white in a dark venue — exactly the flash the
+                mode promises will not happen. */}
+          </Pressable>
+        </Modal>
+
+        {/* Upgrade CTA for non-academy (free / lapsed) → Paywall. Held back
+            until `resolved`: offering a member a purchase they already own is
+            the upsell-honesty failure, and it is cheaper to show the button a
+            beat late than to show it wrongly (entitlement audit 2026-09-11). */}
+        {tierKnown && !academy && (
+          <View style={{ marginTop: 4 }}>
+            <GlassButton
+              label={entitlement === 'lapsed' ? 'RENEW ACADEMY' : 'UPGRADE TO ACADEMY'}
+              // Glossary blue (Booth 2026-07-11 #2).
+              tint="blue"
+              height={52}
+              fontSize={14}
+              onPress={() => (navigation as any).navigate('Paywall')}
+            />
+          </View>
+        )}
+      </KeyboardAwareScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
-  body: { flex: 1, padding: 14, gap: 12 }, // zero scroll (locked)
-  // Commercial variant scrolls (adds the networking profile form).
   // Card column, not the prose column: 760 on a tablet (owner iPad report
   // 2026-09-25 - 560 read as "narrow squeezed"). Phones unchanged.
   bodyScroll: { padding: 14, paddingBottom: 32, gap: 12, ...cardColumn },
@@ -2091,91 +1997,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   gearGlyph: { fontSize: 20.5, color: colors.textSubAlt },
-
-  idCardLegacy: {
-    backgroundColor: '#181818',
-    borderWidth: 1,
-    borderColor: colors.deepBorder,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    gap: 5,
-  },
-  pilotDot: {
-    position: 'absolute',
-    top: 7,
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: '#4a4a4a',
-    borderWidth: 1,
-    borderColor: '#222222',
-  },
-  avatar: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarImg: { width: 110, height: 110, borderRadius: 55 },
-  avatarInitials: { fontFamily: fonts.oswaldBold, fontSize: 38, color: '#221500' },
-  nickname: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, letterSpacing: 1, color: colors.textPrimary, marginTop: 6 },
-  apeId: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    color: colors.amber,
-    textShadowColor: 'rgba(255,180,0,.4)',
-    textShadowRadius: 6,
-    textShadowOffset: { width: 0, height: 0 },
-  },
-
-  panel: {
-    backgroundColor: '#181818',
-    borderWidth: 1,
-    borderColor: colors.hairlineAlt,
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-  },
-
-  // Institutional Mode row (user request 2026-07-17) — disabled switch +
-  // tappable label opening the parked-modules container.
-
-  // CM7 commercial variant.
-
-  albumRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  // Coordinated lighter-gray SQUARE backing (Booth 2026-07-11): rounded square,
-  // lifted another 39% toward white (#55565a → #97989a) for stronger contrast.
-  albumBacking: {
-    padding: 8,
-    borderRadius: 10,
-    backgroundColor: '#97989a',
-    borderWidth: 1,
-    borderColor: '#a4a5a7',
-  },
-  tierName: {
-    fontFamily: fonts.oswaldBold,
-    fontSize: 18,
-    letterSpacing: 1.8,
-    color: '#c8c8c8',
-    textShadowColor: 'rgba(200,200,200,.3)',
-    textShadowRadius: 8,
-    textShadowOffset: { width: 0, height: 0 },
-  },
-  tierMeta: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.6, color: colors.textSubAlt, marginTop: 2 },
-  tierNote: {
-    fontFamily: fonts.barlowCondensedRegular,
-    fontSize: 12,
-    lineHeight: 15,
-    color: colors.textMuted,
-    marginTop: 6,
-    maxWidth: 170,
-  },
 });

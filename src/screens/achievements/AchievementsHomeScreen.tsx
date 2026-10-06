@@ -3,7 +3,6 @@
  * Three category cards — Topics, Certificates, Programs — each showing its
  * earned count and a strip of the most-recent trophies, so progress in all
  * three shows the moment you land. Tapping a card drills into that category.
- * Replaces the old single 50-slot v1 grid (AchievementsScreen).
  *
  * Reached from the bottom tab OR the Profile "Trophies & records" link; the
  * latter passes `from: 'profile'` so a back-to-Profile chevron shows (owner

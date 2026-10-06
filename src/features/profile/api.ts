@@ -1,23 +1,16 @@
 /**
- * Profile / Achievements / Gallery data layer — RLS-scoped reads only.
+ * Profile data layer — RLS-scoped reads only.
  * `overallPct` = completed ACTIVE v3 topics / active v3 topic count — both
- * sides scoped identically (2026-09-22). Was complete_count / 50.
- * status rows (never client math over raw events). The album-tier data (tier
- * name + AlbumDisc) is still computed for the RETAINED academic Profile variant,
- * but the commercial version no longer shows it and the live tab-bar tier store
- * was REMOVED (owner 2026-08-07 — album progression retired for commercial).
+ * sides scoped identically (2026-09-22), counted from status rows (never
+ * client math over raw events).
  */
 import { supabase } from '../../lib/supabase';
 import { hasSafeSession, safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../commercial/realAccount';
-import { albumTierFor, type AlbumTierName } from '../../theme/tokens';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { classifyProfileRead, type ProfileRead } from './profileRead';
 import { myUserId, myUserRowOrThrow } from '../account/myUserRow';
 export type { ProfileRead } from './profileRead';
-
-export const ALBUM_DENOMINATOR = 50; // locked (D-5) — legacy album scale; NOT the
-// overall-% denominator anymore (that is the live v3 topic count; see fetchProfile).
 
 /* ---- fetches ---- */
 
@@ -35,7 +28,6 @@ export type ProfileData = {
    *  than a bare "98%", which tells the learner nothing about the scale. */
   topicTotal: number;
   overallPct: number;
-  tierName: AlbumTierName;
 };
 
 type UserRow = {
@@ -135,8 +127,7 @@ export async function fetchProfile(): Promise<ProfileRead> {
         .eq('status', 'complete')
         .eq('achievements.curriculum_version_id', V3_CURRICULUM_VERSION_ID)
         .eq('achievements.is_active', true),
-      // Overall % denominator = the LIVE v3 topic count, not the retired 50-slot
-      // album scale (QA Wave B 2026-09-10: /50 against 166 topics rendered >100%).
+      // Overall % denominator = the LIVE active v3 topic count.
       supabase
         .from('achievements')
         .select('id', { count: 'exact', head: true })
@@ -172,7 +163,6 @@ export async function fetchProfile(): Promise<ProfileRead> {
   // 246% computation into a confident-looking 100%.
   const total = totalTopics ?? 0;
   const overallPct = total > 0 ? Math.min(100, Math.floor((done / total) * 100)) : 0;
-  const tier = albumTierFor(overallPct);
 
   const initials =
     `${(user.first_name ?? user.nickname ?? '?').charAt(0)}${user.last_name_initial ?? ''}`.toUpperCase();
@@ -188,7 +178,6 @@ export async function fetchProfile(): Promise<ProfileRead> {
       completeCount: done,
       topicTotal: total,
       overallPct,
-      tierName: tier.name,
     },
   };
 }
@@ -390,7 +379,5 @@ export async function saveMyRegistryName(name: string): Promise<boolean> {
   }
 }
 
-// The Achievements trophy grid + Gallery data moved to
-// `src/features/achievements/api.ts` (v3 redesign 2026-09-04). The old
-// `fetchAchievements`/`fetchGallery` here joined the retired v1 `courses` table
-// and were removed with the single 50-slot grid.
+// The Achievements trophy grid + Gallery data live in
+// `src/features/achievements/api.ts`.

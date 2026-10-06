@@ -4,9 +4,7 @@
  *
  * - Loads straight to the last-used topic (no Resume modal).
  * - Swipe L/R on the topic title block moves freely between ALL topics in the
- *   course (user request 2026-07-17). The old per-topic frontier gate (hard
- *   stop + screen-shake/haptic past the one-ahead boundary) is removed; a
- *   per-course gate will replace it later.
+ *   deck (user request 2026-07-17); there is no per-topic frontier gate.
  * - Provisional (clamped) topic = predecessor status passed_incomplete:
  *   distinct border + persistent reminder (copy locked; styling is a
  *   [TBD-DESIGN] proposal).
@@ -125,7 +123,7 @@ import { CoachMark } from '../../components/CoachMark';
 import { HelpKey } from '../../components/HelpKey';
 import { COACH_KEYS, useCoachMark } from '../../lib/coachMark';
 import { LearningIntroSheet } from '../../features/intro/LearningIntroSheet';
-import { getCourseIntro, getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
+import { getTopicIntro, isIntroEmpty } from '../../features/intro/learningIntros';
 import { QUIZ_OUTCOME_COPY, replayQuizSubmissions } from '../../features/quiz/api';
 import { EXAM_OUTCOME_COPY, EXAM_PASS_NOT_ISSUED_COPY, replayExamSubmissions } from '../../features/finalExam/api';
 import { onStudyProgress, replayQueue } from '../../features/study/sync';
@@ -770,8 +768,6 @@ export function DashboardScreen() {
   // Pillar B coach mark (plan §3): the dial IS the topic selector but reads as
   // decoration until held. Retires after 2 real turns per open, 5 opens.
   const jogCoach = useCoachMark(COACH_KEYS.dashboardJog, 2);
-  // CM6 (Booth 2026-07-11): commercialMode renders a PUBLIC course (seq order
-  // from the seed) through this same screen; institutional path unchanged.
   const { commercialMode, caps, entitlement, resolved } = useEntitlement();
   // The study gates' "tier is known" (hunt 5, 2026-10-03): the central rule,
   // `memberGateOf` — a read that produced a tier, OR this account's remembered
@@ -797,23 +793,17 @@ export function DashboardScreen() {
   // topic into the Dashboard, but studying it raises the Academy upgrade sheet.
   const [upgradeOpen, setUpgradeOpen] = useState(false);
 
-  // Enrollment-driven Dashboard (user request 2026-07-22): a COURSE ⇄ MY
-  // ENROLLMENT toggle. In enrollment mode the top swiper iterates the user's
-  // enrolled topics (active + inactive; inactive dimmed) and the full study
-  // machinery loads per topic. Available to ANY user with enrolled topics.
+  // Enrollment-driven Dashboard (user request 2026-07-22): the top swiper
+  // iterates the user's enrolled topics (active + inactive; inactive dimmed)
+  // and the full study machinery loads per topic. The user manages the list
+  // via the "My Enrollments" screen; with nothing enrolled, load() falls back
+  // to the free topics.
   const enrolled = useEnrollment();
   // `enrolled` is [] while the stored list is being read AND after that read
   // FAILED — neither is "nothing enrolled" (hunt 12; D51). Read inside load().
   const enrollRead = useEnrollmentReadState();
   const enrollReadRef = useRef(enrollRead);
   enrollReadRef.current = enrollRead;
-  // The dashboard is now driven by the user's ENROLLMENT (they manage it via the
-  // "My Enrollments" screen); the COURSE ⇄ ENROLLMENT toggle was removed (user
-  // request 2026-07-23). Falls back to the course/commercial fetch only when no
-  // topics are loaded (see load() guard).
-  const [viewMode, setViewMode] = useState<'course' | 'enrollment'>('enrollment');
-  const viewModeRef = useRef(viewMode);
-  viewModeRef.current = viewMode;
   // The study swipe shows ACTIVE enrolled topics the user can ACCESS. Free/
   // The dashboard deck = every ACTIVE enrolled topic, locked or not (user request
   // 2026-08-13, reversing the 2026-07-22 free-only rule): a non-member SEES the
@@ -904,11 +894,10 @@ export function DashboardScreen() {
   const popupOpenRef = useRef(false);
   popupOpenRef.current = termsOpen || trophyOpen || deckOpen || upgradeOpen || dashIntroUp;
 
-  // Learning intros (user request 2026-07-18): a COURSE intro before beginning
-  // a course and a TOPIC intro before beginning each topic. Auto-shown once
-  // each (persisted in one set), and re-openable from the topic card. `intro`
-  // holds whichever sheet is currently up.
-  const [intro, setIntro] = useState<{ kind: 'course' | 'topic'; key: string; name: string } | null>(null);
+  // Learning intros (user request 2026-07-18): a TOPIC intro before beginning
+  // each topic. Auto-shown once each (persisted in one set). `intro` holds the
+  // sheet that is currently up.
+  const [intro, setIntro] = useState<{ key: string; name: string } | null>(null);
   const [introSeen, setIntroSeen] = useState<Set<string>>(new Set());
   useEffect(() => {
     AsyncStorage.getItem('ape:learnIntrosSeen')
@@ -1147,7 +1136,7 @@ export function DashboardScreen() {
           // Both arms build from v3 enrollments (owner 2026-09-03): an empty
           // enrollment list falls to the same free-topic view a guest sees.
           d =
-            viewModeRef.current === 'enrollment' && enrolledGsRef.current.length > 0
+            enrolledGsRef.current.length > 0
               ? await fetchEnrollmentDashboard(enrolledGsRef.current)
               : await guestFetch();
         } catch (e: any) {
@@ -1301,24 +1290,11 @@ export function DashboardScreen() {
   // a confirmed-empty topic sat at 0% with its whole chain locked again.
   useTermsExempt();
 
-  // Toggle Course ⇄ My Enrollment (user request 2026-07-22) — reload at once.
-  const switchMode = useCallback(
-    (next: 'course' | 'enrollment') => {
-      if (viewModeRef.current === next) return;
-      setViewMode(next);
-      viewModeRef.current = next;
-      void load();
-    },
-    [load],
-  );
-
-  // Keep the enrollment view in sync as the list is edited: reload on any change
-  // while viewing it, and fall back to the course view if it empties.
+  // Keep the deck in sync as the enrollment list is edited: reload on any
+  // change; an empty list falls back to the free topics inside load() (user
+  // request 2026-07-23).
   const enrolledKey = enrolled.map((e) => `${e.gs}${e.active ? '' : '!'}`).join(',');
   useEffect(() => {
-    if (viewModeRef.current !== 'enrollment') return;
-    // Reload as the enrollment list is edited; an empty list simply falls back to
-    // the course/commercial fetch inside load() (user request 2026-07-23).
     // …and when the stored list's READ lands or fails (hunt 12): an empty or
     // unreadable list has the same key as the placeholder, so a recovered
     // read would otherwise never reload the deck.
@@ -1358,15 +1334,13 @@ export function DashboardScreen() {
   // every derived value (overallPct, quizState, rowsForTopic…) computes to 0/empty.
   // Scroll order (owner 2026-08-01): resolved from the deck prefs — ALPHABETICAL
   // by default (★ Custom List pinned first), or the user's CUSTOM order; removed
-  // topics are excluded. data.topics keeps its course order for the progress/
+  // topics are excluded. data.topics keeps its enrollment order for the progress/
   // frontier logic; only this carousel is reordered.
   const { topics, removedMembers } = useMemo(() => {
     const customTopic: Topic = {
       id: FLAGGED_TOPIC_ID,
-      sequence_in_course: 9999,
       name: FLAGGED_TOPIC_NAME,
       applicable_methods: [],
-      is_prerequisite: false,
       icon_url: null,
       global_sequence: null,
     };
@@ -1515,8 +1489,7 @@ export function DashboardScreen() {
     (next: number) => {
       if (!data) return;
       // Free roam across all topics (user request 2026-07-17); clamp only to
-      // the real array bounds. A per-course gate will replace the old
-      // per-topic frontier stop later.
+      // the real array bounds.
       if (next < 0 || next > topics.length - 1) return;
       shownTopicIdRef.current = topics[next].id;
       setTopicIdx(next);
@@ -1661,24 +1634,18 @@ export function DashboardScreen() {
     if (consumeDevPreview('dashboard:terms')) void openFlaggedTerms();
   }, [openFlaggedTerms]);
 
-  // Auto-open the not-yet-seen intro (user request 2026-07-18): the COURSE
-  // intro first, then the CURRENT TOPIC's — so there is always an intro before
-  // beginning. Each is shown once (persisted); re-openable from the card.
+  // Auto-open the CURRENT TOPIC's not-yet-seen intro (user request 2026-07-18)
+  // before beginning. Each is shown once (persisted).
   useEffect(() => {
     if (!data || intro) return;
     // Only AUTO-open an intro that actually has authored content — otherwise an
     // empty placeholder modal would cover the dashboard and block all input
-    // (bug fix 2026-07-18). The ⓘ buttons still open them on demand.
-    const courseKey = `course:${data.currentCourse.id}`;
-    if (!introSeen.has(courseKey) && !isIntroEmpty(getCourseIntro(data.currentCourse.name))) {
-      setIntro({ kind: 'course', key: courseKey, name: data.currentCourse.name });
-      return;
-    }
+    // (bug fix 2026-07-18).
     const t = topics[topicIdx];
     if (t) {
       const topicKey = `topic:${t.id}`;
       if (!introSeen.has(topicKey) && !isIntroEmpty(getTopicIntro(t.name))) {
-        setIntro({ kind: 'topic', key: topicKey, name: t.name });
+        setIntro({ key: topicKey, name: t.name });
       }
     }
   }, [data, topics, topicIdx, introSeen, intro]);
@@ -1793,7 +1760,6 @@ export function DashboardScreen() {
 
   // Enrollment view: this topic is INACTIVE (set aside) — shown but dimmed.
   const topicInactive =
-    viewMode === 'enrollment' &&
     topic.global_sequence != null &&
     inactiveGs.current.has(topic.global_sequence);
 
@@ -1953,7 +1919,6 @@ export function DashboardScreen() {
   // this deck (the normal case, since these two are auto-enrolled), otherwise
   // send the user to the Home tab where the free topic card lives.
   const dispTopicInactive =
-    viewMode === 'enrollment' &&
     dispTopic.global_sequence != null &&
     inactiveGs.current.has(dispTopic.global_sequence);
   const dispOverallPct = jogActive ? overallPctFor(dispTopic) : overallPct;
@@ -2091,10 +2056,6 @@ export function DashboardScreen() {
 
         {/* R6c: Audio Fundamentals labs credit — renders only once earned. */}
         <FundamentalsCreditBanner />
-
-        {/* The COURSE ⇄ MY ENROLLMENT toggle was removed (user request
-            2026-07-23) — the dashboard follows the enrollment list, adjusted via
-            the "My Enrollments" button above. */}
 
         {/* Topic title block (swipeable — free roam across all topics) */}
         <View
@@ -2243,8 +2204,6 @@ export function DashboardScreen() {
               <LedMeter filled={Math.max(1, segmentsForPct(dispOverallPct))} vertical midi />
             </View>
           </View>
-          {/* Topic/course intro buttons removed (user request 2026-07-18) — the
-              intros still auto-show once before beginning (when content exists). */}
           {/* [46b] (2026-09-11) interpolated QUIZ_PASS here so the copy could not
               drift from the ratified pass mark. 2026-09-17 supersedes that: there
               is no single ratified pass mark any more. The server grades v3 at
@@ -2807,8 +2766,7 @@ export function DashboardScreen() {
                   height={42}
                   onPress={() => {
                     setTermsOpen(false);
-                    // Owner 2026-09-03: the course params are gone with the
-                    // archived v1 catalog. The Glossary preselects by topic.
+                    // The Glossary preselects by topic.
                     navigation.navigate('Glossary', {
                       achievementId: topic.id,
                       topicName: topic.name,
@@ -2906,14 +2864,13 @@ export function DashboardScreen() {
           other popups can wait for it (hunt 13; see dashIntro). */}
       {dashIntro.visible ? <IntroSheet introKey="dashboard" onDismiss={dashIntro.dismiss} /> : null}
 
-      {/* Topic / course learning intro (user request 2026-07-18) — shown before
-          the student begins; content fills in as topics/courses are developed. */}
+      {/* Topic learning intro (user request 2026-07-18) — shown before the
+          student begins; content fills in as topics are developed. */}
       {intro ? (
         <LearningIntroSheet
           visible
-          kind={intro.kind}
           title={intro.name}
-          intro={intro.kind === 'course' ? getCourseIntro(intro.name) : getTopicIntro(intro.name)}
+          intro={getTopicIntro(intro.name)}
           onBegin={dismissIntro}
         />
       ) : null}
@@ -3051,20 +3008,6 @@ const styles = StyleSheet.create({
   // Enrollment view: inactive topic panel reads set-aside (user request 2026-07-22).
   topicCardInactive: { borderTopColor: '#3a3a3a', backgroundColor: '#151515', opacity: 0.82 },
   topicNameDim: { opacity: 0.55 },
-  // COURSE ⇄ MY ENROLLMENT toggle (user request 2026-07-22).
-  modeRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
-  modeBtn: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#333',
-    borderRadius: 8,
-    paddingVertical: 8,
-    alignItems: 'center',
-    backgroundColor: '#131313',
-  },
-  modeBtnOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,.1)' },
-  modeBtnOnGreen: { borderColor: 'rgba(55,224,95,.7)', backgroundColor: 'rgba(55,224,95,.1)' },
-  modeBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSub },
   // MY ENROLLMENTS header button — matches the home screen's green Enrollments
   // nav button (user request 2026-07-23).
   myEnrollBtn: {
@@ -3094,8 +3037,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(120,155,190,0.55)',
     backgroundColor: 'rgba(47,155,255,0.08)',
   },
-  modeBtnTextOn: { color: colors.amber },
-  modeBtnTextOnGreen: { color: '#37e05f' },
   pilotDot: {
     position: 'absolute',
     top: 7,

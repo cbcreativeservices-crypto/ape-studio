@@ -1,7 +1,7 @@
 /**
- * S9 — Achievement Gallery (LOCKED June 7; visuals from 16-s9-gallery.dc.html):
- * earned only, newest first, 2-column cards — 48px course-color vinyl disc,
- * topic name, "COURSE · DATE" mono. Card borders/glow in the course color.
+ * S9 — Achievement Gallery: earned topic trophies only, newest first, in a
+ * grid of cards — the 48px topic tile (an amber disc while its art is
+ * missing), topic name, "SUBJECT · DATE". Card borders/glow amber.
  * Tap → Trophy (entry=gallery). Empty: "Earn your first trophy to see it
  * here." Bottom nav visible (nested in the Achievements tab stack).
  */

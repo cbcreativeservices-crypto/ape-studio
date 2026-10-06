@@ -372,7 +372,6 @@ export function DevVisualIndex() {
         <ShareTermSheet payload={standalone === 'share' ? MOCK_SHARE : null} onClose={() => setStandalone(null)} />
         <LearningIntroSheet
           visible={standalone === 'learningIntro'}
-          kind="topic"
           title="Pro Audio Safety"
           intro={MOCK_INTRO}
           onBegin={() => setStandalone(null)}
