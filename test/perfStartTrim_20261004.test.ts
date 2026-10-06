@@ -41,6 +41,8 @@ const code = (p: string) => read(p).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\
 const slash = (p: string) => p.split('\\').join('/');
 
 const WIPE = 'src/features/account/clearLocalAccountData.ts';
+// Snapshots below were taken with the Miking tiles visible (preview state).
+process.env.EXPO_PUBLIC_MIKING_PREVIEW = '1';
 const CATALOG = 'src/screens/lab/labCatalog.ts';
 /** The five modules the wipe used to import, and what each keeps. */
 const MOVED = {

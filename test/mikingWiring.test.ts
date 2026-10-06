@@ -47,6 +47,9 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 const FILES = walk(DIR).map((f) => ({ f, raw: read(f), s: strip(read(f)) }));
 
+// The tiles are hidden in store builds until the owner approves (labCatalog MIKING_PUBLIC);
+// this file tests the preview state the owner's Pixel runs.
+process.env.EXPO_PUBLIC_MIKING_PREVIEW = '1';
 const { LAB_CATEGORIES, isMemberOnlyLabRoute, labRouteName, categoryLeaves, mikingLessonCount } = await import('../src/screens/lab/labCatalog.ts');
 const REGISTRY = await import('../src/screens/lab/miking/data/registry.ts');
 const { readyLabs, LESSONS } = REGISTRY;
@@ -212,5 +215,15 @@ describe('wording', () => {
       // Code and copy only (comments stripped); "free field" is physics.
       assert.doesNotMatch(s.replace(/free[- ]field/gi, ''), /\bfree\b/i, f);
     }
+  });
+});
+
+describe('release gate (owner 2026-10-06: hidden on store builds until approved)', () => {
+  it('MIKING_PUBLIC is false and only dev or the preview update shows the tiles', () => {
+    const src = read('src/screens/lab/labCatalog.ts');
+    assert.match(src, /export const MIKING_PUBLIC = false;/);
+    assert.match(src, /families: mikingVisible\(\) \? \[/);
+    assert.match(src, /process\.env\.EXPO_PUBLIC_MIKING_PREVIEW === '1'/);
+    assert.match(src, /MikingHub: 'Miking Labs',/);
   });
 });

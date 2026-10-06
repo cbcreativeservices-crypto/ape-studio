@@ -18,6 +18,26 @@ import { computeLabRouteMembership } from './labMembership';
 import { lessonsOf, readyLabs } from './miking/data/registry';
 
 /**
+ * MIKING LABS RELEASE GATE (owner 2026-10-06: "Go to Apple sooner with the
+ * Miking labs hidden for now until I give the approval ok").
+ *
+ * Hidden in store builds (App Review, testers). Shown in development and in
+ * the owner's Pixel test update, which is published with
+ * EXPO_PUBLIC_MIKING_PREVIEW=1 on the `preview` branch only.
+ *
+ * ON THE OWNER'S APPROVAL: set MIKING_PUBLIC to true and publish an update —
+ * JS only, no new build.
+ */
+export const MIKING_PUBLIC = false;
+export function mikingVisible(): boolean {
+  return (
+    MIKING_PUBLIC ||
+    (typeof __DEV__ !== 'undefined' && __DEV__) ||
+    process.env.EXPO_PUBLIC_MIKING_PREVIEW === '1'
+  );
+}
+
+/**
  * The Calculator Laboratory's row count, worked out on first READ (perf start
  * trim, owner 2026-10-04 "do … the members-only gate").
  *
@@ -445,12 +465,13 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
     // lab with a READY lesson (data/registry.ts), opening its lessons. No
     // ready lab, no tile (no placeholder rows). Members-only (ruling:
     // members + grayed preview).
-    families: [
+    // Hidden on store builds until the owner approves (src/config/mikingRelease.ts).
+    families: mikingVisible() ? [
       {
         name: 'Miking Labs',
         labs: readyLabs().map((l) => ({ name: l.family, blurb: l.familyBlurb, countLine: mikingLessonCount(lessonsOf(l.id).length), route: 'MikingHub' as const, params: { lab: l.id }, member: true })),
       },
-    ],
+    ] : [],
   },
   // REMOVED 2026-09-17 (owner): the whole "Mixing & Production" category
   // (id 'mixing'). All three of its rows were placeholders — Mixing Principle,
@@ -633,6 +654,8 @@ const LAB_ROUTE_MEMBERSHIP = computeLabRouteMembership(LAB_CATEGORIES);
  */
 const MEMBER_ONLY_EXTRA_ROUTES: Record<string, string> = {
   // Inside the Cymatics Lab (its own catalog row is `CymaticsLab`).
+  // The Miking family route stays members-only while its tiles are hidden.
+  MikingHub: 'Miking Labs',
   CymaticsModule: 'Cymatics Lab',
   CymaticsPlateStudio: 'Cymatics Lab',
   CymaticsLiquidStudio: 'Cymatics Lab',
