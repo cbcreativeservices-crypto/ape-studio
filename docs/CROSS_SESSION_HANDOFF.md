@@ -607,6 +607,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 00:31 · ccode · 82738593
+changed: Miking: one tile per instrument family on the member Labs menu
+affects other side: nothing (client-only menu change; no DB, no route or lesson-id change)
+needs: nothing
+
 ### 2026-10-05 22:04 · ccode · 76234771
 changed: Remove remaining Curriculum V1 remnants from app code
 affects other side: the app no longer selects achievements.sequence_in_course or achievements.is_prerequisite (Dashboard); no DB change made
