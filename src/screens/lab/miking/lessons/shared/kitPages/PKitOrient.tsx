@@ -27,6 +27,7 @@ import { Body, Card, Landing, Note, Point } from '../../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../../../engine/journeyKit';
 import { micType } from '../../../data/micTypes';
 import type { PageProps } from '../../../pages/pageTypes';
+import { viewToggle } from '../../../engine/scene/viewToggle.ts';
 
 export type KitOrientWords = {
   /** START: what this lesson is about, before the journey map. */
@@ -75,7 +76,7 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
         format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
         formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
       },
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
       {
         kind: 'options',
         id: 'where',

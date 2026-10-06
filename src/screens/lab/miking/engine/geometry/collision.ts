@@ -290,15 +290,28 @@ export function constrainMove(scene: CompiledScene, body: MicBody, from: MicPose
   const dEl = (to.el - from.el) / n;
   let cur: MicPose = { p: from.p, az: from.az, el: from.el };
   let blocked: Blocked = null;
+  // A pose that STARTS inside something (a longer mic swapped in at a zone
+  // made for a shorter one, a stand mic lifted off a pillow) can always be
+  // moved OUT: until the first clear sub-step the move is not stopped. Before
+  // this every fader and drag was dead at such a pose — the move's first
+  // sub-step was "blocked" in every direction (owner, Pixel 2026-10-06:
+  // "many of them their sliders are not working"; the piano's dynamic over
+  // the bass strings, the lid on the short stick).
+  let escaping = checkAssembly(scene, from, body) != null;
   for (let i = 0; i < n; i++) {
     const full: MicPose = { p: add(cur.p, step), az: cur.az + dAz, el: cur.el + dEl };
     const hit = checkAssembly(scene, full, body);
     if (!hit) {
       cur = full;
       blocked = null;
+      escaping = false;
       continue;
     }
     blocked = hit;
+    if (escaping) {
+      cur = full;
+      continue;
+    }
     // Slide: each axis alone (largest component first), angles held.
     const comps: Vec3[] = [
       { x: step.x, y: 0, z: 0 },
@@ -320,6 +333,35 @@ export function constrainMove(scene: CompiledScene, body: MicBody, from: MicPose
     if (!moved) break;
   }
   return { pose: cur, blocked };
+}
+
+/**
+ * The nearest CLEAR pose to `pose` for this mic body: the pose itself when it
+ * is clear, else the smallest straight move (10 mm steps, up to `reach`, along
+ * each axis, either way) that clears every part. A page that starts
+ * a mic at a zone made for a shorter one (the piano's long dynamic under the
+ * lid on the short stick) starts it just clear instead of inside the lid.
+ * Null when nothing within reach is clear (the caller keeps the pose and shows
+ * its block, as before). Pure.
+ */
+export function nearestClear(scene: CompiledScene, pose: MicPose, body: MicBody, bounds: Bounds, reach = 150): MicPose | null {
+  if (!checkAssembly(scene, pose, body)) return pose;
+  const dirs: Vec3[] = [
+    { x: 0, y: 1, z: 0 },
+    { x: 0, y: -1, z: 0 },
+    { x: 1, y: 0, z: 0 },
+    { x: -1, y: 0, z: 0 },
+    { x: 0, y: 0, z: 1 },
+    { x: 0, y: 0, z: -1 },
+  ];
+  for (let d = 10; d <= reach; d += 10) {
+    for (const u of dirs) {
+      const p = clampP(add(pose.p, scale(u, d)), bounds);
+      const cand: MicPose = { p, az: pose.az, el: pose.el };
+      if (!checkAssembly(scene, cand, body)) return cand;
+    }
+  }
+  return null;
 }
 
 /**

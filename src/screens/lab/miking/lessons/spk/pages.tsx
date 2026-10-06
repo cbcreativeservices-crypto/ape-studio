@@ -57,6 +57,7 @@ import { ROTORS, TIME_BASES, type RotorMode, type TimeBaseId } from '../shared/s
 import { CAB_ORDER, SPK_CABS } from './geometry.ts';
 import { cabArt } from './art';
 import type { Back } from '../shared/speakers/cabGeometry.ts';
+import { viewToggle } from '../../engine/scene/viewToggle.ts';
 
 const G = GRILLE_X.mm;
 
@@ -785,7 +786,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
   const azCentre = mic.pose.az > 90 || mic.pose.az < -90 ? 180 : 0;
   const params: DockParam[] = [
     ...posParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis, words: CAB_AXES, aimWords: AIM_WORDS, azCentre }),
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
     {
       kind: 'group',
       id: 'setup',
@@ -925,7 +926,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
         bezel: exBezel,
         params: [
           { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` },
-          { kind: 'toggle', id: 'view', label: exView === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: exView === 'top', onToggle: () => setExView((v) => (v === 'side' ? 'top' : 'side')) },
+          ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
         ],
         initialParam: 'piece',
       },
@@ -1066,12 +1067,20 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
       label: 'AIM',
       value: (a + lim) / (2 * lim),
       home: 0.5,
+      // Preview while the finger rides the lane, commit on release (the
+      // engine's fader contract, 2026-10-06: no page re-render per move).
       onChange: (v) => {
         const ang = Math.round((v * 2 - 1) * lim);
-        rig.moveTo('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
+        rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
+      },
+      onCommit: () => {
+        rig.commit('A');
         setAimed(true);
       },
-      format: () => (a === 0 ? 'facing the speaker' : `${fmtAngle(Math.abs(a))} ${aimAxis === 'az' ? (a > 0 ? 'right' : 'left') : a > 0 ? 'up' : 'down'}`),
+      format: (v) => {
+        const x = Math.round((v * 2 - 1) * lim);
+        return x === 0 ? 'facing the speaker' : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'}`;
+      },
       formatShort: () => fmtAngle(a),
       chooser: {
         title: 'TURN THE MIC',
@@ -1098,7 +1107,7 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
     },
     { kind: 'options', id: 'wedge', label: 'MONITOR', valueLabel: wedge.short, selectedId: wedge.id, onSelect: setWedgeId, sticky: true, options: lesson.live.wedges.map((w) => ({ id: w.id, label: w.label, blurb: w.note })) },
     { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'single' }),
   ];
   const bezel: BezelItem[] = live
     ? [
@@ -1236,7 +1245,7 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
         setFlips((f) => (next === -1 ? { ...f, toInv: true } : { ...f, toNorm: true }));
       },
     },
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
   ];
   const dCell = lenCell(dMm, true);
   const bezel: BezelItem[] = [

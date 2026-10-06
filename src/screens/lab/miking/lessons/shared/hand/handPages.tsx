@@ -39,6 +39,7 @@ import { PTroubleshoot } from '../../../pages/PReadPages';
 import type { PageProps } from '../../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type MicPageSpec, type PosAxis, type PracticeSpec } from '../journeyPages';
 import { HandPlan, type HandPlanItem, type HandScene } from './HandPlan';
+import { viewToggle } from '../../../engine/scene/viewToggle.ts';
 
 export function useFocusedSafe(): boolean {
   try {
@@ -200,7 +201,7 @@ function HandInstrument(spec: HandSpec) {
               format: () => (shown ? `${shown.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
               formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
             },
-            { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'FROM ABOVE', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+            ...viewToggle({ view: view, setView: setView, stage: 'single', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
           ],
           initialParam: 'part',
         },
@@ -398,7 +399,7 @@ function HandPlacement(spec: HandSpec) {
     const available = zonesAvailable(lesson.zones, rig.variant, mic.typeId, t.mount);
     const params: DockParam[] = [
       ...posParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis, words: spec.axes, aimWords: spec.aimWords, azCentre: Math.round(startZone.start.az) }),
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'FROM ABOVE', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'dual', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
       {
         kind: 'group',
         id: 'setup',
@@ -452,7 +453,7 @@ function HandPlacement(spec: HandSpec) {
           bezel: exBezel,
           params: [
             { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (pieces.length - 1), onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${pieces.length}` },
-            { kind: 'toggle', id: 'view', label: exView === 'side' ? 'SIDE VIEW' : 'FROM ABOVE', value: exView === 'top', onToggle: () => setExView((v) => (v === 'side' ? 'top' : 'side')) },
+            ...viewToggle({ view: exView, setView: setExView, stage: 'dual', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
           ],
           initialParam: 'piece',
         },
@@ -558,12 +559,20 @@ function HandContext(spec: HandSpec) {
         label: 'AIM',
         value: (a + lim) / (2 * lim),
         home: 0.5,
+        // Preview while the finger rides the lane, commit on release (the
+        // engine's fader contract, 2026-10-06: no page re-render per move).
         onChange: (v) => {
           const ang = Math.round((v * 2 - 1) * lim) + centre;
-          rig.moveTo('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
+          rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
+        },
+        onCommit: () => {
+          rig.commit('A');
           setAimed(true);
         },
-        format: () => (Math.abs(a) < 0.5 ? 'as it started' : `${fmtAngle(Math.abs(a))} ${aimAxis === 'az' ? (a > 0 ? 'right' : 'left') : a > 0 ? 'up' : 'down'} of where it started`),
+        format: (v) => {
+          const x = Math.round((v * 2 - 1) * lim);
+          return Math.abs(x) < 0.5 ? 'as it started' : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'} of where it started`;
+        },
         formatShort: () => fmtAngle(a),
         chooser: {
           title: 'TURN THE MIC',
@@ -590,7 +599,7 @@ function HandContext(spec: HandSpec) {
       },
       { kind: 'options', id: 'wedge', label: 'MONITOR', valueLabel: wedge.short, selectedId: wedge.id, onSelect: setWedgeId, sticky: true, options: lesson.live.wedges.map((w) => ({ id: w.id, label: w.label, blurb: w.note })) },
       { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'FROM ABOVE', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'single', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
     ];
     const bezel: BezelItem[] = live
       ? [
@@ -736,7 +745,7 @@ function HandTwoMic(spec: HandSpec) {
         onSelect: setSrcId,
         options: regions.map((r) => ({ id: r.id, label: r.label, blurb: `${r.note} Drawn as one point for the path overlay.` })),
       },
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'FROM ABOVE', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'dual', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
     ];
     const dCell = lenCell(dMm, true);
     const bezel: BezelItem[] = [

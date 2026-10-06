@@ -26,6 +26,7 @@ import { PageSteps, type MikingStep } from '../../../../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../../engine/kit';
 import type { PageProps } from '../../../../pages/pageTypes';
 import { handOf } from '../family.ts';
+import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
 const NULL_TOL = 15;
 const AZ_MAX = 45;
@@ -87,13 +88,21 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
       label: 'AIM',
       value: (a - lo) / (hi - lo),
       home: (H.context.pose.el - EL_MIN) / (EL_MAX - EL_MIN),
+      // Preview while the finger rides the lane, commit on release (the
+      // engine's fader contract, 2026-10-06: no page re-render per move).
       onChange: (v) => {
         const ang = Math.round(lo + v * (hi - lo));
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
-        rig.moveTo('A', to);
+        rig.preview('A', to);
+      },
+      onCommit: () => {
+        rig.commit('A');
         setAimed(true);
       },
-      format: () => (aimAxis === 'el' ? `tilted ${a <= 0 ? 'down' : 'up'} ${fmtAngle(Math.abs(a))}` : a === 0 ? 'straight back across the head' : `${fmtAngle(Math.abs(a))} ${a > 0 ? 'right' : 'left'}`),
+      format: (v) => {
+        const x = Math.round(lo + v * (hi - lo));
+        return aimAxis === 'el' ? `tilted ${x <= 0 ? 'down' : 'up'} ${fmtAngle(Math.abs(x))}` : x === 0 ? 'straight back across the head' : `${fmtAngle(Math.abs(x))} ${x > 0 ? 'right' : 'left'}`;
+      },
       formatShort: () => fmtAngle(a),
       chooser: {
         title: 'TURN THE MIC',
@@ -126,7 +135,7 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
       options: lesson.live.wedges.map((w) => ({ id: w.id, label: w.label, blurb: w.note })),
     },
     { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'single' }),
   ];
   const pickupCell: BezelItem = isDeepNull(db) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 };
   const bezel: BezelItem[] = live

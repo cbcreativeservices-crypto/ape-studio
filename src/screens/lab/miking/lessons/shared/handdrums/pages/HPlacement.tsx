@@ -29,6 +29,7 @@ import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, Z
 import { MIC_TYPES, micType } from '../../../../data/micTypes';
 import type { PageProps } from '../../../../pages/pageTypes';
 import { handOf } from '../family.ts';
+import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
 export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
   const H = handOf(lesson);
@@ -89,7 +90,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`,
       formatShort: () => `${exStep + 1} / ${worked.length}`,
     },
-    { kind: 'toggle', id: 'view', label: exView === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: exView === 'top', onToggle: () => setExView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
   ];
 
   const r0 = rig.readouts('A');
@@ -113,7 +114,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const available = zonesAvailable(lesson.zones, variant, mic.typeId, t.mount);
   const params: DockParam[] = [
     ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis }),
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
     {
       kind: 'group',
       id: 'setup',

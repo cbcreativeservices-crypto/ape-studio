@@ -15,7 +15,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useSharedValue, type SharedValue } from 'react-native-reanimated';
 import type { CompiledScene, Lesson, MicBody, MicPattern, MicPose, MicSlot, MicState, Readouts, VariantId, Vec3 } from '../model/types.ts';
 import { lineFor, viewsOf } from '../model/types.ts';
-import { checkAssembly, compileScene, constrainMove, pinToSurface, type Blocked, type Bounds } from '../geometry/collision.ts';
+import { checkAssembly, compileScene, constrainMove, nearestClear, pinToSurface, type Blocked, type Bounds } from '../geometry/collision.ts';
 import { deriveReadouts, type ReadoutCtx } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
 import { micBodyOf } from '../model/validate.ts';
@@ -45,6 +45,9 @@ export type Rig = {
   setActive: (s: MicSlot) => void;
   /** Move toward `to` (constrained). Writes the shared value AND React. */
   moveTo: (slot: MicSlot, to: MicPose) => { pose: MicPose; blocked: Blocked };
+  /** A fader's move while the finger is down: constrained like moveTo, but
+   *  written to the shared values only (no page re-render). `commit` on release. */
+  preview: (slot: MicSlot, to: MicPose) => { pose: MicPose; blocked: Blocked };
   /** "Go to zone": jump straight to a validated pose (clear → placed;
    *  blocked → stays, and says why). No magnetic snapping anywhere else. */
   jumpTo: (slot: MicSlot, to: MicPose) => Blocked;
@@ -103,10 +106,14 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   // start pose is a point in the zone; the plate rests on the pillow's top).
   // Before this, page 5's boundary plate began floating at the drum's centre
   // line until it was first moved.
+  // …and a mic whose start would be inside a part (a long dynamic at a zone
+  // drawn for a short condenser) starts just clear of it (nearestClear), so
+  // no fader or drag on the page starts dead (owner, Pixel 2026-10-06).
   const [mics, setMics] = useState<MicState[]>(() =>
     init.mics.map((m) => {
       const pn = pinFor(lesson, m.typeId);
-      const pose = pn ? pinToSurface(m.pose, pn.top, micBodyOf(micType(m.typeId)), pn.halfWidth) : m.pose;
+      const b = micBodyOf(micType(m.typeId));
+      const pose = pn ? pinToSurface(m.pose, pn.top, b, pn.halfWidth) : (nearestClear(scene, m.pose, b, bounds) ?? m.pose);
       return { slot: m.slot, typeId: m.typeId, pattern: m.pattern, pose, polarity: m.polarity ?? 1, on: m.on ?? true };
     }),
   );
@@ -153,6 +160,25 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
       return r;
     },
     [poseA, poseB, blockedA, blockedB, pin, body, scene, bounds, write, setStopOf],
+  );
+
+  // A FADER's move while the finger rides the lane: the same constrained
+  // move as moveTo, written to the shared values only — the canvas follows
+  // on the UI thread and React does not re-render the page per move (the
+  // drag's own contract, blueprint §5.1). The lane's release calls `commit`.
+  // (Owner, Pixel 2026-10-06, "sliders not working": a POSITION / AIM move
+  // re-rendered the whole page, 60–350 ms a move in the web preview.)
+  const preview = useCallback(
+    (slot: MicSlot, to: MicPose) => {
+      const sv = slot === 'A' ? poseA : poseB;
+      const pn = pin[slot];
+      const target = pn ? pinToSurface(to, pn.top, body[slot], pn.halfWidth) : to;
+      const r = constrainMove(scene, body[slot], sv.value, target, bounds);
+      sv.value = r.pose;
+      (slot === 'A' ? blockedA : blockedB).value = r.blocked;
+      return r;
+    },
+    [poseA, poseB, blockedA, blockedB, pin, body, scene, bounds],
   );
 
   const jumpTo = useCallback(
@@ -205,6 +231,7 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
         const z = zonesAvailable(lesson.zones, sc.variant, typeId, t.mount)[0];
         if (z) p = pn ? pinToSurface(z.start, pn.top, b, pn.halfWidth) : z.start;
       }
+      if (!pn) p = nearestClear(sc, p, b, bd) ?? p;
       sv.value = p;
       const hit = checkAssembly(sc, p, b);
       (slot === 'A' ? blockedA : blockedB).value = hit;
@@ -261,5 +288,5 @@ export function useRig(lesson: Lesson, init: RigInit): Rig {
   );
   const shown = useCallback((slot: MicSlot) => withStop(readouts(slot), stop[slot]), [readouts, stop]);
 
-  return { lesson, variant, setVariant, scene, bounds, mics, pose, blocked, body, pin, ctx, surfaceId, setSurfaceId, lineId, refOf, active, setActive, moveTo, jumpTo, commit, setType, setPattern, setPolarity, setOn, readouts, stop, shown, version };
+  return { lesson, variant, setVariant, scene, bounds, mics, pose, blocked, body, pin, ctx, surfaceId, setSurfaceId, lineId, refOf, active, setActive, moveTo, preview, jumpTo, commit, setType, setPattern, setPolarity, setOn, readouts, stop, shown, version };
 }

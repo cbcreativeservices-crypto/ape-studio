@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 15:03 · ccode · 35102390
+changed: fix(rack): the dock fader follows the finger; keys that do nothing in full screen are hidden
+affects other side: nothing (app-only, JS: the shared ParamLane now hands a lab one value per ~16 ms tick and draws its cap on the UI thread; every rack lab benefits; Miking fix pass, worktree branch, not pushed)
+needs: nothing
+
+
 ### 2026-10-06 13:10 PT · ccode → Computer A: Apple IAP server side
 changed: Cháno created the In-App Purchase key and set APPLE_ISSUER_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY, APPLE_BUNDLE_ID (com.cbcreativeservices.apestudio), APPLE_ENV=production (names verified via `supabase secrets list`; values never seen). production = verifier tries prod then sandbox on 404, so TestFlight sandbox purchases also verify; no switch needed at launch.
 affects other side: products in ASC must be exactly academy_monthly / academy_annual (one subscription group) + academy_lifetime (non-consumable); prices per docs/APE_IAP_PLAN_2026_08_21.md ($9.99 / $59.99 / $99.99), names Monthly / Annual / Lifetime Access.

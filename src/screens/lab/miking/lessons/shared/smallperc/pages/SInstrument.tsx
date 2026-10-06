@@ -20,6 +20,7 @@ import { Body, Card, Landing, Note, Point } from '../../../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../../../../engine/journeyKit';
 import type { PageProps } from '../../../../pages/pageTypes';
 import { spOf } from '../family.ts';
+import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
 export function SInstrument({ lesson: full, art, variant, setVariant, hidden, journey }: PageProps) {
   // The same lesson, its views framed close up on the instrument.
@@ -61,7 +62,7 @@ export function SInstrument({ lesson: full, art, variant, setVariant, hidden, jo
         format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
         formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
       },
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
       {
         kind: 'options',
         id: 'head',
