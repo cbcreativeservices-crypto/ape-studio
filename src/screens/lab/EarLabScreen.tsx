@@ -40,6 +40,7 @@ import {
 import { cardColumn } from '../../theme/readingColumn';
 import { useIsTablet } from '../../theme/useIsTablet';
 import { GlassPanel, GlassTile } from '../tools/GlassTile';
+import { fitValue } from '../../theme/legibility';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
@@ -259,10 +260,16 @@ export function EarLabScreen({ navigation, route }: Props) {
                             style={tablet ? styles.tileThird : styles.tileHalf}
                             glassStyle={styles.tileFace}
                             onPress={() => openLeaf(leaf, sec.key)}
-                            accessibilityLabel={`${leaf.name}. ${leaf.blurb}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
+                            accessibilityLabel={`${leaf.name}. ${leaf.blurb}${leaf.countLine ? ` ${leaf.countLine}.` : ''}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
                           >
                             <Text style={styles.tileName} numberOfLines={2}>{leaf.name}</Text>
                             <Text style={styles.tileSub} numberOfLines={3}>{leaf.blurb}</Text>
+                            {/* A count (the Miking family tiles' "17 Miking Lab
+                                Lessons"): never cut short — its words wrap,
+                                and it never shrinks under 9 pt. */}
+                            {leaf.countLine ? (
+                              <Text style={styles.tileCount} {...fitValue(12)} numberOfLines={2}>{leaf.countLine}</Text>
+                            ) : null}
                             {dev ? (
                               <Text style={styles.soon}>PLANNED</Text>
                             ) : locked ? (
@@ -455,6 +462,7 @@ const styles = StyleSheet.create({
   tileName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.4, color: colors.amber },
   tileSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#d4d6da', flexGrow: 1 },
   tileTagLock: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
+  tileCount: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.6, color: colors.amberLabel },
 
   // Subject header (its labs are the tappable rows beneath).
   catLabel: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 2 },

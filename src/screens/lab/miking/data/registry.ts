@@ -8,17 +8,29 @@
  */
 import type { MikingLabId } from '../engine/model/types.ts';
 
-export type MikingLabMeta = { id: MikingLabId; num: number; name: string; blurb: string };
+/**
+ * `family` / `familyBlurb` (owner 2026-10-06): each READY lab is ONE tile on
+ * the member Labs menu (labCatalog → Instruments & Recording), named by its
+ * instrument family, with a short plain line saying what is in it; the tile
+ * opens that lab's lessons (MikingHub { lab }). "Those tiles … should be on
+ * the member lab menu, not inside another menu." Family order IS this array's
+ * order (Membranophones, Idiophones, Aerophones, Chordophones, Voice &
+ * Ensemble, then the rest). A family appears only when its lab is ready
+ * (readyLabs), so an unbuilt family is never shown or promised.
+ */
+export type MikingLabMeta = { id: MikingLabId; num: number; name: string; blurb: string; family: string; familyBlurb: string };
 export type LessonMeta = { id: string; labId: MikingLabId; title: string; subtitle: string; status: 'ready' };
 
 export const MIKING_LABS: readonly MikingLabMeta[] = [
-  { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.' },
-  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn percussion that is struck, shaken or scraped — the kit’s cymbals, the cajón and hand percussion, hanging metal and the gong, the mallet keyboards and the electric pianos: how each one sounds, recommended starting points, the player’s whole motion, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.' },
-  { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind instruments and their players — brass, saxophones, the flute, piccolo, clarinets, oboe and bassoon, the harmonica, the accordion and the pipe organ: how the lips, the reed, the air jet or the bellows start the sound, where it leaves (a bell, the first open holes, the embouchure, the reeds, the pipes), recommended starting points clear of the mouth, the hands, the bell, the slide, the keys, the breath, the bellows and the player’s movement, studio or live, and what a second mic does. Silent; tendencies in words.' },
-  { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.' },
-  { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '' },
-  { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '' },
-  { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '' },
+  { id: 'drums', num: 1, name: 'Miking Lab 1: Drums', blurb: 'Place microphones on a drawn drum in side and top view — recommended starting points, safe clearance, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Membranophones', familyBlurb: 'Miking drums — kit, hand, concert — and speaker cabinets' },
+  { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn percussion that is struck, shaken or scraped — the kit’s cymbals, the cajón and hand percussion, hanging metal and the gong, the mallet keyboards and the electric pianos: how each one sounds, recommended starting points, the player’s whole motion, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.', family: 'Idiophones', familyBlurb: 'Miking cymbals and percussion, from hi-hat to gong' },
+  { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind instruments and their players — brass, saxophones, the flute, piccolo, clarinets, oboe and bassoon, the harmonica, the accordion and the pipe organ: how the lips, the reed, the air jet or the bellows start the sound, where it leaves (a bell, the first open holes, the embouchure, the reeds, the pipes), recommended starting points clear of the mouth, the hands, the bell, the slide, the keys, the breath, the bellows and the player’s movement, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Aerophones', familyBlurb: 'Miking winds and brass, from trumpet to pipe organ' },
+  { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Chordophones', familyBlurb: 'Miking strings and pianos, from guitar to harp' },
+  // Not built yet: no ready lesson, so neither the lab nor its family tile is
+  // listed. Fill `blurb` and `familyBlurb` when the first lesson goes ready.
+  { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '', family: 'Voice & Ensemble', familyBlurb: '' },
+  { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '', family: 'Foley, Field & Scientific', familyBlurb: '' },
+  { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '', family: 'Sports & Broadcast', familyBlurb: '' },
 ];
 
 export const LESSONS: readonly LessonMeta[] = [

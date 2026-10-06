@@ -1,18 +1,37 @@
 /**
- * MikingHubScreen — route `MikingHub { lab? }` (blueprint §2; ruling §16.3:
- * the "Miking Lab 1: Drums" row opens this hub, which lists its lessons).
- * Only labs and lessons that are READY are listed (owner rule: no
- * placeholder rows). Each lesson shows ✓ and "n of N pages" — the lab-local
- * credit of ruling §16.1. A failed progress read says so (D51) and every
- * lesson still opens.
+ * MikingHubScreen — route `MikingHub { lab? }` (blueprint §2; ruling §16.3).
+ *
+ * The member Labs menu carries ONE tile per instrument FAMILY (owner
+ * 2026-10-06: "those tiles (membranophone, aerophone, etc.) should be on the
+ * member lab menu, not inside another menu" — labCatalog, Instruments &
+ * Recording), and each opens this screen with `{ lab }`: that family's
+ * lessons, in the same animated two-column push-button menu (owner: "in the
+ * same animated 2 column push button menu format like calculators, tools
+ * menu, members on labs"). BACK returns to the Labs menu.
+ *
+ * Only READY labs and lessons are listed (owner rule: no placeholder rows).
+ * Each lesson shows ✓ and "n of N pages" — the lab-local credit of ruling
+ * §16.1. A failed progress read says so (D51) and every lesson still opens.
+ * Without `lab` (the #labpreview harness) every ready family's lessons are
+ * shown in turn; nothing in the app links there.
+ *
+ * The tiles are the shared GlassTile / GlassPanel hardware (src/screens/tools/
+ * GlassTile.tsx) that the Calculator Lab and the Labs menu (EarLabScreen) use
+ * — recess, raised glass, sink + power-on press, one activation per tap —
+ * laid out the way the Labs menu lays them out (two columns on a phone, three
+ * on a tablet). Members-only gating is the navigator's (MemberGated +
+ * withMembershipPreview), unchanged.
  */
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
-import { readingColumn } from '../../../theme/readingColumn';
+import { cardColumn } from '../../../theme/readingColumn';
+import { useIsTablet } from '../../../theme/useIsTablet';
+import { fitValue } from '../../../theme/legibility';
 import type { RootStackParamList } from '../../../navigation/types';
+import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import { LabHeader } from '../kit/LabNavBar';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { PAGE_IDS } from './engine/model/types.ts';
@@ -23,39 +42,45 @@ export function MikingHubScreen() {
   const insets = useSafeAreaInsets();
   const route = useRoute();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const tablet = useIsTablet();
   const want = (route.params as { lab?: string } | undefined)?.lab;
   const labs = readyLabs();
   const shown: MikingLabMeta[] = want ? labs.filter((l) => l.id === want) : labs;
+  const one = shown.length === 1 ? shown[0] : undefined;
   const progress = useMikingProgress();
   const unreadable = useMikingUnreadable();
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <LabHeader title={shown.length === 1 ? shown[0].name.toUpperCase() : 'MIKING LABS'} subtitle="Place microphones on drawn instruments — silent; tendencies in words" />
-      <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 24 }]}>
+      <LabHeader
+        title={one ? one.family.toUpperCase() : 'MIKING LABS'}
+        subtitle={one ? one.name : 'Place microphones on drawn instruments — silent; tendencies in words'}
+      />
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
         {unreadable ? <ProgressUnreadableNote /> : null}
         {shown.map((lab) => (
-          <View key={lab.id} style={{ gap: 10 }}>
+          <View key={lab.id} style={styles.family}>
+            {one ? null : <Text style={styles.familyHead}>{lab.family.toUpperCase()}</Text>}
             <Text style={styles.blurb}>{lab.blurb}</Text>
-            {lessonsOf(lab.id).map((ls) => {
-              const lp = lessonProgress(progress, ls.id);
-              const n = PAGE_IDS.filter((p) => lp.done.includes(p)).length;
-              const all = n === PAGE_IDS.length;
-              return (
-                <Pressable
-                  key={ls.id}
-                  onPress={() => navigation.navigate('MikingLesson', { id: ls.id })}
-                  style={styles.row}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${n} of ${PAGE_IDS.length} pages done.`}
-                >
-                  <View style={{ flex: 1, gap: 2 }}>
-                    <Text style={styles.title}>{`${all ? '✓ ' : ''}${ls.title}`}</Text>
-                    <Text style={styles.sub}>{ls.subtitle}</Text>
-                  </View>
-                  <Text style={[styles.count, all && { color: colors.green }]}>{`${n} of ${PAGE_IDS.length} pages`}</Text>
-                </Pressable>
-              );
-            })}
+            <GlassPanel style={[styles.tileGrid, !tablet && styles.tilePanelPhone]}>
+              {lessonsOf(lab.id).map((ls) => {
+                const lp = lessonProgress(progress, ls.id);
+                const n = PAGE_IDS.filter((p) => lp.done.includes(p)).length;
+                const all = n === PAGE_IDS.length;
+                return (
+                  <GlassTile
+                    key={ls.id}
+                    style={tablet ? styles.tileThird : styles.tileHalf}
+                    glassStyle={styles.tileFace}
+                    onPress={() => navigation.navigate('MikingLesson', { id: ls.id })}
+                    accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${n} of ${PAGE_IDS.length} pages done.`}
+                  >
+                    <Text style={styles.tileName}>{`${all ? '✓ ' : ''}${ls.title}`}</Text>
+                    <Text style={styles.tileSub}>{ls.subtitle}</Text>
+                    <Text style={[styles.count, all && { color: colors.green }]} {...fitValue(12)}>{`${n} of ${PAGE_IDS.length} pages`}</Text>
+                  </GlassTile>
+                );
+              })}
+            </GlassPanel>
           </View>
         ))}
         <Text style={styles.note}>After our research, these lessons suggest where to begin — starting points, not rules. Move the mic, listen, and trust your ears and the room. Place real mics with the player stopped.</Text>
@@ -67,10 +92,19 @@ export function MikingHubScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   scroll: { paddingHorizontal: 16, paddingTop: 10, gap: 16 },
+  family: { gap: 10 },
+  familyHead: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1 },
   blurb: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 64, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#111114' },
-  title: { color: colors.textPrimary, fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 0.8 },
-  sub: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 17 },
-  count: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.8 },
+  // The Labs menu's tile grid (EarLabScreen): the panel, its thinner phone
+  // margin, the tile widths and the tile face.
+  tileGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', columnGap: 8, rowGap: 10 },
+  tilePanelPhone: { padding: 7 },
+  tileHalf: { width: '48.5%' },
+  tileThird: { width: '32%' },
+  tileFace: { minHeight: 118, padding: 12, gap: 5, justifyContent: 'space-between', backgroundColor: '#101116' },
+  tileName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.4, color: colors.textPrimary },
+  // Never cut short: the subtitle wraps in full (the tile grows).
+  tileSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#d4d6da', flexGrow: 1 },
+  count: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.8, color: colors.amberLabel },
   note: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
 });

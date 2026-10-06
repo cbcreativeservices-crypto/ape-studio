@@ -47,8 +47,9 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 const FILES = walk(DIR).map((f) => ({ f, raw: read(f), s: strip(read(f)) }));
 
-const { LAB_CATEGORIES, isMemberOnlyLabRoute, labRouteName, categoryLeaves } = await import('../src/screens/lab/labCatalog.ts');
-const { readyLabs, LESSONS } = await import('../src/screens/lab/miking/data/registry.ts');
+const { LAB_CATEGORIES, isMemberOnlyLabRoute, labRouteName, categoryLeaves, mikingLessonCount } = await import('../src/screens/lab/labCatalog.ts');
+const REGISTRY = await import('../src/screens/lab/miking/data/registry.ts');
+const { readyLabs, LESSONS } = REGISTRY;
 
 describe('listing (owner: Training Labs → Instruments & Recording, members only)', () => {
   const cat = (LAB_CATEGORIES as { id: string; section: string; families?: { name: string; labs: { name: string; route?: string; params?: { lab?: string }; member?: boolean }[] }[] }[]).find((c) => c.id === 'instruments')!;
@@ -60,16 +61,61 @@ describe('listing (owner: Training Labs → Instruments & Recording, members onl
     for (const l of fam.labs) {
       assert.equal(l.route, 'MikingHub');
       assert.equal(l.member, true);
-      assert.ok(l.params?.lab);
+      assert.ok(l.params?.lab, 'each tile opens one family’s lessons');
     }
   });
-  it('one row per lab with a READY lesson — no placeholder rows', () => {
+  it('one tile per READY family, straight on the Labs menu, named by family — no placeholder (owner 2026-10-06)', () => {
     const fam = cat.families!.find((f) => f.name === 'Miking Labs')!;
     assert.deepEqual(fam.labs.map((l) => l.params!.lab), readyLabs().map((l: { id: string }) => l.id));
+    assert.deepEqual(fam.labs.map((l) => l.name), ['Membranophones', 'Idiophones', 'Aerophones', 'Chordophones']);
+    assert.ok(!fam.labs.some((l) => l.name === 'Miking Labs'), 'no intermediate "Miking Labs" tile');
+    // Owner copy 2026-10-06: "17 Miking Lab Lessons" — the registry's ready count, no chevron.
+    const { lessonsOf } = REGISTRY as { lessonsOf: (id: string) => unknown[] };
+    for (const l of fam.labs as { countLine?: string; params?: { lab?: string } }[]) {
+      assert.equal(l.countLine, `${lessonsOf(l.params!.lab!).length} Miking Lab Lessons`);
+    }
+    assert.deepEqual((fam.labs as { countLine?: string }[]).map((l) => l.countLine), ['17 Miking Lab Lessons', '24 Miking Lab Lessons', '18 Miking Lab Lessons', '20 Miking Lab Lessons']);
+    assert.equal(mikingLessonCount(1), '1 Miking Lab Lesson', 'singular');
+    const ear = strip(read('src/screens/lab/EarLabScreen.tsx'));
+    assert.match(ear, /\{leaf\.countLine \? \(\s*<Text style=\{styles\.tileCount\} \{\.\.\.fitValue\(12\)\} numberOfLines=\{2\}>\{leaf\.countLine\}<\/Text>/, 'the Labs menu tile shows it, never cut short');
     assert.deepEqual(readyLabs().map((l: { id: string }) => l.id), ['drums', 'percussion', 'winds', 'strings'], 'Labs 1, 2, 3 and 4 have ready lessons today');
     for (const l of readyLabs()) assert.ok((l as { blurb: string }).blurb.length > 40, `${l.id}: a listed lab has its blurb`);
     assert.ok(LESSONS.every((l: { status: string }) => l.status === 'ready'));
     assert.ok(categoryLeaves(cat as never).some((l: { route?: string }) => l.route === 'MikingHub'));
+  });
+});
+
+type FamilyMeta = { id: string; family: string; familyBlurb: string };
+const { MIKING_LABS } = (await import('../src/screens/lab/miking/data/registry.ts')) as unknown as { MIKING_LABS: readonly FamilyMeta[] };
+describe('the family tiles (owner 2026-10-06: a tile per family on the Labs menu → its lessons, same push-button menu)', () => {
+  type Meta = FamilyMeta;
+  const hub = strip(read('src/screens/lab/miking/MikingHubScreen.tsx'));
+  const catalog = strip(read('src/screens/lab/labCatalog.ts'));
+  it('the families, in the owner’s order: Membranophones, Idiophones, Aerophones, Chordophones, Voice & Ensemble, then the rest', () => {
+    assert.deepEqual(MIKING_LABS.map((l) => l.family), ['Membranophones', 'Idiophones', 'Aerophones', 'Chordophones', 'Voice & Ensemble', 'Foley, Field & Scientific', 'Sports & Broadcast']);
+  });
+  it('the tiles are REGISTRY-DRIVEN and show no unready family (no "coming soon")', () => {
+    assert.match(catalog, /readyLabs\(\)\.map\(\(l\) => \(\{ name: l\.family, blurb: l\.familyBlurb, countLine: mikingLessonCount\(lessonsOf\(l\.id\)\.length\), route: 'MikingHub' as const, params: \{ lab: l\.id \}, member: true \}\)\)/);
+    assert.doesNotMatch(catalog, /Membranophones|Idiophones|Aerophones|Chordophones/i, 'no hard-coded family list in the catalog');
+    assert.doesNotMatch(hub, /MIKING_LABS|Membranophones|Idiophones|Aerophones|Chordophones/i, 'none in the screen either');
+    assert.doesNotMatch(hub, /coming soon|planned|soon/i);
+    const ready = new Set(readyLabs().map((l: { id: string }) => l.id));
+    const shown = (readyLabs() as unknown as Meta[]).map((l) => l.family);
+    for (const l of MIKING_LABS) if (!ready.has(l.id)) assert.ok(!shown.includes(l.family), `${l.family} is not listed until its lab is ready`);
+    for (const l of readyLabs() as unknown as Meta[]) assert.ok(l.familyBlurb.length > 20, `${l.id}: a listed family says what is in it`);
+  });
+  it('no intermediate family menu: the hub shows lessons only, on the shared glass push-button tiles', () => {
+    assert.doesNotMatch(hub, /FamilyMenu|navigation\.push\(/);
+    assert.match(hub, /import \{ GlassPanel, GlassTile \} from '\.\.\/\.\.\/tools\/GlassTile';/);
+    assert.match(hub, /style=\{tablet \? styles\.tileThird : styles\.tileHalf\}/);
+    assert.match(hub, /onPress=\{\(\) => navigation\.navigate\('MikingLesson', \{ id: ls\.id \}\)\}/);
+    assert.match(hub, /tileHalf: \{ width: '48\.5%' \}/);
+  });
+  it('each lesson tile keeps ✓, "n of N pages" (never cut short), the D51 note and the starting-points note', () => {
+    assert.match(hub, /`\$\{all \? '✓ ' : ''\}\$\{ls\.title\}`/);
+    assert.match(hub, /\{\.\.\.fitValue\(12\)\}>\{`\$\{n\} of \$\{PAGE_IDS\.length\} pages`\}/);
+    assert.match(hub, /\{unreadable \? <ProgressUnreadableNote \/> : null\}/);
+    assert.match(hub, /starting points, not rules/);
   });
 });
 

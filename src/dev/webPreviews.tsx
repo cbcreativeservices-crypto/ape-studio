@@ -104,6 +104,9 @@ import { DrumTuningLabScreen } from '../screens/lab/drumtuning/DrumTuningLabScre
 // Miking Labs (2026-10-04): `#labpreview/MikingHub`, `#labpreview/MikingLesson/M01`
 // (add `?page=placement` before the hash to open a page).
 import { MikingHubScreen } from '../screens/lab/miking/MikingHubScreen';
+// The Labs menu itself (`#labpreview/EarLab`), so a Miking family tile can be
+// tapped through to its lesson menu (2026-10-06).
+import { EarLabScreen } from '../screens/lab/EarLabScreen';
 import { MikingLessonScreen } from '../screens/lab/miking/MikingLessonScreen';
 // Room Design & Monitoring Lab (2026-10-01): SVG plan + side views, so the
 // whole lab measures in the browser harness (`#labpreview/RoomDesignLab`).
@@ -198,6 +201,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   MasteringLab: MasteringLabScreen as ComponentType,
   DrumTuningLab: DrumTuningLabScreen as ComponentType,
   MikingHub: MikingHubScreen as ComponentType,
+  EarLab: EarLabScreen as ComponentType,
   MikingLesson: MikingLessonScreen as ComponentType,
 };
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
