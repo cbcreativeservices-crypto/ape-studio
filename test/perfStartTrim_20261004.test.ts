@@ -397,7 +397,7 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   MeterLab: [true, 'Visual Audio Analysis'],
   MeterModule: [true, 'Signal Detective'],
   MicLab: [true, 'Microphone Principles'],
-  MikingHub: [true, 'Membranophones'], // Miking Labs: one catalog tile per family (owner 2026-10-06); the route takes its first tile's name
+  MikingHub: [true, 'Miking Labs'], // one catalog tile per family (owner 2026-10-06); the shared route is named for the whole set
   MikingLesson: [true, 'Miking Labs'], // the lesson host (MEMBER_ONLY_EXTRA_ROUTES)
   MicSelectLab: [true, 'Microphone Selection Lab'],
   ModularLab: [true, 'Modular Synth'],

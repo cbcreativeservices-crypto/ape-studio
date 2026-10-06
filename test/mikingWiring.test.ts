@@ -131,6 +131,7 @@ describe('gating (members-only with the grayed preview)', () => {
     assert.equal(isMemberOnlyLabRoute('MikingHub'), true);
     assert.equal(isMemberOnlyLabRoute('MikingLesson'), true);
     assert.equal(labRouteName('MikingLesson'), 'Miking Labs');
+    assert.equal(labRouteName('MikingHub'), 'Miking Labs');
   });
   it('typed routes and the preview harness entries', () => {
     const types = read('src/navigation/types.ts');

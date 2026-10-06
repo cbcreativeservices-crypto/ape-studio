@@ -682,6 +682,9 @@ export function isMemberOnlyLabRoute(route: string): boolean {
 
 /** The lab's display name for a screen route (for the preview upgrade sheet). */
 export function labRouteName(route: string): string | undefined {
+  // One route serves every Miking family tile, so the membership sheet names
+  // the whole set rather than whichever family tile was registered first.
+  if (route === 'MikingHub') return 'Miking Labs';
   return LAB_ROUTE_MEMBERSHIP.get(route)?.name ?? MEMBER_ONLY_EXTRA_ROUTES[route];
 }
 
