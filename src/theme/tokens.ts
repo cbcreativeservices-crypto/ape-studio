@@ -33,7 +33,7 @@ export const colors = {
 
   // Accent hues (per-domain, from README color table)
   orange: '#ff8a1e', // Home tab, warnings, "continue" method
-  blue: '#2f9bff', // Study tab, selected answers, MIC/PA certs, flashcards
+  blue: '#2f9bff', // Study tab, selected answers, flashcards
   cyan: '#5bb0ff',
   cyanBright: '#7fd4ff', // Glossary accent
   green: '#37e05f', // Profile tab, success, ear-training

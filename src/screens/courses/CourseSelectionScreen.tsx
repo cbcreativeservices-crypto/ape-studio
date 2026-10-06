@@ -691,8 +691,8 @@ function CourseCardView({
   academy: boolean;
 }) {
   // CM3: the card RENDERS entitlement capabilities (server-owned once live) —
-  // it never decides them. Flag OFF ⇒ everything unlocked-looking as today.
-  const { commercialMode, caps } = useEntitlement();
+  // it never decides them.
+  const { caps } = useEntitlement();
   // "Free" / membership copy and the 🔒 ACADEMY MODE sell only once a read has
   // actually PRODUCED a non-member tier (tier sweep 2026-10-03). `!isMember`
   // alone also matched the boot window and a member whose membership read
@@ -1279,8 +1279,8 @@ export function CourseSelectionScreen() {
     // After the re-layout at the new pad has been committed, not before.
     requestAnimationFrame(() => listRef.current?.scrollToIndex({ index: activeIdx, animated: false }));
   }, [windowW, activeIdx]);
-  // CM2 — commercial mode + entitlement (mock provider; server truth later).
-  const { commercialMode, entitlement, caps, resolved, setCommercialMode, setEntitlement, tierKnown } = useEntitlement();
+  // CM2 — membership entitlement (provider reads server truth).
+  const { entitlement, caps, resolved, setEntitlement, tierKnown } = useEntitlement();
   const upsell = useUpsellAllowed();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   /** Stable, so the memoised cards are not re-rendered by a fresh closure. */
@@ -1333,7 +1333,7 @@ export function CourseSelectionScreen() {
     // is never handed the guest sign-up gate. The Study tab's own load says
     // "couldn't reach your account" (Dashboard, hunt 7).
     if (!sessionUnknown) setIsGuest(!isRealAccount(sessData.session));
-    // The PUBLIC-catalog builder — used for guests/commercial mode AND as the
+    // The PUBLIC-catalog builder — used for guests AND as the
     // self-heal fallback when an authed load fails on a broken session.
     const buildPublicCatalog = async () => {
       // The one taster the carousel shows (Pro Audio Safety, gs 3060) is built
@@ -1773,25 +1773,11 @@ export function CourseSelectionScreen() {
           lower so this reads as the app's front door, not a small header
           (Booth 2026-07-09d). */}
       <View style={styles.hero}>
-        {/* DEV-ONLY hidden toggles (no-ops in release — provider setters are
-            __DEV__-guarded): long-press LOGO = commercialMode; long-press
-            WORDMARK = cycle mock entitlement. */}
-        <Pressable
-          accessibilityRole="image"
-          accessibilityLabel="Pro Audio Training Academy"
-          onLongPress={() => {
-            if (!__DEV__) return;
-            const next = !commercialMode;
-            setCommercialMode(next);
-            // Turning commercial ON from anonymous → land in FREE so the free
-            // topics (gs0/gs36) are immediately accessible for testing.
-            if (next && entitlement === 'anonymous') setEntitlement('free');
-            notify('DEV', `commercialMode → ${next ? 'ON (free)' : 'OFF'}`);
-          }}
-          delayLongPress={600}
-        >
+        {/* DEV-ONLY hidden toggle (no-op in release — the provider setter is
+            __DEV__-guarded): long-press WORDMARK = cycle mock entitlement. */}
+        <View accessibilityRole="image" accessibilityLabel="Pro Audio Training Academy">
           {compactHeader ? null : <BrandLogo size={54} />}
-        </Pressable>
+        </View>
         <Pressable
           onLongPress={() => {
             if (!__DEV__) return;

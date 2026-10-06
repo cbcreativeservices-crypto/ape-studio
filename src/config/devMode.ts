@@ -28,10 +28,9 @@ export const DEV_BYPASS = {
   bypassMethodLocks: false,
   /** Entitlement caps forced to full academy: paywalls/veils/upsells hidden.
    *  OFF (owner 2026-08-06): the owner needs to SEE each tier's gates/veils/
-   *  upsells. With this off, commercialMode ON renders the real per-tier caps
-   *  (anonymous/free/academy/lapsed); the institutional app (commercialMode
-   *  OFF) still gets full academy caps via EntitlementProvider, so nothing
-   *  there is gated. Flip back to true only for lock-free screen testing. */
+   *  upsells. With this off, the app renders the real per-tier caps
+   *  (anonymous/free/academy/lapsed). Flip back to true only for lock-free
+   *  screen testing. */
   bypassAcademyLocks: false,
   /** Every screen intro/tutorial + coach mark shows on EVERY entry (first-time
    *  experience each visit), ignoring the persisted seen/retire counters.

@@ -768,7 +768,7 @@ export function DashboardScreen() {
   // Pillar B coach mark (plan §3): the dial IS the topic selector but reads as
   // decoration until held. Retires after 2 real turns per open, 5 opens.
   const jogCoach = useCoachMark(COACH_KEYS.dashboardJog, 2);
-  const { commercialMode, caps, entitlement, resolved } = useEntitlement();
+  const { caps, entitlement, resolved } = useEntitlement();
   // The study gates' "tier is known" (hunt 5, 2026-10-03): the central rule,
   // `memberGateOf` — a read that produced a tier, OR this account's remembered
   // 'free'. `tierKnown` alone left a known free learner whose membership read
@@ -1076,9 +1076,9 @@ export function DashboardScreen() {
         );
       }
       // A session-less GUEST studies the FREE topics on-device only. It must NEVER
-      // touch the student-record path: fetchDashboard()/fetchCommercialDashboard()
-      // query users/enrollment/progress, which throw 'user_not_found' for a guest
-      // (that used to blank the whole Study tab). Instead load the free topics
+      // touch the student-record path: the account fetch reads the users row and
+      // progress, and throws 'user_not_found' for a guest (that used to blank the
+      // whole Study tab). Instead load the free topics
       // through the guest-safe enrollment fetch (userId stays 'local' → no progress
       // queries; content — achievements/glossary — is anon-readable). Progress = the
       // device-local mirror merged below. Keyed on the real session, NOT entitlement,
@@ -1235,8 +1235,8 @@ export function DashboardScreen() {
         e?.message === 'not_enrolled'
           ? 'No enrolled topics found for this account.'
           : e?.message === 'user_not_found'
-            // COMMERCIAL WORDING (2026-09-17). "Student record" is the retired
-            // institutional vocabulary and means nothing to a customer.
+            // COMMERCIAL WORDING (2026-09-17). "Student record" means nothing
+            // to a customer.
             ? 'Your account setup is not finished yet — finish it to save your progress.'
             : e?.message === 'enrollment_unreadable'
               // The Enrollments screen's own words for the same state.
@@ -1248,7 +1248,7 @@ export function DashboardScreen() {
     } finally {
       if (!stale()) setLoading(false);
     }
-  }, [commercialMode, caps, navigation]);
+  }, [caps, navigation]);
 
   useFocusEffect(
     useCallback(() => {

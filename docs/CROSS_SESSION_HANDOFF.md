@@ -1,3 +1,14 @@
+## 2026-10-06 — ccode -> A: V1 / institutional leftovers removed from the app code (branch off final-lab, NOT pushed, NOT published)
+
+Follow-up to your V1 drop in production (courses, V1 enrollment, course_sections, session_logs, instructor_sections, achievements.course_id, register_student, unlock_after_safety, recompute_reachability, is_instructor_for_user, seed_first_topic_on_enrollment). Owner: "I want the app clean — nothing hidden extra."
+
+- **New error codes now have copy.** `retired_content` (from start_quiz_attempt / submit_quiz / record_study_progress / credit_time_trial) and `archived_quiz_retired` read "This topic has been retired." on the quiz start and quiz submit error maps (`features/quiz/api.ts`, `RETIRED_CONTENT_COPY`). record_study_progress and credit_time_trial have no user-facing error copy in the app, so nothing new shows there; their queued writes for a retired topic are kept and retried, not dropped.
+- **register_student dead code removed** from `features/auth/api.ts` (the EnrolledCourse / RegisterStudentResult / RegisterErrorCode types and REGISTER_ERROR_COPY). Registration is register_commercial_user only.
+- **store-notifications: the `users.audience === 'institutional'` skip in refund certificate revocation is removed IN CODE ONLY.** It needs a redeploy of `store-notifications` by you or the owner before production behaves the same way. Nothing was deployed from here.
+- Also gone: the dev-only InstitutionalScreen and its route, the `commercialMode` flag and its dev long-press toggle (no user-visible change; commercial behaviour is now simply the code), the dead pre-v3 PROGRAM_PATHS / SPECIALIZED_CERTIFICATES / DAW_ELECTIVES lists, the unused MIC/REC/MIX/PA CertIcon, and the V1 SQL packages at the repo root. `test/fixtures/serverRelations.txt` no longer lists the five dropped tables.
+- **Reminder:** the drop of `achievements.sequence_in_course` / `is_prerequisite` still waits for the owner's next published build. The published app still reads them; nothing in this change references them.
+- Instructor progress sharing, badges / student_badges, user_topic_enrollments, register_commercial_user, lookup_student_by_qr / my_identity / ape_student_id / qr_token are untouched.
+
 ## 2026-10-04 21:20 PT — A: website "employers & instructors" LIVE; one stray docs commit on audio-tools-engine (harmless)
 
 - The instructor wording and the apply-form choice are live in production. Commit 58b86095 on audio-tools-engine is the same content as c115b43b on final-lab, and Vercel prod is READY.
@@ -614,6 +625,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-06 00:24 · ccode · 65416d4d
+changed: Remove V1/institutional leftovers and the commercialMode flag; map retired_content
+affects other side: retired_content / archived_quiz_retired now have quiz copy; store-notifications' institutional skip removed in code (see the 2026-10-06 entry at the top).
+needs: a redeploy of store-notifications; sequence_in_course / is_prerequisite drop still waits for the owner's next published build.
 
 ### 2026-10-05 22:04 · ccode · 76234771
 changed: Remove remaining Curriculum V1 remnants from app code

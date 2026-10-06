@@ -1,6 +1,8 @@
 # Relations in `public`, and whether anon/authenticated hold SELECT.
 # Captured from the live project 2026-09-20. `1` = a client can read it.
 # Regenerate deliberately — see test/serverContract.test.ts for the query.
+# 2026-10-05: courses, enrollment (V1), course_sections, session_logs and
+# instructor_sections removed by hand — Computer A dropped them in production.
 academy_stats=0
 access_code_redemptions=0
 access_codes=0
@@ -28,8 +30,6 @@ contact_messages=0
 contact_reports=0
 contact_requests=0
 content_blocklist=0
-course_sections=1
-courses=1
 credential_awards=1
 credential_eligibility=1
 curriculum_versions=1
@@ -43,7 +43,6 @@ employer_applications=1
 employer_email_verifications=0
 employer_profile_interests=1
 employer_profiles=1
-enrollment=1
 entitlements=1
 final_exam_attempt_items=0
 final_exam_attempts=0
@@ -55,7 +54,6 @@ glossary_stats=0
 glossary_study_v=1
 glossary_topics=1
 glossary_usage=0
-instructor_sections=1
 lab_audio_assets=0
 lab_audio_uploads=0
 lab_upload_config=0
@@ -77,7 +75,6 @@ quiz_attempts=1
 quiz_questions=1
 registry_consent_events=1
 scenario_homework=0
-session_logs=1
 student_achievement_progress=1
 student_badges=1
 student_lab_progress=1

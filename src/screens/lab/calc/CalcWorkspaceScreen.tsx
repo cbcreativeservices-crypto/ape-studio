@@ -120,14 +120,13 @@ export function CalcWorkspaceScreen() {
   // allowance set to 5 by the owner 2026-09-01, see calcUsage.CALC_WEEKLY_LIMIT).
   // Academy is unlimited; anonymous guests must sign in. The result is hidden
   // behind a CALCULATE button so there is one countable trigger per calculation.
-  const { entitlement, commercialMode, resolved, tierKnown, tierReadFailed } = useEntitlement();
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // During the first-run onboarding demo the calc is a canned "looks real"
   // landing focused on UX, not the upsell (owner 2026-09-07): no sign-in gate
   // and no weekly-cap prompt — the answer just computes locally. Real gating
   // returns the moment onboarding ends. Both hooks run every render.
   const onboardingSampling = useSamplingActive();
-  // Caps only bite in commercial mode; institutional/dev mode grants full access.
-  const capped = commercialMode && (entitlement === 'free' || entitlement === 'lapsed') && !onboardingSampling;
+  const capped = (entitlement === 'free' || entitlement === 'lapsed') && !onboardingSampling;
   // `resolved` REQUIRED here (entitlement roll-out 2026-09-11): the provider
   // boots at 'anonymous', so without it every user — signed-in members included
   // — opened a calculator to "Create a free account (or sign in) to run
@@ -139,7 +138,7 @@ export function CalcWorkspaceScreen() {
   // failed with no remembered tier still read 'anonymous' — and was told to
   // "Create a free account (or sign in)", with a SIGN IN button, while signed
   // in. A real guest's tier is always known (no session = a definitive answer).
-  const mustSignIn = commercialMode && resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;
+  const mustSignIn = resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;
   // ⛔ HOLD THE ANSWER UNTIL THE TIER IS KNOWN (bug pass 2026-10-01). `capped`
   // is false before the entitlement read lands (the provider boots at
   // 'anonymous'), so a FREE account on a slow connection read every answer it
@@ -148,7 +147,7 @@ export function CalcWorkspaceScreen() {
   // case above holds here too; once the provider gives up (`tierReadFailed`,
   // owner ruling 2026-10-03) it says so instead of "Checking…".
   const tierUnconfirmed = resolved && !tierKnown && entitlement === 'anonymous';
-  const tierPending = commercialMode && (!resolved || tierUnconfirmed) && !onboardingSampling;
+  const tierPending = (!resolved || tierUnconfirmed) && !onboardingSampling;
   const [usage, setUsage] = useState<CalcUsage | null>(null);
   // EVERY input set already paid for on this screen, not just the last one
   // (bug pass 2026-10-01): with one remembered signature, A → B → back to A

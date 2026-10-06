@@ -196,11 +196,11 @@ const subscribe = (cb: () => void) => {
  *
  *   "A `presentation: 'modal'` screen is presented in its OWN native container,
  *    ABOVE the React root's sibling views — so the root-level LowLightDim never
- *    covered Settings, WeeklyConcept, Institutional, About, Directory,
- *    ExposureMonitor or Paywall."
+ *    covered Settings, WeeklyConcept, About, Directory, ExposureMonitor or
+ *    Paywall."
  *
  * A root-level dialog host has exactly that defect: raised FROM one of those
- * seven screens it renders UNDERNEATH the screen that raised it — invisible and
+ * modal screens it renders UNDERNEATH the screen that raised it — invisible and
  * un-tappable. Settings is one of the seven, and Settings is where Log out
  * lives. Owner 2026-09-13: "logout took me to login gate", with no popup at all.
  *

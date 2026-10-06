@@ -60,7 +60,7 @@ const STUBS: Record<string, string> = {
   'ape-sss:async-storage': `export default { async getItem() { return null; }, async setItem() {}, async removeItem() {} };`,
   'ape-sss:lastTier': `export async function loadLastTier() { return null; } export async function saveLastTier() {}`,
   'ape-sss:devMode': `export const devBypass = () => false;`,
-  'ape-sss:flags': `export const DEV_COMMERCIAL_FLAG_KEY = 'x'; export const DEV_ENTITLEMENT_KEY = 'y'; export const FLAG_DEFAULTS = { commercialMode: true };`,
+  'ape-sss:flags': `export const DEV_ENTITLEMENT_KEY = 'y';`,
   'ape-sss:supabase': `
     const SB = () => globalThis.__SB__;
     export const supabase = {
@@ -119,9 +119,9 @@ registerHooks({
 });
 
 /* ── harness ──────────────────────────────────────────────────────────── */
-// useState order in EntitlementProvider: commercialMode, entitlement, resolved,
-// tierKnown, tierReadFailed.
-const S = { entitlement: 1, resolved: 2, tierKnown: 3, tierReadFailed: 4 } as const;
+// useState order in EntitlementProvider: entitlement, resolved, tierKnown,
+// tierReadFailed.
+const S = { entitlement: 0, resolved: 1, tierKnown: 2, tierReadFailed: 3 } as const;
 type SessionResult = { data: { session: unknown }; error?: unknown };
 const RETRYABLE: SessionResult = { data: { session: null }, error: { name: 'AuthRetryableFetchError', message: 'Failed to fetch' } };
 const SIGNED_OUT: SessionResult = { data: { session: null }, error: null };

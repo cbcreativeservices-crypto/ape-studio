@@ -110,7 +110,6 @@ const Lazy = {
   Settings: lazyScreen(() => require('../screens/settings/SettingsScreen').SettingsScreen),
   Help: lazyScreen(() => require('../screens/help/HelpScreen').HelpScreen),
   WeeklyConcept: lazyScreen(() => require('../screens/notifications/WeeklyConceptScreen').WeeklyConceptScreen),
-  Institutional: lazyScreen(() => require('../screens/institutional/InstitutionalScreen').InstitutionalScreen),
   About: lazyScreen(() => require('../screens/about/AboutScreen').AboutScreen),
   Awards: lazyScreen(() => require('../screens/awards/AwardsScreen').AwardsScreen),
   AudioCommunityDirectory: lazyScreen(() => require('../screens/directory/AudioCommunityDirectoryScreen').AudioCommunityDirectoryScreen),
@@ -322,8 +321,8 @@ export function RootNavigator() {
        *
        * A `presentation: 'modal'` screen is presented in its OWN native
        * container, ABOVE the React root's sibling views — so the root-level
-       * LowLightDim never covered Settings, WeeklyConcept, Institutional,
-       * About, Directory, ExposureMonitor or Paywall. Seven screens broke the
+       * LowLightDim never covered Settings, WeeklyConcept, About, Directory,
+       * ExposureMonitor or Paywall. Every modal screen broke the
        * mode's promise that "the display stays dim and steady".
        *
        * screenLayout wraps EVERY screen, so the wash follows the user into any
@@ -385,8 +384,6 @@ export function RootNavigator() {
       <Stack.Screen name="Settings" getComponent={Lazy.Settings} options={{ presentation: 'modal' }} />
       <Stack.Screen name="Help" getComponent={Lazy.Help} options={{ presentation: 'modal' }} />
       <Stack.Screen name="WeeklyConcept" getComponent={Lazy.WeeklyConcept} options={{ presentation: 'modal' }} />
-      {/* Institutional Mode parked container (user request 2026-07-17). */}
-      <Stack.Screen name="Institutional" getComponent={Lazy.Institutional} options={{ presentation: 'modal' }} />
       <Stack.Screen name="About" getComponent={Lazy.About} options={{ presentation: 'modal' }} />
       {/* Awards (Booth 2026-07-15) — Certificates/Diplomas/Hall of Fame, bottom
           nav hidden. An AREA-level destination (Dashboard ⇄ Certificates) → fade. */}

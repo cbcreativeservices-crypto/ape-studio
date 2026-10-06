@@ -84,7 +84,7 @@ export function CalcWorkflowRunScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const route = useRoute<RouteProp<RootStackParamList, 'CalcWorkflowRun'>>();
-  const { entitlement, resolved, commercialMode, tierKnown, tierReadFailed } = useEntitlement();
+  const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // ⛔ WORKFLOWS ARE ACADEMY-ONLY — RE-CHECKED HERE (evening hunt 1,
   // 2026-10-02). The lab's gate lets a tap through while the tier is still
   // unknown (`!resolved` counts as allowed, so a member is never sold what they
@@ -93,7 +93,7 @@ export function CalcWorkflowRunScreen() {
   // shows every answer, with no weekly cap, for as long as it stayed open.
   // Once the tier is KNOWN and is not a member, the answers are withheld.
   const tier = useTier();
-  const workflowBlocked = commercialMode && tier !== 'unknown' && tier !== 'member';
+  const workflowBlocked = tier !== 'unknown' && tier !== 'member';
   // Blocked because the membership read FAILED (no remembered tier), not
   // because the account is known to be free (hunt 4, 2026-10-03): the
   // honest "not confirmed" words, never the membership sell — as CalcLab.

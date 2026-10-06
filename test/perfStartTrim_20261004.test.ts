@@ -389,7 +389,6 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   HarmonographLab: [true, 'Harmonograph'],
   Help: [false, null],
   Home: [false, null],
-  Institutional: [false, null],
   LabCategory: [false, null],
   LimiterLab: [true, 'Limiter'],
   Main: [false, null],

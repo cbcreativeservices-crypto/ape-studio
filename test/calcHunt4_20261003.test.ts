@@ -29,10 +29,10 @@ const NOT_CONFIRMED = 'Couldn’t confirm your membership on this phone. Check y
 describe('H4-1 — a failed membership read is never told to sign in or sold membership', () => {
   it('calculator: SIGN IN only for a KNOWN guest; an unconfirmed tier holds the answer', () => {
     const s = read('CalcWorkspaceScreen.tsx');
-    assert.match(s, /const \{ entitlement, commercialMode, resolved, tierKnown, tierReadFailed \} = useEntitlement\(\);/);
-    assert.match(s, /const mustSignIn = commercialMode && resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;/);
+    assert.match(s, /const \{ entitlement, resolved, tierKnown, tierReadFailed \} = useEntitlement\(\);/);
+    assert.match(s, /const mustSignIn = resolved && tierKnown && entitlement === 'anonymous' && !onboardingSampling;/);
     assert.match(s, /const tierUnconfirmed = resolved && !tierKnown && entitlement === 'anonymous';/);
-    assert.match(s, /const tierPending = commercialMode && \(!resolved \|\| tierUnconfirmed\) && !onboardingSampling;/);
+    assert.match(s, /const tierPending = \(!resolved \|\| tierUnconfirmed\) && !onboardingSampling;/);
     const pending = s.slice(s.indexOf(') : tierPending ? ('), s.indexOf(') : capped && !resultUnlocked ? ('));
     assert.ok(pending.includes(NOT_CONFIRMED), 'the honest end state once the provider gives up');
     assert.match(pending, /tierReadFailed && tierUnconfirmed/);

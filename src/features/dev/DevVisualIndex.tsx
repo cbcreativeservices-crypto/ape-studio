@@ -196,7 +196,6 @@ const SCREENS: { section: string; items: ScreenEntry[] }[] = [
       { label: 'Settings', go: (n) => n.navigate('Settings') },
       { label: 'About / Credits', go: (n) => n.navigate('About') },
       { label: 'Paywall', go: (n) => n.navigate('Paywall') },
-      { label: 'Institutional (parked)', go: (n) => n.navigate('Institutional') },
     ],
   },
   {

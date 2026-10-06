@@ -139,7 +139,6 @@ const STILL_TWO_STATE: Record<string, string> = {
   'screens/achievements/CredentialWall.tsx': 'resolved-gated (`resolved && …`)',
   'screens/awards/AwardsScreen.tsx': 'resolved-gated on every site',
   'screens/commercial/PaywallScreen.tsx': 'behind a `!tierKnown` return / tierKnown-gated (a charged purchase: the strictest gate)',
-  'screens/courses/CourseSelectionScreen.tsx': 'the dev-only commercial toggle seeding a tier; __DEV__ only',
   'screens/courses/StudyAreaExplore.tsx': 'resolved-gated',
   'screens/directory/DirectoryScreen.tsx': 'deliberately optimistic while unresolved (`!resolved || …`) plus an `accountConfirmed` that is resolved-gated',
   'screens/glossary/GlossaryScreen.tsx': 'the device-key input is passed with `resolved`; the charge is `resolved && !isMember`; capMode local is harmless before the read',

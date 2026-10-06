@@ -425,8 +425,8 @@ function App() {
           Native module — inert until a build bundles it (no crash before then). */}
       <KeyboardProvider>
       <StatusBar style="light" />
-      {/* Commercial entitlement context (CM1) — inert while commercialMode is
-          OFF; no consumers yet, so app behavior is unchanged. */}
+      {/* Commercial entitlement context (CM1) — the membership tier every
+          gate in the app reads. */}
       <EntitlementProvider>
         {/* Store purchases are listened for from BOOT, not just while the
             paywall is open (2026-09-18). Ask-to-Buy, SCA challenges and any

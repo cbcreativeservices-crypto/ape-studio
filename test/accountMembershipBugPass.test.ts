@@ -36,7 +36,7 @@ test('account-switch syncs run one at a time', () => {
 
 test('a successful refreshEntitlement marks the tier known and caches it', () => {
   const body = provider.slice(provider.indexOf('const refreshEntitlement = useCallback'));
-  const end = body.indexOf('const setCommercialMode');
+  const end = body.indexOf('setMemberStanding(entitlement');
   const refresh = body.slice(0, end);
   assert.match(refresh, /setTierKnown\(true\)/);
   assert.match(refresh, /saveLastTier\(uidAtStart, tier\)/);

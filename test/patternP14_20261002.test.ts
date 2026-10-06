@@ -98,7 +98,6 @@ describe('the overlay-label floors stay at 9 pt', () => {
  * are not text the learner reads. Count per file. May only shrink.
  */
 const SUB9_ALLOWED: Record<string, { n: number; why: string }> = {
-  'components/CertIcon.tsx': { n: 1, why: '"REC" glyph in a 24-unit viewBox drawn at 32 pt → 8.4 × 1.33 = 11.2 pt' },
   'screens/lab/soundsystems/art/gearArt.tsx': {
     n: 5,
     why: 'silk-screen legends (IN/OUT, CH1, DI, TX·ST) are panel TEXTURE on cards; every display passes legends={false} (owner 2026-09-25)',

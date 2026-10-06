@@ -140,8 +140,8 @@ describe('#1 · the client meters only a KNOWN non-member', () => {
 
   it('capped keys on the member gate, not on resolved && !isMember', () => {
     assert.match(screen, /const memberGate = useMemberGate\(\);\s*const meterKnown = memberGate === 'locked';/);
-    assert.match(screen, /const capped = commercialMode && meterKnown;/);
-    assert.doesNotMatch(screen, /const capped = commercialMode && resolved && !isMember;/);
+    assert.match(screen, /const capped = meterKnown;/);
+    assert.doesNotMatch(screen, /const capped = (commercialMode && )?resolved && !isMember;/);
   });
 
   it('a server limit while membership is unconfirmed: no lock, no upsell — the honest words', () => {

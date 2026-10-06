@@ -3,16 +3,15 @@
  * come from server rows; the client never writes tables (study writes go
  * through record_study_progress in M4, quiz through the quiz RPCs in M5).
  *
- * Status vocabulary (from deployed recompute_reachability):
- *   locked · unlocked · passed_incomplete (a partial pass — clamps one-ahead) ·
- *   complete (a full pass).
+ * Status vocabulary (server-written on student_achievement_progress):
+ *   locked · unlocked · passed_incomplete (a partial pass) · complete (a full
+ *   pass).
  *
- * The score bands that separate those are the SERVER's, and this comment used
- * to spell them as "partial 20–23 / full 24–25" — the retired 25-question
- * quiz. The ratified shape is QUIZ_SIZE 30 / QUIZ_PASS 28 (features/quiz/api.ts,
- * whose header says: do not reintroduce 25/24). Deliberately NOT restating the
- * new bands here: recompute_reachability owns them, and a second copy in a
- * client docblock is exactly how the last pair went stale.
+ * The score bands that separate those are the SERVER's. The ratified shape is
+ * QUIZ_SIZE 30 / QUIZ_PASS 28 (features/quiz/api.ts, whose header says: do
+ * not reintroduce 25/24). Deliberately NOT restating the bands here: the quiz
+ * RPCs own them, and a second copy in a client docblock is exactly how an
+ * earlier pair went stale.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';

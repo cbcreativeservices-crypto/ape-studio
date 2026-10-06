@@ -1,10 +1,9 @@
 /**
- * Auth API — the ONLY registration path is the register_student RPC v2.1
- * (Code brief §1). Never touch tables directly; IMPL §3's direct-table
- * snippet is superseded (C-4).
- *
- * Flow: signUp(email, password) → session → register_student(id, code).
- * v2.1 auto-enrolls the SAFE course; first-topic seeding is trigger-side.
+ * Auth API — session plumbing for sign-in, sign-up, recovery and sign-out.
+ * Account registration itself is commercial-only: AuthScreen calls
+ * registerCommercialUser (features/commercial/commercialAuth.ts), which uses
+ * ensureSession below and then the register_commercial_user RPC. Never touch
+ * tables directly.
  */
 import { supabase } from '../../lib/supabase';
 import { safeSession } from '../../lib/getSessionSafe';
@@ -69,55 +68,11 @@ import { friendlyAuthError } from './authErrorCopy';
 export { friendlyAuthError, EMAIL_RE, passwordIssue } from './authErrorCopy';
 
 /**
- * Map a Supabase/JS auth error to user-facing copy (QA Wave D, D-3 2026-09-10).
- * Offline used to surface the raw developer string "Network request failed";
- * detect network failures and show an actionable line, pass everything else
- * through (Supabase's own messages are already user-legible for bad creds etc.).
- */
-export type EnrolledCourse = {
-  course_id: string;
-  course_code: string;
-  first_topic_id: string;
-  first_topic_status: string;
-  [k: string]: unknown;
-};
-
-export type RegisterStudentResult =
-  | { success: true; user_id: string; enrolled_courses: EnrolledCourse[] }
-  | { success: false; error_code: RegisterErrorCode };
-
-export type RegisterErrorCode =
-  | 'not_authenticated'
-  | 'student_not_found_or_registered'
-  | 'code_invalid_or_used'
-  | 'internal_error';
-
-/**
- * Locked S1 error copy (seed brief §3 S1, verbatim), mapped from RPC codes.
- * NOTE (flagged D-2b): the RPC conflates "ID not found" and "already
- * registered" into one code, so the locked copy "Already registered. Use Sign
- * In below." has no distinguishable trigger — pending a Booth ruling we map
- * that code to the "not found" message (it names the recovery path: professor).
- */
-export const REGISTER_ERROR_COPY: Record<RegisterErrorCode, string> = {
-  // COMMERCIAL WORDING (2026-09-17). The institutional mode is retired and
-  // these are paying customers with no professor to check with — a support
-  // route they do not have reads as the app not knowing who they are.
-  student_not_found_or_registered: 'That ID or code was not found. Check it and try again, or contact support.',
-  code_invalid_or_used: 'Registration code is incorrect or already used.',
-  not_authenticated: 'Something went wrong. Please try again.',
-  internal_error: 'Something went wrong. Please try again.',
-};
-
-// registerStudent() removed 2026-09-03 (owner decision "delete two dead entry
-// points"). It called the register_student RPC, the one writer that inserted an
-// enrollment row against the archived `courses` table. It was exported and never
-// imported anywhere; AuthScreen signs up through registerCommercialUser instead.
-/**
  * Ensure an authed session for the (email, password) pair.
  * - Fresh email → signUp creates the account + session.
- * - Email already has an account (e.g. retry after a failed register_student,
- *   app reinstall) → fall back to signInWithPassword so the flow is resumable.
+ * - Email already has an account (e.g. retry after a failed
+ *   register_commercial_user, app reinstall) → fall back to
+ *   signInWithPassword so the flow is resumable.
  * Returns an error message to display, or null on success.
  *
  * Model-A assumption: email confirmation is DISABLED. If signUp comes back

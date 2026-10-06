@@ -17,9 +17,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const RUN = readFileSync(path.resolve(HERE, '../src/screens/lab/calc/CalcWorkflowRunScreen.tsx'), 'utf8');
 
 describe('E1-1 — the workflow runner withholds answers from a known non-member', () => {
-  it('derives the block from the KNOWN tier (useTier), in commercial mode only', () => {
+  it('derives the block from the KNOWN tier (useTier)', () => {
     assert.match(RUN, /import \{ useTier \} from '\.\.\/\.\.\/\.\.\/features\/commercial\/useTier';/);
-    assert.match(RUN, /const tier = useTier\(\);\s*const workflowBlocked = commercialMode && tier !== 'unknown' && tier !== 'member';/);
+    assert.match(RUN, /const tier = useTier\(\);\s*const workflowBlocked = tier !== 'unknown' && tier !== 'member';/);
   });
   it('the blocked view returns BEFORE any step, answer or summary renders', () => {
     const render = RUN.slice(RUN.indexOf('// ---- Render ----'));

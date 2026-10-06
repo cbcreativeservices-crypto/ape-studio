@@ -969,7 +969,7 @@ export function ProfileScreen() {
             correct about OTHER members — see HOW THEY'RE INVOLVED in the
             directory's Explore filters, which is not an inconsistency. */}
         {/* —— MY PROGRESS —— retrospective only (owner 2026-09-04): what the
-            user has DONE. The Full Course line is a readout; each certificate /
+            user has DONE. The whole-curriculum line is a readout; each certificate /
             program row opens its read-only AwardProgress view (which has a ‹
             Back to Profile). Nothing here links to the Enrollments enroll page
             — enrolling lives in Study — so no one lands there and gets stuck. */}
@@ -1777,7 +1777,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   chevron: { fontFamily: fonts.oswaldMedium, fontSize: 20, color: colors.textMutedDeep },
-  // Full Course Certification progress readout (retrospective, non-navigating).
+  // Whole-curriculum progress readout (retrospective, non-navigating).
   readoutRow: { paddingVertical: 9, paddingHorizontal: 4 },
   readoutHead: {},
   progressTrack: { height: 6, borderRadius: 3, backgroundColor: '#26262b', overflow: 'hidden', marginTop: 8 },

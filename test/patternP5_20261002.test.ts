@@ -303,7 +303,7 @@ const REVIEWED_PLAIN: Record<string, { count: number; why: string }> = {
     count: 1,
     why: 'deliberate: the gate\'s own paywallPending request waits rootModalHoldMs() for every Modal (its own included) to go',
   },
-  'src/features/dev/DevVisualIndex.tsx': { count: 4, why: 'dev-only visual index rows (__DEV__ harness)' },
+  'src/features/dev/DevVisualIndex.tsx': { count: 3, why: 'dev-only visual index rows (__DEV__ harness)' },
   'src/features/lab/LabPreviewOverlay.tsx': {
     count: 1,
     why: 'UpgradeSheet is an in-tree View over the navigator, not a Modal — nothing to fade',

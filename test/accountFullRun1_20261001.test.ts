@@ -26,7 +26,7 @@ test('a derive older than a refreshEntitlement answer never overwrites it (purch
   const derive = ent.slice(ent.indexOf('const deriveAndApply'), ent.indexOf('const RETRY_DELAYS_MS'));
   assert.match(derive, /const refreshSeen = refreshApplied\.current;/);
   assert.match(derive, /refreshApplied\.current === refreshSeen/);
-  const refresh = ent.slice(ent.indexOf('const refreshEntitlement = useCallback'), ent.indexOf('const setCommercialMode'));
+  const refresh = ent.slice(ent.indexOf('const refreshEntitlement = useCallback'), ent.indexOf('setMemberStanding(entitlement'));
   assert.match(refresh, /serverTierApplied\.current = true;\s*refreshApplied\.current \+= 1;\s*setEntitlementState\(tier\);/);
 });
 

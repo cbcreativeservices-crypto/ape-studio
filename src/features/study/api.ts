@@ -87,7 +87,7 @@ async function fetchTopicItemsOnce(achievementId: string): Promise<GlossaryItem[
   // `glossary_study_v` view — one query keyed by achievement_id, with the
   // free-topic exception (anon/free can study gs0/gs36) and common_mistakes
   // masked per entitlement server-side. Any error or empty result falls back
-  // to the legacy base-table path below, so institutional study never breaks.
+  // to the legacy base-table path below, so study never breaks.
   try {
     const { data, error } = await supabase
       .from('glossary_study_v')

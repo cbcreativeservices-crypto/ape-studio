@@ -13,7 +13,7 @@
  * copy. A preview identifies the term; reading it spends a lookup.
  *
  * ⚠️ `capped` is the gate, NOT `isMember` and NOT "is a guest".
- * `capped = commercialMode && resolved && !isMember` — the SAME predicate
+ * `capped = meterKnown` (a KNOWN non-member) — the SAME predicate
  * gateDefinitionOpen charges against. Anything else and the two disagree:
  *  • gate on !isMember alone and rows clamp before entitlement resolves, so a
  *    paying member sees a truncated glossary for a frame on every cold start;

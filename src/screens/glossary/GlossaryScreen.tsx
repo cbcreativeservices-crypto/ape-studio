@@ -1428,7 +1428,7 @@ export function GlossaryScreen({ route, navigation }: Props) {
   // glossary — and is REMEMBERED across launches (defaults to showing links).
   const [linksOn, setLinksOn] = useGlossaryLinksPref();
   // CM4: Common Mistakes gating. Server owns entitlement; we render.
-  const { commercialMode, isMember, entitlement, resolved, tierReadFailed } = useEntitlement();
+  const { isMember, entitlement, resolved, tierReadFailed } = useEntitlement();
   // Membership copy (SEE MEMBERSHIP, 🔒 MEMBERS, the upgrade hint) only for a
   // KNOWN non-member (tier sweep 2026-10-03): `resolved && !isMember` also
   // matched a member whose membership read FAILED — they were sold their own
@@ -1676,7 +1676,7 @@ ${COPY.glossaryFreeAllowance}`,
   // `meterKnown`, not `resolved && !isMember` (owner 2026-10-03 #1): that also
   // matched a paying member whose membership read FAILED, who was then capped,
   // clamped and locked like a free reader. See `memberGate` above.
-  const capped = commercialMode && meterKnown;
+  const capped = meterKnown;
   // …and once the gateway meters, even a guest is counted on the SERVER: they
   // hold a device key, so there is a uid to count against. 'local' is only for
   // the world before the gateway exists.
@@ -2557,7 +2557,7 @@ ${COPY.glossaryFreeAllowance}`,
   // Topic list is ALWAYS visible + readable to everyone (owner 2026-07-29);
   // only ACTIVATING a topic filter is member-gated. Gate on real entitlement
   // so free/lapsed/anonymous users see the readable A–Z list with 🔒 MEMBERS
-  // per row (a membership sell point), independent of the commercialMode flag.
+  // per row (a membership sell point).
   // `resolved` guard (entitlement gate roll-out 2026-09-11) — same rule as
   // `capped` above: the provider boots at 'anonymous', so without it a member
   // opening the topic picker in the pre-resolve window got the view-only list
@@ -3657,7 +3657,7 @@ ${COPY.glossaryFreeAllowance}`,
              * for the first time.
              *
              * Gated on `capped`, NOT on cardView: that is
-             * `commercialMode && resolved && !isMember`, the same
+             * `meterKnown` (a KNOWN non-member), the same
              * predicate gateDefinitionOpen charges against — so members
              * and dev keep full collapsed definitions, and nothing clamps
              * before entitlement resolves.
@@ -3744,7 +3744,7 @@ ${COPY.glossaryFreeAllowance}`,
   // isMember included (they drive the star/bookmark glyphs and the Common-
   // Mistakes body), which the old always-new array silently covered.
   // `capped` is listed as well as `isMember` and it is NOT redundant: capped is
-  // `commercialMode && resolved && !isMember`, so it flips when ENTITLEMENT
+  // `meterKnown` (a KNOWN non-member), so it flips when ENTITLEMENT
   // RESOLVES even though isMember never moved. It drives the collapsed row's
   // clamp — leave it out and a guest's rows keep rendering full definitions for
   // the rest of the session, which is the exact hole this clamp closes.
