@@ -25,7 +25,7 @@
  * so inside StageFullScreen the scene wraps itself in GestureHandlerRootView;
  * a drag that starts on a mic locks the full-screen scrollers (ScrollLock).
  */
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import Animated, { useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withDelay, withSequence, withTiming, type SharedValue } from 'react-native-reanimated';
@@ -33,7 +33,7 @@ import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-g
 import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../theme/tokens';
 import { fitValue } from '../../../../../theme/legibility';
-import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
+import { StageInFullScreen, useStageTextScale, useStageZoom } from '../../../rack/stageAspect';
 import { useScrollLock } from '../../../scrollLock';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../../../modules/ape-gesture-exclusion';
 import { MikingMicArt } from '../../../../../features/lab/micDrawings';
@@ -54,7 +54,9 @@ import type { Rig } from './useRig.ts';
 import { liveLine, withStop } from './readoutText.ts';
 import { frustumOutline } from '../geometry/outline.ts';
 import { refLabels } from './sceneWords.ts';
-import { fitLabels, labelWidth } from './labelLayout.ts';
+import { labelWidth } from './labelLayout.ts';
+import { layoutArtLabels } from './artLabels.ts';
+import { sceneFrame } from '../geometry/contentFrame.ts';
 import type { LessonArt } from './sceneTypes.ts';
 
 const BLUE = '#6fa8ff';
@@ -64,9 +66,10 @@ const RED = '#ff6b5e';
 const IDEAL = '#e8eaee';
 const POLAR_R = 170; // mm: the drawn radius of an on-axis lobe (a drawing size, not a range)
 const MAX_ZOOM = 5;
-/** Below this fit scale (px per mm) no part label can sit by its part:
- *  hidden. Above it, colliding labels are culled (fitLabels). */
-const LABEL_MIN_S = 0.12;
+/** Below this fit scale (px per mm) no part label is drawn. Above it the
+ *  level-of-detail layout (artLabels.ts) keeps only labels with clear space
+ *  (2026-10-06: lowered from 0.12 — a timpani on a 250 pt glass had none). */
+const LABEL_MIN_S = 0.06;
 const PAD = 8;
 /** The aim ring sits this far behind the mic's tail, at this radius (screen px). */
 const RING_OFFSET_PX = 20;
@@ -1038,6 +1041,24 @@ export function liveReserve(count: number, w: number, textScale: number): number
 
 /* ── the scene ───────────────────────────────────────────────────────── */
 
+/**
+ * The instrument's drawing, memoised by (view, variant) — its only props.
+ * Every fader move and zone jump re-renders the page, and the instrument is
+ * by far the largest subtree on the glass (hundreds of Skia nodes): without
+ * this it was rebuilt on every move (measured 2026-10-06 in the web preview:
+ * most of the 60–350 ms a dock-fader move cost; the "sliders not working"
+ * report). One wrapper per art component, shared by every scene.
+ */
+const memoCache = new WeakMap<LessonArt['Instrument'], LessonArt['Instrument']>();
+export function memoArt(C: LessonArt['Instrument']): LessonArt['Instrument'] {
+  let m = memoCache.get(C);
+  if (!m) {
+    m = memo(C) as unknown as LessonArt['Instrument'];
+    memoCache.set(C, m);
+  }
+  return m;
+}
+
 export function PlacementScene(props: PlacementSceneProps) {
   const inFull = useContext(StageInFullScreen);
   const body = <SceneBody {...props} />;
@@ -1048,8 +1069,18 @@ export function PlacementScene(props: PlacementSceneProps) {
 
 function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, avoid, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
   const model = rig.lesson.model;
-  const box = boxOverride ?? viewsOf(model, rig.variant)[view]!;
+  // With no mic on the drawing (the parts, the instrument alone) the scene
+  // fits the instrument's own CONTENT FRAME, not the generous authored box
+  // (owner 2026-10-06: "too small, there is more room"); with mics, the
+  // authored box, inside which a mic may be moved (geometry/contentFrame.ts).
+  const anyMic = slots.length > 0 || !!wedge || !!pathsFrom;
+  const authoredBox = viewsOf(model, rig.variant)[view]!;
+  const box = boxOverride ?? sceneFrame(rig.lesson.model, rig.variant, view, anyMic) ?? authoredBox;
   const textScale = useStageTextScale();
+  // Part labels keep the size they have at the full screen's 1× while a zoom
+  // step enlarges the drawing, so more of them find clear space as the
+  // learner zooms in (level of detail, owner 2026-10-06); never under 9 pt.
+  const labelScale = Math.max(1, textScale / useStageZoom());
   const viewTag = copyOf(rig.lesson).viewTag[view];
   // The live strip owns a band at the top: the drawing is fitted BELOW it, so
   // the strip never sits on the heads or their labels (layout pass 2026-10-04).
@@ -1343,15 +1374,35 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     // the drawn figure only adds words to the picture (clarity pass
     // 2026-10-05); an off-glass pointer ("← PLAYER") stays.
     const own = art.labels(view, variant).filter((l) => !(micsOn && l.id === 'player' && l.text === 'PLAYER'));
-    return fitLabels(own, base, textScale, w, avoid, obstacles);
+    // The view's tag in the bottom-left corner ("SIDE · CUTAWAY") is words
+    // too: a label never sits on it.
+    const tagText = model.viewTags?.[view] ?? viewTag;
+    const tagFs = Math.max(9, 9 * textScale);
+    const tag = { x0: 0, y0: h - tagFs * 1.4 - 4, x1: 8 + tagText.length * (tagFs * 0.6 + 1.2), y1: h };
+    // Level of detail (artLabels.ts): only labels that find clear space — off
+    // the drawing, off each other, on the glass below the live strip.
+    return layoutArtLabels(art, view, variant, authoredBox, base, labelScale, w, h, { avoid, obstacles: [...(obstacles ?? []), tag], minY: reserveTop + 1, labels: own, model });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
-  }, [mini, showLabels, showZones, zones, art, view, variant, base, textScale, w, micsOn, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
-  const Instrument = art.Instrument;
+  }, [mini, showLabels, showZones, zones, art, view, variant, base, labelScale, textScale, viewTag, w, h, reserveTop, authoredBox, model, micsOn, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
+  const Instrument = memoArt(art.Instrument);
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
     const part = model.parts.find((p) => p.id === highlight);
+    // A part that cannot be seen from this view (a marimba's tubes under its
+    // bars, from above) gets no marker here: it would ring the part in front.
+    if (part?.hiddenIn?.includes(view)) return null;
     const region = model.regions.find((r) => r.partId === highlight);
     const p = Skia.Path.Make();
+    // A named part drawn as several solids (the resonator tubes, in groups):
+    // ring the solids themselves, never a point where the part meets another.
+    if (part && !part.solid) {
+      const kids = model.parts.filter((q) => q.id.startsWith(`${part.id}.`) && q.solid && (!q.variants || q.variants.includes(variant)) && !q.hiddenIn?.includes(view));
+      for (const k of kids) {
+        const o = shapeOutline(k.solid!, view);
+        if (o) p.addPath(o);
+      }
+      if (kids.length) return p;
+    }
     const sol = part?.solid;
     if (sol && (sol.kind === 'slab' || sol.kind === 'tube')) {
       const q = cylinderRect(sol, view);
@@ -1364,10 +1415,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     }
     if (region) p.addCircle(region.anchor.x, view === 'side' ? region.anchor.y : region.anchor.z, 70);
     return region ? p : null;
-  }, [highlight, model, view]);
+  }, [highlight, model, view, variant]);
 
   const micsShown = rig.mics.filter((m) => live.includes(m.slot) && m.on);
-  const labelBoxes = useMemo<LabelBox[] | null>(() => (art.labelsYieldToMic ? labels.map((l) => ({ u: l.u, v: l.v, W: labelWidth(l.text, textScale, w), align: l.align })) : null), [art.labelsYieldToMic, labels, textScale, w]);
+  const labelBoxes = useMemo<LabelBox[] | null>(() => (art.labelsYieldToMic ? labels.map((l) => ({ u: l.u, v: l.v, W: labelWidth(l.text, labelScale, w), align: l.align })) : null), [art.labelsYieldToMic, labels, labelScale, w]);
   // The mics the part labels step back from (opt-in per lesson).
   const shownKey = micsShown.map((m) => `${m.slot}:${m.typeId}`).join(',');
   const yieldTo = useMemo<MicYield>(
@@ -1388,7 +1439,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           <KeepOutsAtRest.Provider value={false}>
             <Instrument view={view} variant={variant} />
           </KeepOutsAtRest.Provider>
-          <LeaderLines labels={labels} xf={xf} scale={textScale} maxX={w} />
+          <LeaderLines labels={labels} xf={xf} scale={labelScale} maxX={w} />
           {envelopes.map((e) => (
             <EnvelopeMark key={e.id} e={e} rig={rig} slots={micsShown.map((m) => m.slot)} gate={gate} hatchPath={hatchPath} fadeMs={fadeIn} pinned={highlight === e.id} />
           ))}
@@ -1420,7 +1471,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         </Group>
       </Canvas>
       {labels.map((l) => (
-        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={textScale} maxX={w} yieldTo={yieldTo} view={view} />
+        <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
       ))}
       {showPolar && !mini && showLabels
         ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} labelBoxes={labelBoxes} shown={lobeOpacity} avoid={avoid ?? null} />)

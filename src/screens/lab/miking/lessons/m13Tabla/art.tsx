@@ -256,7 +256,7 @@ function TopDrum({ d, p }: { d: TablaDrum; p: ReturnType<typeof topParts> }) {
  *  audience (+x), the right hand on the dayan, the left on the bayan — the
  *  same places as the line art it replaces. ILLUSTRATIVE. */
 const tablaPoses: Partial<Record<ViewId, PlayerPose>> = {};
-function tablaPose(view: ViewId): PlayerPose {
+export function tablaPose(view: ViewId): PlayerPose {
   const hit = tablaPoses[view];
   if (hit) return hit;
   let pose: PlayerPose;

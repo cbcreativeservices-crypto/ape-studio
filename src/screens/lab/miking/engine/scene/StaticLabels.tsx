@@ -28,8 +28,10 @@ export type StaticLabel = {
 /** ink* = dark marks for a LIGHT surface (a coated drumhead), with a light halo. */
 const TONE = { muted: colors.textMuted, illustrative: '#aab0bd', amber: '#ffc64d', blue: '#8fbcff', inkBlue: '#123f8c', inkAmber: '#7a4a00' } as const;
 
-export function StaticLabels({ labels, xf, scale, w }: { labels: StaticLabel[]; xf: ViewXform; scale: number; w: number }) {
-  const kept = fitLabels(labels, xf, scale, w);
+/** `laidOut`: the labels come already placed (artLabels.layoutArtLabels —
+ *  level of detail, clear of the drawing); draw them as they are. */
+export function StaticLabels({ labels, xf, scale, w, laidOut = false }: { labels: (StaticLabel & { leader?: { u: number; v: number } })[]; xf: ViewXform; scale: number; w: number; laidOut?: boolean }) {
+  const kept = laidOut ? labels : fitLabels(labels, xf, scale, w);
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {kept.map((l) => {

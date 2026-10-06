@@ -49,7 +49,7 @@ import { isTabletWindow } from '../../../theme/tablet'; // tablet wording, owner
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal } from '../../../components/DimModal';
 import { colors, fonts } from '../../../theme/tokens';
-import { StageAspectReport, StageGlassWidth, StageInFullScreen, StageTextScale, type StageReport } from './stageAspect';
+import { StageAspectReport, StageGlassWidth, StageInFullScreen, StageTextScale, StageZoom, type StageReport } from './stageAspect';
 import { anchorOffset, baseSize, compaction, factorOf, fitFactor, isLandscape, textScaleFor, wantsRotate, zoomSteps } from './stageFitMath';
 import { ScrollLockProvider } from '../scrollLock';
 
@@ -342,9 +342,11 @@ export function StageFullScreen({
                   <ScrollLockProvider value={setDragLocked}>
                   <StageAspectReport.Provider value={report}>
                     <StageGlassWidth.Provider value={glassW ?? 0}>
+                      <StageZoom.Provider value={zoom}>
                       <StageTextScale.Provider value={textScale}>
                         <FullDrawing render={render} w={w} h={h} />
                       </StageTextScale.Provider>
+                      </StageZoom.Provider>
                     </StageGlassWidth.Provider>
                   </StageAspectReport.Provider>
                   </ScrollLockProvider>

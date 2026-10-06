@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 15:04 · ccode · 781b3a27
+changed: fix(miking): the player's head is drawn as part of the figure, not the line-art head icon
+affects other side: nothing (app-only drawing; the avatar head-icon spec is unchanged; 82f5537a before it — Miking faders preview/commit + view keys — is app-only too)
+needs: nothing
+
+
 ### 2026-10-06 15:03 · ccode · 35102390
 changed: fix(rack): the dock fader follows the finger; keys that do nothing in full screen are hidden
 affects other side: nothing (app-only, JS: the shared ParamLane now hands a lab one value per ~16 ms tick and draws its cap on the UI thread; every rack lab benefits; Miking fix pass, worktree branch, not pushed)

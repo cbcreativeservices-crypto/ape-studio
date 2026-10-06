@@ -105,6 +105,8 @@ function model(design: FluteDesign): InstrumentModel {
     id: 'flute',
     name: 'flute',
     views: FLUTE_VIEWS,
+    // The wooden flute and the player's arms reach past the modelled parts.
+    fitAuthored: { side: true, top: true },
     words: WORDS(design),
     surfaces,
     rims: rims(),

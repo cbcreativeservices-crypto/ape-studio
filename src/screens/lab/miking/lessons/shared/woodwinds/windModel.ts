@@ -45,6 +45,8 @@ export type WindModelOpts = {
   id: string;
   name: string;
   views: { side: ViewBox; top: ViewBox };
+  /** Views whose drawing reaches past the modelled parts (contentFrame.ts). */
+  fitAuthored?: InstrumentModel['fitAuthored'];
   words: WindPartWords;
   surfaces: ReferenceSurface[];
   rims: Rim[];
@@ -143,6 +145,7 @@ export function windModel(L: Layout, o: WindModelOpts): InstrumentModel {
     variants: o.variants,
     defaultVariant: o.variants[0].id,
     views: o.views,
+    ...(o.fitAuthored ? { fitAuthored: o.fitAuthored } : {}),
     // A mic may face the player (the usual way), or look forward from behind
     // the head: the aim may swing all the way round.
     aimAzLimit: 180,

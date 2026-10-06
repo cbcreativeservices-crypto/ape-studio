@@ -213,6 +213,8 @@ export const A11_MODEL: InstrumentModel = {
     top: { u0: -620, u1: 820, v0: BASS_FULL - 420, v1: TREBLE.z1 + 520 },
   },
   viewTags: { side: 'FROM THE PLAYER’S RIGHT', top: 'FROM ABOVE' },
+  // From above the bellows' folds reach past the modelled parts.
+  fitAuthored: { top: true },
   aimAzLimit: 180,
   yFloor: { mm: FLOOR_Y, prov: ACCORDION.grilleHt.prov, placeholder: true },
   interior: { x0: 0, x1: 0, rIn: 0, c: v3(0, 0, 0) },

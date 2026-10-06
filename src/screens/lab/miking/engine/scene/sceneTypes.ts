@@ -42,6 +42,10 @@ export type LessonArt = {
    *  so the words never hide the mic, a zone or a readout. A lesson that
    *  gives neither is unchanged. */
   labelObstacles?: (view: ViewId, variant: VariantId, shown: readonly string[]) => readonly ViewRect[];
+  /** Opt-in: whether the drawn PLAYER figure covers (u, v) (mm, within
+   *  `tol`) where the hit test does not name the player — the part labels
+   *  keep off the figure too (artLabels.ts; players/playerPose.poseHit). */
+  figureAt?: (view: ViewId, variant: VariantId, u: number, v: number, tol: number) => boolean;
   labelsYieldToMic?: boolean;
   /** HOW IT SOUNDS (LESSON_JOURNEY §6 stage 2): the strike sequence revealed
    *  by `reveal` (1 … n, a shared value: stepped, or played ONCE by the

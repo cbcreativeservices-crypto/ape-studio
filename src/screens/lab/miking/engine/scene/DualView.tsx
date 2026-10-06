@@ -15,6 +15,7 @@ import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect'
 import type { ViewId } from '../model/types.ts';
 import { viewsOf } from '../model/types.ts';
 import { fitPair, fitXform } from '../geometry/frame.ts';
+import { sceneFrame } from '../geometry/contentFrame.ts';
 import { PlacementScene, liveReserve, type PlacementSceneProps } from './PlacementScene';
 import { chooseInsetCorner } from './labelLayout.ts';
 
@@ -31,7 +32,17 @@ export function DualView(props: DualViewProps) {
   const { rig, w, h, view, setView, labelFor } = props;
   const inFull = useContext(StageInFullScreen);
   const textScale = useStageTextScale();
-  const box = viewsOf(rig.lesson.model, rig.variant);
+  // The same frames the scenes fit (the instrument's content frame when no
+  // mic is on the drawing — geometry/contentFrame.ts), so both views and the
+  // inset line up with what each scene draws.
+  const withMics = (props.slots ?? ['A']).length > 0 || !!props.wedge || !!props.pathsFrom;
+  const box = useMemo(() => {
+    const authored = viewsOf(rig.lesson.model, rig.variant);
+    return {
+      side: authored.side ? sceneFrame(rig.lesson.model, rig.variant, 'side', withMics) : undefined,
+      top: authored.top ? sceneFrame(rig.lesson.model, rig.variant, 'top', withMics) : undefined,
+    };
+  }, [rig.lesson, rig.variant, withMics]);
   const other: ViewId = view === 'side' ? 'top' : 'side';
   const stacked = inFull && box.side && box.top;
   const portrait = h >= w * 0.75;
