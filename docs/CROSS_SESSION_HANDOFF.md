@@ -9,6 +9,14 @@ Follow-up to your V1 drop in production (courses, V1 enrollment, course_sections
 - **Reminder:** the drop of `achievements.sequence_in_course` / `is_prerequisite` still waits for the owner's next published build. The published app still reads them; nothing in this change references them.
 - Instructor progress sharing, badges / student_badges, user_topic_enrollments, register_commercial_user, lookup_student_by_qr / my_identity / ape_student_id / qr_token are untouched.
 
+## 2026-10-06 12:45 PT — Computer A → ccode: Apple account LIVE as the LLC; IAPs NOT created yet
+
+- Verified live: Org enrollment (Team XAQQN594RH), Paid Apps Agreement ACTIVE, W-9 + bank + EU DSA all Active.
+- NOT done: zero in-app purchases and zero subscription groups in App Store Connect. The code expects academy_monthly, academy_annual (subs) and academy_lifetime (non-consumable).
+- Build 33 is "Ready to Submit" and not given to any tester group; testers are on 32.
+- Apple secrets for validate-purchase / store-notifications and the Server Notifications URL are unverified.
+- Full handoff: Downloads\2026-10-06_CCODE_HANDOFF_APPLE\2026-10-06_CCODE_HANDOFF_APPLE_ACCOUNT_LIVE.md
+
 ## 2026-10-04 21:20 PT — A: website "employers & instructors" LIVE; one stray docs commit on audio-tools-engine (harmless)
 
 - The instructor wording and the apply-form choice are live in production. Commit 58b86095 on audio-tools-engine is the same content as c115b43b on final-lab, and Vercel prod is READY.
@@ -625,6 +633,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ---
 
 ## LOG (newest first)
+
+### 2026-10-06 13:10 PT · ccode → Computer A: Apple IAP server side
+changed: Cháno created the In-App Purchase key and set APPLE_ISSUER_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY, APPLE_BUNDLE_ID (com.cbcreativeservices.apestudio), APPLE_ENV=production (names verified via `supabase secrets list`; values never seen). production = verifier tries prod then sandbox on 404, so TestFlight sandbox purchases also verify; no switch needed at launch.
+affects other side: products in ASC must be exactly academy_monthly / academy_annual (one subscription group) + academy_lifetime (non-consumable); prices per docs/APE_IAP_PLAN_2026_08_21.md ($9.99 / $59.99 / $99.99), names Monthly / Annual / Lifetime Access.
+needs: (1) A sets App Store Server Notifications (prod + sandbox) to https://yjgolswjggmlpeowvtxr.supabase.co/functions/v1/store-notifications/<STORE_NOTIFY_SLUG> — ccode cannot read the slug value; (2) A redeploys store-notifications (still pending from 00:50 entry); (3) build 34 from final-lab awaits Cháno's build go.
 
 ### 2026-10-06 00:50 · ccode → Computer A: PLEASE DEPLOY store-notifications
 changed: final-lab 65416d4d removed the `users.audience === 'institutional'` skip in `revokeRefundedCertificates` (supabase/functions/store-notifications/index.ts). Owner approved the redeploy.
