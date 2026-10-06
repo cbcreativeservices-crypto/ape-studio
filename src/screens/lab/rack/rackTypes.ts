@@ -95,6 +95,12 @@ export type DockParam =
       /** 0..1 lane position; the lab owns its own value mapping/taper. */
       value: number;
       onChange: (v: number) => void;
+      /** Opt-in (Miking Labs, 2026-10-06): the finger let go at `v`. With it,
+       *  `onChange` is a cheap PREVIEW while the finger rides the lane (it may
+       *  leave React state alone — a mic moved through shared values), the
+       *  lane prints `format(v)` live itself, and this commits the result
+       *  once. Without it nothing changes: every move is an onChange. */
+      onCommit?: (v: number) => void;
       /** Formatted readout for the lane + drag tag (full detail). */
       format: (v: number) => string;
       /** Compact value for the dock BUTTON (~7 mono chars before truncation
@@ -148,6 +154,8 @@ export type DockParam =
       /** In-tray reset (reset-in-container rule). */
       onReset?: { label: string; onPress: () => void };
       helpKey?: string;
+      /** As for a toggle: not shown in FULL SCREEN, where it changes nothing. */
+      hideInFull?: boolean;
     }
   | {
       kind: 'group';
@@ -172,6 +180,10 @@ export type DockParam =
       value: boolean;
       onToggle: () => void;
       helpKey?: string;
+      /** The key changes nothing in FULL SCREEN, so it is not shown there
+       *  (owner 2026-10-06: "useless buttons should just be hidden" — a
+       *  SIDE / TOP VIEW key over a full screen that already shows both). */
+      hideInFull?: boolean;
       /** Let the key's label WRAP to two lines instead of ellipsizing at one.
        *  Opt-in and rare: a dock key has ~10 characters of room at Oswald 12,
        *  so a longer name is normally the wrong name. Use it only when the

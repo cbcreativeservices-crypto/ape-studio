@@ -346,7 +346,10 @@ export function RackUnit({
     it.leavesFull && it.onPress ? { ...it, onPress: () => leaveFullThen(it.onPress as () => void) } : it,
   );
 
-  const dockNode = (
+  // FULL SCREEN's dock leaves out the keys that change nothing there
+  // (`hideInFull`, owner 2026-10-06: "useless buttons should just be
+  // hidden" — a view toggle over a full screen that shows both views).
+  const dockFor = (inFull: boolean) => (
     <View style={styles.dock}>
       {/* Tablet (owner 2026-09-29): the faceplate stays full width but the
           lane and keys sit in the centred reading column, lined up with the
@@ -359,6 +362,8 @@ export function RackUnit({
           value={bound.value}
           readout={bound.format(bound.value)}
           onChange={bound.onChange}
+          onCommit={bound.onCommit}
+          format={bound.onCommit ? bound.format : undefined}
           onDragActive={setLaneActive}
           tint={bound.tint}
           level={bound.level}
@@ -367,6 +372,7 @@ export function RackUnit({
       ) : null}
       <View style={styles.strip}>
         {params.map((p) => {
+          if (inFull && (p.kind === 'toggle' || p.kind === 'options') && p.hideInFull) return null;
           switch (p.kind) {
             case 'fader':
               return (
@@ -598,7 +604,7 @@ export function RackUnit({
       </View>
 
       {/* ── DOCK — lane + strip; rides directly under the well content ────── */}
-      <View onLayout={(e) => setDockH(Math.round(e.nativeEvent.layout.height))}>{dockNode}</View>
+      <View onLayout={(e) => setDockH(Math.round(e.nativeEvent.layout.height))}>{dockFor(false)}</View>
 
       {/* Blank faceplate below the raised dock — calm, non-interactive. Gone
           while a tray is open: the dock drops to the bottom instead. */}
@@ -631,7 +637,7 @@ export function RackUnit({
           render={stage.render}
           badge={stage.badge}
           glassW={glassW}
-          controls={dockNode}
+          controls={dockFor(true)}
           overlay={trayNodeFull}
           overlayLift={trayParam ? fullTrayH + 6 : 0}
           readouts={bezelItems?.length ? <BezelReadouts items={bezelItems} onHelp={help} /> : undefined}
