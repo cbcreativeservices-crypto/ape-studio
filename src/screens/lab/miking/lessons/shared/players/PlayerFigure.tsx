@@ -46,7 +46,7 @@
  */
 import { useMemo } from 'react';
 import { BlurMask, Circle, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
-import { BODY, dist, lerp, pt, type Hand, type PlayerPose, type Pt } from './playerPose.ts';
+import { BODY, dist, lerp, poseHit, pt, type Hand, type PlayerPose, type Pt } from './playerPose.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -858,6 +858,22 @@ function built(pose: PlayerPose): Built {
     cache.set(pose, b);
   }
   return b;
+}
+
+/**
+ * Whether the DRAWN figure covers (u, v), within `tol` mm: the very paths the
+ * figure paints (torso, arms, legs, hands, shoes, head) — for the part labels,
+ * which keep off the player (engine/scene/artLabels.ts, LessonArt.figureAt).
+ * Where Skia's paths cannot answer (the node tests' stand-in), the pose's
+ * capsules do (playerPose.poseHit).
+ */
+export function figureCovers(pose: PlayerPose, u: number, v: number, tol = 0): boolean {
+  const b = built(pose);
+  const paths = [...b.behind, ...b.front, ...b.shoes].map((m) => m.path).concat(b.head.fill);
+  if (typeof paths[0]?.contains !== 'function') return poseHit(pose, u, v, tol);
+  const pts = tol > 0 ? [pt(u, v), pt(u - tol, v), pt(u + tol, v), pt(u, v - tol), pt(u, v + tol)] : [pt(u, v)];
+  for (const q of pts) for (const p of paths) if (p.contains(q.u, q.v)) return true;
+  return false;
 }
 
 function Bar({ b }: { b: Built['bars'][number] }) {

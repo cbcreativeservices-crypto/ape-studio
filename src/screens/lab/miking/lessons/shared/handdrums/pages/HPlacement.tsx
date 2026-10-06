@@ -78,6 +78,11 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     { title: 'CLEARANCE', text: H.clearWords, cell: 3 },
   ];
   const wk = worked[exStep];
+  // The piece being read is marked on the drawing too (PPlacement's rule,
+  // 2026-10-06): the head it is measured from (2, 3), the keep-outs (6).
+  const exHeadPart = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.partId ?? null;
+  const exEnvelope = lesson.model.envelopes.find((e) => !e.variants || e.variants.includes(variant))?.id ?? null;
+  const exHighlight = exStep === 1 || exStep === 2 ? exHeadPart : exStep === 5 ? exEnvelope : null;
   const partShort = stopShortOf(lesson.model, { gooseneck: 'REACH' });
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, partShort).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
   const exParams: DockParam[] = [
@@ -172,7 +177,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
+        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} highlight={exHighlight} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
         badge: 'WORKED EXAMPLE · placed for you · blue = recommended starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: exParams,

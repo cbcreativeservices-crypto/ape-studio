@@ -33,8 +33,8 @@ import type { ArtLabel, LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { fretX, outlinePoly, type GuitarGeom } from './guitarSpec.ts';
 import { partIdOf, type BuiltGuitarModel, type GuitarScene } from './guitarModel.ts';
 import { guitarPlayerPose } from './guitarPlayer.ts';
-import { poseHit, type PlayerPose } from '../players/playerPose.ts';
-import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import type { PlayerPose } from '../players/playerPose.ts';
+import { figureCovers, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -849,7 +849,7 @@ export function makeGuitarArt(
     labels: (view, variant) => guitarLabels(scOf(variant), view, extras?.labels, viewsOf(built.model, vid(variant))[view]),
     hitTest: (view, variant, u, v, tol) => guitarHit(scOf(variant), view, u, v, tol),
     // The drawn player, so the part labels keep off the figure too.
-    figureAt: (view, variant, u, v, tol) => poseHit(playerPoseOf(scOf(variant), view), u, v, tol),
+    figureAt: (view, variant, u, v, tol) => figureCovers(playerPoseOf(scOf(variant), view), u, v, tol),
     // The words keep off the recommended starting points and step back from
     // the mic (art pass 2026-10-05: labels were drawn over both).
     labelObstacles: (view, variant, shown) =>

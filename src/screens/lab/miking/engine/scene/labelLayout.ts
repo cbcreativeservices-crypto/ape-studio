@@ -75,6 +75,9 @@ export function leaderLine(r: LabelRect, xf: ViewXform, lead: { u: number; v: nu
  *     than the words, more spots are clear, and the finer names appear.
  * Without `clearOf` the layout is exactly the previous one.
  */
+/** Points of clear space a level-of-detail label keeps round its words. */
+export const LABEL_AIR = 3;
+
 export type LabelOpts = {
   /** True when the model rectangle (mm) holds no drawn part. */
   clearOf?: (u0: number, v0: number, u1: number, v1: number) => boolean;
@@ -114,8 +117,10 @@ export function fitLabels<T extends Fit>(
     if (kept.some((k) => r.x0 < k.x1 - 2 && r.x1 > k.x0 + 2 && r.y0 < k.y1 - 1 && r.y1 > k.y0 + 1)) return false;
     if (!lod) return true;
     if (r.y0 < minY || r.y1 > maxY) return false;
-    // The words' own box, in mm, must hold no drawn part.
-    return clearOf!((r.x0 - xf.ox) / xf.s, (r.y0 - xf.oy) / xf.s, (r.x1 - xf.ox) / xf.s, (r.y1 - xf.oy) / xf.s);
+    // The words' own box, in mm, must hold no drawn part — with a few points
+    // of air round it, so a label never sits flush against an edge.
+    const m = LABEL_AIR;
+    return clearOf!((r.x0 - m - xf.ox) / xf.s, (r.y0 - m - xf.oy) / xf.s, (r.x1 + m - xf.ox) / xf.s, (r.y1 + m - xf.oy) / xf.s);
   };
   // Free-space candidates round a part's point (px → a place in mm).
   const around = (ax: number, ay: number): LabelPlace[] => {
