@@ -626,6 +626,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 00:36 · ccode · a2f12a4d
+changed: Miking: the membership sheet names the family route "Miking Labs"
+affects other side: nothing (client-only copy on the members-only sheet)
+needs: nothing
+
+
+### 2026-10-06 00:32 · ccode · a547c23d
+changed: Merge branch 'worktree-agent-ad9fed093bb23def6' into final-lab
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-10-06 00:24 · ccode · 65416d4d
 changed: Remove V1/institutional leftovers and the commercialMode flag; map retired_content
 affects other side: retired_content / archived_quiz_retired now have quiz copy; store-notifications' institutional skip removed in code (see the 2026-10-06 entry at the top).
