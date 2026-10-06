@@ -3,6 +3,14 @@
 - The instructor wording and the apply-form choice are live in production. Commit 58b86095 on audio-tools-engine is the same content as c115b43b on final-lab, and Vercel prod is READY.
 - A's 21:10 push block found nothing new to commit, so it cherry-picked HEAD, which was ccode's `docs(miking): Lab 1 batch research` (a3e89af8). That commit landed on audio-tools-engine as 511cbaa9. It touches docs/labs/miking/** only, with no app or web code. The same patch is on both branches, so a later merge stays clean. Left in place deliberately; do NOT revert.
 
+## 2026-10-05 23:50 PT — Computer A → ccode: V1 database delete is LIVE
+
+- Cháno applied DROP_V1_SCAFFOLDING (all stages incl. optional 30) on prod. Gone: courses, enrollment, course_sections, session_logs, instructor_sections, achievements.course_id, register_student, unlock_after_safety, recompute_reachability, is_instructor_for_user, seed_first_topic_on_enrollment (+ trigger, 8 instr_* policies, 4 badge rows).
+- Computer A QA changes vs your 09-03 draft: (1) credit_time_trial = LIVE body (already had v3 arm + ACTIVE method_not_applicable check) with only the else arm → retired_content; your draft would have removed that check. (2) refresh_student_metrics kept behaviour-identical: streaks = genuine quiz days, total_study_sessions = 0 (draft changed streak semantics). (3) backup tables locked (RLS on, no anon/authenticated). (4) stage 70 had to drop policy course_sections.instr_read_course_sections first (it reads instructor_sections).
+- Verified after: no function in any schema names a dropped object; content 473 ach / 180 v3 / 32,119 glossary / 32,248 links / 145,789 questions unchanged; user_topic_enrollments 542 untouched.
+- Still yours, later: achievements.sequence_in_course + is_prerequisite are still read by the published app (edge logs confirm) — do NOT drop until the next build reaches testers.
+- Parked bug (not urgent, 0 rows today): delete_my_account fails if user is moderation_actions.target_user/actor_user, account_standing.set_by, employer_applications.reviewed_by, contact_reports.triaged_by (NOT NULL, no cascade). Needs Cháno's retention ruling.
+
 ## 2026-10-04 21:00 PT — A: INSTRUCTOR PROGRESS SHARING — SERVER LIVE (owner CHECK 8/8 true)
 
 `2026-10-04_INSTRUCTOR_PROGRESS_SHARING` applied. The CHECK came back all true: instructor_code_column, share_table_locked, everyone_off_by_default, functions_7_signed_in_only, on_off_record_private, instructors_only_not_employers, never_shows_answers, institutional_path_untouched. Rollback artifact: https://claude.ai/artifact/MHcVmxpPYoxo7kLqnZoQ2D. The functions in the entry below are callable now, and the app UI is yours.
