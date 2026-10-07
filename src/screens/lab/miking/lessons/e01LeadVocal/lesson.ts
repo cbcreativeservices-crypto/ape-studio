@@ -326,7 +326,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Set input gain on the loudest real passage, with about 10 dB of headroom (peaks near −10 dBFS) in a digital recording. The fader comes after the overload; the first full take is often louder than the soundcheck.',
     why: {
       'Pull the channel fader down until it sounds clean': 'The overload happens at the input, before the fader. A lower fader only makes the clipped sound quieter.',
-      'Ask the singer to sing the chorus more softly': 'The singer’s healthy technique is the performance. Set the gain for it — never ask for clipping, nor for less.',
+      'Ask the singer to sing the chorus more softly': 'The singer’s healthy technique is the performance. Set the gain for it — do not ask the singer to hold back.',
     },
   },
   {

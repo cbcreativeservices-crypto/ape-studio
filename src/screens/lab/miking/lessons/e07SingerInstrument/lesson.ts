@@ -81,7 +81,7 @@ const pages: LessonPages = {
     title: 'Two microphones',
     goal: 'See why a vocal mic and an instrument mic can sound thin or hollow together — each hears the other source a little later — how the arrival-time difference places comb notches, and what the polarity switch does and does not change.',
     credit: { scenarios: ['sw.two.1', 'sw.two.2', 'sw.two.3', 'sw.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Correlated bleed: each mic hears the other source late, so the sum combs. Change the spacing or angle, or turn one down, before a polarity switch — it flips the sign and never removes a delay. Check in mono.',
+    takeaway: 'Bleed — the same sound in both mics: each mic hears the other source late, so the sum combs. Change the spacing or angle, or turn one down, before a polarity switch — it flips the sign and never removes a delay. Check in mono.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A seated singer-guitarist cannot give the mics 3:1 spacing. Is the two-mic setup then wrong?',
     options: ['No — accept some bleed, aim the nulls, or use one mic', 'Yes — two mics need 3:1, or they cannot be used at all', 'Yes — move the guitar mic a metre away to get it'],
     correct: 'No — accept some bleed, aim the nulls, or use one mic',
-    explain: '3:1 is a starting design for reducing correlated bleed, not a pass mark. With a performer this close, accept the bleed as part of the performance, aim each mic’s rejection at the other source — or choose one coherent mic.',
+    explain: '3:1 is a starting design for reducing bleed (the same sound in both mics), not a pass mark. With a performer this close, accept the bleed as part of the performance, aim each mic’s rejection at the other source — or choose one coherent mic.',
     why: {
       'Yes — two mics need 3:1, or they cannot be used at all': 'Many fine recordings break 3:1; it is a guideline, and the mono check decides.',
       'Yes — move the guitar mic a metre away to get it': 'A metre out the guitar mic hears more room and more voice — the opposite of the aim.',
@@ -316,7 +316,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'The vocal and guitar mics, each fine alone, sound thin together in mono. Why?',
     options: ['Each hears the other source a little later', 'The guitar mic reverses the polarity of the voice', 'The vocal mic is louder, so it cancels the guitar'],
     correct: 'Each hears the other source a little later',
-    explain: 'Correlated bleed: the guitar mic hears the voice later than the vocal mic does, and the vocal mic hears the guitar later than the guitar mic does. Summed, some pitches cancel — a comb.',
+    explain: 'Bleed — the same sound in both mics: the guitar mic hears the voice later than the vocal mic does, and the vocal mic hears the guitar later than the guitar mic does. Summed, some pitches cancel — a comb.',
     why: {
       'The guitar mic reverses the polarity of the voice': 'Distance delays a sound; it does not flip its sign.',
       'The vocal mic is louder, so it cancels the guitar': 'A level difference changes the notches’ depth; the delay makes them.',
@@ -392,7 +392,7 @@ const symptoms: Symptom[] = [
   {
     id: 'sw.sym.thin',
     observation: 'The two tracks sound thin or hollow together',
-    firstChecks: 'Correlated bleed and the timing difference. Change the spacing or angle, turn one down, and check mono before processing.',
+    firstChecks: 'Bleed (the same sound in both mics) and the timing difference. Change the spacing or angle, turn one down, and check mono before processing.',
     options: ['Change spacing or angle; check mono first', 'Flip one mic’s polarity and leave it like that', 'Add low end to both until it fills out'],
     correct: 'Change spacing or angle; check mono first',
     explain: 'Each mic hears the other source late; summed, some pitches cancel. Move or rebalance first — a polarity switch cannot align every pitch.',
@@ -469,7 +469,7 @@ const setupTasks: SetupTask[] = [
       { id: 'b', label: 'A vocal mic ~15 cm from the lips and a guitar mic ~22 cm from the 12th fret, rejection toward each other', ok: true, power: 'phantom', feedback: 'A recommended pair for control — check each alone and the pair in mono.' },
       { id: 'c', label: 'A mic inside the sound hole and a second at the singer’s chest', ok: false, power: 'phantom', feedback: 'Inside the hole is the boomiest place, and neither sound leaves the chest.' },
       { id: 'd', label: 'Four mics on the guitar, chosen later', ok: false, power: 'phantom', feedback: 'Every mic adds bleed and phase; choose a relationship first.' },
-      { id: 'e', label: 'An omni vocal mic 5 cm from the lips to block the guitar', ok: false, power: 'phantom', feedback: 'An omni rejects nothing; distance does more than the pattern here.' },
+      { id: 'e', label: 'An omni vocal mic 5 cm from the lips to block the guitar', ok: false, power: 'phantom', feedback: 'An omni blocks nothing: at 5 cm only the closeness keeps the voice ahead of the guitar — and the capsule sits in the breath.' },
     ],
     reasons: [
       { id: 'r.doc', label: 'Each mic is measured from its own source: the lips, the guitar point', role: 'required', feedback: 'Say what each mic is measured from.' },

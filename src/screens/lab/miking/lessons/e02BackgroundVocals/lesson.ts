@@ -161,13 +161,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bv.mic.4',
     page: 'microphone',
-    prompt: 'Two cardioids back to back in the studio. Where should nobody stand?',
-    options: ['At the sides, where both hear less', 'In front of either mic, on its axis', 'A step farther back than the others'],
-    correct: 'At the sides, where both hear less',
-    explain: 'Each cardioid hears its front best; at the sides, 90° off both, each hears less. Keep the pickup directions intentional and check stereo and mono.',
+    prompt: 'Two cardioids back to back, a channel each. Why keep the singers in front of the mics, not at their sides?',
+    options: ['A side voice lands equally in both mics', 'At the sides neither mic hears a voice', 'In front, the mics stop hearing the room'],
+    correct: 'A side voice lands equally in both mics',
+    explain: 'Each cardioid hears its own front best and is only about 6 dB down at its side. A singer at the side lands equally in both channels — summed in mono, about as loud as a singer in front, but on neither fader alone and in the middle of a stereo picture. In front of one mic, a voice sits mostly on that channel. Check stereo and mono.',
     why: {
-      'In front of either mic, on its axis': 'In front of a mic is exactly where a singer belongs.',
-      'A step farther back than the others': 'A step back is how a loud voice balances; the sides are the weak spot.',
+      'At the sides neither mic hears a voice': 'A cardioid at 90° is only about 6 dB down: both mics still hear a singer at the side — and summed, the two together hear all round.',
+      'In front, the mics stop hearing the room': 'Both mics hear the room wherever the singers stand; the point is which channel a voice lands in.',
     },
   },
   {

@@ -1276,3 +1276,12 @@ The shared ensemble toolkit (`lessons/shared/ensemble/`) took both groups' addit
 | M2-02 | Family `voice` (group 4) and `voices` (group 2) | ONE family, `voices`: the band's lead-vocal section uses it. | seating.ts, bandStage.ts |
 | M2-03 | Arrays and stands near singers | Group 2's rule (head + body, `voiceTouches`; the stand base 280 mm from the feet) now applies to group 4's singers too; groups 3, 4 and 5's array and stand tests all pass with it. | seating.ts `arrayClear` |
 | M2-04 | Singles, views and worked words | One `StageSingle`/setup single: groups 4/5's `art`/`len`/`r`/`cross`/`foot`/`typeId` and group 2's handheld `vocalDynamic`, `dimTo`, `aimLen`, `boomDir`; setups keep group 4's `di`/`roles`/`arrayWords`/plot readouts and group 2's `focus`/`short`; `workedWords` takes `height`/`forward` (groups 2 and 4) and `aim` (group 2); a lesson's `views` (group 2) and a stage plot's audience words (group 4) both feed the VIEW chooser. | ensembleData.ts, EnsembleStage.tsx, ensemblePages.tsx |
+
+## Lab 5 voice review (2026-10-07, `docs/labs/reviews/REVIEW_2026_10_07_lab5-voice.md`)
+
+| id | Lesson | Was | Now | Why | Status |
+|---|---|---|---|---|---|
+| V-01 | E02 `bv.mic.4`, setup `b2b` | Back-to-back cardioids: nobody at the sides "where both hear less" | A side voice lands equally in both mics (on neither channel alone, centred in stereo) | Each cardioid is ~6 dB down at 90°; the pair summed is an omni | APPLIED |
+| V-02 | E06 `rig` note, safety line | "Never … over the children's heads without a competent rigger" | "Nothing hangs over the children's heads"; a hung mic in front of the mouths, by a competent rigger with venue approval | Matched E05 and the shared hanging items | APPLIED |
+| V-03 | E04 `wedge` note | hypercardioid | supercardioid (the pattern the lesson offers) | Consistency | APPLIED |
+| V-04 | E07 (four strings) | "correlated bleed" | "bleed (the same sound in both mics)" | Plain words | APPLIED |
