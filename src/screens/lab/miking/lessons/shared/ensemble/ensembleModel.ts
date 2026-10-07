@@ -25,7 +25,8 @@
 import type { DocumentedZone, Envelope, InstrumentModel, MicPose, Part, Provenance, ReferenceSurface, Vec3, ViewBox } from '../../../engine/model/types.ts';
 import { sectorPolys } from '../handGeom.ts';
 import { add, aimOf, mul, planDir, sub, unit, v3 } from './frameS.ts';
-import { headTop, sectionCentre, seatsOf, supportOf, type Seating } from './seating.ts';
+import { headTop, isVoice, sectionCentre, seatsOf, supportOf, type Seating } from './seating.ts';
+import { voiceSolids } from './voiceGroup.ts';
 
 /** `short`: the dock chip's one word (SEATING ▸ …), distinct per variant. */
 export type EnsembleVariant = { id: string; label: string; short?: string; blurb: string; seating: Seating };
@@ -62,7 +63,7 @@ export function stageViews(seatings: readonly Seating[], extra: { zMax?: number;
   return { side: { u0: x0, u1: x1, v0: top, v1: 300 }, top: { u0: x0, u1: x1, v0: z0, v1: z1 } };
 }
 
-export function ensembleModel(o: { id: string; name: string; variants: readonly EnsembleVariant[]; views?: { side: ViewBox; top: ViewBox }; viewsByVariant?: InstrumentModel['viewsByVariant']; extraSurfaces?: ReferenceSurface[] }): InstrumentModel {
+export function ensembleModel(o: { id: string; name: string; variants: readonly EnsembleVariant[]; views?: { side: ViewBox; top: ViewBox }; viewsByVariant?: InstrumentModel['viewsByVariant']; extraSurfaces?: ReferenceSurface[]; /** group 2: a lesson's own boom rule (two singers facing each other: the boom runs downstage, never into a singer). */ mountRule?: InstrumentModel['mountRule'] }): InstrumentModel {
   const parts: Part[] = [];
   const envelopes: Envelope[] = [];
   const regions: InstrumentModel['regions'] = [];
@@ -72,6 +73,12 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
       parts.push({ id: sectionPartId(V.id, sec.id), label: sec.label, short: sec.short, role: sec.radiates, variants: [V.id], listIn: [], prov: ill('a drawing-default seating') });
       regions.push({ id: `r.${V.id}.${sec.id}`, partId: sectionPartId(V.id, sec.id), label: `the ${sec.label}`, anchor: sectionCentre(S, sec.id), variants: [V.id], prov: ill('the section’s players’ sound points (a drawing default)'), note: sec.radiates });
       for (const seat of seatsOf(S, sec.id)) {
+        if (isVoice(seat.kind)) {
+          // A singer (group 2): frame V's head and body, so a vocal mic can
+          // come within a few centimetres of the lips (seatingVoices.ts).
+          for (const [k, solid] of voiceSolids(seat)) parts.push({ id: `${seatPartId(V.id, seat.id)}${k}`, label: sec.label, short: sec.short, role: '', solid, variants: [V.id], listIn: [], prov: ill('a singer: frame V’s figure (a drawing default)') });
+          continue;
+        }
         parts.push({
           id: seatPartId(V.id, seat.id),
           label: sec.label,
@@ -147,7 +154,7 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
     aimHome: { az: -90, el: -30 },
     // A tall stand's boom runs level, away from the mic's tail (toward the
     // conductor and the hall when the mic faces the ensemble).
-    mountRule: { boom: 'level', fallback: v3(0, 0, 1), length: 700 },
+    mountRule: o.mountRule ?? { boom: 'level', fallback: v3(0, 0, 1), length: 700 },
     yFloor: { mm: 0, prov: ill('frame S: the stage floor is y = 0') },
     interior: { x0: 0, x1: 0, rIn: 0, c: v3(0, 0, 0) },
     ports: Object.fromEntries(o.variants.map((v) => [v.id, null])),

@@ -178,3 +178,13 @@ Added 2026-10-07 by the Lab 5 arrays-and-orchestra builder (branch lab5-g3): the
 |---|---|---|---|
 | DPA-AB-ORCH | DPA, Eddy Bøgh Brixen, "How to AB stereo mic an orchestra": the A/B pair "commonly omnidirectional", 40–60 cm, above or behind the podium at 3–4 m | https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-ab-stereo-mic-an-orchestra/ | read in the Batch 5 research pass (see `lead_vocal/SOURCES.md` §0) |
 | DPA-MULTI | DPA, Eddy Bøgh Brixen, "Multimiking a classical orchestra": directional supports about 1–1.5 m from the players, covering three or four | https://www.dpamicrophones.com/mic-university/audio-production/multimiking-a-classical-orchestra/ | read in the Batch 5 research pass |
+
+## 12. Mic types for Lab 5's voices in groups (E02, E04, E05, E06; `lessons/shared/ensemble/groupVoiceMics.ts`)
+
+Added 2026-10-07 by the Lab 5 group 2 builder (branch lab5-g2): the shared large-diaphragm condenser (`grpLdc`).
+Facts in `background_vocals/`, `duets_small_vocal/` and `choir/SOURCES.md`; the full register is `lead_vocal/SOURCES.md` §0.
+
+| Key | Source | URL | Status 2026-10-07 |
+|---|---|---|---|
+| AKG-C414 | AKG, C414 XLS/XLII manual §4.6.2 Choir/Backing Vocals: "select the cardioid or omni pattern and place the vocalists in a semicircle in front of the microphone"; "one stereo microphone plus one spot microphone each for the soprano, alto, tenor, and bass sections" | see `lead_vocal/SOURCES.md` §0 | PDF read 2026-10-05 in the Batch 5 research pass |
+| S-REC | Shure, *Microphone Techniques for Recording* (booklet), Ensemble Vocals p.5–6: "Having the vocalists circle around an omnidirectional mic …"; "Two cardioid mics, positioned back to back"; the choir mic "a few feet in front of, and a few feet above, the heads of the first row … aimed at the last row" | see `snare/SOURCES.md`, `lead_vocal/SOURCES.md` §0 | re-read 2026-10-05 in the Batch 5 research pass |

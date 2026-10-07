@@ -31,7 +31,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { ViewXform } from '../../../engine/geometry/frame.ts';
 import type { Vec3 } from '../../../engine/model/types.ts';
 import { add, DEG, mul, planDir, uv, uvDir, v3, type StageView } from './frameS.ts';
-import { ARRAYS, arrayCapsules, arrayPoint, includedAngle, pairSpacing, treeSpacings, type ArrayParams, type ArrayPlacement, type ArrayPresetId, type Capsule } from './stereoArray.ts';
+import { ARRAYS, arrayCapsules, arrayPoint, capsuleBody, includedAngle, pairSpacing, treeSpacings, type ArrayParams, type ArrayPlacement, type ArrayPresetId, type Capsule } from './stereoArray.ts';
 import type { ArrayMount } from './ensembleData.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -40,6 +40,9 @@ const AMBER = '#ffc64d';
 const IDEAL = '#e8eaee';
 /** The drawn pencil: 104 mm long, Ø 21 (ensembleMics.ts). */
 const MIC = { len: 104, r: 10.5 };
+/** A side-address condenser's mount below its body centre (half its 255 mm
+ *  upright length, voiceMics LDC_BODY; group 2). */
+const LDC_MOUNT_DROP = 140;
 
 /** How an array is held (ensembleData.ts): 'stand', a tall stand under the
  *  bar; 'boom', a tall stand `reach` mm BEHIND the bar (toward the hall), its
@@ -59,10 +62,22 @@ export function rigHardware(spec: RigSpec, caps: readonly Capsule[]) {
   const xs = main.map((q) => q.p);
   const barY = Math.min(...xs.map((p) => p.y)) - 40;
   const tree = ARRAYS[spec.id].family === 'tree';
+  // group 2: a side-address large-diaphragm mic (one shared mic, or two back
+  // to back) sits in a mount on top of its stand: the mast comes up under the
+  // body, no bar, no clip.
+  const ldc = ARRAYS[spec.id].art === 'ldc';
+  if (ldc) {
+    const centres = main.map((q) => add(q.p, mul(q.dir, -capsuleBody(spec.id, q.pattern).len / 2)));
+    const mid = mul(centres.reduce((a, b) => add(a, b), v3(0, 0, 0)), 1 / Math.max(1, centres.length));
+    const under = v3(mid.x, mid.y + LDC_MOUNT_DROP, mid.z);
+    const foot = mount.kind === 'boom' ? v3(mid.x - f.x * mount.reach, 0, mid.z - f.z * mount.reach) : v3(mid.x, 0, mid.z);
+    const mastTop = mount.kind === 'boom' ? v3(foot.x, under.y - 200, foot.z) : under;
+    return { c, barY: under.y, centreOfBar: under, foot, mastTop, boom: mount.kind === 'boom', main, out: [], ldc: true, centres };
+  }
   const centreOfBar = tree ? add(c, v3(0, barY - c.y, 0)) : v3(c.x, barY, c.z);
   const foot = mount.kind === 'boom' ? v3(c.x - f.x * mount.reach, 0, c.z - f.z * mount.reach) : v3(c.x, 0, c.z);
   const mastTop = mount.kind === 'boom' ? v3(foot.x, barY - 260, foot.z) : v3(c.x, barY + 60, c.z);
-  return { c, barY, centreOfBar, foot, mastTop, boom: mount.kind === 'boom', main, out: caps.filter((q) => q.id === 'OL' || q.id === 'OR') };
+  return { c, barY, centreOfBar, foot, mastTop, boom: mount.kind === 'boom', main, out: caps.filter((q) => q.id === 'OL' || q.id === 'OR'), ldc: false, centres: [] as Vec3[] };
 }
 
 /** Every point a rig occupies (frame S): to frame a view round it. */
@@ -70,7 +85,7 @@ export function rigPoints(spec: RigSpec): Vec3[] {
   const caps = arrayCapsules(spec.id, spec.params, spec.place);
   const h = rigHardware(spec, caps);
   const pts = [h.foot, h.mastTop, ...caps.map((q) => q.p), ...h.out.map((q) => v3(q.p.x, 0, q.p.z))];
-  for (const q of caps) pts.push(add(q.p, mul(q.dir, -MIC.len)));
+  for (const q of caps) pts.push(add(q.p, mul(q.dir, -capsuleBody(spec.id, q.pattern).len)));
   return pts;
 }
 
@@ -143,20 +158,31 @@ export function ArrayRig({ spec, view, px, lobes = false, aims = false, wedge = 
       metal.moveTo(t0.u, t0.v);
       metal.lineTo(bc.u, bc.v);
     }
+    // group 2: a large-diaphragm mount — a short cradle under each body (two
+    // back to back share one), no bar and no clips.
+    if (h.ldc) {
+      for (const cc of h.centres) {
+        const a = uv(view, v3(cc.x, h.barY, cc.z));
+        const b = uv(view, v3(cc.x, cc.y + 120, cc.z));
+        bar.moveTo(bc.u, bc.v);
+        bar.lineTo(a.u, a.v);
+        bar.lineTo(b.u, b.v);
+      }
+    }
     // The bar: across the main capsules, and for a tree the arm to the centre.
-    const ends = h.main.filter((q) => q.id !== 'C' && q.id !== 'S').map((q) => uv(view, v3(q.p.x, h.barY, q.p.z)));
+    const ends = h.ldc ? [] : h.main.filter((q) => q.id !== 'C' && q.id !== 'S').map((q) => uv(view, v3(q.p.x, h.barY, q.p.z)));
     if (ends.length >= 2) {
       bar.moveTo(ends[0].u, ends[0].v);
       bar.lineTo(ends[1].u, ends[1].v);
     }
-    const C = h.main.find((q) => q.id === 'C');
+    const C = h.ldc ? undefined : h.main.find((q) => q.id === 'C');
     if (C) {
       const cc = uv(view, v3(C.p.x, h.barY, C.p.z));
       bar.moveTo(bc.u, bc.v);
       bar.lineTo(cc.u, cc.v);
     }
     // Each capsule's clip: a short drop from the bar to the mic's tail.
-    for (const q of h.main) {
+    for (const q of h.ldc ? [] : h.main) {
       const top = uv(view, v3(q.p.x, h.barY, q.p.z));
       const tail = uv(view, add(q.p, mul(q.dir, -MIC.len)));
       bar.moveTo(top.u, top.v);
@@ -232,11 +258,14 @@ export function ArrayRig({ spec, view, px, lobes = false, aims = false, wedge = 
       </Path>
       <Path path={g.bar} style="stroke" strokeWidth={Math.max(16, 2.4 * px)} strokeCap="round" color="#16171b" />
       <Path path={g.bar} style="stroke" strokeWidth={Math.max(9, 1.4 * px)} strokeCap="round" color="#9aa0ab" />
-      {caps.map((q, i) => (
-        <Group key={`cap${i}`} transform={micXf(view, q)}>
-          <MikingMicArt art={q.pattern === 'figure8' ? 'sideLdc' : 'sdc'} r={MIC.r} len={MIC.len} cross={q.pattern === 'figure8' ? 50 : MIC.r * 2} />
-        </Group>
-      ))}
+      {caps.map((q, i) => {
+        const cb = capsuleBody(spec.id, q.pattern);
+        return (
+          <Group key={`cap${i}`} transform={micXf(view, q)}>
+            <MikingMicArt art={cb.art} r={cb.cross / 2} len={cb.len} cross={cb.cross} />
+          </Group>
+        );
+      })}
     </Group>
   );
 }
@@ -256,8 +285,10 @@ export function arrayDims(id: ArrayPresetId, params: ArrayParams = {}): string[]
       return [`${Math.round(pairSpacing(caps) / 10)} cm apart (${(pairSpacing(caps) / 25.4).toFixed(1)} in)`, 'omnis, aimed at the ensemble'];
     case 'near':
       return [`${Math.round(pairSpacing(caps) / 10)} cm apart (${(pairSpacing(caps) / 25.4).toFixed(1)} in)`, `${Math.round(includedAngle(caps))}° between the axes`, ...(d.recordingAngle ? [`${d.recordingAngle}° recording angle`] : [])];
+    case 'single':
+      return [`one mic, ${d.pattern === 'figure8' ? 'figure-8' : d.pattern}`, 'at the singers’ mouth height'];
     default:
-      return id === 'ms' ? ['Mid forward, Side across', 'L = M + S · R = M − S'] : [`capsules together, ${Math.round(includedAngle(caps))}° apart`, 'one above the other'];
+      return id === 'ms' ? ['Mid forward, Side across', 'L = M + S · R = M − S'] : id === 'b2b' ? ['two cardioids back to back', 'one facing each way'] : [`capsules together, ${Math.round(includedAngle(caps))}° apart`, 'one above the other'];
   }
 }
 
@@ -361,7 +392,7 @@ export function ArrayDetail({ w, h, id, params = {}, accessibilityLabel }: { w: 
     }
     // A coincident pair is its patterns (the capsules share a point): each
     // capsule's pickup shape, so M/S reads as a cardioid and a figure-8.
-    const lobes = d.family === 'coincident' ? caps.map((q) => lobePath('plan', q, 230)) : [];
+    const lobes = d.family === 'coincident' || d.family === 'single' ? caps.map((q) => lobePath('plan', q, 230)) : [];
     return { dims, arcs, wedge, bar, lobes };
   }, [caps, d, id, px]);
   const labels: StaticLabel[] = useMemo(() => {
@@ -375,7 +406,7 @@ export function ArrayDetail({ w, h, id, params = {}, accessibilityLabel }: { w: 
     if (d.family === 'near' || id === 'xy') out.push({ id: 'ang', text: `${Math.round(includedAngle(caps))}°`, u: 0, v: -260, align: 'center', tone: 'amber' });
     if (d.recordingAngle) out.push({ id: 'ra', text: `${d.recordingAngle}° RECORDING ANGLE`, short: `${d.recordingAngle}° REC. ANGLE`, u: 0, v: -560, align: 'center', tone: 'muted' });
     for (const q of caps) {
-      const lab = q.id === 'C' ? 'C' : q.id === 'M' ? 'MID' : q.id === 'S' ? 'SIDE' : q.id === 'L' ? 'L' : q.id === 'R' ? 'R' : q.id;
+      const lab = d.family === 'single' ? 'MIC' : id === 'b2b' ? q.label : q.id === 'C' ? 'C' : q.id === 'M' ? 'MID' : q.id === 'S' ? 'SIDE' : q.id === 'L' ? 'L' : q.id === 'R' ? 'R' : q.id;
       // Each capsule named just past the end of its aim (coincident capsules share a point).
       const reach = d.family === 'tree' ? 300 : 160;
       const lu = q.p.x + q.dir.x * reach;
@@ -422,7 +453,7 @@ export function ArrayDetail({ w, h, id, params = {}, accessibilityLabel }: { w: 
           <Path path={g.dims} style="stroke" strokeWidth={1.6 * px} color="#ffffff" opacity={0.9} />
           {caps.map((q, i) => (
             <Group key={`d${i}`} transform={micXf('plan', q)}>
-              <MikingMicArt art={q.pattern === 'figure8' ? 'sideLdc' : 'sdc'} r={MIC.r} len={MIC.len} cross={q.pattern === 'figure8' ? 50 : MIC.r * 2} />
+              <MikingMicArt art={capsuleBody(id, q.pattern).art} r={capsuleBody(id, q.pattern).cross / 2} len={capsuleBody(id, q.pattern).len} cross={capsuleBody(id, q.pattern).cross} />
             </Group>
           ))}
           {caps.map((q, i) => (

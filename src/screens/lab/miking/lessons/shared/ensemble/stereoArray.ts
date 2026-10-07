@@ -35,9 +35,12 @@ import type { PatternId, Provenance, Vec3 } from '../../../engine/model/types.ts
 import { deltaTms } from '../../../engine/physics/twoMic.ts';
 import { add, DEG, dist, mul, planDir, sub, unit, v3 } from './frameS.ts';
 
-export type ArrayPresetId = 'xy' | 'ortf' | 'nos' | 'din' | 'ms' | 'ab' | 'tree' | 'treeCompact';
-export const ARRAY_IDS: readonly ArrayPresetId[] = ['xy', 'ortf', 'nos', 'din', 'ms', 'ab', 'tree', 'treeCompact'];
-export type ArrayFamily = 'coincident' | 'near' | 'spaced' | 'tree';
+/* group 2 — voices: 'one', 'oneOmni', 'oneFig8' (ONE shared mic on a stand,
+ * moved like an array in the Placement Studio) and 'b2b' (two cardioids back
+ * to back, S-REC's ensemble-vocal alternative). Large-diaphragm, side-address. */
+export type ArrayPresetId = 'xy' | 'ortf' | 'nos' | 'din' | 'ms' | 'ab' | 'tree' | 'treeCompact' | 'one' | 'oneOmni' | 'oneFig8' | 'b2b';
+export const ARRAY_IDS: readonly ArrayPresetId[] = ['xy', 'ortf', 'nos', 'din', 'ms', 'ab', 'tree', 'treeCompact', 'one', 'oneOmni', 'oneFig8', 'b2b'];
+export type ArrayFamily = 'coincident' | 'near' | 'spaced' | 'tree' | 'single';
 export type CapsuleId = 'L' | 'R' | 'C' | 'M' | 'S' | 'OL' | 'OR';
 /** Where a capsule is routed: a side, both sides (the tree's centre), or the
  *  M/S matrix's Mid and Side inputs. */
@@ -86,6 +89,10 @@ export type ArrayDef = {
   tends: string;
   /** What to check before choosing it. */
   check: string;
+  /** How its capsules are drawn (default: the pencil condenser; a figure-8
+   *  capsule as a side-address body). 'ldc': a side-address large-diaphragm
+   *  condenser for every capsule (group 2's shared vocal mics). */
+  art?: 'ldc';
   /** INTERNAL record (never shown). */
   prov: Provenance;
 };
@@ -115,6 +122,8 @@ export const OUTRIGGERS = { span: 6096, front: 1524 } as const;
 export const MAIN_HEIGHT = { def: 3200, min: 3000, max: 4000 } as const;
 /** Two pencil capsules stacked for a coincident pair (mm apart, vertical). */
 const STACK = 26;
+/** group 2: each back-to-back body's front from the shared centre (mm). */
+const B2B_FRONT = 85;
 
 export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
   xy: {
@@ -225,7 +234,71 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     check: 'The same as the wider tree: centre level, edges, mono.',
     prov: src('PELLOWE', 'maybe 2.5 feet back and 5 feet apart you would have 2 more (Decca practice, 1997 interview)'),
   },
+  /* group 2 — voices */
+  one: {
+    id: 'one',
+    name: 'One shared mic (cardioid)',
+    short: 'ONE MIC',
+    family: 'single',
+    locked: false,
+    pattern: 'cardioid',
+    recordingAngle: null,
+    what: 'One large-diaphragm condenser, cardioid, on a stand at the singers’ mouth height — the singers round its front, each mouth about the same distance away.',
+    tends: 'A natural blend the singers make themselves; less control of any one voice afterwards.',
+    check: 'Every mouth at a matched distance, the loudest singer a step back, nobody outside the front of the pattern.',
+    art: 'ldc',
+    prov: src('AKG-C414', 'select the cardioid or omni pattern and place the vocalists in a semicircle in front of the microphone (§4.6.2); S-BLUEGRASS shared mic'),
+  },
+  oneOmni: {
+    id: 'oneOmni',
+    name: 'One mic, omni, in the middle',
+    short: 'OMNI',
+    family: 'single',
+    locked: false,
+    pattern: 'omni',
+    recordingAngle: null,
+    what: 'One large-diaphragm condenser set to omni, at mouth height in the middle of a circle of singers.',
+    tends: 'Every singer heard equally from every side, with the room: the group balances itself by distance.',
+    check: 'The room, the weakest and the strongest voice, and how close each singer stands.',
+    art: 'ldc',
+    prov: src('S-REC', 'Having the vocalists circle around an omnidirectional mic (Ensemble Vocals p.6)'),
+  },
+  oneFig8: {
+    id: 'oneFig8',
+    name: 'One figure-8 between two singers',
+    short: 'FIGURE-8',
+    family: 'single',
+    locked: false,
+    pattern: 'figure8',
+    recordingAngle: null,
+    what: 'One large-diaphragm condenser set to figure-8, between two singers facing each other — one singer in each lobe, its dead sides to the room.',
+    tends: 'Two voices on one channel with the sides rejected; strong proximity effect, so small moves change the balance.',
+    check: 'Both mouths on the axis at matched distance; nothing loud at the back lobe of a live room.',
+    art: 'ldc',
+    prov: src('LESSON-DUET', 'a bidirectional figure-eight microphone can put one singer in each lobe (E04 L11; the figure-8 is the textbook bidirectional pattern)'),
+  },
+  b2b: {
+    id: 'b2b',
+    name: 'Two cardioids back to back',
+    short: 'BACK TO BACK',
+    family: 'coincident',
+    locked: false,
+    pattern: 'cardioid',
+    recordingAngle: null,
+    what: 'Two cardioids together, one facing each way — singers on both sides, each side on its own channel.',
+    tends: 'More separation between the two sides than an omni circle, with the group still singing together.',
+    check: 'Nobody standing at the sides, where both cardioids hear less; the sum in mono.',
+    art: 'ldc',
+    prov: src('S-REC', 'Two cardioid mics, positioned back to back could be used for this same application (Ensemble Vocals p.6)'),
+  },
 };
+/** The drawn size of a capsule (mm): the pencil (ensembleMics.ts), or a
+ *  side-address large-diaphragm condenser (voiceMics LDC_BODY: 80 deep, 118
+ *  wide) for the voices' shared mics. */
+export function capsuleBody(id: ArrayPresetId, pattern: PatternId): { len: number; cross: number; art: 'sdc' | 'sideLdc' } {
+  if (ARRAYS[id].art === 'ldc') return { len: 80, cross: 118, art: 'sideLdc' };
+  return pattern === 'figure8' ? { len: 104, cross: 50, art: 'sideLdc' } : { len: 104, cross: 21, art: 'sdc' };
+}
 
 /** The plan direction of an array facing `faceDeg`, its left, and a capsule
  *  aim turned `phi` toward the left and tilted `tilt` down. */
@@ -286,6 +359,19 @@ export function arrayCapsules(id: ArrayPresetId, params: ArrayParams = {}, place
       const b = clampR(def.turn, params.turn);
       const cDb = Math.max(TREE_CENTRE_DB.min, Math.min(TREE_CENTRE_DB.max, params.centreDb ?? -4.5));
       out.push(cap('L', 'LEFT', 0, g.width / 2, 0, b, 'omni', 'L'), cap('R', 'RIGHT', 0, -g.width / 2, 0, -b, 'omni', 'R'), cap('C', 'CENTRE', g.forward, 0, 0, 0, 'omni', 'LR', cDb));
+      break;
+    }
+    /* group 2 — voices: one mic (routed to both sides: a mono channel), or two back to back. */
+    case 'one':
+    case 'oneOmni':
+    case 'oneFig8':
+      out.push(cap('C', 'MIC', 0, 0, 0, 0, def.pattern, 'LR'));
+      break;
+    case 'b2b': {
+      // Back to back: the two bodies' backs meet at `c`, each front 85 mm out
+      // (a large-diaphragm body is 80 deep), level — `tilt` is not applied,
+      // so neither one points at the floor.
+      out.push(cap('L', 'FRONT', B2B_FRONT, 0, 0, 0, 'cardioid', 'L', 0, 0), cap('R', 'BACK', -B2B_FRONT, 0, 0, 180, 'cardioid', 'R', 0, 0));
       break;
     }
   }

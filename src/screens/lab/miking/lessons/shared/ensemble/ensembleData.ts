@@ -5,7 +5,7 @@
  * stage), the Placement Studio's starting points for the array's centre,
  * the worked example, and the page words. Read by ensemblePages.tsx.
  */
-import type { Lesson, Vec3 } from '../../../engine/model/types.ts';
+import type { Lesson, PatternId, Vec3 } from '../../../engine/model/types.ts';
 import type { StageView } from './frameS.ts';
 import type { SeatingId } from './seating.ts';
 import type { ArrayParams, ArrayPlacement, ArrayPresetId } from './stereoArray.ts';
@@ -22,8 +22,15 @@ export type EnsembleSetup = {
   title: string;
   /** Only in these variants (default: all). */
   variants?: readonly string[];
-  rig?: { id: ArrayPresetId; params?: ArrayParams; place: ArrayPlacement; mount?: ArrayMount };
-  singles?: readonly { key: string; p: Vec3; aim: Vec3; pattern: 'cardioid' | 'omni' | 'supercardioid'; label: string }[];
+  /** group 2: `dimTo` draws the white distance from the rig to that point (a mouth) instead of its height and front distance. */
+  rig?: { id: ArrayPresetId; params?: ArrayParams; place: ArrayPlacement; mount?: ArrayMount; dimTo?: Vec3 };
+  /** group 2: `art` a handheld vocal dynamic; `dimTo` the singer's lips (the
+   *  white distance drawn to them); `aimLen` a shorter amber aim. */
+  singles?: readonly { key: string; p: Vec3; aim: Vec3; pattern: PatternId; label: string; art?: 'sdc' | 'vocalDynamic'; dimTo?: Vec3; aimLen?: number; boomDir?: Vec3 }[];
+  /** group 2: frame only these seats and the mics (a close vocal setup). */
+  focus?: readonly string[];
+  /** group 2: the ARRAY readout's word for a setup of single mics ("HANDHELDS", "AREA MICS"). */
+  short?: string;
   /** The mics, in words. */
   mics: string;
   /** Where to start, in words. */
@@ -53,14 +60,23 @@ export type EnsembleData = {
     soundNote: string;
     /** The main position the near/far readout is taken from. */
     mainAt: Vec3;
+    /** group 2: per seating, where the mic stands (a shared mic sits in each group's own middle). */
+    mainAtBy?: Readonly<Record<string, Vec3>>;
+    /** group 2: what stands there (default a spaced pair): one shared mic for a vocal group. */
+    mainRig?: { id: ArrayPresetId; face?: number; tilt?: number; label: string };
   };
   /** BEFORE ANY MIC points. */
   before: readonly { title: string; text: string }[];
   /** The rigging / access / hearing line (a warning). */
   safety: string;
-  /** The worked example's words: where to begin, and clearance. */
-  workedWords: { begin: string; clearance: string };
+  /** The worked example's words: where to begin, and clearance. group 2:
+   *  optional HEIGHT / HOW FAR FORWARD / AIM words in place of the main
+   *  array's (a shared vocal mic is not above anyone's head). */
+  workedWords: { begin: string; clearance: string; height?: string; forward?: string; aim?: string };
   /** The Placement Studio's "how the starting points work" paragraphs. */
   learnZones: readonly string[];
+  /** group 2: the views this lesson draws (default all three). E06 shows
+   *  children from above only: ['plan']. */
+  views?: readonly StageView[];
 };
 export type EnsembleLesson = Lesson & { ensemble: EnsembleData };
