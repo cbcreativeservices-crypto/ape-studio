@@ -15,8 +15,8 @@
  * progress read says so (D51) and every guide still opens. Members-only
  * gating is the navigator's (MemberGated + withMembershipPreview).
  */
-import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { memo, useCallback, useDeferredValue, useMemo, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,7 +28,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import { LabHeader } from '../kit/LabNavBar';
 import { ProgressLoadingNote, ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
-import { MIXING_GUIDE_INDEX } from './data/index';
+import { MIXING_GUIDE_INDEX, type MixingGuideEntry } from './data/index';
 import { STARTING_POINTS_LINE } from './data/types';
 import { filterGuides, readCountLine } from './guideSearch';
 import { useGuidesHydrated, useGuidesRead, useGuidesUnreadable } from './readProgress';
@@ -41,11 +41,18 @@ export function MixingGuidesHubScreen() {
   const { width: winW } = useWindowDimensions();
   const tabletTile = winW >= 1100 ? styles.tileQuarter : styles.tileThird;
   const [query, setQuery] = useState('');
-  const shown = useMemo(() => filterGuides(MIXING_GUIDE_INDEX, query), [query]);
+  // The field echoes at once; the grid follows at low priority (deferred).
+  const deferredQuery = useDeferredValue(query);
+  const shown = useMemo(() => filterGuides(MIXING_GUIDE_INDEX, deferredQuery), [deferredQuery]);
+  // Hunt 2026-10-07 (timing): the 50 tiles stay MOUNTED and a filtered-out
+  // tile is only hidden — a keystroke used to unmount/remount the animated
+  // tiles (181 ms for the first letter, 167 ms to clear on desktop dev).
+  const shownIds = useMemo(() => new Set(shown.map((g) => g.id)), [shown]);
+  const openGuide = useCallback((id: string) => navigation.navigate('MixingGuide', { id }), [navigation]);
   const progress = useGuidesRead();
   const hydrated = useGuidesHydrated();
   const unreadable = useGuidesUnreadable();
-  const read = new Set(progress.read);
+  const read = useMemo(() => new Set(progress.read), [progress.read]);
   const readCount = MIXING_GUIDE_INDEX.filter((g) => read.has(g.id)).length;
   const total = MIXING_GUIDE_INDEX.length;
 
@@ -96,34 +103,50 @@ export function MixingGuidesHubScreen() {
         </View>
 
         {shown.length === 0 ? (
-          <Text style={styles.empty}>No style matches “{query}”. Try a shorter word, or clear the search to see all {total}.</Text>
-        ) : (
-          <GlassPanel style={[styles.tileGrid, !tablet && styles.tilePanelPhone]}>
-            {shown.map((g) => {
-              const done = read.has(g.id);
-              return (
-                <GlassTile
-                  key={g.id}
-                  style={tablet ? tabletTile : styles.tileHalf}
-                  glassStyle={styles.tileFace}
-                  onPress={() => navigation.navigate('MixingGuide', { id: g.id })}
-                  accessibilityLabel={`${g.num}. ${g.title}. Mix priority: ${g.line}.${done ? ' Read.' : ''}`}
-                >
-                  <Text style={styles.tileNum} {...fitValue(11)}>{String(g.num).padStart(2, '0')}</Text>
-                  <Text style={styles.tileName}>{g.title}</Text>
-                  <Text style={styles.tileSub} numberOfLines={4}>{g.line}</Text>
-                  {done ? <Text style={styles.tileRead} {...fitValue(11)}>✓ READ</Text> : null}
-                </GlassTile>
-              );
-            })}
+          <Text style={styles.empty}>No style matches “{deferredQuery}”. Try a shorter word, or clear the search to see all {total}.</Text>
+        ) : null}
+        <GlassPanel style={[styles.tileGrid, !tablet && styles.tilePanelPhone, shown.length === 0 && styles.tileHidden]}>
+            {MIXING_GUIDE_INDEX.map((g) => (
+              <HubTile key={g.id} g={g} done={read.has(g.id)} hidden={!shownIds.has(g.id)} tileStyle={tablet ? tabletTile : styles.tileHalf} onOpen={openGuide} />
+            ))}
           </GlassPanel>
-        )}
       </ScrollView>
     </View>
   );
 }
 
+/** One tile, memoised: a keystroke or a ✓ elsewhere re-renders only the
+ *  tiles whose props changed. A filtered-out tile is hidden, not unmounted. */
+const HubTile = memo(function HubTile({
+  g,
+  done,
+  hidden,
+  tileStyle,
+  onOpen,
+}: {
+  g: MixingGuideEntry;
+  done: boolean;
+  hidden: boolean;
+  tileStyle: StyleProp<ViewStyle>;
+  onOpen: (id: string) => void;
+}) {
+  return (
+    <GlassTile
+      style={hidden ? [tileStyle, styles.tileHidden] : tileStyle}
+      glassStyle={styles.tileFace}
+      onPress={() => onOpen(g.id)}
+      accessibilityLabel={`${g.num}. ${g.title}. Mix priority: ${g.line}.${done ? ' Read.' : ''}`}
+    >
+      <Text style={styles.tileNum} {...fitValue(11)}>{String(g.num).padStart(2, '0')}</Text>
+      <Text style={styles.tileName}>{g.title}</Text>
+      <Text style={styles.tileSub} numberOfLines={4}>{g.line}</Text>
+      {done ? <Text style={styles.tileRead} {...fitValue(11)}>✓ READ</Text> : null}
+    </GlassTile>
+  );
+});
+
 const styles = StyleSheet.create({
+  tileHidden: { display: 'none' },
   root: { flex: 1, backgroundColor: colors.screenBg },
   scroll: { paddingHorizontal: 16, paddingTop: 6, gap: 12 },
   intro: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21 },
@@ -150,8 +173,10 @@ const styles = StyleSheet.create({
   tileGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', columnGap: 8, rowGap: 10 },
   tilePanelPhone: { padding: 7 },
   tileHalf: { width: '48.5%' },
-  tileThird: { width: '32%' },
-  tileQuarter: { width: '24%' },
+  // Hunt 2026-10-07 R2: 32% / 24% left a ~35 px empty strip on the right of
+  // the iPad grid (left margin 12). Sized to close it and still fit at 768.
+  tileThird: { width: '32.4%' },
+  tileQuarter: { width: '24.2%' },
   tileFace: { minHeight: 118, padding: 12, gap: 4, backgroundColor: '#101116' },
   tileNum: { fontFamily: fonts.mono, fontSize: 11, color: colors.textSub },
   tileName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.4, color: colors.amber },

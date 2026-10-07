@@ -324,9 +324,9 @@ describe('wiring (Training Labs → Mixing, members only)', () => {
   it('the hub is the shared glass push-button grid with a filter; the guide runs on the shared strip and ends on what’s left', () => {
     const hub = strip(read(`${DIR}/MixingGuidesHubScreen.tsx`));
     assert.match(hub, /import \{ GlassPanel, GlassTile \} from '\.\.\/\.\.\/tools\/GlassTile';/);
-    assert.match(hub, /style=\{tablet \? tabletTile : styles\.tileHalf\}/);
+    assert.match(hub, /tileStyle=\{tablet \? tabletTile : styles\.tileHalf\}/);
     assert.match(hub, /tileHalf: \{ width: '48\.5%' \}/);
-    assert.match(hub, /filterGuides\(MIXING_GUIDE_INDEX, query\)/);
+    assert.match(hub, /filterGuides\(MIXING_GUIDE_INDEX, deferredQuery\)/);
     assert.match(hub, /<ProgressUnreadableNote\b/);
     assert.match(hub, /readCountLine\(readCount, total\)/);
     const host = strip(read(`${DIR}/MixingGuideScreen.tsx`));
