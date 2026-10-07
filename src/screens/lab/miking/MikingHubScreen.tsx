@@ -46,7 +46,10 @@ export function MikingHubScreen() {
   const tablet = useIsTablet();
   const want = (route.params as { lab?: string } | undefined)?.lab;
   const labs = readyLabs();
-  const shown: MikingLabMeta[] = want ? labs.filter((l) => l.id === want) : labs;
+  // An unknown or retired `lab` (an old link) shows every family, never an
+  // empty menu (toddler hunt 2026-10-07, T1-04).
+  const picked = want ? labs.filter((l) => l.id === want) : [];
+  const shown: MikingLabMeta[] = picked.length ? picked : labs;
   const one = shown.length === 1 ? shown[0] : undefined;
   const progress = useMikingProgress();
   const unreadable = useMikingUnreadable();

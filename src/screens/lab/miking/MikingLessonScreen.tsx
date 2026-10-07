@@ -311,14 +311,19 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
   );
   const units = useMemo(() => PAGE_IDS.map((id) => ({ id, title: pageOf(lesson, id).title, done: doneIds.has(id) })), [lesson, doneIds]);
 
-  const doReset = () =>
-    void clearMikingPracticeRun(lesson.id).then(() => {
-      setLocalAnswers({});
-      setLocalInteractive(new Set());
-      setLocalQuick(null);
-      setRunId((r) => r + 1);
-      goPage(0);
-    });
+  // START OVER and PRACTISE AGAIN are one fresh practice run (toddler hunt
+  // 2026-10-07): the screen resets AT ONCE — it used to wait for the device
+  // write, so on slow storage START OVER looked dead (T1-02) — and PRACTISE
+  // AGAIN on the what's-left screen used to keep every answer and activity,
+  // so page 1 came back already finished (T1-03). Credit is never touched.
+  const doReset = () => {
+    void clearMikingPracticeRun(lesson.id);
+    setLocalAnswers({});
+    setLocalInteractive(new Set());
+    setLocalQuick(null);
+    setRunId((r) => r + 1);
+    goPage(0);
+  };
   const confirmReset = () => {
     const message = `Starts ${lesson.title} again from page 1. Pages you have already been credited for stay credited.`;
     if (Platform.OS === 'web') {
@@ -419,10 +424,7 @@ function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: 
             mode="progress"
             noun="page"
             onJump={(id) => goPage(PAGE_IDS.indexOf(id as PageId))}
-            onPracticeAgain={() => {
-              setRunId((r) => r + 1);
-              goPage(0);
-            }}
+            onPracticeAgain={doReset}
             onDone={() => safeGoBack(navigation)}
             bottomInset
           />
