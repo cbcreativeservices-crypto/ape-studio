@@ -588,6 +588,7 @@ const copy: Partial<LessonCopy> = {
     },
   },
   twoMic: {
+    label: 'A spaced pair over the keyboard',
     A: { typeId: 'mlSdc', pattern: 'cardioid', zone: 'xy.pairHigh' },
     B: { typeId: 'mlSdc', pattern: 'cardioid', zone: 'xy.pairLow' },
     learn: [],

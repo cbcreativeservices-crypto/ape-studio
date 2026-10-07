@@ -102,6 +102,7 @@ export const M09_COPY: Partial<LessonCopy> = {
   },
   twoMic: {
     variant: 'studio',
+    label: 'The floor-tom method: over the snare, and beside the floor tom',
     A: { typeId: 'ohPencil', pattern: 'cardioid', zone: 'oh.gj.main' },
     B: { typeId: 'ohPencil', pattern: 'cardioid', zone: 'oh.gj.side' },
     learn: [

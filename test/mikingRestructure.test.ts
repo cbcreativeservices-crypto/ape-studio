@@ -29,7 +29,7 @@ import { MIC_TYPES } from '../src/screens/lab/miking/data/micTypes.ts';
 import { PAGE_IDS, viewsOf, type Lesson, type SourcePageId } from '../src/screens/lab/miking/engine/model/types.ts';
 import { FOUNDATION_PAGES, journeyPageOf, STANDARD_LINE, STANDARD_LINE_PAGES, validateQuickCheck, journeyIntro } from '../src/screens/lab/miking/engine/journey.ts';
 import { isRetired, pageOf, quickCheckOf, restructureLesson, RETIRED, scenariosOnPage } from '../src/screens/lab/miking/engine/restructure.ts';
-import { coreSetups, startingSetups, zoneInVariant } from '../src/screens/lab/miking/engine/setups.ts';
+import { coreSetups, SETUP_PICKS, startingSetups, zoneInVariant } from '../src/screens/lab/miking/engine/setups.ts';
 import { creditedCount, creditedPages, isStoredPage } from '../src/screens/lab/miking/engine/progress/creditMap.ts';
 import { pageComplete } from '../src/screens/lab/miking/engine/progress/credit.ts';
 import { compileScene, checkAssembly, nearestClear, TILT_MAX } from '../src/screens/lab/miking/engine/geometry/collision.ts';
@@ -114,11 +114,15 @@ describe('STARTING SETUPS: real setups, from the lesson’s own starting points'
   for (const lesson of ALL) {
     it(`${lesson.id}: every variant has a setup; every mic sits at a zone start with a type that zone takes`, () => {
       let best = 0;
+      // A lesson whose own words say one spot is usually enough has no TWO
+      // MICS role (SETUP_PICKS pair: null, review 2026-10-07): it still draws
+      // two setups somewhere, the second as ANOTHER START.
+      const oneSpot = SETUP_PICKS[lesson.id]?.pair === null;
       for (const v of lesson.model.variants) {
         const list = startingSetups(lesson, v.id, MIC_TYPES);
         assert.ok(list.length >= 1, `${lesson.id}/${v.id}: no setup`);
         assert.equal(list[0].role, 'one');
-        best = Math.max(best, coreSetups(list).length);
+        best = Math.max(best, oneSpot ? list.length : coreSetups(list).length);
         const ids = new Set<string>();
         const scene = compileScene(lesson.model, v.id);
         const vb = viewsOf(lesson.model, v.id);

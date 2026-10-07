@@ -481,6 +481,9 @@ export const I01A_LESSON: CymbalLesson = {
   model: HAT_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard', 'standClip'],
   zones: HAT_ZONES,
+  // Review 2026-10-07 (R12-C04): the same over-and-under pair the lesson's
+  // two-mic page draws in its other setup, so both setups show it alike.
+  setupPairs: [{ label: 'Over the far edge + under the bottom cymbal, on a clip', A: { zone: 'hh.farEdge', typeId: 'sdcCard', pattern: 'cardioid' }, B: { zone: 'hh.underOpen', typeId: 'standClip', pattern: 'supercardioid' }, variants: ['open'] }],
   pages,
   scenarios,
   symptoms: symptoms(W, { neighbour: 'the snare', air: true }),

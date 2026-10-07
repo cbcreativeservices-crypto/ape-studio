@@ -53,16 +53,16 @@ export function setupsKeep(key: string, i: number, n: number): boolean {
  * Reviewed one by one on 2026-10-06 (CORRECTIONS_LOG.md, "R-06").
  */
 export const RETIRED: Readonly<Record<string, readonly string[]>> = {
-  M01: ['k.snd.2', 'q.3'],
+  M01: ['k.snd.2', 'q.3', 'q.4'],
   M02: ['sn.snd.2', 'q.3'],
-  M03: ['tm.snd.3'],
+  M03: ['tm.snd.3', 'q.4'],
   M09: ['oh.snd.3'],
   M04a: ['cg.snd.2', 'q.3'],
   M04b: ['bg.snd.1', 'bg.snd.3', 'q.4'],
   M04c: ['tb.snd.2'],
   M06: ['tp.snd.1', 'tp.snd.2', 'tp.q.3', 'tp.q.4'],
-  M07a: ['cbd.snd.3'],
-  M07b: ['cs.snd.2', 'cs.q.3'],
+  M07a: ['cbd.snd.1', 'cbd.snd.3', 'cbd.q.3'],
+  M07b: ['cs.snd.2', 'cs.q.3', 'cs.q.4'],
   M12: ['tb.snd.1', 'tb.snd.2', 'q.3'],
   C01: ['ag.snd.2', 'ag.snd.3', 'q.3'],
   C02: ['eg.snd.1', 'q.3'],
@@ -99,6 +99,20 @@ export const RETIRED: Readonly<Record<string, readonly string[]>> = {
   A12: ['org.snd.1', 'org.q.3'],
 };
 
+/**
+ * Review 2026-10-07 (labs 1–2, R12-L01): the quick-check items about the two
+ * heads coupled through the air (M01 q.4, M03 q.4, M07a cbd.q.3 and its MEET IT check cbd.snd.1, M07b cs.q.4)
+ * test the 'air' step MEET IT leaves out, so they are retired above too. And
+ * a replacement never repeats an item the check already asks in other words
+ * (M02: two items on what makes the buzz; I11b: two on the vibrato; M07a: two on where the sound leaves): these
+ * MEET IT checks are passed over when a replacement is chosen.
+ */
+export const QUICK_AVOID: Readonly<Record<string, readonly string[]>> = {
+  M02: ['sn.snd.1'],
+  I11b: ['wu.snd.2'],
+  M07a: ['cbd.snd.2'],
+};
+
 export function isRetired(lessonId: string, itemId: string): boolean {
   return !!RETIRED[lessonId]?.includes(itemId);
 }
@@ -114,7 +128,7 @@ function meetContent(lesson: Lesson): PageContent {
   const src = lesson.pages.instrument;
   const snd = lesson.pages.sound;
   const scenarios = [...(src?.credit.scenarios ?? []), ...(snd?.credit.scenarios ?? [])].filter((id) => !isRetired(lesson.id, id));
-  const noun = lesson.noun.one;
+  const noun = lesson.noun.subject ?? lesson.noun.one;
   return {
     title: 'Meet it — where the sound comes from',
     goal: `Meet the ${noun} in brief — what it is and its parts — and see where its sound leaves it: those are the places a mic can hear it best. Shown, never played.`,
@@ -131,7 +145,7 @@ function setupsContent(lesson: Lesson): PageContent {
   const scenarios = (set?.credit.scenarios ?? []).filter((id) => !isRetired(lesson.id, id));
   return {
     title: 'Starting setups',
-    goal: `See real mic setups on the ${lesson.noun.one}, drawn where the mic goes — its type, its aim and its distance — one at a time. Then what to settle before any mic goes up.`,
+    goal: `See real mic setups on the ${lesson.noun.subject ?? lesson.noun.one}, drawn where the mic goes — its type, its aim and its distance — one at a time. Then what to settle before any mic goes up.`,
     credit: {
       scenarios,
       interactive: 'setupsSeen',
@@ -184,7 +198,8 @@ export function quickCheckOf(lesson: Lesson): readonly DiagnosticItem[] {
   const kept = lesson.diagnostic.filter((d) => !isRetired(lesson.id, d.id));
   const need = Math.max(0, Math.min(QUICK_CHECK_SIZE, lesson.diagnostic.length) - kept.length);
   const used = new Set(kept.map((d) => d.prompt));
-  const pool = [...scenariosOnPage(lesson, 'meet'), ...scenariosOnPage(lesson, 'setups')].filter((s) => !used.has(s.prompt));
+  const avoid = QUICK_AVOID[lesson.id] ?? [];
+  const pool = [...scenariosOnPage(lesson, 'meet'), ...scenariosOnPage(lesson, 'setups')].filter((s) => !used.has(s.prompt) && !avoid.includes(s.id));
   const extra = pool.slice(0, need).map(asQuickItem);
   // Keep the authored order: a replacement takes the retired item's place.
   const out: DiagnosticItem[] = [];

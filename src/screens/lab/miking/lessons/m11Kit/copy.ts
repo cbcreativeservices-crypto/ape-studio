@@ -4,7 +4,7 @@
  * mics, the channel plan, the routing). Starting points; no sources, brands
  * or names (owner ruling 2026-10-04).
  */
-import type { LessonCopy } from '../../engine/model/copy.ts';
+import { NEUTRAL_COPY, type LessonCopy } from '../../engine/model/copy.ts';
 import type { KitOrientWords } from '../shared/kitPages/PKitOrient';
 import type { ArrivalsWords } from '../shared/kitPages/kitSoundSteps';
 
@@ -36,8 +36,14 @@ export const M11_COPY: Partial<LessonCopy> = {
       { title: 'CLEARANCE FOR EVERY CHANNEL', text: 'Each mic is another stand, cable and clamp near a moving player. Stop the playing before moving hardware; keep the sticks’, cymbals’, pedals’ and the player’s whole movement clear; counterweight long booms; check any rim clamp for fit.' },
     ],
   },
+  // Review 2026-10-07 (R12-A01): a complete kit's ONE MIC setup is one mic
+  // over the whole kit (the lesson's "from one whole-kit mic …"), not the
+  // kick mic. The lesson's own placement page is the channel plan, so this
+  // only chooses STARTING SETUPS' first setup.
+  placement: { ...NEUTRAL_COPY.placement, workedZone: { studio: 'oh.mono', live: 'oh.mono' } },
   twoMic: {
     variant: 'studio',
+    label: 'A kick mic and one overhead',
     A: { typeId: 'kickDynSuper', pattern: 'supercardioid', zone: 'kit.kick.out' },
     B: { typeId: 'ohPencil', pattern: 'cardioid', zone: 'oh.gj.main' },
     learn: [

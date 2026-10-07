@@ -166,6 +166,8 @@ export type LessonCopy = {
   };
   twoMic: {
     variant?: VariantId;
+    /** The pair's name on STARTING SETUPS (default: its two zones' labels). */
+    label?: string;
     A: { typeId: string; pattern: MicPattern; zone: string };
     B: { typeId: string; pattern: MicPattern; zone?: string; pose?: MicPose };
     /** Mics on OPPOSITE sides of this surface face heads that move the same

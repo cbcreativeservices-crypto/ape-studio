@@ -1276,3 +1276,14 @@ The shared ensemble toolkit (`lessons/shared/ensemble/`) took both groups' addit
 | M2-02 | Family `voice` (group 4) and `voices` (group 2) | ONE family, `voices`: the band's lead-vocal section uses it. | seating.ts, bandStage.ts |
 | M2-03 | Arrays and stands near singers | Group 2's rule (head + body, `voiceTouches`; the stand base 280 mm from the feet) now applies to group 4's singers too; groups 3, 4 and 5's array and stand tests all pass with it. | seating.ts `arrayClear` |
 | M2-04 | Singles, views and worked words | One `StageSingle`/setup single: groups 4/5's `art`/`len`/`r`/`cross`/`foot`/`typeId` and group 2's handheld `vocalDynamic`, `dimTo`, `aimLen`, `boomDir`; setups keep group 4's `di`/`roles`/`arrayWords`/plot readouts and group 2's `focus`/`short`; `workedWords` takes `height`/`forward` (groups 2 and 4) and `aim` (group 2); a lesson's `views` (group 2) and a stage plot's audience words (group 4) both feed the VIEW chooser. | ensembleData.ts, EnsembleStage.tsx, ensemblePages.tsx |
+
+## Review 2026-10-07 — Labs 1–2 restructured pages (`docs/labs/reviews/REVIEW_2026_10_07_labs12.md`)
+
+| id | lesson | was | now | basis | status |
+|---|---|---|---|---|---|
+| R12-A01 | M11 | ONE MIC = kick mic outside the front head (first zone) | ONE MIC = one mic over the middle of the kit (`oh.mono`) | the lesson's own "from one whole-kit mic" | APPLIED |
+| R12-A02 | M09 | spaced pair drawn as two one-mic setups | `setupPairs` "A spaced pair over the kit" (`oh.ab.hat` + `oh.ab.ride`), drawn whole | the lesson's own zones | APPLIED |
+| R12-A03 | M08, I03a, I04, I05a–d, I10, I06b | TWO MICS = two angles on one small source | no TWO MICS role (`SETUP_PICKS pair: null`); I06b R-06 `setupPairs` removed; I10 closer spot = CLOSE · LIVE; I06b farther spots = FARTHER BACK | each lesson's two-mic page: one spot is usually enough | APPLIED |
+| R12-A04/05 | M03, M05 | close = rim condenser; djembe on the floor had one setup | close = clip-on; distant = `dj.top.far` | the lessons' own zone words | APPLIED |
+| R12-C04 | I01a, I01c, I01e | over-and-under pair only in one setup | `setupPairs` for the other setup (same zones) | consistency | APPLIED · OWNER REVIEW (R12-A07) |
+| R12-L01 | M01, M03, M07a, M07b | quick-check / MEET IT items on the dropped air-coupling step | RETIRED; replaced from the foundations | journey §2.5 | APPLIED |

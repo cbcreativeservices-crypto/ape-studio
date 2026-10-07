@@ -630,7 +630,7 @@ export const M10_LESSON: Lesson = {
   labId: 'drums',
   title: 'Drum Room Mics',
   subtitle: 'The kit and its room — close, low in front, farther out, in the corners',
-  noun: { one: 'drum room', many: 'drum rooms' },
+  noun: { one: 'drum room', many: 'drum rooms', subject: 'drum kit' },
   model: M10_MODEL,
   micTypeIds: ['roomLdc', 'roomPencil', 'ohLdc'],
   zones: M10_ZONES,

@@ -139,7 +139,7 @@ export const TIMB_ZONES: DocumentedZone[] = [
     aim: aim(60, 'aimed across the head: ±60° of straight down is the lab’s tolerance'),
     drawn: drawAbove(HEAD_Y, JUST_ABOVE, { u0: d.c.x + d.R * 0.5, u1: d.c.x + d.R + 40 }, { u0: d.c.x - d.R - 40, u1: d.c.x + d.R + 40, v0: d.c.z - d.R - 40, v1: d.c.z + d.R + 40, round: true }),
     start: { p: { x: d.c.x + d.R - 25, y: HEAD_Y - 70, z: d.c.z }, az: 0, el: -50 },
-    tendency: 'Independent control of each drum; the mic confirms the count, not a geometry. Check the clamp, the stick path and the combined sound.',
+    tendency: 'Independent control of each drum, and the mic moves with the drum. Check the clamp, the stick path and the combined sound.',
     checks: ['The player agrees, and the clamp fits', 'Clear of the stick on the head, the rim and the shell', 'Stand or clamp noise; the pair in mono'],
   })),
 ];
