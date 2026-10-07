@@ -170,3 +170,12 @@ import { E13_ART } from '../lessons/e13MixedEnsemble/art';
 ART.E13 = E13_ART;
 import { E11_ART } from '../lessons/e11StringQuartet/art';
 ART.E11 = E11_ART;
+/* Lab 5 (ensembles and voice), group 2 — voice II, groups: E02, E04, E05, E06 (each lesson on its own line). */
+import { E02_ART } from '../lessons/e02BackgroundVocals/art';
+ART.E02 = E02_ART;
+import { E04_ART } from '../lessons/e04Duets/art';
+ART.E04 = E04_ART;
+import { E05_ART } from '../lessons/e05Choir/art';
+ART.E05 = E05_ART;
+import { E06_ART } from '../lessons/e06ChildrensChoir/art';
+ART.E06 = E06_ART;
