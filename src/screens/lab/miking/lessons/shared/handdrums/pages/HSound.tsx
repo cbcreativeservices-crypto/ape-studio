@@ -320,7 +320,6 @@ export function HSound({ lesson, art, answers, onAnswered, onInteractive, intera
             <Point title="BODY">{S.body}</Point>
           </Card>
           <Note>This lab never plays a sound and draws no frequency curve for the drum: how a real drum sounds depends on the drum, the head, the tuning and the player. The pictures show where the sound comes from and where it leaves.</Note>
-          {!reached ? <Note tone="warn">The strike sequence on step 1 has not reached its end yet — step it through to earn this page’s credit.</Note> : null}
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
         </>
       ),

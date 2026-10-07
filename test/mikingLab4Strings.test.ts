@@ -40,6 +40,7 @@ import { C09B_LESSON } from '../src/screens/lab/miking/lessons/c09bViola/lesson.
 import { C09C_LESSON } from '../src/screens/lab/miking/lessons/c09cCello/lesson.ts';
 import { C06A_LESSON } from '../src/screens/lab/miking/lessons/c06aBassPlucked/lesson.ts';
 import { C06B_LESSON } from '../src/screens/lab/miking/lessons/c06bBassBowed/lesson.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const LAB4 = [C09A_LESSON, C09B_LESSON, C09C_LESSON, C06A_LESSON, C06B_LESSON];
 const BOWED = [C09A_LESSON, C09B_LESSON, C09C_LESSON, C06B_LESSON];
@@ -263,7 +264,7 @@ function bowNeverAtAStart(lesson: Lesson) {
 for (const lesson of LAB4) {
   describe(`${lesson.id} ${lesson.title} validates`, () => {
     it('validateLesson returns no problems', () => assert.deepEqual(validateLesson(lesson, MIC_TYPES), []));
-    it('the 9 pages are present', () => assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort()));
+    it('its written pages serve the 8 journey pages', () => assertJourneyPages(lesson));
     it('it is listed in Lab 4 (Strings), and served', () => {
       assert.ok(MIKING_LABS.some((l) => l.id === 'strings'), 'the Strings hub exists');
       assert.ok(LESSONS.some((l) => l.id === lesson.id && l.labId === 'strings' && l.status === 'ready'));

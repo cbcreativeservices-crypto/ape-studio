@@ -28,6 +28,7 @@
  */
 import type { DocumentedZone, Lesson, MicPattern, MicPose, MicSlot, MicType, VariantId, Vec3 } from './model/types.ts';
 import { copyOf } from './model/copy.ts';
+import { guideFor } from './geometry/guides.ts';
 
 export type SetupRole = 'one' | 'pair' | 'close' | 'distant' | 'more';
 export const ROLE_LABEL: Readonly<Record<SetupRole, string>> = { one: 'ONE MIC', pair: 'TWO MICS', close: 'CLOSE · LIVE', distant: 'FARTHER BACK · STUDIO', more: 'ANOTHER START' };
@@ -129,7 +130,23 @@ function micAt(lesson: Lesson, slot: MicSlot, z: DocumentedZone, micTypes: Recor
   return { slot, typeId, pattern: micTypes[typeId]?.patterns[0]?.id ?? 'cardioid', pose: z.start, zoneId: z.id, surfaceId: z.refSurface, polarity: 1 };
 }
 
-const PAIR_TAIL = 'Two mics give more to blend — check the pair together in mono.';
+/**
+ * The surface a second mic placed by pose alone (no zone: the kick's mic
+ * outside the port) is measured from: the nearest of the lesson's reference
+ * surfaces in this variant — the front head for a mic outside the front head,
+ * never the batter head on the far side of the drum.
+ */
+export function nearestSurface(lesson: Lesson, v: VariantId, pose: MicPose): string | null {
+  let best: { id: string; d: number } | null = null;
+  for (const s of lesson.model.surfaces) {
+    if (s.variants && !s.variants.includes(v)) continue;
+    const d = guideFor(s, pose).distance;
+    if (!best || d < best.d) best = { id: s.id, d };
+  }
+  return best?.id ?? null;
+}
+
+const PAIR_TAIL ='Two mics give more to blend — check the pair together in mono.';
 
 function pairSetup(lesson: Lesson, v: VariantId, micTypes: Record<string, MicType>, pair: PairInput | null | undefined): StartingSetup | null {
   const byId = (id?: string) => (id ? lesson.zones.find((z) => z.id === id) : undefined);
@@ -156,7 +173,7 @@ function pairSetup(lesson: Lesson, v: VariantId, micTypes: Record<string, MicTyp
       const A: SetupMic = { ...micAt(lesson, 'A', zA, micTypes), typeId: T.A.typeId || typeForZone(lesson, zA, micTypes), pattern: T.A.pattern };
       const B: SetupMic = zB
         ? { ...micAt(lesson, 'B', zB, micTypes), typeId: T.B.typeId || typeForZone(lesson, zB, micTypes), pattern: T.B.pattern }
-        : { slot: 'B', typeId: T.B.typeId || lesson.micTypeIds[0], pattern: T.B.pattern, pose: T.B.pose!, zoneId: null, surfaceId: zA.refSurface, polarity: 1 };
+        : { slot: 'B', typeId: T.B.typeId || lesson.micTypeIds[0], pattern: T.B.pattern, pose: T.B.pose!, zoneId: null, surfaceId: nearestSurface(lesson, v, T.B.pose!) ?? zA.refSurface, polarity: 1 };
       const zones = zB ? [zA, zB] : [zA];
       return { id: `pair:${zA.id}+${zB?.id ?? 'pose'}`, role: 'pair', variant: v, title: zB ? `${zA.label} + ${lower(zB.label)}` : `${zA.label}, with a second mic`, mics: [A, B], zones, line: `${firstSentence((zB ?? zA).tendency)} ${PAIR_TAIL}` };
     }
@@ -175,7 +192,7 @@ function pairSetup(lesson: Lesson, v: VariantId, micTypes: Record<string, MicTyp
       pattern: side.pattern ?? micTypes[side.typeId]?.patterns[0]?.id ?? 'cardioid',
       pose,
       zoneId: z?.id ?? null,
-      surfaceId: z?.refSurface ?? a?.refSurface ?? b?.refSurface ?? lesson.model.surfaces[0]?.id ?? '',
+      surfaceId: z?.refSurface ?? nearestSurface(lesson, v, pose) ?? a?.refSurface ?? b?.refSurface ?? lesson.model.surfaces[0]?.id ?? '',
       polarity: pol,
     });
     const zones = [a, b].filter((z): z is DocumentedZone => !!z);

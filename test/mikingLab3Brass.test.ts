@@ -41,6 +41,7 @@ import { A01_LESSON } from '../src/screens/lab/miking/lessons/a01Trumpet/lesson.
 import { A02_LESSON } from '../src/screens/lab/miking/lessons/a02Trombone/lesson.ts';
 import { lobe } from '../src/screens/lab/miking/lessons/shared/brass/brassSoundMath.ts';
 import { itemRules, learnerStrings, RESEARCH_NAMES } from './_mikingItemRules.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const LAB3 = [A01_LESSON, A02_LESSON];
 const r1 = (x: number) => Math.round(x * 10) / 10;
@@ -123,9 +124,9 @@ describe('Lab 3 brass lessons: registered, valid, complete', () => {
     assert.ok(MIKING_LABS.find((l) => l.id === 'winds')!.blurb.length > 40);
   });
   for (const L of LAB3) {
-    it(`${L.id}: validateLesson is clean; the nine journey pages are there`, () => {
+    it(`${L.id}: validateLesson is clean; its written pages serve the 8 journey pages`, () => {
       assert.deepEqual(validateLesson(L, MIC_TYPES), []);
-      for (const p of PAGE_IDS) assert.ok(L.pages[p], `${L.id} page ${p}`);
+      assertJourneyPages(L);
     });
     it(`${L.id}: the item-writing rules`, () => itemRules(L));
     it(`${L.id}: no research name in learner text`, () => {

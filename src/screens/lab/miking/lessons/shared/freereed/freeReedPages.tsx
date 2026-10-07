@@ -47,7 +47,7 @@ export function makeFreeReedPages(spec: FreeReedSpec): Partial<Record<SourcePage
   const pick = (id: SourcePageId): PageFn =>
     function FreeReedVariantPage(p: PageProps) {
       const v = spec.pin?.[id] ?? p.variant;
-      const P = (byV[v] ?? base)[id];
+      const P = ((byV[v] ?? base)[id] ?? base[id]) as PageFn;
       const ctx: VariantCtx = { variant: v, setVariant: p.setVariant, options: spec.pin?.[id] ? [] : p.lesson.model.variants.map((q) => ({ id: q.id, label: q.label, blurb: q.blurb })), key: spec.meet.variantKey };
       return (
         <VariantContext.Provider value={ctx}>

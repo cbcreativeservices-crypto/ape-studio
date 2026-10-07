@@ -116,7 +116,7 @@ function meetContent(lesson: Lesson): PageContent {
   const scenarios = [...(src?.credit.scenarios ?? []), ...(snd?.credit.scenarios ?? [])].filter((id) => !isRetired(lesson.id, id));
   const noun = lesson.noun.one;
   return {
-    title: src?.title ?? `Meet the ${noun}`,
+    title: 'Meet it — where the sound comes from',
     goal: `Meet the ${noun} in brief — what it is and its parts — and see where its sound leaves it: those are the places a mic can hear it best. Shown, never played.`,
     credit: {
       scenarios,

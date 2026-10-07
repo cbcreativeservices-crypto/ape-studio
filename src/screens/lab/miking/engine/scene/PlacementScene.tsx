@@ -1475,7 +1475,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     if (!guideKey) return [];
     const cu = (box.u0 + box.u1) / 2;
     const cv = (box.v0 + box.v1) / 2;
-    return rig.mics
+    const raw = rig.mics
       .filter((m) => live.includes(m.slot) && m.on)
       .map((m) => {
         const s = model.surfaces.find((q) => q.id === rig.refOf(m.slot).surfaceId);
@@ -1502,6 +1502,25 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
         return { slot: m.slot, g, pr, short, text, W, H, au, av, nx, ny, rect: { x0: px - W / 2, x1: px + W / 2, y0: py - H / 2, y1: py + H / 2 } };
       })
       .filter((x): x is NonNullable<typeof x> => !!x);
+    // A pair's two dimensions side by side (the piano's spaced pair): a label
+    // that would sit on the other's steps to the far side of its own line;
+    // if it still collides and says the same, it is not printed twice.
+    const hits = (a: { x0: number; x1: number; y0: number; y1: number }, b: typeof a) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+    const out: (typeof raw[number] & { hide?: boolean })[] = [];
+    for (const d of raw) {
+      let cur: typeof raw[number] & { hide?: boolean } = d;
+      if (out.some((o) => !o.hide && hits(o.rect, cur.rect))) {
+        const nx = -d.nx;
+        const ny = -d.ny;
+        const px = base.ox + d.au * base.s + nx * (d.W / 2 + 6);
+        const py = base.oy + d.av * base.s + ny * (d.H / 2 + 6);
+        const flipped = { ...d, nx, ny, rect: { x0: px - d.W / 2, x1: px + d.W / 2, y0: py - d.H / 2, y1: py + d.H / 2 } };
+        if (!out.some((o) => !o.hide && hits(o.rect, flipped.rect))) cur = flipped;
+        else if (out.some((o) => !o.hide && o.text === d.text)) cur = { ...d, hide: true };
+      }
+      out.push(cur);
+    }
+    return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps -- by the poses' key
   }, [guideKey, view, box, base, textScale, w, model.surfaces]);
   // Part labels only where the drawing is big enough to carry them (a short
@@ -1616,7 +1635,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       {labels.map((l) => (
         <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
       ))}
-      {guideData.map((d) => (
+      {guideData.filter((d) => !d.hide).map((d) => (
         <GuideLabel key={`gl:${d.slot}`} xf={xf} u={d.au} v={d.av} nx={d.nx} ny={d.ny} W={d.W} H={d.H} text={d.text} scale={textScale} maxX={w} maxY={h} />
       ))}
       {showPolar && !mini && showLabels

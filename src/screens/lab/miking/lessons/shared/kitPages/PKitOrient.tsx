@@ -25,6 +25,7 @@ import { sceneLabel } from '../../../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point } from '../../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../../../engine/journeyKit';
+import { journeyIntro } from '../../../engine/journey.ts';
 import { micType } from '../../../data/micTypes';
 import type { PageProps } from '../../../pages/pageTypes';
 import { viewToggle } from '../../../engine/scene/viewToggle.ts';
@@ -100,7 +101,7 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
       layout: 'read',
       body: (
         <>
-          <Body>{words.start}</Body>
+          <Body>{journeyIntro(lesson.noun)}</Body>
           <JourneyMap met={journey.met} here="meet" />
           <PathChooser journey={journey} />
           {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}

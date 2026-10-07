@@ -40,6 +40,7 @@ import { C10_LESSON } from '../src/screens/lab/miking/lessons/c10Harp/lesson.ts'
 import { C12_LESSON } from '../src/screens/lab/miking/lessons/c12Clavinet/lesson.ts';
 import { HP, LV } from '../src/screens/lab/miking/lessons/c10Harp/model.ts';
 import { CLAV_RANGE_HZ } from '../src/screens/lab/miking/lessons/c12Clavinet/ampSpec.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const ALL = [C11_LESSON, C10_LESSON, C12_LESSON];
 const DOCS = 'docs/labs/miking';
@@ -119,7 +120,7 @@ function itemRules(lesson: Lesson) {
 for (const lesson of ALL) {
   describe(`${lesson.id} ${lesson.title}`, () => {
     it('validateLesson returns no problems', () => assert.deepEqual(validateLesson(lesson, MIC_TYPES), []));
-    it('the 9 pages are present', () => assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort()));
+    it('its written pages serve the 8 journey pages', () => assertJourneyPages(lesson));
     it('registered in Lab 4 (Strings) and served', () => {
       const meta = LESSONS.find((l) => l.id === lesson.id);
       assert.ok(meta);

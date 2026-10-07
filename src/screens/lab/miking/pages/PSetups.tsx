@@ -23,7 +23,7 @@
  * Credit: every setup in one of the four roles looked at (+ the checks).
  */
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicPattern, SettingItem, ViewId } from '../engine/model/types.ts';
@@ -61,12 +61,22 @@ export function aroundItems(items: readonly SettingItem[]): { near: SettingItem[
   return { near: keep.filter((i) => i.scene === 'all' || i.scene === 'kit'), stage: keep.filter((i) => i.scene === 'stage'), studio: keep.filter((i) => i.scene === 'studio') };
 }
 
-export function SetupCard({ s }: { s: StartingSetup }) {
+/** The web preview harness only (`&setup=<n>`, 1-based): open that setup, for
+ *  captures of every setup (never the production router). */
+function devSetupIndex(): number {
+  if (!(__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined')) return 0;
+  const m = /[?&]setup=(\d+)/.exec(window.location.search);
+  return m ? Math.max(0, Number(m[1]) - 1) : 0;
+}
+
+/** `where`: per mic slot, the distance in words when the mic has no zone of
+ *  its own (a second mic placed where the two-mic page puts it). */
+export function SetupCard({ s, where }: { s: StartingSetup; where?: Partial<Record<string, string>> }) {
   return (
     <View style={styles.card}>
       <Text style={styles.role}>{ROLE_LABEL[s.role]}</Text>
       <Text style={styles.title}>{s.title}</Text>
-      {s.mics.map((m, i) => {
+      {s.mics.map((m) => {
         const z = s.zones.find((q) => q.id === m.zoneId);
         return (
           <View key={m.slot} style={{ gap: 2 }}>
@@ -80,10 +90,10 @@ export function SetupCard({ s }: { s: StartingSetup }) {
                 <Text style={styles.key}>{'START · '}</Text>
                 {z.band}
               </Text>
-            ) : i > 0 ? (
+            ) : where?.[m.slot] ? (
               <Text style={styles.line}>
                 <Text style={styles.key}>{'START · '}</Text>
-                The lesson’s second mic, where its two-mic page puts it.
+                {where[m.slot]}
               </Text>
             ) : null}
           </View>
@@ -101,7 +111,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
   const C = copyOf(lesson);
   const setups = useSetups(lesson, variant);
   const core = useMemo(() => coreSetups(setups), [setups]);
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(devSetupIndex);
   const i = Math.min(idx, Math.max(0, setups.length - 1));
   const sel = setups[i] as StartingSetup | undefined;
   const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
@@ -130,6 +140,12 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
     if (core.length && seenCore >= core.length && !interactiveDone.has('setupsSeen')) onInteractive('setupsSeen');
   }, [seenCore, core.length, interactiveDone, onInteractive]);
 
+  // A mic with no zone of its own: its distance, in words, from the surface it is measured from.
+  const where: Partial<Record<string, string>> = {};
+  sel?.mics.forEach((m, k) => {
+    const sf = lesson.model.surfaces.find((q) => q.id === m.surfaceId);
+    if (!m.zoneId && sf && guides[k]) where[m.slot] = `About ${fmtLen(guides[k].distance).replace(/^≈ /, '')} from ${/^the /i.test(sf.label) ? sf.label : `the ${sf.label}`}.`;
+  });
   const variantLabel = lesson.model.variants.find((v) => v.id === variant)?.label ?? variant.toUpperCase();
   const variantShort = C.variantShort[variant] ?? variantLabel.toLowerCase();
   const d0 = guides[0]?.distance;
@@ -207,7 +223,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
       well: (
         <>
           <Landing looking={sel ? `${ROLE_LABEL[sel.role]} · ${variantShort}` : variantShort} prompt="Step through SETUP. Each one is drawn on the instrument: the mic and its stand, where it points (amber) and its distance (white)." />
-          {sel ? <SetupCard s={sel} /> : <Note>This lesson has no starting setup for this choice — try another one in the dock.</Note>}
+          {sel ? <SetupCard s={sel} where={where} /> : <Note>This lesson has no starting setup for this choice — try another one in the dock.</Note>}
           <Body>{`Looked at: ${seenCore} of ${core.length} setups${setups.length > core.length ? ` (and ${setups.length - core.length} more starting point${setups.length - core.length === 1 ? '' : 's'} to explore)` : ''}. The Placement Studio starts from the last one you look at.`}</Body>
         </>
       ),

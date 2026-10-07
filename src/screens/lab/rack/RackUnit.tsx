@@ -280,7 +280,10 @@ export function RackUnit({
   // reserve: the tablet well should still show a paragraph in landscape).
   // A view-built stage (StageBox → `fixed()`) keeps the phone height: its
   // text does not grow with the box, so more glass would only add air.
-  const phoneTarget = Math.min(STAGE_HEIGHTS[effSize], Math.max(100, winH - 350));
+  // A lab may ask for a taller phone glass (stage.phoneHeight, sized from the
+  // window by the lab): honoured only where the declared size is not dropped.
+  const phoneBase = stage.phoneHeight && effSize === size ? Math.max(STAGE_HEIGHTS[effSize], stage.phoneHeight) : STAGE_HEIGHTS[effSize];
+  const phoneTarget = Math.min(phoneBase, Math.max(100, winH - 350));
   const tabletTarget = Math.min(Math.round(winH * TABLET_STAGE_SHARE[size]), winH - TABLET_RESERVE);
   // Never SMALLER than the phone rule gives the same window (a landscape
   // iPad mini's 744 pt height keeps the phone glass).

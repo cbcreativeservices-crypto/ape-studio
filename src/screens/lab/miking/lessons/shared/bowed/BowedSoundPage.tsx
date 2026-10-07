@@ -336,7 +336,6 @@ export function makeBowedSoundPage(cfg: BowedSoundConfig): (p: PageProps) => Rea
               <Point title="BODY">{S.body}</Point>
             </Card>
             <Note>{cfg.silentNote}</Note>
-            {!reached ? <Note tone="warn">The sequence on step 1 has not reached its end yet — step it through to earn this page’s credit.</Note> : null}
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
           </>
         ),

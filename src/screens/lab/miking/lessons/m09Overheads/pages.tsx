@@ -65,7 +65,6 @@ export function M09Sound({ lesson, answers, onAnswered, onInteractive, interacti
             <Point title="WHAT AN OVERHEAD HEARS">The cymbals hang closest, so they arrive first and loudest; the snare a little later; the kick last and weakest. Each source keeps its own distance — and its own arrival time — at every mic.</Point>
           </Card>
           <Note>This lab never plays a sound and draws no frequency curve for the kit: how a real kit sounds depends on the drums, the cymbals, the tuning, the room and the player. The pictures show where the sound comes from and when it arrives.</Note>
-          {!strike.reached ? <Note tone="warn">The cymbal’s stroke on step 1 has not reached its end yet — step it through to earn this page’s credit.</Note> : null}
           <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
         </>
       ),

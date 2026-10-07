@@ -52,6 +52,23 @@ export function journeyPageOf(p: SourcePageId): PageId {
  *  MEET IT, STARTING SETUPS and the Placement Studio. */
 export const STANDARD_LINE = 'These are suggested starting points, not rules. Put the mic up, listen, move it, and adjust — your ears and the room decide.';
 
+/**
+ * The START step's opening paragraph, the same for every lesson (owner
+ * restructure 2026-10-06): it names the journey as it now is — where the
+ * sound leaves, the starting setups drawn on the instrument, the microphones,
+ * the Placement Studio — and never the old "how it makes its sound, and where
+ * it sits". `thing`: the lesson's word for the instrument ("drum", "guitar
+ * and its amp"); `plural`: a lesson about several (the hand-drum pairs).
+ */
+export function journeyIntro(noun: { one: string; many: string }, thing?: string, plural = false): string {
+  const a = /^[aeiou]/i.test(noun.one) ? 'an' : 'a';
+  const what = plural ? `microphones on ${noun.many}` : `a microphone on ${a} ${noun.one}`;
+  const itself = plural ? `the ${thing ?? noun.many} themselves` : `the ${thing ?? noun.one} itself`;
+  const its = plural ? 'their' : 'its';
+  const it = plural ? 'them' : 'it';
+  return `This lesson is about putting ${what}. First, in brief, ${itself} and where ${its} sound leaves — the places a mic can hear ${it} best. Then real starting setups drawn on ${it}, the microphones, and the Placement Studio, where you move the mic yourself. Nothing here makes a sound: the lab is silent and shows the physics instead.`;
+}
+
 /** Pages that print the standard line under their goal. */
 export const STANDARD_LINE_PAGES: readonly PageId[] = ['meet', 'setups', 'placement'];
 

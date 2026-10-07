@@ -451,7 +451,7 @@ export function makeMetalPages(spec: MetalSpec): Partial<Record<SourcePageId, Pa
   for (const [v, h] of Object.entries(spec.handByVariant ?? {})) if (h) byV[v] = makeHandPages(h, sound);
   const pick = (id: SourcePageId): PageFn =>
     function VariantPage(p: PageProps) {
-      const P = (byV[p.variant] ?? base)[id];
+      const P = ((byV[p.variant] ?? base)[id] ?? base[id]) as PageFn;
       const ctx: VariantCtx = { variant: p.variant, setVariant: p.setVariant, options: p.lesson.model.variants.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })), key: spec.meet.variantKey };
       return (
         <VariantContext.Provider value={ctx}>

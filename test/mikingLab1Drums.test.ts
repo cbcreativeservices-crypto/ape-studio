@@ -37,6 +37,7 @@ import { DEPTH, H_UP, SNARE_ZONES } from '../src/screens/lab/miking/lessons/m02S
 import { WIRE_Y } from '../src/screens/lab/miking/lessons/m02Snare/geometry.ts';
 import { FLOOR_16x16, SNARE_14x55, TOM_10x7, TOM_12x8, lowestHeight, rodAngles } from '../src/screens/lab/miking/lessons/shared/drums/drumSpec.ts';
 import { KIT, KIT_CYMBALS, KIT_DRUMS, KIT_FLOOR_Y } from '../src/screens/lab/miking/lessons/shared/kitPlanModel.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const plan = (a: { x: number; z: number }, b: { x: number; z: number }) => Math.round(Math.hypot(a.x - b.x, a.z - b.z) * 10) / 10;
 const heightOf = (y: number) => KIT_FLOOR_Y - y;
@@ -185,7 +186,7 @@ function copyIds(lesson: Lesson) {
 for (const lesson of [M02_LESSON, M03_LESSON]) {
   describe(`${lesson.id} ${lesson.title} validates`, () => {
     it('validateLesson returns no problems', () => assert.deepEqual(validateLesson(lesson, MIC_TYPES), []));
-    it('the 9 pages are present', () => assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort()));
+    it('its written pages serve the 8 journey pages', () => assertJourneyPages(lesson));
     it('it is registered in Lab 1 after the kick, and served', () => {
       const lab1 = LESSONS.filter((l) => l.labId === 'drums').map((l) => l.id);
       assert.deepEqual(lab1.slice(0, 3), ['M01', 'M02', 'M03']);

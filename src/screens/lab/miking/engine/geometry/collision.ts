@@ -341,11 +341,26 @@ export function constrainMove(scene: CompiledScene, body: MicBody, from: MicPose
  * each axis, either way) that clears every part. A page that starts
  * a mic at a zone made for a shorter one (the piano's long dynamic under the
  * lid on the short stick) starts it just clear instead of inside the lid.
- * Null when nothing within reach is clear (the caller keeps the pose and shows
- * its block, as before). Pure.
+ *
+ * FIRST it tries the same place, tilted (owner 2026-10-06, the piano: "restore
+ * ~15 cm"): the mic's front stays where the zone starts it — so its distance
+ * holds — and only its up–down aim turns, 5° at a time up to TILT_MAX either
+ * way, plus 5° more when that is clear too (room to turn). Only when no tilt
+ * clears it is the mic moved. Null when nothing within reach is clear (the
+ * caller keeps the pose and shows its block, as before). Pure.
  */
+export const TILT_MAX = 30;
 export function nearestClear(scene: CompiledScene, pose: MicPose, body: MicBody, bounds: Bounds, reach = 150): MicPose | null {
   if (!checkAssembly(scene, pose, body)) return pose;
+  const tilt = (d: number): MicPose => ({ p: pose.p, az: pose.az, el: Math.max(-90, Math.min(90, pose.el + d)) });
+  for (let d = 5; d <= TILT_MAX; d += 5) {
+    for (const sgn of [1, -1]) {
+      const cand = tilt(sgn * d);
+      if (cand.el === pose.el || checkAssembly(scene, cand, body)) continue;
+      const roomy = tilt(sgn * (d + 5));
+      return checkAssembly(scene, roomy, body) ? cand : roomy;
+    }
+  }
   const dirs: Vec3[] = [
     { x: 0, y: 1, z: 0 },
     { x: 0, y: -1, z: 0 },

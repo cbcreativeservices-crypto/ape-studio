@@ -45,6 +45,7 @@ import { SEATED as CL_SEATED, STANDING as CL_STANDING } from '../src/screens/lab
 import { LAYOUTS as BCL } from '../src/screens/lab/miking/lessons/a08bBassClarinet/geometry.ts';
 import { SEATED as OB_SEATED, STANDING as OB_STANDING } from '../src/screens/lab/miking/lessons/a09aOboe/geometry.ts';
 import { SEATED as BSN_SEATED, STANDING as BSN_STANDING } from '../src/screens/lab/miking/lessons/a09bBassoon/geometry.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const WINDS = [A06_LESSON, A07_LESSON, A08A_LESSON, A08B_LESSON, A09A_LESSON, A09B_LESSON];
 const SPECS: WindSpec[] = [fluteSpec('metal'), fluteSpec('wooden'), fluteSpec('simple'), PICCOLO, CLARINET, bassClarinetSpec('eflat'), bassClarinetSpec('lowc'), OBOE, BASSOON];
@@ -147,7 +148,7 @@ const JET_LAYOUTS: Record<string, (v: string) => Layout> = {
 for (const lesson of WINDS) {
   describe(`${lesson.id} ${lesson.title}`, () => {
     it('validateLesson returns no problems', () => assert.deepEqual(validateLesson(lesson, MIC_TYPES), []));
-    it('the 9 pages are present', () => assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort()));
+    it('its written pages serve the 8 journey pages', () => assertJourneyPages(lesson));
     it('it is listed in Lab 3 (Winds), and served', () => {
       assert.ok(MIKING_LABS.some((l) => l.id === 'winds'), 'the Winds hub exists');
       assert.ok(LESSONS.some((l) => l.id === lesson.id && l.labId === 'winds' && l.status === 'ready'));

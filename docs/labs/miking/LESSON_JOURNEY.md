@@ -27,24 +27,64 @@ navigation; every lab ends with a "what's left" screen.
 
 ---
 
+## 0. The 2026-10-06 restructure (owner, binding)
+
+> **Owner, 2026-10-06:** "We need to be careful with this whole idea of 'where it sits' … it
+> is too generic and is more about stage position than mic position. The labs need to be
+> about miking." And: "nowhere do I actually see mics set up or shown as an example, and
+> that is the goal of the lab."
+
+What changed (all 79 lessons, engine-level — `engine/restructure.ts`, `engine/setups.ts`,
+`engine/compose.tsx`; no lesson had to be rewritten to be served this way):
+- **"Where it sits" (`setting`) is gone as a page.** What in it changes a MIC decision —
+  the neighbours that bleed into the mic, the player's clearance, live versus studio, an
+  amplified source's mic-or-DI path, and "before any mic" (ask the player, hearing) — is now
+  on STARTING SETUPS as mic decisions. The plans of the stage and the studio are dropped.
+- **ORIENT + HOW IT SOUNDS are one shorter page, MEET IT — WHERE THE SOUND COMES FROM**: what
+  it is, its parts, and where the sound leaves (the steps that were physics only — vibration
+  shapes, the air column, the valves, a pickup's string — are left out: `MEET_DROP`).
+- **New: STARTING SETUPS**, right after MEET IT: real setups DRAWN ON THE INSTRUMENT, one at
+  a time — the mic, its stand / boom / clip, its aim (amber), its distance as a dimension
+  (white). ONE MIC, TWO MICS, CLOSE · LIVE, FARTHER BACK · STUDIO (each only where the lesson's
+  research gives one), then the lesson's other starting points (ANOTHER START). Each card:
+  name, mic type and pattern, where to start (distance and aim), one line on what it tends
+  to do and its trade-off. Built from each lesson's own zones, two-mic data and (where its
+  two-mic pair lived only in its art) a logged `setupPairs` entry — never invented
+  (CORRECTIONS_LOG.md R-06).
+- **MICROPHONES** opens with the chosen mic drawn ON the instrument where the lesson starts it.
+- **The PLACEMENT STUDIO starts from a setup**: START (dock) — "Start from: …" — the last
+  setup looked at, or any other.
+- **One standard line, word for word, on MEET IT, STARTING SETUPS and the Placement Studio:**
+  "These are suggested starting points, not rules. Put the mic up, listen, move it, and
+  adjust — your ears and the room decide." (`journey.STANDARD_LINE`)
+- The Miking display is taller where the window allows (owner answer A, §3.1a); labels stay
+  simple (owner answer C: no priority tags); the piano's long dynamic under the short-stick
+  lid keeps its ~15 cm start (owner answer B, §6 stage 2).
+
 ## 1. The journey at a glance
 
-Seven STAGES, nine PAGES. A stage is a teaching idea; a page is a unit on the lab strip
-(`LabNavBar`), with its own steps, credit and what's-left row. (The Sources stage was removed
-by the owner ruling of 2026-10-04: the lesson ends at Practice → the what's-left screen.)
+Six STAGES, eight PAGES. A stage is a teaching idea; a page is a unit on the lab strip
+(`LabNavBar`), with its own steps, credit and what's-left row.
 
-| # | Stage | Page id (strip title for Kick) | What the learner does | Credit (banks on the event) |
+| # | Stage | Page id (strip title) | What the learner does | Credit (banks on the event) |
 |---|---|---|---|---|
-| 1 | ORIENT | `instrument` (Meet the kick drum) | Chooses NEW or EXPERIENCED. Reads what the instrument is, where it is used, its job. Explores the parts freely (tap to name). **No tasks.** | On NEXT from the page's last step (nothing to answer). |
-| 2 | HOW IT SOUNDS | `sound` (How it makes its sound) | Watches a strike become sound, step by step (user-started). Explores the head's vibration shapes and the two heads coupled by the air. Then 3 checks. | The strike sequence reached its end + 3 checks. |
-| 3 | THE SETTING | `setting` (Where it sits) | Explores the kit around the instrument, the player's space, a stage (monitors, audience side) and a studio. Reads "before any mic" (ask the player, hearing). Then 3 checks. | 3 checks. |
-| 4 | MICROPHONES | `microphone` | Predicts, then sweeps a source round a pattern; reads the mic types by property for THIS source. Checks (one reaches back to stage 2). | Checks. |
-| 5 | PLACEMENT, guided then free | `placement` | WATCH: a worked example reads one recommended starting point piece by piece. PLACE: the learner rests a mic in two recommended zones, then moves it and sees what changes. Checks (one reaches back to stage 3). | Two zones rested in, clear + checks. |
-| 6 | ADVANCED | `context` (Studio or live), `twoMic` (Two microphones), `troubleshoot` | Aim a pattern's rejection at a fixed monitor; two mics, delay vs polarity; symptoms → first checks. | As before (review fixes kept). |
-| 7 | PRACTICE / ASSESS | `practice` | The setup in order; two briefs where several setups pass and the REASONS are graded; a mixed review drawn from every stage. | All items. |
+| 1 | MEET IT | `meet` (Meet it — where the sound comes from) | Chooses NEW or EXPERIENCED. What the instrument is, its parts (tap to name), and where its sound leaves — the places a mic hears it best. Shown, never played. | Its where-the-sound-leaves checks. |
+| 2 | STARTING SETUPS | `setups` (Starting setups) | Steps through real setups drawn on the instrument; reads what else the mic hears (neighbours, clearance, stage or studio); "before any mic"; checks. | Every ONE / TWO / CLOSE / FARTHER setup looked at + the checks. |
+| 3 | MICROPHONES | `microphone` | The chosen mic drawn on the instrument; then predict, sweep a source round a pattern, the types by property; checks. | Checks. |
+| 4 | PLACEMENT STUDIO | `placement` | WATCH a worked example; then START from a setup, move the mic, rest it in two zones, see what changes; checks. | Two zones + checks. |
+| 5 | ADVANCED | `context`, `twoMic`, `troubleshoot` | Aim a pattern's rejection at a fixed monitor; two mics, delay vs polarity; symptoms → first checks. | As before. |
+| 6 | PRACTICE / ASSESS | `practice` | The setup in order; briefs where several setups pass and the REASONS are graded; a mixed review. | All items. |
 
-Stages 1–3 are the **FOUNDATIONS**. Nothing on stages 4–7 asks the learner to operate a mic
-until the foundations are met (§3.3), and nothing on stages 1–3 asks them to place one.
+Stages 1–2 are the **FOUNDATIONS**. Nothing on stages 3–6 asks the learner to operate a mic
+until the foundations are met (§3.3); STARTING SETUPS DRAWS mics but never lets one be moved.
+
+**Lessons are WRITTEN in nine source pages, SERVED as eight.** The 79 lessons keep their
+`instrument`, `sound` and `setting` page words and checks; `engine/restructure.ts` builds
+MEET IT from the first two and STARTING SETUPS' checks from the third. A check about a step
+MEET IT no longer shows is retired from the page and its credit (`RETIRED`, reviewed one by
+one); a retired quick-check item is replaced by one of the lesson's own MEET IT checks, so the
+check stays six items. A lesson written to the new journey may give `pages.meet` /
+`pages.setups` itself.
 
 ---
 
@@ -56,11 +96,11 @@ help that fades as the stages go on (§4). A learner who never chooses is treate
 
 ### 2.2 EXPERIENCED
 Someone who already mics this instrument. They take an **honest short check** (the QUICK
-CHECK) and, if it shows the foundations are there, the activities on stages 4–7 open at once.
+CHECK) and, if it shows the foundations are there, the activities on stages 3–6 open at once.
 They can go back to any page at any time.
 
 ### 2.3 How the choice is offered
-- On the first step of page 1 (START), before anything else: the journey map (the 7 stages,
+- On the first step of page 1 (START), before anything else: the journey map (the 6 stages,
   one line each) and two buttons:
   - **"New to miking a [instrument]? Start at the beginning."**
   - **"Already mic [instruments]? Take the quick check to go straight to the microphones."**
@@ -76,7 +116,7 @@ A guest's choice is held for the sign-in hand-off like the rest of their work (`
 a members-only preview remembers it only on screen (preview earns and keeps nothing).
 
 ### 2.5 The quick check (rules every lesson follows)
-- **6 items**, all from the FOUNDATIONS (2 per foundation page), never from the pages it
+- **6 items**, all from the FOUNDATIONS (MEET IT and STARTING SETUPS), never from the pages it
   unlocks — it checks what a skipper would miss, not what they are about to practise.
 - At least one item is **critical** (safety: hearing, or clearance/the player's space). A
   wrong critical item fails the check whatever the score.
@@ -112,28 +152,46 @@ a members-only preview remembers it only on screen (preview earns and keeps noth
   tail of the last step (unchanged).
 
 ### 3.2 What's left and credit
-- `LabEndScreen` (mode `progress`, noun `page`) lists all nine pages with their requirement,
+- `LabEndScreen` (mode `progress`, noun `page`) lists all eight pages with their requirement,
   the first-try hint (review m7) and, for a foundation page skipped by the quick check, the
   "Skipped with the quick check" line. Jumping from it opens that page.
-- The hub counts `n of 9 pages`.
+- The hub counts `n of 8 pages`, read through `engine/progress/creditMap.ts` (§3.5).
 
 ### 3.3 The FOUNDATIONS gate, and why it does not block navigation
 - **Navigation is never blocked.** NEXT, PREV, CONTENTS and the what's-left jumps work on
   every page, always (owner 2026-09-20).
 - What waits is the **activity**: on a page after the foundations, a learner whose
   foundations are not met sees a **Foundations card** in place of the page's activity. It
-  says what the page builds on, lists the three foundation pages with ✓ / not yet and a
+  says what the page builds on, lists the two foundation pages with ✓ / not yet and a
   one-tap OPEN for each, and offers the quick check. It never says "locked"; it says what
   the page needs and how to get there in one tap.
-- **Foundations met** = each of `instrument`, `sound`, `setting` is credited (stored, or met
+- **Foundations met** = each of `meet`, `setups` is credited (stored, or met
   in this session — so a guest and a preview are judged by what they did on screen), OR the
   quick check was passed in this practice run.
 - This is the study-method gate the owner asked for ("understanding … then finally the
   miking"), in the same family as the Dashboard power sequence; it is NOT a navigation lock.
 
 ### 3.4 The web preview harness
-`#labpreview/MikingLesson/M01?page=<id>` opens a page; `&unlock=1` (DEV + web only, never
-the production router) treats the quick check as passed so a capture can reach any stage.
+`#labpreview/MikingLesson/M01?page=<id>` opens a page (`instrument` / `sound` / `setting` open
+the page built from them); `&step=<n>`, `&variant=<id>`, `&setup=<n>` (STARTING SETUPS, 1-based);
+`&unlock=1` (DEV + web only, never the production router) treats the quick check as passed
+so a capture can reach any stage.
+
+### 3.5 Stored credit across the restructure (owner rule: credit is never removed)
+A record may still carry `instrument`, `sound`, `setting`. They are KEPT on the record (the
+sanitiser accepts them: `isStoredPage`) and READ as the page built from them
+(`creditedPages`): `instrument` or `sound` → MEET IT, `setting` → STARTING SETUPS, every other
+page → itself. Nothing is credited that the learner did not bank a source of; a complete
+nine-page lesson is a complete eight-page lesson; "n of 8" never passes 8; the only drop is
+where two banked pages became one (instrument + sound → MEET IT). A resume point on an old
+page resumes on the page built from it; a quick-check miss on an old page names the new one.
+
+### 3.1a The display height (owner answer A, 2026-10-06)
+On a phone the Miking glass is sized from the window: `clamp(round(window × 0.36), 250, 340)`
+for a window at least 760 pt tall (915 → 329, 844 → 304); below 760 the rack's own rule
+(250, a step smaller under 700). The Rack Unit still clamps it so the dock and the well keep
+their room, and a tablet keeps its larger share (`engine/rack/glassHeight.ts`, the rack's
+opt-in `stage.phoneHeight`). Rack Unit layout unchanged.
 
 ---
 
@@ -171,111 +229,77 @@ Kept from review C1 and tested (`test/mikingReviewFixes.test.ts`, `test/mikingJo
 
 Max new concepts = the most new ideas any ONE step of the stage introduces.
 
-### Stage 1 — ORIENT (`instrument`)
-- **Objective:** the learner can say what the instrument is, where it is used, what job it
-  does in the music, and name its parts — before any microphone.
-- **On screen:**
-  1. START (read): the journey map; NEW / EXPERIENCED; the quick check (experienced only).
-  2. WHAT IT IS (read): a large static drawing of the instrument, and four short facts
-     (what it is, where it is used, its job, its size range).
-  3. THE PARTS (rack): the instrument from the side and from above, cut open; tap a part (or
-     step through PART) to name it and read what it does; the front-head choice
-     (ported / intact).
-- **Interaction allowed:** tap, step, switch view, switch the front head. No mic. No task.
-- **Max new concepts:** 4 (step 2: what, where, job, size).
-- **Check:** none (exploration only). The facts come back in the quick check and in later
-  "from earlier" checks.
-- **Exit:** NEXT from THE PARTS banks the page.
+### Stage 1 — MEET IT — WHERE THE SOUND COMES FROM (`meet`)
+- **Objective:** the learner can say what the instrument is, name its parts, and say where
+  its sound leaves it — the places a mic can hear it best.
+- **On screen (composed: the lesson's orient page, then its how-it-sounds page trimmed):**
+  1. START (read): the standard line; the journey map; NEW / EXPERIENCED; the quick check
+     (experienced only). The opening paragraph is the same for every lesson
+     (`journey.journeyIntro`) and names the journey as it now is.
+  2. WHAT IT IS (read): a large drawing and the short facts.
+  3. THE PARTS (rack): tap a part to name it and read what it does and where sound leaves it.
+  4+. Where the sound leaves (the lesson's how-it-sounds steps that say it: the strike or
+     breath becoming sound, attack and body, the bell, the open holes, the soundboard …),
+     then the checks. Physics-only steps are not shown (`MEET_DROP`).
+- **Interaction:** tap, step, play once, switch view or variant. No mic.
+- **Check:** the how-it-sounds checks still about what is shown (2–3 per lesson).
 
-### Stage 2 — HOW IT SOUNDS (`sound`)
-- **Objective:** the learner can explain how a strike becomes sound and where it leaves the
-  instrument, and tell attack from body (resonance).
-- **On screen:**
-  1. STRIKE TO SOUND (rack): the instrument cut open, with a numbered EXPLANATORY OVERLAY —
-     1 the beater strikes the batter head; 2 the head is pushed in; 3 the air inside pushes
-     the front head out (and, with a port, some air leaves through it); 4 sound leaves from
-     both heads and the port. Head motion is drawn as a displaced outline in the ideal
-     membrane's lowest shape, drawn larger than life ("motion drawn larger"), with the rest
-     position still drawn. Controls:
-     STEP (1–4), PLAY ONCE (a staged reveal that stops at 4 — not a loop), FRONT HEAD.
-  2. THE HEAD'S SHAPES (rack): the batter head face-on, showing one vibration shape of an
-     IDEAL clamped membrane — J_n(j_ns·r/R)·cos(nθ), the Cymatics Lab's and the Drum Tuning
-     Lab's own Bessel tables — with its still lines drawn, + and − regions, its frequency
-     ratio to the lowest shape (1, 1.59, 2.14, 2.30, 2.65), and how much of the shape's peak
-     motion sits under the beater. Controls: SHAPE, STRIKE (centre, 1 in, 2 in above — the
-     usual strike range), SWING (drag the shape through its cycle by hand).
-  3. TWO HEADS, ONE AIR (rack): the two heads' lowest shape coupled through the enclosed air
-     (the two-headed-drum model the Drum Tuning Lab uses): "heads together" (the lower of the
-     pair; the air is carried along) and "heads opposed" (the higher; the air is squeezed).
-     SWING by hand.
-  4. ATTACK AND BODY (read): attack = the beater's brief contact, from the strike area; body
-     = the heads, air and shell ringing, leaving mostly through the front head and the port.
-     In WORDS (no curve, no invented time scale). Then the checks.
-- **Interaction allowed:** step, play once, pause, swing by hand, choose shape / strike /
-  front head. No mic.
-- **Max new concepts:** 4 (step 1).
-- **Check:** 3 items (where resonance leaves; why a centre strike drives only ring shapes;
-  why port air can pop a mic).
-- **Exit:** the strike sequence reached step 4 + the checks.
-- **Motion rules (charter §5, binding):** user-started; pausable; every state reachable by
-  STEP; PLAY ONCE becomes instant steps under reduced motion; nothing loops (D8 — no
-  `withRepeat`, `useFrameCallback`, `setInterval`); the overlay never claims speed or amount
-  ("the order of events, not their speed"); displacement is said once in plain words
-  ("motion drawn larger") and logged in the simplifications register.
+### Stage 2 — STARTING SETUPS (`setups`)
+- **Objective:** see where a mic actually goes on this instrument — several real setups —
+  before choosing or placing one; know what else reaches the mic and what to settle first.
+- **On screen (composed: the engine's setups steps, then the lesson's "before any mic"):**
+  1. SETUPS (rack): one setup at a time, drawn on the instrument: each mic at the lesson's
+     starting point with its stand / boom / clip (the collision model's mount, so nothing
+     floats and the stand stands on the floor; the cable leaves the mic's tail), its aim
+     (amber, dashed, arrowhead), its distance (white dimension and the number), its pickup
+     shape. SETUP steps through them; SETUPS names them; the drawing is framed to the
+     instrument plus the whole setup (`geometry/contentFrame.setupFrame`). Card: role, name,
+     mic type and pattern, START (the zone's own distance-and-aim words, or the distance in
+     words for a second mic with no zone), TENDS TO (one line).
+  2. WHAT ELSE THE MIC HEARS (read): the neighbours that reach the mic, what the mic and its
+     stand keep clear of, and ON A STAGE / IN A STUDIO — the old setting page's mic
+     decisions, said as decisions.
+  3. (an amplified source) MIC OR DI — the lesson's own signal-path step.
+  4. BEFORE ANY MIC (read): ask the player; hearing safety; the checks.
+- **Roles** (`engine/setups.ts`): ONE MIC = the zone the worked example reads; TWO MICS = the
+  lesson's two-mic pair (copy, else `setupPairs`); CLOSE · LIVE = a stage / clip-on / "close"
+  zone no farther from the sound than ONE MIC, else one clearly nearer; FARTHER BACK · STUDIO =
+  a room / studio zone farther away, else one clearly farther; `SETUP_PICKS` records where a
+  lesson's own words choose differently. A role with no zone is left out — nothing invented.
+- **A mic that would touch a part at its zone start** (only the piano's long dynamic under the
+  lid, four zone starts in all) is tilted clear about its front — 5° steps, up to 30° — so its
+  distance holds (owner answer B: the short-stick lid keeps ~15 cm); only if no tilt clears
+  it is it moved (`geometry/collision.nearestClear`).
+- **Credit:** every setup in the four roles looked at (`setupsSeen`) + the checks.
 
-### Stage 3 — THE SETTING (`setting`)
-- **Objective:** the learner knows where the instrument sits — its neighbours, the player's
-  space, what a stage adds (monitors, the audience side, the PA) and what a studio adds —
-  and what to do before any mic (ask the player, protect hearing).
-- **On screen:**
-  1. ON THE KIT (rack): a plan (from above) of the instrument with its neighbours and the
-     player's space; tap a neighbour to read what it means for a mic on this instrument
-     (spill, cable route, keep-out). A typical right-handed layout.
-  2. STAGE AND STUDIO (rack): the same plan with STAGE (the drummer's fill, a downstage
-     wedge, the audience side) or STUDIO (the room, no monitors) — the same fixed monitor
-     positions the ADVANCED stage uses, so the picture the learner meets later is familiar.
-  3. BEFORE ANY MIC (read): ask the player (head intact or ported, what the instrument should
-     do); hear it unamplified; hearing safety (85 dBA / 8 h, 3 dB exchange, as plain advice);
-     then the checks.
-- **Interaction allowed:** tap, step, switch stage/studio. No mic.
-- **Max new concepts:** 4 (step 2).
-- **Check:** 3 items (the intact-head options; a mic's max SPL is not a hearing limit; where
-  the player's monitor sits relative to the instrument).
-- **Exit:** the checks.
-
-### Stage 4 — MICROPHONES (`microphone`)
+### Stage 3 — MICROPHONES (`microphone`)
 - **Objective:** choose a mic by its properties for THIS source (pattern, power, size, mount).
-- **On screen:** PREDICT FIRST → COMPARE (rack: sweep a test source round the pattern) →
-  BY PROPERTY (read: three plain lines per type, spec details behind a toggle) → CHECK.
-- **Interaction:** sweep, choose type / pattern. Mic only on the polar display, not on the
-  instrument.
-- **Max new concepts:** 3.
-- **Check:** the existing four + one FROM EARLIER (stage 2: what a mic near the struck head
-  mostly hears).
-- **Exit:** the checks.
+- **On screen:** ON THE INSTRUMENT (rack: the chosen TYPE drawn where the lesson starts it —
+  the setup that uses it, else the first starting point that takes it — with its mount,
+  pickup shape and distance; PATTERN where the type offers more than one) → the lesson's own
+  microphone page: PREDICT FIRST → COMPARE (sweep a source round the pattern) → BY PROPERTY →
+  CHECK.
+- **Check:** the existing checks + one FROM EARLIER.
 
-### Stage 5 — PLACEMENT, guided then free (`placement`)
-- **Objective:** start from a recommended starting point, measured from its named head, aimed
-  at it, clear of every moving part — then move the mic and see what changes.
+### Stage 4 — PLACEMENT STUDIO (`placement`)
+- **Objective:** start from a setup, measured from its named surface, aimed, clear of every
+  moving part — then move the mic and see what changes.
 - **On screen:**
-  1. WATCH (rack, worked example): the mic is placed FOR the learner at a recommended
-     starting point; STEP walks through reading it — 1 where to begin; 2 the head it is
-     measured from; 3 the distance; 4 off the beater line; 5 the aim; 6 clearance.
-     The bezel cell for the current piece is the one the well explains.
-  2. PLACE (rack, faded): PREDICT FIRST, then the learner rests the mic in two different
-     recommended zones (drag, or POSITION / AIM with no drag; ZONE jumps).
+  1. WATCH (rack, worked example): a recommended starting point read piece by piece (its own
+     rig; it earns nothing).
+  2. PLACE (rack): the mic begins at the starting setup last looked at (START in the dock —
+     "Start from: …" — picks another; a two-mic setup starts from its first mic); the learner
+     rests it in two different zones and moves it.
   3. HOW ZONES WORK (read) → CHECK.
-- **Max new concepts:** 3 per step.
-- **Check:** the existing three + one FROM EARLIER (stage 3: the player's space).
-- **Exit:** two zones + the checks. The worked example earns nothing (its own rig).
+- **Exit:** two zones + the checks.
 
-### Stage 6 — ADVANCED (`context`, `twoMic`, `troubleshoot`)
+### Stage 5 — ADVANCED (`context`, `twoMic`, `troubleshoot`)
 Unchanged in substance (every review fix kept): studio vs live with a FIXED monitor and the
 learner aiming the mic; two mics with delay vs polarity and the ideal comb; symptoms. Each of
 `context` and `twoMic` opens with PREDICT FIRST (no worked example: the help has faded).
 `context` adds one FROM EARLIER check (stage 2: the front head and port radiate).
 
-### Stage 7 — PRACTICE / ASSESS (`practice`)
+### Stage 6 — PRACTICE / ASSESS (`practice`)
 The setup in order, the gain judgement, two briefs where several setups pass and the reasons
 are graded, the second-channel card, and the mixed review reaching back across the stages.
 
@@ -301,7 +325,10 @@ is in words.
 Never: a played sound; a frequency curve presented as data; motion that implies a speed or a
 level the model does not compute; a loop that runs by itself.
 
-## 8. THE SETTING for the other families
+## 8. THE SETTING for the other families (source data only since 2026-10-06)
+
+The setting data (`lesson.setting`) still feeds STARTING SETUPS' "what else the mic hears" step
+and its checks; its plans are no longer drawn. The rules below are kept for the data.
 
 Always a plan (from above) at the source's real scale, with neighbours as illustrated real
 objects (never boxes or circles), the player's space drawn as a keep-out, and STAGE / STUDIO
@@ -323,20 +350,24 @@ such internally (`prov`); nothing is tagged on screen (§12). Lab 1's drum lesso
 - `noun`: the instrument's short noun ("kick" / "kicks") for the path wording;
 - `diagnostic`: the 6 quick-check items (`covers` = the foundation page each one tests,
   `critical` for safety items);
-- pages for all nine ids, with credit lists that validate (`validateLesson`);
+- pages for the nine source ids (or `meet` / `setups` + the six), with credit lists that
+  validate (`validateLesson` checks both the written pages and the journey as served);
+- `setupPairs` only where a two-mic STARTING SETUP is not in `copy.twoMic` (logged);
 - `accuracyDetail`: the one "about these starting points" note behind the header's ⓘ.
 
-## 10. Tests that pin the journey (`test/mikingJourney.test.ts`)
+## 10. Tests that pin the journey (`test/mikingJourney.test.ts`, `test/mikingRestructure.test.ts`)
 
-- PAGE_IDS order puts the three foundations first and `practice` last (no `sources` page);
+- PAGE_IDS order puts the two foundations first and `practice` last (no `sources` page, no
+  `setting` page);
   every stage maps to pages that exist.
-- NEW path: no page with a placement/aiming/pairing task is open before ORIENT + HOW IT
-  SOUNDS + THE SETTING are met.
+- NEW path: no page with a placement/aiming/pairing task is open before MEET IT + STARTING
+  SETUPS are met; STARTING SETUPS draws mics but never lets one be moved.
 - The quick check: 6 items, all from foundation pages, at least one critical; pass needs
   ≥ 5 of 6 and every critical item; one attempt per run; a passed check opens the activities.
 - Skipping never inflates credit: recording a passed check leaves `done` untouched; lesson
   complete still needs every page.
-- ORIENT has no credited task; HOW IT SOUNDS and THE SETTING have checks; every page from
+- MEET IT and STARTING SETUPS are credited by their own live checks (STARTING SETUPS also by
+  looking at every setup); every page from
   MICROPHONES to ADVANCED carries a FROM EARLIER item from a foundation stage.
 - HOW IT SOUNDS: the membrane shapes are the Bessel-zero ratios; a centre strike drives only
   n = 0 shapes; no miking file is a loop host.
@@ -355,9 +386,13 @@ such internally (`prov`); nothing is tagged on screen (§12). Lab 1's drum lesso
 3. **Kit layout** — the neighbours' positions are a typical right-handed layout; left-handed
    players mirror it. A drummer's review of the plan is wanted.
 4. **Existing credit** — the lesson grew from 8 to 10 pages, then to 9 when the Sources page
-   left (2026-10-04). Credit already earned on the remaining pages stays; a stored Sources
-   credit (preview builds only — this branch is unpublished) no longer counts, because the
-   page no longer exists.
+   left (2026-10-04), then to 8 with the 2026-10-06 restructure. Credit on instrument / sound
+   / setting is kept and read as MEET IT / STARTING SETUPS (§3.5). A learner who had banked
+   only ORIENT now sees MEET IT credited (nothing is ever taken away) — say if MEET IT should
+   instead wait for its checks.
+5. **Variants with a single setup to look at** — 12 variants (e.g. the piano on the short
+   stick, the splash piggy-backed) have only ONE MIC among the four roles; every lesson has
+   at least two in some variant. Add researched pairs there if wanted.
 
 ## 12. The starting-points voice (owner ruling 2026-10-04 — every lesson)
 

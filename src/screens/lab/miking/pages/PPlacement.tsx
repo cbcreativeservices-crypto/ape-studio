@@ -176,7 +176,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
           {
             kind: 'options' as const,
             id: 'from',
-            label: 'START FROM',
+            label: 'START',
             valueLabel: fromNow ? ROLE_LABEL[fromNow.role].split(' ')[0] : 'CHOOSE',
             selectedId: fromShown,
             onSelect: (id: string) => {

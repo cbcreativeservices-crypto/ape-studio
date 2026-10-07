@@ -230,7 +230,6 @@ export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractiv
             <Note key={t.slice(0, 24)}>{t}</Note>
           ))}
           <Note>This lab never plays a sound and draws no frequency curve for the cymbal: how a real cymbal sounds depends on its alloy, weight, hammering and lathing, the stick and the player. The pictures show where the sound starts, where it leaves and when it arrives.</Note>
-          {!reached ? <Note tone="warn">The strike on step 1 has not reached its end yet — step it through to earn this page’s credit.</Note> : null}
           <ScenarioList items={lesson.scenarios.filter((q) => q.page === 'sound')} answers={answers} onAnswered={onAnswered} />
         </>
       ),

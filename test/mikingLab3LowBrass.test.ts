@@ -39,6 +39,7 @@ import { pipeLowestHz, pipeRatio, pipeShape, reflection, spreadHalfAngle, stillP
 import { A03_LESSON } from '../src/screens/lab/miking/lessons/a03Horn/lesson.ts';
 import { A04A_LESSON } from '../src/screens/lab/miking/lessons/a04aTuba/lesson.ts';
 import { A04B_LESSON } from '../src/screens/lab/miking/lessons/a04bEuphonium/lesson.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const LAB3: Lesson[] = [A03_LESSON, A04A_LESSON, A04B_LESSON];
 const len = (a: { x: number; y: number; z: number }) => Math.hypot(a.x, a.y, a.z);
@@ -117,9 +118,9 @@ describe('the air column and the bell (airColumn.ts)', () => {
 for (const lesson of LAB3) {
   describe(`${lesson.id} ${lesson.title}`, () => {
     const m = lesson.model;
-    it('validates, has the 9 pages and sits in Lab 3 (Winds)', () => {
+    it('validates, serves the 8 journey pages and sits in Lab 3 (Winds)', () => {
       assert.deepEqual(validateLesson(lesson, MIC_TYPES), []);
-      assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort());
+      assertJourneyPages(lesson);
       assert.equal(lesson.labId, 'winds');
       assert.ok(LESSONS.some((x) => x.id === lesson.id && x.labId === 'winds'));
       assert.ok(lessonsOf('winds').some((x) => x.id === lesson.id));

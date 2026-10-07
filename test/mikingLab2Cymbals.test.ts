@@ -43,6 +43,7 @@ import { KIT_PLACED_CYMBALS, CYMBAL_SWING } from '../src/screens/lab/miking/less
 import * as FX from '../src/screens/lab/miking/lessons/shared/cymbals/cymbalFx.ts';
 import { BRAND_NAMES, BANNED_FORMS } from './mikingLearnerText.test.ts';
 import { RESEARCH_NAMES, itemRules, learnerStrings } from './_mikingItemRules.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -86,9 +87,9 @@ describe('each lesson validates and its zones are reachable', () => {
   for (const id of IDS) {
     const lesson = L(id);
     const m = lesson.model;
-    it(`${id}: validateLesson is clean; nine pages`, () => {
+    it(`${id}: validateLesson is clean; the 8 journey pages`, () => {
       assert.deepEqual(validateLesson(lesson, MIC_TYPES), []);
-      for (const p of PAGE_IDS) assert.ok(lesson.pages[p]?.title, p);
+      assertJourneyPages(lesson);
     });
     it(`${id}: every zone start is clear and inside its zone, for every setup and mic it allows`, () => {
       for (const z of lesson.zones) {

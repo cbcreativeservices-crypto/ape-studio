@@ -35,6 +35,7 @@ import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import { LabHeader } from '../kit/LabNavBar';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { PAGE_IDS } from './engine/model/types.ts';
+import { creditedCount } from './engine/progress/creditMap.ts';
 import { lessonProgress, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
 import { lessonsOf, readyLabs, type MikingLabMeta } from './data/registry';
 
@@ -64,7 +65,10 @@ export function MikingHubScreen() {
             <GlassPanel style={[styles.tileGrid, !tablet && styles.tilePanelPhone]}>
               {lessonsOf(lab.id).map((ls) => {
                 const lp = lessonProgress(progress, ls.id);
-                const n = PAGE_IDS.filter((p) => lp.done.includes(p)).length;
+                // Read through the credit map: a record from before the 2026-10-06
+                // restructure counts its instrument / sound / setting as the page
+                // built from them (never more than the eight pages).
+                const n = creditedCount(lp.done);
                 const all = n === PAGE_IDS.length;
                 return (
                   <GlassTile

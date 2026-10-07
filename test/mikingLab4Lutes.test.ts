@@ -45,6 +45,8 @@ import { answerWord, etRatio, inStep } from '../src/screens/lab/miking/lessons/s
 import { C13_LESSON } from '../src/screens/lab/miking/lessons/c13Oud/lesson.ts';
 import { C14_LESSON } from '../src/screens/lab/miking/lessons/c14Sitar/lesson.ts';
 import { C15_LESSON } from '../src/screens/lab/miking/lessons/c15Veena/lesson.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
+import { pageOf } from '../src/screens/lab/miking/engine/restructure.ts';
 
 const LUTES = [C13_LESSON, C14_LESSON, C15_LESSON];
 
@@ -255,7 +257,7 @@ function copyIds(lesson: Lesson) {
     for (const id of C.context.shield) assert.ok(lesson.model.parts.some((q) => q.id === id), id);
     assert.ok(C.context.shield.length >= 3, 'the body shields the path');
     assert.notEqual(C.words.instrument, 'drum');
-    for (const id of PAGE_IDS) for (const sid of lesson.pages[id].credit.scenarios) assert.ok(cards.has(sid) || lesson.orderTasks.some((t) => t.id === sid) || lesson.setupTasks.some((t) => t.id === sid), `${id}: ${sid}`);
+    for (const id of PAGE_IDS) for (const sid of pageOf(lesson, id).credit.scenarios) assert.ok(cards.has(sid) || lesson.orderTasks.some((t) => t.id === sid) || lesson.setupTasks.some((t) => t.id === sid), `${id}: ${sid}`);
   });
   it('the monitor can sit in a supercardioid’s null by aim alone, and does not at the start; the front sources cannot', () => {
     const X = copyOf(lesson).context;
@@ -312,7 +314,7 @@ function copyIds(lesson: Lesson) {
 for (const lesson of LUTES) {
   describe(`${lesson.id} ${lesson.title} validates`, () => {
     it('validateLesson returns no problems', () => assert.deepEqual(validateLesson(lesson, MIC_TYPES), []));
-    it('the 9 pages are present', () => assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort()));
+    it('its written pages serve the 8 journey pages', () => assertJourneyPages(lesson));
     it('it is registered in Lab 4 (strings) and served', () => {
       assert.ok(LESSONS.some((l) => l.id === lesson.id && l.labId === 'strings' && l.status === 'ready'));
       assert.equal(lessonById(lesson.id), lesson);

@@ -437,7 +437,7 @@ type PageFn = (p: PageProps) => ReactNode;
 const pin = (id: SourcePageId, v?: string): PageFn =>
   function OrganVariantPage(p: PageProps) {
     const vv = v ?? p.variant;
-    const P = base[id];
+    const P = base[id] as PageFn;
     const ctx: VariantCtx = { variant: vv, setVariant: p.setVariant, options: v ? [] : p.lesson.model.variants.map((q) => ({ id: q.id, label: q.label, blurb: q.blurb })), key: 'ROOM' };
     return (
       <VariantContext.Provider value={ctx}>

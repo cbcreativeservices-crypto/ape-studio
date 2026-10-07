@@ -113,7 +113,7 @@ export function PMicOnIt({ lesson, art, variant, startFrom }: PageProps) {
       },
       well: (
         <>
-          <Landing looking={`${t.label} · ${PATTERN_LABELS[pat] ?? pat}`} prompt="Choose a TYPE: each one is drawn where this lesson starts it, with its mount, its pickup shape and its distance." />
+          <Landing looking={micWords(typeId, pat)} prompt="Choose a TYPE: each one is drawn where this lesson starts it, with its mount, its pickup shape and its distance." />
           <Card>
             <Point title={t.label.toUpperCase()}>{t.blurb}</Point>
             <Text style={styles.line}>{pl.power}</Text>

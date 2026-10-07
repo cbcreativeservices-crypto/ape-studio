@@ -690,7 +690,6 @@ export function makeStringSoundPage(built: BuiltGuitarModel, opts: { membrane?: 
               <Point title="BODY">{S.body}</Point>
             </Card>
             <Note>{C.sound.silentNote}</Note>
-            {!reached ? <Note tone="warn">The pluck sequence on step 1 has not reached its end yet — step it through to earn this page’s credit.</Note> : null}
             <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
           </>
         ),

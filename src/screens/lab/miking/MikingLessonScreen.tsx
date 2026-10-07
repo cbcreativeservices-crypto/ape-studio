@@ -1,6 +1,6 @@
 /**
  * MikingLessonScreen — route `MikingLesson { id }` (blueprint §7, §8). ONE
- * lesson, nine pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md),
+ * lesson, eight pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md),
  * each a run of steps on the shared lab strip in sub-step mode (the Drum
  * Tuning host shape, DrumTuningLabScreen.tsx):
  *
@@ -22,7 +22,7 @@
  *
  * THE JOURNEY (LESSON_JOURNEY §2–§3): the learner's path (NEW / EXPERIENCED)
  * and this run's quick check live on the progress record; the FOUNDATIONS
- * (orient, how it sounds, the setting) are "met" from stored credit OR from
+ * (MEET IT, STARTING SETUPS) are "met" from stored credit OR from
  * what was met on screen this session (so a guest and a preview are judged
  * by what they did). Until they are met — or the quick check is passed — a
  * later page shows the Foundations card in place of its ACTIVITY; NEXT,
@@ -42,13 +42,16 @@ import { persistAllowed } from '../../../features/commercial/tier';
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
-import { PAGE_IDS, type Lesson, type PageId, type VariantId } from './engine/model/types.ts';
+import { PAGE_IDS, type Lesson, type PageId, type SourcePageId, type VariantId } from './engine/model/types.ts';
 import { StepHostContext, type StepHost } from './engine/steps';
-import { TakeawayCard } from './engine/kit';
+import { StandardLine, TakeawayCard } from './engine/kit';
 import { bankPage, lessonProgress, recordAnswer, recordInteractive, recordPath, recordPlace, recordQuickCheck, clearMikingPracticeRun, setMikingSaveBlocked, useMikingHydrated, useMikingProgress, useMikingUnreadable } from './engine/progress/mikingProgress';
 import { banksOnNext, pageComplete } from './engine/progress/credit.ts';
+import { creditedPages } from './engine/progress/creditMap.ts';
 import { lessonById } from './data/lessons';
-import { isFoundation, pageGate, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
+import { isFoundation, journeyPageOf, pageGate, STANDARD_LINE, STANDARD_LINE_PAGES, type LearnerPath, type QuickCheckResult } from './engine/journey.ts';
+import { meetKeep, pageOf, restructureLesson, setupsKeep } from './engine/restructure.ts';
+import { ComposedPage, type PagePart } from './engine/compose';
 import { FoundationsCard, type JourneyProps } from './engine/journeyKit';
 import { PageSteps } from './engine/steps';
 import { PSound } from './pages/PSound';
@@ -58,12 +61,19 @@ import type { LessonArt } from './engine/scene/sceneTypes.ts';
 import type { PageProps } from './pages/pageTypes';
 import { PInstrument } from './pages/PInstrument';
 import { PMicrophone } from './pages/PMicrophone';
+import { PMicOnIt } from './pages/PMicOnIt';
+import { PSetups } from './pages/PSetups';
 import { PPlacement } from './pages/PPlacement';
 import { PContext } from './pages/PContext';
 import { PTwoMic } from './pages/PTwoMic';
 import { PPractice, PTroubleshoot } from './pages/PReadPages';
 
-const SHARED_PAGES: Record<PageId, (p: PageProps) => ReactNode> = {
+type PageFn = (p: PageProps) => ReactNode;
+
+/** The shared page for every id a lesson's DATA is written for: the journey
+ *  pages and the three source pages MEET IT and STARTING SETUPS are built
+ *  from (engine/restructure.ts). */
+const SHARED_PAGES: Record<Exclude<SourcePageId, 'meet' | 'setups'>, PageFn> = {
   instrument: PInstrument,
   sound: PSound,
   setting: PSetting,
@@ -75,8 +85,45 @@ const SHARED_PAGES: Record<PageId, (p: PageProps) => ReactNode> = {
   practice: PPractice,
 };
 
-/** Steps per page (the strip's count before a page reports its titles). */
-const STEP_COUNTS: Record<PageId, number> = { instrument: 3, sound: 4, setting: 3, microphone: 3, placement: 4, context: 3, twoMic: 3, troubleshoot: 1, practice: 3 };
+/** Steps per source page (the strip's count before a page reports its
+ *  titles; a composed page counts its parts — an over-count is harmless,
+ *  the step is clamped once the titles arrive). */
+const STEP_COUNTS: Record<Exclude<SourcePageId, 'meet' | 'setups'>, number> = { instrument: 3, sound: 4, setting: 3, microphone: 3, placement: 4, context: 3, twoMic: 3, troubleshoot: 1, practice: 3 };
+/** The engine's own steps on a composed page: STARTING SETUPS (the setups,
+ *  what else the mic hears), MICROPHONES (the mic on the instrument). */
+const OWN_STEPS = { setups: 2, onit: 1 } as const;
+
+/** The journey's page components for a lesson's art: its own page for an id
+ *  (art.pages), else the shared one; MEET IT, STARTING SETUPS and
+ *  MICROPHONES composed from their parts (engine/compose.tsx). */
+export function journeyPages(art: LessonArt): Record<PageId, PageFn> {
+  const own = (art.pages ?? {}) as Partial<Record<SourcePageId, PageFn>>;
+  const src = (id: Exclude<SourcePageId, 'meet' | 'setups'>): PageFn => own[id] ?? SHARED_PAGES[id];
+  const compose = (name: string, parts: readonly PagePart[]): PageFn => {
+    const Composed = (p: PageProps) => <ComposedPage parts={parts} props={p} />;
+    Composed.displayName = name;
+    return Composed;
+  };
+  return {
+    meet: own.meet ?? compose('MeetIt', [{ key: 'instrument', Page: src('instrument') }, { key: 'sound', Page: src('sound'), keep: meetKeep }]),
+    setups: own.setups ?? compose('StartingSetups', [{ key: 'setups', Page: PSetups }, { key: 'setting', Page: src('setting'), keep: setupsKeep }]),
+    microphone: compose('Microphones', [{ key: 'onit', Page: PMicOnIt }, { key: 'microphone', Page: src('microphone') }]),
+    placement: src('placement'),
+    context: src('context'),
+    twoMic: src('twoMic'),
+    troubleshoot: src('troubleshoot'),
+    practice: src('practice'),
+  };
+}
+
+/** Steps per journey page before it reports (see STEP_COUNTS). */
+export function journeyStepCount(art: LessonArt, id: PageId): number {
+  const n = (s: Exclude<SourcePageId, 'meet' | 'setups'>) => art.stepCounts?.[s] ?? STEP_COUNTS[s];
+  if (id === 'meet') return art.stepCounts?.meet ?? n('instrument') + n('sound');
+  if (id === 'setups') return art.stepCounts?.setups ?? OWN_STEPS.setups + n('setting');
+  if (id === 'microphone') return OWN_STEPS.onit + n('microphone');
+  return n(id);
+}
 
 
 export function MikingLessonScreen() {
@@ -108,12 +155,22 @@ function devUnlock(): boolean {
   return __DEV__ && Platform.OS === 'web' && typeof window !== 'undefined' && /[?&]unlock=1(&|$)/.test(window.location.search);
 }
 
+/** A page id from a route or the harness: a journey page, or one of the
+ *  three source pages, read as the page built from it. */
+function asJourneyPage(x: string | undefined): PageId | null {
+  if (!x) return null;
+  if ((PAGE_IDS as readonly string[]).includes(x)) return x as PageId;
+  if (x === 'instrument' || x === 'sound' || x === 'setting') return journeyPageOf(x);
+  return null;
+}
+
 function devStartPage(fromParams?: string): PageId | null {
-  if (fromParams && (PAGE_IDS as readonly string[]).includes(fromParams)) return fromParams as PageId;
+  const p = asJourneyPage(fromParams);
+  if (p) return p;
   // The web preview harness only (`#labpreview/MikingLesson/M01` + `?page=`).
   if (__DEV__ && Platform.OS === 'web' && typeof window !== 'undefined') {
     const m = /[?&]page=([A-Za-z]+)/.exec(window.location.search);
-    if (m && (PAGE_IDS as readonly string[]).includes(m[1])) return m[1] as PageId;
+    return asJourneyPage(m?.[1]);
   }
   return null;
 }
@@ -126,7 +183,10 @@ function devParam(key: 'step' | 'variant'): string | null {
   return m ? m[1] : null;
 }
 
-function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt; startPage?: string }) {
+function LessonHost({ lesson: written, art, startPage }: { lesson: Lesson; art: LessonArt; startPage?: string }) {
+  // The lesson as the eight-page journey serves it (MEET IT and STARTING
+  // SETUPS built from the pages it was written in; engine/restructure.ts).
+  const lesson = useMemo(() => restructureLesson(written), [written]);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const tier = useTier();
@@ -139,7 +199,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   const unreadable = useMikingUnreadable();
   const lp = lessonProgress(progress, lesson.id);
   // A lesson family may supply its own page for an id (art.pages); the rest are shared.
-  const PAGE_COMPONENTS = useMemo(() => ({ ...SHARED_PAGES, ...(art.pages as Partial<Record<PageId, (p: PageProps) => ReactNode>> | undefined) }), [art]);
+  const PAGE_COMPONENTS = useMemo(() => journeyPages(art), [art]);
   // What happened ON SCREEN this session, kept beside the record: a preview
   // writes nothing, yet the journey must still follow what the learner did.
   const [localAnswers, setLocalAnswers] = useState<Record<string, boolean>>({});
@@ -149,8 +209,14 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   const [localQuick, setLocalQuick] = useState<QuickCheckResult | null>(null);
   const answers = useMemo(() => ({ ...localAnswers, ...lp.answers }), [localAnswers, lp.answers]);
   const interactiveDone = useMemo(() => new Set([...lp.interactive, ...localInteractive]), [lp.interactive, localInteractive]);
-  const doneIds = useMemo(() => new Set<string>(lp.done), [lp.done]);
-  const met = useMemo(() => new Set<PageId>([...lp.done, ...metLocal]), [lp.done, metLocal]);
+  // Stored credit, read as journey pages: a record from before the
+  // 2026-10-06 restructure keeps instrument / sound / setting, which credit
+  // the page built from them (engine/progress/creditMap.ts). Never erased.
+  const credited = useMemo(() => creditedPages(lp.done), [lp.done]);
+  const doneIds = useMemo(() => new Set<string>(credited), [credited]);
+  const met = useMemo(() => new Set<PageId>([...credited, ...metLocal]), [credited, metLocal]);
+  // The STARTING SETUP last looked at: the Placement Studio starts from it.
+  const [startFrom, setStartFrom] = useState<string | null>(null);
   const path: LearnerPath | null = localPath ?? lp.path ?? null;
   const quick: QuickCheckResult | null = lp.quick ?? localQuick;
   const unlocked = useMemo(() => devUnlock(), []);
@@ -167,7 +233,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
     return v && lesson.model.variants.some((x) => x.id === v) ? v : lesson.model.defaultVariant;
   });
   const page = PAGE_IDS[pageIdx];
-  const content = lesson.pages[page];
+  const content = pageOf(lesson, page);
 
   // RESUME once, for a learner whose record is theirs to restore (never a
   // guest or a preview), and never over a move already made.
@@ -232,7 +298,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   }, [lesson, done, complete, page, markMet]);
 
   // A family's own pages (the hand drums, the guitars) may have their own step counts.
-  const countOf = (id: PageId) => art.stepCounts?.[id] ?? STEP_COUNTS[id];
+  const countOf = (id: PageId) => journeyStepCount(art, id);
   const stepCount = stepTitles.length || countOf(page);
   const stepIdx = Math.min(step, Math.max(0, stepCount - 1));
   const sub = useMemo(
@@ -243,7 +309,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [stepCount, stepIdx, stepTitles, setStep, goPage, pageIdx, art],
   );
-  const units = useMemo(() => PAGE_IDS.map((id) => ({ id, title: lesson.pages[id].title, done: doneIds.has(id) })), [lesson, doneIds]);
+  const units = useMemo(() => PAGE_IDS.map((id) => ({ id, title: pageOf(lesson, id).title, done: doneIds.has(id) })), [lesson, doneIds]);
 
   const doReset = () =>
     void clearMikingPracticeRun(lesson.id).then(() => {
@@ -277,7 +343,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
 
   // A review hint per page that never touches credit (review m7).
   const firstTry = (id: PageId) => {
-    const ids = lesson.pages[id].credit.scenarios.filter((q) => q in answers);
+    const ids = pageOf(lesson, id).credit.scenarios.filter((q) => q in answers);
     if (!ids.length) return '';
     const right = ids.filter((q) => answers[q]).length;
     return ` First try: ${right} of ${ids.length} right${right < ids.length ? ' — worth a second look' : ''}.`;
@@ -286,10 +352,13 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
   const answered = c.scenarios.filter((id) => id in answers).length;
   const standing = [c.scenarios.length ? `${answered} of ${c.scenarios.length} checks right` : '', c.interactive ? `activity ${interactiveDone.has(c.interactive) ? 'done' : 'not yet'}` : ''].filter(Boolean).join(', ');
   const head = (
-    <Text style={styles.objective}>
-      <Text style={styles.objectiveKey}>{`Page ${pageIdx + 1} goal: `}</Text>
-      {content.goal}
-    </Text>
+    <>
+      <Text style={styles.objective}>
+        <Text style={styles.objectiveKey}>{`Page ${pageIdx + 1} goal: `}</Text>
+        {content.goal}
+      </Text>
+      {STANDARD_LINE_PAGES.includes(page) ? <StandardLine text={STANDARD_LINE} /> : null}
+    </>
   );
   const tail = (
     <>
@@ -321,7 +390,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
     met,
     quickPassed,
     goPage: (id, atStep = 0) => goPage(PAGE_IDS.indexOf(id), atStep),
-    titleOf: (id) => lesson.pages[id].title,
+    titleOf: (id) => pageOf(lesson, id).title,
     noun: lesson.noun,
     here: page,
   };
@@ -344,7 +413,7 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
         {ending ? (
           <LabEndScreen
             labTitle={`Miking: ${lesson.title}`}
-            units={PAGE_IDS.map((id) => ({ id, label: lesson.pages[id].title, detail: `${lesson.pages[id].credit.note}${firstTry(id)}${quick?.pass && isFoundation(id) && !doneIds.has(id) ? ' Skipped with the quick check — open it to earn its credit.' : ''}` }))}
+            units={PAGE_IDS.map((id) => ({ id, label: pageOf(lesson, id).title, detail: `${pageOf(lesson, id).credit.note}${firstTry(id)}${quick?.pass && isFoundation(id) && !doneIds.has(id) ? ' Skipped with the quick check — open it to earn its credit.' : ''}` }))}
             cleared={doneIds}
             unreadable={unreadable}
             mode="progress"
@@ -376,6 +445,8 @@ function LessonHost({ lesson, art, startPage }: { lesson: Lesson; art: LessonArt
               canSave={canSave}
               preview={preview}
               journey={journey}
+              startFrom={startFrom}
+              chooseStart={setStartFrom}
             />
           </StepHostContext.Provider>
         </View>

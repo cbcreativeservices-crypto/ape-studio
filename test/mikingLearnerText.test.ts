@@ -27,7 +27,9 @@ import { describe, it } from 'node:test';
 import { lessonById } from '../src/screens/lab/miking/data/lessons.ts';
 import { LESSONS, MIKING_LABS } from '../src/screens/lab/miking/data/registry.ts';
 import { MIC_TYPES } from '../src/screens/lab/miking/data/micTypes.ts';
-import { STAGES } from '../src/screens/lab/miking/engine/journey.ts';
+import { STAGES, STANDARD_LINE, journeyIntro } from '../src/screens/lab/miking/engine/journey.ts';
+import { restructureLesson } from '../src/screens/lab/miking/engine/restructure.ts';
+import { startingSetups } from '../src/screens/lab/miking/engine/setups.ts';
 import { PAGE_IDS } from '../src/screens/lab/miking/engine/model/types.ts';
 
 /** Brands, models and named authorities that are never shown to a learner
@@ -150,7 +152,7 @@ function offences(items: { path: string; text: string }[]): string[] {
 const ROOT = process.cwd();
 const MIKING = join(ROOT, 'src/screens/lab/miking');
 /** .ts files that BUILD on-screen words (the rest of the .ts are data — walked — or pure maths). */
-const TS_PRESENTATION = ['engine/journey.ts', 'engine/scene/readoutText.ts', 'engine/scene/sceneWords.ts', 'engine/a11y/describe.ts', 'engine/model/units.ts', 'engine/model/copy.ts', 'engine/scene/placementDock.ts'];
+const TS_PRESENTATION = ['engine/journey.ts', 'engine/restructure.ts', 'engine/setups.ts', 'engine/scene/readoutText.ts', 'engine/scene/sceneWords.ts', 'engine/a11y/describe.ts', 'engine/model/units.ts', 'engine/model/copy.ts', 'engine/scene/placementDock.ts'];
 const stripComments = (s: string) => s.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1');
 
 function tsxFiles(dir: string): string[] {
@@ -185,6 +187,20 @@ describe('learner-facing text names no source and carries no badge (owner ruling
       assert.deepEqual(offences(items), []);
     });
   }
+
+  it('every STARTING SETUP, the served MEET IT and STARTING SETUPS pages and the shared lines are clean (restructure 2026-10-06)', () => {
+    const items: { path: string; text: string }[] = [];
+    for (const meta of LESSONS) {
+      const lesson = lessonById(meta.id)!;
+      const served = restructureLesson(lesson);
+      strings({ meet: served.pages.meet, setups: served.pages.setups, diagnostic: served.diagnostic }, `${meta.id}.served`, items);
+      for (const v of lesson.model.variants) for (const s of startingSetups(lesson, v.id, MIC_TYPES)) strings({ title: s.title, line: s.line }, `${meta.id}.${v.id}.${s.id}`, items);
+      strings(journeyIntro(lesson.noun), `${meta.id}.intro`, items);
+    }
+    strings(STANDARD_LINE, 'STANDARD_LINE', items);
+    assert.ok(items.length > 500, `${items.length} strings`);
+    assert.deepEqual(offences(items), []);
+  });
 
   it('the mic types, the journey stages and the registry rows are clean', () => {
     const items: { path: string; text: string }[] = [];
