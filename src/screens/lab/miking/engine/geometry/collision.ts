@@ -135,6 +135,19 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
   const b = sub(p, scale(aim, Math.max(r, L - r)));
   const tail = sub(p, scale(aim, L));
   const out: Seg[] = [{ a, b, r, piece: 'body' }];
+  if (body.pop) {
+    // A POP SCREEN (Lab 5): its disc `gap` ahead of the front, square to the
+    // axis, as two crossed diameters — so the screen, not only the mic, keeps
+    // clear of the singer. Two unit vectors across the aim (no cross product
+    // in the engine's frame convention: built from components).
+    const c = add(p, scale(aim, body.pop.gap));
+    const hz = Math.sqrt(aim.x * aim.x + aim.z * aim.z);
+    const u1 = hz > 1e-6 ? { x: -aim.z / hz, y: 0, z: aim.x / hz } : { x: 1, y: 0, z: 0 };
+    const u2 = { x: aim.y * u1.z - aim.z * u1.y, y: aim.z * u1.x - aim.x * u1.z, z: aim.x * u1.y - aim.y * u1.x };
+    const pr = body.pop.r;
+    out.push({ a: sub(c, scale(u1, pr)), b: add(c, scale(u1, pr)), r: 5, piece: 'body' });
+    out.push({ a: sub(c, scale(u2, pr)), b: add(c, scale(u2, pr)), r: 5, piece: 'body' });
+  }
   if (body.mount === 'clip') {
     // A rim clamp: the body, and an arm from its tail to the nearest hoop
     // point (no rims on the scene: the body alone).

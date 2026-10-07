@@ -429,10 +429,22 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
   });
   const ringR = useDerivedValue(() => RING_R_PX / xf.value.s);
   const ringW = useDerivedValue(() => 2.5 / xf.value.s);
+  // A pop screen's gooseneck leaves the hoop on its LOWER side (side view) —
+  // which local side that is depends on the mic's turn on the glass.
+  const popFlip = useDerivedValue(() => {
+    const p = pose.value;
+    const aim = aimVec(p.az, p.el);
+    const bx = -aim.x;
+    const by = view === 'side' ? -aim.y : -aim.z;
+    const ang = Math.atan2(by, bx) - Math.PI / 2;
+    return [{ scaleX: Math.sin(ang) <= 0 ? 1 : -1 }];
+  });
   return (
     <Group>
       <Group transform={transform}>
+        {t.pop ? <PopGooseneck pop={t.pop} len={len} flip={popFlip} /> : null}
         <MikingMicArt art={t.art} r={r} len={len} cross={cross} />
+        {t.pop ? <PopHoop pop={t.pop} /> : null}
         {/* Collision: a red outline + the scene's ✕ label (colour never alone). */}
         <Path path={outlineOf(len, cross)} style="stroke" strokeWidth={5} color={RED} opacity={redOpacity} />
       </Group>
@@ -443,6 +455,72 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf }: { pose: SharedValu
           <Circle c={ring} r={ringR} style="stroke" strokeWidth={ringW} color={AMBER} opacity={0.9} />
         </>
       ) : null}
+    </Group>
+  );
+}
+
+/**
+ * A POP SCREEN (Lab 5; types.ts PopScreen), in the mic's local frame (front
+ * at the origin, the body toward +y): the hoop `gap` mm ahead of the front,
+ * seen edge-on as a thin ellipse (its tilt off parallel), a fine mesh across
+ * it; and the gooseneck from the hoop's rim back to its clamp on the stand's
+ * boom just behind the mic's tail — the same mount the collision model uses,
+ * so the screen never floats. Drawn under the scene's one transform.
+ */
+function PopHoop({ pop }: { pop: NonNullable<ReturnType<typeof micType>['pop']> }) {
+  const g = pop.gap.mm;
+  const R = pop.r.mm;
+  const ry = Math.max(7, R * Math.sin((pop.tilt.mm * Math.PI) / 180));
+  const hoop = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.addOval(Skia.XYWHRect(-R, -g - ry, 2 * R, 2 * ry));
+    return p;
+  }, [g, R, ry]);
+  const mesh = useMemo(() => {
+    const p = Skia.Path.Make();
+    for (let x = -R + 9; x < R; x += 9) {
+      const h = ry * Math.sqrt(Math.max(0, 1 - (x / R) * (x / R)));
+      p.moveTo(x, -g - h);
+      p.lineTo(x, -g + h);
+    }
+    return p;
+  }, [g, R, ry]);
+  return (
+    <Group>
+      <Path path={hoop} color="#0b0c10" opacity={0.55} />
+      <Group clip={hoop}>
+        <Path path={mesh} style="stroke" strokeWidth={1.1} color="#9aa0ab" opacity={0.35} />
+      </Group>
+      <Path path={hoop} style="stroke" strokeWidth={6} color="#08090b" />
+      <Path path={hoop} style="stroke" strokeWidth={3.6} color="#3d414b" />
+      <Group transform={[{ translateX: -1.2 }, { translateY: -1.6 }]}>
+        <Path path={hoop} style="stroke" strokeWidth={1.2} color="#d4d8e0" opacity={0.45} />
+      </Group>
+    </Group>
+  );
+}
+
+function PopGooseneck({ pop, len, flip }: { pop: NonNullable<ReturnType<typeof micType>['pop']>; len: number; flip: SharedValue<{ scaleX: number }[]> }) {
+  const g = pop.gap.mm;
+  const R = pop.r.mm;
+  const neck = useMemo(() => {
+    const p = Skia.Path.Make();
+    // From the hoop's rim (local −x) round the side of the mic to a clamp on
+    // the boom, just behind the tail.
+    p.moveTo(-R * 0.92, -g + 3);
+    p.cubicTo(-R * 1.25, -g * 0.35, -R * 1.05, len * 0.55, -14, len + 26);
+    return p;
+  }, [g, R, len]);
+  return (
+    <Group transform={flip}>
+      <Path path={neck} style="stroke" strokeWidth={8} strokeCap="round" color="#0b0c0f" />
+      <Path path={neck} style="stroke" strokeWidth={5} strokeCap="round" color="#4d515b" />
+      <Group transform={[{ translateX: -1 }, { translateY: -1.4 }]}>
+        <Path path={neck} style="stroke" strokeWidth={1.4} strokeCap="round" color="#d4d8e0" opacity={0.45} />
+      </Group>
+      {/* The clamp on the boom. */}
+      <Circle cx={-14} cy={len + 26} r={9} color="#16171b" />
+      <Circle cx={-14} cy={len + 26} r={9} style="stroke" strokeWidth={2} color="#8a8f99" />
     </Group>
   );
 }

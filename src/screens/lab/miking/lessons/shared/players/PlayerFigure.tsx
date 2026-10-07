@@ -954,15 +954,19 @@ export function PlayerBehind({ pose, dim = 1, part = 'all' }: { pose: PlayerPose
   );
 }
 
-/** The player IN FRONT of the instrument: the near arm and the hands. */
-export function PlayerInFront({ pose, dim = 1 }: { pose: PlayerPose; dim?: number }) {
+/** The player IN FRONT of the instrument: the near arm and the hands.
+ *  `hands={false}` (added 2026-10-07 for a standing singer seen from above,
+ *  arms hanging: the hands are under the shoulders, out of sight) draws the
+ *  near arm only. */
+export function PlayerInFront({ pose, dim = 1, hands = true }: { pose: PlayerPose; dim?: number; hands?: boolean }) {
   const b = built(pose);
+  const front = hands ? b.front : b.front.filter((m) => m.tone !== 'skin');
   return (
     <Group opacity={dim} transform={aboveTurn(pose)}>
       {b.bars.map((q, i) => (
         <Bar key={`bar${i}`} b={q} />
       ))}
-      {b.front.map((m, i) => (
+      {front.map((m, i) => (
         <Group key={`f${i}`}>
           {i === 0 ? (
             // The near arm's soft shadow on the instrument under it.
@@ -979,8 +983,8 @@ export function PlayerInFront({ pose, dim = 1 }: { pose: PlayerPose; dim?: numbe
         </Group>
       ))}
       <Path path={b.shirtLinesFront} style="stroke" strokeWidth={2.4} strokeCap="round" color={SHIRT_LINE} opacity={0.9} />
-      <Path path={b.handLines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} />
-      {b.pick ? (
+      {hands ? <Path path={b.handLines} style="stroke" strokeWidth={1.8} strokeCap="round" color={FIGURE_TONES.skin.edge} opacity={0.7} /> : null}
+      {hands && b.pick ? (
         <Path path={b.pick}>
           <LinearGradient start={vec(b.pick.getBounds().x, b.pick.getBounds().y)} end={vec(b.pick.getBounds().x + 20, b.pick.getBounds().y + 20)} colors={PICK} />
         </Path>

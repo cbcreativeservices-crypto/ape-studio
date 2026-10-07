@@ -56,8 +56,13 @@ export function SetupStage({ lesson, art, setup, view, setView, w, h, label }: {
     }
     const v = viewsOf(model, rig.variant);
     const out: { side?: ViewBox; top?: ViewBox } = {};
-    if (v.side) out.side = setupFrame(model, rig.variant, 'side', pts);
-    if (v.top) out.top = setupFrame(model, rig.variant, 'top', pts);
+    // A model may cap how far the drawing grows (InstrumentModel.setupFrameMax).
+    const cap = (f: ViewBox | undefined, view: 'side' | 'top'): ViewBox | undefined => {
+      const m = model.setupFrameMax?.[view];
+      return f && m ? { u0: Math.max(f.u0, m.u0), u1: Math.min(f.u1, m.u1), v0: Math.max(f.v0, m.v0), v1: Math.min(f.v1, m.v1) } : f;
+    };
+    if (v.side) out.side = cap(setupFrame(model, rig.variant, 'side', pts), 'side');
+    if (v.top) out.top = cap(setupFrame(model, rig.variant, 'top', pts), 'top');
     // Side and top share x (the full-screen pair lines up on one scale).
     if (out.side && out.top) {
       const u0 = Math.min(out.side.u0, out.top.u0);
