@@ -156,3 +156,10 @@ import { E13_LESSON } from '../lessons/e13MixedEnsemble/lesson.ts';
 LESSON_CONTENT.E13 = E13_LESSON;
 import { E11_LESSON } from '../lessons/e11StringQuartet/lesson.ts';
 LESSON_CONTENT.E11 = E11_LESSON;
+/* Lab 5 (ensembles), group 4 — bands & stage plots: E09, E15, E08 (each lesson on its own line). */
+import { E09_LESSON } from '../lessons/e09CompleteBand/lesson.ts';
+LESSON_CONTENT.E09 = E09_LESSON;
+import { E15_LESSON } from '../lessons/e15JazzCombo/lesson.ts';
+LESSON_CONTENT.E15 = E15_LESSON;
+import { E08_LESSON } from '../lessons/e08AcousticGroup/lesson.ts';
+LESSON_CONTENT.E08 = E08_LESSON;

@@ -124,6 +124,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'E11', labId: 'ensembles', title: 'String Quartet and Sections', subtitle: 'A pair in front of the quartet, one support if needed — then the larger string sections', status: 'ready' },
   { id: 'E13', labId: 'ensembles', title: 'Mixed Classical Ensembles', subtitle: 'A chamber group or an orchestra: one main array first, the tree and its centre, supports for a named need', status: 'ready' },
   { id: 'E14', labId: 'ensembles', title: 'Full Orchestra', subtitle: 'A main pair or a tree over the podium first — supports only where something is missing', status: 'ready' },
+  // Lab 5 (ensembles), group 4 — bands & stage plots: E09, E15, E08 (each lesson on its own line).
+  { id: 'E09', labId: 'ensembles', title: 'Rhythm Sections and Complete Bands', subtitle: 'A band on a stage plot: arrange it first, the fewest mics that do the job, every open mic counted', status: 'ready' },
+  { id: 'E15', labId: 'ensembles', title: 'Jazz Combo', subtitle: 'A conversation with bleed: one main view, a few supports, close mics or a hybrid — and the amp turned away', status: 'ready' },
+  { id: 'E08', labId: 'ensembles', title: 'Acoustic Duos and Small Groups', subtitle: 'Players about equally far from one pair; a spot only for a reason, 3:1 between spots', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
