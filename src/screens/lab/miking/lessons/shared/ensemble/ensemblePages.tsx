@@ -204,7 +204,7 @@ export function EnsembleMeet(p: PageProps) {
   const [fam, setFam] = useState<string>('all');
   const [view2, setView2] = useState<StageView>(() => allowView(lesson, 'section'));
   const [showMain, setShowMain] = useState(true);
-  const radiate = fam === 'all' ? secs.map((q) => q.id) : secs.filter((q) => q.family === fam).map((q) => q.id);
+  const radiate = useMemo(() => (fam === 'all' ? secs.map((q) => q.id) : secs.filter((q) => q.family === fam).map((q) => q.id)), [fam, secs]);
   const M = E.meet.mainAtBy?.[variant] ?? E.meet.mainAt;
   const nf = nearFar(s, M);
   const dNear = dist(M, soundPoint(nf.near));
@@ -212,7 +212,8 @@ export function EnsembleMeet(p: PageProps) {
   const bias = frontBackDb(M, soundPoint(nf.near), soundPoint(nf.far));
   const famWord = (f: string) => (f === 'all' ? 'EVERY SECTION' : f.toUpperCase());
   const MR = E.meet.mainRig;
-  const rigM: StageRig[] = showMain ? [{ key: 'main', id: MR?.id ?? 'ab', place: { c: M, face: MR?.face ?? 0, tilt: MR?.tilt ?? 25 }, mount: s.podium && !MR ? { kind: 'boom', reach: 1500 } : { kind: 'stand' } }] : [];
+  // Memoised (L5-R1-02): a fresh rig per render re-ran the stage's box, labels and corner search.
+  const rigM: StageRig[] = useMemo(() => (showMain ? [{ key: 'main', id: MR?.id ?? 'ab', place: { c: M, face: MR?.face ?? 0, tilt: MR?.tilt ?? 25 }, mount: s.podium && !MR ? { kind: 'boom', reach: 1500 } : { kind: 'stand' } }] : []), [showMain, MR, M, s.podium]);
 
   const steps: MikingStep[] = [
     startStep(lesson, journey, ''),
@@ -411,15 +412,17 @@ export function EnsembleSetups(p: PageProps) {
   useEffect(() => {
     if (core.length && seenCore >= core.length && !interactiveDone.has('setupsSeen')) onInteractive('setupsSeen');
   }, [seenCore, core.length, interactiveDone, onInteractive]);
-  const st = sel ? stageOf(sel) : { rigs: [], singles: [] };
+  // Memoised per setup (L5-R1-03): stepping SETUP fast re-drew every stage piece twice (the LOOKED AT update).
+  const st = useMemo(() => (sel ? stageOf(sel) : { rigs: [], singles: [] }), [sel]);
   const c = sel?.rig?.place.c ?? sel?.singles?.[0]?.p ?? null;
   const a11y = sel ? `${sel.role}: ${sel.title}. ${sel.mics}. ${sel.start}` : 'No setup.';
   const around = aroundItems(lesson.setting.items);
   const VW = viewWordsOf(s);
   // Group 4: a stage plot's derived readouts and the spill paths drawn.
-  const plot = E.plot && sel ? plotReadout(sel, s) : null;
-  const spillPaths: StageSpill[] = plot ? plot.mics.filter((m) => m.from).map((m) => ({ key: `sp:${m.key}`, from: m.from!, to: m.to })) : [];
-  const eq = E.ring && sel?.rig ? equalRing(s, sel.rig.place.c) : null;
+  const plot = useMemo(() => (E.plot && sel ? plotReadout(sel, s) : null), [E.plot, sel, s]);
+  const spillPaths: StageSpill[] = useMemo(() => (plot ? plot.mics.filter((m) => m.from).map((m) => ({ key: `sp:${m.key}`, from: m.from!, to: m.to })) : []), [plot]);
+  const eq = useMemo(() => (E.ring && sel?.rig ? equalRing(s, sel.rig.place.c) : null), [E.ring, sel, s]);
+  const eqRings = useMemo(() => (eq ? [eq.ring] : []), [eq]);
   const bezel: BezelItem[] = plot
     ? [
         { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
@@ -440,7 +443,7 @@ export function EnsembleSetups(p: PageProps) {
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => (sel ? <EnsembleStage w={w} h={h} seating={s} view={view} rigs={st.rigs} singles={st.singles} spill={spillPaths} rings={eq ? [eq.ring] : []} dims detail={!!sel.rig && ARRAYS[sel.rig.id].family !== 'single'} lobes={view !== 'plan'} focus={sel.focus} accessibilityLabel={a11y} /> : <Text style={styles.missing}>No starting setup for this seating.</Text>),
+        render: (w, h) => (sel ? <EnsembleStage w={w} h={h} seating={s} view={view} rigs={st.rigs} singles={st.singles} spill={spillPaths} rings={eqRings} dims detail={!!sel.rig && ARRAYS[sel.rig.id].family !== 'single'} lobes={view !== 'plan'} focus={sel.focus} accessibilityLabel={a11y} /> : <Text style={styles.missing}>No starting setup for this seating.</Text>),
         badge: plot ? 'Placed for you · amber dashed = where each mic points · coral dots = the loudest neighbour reaching each close mic · the corner box = the array’s exact shape' : 'Placed for you · amber dashed = where each mic points · white = height and distance · the corner box = the array’s exact shape',
         bezel,
         params: [
@@ -602,7 +605,7 @@ export function EnsemblePlacement(p: PageProps) {
   cRef.current = c;
   const face = start?.rig?.place.face ?? 0;
   const tilt = start?.rig?.place.tilt ?? 25;
-  const mount: ArrayMount = start?.rig?.mount ?? { kind: 'stand' };
+  const mount: ArrayMount = useMemo(() => start?.rig?.mount ?? { kind: 'stand' }, [start]);
   const pickStart = (id: string) => {
     const q = list.find((x) => x.id === id);
     if (!q?.rig) return;
@@ -611,8 +614,23 @@ export function EnsemblePlacement(p: PageProps) {
     setParams(q.rig.params ?? {});
     setC(q.rig.place.c);
     setRest(q.rig.place.c);
+    // A start a setup gives earns nothing (L5-R1-04): only a learner's own rest counts.
+    setMoved(false);
   };
-  const place: ArrayPlacement = { c, face, tilt };
+  // ARRAY switch (L5-R1-05): the old array's spacing/angle is not this one's —
+  // take this array's own starting geometry (else its default).
+  const pickPreset = (id: ArrayPresetId) => {
+    setPreset(id);
+    setParams(start?.rig?.id === id ? start.rig.params ?? {} : list.find((q) => q.rig!.id === id)?.rig?.params ?? {});
+  };
+  // SEATING changed while away (L5-R1-06): the old seating's start is not on this stage.
+  const seenVariant = useRef(variant);
+  useEffect(() => {
+    if (seenVariant.current === variant) return;
+    seenVariant.current = variant;
+    if (fromStart?.rig) pickStart(fromStart.id);
+  }, [variant]); // eslint-disable-line react-hooks/exhaustive-deps
+  const place: ArrayPlacement = useMemo(() => ({ c, face, tilt }), [c, face, tilt]);
   const caps = useMemo(() => arrayCapsules(preset, params, place), [preset, params, c.x, c.y, c.z, face, tilt]); // eslint-disable-line react-hooks/exhaustive-deps
   const foot = mount.kind === 'boom' ? v3(c.x - Math.sin(face * (Math.PI / 180)) * mount.reach, 0, c.z + Math.cos(face * (Math.PI / 180)) * mount.reach) : v3(c.x, 0, c.z);
   const blocked = arrayClear(s, caps, foot);
@@ -637,7 +655,7 @@ export function EnsemblePlacement(p: PageProps) {
   const presets = [...new Set(list.map((q) => q.rig!.id))];
   const def = ARRAYS[preset];
   const geom = def.spacing ? { key: 'spacing' as const, r: def.spacing, unit: 'mm', label: 'SPACING' } : def.angle ? { key: 'angle' as const, r: def.angle, unit: '°', label: 'ANGLE' } : def.turn ? { key: 'turn' as const, r: def.turn, unit: '°', label: 'TURN OUT' } : null;
-  const gv = geom ? params[geom.key] ?? geom.r.def : 0;
+  const gv = geom ? Math.max(geom.r.min, Math.min(geom.r.max, params[geom.key] ?? geom.r.def)) : 0;
   const params2: DockParam[] = [
     {
       kind: 'fader',
@@ -672,7 +690,7 @@ export function EnsemblePlacement(p: PageProps) {
           },
         ]
       : []),
-    { kind: 'options', id: 'array', label: 'ARRAY', valueLabel: def.short, selectedId: preset, onSelect: (id) => setPreset(id as ArrayPresetId), sticky: true, options: presets.map((id) => ({ id, label: ARRAYS[id].name, blurb: ARRAYS[id].what })) },
+    { kind: 'options', id: 'array', label: 'ARRAY', valueLabel: def.short, selectedId: preset, onSelect: (id) => pickPreset(id as ArrayPresetId), sticky: true, options: presets.map((id) => ({ id, label: ARRAYS[id].name, blurb: ARRAYS[id].what })) },
     { kind: 'options', id: 'start', label: 'START', valueLabel: (start?.role ?? '').split(' ')[0], selectedId: startId, onSelect: pickStart, options: list.map((q) => ({ id: q.id, label: `Start from: ${q.role} · ${q.title}`, blurb: q.start })) },
     ...viewParam(view, setView, VW, viewsFor(lesson)),
   ];
@@ -692,7 +710,7 @@ export function EnsemblePlacement(p: PageProps) {
   const nowWords = `The ${def.name.toLowerCase()} is ${fmtStage(-c.y)} up, ${c.z >= 0 ? `${fmtStage(c.z)} in front of ${front}` : `${fmtStage(-c.z)} behind ${front}`}${Math.abs(c.x) > 50 ? `, ${fmtStage(Math.abs(c.x))} to the ${who}’s ${c.x < 0 ? 'left' : 'right'}` : ''}. The nearest and farthest ${them} arrive about ${bias.toFixed(0)} dB apart by distance; ${one ? `the nearest mouth is ${Math.round(dNearNow / 10)} cm from the mic` : ra ? `${inside} of ${s.sections.length} sections sit inside its ${ra}° recording angle` : `the outermost ${them} reach the two sides up to ${dtEdge.toFixed(1)} ms apart`}.${zone ? ` At a recommended starting point: ${zone.label}.` : ' Not at a recommended starting point.'}${blocked ? ` Blocked: it would touch ${blocked}.` : ''}`;
   const zonesDrawn: StageZone[] = zones.map((z) => ({ key: z.id, box: z.box, on: zone?.id === z.id }));
   // group 2: one shared mic shows its distance to the nearest mouth, not its height and front.
-  const rigNow: StageRig[] = [{ key: 'now', id: preset, params, place, mount, ...(one ? { dimTo: soundPoint(nf.near) } : {}) }];
+  const rigNow: StageRig[] = useMemo(() => [{ key: 'now', id: preset, params, place, mount, ...(one ? { dimTo: soundPoint(nf.near) } : {}) }], [preset, params, c, face, tilt, mount, one, nf.near]); // eslint-disable-line react-hooks/exhaustive-deps
   const pred = lesson.predictions.placement;
   const exRigs: StageRig[] = exRig ? [{ key: 'ex', ...exRig }] : [];
   const steps: MikingStep[] = [

@@ -637,6 +637,9 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 ### 2026-10-07 16:51 · ccode · 01026021
 changed: fix(miking labs 1-4): chaos-toddler hunt, 3 rounds
 affects other side: nothing (client-only Miking Labs 1–4 fixes; no backend, schema or RPC change)
+### 2026-10-07 16:12 · ccode · dcc0ee16
+changed: fix(lab5): toddler pass - false zone credit on START, stale array geometry/seating in Placement, stage memo busting
+affects other side: nothing (client-only Lab 5 screen fixes)
 needs: nothing
 
 
