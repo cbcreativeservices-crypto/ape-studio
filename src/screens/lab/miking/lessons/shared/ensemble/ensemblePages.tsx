@@ -56,8 +56,8 @@ export const setupsFor = (l: Lesson, variant: string): EnsembleSetup[] => ensemb
 /** A setup as the stage draws it. */
 export function stageOf(s: EnsembleSetup): { rigs: StageRig[]; singles: StageSingle[] } {
   return {
-    rigs: s.rig ? [{ key: `${s.id}:rig`, ...s.rig }] : [],
-    singles: (s.singles ?? []).map((m) => ({ key: `${s.id}:${m.key}`, p: m.p, dir: m.aim, pattern: m.pattern, label: m.label })),
+    rigs: [...(s.rig ? [{ key: `${s.id}:rig`, ...s.rig }] : []), ...(s.extraRigs ?? []).map((r, i) => ({ key: `${s.id}:rig${i + 2}`, ...r }))],
+    singles: (s.singles ?? []).map((m) => ({ key: `${s.id}:${m.key}`, p: m.p, dir: m.aim, pattern: m.pattern, label: m.label, art: m.art, len: m.len, cross: m.cross, foot: m.foot })),
   };
 }
 

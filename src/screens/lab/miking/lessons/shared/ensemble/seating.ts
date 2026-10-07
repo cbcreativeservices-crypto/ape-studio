@@ -53,8 +53,11 @@ export type Kind =
   | 'harp'
   | 'piano'
   | 'celesta'
-  | 'conductor';
-export type Family = 'strings' | 'winds' | 'brass' | 'percussion' | 'keys' | 'conductor';
+  | 'conductor'
+  | KindG5;
+/** Lab 5 group 5 (sections): saxophones, the rhythm section, the percussion stations. */
+export type KindG5 = 'sax' | 'bariSax' | 'guitar' | 'drumkit' | 'marimba' | 'vibraphone' | 'congas' | 'perctable';
+export type Family = 'strings' | 'winds' | 'brass' | 'percussion' | 'keys' | 'conductor' | 'reeds' | 'rhythm';
 export type Posture = 'seated' | 'standing';
 
 export type Seat = {
@@ -82,7 +85,9 @@ export type Section = {
 };
 export type Riser = { x0: number; x1: number; z0: number; z1: number; h: number };
 export type Podium = { c: Vec3; w: number; d: number; h: number };
-export type SeatingId = 'orch.american' | 'orch.german' | 'strings.american' | 'strings.german' | 'chamber.mixed' | 'quartet.arc' | 'quartet.arcVa';
+export type SeatingId = 'orch.american' | 'orch.german' | 'strings.american' | 'strings.german' | 'chamber.mixed' | 'quartet.arc' | 'quartet.arcVa' | SeatingIdG5;
+/** Lab 5 group 5 (sections): the horn section, the big band, the percussion ensemble. */
+export type SeatingIdG5 = 'horns.line' | 'horns.arc' | 'bb.standard' | 'bb.horseshoe' | 'perc.trio' | 'perc.large';
 export type Seating = {
   id: SeatingId;
   label: string;
@@ -139,16 +144,52 @@ export const KIND: Record<Kind, { label: string; family: Family; sound: number; 
   piano: { label: 'piano', family: 'keys', sound: 850, reach: 1900, posture: 'seated' },
   celesta: { label: 'celesta', family: 'keys', sound: 850, reach: 650, posture: 'seated' },
   conductor: { label: 'conductor', family: 'conductor', sound: 1500, reach: 300, posture: 'standing' },
+  /* ── group 5 (sections): saxophones, the rhythm section, the percussion
+   *  stations. Heights and reaches are drawing defaults from the Lab 1–4
+   *  families (sax/, the kit, mallets/ ROWS, the congas, the guitar amp). ── */
+  sax: { label: 'saxophone', family: 'reeds', sound: 760, reach: 320, posture: 'seated' },
+  bariSax: { label: 'baritone saxophone', family: 'reeds', sound: 640, reach: 380, posture: 'seated' },
+  guitar: { label: 'guitar and its amp', family: 'rhythm', sound: 330, reach: 640, posture: 'seated' },
+  drumkit: { label: 'drum kit', family: 'rhythm', sound: 760, reach: 1450, posture: 'seated' },
+  marimba: { label: 'marimba', family: 'percussion', sound: 970, reach: 680, posture: 'standing' },
+  vibraphone: { label: 'vibraphone', family: 'percussion', sound: 940, reach: 600, posture: 'standing' },
+  congas: { label: 'congas', family: 'percussion', sound: 762, reach: 520, posture: 'standing' },
+  perctable: { label: 'small percussion', family: 'percussion', sound: 930, reach: 520, posture: 'standing' },
 };
+
+/* group 5: where a section kind's sound leaves, in the player's frame (mm
+ * ahead, mm to the player's right) — the sax's body and bell hang to the
+ * player's right; the guitar is heard from its amp beside the player; a
+ * keyboard, a kit or a station is heard from the instrument in front. A
+ * player standing where the kind is usually seated is 400 mm higher. */
+const SOUND_G5: Partial<Record<Kind, { ahead: number; side: number }>> = {
+  sax: { ahead: 230, side: 130 },
+  bariSax: { ahead: 260, side: 190 },
+  guitar: { ahead: 470, side: 470 },
+  drumkit: { ahead: 520, side: 0 },
+  marimba: { ahead: 480, side: 0 },
+  vibraphone: { ahead: 440, side: 0 },
+  congas: { ahead: 380, side: 0 },
+  perctable: { ahead: 420, side: -60 },
+};
+export const STAND_LIFT = 400;
 
 /** The point a seat's sound leaves from (frame S). */
 export function soundPoint(s: Seat): Vec3 {
   const k = KIND[s.kind];
   const fwd = planDir(s.face);
+  const g5 = SOUND_G5[s.kind];
+  if (g5) {
+    const right = v3(Math.cos(s.face * DEG), 0, Math.sin(s.face * DEG));
+    const lift = s.posture === 'standing' && k.posture === 'seated' ? STAND_LIFT : 0;
+    return add(add(add(s.p, mul(fwd, g5.ahead)), mul(right, g5.side)), v3(0, -(k.sound + lift), 0));
+  }
   // Strings, keys and percussion sound in front of the player; a horn's bell
   // points back past the player's right; the rest at the player.
   const ahead = s.kind === 'horn' ? -150 : s.kind === 'timpani' || s.kind === 'percussion' || s.kind === 'piano' || s.kind === 'celesta' || s.kind === 'harp' ? k.reach * 0.6 : s.kind === 'trumpet' || s.kind === 'trombone' ? k.reach : 120;
-  return add(add(s.p, mul(fwd, ahead)), v3(0, -k.sound, 0));
+  // group 5: a player standing where the kind is usually seated (big-band trumpets) plays higher.
+  const lift = s.posture === 'standing' && k.posture === 'seated' ? STAND_LIFT : 0;
+  return add(add(s.p, mul(fwd, ahead)), v3(0, -(k.sound + lift), 0));
 }
 /** The top of a player's head above the floor (mm, as a height). */
 export function headTop(s: Seat): number {
@@ -353,6 +394,184 @@ function quartet(vaOut: boolean): Seating {
   };
 }
 
+/* ═══════════════ group 5 (sections): horn section, big band, percussion ═══════════════
+ * Research: docs/labs/miking/horn_section/, jazz_big_band/ (SOURCES.md §a:
+ * the big-band orders), percussion_ensemble/. Every position, spacing, riser
+ * and angle below is a DRAWING DEFAULT (CORRECTIONS_LOG.md G5-OR-*) except the
+ * ORDERS the research gives: the big band's sax row (tenor 1, alto 2, alto 1,
+ * tenor 2, baritone), trombones and trumpets 2–1–3–4, the rhythm section on
+ * the conductor's left, trumpets standing on a short riser (EMAC-BB); the
+ * horseshoe (S-BREIT): drums at the base, trumpets across from them, the
+ * trombones and saxes facing each other on the legs; the horn section's
+ * players at an equal distance from a section mic (S-SM4-UG). */
+type SecG5 = Omit<Section, 'seats'>;
+function seatingG5(id: SeatingIdG5, label: string, blurb: string, seats: Seat[], secs: readonly SecG5[], risers: Riser[], stage: Seating['stage']): Seating {
+  return { id, label, blurb, seats, sections: secs.filter((q) => seats.some((s) => s.section === q.id)).map((q) => ({ ...q, seats: seats.filter((s) => s.section === q.id).map((s) => s.id) })), risers, podium: null, conductor: null, stage };
+}
+/** A player at (x, z) on a riser `h` high, facing `face`; a seated reader's
+ *  music stand 420 mm ahead, to the side the instrument leaves free (a
+ *  trombone's on the right of its bell and slide, the rest on the left). */
+function seatG5(id: string, kind: Kind, section: string, x: number, z: number, face: number, o: { h?: number; posture?: Posture; stand?: boolean } = {}): Seat {
+  const posture = o.posture ?? KIND[kind].posture;
+  const p = v3(x, -(o.h ?? 0), z);
+  const right = v3(Math.cos(face * DEG), 0, Math.sin(face * DEG));
+  const reads = o.stand ?? posture === 'seated';
+  const stand = reads ? add(add(p, mul(planDir(face), 420)), mul(right, kind === 'trombone' ? 330 : -330)) : null;
+  return { id, kind, section, p, face, posture, stand };
+}
+const R_G5 = {
+  tpt: 'From the bell, pointing forward: strong and bright on its axis, softer and rounder off it.',
+  tbn: 'From the bell beside the player’s head, pointing forward over a slide that moves in and out in front of the player.',
+  sax: 'From the open tone holes along the body and from the bell — the bell is only part of it.',
+  lowBrass: 'From a large bell: strong low notes that need distance and headroom.',
+} as const;
+
+function hornsLine(): Seating {
+  const S = (id: string, kind: Kind, sec: string, x: number) => seatG5(id, kind, sec, x, -500, 180, { posture: 'standing', stand: false });
+  const seats = [S('tpt.1', 'trumpet', 'tpt', -1500), S('as.1', 'sax', 'as', -500), S('tbn.1', 'trombone', 'tbn', 500), S('btb.1', 'trombone', 'btb', 1500)];
+  return seatingG5(
+    'horns.line',
+    'A horn line on stage',
+    'Four players standing in a line facing the audience: trumpet, alto sax, trombone and bass trombone, about 1 m apart.',
+    seats,
+    [
+      { id: 'tpt', label: 'trumpet', short: 'TRUMPET', family: 'brass', radiates: R_G5.tpt },
+      { id: 'as', label: 'alto saxophone', short: 'ALTO SAX', family: 'reeds', radiates: R_G5.sax },
+      { id: 'tbn', label: 'trombone', short: 'TROMBONE', family: 'brass', radiates: R_G5.tbn },
+      { id: 'btb', label: 'bass trombone', short: 'BASS TBN', family: 'brass', radiates: `${R_G5.tbn} Lower and heavier: protect the headroom.` },
+    ],
+    [],
+    { x0: -2300, x1: 2300, z0: -1300, z1: 2300 },
+  );
+}
+
+/** The studio arc: the players at an equal distance round the section mic
+ *  (S-SM4-UG), 1.5 m — inside its 1–6 ft — round a point 0.85 m in front. */
+export const HORN_ARC = { c: v3(0, 0, 850), r: 1500, at: [-54, -18, 18, 54] } as const;
+function hornsArc(): Seating {
+  const C = HORN_ARC.c;
+  // Each player sits so that the instrument's sound point (the bell; the
+  // sax's body) — not the chair — is HORN_ARC.r from the centre.
+  const at = (id: string, kind: Kind, sec: string, th: number, r: number) => seatG5(id, kind, sec, C.x + r * Math.sin(th * DEG), C.z - r * Math.cos(th * DEG), th + 180);
+  const S = (id: string, kind: Kind, sec: string, th: number) => {
+    const s0 = at(id, kind, sec, th, HORN_ARC.r);
+    const sp = soundPoint(s0);
+    return at(id, kind, sec, th, 2 * HORN_ARC.r - Math.hypot(sp.x - C.x, sp.z - C.z));
+  };
+  const [a, b, c, d] = HORN_ARC.at;
+  const seats = [S('tpt.1', 'trumpet', 'tpt', a), S('ts.1', 'sax', 'ts', b), S('tbn.1', 'trombone', 'tbn', c), S('tu.1', 'tuba', 'tu', d)];
+  return seatingG5(
+    'horns.arc',
+    'A section round one mic',
+    'Four players seated on an arc in a studio, each about the same distance from a section mic at its centre: trumpet, tenor sax, trombone and tuba.',
+    seats,
+    [
+      { id: 'tpt', label: 'trumpet', short: 'TRUMPET', family: 'brass', radiates: R_G5.tpt },
+      { id: 'ts', label: 'tenor saxophone', short: 'TENOR SAX', family: 'reeds', radiates: R_G5.sax },
+      { id: 'tbn', label: 'trombone', short: 'TROMBONE', family: 'brass', radiates: R_G5.tbn },
+      { id: 'tu', label: 'tuba', short: 'TUBA', family: 'brass', radiates: `${R_G5.lowBrass} Its bell points up.` },
+    ],
+    [],
+    { x0: -2700, x1: 2700, z0: -2000, z1: 2100 },
+  );
+}
+
+const BB_SECS: readonly SecG5[] = [
+  { id: 'sax', label: 'saxophones', short: 'SAXES', family: 'reeds', radiates: 'From the open tone holes along each body and from the bells, low in front of the seated players; the baritone lowest of all.' },
+  { id: 'tbn', label: 'trombones', short: 'TROMBONES', family: 'brass', radiates: 'From bells beside the players’ heads, pointing forward over slides that move in and out.' },
+  { id: 'tpt', label: 'trumpets', short: 'TRUMPETS', family: 'brass', radiates: 'From bells pointing forward, standing above the trombones: strong and direct, brighter on the axis.' },
+  { id: 'pno', label: 'piano', short: 'PIANO', family: 'rhythm', radiates: 'From the soundboard under the lid; the open lid throws much of it toward its open side.' },
+  { id: 'gtr', label: 'guitar', short: 'GUITAR', family: 'rhythm', radiates: 'From the loudspeaker of its amplifier beside the player — the guitar itself is quiet.' },
+  { id: 'cb', label: 'double bass', short: 'BASS', family: 'rhythm', radiates: 'From a large body standing on the floor: pitch and attack from the strings and the top, weight from the body.' },
+  { id: 'dr', label: 'drums', short: 'DRUMS', family: 'rhythm', radiates: 'From every drum head and cymbal of the kit: the cymbals up and out, the drums from their heads.' },
+];
+/** Chair spacing and rows (drawing defaults): 0.9 m chairs; trombones on a
+ *  0.2 m riser, trumpets standing on a 0.4 m one. */
+export const BB_DIMS = { saxZ: -550, tbnZ: -1950, tptZ: -3250, step: 900, tbnRiser: 200, tptRiser: 400 } as const;
+function bigBand(): Seating {
+  const D = BB_DIMS;
+  const seats: Seat[] = [
+    // Saxes, as the conductor faces them: tenor 1, alto 2, alto 1, tenor 2, baritone.
+    seatG5('sax.t1', 'sax', 'sax', -2 * D.step, D.saxZ, 180),
+    seatG5('sax.a2', 'sax', 'sax', -D.step, D.saxZ, 180),
+    seatG5('sax.a1', 'sax', 'sax', 0, D.saxZ, 180),
+    seatG5('sax.t2', 'sax', 'sax', D.step, D.saxZ, 180),
+    seatG5('sax.bari', 'bariSax', 'sax', 2 * D.step, D.saxZ, 180),
+    // Trombones 2 – 1 – 3 – 4 (the 4th the bass trombone), seated on a short riser.
+    ...(['tbn.2', 'tbn.1', 'tbn.3', 'tbn.4'] as const).map((id, i) => seatG5(id, 'trombone', 'tbn', (i - 1.5) * D.step, D.tbnZ, 180, { h: D.tbnRiser })),
+    // Trumpets 2 – 1 – 3 – 4, standing on the riser behind them.
+    ...(['tpt.2', 'tpt.1', 'tpt.3', 'tpt.4'] as const).map((id, i) => seatG5(id, 'trumpet', 'tpt', (i - 1.5) * D.step, D.tptZ, 180, { h: D.tptRiser, posture: 'standing', stand: false })),
+    // The rhythm section on the conductor's left: piano, guitar, bass, drums.
+    seatG5('pno.1', 'piano', 'pno', -5300, -1000, 90, { stand: false }),
+    seatG5('gtr.1', 'guitar', 'gtr', -4600, -2900, 120, { stand: false }),
+    seatG5('cb.1', 'bass', 'cb', -3300, -2350, 130),
+    seatG5('dr.1', 'drumkit', 'dr', -4200, -3900, 100, { stand: false }),
+  ];
+  return seatingG5(
+    'bb.standard',
+    'Saxes, trombones, trumpets in rows',
+    'Saxes in front, trombones behind them on a short riser, trumpets standing at the back; piano, guitar, bass and drums on the conductor’s left.',
+    seats,
+    BB_SECS,
+    [
+      { x0: -1900, x1: 1900, z0: -2500, z1: -1450, h: D.tbnRiser },
+      { x0: -1900, x1: 1900, z0: -3750, z1: -2650, h: D.tptRiser },
+    ],
+    { x0: -6000, x1: 2500, z0: -4900, z1: 3400 },
+  );
+}
+
+/** The horseshoe (S-BREIT): the drums at the base; the trumpets across from
+ *  them; the saxes (conductor's left) and trombones facing each other on the
+ *  legs. Its size is a drawing default: legs 4.8 m apart. */
+export const HORSESHOE = { legX: 2400, drumZ: -4300, tptZ: -300 } as const;
+function horseshoe(): Seating {
+  const H = HORSESHOE;
+  const seats: Seat[] = [
+    ...(['sax.t1', 'sax.a2', 'sax.a1', 'sax.t2', 'sax.bari'] as const).map((id, i) => seatG5(id, id === 'sax.bari' ? 'bariSax' : 'sax', 'sax', -H.legX, -1300 - i * 600, 90)),
+    ...(['tbn.2', 'tbn.1', 'tbn.3', 'tbn.4'] as const).map((id, i) => seatG5(id, 'trombone', 'tbn', H.legX, -1500 - i * 700, 270)),
+    ...(['tpt.2', 'tpt.1', 'tpt.3', 'tpt.4'] as const).map((id, i) => seatG5(id, 'trumpet', 'tpt', (i - 1.5) * 900, H.tptZ, 0)),
+    seatG5('dr.1', 'drumkit', 'dr', 0, H.drumZ, 180, { stand: false }),
+    seatG5('pno.1', 'piano', 'pno', -3400, -5400, 90, { stand: false }),
+    seatG5('cb.1', 'bass', 'cb', 1300, -5100, 200),
+    seatG5('gtr.1', 'guitar', 'gtr', 2700, -4900, 220, { stand: false }),
+  ];
+  return seatingG5(
+    'bb.horseshoe',
+    'A horseshoe in the studio',
+    'In a U: the drums at its base, the trumpets across from them, the saxes and trombones facing each other on its two sides — everyone sees everyone.',
+    seats,
+    BB_SECS.map((q) => (q.id === 'tpt' ? { ...q, radiates: 'From bells pointing across the U toward the drums: strong and direct, brighter on the axis.' } : q.id === 'tbn' || q.id === 'sax' ? { ...q, radiates: `${q.radiates.split(',')[0]}, across the U toward the other side.` } : q)),
+    [],
+    { x0: -4300, x1: 3400, z0: -6300, z1: 700 },
+  );
+}
+
+const PERC_SECS: readonly SecG5[] = [
+  { id: 'cg', label: 'congas', short: 'CONGAS', family: 'percussion', radiates: 'From the heads, up and out under the hands — and from the open lower ends, near the floor.' },
+  { id: 'mar', label: 'marimba', short: 'MARIMBA', family: 'percussion', radiates: 'From the wooden bars, up — and from the open tops of the tubes hanging under them, which carry the low notes; the low end is the long, wide end.' },
+  { id: 'vib', label: 'vibraphone', short: 'VIBRAPHONE', family: 'percussion', radiates: 'From the metal bars and the tubes under them; the notes ring on after each stroke until the pedal stops them.' },
+  { id: 'tbl', label: 'small percussion', short: 'SMALL PERC', family: 'percussion', radiates: 'From each instrument as it is played: shakers and the tambourine move through the air; the cymbal on its stand rings out from its edge.' },
+  { id: 'timp', label: 'timpani', short: 'TIMPANI', family: 'percussion', radiates: 'From the heads, up and out — loud, low peaks.' },
+  { id: 'perc', label: 'bass drum, snare and cymbals', short: 'DRUMS · CYMBALS', family: 'percussion', radiates: 'From each instrument struck: the bass drum’s heads to the sides, the snare up, the cymbals from their edges — sharp, loud attacks.' },
+];
+function percTrio(): Seating {
+  const seats = [seatG5('cg.1', 'congas', 'cg', -1800, -1100, 160), seatG5('mar.1', 'marimba', 'mar', 0, -1350, 180), seatG5('tbl.1', 'perctable', 'tbl', 1800, -1100, 200)];
+  return seatingG5('perc.trio', 'Three stations', 'A compact group: a hand-drum station, a marimba and a small-percussion table with a cymbal, on a shallow arc about 4 m wide.', seats, PERC_SECS, [], { x0: -2500, x1: 2500, z0: -1900, z1: 3300 });
+}
+function percLarge(): Seating {
+  const seats = [
+    seatG5('cg.1', 'congas', 'cg', -2900, -1500, 180),
+    seatG5('mar.1', 'marimba', 'mar', -900, -1500, 180),
+    seatG5('vib.1', 'vibraphone', 'vib', 1500, -1500, 180),
+    seatG5('timp.1', 'timpani', 'timp', -2000, -3700, 180),
+    seatG5('perc.1', 'percussion', 'perc', 200, -3700, 180),
+    seatG5('perc.2', 'percussion', 'perc', 1900, -3700, 180),
+  ];
+  return seatingG5('perc.large', 'Two rows of stations', 'A larger group: congas, marimba and vibraphone in front; timpani, a concert bass drum and a snare with cymbals behind.', seats, PERC_SECS, [], { x0: -3700, x1: 2800, z0: -4400, z1: 3300 });
+}
+const PRESETS_G5: Record<SeatingIdG5, () => Seating> = { 'horns.line': hornsLine, 'horns.arc': hornsArc, 'bb.standard': bigBand, 'bb.horseshoe': horseshoe, 'perc.trio': percTrio, 'perc.large': percLarge };
+
 const cache = new Map<SeatingId, Seating>();
 /** A seating preset (built once). */
 export function seatingOf(id: SeatingId): Seating {
@@ -369,7 +588,9 @@ export function seatingOf(id: SeatingId): Seating {
             ? orchestra('german', false)
             : id === 'chamber.mixed'
               ? chamber()
-              : quartet(id === 'quartet.arcVa');
+              : id in PRESETS_G5
+                ? PRESETS_G5[id as SeatingIdG5]()
+                : quartet(id === 'quartet.arcVa');
   cache.set(id, s);
   return s;
 }

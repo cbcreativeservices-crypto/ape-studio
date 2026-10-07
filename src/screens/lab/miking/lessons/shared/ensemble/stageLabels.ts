@@ -9,11 +9,14 @@ import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { uv, type StageView } from './frameS.ts';
 import { headTop, KIND, sectionCentre, seatsOf, type Seat, type Seating } from './seating.ts';
 
+/** group 5: the half-width of a wide section instrument in an elevation (mm). */
+const WIDE_G5: Partial<Record<string, number>> = { marimba: 1100, vibraphone: 800, drumkit: 900, congas: 400, perctable: 650, guitar: 750 };
+
 /** A player's footprint in a view (mm): a disc in plan, a box in elevation. */
 function seatBox(q: Seat, view: StageView): { u0: number; u1: number; v0: number; v1: number } {
   const o = uv(view, q.p);
   if (view === 'plan') return { u0: o.u - 360, u1: o.u + 360, v0: o.v - 360, v1: o.v + 360 };
-  const wide = q.kind === 'piano' ? 1200 : q.kind === 'timpani' ? 900 : q.kind === 'harp' ? 450 : 300;
+  const wide = q.kind === 'piano' ? 1200 : q.kind === 'timpani' ? 900 : q.kind === 'harp' ? 450 : (WIDE_G5[q.kind] ?? 300);
   return { u0: o.u - wide, u1: o.u + wide, v0: -headTop(q), v1: o.v };
 }
 

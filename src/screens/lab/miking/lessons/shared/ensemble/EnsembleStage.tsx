@@ -34,6 +34,7 @@ import { headTop, soundPoint, type Seat, type Seating } from './seating.ts';
 import { SeatingView, SECTION_SLICE } from './SeatingArt';
 import { ArrayDetail, ArrayRig, rigPoints, type RigSpec } from './ArrayArt';
 import { stageClearOf, stageHit, stageLabels } from './stageLabels.ts';
+import type { SingleArt } from './ensembleData.ts';
 
 const AMBER = '#ffc64d';
 const BLUE = '#6fa8ff';
@@ -42,7 +43,21 @@ const ZONE = '#3d8bff';
 const MIC = { len: 104, r: 10.5 };
 
 export type StageRig = RigSpec & { key: string; label?: string; lit?: boolean };
-export type StageSingle = { key: string; p: Vec3; dir: Vec3; pattern: PatternId; label?: string; lit?: boolean };
+export type StageSingle = {
+  key: string;
+  p: Vec3;
+  dir: Vec3;
+  pattern: PatternId;
+  label?: string;
+  lit?: boolean;
+  /** group 5: the mic's drawing (default the pencil condenser) and its body
+   *  (mm: `len` deep, `cross` across), and a stand foot set on a riser or a
+   *  gap between players (default: 650 mm back from the mic's tail, on the floor). */
+  art?: SingleArt;
+  len?: number;
+  cross?: number;
+  foot?: Vec3;
+};
 export type StageZone = { key: string; box: { min: Vec3; max: Vec3 }; label?: string; on?: boolean };
 
 /** Where a seat's sound radiates (a local direction: right, up, forward). */
@@ -64,6 +79,15 @@ const RADIATE: Record<string, [number, number, number]> = {
   harp: [0.3, 0.3, -0.9],
   piano: [0.7, 0.7, 0],
   celesta: [0, 1, 0.2],
+  // group 5 (sections)
+  sax: [0.35, 0.55, 0.75],
+  bariSax: [0.35, 0.7, 0.6],
+  guitar: [0, 0.1, 1],
+  drumkit: [0, 0.85, 0.5],
+  marimba: [0, 1, 0.1],
+  vibraphone: [0, 1, 0.1],
+  congas: [0, 1, 0.25],
+  perctable: [0, 0.9, 0.4],
 };
 function radDir(q: Seat): Vec3 {
   const [r, up, f] = RADIATE[q.kind] ?? [0, 1, 0];
@@ -91,10 +115,10 @@ export function stageBox(s: Seating, view: StageView, rigs: readonly StageRig[] 
 /** A support or spot on its boom stand: the foot toward the hall, the mast,
  *  the boom up to the mic's tail. */
 function boomStand(m: StageSingle) {
-  const tail = add(m.p, mul(m.dir, -MIC.len));
+  const tail = add(m.p, mul(m.dir, -(m.len ?? MIC.len)));
   const flat = unit(v3(-m.dir.x, 0, -m.dir.z));
-  const foot = v3(tail.x + flat.x * 650, 0, tail.z + flat.z * 650);
-  const top = v3(foot.x, Math.min(-900, tail.y + 350), foot.z);
+  const foot = m.foot ?? v3(tail.x + flat.x * 650, 0, tail.z + flat.z * 650);
+  const top = v3(foot.x, Math.min(foot.y - 900, tail.y + 350), foot.z);
   return { tail, foot, top };
 }
 
@@ -353,7 +377,7 @@ export function EnsembleStage(p: EnsembleStageProps) {
                 <Path path={metal} style="stroke" strokeWidth={Math.max(22, 3 * px)} strokeCap="round" color="#0b0c0f" />
                 <Path path={metal} style="stroke" strokeWidth={Math.max(13, 1.8 * px)} strokeCap="round" color="#9aa0ab" />
                 <Group transform={micXf(view, m.p, m.dir)}>
-                  <MikingMicArt art="sdc" r={MIC.r} len={MIC.len} cross={MIC.r * 2} />
+                  <MikingMicArt art={m.art ?? 'sdc'} r={(m.cross ?? MIC.r * 2) / 2} len={m.len ?? MIC.len} cross={m.cross ?? MIC.r * 2} />
                 </Group>
                 <Circle cx={uv(view, m.p).u} cy={uv(view, m.p).v} r={5 * px} color={AMBER} opacity={0.9} />
               </Group>

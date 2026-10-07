@@ -39,11 +39,19 @@ const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 /** Large instruments drawn in front of their player (SeatingArt.tsx): their
  *  plan box in the player's frame (width across, from f0 to f1 mm ahead) and
  *  height — collision solids, drawing defaults. */
-const FOOTPRINT: Partial<Record<string, { w: number; f0: number; f1: number; h: number }>> = {
+const FOOTPRINT: Partial<Record<string, { w: number; f0: number; f1: number; h: number; dx?: number }>> = {
   piano: { w: 1500, f0: 300, f1: 2450, h: 1000 },
   timpani: { w: 1700, f0: 150, f1: 1150, h: 900 },
   harp: { w: 500, f0: -100, f1: 520, h: 1800 },
   celesta: { w: 1000, f0: 240, f1: 780, h: 1000 },
+  // group 5 (sections): the mallet keyboards (Lab 2's frames), the kit, the
+  // congas, the small-percussion table, the guitar's amp beside its player (`dx`).
+  marimba: { w: 2130, f0: 220, f1: 1120, h: 1000 },
+  vibraphone: { w: 1530, f0: 220, f1: 970, h: 960 },
+  drumkit: { w: 1800, f0: 200, f1: 1550, h: 1250 },
+  congas: { w: 720, f0: 200, f1: 560, h: 790 },
+  perctable: { w: 900, f0: 200, f1: 650, h: 900 },
+  guitar: { w: 560, f0: 335, f1: 605, h: 540, dx: 470 },
 };
 export const seatPartId = (v: string, seatId: string) => `${v}:${seatId}`;
 export const sectionPartId = (v: string, sec: string) => `${v}:${sec}`;
@@ -87,11 +95,12 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
         if (big) {
           const f = planDir(seat.face);
           const r = v3(Math.cos((seat.face * Math.PI) / 180), 0, Math.sin((seat.face * Math.PI) / 180));
+          const dx = big.dx ?? 0;
           const corners = [
-            [-big.w / 2, big.f0],
-            [big.w / 2, big.f0],
-            [-big.w / 2, big.f1],
-            [big.w / 2, big.f1],
+            [-big.w / 2 + dx, big.f0],
+            [big.w / 2 + dx, big.f0],
+            [-big.w / 2 + dx, big.f1],
+            [big.w / 2 + dx, big.f1],
           ].map(([x, a]) => add(add(seat.p, mul(r, x)), mul(f, a)));
           const xs = corners.map((c) => c.x);
           const zs = corners.map((c) => c.z);

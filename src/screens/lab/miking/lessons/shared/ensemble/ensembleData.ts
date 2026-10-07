@@ -9,6 +9,8 @@ import type { Lesson, Vec3 } from '../../../engine/model/types.ts';
 import type { StageView } from './frameS.ts';
 import type { SeatingId } from './seating.ts';
 import type { ArrayParams, ArrayPlacement, ArrayPresetId } from './stereoArray.ts';
+/** group 5: a single mic's drawing (EnsembleStage.SingleArt, repeated here so this file stays pure). */
+export type SingleArt = 'sdc' | 'smallDynamic' | 'instDynamic' | 'sideLdc';
 
 /** How an array is held (ArrayArt.tsx): a tall stand under the bar, or a
  *  boom stand `reach` mm behind it (toward the hall). */
@@ -23,7 +25,11 @@ export type EnsembleSetup = {
   /** Only in these variants (default: all). */
   variants?: readonly string[];
   rig?: { id: ArrayPresetId; params?: ArrayParams; place: ArrayPlacement; mount?: ArrayMount };
-  singles?: readonly { key: string; p: Vec3; aim: Vec3; pattern: 'cardioid' | 'omni' | 'supercardioid'; label: string }[];
+  /** group 5: a second array drawn with the first (the horseshoe's two M/S pairs). */
+  extraRigs?: readonly { id: ArrayPresetId; params?: ArrayParams; place: ArrayPlacement; mount?: ArrayMount }[];
+  /** `art`, `len`, `cross`, `foot` (group 5): a dynamic or a ribbon drawn as
+   *  itself, and a stand standing on a riser or in a gap (EnsembleStage). */
+  singles?: readonly { key: string; p: Vec3; aim: Vec3; pattern: 'cardioid' | 'omni' | 'supercardioid' | 'figure8'; label: string; art?: SingleArt; len?: number; cross?: number; foot?: Vec3 }[];
   /** The mics, in words. */
   mics: string;
   /** Where to start, in words. */

@@ -31,6 +31,13 @@ import { DrumPlan, CymbalPlan } from '../drums/DrumArt';
 import { CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
 import { DEG, planDir, uv, type StageView } from './frameS.ts';
 import { DIMS, headTop, sectionBox, type Seat, type Seating } from './seating.ts';
+// group 5 (sections): the shared kit, the mallet rows, the congas — reused, never redrawn from scratch.
+import { KIND, STAND_LIFT } from './seating.ts';
+import { KickFromAbove } from '../drums/DrumArt';
+import { KICK_22x18 } from '../drums/drumSpec.ts';
+import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_HARDWARE } from '../kitPlanModel.ts';
+import { isNatural, ROWS } from '../mallets/malletSpec.ts';
+import { CONGA_DIMS } from '../../m04aCongas/model.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -63,6 +70,8 @@ const MATS = {
   riser: { ramp: ['#4a3826', '#3a2c1e', '#2a1f15', '#1c140d'], rim: '#8a6a48', core: '#0a0704', edge: '#120c07', rimW: 10, coreW: 40 },
   harpGold: { ramp: ['#fff0c0', '#e0b860', '#9a7020', '#4a3208'], rim: '#fffbe8', core: '#2a1a02', edge: '#3a2604', rimW: 5, coreW: 16 },
   piano: { ramp: ['#4a4c54', '#1e1f24', '#0b0b0d', '#030304'], rim: '#9a9eaa', core: '#000', edge: '#000', rimW: 6, coreW: 24 },
+  /** group 5: a rawhide drum head (the hand-drum family's RAWHIDE tones). */
+  hide: { ramp: ['#f6e9cc', '#e6cf9e', '#c9a874', '#8e7046'], rim: '#fffaf0', core: '#5a4428', edge: '#5e4626', rimW: 4, coreW: 14 },
 } satisfies Record<string, Mat>;
 type MatId = keyof typeof MATS;
 type FigTone = 'shirt' | 'trousers' | 'skin' | 'shoe' | 'seat';
@@ -208,8 +217,9 @@ function planSeat(b: Batch, s: Seat) {
   const put = placer(s);
   const standing = s.posture === 'standing';
   const k = s.kind;
-  // Chair (seated players; a pianist's bench).
-  if (!standing && k !== 'conductor') {
+  // Chair (seated players; a pianist's bench; a drummer's round throne — group 5).
+  if (k === 'drumkit') put(b.fig.seat, ellipse(P(0, 0), 175, 175));
+  else if (!standing && k !== 'conductor') {
     put(b.fig.seat, rr(-215, -210, 215, 220, 60));
     put(b.fig.seat, rr(-205, 205, 205, 255, 22));
   }
@@ -452,6 +462,135 @@ function planSeat(b: Batch, s: Seat) {
       }
       break;
     }
+    /* ── group 5 (sections): the saxes, the rhythm section, the percussion stations ── */
+    case 'sax':
+    case 'bariSax': {
+      // The body hangs at the player's right, the bell turned up and forward.
+      const big = k === 'bariSax';
+      const top = P(20, -170);
+      const bow = P(big ? 210 : 165, big ? -330 : -290);
+      put(b.mat.silver, capsule(P(0, -100), top, 8));
+      put(b.mat.brass, taper(top, bow, big ? 34 : 22, big ? 56 : 36));
+      const bell = P(bow.u + (big ? 40 : 30), bow.v - (big ? 50 : 40));
+      put(b.mat.brass, ellipse(bell, big ? 100 : 68, big ? 86 : 58));
+      put(b.holes, ellipse(bell, big ? 74 : 48, big ? 62 : 40));
+      if (big) put(b.mat.brass, ellipse(P(-40, -120), 46, 40));
+      const h1 = P(top.u + (bow.u - top.u) * 0.25, top.v + (bow.v - top.v) * 0.25);
+      const h2 = P(top.u + (bow.u - top.u) * 0.7, top.v + (bow.v - top.v) * 0.7);
+      arm([LS, P(-150, -170), h1]);
+      hand(h1);
+      arm([RS, P(270, -120), h2]);
+      hand(h2);
+      break;
+    }
+    case 'guitar': {
+      // An archtop on the lap, its neck to the player's left; the amp on the
+      // floor at the player's right, its speaker facing forward.
+      put(b.mat.varnish, ellipse(P(60, -210), 190, 120));
+      put(b.mat.silver, rr(20, -250, 100, -170, 8));
+      put(b.mat.ebony, capsule(P(-110, -230), P(-560, -170), 20));
+      arm([LS, P(-260, -200), P(-440, -190)]);
+      hand(P(-440, -190));
+      arm([RS, P(230, -150), P(100, -220)]);
+      hand(P(100, -220));
+      put(b.mat.piano, rr(190, -605, 750, -335, 30));
+      put(b.desks, rr(220, -620, 720, -590, 6));
+      put(b.legs, line(make(), P(160, -160), P(300, -335)));
+      break;
+    }
+    case 'drumkit': {
+      // The shared five-piece kit (kitPlanModel, Lab 1) at the throne: its
+      // frame K maps to the player's frame as (x, y) = (z + 110, −(x + 770)).
+      const F = (s.face * Math.PI) / 180;
+      const kp = (xK: number, zK: number) => P(zK + 110, -(xK + 770));
+      for (const id of ['crash1', 'crash2', 'ride'] as const) put(b.legs, line(make(), kp(PLAN_HARDWARE.booms[id].u, PLAN_HARDWARE.booms[id].v), kp(KIT_CYMBALS[id].c.x, KIT_CYMBALS[id].c.z)));
+      b.extra.push({
+        key: `kit:${s.id}`,
+        el: (
+          <Group key={`kit:${s.id}`} transform={[{ translateX: s.p.x }, { translateY: s.p.z }, { rotate: F }, { translateX: 110 }, { translateY: -770 }, { rotate: -Math.PI / 2 }]}>
+            <KickFromAbove spec={KICK_22x18} u0={0} z={0} pedal={KIT.kick.pedal} />
+            {(['snare', 'tom1', 'tom2', 'floor'] as const).map((id) => (
+              <DrumPlan key={id} drum={KIT_DRUMS[id]} />
+            ))}
+            {(['hihat', 'crash1', 'crash2', 'ride'] as const).map((id) => (
+              <CymbalPlan key={id} cx={KIT_CYMBALS[id].c.x} cz={KIT_CYMBALS[id].c.z} d={KIT_CYMBALS[id].d} tiltDeg={KIT_CYMBALS[id].tiltDeg} dim={0.78} />
+            ))}
+          </Group>
+        ),
+      });
+      const sn = kp(KIT_DRUMS.snare.c.x, KIT_DRUMS.snare.c.z);
+      const fl = kp(KIT_DRUMS.floor.c.x, KIT_DRUMS.floor.c.z);
+      arm([LS, P(-250, -150), P(sn.u + 40, sn.v + 60)]);
+      hand(P(sn.u + 40, sn.v + 60));
+      arm([RS, P(250, -150), P(fl.u - 60, fl.v + 90)]);
+      hand(P(fl.u - 60, fl.v + 90));
+      put(b.stick, line(make(), P(sn.u + 40, sn.v + 60), P(sn.u + 60, sn.v - 180)));
+      put(b.stick, line(make(), P(fl.u - 60, fl.v + 90), P(fl.u - 120, fl.v - 150)));
+      break;
+    }
+    case 'marimba':
+    case 'vibraphone': {
+      // The keyboard across the player, the LOW end on the player's left; the
+      // naturals near the player, the accidentals behind them (Lab 2's ROWS).
+      const row = k === 'marimba' ? ROWS.marimba43 : ROWS.vibe;
+      const L = row.Lframe.mm;
+      const y0 = -220;
+      const depth = (x: number) => row.Dlow.mm + ((row.Dhigh.mm - row.Dlow.mm) * (x + L / 2)) / L;
+      // The frame under the bars (painted before the bars: the desks layer).
+      put(b.desks, poly([P(-L / 2, y0), P(L / 2, y0), P(L / 2, y0 - row.Dhigh.mm), P(-L / 2, y0 - row.Dlow.mm)]));
+      const nat: number[] = [];
+      for (let key = row.lowKey; key <= row.highKey; key++) if (isNatural(key)) nat.push(key);
+      const pitch = (L - 120) / nat.length;
+      const bar = k === 'marimba' ? b.mat.varnish : b.mat.silver;
+      nat.forEach((key, i) => {
+        const x = -L / 2 + 60 + (i + 0.5) * pitch;
+        const D = depth(x);
+        const len = D * 0.42;
+        put(bar, rr(x - pitch * 0.42, y0 - 30 - len, x + pitch * 0.42, y0 - 30, 6));
+        if (key < row.highKey && !isNatural(key + 1)) put(bar, rr(x + pitch * 0.5 - pitch * 0.38, y0 - D + 30, x + pitch * 0.5 + pitch * 0.38, y0 - D + 30 + len * 0.9, 6));
+      });
+      arm([LS, P(-230, -180), P(-210, -320)]);
+      arm([RS, P(230, -180), P(210, -320)]);
+      hand(P(-210, -320));
+      hand(P(210, -320));
+      for (const sx of [-1, 1]) {
+        put(b.stick, line(make(), P(sx * 210, -320), P(sx * 290, -470)));
+        put(b.holes, ellipse(P(sx * 290, -470), 24, 24));
+      }
+      break;
+    }
+    case 'congas': {
+      // A conga (left) and a tumba (right) in front of the player (M04a's sizes).
+      for (const [x, d] of [
+        [-170, CONGA_DIMS.congaD.mm],
+        [170, CONGA_DIMS.tumbaD.mm],
+      ] as const) {
+        put(b.mat.steel, ellipse(P(x, -380), d / 2 + 10, d / 2 + 10));
+        put(b.mat.hide, ellipse(P(x, -380), d / 2, d / 2));
+      }
+      arm([LS, P(-230, -170), P(-170, -360)]);
+      arm([RS, P(230, -170), P(170, -360)]);
+      hand(P(-170, -360));
+      hand(P(170, -360));
+      break;
+    }
+    case 'perctable': {
+      // A padded table of small percussion, a cymbal on its stand at the right.
+      put(b.mat.chair, rr(-450, -650, 450, -200, 30));
+      put(b.mat.varnish, ellipse(P(-250, -440), 125, 125));
+      put(b.holes, ellipse(P(-250, -440), 95, 95));
+      for (let i = 0; i < 8; i++) put(b.mat.silver, ellipse(P(-250 + Math.cos((i * Math.PI) / 4) * 110, -440 + Math.sin((i * Math.PI) / 4) * 110), 16, 16));
+      put(b.mat.maple, capsule(P(40, -540), P(170, -490), 26));
+      put(b.mat.maple, rr(-60, -360, 90, -300, 10));
+      put(b.hair, poly([P(200, -300), P(340, -300), P(270, -420)]));
+      const cy = toPlan(s, 650, -380);
+      b.extra.push({ key: `pcy:${s.id}`, el: <CymbalPlan key={`pcy:${s.id}`} cx={cy.u} cz={cy.v} d={18 * IN} tiltDeg={0} dim={0.88} /> });
+      arm([LS, P(-220, -170), P(-160, -330)]);
+      arm([RS, P(220, -170), P(140, -330)]);
+      hand(P(-160, -330));
+      hand(P(140, -330));
+      break;
+    }
     case 'conductor': {
       arm([LS, P(-300, -150), P(-280, -380)]);
       arm([RS, P(300, -150), P(260, -420)]);
@@ -514,8 +653,15 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
   const faceOn = Math.max(0.3, front ? Math.abs(Math.cos(F)) : Math.abs(Math.sin(F)));
   const sh = standing ? 1450 : DIMS.seatedShoulder;
   const hipUp = standing ? 920 : DIMS.chairSeat + 40;
-  // The chair.
-  if (!standing) {
+  // group 5: an instrument usually played seated, played standing (big-band trumpets), sits higher.
+  const lift = standing && KIND[k].posture === 'seated' ? STAND_LIFT : 0;
+  // The chair (a drummer's throne: a round seat on a post — group 5).
+  if (k === 'drumkit') {
+    b.fig.seat.addPath(rr(o.u - 175, g - DIMS.chairSeat - 40, o.u + 175, g - DIMS.chairSeat + 20, 30));
+    line(b.legs, P(o.u, g - DIMS.chairSeat), P(o.u, g - 120));
+    line(b.legs, P(o.u, g - 120), P(o.u - 220, g));
+    line(b.legs, P(o.u, g - 120), P(o.u + 220, g));
+  } else if (!standing) {
     const w = front ? 210 : 230;
     b.fig.seat.addPath(rr(o.u - w, g - DIMS.chairSeat - 30, o.u + w, g - DIMS.chairSeat + 10, 12));
     if (front) b.fig.seat.addPath(rr(o.u - 200, g - 900, o.u + 200, g - DIMS.chairSeat - 20, 30));
@@ -643,24 +789,24 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
     case 'trumpet':
     case 'trombone': {
       const tb = k === 'trombone';
-      const mouth = Q(tb ? -60 : 0, 110, 1150);
-      const bellAt = Q(tb ? -80 : 0, tb ? 520 : 560, 1120);
+      const mouth = Q(tb ? -60 : 0, 110, 1150 + lift);
+      const bellAt = Q(tb ? -80 : 0, tb ? 520 : 560, 1120 + lift);
       const { d, k: kf } = dirOf(0, 0, 1);
       if (kf < 0.35) {
         // The bell toward the viewer, seen end-on.
         const R = tb ? 110 : 62;
         b.mat.brass.addPath(ellipse(bellAt, R, R));
         b.holes.addPath(ellipse(bellAt, R * 0.72, R * 0.72));
-        if (tb) b.mat.brass.addPath(rr(X(20, 0) - 14, g - 1120, X(20, 0) + 14, g - 760, 8));
+        if (tb) b.mat.brass.addPath(rr(X(20, 0) - 14, g - 1120 - lift, X(20, 0) + 14, g - 760 - lift, 8));
       } else {
         const L = tb ? 900 : 470;
         b.mat.brass.addPath(capsule(mouth, P(mouth.u + d.u * L * kf, mouth.v + 20), tb ? 16 : 18));
         b.mat.brass.addPath(flare(P(mouth.u + d.u * (tb ? 200 : 300) * kf, mouth.v + 6), P(mouth.u + d.u * (tb ? 420 : 470) * kf, mouth.v + 6), 20, tb ? 110 : 62));
       }
-      arm([shL, Q(-170, 150, 1000), Q(-30, 280, 1130)]);
-      arm([shR, Q(170, 150, 980), Q(30, tb ? 560 : 280, 1110)]);
-      hand(Q(-30, 280, 1130));
-      hand(Q(30, tb ? 560 : 280, 1110));
+      arm([shL, Q(-170, 150, 1000 + lift), Q(-30, 280, 1130 + lift)]);
+      arm([shR, Q(170, 150, 980 + lift), Q(30, tb ? 560 : 280, 1110 + lift)]);
+      hand(Q(-30, 280, 1130 + lift));
+      hand(Q(30, tb ? 560 : 280, 1110 + lift));
       break;
     }
     case 'tuba': {
@@ -740,6 +886,170 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       arm([shR, Q(220, 60, 1100), Q(80, 330, 950)]);
       hand(Q(-140, 330, 950));
       hand(Q(80, 330, 950));
+      break;
+    }
+    /* ── group 5 (sections) ── */
+    case 'sax':
+    case 'bariSax': {
+      // The neck from the mouth, the body down the player's right to the
+      // bow, the bell turned up and forward (the baritone's bow near the floor).
+      const big = k === 'bariSax';
+      const mouth = Q(0, 110, 1140 + lift);
+      const top = Q(30, 170, (big ? 1090 : 1060) + lift);
+      const bow = Q(big ? 150 : 120, big ? 240 : 210, (big ? 270 : 560) + lift);
+      b.mat.silver.addPath(capsule(mouth, top, 9));
+      b.mat.brass.addPath(taper(top, bow, big ? 34 : 22, big ? 56 : 36));
+      b.mat.brass.addPath(ellipse(bow, big ? 62 : 42, big ? 52 : 36));
+      b.mat.brass.addPath(flare(bow, Q(big ? 230 : 190, big ? 280 : 240, (big ? 660 : 800) + lift), big ? 50 : 34, big ? 100 : 66));
+      if (big) b.mat.brass.addPath(ellipse(Q(-20, 150, 1180 + lift), 50, 44));
+      for (const t of [0.3, 0.45, 0.6, 0.75]) b.mat.silver.addPath(ellipse(P(top.u + (bow.u - top.u) * t, top.v + (bow.v - top.v) * t), 11, 11));
+      const h1 = P(top.u + (bow.u - top.u) * 0.22, top.v + (bow.v - top.v) * 0.22);
+      const h2 = P(top.u + (bow.u - top.u) * 0.62, top.v + (bow.v - top.v) * 0.62);
+      arm([shL, Q(-160, 150, 950 + lift), h1]);
+      arm([shR, Q(260, 100, 820 + lift), h2]);
+      hand(h1);
+      hand(h2);
+      break;
+    }
+    case 'guitar': {
+      // The guitar on the lap, the neck rising to the left; the amp on the
+      // floor at the player's right, its speaker toward the player's front.
+      b.mat.varnish.addPath(ellipse(Q(60, 170, 700), 190 * faceOn, 210));
+      b.mat.ebony.addPath(capsule(Q(-100, 180, 760), Q(-560, 170, 930), 18));
+      arm([shL, Q(-300, 160, 820), Q(-440, 175, 880)]);
+      arm([shR, Q(240, 120, 800), Q(90, 180, 700)]);
+      hand(Q(-440, 175, 880));
+      hand(Q(90, 180, 700));
+      const us = [X(190, 335), X(750, 335), X(190, 605), X(750, 605)];
+      const u0 = Math.min(...us);
+      const u1 = Math.max(...us);
+      b.mat.piano.addPath(rr(u0, g - 540, u1, g - 10, 24));
+      if (Math.abs(fwdU) < 0.6) b.holes.addPath(ellipse(Q(470, 605, 300), 130 * Math.max(0.35, Math.abs(rightU)), 130));
+      line(b.legs, Q(60, 170, 600), Q(240, 335, 120));
+      break;
+    }
+    case 'drumkit': {
+      // The shared kit (kitPlanModel): K → the player's (right, forward) = (z + 110, x + 770).
+      const kp = (xK: number, zK: number) => ({ r: zK + 110, f: xK + 770 });
+      const kick = kp(KIT.kick.depth / 2, 0);
+      if (Math.abs(fwdU) < 0.5) {
+        const c = Q(kick.r, kick.f, KIT.kick.R);
+        b.mat.varnish.addPath(ellipse(c, KIT.kick.R + 16, KIT.kick.R + 16));
+        b.desks.addPath(ellipse(c, KIT.kick.R - 10, KIT.kick.R - 10));
+      } else {
+        const a = X(kick.r, 770);
+        const e = X(kick.r, 770 + KIT.kick.depth);
+        b.mat.varnish.addPath(rr(Math.min(a, e), g - 2 * KIT.kick.R, Math.max(a, e), g, 30));
+      }
+      const drum = (id: 'snare' | 'tom1' | 'tom2' | 'floor', depth: number) => {
+        const d = KIT_DRUMS[id];
+        const at = kp(d.c.x, d.c.z);
+        const R = d.spec.d.mm / 2;
+        const top = KIT.floorY - d.c.y;
+        const u = X(at.r, at.f);
+        b.mat.varnish.addPath(rr(u - R, g - top, u + R, g - top + depth, 14));
+        b.mat.silver.addPath(rr(u - R - 6, g - top - 8, u + R + 6, g - top + 10, 6));
+        line(b.legs, P(u, g - top + depth), P(u, g));
+      };
+      drum('floor', 400);
+      drum('snare', 140);
+      drum('tom1', 180);
+      drum('tom2', 200);
+      for (const id of ['hihat', 'crash1', 'crash2', 'ride'] as const) {
+        const cy = KIT_CYMBALS[id];
+        const at = kp(cy.c.x, cy.c.z);
+        const u = X(at.r, at.f);
+        const h = KIT.floorY - cy.c.y;
+        b.mat.brass.addPath(ellipse(P(u, g - h), cy.d / 2, 14));
+        line(b.legs, P(u, g - h), P(u, g));
+      }
+      const sn = kp(KIT_DRUMS.snare.c.x, KIT_DRUMS.snare.c.z);
+      const fl = kp(KIT_DRUMS.floor.c.x, KIT_DRUMS.floor.c.z);
+      arm([shL, Q(-260, 140, 820), Q(sn.r + 40, sn.f - 60, 720)]);
+      arm([shR, Q(260, 140, 820), Q(fl.r - 60, fl.f - 90, 720)]);
+      hand(Q(sn.r + 40, sn.f - 60, 720));
+      hand(Q(fl.r - 60, fl.f - 90, 720));
+      break;
+    }
+    case 'marimba':
+    case 'vibraphone': {
+      // The keyboard along the player's right–left, the bars at their own
+      // height (Lab 2's ROWS); the resonators hang under them, longest at the
+      // low end (the player's left); a frame end and wheels at each end.
+      const row = k === 'marimba' ? ROWS.marimba43 : ROWS.vibe;
+      const L = row.Lframe.mm;
+      const hb = row.hBars.mm;
+      const us = [X(-L / 2, 220), X(L / 2, 220), X(-L / 2, 220 + row.Dlow.mm), X(L / 2, 220 + row.Dhigh.mm)];
+      const u0 = Math.min(...us);
+      const u1 = Math.max(...us);
+      (k === 'marimba' ? b.mat.varnish : b.mat.silver).addPath(rr(u0, g - hb - 26, u1, g - hb + 14, 10));
+      if (Math.abs(rightU) > 0.35) {
+        const n = 14;
+        for (let i = 0; i < n; i++) {
+          const t = i / (n - 1);
+          const x = -L / 2 + 70 + t * (L - 140);
+          const u = X(x, 220 + (row.Dlow.mm + (row.Dhigh.mm - row.Dlow.mm) * t) * 0.45);
+          const len = (k === 'marimba' ? 720 : 520) * Math.pow(1 - t, 0.8) + 140;
+          (k === 'marimba' ? b.mat.steel : b.mat.brass).addPath(rr(u - 20, g - hb + 14, u + 20, g - hb + 14 + len, 8));
+        }
+      } else b.mat.steel.addPath(rr(u0 + 40, g - hb + 14, u1 - 40, g - hb + 120, 10));
+      for (const sx of [-1, 1]) {
+        const u = X(sx * (L / 2 - 50), 220 + (sx < 0 ? row.Dlow.mm : row.Dhigh.mm) / 2);
+        line(b.legs, P(u, g - hb + 14), P(u, g - 40));
+        b.fig.shoe.addPath(ellipse(P(u, g - 30), 34, 30));
+      }
+      if (k === 'vibraphone') line(b.legs, Q(-250, 260, 120), Q(250, 260, 120));
+      const hy = hb + 140;
+      arm([shL, Q(-240, 120, 1150), Q(-220, 300, hy)]);
+      arm([shR, Q(240, 120, 1150), Q(220, 300, hy)]);
+      hand(Q(-220, 300, hy));
+      hand(Q(220, 300, hy));
+      for (const sx of [-1, 1]) {
+        line(b.stick, Q(sx * 220, 300, hy), Q(sx * 300, 460, hb + 30));
+        b.holes.addPath(ellipse(Q(sx * 300, 460, hb + 30), 24, 24));
+      }
+      break;
+    }
+    case 'congas': {
+      // A conga and a tumba, 30 in tall (M04a), the heads under the hands.
+      const H = CONGA_DIMS.height.mm;
+      for (const [x, d] of [
+        [-170, CONGA_DIMS.congaD.mm],
+        [170, CONGA_DIMS.tumbaD.mm],
+      ] as const) {
+        const R = d / 2;
+        const u = X(x, 380);
+        b.mat.varnish.addPath(poly([P(u - R, g - H), P(u + R, g - H), P(u + R * 1.1, g - H * 0.6), P(u + R * 0.8, g), P(u - R * 0.8, g), P(u - R * 1.1, g - H * 0.6)]));
+        b.mat.steel.addPath(rr(u - R - 8, g - H - 14, u + R + 8, g - H + 10, 6));
+        b.mat.hide.addPath(ellipse(P(u, g - H - 6), R, 14));
+      }
+      arm([shL, Q(-230, 160, 1000), Q(-170, 330, H + 60)]);
+      arm([shR, Q(230, 160, 1000), Q(170, 330, H + 60)]);
+      hand(Q(-170, 330, H + 60));
+      hand(Q(170, 330, H + 60));
+      break;
+    }
+    case 'perctable': {
+      // A padded table of small percussion; a cymbal on its stand at the right.
+      const us = [X(-450, 200), X(450, 200), X(-450, 650), X(450, 650)];
+      const u0 = Math.min(...us);
+      const u1 = Math.max(...us);
+      b.mat.chair.addPath(rr(u0, g - 880, u1, g - 840, 10));
+      line(b.legs, P(u0 + 40, g - 840), P(u0 + 40, g));
+      line(b.legs, P(u1 - 40, g - 840), P(u1 - 40, g));
+      b.mat.varnish.addPath(ellipse(Q(-250, 440, 905), 125, 26));
+      b.mat.maple.addPath(capsule(Q(40, 540, 900), Q(170, 490, 915), 26));
+      const tri = Q(270, 330, 1020);
+      line(b.hair, P(tri.u - 75, tri.v + 130), P(tri.u + 75, tri.v + 130));
+      line(b.hair, P(tri.u - 75, tri.v + 130), P(tri.u, tri.v));
+      line(b.hair, P(tri.u + 75, tri.v + 130), P(tri.u, tri.v));
+      const cy = Q(650, 380, 1150);
+      b.mat.brass.addPath(ellipse(cy, 229, 12));
+      line(b.legs, cy, P(cy.u, g));
+      arm([shL, Q(-220, 160, 1060), Q(-160, 330, 940)]);
+      arm([shR, Q(220, 160, 1060), Q(140, 330, 940)]);
+      hand(Q(-160, 330, 940));
+      hand(Q(140, 330, 940));
       break;
     }
     case 'conductor': {
