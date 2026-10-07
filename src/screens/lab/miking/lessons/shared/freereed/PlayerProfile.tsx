@@ -39,8 +39,6 @@ export const SKIN = ['#8a8f98', '#6e737c', '#52565e'];
 export const SKIN_RIM = '#b3b8c1';
 export const SKIN_EDGE = '#24272d';
 const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
-const HEAD_LINE = '#cfd4dc';
-const HEAD_FILL = 'rgba(16,18,23,0.8)';
 
 /** A standing player in profile (facing +u). Every joint is a drawing
  *  default: no source gives a player's geometry. */
@@ -235,7 +233,12 @@ function build(p: ProfilePose): Built {
       { path: shoe(p.ankleNear, p.floor), far: false },
     ],
     lines,
-    head: headProfile(p.head.c, p.head.r),
+    // The head joined to the collar by its neck: one skin mass (FigureHead's rule).
+    head: (() => {
+      const h = headProfile(p.head.c, p.head.r);
+      const k = p.head.r / 110;
+      return { line: h.line, fill: union(h.fill, capsule(pt(p.head.c.u - 6 * k, p.head.c.v + 70 * k), pt(p.neck.u, p.neck.v - 10), 44 * k, 50 * k)) };
+    })(),
     shadow,
     strap,
   };
@@ -299,11 +302,9 @@ export function ProfileBehind({ pose, dim = 1 }: { pose: ProfilePose; dim?: numb
           </Path>
         </>
       ) : null}
-      <Path path={b.head.fill} color={HEAD_FILL} />
-      <Path path={b.head.fill}>
-        <RadialGradient c={vec(pose.head.c.u - pose.head.r * 0.4, pose.head.c.v - pose.head.r * 0.5)} r={pose.head.r * 1.4} colors={['rgba(255,255,255,0.07)', 'rgba(255,255,255,0)']} />
-      </Path>
-      <Path path={b.head.line} style="stroke" strokeWidth={4.2} strokeCap="round" strokeJoin="round" color={HEAD_LINE} opacity={0.82} />
+      {/* The head as part of the figure (owner 2026-10-06: no separate
+          line-art head icon) — the same lit skin mass as the hands. */}
+      <SkinArt path={b.head.fill} />
     </Group>
   );
 }

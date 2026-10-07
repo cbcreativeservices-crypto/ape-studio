@@ -24,7 +24,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { VariantId, Vec3, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { useKeepOutsAtRest } from '../../../engine/scene/keepOuts.ts';
-import { FIGURE_TONES, FigureMass, handShape, headAbove, headProfile, LineHead, type FigureTone, type HeadPaths } from '../players/PlayerFigure';
+import { FIGURE_TONES, FigureMass, handShape, FigureHead, headAbove, headProfile, type FigureTone, type HeadPaths } from '../players/PlayerFigure';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { archAt, fbHalf, fingerboardZ, halfWidth, outline, stationsOf, stringYs, stringZ, type BowedSpec } from './bowedSpec.ts';
 import { anchorsOf, toLesson, type BPoint, type BowPose, type Posture } from './posture.ts';
@@ -529,7 +529,7 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
 export function PaintItem({ it }: { it: Item }) {
   const { box } = it;
   const grad = typeof it.fill === 'object' ? it.fill : null;
-  if (it.head) return <LineHead head={it.head.paths} c={it.head.c} r={it.head.r} />;
+  if (it.head) return <FigureHead fill={it.head.paths.fill} />;
   if (it.tone) {
     return (
       <Group opacity={it.opacity ?? 1} clip={it.clip}>

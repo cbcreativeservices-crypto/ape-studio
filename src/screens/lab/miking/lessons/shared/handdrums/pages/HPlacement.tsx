@@ -29,6 +29,7 @@ import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, Z
 import { MIC_TYPES, micType } from '../../../../data/micTypes';
 import type { PageProps } from '../../../../pages/pageTypes';
 import { handOf } from '../family.ts';
+import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
 
 export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
   const H = handOf(lesson);
@@ -77,6 +78,11 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     { title: 'CLEARANCE', text: H.clearWords, cell: 3 },
   ];
   const wk = worked[exStep];
+  // The piece being read is marked on the drawing too (PPlacement's rule,
+  // 2026-10-06): the head it is measured from (2, 3), the keep-outs (6).
+  const exHeadPart = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.partId ?? null;
+  const exEnvelope = lesson.model.envelopes.find((e) => !e.variants || e.variants.includes(variant))?.id ?? null;
+  const exHighlight = exStep === 1 || exStep === 2 ? exHeadPart : exStep === 5 ? exEnvelope : null;
   const partShort = stopShortOf(lesson.model, { gooseneck: 'REACH' });
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, partShort).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
   const exParams: DockParam[] = [
@@ -89,7 +95,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`,
       formatShort: () => `${exStep + 1} / ${worked.length}`,
     },
-    { kind: 'toggle', id: 'view', label: exView === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: exView === 'top', onToggle: () => setExView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
   ];
 
   const r0 = rig.readouts('A');
@@ -113,7 +119,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const available = zonesAvailable(lesson.zones, variant, mic.typeId, t.mount);
   const params: DockParam[] = [
     ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis }),
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
     {
       kind: 'group',
       id: 'setup',
@@ -171,7 +177,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
+        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} highlight={exHighlight} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
         badge: 'WORKED EXAMPLE · placed for you · blue = recommended starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: exParams,

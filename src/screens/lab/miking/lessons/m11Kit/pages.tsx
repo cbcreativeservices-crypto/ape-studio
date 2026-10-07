@@ -33,6 +33,7 @@ import { M11_ARRIVALS, M11_ORIENT, PLAN_WORDS, ROUTE_WORDS } from './copy.ts';
 import { M11_VIEWS } from './geometry.ts';
 import { PlanScene } from './PlanScene';
 import { CHANNELS, CHANNEL_IDS, FEEDS, FEED_LABEL, PLANS, counts, openIn, routingDone, ROUTE_IDS, type ChannelId, type Feed, type PlanId, type Routing } from './plan.ts';
+import { viewToggle } from '../../engine/scene/viewToggle.ts';
 
 export function M11Orient(p: PageProps) {
   return <PKitOrient {...p} words={M11_ORIENT} />;
@@ -131,7 +132,7 @@ export function PChannelPlan({ lesson, answers, onAnswered, onInteractive, inter
       format: () => `${stage + 1} of ${WATCH.length} · ${ws.label.toLowerCase()}`,
       formatShort: () => `${stage + 1} / ${WATCH.length}`,
     },
-    { kind: 'toggle', id: 'view', label: wview === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: wview === 'top', onToggle: () => setWview((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: wview, setView: setWview, stage: 'single' }),
   ];
   const buildParams: DockParam[] = [
     {
@@ -166,7 +167,7 @@ export function PChannelPlan({ lesson, answers, onAnswered, onInteractive, inter
         </View>
       ),
     },
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'single' }),
   ];
   const steps: MikingStep[] = [
     {

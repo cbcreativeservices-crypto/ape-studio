@@ -385,6 +385,21 @@ function facePath(at: Pt): SkPath {
   return f;
 }
 
+/** The face as part of the figure (owner 2026-10-06: no separate line-art
+ *  head on a lab figure): the profile above closed into the lower head and
+ *  neck, painted as the same lit skin mass as the hands beside it. */
+function faceMass(at: Pt): SkPath {
+  const P = (u: number, v: number) => [at.u + u, at.v + v] as const;
+  const f = facePath(at);
+  // Close it a short way behind the face (the cheek and the jaw), so the
+  // head stays a profile beside the hands and clear of the parts' names.
+  f.lineTo(...P(-122, 90));
+  f.quadTo(...P(-136, 20), ...P(-126, -60));
+  f.quadTo(...P(-112, -150), ...P(-64, -160));
+  f.close();
+  return f;
+}
+
 /* ═══════════════ the MEET page's close-up ═══════════════ */
 
 /* The harmonica taken apart, drawn oblique (a cabinet projection: depth up
@@ -465,14 +480,14 @@ const CLOSE = { u: 430, v: 170 };
 const MEET_BOX = { u0: 0, u1: 610, v0: 10, v1: 330 };
 
 function MeetHarmonica({ hi }: { hi: string | null }): ReactElement {
-  // A lips-and-chin outline beside the hands (line art, house spec: no eye).
-  const face = facePath(CLOSE);
+  // The lower face beside the hands, the same lit skin as the hands.
+  const face = faceMass(CLOSE);
   return (
     <Group>
       {LAYERS.map((_, i) => (
         <Layer key={i} i={i} hi={hi} />
       ))}
-      <Path path={face} style="stroke" strokeWidth={3.4} strokeCap="round" color="#cfd4dc" opacity={0.8} />
+      <MassArt path={face} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
       <HandsProfile at={CLOSE} state="half" hi={hi === 'hm.hands'} />
       {hi === 'hm.harp' ? <Path path={rr(CLOSE.u - 8, CLOSE.v - 22, CLOSE.u + HD + 9, CLOSE.v + 22, 5)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
       {hi === 'hm.holes' ? <Path path={rr(EX.u - 6, layerBox(2).v0 - 6, EX.u + HL * SCALE + 6, layerBox(2).v1 + 6, 4)} style="stroke" strokeWidth={3} color={HIGHLIGHT} /> : null}
@@ -551,7 +566,7 @@ export function HandChamber({ w, h, state, accessibilityLabel }: { w: number; h:
     out.moveTo(HD + 6, 0);
     out.lineTo(HD + 26, 0);
   }
-  const lips = facePath({ u: 0, v: 0 });
+  const lips = faceMass({ u: 0, v: 0 });
   const st = state;
   const labels: StaticLabel[] = [
     { id: 'harp', text: 'HARMONICA', u: 40, v: -128, align: 'left', tone: 'muted' },
@@ -563,7 +578,7 @@ export function HandChamber({ w, h, state, accessibilityLabel }: { w: number; h:
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          <Path path={lips} style="stroke" strokeWidth={3.4} strokeCap="round" color="#cfd4dc" opacity={0.8} />
+          <MassArt path={lips} ramp={SKIN} rim={SKIN_RIM} edge={SKIN_EDGE} />
           <HandsProfile at={at} state={state} />
           <Path path={out} style="stroke" strokeWidth={3} strokeCap="round" color={AIR} opacity={0.8}>
             <DashPathEffect intervals={[10, 7]} />

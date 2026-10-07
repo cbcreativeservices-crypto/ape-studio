@@ -143,7 +143,10 @@ export function malletModel(fam: MalletFamily): InstrumentModel {
     parts.push({ id: `${p}.acc.${id}`, label: 'accidental bars (the far row, raised)', short: 'ACCIDENTALS', role: R.accidentals, moving: true, prov: r.prov.range, variants: only, solid: rowBox(L.accidentals), clearance: { mm: 8, prov: ill('a struck bar moves: no source gives a clearance') } });
     const resRole = R.resonators;
     if (L.tubes.length && resRole) {
-      parts.push({ id: `${p}.res.${id}`, label: 'resonators', short: 'RESONATORS', role: resRole, prov: r.res.prov, variants: only });
+      // The tubes hang under the bars: from above the bars hide them, so the
+      // resonators are named and highlighted from the side only (hiddenIn;
+      // owner 2026-10-06: "the resonators are the tubes, not the bars").
+      parts.push({ id: `${p}.res.${id}`, label: 'resonators', short: 'RESONATORS', role: resRole, prov: r.res.prov, variants: only, hiddenIn: ['top'] });
       for (const [side, list] of [['n', L.tubes.filter((t) => t.z < 0)], ['a', L.tubes.filter((t) => t.z > 0)]] as const) {
         chunks([...list].sort((a, b) => b.x - a.x), 6).forEach((grp, i) => {
           const half = (t: (typeof grp)[number]) => (t.kind === 'helmholtz' ? (t.depth ?? 150) / 2 : t.d / 2);
@@ -155,6 +158,7 @@ export function malletModel(fam: MalletFamily): InstrumentModel {
             prov: r.res.prov,
             variants: only,
             listIn: [],
+            hiddenIn: ['top'],
             solid: box({ x: Math.min(...grp.map((t) => t.x - t.d / 2)), y: Math.min(...grp.map((t) => t.yTop)), z: Math.min(...grp.map((t) => t.z - half(t))) }, { x: Math.max(...grp.map((t) => t.x + t.d / 2)), y: Math.max(...grp.map((t) => t.yBot)), z: Math.max(...grp.map((t) => t.z + half(t))) }),
           });
         });
@@ -226,6 +230,8 @@ export function malletModel(fam: MalletFamily): InstrumentModel {
     defaultVariant: v0,
     views: G.views[v0],
     viewsByVariant,
+    // A case instrument stands on a table the model does not hold as a part.
+    ...(fam.variants.some((v) => v.row.stand === 'case') ? { fitAuthored: { side: true as const } } : {}),
     viewTags: { side: 'FRONT · FROM THE AUDIENCE', top: 'FROM ABOVE · AUDIENCE BELOW' },
     aimAzLimit: 180,
     yFloor: { mm: 0, prov: ill('the floor is the frame’s origin; the bar height above it is a drawing default') },

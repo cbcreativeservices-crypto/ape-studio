@@ -94,6 +94,11 @@ export type Part = {
   /** Listed on the parts page only in these variants (default: wherever it
    *  is present). A neighbour stays a solid without being a part to name. */
   listIn?: VariantId[];
+  /** Views in which the part cannot be seen (a marimba's tubes hang under
+   *  their bars: from above the bars hide them). No highlight is drawn there
+   *  — a marker would sit on the part in front (owner 2026-10-06: "marimba
+   *  resonator are the tubes not the wooden struck note"). */
+  hiddenIn?: ViewId[];
   /** Where its geometry comes from (internal record; never shown). */
   prov: Provenance;
 };
@@ -375,6 +380,11 @@ export type InstrumentModel = {
   variants: Variant[];
   defaultVariant: VariantId;
   views: Partial<Record<ViewId, ViewBox>>;
+  /** Views whose drawing reaches past its modelled parts (a harp's strings
+   *  seen from above, an accordion's bellows): a scene with no mic on it fits
+   *  the authored box there instead of the content frame
+   *  (geometry/contentFrame.ts; pinned by test/mikingContentFrame). */
+  fitAuthored?: Partial<Record<ViewId, true>>;
   /** How far the aim may swing left–right by drag (deg; default 80). 180
    *  lets a mic face the other way (behind an open-backed cabinet). */
   aimAzLimit?: number;

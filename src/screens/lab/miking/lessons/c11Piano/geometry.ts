@@ -179,6 +179,8 @@ export const PIANO_MODEL: InstrumentModel = {
   defaultVariant: 'grand',
   views: GRAND_VIEWS,
   viewsByVariant: { baby: BABY_VIEWS, upright: UP_VIEWS, uprightFront: UP_VIEWS },
+  // From above the bench and the open lid reach past the modelled parts.
+  fitAuthored: { top: true },
   aimAzLimit: 180,
   yFloor: FLOOR,
   // No drum interior: nothing counts as "inside" (every zone is 'either').

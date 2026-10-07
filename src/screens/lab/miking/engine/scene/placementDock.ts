@@ -59,13 +59,21 @@ export function placementParams(opts: {
       id: 'pos',
       label: 'POSITION',
       value: Math.min(1, Math.max(0, (cur - lo) / (hi - lo))),
+      // While the finger rides the lane the mic moves through the shared
+      // values only (rig.preview: the canvas follows, the page does not
+      // re-render); the release commits it (owner, Pixel 2026-10-06:
+      // "sliders not working" — a move used to re-render the whole page).
       onChange: (v) => {
-        const to: MicPose = { ...pose, p: { ...pose.p, [posAxis]: lo + v * (hi - lo) } };
-        rig.moveTo(slot, to);
+        rig.preview(slot, { ...pose, p: { ...pose.p, [posAxis]: lo + v * (hi - lo) } });
       },
+      onCommit: () => rig.commit(slot),
       // Compact: the lane prints its value right-aligned beside the label, so a
       // long line ran over "POSITION". The stop comes FIRST when there is one.
-      format: () => (stopWord ? `${stopWord} · ${fmtLen(Math.abs(cur - origin))}` : posWords(posAxis, cur - origin, axes)),
+      // (Called with the finger's value while it rides the lane.)
+      format: (v) => {
+        const at = Math.abs(lo + v * (hi - lo) - cur) < 0.5 ? cur : lo + v * (hi - lo);
+        return stopWord && at === cur ? `${stopWord} · ${fmtLen(Math.abs(cur - origin))}` : posWords(posAxis, at - origin, axes);
+      },
       formatShort: () => (posAxis === 'x' ? axes.x.label.split(' ')[0] : posAxis === 'y' ? axes.y.label.split(' ')[0] : axes.z.label.split(' ')[0]),
       chooser: {
         title: 'MOVE THE MIC',
@@ -95,10 +103,15 @@ export function placementParams(opts: {
       home: 0.5,
       onChange: (v) => {
         const ang = Math.round((v * 2 - 1) * lim) + h0;
-        const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
-        rig.moveTo(slot, to);
+        rig.preview(slot, aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
       },
-      format: () => `${stopWord ? `${stopWord} · ` : ''}${aimAxis === 'az' ? (a >= 0 ? 'to the right' : 'to the left') : a >= 0 ? 'tilted up' : 'tilted down'} ${fmtAngle(Math.abs(a))}`,
+      onCommit: () => rig.commit(slot),
+      format: (v) => {
+        const want = Math.round((v * 2 - 1) * lim);
+        const live = Math.abs(want - a) >= 1;
+        const x = live ? want : a;
+        return `${stopWord && !live ? `${stopWord} · ` : ''}${aimAxis === 'az' ? (x >= 0 ? 'to the right' : 'to the left') : x >= 0 ? 'tilted up' : 'tilted down'} ${fmtAngle(Math.abs(x))}`;
+      },
       formatShort: () => fmtAngle(a),
       chooser: {
         title: 'TURN THE MIC',

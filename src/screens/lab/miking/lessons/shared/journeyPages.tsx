@@ -351,8 +351,16 @@ export function posParams(o: { rig: Rig; slot: MicSlot; posAxis: PosAxis; setPos
       id: 'pos',
       label: 'POSITION',
       value: Math.min(1, Math.max(0, (cur - lo) / (hi - lo))),
-      onChange: (v) => rig.moveTo(slot, { ...pose, p: { ...pose.p, [posAxis]: lo + v * (hi - lo) } }),
-      format: () => (stopWord ? `${stopWord} · ${fmtLen(Math.abs(cur))}` : words[posAxis].fmt(cur)),
+      // Preview while the finger rides the lane, commit on release (the
+      // engine's fader contract, 2026-10-06: no page re-render per move).
+      onChange: (v) => {
+        rig.preview(slot, { ...pose, p: { ...pose.p, [posAxis]: lo + v * (hi - lo) } });
+      },
+      onCommit: () => rig.commit(slot),
+      format: (v) => {
+        const at = lo + v * (hi - lo);
+        return Math.abs(at - cur) < 0.5 ? (stopWord ? `${stopWord} · ${fmtLen(Math.abs(cur))}` : words[posAxis].fmt(cur)) : words[posAxis].fmt(at);
+      },
       formatShort: () => words[posAxis].short,
       chooser: {
         title: 'MOVE THE MIC',
@@ -369,9 +377,15 @@ export function posParams(o: { rig: Rig; slot: MicSlot; posAxis: PosAxis; setPos
       home: 0.5,
       onChange: (v) => {
         const ang = Math.round((v * 2 - 1) * AIM_MAX);
-        rig.moveTo(slot, aimAxis === 'az' ? { ...pose, az: ang + azC } : { ...pose, el: ang });
+        rig.preview(slot, aimAxis === 'az' ? { ...pose, az: ang + azC } : { ...pose, el: ang });
       },
-      format: () => `${stopWord ? `${stopWord} · ` : ''}${aimAxis === 'az' ? (a >= 0 ? 'turned right' : 'turned left') : a >= 0 ? 'tilted up' : 'tilted down'} ${fmtAngle(Math.abs(a))}`,
+      onCommit: () => rig.commit(slot),
+      format: (v) => {
+        const want = Math.round((v * 2 - 1) * AIM_MAX);
+        const live = Math.abs(want - a) >= 1;
+        const x = live ? want : a;
+        return `${stopWord && !live ? `${stopWord} · ` : ''}${aimAxis === 'az' ? (x >= 0 ? 'turned right' : 'turned left') : x >= 0 ? 'tilted up' : 'tilted down'} ${fmtAngle(Math.abs(x))}`;
+      },
       formatShort: () => fmtAngle(a),
       chooser: {
         title: 'TURN THE MIC',

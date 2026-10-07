@@ -34,7 +34,7 @@ import { fretX, outlinePoly, type GuitarGeom } from './guitarSpec.ts';
 import { partIdOf, type BuiltGuitarModel, type GuitarScene } from './guitarModel.ts';
 import { guitarPlayerPose } from './guitarPlayer.ts';
 import type { PlayerPose } from '../players/playerPose.ts';
-import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { figureCovers, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -840,7 +840,7 @@ export function guitarHit(sc: GuitarScene, view: ViewId, u: number, vv: number, 
 export function makeGuitarArt(
   built: BuiltGuitarModel,
   extras?: { labels?: (sc: GuitarScene, view: ViewId) => ArtLabel[]; zones?: readonly DocumentedZone[] },
-): Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' | 'labelObstacles' | 'labelsYieldToMic'> {
+): Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' | 'labelObstacles' | 'labelsYieldToMic' | 'figureAt'> {
   const scOf = (v: VariantId) => built.scenes[v] ?? built.scenes[built.model.defaultVariant];
   const vid = (v: VariantId) => (built.scenes[v] ? v : built.model.defaultVariant);
   const zones = extras?.zones ?? [];
@@ -848,6 +848,8 @@ export function makeGuitarArt(
     Instrument: ({ view, variant }) => <GuitarSceneArt sc={scOf(variant)} view={view} />,
     labels: (view, variant) => guitarLabels(scOf(variant), view, extras?.labels, viewsOf(built.model, vid(variant))[view]),
     hitTest: (view, variant, u, v, tol) => guitarHit(scOf(variant), view, u, v, tol),
+    // The drawn player, so the part labels keep off the figure too.
+    figureAt: (view, variant, u, v, tol) => figureCovers(playerPoseOf(scOf(variant), view), u, v, tol),
     // The words keep off the recommended starting points and step back from
     // the mic (art pass 2026-10-05: labels were drawn over both).
     labelObstacles: (view, variant, shown) =>

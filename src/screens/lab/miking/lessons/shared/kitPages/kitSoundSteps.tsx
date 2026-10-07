@@ -25,6 +25,7 @@ import { CYMBAL_SHAPES, cymbalStrikeShare, edgeToBow } from '../cymbals/cymbalMo
 import { CymbalStrike } from './CymbalStrike';
 import { ArrivalsScene, msFor, type ArrivalImage, type ArrivalPoint, type ArrivalSource } from './ArrivalsScene';
 import { useStepReveal } from './useStepReveal';
+import { viewToggle } from '../../../engine/scene/viewToggle.ts';
 
 const dist = (a: Vec3, b: Vec3) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
@@ -251,7 +252,7 @@ export function useArrivalsStep({
       sticky: true,
       options: points.map((p) => ({ id: p.id, label: p.label })),
     },
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'single' }),
   ];
   const bezel: BezelItem[] = rows.slice(0, 3).map((r) => ({ k: r.label.toUpperCase(), v: t >= r.ms ? 'ARRIVED' : fmtMs(r.ms), sub: t >= r.ms ? fmtMs(r.ms) : 'arrives at', tint: t >= r.ms ? r.color : undefined, flex: 1 }));
   bezel.push({ k: 'SPREAD', v: fmtMs(rows[rows.length - 1].ms - first.ms), sub: 'first→last', flex: 1 });

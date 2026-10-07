@@ -38,10 +38,10 @@
  * inside the full-width lane so the cap never comes within 40 dp of either
  * window edge — the system back-gesture strips. See laneEdgeGuard.ts.
  */
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, PanResponder, StyleSheet, Text, View } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColor, rampColors } from '../../../features/tools/levelColor';
@@ -49,15 +49,20 @@ import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { laneFingerAt, laneFingerDx, type LaneFinger } from './laneFinger';
 import { FALLBACK_INSETS, LANE_CAP_W, laneDragValue, laneValueAt } from './laneEdgeGuard';
 import { useEdgeGuard } from './useEdgeGuard';
+import { createLaneFeed } from './laneFeed';
 import { GestureExclusionZone } from '../../../../modules/ape-gesture-exclusion';
 
 const DOUBLE_TAP_MS = 320;
+/** The lane hands the page at most one value per this long (≈ one frame). */
+const LANE_TICK_MS = 16;
 
 export function ParamLane({
   label,
   value,
-  readout,
+  readout: pageReadout,
   onChange,
+  onCommit,
+  format,
   onDragActive,
   tint,
   level,
@@ -69,6 +74,11 @@ export function ParamLane({
   /** Formatted value string (mono, right side of the lane). */
   readout: string;
   onChange: (v: number) => void;
+  /** A PREVIEW lane (rackTypes `onCommit`): called once with the value the
+   *  finger let go at; `onChange` then only previews. */
+  onCommit?: (v: number) => void;
+  /** The param's own words for a value — printed live on a preview lane. */
+  format?: (v: number) => string;
   /** True while the finger is riding the lane — drives the in-glass drag tag. */
   onDragActive?: (active: boolean) => void;
   /** Thumb/fill tint (default amber). */
@@ -103,6 +113,54 @@ export function ParamLane({
   // its window (laneEdgeGuard.ts). The dock fallback holds until measured.
   const { ref: laneRef, ins, insRef, measure: measureEdges } = useEdgeGuard({ capW: CAP_W, fallback: FALLBACK_INSETS });
 
+  // The CAP follows the finger on the UI thread (capV) while it rides the
+  // lane, whatever the page is doing; the page hears the value at most once a
+  // frame (laneFeed.ts — the Miking Labs' "sliders not working" fix,
+  // 2026-10-06). At rest the cap is the page's own value, so a stepped
+  // fader settles on its step and a lab that stopped a move (a mic held by a
+  // part, "✕ shell" on the lane) shows where it really is.
+  const capV = useSharedValue(Math.max(0, Math.min(1, value)));
+  const travelW = useSharedValue(0);
+  const dragging = useRef(false);
+  const [rest, setRest] = useState(0);
+  // A PREVIEW lane (`onCommit` given): the page does not re-render while the
+  // finger moves, so the lane prints the bound param's own words for the
+  // finger's value itself, and commits once on release.
+  const onCommitRef = useRef(onCommit);
+  onCommitRef.current = onCommit;
+  const formatRef = useRef(format);
+  formatRef.current = format;
+  const [live, setLive] = useState<string | null>(null);
+  const feed = useRef(
+    createLaneFeed({
+      deliver: (v) => {
+        onChangeRef.current(v);
+        if (onCommitRef.current && formatRef.current) setLive(formatRef.current(v));
+      },
+      // One tick about a frame long (16 ms), once per burst of moves — never
+      // a chain (nothing re-schedules itself); the release cancels it and
+      // delivers at once. (A timer, not a rAF: a rAF with a cancel reads as a
+      // loop to the motion ratchets — patternP10 / P10b.)
+      schedule: (cb) => setTimeout(cb, LANE_TICK_MS),
+      cancel: (h) => clearTimeout(h as ReturnType<typeof setTimeout>),
+    }),
+  ).current;
+  /** The finger is gone (lifted, or the touch was taken): deliver what is
+   *  pending, commit a preview lane, hand the cap back to the page. */
+  const settle = useRef(() => {
+    feed.end();
+    const last = feed.latest();
+    if (onCommitRef.current && last != null) onCommitRef.current(last);
+    dragging.current = false;
+    setLive(null);
+    setRest((n) => n + 1);
+    onActiveRef.current?.(false);
+  }).current;
+  useEffect(() => {
+    if (!dragging.current) capV.value = Math.max(0, Math.min(1, value));
+  }, [value, rest, capV]);
+  const capStyle = useAnimatedStyle(() => ({ left: capV.value * Math.max(0, travelW.value - CAP_W) }));
+
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -110,11 +168,13 @@ export function ParamLane({
       onPanResponderGrant: (e) => {
         onActiveRef.current?.(true);
         movedRef.current = false;
+        dragging.current = true;
         fingerRef.current = laneFingerAt(e.nativeEvent);
         if (wRef.current > 0) {
           const v = laneValueAt(e.nativeEvent.locationX, wRef.current, insRef.current);
           baseRef.current = v;
-          onChangeRef.current(v);
+          capV.value = v;
+          feed.grant(v);
         }
       },
       onPanResponderMove: (e, g) => {
@@ -122,11 +182,13 @@ export function ParamLane({
         if (dx === 'lifted') return;
         if (Math.abs(dx) > 5) movedRef.current = true;
         if (wRef.current > 0) {
-          onChangeRef.current(laneDragValue(baseRef.current, dx, wRef.current, insRef.current));
+          const v = laneDragValue(baseRef.current, dx, wRef.current, insRef.current);
+          capV.value = v;
+          feed.move(v);
         }
       },
       onPanResponderRelease: () => {
-        onActiveRef.current?.(false);
+        settle();
         // Double-tap → home (owner ruling 2026-09-11: unity for faders,
         // centre for panners). Tap semantics on this lane have always been
         // "jump to the finger", so the first tap of the pair jumps and the
@@ -135,6 +197,7 @@ export function ParamLane({
           const now = Date.now();
           if (now - lastTapRef.current < DOUBLE_TAP_MS && homeRef.current != null) {
             onChangeRef.current(homeRef.current);
+            onCommitRef.current?.(homeRef.current);
             AccessibilityInfo.announceForAccessibility?.(`${labelRef.current} reset to home`);
             lastTapRef.current = 0;
           } else {
@@ -142,14 +205,14 @@ export function ParamLane({
           }
         }
       },
-      onPanResponderTerminate: () => onActiveRef.current?.(false),
+      onPanResponderTerminate: () => settle(),
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;
 
   const v = Math.max(0, Math.min(1, value));
+  const readout = live ?? pageReadout;
   const c = level ? levelColor(v) : (tint ?? colors.amber);
-  const capLeft = `${v * 100}%` as const;
 
   return (
     <View
@@ -184,7 +247,9 @@ export function ParamLane({
       accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
       onAccessibilityAction={(e) => {
         const step = e.nativeEvent.actionName === 'increment' ? 0.05 : -0.05;
-        onChangeRef.current(Math.max(0, Math.min(1, v + step)));
+        const next = Math.max(0, Math.min(1, v + step));
+        onChangeRef.current(next);
+        onCommitRef.current?.(next);
       }}
     >
       {/* The recessed travel slot. It stays EMPTY behind the cap on an
@@ -207,7 +272,7 @@ export function ParamLane({
       {/* The cap's TRAVEL: the lane less the edge-guard insets. Slot, scale
           and cap all live inside it, so their percentage geometry is
           unchanged — only the span they share is inset from a window edge. */}
-      <View pointerEvents="none" style={[styles.travel, { left: ins.l, right: ins.r }]}>
+      <View pointerEvents="none" style={[styles.travel, { left: ins.l, right: ins.r }]} onLayout={(e) => (travelW.value = e.nativeEvent.layout.width)}>
       <View pointerEvents="none" style={styles.slot}>
         {level ? (
           <LinearGradient
@@ -241,7 +306,7 @@ export function ParamLane({
       {/* The cap: brushed metal, grip grooves, coloured indicator line that
           breathes per the app-wide pulse standard. It overhangs the slot the
           way a real cap stands proud of the panel. */}
-      <Animated.View pointerEvents="none" style={[styles.cap, { left: capLeft, marginLeft: -CAP_W * v }]}>
+      <Animated.View pointerEvents="none" style={[styles.cap, capStyle]}>
         <LinearGradient colors={['#3c3c44', '#26262c', '#303038']} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={StyleSheet.absoluteFill} />
         <View style={styles.grip} />
         <Animated.View style={[styles.capLine, { backgroundColor: c }, pulseStyle]} />

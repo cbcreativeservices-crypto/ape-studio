@@ -22,6 +22,7 @@
  */
 import './_mikingTsxLoader.ts';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
 const R = <T,>(m: T): T => ((m as { default?: T }).default ?? m);
@@ -31,12 +32,15 @@ const { lessonArt } = R(await import('../src/screens/lab/miking/data/lessonArt.t
 const { fitLabels, labelRect, leaderLine } = R(await import('../src/screens/lab/miking/engine/scene/labelLayout.ts'));
 const { fitXform } = R(await import('../src/screens/lab/miking/engine/geometry/frame.ts'));
 const { viewsOf } = R(await import('../src/screens/lab/miking/engine/model/types.ts'));
+const { sceneFrame } = R(await import('../src/screens/lab/miking/engine/geometry/contentFrame.ts'));
+const { layoutArtLabels } = R(await import('../src/screens/lab/miking/engine/scene/artLabels.ts'));
+const { liveReserve } = R(await import('../src/screens/lab/miking/engine/scene/PlacementScene.tsx'));
 const bowedArt = R(await import('../src/screens/lab/miking/lessons/shared/bowed/BowedArt.tsx'));
 const bowedSpec = R(await import('../src/screens/lab/miking/lessons/shared/bowed/bowedSpec.ts'));
 
 /** The player, not the instrument (bw.* the bowed family's figure, br.* the brass player's, pl.* the low-brass player's). */
 const PERSON = /^(bw\.(player|head|armR\d?a|leftHand|chair)(\.seated)?|br\.(player|head|armR\d?a|valveHands)(\.[a-z]+)?|sx\.(player|head|handR|armR\d?|thighR|strap|chair)(\.[a-z]+)?|hm\.(body|head)|ac\.(body|strap)|ww\.(player|head|hands|chair|chairBack)(\.[a-z]+)?|pl\.[a-zA-Z]+|player\..*|chair|bench\..*|kit\.throne)$/;
-const LABEL_MIN_S = 0.12; // PlacementScene: no labels below this fit scale
+const LABEL_MIN_S = 0.06; // PlacementScene: no labels below this fit scale
 
 type Hit = { lesson: string; where: string; text: string; parts: string[] };
 function overlaps(id: string): Hit[] {
@@ -48,18 +52,26 @@ function overlaps(id: string): Hit[] {
   for (const variant of variants) {
     const views = viewsOf(L.model, variant);
     for (const view of Object.keys(views) as ('side' | 'top')[]) {
-      const box = views[view]!;
-      const aspect = (box.u1 - box.u0) / (box.v1 - box.v0);
+      // Laid out exactly as the phone lays them out (2026-10-06): the frame a
+      // scene fits (the instrument's content frame with no mic on the drawing;
+      // the authored box with mics, under the live strip's band) and the
+      // level-of-detail layout (artLabels.layoutArtLabels).
+      const authored = views[view]!;
+      const parts = sceneFrame(L.model, variant, view, false)!;
+      const aspect = (parts.u1 - parts.u0) / (parts.v1 - parts.v0);
+      const band = liveReserve(1, 390, 1);
       const layouts = [
-        { where: 'figure', w: 358, h: 358 / aspect, pad: 6 },
-        ...[300, 420, 640].map((h) => ({ where: `stage ${h}`, w: 390, h, pad: 8 })),
+        { where: 'figure', box: parts, w: 358, h: 358 / aspect, pad: 6, top: 0 },
+        ...[300, 420, 640].map((h) => ({ where: `parts ${h}`, box: parts, w: 390, h, pad: 8, top: 0 })),
+        ...[300, 420, 640].map((h) => ({ where: `stage ${h}`, box: authored, w: 390, h, pad: 8, top: band })),
         // A lesson that prints labels below the usual floor is checked down there too.
-        ...(L.model.labelMinScale ? [{ where: 'stage 240', w: 390, h: 240, pad: 8 }] : []),
+        ...(L.model.labelMinScale ? [{ where: 'stage 240', box: authored, w: 390, h: 240, pad: 8, top: band }] : []),
       ];
       for (const lay of layouts) {
-        const xf = fitXform(view, box, lay.w, lay.h, lay.pad);
+        const f = fitXform(view, lay.box, lay.w, lay.h - lay.top, lay.pad);
+        const xf = { ...f, oy: f.oy + lay.top };
         if (lay.where !== 'figure' && xf.s < (L.model.labelMinScale ?? LABEL_MIN_S)) continue;
-        for (const l of fitLabels(A.labels(view, variant), xf, 1, lay.w)) {
+        for (const l of layoutArtLabels(A, view, variant, authored, xf, 1, lay.w, lay.h, { minY: lay.top + 1, model: L.model })) {
           const r = labelRect(l, xf, 1, lay.w);
           const parts = new Set<string>();
           for (let i = 0; i <= 6; i++)
@@ -79,28 +91,14 @@ function overlaps(id: string): Hit[] {
 
 /**
  * The ratchet (2026-10-05): overlapping label placements per lesson, counted
- * by this test. ONLY EVER LOWER THESE. Lab 4's upright bass (C06a/b), sitar
- * (C14) and veena (C15) are at zero and are not listed.
+ * by this test. ONLY EVER LOWER THESE. It stood at 1445 (Lab 1 440, Lab 2 423,
+ * Lab 4 582); the level-of-detail layout of 2026-10-06 (artLabels.ts — a
+ * label only in clear space, moved there on a leader, or left out until a
+ * closer zoom) took every lesson to 0, at seven layouts (the read-step figure,
+ * the parts stage and the placement stage at three heights). A lesson listed
+ * here again would be a regression.
  */
-const KNOWN: Record<string, number> = {
-  // Lab 1 (drums, hand drums, concert percussion, speakers): many name a drum
-  // or cymbal ON it in the kit plan — each to be moved off with a leader.
-  M01: 16, M02: 56, M03: 83, M09: 62, M10: 6, M11: 82, M04a: 12, M04b: 13, M04c: 16, M05: 16,
-  M06: 9, M07a: 20, M07b: 24, M08: 20, M12: 5,
-  // Lab 4: the guitar family's art (C01, C03, C05A–C, C07) is in an art pass
-  // on another branch; the amps, the bowed family, harp, piano, clavinet, oud.
-  // (C01, C03, C05A–C lowered at the merge with the guitar art pass, 2026-10-05.)
-  // (C02, C04, SPK, I11a to zero and C08 lowered at the miking-a5 merge: the shared
-  // cabinet's SPEAKER label moved behind the cabinet on a leader, 2026-10-05.)
-  C01: 45, C03: 36, C05A: 40, C05B: 27, C05C: 5, C07: 20, C08: 8,
-  C09a: 32, C09b: 40, C09c: 12, C10: 47, C11: 229, C12: 16, C13: 25,
-  // Lab 2 (percussion): merged into final-lab before this rule; RECORDED at the
-  // fix4 merge (integrator, 2026-10-05) at the counts found then — new entries,
-  // reported to the lead, to be worked down like the rest (cymbals name parts
-  // and neighbours on the kit plan; the mallet keyboards their bars and pipes).
-  I01a: 50, I01b: 36, I01c: 52, I01d: 37, I01e: 46, I06a: 4, I07: 50, I08: 40, I09: 37,
-  I10: 53, I11b: 16, I12: 2,
-};
+const KNOWN: Record<string, number> = {};
 
 const ids: string[] = LESSONS.map((m: { id: string }) => m.id);
 const found = new Map(ids.map((id) => [id, overlaps(id)]));
@@ -175,4 +173,42 @@ describe('the bowed portrait (ORIENT figure): labels around the body, not on it'
       assert.deepEqual([...new Set(bad)], []);
     });
   }
+});
+
+describe('level of detail (owner 2026-10-06: "the finest details aren’t shown until the image is zoomed in enough")', () => {
+  // The default phone glass (390 × 248) against the full screen's 2× step:
+  // the drawing doubles, the words keep their size (PlacementScene divides
+  // the text scale by StageZoom), so at least as many names find room.
+  for (const id of ids) {
+    const L = lessonById(id);
+    const A = lessonArt(id);
+    if (!L || !A) continue;
+    const variant = L.model.defaultVariant;
+    for (const view of Object.keys(viewsOf(L.model, variant)) as ('side' | 'top')[]) {
+      it(`${id} ${view}: no two labels overlap, every label is on the glass, zooming in keeps at least as many`, () => {
+        const authored = viewsOf(L.model, variant)[view]!;
+        const box = sceneFrame(L.model, variant, view, false)!;
+        const xf = fitXform(view, box, 390, 248, 8);
+        const phone = layoutArtLabels(A, view, variant, authored, xf, 1, 390, 248, { model: L.model });
+        const zoomed = layoutArtLabels(A, view, variant, authored, fitXform(view, box, 780, 496, 8), 1, 780, 496, { model: L.model });
+        const rects = phone.map((l: { u: number; v: number; text: string; align: 'left' | 'center' | 'right' }) => ({ t: l.text, r: labelRect(l, xf, 1, 390) }));
+        for (const [i, a] of rects.entries()) {
+          assert.ok(a.r.y0 >= 0 && a.r.y1 <= 248, `${a.t} off the glass`);
+          for (const b of rects.slice(i + 1)) assert.ok(!(a.r.x0 < b.r.x1 - 2 && a.r.x1 > b.r.x0 + 2 && a.r.y0 < b.r.y1 - 1 && a.r.y1 > b.r.y0 + 1), `"${a.t}" over "${b.t}"`);
+        }
+        assert.ok(zoomed.length >= phone.length, `${zoomed.length} zoomed < ${phone.length} at the phone fit`);
+      });
+    }
+  }
+  it('labels never shrink below the 9 pt floor (fontSize max(9, 9.5 × scale))', () => {
+    assert.match(readFileSync('src/screens/lab/miking/engine/scene/StaticLabels.tsx', 'utf8'), /fontSize: Math\.max\(9, 9\.5 \* scale\)/);
+    // A scene label is 9.5 × labelScale, and labelScale is floored at 1.
+    assert.match(readFileSync('src/screens/lab/miking/engine/scene/PlacementScene.tsx', 'utf8'), /fontSize: 9\.5 \* scale, textAlign: align/);
+  });
+  it('the scenes lay their part labels out with the level-of-detail layout, labels held at the 1× size while zooming', () => {
+    const scene = readFileSync('src/screens/lab/miking/engine/scene/PlacementScene.tsx', 'utf8');
+    assert.match(scene, /layoutArtLabels\(art, view, variant, authoredBox, base, labelScale/);
+    assert.match(scene, /const labelScale = Math\.max\(1, textScale \/ useStageZoom\(\)\);/);
+    assert.match(readFileSync('src/screens/lab/miking/engine/scene/InstrumentFigure.tsx', 'utf8'), /layoutArtLabels\(art, view, variant/);
+  });
 });

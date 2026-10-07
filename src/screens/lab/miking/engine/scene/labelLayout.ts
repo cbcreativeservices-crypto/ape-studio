@@ -58,13 +58,44 @@ export function leaderLine(r: LabelRect, xf: ViewXform, lead: { u: number; v: nu
  *   • a label with `at` (its part's point) that ends up away from that point
  *     comes back with `leader` = `at`, so the scene can draw a thin line to it.
  */
-export function fitLabels<T extends { u: number; v: number; text: string; short?: string; align: Align; alts?: readonly LabelPlace[]; at?: { u: number; v: number }; lead?: { u: number; v: number } }>(
+/**
+ * LEVEL OF DETAIL (owner, Pixel 2026-10-06: "many of the text details cover
+ * up objects below or stack on top of each other. Maybe the finest details
+ * aren't shown until the image is zoomed in enough."). Opt-in by `clearOf`:
+ *
+ *   • a label is kept only where its box is clear of the DRAWING (`clearOf`,
+ *     the art's own hit test as an occupancy grid — artLabels.ts) as well as
+ *     of every label already kept, and wholly on the glass (minY..maxY);
+ *   • if neither its own place nor an `alts` place is clear, it is placed in
+ *     the nearest FREE SPACE round its part — rings of candidate spots, then
+ *     the glass's side margins — with a leader back to the part;
+ *   • labels are placed in the art's order (or by `priority`, 1 = a primary
+ *     part name, 2 = secondary, 3 = fine detail): a label that finds no clear
+ *     spot at this scale is left out — at a closer zoom the drawing is larger
+ *     than the words, more spots are clear, and the finer names appear.
+ * Without `clearOf` the layout is exactly the previous one.
+ */
+/** Points of clear space a level-of-detail label keeps round its words. */
+export const LABEL_AIR = 3;
+
+export type LabelOpts = {
+  /** True when the model rectangle (mm) holds no drawn part. */
+  clearOf?: (u0: number, v0: number, u1: number, v1: number) => boolean;
+  /** The glass's usable band (px): labels sit wholly inside it. */
+  minY?: number;
+  maxY?: number;
+};
+
+type Fit = { u: number; v: number; text: string; short?: string; align: Align; alts?: readonly LabelPlace[]; at?: { u: number; v: number }; lead?: { u: number; v: number }; priority?: 1 | 2 | 3 };
+
+export function fitLabels<T extends Fit>(
   labels: T[],
   xf: ViewXform,
   scale: number,
   maxX: number,
   avoid?: PxRect,
   obstacles?: readonly PxRect[],
+  opts: LabelOpts = {},
 ): (T & { leader?: { u: number; v: number } })[] {
   const h = 9.5 * scale * 1.25;
   // `avoid` (the glass's inset of the other view) counts as already taken: a
@@ -78,32 +109,85 @@ export function fitLabels<T extends { u: number; v: number; text: string; short?
     const top = xf.oy + p.v * xf.s - 7 * scale;
     return { x0: left, x1: left + W, y0: top, y1: top + h };
   };
-  const clear = (r: PxRect) => !kept.some((k) => r.x0 < k.x1 - 2 && r.x1 > k.x0 + 2 && r.y0 < k.y1 - 1 && r.y1 > k.y0 + 1);
-  for (const l of labels) {
+  const { clearOf } = opts;
+  const lod = !!clearOf;
+  const minY = opts.minY ?? -Infinity;
+  const maxY = opts.maxY ?? Infinity;
+  const clear = (r: PxRect) => {
+    if (kept.some((k) => r.x0 < k.x1 - 2 && r.x1 > k.x0 + 2 && r.y0 < k.y1 - 1 && r.y1 > k.y0 + 1)) return false;
+    if (!lod) return true;
+    if (r.y0 < minY || r.y1 > maxY) return false;
+    // The words' own box, in mm, must hold no drawn part — with a few points
+    // of air round it, so a label never sits flush against an edge.
+    const m = LABEL_AIR;
+    return clearOf!((r.x0 - m - xf.ox) / xf.s, (r.y0 - m - xf.oy) / xf.s, (r.x1 + m - xf.ox) / xf.s, (r.y1 + m - xf.oy) / xf.s);
+  };
+  // Free-space candidates round a part's point (px → a place in mm).
+  const around = (ax: number, ay: number): LabelPlace[] => {
+    const P = (x: number, y: number, align: Align): LabelPlace => ({ u: (x - xf.ox) / xf.s, v: (y + 7 * scale - h / 2 - xf.oy) / xf.s, align });
+    const res: LabelPlace[] = [];
+    // Rings out to half the glass (a larger drawing pushes free space further
+    // from the part in px).
+    const reach = Math.max(h * 7, 0.5 * Math.max(maxX, Number.isFinite(maxY) ? maxY : 0));
+    const rings = [1.1, 2, 3.2, 4.8, 7, 10, 14, 20, 28].map((k) => h * k).filter((d, i) => i < 5 || d <= reach);
+    for (const d of rings) {
+      const k = d * 0.75;
+      res.push(P(ax + d, ay, 'left'), P(ax - d, ay, 'right'), P(ax, ay - d, 'center'), P(ax, ay + d, 'center'));
+      res.push(P(ax + k, ay - k, 'left'), P(ax - k, ay - k, 'right'), P(ax + k, ay + k, 'left'), P(ax - k, ay + k, 'right'));
+    }
+    // The glass's margins, level with the part and a row either side.
+    for (const dy of [0, -h * 1.4, h * 1.4, -h * 2.8, h * 2.8]) res.push(P(4, ay + dy, 'left'), P(maxX - 4, ay + dy, 'right'));
+    return res;
+  };
+  const order = labels.map((l, i) => ({ l, i })).sort((a, b) => (a.l.priority ?? 2) - (b.l.priority ?? 2) || a.i - b.i);
+  const placed = new Map<number, T & { leader?: { u: number; v: number } }>();
+  for (const { l, i: idx } of order) {
     const places: LabelPlace[] = [{ u: l.u, v: l.v, align: l.align }, ...(l.alts ?? [])];
     const texts = l.short ? [l.text, l.short] : [l.text];
+    // `lead` (the Lab 4 review's name) is the same as `at`.
+    const at = l.at ?? l.lead;
     let done = false;
-    for (const text of texts) {
-      for (let i = 0; i < places.length && !done; i++) {
-        const p = places[i];
-        const r = rectOf(p, text);
-        if (!clear(r)) continue;
-        kept.push(r);
-        done = true;
-        let leader: { u: number; v: number } | undefined;
-        // `lead` (the Lab 4 review's name) is the same as `at`.
-        const at = l.at ?? l.lead;
-        if (at) {
-          const ax = xf.ox + at.u * xf.s;
-          const ay = xf.oy + at.v * xf.s;
-          const near = ax >= r.x0 - 6 && ax <= r.x1 + 6 && ay >= r.y0 - 6 && ay <= r.y1 + 6;
-          if (!near) leader = at;
-        }
-        if (i === 0 && text === l.text && !leader) out.push(l);
-        else out.push({ ...l, text, u: p.u, v: p.v, align: p.align, ...(leader ? { leader } : {}) });
+    const take = (p: LabelPlace, text: string, own: boolean) => {
+      const r = rectOf(p, text);
+      if (!clear(r)) return false;
+      kept.push(r);
+      let leader: { u: number; v: number } | undefined;
+      // A label set away from its part points back to it: to `at`, or (in
+      // free space) to where the art wrote it, which names the part.
+      const anchor = at ?? (lod && !own ? { u: l.u, v: l.v } : undefined);
+      if (anchor) {
+        const ax = xf.ox + anchor.u * xf.s;
+        const ay = xf.oy + anchor.v * xf.s;
+        const near = ax >= r.x0 - 6 && ax <= r.x1 + 6 && ay >= r.y0 - 6 && ay <= r.y1 + 6;
+        // No leader to a point off the glass (it would run off the edge).
+        const onGlass = !lod || (ax >= 0 && ax <= maxX && ay >= Math.max(0, minY) && ay <= maxY);
+        if (!near && onGlass) leader = anchor;
       }
+      if (own && p === places[0] && text === l.text && !leader) placed.set(idx, l);
+      else placed.set(idx, { ...l, text, u: p.u, v: p.v, align: p.align, ...(leader ? { leader } : {}) });
+      return true;
+    };
+    for (const text of texts) {
+      for (let i = 0; i < places.length && !done; i++) done = take(places[i], text, true);
       if (done) break;
     }
+    if (!done && lod) {
+      const a = at ?? { u: l.u, v: l.v };
+      // A point off the glass (a pointer label at the drawing's edge, "←
+      // PLAYER") is searched from the nearest point on the glass.
+      const ax = Math.max(4, Math.min(maxX - 4, xf.ox + a.u * xf.s));
+      const ay = Math.max(Number.isFinite(minY) ? minY + h : h, Math.min(Number.isFinite(maxY) ? maxY - h : Infinity, xf.oy + a.v * xf.s));
+      const cands = around(ax, ay);
+      for (const text of texts) {
+        for (let i = 0; i < cands.length && !done; i++) done = take(cands[i], text, false);
+        if (done) break;
+      }
+    }
+  }
+  // Back in the art's order (the scenes draw them in that order).
+  for (let i = 0; i < labels.length; i++) {
+    const p = placed.get(i);
+    if (p) out.push(p);
   }
   return out;
 }

@@ -642,6 +642,26 @@ needs: Cháno/A: version 1.0 metadata + review notes (Anorak demo login); App St
 ### 2026-10-06 13:27 · ccode · f1bf0a57
 changed: Miking Labs hidden on store builds until the owner approves
 affects other side: build 34 (iOS) goes to App Review with Miking Labs hidden; MIKING_PUBLIC flips on owner approval via OTA
+### 2026-10-06 17:10 · ccode · 6542af2f
+changed: fix(miking): a mic set clear of a part keeps room to turn; the harmonica face is a profile; fix-pass screenshots (docs/labs/miking/screens/fixpass_2026_10_06) — last commit of the Miking owner-feedback fix pass (35102390..6542af2f, worktree branch, not pushed, not merged)
+affects other side: nothing (app-only)
+needs: nothing
+
+### 2026-10-06 16:04 · ccode · 6602602d
+changed: fix(miking): labels keep off the drawn player exactly and keep a little air; the hand drums' worked example marks its piece
+affects other side: nothing (app-only drawing/layout; 5d4ac01b before it — content frames, level-of-detail labels, marimba resonators — is app-only too; Miking fix pass on a worktree branch, not pushed, nothing published)
+needs: nothing
+
+
+### 2026-10-06 15:04 · ccode · 781b3a27
+changed: fix(miking): the player's head is drawn as part of the figure, not the line-art head icon
+affects other side: nothing (app-only drawing; the avatar head-icon spec is unchanged; 82f5537a before it — Miking faders preview/commit + view keys — is app-only too)
+needs: nothing
+
+
+### 2026-10-06 15:03 · ccode · 35102390
+changed: fix(rack): the dock fader follows the finger; keys that do nothing in full screen are hidden
+affects other side: nothing (app-only, JS: the shared ParamLane now hands a lab one value per ~16 ms tick and draws its cap on the UI thread; every rack lab benefits; Miking fix pass, worktree branch, not pushed)
 needs: nothing
 
 

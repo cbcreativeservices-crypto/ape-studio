@@ -33,6 +33,7 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { VariantId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
+import { FigureHead } from '../players/PlayerFigure';
 import { fingering, holesOf, pathOf, radiusAt, type Fingering, type SaxRow } from './saxSpec.ts';
 import { anchorsOf, centre, onTube, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
 import { TO_VIEWER, band, bellGuard, circle2, cupsOf, engraving, pearlsOf, prj, rodsOf, silhouette, tubeSamples, type P2, type Placed, type TubeSample } from './saxDraw.ts';
@@ -60,8 +61,6 @@ const TROUSER = ['#41454f', '#2d3038', '#1b1d22'];
 const SKIN = ['#8a8f98', '#6e737c', '#52565e'];
 const SKIN_EDGE = '#24272d';
 const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
-const HEAD_LINE = '#cfd4dc';
-const HEAD_FILL = 'rgba(16,18,23,0.82)';
 const STRAP = ['#3a3f4a', '#1d2027', '#0d0f13'];
 const CHAIR = ['#3a3c43', '#1d1e22', '#0c0c0e'];
 const METAL = ['#d5d9e0', '#8d939e', '#4b5059'];
@@ -459,16 +458,10 @@ export function playerGroups(P: SaxPosture, view: ViewId): { behind: Group3[]; f
   return { behind, front, head };
 }
 
+/** The player's head as part of the figure (owner 2026-10-06: no separate
+ *  line-art head icon on a lab figure) — the shared FigureHead skin mass. */
 function HeadArt({ h }: { h: { line: SkPath; fill: SkPath; c: P2; r: number } }) {
-  return (
-    <Group>
-      <Path path={h.fill} color={HEAD_FILL} />
-      <Path path={h.fill}>
-        <RadialGradient c={vec(h.c[0] - h.r * 0.4, h.c[1] - h.r * 0.5)} r={h.r * 1.4} colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0)']} />
-      </Path>
-      <Path path={h.line} style="stroke" strokeWidth={3.6} strokeCap="round" strokeJoin="round" color={HEAD_LINE} opacity={0.82} />
-    </Group>
-  );
+  return <FigureHead fill={h.fill} />;
 }
 
 /** The instrument alone (its own fingering), for a view. */

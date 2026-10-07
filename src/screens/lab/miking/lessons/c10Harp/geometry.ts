@@ -128,6 +128,8 @@ export const HARP_MODEL: InstrumentModel = {
   defaultVariant: 'pedal',
   views: { side: { u0: -1200, u1: 1000, v0: -2250, v1: 60 }, top: { u0: -1200, u1: 1000, v0: -950, v1: 950 } },
   viewsByVariant: { lever: { side: { u0: -1200, u1: 900, v0: -2000, v1: 60 }, top: { u0: -1200, u1: 900, v0: -950, v1: 950 } } },
+  // From above the strings and the pillar reach past the modelled parts.
+  fitAuthored: { top: true },
   aimAzLimit: 180,
   yFloor: { mm: 0, prov: { kind: 'illustrative', reason: 'the frame’s floor (y = 0)' } },
   interior: { x0: 0, x1: 0, rIn: 0, c: { x: 0, y: 0, z: 0 } },

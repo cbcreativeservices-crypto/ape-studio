@@ -105,6 +105,49 @@ export const dist = (a: Pt, b: Pt) => Math.hypot(b.u - a.u, b.v - a.v);
 export const lerp = (a: Pt, b: Pt, t: number): Pt => ({ u: a.u + (b.u - a.u) * t, v: a.v + (b.v - a.v) * t });
 export const angleOf = (a: Pt, b: Pt) => Math.atan2(b.v - a.v, b.u - a.u);
 
+/** Distance from p to the segment a–b. */
+function segDist(p: Pt, a: Pt, b: Pt): number {
+  const vx = b.u - a.u;
+  const vy = b.v - a.v;
+  const ll = vx * vx + vy * vy;
+  const t = ll > 1e-9 ? Math.max(0, Math.min(1, ((p.u - a.u) * vx + (p.v - a.v) * vy) / ll)) : 0;
+  return Math.hypot(p.u - (a.u + vx * t), p.v - (a.v + vy * t));
+}
+
+/**
+ * Whether the DRAWN figure covers the point (u, v), within `tol` mm — the
+ * same masses PlayerFigure draws (true-size limbs, the torso between the
+ * shoulders and the hips, the head, the hands), as capsules. For the part
+ * labels (engine/scene/artLabels.ts): a label is never set on the player
+ * (owner 2026-10-06: "text details cover up objects below").
+ */
+export function poseHit(pose: PlayerPose, u: number, v: number, tol = 0): boolean {
+  const p = pt(u, v);
+  const cap = (a: Pt, b: Pt, r: number) => segDist(p, a, b) <= r + tol;
+  if (Math.hypot(u - pose.head.c.u, v - pose.head.c.v) <= pose.head.r * 1.15 + tol) return true;
+  if (cap(pose.head.c, pose.neck, BODY.neckW / 2)) return true;
+  // The torso: the spine from the collar to the hips' midpoint, as wide as the chest.
+  const hip = lerp(pose.hipR, pose.hipL, 0.5);
+  if (cap(pose.neck, hip, BODY.chestHalf)) return true;
+  if (cap(pose.shoulderR, pose.shoulderL, BODY.upperArmR)) return true;
+  if (cap(pose.hipR, pose.hipL, BODY.thighR)) return true;
+  for (const [s, e, h] of [
+    [pose.shoulderR, pose.elbowR, pose.handR],
+    [pose.shoulderL, pose.elbowL, pose.handL],
+  ] as const) {
+    if (cap(s, e, BODY.upperArmR) || cap(e, h.wrist, BODY.elbowR)) return true;
+    const tip = pt(h.wrist.u + Math.cos(h.dir) * BODY.handLen * 0.8, h.wrist.v + Math.sin(h.dir) * BODY.handLen * 0.8);
+    if (cap(h.wrist, tip, BODY.handW / 2)) return true;
+  }
+  for (const [hp, k, f] of [
+    [pose.hipR, pose.kneeR, pose.footR],
+    [pose.hipL, pose.kneeL, pose.footL],
+  ] as const) {
+    if (cap(hp, k, BODY.thighR) || cap(k, f, BODY.kneeR)) return true;
+  }
+  return false;
+}
+
 /** A joint `len` from `a` toward `b` (or `b` itself when nearer). */
 export function toward(a: Pt, b: Pt, len: number): Pt {
   const d = dist(a, b);

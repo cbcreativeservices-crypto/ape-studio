@@ -50,3 +50,15 @@ export const StageGlassWidth = createContext(0);
  * labels under the 9 pt floor.
  */
 export const StageInFullScreen = createContext(false);
+
+/**
+ * StageZoom — the full-screen zoom STEP the drawing is shown at (1 on the
+ * glass and at 1×; 1.5, 2, 3 or FIT's factor). StageTextScale grows with the
+ * step, so words keep their size relative to the drawing; a drawing that
+ * wants its labels to stay put while the picture grows — so that more of
+ * them fit as the learner zooms in (the Miking Labs' level-of-detail labels,
+ * owner 2026-10-06) — divides by this. Additive: nothing reads it unless it
+ * asks.
+ */
+export const StageZoom = createContext(1);
+export const useStageZoom = (): number => useContext(StageZoom);

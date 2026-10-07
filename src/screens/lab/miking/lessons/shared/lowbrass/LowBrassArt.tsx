@@ -46,8 +46,6 @@ const SHIRT = ['#5d687e', '#465064', '#2f3645'];
 const TROUSER = ['#41454f', '#2d3038', '#1b1d22'];
 const SKIN = ['#8a8f98', '#6e737c', '#52565e'];
 const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
-const HEAD_LINE = '#cfd4dc';
-const HEAD_FILL = 'rgba(16,18,23,0.85)';
 const OUTLINE = '#08090b';
 const CHAIR = ['#3a3c43', '#1d1e22', '#0c0c0e'];
 
@@ -309,27 +307,19 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
         ]
       : circ(hc, r, 28);
   const head = smoothClosed(headPts);
-  const lines = make();
-  if (view === 'side') {
-    lines.addArc(Skia.XYWHRect(hc[0] - r * 0.28, hc[1] - r * 0.18, r * 0.34, r * 0.46), 200, 230);
-  } else {
-    lines.addArc(Skia.XYWHRect(hc[0] - r * 0.15, hc[1] - r * 1.18, r * 0.3, r * 0.3), 180, 180);
-    lines.addArc(Skia.XYWHRect(hc[0] - r * 0.15, hc[1] + r * 0.88, r * 0.3, r * 0.3), 0, 180);
-    lines.moveTo(hc[0] + r * 0.92, hc[1] - r * 0.12);
-    lines.lineTo(hc[0] + r * 1.12, hc[1]);
-    lines.lineTo(hc[0] + r * 0.92, hc[1] + r * 0.12);
-  }
+  // The head is part of the figure (owner 2026-10-06: no separate line-art
+  // head icon on a lab figure): the same lit skin mass as the hands and the
+  // neck it sits on; from above, the ears and the nose's tip.
+  const ears: P2[][] = view === 'side' ? [] : [circ([hc[0] - r * 0.02, hc[1] - r * 0.98], r * 0.2, 12), circ([hc[0] - r * 0.02, hc[1] + r * 0.98], r * 0.2, 12), circ([hc[0] + r * 0.98, hc[1]], r * 0.16, 10)];
   out.push({
     key: 'head',
     depth: depthOf(view, J.head),
     node: (
       <Group key="head">
-        <Path path={head} color={HEAD_FILL} />
-        <Path path={head}>
-          <RadialGradient c={vec(hc[0] - r * 0.4, hc[1] - r * 0.5)} r={r * 1.4} colors={['rgba(255,255,255,0.08)', 'rgba(255,255,255,0)']} />
-        </Path>
-        <Path path={head} style="stroke" strokeWidth={4} color={HEAD_LINE} opacity={0.85} strokeJoin="round" />
-        <Path path={lines} style="stroke" strokeWidth={3.4} color={HEAD_LINE} opacity={0.8} strokeCap="round" />
+        {ears.map((e, i) => (
+          <Lit key={i} path={smoothClosed(e)} pts={e} ramp={SKIN} />
+        ))}
+        <Lit path={head} pts={headPts} ramp={SKIN} />
       </Group>
     ),
   });

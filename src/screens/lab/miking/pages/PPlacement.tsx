@@ -37,6 +37,7 @@ import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, Z
 import { MIC_TYPES, micType } from '../data/micTypes';
 import { copyOf } from '../engine/model/copy.ts';
 import type { PageProps } from './pageTypes';
+import { viewToggle } from '../engine/scene/viewToggle.ts';
 
 /** "{line}" / "{head}" / "{tol}" in a copy line. */
 const fill = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? '');
@@ -96,6 +97,13 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
     { title: 'CLEARANCE', text: C.placement.workedClear, cell: 3 },
   ];
   const wk = worked[exStep];
+  // The piece being read is marked ON THE DRAWING too (owner, Pixel
+  // 2026-10-06: "sliders not working" — this STEP fader only lit a bezel
+  // cell, so the picture never moved): the head it is measured from (2, 3),
+  // the keep-outs the clearance is about (6).
+  const exHeadPart = lesson.model.surfaces.find((q) => q.id === exZone.refSurface)?.partId ?? null;
+  const exEnvelope = (lesson.model.envelopes.find((e) => !e.variants || e.variants.includes(variant)) ?? null)?.id ?? null;
+  const exHighlight = exStep === 1 || exStep === 2 ? exHeadPart : exStep === 5 ? exEnvelope : null;
   const exBezel: BezelItem[] = placementBezel(exShown, readoutWords(ex, 'A'), exZone, stopShortOf(lesson.model)).map((c, i) => (i === wk.cell ? { ...c, k: `▸ ${c.k}`, tint: '#ffc64d' } : c));
   const exParams: DockParam[] = [
     {
@@ -107,7 +115,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`,
       formatShort: () => `${exStep + 1} / ${worked.length}`,
     },
-    { kind: 'toggle', id: 'view', label: exView === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: exView === 'top', onToggle: () => setExView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
   ];
 
   // Distances are read from the head the active zone names (lesson L39), else from
@@ -136,7 +144,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const available = zonesAvailable(lesson.zones, variant, mic.typeId, t.mount);
   const params: DockParam[] = [
     ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis }),
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
     {
       kind: 'group',
       id: 'setup',
@@ -193,7 +201,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
+        render: (w, h) => <DualView rig={ex} art={art} view={exView} setView={setExView} w={w} h={h} slots={['A']} interactive={false} highlight={exHighlight} labelFor={(v) => sceneLabel(ex, v, ['A'], 'A worked example: the mic is placed for you.')} />,
         badge: 'WORKED EXAMPLE · placed for you · blue = recommended starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: exParams,

@@ -18,9 +18,12 @@
  *     picking hand round a pick, a fretting hand's fingers arched over the
  *     board onto the strings (thumb behind the neck), a hand on a steel bar, a
  *     fist round a stick, a hand curved down onto keys;
- *   • the head in the house LINE-ART spec (reference_head_icon_spec): one
- *     uniform light stroke, bald, brows, nose and mouth, ears, NO eyes — front,
- *     profile (mirrored for the facing) and from above;
+ *   • the head drawn AS PART OF THE FIGURE (owner 2026-10-06: the separate
+ *     line-art head icon looked "too dissimilar and disjunct"): one skin-tone
+ *     mass — skull, ears and the neck into the collar — with the same light,
+ *     rim, core shadow and contour as the hands; neutral, no face; an adult
+ *     head ≈ 1/7.5 of the standing height (BODY.headH 228 mm) — front, profile
+ *     (mirrored for the facing) and from above;
  *   • a muted palette (neighbours recede, charter §6): nothing competes with
  *     the instrument, the zones or the mic.
  *
@@ -39,11 +42,11 @@
  *   <PlayerBehind pose={pose} />  …the instrument…  <PlayerInFront pose={pose} />
  * Art that builds its own body geometry (the bowed family's 3-D figure, the
  * lute players) paints it with the same look through <FigureMass/> and
- * <LineHead/>.
+ * <FigureHead/>.
  */
 import { useMemo } from 'react';
-import { BlurMask, Circle, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
-import { BODY, dist, lerp, pt, type Hand, type PlayerPose, type Pt } from './playerPose.ts';
+import { BlurMask, Circle, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
+import { BODY, dist, lerp, poseHit, pt, type Hand, type PlayerPose, type Pt } from './playerPose.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -63,9 +66,6 @@ export const FIGURE_TONES: Record<FigureTone, ToneDef> = {
   seat: { ramp: ['#4a4c55', '#2e3036', '#1b1c21', '#0f1013'], rim: '#8d929d', core: '#050506', edge: '#08080a', rimW: 5, coreW: 20 },
 };
 const SHIRT_LINE = '#161a24';
-/** The line-art head (house spec): a light neutral stroke. */
-export const HEAD_LINE = '#cfd4dc';
-const HEAD_FILL = 'rgba(16,18,23,0.8)';
 const CHROME = ['#f2f4f8', '#b9bec8', '#6b707b', '#d4d8df'];
 const PICK = ['#7a3a1a', '#4a200c'];
 
@@ -270,7 +270,10 @@ export function headFront(c: Pt, r: number, neckV: number): HeadPaths {
   // Mouth: two strokes.
   line.addPath(curve([P(-22, 60), P(0, 56), P(22, 60)]));
   line.addPath(curve([P(-11, 69), P(0, 73), P(11, 69)]));
-  const fill = union(skull, capsule(P(0, 80), P(0, nb - 6), 46 * k, 50 * k));
+  // The silhouette the figure draws (FigureHead): the skull, both ears and the
+  // neck down into the collar, one outline.
+  const ears = [-1, 1].map((s) => smooth([P(s * 70, -10), P(s * 90, -8), P(s * 96, 14), P(s * 88, 40), P(s * 70, 44)], 0.6));
+  const fill = union(skull, ...ears, capsule(P(0, 80), P(0, nb - 6), 46 * k, 50 * k));
   return { line, fill };
 }
 
@@ -316,20 +319,24 @@ export function headAbove(c: Pt, r: number): HeadPaths {
   line.addPath(skull);
   for (const s of [-1, 1]) line.addPath(curve([P(s * 78, -14), P(s * 94, 0), P(s * 92, 22), P(s * 76, 30)]));
   line.addPath(curve([P(-12, 92), P(0, 114), P(12, 92)]));
-  return { line, fill: skull };
+  // Seen from above: the cranium, the ears and the tip of the nose.
+  const ears = [-1, 1].map((s) => smooth([P(s * 72, -16), P(s * 92, -6), P(s * 94, 18), P(s * 78, 30)], 0.6));
+  const nose = smooth([P(-12, 88), P(0, 114), P(12, 88)], 0.5);
+  return { line, fill: union(skull, ...ears, nose) };
 }
 
-/** A house line-art head: a quiet translucent interior and one light stroke. */
-export function LineHead({ head, c, r }: { head: HeadPaths; c: Pt; r: number }) {
-  return (
-    <Group>
-      <Path path={head.fill} color={HEAD_FILL} />
-      <Path path={head.fill}>
-        <RadialGradient c={vec(c.u - r * 0.4, c.v - r * 0.5)} r={r * 1.4} colors={['rgba(255,255,255,0.07)', 'rgba(255,255,255,0)']} />
-      </Path>
-      <Path path={head.line} style="stroke" strokeWidth={Math.max(3, r * 0.038)} strokeCap="round" strokeJoin="round" color={HEAD_LINE} opacity={0.85} />
-    </Group>
-  );
+/**
+ * The figure's HEAD, drawn as part of the same figure (owner 2026-10-06, on
+ * the Pixel: "on human figures do not replace the head with the separate head
+ * icon, they look too dissimilar and disjunct"). The head's silhouette — the
+ * skull, the ears and the neck that joins it to the collar, one outline — is
+ * one more body MASS in the skin tone: the same gradient, rim light, core
+ * shadow and contour as the hands, so it reads as the same person. No face is
+ * drawn (a neutral figure); a profile reads by its silhouette. The house
+ * line-art head icon (reference_head_icon_spec) stays for avatars, not here.
+ */
+export function FigureHead({ fill }: { fill: SkPath }) {
+  return <FigureMass path={fill} tone="skin" contour={2.6} />;
 }
 
 /* ── hands ── */
@@ -853,6 +860,22 @@ function built(pose: PlayerPose): Built {
   return b;
 }
 
+/**
+ * Whether the DRAWN figure covers (u, v), within `tol` mm: the very paths the
+ * figure paints (torso, arms, legs, hands, shoes, head) — for the part labels,
+ * which keep off the player (engine/scene/artLabels.ts, LessonArt.figureAt).
+ * Where Skia's paths cannot answer (the node tests' stand-in), the pose's
+ * capsules do (playerPose.poseHit).
+ */
+export function figureCovers(pose: PlayerPose, u: number, v: number, tol = 0): boolean {
+  const b = built(pose);
+  const paths = [...b.behind, ...b.front, ...b.shoes].map((m) => m.path).concat(b.head.fill);
+  if (typeof paths[0]?.contains !== 'function') return poseHit(pose, u, v, tol);
+  const pts = tol > 0 ? [pt(u, v), pt(u - tol, v), pt(u + tol, v), pt(u, v - tol), pt(u, v + tol)] : [pt(u, v)];
+  for (const q of pts) for (const p of paths) if (p.contains(q.u, q.v)) return true;
+  return false;
+}
+
 function Bar({ b }: { b: Built['bars'][number] }) {
   return (
     <Group>
@@ -924,7 +947,7 @@ export function PlayerBehind({ pose, dim = 1, part = 'all' }: { pose: PlayerPose
         </>
       ) : null}
       {/* the head: house line art over a quiet translucent interior */}
-      <LineHead head={b.head} c={pose.head.c} r={pose.head.r} />
+      <FigureHead fill={b.head.fill} />
         </>
       ) : null}
     </Group>

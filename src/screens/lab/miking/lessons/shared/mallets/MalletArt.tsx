@@ -816,7 +816,11 @@ export function malletLabels(fam: MalletFamily) {
       out.push({ id: 'bars', text: 'BARS', u: 0, v: L.yAcc - 26, align: 'center' });
       if (L.tubes.length) {
         const t = L.tubes.find((q) => q.x > (L.span.hi * 0.5)) ?? L.tubes[0];
-        out.push({ id: 'res', text: 'RESONATORS', short: 'TUBES', u: t.x, v: (t.yTop + t.yBot) / 2, align: 'center' });
+        // Named on a TUBE's body (owner 2026-10-06: the resonators are the
+        // tubes, not the bars), its leader ending on the tube, well below the
+        // bar it hangs from. No resonator label from above: the bars hide them.
+        const at = { u: t.x, v: t.yTop + (t.yBot - t.yTop) * 0.6 };
+        out.push({ id: 'res', text: 'RESONATORS', short: 'TUBES', u: at.u, v: at.v, align: 'center', at });
       }
       if (ex.motor && ex.motor.kind === 'box') out.push({ id: 'motor', text: 'MOTOR', u: (ex.motor.min.x + ex.motor.max.x) / 2, v: ex.motor.max.y + 40, align: 'center', tone: 'muted' });
       if (ex.pedal) out.push({ id: 'pedal', text: 'PEDAL', u: 0, v: yF - 90, align: 'center', tone: 'muted' });

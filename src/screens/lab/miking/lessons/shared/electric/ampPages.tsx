@@ -65,6 +65,7 @@ import { ElectricExplorer, electricAspect, type ElectricShow } from './ElectricE
 import { StringDisplay, HARMONICS } from './StringDisplay';
 import { atNode, barFor, barHz, pickupWeight } from './stringModel.ts';
 import { openHz, type ElectricSpec } from './electricSpec.ts';
+import { viewToggle } from '../../../engine/scene/viewToggle.ts';
 
 const G = GRILLE_X.mm;
 
@@ -788,7 +789,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
     const azCentre = mic.pose.az > 90 || mic.pose.az < -90 ? 180 : 0;
     const params: DockParam[] = [
       ...posParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis, words: axes, aimWords: AIM_WORDS, azCentre }),
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
       {
         kind: 'group',
         id: 'setup',
@@ -839,7 +840,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
           bezel: exBezel,
           params: [
             { kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` },
-            { kind: 'toggle', id: 'view', label: exView === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: exView === 'top', onToggle: () => setExView((v) => (v === 'side' ? 'top' : 'side')) },
+            ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
           ],
           initialParam: 'piece',
         },
@@ -940,12 +941,20 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
         label: 'AIM',
         value: (a + lim) / (2 * lim),
         home: 0.5,
+        // Preview while the finger rides the lane, commit on release (the
+        // engine's fader contract, 2026-10-06: no page re-render per move).
         onChange: (v) => {
           const ang = Math.round((v * 2 - 1) * lim);
-          rig.moveTo('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
+          rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang });
+        },
+        onCommit: () => {
+          rig.commit('A');
           setAimed(true);
         },
-        format: () => (a === 0 ? 'facing the speaker' : `${fmtAngle(Math.abs(a))} ${aimAxis === 'az' ? (a > 0 ? 'right' : 'left') : a > 0 ? 'up' : 'down'}`),
+        format: (v) => {
+          const x = Math.round((v * 2 - 1) * lim);
+          return x === 0 ? 'facing the speaker' : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'}`;
+        },
         formatShort: () => fmtAngle(a),
         chooser: {
           title: 'TURN THE MIC',
@@ -972,7 +981,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
       },
       { kind: 'options', id: 'wedge', label: 'MONITOR', valueLabel: wedge.short, selectedId: wedge.id, onSelect: setWedgeId, sticky: true, options: lesson.live.wedges.map((w) => ({ id: w.id, label: w.label, blurb: w.note })) },
       { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'single' }),
     ];
     const bezel: BezelItem[] = live
       ? [
@@ -1109,7 +1118,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: Pag
       { kind: 'toggle', id: 'polarity', label: `${rearMode ? 'REAR' : 'DI'} POL ${switchB === 1 ? '+' : '−'}`, value: switchB === -1, onToggle: flip },
       ...(rearMode ? [{ kind: 'toggle' as const, id: 'mic', label: slot === 'A' ? 'EDIT FRONT' : 'EDIT REAR', value: slot === 'B', onToggle: () => setSlot((s) => (s === 'A' ? 'B' : 'A')) }] : [{ kind: 'fader' as const, id: 'blend', label: 'DI LEVEL', value: (diDb + 12) / 12, home: 1, onChange: (v: number) => setDiDb(Math.round(v * 12) - 12), format: () => `the DI ${diDb === 0 ? 'at the mic’s level' : `${-diDb} dB under the mic`}`, formatShort: () => `${diDb} dB` }]),
       ...(spec.pairs.length > 1 ? [{ kind: 'options' as const, id: 'pair', label: 'PAIR', valueLabel: pair === 'rear' ? 'FRONT+REAR' : 'MIC+DI', selectedId: pair, onSelect: (id: string) => setPair(id as 'rear' | 'di'), sticky: true, options: [{ id: 'rear', label: 'FRONT + REAR MIC', blurb: 'A mic in front and a mic behind the open back.' }, { id: 'di', label: 'MIC + DI', blurb: 'The front mic, blended with a direct (electrical) feed.' }] }] : []),
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
     ];
     const dCell = lenCell(dMm, rearMode);
     const bezel: BezelItem[] = rearMode

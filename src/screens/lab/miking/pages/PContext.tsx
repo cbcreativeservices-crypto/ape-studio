@@ -32,6 +32,7 @@ import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../engine/kit';
 import type { PageProps } from './pageTypes';
 import { copyOf } from '../engine/model/copy.ts';
+import { viewToggle } from '../engine/scene/viewToggle.ts';
 
 const NULL_TOL = 15; // deg: "in the null" tolerance (the lab's, ruling §16.4)
 
@@ -97,14 +98,22 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       label: 'AIM',
       value: (a + lim) / (2 * lim),
       home: 0.5,
+      // Preview while the finger rides the lane, commit on release (the
+      // engine's fader contract, 2026-10-06: no page re-render per move).
       onChange: (v) => {
         const ang = a0 + Math.round((v * 2 - 1) * lim);
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
-        rig.moveTo('A', to);
+        rig.preview('A', to);
+      },
+      onCommit: () => {
+        rig.commit('A');
         setAimed(true);
       },
       // Short: the lane prints this beside its label.
-      format: () => (a === 0 ? C.words.facing : `${fmtAngle(Math.abs(a))} ${aimAxis === 'az' ? (a > 0 ? 'right' : 'left') : a > 0 ? 'up' : 'down'}`),
+      format: (v) => {
+        const x = Math.round((v * 2 - 1) * lim);
+        return x === 0 ? C.words.facing : `${fmtAngle(Math.abs(x))} ${aimAxis === 'az' ? (x > 0 ? 'right' : 'left') : x > 0 ? 'up' : 'down'}`;
+      },
       formatShort: () => fmtAngle(a),
       chooser: {
         title: 'TURN THE MIC',
@@ -137,7 +146,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       options: lesson.live.wedges.map((w) => ({ id: w.id, label: w.label, blurb: w.note })),
     },
     { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'single' }),
   ];
 
   const pickupCell: BezelItem = shield

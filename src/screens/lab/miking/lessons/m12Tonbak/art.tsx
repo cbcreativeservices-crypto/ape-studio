@@ -136,7 +136,7 @@ function getBuilt(view: ViewId): Built {
  *  2026-10-05), on a chair, the drum across the lap, facing the audience
  *  (+x): the same places as the line art it replaces. ILLUSTRATIVE. */
 const tonbakPoses: Partial<Record<ViewId, PlayerPose>> = {};
-function tonbakPose(view: ViewId): PlayerPose {
+export function tonbakPose(view: ViewId): PlayerPose {
   const hit = tonbakPoses[view];
   if (hit) return hit;
   let pose: PlayerPose;

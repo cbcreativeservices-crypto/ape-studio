@@ -17,10 +17,12 @@ import type { PageProps } from '../../pages/pageTypes';
 import { HandStrike, type StrikeSpec } from '../shared/hand/HandStrike';
 import { makeHandPages, useStepper, type HandSpec } from '../shared/hand/handPages';
 import { BAYAN, DAYAN, MID, TABLA_ZONES } from './geometry.ts';
-import { TablaArt, tablaHitTest, tablaLabels } from './art';
+import { TablaArt, tablaHitTest, tablaLabels, tablaPose } from './art';
+import { figureCovers } from '../shared/players/PlayerFigure';
 import { TablaHeads } from './TablaHeads';
 
-export const TABLA_ART = { Instrument: TablaArt, labels: (v: 'side' | 'top') => tablaLabels(v), hitTest: tablaHitTest };
+// figureAt: the part labels keep off the drawn player (artLabels.ts).
+export const TABLA_ART = { Instrument: TablaArt, labels: (v: 'side' | 'top') => tablaLabels(v), hitTest: tablaHitTest, figureAt: (view: 'side' | 'top', _v: string, u: number, v: number, tol: number) => figureCovers(tablaPose(view), u, v, tol) };
 
 /* ═══════════════ 2 · HOW IT SOUNDS ═══════════════ */
 const n2 = (x: number, y: number) => {

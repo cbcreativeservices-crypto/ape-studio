@@ -38,6 +38,7 @@ import type { PageProps } from '../../../pages/pageTypes';
 import { malletFamOf, malletWordsOf } from './family.ts';
 import { malletGeom } from './malletModel.ts';
 import { noteName } from './malletSpec.ts';
+import { viewToggle } from '../../../engine/scene/viewToggle.ts';
 
 export function MTwoMic({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, hidden }: PageProps) {
   const T = malletWordsOf(lesson).two;
@@ -127,7 +128,7 @@ export function MTwoMic({ lesson, art, answers, onAnswered, onInteractive, inter
       value: B.polarity === -1,
       onToggle: () => rig.setPolarity('B', B.polarity === 1 ? -1 : 1),
     },
-    { kind: 'toggle', id: 'view', label: view === 'side' ? 'FRONT VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((x) => (x === 'side' ? 'top' : 'side')) },
+    ...viewToggle({ view: view, setView: setView, stage: 'dual', labels: ['FRONT VIEW', 'TOP VIEW'] }),
   ];
   const dCell = lenCell(dMm, true);
   const bezel: BezelItem[] = [

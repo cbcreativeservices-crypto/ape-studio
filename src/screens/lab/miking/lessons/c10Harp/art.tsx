@@ -17,7 +17,7 @@ import { BlurMask, Group, LinearGradient, Path, RadialGradient, Skia, vec } from
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { harpGeom, harpistAt, type HarpGeom, type Pt } from './harpSpec.ts';
-import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { figureCovers, PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -507,9 +507,11 @@ export function harpHitTest(view: ViewId, variant: VariantId, u: number, v: numb
   return null;
 }
 
-export const HARP_BASE_ART: Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest'> = {
+export const HARP_BASE_ART: Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' | 'figureAt'> = {
   Instrument: HarpArt,
   labels: harpLabels,
   hitTest: harpHitTest,
+  // The drawn harpist, so the part labels keep off the figure too.
+  figureAt: (view, _variant, u, v, tol) => figureCovers(harpistPose(view), u, v, tol),
 };
 

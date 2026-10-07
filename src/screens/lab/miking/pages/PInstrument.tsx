@@ -31,6 +31,7 @@ import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point } from '../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../engine/journeyKit';
 import type { PageProps } from './pageTypes';
+import { viewToggle } from '../engine/scene/viewToggle.ts';
 
 export function PInstrument({ lesson, art, variant, setVariant, hidden, journey }: PageProps) {
   const model = lesson.model;
@@ -69,7 +70,7 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
         format: () => (shownPart ? `${shownPart.short.toUpperCase()} · ${seen.size} of ${parts.length} looked at` : `step through the ${parts.length} parts`),
         formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
       },
-      { kind: 'toggle', id: 'view', label: view === 'side' ? 'SIDE VIEW' : 'TOP VIEW', value: view === 'top', onToggle: () => setView((v) => (v === 'side' ? 'top' : 'side')) },
+      ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
       {
         kind: 'options',
         id: 'head',
