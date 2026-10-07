@@ -142,3 +142,10 @@ LESSON_CONTENT.A12 = A12_LESSON;
 /* Lab 3 (winds), the woodwinds (A06–A09b): appended so other lessons merge cleanly. */
 import { WOODWIND_CONTENT } from '../lessons/shared/woodwinds/content.ts';
 Object.assign(LESSON_CONTENT, WOODWIND_CONTENT);
+/* Lab 5 (ensembles and voice), group 1 — voice I, solo: E01, E03, E07 (each lesson on its own line). */
+import { E01_LESSON } from '../lessons/e01LeadVocal/lesson.ts';
+LESSON_CONTENT.E01 = E01_LESSON;
+import { E03_LESSON } from '../lessons/e03RapVocal/lesson.ts';
+LESSON_CONTENT.E03 = E03_LESSON;
+import { E07_LESSON } from '../lessons/e07SingerInstrument/lesson.ts';
+LESSON_CONTENT.E07 = E07_LESSON;

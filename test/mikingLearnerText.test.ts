@@ -106,6 +106,12 @@ export const BRAND_NAMES: readonly string[] = [
   'Gautrot',
   'MDAT',
   'UNSW',
+  // Lab 5 voice research (docs/labs/miking/lead_vocal, rap_vocal, singer_with_instrument).
+  'SM ?58',
+  'SM ?4',
+  'KMS ?104',
+  'GRAS',
+  'Blue Yeti',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */
