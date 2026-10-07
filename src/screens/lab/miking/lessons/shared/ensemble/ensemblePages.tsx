@@ -43,8 +43,10 @@ import { makeHandPages, type HandSpec } from '../hand/handPages';
 import { dist, fmtM, fmtStage, sideWords, v3, type StageView } from './frameS.ts';
 import { arrayClear, edges, nearFar, seatingOf, seatsOf, soundPoint, type Seating } from './seating.ts';
 import { ARRAYS, arrayCapsules, dtLR, frontBackDb, insideRecordingAngle, type ArrayParams, type ArrayPlacement, type ArrayPresetId } from './stereoArray.ts';
-import { EnsembleStage, type StageRig, type StageSingle, type StageZone } from './EnsembleStage';
+import { EnsembleStage, type StageRig, type StageRing, type StageSingle, type StageSpill, type StageZone } from './EnsembleStage';
 import { variantShort } from './ensembleModel.ts';
+import { MIC_TYPES } from '../../../data/micTypes.ts';
+import { nomDb, worstSpill, worstThreeToOne, type Spill } from './stagePlot.ts';
 import type { ArrayMount, EnsembleData, EnsembleLesson, EnsembleSetup } from './ensembleData.ts';
 
 /* ═══════════════════ the lesson's DATA (ensembleData.ts) ═══════════════════ */
@@ -53,13 +55,66 @@ export const ensembleOf = (l: Lesson): EnsembleData => (l as EnsembleLesson).ens
 export const seatingFor = (l: Lesson, variant: string): Seating => seatingOf(ensembleOf(l).seatings[variant] ?? Object.values(ensembleOf(l).seatings)[0]);
 export const setupsFor = (l: Lesson, variant: string): EnsembleSetup[] => ensembleOf(l).setups.filter((s) => !s.variants || s.variants.includes(variant));
 
-/** A setup as the stage draws it. */
+/** A setup as the stage draws it (group 4: a single with a `typeId` is drawn
+ *  as that mic — a vocal dynamic, an instrument dynamic — not the pencil). */
 export function stageOf(s: EnsembleSetup): { rigs: StageRig[]; singles: StageSingle[] } {
   return {
     rigs: [...(s.rig ? [{ key: `${s.id}:rig`, ...s.rig }] : []), ...(s.extraRigs ?? []).map((r, i) => ({ key: `${s.id}:rig${i + 2}`, ...r }))],
-    singles: (s.singles ?? []).map((m) => ({ key: `${s.id}:${m.key}`, p: m.p, dir: m.aim, pattern: m.pattern, label: m.label, art: m.art, len: m.len, cross: m.cross, foot: m.foot })),
+    singles: (s.singles ?? []).map((m) => {
+      const t = m.typeId ? MIC_TYPES[m.typeId] : undefined;
+      const look = t && t.address === 'end' ? { art: t.art as StageSingle['art'], len: t.body.length.mm, r: t.body.radius.mm } : {};
+      // group 5's explicit drawing (art, len, cross, a stand foot) wins over a type's look.
+      const own = m.art ? { art: m.art, len: m.len, cross: m.cross, r: undefined } : {};
+      return { key: `${s.id}:${m.key}`, p: m.p, dir: m.aim, pattern: m.pattern, label: m.label, ...look, ...own, foot: m.foot };
+    }),
   };
 }
+
+/* ── group 4: the STAGE-PLOT readouts (stagePlot.ts; every number derived) ── */
+/** The sources a stage plot's spill is measured against: every section with
+ *  an acoustic (or amplified) sound on the stage — a keyboard on a DI has none. */
+export function plotSources(s: Seating): { id: string; label: string; p: Vec3 }[] {
+  return s.sections.filter((q) => q.id !== 'keys').map((q) => ({ id: q.id, label: q.label, p: soundPoint(seatsOf(s, q.id)[0]) }));
+}
+export type PlotReadout = {
+  open: number;
+  nom: number;
+  mics: { key: string; label: string; worst: { id: string; label: string; s: Spill } | null; from: Vec3 | null; to: Vec3 }[];
+  three: ReturnType<typeof worstThreeToOne>;
+};
+export function plotReadout(setup: EnsembleSetup, s: Seating): PlotReadout {
+  const caps = setup.rig ? arrayCapsules(setup.rig.id, setup.rig.params, setup.rig.place).length : 0;
+  const singles = setup.singles ?? [];
+  const open = caps + singles.length;
+  const srcs = plotSources(s);
+  const mics = singles.map((m) => {
+    const own = m.own;
+    const others = srcs.filter((q) => q.id !== m.src);
+    const worst = own ? worstSpill({ p: m.p, dir: m.aim, pattern: m.pattern }, own, others) : null;
+    return { key: m.key, label: m.label, worst, from: worst ? others.find((q) => q.id === worst.id)!.p : null, to: m.p };
+  });
+  const sep = singles.filter((m) => m.own).map((m) => ({ key: m.label, p: m.p, own: m.own! }));
+  return { open, nom: nomDb(open), mics, three: sep.length >= 2 ? worstThreeToOne(sep) : null };
+}
+/** Group 4: the equal-distance ring round an array's centre (plan), through
+ *  the players' sound points, and the spread of their 3-D distances to it. */
+export function equalRing(s: Seating, c: Vec3): { ring: StageRing; spread: number; near: number; far: number } {
+  const pts = s.seats.filter((q) => q.kind !== 'conductor').map(soundPoint);
+  const plan = pts.map((p) => Math.hypot(p.x - c.x, p.z - c.z));
+  const d3 = pts.map((p) => dist(p, c));
+  const near = Math.min(...d3);
+  const far = Math.max(...d3);
+  return { ring: { key: 'ring', c: v3(c.x, 0, c.z), r: plan.reduce((a, b) => a + b, 0) / Math.max(1, plan.length) }, spread: far - near, near, far };
+}
+const dbWords = (x: number) => `${Math.round(x)} dB`;
+/** One close mic's spill, in words (equal source levels, straight paths, no room). */
+export function spillWords(m: PlotReadout['mics'][number]): string {
+  const w = m.worst;
+  if (!w) return `${m.label}: no neighbour on this stage.`;
+  const pat = w.s.patternDb == null ? 'and it sits in the pattern’s null' : w.s.patternDb < 1 ? 'and it is in front of the mic — the pattern takes almost nothing off' : `and the pattern takes about ${dbWords(w.s.patternDb)} more`;
+  return `${m.label}: its own source ${fmtDist(w.s.rOwn)} away; the ${w.label}, ${fmtDist(w.s.rOther)} — about ${dbWords(w.s.distanceDb)} lower by distance alone, ${pat}.`;
+}
+const fmtDist = (mm: number) => (mm < 1000 ? `${Math.round(mm / 10)} cm` : fmtM(mm));
 
 /** The web preview harness only (`&setup=<n>`, 1-based; never the production router). */
 function devSetupIndex(): number {
@@ -73,16 +128,23 @@ const VIEW_WORDS: Record<StageView, { label: string; blurb: string; tag: string 
   section: { label: 'FROM THE SIDE', blurb: 'Cut along the middle and seen from the conductor’s right: heights, rows and how far forward everything is.', tag: 'FROM THE SIDE · ALONG THE MIDDLE' },
   front: { label: 'FROM THE HALL', blurb: 'As the audience sees the stage: heights and how wide everything is.', tag: 'FROM THE HALL' },
 };
-function viewParam(view: StageView, setView: (v: StageView) => void): DockParam {
+/** Group 4: a stage plot's views, said as the audience sees the stage. */
+const PLOT_VIEW_WORDS: Record<StageView, { label: string; blurb: string; tag: string }> = {
+  plan: { label: 'FROM ABOVE', blurb: 'The stage plot: downstage and the audience at the bottom, the back wall at the top.', tag: 'FROM ABOVE · THE STAGE PLOT' },
+  section: { label: 'FROM THE SIDE', blurb: 'Cut along the middle and seen from the audience’s right: heights, and how far upstage everything is.', tag: 'FROM THE SIDE · ALONG THE MIDDLE' },
+  front: { label: 'FROM THE FRONT', blurb: 'As the audience sees the stage: heights and how wide everything is.', tag: 'FROM THE AUDIENCE' },
+};
+const viewWordsOf = (s: Seating) => (s.viewer === 'audience' ? PLOT_VIEW_WORDS : VIEW_WORDS);
+function viewParam(view: StageView, setView: (v: StageView) => void, W: Record<StageView, { label: string; blurb: string; tag: string }> = VIEW_WORDS): DockParam {
   return {
     kind: 'options',
     id: 'view',
     label: 'VIEW',
-    valueLabel: VIEW_WORDS[view].label.replace('FROM ', ''),
+    valueLabel: W[view].label.replace('FROM ', ''),
     selectedId: view,
     onSelect: (id) => setView(id as StageView),
     sticky: true,
-    options: (['plan', 'section', 'front'] as const).map((v) => ({ id: v, label: VIEW_WORDS[v].label, blurb: VIEW_WORDS[v].blurb })),
+    options: (['plan', 'section', 'front'] as const).map((v) => ({ id: v, label: W[v].label, blurb: W[v].blurb })),
   };
 }
 function variantParam(p: PageProps): DockParam[] {
@@ -98,7 +160,7 @@ function StageFigure({ lesson, variant }: { lesson: Lesson; variant: string }) {
   const E = ensembleOf(lesson);
   const st = s.stage;
   const aspect = (st.x1 - st.x0 + 1000) / (st.z1 - st.z0 + 1000);
-  return <ExpandableFigure badge={E.meet.figureBadge} title={E.meet.figureTitle} aspect={aspect} render={(w: number, h: number) => <EnsembleStage w={w} h={h} seating={s} view="plan" accessibilityLabel={`${E.meet.figureTitle}, from above as the conductor sees it: ${s.sections.map((q) => q.label).join(', ')}.`} />} />;
+  return <ExpandableFigure badge={E.meet.figureBadge} title={E.meet.figureTitle} aspect={aspect} render={(w: number, h: number) => <EnsembleStage w={w} h={h} seating={s} view="plan" accessibilityLabel={`${E.meet.figureTitle}, from above as the ${s.viewer === 'audience' ? 'audience' : 'conductor'} sees it: ${s.sections.map((q) => q.label).join(', ')}.`} />} />;
 }
 
 /* ═══════════════════ 1 · MEET IT ═══════════════════ */
@@ -106,6 +168,7 @@ export function EnsembleMeet(p: PageProps) {
   const { lesson, journey, variant, answers, onAnswered } = p;
   const E = ensembleOf(lesson);
   const s = seatingFor(lesson, variant);
+  const VW = viewWordsOf(s);
   const [view, setView] = useState<StageView>('plan');
   const [secId, setSecId] = useState<string | null>(null);
   const [seen, setSeen] = useState<ReadonlySet<string>>(() => new Set());
@@ -146,8 +209,8 @@ export function EnsembleMeet(p: PageProps) {
       kind: 'TRY',
       layout: 'rack',
       rack: {
-        render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} hi={secId} onTapSection={pick} accessibilityLabel={`${lesson.model.name}, ${VIEW_WORDS[view].tag.toLowerCase()}.${sec ? ` Highlighted: the ${sec.label}, ${centre ? sideWords(centre) : ''}.` : ''}`} />,
-        badge: `${VIEW_WORDS[view].tag} · tap a section to name it · amber outline = the one you picked · a typical layout`,
+        render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} hi={secId} onTapSection={pick} accessibilityLabel={`${lesson.model.name}, ${VW[view].tag.toLowerCase()}.${sec ? ` Highlighted: the ${sec.label}, ${centre ? sideWords(centre, 600, s.viewer) : ''}.` : ''}`} />,
+        badge: `${VW[view].tag} · tap a section to name it · amber outline = the one you picked · a typical layout`,
         bezel: [
           { k: 'SECTION', v: secId === 'cond' ? 'CONDUCTOR' : sec ? sec.short : 'TAP ONE', flex: 1.6 },
           { k: 'PLAYERS', v: sec ? `${players.length}` : '—', flex: 0.8 },
@@ -166,17 +229,17 @@ export function EnsembleMeet(p: PageProps) {
             format: () => (sec ? `${sec.short} · ${players.length} ${players.length === 1 ? 'player' : 'players'}` : `step through the ${secs.length} sections`),
             formatShort: () => (sec ? sec.short.slice(0, 9) : 'STEP'),
           },
-          viewParam(view, setView),
+          viewParam(view, setView, VW),
           ...variantParam(p),
         ],
         initialParam: 'sec',
       },
       well: (
         <>
-          <Landing looking={`${VIEW_WORDS[view].tag.toLowerCase()} · ${s.label.toLowerCase()}`} prompt="Tap a section on the stage — or step through SECTION — to see what it is and where it sits. Switch VIEW to see heights and rows." />
+          <Landing looking={`${VW[view].tag.toLowerCase()} · ${s.label.toLowerCase()}`} prompt="Tap a section on the stage — or step through SECTION — to see what it is and where it sits. Switch VIEW to see heights and rows." />
           {sec && centre ? (
             <Card>
-              <Point title={`${sec.label.toUpperCase()} · ${players.length} ${players.length === 1 ? 'PLAYER' : 'PLAYERS'}`}>{`${sideWords(centre)[0].toUpperCase()}${sideWords(centre).slice(1)}. ${sec.radiates}`}</Point>
+              <Point title={`${sec.label.toUpperCase()} · ${players.length} ${players.length === 1 ? 'PLAYER' : 'PLAYERS'}`}>{`${sideWords(centre, 600, s.viewer)[0].toUpperCase()}${sideWords(centre, 600, s.viewer).slice(1)}. ${sec.radiates}`}</Point>
             </Card>
           ) : secId === 'cond' ? (
             <Card>
@@ -206,7 +269,7 @@ export function EnsembleMeet(p: PageProps) {
         params: [
           { kind: 'options', id: 'fam', label: 'FAMILY', valueLabel: famWord(fam).split(' ')[0], selectedId: fam, onSelect: setFam, sticky: true, options: [{ id: 'all', label: 'EVERY SECTION', blurb: 'All the arcs at once.' }, ...families.map((f) => ({ id: f, label: f.toUpperCase(), blurb: secs.filter((q) => q.family === f).map((q) => q.label).join(', ') }))] },
           { kind: 'toggle', id: 'main', label: showMain ? 'MAIN PAIR ON' : 'MAIN PAIR OFF', value: showMain, onToggle: () => setShowMain((x) => !x) },
-          viewParam(view2, setView2),
+          viewParam(view2, setView2, VW),
           ...variantParam(p),
         ],
         initialParam: 'fam',
@@ -266,7 +329,7 @@ function SetupCard({ s, seating }: { s: EnsembleSetup; seating: Seating }) {
       {r ? (
         <Text style={styles.line}>
           <Text style={styles.key}>{'THE ARRAY · '}</Text>
-          {ARRAYS[r.id].what}
+          {s.arrayWords?.what ?? ARRAYS[r.id].what}
         </Text>
       ) : null}
       <Text style={styles.tendency}>
@@ -276,11 +339,38 @@ function SetupCard({ s, seating }: { s: EnsembleSetup; seating: Seating }) {
       {r ? (
         <Text style={styles.line}>
           <Text style={styles.key}>{'CHECK · '}</Text>
-          {ARRAYS[r.id].check}
+          {s.arrayWords?.check ?? ARRAYS[r.id].check}
         </Text>
       ) : null}
       {seating.podium && r ? <Text style={styles.small}>{`Height ${fmtStage(-r.place.c.y)} above the floor; ${r.place.c.z >= 0 ? `${fmtStage(r.place.c.z)} in front of the front row` : `${fmtStage(-r.place.c.z)} behind it`}.`}</Text> : null}
+      {s.di?.length ? (
+        <Text style={styles.line}>
+          <Text style={styles.key}>{'DI · '}</Text>
+          {`${s.di.map((id) => seating.sections.find((q) => q.id === id)?.label ?? id).join(', ')}: a line output or DI box, no mic.`}
+        </Text>
+      ) : null}
+      {s.roles ? (
+        <Text style={styles.line}>
+          <Text style={styles.key}>{'ROLES · '}</Text>
+          {s.roles}
+        </Text>
+      ) : null}
     </View>
+  );
+}
+
+/** Group 4: the stage plot's readouts under a setup card (derived; said once
+ *  as a simplified picture). */
+function PlotCard({ r }: { r: PlotReadout }) {
+  return (
+    <Card>
+      <Point title={`OPEN MICS · ${r.open}`}>{r.open > 1 ? `Each doubling of open mics costs about 3 dB of gain before feedback: ${r.open} open mics, about ${r.nom.toFixed(1)} dB less than one. Close the ones a song does not need.` : 'One open mic: the most gain before feedback this plot can have.'}</Point>
+      {r.mics.length ? (
+        <Point title="WHAT ELSE EACH CLOSE MIC HEARS">{r.mics.map((m) => spillWords(m)).join(' ')}</Point>
+      ) : null}
+      {r.three ? <Point title={`3:1 · ${r.three.ok ? 'MET' : 'NOT MET'}`}>{`The closest pair, ${r.three.a} and ${r.three.b}: ${fmtDist(r.three.apart)} apart, against ${fmtDist(r.three.need)} for 3 × the farther mic’s distance to its own source.${r.three.ok ? '' : ' Move a mic closer to its source, move the sources apart, or accept the bleed as part of the sound.'}`}</Point> : null}
+      <Text style={styles.small}>A simplified picture: equal source levels, straight paths, ideal patterns, no room — what the drawing implies, not a measurement.</Text>
+    </Card>
   );
 }
 
@@ -311,6 +401,24 @@ export function EnsembleSetups(p: PageProps) {
   const c = sel?.rig?.place.c ?? sel?.singles?.[0]?.p ?? null;
   const a11y = sel ? `${sel.role}: ${sel.title}. ${sel.mics}. ${sel.start}` : 'No setup.';
   const around = aroundItems(lesson.setting.items);
+  const VW = viewWordsOf(s);
+  // Group 4: a stage plot's derived readouts and the spill paths drawn.
+  const plot = E.plot && sel ? plotReadout(sel, s) : null;
+  const spillPaths: StageSpill[] = plot ? plot.mics.filter((m) => m.from).map((m) => ({ key: `sp:${m.key}`, from: m.from!, to: m.to })) : [];
+  const eq = E.ring && sel?.rig ? equalRing(s, sel.rig.place.c) : null;
+  const bezel: BezelItem[] = plot
+    ? [
+        { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
+        { k: 'OPEN MICS', v: `${plot.open}`, flex: 1 },
+        { k: 'NOM COST', v: plot.open > 1 ? `${plot.nom.toFixed(1)} dB` : '0 dB', flex: 1 },
+        { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
+      ]
+    : [
+        { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
+        { k: 'ARRAY', v: sel?.rig ? ARRAYS[sel.rig.id].short : sel ? ((sel.singles?.length ?? 0) > 1 ? 'CLOSE MICS' : 'SPOT') : '—', flex: 1.1 },
+        { k: 'HEIGHT', v: c ? fmtM(-c.y) : '—', flex: 0.9 },
+        { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
+      ];
   const steps: MikingStep[] = [
     {
       key: 'setups',
@@ -318,14 +426,9 @@ export function EnsembleSetups(p: PageProps) {
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => (sel ? <EnsembleStage w={w} h={h} seating={s} view={view} rigs={st.rigs} singles={st.singles} dims detail={!!sel.rig} lobes={view !== 'plan'} accessibilityLabel={a11y} /> : <Text style={styles.missing}>No starting setup for this seating.</Text>),
-        badge: 'Placed for you · amber dashed = where each mic points · white = height and distance · the corner box = the array’s exact shape',
-        bezel: [
-          { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
-          { k: 'ARRAY', v: sel?.rig ? ARRAYS[sel.rig.id].short : sel ? ((sel.singles?.length ?? 0) > 1 ? 'CLOSE MICS' : 'SPOT') : '—', flex: 1.1 },
-          { k: 'HEIGHT', v: c ? fmtM(-c.y) : '—', flex: 0.9 },
-          { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
-        ],
+        render: (w, h) => (sel ? <EnsembleStage w={w} h={h} seating={s} view={view} rigs={st.rigs} singles={st.singles} spill={spillPaths} rings={eq ? [eq.ring] : []} dims detail={!!sel.rig} lobes={view !== 'plan'} accessibilityLabel={a11y} /> : <Text style={styles.missing}>No starting setup for this seating.</Text>),
+        badge: plot ? 'Placed for you · amber dashed = where each mic points · coral dots = the loudest neighbour reaching each close mic · the corner box = the array’s exact shape' : 'Placed for you · amber dashed = where each mic points · white = height and distance · the corner box = the array’s exact shape',
+        bezel,
         params: [
           {
             kind: 'fader',
@@ -337,15 +440,21 @@ export function EnsembleSetups(p: PageProps) {
             formatShort: () => `${i + 1} / ${list.length}`,
           },
           { kind: 'options', id: 'pick', label: 'SETUPS', valueLabel: sel ? sel.role.split(' ')[0] : '—', selectedId: sel?.id ?? null, onSelect: (id) => setIdx(Math.max(0, list.findIndex((q) => q.id === id))), sticky: true, options: list.map((q) => ({ id: q.id, label: `${q.role} · ${q.title}`, blurb: q.line })) },
-          viewParam(view, setView),
+          viewParam(view, setView, VW),
           ...variantParam(p),
         ],
         initialParam: 'setup',
       },
       well: (
         <>
-          <Landing looking={sel ? `${sel.role} · ${VIEW_WORDS[view].tag.toLowerCase()}` : s.label} prompt="Step through SETUP. Each one is drawn on the stage: the stand, the bar or boom, each mic, where it points (amber) and its height and distance (white). Switch VIEW for heights or the plan." />
+          <Landing looking={sel ? `${sel.role} · ${VW[view].tag.toLowerCase()}` : s.label} prompt="Step through SETUP. Each one is drawn on the stage: the stand, the bar or boom, each mic, where it points (amber) and its height and distance (white). Switch VIEW for heights or the plan." />
           {sel ? <SetupCard s={sel} seating={s} /> : <Note>No starting setup for this seating — try another in the dock.</Note>}
+          {eq ? (
+            <Card>
+              <Point title={`EQUAL DISTANCE · ${fmtDist(eq.spread)} SPREAD`}>{`The players are ${fmtDist(eq.near)} to ${fmtDist(eq.far)} from the array’s centre (the white dotted ring, seen from above). The closer those distances, the more evenly the array hears them — moving a player is often the simplest balance control.`}</Point>
+            </Card>
+          ) : null}
+          {plot ? <PlotCard r={plot} /> : null}
           <Body>{`Looked at: ${seenCore} of ${core.length} setups${list.length > core.length ? ` (and ${list.length - core.length} more to explore)` : ''}. The Placement Studio starts from the last one you look at.`}</Body>
         </>
       ),
@@ -426,6 +535,15 @@ export function EnsemblePlacement(p: PageProps) {
   const { lesson, variant, answers, onAnswered, onInteractive, interactiveDone, startFrom } = p;
   const E = ensembleOf(lesson);
   const s = seatingFor(lesson, variant);
+  // Group 4: a stage plot's MOVE ranges and its words from the audience's side.
+  const who = s.viewer === 'audience' ? 'audience' : 'conductor';
+  const front = s.viewer === 'audience' ? 'the front line of the band' : 'the front row';
+  const AX: Record<Axis, { label: string; blurb: string; lo: number; hi: number }> = {
+    h: { ...AXIS.h, ...E.placeAxes?.h },
+    z: { ...AXIS.z, ...E.placeAxes?.z, ...(s.viewer === 'audience' ? { blurb: 'Upstage toward the back wall, or downstage toward the audience.' } : {}) },
+    x: { ...AXIS.x, ...E.placeAxes?.x, ...(s.viewer === 'audience' ? { blurb: 'To the audience’s left or right.' } : {}) },
+  };
+  const VW = viewWordsOf(s);
   const list = setupsFor(lesson, variant).filter((q) => q.rig);
   const workedId = E.worked[variant] ?? list[0]?.id;
   const worked = list.find((q) => q.id === workedId) ?? list[0];
@@ -441,8 +559,8 @@ export function EnsemblePlacement(p: PageProps) {
     ? [
         { title: 'WHERE TO BEGIN', text: `${worked!.title}. ${E.workedWords.begin}`, view: 'plan' as StageView, cell: 0 },
         { title: 'THE ARRAY', text: `${ARRAYS[exRig.id].name}: ${ARRAYS[exRig.id].what}`, view: 'plan' as StageView, cell: 0 },
-        { title: 'THE HEIGHT', text: `${fmtStage(-exC.y)} above the floor — high enough to see past the front players to the rows behind. Higher hears more of the back rows and the hall; lower, more of the front desks.`, view: 'section' as StageView, cell: 1 },
-        { title: 'HOW FAR FORWARD', text: `${exC.z >= 0 ? `${fmtStage(exC.z)} in front of the front row` : `${fmtStage(-exC.z)} behind it`}${s.podium ? ', over or just behind the podium' : ''}. Closer tends to more direct sound and more front-row weight; farther back, more blend and more of the room.`, view: 'section' as StageView, cell: 2 },
+        { title: 'THE HEIGHT', text: E.workedWords.height ?? `${fmtStage(-exC.y)} above the floor — high enough to see past the front players to the rows behind. Higher hears more of the back rows and the hall; lower, more of the front desks.`, view: 'section' as StageView, cell: 1 },
+        { title: 'HOW FAR FORWARD', text: E.workedWords.forward ?? `${exC.z >= 0 ? `${fmtStage(exC.z)} in front of the front row` : `${fmtStage(-exC.z)} behind it`}${s.podium ? ', over or just behind the podium' : ''}. Closer tends to more direct sound and more front-row weight; farther back, more blend and more of the room.`, view: 'section' as StageView, cell: 2 },
         { title: 'THE AIM', text: `${ARRAYS[exRig.id].recordingAngle ? `Facing the middle of the ensemble; its ${ARRAYS[exRig.id].recordingAngle}° recording angle (the amber wedge) should take in the whole width.` : 'Facing the middle of the ensemble, tilted down toward it.'} Move the whole array to change what it covers — not one mic of it.`, view: 'plan' as StageView, cell: 3 },
         { title: 'CLEARANCE', text: E.workedWords.clearance, view: 'front' as StageView, cell: 3 },
       ]
@@ -496,7 +614,7 @@ export function EnsemblePlacement(p: PageProps) {
   const ra = ARRAYS[preset].recordingAngle;
   const inside = ra ? s.sections.filter((q) => insideRecordingAngle(preset, place, soundPoint(seatsOf(s, q.id)[0])) === true).length : 0;
   const axisVal = axis === 'h' ? -c.y : axis === 'z' ? c.z : c.x;
-  const A = AXIS[axis];
+  const A = AX[axis];
   const withAxis = (q: Vec3, v: number) => (axis === 'h' ? v3(q.x, -v, q.z) : axis === 'z' ? v3(q.x, q.y, v) : v3(v, q.y, q.z));
   const setAxisVal = (v: number) => setC((q) => withAxis(q, v));
   const presets = [...new Set(list.map((q) => q.rig!.id))];
@@ -518,10 +636,10 @@ export function EnsemblePlacement(p: PageProps) {
       },
       format: (v) => {
         const x = Math.round((A.lo + v * (A.hi - A.lo)) / 50) * 50;
-        return axis === 'h' ? `${fmtStage(x)} above the floor` : axis === 'z' ? (x >= 0 ? `${fmtStage(x)} in front of the front row` : `${fmtStage(-x)} behind it`) : x === 0 ? 'on the centre line' : `${fmtStage(Math.abs(x))} to the conductor’s ${x < 0 ? 'left' : 'right'}`;
+        return axis === 'h' ? `${fmtStage(x)} above the floor` : axis === 'z' ? (x >= 0 ? `${fmtStage(x)} in front of ${front}` : `${fmtStage(-x)} behind it`) : x === 0 ? 'on the centre line' : `${fmtStage(Math.abs(x))} to the ${who}’s ${x < 0 ? 'left' : 'right'}`;
       },
       formatShort: () => (axis === 'h' ? fmtM(-c.y) : axis === 'z' ? fmtM(c.z) : fmtM(c.x)),
-      chooser: { title: 'MOVE THE ARRAY', selectedId: axis, onSelect: (id) => setAxis(id as Axis), options: (['h', 'z', 'x'] as const).map((k) => ({ id: k, label: AXIS[k].label, blurb: AXIS[k].blurb })) },
+      chooser: { title: 'MOVE THE ARRAY', selectedId: axis, onSelect: (id) => setAxis(id as Axis), options: (['h', 'z', 'x'] as const).map((k) => ({ id: k, label: AX[k].label, blurb: AX[k].blurb })) },
     },
     ...(geom
       ? [
@@ -539,16 +657,18 @@ export function EnsemblePlacement(p: PageProps) {
       : []),
     { kind: 'options', id: 'array', label: 'ARRAY', valueLabel: def.short, selectedId: preset, onSelect: (id) => setPreset(id as ArrayPresetId), sticky: true, options: presets.map((id) => ({ id, label: ARRAYS[id].name, blurb: ARRAYS[id].what })) },
     { kind: 'options', id: 'start', label: 'START', valueLabel: (start?.role ?? '').split(' ')[0], selectedId: startId, onSelect: pickStart, options: list.map((q) => ({ id: q.id, label: `Start from: ${q.role} · ${q.title}`, blurb: q.start })) },
-    viewParam(view, setView),
+    viewParam(view, setView, VW),
   ];
+  // Group 4: a small group's equal-distance ring and the spread of distances.
+  const eqNow = E.ring ? equalRing(s, c) : null;
   const bezel: BezelItem[] = [
     { k: 'HEIGHT', v: fmtM(-c.y), flex: 0.9 },
-    { k: c.z >= 0 ? 'IN FRONT' : 'BEHIND', v: fmtM(Math.abs(c.z)), flex: 0.9 },
+    eqNow ? { k: 'SPREAD', v: fmtDist(eqNow.spread), flex: 0.9 } : { k: c.z >= 0 ? 'IN FRONT' : 'BEHIND', v: fmtM(Math.abs(c.z)), flex: 0.9 },
     { k: 'NEAR / FAR', v: `${bias.toFixed(0)} dB`, flex: 1 },
     ra ? { k: `IN ${ra}°`, v: `${inside} / ${s.sections.length}`, flex: 0.9 } : { k: 'EDGES Δt', v: `${dtEdge.toFixed(1)} ms`, flex: 1 },
     { k: 'ZONE', v: blocked ? 'BLOCKED' : zone ? 'IN ZONE' : '—', tint: blocked ? '#ff6b5e' : zone ? '#5bff85' : undefined, flex: 1 },
   ];
-  const nowWords = `The ${def.name.toLowerCase()} is ${fmtStage(-c.y)} up, ${c.z >= 0 ? `${fmtStage(c.z)} in front of the front row` : `${fmtStage(-c.z)} behind it`}${Math.abs(c.x) > 50 ? `, ${fmtStage(Math.abs(c.x))} to the conductor’s ${c.x < 0 ? 'left' : 'right'}` : ''}. The nearest and farthest players arrive about ${bias.toFixed(0)} dB apart by distance; ${ra ? `${inside} of ${s.sections.length} sections sit inside its ${ra}° recording angle` : `the outermost players reach the two sides up to ${dtEdge.toFixed(1)} ms apart`}.${zone ? ` At a recommended starting point: ${zone.label}.` : ' Not at a recommended starting point.'}${blocked ? ` Blocked: it would touch ${blocked}.` : ''}`;
+  const nowWords = `The ${def.name.toLowerCase()} is ${fmtStage(-c.y)} up, ${c.z >= 0 ? `${fmtStage(c.z)} in front of ${front}` : `${fmtStage(-c.z)} behind ${front}`}${Math.abs(c.x) > 50 ? `, ${fmtStage(Math.abs(c.x))} to the ${who}’s ${c.x < 0 ? 'left' : 'right'}` : ''}. The nearest and farthest players arrive about ${bias.toFixed(0)} dB apart by distance; ${ra ? `${inside} of ${s.sections.length} sections sit inside its ${ra}° recording angle` : `the outermost players reach the two sides up to ${dtEdge.toFixed(1)} ms apart`}.${zone ? ` At a recommended starting point: ${zone.label}.` : ' Not at a recommended starting point.'}${blocked ? ` Blocked: it would touch ${blocked}.` : ''}`;
   const zonesDrawn: StageZone[] = zones.map((z) => ({ key: z.id, box: z.box, on: zone?.id === z.id }));
   const rigNow: StageRig[] = [{ key: 'now', id: preset, params, place, mount }];
   const pred = lesson.predictions.placement;
@@ -565,7 +685,7 @@ export function EnsemblePlacement(p: PageProps) {
         bezel: [
           { k: exStep === 0 || exStep === 1 ? '▸ ARRAY' : 'ARRAY', v: exRig ? ARRAYS[exRig.id].short : '—', tint: exStep <= 1 ? '#ffc64d' : undefined, flex: 1 },
           { k: exStep === 2 ? '▸ HEIGHT' : 'HEIGHT', v: fmtM(-exC.y), tint: exStep === 2 ? '#ffc64d' : undefined, flex: 0.9 },
-          { k: exStep === 3 ? '▸ IN FRONT' : 'IN FRONT', v: fmtM(Math.abs(exC.z)), tint: exStep === 3 ? '#ffc64d' : undefined, flex: 0.9 },
+          { k: `${exStep === 3 ? '▸ ' : ''}${exC.z >= 0 ? 'IN FRONT' : 'BEHIND'}`, v: fmtM(Math.abs(exC.z)), tint: exStep === 3 ? '#ffc64d' : undefined, flex: 0.9 },
           { k: exStep >= 4 ? '▸ NEAR / FAR' : 'NEAR / FAR', v: `${exBias.toFixed(0)} dB`, tint: exStep >= 4 ? '#ffc64d' : undefined, flex: 1 },
         ],
         params: [{ kind: 'fader', id: 'piece', label: 'STEP', value: pieces.length > 1 ? exStep / (pieces.length - 1) : 0, onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => (wk ? `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}` : ''), formatShort: () => `${exStep + 1} / ${pieces.length}` }],
@@ -590,7 +710,7 @@ export function EnsemblePlacement(p: PageProps) {
       kind: 'PLACE',
       layout: 'rack',
       rack: {
-        render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} rigs={rigNow} zones={zonesDrawn} dims detail lobes={view !== 'plan'} accessibilityLabel={nowWords} />,
+        render: (w, h) => <EnsembleStage w={w} h={h} seating={s} view={view} rigs={rigNow} zones={zonesDrawn} rings={eqNow ? [eqNow.ring] : []} dims detail lobes={view !== 'plan'} accessibilityLabel={nowWords} />,
         badge: 'Blue = recommended starting points for the array’s centre · amber dot = the array’s centre · readouts calculated from the drawing',
         bezel,
         params: params2,
@@ -601,6 +721,7 @@ export function EnsemblePlacement(p: PageProps) {
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
           <Landing looking={`${def.name} · ${start ? `started from ${start.role.toLowerCase()}` : ''}`} prompt="MOVE the array (choose UP–DOWN, TOWARD–AWAY or ACROSS) and let go to rest it. Rest its centre in two different blue zones. Watch what the readouts do." />
           <NowLine text={nowWords} />
+          {eqNow ? <Body>{`Equal distance: the players are ${fmtDist(eqNow.near)} to ${fmtDist(eqNow.far)} from the array’s centre — ${fmtDist(eqNow.spread)} apart. The white dotted ring shows it from above.`}</Body> : null}
           {blocked ? <Note tone="warn">{`It would touch ${blocked}: the players, their bows and the conductor’s space come first. Move it.`}</Note> : null}
           {zone ? (
             <Card>

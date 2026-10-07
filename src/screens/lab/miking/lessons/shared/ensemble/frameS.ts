@@ -93,8 +93,10 @@ export function planDir(deg: number): Vec3 {
 export function sideOf(p: Vec3, centre = 600): 'left' | 'centre' | 'right' {
   return p.x < -centre ? 'left' : p.x > centre ? 'right' : 'centre';
 }
-export function sideWords(p: Vec3, centre = 600): string {
+export function sideWords(p: Vec3, centre = 600, viewer?: 'audience'): string {
   const s = sideOf(p, centre);
+  // Group 4: a stage plot is said as the audience sees it (+x on the same side).
+  if (viewer === 'audience') return s === 'centre' ? 'in the middle, as the audience sees the stage' : `on the audience’s ${s}`;
   return s === 'centre' ? 'in the middle, as the conductor faces the ensemble' : `on the conductor’s ${s}`;
 }
 

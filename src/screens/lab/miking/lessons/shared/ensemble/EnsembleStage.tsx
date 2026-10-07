@@ -34,15 +34,19 @@ import { headTop, soundPoint, type Seat, type Seating } from './seating.ts';
 import { SeatingView, SECTION_SLICE } from './SeatingArt';
 import { ArrayDetail, ArrayRig, rigPoints, type RigSpec } from './ArrayArt';
 import { stageClearOf, stageHit, stageLabels } from './stageLabels.ts';
-import type { SingleArt } from './ensembleData.ts';
+import { GEAR_SIZE, PA_BOX } from './bandStage.ts';
 
 const AMBER = '#ffc64d';
 const BLUE = '#6fa8ff';
 const IDEAL = '#e8eaee';
 const ZONE = '#3d8bff';
+/** Group 4: a spill path (a neighbour reaching a close mic). */
+const SPILL = '#ff8a6e';
 const MIC = { len: 104, r: 10.5 };
 
 export type StageRig = RigSpec & { key: string; label?: string; lit?: boolean };
+/** The mic drawings a single can use (features/lab/micDrawings MikingMicArt). */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc';
 export type StageSingle = {
   key: string;
   p: Vec3;
@@ -50,15 +54,21 @@ export type StageSingle = {
   pattern: PatternId;
   label?: string;
   lit?: boolean;
-  /** group 5: the mic's drawing (default the pencil condenser) and its body
-   *  (mm: `len` deep, `cross` across), and a stand foot set on a riser or a
-   *  gap between players (default: 650 mm back from the mic's tail, on the floor). */
-  art?: SingleArt;
+  /** The mic's drawing (default the pencil condenser) and its body, mm: `len`
+   *  deep, and across either `r` (a radius: group 4, from the mic type) or
+   *  `cross` (a width: group 5); and a stand foot set on a riser or a gap
+   *  between players (group 5; default: 650 mm back from the mic's tail, on the floor). */
+  art?: MicArtId;
   len?: number;
+  r?: number;
   cross?: number;
   foot?: Vec3;
 };
 export type StageZone = { key: string; box: { min: Vec3; max: Vec3 }; label?: string; on?: boolean };
+/** Group 4: a spill path (a neighbour's sound reaching a close mic) and an
+ *  equal-distance ring (plan only). */
+export type StageSpill = { key: string; from: Vec3; to: Vec3 };
+export type StageRing = { key: string; c: Vec3; r: number };
 
 /** Where a seat's sound radiates (a local direction: right, up, forward). */
 const RADIATE: Record<string, [number, number, number]> = {
@@ -79,17 +89,25 @@ const RADIATE: Record<string, [number, number, number]> = {
   harp: [0.3, 0.3, -0.9],
   piano: [0.7, 0.7, 0],
   celesta: [0, 1, 0.2],
+  // Group 4 (an amp radiates along its own facing: Seat.srcFace). The drum
+  // kit is one kind for groups 4 and 5.
+  drumkit: [0, 0.8, 0.6],
+  keys: [0, 1, 0.2],
+  singer: [0, 0.1, 1],
+  tenorSax: [0.3, 0.6, 0.75],
+  aguitar: [0, 0.2, 1],
+  mandolin: [0, 0.2, 1],
   // group 5 (sections)
   sax: [0.35, 0.55, 0.75],
   bariSax: [0.35, 0.7, 0.6],
   guitar: [0, 0.1, 1],
-  drumkit: [0, 0.85, 0.5],
   marimba: [0, 1, 0.1],
   vibraphone: [0, 1, 0.1],
   congas: [0, 1, 0.25],
   perctable: [0, 0.9, 0.4],
 };
 function radDir(q: Seat): Vec3 {
+  if (q.srcFace != null) return planDir(q.srcFace);
   const [r, up, f] = RADIATE[q.kind] ?? [0, 1, 0];
   const F = q.face * DEG;
   const right = v3(Math.cos(F), 0, Math.sin(F));
@@ -102,6 +120,8 @@ export function stageBox(s: Seating, view: StageView, rigs: readonly StageRig[] 
   const st = s.stage;
   const pts: Vec3[] = [v3(st.x0, 0, st.z0), v3(st.x1, 0, st.z1), ...extra];
   for (const q of s.seats) pts.push(v3(q.p.x, -headTop(q) - 120, q.p.z));
+  // Group 4: the gear (an amp, the PA on its stand) is part of the stage.
+  for (const g of s.gear ?? []) pts.push(v3(g.p.x, g.p.y - (g.kind === 'pa' ? PA_BOX.bottom + PA_BOX.h : GEAR_SIZE[g.kind].h) - 120, g.p.z));
   if (s.conductor) pts.push(v3(0, -2100, s.conductor.p.z));
   for (const r of rigs) pts.push(...rigPoints(r));
   for (const m of singles) pts.push(m.p, v3(m.p.x, 0, m.p.z));
@@ -162,6 +182,9 @@ export type EnsembleStageProps = {
   detail?: boolean;
   labels?: boolean;
   extraLabels?: readonly StaticLabel[];
+  /** Group 4: spill paths (coral dashed) and equal-distance rings (plan). */
+  spill?: readonly StageSpill[];
+  rings?: readonly StageRing[];
   box?: ViewBox;
   onTapSection?: (id: string) => void;
   accessibilityLabel: string;
@@ -169,9 +192,9 @@ export type EnsembleStageProps = {
 };
 
 export function EnsembleStage(p: EnsembleStageProps) {
-  const { w, h, seating, view, hi = null, rigs = [], singles = [], zones = [], radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = [], onTapSection } = p;
+  const { w, h, seating, view, hi = null, rigs = [], singles = [], zones = [], radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = [], spill = [], rings = [], onTapSection } = p;
   const textScale = useStageTextScale();
-  const box = useMemo(() => p.box ?? stageBox(seating, view, rigs, singles), [p.box, seating, view, rigs, singles]);
+  const box = useMemo(() => p.box ?? stageBox(seating, view, rigs, singles, view === 'plan' ? rings.flatMap((r) => [v3(r.c.x - r.r, 0, r.c.z - r.r), v3(r.c.x + r.r, 0, r.c.z + r.r)]) : []), [p.box, seating, view, rigs, singles, rings]);
   const xf: ViewXform = useMemo(() => fitXform(view === 'front' ? 'side' : 'top', box, w, h, 6), [view, box, w, h]);
   const px = 1 / xf.s;
   const slice = view === 'section' ? SECTION_SLICE : Infinity;
@@ -261,7 +284,9 @@ export function EnsembleStage(p: EnsembleStageProps) {
       tick({ u: bot.u + off, v: bot.v }, false);
       lab.push({ id: 'dimH', text: `${fmtM(-c.y)} UP`, u: top.u + off + 120, v: (top.v + bot.v) / 2, align: 'left', tone: 'amber' });
     }
-    if (view !== 'front') {
+    // Group 4: on a stage plot a rig upstage of the band's front line (a drum
+    // pair over the kit) is not measured from that line — height only.
+    if (view !== 'front' && !(seating.viewer === 'audience' && c.z < 0)) {
       const a = uv(view, view === 'plan' ? v3(c.x, 0, c.z) : c);
       const b = uv(view, view === 'plan' ? v3(c.x, 0, 0) : v3(c.x, c.y, 0));
       const off = view === 'plan' ? 420 : -260;
@@ -273,7 +298,7 @@ export function EnsembleStage(p: EnsembleStageProps) {
       lab.push({ id: 'dimD', text: `${fmtM(Math.abs(c.z))} ${c.z >= 0 ? 'IN FRONT' : 'BEHIND'}`, short: fmtM(Math.abs(c.z)), u: (a.u + b.u) / 2 + (horiz ? 0 : off + 110), v: (a.v + b.v) / 2 + (horiz ? off - 120 : 0), align: horiz ? 'center' : 'left', tone: 'amber' });
     }
     return { lines, lab };
-  }, [rigs, dims, view, px]);
+  }, [rigs, dims, view, px, seating]);
 
   // The detail inset goes in the emptiest corner of the glass: the first
   // corner clear of the players and of the rig (sampled in the drawing). On a
@@ -351,6 +376,22 @@ export function EnsembleStage(p: EnsembleStageProps) {
                 <DashPathEffect intervals={[6 * px, 4 * px]} />
               </Path>
             ) : null}
+            {view === 'plan'
+              ? rings.map((r) => (
+                  <Circle key={r.key} cx={r.c.x} cy={r.c.z} r={r.r} style="stroke" strokeWidth={1.8 * px} color={IDEAL} opacity={0.7}>
+                    <DashPathEffect intervals={[3 * px, 5 * px]} />
+                  </Circle>
+                ))
+              : null}
+            {spill.map((q) => {
+              const a = uv(view, q.from);
+              const b = uv(view, q.to);
+              return (
+                <Line key={q.key} p1={vec(a.u, a.v)} p2={vec(b.u, b.v)} color={SPILL} strokeWidth={1.6 * px} opacity={0.9}>
+                  <DashPathEffect intervals={[2 * px, 4 * px]} />
+                </Line>
+              );
+            })}
             {zonesG.map(({ z, path }) => (
               <Group key={z.key}>
                 <Path path={path} color={ZONE} opacity={z.on ? 0.3 : 0.16} />
@@ -377,7 +418,7 @@ export function EnsembleStage(p: EnsembleStageProps) {
                 <Path path={metal} style="stroke" strokeWidth={Math.max(22, 3 * px)} strokeCap="round" color="#0b0c0f" />
                 <Path path={metal} style="stroke" strokeWidth={Math.max(13, 1.8 * px)} strokeCap="round" color="#9aa0ab" />
                 <Group transform={micXf(view, m.p, m.dir)}>
-                  <MikingMicArt art={m.art ?? 'sdc'} r={(m.cross ?? MIC.r * 2) / 2} len={m.len ?? MIC.len} cross={m.cross ?? MIC.r * 2} />
+                  <MikingMicArt art={m.art ?? 'sdc'} r={m.r ?? (m.cross ?? MIC.r * 2) / 2} len={m.len ?? MIC.len} cross={m.cross ?? (m.r ?? MIC.r) * 2} />
                 </Group>
                 <Circle cx={uv(view, m.p).u} cy={uv(view, m.p).v} r={5 * px} color={AMBER} opacity={0.9} />
               </Group>

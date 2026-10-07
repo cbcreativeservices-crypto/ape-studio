@@ -32,7 +32,14 @@ export const ARRAY_CARDS: ReactNode = (
   </>
 );
 
-export function ensembleHandSpec(o: { art: LessonArt; model: InstrumentModel; title: string; mic: HandSpec['mic']; ctx: HandSpec['ctx']; two: HandSpec['two']; practice: HandSpec['practice']; words: NonNullable<HandSpec['words']>; firstZone: string; firstMic: string }): HandSpec {
+/** Group 4: a stage plot's axes, said as the audience sees the stage. */
+export const STAGE_PLOT_AXES: HandSpec['axes'] = {
+  x: { label: 'ACROSS', short: 'ACROSS', blurb: 'To the audience’s left or right (x).', fmt: (v) => (Math.abs(v) < 25 ? 'on the centre line' : `${fmtM(Math.abs(v))} to the audience’s ${v < 0 ? 'left' : 'right'}`) },
+  y: { label: 'UP–DOWN', short: 'HEIGHT', blurb: 'Higher or lower (y).', fmt: (v) => `${fmtM(Math.max(0, -v))} above the floor` },
+  z: { label: 'UPSTAGE–DOWNSTAGE', short: 'TOWARD', blurb: 'Upstage toward the back wall, or downstage toward the audience (z).', fmt: (v) => (v >= 0 ? `${fmtM(v)} in front of the band’s front line` : `${fmtM(-v)} upstage of the band’s front line`) },
+};
+
+export function ensembleHandSpec(o: { art: LessonArt; model: InstrumentModel; title: string; mic: HandSpec['mic']; ctx: HandSpec['ctx']; two: HandSpec['two']; practice: HandSpec['practice']; words: NonNullable<HandSpec['words']>; firstZone: string; firstMic: string; axes?: HandSpec['axes']; aimWords?: HandSpec['aimWords']; outside?: string }): HandSpec {
   const V = o.model.views;
   return {
     art: o.art,
@@ -45,9 +52,9 @@ export function ensembleHandSpec(o: { art: LessonArt; model: InstrumentModel; ti
     partsWarn: '',
     plan: { items: [], label: () => '', looking: () => '', first: '', before: [] },
     mic: o.mic,
-    axes: ENSEMBLE_AXES,
-    aimWords: { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the hall).' },
-    outside: 'clear of the players',
+    axes: o.axes ?? ENSEMBLE_AXES,
+    aimWords: o.aimWords ?? { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the hall).' },
+    outside: o.outside ?? 'clear of the players',
     worked: { zone: o.firstZone, mic: o.firstMic, looking: '', pieces: () => [], done: '', label: '' },
     place: { zone: o.firstZone, mic: o.firstMic, looking: '', prompt: '', tried: () => '', label: '' },
     learnZones: [],

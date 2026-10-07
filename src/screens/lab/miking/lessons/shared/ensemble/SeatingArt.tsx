@@ -30,12 +30,12 @@ import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
 import { DrumPlan, CymbalPlan } from '../drums/DrumArt';
 import { CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
 import { DEG, planDir, uv, type StageView } from './frameS.ts';
-import { DIMS, headTop, sectionBox, type Seat, type Seating } from './seating.ts';
-// group 5 (sections): the shared kit, the mallet rows, the congas — reused, never redrawn from scratch.
+import { DIMS, headTop, sectionBox, type Gear, type Seat, type Seating } from './seating.ts';
+// Group 4: the band players and the stage gear (drawn into these batches) —
+// the drum kit (one kind for groups 4 and 5) is Lab 1's shared kit, whole.
+import { BAND_KINDS, bandElevInstrument, bandElevWhole, bandGearElev, bandGearPlan, bandPlanInstrument, bandPlanWhole, gearBehind, type BandTools } from './BandArt';
+// group 5 (sections): the mallet rows, the congas — reused, never redrawn from scratch.
 import { KIND, STAND_LIFT } from './seating.ts';
-import { KickFromAbove } from '../drums/DrumArt';
-import { KICK_22x18 } from '../drums/drumSpec.ts';
-import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_HARDWARE } from '../kitPlanModel.ts';
 import { isNatural, ROWS } from '../mallets/malletSpec.ts';
 import { CONGA_DIMS } from '../../m04aCongas/model.ts';
 
@@ -70,6 +70,13 @@ const MATS = {
   riser: { ramp: ['#4a3826', '#3a2c1e', '#2a1f15', '#1c140d'], rim: '#8a6a48', core: '#0a0704', edge: '#120c07', rimW: 10, coreW: 40 },
   harpGold: { ramp: ['#fff0c0', '#e0b860', '#9a7020', '#4a3208'], rim: '#fffbe8', core: '#2a1a02', edge: '#3a2604', rimW: 5, coreW: 16 },
   piano: { ramp: ['#4a4c54', '#1e1f24', '#0b0b0d', '#030304'], rim: '#9a9eaa', core: '#000', edge: '#000', rimW: 6, coreW: 24 },
+  // Group 4 (BandArt.tsx): amp and wedge vinyl, grille cloth, a sunburst
+  // guitar, a cherry bass, the keyboard's keys.
+  tolex: { ramp: ['#3c3e45', '#25262b', '#16171a', '#0b0b0d'], rim: '#80848f', core: '#000', edge: '#050506', rimW: 5, coreW: 18 },
+  cloth: { ramp: ['#8a8170', '#5e5748', '#3a352b', '#221f19'], rim: '#c9bfa6', core: '#0e0c09', edge: '#1a1712', rimW: 3, coreW: 10 },
+  sunburst: { ramp: ['#f0b25a', '#c4561c', '#6e1e0a', '#260803'], rim: '#ffd9a0', core: '#120402', edge: '#1c0703', rimW: 5, coreW: 18 },
+  cherry: { ramp: ['#e06a6a', '#a2222a', '#5a0c12', '#2a0507'], rim: '#ffc0c0', core: '#140203', edge: '#1e0406', rimW: 5, coreW: 18 },
+  ivory: { ramp: ['#ffffff', '#eeeae0', '#cfc9bb', '#9e9889'], rim: '#ffffff', core: '#5e594d', edge: '#4a463c', rimW: 2, coreW: 6 },
   /** group 5: a rawhide drum head (the hand-drum family's RAWHIDE tones). */
   hide: { ramp: ['#f6e9cc', '#e6cf9e', '#c9a874', '#8e7046'], rim: '#fffaf0', core: '#5a4428', edge: '#5e4626', rimW: 4, coreW: 14 },
 } satisfies Record<string, Mat>;
@@ -211,15 +218,20 @@ function toPlan(s: Seat, x: number, y: number): P2 {
   return P(s.p.x + x * Math.cos(F) - y * Math.sin(F), s.p.z + x * Math.sin(F) + y * Math.cos(F));
 }
 
+/** Group 4: the path builders BandArt.tsx draws with. */
+const BAND_TOOLS: BandTools = { P, capsule, taper, ellipse, rr, poly, line, flare };
+
 /* ═══════════════════ PLAN (from above) ═══════════════════ */
 
 function planSeat(b: Batch, s: Seat) {
+  // Group 4: the drum kit draws itself, its drummer included.
+  if (bandPlanWhole(b, s)) return;
   const put = placer(s);
   const standing = s.posture === 'standing';
   const k = s.kind;
-  // Chair (seated players; a pianist's bench; a drummer's round throne — group 5).
-  if (k === 'drumkit') put(b.fig.seat, ellipse(P(0, 0), 175, 175));
-  else if (!standing && k !== 'conductor') {
+  // Chair (seated players; a pianist's bench). A drum kit never gets here:
+  // bandPlanWhole draws the kit with its drummer.
+  if (!standing && k !== 'conductor') {
     put(b.fig.seat, rr(-215, -210, 215, 220, 60));
     put(b.fig.seat, rr(-205, 205, 205, 255, 22));
   }
@@ -498,36 +510,6 @@ function planSeat(b: Batch, s: Seat) {
       put(b.legs, line(make(), P(160, -160), P(300, -335)));
       break;
     }
-    case 'drumkit': {
-      // The shared five-piece kit (kitPlanModel, Lab 1) at the throne: its
-      // frame K maps to the player's frame as (x, y) = (z + 110, −(x + 770)).
-      const F = (s.face * Math.PI) / 180;
-      const kp = (xK: number, zK: number) => P(zK + 110, -(xK + 770));
-      for (const id of ['crash1', 'crash2', 'ride'] as const) put(b.legs, line(make(), kp(PLAN_HARDWARE.booms[id].u, PLAN_HARDWARE.booms[id].v), kp(KIT_CYMBALS[id].c.x, KIT_CYMBALS[id].c.z)));
-      b.extra.push({
-        key: `kit:${s.id}`,
-        el: (
-          <Group key={`kit:${s.id}`} transform={[{ translateX: s.p.x }, { translateY: s.p.z }, { rotate: F }, { translateX: 110 }, { translateY: -770 }, { rotate: -Math.PI / 2 }]}>
-            <KickFromAbove spec={KICK_22x18} u0={0} z={0} pedal={KIT.kick.pedal} />
-            {(['snare', 'tom1', 'tom2', 'floor'] as const).map((id) => (
-              <DrumPlan key={id} drum={KIT_DRUMS[id]} />
-            ))}
-            {(['hihat', 'crash1', 'crash2', 'ride'] as const).map((id) => (
-              <CymbalPlan key={id} cx={KIT_CYMBALS[id].c.x} cz={KIT_CYMBALS[id].c.z} d={KIT_CYMBALS[id].d} tiltDeg={KIT_CYMBALS[id].tiltDeg} dim={0.78} />
-            ))}
-          </Group>
-        ),
-      });
-      const sn = kp(KIT_DRUMS.snare.c.x, KIT_DRUMS.snare.c.z);
-      const fl = kp(KIT_DRUMS.floor.c.x, KIT_DRUMS.floor.c.z);
-      arm([LS, P(-250, -150), P(sn.u + 40, sn.v + 60)]);
-      hand(P(sn.u + 40, sn.v + 60));
-      arm([RS, P(250, -150), P(fl.u - 60, fl.v + 90)]);
-      hand(P(fl.u - 60, fl.v + 90));
-      put(b.stick, line(make(), P(sn.u + 40, sn.v + 60), P(sn.u + 60, sn.v - 180)));
-      put(b.stick, line(make(), P(fl.u - 60, fl.v + 90), P(fl.u - 120, fl.v - 150)));
-      break;
-    }
     case 'marimba':
     case 'vibraphone': {
       // The keyboard across the player, the LOW end on the player's left; the
@@ -599,6 +581,9 @@ function planSeat(b: Batch, s: Seat) {
       put(b.stick, line(make(), P(260, -420), P(330, -720)));
       break;
     }
+    default:
+      // Group 4: the band players' instruments (BandArt.tsx).
+      if (BAND_KINDS.has(k)) bandPlanInstrument(b, s, { ...BAND_TOOLS, put, arm, hand, LS, RS });
   }
   // The head from above (the nose toward the front: rotated half a turn).
   const h = headAbove(pt(0, 0), 104);
@@ -629,6 +614,8 @@ function planStand(b: Batch, s: Seat) {
  *  conductor); the instrument follows the player's real facing (its local
  *  right and forward projected into the view). */
 function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
+  // Group 4: the drum kit from the side draws itself, its drummer included.
+  if (bandElevWhole(b, s, view)) return;
   const o = uv(view, s.p);
   const g = o.v; // the floor (riser top) as screen v
   const standing = s.posture === 'standing' || s.kind === 'conductor';
@@ -928,49 +915,8 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       line(b.legs, Q(60, 170, 600), Q(240, 335, 120));
       break;
     }
-    case 'drumkit': {
-      // The shared kit (kitPlanModel): K → the player's (right, forward) = (z + 110, x + 770).
-      const kp = (xK: number, zK: number) => ({ r: zK + 110, f: xK + 770 });
-      const kick = kp(KIT.kick.depth / 2, 0);
-      if (Math.abs(fwdU) < 0.5) {
-        const c = Q(kick.r, kick.f, KIT.kick.R);
-        b.mat.varnish.addPath(ellipse(c, KIT.kick.R + 16, KIT.kick.R + 16));
-        b.desks.addPath(ellipse(c, KIT.kick.R - 10, KIT.kick.R - 10));
-      } else {
-        const a = X(kick.r, 770);
-        const e = X(kick.r, 770 + KIT.kick.depth);
-        b.mat.varnish.addPath(rr(Math.min(a, e), g - 2 * KIT.kick.R, Math.max(a, e), g, 30));
-      }
-      const drum = (id: 'snare' | 'tom1' | 'tom2' | 'floor', depth: number) => {
-        const d = KIT_DRUMS[id];
-        const at = kp(d.c.x, d.c.z);
-        const R = d.spec.d.mm / 2;
-        const top = KIT.floorY - d.c.y;
-        const u = X(at.r, at.f);
-        b.mat.varnish.addPath(rr(u - R, g - top, u + R, g - top + depth, 14));
-        b.mat.silver.addPath(rr(u - R - 6, g - top - 8, u + R + 6, g - top + 10, 6));
-        line(b.legs, P(u, g - top + depth), P(u, g));
-      };
-      drum('floor', 400);
-      drum('snare', 140);
-      drum('tom1', 180);
-      drum('tom2', 200);
-      for (const id of ['hihat', 'crash1', 'crash2', 'ride'] as const) {
-        const cy = KIT_CYMBALS[id];
-        const at = kp(cy.c.x, cy.c.z);
-        const u = X(at.r, at.f);
-        const h = KIT.floorY - cy.c.y;
-        b.mat.brass.addPath(ellipse(P(u, g - h), cy.d / 2, 14));
-        line(b.legs, P(u, g - h), P(u, g));
-      }
-      const sn = kp(KIT_DRUMS.snare.c.x, KIT_DRUMS.snare.c.z);
-      const fl = kp(KIT_DRUMS.floor.c.x, KIT_DRUMS.floor.c.z);
-      arm([shL, Q(-260, 140, 820), Q(sn.r + 40, sn.f - 60, 720)]);
-      arm([shR, Q(260, 140, 820), Q(fl.r - 60, fl.f - 90, 720)]);
-      hand(Q(sn.r + 40, sn.f - 60, 720));
-      hand(Q(fl.r - 60, fl.f - 90, 720));
-      break;
-    }
+    // The drum kit (one kind for groups 4 and 5) is drawn by BandArt.tsx
+    // (the switch's default): Lab 1's kit from the hall, KitSide in section.
     case 'marimba':
     case 'vibraphone': {
       // The keyboard along the player's right–left, the bars at their own
@@ -1060,6 +1006,9 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       line(b.stick, Q(360, 260, 1600), Q(470, 520, 1900));
       break;
     }
+    default:
+      // Group 4: the band players' instruments (BandArt.tsx).
+      if (BAND_KINDS.has(k)) bandElevInstrument(b, s, view, { ...BAND_TOOLS, Q, X, arm, hand, shL, shR, g, o, front, rightU, fwdU });
   }
   const headC = P(o.u, g - ((standing ? DIMS.standingHead : DIMS.seatedHead) - 113));
   const head = front ? headFront(pt(headC.u, headC.v), 104, g - sh + 30) : headProfile(pt(headC.u, headC.v), 104, g - sh + 30, fwdU >= 0 ? 1 : -1);
@@ -1120,40 +1069,49 @@ function build(s: Seating, view: StageView, hi: string | null): Built {
   const hit = cache.get(k);
   if (hit) return hit;
   const seats = [...s.seats, ...(s.conductor ? [s.conductor] : [])].filter((q) => view !== 'section' || Math.abs(q.p.x) <= SECTION_SLICE || q.kind === 'conductor');
-  const depth = (q: Seat) => (view === 'plan' ? -q.p.y : view === 'front' ? q.p.z : q.p.x);
-  const sorted = [...seats].sort((a, b) => depth(a) - depth(b));
+  // Group 4: the stage gear is painted with the players, by depth (in the
+  // section only what is near the centre line, like the players).
+  const gear = (s.gear ?? []).filter((g) => view !== 'section' || Math.abs(g.p.x) <= SECTION_SLICE);
+  type Item = { seat: Seat; gear?: undefined } | { gear: Gear; seat?: undefined };
+  const items: Item[] = [...seats.map((q) => ({ seat: q })), ...gear.map((g) => ({ gear: g }))];
+  const at = (it: Item) => (it.seat ? it.seat.p : it.gear!.p);
+  // From above, the gear lies under the players; from the hall and the
+  // side, everything far to near (a wedge or DI box a touch nearer).
+  const depth = (it: Item) => (view === 'plan' ? (it.gear ? -1e9 : -at(it).y) : (view === 'front' ? at(it).z : at(it).x) + (it.gear && !gearBehind(it.gear) ? 1 : 0));
+  const sorted = [...items].sort((a, b) => depth(a) - depth(b));
   const layers: Batch[] = [];
   // Plan: one layer (nothing overlaps from above but the stands); the
   // elevations: a layer per ~600 mm of depth, painted far to near.
   const step = view === 'plan' ? Infinity : 600;
   let cur: Batch | null = null;
   let curD = -Infinity;
-  for (const q of sorted) {
-    if (!cur || depth(q) - curD > step) {
+  const paint = (into: Batch, it: Item) => {
+    if (it.gear) {
+      if (view === 'plan') bandGearPlan(into, it.gear, BAND_TOOLS);
+      else bandGearElev(into, it.gear, view, BAND_TOOLS);
+      return;
+    }
+    const q = it.seat!;
+    if (view === 'plan') {
+      planStand(into, q);
+      planSeat(into, q);
+    } else {
+      elevStand(into, q, view);
+      elevSeat(into, q, view);
+    }
+  };
+  for (const it of sorted) {
+    if (!cur || depth(it) - curD > step) {
       cur = newBatch();
-      curD = depth(q);
+      curD = depth(it);
       layers.push(cur);
     }
-    if (view === 'plan') {
-      planStand(cur, q);
-      planSeat(cur, q);
-    } else {
-      elevStand(cur, q, view);
-      elevSeat(cur, q, view);
-    }
+    paint(cur, it);
   }
   let hiBatch: Batch | null = null;
   if (hi) {
     hiBatch = newBatch();
-    for (const q of sorted.filter((x) => x.section === hi || (hi === 'cond' && x.kind === 'conductor'))) {
-      if (view === 'plan') {
-        planStand(hiBatch, q);
-        planSeat(hiBatch, q);
-      } else {
-        elevStand(hiBatch, q, view);
-        elevSeat(hiBatch, q, view);
-      }
-    }
+    for (const it of sorted.filter((x) => (x.seat ? x.seat.section === hi || (hi === 'cond' && x.seat.kind === 'conductor') : x.gear!.section === hi))) paint(hiBatch, it);
   }
   const out = { layers, hiBatch };
   cache.set(k, out);
@@ -1174,6 +1132,11 @@ export function sectionOutline(s: Seating, sectionId: string, view: StageView): 
     let out: SkPath | null = null;
     for (const q of s.seats.filter((x) => x.section === sectionId)) {
       const c = ellipse(P(q.p.x, q.p.z), 470, 470);
+      out = out ? Skia.Path.MakeFromOp(out, c, PathOp.Union) ?? out : c;
+    }
+    // Group 4: a player's amp is part of the section on a stage plot.
+    for (const g of (s.gear ?? []).filter((x) => x.section === sectionId && (x.kind === 'combo' || x.kind === 'bassRig'))) {
+      const c = ellipse(P(g.p.x, g.p.z), 520, 520);
       out = out ? Skia.Path.MakeFromOp(out, c, PathOp.Union) ?? out : c;
     }
     return out ?? make();

@@ -7,7 +7,8 @@
  */
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { uv, type StageView } from './frameS.ts';
-import { headTop, KIND, sectionCentre, seatsOf, type Seat, type Seating } from './seating.ts';
+import { headTop, KIND, sectionCentre, seatsOf, type Gear, type Seat, type Seating } from './seating.ts';
+import { GEAR_SIZE, PA_BOX } from './bandStage.ts';
 
 /** group 5: the half-width of a wide section instrument in an elevation (mm). */
 const WIDE_G5: Partial<Record<string, number>> = { marimba: 1100, vibraphone: 800, drumkit: 900, congas: 400, perctable: 650, guitar: 750 };
@@ -16,8 +17,18 @@ const WIDE_G5: Partial<Record<string, number>> = { marimba: 1100, vibraphone: 80
 function seatBox(q: Seat, view: StageView): { u0: number; u1: number; v0: number; v1: number } {
   const o = uv(view, q.p);
   if (view === 'plan') return { u0: o.u - 360, u1: o.u + 360, v0: o.v - 360, v1: o.v + 360 };
-  const wide = q.kind === 'piano' ? 1200 : q.kind === 'timpani' ? 900 : q.kind === 'harp' ? 450 : (WIDE_G5[q.kind] ?? 300);
+  // The drum kit (groups 4 and 5) is WIDE_G5's 900; group 4's keyboard 650.
+  const wide = q.kind === 'piano' ? 1200 : q.kind === 'timpani' ? 900 : q.kind === 'keys' ? 650 : q.kind === 'harp' ? 450 : (WIDE_G5[q.kind] ?? 300);
   return { u0: o.u - wide, u1: o.u + wide, v0: -headTop(q), v1: o.v };
+}
+
+/** Group 4: a piece of gear's footprint in a view (a box round its centre). */
+function gearBox(g: Gear, view: StageView): { u0: number; u1: number; v0: number; v1: number } {
+  const S = GEAR_SIZE[g.kind];
+  const o = uv(view, g.p);
+  const r = Math.max(S.w, S.d) / 2;
+  if (view === 'plan') return { u0: o.u - r, u1: o.u + r, v0: o.v - r, v1: o.v + r };
+  return { u0: o.u - r, u1: o.u + r, v0: o.v - (g.kind === 'pa' ? PA_BOX.bottom + PA_BOX.h : S.h), v1: o.v };
 }
 
 /** What is under (u, v) in a view: a section id, 'cond' (the podium and the
@@ -49,6 +60,12 @@ export function stageHit(s: Seating, view: StageView, u: number, v: number, tol:
     }
   }
   if (best) return best.id;
+  // Group 4: a tap on a player's amp, DI or wedge names that player's section.
+  for (const g of s.gear ?? []) {
+    if (!g.section || (view === 'section' && Math.abs(g.p.x) > slice)) continue;
+    const b = gearBox(g, view);
+    if (u >= b.u0 - tol && u <= b.u1 + tol && v >= b.v0 - tol && v <= b.v1 + tol) return g.section;
+  }
   if (s.podium) {
     const P = s.podium;
     const a = uv(view, { x: P.c.x - P.w / 2, y: -P.h, z: P.c.z - P.d / 2 });
@@ -67,7 +84,10 @@ export function stageLabels(s: Seating, view: StageView, slice = Infinity): ArtL
   for (const sec of s.sections) {
     const seats = seatsOf(s, sec.id).filter((q) => view !== 'section' || Math.abs(q.p.x) <= slice);
     if (!seats.length) continue;
-    const c = sectionCentre(s, sec.id);
+    // Group 4: a player whose sound leaves elsewhere (an amp) is named at the
+    // player, chest high; the amp has its own label.
+    const away = seats.some((q) => q.kind === 'eguitar' || q.kind === 'ebass');
+    const c = away ? { x: seats.reduce((a, q) => a + q.p.x, 0) / seats.length, y: seats[0].p.y - 1150, z: seats.reduce((a, q) => a + q.p.z, 0) / seats.length } : sectionCentre(s, sec.id);
     const at = uv(view, view === 'plan' ? { x: c.x, y: 0, z: c.z } : c);
     const us = seats.map((q) => uv(view, q.p).u);
     const vs = seats.map((q) => uv(view, q.p).v);
@@ -99,6 +119,15 @@ export function stageLabels(s: Seating, view: StageView, slice = Infinity): ArtL
     const w0 = sec.short.split(' ')[0];
     const short = /^\d/.test(w0) ? `VN ${w0[0]}` : w0;
     out.push({ id: sec.id, text: sec.short, short, u: first.u, v: first.v, align: first.align, alts: alts.slice(1), at, tone: undefined });
+  }
+  // Group 4: the amps, the PA and a gobo, named from above (muted: they are
+  // not players).
+  if (view === 'plan') {
+    for (const g of (s.gear ?? []).filter((q) => q.kind === 'combo' || q.kind === 'bassRig' || q.kind === 'pa' || q.kind === 'gobo')) {
+      const o = uv('plan', g.p);
+      const r = Math.max(GEAR_SIZE[g.kind].w, GEAR_SIZE[g.kind].d) / 2;
+      out.push({ id: `gear.${g.id}`, text: g.short, short: g.short.replace('GUITAR', 'GTR'), u: o.u, v: o.v - r - 160, align: 'center', tone: 'muted', at: o, alts: [{ u: o.u, v: o.v + r + 200, align: 'center' }, { u: o.u - r - 80, v: o.v, align: 'right' }, { u: o.u + r + 80, v: o.v, align: 'left' }] });
+    }
   }
   // The conductor (and the podium).
   if (s.conductor && s.podium) {

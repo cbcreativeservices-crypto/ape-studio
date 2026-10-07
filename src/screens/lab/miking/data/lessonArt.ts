@@ -170,6 +170,13 @@ import { E13_ART } from '../lessons/e13MixedEnsemble/art';
 ART.E13 = E13_ART;
 import { E11_ART } from '../lessons/e11StringQuartet/art';
 ART.E11 = E11_ART;
+/* Lab 5 (ensembles), group 4 — bands & stage plots: E09, E15, E08 (each lesson on its own line). */
+import { E09_ART } from '../lessons/e09CompleteBand/art';
+ART.E09 = E09_ART;
+import { E15_ART } from '../lessons/e15JazzCombo/art';
+ART.E15 = E15_ART;
+import { E08_ART } from '../lessons/e08AcousticGroup/art';
+ART.E08 = E08_ART;
 /* Lab 5 (ensembles), group 5 — sections: E10, E16, E12 (each lesson on its own line). */
 import { E10_ART } from '../lessons/e10HornSection/art';
 ART.E10 = E10_ART;
