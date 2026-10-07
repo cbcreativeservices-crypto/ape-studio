@@ -14,7 +14,7 @@
  */
 import { useRef, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../components/backHitSlop';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
@@ -37,8 +37,8 @@ import {
 } from './labCatalog';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
-import { cardColumn } from '../../theme/readingColumn';
-import { useIsTablet } from '../../theme/useIsTablet';
+import { cardColumn, readingText } from '../../theme/readingColumn';
+import { useIsTablet, useWideOnTablet } from '../../theme/useIsTablet';
 import { GlassPanel, GlassTile } from '../tools/GlassTile';
 import { fitValue } from '../../theme/legibility';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -91,6 +91,11 @@ export function EarLabScreen({ navigation, route }: Props) {
   // triangle); at most ONE row is expanded at a time, and the expanded row
   // carries an explicit [OPEN] button — the triangle never opens the lab.
   const tablet = useIsTablet();
+  // Tablet (owner iPad report 2026-10-06): the menu takes the iPad's width —
+  // three tiles across, four once the window is landscape-wide. Phone: two.
+  const wide = useWideOnTablet();
+  const { width: winW } = useWindowDimensions();
+  const tabletTile = winW >= 1100 ? styles.tileQuarter : styles.tileThird;
 
   // navigate is over-strict about the (route, params?) tuple across a union of
   // routes; go loose (the app-wide escape hatch) since routes/params come from
@@ -211,9 +216,10 @@ export function EarLabScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
-        <Text style={styles.intro}>{intro}</Text>
-        {gate === 'unconfirmed' ? <Text style={styles.intro}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+        {/* Prose keeps the reading measure inside the wide menu (tablet only). */}
+        <Text style={[styles.intro, wide && readingText]}>{intro}</Text>
+        {gate === 'unconfirmed' ? <Text style={[styles.intro, wide && readingText]}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}
 
         {shownSections.map((sec) => {
           const secLocked = sectionLocked(sec.key);
@@ -257,7 +263,7 @@ export function EarLabScreen({ navigation, route }: Props) {
                         return (
                           <GlassTile
                             key={`${cat.id}:${leaf.name}`}
-                            style={tablet ? styles.tileThird : styles.tileHalf}
+                            style={tablet ? tabletTile : styles.tileHalf}
                             glassStyle={styles.tileFace}
                             onPress={() => openLeaf(leaf, sec.key)}
                             accessibilityLabel={`${leaf.name}. ${leaf.blurb}${leaf.countLine ? ` ${leaf.countLine}.` : ''}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
@@ -457,6 +463,7 @@ const styles = StyleSheet.create({
   tilePanelPhone: { padding: 7 },
   tileHalf: { width: '48.5%' },
   tileThird: { width: '32%' },
+  tileQuarter: { width: '24%' },
   tileFull: { width: '100%' },
   tileFace: { minHeight: 118, padding: 12, gap: 5, backgroundColor: '#101116' },
   tileName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.4, color: colors.amber },

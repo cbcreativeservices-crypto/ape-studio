@@ -601,7 +601,7 @@ export function SplMeterScreen({ navigation }: Props) {
   // Instead we drive the live meters DIRECTLY off ApeDsp.getMeterFrame() each
   // animation frame into SharedValues (UI thread), and update the TEXT readouts
   // on a slow throttle. See the rAF loop below.
-  const { state, start, stop, lastError, resetPeakHold, resetLeq, meterFlags } = useDspEngine({}, {});
+  const { state, start, stop, lastError, noSignal, resetPeakHold, resetLeq, meterFlags } = useDspEngine({}, {});
 
   // Auto-resume within the SPL ecosystem (owner 2026-07-30): the engine tears
   // the mic down on blur for privacy (useDspEngine), so navigating to the
@@ -1544,7 +1544,7 @@ export function SplMeterScreen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Honest not-ready states: absent / spike / denied / error. */}
-        <EngineGate state={state} lastError={lastError} onRetry={start} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 
         {/* Opens straight into the live meter (auto-start). */}
         {!micPaused && (state === 'idle' || state === 'starting') && (
@@ -1849,7 +1849,7 @@ export function SplMeterScreen({ navigation }: Props) {
             </Pressable>
           </View>
           <ScrollView contentContainerStyle={styles.vuScroll}>
-            <EngineGate state={state} lastError={lastError} onRetry={start} />
+            <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 
             {!micPaused && (state === 'idle' || state === 'starting') && (
               <>

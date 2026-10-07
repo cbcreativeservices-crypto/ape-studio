@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TrophyImage } from './TrophyImage';
 import { fonts } from '../theme/tokens';
 import { readingColumn } from '../theme/readingColumn';
+import { isTabletWindow } from '../theme/tablet';
 import { Modal } from './DimModal';
 
 /**
@@ -21,7 +22,14 @@ import { Modal } from './DimModal';
  * sized for a tall window it is no longer in, overflowing the short axis it was
  * specifically capped against. Hooked, 2026-09-13.
  */
-function artSize(w: number, h: number, withBelow: boolean): number {
+export function artSize(w: number, h: number, withBelow: boolean): number {
+  // TABLET (owner iPad report 2026-10-06: trophy images "stay small"): the
+  // phone caps (360 → 277 pt after the 23% trim) left a trophy opened on an
+  // iPad a small square in a 1024 pt room. A tablet keeps the same two-axis
+  // rule with tablet-sized caps; a phone never reaches this branch.
+  if (isTabletWindow(w, h)) {
+    return Math.round(Math.min(w * 0.82, h * (withBelow ? 0.34 : 0.6), withBelow ? 400 : 640));
+  }
   // Trophy zoom art reduced 23% (Booth 2026-07-11).
   // With a `below` panel sharing the window (the topic overview, owner
   // 2026-09-20) the art yields height so the prose has somewhere to live —

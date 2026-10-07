@@ -52,6 +52,35 @@ export const cardColumn = {
 } as const;
 
 /**
+ * The WIDE column — MENUS, HUBS, GRIDS and DASHBOARDS on a tablet.
+ *
+ * ⛔ OWNER iPAD REPORT, 2026-10-06 (builds 33/34): "Audio tools menu and other
+ * screens like it have blank space on both sides of the narrowed phone-width
+ * display. All that dead space makes it look not designed for iPad (needed
+ * for Apple approval)." Measured: the Tools hub sat in a 560 pt column with
+ * 232 pt of black either side of a portrait iPad (1024) and 403 pt either side
+ * in landscape (1366); the lab menus and the trophy case did the same at 760.
+ *
+ * A menu is not a paragraph. Line length is a reason to cap PROSE (the 560
+ * reading column stays for that), never a reason to cap a page of tiles: on a
+ * tablet a menu takes the width and spends it on MORE COLUMNS or BIGGER TILES
+ * (`gridColumns`, `TabletGrid`). 1400 never binds on any iPad (the 13" is
+ * 1366 wide in landscape); it only stops an absurd desktop-web window.
+ *
+ * Callers take it through `useWideOnTablet()` (./useIsTablet), which hands a
+ * phone its old column untouched — ✅ NO PIXEL MOVES ON ANY PHONE, in either
+ * orientation, because the branch is the 600 pt short-edge rule, not width.
+ */
+export const WIDE_MAX_W = 1400;
+
+/** Spread into the scroll content style of a menu/hub/grid on a TABLET. */
+export const wideColumn = {
+  width: '100%',
+  maxWidth: WIDE_MAX_W,
+  alignSelf: 'center',
+} as const;
+
+/**
  * The POPUP card width — the intro/help sheets' long-standing 460, named at
  * last (owner 2026-09-29, tablet pass) so every centred popup shares it. A
  * popup card without it (the glossary term popup, the dashboard's term list)

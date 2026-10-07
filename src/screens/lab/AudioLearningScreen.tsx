@@ -24,7 +24,9 @@ import { useMemberGate } from '../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../features/commercial/tier';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
-import { cardColumn } from '../../theme/readingColumn';
+import { cardColumn, readingText } from '../../theme/readingColumn';
+import { useWideOnTablet } from '../../theme/useIsTablet';
+import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 // Card background art (owner 2026-08-22). Bundled PNGs; each ImageBackground
@@ -72,6 +74,9 @@ export function AudioLearningScreen({ navigation }: Props) {
   // ACADEMY MEMBERSHIP badge and the free copy. A failed read keeps the
   // neutral member view and is told plainly that the check failed.
   const locked = gate === 'locked';
+  // Tablet: the two paths side by side across the iPad (owner iPad report
+  // 2026-10-06 — no dead gutters on a menu). Phone: unchanged.
+  const wide = useWideOnTablet();
 
   const goFundamentals = () => navigation.navigate('EarLab', { section: 'fundamentals' });
   const goTraining = () => navigation.navigate('EarLab', { section: 'training' });
@@ -94,12 +99,15 @@ export function AudioLearningScreen({ navigation }: Props) {
         <AccuracyNote compact />
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
-        <Text style={styles.intro}>{locked ? INTRO : INTRO_MEMBER}</Text>
-        {gate === 'unconfirmed' ? <Text style={styles.intro}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+        {/* Prose keeps the reading measure inside the wide menu (tablet only). */}
+        <Text style={[styles.intro, wide && readingText]}>{locked ? INTRO : INTRO_MEMBER}</Text>
+        {gate === 'unconfirmed' ? <Text style={[styles.intro, wide && readingText]}>{MEMBERSHIP_NOT_CONFIRMED}</Text> : null}
 
+        <TabletGrid minTile={360} maxCols={2} gap={16}>
         {/* ── Audio Fundamentals — free to start (core labs free) ──────── */}
         <Pressable
+          key="fundamentals"
           onPress={goFundamentals}
           accessibilityRole="button"
           accessibilityLabel={`Audio Fundamentals. ${locked ? 'Free to start. ' : ''}Required for every Academy certificate. Explore fundamentals.`}
@@ -141,6 +149,7 @@ export function AudioLearningScreen({ navigation }: Props) {
 
         {/* ── Advanced Training Labs — members; free users preview ─────── */}
         <Pressable
+          key="training"
           onPress={goTraining}
           accessibilityRole="button"
           accessibilityLabel={
@@ -182,6 +191,7 @@ export function AudioLearningScreen({ navigation }: Props) {
             </View>
           </ImageBackground>
         </Pressable>
+        </TabletGrid>
       </ScrollView>
     </View>
   );

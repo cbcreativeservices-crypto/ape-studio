@@ -19,6 +19,8 @@ import { fetchTopicAchievementsShared, prefetchTrophyCase, type FieldGroup, type
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
+import { useWideOnTablet } from '../../theme/useIsTablet';
+import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 type FlatSubject = { field: string; subject: string; topics: TopicAchievement[]; earnedCount: number; totalCount: number };
@@ -107,10 +109,59 @@ export function TopicsScreen() {
   useFocusEffect(useCallback(() => load(), [load]));
 
   const subjects = useMemo(() => (fields ? flatten(fields) : []), [fields]);
+  // Tablet (owner iPad report 2026-10-06): the wide column, subjects in
+  // columns per field. `null` on a phone — the phone list is untouched.
+  const wide = useWideOnTablet();
+  const fieldGroups = useMemo(() => {
+    const out: Array<{ field: string; subjects: FlatSubject[] }> = [];
+    for (const s of subjects) {
+      const last = out[out.length - 1];
+      if (last && last.field === s.field) last.subjects.push(s);
+      else out.push({ field: s.field, subjects: [s] });
+    }
+    return out;
+  }, [subjects]);
+
+  /** One SUBJECT card (header row + its topics when open) — the same card on
+   *  a phone and a tablet; only where it sits differs. */
+  const subjectCard = (s: FlatSubject) => {
+    const key = `${s.field}|${s.subject}`;
+    const isOpen = open === key;
+    const hasEarned = s.earnedCount > 0;
+    return (
+                <View style={styles.subjectCard}>
+                  <Pressable
+                    style={styles.subjectRow}
+                    onPress={() => setOpen((prev) => (prev === key ? null : key))}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: isOpen }}
+                    // RN-web drops accessibilityState; aria-expanded reaches the DOM (A1-02).
+                    aria-expanded={isOpen}
+                    accessibilityLabel={`${s.subject}, ${s.earnedCount} of ${s.totalCount} earned`}
+                  >
+                    <Text style={styles.subjectChevron}>{isOpen ? '▾' : '▸'}</Text>
+                    <Text style={styles.subjectName} numberOfLines={2}>
+                      {s.subject}
+                    </Text>
+                    <Text style={[styles.subjectCount, hasEarned ? styles.subjectCountEarned : null]}>
+                      {s.earnedCount} / {s.totalCount}
+                    </Text>
+                  </Pressable>
+
+                  {isOpen ? (
+                    <View style={styles.expanded}>
+                      {s.topics.map((t) => (
+                        <TopicRow key={t.achievementId} topic={t} onOpen={setModalTopic} />
+                      ))}
+                    </View>
+                  ) : null}
+                </View>
+    );
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         <View style={styles.headerRow}>
           <Pressable
             onPress={leave}
@@ -151,46 +202,37 @@ export function TopicsScreen() {
           </View>
         ) : null}
 
+        {wide ? (
+          // TABLET (owner iPad report 2026-10-06): each field's subjects sit in
+          // columns across the iPad under their field heading, instead of one
+          // 760 pt strip between black gutters. A phone renders the list below,
+          // exactly as before.
+          <View style={styles.tree}>
+            {fieldGroups.map((g) => (
+              <View key={g.field}>
+                <Text style={styles.fieldHead}>{g.field.toUpperCase()}</Text>
+                <TabletGrid minTile={340} maxCols={3} gap={8}>
+                  {g.subjects.map((s) => (
+                    <View key={`${s.field}|${s.subject}`}>{subjectCard(s)}</View>
+                  ))}
+                </TabletGrid>
+              </View>
+            ))}
+          </View>
+        ) : (
         <View style={styles.tree}>
           {subjects.map((s, i) => {
             const key = `${s.field}|${s.subject}`;
-            const isOpen = open === key;
             const showField = i === 0 || subjects[i - 1].field !== s.field;
-            const hasEarned = s.earnedCount > 0;
             return (
               <View key={key}>
                 {showField ? <Text style={styles.fieldHead}>{s.field.toUpperCase()}</Text> : null}
-                <View style={styles.subjectCard}>
-                  <Pressable
-                    style={styles.subjectRow}
-                    onPress={() => setOpen((prev) => (prev === key ? null : key))}
-                    accessibilityRole="button"
-                    accessibilityState={{ expanded: isOpen }}
-                    // RN-web drops accessibilityState; aria-expanded reaches the DOM (A1-02).
-                    aria-expanded={isOpen}
-                    accessibilityLabel={`${s.subject}, ${s.earnedCount} of ${s.totalCount} earned`}
-                  >
-                    <Text style={styles.subjectChevron}>{isOpen ? '▾' : '▸'}</Text>
-                    <Text style={styles.subjectName} numberOfLines={2}>
-                      {s.subject}
-                    </Text>
-                    <Text style={[styles.subjectCount, hasEarned ? styles.subjectCountEarned : null]}>
-                      {s.earnedCount} / {s.totalCount}
-                    </Text>
-                  </Pressable>
-
-                  {isOpen ? (
-                    <View style={styles.expanded}>
-                      {s.topics.map((t) => (
-                        <TopicRow key={t.achievementId} topic={t} onOpen={setModalTopic} />
-                      ))}
-                    </View>
-                  ) : null}
-                </View>
+                {subjectCard(s)}
               </View>
             );
           })}
         </View>
+        )}
       </ScrollView>
 
       <TrophyModal

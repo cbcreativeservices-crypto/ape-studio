@@ -24,10 +24,16 @@ import { BUILT_MODULE_IDS } from './modules';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 export function AmpLabHomeScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the module list takes the iPad's
+  // width in two columns. Phone: unchanged (`wide` is null, TabletGrid a
+  // Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [openId, setOpenId] = useState<string | null>(null);
   const [progress, setProgress] = useState<AmpProgressState | null>(null);
@@ -143,7 +149,7 @@ export function AmpLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
           One question runs through every module: what is the amplifier doing, what load does it see, and
           where does the extra output energy come from? Every screen answers it with a live, synchronized
@@ -177,6 +183,7 @@ export function AmpLabHomeScreen() {
         ) : null}
 
         <Text style={styles.sectionTitle}>MODULE MAP</Text>
+        <TabletGrid minTile={360} maxCols={2} gap={8}>
         {built.map((m) => (
           <ModuleAccordionRow
             key={m.id}
@@ -189,6 +196,7 @@ export function AmpLabHomeScreen() {
             onOpen={() => navigation.navigate('AmpModule', { id: m.id })}
           />
         ))}
+        </TabletGrid>
         {built.length < AMP_MODULES.length ? (
           <Text style={styles.note}>
             Modules {built.length + 1}–{AMP_MODULES.length} are on the bench.

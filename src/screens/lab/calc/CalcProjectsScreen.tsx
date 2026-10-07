@@ -25,6 +25,7 @@ import { workflowGeneration, workflowListUnreadable, workflowStore } from './wor
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -58,6 +59,9 @@ function toDraft(p: Project): DraftValue[] {
 
 export function CalcProjectsScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): saved projects in two columns
+  // across the iPad. Phone: one column in the card column, exactly as before.
+  const wide = useWideOnTablet();
   const navigation = useNavigation<Nav>();
   const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // workflowLimitsFor, not WORKFLOW_LIMITS[entitlement] — hold the academy row
@@ -322,7 +326,11 @@ export function CalcProjectsScreen() {
         <FlatList
           data={loaded ? projects : []}
           keyExtractor={(p) => p.id}
-          contentContainerStyle={[styles.scroll, cardColumn]}
+          // numColumns cannot change on a mounted list — re-key it.
+          key={wide ? 'cols-2' : 'cols-1'}
+          numColumns={wide ? 2 : 1}
+          columnWrapperStyle={wide ? styles.tabletRow : undefined}
+          contentContainerStyle={[styles.scroll, cardColumn, wide]}
           keyboardShouldPersistTaps="handled"
           ListEmptyComponent={!loaded ? (
             <Text style={styles.caption}>Loading your projects…</Text>
@@ -338,7 +346,7 @@ export function CalcProjectsScreen() {
             </Text>
           )}
           renderItem={({ item: p }) => (
-            <View style={styles.card}>
+            <View style={[styles.card, wide && styles.tabletCell]}>
               <Text style={styles.cardName}>{p.name}</Text>
               {p.notes ? <Text style={styles.caption}>{p.notes}</Text> : null}
               <Text style={styles.valueLine}>
@@ -493,6 +501,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 9,
   },
+  // Tablet two-column list (owner iPad report 2026-10-06); a lone last card
+  // keeps half the row.
+  tabletRow: { gap: 8 },
+  tabletCell: { flex: 1, maxWidth: '50%' },
   card: { borderRadius: 10, borderWidth: 1, borderColor: '#26262c', backgroundColor: '#131316', padding: 12, gap: 6 },
   cardName: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
   valueLine: { fontFamily: fonts.mono, fontSize: 12, lineHeight: 17, color: colors.textSub },

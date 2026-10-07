@@ -24,6 +24,8 @@ import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 const HERO_N = 48;
@@ -81,6 +83,10 @@ function HeroPlate({ width }: { width: number }) {
 
 export function CymaticsHomeScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the module list takes the iPad's
+  // width in two columns. Phone: unchanged (`wide` is null, TabletGrid a
+  // Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lessonOpen, setLessonOpen] = useState(false);
   const [openId, setOpenId] = useState<CymaticsModuleId | null>(null);
@@ -134,7 +140,7 @@ export function CymaticsHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         <View style={styles.hero} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {width > 0 ? <HeroPlate width={width} /> : null}
           <Text style={styles.heroBadge}>SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTRE-DRIVEN</Text>
@@ -181,9 +187,11 @@ export function CymaticsHomeScreen() {
         </Pressable>
 
         <Text style={styles.sectionTitle}>LEARN &amp; EXPERIMENT</Text>
+        <TabletGrid minTile={360} maxCols={2} gap={8}>
         {CYMATICS_MODULES.map((m, i) => (
           <ModuleAccordionRow key={m.id} num={i + 1} name={m.title} blurb={m.blurb} expanded={openId === m.id} onToggle={() => setOpenId(openId === m.id ? null : m.id)} onOpen={() => open(m.id)} />
         ))}
+        </TabletGrid>
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
 
         {PLANNED_AREAS.length > 0 ? <Text style={styles.sectionTitle}>PLANNED AREAS</Text> : null}

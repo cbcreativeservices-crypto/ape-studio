@@ -137,7 +137,8 @@ test('9 — EngineGate: iOS denied retries on return to the app, focused only', 
 test('10 — Waveform shows ONE retry key on error', () => {
   const src = read('screens/tools/WaveformScreen.tsx');
   assert.doesNotMatch(src, /label="TRY AGAIN"/);
-  assert.match(src, /<EngineGate state=\{state\} lastError=\{lastError\} onRetry=\{start\} \/>/);
+  // noSignal (iPad pass 2026-10-07) is the same single card, not a second key.
+  assert.match(src, /<EngineGate state=\{state\} lastError=\{lastError\} onRetry=\{start\}(?: noSignal=\{noSignal\})? \/>/);
 });
 
 test('8 — Measurement Library: one image share at a time', () => {

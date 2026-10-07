@@ -21,10 +21,16 @@ import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 export function MeterLabHomeScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the module list takes the iPad's
+  // width in two columns. Phone: unchanged (`wide` is null, TabletGrid a
+  // Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lessonOpen, setLessonOpen] = useState(false);
   // Accordion: every module collapsed by default, only one open at a time.
@@ -66,7 +72,7 @@ export function MeterLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         <Text style={styles.body}>
           Every professional display — waveform, peak, VU, LUFS, spectrum, spectrogram, waterfall,
           phase, scope — tells a story to the engineer who can read it. The Academy’s measurement
@@ -76,6 +82,7 @@ export function MeterLabHomeScreen() {
             no ✓ on a row is a stand-in when the banked units could not be
             read — said here, before the rows. Every module stays open. */}
         {unreadable ? <ProgressUnreadableNote /> : null}
+        <TabletGrid minTile={360} maxCols={2} gap={8}>
         {METER_MODULES.map((m) => (
           <ModuleAccordionRow
             key={m.id}
@@ -88,6 +95,7 @@ export function MeterLabHomeScreen() {
             onOpen={() => navigation.navigate('MeterModule', { id: m.id })}
           />
         ))}
+        </TabletGrid>
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
         <Text style={styles.sectionTitle}>USE WHAT YOU LEARNED</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>

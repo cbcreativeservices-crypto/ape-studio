@@ -402,7 +402,7 @@ function LivePitchMode({
   helpAll: () => void;
   onOpenLibrary: () => void;
 }) {
-  const { state, frames, start, stop, lastError, meterFlags } = useDspEngine(
+  const { state, frames, start, stop, lastError, noSignal, meterFlags } = useDspEngine(
     { pitchEnabled: true },
     { meter: true, pitch: true },
   );
@@ -669,6 +669,8 @@ function LivePitchMode({
   }
   return (
     <>
+      {/* Running, but the mic never delivered a frame (iPad pass 2026-10-07). */}
+      {noSignal ? <EngineGate state={state} lastError={lastError} onRetry={start} noSignal /> : null}
       {kind === 'sound' ? (
         // Tapping the readout toggles START/STOP (owner 2026-07-31). Readout
         // green (owner 2026-08-05).

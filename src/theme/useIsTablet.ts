@@ -2,10 +2,22 @@
  *  2026-09-29, tablet pass). Re-renders on rotation and Split View. */
 import { Dimensions, useWindowDimensions } from 'react-native';
 import { isTabletWindow } from './tablet';
+import { wideColumn } from './readingColumn';
 
 export function useIsTablet(): boolean {
   const { width, height } = useWindowDimensions();
   return isTabletWindow(width, height);
+}
+
+/**
+ * The content column for a MENU / HUB / GRID / DASHBOARD on a tablet (owner
+ * iPad report 2026-10-06 — see `wideColumn` in ./readingColumn). Append it
+ * AFTER the screen's own column cap: on a tablet it overrides that cap with
+ * the wide column, whose width the screen spends on columns (`TabletGrid`);
+ * on a phone it is `null`, so the phone keeps exactly the column it had.
+ */
+export function useWideOnTablet(): typeof wideColumn | null {
+  return useIsTablet() ? wideColumn : null;
 }
 
 /**

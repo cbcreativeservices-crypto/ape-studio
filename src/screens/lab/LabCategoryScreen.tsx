@@ -23,7 +23,9 @@ import { notify } from '../../lib/confirm';
 import { startLabPreview } from '../../features/lab/labPreviewStore';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
-import { cardColumn } from '../../theme/readingColumn';
+import { cardColumn, readingText } from '../../theme/readingColumn';
+import { useWideOnTablet } from '../../theme/useIsTablet';
+import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LabCategory'>;
@@ -37,6 +39,9 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   const { resolved } = useEntitlement();
   const gate = useMemberGate();
   const lastOpenAt = useRef(0);
+  // Tablet (owner iPad report 2026-10-06): the list takes the iPad's width in
+  // two columns instead of a 760 pt strip between black gutters. Phone: as was.
+  const wide = useWideOnTablet();
 
   if (!cat || cat.kind !== 'list') {
     return (
@@ -89,13 +94,14 @@ export function LabCategoryScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <Header title={cat.name.toUpperCase()} subtitle={categoryCountLabel(cat)} onBack={() => safeGoBack(navigation)} />
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
-        <Text style={styles.intro}>{cat.description}</Text>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+        <Text style={[styles.intro, wide && readingText]}>{cat.description}</Text>
 
         {cat.families?.map((fam) => (
           <View key={fam.name} style={styles.section}>
             <Text style={styles.familyTitle}>{fam.name}</Text>
             <View style={styles.list}>
+              <TabletGrid minTile={360} maxCols={2} gap={8}>
               {fam.labs.map((leaf) => {
                 const k = `${fam.name}:${leaf.name}`;
                 return (
@@ -108,12 +114,14 @@ export function LabCategoryScreen({ navigation, route }: Props) {
                   />
                 );
               })}
+              </TabletGrid>
             </View>
           </View>
         ))}
 
         {cat.labs && cat.labs.length > 0 ? (
           <View style={styles.list}>
+            <TabletGrid minTile={360} maxCols={2} gap={8}>
             {cat.labs.map((leaf) => (
               <Fragment key={leaf.name}>
                 <LabRow
@@ -124,6 +132,7 @@ export function LabCategoryScreen({ navigation, route }: Props) {
                 />
               </Fragment>
             ))}
+            </TabletGrid>
           </View>
         ) : null}
       </ScrollView>

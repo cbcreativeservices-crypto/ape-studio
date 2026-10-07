@@ -22,6 +22,8 @@ import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 const PATH = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'PROCESSING', 'RECONSTRUCTION', 'SOUND'];
@@ -42,6 +44,10 @@ function SignalPathBanner() {
 
 export function DigitalLabHomeScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the module list takes the iPad's
+  // width in two columns. Phone: unchanged (`wide` is null, TabletGrid a
+  // Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lessonOpen, setLessonOpen] = useState(false);
   /**
@@ -81,7 +87,7 @@ export function DigitalLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         <SignalPathBanner />
         <Text style={styles.body}>
           Follow the complete chain — acoustic sound → microphone → analog voltage → anti-aliasing
@@ -93,6 +99,7 @@ export function DigitalLabHomeScreen() {
             no ✓ on a row is a stand-in when the banked units could not be
             read — said here, before the rows. Every module stays open. */}
         {unreadable ? <ProgressUnreadableNote /> : null}
+        <TabletGrid minTile={360} maxCols={2} gap={8}>
         {DIGITAL_MODULES.map((m, i) => (
           <ModuleAccordionRow
             key={m.id}
@@ -105,6 +112,7 @@ export function DigitalLabHomeScreen() {
             onOpen={() => open(m.id)}
           />
         ))}
+        </TabletGrid>
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
         <Text style={styles.sectionTitle}>SECONDARY TOOLS</Text>
         <View style={styles.toolWrap}>

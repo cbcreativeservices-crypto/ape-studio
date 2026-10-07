@@ -11,7 +11,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
-import { gridColumns } from '../../theme/tablet';
+import { galleryLayout, GALLERY_PHONE_ART } from '../../theme/tablet';
 import { TrophyImage } from '../../components/TrophyImage';
 import { StudioButton } from '../../components/StudioButton';
 import { fetchGalleryV3Shared, type GalleryEntry } from '../../features/achievements/api';
@@ -20,10 +20,11 @@ import { safeGoBack } from '../../lib/safeGoBack';
 // A row item is either a trophy entry or the odd-row-padding spacer sentinel.
 type GalleryRow = GalleryEntry | '__spacer__';
 
-function BadgeDisc({ color }: { color: string }) {
+function BadgeDisc({ color, size = 48 }: { color: string; size?: number | '100%' }) {
   // Design: radial rings — dark core, color ring, dark band, color ring, dark rim.
+  // Drawn in a 48-unit box and scaled, so the tablet's big tile keeps the art.
   return (
-    <Svg width={48} height={48} viewBox="0 0 48 48">
+    <Svg width={size} height={size} viewBox="0 0 48 48">
       <Circle cx={24} cy={24} r={24} fill="#122030" />
       <Circle cx={24} cy={24} r={16} fill="none" stroke={color} strokeWidth={3} />
       <Circle cx={24} cy={24} r={10.5} fill="none" stroke={color} strokeWidth={2.5} opacity={0.85} />
@@ -103,8 +104,18 @@ export function GalleryScreen() {
   // Columns (owner 2026-09-29, tablet pass): two on a phone, as always; a
   // tablet gains columns instead of stretching each trophy card ~490 pt wide
   // around a 48 pt badge. 16 pt scroll padding each side, 12 pt row gap.
-  const { width: winW } = useWindowDimensions();
-  const cols = gridColumns(winW - 32, 220, 12, 2, 4);
+  //
+  // ⛔ AND THE ART FILLS THE CARD ON A TABLET (owner iPad report 2026-10-06:
+  // "Trophy images in 'My Gallery' need to expand much larger and take up
+  // more of the screen. They stay small."). The 2026-09-29 pass added columns
+  // but kept the 48 pt phone badge, so an iPad showed four 239 pt cards each
+  // holding a stamp. `galleryLayout` (theme/tablet) sizes the art to the
+  // card's width from the LIVE window — rotation and Split View included. A
+  // phone gets `art: null` and keeps its 48 pt badge exactly.
+  const { width: winW, height: winH } = useWindowDimensions();
+  const grid = galleryLayout(winW, winH);
+  const cols = grid.cols;
+  const tabletArt = grid.art !== null;
   // Pad to a full last row so a lone trailing card keeps its column width
   // (flex:1 would otherwise stretch it across the row). Spacers render nothing.
   const SPACER = '__spacer__';
@@ -116,12 +127,15 @@ export function GalleryScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: GalleryRow }) => {
-      if (item === SPACER) return <View style={styles.spacer} />;
+      // Tablet: the spacer carries the card's padding + border so a short last
+      // row's cards keep the exact width of the cards above them (measured on
+      // the web preview: a bare flex:1 spacer let them grow 16 pt wider).
+      if (item === SPACER) return <View style={[styles.spacer, tabletArt && styles.spacerTablet]} />;
       const e = item;
       return (
       <Pressable
         accessibilityRole="button"
-        style={[styles.card, { borderColor: `${colors.amber}66`, shadowColor: colors.amber }]}
+        style={[styles.card, tabletArt && styles.cardTablet, { borderColor: `${colors.amber}66`, shadowColor: colors.amber }]}
         onPress={() =>
           (navigation as any).navigate('Trophy', {
             topicName: e.name,
@@ -130,20 +144,29 @@ export function GalleryScreen() {
           })
         }
       >
-        <TrophyImage
-          iconUrl={e.iconUrl}
-          size={48}
-          radius={8}
-          fallback={<BadgeDisc color={colors.amber} />}
-        />
-        <Text style={styles.cardName}>{e.name.toUpperCase()}</Text>
-        <Text style={styles.cardMeta}>
+        {tabletArt ? (
+          // A square that is the card's own inner width — measured by layout,
+          // not computed, so a web scrollbar or a rounding pass can never
+          // push the art past the card's edge.
+          <View style={styles.artTablet}>
+            <TrophyImage iconUrl={e.iconUrl} fill radius={12} fallback={<BadgeDisc color={colors.amber} size="100%" />} />
+          </View>
+        ) : (
+          <TrophyImage
+            iconUrl={e.iconUrl}
+            size={GALLERY_PHONE_ART}
+            radius={8}
+            fallback={<BadgeDisc color={colors.amber} />}
+          />
+        )}
+        <Text style={[styles.cardName, tabletArt && styles.cardNameTablet]}>{e.name.toUpperCase()}</Text>
+        <Text style={[styles.cardMeta, tabletArt && styles.cardMetaTablet]}>
           {e.subject} · {fmtDate(e.dateEarned)}
         </Text>
       </Pressable>
       );
     },
-    [navigation],
+    [navigation, tabletArt],
   );
 
   return (
@@ -155,8 +178,8 @@ export function GalleryScreen() {
         // numColumns cannot change on a mounted FlatList: re-key on rotation.
         key={`cols-${cols}`}
         numColumns={cols}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.scroll}
+        columnWrapperStyle={[styles.row, tabletArt && { gap: grid.gap }]}
+        contentContainerStyle={[styles.scroll, tabletArt && { padding: grid.pad, gap: grid.gap }]}
         // Windowing: keep memory bounded when a user has earned many trophies.
         initialNumToRender={10}
         maxToRenderPerBatch={10}
@@ -237,6 +260,7 @@ const styles = StyleSheet.create({
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
   row: { gap: 12 },
   spacer: { flex: 1 },
+  spacerTablet: { padding: 14, borderWidth: 1, borderColor: 'transparent' },
   card: {
     flex: 1,
     backgroundColor: '#181818',
@@ -250,4 +274,10 @@ const styles = StyleSheet.create({
   },
   cardName: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.5, color: colors.textPrimary },
   cardMeta: { fontFamily: fonts.mono, fontSize: 11, color: '#777777' },
+  // Tablet only (galleryLayout gave art): the trophy is the card — centred,
+  // filling the width, with the name and date set a size up beneath it.
+  cardTablet: { alignItems: 'center', gap: 12 },
+  artTablet: { width: '100%', aspectRatio: 1 },
+  cardNameTablet: { fontSize: 15, textAlign: 'center' },
+  cardMetaTablet: { fontSize: 12, textAlign: 'center' },
 });

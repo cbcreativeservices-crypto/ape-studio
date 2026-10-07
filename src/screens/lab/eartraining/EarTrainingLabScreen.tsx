@@ -24,9 +24,15 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 
 export function EarTrainingLabScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the module list takes the iPad's
+  // width in two columns. Phone: unchanged (`wide` is null, TabletGrid a
+  // Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [openId, setOpenId] = useState<string | null>(null);
   const [progress, setProgress] = useState<EarProgressState | null>(null);
@@ -62,7 +68,7 @@ export function EarTrainingLabScreen() {
         subtitle="Hear a change · then see it measured"
         right={<AccuracyNote compact detail="Every drill here plays through your phone’s UNCALIBRATED output — and through whatever headphones or speakers you are on, which colour it further. Train the SKILL of hearing a change here; judge absolute tonality on monitoring you trust." />}
       />
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
         <Text style={styles.body}>
           Every drill here renders real signals, plays them, and then shows you the same buffers
           on the analyzers — the habit this lab builds is hearing something and knowing what the
@@ -79,6 +85,7 @@ export function EarTrainingLabScreen() {
             levels, no accuracy and no ✓ — said here, before the rows. The
             modules stay open to practise. */}
         {unreadable ? <ProgressUnreadableNote /> : null}
+        <TabletGrid minTile={360} maxCols={2} gap={8}>
         {EAR_MODULES.map((m) => {
           const p = unreadable ? undefined : progress?.modules[m.id];
           const acc = p ? recentAccuracy(p) : null;
@@ -98,6 +105,7 @@ export function EarTrainingLabScreen() {
             />
           );
         })}
+        </TabletGrid>
         <Text style={styles.coming}>
           All fourteen modules are live. Emulated processors and rendered program beds are
           labeled as such throughout.

@@ -21,8 +21,8 @@ import { useFocusEffect, useNavigation, useRoute, type RouteProp } from '@react-
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
-import { CARD_MAX_W, cardColumn } from '../../../theme/readingColumn';
-import { gridColumns } from '../../../theme/tablet';
+import { CARD_MAX_W, WIDE_MAX_W, cardColumn, wideColumn } from '../../../theme/readingColumn';
+import { gridColumns, isTabletWindow } from '../../../theme/tablet';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { formatHz } from '../../../features/cymatics/music';
@@ -361,8 +361,13 @@ export function GalleryScreen() {
   // were 490 pt tiles (655 pt in landscape). The open pattern is also held
   // inside the window height so it never runs past the fold sideways. On a
   // portrait phone every number below equals the old one.
-  const contentW = Math.min(ww, CARD_MAX_W) - 32;
-  const cols = gridColumns(contentW, 200, 12, 2, 4);
+  //
+  // ⛔ AND THE WHOLE iPAD (owner iPad report 2026-10-06: dead space either
+  // side of a capped menu reads as "not designed for iPad"). A tablet takes
+  // the wide column and up to six squares a row; a phone is unchanged.
+  const tablet = isTabletWindow(ww, wh);
+  const contentW = Math.min(ww, tablet ? WIDE_MAX_W : CARD_MAX_W) - 32;
+  const cols = gridColumns(contentW, 200, 12, 2, tablet ? 6 : 4);
   const cardW = Math.floor((contentW - 12 * (cols - 1)) / cols);
   const previewW = Math.min(contentW, Math.max(240, wh - 320));
 
@@ -393,7 +398,7 @@ export function GalleryScreen() {
           onHelp={help}
         />
       ) : (
-        <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[styles.scroll, cardColumn, tablet && wideColumn]} keyboardShouldPersistTaps="handled">
           {mode === 'browse' ? (
             <>
               <View style={styles.chips}>

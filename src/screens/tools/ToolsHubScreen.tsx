@@ -69,7 +69,8 @@ import {
   type ExposureSnapshot,
 } from '../../features/audio/exposureMonitor';
 import type { RootStackParamList } from '../../navigation/types';
-import { TOOL_READING_MAX_W } from '../../theme/readingColumn';
+import { GRID_GAP, HUB_MAX_CONTENT_W, hubContentMaxW, tileWidthFor } from './hubGrid';
+import { TabletGrid } from '../../components/TabletGrid';
 
 /**
  * TILE WIDTH IS A FUNCTION OF THE LIVE WINDOW, NOT OF BOOT (2026-09-13).
@@ -88,6 +89,12 @@ import { TOOL_READING_MAX_W } from '../../theme/readingColumn';
  * TWO ACROSS, ALWAYS (owner, 2026-09-13: "Tools hub should keep side by side
  * arrangement"). The column count is NOT responsive. What changes on a wide
  * screen is that the hub's content column stops growing.
+ *
+ * ⛔ SUPERSEDED ON A TABLET (owner iPad report 2026-10-06): the capped column
+ * read as "dead space … not designed for iPad". A tablet now takes the wide
+ * column — two big displays across in portrait, four in landscape (still a
+ * side-by-side rack) — see
+ * `hubColumnsFor` in ./hubGrid. Phones keep everything below exactly.
  *
  * Two separate faults were found measuring this at tablet width.
  *
@@ -114,16 +121,9 @@ import { TOOL_READING_MAX_W } from '../../theme/readingColumn';
 /** The hub's content column stops growing here and centres (see above). Tiles
  *  land at 247 pt on any screen at least this wide - bigger than a phone's 163,
  *  which is the point of a tablet, without becoming half the screen. */
-const GRID_GAP = 12; // styles.grid gap
-const HUB_MAX_CONTENT_W = TOOL_READING_MAX_W;
-/** Pixels deliberately left unspent so flex-wrap can never drop a tile. */
-const TILE_FIT_SLACK = 2;
-
-function tileWidthFor(windowW: number): number {
-  const content = Math.min(windowW, HUB_MAX_CONTENT_W);
-  const inner = content - 14 * 2 - (1 + 12) * 2;
-  return Math.floor((inner - GRID_GAP - TILE_FIT_SLACK) / 2);
-}
+// The tile arithmetic itself lives in ./hubGrid (pure, so node tests can run
+// it at every phone and iPad size): GRID_GAP, HUB_MAX_CONTENT_W, the slack,
+// and the tablet column rule (owner iPad report 2026-10-06).
 
 /** A card/chip/row RIM under the hub's overhead key (HUB_LIGHT, TileChassis):
  *  the up-facing top edge catches (rung 3), the sides sit in ambient, the
@@ -191,8 +191,8 @@ function DosimeterChip({ onOpen }: { onOpen: () => void }) {
 /* Tile Forge (owner 2026-08-23): chassis geometry shared with TileChassis;
    per-tile wear seeds are stable so each tile's grit/scratch never shift. */
 /** Chassis geometry for the CURRENT tile width (see tileWidthFor). */
-const tileMetricsFor = (windowW: number) => {
-  const w = tileWidthFor(windowW);
+const tileMetricsFor = (windowW: number, windowH: number) => {
+  const w = tileWidthFor(windowW, windowH);
   return { w, ...tileLayout(w) };
 };
 type TileMetrics = ReturnType<typeof tileMetricsFor>;
@@ -924,8 +924,10 @@ export function ToolsHubScreen({ navigation }: Props) {
   // The ONE source of tile geometry for this render: the chassis, the tiles,
   // the visibility gating and the panel patina all read it, so they cannot
   // disagree about how big a tile is or where it sits (see tileWidthFor).
-  const { width: windowW } = useWindowDimensions();
-  const tile = useMemo(() => tileMetricsFor(windowW), [windowW]);
+  const { width: windowW, height: windowH } = useWindowDimensions();
+  const tile = useMemo(() => tileMetricsFor(windowW, windowH), [windowW, windowH]);
+  // 560 on a phone (unchanged); the wide column on a tablet (see hubColumnsFor).
+  const hubCap = { maxWidth: hubContentMaxW(windowW, windowH) };
   const { isMember } = useEntitlement();
   // KNOWN, not merely resolved (tier sweep 2026-10-03): a member whose
   // membership read FAILED (no remembered tier) read as a non-member here and
@@ -1066,7 +1068,7 @@ export function ToolsHubScreen({ navigation }: Props) {
             old header carried that itself. Pushing it into CompactBrandBar
             would be the first of the props that made the last three copies
             of this row drift apart. */}
-        <View style={styles.brandBarCap}>
+        <View style={[styles.brandBarCap, hubCap]}>
           <CompactBrandBar right={<HelpKey search="tool" />} />
         </View>
 
@@ -1077,7 +1079,7 @@ export function ToolsHubScreen({ navigation }: Props) {
           //    the last row clear of the home indicator / gesture strip. It was
           //    removed 2026-09-19 and the 24 here was left behind, so the final
           //    row ran under the indicator. Keep the inset in the style prop.
-          contentContainerStyle={[styles.scroll, { paddingBottom: 24 + insets.bottom }]}
+          contentContainerStyle={[styles.scroll, hubCap, { paddingBottom: 24 + insets.bottom }]}
           scrollEventThrottle={100}
           onLayout={(e) => {
             viewRef.current.h = e.nativeEvent.layout.height;
@@ -1182,6 +1184,9 @@ export function ToolsHubScreen({ navigation }: Props) {
             <>
               <Text style={styles.trainingHead}>MEASUREMENT TRAINING</Text>
               <View style={styles.trainingList}>
+                {/* Two columns of training rows on a tablet (owner iPad
+                    report 2026-10-06); a phone renders the plain list. */}
+                <TabletGrid minTile={360} maxCols={2} gap={8} inset={28}>
                 {CONCEPT_MODULES.map((m) => (
                   <Pressable
                     key={m.key}
@@ -1205,6 +1210,7 @@ export function ToolsHubScreen({ navigation }: Props) {
                     <Text style={[styles.trainingChevron, !isMember && styles.lockedText]}>›</Text>
                   </Pressable>
                 ))}
+                </TabletGrid>
               </View>
               {!isMember && <Text style={styles.lockedNote}>🔒 Academy membership required.</Text>}
             </>

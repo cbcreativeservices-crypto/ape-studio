@@ -308,7 +308,7 @@ export function SpectrogramScreen({ navigation }: Props) {
   // object we pass on mount. No live engine-setting changes on this screen —
   // dynamic range is a pure display scale.
   const cfg = useRef<EngineConfig>({ fftSize: FFT_SIZE, spectrumEnabled: true }).current;
-  const { state, frames, start, stop, lastError, meterFlags } = useDspEngine(cfg, { meter: true });
+  const { state, frames, start, stop, lastError, noSignal, meterFlags } = useDspEngine(cfg, { meter: true });
 
   const [history, setHistory] = useState<SpectroColumnData[]>([]);
   const [dynRange, setDynRange] = useState<number>(60);
@@ -654,7 +654,7 @@ export function SpectrogramScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.scroll}>
         {/* Honest not-ready card (absent/spike/denied/error) — renders nothing
             when the engine is usable. */}
-        <EngineGate state={state} lastError={lastError} onRetry={start} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 
         {/* Opens straight into the live spectrogram (auto-start, owner
             2026-08-01 — no redundant START screen on the normal path). */}

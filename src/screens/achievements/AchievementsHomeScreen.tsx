@@ -20,7 +20,9 @@ import { CredentialBadge, type CredentialKind } from '../../components/Credentia
 import { fetchAchievementsHub, prefetchTrophyCase, type HubData } from '../../features/achievements/api';
 import { TROPHY_CASE_EMPTY } from '../../features/celebration/catalog';
 import { ScreenIntroOverlay } from '../../features/intro/ScreenIntroOverlay';
-import { readingColumn } from '../../theme/readingColumn';
+import { readingColumn, readingText } from '../../theme/readingColumn';
+import { useWideOnTablet } from '../../theme/useIsTablet';
+import { TabletGrid } from '../../components/TabletGrid';
 
 const MINI = 44;
 
@@ -73,6 +75,9 @@ export function AchievementsHomeScreen() {
   // case: a rejection used to leave all three strips in a permanent skeleton
   // with no error and no retry (launch audit 2026-09-09).
   const [error, setError] = useState(false);
+  // Tablet (owner iPad report 2026-10-06): the three cases sit side by side
+  // across the iPad instead of a 560 pt strip between black gutters.
+  const wide = useWideOnTablet();
 
   // NEWEST LOAD WINS (hunt 5, 2026-10-03; pattern P2). This is a tab root: it
   // stays mounted and reloads on every focus, and the hub fans out into
@@ -101,7 +106,7 @@ export function AchievementsHomeScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, wide]}>
         <View style={styles.headerRow}>
           {cameFromProfile ? (
             <Pressable
@@ -123,7 +128,7 @@ export function AchievementsHomeScreen() {
         {/* Owner copy 2026-09-18. Sits above the error branch so the case still
             introduces itself when the counts cannot be read. */}
         <Text style={styles.tagline}>{TROPHY_CASE_EMPTY.tagline}</Text>
-        <Text style={styles.intro}>{TROPHY_CASE_EMPTY.intro}</Text>
+        <Text style={[styles.intro, wide && readingText]}>{TROPHY_CASE_EMPTY.intro}</Text>
 
         {error && !hub ? (
           <View style={styles.errorCard}>
@@ -136,8 +141,10 @@ export function AchievementsHomeScreen() {
           </View>
         ) : (
         <>
+        <TabletGrid minTile={300} maxCols={3} gap={14}>
         {/* TOPICS */}
         <Pressable
+          key="topics"
           style={({ pressed }) => [styles.card, { borderColor: `${colors.amber}44` }, pressed && styles.cardPressed]}
           // Press-IN warms the next screen's read (perf hunt 2026-10-03): with
           // the hub's own answer still fresh it is shared, not re-fetched.
@@ -167,6 +174,7 @@ export function AchievementsHomeScreen() {
 
         {/* CERTIFICATES */}
         <Pressable
+          key="certificates"
           style={({ pressed }) => [styles.card, { borderColor: `${colors.cyan}44` }, pressed && styles.cardPressed]}
           onPressIn={() => prefetchTrophyCase('certificate')}
           onPress={() => navigation.navigate('Certificates')}
@@ -194,6 +202,7 @@ export function AchievementsHomeScreen() {
 
         {/* PROGRAMS */}
         <Pressable
+          key="programs"
           style={({ pressed }) => [styles.card, { borderColor: `${colors.programPurple}44` }, pressed && styles.cardPressed]}
           onPressIn={() => prefetchTrophyCase('program')}
           onPress={() => navigation.navigate('Programs')}
@@ -220,6 +229,7 @@ export function AchievementsHomeScreen() {
             ))}
           </RecentStrip>
         </Pressable>
+        </TabletGrid>
 
         {/* ── SHARING, NOT FEATURING (owner 2026-09-18) ───────────────────────
             The first draft of this section was headed FEATURED ACHIEVEMENT and
