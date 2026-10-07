@@ -663,6 +663,10 @@ export const C08_LESSON: Lesson = {
   model: C08_MODEL,
   micTypeIds: [...C08_MICS],
   zones: C08_ZONES,
+  // TWO MICS (review 2026-10-07, CORRECTIONS_LOG RV34-08): the lesson's own
+  // farther mic is "usually a second mic under the close one" — drawn as
+  // that pair. (The DI beside the mic is on the two-mic page.)
+  setupPairs: [{ label: 'A close mic, with a farther mic for the room', A: { zone: 'bass.boundary' }, B: { zone: 'bass.far' }, line: 'The close mic carries the note; the farther one adds the cabinet and a good, quiet room. On most stages the second channel is the DI instead. Check the pair together in mono.' }],
   pages,
   scenarios,
   symptoms,

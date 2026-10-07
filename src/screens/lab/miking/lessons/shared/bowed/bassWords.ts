@@ -94,7 +94,9 @@ export function bassCopy(kind: BassKind, ids: { worked: string; context: string;
       },
     },
     twoMic: {
-      A: { typeId: 'sdcCard', pattern: 'cardioid', zone: ids.twoA },
+      // The close mic is the zone's own miniature on its string clip (a
+      // full pencil condenser on a stand cannot sit under the strings).
+      A: { typeId: 'strMini', pattern: 'supercardioid', zone: ids.twoA },
       B: { typeId: 'sdcCard', pattern: 'omni', zone: ids.twoB },
       learn: [
         'A strong single-mic sound is the reference. A second view — closer and farther, or a room mic — can add attack or space; keep it only if it helps in the mix.',

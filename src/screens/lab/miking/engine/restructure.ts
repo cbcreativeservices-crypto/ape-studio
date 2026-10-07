@@ -178,6 +178,26 @@ const quickCache = new WeakMap<Lesson, readonly DiagnosticItem[]>();
  * lesson's own MEET IT checks — then, if it has none left, a STARTING SETUPS
  * one — so the check stays six items and still covers both foundations.
  */
+const stemWords = (s: string): Set<string> =>
+  new Set(
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length >= 4)
+      .map((w) => w.replace(/(ing|ed|es|s)$/, '').replace(/([bdgmnpt])\1$/, '$1')),
+  );
+const overlap = (a: Set<string>, b: Set<string>): number => {
+  const both = [...a].filter((x) => b.has(x)).length;
+  const all = new Set([...a, ...b]).size;
+  return all ? both / all : 0;
+};
+/** Two items ask the same thing: their answers share most of their words,
+ *  or the question and answer together do. */
+export function sameQuestion(a: { prompt: string; correct: string }, b: { prompt: string; correct: string }): boolean {
+  return overlap(stemWords(a.correct), stemWords(b.correct)) >= 0.4 || overlap(stemWords(`${a.prompt} ${a.correct}`), stemWords(`${b.prompt} ${b.correct}`)) >= 0.35;
+}
+
 export function quickCheckOf(lesson: Lesson): readonly DiagnosticItem[] {
   const hit = quickCache.get(lesson);
   if (hit) return hit;
@@ -185,7 +205,21 @@ export function quickCheckOf(lesson: Lesson): readonly DiagnosticItem[] {
   const need = Math.max(0, Math.min(QUICK_CHECK_SIZE, lesson.diagnostic.length) - kept.length);
   const used = new Set(kept.map((d) => d.prompt));
   const pool = [...scenariosOnPage(lesson, 'meet'), ...scenariosOnPage(lesson, 'setups')].filter((s) => !used.has(s.prompt));
-  const extra = pool.slice(0, need).map(asQuickItem);
+  // A replacement that asks the same thing as an item already in the check
+  // (review 2026-10-07: "the carved top, driven through the floating bridge"
+  // twice in six) is taken only when nothing else is left — one idea must
+  // not count twice towards the pass.
+  const taken: { prompt: string; correct: string }[] = [...kept];
+  const fresh: MikingScenario[] = [];
+  const dupes: MikingScenario[] = [];
+  for (const s of pool) {
+    if (taken.some((d) => sameQuestion(d, s))) dupes.push(s);
+    else {
+      fresh.push(s);
+      taken.push(s);
+    }
+  }
+  const extra = [...fresh, ...dupes].slice(0, need).map(asQuickItem);
   // Keep the authored order: a replacement takes the retired item's place.
   const out: DiagnosticItem[] = [];
   let e = 0;
