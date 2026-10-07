@@ -120,7 +120,14 @@ export const COPY = {
    * "free" / "costs nothing" back in it. Guarded by
    * test/testflight32CredentialScenarioCopy.test.ts.
    */
-  enrollFreeLine: 'Enrolling is part of the membership — pick as many topics and certificates as you like.',
+  /*
+   * …AND IT MUST BE TRUE FOR EVERY TOPIC (TestFlight triage 2026-10-08). "Enrolling
+   * is part of the membership" said it of ALL topics, but Pro Audio Safety and
+   * DAW Fundamentals (FREE_ENROLL_GS) open for everyone, guests included. The
+   * line now names the exception instead of hiding it — still without the word
+   * "free", which the owner found confusing here.
+   */
+  enrollFreeLine: 'Certificates, programs and topics are part of the membership — only Pro Audio Safety and DAW Fundamentals open without one.',
   membershipCoversLine: 'One membership covers them all. Choosing more never costs more.',
   // Introductory lifetime offer (Booth 2026-07-15).
   lifetimePrice: '$99.99',

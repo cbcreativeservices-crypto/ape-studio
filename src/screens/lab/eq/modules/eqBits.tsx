@@ -24,6 +24,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { useScrollLock } from '../../LabShell';
 import { usePulseStyle } from '../../../../features/lab/attentionPulse';
 import { useStageTextScale } from '../../rack/stageAspect';
+import { laneFingerAtY, laneFingerDy, type LaneFingerY } from '../../rack/laneFinger';
 
 const TRACK_H = 108;
 /** Fader column width at 1× (the board's per-band pitch). */
@@ -95,6 +96,10 @@ export function VerticalFader({
     if (grabbed) onActiveRef.current?.(false);
   };
 
+  // The finger that grabbed this fader (TestFlight triage 2026-10-08): `g.dy`
+  // is the centroid of every finger on the glass, so a thumb on the next band
+  // dragged the band already held — the two moved together.
+  const fingerRef = useRef<LaneFingerY>({ id: undefined, py: 0 });
   const pan = useRef(
     PanResponder.create({
       // Claim immediately — the host ScrollView must never steal a fader touch.
@@ -103,6 +108,7 @@ export function VerticalFader({
       onPanResponderGrant: (e) => {
         lockRef.current?.(true);
         onActiveRef.current?.(true);
+        fingerRef.current = laneFingerAtY(e.nativeEvent);
         if (relativeRef.current) {
           baseRef.current = valueRef.current;
           return;
@@ -111,8 +117,10 @@ export function VerticalFader({
         baseRef.current = v;
         onChangeRef.current(v);
       },
-      onPanResponderMove: (_e, g) => {
-        onChangeRef.current(Math.max(0, Math.min(1, baseRef.current - g.dy / trackHRef.current)));
+      onPanResponderMove: (e, g) => {
+        const dy = laneFingerDy(e.nativeEvent, fingerRef.current, g.dy);
+        if (dy === 'lifted') return;
+        onChangeRef.current(Math.max(0, Math.min(1, baseRef.current - dy / trackHRef.current)));
       },
       onPanResponderRelease: () => done(true),
       onPanResponderTerminate: () => done(true),

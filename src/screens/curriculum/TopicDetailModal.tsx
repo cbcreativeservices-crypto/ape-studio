@@ -17,7 +17,16 @@
  *   5. "WHERE THESE SKILLS APPLY": per-topic roles as passive tags (NOT buttons).
  *   6. Fixed footer CLOSE — outside the scroll so it is always reachable.
  *
- * SWIPE (2026-09-15): swipe left / right steps to the next / previous topic in
+ * NO SIDEWAYS SWIPE (TestFlight triage 2026-10-08): the owner's report on the
+ * credential popup — "Scrolling left and right either jumps screens or creates
+ * an unwanted movement of the image" — had the same cause here. The swipe
+ * pager below is a native horizontal ScrollView that tracks the finger, so any
+ * sideways drift while reading dragged the art, and a longer drift stepped to
+ * another topic. The credential popup dropped it on 2026-09-30; this, its twin,
+ * now shows ONE topic and scrolls vertically only. prev / next / onStep are
+ * still accepted so callers compile, and ignored.
+ *
+ * SWIPE (2026-09-15 — RETIRED 2026-10-08, see above): swipe left / right steps to the next / previous topic in
  * the list being browsed (`nav`, owned by CurriculumScreen) without closing.
  * The card SHELL (frame + footer) stays put; only the item CONTENT slides and
  * crossfades, and the art crossfades through `ArtCrossfade` so a step never
@@ -39,7 +48,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
-import { DetailPager } from '../../components/detailSwipe';
 import { TrophyImage } from '../../components/TrophyImage';
 import { topicImagePath } from '../../data/topicImages';
 import { useMemberGate } from '../../features/commercial/useTier';
@@ -84,16 +92,13 @@ function withoutGs<V>(m: Record<number, V>, gs: number): Record<number, V> {
 
 export function TopicDetailModal({
   topic,
-  prev,
-  next,
-  onStep,
   onClose,
   onEnrollTopic,
   isTopicEnrolled,
 }: {
   topic: TopicDetail | null;
-  /** Neighbours in the browsed list for the swipe pager (parent-owned); null at
-   *  a list end. Omit prev+next+onStep for a popup with nothing to swipe to. */
+  /** IGNORED since the TestFlight triage of 2026-10-08 (no sideways pager —
+   *  see the file note). Kept so callers compile. */
   prev?: TopicDetail | null;
   next?: TopicDetail | null;
   onStep?: (dir: 1 | -1) => void;
@@ -249,18 +254,7 @@ export function TopicDetailModal({
         <View style={[styles.card, { maxHeight: budget }]} accessibilityViewIsModal>
           {topic ? (
             <>
-              {onStep ? (
-                <DetailPager
-                  width={pageW}
-                  prev={prev ?? null}
-                  current={topic}
-                  next={next ?? null}
-                  onStep={onStep}
-                  renderPage={renderPage}
-                />
-              ) : (
-                renderPage(topic)
-              )}
+              {renderPage(topic)}
 
               {/* Fixed footer — always reachable regardless of scroll. Checking
                   the box IS the enrolment (owner 2026-09-15): it enrols in place,

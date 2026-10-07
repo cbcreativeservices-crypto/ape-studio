@@ -24,6 +24,8 @@ import { useScrollLock } from '../LabShell';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { NO_INSETS, laneDragValue, laneValueAt } from '../rack/laneEdgeGuard';
 import { useEdgeGuard } from '../rack/useEdgeGuard';
+import { createLaneFeed } from '../rack/laneFeed';
+import { laneFingerAt, laneFingerDx, type LaneFinger } from '../rack/laneFinger';
 
 export type CheckSpec = {
   question: string;
@@ -142,6 +144,8 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
  *  the cap position — the felt bug is that putting a finger ON the cap moves it.
  *  Same contract as ParamLane and amp/kit.tsx's ControlSlider. */
 const CAP_W = 24;
+/** One delivery tick about a frame long — see the drag notes in DragSlider. */
+const DRAG_TICK_MS = 16;
 
 export function DragSlider({
   value,
@@ -217,6 +221,34 @@ export function DragSlider({
   // which made sliders "whip around" to the opposite end at the extremes —
   // dx never lies. Capture on start so the slider owns the touch immediately.
   const baseRef = useRef(0);
+  // ⛔ "CONTROLS ARE SLOW TO RESPOND AND MOVE TOGETHER SOMETIMES" (owner,
+  // TestFlight, Line Array Laboratory — its ARRAY tray is three of these).
+  // Two causes, both already cured in the rack's ParamLane and copied here:
+  //  • MOVE TOGETHER — PanResponder's `g.dx` is the travel of the CENTROID of
+  //    every finger on the glass, and the slider that holds the responder gets
+  //    every finger's moves. A thumb on a second slider while the first was
+  //    held dragged the first. The slider now follows THE FINGER THAT GRABBED
+  //    IT (laneFinger) and stays put once that finger lifts.
+  //  • SLOW — every touch move went straight to the lab, which rebuilds its
+  //    whole scene per move; the moves queued behind the renders and the cap
+  //    caught up long after the finger stopped. Moves now keep only the newest
+  //    value and hand it over at most once per tick (laneFeed); the grab and
+  //    the release are delivered at once, so a tap lands where it touched and
+  //    the resting value is exactly the finger's last.
+  const fingerRef = useRef<LaneFinger>({ id: undefined, px: 0 });
+  const feed = useRef(
+    createLaneFeed({
+      deliver: (v) => onChangeRef.current(v),
+      // A timer, not a rAF (the motion ratchets read a cancelled rAF as a loop).
+      schedule: (cb) => setTimeout(cb, DRAG_TICK_MS),
+      cancel: (h) => clearTimeout(h as ReturnType<typeof setTimeout>),
+    }),
+  ).current;
+  // An unmount mid-drag (tray closed by a second finger) still delivers the
+  // last value rather than dropping it on a dangling timer.
+  // []-deps: unmount only (the G6 rule — `feed` is created once anyway).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => feed.end(), []);
   const pan = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -224,22 +256,31 @@ export function DragSlider({
       onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
       onPanResponderGrant: (e) => {
         setLock(true);
+        fingerRef.current = laneFingerAt(e.nativeEvent);
         if (wRef.current > 0) {
           // Read the touch in the INSET lane the cap travels in, so the map is
           // the exact inverse of the cap position (same contract as
           // ParamLane and ControlSlider).
           const v = laneValueAt(e.nativeEvent.locationX, wRef.current, insRef.current, CAP_W);
           baseRef.current = v;
-          onChangeRef.current(v);
+          feed.grant(v);
         }
       },
-      onPanResponderMove: (_e, g) => {
+      onPanResponderMove: (e, g) => {
+        const dx = laneFingerDx(e.nativeEvent, fingerRef.current, g.dx);
+        if (dx === 'lifted') return;
         if (wRef.current > 0) {
-          onChangeRef.current(laneDragValue(baseRef.current, g.dx, wRef.current, insRef.current, CAP_W));
+          feed.move(laneDragValue(baseRef.current, dx, wRef.current, insRef.current, CAP_W));
         }
       },
-      onPanResponderRelease: () => setLock(false),
-      onPanResponderTerminate: () => setLock(false),
+      onPanResponderRelease: () => {
+        feed.end();
+        setLock(false);
+      },
+      onPanResponderTerminate: () => {
+        feed.end();
+        setLock(false);
+      },
       onPanResponderTerminationRequest: () => false,
     }),
   ).current;

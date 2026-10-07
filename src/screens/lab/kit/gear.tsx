@@ -47,6 +47,7 @@ import Svg, { Circle, Line } from 'react-native-svg';
 import { colors, fonts } from '../../../theme/tokens';
 import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { useScrollLock } from '../scrollLock';
+import { laneFingerAtY, laneFingerDy, type LaneFingerY } from '../rack/laneFinger';
 
 /**
  * The nearest page scroll-lock, RELEASED ON UNMOUNT if this control still
@@ -166,6 +167,8 @@ export function GearFader({
   // handoff are JS-side arguments; on glass the native scroll view does not
   // argue, it takes — unless it is disabled first.
   const lockRef = useOwnedScrollLock();
+  /** The finger that grabbed the cap (see onPanResponderMove). */
+  const fingerRef = useRef<LaneFingerY>({ id: undefined, py: 0 });
 
   const responder = useMemo(
     () =>
@@ -184,13 +187,14 @@ export function GearFader({
         // BEFORE the fader has committed to a vertical drag.
         onPanResponderTerminationRequest: (_e, g) =>
           !moved.current && Math.abs(g.dx) > Math.abs(g.dy) + 6,
-        onPanResponderGrant: () => {
+        onPanResponderGrant: (e) => {
           lockRef.current?.(true);
           grabDb.current = valueRef.current;
           moved.current = false;
           slid.current = false;
+          fingerRef.current = laneFingerAtY(e.nativeEvent);
         },
-        onPanResponderMove: (_e, g) => {
+        onPanResponderMove: (e, g) => {
           // ANY slide disqualifies the tap path. `moved` stays VERTICAL-only so
           // the termination guard above still lets an uncommitted sideways
           // swipe through to the scroller — a purely horizontal jiggle used to
@@ -201,7 +205,13 @@ export function GearFader({
           if (!moved.current) return; // a resting finger is not a drag
           // Grab-relative, like the hardware: the cap follows the finger from
           // where it WAS, it never teleports under it.
-          const f = faderDbToFrac(grabDb.current) - g.dy / SLOT_H;
+          // …and from ITS OWN finger (TestFlight triage 2026-10-08): `g.dy` is
+          // the centroid of every finger, so a thumb on the next channel's
+          // fader dragged this one too. Once the grabbing finger lifts, the
+          // cap stays where it is.
+          const dy = laneFingerDy(e.nativeEvent, fingerRef.current, g.dy);
+          if (dy === 'lifted') return;
+          const f = faderDbToFrac(grabDb.current) - dy / SLOT_H;
           const db = Math.round(faderFracToDb(f));
           if (db !== valueRef.current) onChangeRef.current(db);
         },

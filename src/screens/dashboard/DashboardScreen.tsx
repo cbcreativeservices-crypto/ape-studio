@@ -2785,6 +2785,8 @@ export function DashboardScreen() {
           upgrade sheet). Free topics + academy members are never gated. */}
       <StudyAccessSheet
         visible={upgradeOpen}
+        // A known guest is told the account step too (TestFlight triage 2026-10-08).
+        guest={quizAsGuest}
         onClose={() => setUpgradeOpen(false)}
         onUnlock={() => {
           setUpgradeOpen(false);

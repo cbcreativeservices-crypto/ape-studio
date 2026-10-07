@@ -62,7 +62,8 @@ describe('sources use the guard', () => {
     const s = read('src/screens/lab/foundations/bits.tsx');
     assert.match(s, /useEdgeGuard\(\{ capW: CAP_W, fallback: NO_INSETS \}\)/);
     assert.match(s, /laneValueAt\(e\.nativeEvent\.locationX, wRef\.current, insRef\.current, CAP_W\)/);
-    assert.match(s, /laneDragValue\(baseRef\.current, g\.dx, wRef\.current, insRef\.current, CAP_W\)/);
+    // dx = the GRABBING finger's travel (laneFingerDx), TestFlight triage 2026-10-08.
+    assert.match(s, /laneDragValue\(baseRef\.current, dx, wRef\.current, insRef\.current, CAP_W\)/);
     assert.match(s, /style=\{\[styles\.sliderGuard, \{ left: ins\.l, right: ins\.r \}\]\}/);
   });
   it('ControlSlider', () => {
