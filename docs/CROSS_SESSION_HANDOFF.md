@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 13:48 · ccode · 293e57ca
+changed: Merge Lab 5 group 2 (voices: E02, E04, E05, E06) onto groups 1, 3, 4 and 5
+affects other side: nothing (client-only lesson code and docs, not published)
+needs: nothing
+
+
 ### 2026-10-07 13:18 · ccode · 53ffb6ec
 changed: Merge Lab 5 group 4 (bands & stage plots: E09, E15, E08) onto groups 1, 3 and 5
 affects other side: nothing (client-only lesson code and docs, not published)
