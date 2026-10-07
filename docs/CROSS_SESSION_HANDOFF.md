@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 11:05 · ccode · 59a8ddcc
+changed: Merge Lab 5 group 3 (arrays & orchestra) onto group 1; combined Lab 5 blurb; count tests merge-proof
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-07 10:27 · ccode · 40ec099c
 changed: Merge remote-tracking branch 'origin/lab5-g1' into HEAD
 affects other side: nothing (client-only)
