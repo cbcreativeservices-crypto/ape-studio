@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 14:49 · ccode · be8c54ee
+changed: miking labs 3-4 review: setups drawn as a pro starts them; quick check asks each idea once
+affects other side: nothing (app-side Miking lesson data and engine only; no backend, schema or store change; Miking stays hidden on store builds)
+needs: nothing
+
+
 ### 2026-10-07 13:48 · ccode · 293e57ca
 changed: Merge Lab 5 group 2 (voices: E02, E04, E05, E06) onto groups 1, 3, 4 and 5
 affects other side: nothing (client-only lesson code and docs, not published)
