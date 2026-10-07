@@ -249,6 +249,12 @@ const MemberGated = {
   // cannot name (MEMBER_ONLY_EXTRA_ROUTES). Both gated, both lazy.
   MikingHub: lazyScreen(() => withMembershipPreview(require('../screens/lab/miking/MikingHubScreen').MikingHubScreen)),
   MikingLesson: lazyScreen(() => withMembershipPreview(require('../screens/lab/miking/MikingLessonScreen').MikingLessonScreen)),
+  // Mixing Guides (2026-10-07): the hub is the catalog row (Mixing,
+  // training); one style's guide is a child route the catalog cannot name
+  // (MEMBER_ONLY_EXTRA_ROUTES). Both gated, both lazy — and each guide's body
+  // loads only when it is opened (mixingGuides/data/load.ts).
+  MixingGuides: lazyScreen(() => withMembershipPreview(require('../screens/lab/mixingGuides/MixingGuidesHubScreen').MixingGuidesHubScreen)),
+  MixingGuide: lazyScreen(() => withMembershipPreview(require('../screens/lab/mixingGuides/MixingGuideScreen').MixingGuideScreen)),
   BinauralLab: lazyScreen(() => withMembershipPreview(Gated.BinauralLab())),
   CableLab: lazyScreen(() => withMembershipPreview(Gated.CableLab())),
   ChorusLab: lazyScreen(() => withMembershipPreview(Gated.ChorusLab())),
@@ -529,6 +535,8 @@ export function RootNavigator() {
       <Stack.Screen name="DrumTuningLab" getComponent={MemberGated.DrumTuningLab} />
       <Stack.Screen name="MikingHub" getComponent={MemberGated.MikingHub} />
       <Stack.Screen name="MikingLesson" getComponent={MemberGated.MikingLesson} />
+      <Stack.Screen name="MixingGuides" getComponent={MemberGated.MixingGuides} />
+      <Stack.Screen name="MixingGuide" getComponent={MemberGated.MixingGuide} />
       <Stack.Screen name="SpeechLab" getComponent={MemberGated.SpeechLab} />
       <Stack.Screen name="SmartProcessorsLab" getComponent={MemberGated.SmartProcessorsLab} />
       <Stack.Screen name="DeEsserLab" getComponent={MemberGated.DeEsserLab} />

@@ -379,6 +379,11 @@ export type RootStackParamList = {
    *  exposure check-in). Members-only (catalog + MEMBER_ONLY_EXTRA_ROUTES). */
   MikingHub: { lab?: import('../screens/lab/miking/engine/model/types').MikingLabId } | undefined;
   MikingLesson: { id: string; page?: string };
+  /** Mixing Guides (owner 2026-10-07): a written reference — the 50-style hub
+   *  and one style's guide. Silent; the route names do not end in `Lab`.
+   *  Members-only (catalog leaf + MEMBER_ONLY_EXTRA_ROUTES). */
+  MixingGuides: undefined;
+  MixingGuide: { id: string };
   /** Speech & Voice Lab (owner brief 2026-09-02) — visual, paged. */
   SpeechLab: undefined;
   /** Smart Processors family hub (owner brief 2026-09-02) and its V1 member. */

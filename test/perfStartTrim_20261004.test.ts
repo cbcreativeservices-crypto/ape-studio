@@ -402,6 +402,8 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   MikingHub: [true, 'Miking Labs'], // one catalog tile per family (owner 2026-10-06); the shared route is named for the whole set
   MikingLesson: [true, 'Miking Labs'], // the lesson host (MEMBER_ONLY_EXTRA_ROUTES)
   MicSelectLab: [true, 'Microphone Selection Lab'],
+  MixingGuides: [true, 'Mixing Guides'], // Mixing Guides hub (2026-10-07): catalog leaf (Mixing, training) + MEMBER_ONLY_EXTRA_ROUTES while hidden
+  MixingGuide: [true, 'Mixing Guides'], // one style's guide (MEMBER_ONLY_EXTRA_ROUTES)
   ModularLab: [true, 'Modular Synth'],
   MultiMeter: [false, null],
   NoiseLab: [true, 'Noise'],
@@ -466,13 +468,13 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
 };
 /** The Lab landing's row labels at HEAD, and the grand total. */
 const COUNTS_AT_HEAD: Record<string, string> = {
-  sound: '4 Labs', acoustics: '3 Labs', signal: '9 Labs', mixingworkflow: '3 Labs', production: '2 Labs',
+  sound: '4 Labs', acoustics: '3 Labs', signal: '9 Labs', mixingworkflow: '4 Labs', production: '2 Labs',
   livesound: '1 Lab', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
   saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '3 Labs',
   visualization: '2 Labs', instruments: '6 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
   calculators: '166 Calculators', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
 };
-const TOTAL_AT_HEAD = 224; // was 217 before the ampacity calculator; +1 Miking Lab 1: Drums (2026-10-04); +1 Miking Lab 4: Strings (2026-10-05, a lab is listed once it has a ready lesson); +1 Miking Lab 2: Percussion (2026-10-05); +1 Miking Lab 3: Winds
+const TOTAL_AT_HEAD = 225; // was 217 before the ampacity calculator; +1 Miking Lab 1: Drums (2026-10-04); +1 Miking Lab 4: Strings (2026-10-05, a lab is listed once it has a ready lesson); +1 Miking Lab 2: Percussion (2026-10-05); +1 Miking Lab 3: Winds; +1 Mixing Guides (2026-10-07, preview state)
 
 describe('3. the members-only gate decides exactly as before', () => {
   it('loading the catalog (what the gate does at start) does not load the calc registry', async () => {
@@ -491,12 +493,12 @@ describe('3. the members-only gate decides exactly as before', () => {
     assert.deepEqual(new Set(reached), before);
   });
 
-  it('GUARD: same membersOnly decision and same lab name for all 148 routes (147 + ProductionPacket, 2026-10-04)', async () => {
+  it('GUARD: same membersOnly decision and same lab name for all 150 routes (147 + ProductionPacket, 2026-10-04; + MixingGuides, MixingGuide, 2026-10-07)', async () => {
     const cat = await import('../src/screens/lab/labCatalog.ts');
     const now: Record<string, [boolean, string | null]> = {};
     for (const r of Object.keys(GATE_AT_HEAD)) now[r] = [cat.isMemberOnlyLabRoute(r), cat.labRouteName(r) ?? null];
     assert.deepEqual(now, GATE_AT_HEAD);
-    assert.equal(Object.values(now).filter(([m]) => m).length, 75, '75 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson)');
+    assert.equal(Object.values(now).filter(([m]) => m).length, 77, '77 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson + MixingGuides + MixingGuide)');
   });
 
   it('GUARD: every route the catalog and the navigator name is in that comparison', () => {

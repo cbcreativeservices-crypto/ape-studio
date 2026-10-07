@@ -38,6 +38,26 @@ export function mikingVisible(): boolean {
 }
 
 /**
+ * MIXING GUIDES RELEASE GATE (owner 2026-10-07: the same mechanism as the
+ * Miking Labs — hidden on store builds until the owner approves).
+ *
+ * Shown in development and in the owner's Pixel test update (published with
+ * EXPO_PUBLIC_MIKING_PREVIEW=1 on the `preview` branch only — the one preview
+ * switch both hidden labs share).
+ *
+ * ON THE OWNER'S APPROVAL: set MIXING_PUBLIC to true and publish an update —
+ * JS only, no new build.
+ */
+export const MIXING_PUBLIC = false;
+export function mixingGuidesVisible(): boolean {
+  return (
+    MIXING_PUBLIC ||
+    (typeof __DEV__ !== 'undefined' && __DEV__) ||
+    process.env.EXPO_PUBLIC_MIKING_PREVIEW === '1'
+  );
+}
+
+/**
  * The Calculator Laboratory's row count, worked out on first READ (perf start
  * trim, owner 2026-10-04 "do … the members-only gate").
  *
@@ -260,6 +280,15 @@ const RAW_LAB_CATEGORIES: LabCategory[] = [
       // mix — what mastering can and cannot change, the room, the tools, the
       // workflow, loudness at matched level, delivery, a fictional EP.
       { name: 'Mastering Lab: From Final Mix to Release', blurb: 'The final listening, decision-making and delivery stage — what a master can and cannot change, the room, the tools, loudness at matched level, and delivering to the destination’s current spec.', route: 'MasteringLab', member: true },
+      // MIXING GUIDES (owner 2026-10-07): a written reference, one guide per
+      // music style — what its audience expects and where to start the mix.
+      // Members-only. Hidden on store builds until the owner approves
+      // (MIXING_PUBLIC above). No count line: the catalog is read at app
+      // start, and the guide index stays out of the start graph (perf cap,
+      // test/perfStartTrim_20261004) — the hub shows the count.
+      ...(mixingGuidesVisible()
+        ? [{ name: 'Mixing Guides', blurb: 'What each music style’s audience expects, and where to start the mix — a written reference.', route: 'MixingGuides' as const, member: true }]
+        : []),
     ],
   },
   // Production Workflow (owner GO 2026-09-17). The two flagship labs: what
@@ -693,6 +722,10 @@ const MEMBER_ONLY_EXTRA_ROUTES: Record<string, string> = {
   // The Miking Labs lesson host (2026-10-04): the catalog names the hub
   // (`MikingHub`); every lesson opens through this child route.
   MikingLesson: 'Miking Labs',
+  // Mixing Guides (2026-10-07): the hub stays members-only while its tile is
+  // hidden; one style's guide is a child route the catalog cannot name.
+  MixingGuides: 'Mixing Guides',
+  MixingGuide: 'Mixing Guides',
 };
 
 /** True when EVERY catalog appearance of this screen route is members-only —

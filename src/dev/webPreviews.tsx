@@ -108,6 +108,9 @@ import { MikingHubScreen } from '../screens/lab/miking/MikingHubScreen';
 // tapped through to its lesson menu (2026-10-06).
 import { EarLabScreen } from '../screens/lab/EarLabScreen';
 import { MikingLessonScreen } from '../screens/lab/miking/MikingLessonScreen';
+// Mixing Guides (2026-10-07): `#labpreview/MixingGuides`, `#labpreview/MixingGuide/pop`.
+import { MixingGuidesHubScreen } from '../screens/lab/mixingGuides/MixingGuidesHubScreen';
+import { MixingGuideScreen } from '../screens/lab/mixingGuides/MixingGuideScreen';
 // Room Design & Monitoring Lab (2026-10-01): SVG plan + side views, so the
 // whole lab measures in the browser harness (`#labpreview/RoomDesignLab`).
 import { RoomDesignLabScreen } from '../screens/lab/roomdesign/RoomDesignLabScreen';
@@ -203,6 +206,8 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   MikingHub: MikingHubScreen as ComponentType,
   EarLab: EarLabScreen as ComponentType,
   MikingLesson: MikingLessonScreen as ComponentType,
+  MixingGuides: MixingGuidesHubScreen as ComponentType,
+  MixingGuide: MixingGuideScreen as ComponentType,
 };
 /** `#labpreview/<Screen>/<id>` → a ToolPreview of that lab, every other lab
  *  screen registered as a sibling so in-lab navigation (a home → a module)
