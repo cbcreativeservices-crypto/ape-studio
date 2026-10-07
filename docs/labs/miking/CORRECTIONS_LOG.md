@@ -1033,3 +1033,59 @@ LESSON_JOURNEY.md §0 is the record of the journey change.
 | R-06-08 | (kick pair) | The second kick mic "near the port" (a pose, no zone) | Measured from the nearest reference surface — the front head (≈ 9 cm), not the batter head | A dimension across the drum read 54.5 cm | — | APPLIED (`setups.nearestSurface`) |
 | R-06-09 | C11 (short stick) | Shure: "6 inches over middle strings … with lid on short stick" | The long dynamic now starts at the zone's 15 cm, tilted clear of the lid (aim 40° below level instead of 70°, within the zone's 50° aim tolerance); it was moved down to ≈ 9 cm by the 2026-10-06 fix pass | Owner answer B: restore ~15 cm. `nearestClear` tilts about the mic's front first (≤ 30°), moves only if no tilt clears | S-REC | APPLIED · four zone starts in the app use it, all piano-lid dynamics (C11 gp.bass grand / baby, gp.short, gp.hole) |
 | R-06-10 | (credit) | Stored instrument / sound / setting credit | Kept on the record; read as MEET IT (instrument or sound) and STARTING SETUPS (setting) | Owner rule: credit is never removed | — | APPLIED · OWNER: ORIENT-only credit now shows MEET IT credited |
+
+## Lab 5 · Voice I — solo: E01 Lead Vocal, E03 Rap and Rhythmic Vocal, E07 Singer with Guitar or Piano (branch lab5-g1, 2026-10-07)
+
+Research: `BATCH5_RESEARCH_SUMMARY.md` §2, `lead_vocal/`, `rap_vocal/`, `singer_with_instrument/`. The shared voice family
+(frame V, the singer, the voice mics, the pop screen) lives in `lessons/shared/voice/` and is reused by groups 2, 4 and 5.
+
+### E01 Lead Vocal (`source_text/Lead-Vocal-Miking-Technique.txt`, lesson id E01)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| E1-01 | L91 | "about 10 cm" on stage | "within 10 cm" (zone 2.5–10 cm, start 6 cm) | Correction 8: DPA's wording | DPA-VOICE | APPLIED |
+| E1-02 | L38 | "10 dBFS of headroom" | "about 10 dB of headroom (peaks near −10 dBFS)" | Correction 8: dBFS is a level, not a margin | N-VOC | APPLIED |
+| E1-03 | L10 | "Can be angled substantially" (cited to [3]) | Kept as a tendency; re-cited to the DPA studio article ("up to 90°") | Correction 8: re-cite | DPA-VOC-STUDIO | APPLIED |
+| E1-04 | (rows) | Shure 10–20 cm, Neumann 20–30 cm | Two zones measured from the lips (close 10–20 cm; farther 20–30 cm). Every distance is from the lip point; the 25 mm mouth reference point is in the spec and is not drawn | Sourced rows | S-VOC-REC, N-VOC, GRAS-44AB | APPLIED |
+| E1-05 | (pop) | A pop screen "between the mic and the singer" | The screen is real: it clamps to the mic's stand on a gooseneck, sits 10 cm in front of the capsule and is part of the collision assembly, so a screened condenser cannot come closer than about 12 cm | Real equipment | N-POP | APPLIED |
+| E1-06 | (monitor) | "in front of the singer" (E01) vs "behind the microphone" (E07) | One place: the wedge on the floor about 1 m in front of the singer, facing back = behind the mic. For a level stage mic at 6 cm it arrives about 126° off the front: in a supercardioid's null, not a cardioid's | Correction 6 | S-LIVE, S-SM58-UG | APPLIED |
+| E1-07 | (institutional words) | "Students", "teaching exercise", the school's name | "you", "practice exercise"; no school name | Correction 7 | — | APPLIED |
+
+### E03 Rap and Rhythmic Vocal (`source_text/Rap-Vocal-Miking-Technique.txt`, lesson id E03)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| E3-01 | L13 (table) | "2–6 in" | Two rows: a dynamic about 4 in (2–6 in) from the lips, and a screened condenser 1–6 in. The screen stops the condenser at about 15 cm, so its start is at the row's far end | Correction 8 | DPA-VOICE, S-SM4-UG | APPLIED |
+| E3-02 | L31 | Lower the mic for sibilance, cited to [4] | Kept; re-cited to [1] ([4] discusses the presence peak) | Correction 8 | S-VOC-REC | APPLIED |
+| E3-03 | L59 | "Aim between the nose and the mouth" (no source) | Kept; now sourced. The farther starts aim at that point, so the studio readout shows AIM ≈ 3–6° off the lips at 15–33 cm | Research: now sourced | S-REC | APPLIED |
+| E3-04 | (working zone) | "Give the rapper a defined working zone" | Drawn as the head's travel round its rest position (a dashed amber outline); the inverse-square swing it causes is computed (doubling the distance ≈ 6 dB) | No size is given | — | APPLIED · OWNER: approve the size |
+
+### E07 Singer with Guitar or Piano (`source_text/Singer-With-Instrument-Miking-Technique.txt`, lesson id E07)
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| E7-01 | L14 | A 3:1 example with distances it does not state | Rewritten from the drawing: the vocal mic 15 cm from the lips and the guitar mic 22.5 cm from the 12th fret stand about 49 cm apart — under 3:1 (ratio ≈ 2.2). 3:1 would need 3 × 22.5 = 67.5 cm. The app says so plainly: one performer's two sources are always in both mics, so polarity and timing are checked, not the ratio | Correction 1 (one definition: mic-to-mic ≥ 3 × the larger mic-to-source) | S-LIVE | APPLIED |
+| E7-02 | L41 | A "ring out" exercise | No-provocation rule: bring the level up only to the agreed performance level; at any ring, lower that send at once and change the placement, the angle or the pattern. Never create feedback deliberately | Correction 2 | — | APPLIED |
+| E7-03 | (hosts) | Guitar or piano | One model, two variants: the guitar family's steel-string guitar (seated) and the C11 grand piano, each with its own singer, mouth and views (`hostMerge.ts`). The piano zones are C11's own, retagged | Reuse, no new instrument geometry | C11 zones' sources | APPLIED |
+| E7-04 | (one mic) | One coherent mic for both | A zone 40–70 cm out, aimed between the mouth and the 12th fret (a drawing default; the lesson gives no distance) | No source gives the distance | LESSON | APPLIED · OWNER: approve |
+| E7-05 | (null) | "Use the vocal mic's rejection toward the instrument" | Tested: a supercardioid at the vocal start can put the guitar in its null by aim alone (within ±60°) | Physics | S-LIVE | APPLIED |
+
+### OWNER REVIEW (drawing defaults chosen where the research leaves the decision open)
+
+| id | Default | Where |
+|---|---|---|
+| OR-V1 | The head and the singer are the shared PlayerFigure (FigureHead); the lip point sits on its mouth; head radius 114 mm; a standing singer's lips 1550 mm above the floor | `voiceSpec.ts`, `voicePose.ts` |
+| OR-V2 | The worked studio distance is 15 cm (D-LV1: inside Shure's 10–20 cm) | E01 `lv.close` |
+| OR-V3 | The pop screen: a 15 cm hoop, 10 cm in front of the capsule (sourced gap), tilted 10°, on a gooseneck clamped to the stand | `voiceMics.ts` `vocLdc`, `PlacementScene.tsx` |
+| OR-V4 | The angled starts: slightly lower 30° below, to one side 20°, nose height and above (eye level) 10–16° | `voiceStarts.ts`, E01 / E03 zones |
+| OR-V5 | "Around 12 in" drawn as a ±5 cm band (25.5–35.5 cm) | `VOICE_ROWS.loose` |
+| OR-V6 | The floor wedge 1 m in front of the singer, its face lifted 250 mm | E01 / E03 `live.wedges` |
+| OR-V7 | The headset: 14 mm ahead of the lips, 34 mm to the side, its boom reaching 170 mm from the ear | `VOICE_DIMS.headsetFwd/Side`, `vocHeadset` |
+| OR-V8 | The rapper's working zone: 6 cm forward, 8 cm back, 4 cm up and down | `VOICE_DIMS.work*` |
+| OR-V9 | E07's seated posture and mouth offset over the guitar (about 40 cm above the strings); the singer at the piano's keys | E07 `geometry.ts` |
+| OR-V10 | E07's one-mic distance 40–70 cm | E07 `sg.one` |
+| OR-V11 | The mouth reference point (25 mm) is in the spec, not drawn | `VOICE_DIMS.mrp` |
+| OR-V12 | STARTING SETUPS on a singer are framed head-and-shoulders (`setupFrameMax`), so the stand runs off the bottom edge | `InstrumentModel.setupFrameMax` |
+| OR-V13 | The side-address condenser is drawn with its basket centred on the measured point | `micDrawings.tsx` `VocalLdcMic` |
+| OR-V14 | Mic model names never shown; the air jet (P, B) drawn as an illustrative shape | `VoiceSoundArt.tsx` |
+| OR-V15 | The farther studio starts aim between the nose and the mouth (S-REC), so their AIM readout is 3–6°, not 0° | `voiceZones.ts` `onNoseMouth` |
