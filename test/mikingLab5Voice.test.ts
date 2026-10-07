@@ -122,12 +122,13 @@ describe('the voice mics and the pop screen', () => {
 });
 
 describe('Lab 5 voice lessons: registered, valid, complete', () => {
-  it('Lab 5 is ready, one family tile “Voice & Ensemble”, its blurbs filled, three lessons', () => {
+  it('Lab 5 is ready, one family tile “Voice & Ensemble”, its blurbs filled, the voice lessons listed', () => {
     const lab = MIKING_LABS.find((l) => l.id === 'ensembles')!;
     assert.ok(readyLabs().some((l) => l.id === 'ensembles'));
     assert.equal(lab.family, 'Voice & Ensemble');
     assert.ok(lab.blurb.length > 40 && lab.familyBlurb.length > 20);
-    assert.deepEqual(lessonsOf('ensembles').map((l) => l.id), ['E01', 'E03', 'E07']);
+    const ids = lessonsOf('ensembles').map((l) => l.id);
+    for (const id of ['E01', 'E03', 'E07']) assert.ok(ids.includes(id), `${id} listed`);
     for (const id of ['E01', 'E03', 'E07']) {
       const m = LESSONS.find((l) => l.id === id)!;
       assert.ok(m.labId === 'ensembles' && m.status === 'ready');

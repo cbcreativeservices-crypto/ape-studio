@@ -670,6 +670,21 @@ needs: nothing
 ### 2026-10-07 10:19 · ccode · b08bcf20
 changed: Miking engine: pop screen on the mic stand, setup frame cap, vocal mic drawings
 affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
+### 2026-10-07 10:56 · ccode · bf63d5ef
+changed: Miking Lab 5 group 3: corrections log, owner review, 412x915 captures
+affects other side: nothing (docs only; owner-review rows G3-OR-1..9 in docs/labs/miking/CORRECTIONS_LOG.md are for the owner)
+needs: nothing
+
+
+### 2026-10-07 10:56 · ccode · 6a4d24cc
+changed: Miking Lab 5: E14 Full Orchestra, E13 Mixed Classical, E11 String Quartet
+affects other side: nothing (client-only; lessons are bundled, the Miking tiles stay behind MIKING_PUBLIC = false)
+needs: nothing
+
+
+### 2026-10-07 10:56 · ccode · 4de2681e
+changed: Miking Lab 5: shared stereo-array tool + seating-plan builder (frame S)
+affects other side: nothing (client-only, no data or schema)
 needs: nothing
 
 

@@ -163,3 +163,10 @@ import { E03_ART } from '../lessons/e03RapVocal/art';
 ART.E03 = E03_ART;
 import { E07_ART } from '../lessons/e07SingerInstrument/art';
 ART.E07 = E07_ART;
+/* Lab 5 (ensembles), arrays and orchestra (group 3): E14, E13, E11 (each lesson on its own line). */
+import { E14_ART } from '../lessons/e14FullOrchestra/art';
+ART.E14 = E14_ART;
+import { E13_ART } from '../lessons/e13MixedEnsemble/art';
+ART.E13 = E13_ART;
+import { E11_ART } from '../lessons/e11StringQuartet/art';
+ART.E11 = E11_ART;

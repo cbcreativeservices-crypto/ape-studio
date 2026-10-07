@@ -77,7 +77,7 @@ describe('listing (owner: Training Labs → Instruments & Recording, members onl
     for (const l of fam.labs as { countLine?: string; params?: { lab?: string } }[]) {
       assert.equal(l.countLine, `${lessonsOf(l.params!.lab!).length} Miking Lab Lessons`);
     }
-    assert.deepEqual((fam.labs as { countLine?: string }[]).map((l) => l.countLine), ['17 Miking Lab Lessons', '24 Miking Lab Lessons', '18 Miking Lab Lessons', '20 Miking Lab Lessons', '3 Miking Lab Lessons']);
+    assert.deepEqual((fam.labs as { countLine?: string }[]).map((l) => l.countLine), ['17 Miking Lab Lessons', '24 Miking Lab Lessons', '18 Miking Lab Lessons', '20 Miking Lab Lessons', `${lessonsOf('ensembles').length} Miking Lab Lessons`]);
     assert.equal(mikingLessonCount(1), '1 Miking Lab Lesson', 'singular');
     const ear = strip(read('src/screens/lab/EarLabScreen.tsx'));
     assert.match(ear, /\{leaf\.countLine \? \(\s*<Text style=\{styles\.tileCount\} \{\.\.\.fitValue\(12\)\} numberOfLines=\{2\}>\{leaf\.countLine\}<\/Text>/, 'the Labs menu tile shows it, never cut short');

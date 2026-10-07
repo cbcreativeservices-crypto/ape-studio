@@ -170,3 +170,11 @@ condenser's body is the kit lessons' S-SM4-WEB row, its pattern S-SM4-UG).
 | S-SM58-UG | Shure, SM58 user guide (PDF): cardioid; "Place the microphone so that unwanted sound sources, such as monitors and loudspeakers, are directly behind it"; proximity "6 to 10 dB below 100 Hz … about 6 mm (1/4 in.)"; the placement table rows (the generic `vocDynCard` type) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 in the Batch 5 research pass |
 | N-POP | Neumann Home Studio Academy, "How to protect your microphone against pops": a pop screen "at least 10 cm (4 inches) away from the mic"; without one, "Position the mic top down, at about eye level, and angle it down toward the singer's mouth" (the `vocLdc` screen, the `vocLdcOpen` type) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 in the Batch 5 research pass |
 | DPA-VOICE | DPA, B. Brinck, "How to mic the voice: technology and characteristics": stage vocals "within 10 cm", peaks "above 135 dB", "the high frequency from the voice is very directional" (the `vocHeadset` type) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 in the Batch 5 research pass |
+## 11. Mic types for Lab 5's main arrays and supports (E11, E13, E14 and later; `lessons/shared/ensemble/ensembleMics.ts`)
+
+Added 2026-10-07 by the Lab 5 arrays-and-orchestra builder (branch lab5-g3): the omni, cardioid and figure-8 condensers the stereo-array tool draws. Facts in `full_orchestra/SOURCES.md` §A.
+
+| Key | Source | URL | Status 2026-10-07 |
+|---|---|---|---|
+| DPA-AB-ORCH | DPA, Eddy Bøgh Brixen, "How to AB stereo mic an orchestra": the A/B pair "commonly omnidirectional", 40–60 cm, above or behind the podium at 3–4 m | https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-ab-stereo-mic-an-orchestra/ | read in the Batch 5 research pass (see `lead_vocal/SOURCES.md` §0) |
+| DPA-MULTI | DPA, Eddy Bøgh Brixen, "Multimiking a classical orchestra": directional supports about 1–1.5 m from the players, covering three or four | https://www.dpamicrophones.com/mic-university/audio-production/multimiking-a-classical-orchestra/ | read in the Batch 5 research pass |

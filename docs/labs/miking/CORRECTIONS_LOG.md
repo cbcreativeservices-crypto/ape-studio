@@ -1089,3 +1089,36 @@ Research: `BATCH5_RESEARCH_SUMMARY.md` §2, `lead_vocal/`, `rap_vocal/`, `singer
 | OR-V13 | The side-address condenser is drawn with its basket centred on the measured point | `micDrawings.tsx` `VocalLdcMic` |
 | OR-V14 | Mic model names never shown; the air jet (P, B) drawn as an illustrative shape | `VoiceSoundArt.tsx` |
 | OR-V15 | The farther studio starts aim between the nose and the mouth (S-REC), so their AIM readout is 3–6°, not 0° | `voiceZones.ts` `onNoseMouth` |
+## Lab 5 · group 3 · arrays and orchestra: E14 Full Orchestra, E13 Mixed Classical Ensembles, E11 String Quartet and Sections (branch lab5-g3, 2026-10-07)
+
+Sources: `source_text/{Full-Orchestra,Mixed-Acoustic-and-Classical-Ensembles,String-Quartets-and-Larger-String-Sections}-Miking-Technique*.txt`, BATCH5_RESEARCH_SUMMARY.md §2–§3 and `full_orchestra/GEOMETRY_PROPOSAL.md`.
+Shared code: `lessons/shared/ensemble/`. This holds the stereo-array tool (`stereoArray.ts`, `ArrayArt.tsx`) and the seating-plan / stage-plot builder core, frame S (`frameS.ts`, `seating.ts`, `SeatingArt.tsx`, `EnsembleStage.tsx`, `stageLabels.ts`).
+
+### Corrections
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| E14-F1 | (frame S) | Proposal: +x upstage, +z to the conductor's left | +x is the conductor's RIGHT, +y is down, +z is downstage toward the conductor and hall. The origin is on the floor at the front of the front row, on the centre line. Plan uv = (x, z), which is the conductor's view and the engine's top view. Front uv = (x, y), which is the engine's side view. Section uv = (−z, y), seen from the conductor's right. | With these axes the engine's views are not mirrored, and every plan is drawn as the conductor sees it, as the brief asks. | — | APPLIED |
+| G3-01 | E14/E13 (tree) | "Decca Tree" | "three-omni tree" (and "the tree") in all learner text | The learner-text test bans brand and studio names, and "Decca" is a label name. The method is described by its geometry, not its name. | test/mikingLearnerText | APPLIED · OWNER REVIEW (G3-OR-8) |
+| G3-02 | (ORTF) | Shure 6 in / 7 in; DPA "±110°" | Fixed at 17 cm and 110° included (stays 110° at any tilt: the array pitches as a unit), with a 95° recording-angle wedge. The other figures stay out of learner text. | Research §2.3 | SCHOEPS (SOURCES_SHARED) | APPLIED |
+| G3-03 | (arrays) | 3:1 spacing applied to a pair | "No 3:1 inside an array": a pair's spacing comes from its method. An item tests this. | Research §3.2 | — | APPLIED |
+| G3-04 | E13 L81 | Spot delays from distance | Named as one room-specific method: worth trying where a support is more than about 4 m from the main pair, judged by ear and in mono, never set from distance alone | Research §2.8 | DPA-MULTI | APPLIED |
+| G3-05 | E13 L5 | "the final item in the approved Ensembles and Voice list" | Removed | False, and outside the lesson | — | APPLIED |
+| G3-06 | E11 L46 | "full orchestral arrays belong in the Mixed … lesson" | Cross-reference dropped. The sections' three-omni tree is a non-core extension setup, and the full arrays are in E14. | Stale cross-reference | — | APPLIED |
+| G3-07 | (all three) | "students", "instructor", "classroom trial", "teaching exercise" | "you", "suggested trial", "practice exercise", "a qualified operator" | Research §2.7 and the wiring test | — | APPLIED |
+| G3-08 | (rigging) | Flown arrays and booms over players | One safety line on each placement page: no one flies an array, attaches to the venue's structure, climbs above players or routes a boom over them without the venue's approved rigging plan and qualified crew. Stands need stable bases. Exits stay clear. One item is critical. | House safety rule | — | APPLIED |
+| G3-09 | (engine) | — | The engine has two mic slots, so arrays (2–5 capsules) are drawn and moved on the ensemble pages (MEET IT, STARTING SETUPS, PLACEMENT). The engine's own pages use the array's centre as one mic, or a support as the second. On E14's MICROPHONES page the mic is drawn at true scale on a 14 m stage, so it is only a few pixels: its dimension line and zone locate it. | Engine limit, noted, not hidden | — | APPLIED · known limit |
+
+### OWNER REVIEW (defaults chosen; the alternative is offered where it was cheap)
+
+| id | Default | Alternative | Where | Status |
+|---|---|---|---|---|
+| G3-OR-1 | Three-omni tree: L–R 2 m, centre 1.5 m ahead (the SCHOEPS figure, CONFIRMED); the ≥ 1.5 m capsule rule; 0–45° outward turn; centre fed 4–5 dB down | A smaller tree, 1.52 m × 0.76 m (Pellowe's own, D-DT1): E14 setup "A smaller three-omni tree" (non-core) and `ARRAYS.treeCompact` | stereoArray.ts `TREE`, `TREE_COMPACT`; E14 setups | OWNER: pick the default |
+| G3-OR-2 | Outriggers about 6.1 m (20 ft) apart, 1.5 m (5 ft) in front of the outer strings, at the tree's height. This is practice, not a standard, and is worded as "add them one at a time". | — | stereoArray.ts `OUTRIGGERS`; E14/E13 treeOut | OWNER: approve |
+| G3-OR-3 | Main array height 3.2 m (10.5 ft) in a 3–4 m band | The Placement Studio's MOVE moves it through the band | stereoArray.ts `MAIN_HEIGHT` | OWNER: approve |
+| G3-OR-4 | American seating: the strings run high to low, left to right as the conductor faces them (1st violins, 2nd violins, violas, cellos), with the basses behind the cellos | German (antiphonal) seating: 1st violins on the left and 2nd violins on the right facing them, with cellos and basses beside the 1sts and violas beside the 2nds. Offered by the SEATING chip on E14. E11's sections use the American seating; `strings.german` exists for later builders. | seating.ts `orch.american`, `orch.german` | OWNER: approve |
+| G3-OR-5 | Quartet order from the conductor's view: Vn1–Vn2–Va–Vc (cello on the right) | Viola on the right (Vn1–Vn2–Vc–Va): E11 SEATING | seating.ts `quartet.arc`, `quartet.arcVa` | OWNER: approve |
+| G3-OR-6 | Chamber group: violin, viola, cello and bass in a front arc; flute, clarinet and horn behind; the grand piano across the back on the conductor's left | — | seating.ts `chamber.mixed` | OWNER: approve (drawing default) |
+| G3-OR-7 | Podium 0.9 m square, 0.2 m high, its centre 1.3 m in front of the front row. Risers: winds 0.2 m, brass 0.4 m, timpani and percussion 0.6 m. Desk arcs at 1.6 / 2.7 / 3.8 m. | — | seating.ts `DIMS` | OWNER: approve (drawing defaults) |
+| G3-OR-8 | The method's label name is not used in learner text (see G3-01) | Allow "Decca tree" as a method name: one line in the brand list | test/mikingLearnerText | OWNER: decide |
+| G3-OR-9 | Spaced main pair 50 cm apart (DPA 40–60 cm). The Placement Studio's SPACING runs from 0.4 to 2.5 m. | Shure's 0.9–3 m ensemble spacing (kept as `AB_ENSEMBLE`) is not a default. | stereoArray.ts `AB_USUAL`, `AB_ENSEMBLE` | OWNER: approve |
