@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 15:35 · ccode · 7ae7bedc
+changed: docs(miking): Lab 6 part 1 preparation (F01-F08) - sources, geometry, batch 6 summary, builder prompts
+affects other side: nothing (docs only: Lab 6 part 1 research and builder prompts on branch prep-lab6a; no app code, not published)
+needs: nothing
+
+
 ### 2026-10-07 15:17 · ccode · 3ebadc3b
 changed: Merge remote-tracking branch 'origin/review-labs12' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Miking Labs 1–2 review merged onto final-lab; handoff + CORRECTIONS_LOG conflicts kept both sides; not published)
