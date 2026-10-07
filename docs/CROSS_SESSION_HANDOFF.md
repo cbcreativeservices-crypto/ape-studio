@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 07:54 · ccode · 910f0148
+changed: docs(miking): restructure captures at 412 x 915 (MEET IT, every starting setup, microphones, placement) for M01, M02, I08, I02, A01, A05b, C11, C09c
+affects other side: nothing (docs only)
+needs: nothing
+
+
+### 2026-10-07 07:54 · ccode · a24c61af
+changed: feat(miking): finish the restructure — eight-page journey wired, setups drawn, credit mapped (backup branch miking-restructure-wip only; NOT merged into final-lab, NOT published; 8263/8263)
+affects other side: nothing (client-only; Miking progress stays device-local in ape:miking:v1, old page ids kept and mapped)
+needs: nothing
+
+
 ### 2026-10-06 22:07 · ccode · 50b5d3fd
 changed: Merge branch 'worktree-agent-a7888cdfcf4f9b300' into final-lab
 affects other side: nothing (client-only Miking fixes; Miking still hidden on store builds)
