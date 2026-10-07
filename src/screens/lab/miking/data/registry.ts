@@ -28,7 +28,7 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Chordophones', familyBlurb: 'Miking strings and pianos, from guitar to harp' },
   // Not built yet: no ready lesson, so neither the lab nor its family tile is
   // listed. Fill `blurb` and `familyBlurb` when the first lesson goes ready.
-  { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '', family: 'Voice & Ensemble', familyBlurb: '' },
+  { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: 'Place microphones on drawn ensembles and their stages — the orchestra, mixed classical groups, the string quartet and larger string sections: main pairs and the three-omni tree drawn whole with their stands, supports for a named need, the seating as the conductor sees it, studio or live. Silent; tendencies in words.', family: 'Voice & Ensemble', familyBlurb: 'Miking voices and ensembles, from quartet to orchestra' },
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '', family: 'Foley, Field & Scientific', familyBlurb: '' },
   { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '', family: 'Sports & Broadcast', familyBlurb: '' },
 ];
@@ -116,6 +116,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'A10', labId: 'winds', title: 'Harmonica', subtitle: 'Acoustic on a stand, cupped through an amp, or the amp’s speaker — three paths', status: 'ready' },
   { id: 'A11', labId: 'winds', title: 'Accordion', subtitle: 'Two moving sides: one mic in front, one for each side, or a mount that moves with it', status: 'ready' },
   { id: 'A12', labId: 'winds', title: 'Acoustic Pipe Organ', subtitle: 'A room-sized instrument: the main pair, a division spot, the stream and the PA', status: 'ready' },
+  // Lab 5 (ensembles), arrays and orchestra (group 3): E11, E13, E14 — each on its own line.
+  { id: 'E11', labId: 'ensembles', title: 'String Quartet and Sections', subtitle: 'A pair in front of the quartet, one support if needed — then the larger string sections', status: 'ready' },
+  { id: 'E13', labId: 'ensembles', title: 'Mixed Classical Ensembles', subtitle: 'A chamber group or an orchestra: one main array first, the tree and its centre, supports for a named need', status: 'ready' },
+  { id: 'E14', labId: 'ensembles', title: 'Full Orchestra', subtitle: 'A main pair or a tree over the podium first — supports only where something is missing', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
