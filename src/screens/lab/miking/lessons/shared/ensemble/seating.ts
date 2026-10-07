@@ -20,6 +20,14 @@
  *   chamber.mixed   a mixed chamber group about 3.5 m wide, no conductor
  *   quartet.arc     a string quartet on an arc, 1st violin to cello left to
  *                   right; quartet.arcVa puts the viola on the outside
+ *   (group 2 — voices, seatingVoices.ts) vocal.line, vocal.shared,
+ *                   vocal.circle, duo.shared, duo.fig8, vocal.quartet:
+ *                   small vocal groups standing; choir.risers
+ *                   (four rows, three on Wenger-size steps: 8 in rise, 18 in
+ *                   tread, WENGER-SIG), choir.arc (a twelve-voice choir on a
+ *                   shallow arc), choir.children / choir.childrenSolo (two
+ *                   rows of children, one stepped forward — drawn from
+ *                   above only)
  *
  * Later builders ADD presets here (a choir on risers, a big band, a horn
  * section, percussion stations, a rock or jazz stage plot): a preset is one
@@ -41,6 +49,8 @@ import { add, dist, mul, planDir, sub, unit, v3, DEG } from './frameS.ts';
 // Group 4: the stage-plot presets (called lazily from seatingOf, so the
 // import cycle with bandStage.ts never runs at load).
 import { bandSeating, isBandSeating, kitSnare } from './bandStage.ts';
+// group 2 — voices: one-way (seatingVoices.ts imports only TYPES from here).
+import { VOX, VOICE_SEATING_IDS, voiceSeating, voiceTouches, type VoiceSeatingId } from './seatingVoices.ts';
 
 export type Kind =
   | 'violin'
@@ -61,15 +71,20 @@ export type Kind =
   | 'piano'
   | 'celesta'
   | 'conductor'
+  /* group 2 — voices (seatingVoices.ts): a standing singer, hands free; a
+   * chorister holding a music folder; a child chorister (drawn from above
+   * only). The singer is ONE kind for groups 2 and 4 (group 4's lead vocal). */
+  | 'singer'
+  | 'chorister'
+  | 'child'
   // Group 4 (bands & stage plots, bandStage.ts): the drum kit with its
   // drummer (ONE kind, shared with group 5's big band), the electric guitar
   // and bass (their sound leaves from their amp: Seat.src), a keyboard on its
-  // stand, a singer, a standing tenor sax, a seated acoustic guitar and a mandolin.
+  // stand, a standing tenor sax, a seated acoustic guitar and a mandolin.
   | 'drumkit'
   | 'eguitar'
   | 'ebass'
   | 'keys'
-  | 'singer'
   | 'tenorSax'
   | 'aguitar'
   | 'mandolin'
@@ -77,7 +92,7 @@ export type Kind =
 /** Lab 5 group 5 (sections): saxophones, the rhythm section, the percussion
  *  stations (the drum kit is the shared 'drumkit' above). */
 export type KindG5 = 'sax' | 'bariSax' | 'guitar' | 'marimba' | 'vibraphone' | 'congas' | 'perctable';
-export type Family = 'strings' | 'winds' | 'brass' | 'percussion' | 'keys' | 'conductor' | 'amplified' | 'voice' | 'reeds' | 'rhythm';
+export type Family = 'strings' | 'winds' | 'brass' | 'percussion' | 'keys' | 'conductor' | 'voices' | 'amplified' | 'reeds' | 'rhythm';
 export type Posture = 'seated' | 'standing';
 
 export type Seat = {
@@ -108,9 +123,23 @@ export type Section = {
   /** Where its sound leaves, in words (MEET IT). */
   radiates: string;
 };
-export type Riser = { x0: number; x1: number; z0: number; z1: number; h: number };
+/** `rail`: a back rail this high above the riser's top (choir risers; drawn in elevation). */
+export type Riser = { x0: number; x1: number; z0: number; z1: number; h: number; rail?: number };
 export type Podium = { c: Vec3; w: number; d: number; h: number };
-export type SeatingId = 'orch.american' | 'orch.german' | 'strings.american' | 'strings.german' | 'chamber.mixed' | 'quartet.arc' | 'quartet.arcVa' | BandSeatingId | SeatingIdG5;
+export type SeatingId =
+  | 'orch.american'
+  | 'orch.german'
+  | 'strings.american'
+  | 'strings.german'
+  | 'chamber.mixed'
+  | 'quartet.arc'
+  | 'quartet.arcVa'
+  /* group 2 — voices (seatingVoices.ts) */
+  | VoiceSeatingId
+  /* group 4 — stage plots (bandStage.ts) */
+  | BandSeatingId
+  /* group 5 — sections */
+  | SeatingIdG5;
 /** Group 4: the stage-plot presets (bandStage.ts). */
 export type BandSeatingId = 'band.stage' | 'band.room' | 'jazz.quartet' | 'jazz.guitar' | 'acoustic.duo' | 'acoustic.trio';
 /** Lab 5 group 5 (sections): the horn section, the big band, the percussion ensemble. */
@@ -184,17 +213,21 @@ export const KIND: Record<Kind, { label: string; family: Family; sound: number; 
   piano: { label: 'piano', family: 'keys', sound: 850, reach: 1900, posture: 'seated' },
   celesta: { label: 'celesta', family: 'keys', sound: 850, reach: 650, posture: 'seated' },
   conductor: { label: 'conductor', family: 'conductor', sound: 1500, reach: 300, posture: 'standing' },
+  // group 2 — voices: `sound` is the LIP height above the standing surface,
+  // `reach` how far the lips are ahead of the floor point (frame V's body).
+  // The singer is ONE kind for groups 2 and 4 (group 4's lead vocal too).
+  singer: { label: 'singer', family: 'voices', sound: VOX.adult.lip, reach: VOX.adult.lipAhead, posture: 'standing' },
+  chorister: { label: 'singer', family: 'voices', sound: VOX.adult.lip, reach: VOX.adult.lipAhead, posture: 'standing' },
+  child: { label: 'young singer', family: 'voices', sound: VOX.child.lip, reach: VOX.child.lipAhead, posture: 'standing' },
   // Group 4 (bandStage.ts sets `src` where the sound leaves elsewhere: an
-  // amp's speaker, the tenor's bell). Drawing defaults; the singer's lips at
-  // the voice family's standing 1550 mm (VOICE_DIMS.lipStanding). The drum
-  // kit is ONE kind for groups 4 and 5: Lab 1's shared kit round its throne,
-  // reaching to the kick's front hoop; its sound point is the snare head
+  // amp's speaker, the tenor's bell). Drawing defaults. The drum kit is ONE
+  // kind for groups 4 and 5: Lab 1's shared kit round its throne, reaching
+  // to the kick's front hoop; its sound point is the snare head
   // (soundPoint → bandStage.kitSnare) wherever it sits.
   drumkit: { label: 'drum kit', family: 'percussion', sound: 650, reach: 1250, posture: 'seated' },
   eguitar: { label: 'electric guitar', family: 'amplified', sound: 1000, reach: 350, posture: 'standing' },
   ebass: { label: 'electric bass', family: 'amplified', sound: 1000, reach: 420, posture: 'standing' },
   keys: { label: 'keyboard', family: 'keys', sound: 950, reach: 520, posture: 'standing' },
-  singer: { label: 'singer', family: 'voice', sound: 1550, reach: 100, posture: 'standing' },
   tenorSax: { label: 'tenor sax', family: 'reeds', sound: 760, reach: 300, posture: 'standing' },
   aguitar: { label: 'acoustic guitar', family: 'strings', sound: 640, reach: 330, posture: 'seated' },
   mandolin: { label: 'mandolin', family: 'strings', sound: 960, reach: 300, posture: 'seated' },
@@ -209,6 +242,8 @@ export const KIND: Record<Kind, { label: string; family: Family; sound: number; 
   congas: { label: 'congas', family: 'percussion', sound: 762, reach: 520, posture: 'standing' },
   perctable: { label: 'small percussion', family: 'percussion', sound: 930, reach: 520, posture: 'standing' },
 };
+/** A singer of any age (group 2): the voice kinds. */
+export const isVoice = (k: Kind): boolean => k === 'singer' || k === 'chorister' || k === 'child';
 
 /* group 5: where a section kind's sound leaves, in the player's frame (mm
  * ahead, mm to the player's right) — the sax's body and bell hang to the
@@ -241,13 +276,15 @@ export function soundPoint(s: Seat): Vec3 {
   }
   // Strings, keys and percussion sound in front of the player; a horn's bell
   // points back past the player's right; the rest at the player.
-  const ahead = s.kind === 'horn' ? -150 : s.kind === 'timpani' || s.kind === 'percussion' || s.kind === 'piano' || s.kind === 'celesta' || s.kind === 'harp' ? k.reach * 0.6 : s.kind === 'trumpet' || s.kind === 'trombone' ? k.reach : 120;
+  // A singer's sound leaves at the LIPS (group 2): `reach` ahead, level.
+  const ahead = isVoice(s.kind) ? k.reach : s.kind === 'horn' ? -150 : s.kind === 'timpani' || s.kind === 'percussion' || s.kind === 'piano' || s.kind === 'celesta' || s.kind === 'harp' ? k.reach * 0.6 : s.kind === 'trumpet' || s.kind === 'trombone' ? k.reach : 120;
   // group 5: a player standing where the kind is usually seated (big-band trumpets) plays higher.
   const lift = s.posture === 'standing' && k.posture === 'seated' ? STAND_LIFT : 0;
   return add(add(s.p, mul(fwd, ahead)), v3(0, -(k.sound + lift), 0));
 }
 /** The top of a player's head above the floor (mm, as a height). */
 export function headTop(s: Seat): number {
+  if (s.kind === 'child') return -s.p.y + VOX.child.head;
   return -s.p.y + (s.posture === 'standing' ? DIMS.standingHead : DIMS.seatedHead);
 }
 
@@ -647,7 +684,9 @@ export function seatingOf(id: SeatingId): Seating {
               ? chamber()
               : id in PRESETS_G5
                 ? PRESETS_G5[id as SeatingIdG5]()
-                : quartet(id === 'quartet.arcVa');
+                : (VOICE_SEATING_IDS as readonly string[]).includes(id)
+                  ? voiceSeating(id as VoiceSeatingId)
+                  : quartet(id === 'quartet.arcVa');
   cache.set(id, s);
   return s;
 }
@@ -758,6 +797,13 @@ export function arrayClear(s: Seating, caps: readonly { p: Vec3 }[], foot: Vec3)
   const all = [...s.seats, ...(s.conductor ? [s.conductor] : [])];
   const who = (q: Seat) => (q.kind === 'conductor' ? 'the conductor' : `the ${s.sections.find((x) => x.id === q.section)?.label ?? 'players'}`);
   for (const q of all) {
+    if (isVoice(q.kind)) {
+      // A singer (group 2): the head and the body as frame V draws them, so
+      // a vocal mic may come within a few centimetres of the lips.
+      for (const c of caps) if (voiceTouches(q, c.p)) return who(q);
+      if (Math.hypot(foot.x - q.p.x, foot.z - q.p.z) < VOX.footClear) return who(q);
+      continue;
+    }
     const top = headTop(q) + (q.kind === 'conductor' ? 600 : 150);
     for (const c of caps) if (-c.p.y < top && Math.hypot(c.p.x - q.p.x, c.p.z - q.p.z) < 450) return who(q);
     if (Math.hypot(foot.x - q.p.x, foot.z - q.p.z) < (q.kind === 'conductor' ? 800 : 450)) return who(q);

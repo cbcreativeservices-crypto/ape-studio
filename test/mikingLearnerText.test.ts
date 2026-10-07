@@ -112,6 +112,10 @@ export const BRAND_NAMES: readonly string[] = [
   'KMS ?104',
   'GRAS',
   'Blue Yeti',
+  // Lab 5 group 2 research (docs/labs/miking/choir, childrens_choir): the riser maker, the safeguarding and health authorities.
+  'Wenger',
+  'NSPCC',
+  'World Health Organization',
   // Lab 5 group 5 research (docs/labs/miking/horn_section, jazz_big_band, percussion_ensemble).
   'Royer',
   'R-?121',

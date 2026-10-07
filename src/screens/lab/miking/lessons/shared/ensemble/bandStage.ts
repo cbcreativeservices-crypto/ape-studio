@@ -28,7 +28,7 @@
  * (kitPlanModel.ts, the kick's own geometry), placed whole; the amps are
  * Lab 4's cabinets (speakerModel.ts CABINETS, cabLayout — their sourced
  * sizes and speaker positions); the singer's lips sit at the voice family's
- * standing height (voiceSpec VOICE_DIMS.lipStanding) and offset (HEAD_C).
+ * standing height and offset (group 2's seatingVoices.mouthOf, from voiceSpec).
  * Every POSITION here is a drawing default.
  */
 import type { Vec3 } from '../../../engine/model/types.ts';
@@ -38,7 +38,7 @@ import { KIT, KIT_DRUMS, KIT_FLOOR_Y } from '../kitPlanModel.ts';
 import { KICK_ANCHORS } from '../../m01Kick/geometry.ts';
 import { cabLayout, type CabKind } from '../speakers/speakerModel.ts';
 import { BASS_HEAD } from '../speakers/ampModel.ts';
-import { HEAD_C, VOICE_DIMS } from '../voice/voiceSpec.ts';
+import { mouthOf } from './seatingVoices.ts';
 
 const BAND_IDS: readonly BandSeatingId[] = ['band.stage', 'band.room', 'jazz.quartet', 'jazz.guitar', 'acoustic.duo', 'acoustic.trio'];
 export const isBandSeating = (id: string): id is BandSeatingId => (BAND_IDS as readonly string[]).includes(id);
@@ -127,11 +127,13 @@ export const GEAR_SIZE: Record<GearKind, { w: number; d: number; h: number }> = 
 /** A PA box on its stand: the box's height and where it sits (drawing defaults). */
 export const PA_BOX = { h: 700, bottom: 1200 } as const;
 
-/** The singer's lip point (the voice family's standing height and offset
- *  ahead of the head's axis) and the mouth's directions — a VoiceAnchor. */
+/** The singer's lip point and the mouth's directions — a VoiceAnchor. The
+ *  singer is ONE kind for groups 2 and 4 (merge): the lips are group 2's
+ *  (seatingVoices.mouthOf: the voice family's standing 1550 mm, 124 mm ahead
+ *  of the body's centre, the head 87 mm behind them — the same head-to-lips
+ *  offset as HEAD_C), so the singer's solids and this mouth agree. */
 export function singerAnchor(seat: Pick<Seat, 'p' | 'face'>): { lip: Vec3; fwd: Vec3; up: Vec3; right: Vec3 } {
-  const ahead = -HEAD_C.x;
-  return { lip: local(seat.p, seat.face, ahead, 0, VOICE_DIMS.lipStanding.mm), fwd: planDir(seat.face), up: v3(0, -1, 0), right: rightOf(seat.face) };
+  return mouthOf({ id: '', kind: 'singer', section: '', p: seat.p, face: seat.face, posture: 'standing', stand: null });
 }
 
 /**
@@ -164,7 +166,7 @@ const SEC: Record<string, SecDef> = {
   gtr: { id: 'gtr', label: 'electric guitar', short: 'GUITAR', family: 'amplified', radiates: 'From its amp’s speaker, not the guitar: strongest straight out of the grille, the highs in the narrowest beam. Which way the amp faces decides who hears it.' },
   bass: { id: 'bass', label: 'electric bass', short: 'BASS', family: 'amplified', radiates: 'From the bass amp’s speakers — the low notes spread all round the stage — and, as a clean electrical copy, from its DI box.' },
   keys: { id: 'keys', label: 'keyboard', short: 'KEYS', family: 'keys', radiates: 'Nothing acoustic worth a mic: it leaves by its line output, through a DI box. On the stage it is heard from the wedges and the PA.' },
-  vox: { id: 'vox', label: 'lead vocal', short: 'VOCAL', family: 'voice', radiates: 'From the singer’s mouth, forward — the quietest source on a band stage, which is why its mic is the closest one.' },
+  vox: { id: 'vox', label: 'lead vocal', short: 'VOCAL', family: 'voices', radiates: 'From the singer’s mouth, forward — the quietest source on a band stage, which is why its mic is the closest one.' },
   pno: { id: 'pno', label: 'grand piano', short: 'PIANO', family: 'keys', radiates: 'From the soundboard and strings under the lid; the open lid throws much of it toward the audience — and the drums reach in under the lid too.' },
   ub: { id: 'ub', label: 'upright bass', short: 'BASS', family: 'strings', radiates: 'From the top plate and the f-holes, low and wide, and into the floor through the endpin: easily masked by the drums and the piano.' },
   sax: { id: 'sax', label: 'tenor sax', short: 'SAX', family: 'winds', radiates: 'From the bell AND the open tone holes along the body — not the bell alone — and the player moves as they solo.' },
@@ -194,8 +196,8 @@ function drummer(id: string, p: Vec3, face: number): Seat {
 }
 /** A standing singer (the sound leaves at the lips). */
 function singer(id: string, p: Vec3, face: number): Seat {
-  const s = seat(id, 'singer', 'vox', p, face, 'standing');
-  return { ...s, src: singerAnchor(s).lip };
+  // The lips are soundPoint's for every singer (seating.ts KIND.singer).
+  return seat(id, 'singer', 'vox', p, face, 'standing');
 }
 /** A wedge `ahead` mm in front of a player, facing back at them. */
 function wedgeFor(id: string, q: Seat, ahead = 900, label = 'a floor wedge'): Gear {

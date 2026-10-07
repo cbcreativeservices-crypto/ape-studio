@@ -640,6 +640,18 @@ affects other side: nothing (client-only lesson code and docs, not published)
 needs: nothing
 
 
+### 2026-10-07 13:06 · ccode · c0ed21d7
+changed: Miking Lab 5 group 2: E02 Background Vocals, E04 Duets and Small Groups, E05 Choirs, E06 Children's Choirs
+affects other side: nothing (client-only)
+needs: nothing
+
+
+### 2026-10-07 13:06 · ccode · 9f3450d2
+changed: Miking Lab 5: singers on the seating builder, single-mic presets, group voice items (shared, group 2)
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-07 12:49 · ccode · 343b9482
 changed: Miking Lab 5 group 4: corrections log, owner review, 412x915 captures
 affects other side: nothing (docs and screenshots on branch lab5-g4, not published)

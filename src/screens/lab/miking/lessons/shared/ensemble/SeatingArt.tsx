@@ -22,7 +22,7 @@
  * outline marks it too).
  */
 import { useMemo, type ReactElement } from 'react';
-import { BlurMask, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
 import { FigureHead, FigureMass, headAbove, headFront, headProfile, limb } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose.ts';
 import { outline, BOWED, type BowedSpec } from '../bowed/bowedSpec.ts';
@@ -30,7 +30,7 @@ import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
 import { DrumPlan, CymbalPlan } from '../drums/DrumArt';
 import { CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
 import { DEG, planDir, uv, type StageView } from './frameS.ts';
-import { DIMS, headTop, sectionBox, type Gear, type Seat, type Seating } from './seating.ts';
+import { DIMS, headTop, isVoice, sectionBox, type Gear, type Seat, type Seating } from './seating.ts';
 // Group 4: the band players and the stage gear (drawn into these batches) —
 // the drum kit (one kind for groups 4 and 5) is Lab 1's shared kit, whole.
 import { BAND_KINDS, bandElevInstrument, bandElevWhole, bandGearElev, bandGearPlan, bandPlanInstrument, bandPlanWhole, gearBehind, type BandTools } from './BandArt';
@@ -38,6 +38,8 @@ import { BAND_KINDS, bandElevInstrument, bandElevWhole, bandGearElev, bandGearPl
 import { KIND, STAND_LIFT } from './seating.ts';
 import { isNatural, ROWS } from '../mallets/malletSpec.ts';
 import { CONGA_DIMS } from '../../m04aCongas/model.ts';
+// group 2: the voices' sizes (a child is the adult figure at its scale).
+import { VOX } from './seatingVoices.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -205,7 +207,9 @@ const neckLen = (s: BowedSpec) => s.overall.mm - s.body.mm;
  *  BACK; the player faces −y) to a batch path, placed at the seat. */
 function placer(s: Seat) {
   const F = (s.face * Math.PI) / 180;
-  const m = Skia.Matrix().translate(s.p.x, s.p.z).rotate(F);
+  // A child is the adult figure at its scale (group 2; drawn from above only).
+  const k = s.kind === 'child' ? VOX.child.scale : 1;
+  const m = Skia.Matrix().translate(s.p.x, s.p.z).rotate(F).scale(k, k);
   return (into: SkPath, local: SkPath) => {
     const q = local.copy();
     q.transform(m);
@@ -223,9 +227,40 @@ const BAND_TOOLS: BandTools = { P, capsule, taper, ellipse, rr, poly, line, flar
 
 /* ═══════════════════ PLAN (from above) ═══════════════════ */
 
+/** A SINGER from above (group 2): standing, the head forward over the
+ *  shoulders (frame V's lips sit `lipAhead` in front of the seat point, under
+ *  the face), the hands free — or, for a chorister and a child, a music
+ *  folder held open in front of the chest. */
+function planVoice(b: Batch, s: Seat) {
+  const put = placer(s);
+  for (const sx of [-1, 1]) put(b.fig.shoe, ellipse(P(sx * 100, -70), 48, 72));
+  put(b.fig.shirt, ellipse(P(0, 4), 222, 112));
+  if (s.kind === 'singer') {
+    // The arms hang at the sides: from above, only the tops of the upper arms.
+    for (const sx of [-1, 1]) put(b.fig.shirt, ellipse(P(sx * 206, 10), 50, 64));
+  } else {
+    for (const sx of [-1, 1]) {
+      put(b.fig.shirt, limb([pt(sx * 180, -8), pt(sx * 186, -130), pt(sx * 150, -232)], [58, 48, 40]));
+      put(b.fig.skin, ellipse(P(sx * 146, -248), 38, 44));
+    }
+    // The folder, open, tipped toward the singer (black covers, pale pages between).
+    put(b.mat.ebony, rr(-182, -338, 182, -236, 12));
+    put(b.hair, line(make(), P(0, -334), P(0, -240)));
+  }
+  const h = headAbove(pt(0, 0), 104);
+  const q = h.fill.copy();
+  q.transform(Skia.Matrix().translate(0, -37).rotate(Math.PI));
+  put(b.fig.skin, q);
+}
+
 function planSeat(b: Batch, s: Seat) {
   // Group 4: the drum kit draws itself, its drummer included.
   if (bandPlanWhole(b, s)) return;
+  // group 2: a singer (group 4's lead vocal is the same kind).
+  if (isVoice(s.kind)) {
+    planVoice(b, s);
+    return;
+  }
   const put = placer(s);
   const standing = s.posture === 'standing';
   const k = s.kind;
@@ -614,6 +649,9 @@ function planStand(b: Batch, s: Seat) {
  *  conductor); the instrument follows the player's real facing (its local
  *  right and forward projected into the view). */
 function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
+  // Children are drawn from above only (E06, the lead ruling): never a
+  // figure in elevation — SeatingView marks their area instead.
+  if (s.kind === 'child') return;
   // Group 4: the drum kit from the side draws itself, its drummer included.
   if (bandElevWhole(b, s, view)) return;
   const o = uv(view, s.p);
@@ -998,6 +1036,25 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section') {
       hand(Q(140, 330, 940));
       break;
     }
+    /* ── group 2 (voices; group 4's lead vocal is the same `singer`) ── */
+    case 'singer': {
+      // Hands free, arms at the sides (group 2).
+      arm([shL, Q(-232, 10, 1150), Q(-244, 30, 870)]);
+      arm([shR, Q(232, 10, 1150), Q(244, 30, 870)]);
+      hand(Q(-246, 34, 830));
+      hand(Q(246, 34, 830));
+      break;
+    }
+    case 'chorister': {
+      // A music folder held open in front of the chest (group 2).
+      arm([shL, Q(-215, 60, 1120), Q(-150, 250, 1220)]);
+      arm([shR, Q(215, 60, 1120), Q(150, 250, 1220)]);
+      if (Math.abs(rightU) > 0.3) b.mat.ebony.addPath(poly([Q(-175, 255, 1160), Q(175, 255, 1160), Q(175, 300, 1390), Q(-175, 300, 1390)]));
+      else b.mat.ebony.addPath(capsule(Q(0, 250, 1160), Q(0, 310, 1390), 14));
+      hand(Q(-150, 250, 1220));
+      hand(Q(150, 250, 1220));
+      break;
+    }
     case 'conductor': {
       arm([shL, Q(-330, 120, 1350), Q(-380, 260, 1560)]);
       arm([shR, Q(330, 120, 1350), Q(360, 260, 1600)]);
@@ -1168,6 +1225,39 @@ export function SeatingView({ seating, view, hi = null }: { seating: Seating; vi
     const b = uv(view, { x: P0.c.x + P0.w / 2, y: 0, z: P0.c.z + P0.d / 2 });
     return rr(Math.min(a.u, b.u), Math.min(a.v, b.v), Math.max(a.u, b.u), Math.max(a.v, b.v), view === 'plan' ? 60 : 10);
   }, [seating, view]);
+  // group 2: a choir riser's back rail (WENGER-SIG: 42 in above the top
+  // step), and — in elevation — the area where children stand, marked
+  // instead of drawn (E06 shows children from above only).
+  const rails = useMemo(() => {
+    const p = make();
+    for (const r of seating.risers) {
+      if (!r.rail) continue;
+      if (view === 'plan') {
+        line(p, P(r.x0, r.z0 + 20), P(r.x1, r.z0 + 20));
+        continue;
+      }
+      if (view === 'section' && (r.x0 > SECTION_SLICE || r.x1 < -SECTION_SLICE)) continue;
+      const top = -(r.h + r.rail);
+      if (view === 'front') {
+        line(p, P(r.x0, top), P(r.x1, top));
+        for (let x = r.x0; x <= r.x1 + 1; x += (r.x1 - r.x0) / Math.max(1, Math.round((r.x1 - r.x0) / 900))) line(p, P(x, top), P(x, -r.h));
+      } else {
+        const u = -r.z0 - 20;
+        line(p, P(u, top), P(u, -r.h));
+        line(p, P(u, top), P(u - 60, top));
+      }
+    }
+    return p;
+  }, [seating, view]);
+  const kids = useMemo(() => {
+    if (view === 'plan') return null;
+    const cs = seating.seats.filter((q) => q.kind === 'child' && (view !== 'section' || Math.abs(q.p.x) <= SECTION_SLICE));
+    if (!cs.length) return null;
+    const us = cs.map((q) => uv(view, q.p).u);
+    const top = Math.max(...cs.map((q) => headTop(q)));
+    const floorV = Math.max(...cs.map((q) => uv(view, q.p).v));
+    return rr(Math.min(...us) - 260, -top, Math.max(...us) + 260, floorV, 60);
+  }, [seating, view]);
   const outline = useMemo(() => (hi ? sectionOutline(seating, hi, view) : null), [seating, hi, view]);
   const st = seating.stage;
   const veil = useMemo(() => {
@@ -1184,6 +1274,16 @@ export function SeatingView({ seating, view, hi = null }: { seating: Seating; vi
         </Path>
       ) : null}
       <Mass path={risers} mat="riser" contour={6} />
+      <Path path={rails} style="stroke" strokeWidth={30} strokeCap="round" color="#0b0c0f" />
+      <Path path={rails} style="stroke" strokeWidth={18} strokeCap="round" color="#8d929d" />
+      {kids ? (
+        <>
+          <Path path={kids} color="#6fa8ff" opacity={0.1} />
+          <Path path={kids} style="stroke" strokeWidth={14} color="#6fa8ff" opacity={0.55}>
+            <DashPathEffect intervals={[60, 40]} />
+          </Path>
+        </>
+      ) : null}
       {podium ? <Mass path={podium} mat="riser" contour={6} /> : null}
       {g.layers.map((b, i) => (
         <PaintBatch key={i} b={b} />

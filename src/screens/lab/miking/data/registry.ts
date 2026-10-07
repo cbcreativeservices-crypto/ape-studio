@@ -124,6 +124,11 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'E11', labId: 'ensembles', title: 'String Quartet and Sections', subtitle: 'A pair in front of the quartet, one support if needed — then the larger string sections', status: 'ready' },
   { id: 'E13', labId: 'ensembles', title: 'Mixed Classical Ensembles', subtitle: 'A chamber group or an orchestra: one main array first, the tree and its centre, supports for a named need', status: 'ready' },
   { id: 'E14', labId: 'ensembles', title: 'Full Orchestra', subtitle: 'A main pair or a tree over the podium first — supports only where something is missing', status: 'ready' },
+  // Lab 5 (ensembles and voice), group 2 — voice II, groups: E02, E04, E05, E06 (each lesson on its own line).
+  { id: 'E02', labId: 'ensembles', title: 'Background and Harmony Vocals', subtitle: 'A handheld each about 4–8 cm from the lips and 3:1 apart, or one shared mic the singers balance by distance', status: 'ready' },
+  { id: 'E04', labId: 'ensembles', title: 'Duets and Small Vocal Groups', subtitle: 'One mic with the singers matched, a figure-8 between two, a pair for a group — or a mic each, 3:1 apart', status: 'ready' },
+  { id: 'E05', labId: 'ensembles', title: 'Choirs, Choruses and A Cappella', subtitle: 'A few feet out and a little above, aimed at the rows: the fewest area mics, 3:1 apart — or one main pair', status: 'ready' },
+  { id: 'E06', labId: 'ensembles', title: 'Children’s Voices and Choirs', subtitle: 'Supervised and safe first: one pair before any close mic, aimed at the children’s mouths — shown from above', status: 'ready' },
   // Lab 5 (ensembles), group 4 — bands & stage plots: E09, E15, E08 (each lesson on its own line).
   { id: 'E09', labId: 'ensembles', title: 'Rhythm Sections and Complete Bands', subtitle: 'A band on a stage plot: arrange it first, the fewest mics that do the job, every open mic counted', status: 'ready' },
   { id: 'E15', labId: 'ensembles', title: 'Jazz Combo', subtitle: 'A conversation with bleed: one main view, a few supports, close mics or a hybrid — and the amp turned away', status: 'ready' },

@@ -29,7 +29,8 @@ import { gain } from '../../../engine/physics/polar.ts';
 import { angleBetween } from '../../../engine/geometry/vec.ts';
 import { fitLabels } from '../../../engine/scene/labelLayout.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
-import { add, DEG, fmtM, mul, planDir, unit, uv, uvDir, v3, type StageView } from './frameS.ts';
+import { add, DEG, dist, fmtM, mul, planDir, unit, uv, uvDir, v3, type StageView } from './frameS.ts';
+import { arrayCapsules } from './stereoArray.ts';
 import { headTop, soundPoint, type Seat, type Seating } from './seating.ts';
 import { SeatingView, SECTION_SLICE } from './SeatingArt';
 import { ArrayDetail, ArrayRig, rigPoints, type RigSpec } from './ArrayArt';
@@ -44,7 +45,9 @@ const ZONE = '#3d8bff';
 const SPILL = '#ff8a6e';
 const MIC = { len: 104, r: 10.5 };
 
-export type StageRig = RigSpec & { key: string; label?: string; lit?: boolean };
+/** group 2: `dimTo` replaces the rig's height/front dimensions with the white
+ *  distance from the rig's centre to that point (a shared mic to a mouth). */
+export type StageRig = RigSpec & { key: string; label?: string; lit?: boolean; dimTo?: Vec3 };
 /** The mic drawings a single can use (features/lab/micDrawings MikingMicArt). */
 export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc';
 export type StageSingle = {
@@ -54,15 +57,23 @@ export type StageSingle = {
   pattern: PatternId;
   label?: string;
   lit?: boolean;
-  /** The mic's drawing (default the pencil condenser) and its body, mm: `len`
-   *  deep, and across either `r` (a radius: group 4, from the mic type) or
-   *  `cross` (a width: group 5); and a stand foot set on a riser or a gap
-   *  between players (group 5; default: 650 mm back from the mic's tail, on the floor). */
+  /** The mic's drawing (default the pencil condenser; group 2's handheld
+   *  'vocalDynamic' at its own size) and its body, mm: `len` deep, and
+   *  across either `r` (a radius: group 4, from the mic type) or `cross` (a
+   *  width: group 5); and a stand foot set on a riser or a gap between
+   *  players (group 5; default: 650 mm back from the mic's tail, on the floor). */
   art?: MicArtId;
   len?: number;
   r?: number;
   cross?: number;
   foot?: Vec3;
+  /** group 2: `dimTo` draws the white distance from the mic's front to that
+   *  point (a singer's lips) with its number in cm; `aimLen` shortens the
+   *  amber aim; `boomDir` the plan direction the boom runs to its stand
+   *  (default: straight back from the mic). */
+  dimTo?: Vec3;
+  aimLen?: number;
+  boomDir?: Vec3;
 };
 export type StageZone = { key: string; box: { min: Vec3; max: Vec3 }; label?: string; on?: boolean };
 /** Group 4: a spill path (a neighbour's sound reaching a close mic) and an
@@ -93,7 +104,6 @@ const RADIATE: Record<string, [number, number, number]> = {
   // kit is one kind for groups 4 and 5.
   drumkit: [0, 0.8, 0.6],
   keys: [0, 1, 0.2],
-  singer: [0, 0.1, 1],
   tenorSax: [0.3, 0.6, 0.75],
   aguitar: [0, 0.2, 1],
   mandolin: [0, 0.2, 1],
@@ -105,6 +115,18 @@ const RADIATE: Record<string, [number, number, number]> = {
   vibraphone: [0, 1, 0.1],
   congas: [0, 1, 0.25],
   perctable: [0, 0.9, 0.4],
+  // group 2 — voices: out of the mouth, ahead (group 4's lead vocal too).
+  singer: [0, 0.08, 1],
+  chorister: [0, 0.08, 1],
+  child: [0, 0.08, 1],
+};
+/** A handheld vocal dynamic's drawn size (voiceMics HANDHELD: 162 mm, a 5 cm ball). */
+const HANDHELD = { len: 162, r: 25 };
+/** A single's drawn body: its own `len` / `r` / `cross` when given (groups 4
+ *  and 5), else the handheld's (group 2) or the pencil's. */
+const micSize = (m: StageSingle): { len: number; r: number } => {
+  const base = m.art === 'vocalDynamic' ? HANDHELD : MIC;
+  return { len: m.len ?? base.len, r: m.r ?? (m.cross != null ? m.cross / 2 : base.r) };
 };
 function radDir(q: Seat): Vec3 {
   if (q.srcFace != null) return planDir(q.srcFace);
@@ -115,28 +137,30 @@ function radDir(q: Seat): Vec3 {
   return unit(add(add(mul(right, r), mul(fwd, f)), v3(0, -up, 0)));
 }
 
-/** The view box that holds the seating and everything placed on it. */
-export function stageBox(s: Seating, view: StageView, rigs: readonly StageRig[] = [], singles: readonly StageSingle[] = [], extra: readonly Vec3[] = []): ViewBox {
+/** The view box that holds the seating and everything placed on it.
+ *  `focus` (group 2): frame only those seats and the mics — a close vocal
+ *  setup, where a stage-wide frame would make 6 cm a pixel. */
+export function stageBox(s: Seating, view: StageView, rigs: readonly StageRig[] = [], singles: readonly StageSingle[] = [], extra: readonly Vec3[] = [], focus?: readonly string[]): ViewBox {
   const st = s.stage;
-  const pts: Vec3[] = [v3(st.x0, 0, st.z0), v3(st.x1, 0, st.z1), ...extra];
-  for (const q of s.seats) pts.push(v3(q.p.x, -headTop(q) - 120, q.p.z));
+  const pts: Vec3[] = focus ? [...extra] : [v3(st.x0, 0, st.z0), v3(st.x1, 0, st.z1), ...extra];
+  for (const q of s.seats) if (!focus || focus.includes(q.id)) pts.push(v3(q.p.x, -headTop(q) - 120, q.p.z), ...(focus ? [v3(q.p.x, 0, q.p.z)] : []));
   // Group 4: the gear (an amp, the PA on its stand) is part of the stage.
-  for (const g of s.gear ?? []) pts.push(v3(g.p.x, g.p.y - (g.kind === 'pa' ? PA_BOX.bottom + PA_BOX.h : GEAR_SIZE[g.kind].h) - 120, g.p.z));
-  if (s.conductor) pts.push(v3(0, -2100, s.conductor.p.z));
+  if (!focus) for (const g of s.gear ?? []) pts.push(v3(g.p.x, g.p.y - (g.kind === 'pa' ? PA_BOX.bottom + PA_BOX.h : GEAR_SIZE[g.kind].h) - 120, g.p.z));
+  if (s.conductor && !focus) pts.push(v3(0, -2100, s.conductor.p.z));
   for (const r of rigs) pts.push(...rigPoints(r));
-  for (const m of singles) pts.push(m.p, v3(m.p.x, 0, m.p.z));
+  for (const m of singles) pts.push(m.p, v3(m.p.x, 0, m.p.z), ...(focus ? [boomStand(m).foot] : []));
   const inView = view === 'section' ? pts.filter((p) => Math.abs(p.x) <= SECTION_SLICE + 2500 || p.y < -2000) : pts;
   const us = inView.map((p) => uv(view, p).u);
   const vs = inView.map((p) => uv(view, p).v);
-  const pad = view === 'plan' ? 500 : 450;
+  const pad = focus ? 250 : view === 'plan' ? 500 : 450;
   return { u0: Math.min(...us) - pad, u1: Math.max(...us) + pad, v0: Math.min(...vs) - pad - (view === 'plan' ? 0 : 300), v1: Math.max(...vs) + (view === 'plan' ? pad : 250) };
 }
 
 /** A support or spot on its boom stand: the foot toward the hall, the mast,
  *  the boom up to the mic's tail. */
 function boomStand(m: StageSingle) {
-  const tail = add(m.p, mul(m.dir, -(m.len ?? MIC.len)));
-  const flat = unit(v3(-m.dir.x, 0, -m.dir.z));
+  const tail = add(m.p, mul(m.dir, -micSize(m).len));
+  const flat = m.boomDir ? unit(v3(m.boomDir.x, 0, m.boomDir.z)) : unit(v3(-m.dir.x, 0, -m.dir.z));
   const foot = m.foot ?? v3(tail.x + flat.x * 650, 0, tail.z + flat.z * 650);
   const top = v3(foot.x, Math.min(foot.y - 900, tail.y + 350), foot.z);
   return { tail, foot, top };
@@ -186,6 +210,8 @@ export type EnsembleStageProps = {
   spill?: readonly StageSpill[];
   rings?: readonly StageRing[];
   box?: ViewBox;
+  /** group 2: frame only these seats and the mics (stageBox). */
+  focus?: readonly string[];
   onTapSection?: (id: string) => void;
   accessibilityLabel: string;
   children?: ReactNode;
@@ -194,7 +220,7 @@ export type EnsembleStageProps = {
 export function EnsembleStage(p: EnsembleStageProps) {
   const { w, h, seating, view, hi = null, rigs = [], singles = [], zones = [], radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = [], spill = [], rings = [], onTapSection } = p;
   const textScale = useStageTextScale();
-  const box = useMemo(() => p.box ?? stageBox(seating, view, rigs, singles, view === 'plan' ? rings.flatMap((r) => [v3(r.c.x - r.r, 0, r.c.z - r.r), v3(r.c.x + r.r, 0, r.c.z + r.r)]) : []), [p.box, seating, view, rigs, singles, rings]);
+  const box = useMemo(() => p.box ?? stageBox(seating, view, rigs, singles, view === 'plan' ? rings.flatMap((r) => [v3(r.c.x - r.r, 0, r.c.z - r.r), v3(r.c.x + r.r, 0, r.c.z + r.r)]) : [], p.focus), [p.box, seating, view, rigs, singles, rings, p.focus]);
   const xf: ViewXform = useMemo(() => fitXform(view === 'front' ? 'side' : 'top', box, w, h, 6), [view, box, w, h]);
   const px = 1 / xf.s;
   const slice = view === 'section' ? SECTION_SLICE : Infinity;
@@ -244,9 +270,32 @@ export function EnsembleStage(p: EnsembleStageProps) {
           legs.moveTo(f.u, f.v - 280);
           legs.lineTo(f.u + 300, f.v);
         }
-        return { m, metal, legs, lobe: lobePath(view, m.p, m.dir, m.pattern, 300) };
+        // group 2: the white distance to a singer's lips, with its number.
+        let dim: { path: ReturnType<typeof Skia.Path.Make>; label: StaticLabel } | null = null;
+        if (m.dimTo) {
+          const a = uv(view, m.p);
+          const b = uv(view, m.dimTo);
+          const L = Math.hypot(b.u - a.u, b.v - a.v);
+          if (L > 1) {
+            const n = { u: -(b.v - a.v) / L, v: (b.u - a.u) / L };
+            // Offsets in screen pixels (px = mm per pixel), so the line and
+            // its number clear the mic at any zoom.
+            const off = 10 * px;
+            const tk = 7 * px;
+            const path = Skia.Path.Make();
+            path.moveTo(a.u + n.u * off, a.v + n.v * off);
+            path.lineTo(b.u + n.u * off, b.v + n.v * off);
+            for (const q of [a, b]) {
+              path.moveTo(q.u + n.u * (off - tk), q.v + n.v * (off - tk));
+              path.lineTo(q.u + n.u * (off + tk), q.v + n.v * (off + tk));
+            }
+            const d3 = Math.hypot(m.p.x - m.dimTo.x, m.p.y - m.dimTo.y, m.p.z - m.dimTo.z);
+            dim = { path, label: { id: `dim:${m.key}`, text: `${Math.round(d3 / 10)} CM`, u: (a.u + b.u) / 2 + n.u * (off + 30 * px), v: (a.v + b.v) / 2 + n.v * (off + 30 * px), align: 'center', tone: 'amber' } };
+          }
+        }
+        return { m, metal, legs, dim, lobe: lobePath(view, m.p, m.dir, m.pattern, m.art === 'vocalDynamic' ? 200 : 300) };
       }),
-    [singles, view],
+    [singles, view, px],
   );
 
   const zonesG = useMemo(
@@ -274,6 +323,27 @@ export function EnsembleStage(p: EnsembleStageProps) {
       lines.moveTo(a.u - (horiz ? 0 : k), a.v - (horiz ? k : 0));
       lines.lineTo(a.u + (horiz ? 0 : k), a.v + (horiz ? k : 0));
     };
+    if (r.dimTo) {
+      // group 2: one distance — the nearest capsule's front to a singer's mouth.
+      const to = r.dimTo;
+      const cap = arrayCapsules(r.id, r.params, r.place).reduce((best, q) => (dist(q.p, to) < dist(best.p, to) ? q : best));
+      const c = cap.p;
+      const a = uv(view, c);
+      const b = uv(view, r.dimTo);
+      const L = Math.hypot(b.u - a.u, b.v - a.v);
+      if (L < 1) return null;
+      const n = { u: -(b.v - a.v) / L, v: (b.u - a.u) / L };
+      const off = 22 * px;
+      lines.moveTo(a.u + n.u * off, a.v + n.v * off);
+      lines.lineTo(b.u + n.u * off, b.v + n.v * off);
+      for (const q of [a, b]) {
+        lines.moveTo(q.u + n.u * (off - 10 * px), q.v + n.v * (off - 10 * px));
+        lines.lineTo(q.u + n.u * (off + 10 * px), q.v + n.v * (off + 10 * px));
+      }
+      const d3 = Math.hypot(c.x - r.dimTo.x, c.y - r.dimTo.y, c.z - r.dimTo.z);
+      lab.push({ id: 'dimD', text: `${Math.round(d3 / 10)} CM`, u: (a.u + b.u) / 2 + n.u * (off + 30 * px), v: (a.v + b.v) / 2 + n.v * (off + 30 * px), align: 'center', tone: 'amber' });
+      return { lines, lab };
+    }
     if (view !== 'plan') {
       const top = uv(view, c);
       const bot = uv(view, v3(c.x, 0, c.z));
@@ -348,11 +418,13 @@ export function EnsembleStage(p: EnsembleStageProps) {
   const dW = corner?.dw ?? fullW;
   const dH = corner?.dh ?? fullH;
   const laid = useMemo(() => {
-    const art = labels ? stageLabels(seating, view, slice).map((l) => ({ ...l, tone: l.id === hi ? ('amber' as const) : l.tone })) : [];
-    const all: StaticLabel[] = [...(dimG?.lab ?? []), ...extraLabels, ...art];
+    // group 2: a focused (close) frame names only the singers it frames.
+    const focusSecs = p.focus ? new Set(seating.seats.filter((q) => p.focus!.includes(q.id)).map((q) => q.section)) : null;
+    const art = labels ? stageLabels(seating, view, slice).filter((l) => !focusSecs || focusSecs.has(l.id)).map((l) => ({ ...l, tone: l.id === hi ? ('amber' as const) : l.tone })) : [];
+    const all: StaticLabel[] = [...(dimG?.lab ?? []), ...singlesG.flatMap((q) => (q.dim ? [q.dim.label] : [])), ...extraLabels, ...art];
     // The detail inset's corner is taken: no label sits under it.
     return fitLabels(all, xf, textScale, w, undefined, corner ? [corner] : undefined, { clearOf: stageClearOf(seating, view, slice), minY: 1, maxY: h - 1 });
-  }, [labels, seating, view, slice, hi, dimG, extraLabels, xf, textScale, w, h, corner]);
+  }, [labels, seating, view, slice, hi, dimG, singlesG, extraLabels, xf, textScale, w, h, corner, p.focus]);
 
   const press = (e: { nativeEvent: { locationX: number; locationY: number } }) => {
     if (!onTapSection) return;
@@ -398,8 +470,9 @@ export function EnsembleStage(p: EnsembleStageProps) {
                 <Path path={path} style="stroke" strokeWidth={(z.on ? 2.4 : 1.6) * px} color={ZONE} opacity={0.9} />
               </Group>
             ))}
-            {singlesG.map(({ m, metal, legs, lobe }) => (
+            {singlesG.map(({ m, metal, legs, lobe, dim }) => (
               <Group key={m.key} opacity={m.lit === false ? 0.5 : 1}>
+                {dim ? <Path path={dim.path} style="stroke" strokeWidth={1.6 * px} color="#ffffff" opacity={0.92} /> : null}
                 {lobes ? (
                   <>
                     <Path path={lobe} color={IDEAL} opacity={0.06} />
@@ -409,7 +482,7 @@ export function EnsembleStage(p: EnsembleStageProps) {
                   </>
                 ) : null}
                 {aims ? (
-                  <Line p1={vec(uv(view, m.p).u, uv(view, m.p).v)} p2={vec(uv(view, m.p).u + uvDir(view, m.dir).u * 1300, uv(view, m.p).v + uvDir(view, m.dir).v * 1300)} color={AMBER} strokeWidth={1.5 * px} opacity={0.85}>
+                  <Line p1={vec(uv(view, m.p).u, uv(view, m.p).v)} p2={vec(uv(view, m.p).u + uvDir(view, m.dir).u * (m.aimLen ?? 1300), uv(view, m.p).v + uvDir(view, m.dir).v * (m.aimLen ?? 1300))} color={AMBER} strokeWidth={1.5 * px} opacity={0.85}>
                     <DashPathEffect intervals={[6 * px, 4 * px]} />
                   </Line>
                 ) : null}
@@ -418,7 +491,7 @@ export function EnsembleStage(p: EnsembleStageProps) {
                 <Path path={metal} style="stroke" strokeWidth={Math.max(22, 3 * px)} strokeCap="round" color="#0b0c0f" />
                 <Path path={metal} style="stroke" strokeWidth={Math.max(13, 1.8 * px)} strokeCap="round" color="#9aa0ab" />
                 <Group transform={micXf(view, m.p, m.dir)}>
-                  <MikingMicArt art={m.art ?? 'sdc'} r={m.r ?? (m.cross ?? MIC.r * 2) / 2} len={m.len ?? MIC.len} cross={m.cross ?? (m.r ?? MIC.r) * 2} />
+                  <MikingMicArt art={m.art ?? 'sdc'} r={micSize(m).r} len={micSize(m).len} cross={m.cross ?? micSize(m).r * 2} />
                 </Group>
                 <Circle cx={uv(view, m.p).u} cy={uv(view, m.p).v} r={5 * px} color={AMBER} opacity={0.9} />
               </Group>

@@ -156,6 +156,15 @@ import { E13_LESSON } from '../lessons/e13MixedEnsemble/lesson.ts';
 LESSON_CONTENT.E13 = E13_LESSON;
 import { E11_LESSON } from '../lessons/e11StringQuartet/lesson.ts';
 LESSON_CONTENT.E11 = E11_LESSON;
+/* Lab 5 (ensembles and voice), group 2 — voice II, groups: E02, E04, E05, E06 (each lesson on its own line). */
+import { E02_LESSON } from '../lessons/e02BackgroundVocals/lesson.ts';
+LESSON_CONTENT.E02 = E02_LESSON;
+import { E04_LESSON } from '../lessons/e04Duets/lesson.ts';
+LESSON_CONTENT.E04 = E04_LESSON;
+import { E05_LESSON } from '../lessons/e05Choir/lesson.ts';
+LESSON_CONTENT.E05 = E05_LESSON;
+import { E06_LESSON } from '../lessons/e06ChildrensChoir/lesson.ts';
+LESSON_CONTENT.E06 = E06_LESSON;
 /* Lab 5 (ensembles), group 4 — bands & stage plots: E09, E15, E08 (each lesson on its own line). */
 import { E09_LESSON } from '../lessons/e09CompleteBand/lesson.ts';
 LESSON_CONTENT.E09 = E09_LESSON;

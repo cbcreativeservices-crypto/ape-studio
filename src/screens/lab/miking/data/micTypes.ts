@@ -308,3 +308,6 @@ Object.assign(MIC_TYPES, VOICE_MIC_TYPES);
 /* Lab 5 (ensembles): the main-array and support condensers (omni, cardioid, figure-8). Appended so other lessons merge cleanly. */
 import { ENSEMBLE_MIC_TYPES } from '../lessons/shared/ensemble/ensembleMics.ts';
 Object.assign(MIC_TYPES, ENSEMBLE_MIC_TYPES);
+/* Lab 5, group 2 — voice II, groups (E02, E04, E05, E06): the shared large-diaphragm condenser. Appended so other lessons merge cleanly. */
+import { GROUP_VOICE_MIC_TYPES } from '../lessons/shared/ensemble/groupVoiceMics.ts';
+Object.assign(MIC_TYPES, GROUP_VOICE_MIC_TYPES);

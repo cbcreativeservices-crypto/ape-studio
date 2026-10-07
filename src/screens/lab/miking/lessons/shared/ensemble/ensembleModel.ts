@@ -25,7 +25,8 @@
 import type { DocumentedZone, Envelope, InstrumentModel, MicPose, Part, Provenance, ReferenceSurface, Vec3, ViewBox } from '../../../engine/model/types.ts';
 import { sectorPolys } from '../handGeom.ts';
 import { add, aimOf, mul, planDir, sub, unit, v3 } from './frameS.ts';
-import { headTop, sectionCentre, seatsOf, supportOf, type Seating } from './seating.ts';
+import { headTop, isVoice, sectionCentre, seatsOf, supportOf, type Seating } from './seating.ts';
+import { voiceSolids } from './voiceGroup.ts';
 import { GEAR_SIZE, PA_BOX } from './bandStage.ts';
 import { KIT } from '../kitPlanModel.ts';
 
@@ -60,10 +61,6 @@ const FOOTPRINT: Partial<Record<string, { w: number; f0: number; f1: number; h: 
   perctable: { w: 900, f0: 200, f1: 650, h: 900 },
   guitar: { w: 560, f0: 335, f1: 605, h: 540, dx: 470 },
 };
-/** Group 4: a singer's body ends at the shoulders and the head is its own
- *  narrower solid, so a stage vocal mic can sit a few centimetres from the
- *  lips (the voice family's head: r 114, the lips 87 mm ahead of its axis). */
-const SINGER = { shoulder: 1430, headR: 120 } as const;
 export const seatPartId = (v: string, seatId: string) => `${v}:${seatId}`;
 export const sectionPartId = (v: string, sec: string) => `${v}:${sec}`;
 /** The radius kept clear round a player (body and chair), mm. ILLUSTRATIVE. */
@@ -81,7 +78,7 @@ export function stageViews(seatings: readonly Seating[], extra: { zMax?: number;
   return { side: { u0: x0, u1: x1, v0: top, v1: 300 }, top: { u0: x0, u1: x1, v0: z0, v1: z1 } };
 }
 
-export function ensembleModel(o: { id: string; name: string; variants: readonly EnsembleVariant[]; views?: { side: ViewBox; top: ViewBox }; viewsByVariant?: InstrumentModel['viewsByVariant']; extraSurfaces?: ReferenceSurface[] }): InstrumentModel {
+export function ensembleModel(o: { id: string; name: string; variants: readonly EnsembleVariant[]; views?: { side: ViewBox; top: ViewBox }; viewsByVariant?: InstrumentModel['viewsByVariant']; extraSurfaces?: ReferenceSurface[]; /** group 2: a lesson's own boom rule (two singers facing each other: the boom runs downstage, never into a singer). */ mountRule?: InstrumentModel['mountRule'] }): InstrumentModel {
   const parts: Part[] = [];
   const envelopes: Envelope[] = [];
   const regions: InstrumentModel['regions'] = [];
@@ -91,28 +88,23 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
       parts.push({ id: sectionPartId(V.id, sec.id), label: sec.label, short: sec.short, role: sec.radiates, variants: [V.id], listIn: [], prov: ill('a drawing-default seating') });
       regions.push({ id: `r.${V.id}.${sec.id}`, partId: sectionPartId(V.id, sec.id), label: `the ${sec.label}`, anchor: sectionCentre(S, sec.id), variants: [V.id], prov: ill('the section’s players’ sound points (a drawing default)'), note: sec.radiates });
       for (const seat of seatsOf(S, sec.id)) {
-        const singer = seat.kind === 'singer';
+        if (isVoice(seat.kind)) {
+          // A singer (group 2; group 4's lead vocal is the same kind): frame
+          // V's head and body, so a vocal mic can come within a few
+          // centimetres of the lips (seatingVoices.ts).
+          for (const [k, solid] of voiceSolids(seat)) parts.push({ id: `${seatPartId(V.id, seat.id)}${k}`, label: sec.label, short: sec.short, role: '', solid, variants: [V.id], listIn: [], prov: ill('a singer: frame V’s figure (a drawing default)') });
+          continue;
+        }
         parts.push({
           id: seatPartId(V.id, seat.id),
           label: sec.label,
           short: sec.short,
           role: '',
-          solid: { kind: 'cyl', a: v3(seat.p.x, 0, seat.p.z), b: v3(seat.p.x, singer ? seat.p.y - SINGER.shoulder : -headTop(seat), seat.p.z), r: PLAYER_R },
+          solid: { kind: 'cyl', a: v3(seat.p.x, 0, seat.p.z), b: v3(seat.p.x, -headTop(seat), seat.p.z), r: PLAYER_R },
           variants: [V.id],
           listIn: [],
           prov: ill('a player and chair: a drawing default'),
         });
-        if (singer)
-          parts.push({
-            id: `${seatPartId(V.id, seat.id)}.head`,
-            label: 'the singer’s head',
-            short: sec.short,
-            role: '',
-            solid: { kind: 'cyl', a: v3(seat.p.x, seat.p.y - SINGER.shoulder, seat.p.z), b: v3(seat.p.x, -headTop(seat), seat.p.z), r: SINGER.headR },
-            variants: [V.id],
-            listIn: [],
-            prov: ill('the voice family’s head, as a cylinder: a drawing default'),
-          });
         // A large instrument in front of its player is a solid of its own.
         const big = FOOTPRINT[seat.kind];
         if (big) {
@@ -203,7 +195,7 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
     aimHome: { az: -90, el: -30 },
     // A tall stand's boom runs level, away from the mic's tail (toward the
     // conductor and the hall when the mic faces the ensemble).
-    mountRule: { boom: 'level', fallback: v3(0, 0, 1), length: 700 },
+    mountRule: o.mountRule ?? { boom: 'level', fallback: v3(0, 0, 1), length: 700 },
     yFloor: { mm: 0, prov: ill('frame S: the stage floor is y = 0') },
     interior: { x0: 0, x1: 0, rIn: 0, c: v3(0, 0, 0) },
     ports: Object.fromEntries(o.variants.map((v) => [v.id, null])),

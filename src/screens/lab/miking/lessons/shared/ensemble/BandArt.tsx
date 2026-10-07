@@ -13,8 +13,6 @@
  *                    waist, the neck and the headstock) in the plane of the
  *                    top, seen face-on from the hall and edge-on from above
  *   keys             a stage keyboard on an X stand
- *   the singer       standing, arms at rest (the mic is the setup's, on its
- *                    own stand)
  *   the tenor sax    neck, body, bow and the upturned bell
  *   gear             the combo and the bass rig (Lab 4's cabinet sizes), the
  *                    floor wedge (a sloped grille facing its player), the DI
@@ -82,8 +80,9 @@ export type ElevHelp = BandTools & {
 
 /** The kinds this file draws (SeatingArt's switch hands them over). The
  *  drum kit is one kind for groups 4 and 5; the standing tenor is
- *  `tenorSax` (group 5's section saxes are SeatingArt's `sax`/`bariSax`). */
-export const BAND_KINDS = new Set(['drumkit', 'eguitar', 'ebass', 'keys', 'singer', 'tenorSax', 'aguitar', 'mandolin']);
+ *  `tenorSax` (group 5's section saxes are SeatingArt's `sax`/`bariSax`); the
+ *  singer is one kind for groups 2 and 4, drawn by SeatingArt (group 2). */
+export const BAND_KINDS = new Set(['drumkit', 'eguitar', 'ebass', 'keys', 'tenorSax', 'aguitar', 'mandolin']);
 
 /* ═══════════════ a guitar-family outline in the plane of its top ═══════════════ */
 /** Half-width of a body at s (0 = tail, 1 = neck end): lower bout, waist,
@@ -203,13 +202,6 @@ export function bandPlanInstrument(b: BandBatch, s: Seat, H: PlanHelp) {
       arm([RS, P(220, -150), P(220, -340)]);
       hand(P(-200, -340));
       hand(P(220, -340));
-      break;
-    }
-    case 'singer': {
-      arm([LS, P(-250, 10), P(-245, -90)]);
-      arm([RS, P(250, 10), P(245, -90)]);
-      hand(P(-245, -95));
-      hand(P(245, -95));
       break;
     }
     case 'tenorSax': {
@@ -415,13 +407,6 @@ export function bandElevInstrument(b: BandBatch, s: Seat, view: 'front' | 'secti
       arm([shR, Q(200, 180, 1150), Q(200, 360, top + 30)]);
       hand(Q(-190, 360, top + 30));
       hand(Q(200, 360, top + 30));
-      break;
-    }
-    case 'singer': {
-      arm([shL, Q(-250, 30, 1150), Q(-250, 40, 880)]);
-      arm([shR, Q(250, 30, 1150), Q(250, 40, 880)]);
-      hand(Q(-250, 40, 860));
-      hand(Q(250, 40, 860));
       break;
     }
     case 'tenorSax': {
