@@ -1,0 +1,214 @@
+# Field and Diamond Sports Miking Technique
+Pro Audio Training Academy  |  Sports and Broadcasting Lab B13
+Capture useful action without placing equipment or operators in the path of play. This lesson covers American football, soccer, rugby union, baseball and softball. Compare approved perimeter shotguns, tracked parabolic pickup and fixed ambience; identify what each can cover and what must be handed off. Commentary, interviews and approved participant microphones remain separate sources. No audio examples are included.
+# Learning objectives
+Choose a microphone position for a named sound and perspective, then verify its access, mounting, camera and weather constraints.
+Map changing range, aim, blocked views and safe operator arcs; provide a tested alternative for every important gap.
+Check input headroom, overlapping microphones and the actual broadcast or live destination through representative movement.
+# Permission determines the usable position
+Record the competition, applicable rule edition, rights holder, venue contact and person approving each location. A credential does not approve a mount. The default is outside playing areas and athlete run-off routes; an exception requires express authorization and a safely engineered installation. A sport rule prohibition still applies even if a venue employee likes the location.
+Sport
+Established rule or official process
+Placement consequence
+American football
+NFL preparation includes a network sideline restriction meeting. [2]
+Obtain assigned crew lanes and camera access; NFL procedures do not govern every school or league.
+Soccer
+IFAB Law 1 prohibits extraneous equipment on goals, nets and flagposts. [1]
+Use independently approved perimeter locations. Do not clip a microphone onto those items.
+Rugby union
+World Rugby Law 1 requires a safe enclosure and defines perimeter dimensions. [3]
+Perimeter dimensions are not permission to occupy the run-off with a dish or stand.
+Baseball
+MLB rules address field access, ground rules and umpire authority over broadcast crew. [4]
+Confirm live-ball boundaries and specific mounts; foul territory can still be in play.
+Softball
+USA Softball permits committee-authorized media, with conditions in Supplement 35. [5]
+Do not infer permission for unattended plants or tripods from media access.
+Recommendations in this lesson are conditional production and classroom methods. They are not governing-body mounting standards or guarantees of safe clearance. Confirm the actual event rules before each production.
+# Compare the pickup methods
+Method
+Useful contribution
+Main limitation
+Perimeter shotgun
+Aimed detail from a closer permitted zone; fixed or safely operated.
+Frequency-dependent rejection; aim and distance change the tone. No acoustic zoom. [7]
+Parabolic action mic
+Selected distant transients or calls from a permitted viewing position.
+Focus and aim are critical; portable dishes favor higher-frequency directional gain. [8–12]
+Fixed ambience
+A stable mono or stereo sense of the venue and audience.
+Less action isolation; nearby spectators or PA can dominate. [6]
+Approved structure or boundary mic
+A repeatable local effect where a specific mount is allowed.
+Impact, vibration, ball interference and structure restrictions can rule it out. [1, 4, 5]
+# Place and aim deliberately
+For a shotgun, start at an approved perimeter mark with the acoustic axis aimed at the chosen action zone. Measure capsule-to-target distance, capsule height and horizontal and vertical aim. Try a second permitted angle that keeps the target on axis while placing the loudest PA or crowd sector farther off axis. Read the model’s polar plots; a shotgun may have rear and side pickup and does not reject every frequency equally. [7]
+A low position may favor shoe or ball detail, while a higher permitted position can see over personnel. Treat height as a trial: low hardware is easier to strike and can collect splash or grass noise; elevation adds mounting and sightline constraints. Nothing may protrude into athlete, official, camera or emergency routes. Keep shock isolation effective, leave the interference-tube openings unobstructed by improvised covers, and test cable contact with the suspension.
+For a parabolic, use the specific collector’s capsule type, focal reference and mounting instructions. Do not install a shotgun at the focus by assumption. Klover specifies an omni capsule for its MiK 26; other collectors have different arrangements. Use a stable authorized position and turn within the approved arc. Aim at the desired sound, not automatically at an athlete’s head. [9, 10]
+For fixed ambience, choose an approved protected position that represents the intended listening side and avoids one nearby spectator or loudspeaker dominating. A coincident XY cardioid pair is a useful classroom starting comparison; a single broad microphone is a simpler mono fallback. Larger spaced or immersive arrangements belong in B17. An elevated camera platform is usable only with approved support, access and cable routing.
+# Turn geometry into a coverage map
+Mark each target zone as useful detail, ambience only, or unavailable after listening. For every microphone, show its position, aiming arc, nearest and farthest tested target, sightline obstacles, permitted operator footprint and handoff source. Draw microphone coverage separately from the operator’s safe zone. A manufacturer’s cone sketch is not a frequency-independent coverage guarantee.
+Start with a stable ambience source plus one prioritized action zone. Add channels when a tested gap justifies them. Raising gain boosts background as well as the target; it does not repair unfavorable placement. [6, 7]
+# American football and soccer
+# American football
+Target: cadence or calls where editorially permitted, snap and contact detail, kicks and nearby footfalls. These are brief or moving sources; a midfield view is not coverage of the entire field. An operator may see a play yet have its sound masked by benches, officials, crowds or PA.
+Recommended comparison: use permitted fixed shotguns for selected sideline or end-zone sectors, a parabolic for the current action zone, and fixed ambience for continuity. Keep mounts behind the event’s assigned clearances. At each fixed mark, aim into a named sector rather than broadly at the whole field; log range to the line of scrimmage at several positions. Compare a more downward aim with an axis directed across the field, listening for reduced crowd versus lost action.
+Klover’s MiK 26 guidance suggests aiming toward a distant player’s feet to reduce crowd behind the subject, then raising aim as the player approaches. That is a model-specific technique to test, not a fixed angle for all dishes. [10] The operator should anticipate the snap and follow the action with controlled turns. Change position only within permitted movement rules; never run backward while looking into the dish or chase play into a crew lane.
+Coverage gaps: the far sideline, action behind bench personnel, plays moving beyond the safe turn arc and sudden near-side exits. Hand off to another authorized action source or the ambience bed. Leave medical and chain-crew routes clear, including during pregame and halftime. The NFL’s restriction meeting is evidence of coordinated access control, not a universal sideline setback. [2]
+# Soccer
+Target: kicks, close challenges and footfalls, with occasional approved calls; separate goals and audience reaction from sustained general ambience. A kick near the touchline may be strong on a local mic while central-field action is mainly atmosphere.
+Recommended comparison: divide the perimeter into near-side, far-side and goal-area sectors. Aim approved fixed microphones into neighboring sectors; test a parabolic only where an operator can remain clear of assistant referees, warm-ups, ball attendants, corners and camera movement. A parabolic that improves one kick may miss the next rapid pass; use fixed coverage as a continuity source.
+A documented 2025 TopVision production used 17 fixed cardioid pitch microphones instead of its earlier shotgun arrangement, plus separate crowd microphones. It prioritized overlapping geographic coverage and less exact aiming. This is a producer-specific case, not a required count or a license to copy its locations. [13]
+Mounting limit: IFAB Law 1 prohibits attaching cameras or microphones to goals, nets and flagposts. Goal-area pickup must use a separately permitted location; a mic “behind the goal” is not automatically outside athlete or ball travel. [1] Test both attacking directions and the central-field gap. If a goal-area position is refused, retain wider perimeter coverage and accept less isolated goal detail.
+# Rugby union and changing field coverage
+# Rugby union
+Target: boot-to-ball contact, ordinary calls permitted for broadcast, and local movement around lineouts, scrums, rucks and mauls. A cluster of bodies changes visibility and sound radiation. Do not promise isolated contact detail from a distant microphone, or treat intelligible tactical speech as automatically authorized for program.
+Recommended comparison: fixed directional microphones cover named touchline and in-goal sectors from approved positions; a parabolic follows selected play within a limited arc; fixed ambience maintains the venue bed. Aim a fixed mic at a likely lineout zone, then test an adjacent open-play zone and a farther central zone. Measure the actual distance to each target. A parabolic can follow a kick or receiver without following every rapid ball movement; prioritize the sound requested by the producer.
+Keep the operator and the full dish, support and cable outside active run-off, substitution, ball-retrieval and medical routes. Do not clamp equipment to goal padding or posts without the relevant rules and a qualified approved design. In-goal is part of the playing area; it is not a convenient parking space for microphones.
+World Rugby Law 1 states that the perimeter should be five metres wide where practicable, with minima of 3.5 metres for the men’s game and 3.0 metres for the women’s game. These are ground dimensions, not safe mic distances or crew occupancy rights. The referee must not start with an unsafe ground. This lesson’s rugby guidance applies to union; rugby league and modified forms require their own rules. [3]
+Fallback: when bodies obscure the selected action, use the better permitted angle or the fixed bed. If neither yields useful detail, document the gap. Do not move closer to a scrum or chase a rolling maul to compensate. Recheck target positions when ends change or when wind favors a different permitted angle.
+# Make handoffs part of the plan
+Condition
+What can fail
+Recommended response
+Action crosses the centre
+Both perimeter feeds become distant.
+Accept ambience or use the assigned parabolic; avoid excessive gain.
+Target leaves the safe arc
+Tracking demands an unsafe turn or move.
+Hand off at a rehearsed cue and keep the operator in the assigned zone.
+Personnel block the target
+High-frequency detail and balance change.
+Select an already tested alternate angle; log the obstruction.
+Play approaches crew
+Collision risk rises before audio overload.
+Stop tracking and follow the event safety response; use remote or fixed coverage.
+Mic is struck or moved
+Aim, mount security and channel tone change.
+Mute or withdraw it; arrange inspection only during authorized safe access.
+Name a monitoring operator and the person who can order withdrawal. Prearrange recovery access with event staff. A dead ball or stoppage does not by itself authorize technicians to enter the playing area.
+# Baseball and softball
+# Baseball
+Target: bat contact, catcher or fielder glove transients, selected footfalls and separately controlled crowd reaction. The plate, bases and outfield are distinct pickup zones. A mic aimed at the pitcher cannot be assumed to capture the bat clearly at the same moment.
+Recommended comparison: aim a permitted shotgun from a protected backstop-side or camera position toward the plate area. Test both batter orientations and whether the catcher, umpire, fencing or netting changes the result. Keep the capsule and support entirely on the authorized side of any barrier; do not pass the tube through screening into live-ball space. A second approved perimeter angle can improve coverage of a base or nearby foul-line zone, but it must stay clear of coaches, bat swings and warm-up activity.
+A parabolic can prioritize the plate, pitcher or a selected fielder from a stable protected viewing position. Choose before the pitch when plate detail is the goal; immediately swinging the dish after contact may miss that transient. If following the subsequent play, hand the plate source off deliberately. A separate broad ambience source preserves atmosphere when outfield or base action is too far away. [8]
+Approval and hazards: foul territory may be live-ball territory. Check the park’s ground rules, camera wells and all possible ball paths, including foul balls and throws. Do not attach hardware to backstop netting or fence structures merely because they appear convenient; obtain structural and event approval. MLB Rules 4.05 and 4.07 address ground rules and field access, and Rule 8.01(e) includes umpire authority over broadcast crew. These do not grant a general field-mic installation right. [4]
+# Softball
+Identify fast pitch, slow pitch, age group and governing code first. Actual field geometry and action tempo affect the pickup plan; do not scale a professional baseball layout by an assumed factor. In fast pitch, distinguish the pitcher’s circle from the baseball mound. Bat contact, catcher/glove detail and runner movement still need separate zone tests.
+Recommended comparison: start with a permitted protected plate-area shotgun, compare parabolic aim at the same target, then retain an independent ambience source. Test left- and right-side batter positions, base approaches and an outfield target. A closer perimeter can improve action level while increasing exposure to foul balls, nearby cheering and equipment strikes. Operator shelter from balls must be assessed by the venue, not inferred from a small fence or from an acoustic range test.
+USA Softball’s 2026 Supplement 35 allows tournament-committee-authorized media on the field under conditions. It requires photographic equipment to be carried and says equipment, including tripods, cannot be left on the ground. It is not a blanket audio-plant authorization; stay at the approved protected perimeter unless the competition expressly approves another compliant arrangement. [5]
+Fallback for either diamond sport: prioritize a usable plate source plus ambience when channels or access are limited. Use another approved fixed angle or a protected parabolic position if screening spoils the preferred pickup. Accept missing distant glove detail rather than adding hardware in live-ball areas. Never stage real swings, hard-ball throws or collisions for an audio setup test.
+# Live production checks and outdoor protection
+# Headroom belongs to the whole signal chain
+Test the nearest and loudest credible event: an excited nearby voice, a naturally occurring whistle at a safe distance, bat or glove transient, crowd peak and PA announcement. Do not generate hazardous peaks for testing. Check capsule/electronics capability, mic preamp or transmitter input, receiver output, converter, mixer bus and destination. A low output fader does not undo upstream clipping.
+As a classroom starting recommendation, set the loudest safe rehearsal peak near -12 dBFS at the digital input and retain additional margin when the actual event could be louder. This is not a delivery loudness standard or a guarantee against overload. Shure’s VP83F manual gives a model-specific -12 to -6 dB peak recommendation and separates input gain from headphone/output adjustments; use the actual equipment’s instructions. [17]
+A suitable pad may help an input stage but cannot always cure capsule overload; its location matters. A high-pass filter may reduce residual wind or handling rumble, but cannot repair clipped audio. Avoid removing useful body from action sounds merely to imitate a thin parabolic channel. Adjust headphone listening level separately and keep environmental awareness.
+# Overlap and camera timing
+Solo each action source, then combine the intended pair and check stereo and mono. Two microphones receiving the same transient at different times can produce comb filtering or a doubled attack. Polarity inversion is not time alignment. Prefer a dominant zone mic or a controlled handoff when blending is worse. A delay optimized at one point will change as the source moves. [18]
+Check action sync at the actual program destination after camera cuts and replay routing. Acoustic travel time, wireless/DSP and video processing all contribute. Coordinate compensation with the production engineer; do not chase changing acoustic distance with arbitrary delays. Camera-mounted pickup follows the camera’s position and direction, not necessarily the ball or the desired sound.
+Keep commentary, action and ambience independently controllable. Broadcast effects normally remain off the venue PA and team/official communications. If reinforcement is explicitly required, route and check that feed separately at a modest level; do not deliberately provoke feedback in a stadium.
+# Wind rain mounting and withdrawal
+Use compatible suspension, basket/fur protection and flexible cable strain relief. Prevent cable or fur contact with the mic and internal basket. Rycote documents handling/cable isolation and wind protection; quoted attenuation figures are product claims under particular conditions. Windscreens are not waterproof housings. [14]
+Verify rain, temperature and connector ratings for every component. Keep approved connections protected and cables outside drainage or traffic routes; use venue-approved crossings and qualified electrical support. Secure stands and elevated mounts with rated hardware and the venue’s wind/load plan. Any ballast or protection must itself remain out of access and run-off space. Rycote’s Windshield Rain Jacket is intended between takes, not while recording. [15]
+Follow the event weather plan and leave equipment rather than delaying evacuation. NWS guidance calls for an identified lightning monitor, safe substantial-building or suitable hard-topped-vehicle shelter, and at least 30 minutes after the last thunder before outdoor activity resumes. Dugouts and open rain shelters are not safe lightning shelters. Resume only under the event’s authorized plan. [16]
+# Guided placement lab and coordinate plan
+Use an inactive, authorized outdoor training area with consenting adults. No real match, contact, bat swings, hard balls, thrown objects or loud whistle tests. Compare live monitored sound only; submit the diagram and written observations. The modest source tests demonstrate coverage and movement, not the exact timbre or peak level of a real sport.
+# Set the geometry before listening
+Suggested classroom geometry: mark a 30 by 20 metre rectangle. Put comparison mark M at (15, -6), outside the rectangle, and fixed ambience mark E in the authorized crew strip. All coordinates are in metres. This six-metre offset is a hypothetical training layout, not a sport safety rule. The supervisor may enlarge the clearance or relocate the entire exercise.
+Illustrative training plan only. Dashed lines indicate target directions; they do not define polar patterns or live-event safe zones. E represents a separately permitted ambience position.
+Target
+Coordinates
+Horizontal range from M
+Aim relative to straight ahead
+A
+(15, 4)
+10.0 m
+0 degrees
+B
+(5, 10)
+18.9 m
+32 degrees left
+C
+(15, 18)
+24.0 m
+0 degrees
+Ranges are plan-view calculations rounded to 0.1 metre, not acoustic performance specifications. Measure the slant distance to the actual source height. Start the fixed shotgun at approximately 1.2 metres capsule height only if that mount is approved; log the parabolic capsule and dish-axis height separately.
+# Run the comparison and document the result
+Controlled practice versus live coverage: a studio or inactive-field session allows repeatable sources, closer authorized positions and one-variable comparisons. A match adds unpredictable peaks, crowd/PA spill, camera cuts and restricted movement. Do not assume a successful quiet rehearsal proves stadium isolation. During live coverage, use approved sector changes and handoffs; do not reposition mounts through active play.
+1. Assign roles.  Name the supervisor/safety observer, source assistant, microphone operator and destination monitor. Draw no-entry areas, the permitted turn arc, camera frame, PA/crowd direction, cable route and clear withdrawal path. The safety observer can stop the exercise.
+2. Build three independent feeds.  Use a shotgun, the correctly assembled parabolic and fixed mono or XY ambience. Inspect power/interface compatibility, focus, suspension, wind protection and mounts. Compare the two action microphones sequentially at M; do not assume their capsules share a coordinate when standing side by side.
+3. Establish a baseline.  At A, repeat ordinary speech and modest handclaps at the same source position and orientation. Set each input for headroom; log gain, height, exact capsule location and aim. Keep settings fixed within each microphone’s distance/aim sequence. Compare tone and target-to-background balance at similar monitoring loudness, so a louder output is not mistaken for better isolation.
+4. Test range and aim.  Repeat at B and C. Aim each action mic on axis, then offset its axis by 10 and 20 degrees horizontally as deliberate classroom trials. Note lost articulation, high-frequency change, background and handling noise. The offsets do not assert a universal acceptance angle. Return to A to check repeatability.
+5. Test height and masking.  At approved marks, compare the shotgun near 1.2 metres and approximately 0.6 metres capsule height, with the axis re-aimed at the same source. Keep both supports out of the source path. Have an assistant make ordinary background speech at an authorized crowd mark, first off axis and then nearer the target direction. Do not amplify it to stadium levels. Check physical screening only with a safely placed stationary barrier approved by the supervisor.
+6. Rehearse motion and handoff.  The source assistant walks slowly from A toward B and then C, repeating ordinary speech. The parabolic operator remains at M and turns only inside the marked arc. The mixer changes to the fixed source or ambience when tracking becomes unusable. Compare the handoff with both action channels open; listen for a changed attack, hollow tone or a double arrival.
+7. Rehearse a failure.  The supervisor calls a simulated revoked position, wind change or lost action channel. Mute/select feeds from the safe operating position; do not unplug powered connections or introduce faults in wet equipment. Confirm the fallback at the destination and announce the remaining coverage gap.
+# Student observation sheet
+Event or training layout __________________  Date __________Rule edition and approving person __________________________Target sound and intended perspective ________________________
+Trial
+Position range height aim
+Detail versus background and tone
+Peak and fallback
+Shotgun A on axis
+Parabolic A on axis
+Shotgun or dish B and C
+10 and 20 degree aim errors
+Height or background change
+Moving target and handoff
+Fixed ambience and mono check
+Log microphone/dish model, capsule pattern and focus; wind and source orientation; channel gain and meter location; permission for each mount; camera obstruction; safe arc and withdrawal path. Record observations separately from predicted performance.
+Pass criteria: keep all positions and movement authorized; identify useful detail and ambience-only zones; demonstrate a safe handoff and failure response; retain unclipped rehearsal peaks at the observed stages; explain frequency-dependent aim and why fixed delay cannot solve all moving-source overlap. Submit one annotated map, the completed observations and a sport-specific fallback plan.
+# Critical evidence audit and curriculum connections
+# Points of agreement
+Relevant technical sources agree that position and direction affect detail and background. Shure explains frequency-dependent shotgun rejection; Klover requires correct capsule/focus and aim; Wildtronics relates reflector performance to geometry and frequency. DPA separates action and ambience. These principles establish neither a universal range nor mounting permission. [6–12]
+# Where approaches differ
+Shotguns and parabolics favor selected action, while wider fixed pickup favors geographic continuity. TopVision’s documented fixed-cardioid soccer arrangement differs from the commonly promoted shotgun and parabolic approaches; its higher channel count and fixed positions answer a different coverage problem. The case does not prove cardioids are always preferable. [6, 8, 13]
+Klover’s foot-aiming suggestion is for the MiK 26 in a particular distant-player geometry. A plate, a close player or another collector may need a different aim. Manufacturer range, rejection and wind-attenuation claims need their stated conditions and a test of the assembled system. [9, 10, 14]
+# Direct contradictions and resolution
+Klover’s FAQ suggests acoustic wavelength is not relevant in the same way as electromagnetic wavelength to a parabolic collector. Wildtronics explicitly derives gain and reflector/focus tolerance using acoustic wavelength. Teach the wave-acoustic interpretation: aperture relative to wavelength matters. Hearing low-frequency sound at the capsule does not establish low-frequency reflector gain or narrow low-frequency pickup. Klover itself acknowledges greater high-frequency amplification. Use its hardware instructions without adopting the wavelength claim. [9, 11, 12]
+Application guidance and permission address different questions. DPA lists possible on-field and surface-mounted pickup; IFAB prohibits microphones on particular structures. These statements are not a technical contradiction or an exemption. The competition rule controls the installation. [1, 6]
+# Important gaps and confidence
+No cited source establishes an all-sports safe setback, universal range or microphone count, or event-specific mounting permission. Public rulebooks do not replace a production plan. The proposed layouts, handoffs, classroom geometry and headroom starting point are recommendations to test, not league standards.
+Confidence is high in the cited rule provisions, focus/aim principles and the distinction between input overload and output level. Confidence is moderate in the proposed layouts as useful starting comparisons; actual performance depends on source, hardware, geometry, noise, weather and access. A location’s safety and authorization require current local verification.
+# Curriculum connections
+Delivered companion lessons: B09 Commentators and Announce Positions for a stable independent speech feed; B10 Sideline and Post Event Interviews for permitted interview access and handoffs; B11 Athletes Coaches and Officials for participant mounting and signal-use approval; B12 Parabolic and Tracked Action Pickup for collector assembly, focus and tracking fundamentals.
+Planned continuations are B14 Court Racket and Ice Sports and B17 Crowd and Complete Sports Coverage.
+# Sources and rule locators
+Primary sources checked October 4, 2026. Current rules and product documentation take priority for each event. Older technical articles remain useful for stable principles; production stories describe their own date and setup. Linked pages may contain media, but this lesson includes no audio examples. Bracketed numbers in the text refer to these clickable source titles.
+[1] The IFAB  Laws of the Game 2026 27 Law 1 The Field of Play <https://www.theifab.com/laws/latest/the-field-of-play/>
+Section 1.12 prohibits extraneous equipment on goals, nets and flagposts. Check the edition used by the competition.
+[2] NFL Football Operations  Game and Stadium Preparation <https://operations.nfl.com/game-operations-logistics/preparation-safety/game-and-stadium-prep>
+Network sideline security meeting and broadcasting-policy coordination; an NFL process rather than an all-football rule.
+[3] World Rugby Passport  Law 1 The Ground <https://passport.world.rugby/laws-of-the-game/laws-by-number/1-the-ground/>
+Law 1.3(e) perimeter dimensions; Laws 1.1 and 1.12 ground safety. Applies to rugby union.
+[4] Major League Baseball  2026 Official Baseball Rules <https://mktg.mlbstatic.com/mlb/official-information/2026-official-baseball-rules.pdf>
+Rules 4.05 and 4.07, printed page 17; Rule 8.01(e), printed page 99. Confirm park-specific ground rules separately.
+[5] USA Softball  2026 Official Rules of Softball <https://www.usasoftball.com/wp-content/uploads/sites/120/2026/01/1-12-2026-Rule-Book.pdf>
+Rules Supplement 35 Media Coverage, printed page 141, PDF page 142; Rule 2 for playing field and ground rules.
+[6] DPA Microphones  Mics for Sports Broadcast <https://www.dpamicrophones.com/application/sports-broadcast/>
+Manufacturer application overview of action, speech and ambience roles. Its placement suggestions do not grant venue access.
+[7] Shure Matthew Koschak  Choosing a Shotgun Microphone The Long and Short of It <https://www.shure.com/nl-NL/insights/choosing-a-shotgun-microphone-the-long-and-short-of-it>
+May 17, 2016. Interference-tube response, frequency-dependent directivity and the limits of microphone reach.
+[8] Shure  Why Broadcast Audio Is Due for a Revolution <https://www.shure.com/en-US/insights/why-broadcast-audio-is-due-for-a-revolution>
+September 12, 2025. Describes sports shotgun/parabolic use and aim sensitivity; array superiority statements are product promotion.
+[9] Klover  MiK FAQs <https://www.kloverproducts.com/klover-mik/faqs>
+Model-specific capsule, focal reference and support options. Wavelength discussion is critically assessed in this lesson.
+# Sources and rule locators continued
+[10] Klover Paul Terpstra  Proper Operation of the Klover MiK 26 Parabolic Mic <https://www.kloverproducts.com/blog/proper-operation-of-the-klover-mik-26-parabolic-mic>
+November 2, 2017. Model-specific aiming and fatigue guidance; foot aiming requires a geometry check.
+[11] Wildtronics  Parabolic Microphone Theory Use and Performance <https://www.wildtronics.com/parabolicarticle.html>
+Reflector size, focus and capsule-pattern matching. Comparative performance statements are manufacturer claims.
+[12] Wildtronics  Accuracy Requirements in Parabolic Microphone Reflectors <https://www.wildtronics.com/parabolicaccuracy.html>
+Acoustic wavelength, theoretical gain and geometry tolerance; ideal predictions are not universal field range.
+[13] Sennheiser and TopVision  Authenticity in Football Broadcasting <https://newsroom.sennheiser.com/broadcast-production-partner-topvision-ensures-authenticity-in-football-broadcasting>
+October 16, 2025. Producer-specific soccer case describing 17 fixed cardioid pitch mics and separate ambience.
+[14] Rycote  Modular Windshield Kit <https://www.rycote.com/microphone-windshield-shock-mount/modular-windshield-kit/>
+Manufacturer wind, suspension and cable-isolation guidance; attenuation is conditional product data.
+[15] Rycote  Windshield Rain Jacket <https://www.rycote.com/microphone-windshield-shock-mount/windshield-rain-jacket/>
+Product is for weather protection between takes and is not intended for use while recording.
+[16] NOAA National Weather Service  Lightning Safety and Outdoor Sports Activities <https://www.weather.gov/safety/lightning-sports>
+Weather monitor, stop/shelter plan and at least 30 minutes after last thunder; excludes dugouts as safe shelter.
+[17] Shure  VP83F User Guide <https://pubs.shure.com/view/guide/VP83F/en-US.pdf>
+Adjusting Microphone Gain, page 11 of 21. Model-specific peak range and input-versus-output distinction.
+[18] DPA Eddy Bogh Brixen  Polarity Phase and Delay <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+Distinguishes polarity inversion, phase relationships and delay; explains microphone path differences.

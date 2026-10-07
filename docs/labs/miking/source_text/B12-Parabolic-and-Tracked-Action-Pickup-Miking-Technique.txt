@@ -1,0 +1,71 @@
+# Parabolic and Tracked Action Pickup
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B12  •  Miking technique
+A parabolic reflector gathers sound from a narrow angular region into a microphone at its focus. Sports operators use it to follow distant action from an approved position. It can reveal useful high-frequency detail, but its tonal balance, directivity and success depend on frequency, dish design, aim, venue noise and source level. This lesson covers physical placement, tracking and alternatives for live sound and broadcast. No audio examples are included.
+# Define the sound and the permitted operating area
+Choose a target before choosing a dish: ball/bat contact, shoe or skate detail, calls, or a broader action bed. Locate its expected travel, the crowd/PA direction, cameras, sideline markings, exits and other crew. Obtain the event’s current rules and an assigned operating zone; establish who may enter, where the operator can turn, and where a support or cable may stand. Remain out of play and athlete run-off areas. A good angle does not justify moving into an unsafe or unapproved position. The NFL’s documented sideline restriction meeting is one sport-specific example, not a general credential. [8]
+A parabolic is often a supplementary action microphone. Keep commentary, fixed field effects and crowd ambience on separate controllable channels. A stationary target may suit a fixed approved mount; a fast, uncertain trajectory may need two coordinated safe positions, a wider fixed mic, or deliberate handoff rather than an operator chasing play. [2, 3]
+# Understand what the collector changes
+For an incoming direction near the dish axis, a correctly shaped reflector sends useful reflected energy toward its specified focal region. Dish diameter relative to the sound wavelength matters: practical dishes are much more selective and effective at higher frequencies than at low ones. A low-frequency sound can still reach the capsule directly; that does not prove low-frequency gain or narrow low-frequency pickup from the dish. Off-axis targets often lose high-frequency definition first. A microphone, special baffle/booster, dish geometry and processing can alter a particular product’s response. [1, 4–6]
+The source’s distance, level, orientation, wind, crowd and reverberation also change the result. A reflector does not isolate all sound along its axis or turn any stated distance into a reliable working range. At a given frequency, a crowd or PA in the target direction can be favored along with the play. Test source-to-background balance at the actual venue and mix destination. [1, 4, 5]
+# Assemble and focus the specific system
+Decision
+Starting method
+What to check
+Capsule and focus
+Use the maker’s mic type and mount. Place the acoustic element at the collector’s specified focal position; measure from the maker’s stated reference surface, not an estimated dish center. Recheck after travel. [1, 4]
+A small focus error may weaken higher frequencies. Different Klover models specify different focus distances; a built-in Wildtronics system has its own fixed geometry.
+Pattern and orientation
+Follow the collector’s design: Klover 16 accepts omni or wide cardioid, while Klover 26 calls for omni; some integrated systems use a proprietary capsule/array. Do not replace it with a narrow shotgun by assumption. [1, 4, 6]
+A directional capsule can reject reflected rays from the dish edge; orientation and any direct-wave treatment are model dependent.
+Support and cable
+Use the intended handle, isolated mount or manufacturer-approved monopod/support. Secure connections and route a short cable without touching the dish, dragging in a walkway, or impeding release/movement. [1, 2, 6]
+Hand/handle squeaks, cable bumps, dish flex, fatigue, snagging, trip hazards and emergency clearance.
+Wind/weather
+Fit a cover or windscreen compatible with the dish and capsule, and test it with the actual wind and rain plan. A cover can alter pickup and must not shift focus or touch the element. [1, 7]
+Wind overload, wet connectors/electronics, cover noise and changed high-frequency response; pause when exposure exceeds equipment ratings.
+# Track by ear as well as by sight
+Set up at a permitted mark and listen on isolated headphones at a safe level while another crew member watches surroundings where needed. Use the product’s aiming reference or dish axis, then make small turns to locate the useful action and background. Klover’s 26-inch guide suggests aiming below a distant player in some football settings so the pickup region includes the player but less of the crowd beyond; its stated cone is model-specific. Re-aim as range and elevation change. Do not generalize that angular figure or foot-aiming tactic to another dish or sport. [2]
+Anticipate a likely action zone and move smoothly within the approved arc. Let a fixed mic or another operator cover zones you cannot turn toward safely. Compare a tracked parabola to a fixed permitted mic and an ambience channel at a normal action point and a crowd peak. Watch for dish handling, wind and off-axis coloration. In reflective indoor venues a close permitted perimeter microphone may give more natural detail than a long-distance parabola; decide by observed target-to-background ratio and tone, not an equipment label. [2, 3, 5]
+Leave gain headroom for the nearest or loudest event, especially impact, whistle, celebration and nearby shouting. A high-pass filter can tame rumble but cannot restore overload or missing low-frequency directional gain. If two action mics cover the same source, monitor their arrival difference and polarity when combined; choose or time-align only when editorial routing and variable movement make that useful. Do not assume a fixed delay remains correct as the action moves. [3, 5]
+# Choose the fallback deliberately
+Alternative
+When useful
+Trade-off
+Approved perimeter shotgun/boom
+Action passes a known closer zone; operator/mount can stay outside play. [3]
+Pickup depends on angle and acoustics; no distant mic rejects sound from the same direction.
+Fixed boundary or protected effect mic
+A discrete, predictable permitted surface/structure location.
+Mounting approval, vibration, impact and weather may rule it out.
+Wider ambience pair or fixed effects
+Tracking fails or atmosphere is the editorial goal.
+Clearer venue perspective, less isolated action detail; label the source accordingly.
+Second authorized parabolic position
+Separate action zones with crew/radio capacity.
+Requires coordination, RF/cable planning and a handoff to avoid doubled, colored transients.
+# Guided placement lab
+1. Draw one sport’s approved operating zone, subject path, camera line, PA/crowd direction and emergency clearance. State the desired target sound and a no-entry boundary.
+2. Assemble the actual parabolic system by its manual. Record model, dish diameter, capsule type/orientation and focal reference; check the element’s position without touching a sensitive capsule or damaging the reflector.
+3. At a safe simulated action area, have an assistant produce repeatable non-hazardous transients and ordinary speech at several angles. Compare center aim, a small aim error and a deliberately off-axis target. Listen for high-frequency change and unwanted background; avoid presenting a distance as a guaranteed specification.
+4. Compare the parabolic with one approved fixed or perimeter microphone and a separate ambience channel. Test wind protection, cable/handle movement and a simulated crowd/PA change.
+5. Rehearse tracking while staying inside marks. Handoff to the fixed mic when the target leaves the safe arc. Test a quiet target and a louder nearby transient for headroom at the destination.
+6. Submit a setup diagram, focus/mic check, observed angular and tonal changes, coverage gaps, wind/handling findings, safe operator arc and fallback routing.
+Pass criterion: the student keeps the approved position, tracks or hands off without unsafe movement, explains frequency-dependent focusing and documents when another microphone produces the more useful action or venue perspective. No audio examples.
+# Critical evidence audit
+# Agreement
+Klover and Wildtronics both require a correct focus and careful aim, and both acknowledge that higher frequencies benefit more from a practical collector. Their model designs differ, so capsule pattern, physical orientation and focal measurement must come from the system being used. Shure’s sports broadcast discussion independently notes that small aiming errors can lose high-frequency action detail. [1–6]
+# Direct contradiction and resolution
+Klover’s FAQ speculates that acoustic wavelength is not relevant in the same way as electromagnetic wavelength, while Wildtronics explicitly relates dish gain and accuracy to acoustic wavelength. The latter is consistent with wave acoustics: long wavelengths relative to aperture give weak focusing. Klover also acknowledges stronger high-frequency gain and says a low-frequency sound may be captured. Those claims can coexist once direct capsule pickup is distinguished from reflector gain. Do not infer dish gain from hearing bass in a recording. [1, 4, 5]
+# Gaps and confidence
+No cited source establishes a universal capture distance, an all-sports safe operator location, or a frequency response that applies to every assembled dish. Manufacturer examples describe their own products and conditions; the NFL sideline meeting illustrates one event’s control process. Confidence is high in focus, frequency and aim principles; appropriate technique and safe position require a venue test, current event approval and the exact collector manual. [1–8]
+# Sources and curriculum connections
+Official manufacturer guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] Klover, MiK FAQ: models, focus, capsules, response and range <https://www.kloverproducts.com/klover-mik/faqs>
+[2] Klover, Proper Operation of the MiK 26 <https://www.kloverproducts.com/blog/proper-operation-of-the-klover-mik-26-parabolic-mic>
+[3] Shure, Why Broadcast Audio Is Due for a Revolution <https://www.shure.com/en-US/insights/why-broadcast-audio-is-due-for-a-revolution>
+[4] Wildtronics, Accuracy Requirements in Parabolic Reflectors <https://wildtronics.com/parabolicaccuracy.html>
+[5] Wildtronics, Parabolic Microphone Theory and Performance <https://wildtronics.com/parabolicarticle.html>
+[6] Wildtronics, Universal Parabolic Microphone Manual <https://www.wildtronics.com/documents/Wildtronics%20Universal%20Parabolic%20Mic%20Manual%202015.pdf>
+[7] Klover, Wind Cover for MiK 16 <https://shop.kloverproducts.com/products/wind-cover-for-klover-mik-16>
+[8] NFL Football Operations, Game and Stadium Preparation <https://operations.nfl.com/game-operations-logistics/preparation-safety/game-and-stadium-prep>
+Cross-links: B11 approved body-worn pickup; B13 field and diamond sports; B14 court, racket and ice sports; B17 complete sports coverage.

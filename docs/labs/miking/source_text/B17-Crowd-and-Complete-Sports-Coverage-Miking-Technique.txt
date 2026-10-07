@@ -1,0 +1,319 @@
+# Crowd and Complete Sports Coverage Miking Technique
+Pro Audio Training Academy   Sports and Broadcasting Lab B17
+Build a complete sports sound perspective from separately controllable commentary, action and audience feeds. Compare minimal and extensive layouts, stereo and immersive ambience, and the actual mono/downmix outputs. The best layout covers the event coherently from permitted positions and survives loss of detail. This final sports lesson integrates earlier placements rather than replacing their sport-specific restrictions. No audio examples are included.
+# Learning objectives
+Define the listener viewpoint and map useful action and crowd sectors before adding inputs.
+Choose microphone response, pattern, sensitivity, headroom, geometry and protection for each role.
+Combine feeds without uncontrolled overlap; distinguish polarity inversion from delay and check arrival differences.
+Verify commentary, stereo/immersive routing, mono/downmix, peak margin, picture timing and fallback coverage.
+# Source behavior and desired perspective
+Crowd sound includes distributed conversation, local voices, chants, applause and sudden collective reactions. PA announcements and music can become strongly correlated sources in many microphones. The same pair may hear a diffuse room tail and a clearly localized nearby spectator. Empty-room tests cannot predict a full audience’s absorption, noise or reaction peaks.
+Choose a stable main-camera or audience viewpoint, then decide which action deserves closer detail. A dramatic close effect and distant ambience need not match in distance, but their combination should remain intelligible and believable. Wittek’s manufacturer-authored sports paper distinguishes main ambience, audience spots, action effects and commentary as complementary roles. It supports planning for picture and atmosphere; its product preferences are recommendations. [1]
+# Scope and authority
+Research checked 7 October 2026. Every event still requires its adopted sport rules, venue plan, rights and safety authority. All classroom distances, angles, gains and channel counts below are Academy starting recommendations unless explicitly attributed. They do not authorize real-event positions, overhead work or performance-area mounts.
+# Plan minimal and extensive coverage
+# Start with roles and a fallback
+Academy minimal stereo example: one commentary microphone, one permitted mono action microphone and one stereo audience pair: four microphone input channels. Keep speech, action and ambience separately controllable. A simpler mono production can use one audience microphone, accepting reduced spatial information. If action pickup is denied, the wider venue feed remains a valid fallback; do not substitute an unapproved plant.
+Role
+Minimal stereo example
+Extensive example and reason
+Commentary
+One close speech input.
+Two commentators on independent inputs for level, mute and backup control.
+Action
+One approved fixed sector.
+Four authorized sector inputs, with a named dominant feed or handoff.
+Audience
+One stereo pair from a useful permitted viewpoint.
+Four-channel main ambience plus two stereo audience spots where the main array leaves real gaps.
+Count
+4 microphone channels.
+14 microphone channels: 2 + 4 + 4 + 4. This excludes line feeds, communications and spare channels.
+Fallback
+Audience pair carries venue identity when action is lost.
+A documented surviving subset; added inputs must not create an unmanageable single failure point.
+An extensive layout earns its extra channels through coverage that the smaller layout demonstrably lacks. Map each contribution, shared sources, operating staff and service access. More microphones also create more potential spill, peaks, cable routes and timing differences. Allocate time for monitoring and rehearsal, not simply installation.
+# Choose what must remain audible
+Keep the event’s speech and essential action useful through each tested output. Do not rely on a loud isolated spectator or commentary spill to supply the entire venue bed. Rehearse a commentator mute, action-sector failure, crowd-spot failure and loss of the main array. Decide in advance which safe feed replaces each role and how to avoid a level jump.
+Record microphone channels and approved supporting feeds separately when the production plan allows. Log routing, channel names, gain, filters, picture references and processing. A post-production edit can choose a different balance, but it cannot recover an overloaded capsule or a sound never captured.
+# Permitted crowd and action positions
+# Survey before setting a microphone
+Compare a permitted broad viewpoint with a closer audience-sector position. At the broad point, listen for representative venue tone and coherent crowd scale. At the closer point, listen for one voice, aisle movement, rail vibration, drinks, seat noise and PA dominance. Aim across a useful audience region rather than directly at the nearest person. Keep rear and side lobes in mind when choosing the actual pattern.
+Measure capsule height, slant range to the selected audience/action region, axis, support footprint and movement clearance. A higher position may hear a broader area but needs approved access and mounting. A lower position may increase local voices and obstruction. No universal stand height or crowd distance is established. Keep capsules, windscreens, cable loops and support hardware inside the approved envelope.
+Position choice
+What to compare
+Constraint and fallback
+Broad audience viewpoint
+Venue scale, PA balance and gaps at both ends.
+Approved platform/perimeter only; use mono coverage if stereo cannot fit safely.
+Local crowd spot
+Target group versus one spectator and nearby noise.
+No blocked seats, aisles, exits, accessibility routes or camera/advertising sightlines.
+Action sector
+Near/far useful tone and movement handoff.
+Sport-specific authorization; wider action or ambience if a plant is denied.
+Elevated or suspended array
+Coverage, installed wind protection and channel orientation.
+Venue-approved engineered installation by qualified staff; a ground alternative must be ready.
+Tracked operator
+Acoustic sector and permitted operator arc.
+Do not follow the source into performance, run-off, medical or emergency space.
+# A rule value is not a microphone permission
+Basketball example: FIBA Official Basketball Rules 2026 v1.1, valid 1 October 2026, Article 2.5.1 requires obstructions to be at least 2 m from the court. This is a sport-rule constraint, not a recommended capsule distance or a guarantee that a location 2 m away is authorized. The event may impose larger clearances and additional camera, bench, spectator or medical restrictions. [2]
+Use B13–B16 for the relevant sport family, then verify the actual adopted edition and event instructions. Do not apply FIBA clearance to football, ice, gymnastics, motorsport or aquatic events. Obtain permission for each mount, cable route and operator movement; preserve athlete, official, medical, rescue and emergency access.
+# Choose microphones for crowd and detail
+# Pattern and response are operational choices
+For broad ambience, compare compact directional pairs with an omni or wider-pattern alternative if available. Directional pickup can reduce one unwanted sector; omnis can retain low-frequency venue character but may collect more nearby movement and PA. A figure-eight has two sensitive lobes and requires care around wind and unwanted rear sound. A shotgun is useful for selected detail, but its rejection varies with frequency and does not create a universal reach. See B12–B16 for detail choices.
+Use response and polar plots at relevant frequencies, not just a pattern name. Compare off-axis cheers, PA and moving action for tonal changes. Preserve useful crowd body rather than applying a high-pass filter automatically. Filter only after identifying wind, handling or structure noise and auditioning the effect on the intended source.
+Verified example
+Source information
+Practical limit
+SCHOEPS MK 4 with CMC 1
+Cardioid; listed standard range 40 Hz–26 kHz; sensitivity 15 mV/Pa; maximum 135 dB SPL at THD <0.5% with CMC 1. [3]
+MK 4 is a capsule requiring the compatible amplifier and powering. Other amplifier combinations have different limits.
+SCHOEPS CCM 4
+Compact cardioid; manufacturer lists maximum 136 dB SPL at THD <0.5% with P48, 128 dB SPL with P12; 20 Hz low cut at 12 dB/octave. [4]
+Output/load, connector variant, wind protection and mounting need verification. Do not transfer a Colette amplifier limit to CCM.
+Sennheiser AMBEO VR MIC
+Four cardioids in tetrahedral A-format; 20 Hz–20 kHz; 31 mV/Pa at 1 kHz; four P48 supplies. Published maximum is 130 dB(A) at 1 kHz and 1% THD. [5]
+Retain the manufacturer’s unusual dB(A) wording and test condition. It is not a universal crowd peak rating or permission for exposure.
+# Noise output and peak capacity
+Sensitivity determines voltage for a given pressure; it does not establish safe exposure or usable live-event margin. Compare self-noise and preamp noise during quiet passages, then verify capsule, adapter/transmitter, receiver, preamp, converter and buses against credible peaks. A pad may protect the stage after it but cannot repair earlier overload. Use secure compatible supports, suspension and strain relief; never cover required capsule ports. [3–5]
+Academy gentle-rehearsal starting point: strongest repeatable input peaks near −12 dBFS, with additional margin for unpredictable live reactions. This is not a loudness target, broadcaster specification or guarantee against untested peaks. Headphone level is a separate control.
+# Stereo audience geometry and comparison
+# Set orientation before changing width
+Label left/right from the chosen listening viewpoint. Record the array center, capsule heights, individual axes, spacing and the desired audience region. Compare a central gentle source with left and right sources before covering a full event. A camera reverse angle does not automatically require swapping audience channels; agree on a consistent production perspective.
+Arrangement
+Geometry and channel behavior
+Comparison to make
+Coincident XY
+Capsules as nearly coincident as the approved hardware permits; two directional axes. Academy trial: cardioids at 90° included angle.
+Level-based width versus off-axis tone; mono still requires a check.
+ORTF
+Two cardioids, 17 cm capsule separation and 110° included angle. These are sourced geometry values. [6]
+Level and arrival differences; compare center/side image and mono coloration.
+Spaced pair
+Academy trial: two comparable omnis 0.5 m apart, aimed/oriented according to their design.
+Greater arrival differences for shared sources; log separation and listen rather than assuming width is better.
+Mid Side
+Near-coincident forward Mid plus side-facing figure-eight, with verified positive lobe orientation.
+Decode once; compare width, left/right identification and normalized mono sum.
+# Mid Side classroom matrix
+For a basic symmetric classroom decoder, L=M+kS and R=M−kS, where k sets Side contribution. Then (L+R)/2=M algebraically. This requires matching Side paths and opposite signs; independent processing, unmatched gains or another decoder changes the result. Reserve summing headroom. Start with a documented modest width, verify a source at the positive Side lobe appears on the intended side, and compare mono. This matrix is an Academy explanation, not a universal product preset.
+A near-coincident array is compact but not automatically flawless in every room. A spaced array can be spacious yet color a common PA announcement or action transient in mono. Choose by the actual coverage and output checks. SCHOEPS documents ORTF geometry and its CCM 4 as a possible XY or Mid microphone; claims of superior sound remain manufacturer judgments. [4, 6]
+# Close and distant audience perspective
+Repeat from a closer approved classroom viewpoint without changing source action. Compare the nearest voice, overall crowd scale and room decay before and after loudness matching. A local spot adds a specific sector; it need not replace the stable main bed. Do not add invented cheers or substitute unrelated audience reactions in factual live coverage.
+# Immersive ambience and channel integrity
+# Define capture and delivery separately
+Channel-based surround, height-channel capture and Ambisonics require different routing. Name the delivered layout, channel order, speaker mapping, decoder/renderer, metadata and stereo/mono versions before setting up. Additional microphone channels do not automatically produce a correctly mapped immersive program. Verify each output by identification at conservative playback level.
+SCHOEPS ORTF-2plus2 is a four-channel hemisphere spot system with horizontal and vertical extension. Its channels feed two adjacent base channels and their corresponding heights, such as L/R and Lh/Rh. It is not a complete six-channel 5.1 microphone or an all-around height bed by itself. Its spatial-quality language is a manufacturer claim, to be evaluated in the actual installation. [7]
+# Ambisonic capture is not four speaker feeds
+The AMBEO VR MIC’s four tetrahedral capsule signals form A-format and require its documented conversion. Sennheiser specifies separate tracks, identical preamplifiers, equal channel gains and linked gain changes; small mismatches can affect spatial imaging. Electrical channel matching does not calibrate absolute acoustic response. Preserve the original capsule channels and their labels. [8]
+Log microphone orientation, converter version, selected physical orientation, resulting B-format convention, channel order and normalization. Do not interchange FuMa and AmbiX conventions or assume the four raw capsule tracks are L/R/LS/RS. Use the supported converter and renderer, verify front/left/right/back with a gentle source, and audition decoded stereo, mono and the intended immersive layout. Independent AGC, unequal filters or per-capsule compression can disturb the matrix. Treat these checks as Academy workflow recommendations.
+Capture
+Mandatory identity checks
+Fallback
+Discrete base/height array
+Physical axes and numbered channels match intended base/height outputs.
+Verified base-layer or separate stereo feed; do not silently relabel height.
+A-format microphone
+All four capsule inputs, orientation and matched gain survive capture.
+Separate reliable stereo/mono pickup if a capsule or conversion path fails.
+Decoded program
+Decoder convention, output mapping and actual downmix are documented.
+Known-good stereo version rather than an unverified channel subset.
+Use approved independent support or an engineered remote installation; no improvised overhead hanging. Test installed protection and service access. Stereo-only classrooms may complete a routing plan for immersive coverage, but must mark unlistened immersive results as unverified. Headphone stereo alone does not validate every loudspeaker channel.
+# Combine commentary action and audience
+# Build a coherent balance
+Academy sequence: establish useful speech at a conservative reference level, add stable ambience, then introduce action detail for the selected sector. Check the full mix during quiet narration, excited narration, crowd rise and a natural cue. Keep feeds identifiable and independently controllable. Do not use a fixed speech-to-crowd ratio as a universal standard; the target audience, venue and delivery requirements decide the balance.
+Keep a stable crowd bed when commentary is muted for talkback. Listen for room sound changing with the commentary fader, local spectator dominance and action feeds adding duplicate PA. Prefer aim, position, close speech pickup and controlled overlap before heavy gating or compression. Compression can raise spill between transients; a fast crowd gate can make the venue disappear between phrases.
+Feed or bus
+Intended use
+Routing check
+Commentary
+Speech in the editorial program.
+Cough/mute operates on intended outputs; talkback and IFB are separate.
+Action
+Selected event detail with sector handoff.
+Named dominant feed; no needless simultaneous duplicated action.
+Audience
+Stable main bed plus justified local sectors.
+Mute a spot without collapsing event identity.
+International sound
+Agreed effects/venue mix without local commentary.
+Define inclusion of PA, music and interviews; rights and contract determine content.
+Venue PA or official system
+Only authorized reinforcement/operational feeds.
+Broadcast ambience does not enter a loudspeaker loop by default.
+Replay and program return
+Picture-related replay and monitoring.
+Avoid duplicate live/replay effects, delayed return recirculation and incorrect mix-minus.
+# Camera and editorial coordination
+Coverage supports the picture but a rapid camera cut need not trigger an equally rapid audience-perspective jump. Rehearse action-zone handoffs and replay transitions with the director. Do not place a stand where it obscures a camera, advertising or an official. Protect private, medical and team communications according to the production’s editorial and rights policy; a microphone’s reach does not create permission to broadcast speech.
+If venue reinforcement is required, the venue engineer must review routing and feedback margin at appropriate level. Do not deliberately provoke feedback. Maintain crew awareness, suitable hearing protection and low headphone levels; these recordings are not calibrated hearing-exposure measurements.
+# Polarity arrival differences and overlap
+# Separate sign from travel time
+Polarity inversion multiplies a signal by −1; it does not move the waveform in time. Delay shifts arrival and changes phase differently at different frequencies. DPA explains the distinction between polarity, phase and delay. Two microphones hearing a shared source can combine differently as the source moves, even when wiring polarity is correct. [9]
+Academy calculated example: with sound speed assumed 343 m/s, a 3.43 m path difference gives 10 ms arrival difference. For equal-level identical direct signals with one delayed by 10 ms, summed cancellation minima occur at 50, 150, 250 Hz and subsequent odd multiples of 50 Hz. These ideal values follow from phase opposition; real unequal levels, reflections and frequency response reduce or change the nulls. Speed depends on conditions. Do not interpret this classroom model as measured stadium timing.
+Shared source
+Diagnostic comparison
+Preferred response to a poor blend
+Moving action in two sectors
+Solo, pair and mono at near/middle/far positions.
+Select dominant sector or controlled handoff; do not chase one-point alignment.
+PA in detail and ambience
+Announcement onset, tone and room tail.
+Reduce redundant paths or re-aim from permitted points.
+Direct music feed and acoustic spill
+Electrical latency plus speaker-to-capsule travel.
+Coordinate timing; retain necessary room character without uncontrolled duplication.
+Commentary with room spill
+Mute/unmute speech and listen for bed change.
+Improve close pickup and maintain independent ambience.
+Stereo pair or matrix
+Center/side sources, channel identity and actual mono sum.
+Correct routing first; revise geometry or width if necessary.
+# Use delay for a named problem
+For a stationary shared transient, measure the arrival difference and test delay on the earlier channel, preserving an unprocessed comparison. Record the reference source and position. Retest elsewhere: fixed compensation for one point can worsen another, and may move the sound away from picture timing. Do not delay all ambience to make a local action transient appear coincident; the later room arrival may be part of the intended perspective.
+Check isolation and mounting before phase processing. A rigid rail mount can carry structure sound that an airborne reference does not contain. Different filters and DSP paths also change timing. Polarity tests are diagnostics, not a substitute for the documented final listening check.
+# Mono downmix loudness and picture timing
+# Listen through the actual conversion
+For a documented classroom stereo-to-mono trial, use M=(L+R)/2 and compare at matched listening loudness. This normalized arithmetic sum is not every broadcaster’s mono rule or pan law. Listen for missing center speech, changed action attack, thin PA, lost crowd body and excessive peaks. A correlation meter can help locate a problem but cannot replace listening; low correlation during diffuse applause is not automatically a fault.
+ITU-R BS.775-4, Annex 4, provides downmix equations for 3/2 source material and Annex 8 recognizes alternative surround coefficients. One listed stereo case is L′=L+0.7071C+0.7071LS and R′=R+0.7071C+0.7071RS. This is an example from the recommendation, not every codec or immersive renderer. Use the broadcaster’s coefficients and metadata and retain bus headroom. [10]
+The same ITU recommendation treats LFE as optional enhancement and distinguishes it from bass management. Keep essential engine, impact and venue body in appropriate main channels; do not make the event depend on LFE surviving downmix. Height/object/binaural rendering needs its own documented path. [10]
+# Input peaks differ from program loudness
+EBU R 128 v5, November 2023, specifies a general programme target of −23 LUFS; when impractical, such as live work, it permits ±1 LU. It gives a production linear-audio maximum of −1 dBTP, with possible lower distribution limits. These values apply when that delivery specification is adopted; obtain the actual broadcaster requirements. Measure the program, not just speech or a single input. [11]
+Check momentary/short-term behavior and integrated loudness with the configured meter and required workflow. Test excitement and combined peaks without forcing hazardous sound. Downmix or codec processing can change peak level. A limiter cannot undo preamp clipping; no isolated gain target certifies the complete delivery.
+# Verify sync at the destination
+Use an authorized visible gentle clap or another safe identifiable event and compare picture with the program at the actual destination. Log camera/video path, wireless/DSP, replay and audio delays. Correct persistent technical mismatch with the production engineer while preserving intentional acoustic distance. Recheck after route or replay changes. BS.775 references ITU-R BT.1359 for relative sound/vision timing; this lesson does not substitute a numerical tolerance for broadcaster policy. [10, 12]
+# Weather mounting and operational fallback
+Wind and handling can dominate quiet passages and consume headroom at peaks. Use compatible suspension, basket/fur protection and a flexible strain-relief loop that does not bridge the isolation. Compare installed tone, rain impacts and wind noise. Wind protection is not proof of waterproofing. Rycote’s Windshield Rain Jacket is intended between takes, not during recording. [13]
+Verify complete-system rain, temperature, humidity and connector limits. Qualified venue personnel must approve electrical arrangements and raised/suspended supports, loads, retention and service methods. No improvised drilling, ties or attachment to sport apparatus, barriers or timing systems. Keep cables outside spectator circulation and performance paths; use approved protection and crossings where authorized. Keep drainage and emergency access open.
+Failure or symptom
+Check
+Immediate prepared response
+One shout dominates
+Local voice, axis and distance.
+Use broad ambience; revise the spot from an approved position.
+Crowd disappears with speech
+Commentary spill or an aggressive gate.
+Keep independent ambience; review speech pickup/processing.
+Thin mono or doubled PA
+Overlap, polarity, arrival and decoder settings.
+Reduce redundant feeds; restore known-good mapping.
+Peak distortion
+Every input stage and summed/downmix buses.
+Reduce the affected gain or use suitable hardware and fallback.
+Wind rail or cable rumble
+Protection, mount and isolation bypass.
+Use sheltered independent coverage; processing is secondary.
+Lost immersive channel
+Cable labels, powering and converter inputs.
+Use verified stereo/mono fallback; identify the failed version.
+Weather access or emergency
+Event authority, shelter and withdrawal instructions.
+Mute affected channels and follow the safety plan.
+NWS sports guidance recommends shelter when thunder is heard and waiting at least 30 minutes after the last thunder before returning. Follow the event authority’s stoppage and evacuation instructions. Do not delay shelter to recover equipment. [14]
+# Rehearse continuity
+Name the surviving commentary, action and ambience paths and prepare labeled routing states. Test fallback at controlled level, including the resulting stereo/mono output. Assign an operator to monitor sums, route changes and overload indications. Record known limitations rather than suggesting every event can support the extensive plan.
+# Guided complete coverage lab
+# Prepare a safe mock venue
+Use an instructor-approved dry room with clear source, equipment and access areas. Required: multichannel recorder/mixer or DAW, headphones, secure supports, tape measure, a speech microphone, two matched/comparable cardioids and one action microphone. A figure-eight, extra audience pair or immersive array is optional. Participants use ordinary speech and gentle claps only; no sport impacts, weapons, vehicles, animals, crowd shouting or loud PA test.
+Academy trial coordinates in metres: action A=(0,0); audience positions U1=(−1,2), U2=(0,2), U3=(1,2); stereo center S=(0,4), capsule height 1.5 m, aimed toward U2. Action microphone D=(2,0), height 1 m, aimed at A. All equipment lies in separated marked footprints. Commentary uses a close microphone at an approved separate station and the manufacturer’s speech placement guidance. Adapt to the room and log actual heights/ranges; these are mock coordinates, not event clearances.
+# Run restore and compare
+1. Document. Draw the map, permitted areas, camera mock view and access route. Log every model/pattern, power, gain, filter, support, cable and channel label. Establish speech plus the audience pair as a fallback before detail testing.
+2. Source baseline. At fixed gain, make three gentle claps and repeat one phrase at each U point, then at A. Use the same height/action and record peaks before loudness matching. With all participants at U1/U2/U3, use low conversation and a gentle collective clap. Set conservative headroom; −12 dBFS input peaks are a trial, not a live-event guarantee.
+3. Stereo geometry. Compare near-coincident cardioid XY at 90° with ORTF at 17 cm and 110°. Keep array center and source sequence unchanged. Identify left/center/right, tone and scale; compare normalized mono. Restore the first setup and repeat U2 to check consistency.
+4. Viewpoint. Move only the pair center to a second approved point 1 m closer to U2, if clear. Log actual ranges and repeat the U sequence. Compare local voice versus broad venue perspective; return to S. If clearance is inadequate, omit and record that limitation.
+5. Combine. Build commentary, audience and action balance. Repeat quiet speech, gentle action and low crowd conversation together, then mute commentary for talkback and mute action for fallback. Log continuity, masking and program peaks. A second audience spot is added only to fill a named gap; compare it solo and in the sum.
+6. Arrival and polarity. Compare action and audience channels solo and together on the A clap. Test polarity briefly, restore/document the chosen state, and measure arrival difference if waveform tools are available. Trial delay on the earlier path; move the gentle action source to an approved point 1 m along the source area, retest and log why one-point compensation may not transfer.
+7. Outputs. Listen to stereo, the declared mono sum and every available surround/immersive downmix. If immersive capture is available, verify channel orientation, linked gain and converter mapping with gentle directional identification. If not, complete the routing plan and mark immersive listening unverified. Check a visible gentle clap against available picture.
+8. Failure and repeat. Disable one audience channel, then detail, and restore each using the documented fallback. Do not present one failed side of a stereo pair as a verified stereo mix. Repeat the original U2 baseline. Submit worksheets, final settings, unresolved limitations and the chosen minimal/extensive plan.
+# Student observation worksheet
+Name __________________________   Date __________   Venue __________________________
+Listening viewpoint and target ________________________________________________________
+Sport authority edition and event approval ______________________________________________
+Log capsule heights, source heights, actual slant ranges, axes, spacing, included angle, gain, filters, power, protection and room/environment. Record maximum dBFS and overload indicators before loudness matching. Identify every output and whether it was heard or only planned.
+Trial
+Geometry and settings
+Peak and spill
+Image mono result and decision
+XY baseline
+ORTF comparison
+Closer viewpoint
+Speech action audience
+Polarity and arrival
+Mono/downmix
+Failure/fallback
+Restored baseline
+Best coverage and weakest sector _____________________________________________________
+Final settings and accepted limitation __________________________________________________
+________________________________________________________________________________
+# Coverage routing and approval worksheet
+# Meaningful success criteria
+All proposed live positions have a named approval path; performance, spectator and emergency access remain clear.
+Speech, essential action and venue identity remain useful in each tested output and fallback.
+No tested stage overloads; remaining margin and untested live peaks are explicitly documented.
+Stereo identity, shared-source overlap and mono/downmix are checked; remedies or limitations are recorded.
+Draw microphone/crew footprints, audience and action regions, camera sightlines, restricted areas, exits and cable routes. Label ranges, heights and axes. Show the main array and each spot’s actual contribution. A classroom map does not authorize an installation.
+________________________________________________________________________________
+________________________________________________________________________________
+________________________________________________________________________________
+Channel or bus
+Source destination and format
+Approval and failure alternative
+Commentary
+Action sectors
+Main ambience
+Audience spots
+Program/downmix
+Decoder channel order normalization and version ________________________________________
+Tested output / planned only __________________________________________________________
+Approving authority and unresolved restrictions __________________________________________
+# Critical evidence audit
+# Points all relevant sources support
+The technical sources distinguish geometry, channel identity, output capacity and signal combination. Governing sport rules establish performance-space constraints; they do not approve this lesson’s layouts. Taken together, they support a documented installation and verification of the actual outputs. This is an Academy synthesis rather than a claim that every source discusses every sport. [2–11]
+# Where recommendations differ
+Wittek favors spaced ambience approaches for diffuse-field separation while acknowledging coincident systems’ practical advantages. Sennheiser documents a compact tetrahedral capture and conversion workflow. They address different systems and priorities; neither establishes one universal best sports array. Compare spatial impression, footprint, setup time, mapping and downmix in the actual venue. [1, 8]
+Manufacturer language about neutrality, envelopment or a large listening area is a product or design claim, not independent proof for every venue. Source specifications apply to their exact microphone/amplifier, powering and distortion conditions. The AMBEO maximum’s dB(A) wording is retained instead of silently equating it to another model’s unweighted SPL number. [3–7]
+# Direct contradictions and their limits
+No direct contradiction between the reviewed governing rule and broadcast recommendations is established: their scopes differ. “Spaced arrays always fail mono” and “coincident arrays always pass mono” are overgeneralizations. Wittek’s favorable discussion of spaced downmix depends on sufficiently different pickup; a shared correlated action or PA source can still require attention. Check the actual result. [1, 9, 10]
+A between-takes rain cover used during capture conflicts with the accessory’s stated purpose. A fixed microphone-to-source alignment is also not the same as technical picture synchronization. Resolve the former through the accessory instructions and the latter through separately documented acoustic and production-path checks. [12, 13]
+# Important gaps and confidence
+No source establishes a universal audience distance, height, speech-to-crowd ratio, channel count or safe mount. Event access, structural loads, overhead retention, weather/electrical arrangements, RF coordination, editorial rights and broadcaster delivery remain installation-specific. FIBA’s example does not govern other sports. Empty-room and gentle-clap results do not establish actual crowd peaks or occupied-room balance.
+Confidence is high in directly read rule provisions, listed specifications, geometry and algebra; moderate in conditional Academy starting layouts; unverified for any real installation or output not tested. Classroom electrical channel matching is not full acoustic calibration. This lesson does not certify exposure, compliant measurement or complete delivery conformity.
+# Sources and reading notes
+Primary sources checked 7 October 2026. Numbered references link directly to their original pages or documents. Practical coordinates and workflows are Academy recommendations, not manufacturer deployment permissions.
+[1] Microphone Usage for Sports Broadcasting <https://schoeps.de/fileadmin/user_upload/user_upload/Downloads/Vortraege_Aufsaetze/Papers/SCHOEPS_SportMicrophones_Wittek_092016_1473527311.pdf>
+Helmut Wittek, SCHOEPS, September 2016; pp.2–8 and 12. Manufacturer-authored technical paper on complementary roles, array tradeoffs, diffuse pickup and commentary spill. Historical installation examples are not current access rules.
+[2] FIBA Official Basketball Rules 2026 version 1 1 <https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2026-v1-1.pdf>
+Valid 1 October 2026. Article 2.5.1, printed p.6, obstruction clearance. Sport-rule example only; no microphone authorization is inferred.
+[3] SCHOEPS MK 4 technical specifications <https://schoeps.de/en/products/colette/capsules/cardioids/mk-4.html>
+Cardioid capsule response/sensitivity and amplifier-dependent SPL limits. Do not interchange CMC 1, CMC 6, CMC 6xt or compact CCM specifications.
+[4] SCHOEPS CCM 4 technical specifications <https://schoeps.de/en/products/ccm/ccm-microphones/cardioids/ccm-4.html>
+Compact microphone, powering-dependent maximum SPL, output/load and filter; manufacturer identifies stereo applications. Product sonic preferences are claims.
+[5] Sennheiser AMBEO VR MIC specifications <https://docs.cloud.sennheiser.com/en-us/ambeo-vr-mic/specifications.html>
+v1.2, February 2026. Four capsule identities, range, sensitivity, phantom power and maximum at 1 kHz/1% THD. Preserve its published dB(A) notation and conditions.
+[6] SCHOEPS ORTF Stereo Outdoor Set <https://schoeps.de/en/products/stereo/sets/ortf-stereo-outdoor-set.html>
+Current set uses two CCM 4 cardioids and specifies 17 cm/110° geometry. Array geometry does not establish venue clearance.
+[7] SCHOEPS ORTF 2plus2 Outdoor Set <https://schoeps.de/en/products/surround-3d/ortf-3d/ortf-2plus2-outdoor-set.html>
+Four-channel hemisphere spot and example base/height allocation. Spatial-quality statements are manufacturer claims, not a complete immersive coverage guarantee.
+# Further sources and curriculum links
+[8] Sennheiser AMBEO VR MIC recording instructions <https://docs.cloud.sennheiser.com/en-us/ambeo-vr-mic/manual-recording.html>
+v1.2, February 2026. Separate capsule tracks, identical preamps, matched gain and linked changes; documented A-to-B conversion. Not an acoustic calibration method.
+[9] DPA Polarity Phase and Delay <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+Eddy Bøgh Brixen; primary technical explanation of sign inversion and arrival/phase relationships. The ideal 10 ms numerical example in this lesson is independently calculated.
+[10] ITU R BS 775 4 Multichannel Stereophonic Sound <https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.775-4-202212-I!!PDF-E.pdf>
+December 2022, in force at checking. Annex 4 downmix; Annex 8 alternative surround coefficients; Annex 7 LFE and bass management. Actual codec/renderer and metadata must be verified.
+[11] EBU R 128 version 5 <https://tech.ebu.ch/files/live/sites/tech/files/shared/r/r128.pdf>
+November 2023, clauses h and m, printed pp.3–4. Programme loudness, live tolerance and production true peak; distribution systems can impose lower peaks.
+[12] ITU R BT 1359 Relative Timing of Sound and Vision <https://www.itu.int/rec/R-REC-BT.1359/en>
+Primary recommendation index referenced by BS.775. No unseen numerical timing tolerance is asserted in this lesson; use the adopted broadcaster workflow.
+[13] Rycote Windshield Rain Jacket <https://www.rycote.com/microphone-windshield-shock-mount/windshield-rain-jacket/>
+Manufacturer explicitly identifies between-takes protection, not use during audio recording. Verify the actual recording protection separately.
+[14] National Weather Service Lightning and Outdoor Sports <https://www.weather.gov/safety/lightning-sports>
+Official shelter and return guidance; follow the event authority’s weather instructions and preserve safe withdrawal.
+# Curriculum cross links
+Master plan B17: stereo and immersive ambience; commentary/action/audience integration; polarity, arrival and mono/downmix; minimal and extensive layouts. This lesson completes that scope.
+Use B08 Broadcast Audience and Event Space for audience fundamentals; B09 Commentators and Announce Positions for close speech; B10 Sideline and Post Event Interviews and B11 Athletes Coaches and Officials for authorized speech roles; B12 Parabolic and Tracked Action Pickup for tracked detail. B13 Field and Diamond Sports, B14 Court Racket and Ice Sports, B15 Track Gymnastics and Combat Sports and B16 Motorsport Equestrian and Aquatic Events supply sport-family placement and restrictions.
+Use F05 Foley Perspective and Multiple Microphones for perspective comparisons, F06 Natural and Urban Ambience and F10 Spatial and Specialist Field Pickup for ambience geometry. F11 Measurement Microphones and Calibration and F16 Scientific Arrays and Specialized Sensors define separate measurement and documentation requirements. Broadcast listening trials are not compliant acoustical measurements.
