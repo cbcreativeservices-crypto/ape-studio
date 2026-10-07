@@ -112,6 +112,16 @@ export const BRAND_NAMES: readonly string[] = [
   'KMS ?104',
   'GRAS',
   'Blue Yeti',
+  // Lab 5 group 5 research (docs/labs/miking/horn_section, jazz_big_band, percussion_ensemble).
+  'Royer',
+  'R-?121',
+  'Breitberg',
+  'Xepoleas',
+  'Winkler',
+  'Airmen of Note',
+  'Glenn Miller',
+  'Dior',
+  'Absil',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

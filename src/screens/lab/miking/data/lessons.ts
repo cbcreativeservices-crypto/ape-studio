@@ -156,3 +156,10 @@ import { E13_LESSON } from '../lessons/e13MixedEnsemble/lesson.ts';
 LESSON_CONTENT.E13 = E13_LESSON;
 import { E11_LESSON } from '../lessons/e11StringQuartet/lesson.ts';
 LESSON_CONTENT.E11 = E11_LESSON;
+/* Lab 5 (ensembles), group 5 — sections: E10, E16, E12 (each lesson on its own line). */
+import { E10_LESSON } from '../lessons/e10HornSection/lesson.ts';
+LESSON_CONTENT.E10 = E10_LESSON;
+import { E16_LESSON } from '../lessons/e16BigBand/lesson.ts';
+LESSON_CONTENT.E16 = E16_LESSON;
+import { E12_LESSON } from '../lessons/e12PercussionEnsemble/lesson.ts';
+LESSON_CONTENT.E12 = E12_LESSON;

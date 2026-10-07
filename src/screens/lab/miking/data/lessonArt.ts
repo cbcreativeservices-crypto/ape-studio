@@ -170,3 +170,10 @@ import { E13_ART } from '../lessons/e13MixedEnsemble/art';
 ART.E13 = E13_ART;
 import { E11_ART } from '../lessons/e11StringQuartet/art';
 ART.E11 = E11_ART;
+/* Lab 5 (ensembles), group 5 — sections: E10, E16, E12 (each lesson on its own line). */
+import { E10_ART } from '../lessons/e10HornSection/art';
+ART.E10 = E10_ART;
+import { E16_ART } from '../lessons/e16BigBand/art';
+ART.E16 = E16_ART;
+import { E12_ART } from '../lessons/e12PercussionEnsemble/art';
+ART.E12 = E12_ART;
