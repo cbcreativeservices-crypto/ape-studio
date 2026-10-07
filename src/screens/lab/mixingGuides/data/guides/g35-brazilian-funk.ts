@@ -211,7 +211,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Tempo delay / echo throws",
         "appliedTo": "MC hook ends, DJ tags",
-        "setting": "1/4 or 1/8 note (≈230 ms at 130 BPM, 200 ms at 150), 20–35% feedback",
+        "setting": "1/4 or 1/8 note (1/8 ≈ 230 ms at 130 BPM, 200 ms at 150), 20–35% feedback",
         "amount": "Moderate on throws only"
       },
       {

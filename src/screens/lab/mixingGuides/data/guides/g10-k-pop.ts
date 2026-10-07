@@ -217,7 +217,7 @@ export const GUIDE: MixingGuide = {
         "amount": "Subtle–moderate (send)"
       },
       {
-        "effect": "Hall / 480-style reverb",
+        "effect": "Hall reverb",
         "appliedTo": "Lead vocals",
         "setting": "1.5–2.5 s decay, 30–60 ms pre-delay, HPF 300 Hz",
         "amount": "Moderate; more in ballads and bridges"
@@ -270,7 +270,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Theatre shows run 96–102 dBA LAeq-15; arenas and stadiums 100–106 dBA. Stadium K-pop shows have run 108–109 dBA and about 130 dBC from 50-plus subs—a target few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours (Jin’s solo tour) skip ultra-deep EDM sub in favour of punch and vocal clarity in the back rows."
+      "text": "Theatre shows run 96–102 dBA LAeq-15; arenas and stadiums 100–106 dBA. Stadium K-pop shows have run 108–109 dBA and about 130 dBC from 50-plus subs—a target few venue limits allow. Screams and fanchants hit 100–110 dBA at FOH, so measure during songs and remember the crowd adds to exposure. Many fans are teenagers: offer earplugs, keep C-minus-A under about 20 dB, and avoid fatiguing 2–5 kHz. Some tours skip ultra-deep EDM sub in favour of punch and vocal clarity in the back rows."
     },
     {
       "label": "Studio / streaming:",

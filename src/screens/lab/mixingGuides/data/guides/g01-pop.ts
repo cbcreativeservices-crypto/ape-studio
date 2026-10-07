@@ -245,7 +245,7 @@ export const GUIDE: MixingGuide = {
   },
   "vocals": [
     {
-      "text": "The lead vocal sits roughly 3–6 dB above the dense part of the arrangement on the meter, but loudness is really about what you hear: it should be clearly on top and read like a close-up. Tone is bright, present and smooth, with a lot of air, little harshness and controlled low-mids. Pitch correction is standard. Use transparent graphical correction (graphical, note-by-note) for most pop. Fast-retune, audible pitch correction is a stylistic choice that the artist and producer decide on. Doubles are tucked 6–10 dB under the lead and panned or kept center. Harmony stacks get panned wide. Ad-libs are filtered or panned and often get delay. Intelligibility comes first: consonants must cut through at 2–5 kHz. In the studio, typical mics are large-diaphragm condensers. Live, most artists use handheld dynamics or condensers on wireless chosen for consistency at changing distances. On a headset mic for choreography, expect more gain-before-feedback problems and lean harder on EQ. Make sure the pitch correction can be switched off or adjusted easily."
+      "text": "The lead vocal sits roughly 3–6 dB above the dense part of the arrangement on the meter, but loudness is really about what you hear: it should be clearly on top and read like a close-up. Tone is bright, present and smooth, with a lot of air, little harshness and controlled low-mids. Pitch correction is standard. Use transparent note-by-note (graphical) correction for most pop. Fast-retune, audible pitch correction is a stylistic choice that the artist and producer decide on. Doubles are tucked 6–10 dB under the lead and panned or kept center. Harmony stacks get panned wide. Ad-libs are filtered or panned and often get delay. Intelligibility comes first: consonants must cut through at 2–5 kHz. In the studio, typical mics are large-diaphragm condensers. Live, most artists use handheld dynamics or condensers on wireless chosen for consistency at changing distances. On a headset mic for choreography, expect more gain-before-feedback problems and lean harder on EQ. Make sure the pitch correction can be switched off or adjusted easily."
     }
   ],
   "loudness": [
@@ -336,7 +336,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Mistake:",
-      "text": "Chasing loudness in the mix. Hand mastering a mix with 3–6 dB of headroom and let normalization reward dynamics.",
+      "text": "Chasing loudness in the mix. Give mastering a mix with 3–6 dB of headroom and let normalization reward dynamics.",
       "bullet": true
     },
     {

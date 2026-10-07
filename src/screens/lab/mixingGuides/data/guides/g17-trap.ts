@@ -117,7 +117,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–120 Hz; −2–3 dB at 200–350 Hz",
         "boost": "+2–4 dB shelf above about 5 kHz; presence at 3–4 kHz",
-        "notes": "De-ess after the top boost (a common chain shelves up above roughly 5.2 kHz)"
+        "notes": "De-ess after the top boost (a common chain shelves up above roughly 5 kHz)"
       },
       {
         "source": "Ad-libs / doubles",
@@ -206,13 +206,13 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Real-time pitch correction (hard)",
         "appliedTo": "Lead and ad-libs",
-        "setting": "Retune 0–5, key or chromatic, natural-transition mode off",
+        "setting": "Retune speed 0–5 ms, key or chromatic, natural-transition mode off",
         "amount": "Heavy—part of the sound in melodic trap and rage"
       },
       {
         "effect": "Real-time pitch correction (melodic)",
         "appliedTo": "Sung rap (Future, Gunna style)",
-        "setting": "Retune 10–25",
+        "setting": "Retune speed 10–25 ms",
         "amount": "Moderate"
       },
       {

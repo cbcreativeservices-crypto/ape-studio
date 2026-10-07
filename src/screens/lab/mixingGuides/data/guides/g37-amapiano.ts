@@ -224,7 +224,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Tempo delay",
         "appliedTo": "Vocal phrase ends, chants, sax",
-        "setting": "1/8 dotted or 1/4 at 108–115 BPM (about 400–550 ms for 1/4), 20–30% feedback",
+        "setting": "1/8 dotted or 1/4 at 108–115 BPM (about 520–555 ms for 1/4, 390–415 ms for dotted 1/8), 20–30% feedback",
         "amount": "Moderate, thrown on hooks"
       },
       {

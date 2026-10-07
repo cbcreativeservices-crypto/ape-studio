@@ -12,7 +12,7 @@ export const GUIDE: MixingGuide = {
   "expects": "Audiences come for the singer, so they expect to hear vocal detail (breaths, falsetto, melisma, ad-libs) floating over a warm, heavy bottom and smooth, polished harmony.",
   "glance": {
     "origin": "United States (urban Black music scenes), late 1970s–early 1980s; reshaped by hip-hop, new jack swing, neo-soul and today’s alternative R&B",
-    "tempo": "Most songs 80–120 BPM (study average ≈109); slow jams 60–80 BPM, often felt half-time",
+    "tempo": "Most songs 80–120 BPM (often around 109); slow jams 60–80 BPM, often felt half-time",
     "ensemble": "Solo singer + tracks and 2–3 BGVs; or 5–8 piece band (drums, bass/keys bass, 2 keys, guitar, MD/playback) + 3 BGVs",
     "priority": "The lead vocal: intimate, upfront, every breath and run audible, sitting on a deep but controlled low end",
     "liveSpl": "94–100 dBA LAeq-15 min (keep the average under 100); 110–118 dBC with heavy 808/sub",
@@ -107,7 +107,7 @@ export const GUIDE: MixingGuide = {
         "source": "Snare / clap",
         "cut": "−2–4 dB at 240–500 Hz (boxiness)",
         "boost": "+2 dB at 150–200 Hz body; +2–3 dB at 8–10 kHz",
-        "notes": "Maserati-style: lift 80–110 Hz and 10 kHz, notch around 250 Hz"
+        "notes": "A common move: lift 80–110 Hz and 10 kHz, notch around 250 Hz"
       },
       {
         "source": "Hi-hats",
@@ -144,7 +144,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "3:1",
         "attackRelease": "~10 ms / program-dependent",
         "gainReduction": "3–5 dB",
-        "notes": "Smooth leveling; SZA template pairs a 3A-style unit with a second compressor"
+        "notes": "Smooth leveling; often paired with a second compressor"
       },
       {
         "source": "Lead vocal (stage 2, FET/clean)",
@@ -168,7 +168,7 @@ export const GUIDE: MixingGuide = {
         "ratio": "4:1",
         "attackRelease": "10–30 ms / 50–80 ms",
         "gainReduction": "3–4 dB",
-        "notes": "Parallel 160-style crush blended in for punch"
+        "notes": "A hard-compressed parallel copy blended in for punch"
       },
       {
         "source": "808 / bass",

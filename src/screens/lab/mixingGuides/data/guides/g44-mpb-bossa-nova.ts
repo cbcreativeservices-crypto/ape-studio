@@ -283,7 +283,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Voice-and-guitar bossa in clubs and theaters works at 82–90 dBA LAeq-15 at FOH, peaks under 100 dBA; the audience is often seated and silent. Full-band MPB in theaters runs 88–95 dBA, festival stages 95–100 dBA (big MPB festival rigs use L/C/R arrays mainly for vocal clarity, not level). Pagode and samba shows run 95–100 dBA, about 110–118 dBC, with moderate sub for surdo and bass; a C-minus-A gap above 20 dB means too much sub. Gain-before-feedback on nylon guitar and soft vocals is the real limit; keep stage levels low. Common hearing-safety guidance allows about 1 hour at 97 dBA, so offer earplugs at pagode shows."
+      "text": "Voice-and-guitar bossa in clubs and theaters works at 82–90 dBA LAeq-15 at FOH, peaks under 100 dBA; the audience is often seated and silent. Full-band MPB in theaters runs 88–95 dBA, festival stages 95–100 dBA (big MPB festival rigs use L/C/R arrays mainly for vocal clarity, not level). Pagode and samba shows run 95–100 dBA, about 110–118 dBC, with moderate sub for surdo and bass; a C-minus-A gap above 20 dB means too much sub. Gain-before-feedback on nylon guitar and soft vocals is the real limit; keep stage levels low. Common hearing-safety guidance allows only about 30 minutes at 97 dBA, so offer earplugs at pagode shows."
     },
     {
       "label": "Studio / streaming:",
@@ -336,7 +336,7 @@ export const GUIDE: MixingGuide = {
       "bullet": true
     },
     {
-      "text": "When a singer plays the guitar, use figure-8 mics with nulls aimed at the other source, or spread mics apart; the SOS method cut spill by 3–6 dB.",
+      "text": "When a singer plays the guitar, use figure-8 mics with nulls aimed at the other source, or spread mics apart; this can cut spill by 3–6 dB.",
       "bullet": true
     },
     {

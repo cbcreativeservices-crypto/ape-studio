@@ -45,7 +45,7 @@ GLOBAL = [
     (r"\bRhodes\b", "electric piano"),
     (r"\bWurlitzer\b", "reed electric piano"),
     (r"\bLeslie\b", "rotating speaker"),
-    (r"\bHammond\b", "tonewheel organ"),
+    (r"(?<!Fred )\bHammond\b", "tonewheel organ"),  # not the gospel artist Fred Hammond
     (r"\bB3\b", "organ"),
     # Drum machines: keep the numbers the styles are named by, drop the maker.
     (r"\bRoland TR-(\d+)", r"\1"),
@@ -536,6 +536,59 @@ EDITS["country"] += [("a B3 pad", "an organ pad")]
 EDITS["hard-rock"] += [(", as AC/DC’s FOH engineer describes.", ".")]
 EDITS["funk"] += [("James Brown’s band (Cincinnati’s King Studios and the road)", "James Brown’s band")]
 EDITS["disco-nu-disco"] += [("Philadelphia soul (Sigma Sound, MFSB)", "Philadelphia soul (MFSB)"), ("Munich (Moroder/Musicland)", "Munich (Moroder)")]
+
+# Third pass — expert review 2026-10-07 (docs/labs/reviews/REVIEW_2026_10_07_mixing.md).
+# (a) Arithmetic / safety figures that were wrong in the source, corrected to
+#     the physics: delay times at the stated tempo, the 3 dB exchange rate,
+#     the C-weighted peak metric.
+EDITS["hip-hop-rap"] += [("with peaks under 140 dB LAmax", "with peaks under 140 dB LCpeak")]
+EDITS["mpb-bossa-nova"] += [("allows about 1 hour at 97 dBA", "allows only about 30 minutes at 97 dBA")]
+EDITS["reggae"] += [("(about 350–700 ms at 75 BPM half-time)", "(at a 75 BPM half-time pulse about 600 ms dotted-eighth and 800 ms quarter; half those if you count the 150 BPM double time)")]
+EDITS["amapiano"] += [("(about 400–550 ms for 1/4)", "(about 520–555 ms for 1/4, 390–415 ms for dotted 1/8)")]
+EDITS["brazilian-funk"] += [("1/4 or 1/8 note (≈230 ms at 130 BPM, 200 ms at 150)", "1/4 or 1/8 note (1/8 ≈ 230 ms at 130 BPM, 200 ms at 150)")]
+EDITS["techno"] += [("many EU venues capped at 99 dBA LAeq-30", "German venues capped at 99 dBA LAeq-30")]
+# (b) Names and citations the earlier passes missed (owner ruling 2026-10-04).
+EDITS["hip-hop-rap"] += [
+    ("Bigger tours add a band; J. A big arena run can blend", "Bigger tours add a band; a big arena run can blend"),
+    (" Tours like Drake’s have flown all subs (eight hangs of nine) to deliver even, high-impact bass without crushing the front rows.", " Large tours often fly all the subs to deliver even, high-impact bass without crushing the front rows."),
+]
+EDITS["contemporary-rnb"] += [
+    ("Smooth leveling; SZA template pairs a 3A-style unit with a second compressor", "Smooth leveling; often paired with a second compressor"),
+    ("Parallel 160-style crush blended in for punch", "A hard-compressed parallel copy blended in for punch"),
+    ("Maserati-style: lift 80–110 Hz and 10 kHz, notch around 250 Hz", "A common move: lift 80–110 Hz and 10 kHz, notch around 250 Hz"),
+    ("(study average ≈109)", "(often around 109)"),
+]
+EDITS["edm-festival-electronic"] += [("research measured a C-minus-A difference of about 18 dB at 98 dBA", "a C-minus-A difference of about 18 dB at 98 dBA is typical")]
+EDITS["latin-pop"] += [(" A loudness-matched test found the “Despacito” remix 1.2 dB louder than the original yet less punchy and narrower.", " Played back at matched loudness, a louder, more limited version usually sounds less punchy and narrower.")]
+EDITS["k-pop"] += [
+    ("Hall / 480-style reverb", "Hall reverb"),
+    (" Some tours (Jin’s solo tour) skip ultra-deep EDM sub in favour of punch and vocal clarity in the back rows.", " Some tours skip ultra-deep EDM sub in favour of punch and vocal clarity in the back rows."),
+]
+EDITS["afrobeats"] += [
+    ("Hit vocal lifts often sit near 4.3 kHz and 13.5 kHz", "Common vocal lifts sit around 4–5 kHz and 12–14 kHz"),
+    ("it has its own report.", "it has its own guide (Amapiano)."),
+]
+EDITS["trap"] += [
+    ("(a common chain shelves up above roughly 5.2 kHz)", "(a common chain shelves up above roughly 5 kHz)"),
+    ("Retune 0–5,", "Retune speed 0–5 ms,"),
+    ("Retune 10–25", "Retune speed 10–25 ms"),
+]
+EDITS["musical-theatre"] += [
+    ("Live Design’s guide to learning a mix notes 30–40 dB of program dynamic range", "A show can carry 30–40 dB of program dynamic range"),
+    ("Hamilton’s album string bus used a narrow cut near 3.5 kHz", "A narrow cut near 3.5 kHz on the string bus is a common fix"),
+]
+EDITS["mpb-bossa-nova"] += [("the SOS method cut spill by 3–6 dB.", "this can cut spill by 3–6 dB.")]
+EDITS["disco-nu-disco"] += [
+    ("Dimension-style mode 2–3, or 0.5–1 Hz rate", "Subtle fixed-mode stereo chorus, or 0.5–1 Hz rate"),
+    ("Section miked with a Decca tree plus spots", "Section miked with a three-omni tree plus spots"),
+]
+EDITS["film-video-game-score"] += [("Decca tree", "three-omni tree")]
+# (c) Conversion leftovers that read oddly.
+EDITS["pop"] += [
+    ("Use transparent graphical correction (Melodyne-style) for most pop.", "Use transparent note-by-note (graphical) correction for most pop."),
+    ("Hand mastering a mix with 3–6 dB of headroom", "Give mastering a mix with 3–6 dB of headroom"),
+]
+EDITS["reggae"] += [("Organ-style 16th-note shuffle around the offbeat", "a 16th-note organ shuffle (the “bubble”) around the offbeat")]
 
 EXPECTS = {
     "pop": "They expect a voice that sounds intimate yet huge, a chorus that lifts noticeably above the verse, and low end that feels modern without blurring the vocal.",

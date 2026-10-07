@@ -15,7 +15,7 @@ export const GUIDE: MixingGuide = {
     "tempo": "120–135 BPM classic Detroit and Berlin; dub techno 115–125; peak-time 128–138; hard/industrial 140–160+",
     "ensemble": "Solo DJ (2–4 decks, mixer) or solo/duo live act (drum machine, synths, sampler/laptop, effects, DJ-style mixer)",
     "priority": "The kick and the low end: a mono, solid, physical four-on-the-floor that never distorts over hours",
-    "liveSpl": "Dancefloor typically 98–103 dBA Leq (LAeq-15 to 30 min), 115–125 dBC; many EU venues capped at 99 dBA LAeq-30 (German rules)",
+    "liveSpl": "Dancefloor typically 98–103 dBA Leq (LAeq-15 to 30 min), 115–125 dBC; German venues capped at 99 dBA LAeq-30 (German rules)",
     "studioLoudness": "Club masters commonly −9 to −6 LUFS-I (hard techno louder); vinyl around −9 LUFS short-term max; streaming normalizes to about −14"
   },
   "purpose": [
