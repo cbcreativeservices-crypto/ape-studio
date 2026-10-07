@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 16:52 · ccode · eff040c0
+changed: Merge remote-tracking branch 'origin/hunt-lab5' into HEAD
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-07 16:51 · ccode · 01026021
 changed: fix(miking labs 1-4): chaos-toddler hunt, 3 rounds
 affects other side: nothing (client-only Miking Labs 1–4 fixes; no backend, schema or RPC change)
