@@ -8,7 +8,7 @@
  * drawing-default bands. Owner ruling 2026-10-04: starting points, no
  * sources, brands or badges on screen. FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask } from '../../engine/model/types.ts';
 import type { CymbalLesson } from '../shared/cymbals/cymbalLesson.ts';
 import { BRAND_REASON, CLEAR_REASON, POWER_REASON, docReason, gainCheck, hearingCheck, hearingDiagnostic, nameReason, orderTask, overheadsFirst, polarityCheck, powerCheck, spillCheck, symptoms, type CymWords } from '../shared/cymbals/cymbalItems.ts';
 import { COMMON_UNKNOWNS, THRONE_ITEM, accuracyDetail, practiceSheet, stageItems, stageWedges, stageWords } from '../shared/cymbals/cymbalCommon.ts';
@@ -18,7 +18,7 @@ import { RIDE_COPY, RIDE_CYM } from './copy.ts';
 
 const W: CymWords = { pfx: 'rd', one: 'ride', the: 'the ride', mic: 'ride mic' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the ride',
     goal: 'Get to know the ride cymbal — its bell, bow and edge, its stand over the floor tom — where you meet it and what it does in the music, before any microphone.',

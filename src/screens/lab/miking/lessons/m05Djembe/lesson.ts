@@ -8,13 +8,13 @@
  * The practice page is the shared PPractice: its ids (k.prac.*, k.mix.*) are
  * that page's contract.
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { DJ_MODEL, DJ_WORDS } from './geometry.ts';
 import { DJEMBE, DJ_DIMS as D, DJ_ZONES, HEAD_Y } from './model.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the djembe',
     goal: 'Get to know the djembe — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',
@@ -629,6 +629,7 @@ export const M05_LESSON: HandLesson = {
   model: DJ_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc'],
   zones: DJ_ZONES,
+  setupPairs: [{ label: 'A close top mic and a low mic (raised)', A: { zone: 'dj.top.near', typeId: 'hdDynHyper', pattern: 'hypercardioid' }, B: { zone: 'dj.bottom.near', typeId: 'hdDynHyper', pattern: 'hypercardioid' }, variants: ['raised'] }],
   pages,
   scenarios,
   symptoms,

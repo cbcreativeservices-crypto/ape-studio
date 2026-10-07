@@ -43,6 +43,7 @@ import { BRAND_NAMES, BANNED_FORMS } from './mikingLearnerText.test.ts';
 import { existsSync } from 'node:fs';
 import { registerHooks } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 // The membrane physics imports the Cymatics tables without an extension (the
 // app's bundler style): resolve those for node, then load it dynamically.
@@ -87,9 +88,9 @@ describe('each lesson validates and its zones are reachable', () => {
   for (const id of LESSON_IDS) {
     const lesson = L(id);
     const m = lesson.model;
-    it(`${id}: validateLesson is clean; nine pages; every page credit exists`, () => {
+    it(`${id}: validateLesson is clean; the 8 journey pages; every page credit exists`, () => {
       assert.deepEqual(validateLesson(lesson, MIC_TYPES), []);
-      for (const p of PAGE_IDS) assert.ok(lesson.pages[p]?.title, p);
+      assertJourneyPages(lesson);
     });
     it(`${id}: every zone start is clear and inside its zone, for every setup and mic it allows`, () => {
       for (const z of lesson.zones) {

@@ -20,6 +20,7 @@ import { sceneLabel } from '../../../../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../../../../engine/steps';
 import { Body, Card, Landing, Note, Point } from '../../../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../../../../engine/journeyKit';
+import { journeyIntro } from '../../../../engine/journey.ts';
 import type { PageProps } from '../../../../pages/pageTypes';
 import { handOf } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
@@ -99,8 +100,8 @@ export function HInstrument({ lesson, art, variant, setVariant, hidden, journey 
       layout: 'read',
       body: (
         <>
-          <Body>{`This lesson is about putting microphones on ${lesson.noun.many} — but first the drums themselves: what they are, how they make their sound, and where they sit. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.`}</Body>
-          <JourneyMap met={journey.met} here="instrument" />
+          <Body>{journeyIntro(lesson.noun, 'drums', true)}</Body>
+          <JourneyMap met={journey.met} here="meet" />
           <PathChooser journey={journey} />
           {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
           {journey.path === 'new' ? <Note tone="ok">Good — NEXT takes you through the drums first. You can change how you started here at any time.</Note> : null}

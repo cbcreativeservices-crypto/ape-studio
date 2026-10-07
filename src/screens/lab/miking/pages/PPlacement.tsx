@@ -38,26 +38,53 @@ import { MIC_TYPES, micType } from '../data/micTypes';
 import { copyOf } from '../engine/model/copy.ts';
 import type { PageProps } from './pageTypes';
 import { viewToggle } from '../engine/scene/viewToggle.ts';
+import { ROLE_LABEL } from '../engine/setups.ts';
+import { useSetups } from './PSetups';
 
 /** "{line}" / "{head}" / "{tol}" in a copy line. */
 const fill = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? '');
 
-export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
+export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden, startFrom, chooseStart }: PageProps) {
   const C = copyOf(lesson);
   // The worked example's zone for a variant (the lesson's choice; else the
   // first zone available in it).
   const workedFor = (v: string) => lesson.zones.find((q) => q.id === C.placement.workedZone[v]) ?? lesson.zones.find((q) => !q.requires || ((!q.requires.variant || q.requires.variant === v) && (!q.requires.variants || q.requires.variants.includes(v)))) ?? lesson.zones[0];
+  // START FROM (owner restructure 2026-10-06): the Placement Studio begins
+  // at the starting setup the learner last looked at (its first mic), and
+  // the learner moves it from there.
+  const setups = useSetups(lesson, variant);
+  const fromSetup = setups.find((s) => s.id === startFrom) ?? setups[0] ?? null;
   const start = useMemo(() => {
+    if (fromSetup) return { typeId: fromSetup.mics[0].typeId, pattern: fromSetup.mics[0].pattern, pose: fromSetup.mics[0].pose };
     const z = workedFor(variant);
     const typeId = z.requires?.micTypeIds?.[0] ?? lesson.micTypeIds[0];
-    return { typeId, pose: z.start };
+    return { typeId, pattern: micType(typeId).patterns[0].id, pose: z.start };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const variantShort = C.variantShort[variant] ?? (lesson.model.variants.find((v) => v.id === variant)?.label ?? '').toLowerCase();
-  const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: start.typeId, pattern: micType(start.typeId).patterns[0].id, pose: start.pose }] });
+  const rig = useRig(lesson, { variant, mics: [{ slot: 'A', typeId: start.typeId, pattern: start.pattern, pose: start.pose }] });
   useEffect(() => {
     if (rig.variant !== variant) rig.setVariant(variant);
   }, [variant, rig]);
+  // A START FROM pick: the type first (its body changes the collision), then
+  // the setup's pose and its reference surface.
+  const [fromId, setFromId] = useState<string | null>(null);
+  const wanted = fromId ? setups.find((s) => s.id === fromId) ?? null : null;
+  useEffect(() => {
+    if (!wanted) return;
+    const m = wanted.mics[0];
+    if (rig.mics[0].typeId !== m.typeId) {
+      rig.setType('A', m.typeId);
+      return;
+    }
+    rig.setPattern('A', m.pattern);
+    rig.jumpTo('A', m.pose);
+    if (rig.surfaceId !== m.surfaceId) rig.setSurfaceId(m.surfaceId);
+    setFromId(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wanted?.id, rig.mics[0].typeId]);
+  const [fromShown, setFromShown] = useState<string | null>(fromSetup?.id ?? null);
+  const fromNow = setups.find((s) => s.id === fromShown) ?? null;
   const [view, setView] = useState<ViewId>('side');
   const [posAxis, setPosAxis] = useState<PosAxis>('x');
   const [aimAxis, setAimAxis] = useState<AimAxis>('el');
@@ -144,6 +171,23 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const available = zonesAvailable(lesson.zones, variant, mic.typeId, t.mount);
   const params: DockParam[] = [
     ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis }),
+    ...(setups.length
+      ? [
+          {
+            kind: 'options' as const,
+            id: 'from',
+            label: 'START',
+            valueLabel: fromNow ? ROLE_LABEL[fromNow.role].split(' ')[0] : 'CHOOSE',
+            selectedId: fromShown,
+            onSelect: (id: string) => {
+              setFromShown(id);
+              setFromId(id);
+              chooseStart?.(id);
+            },
+            options: setups.map((s) => ({ id: s.id, label: `${ROLE_LABEL[s.role]} · ${s.title}`, blurb: s.mics.length > 1 ? `Starts from its first mic: ${s.line}` : s.line })),
+          },
+        ]
+      : []),
     ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
     {
       kind: 'group',
@@ -232,7 +276,8 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${t.short} · ${variantShort}`} prompt="Drag the mic (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it around and see what changes." />
+          {fromNow ? <Body>{`START FROM · ${ROLE_LABEL[fromNow.role].toLowerCase()}: ${fromNow.title}${fromNow.mics.length > 1 ? ' (its first mic)' : ''}. Choose another in START FROM.`}</Body> : null}
+          <Landing looking={`${t.short} · ${variantShort}`} prompt="Move the mic from its starting setup: drag it (or use POSITION and AIM; drag the amber ring to turn it). Rest it in two different blue zones — then move it around and listen for what changes." />
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.${t.mount === 'stand' ? C.placement.blocked[variant] ?? '' : ''}`}</Note> : null}
           {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a recommended starting point. ${C.placement.availableLead}: ${available.map((z) => z.label).join('; ') || `none — try another mic type or ${C.variantKey.toLowerCase()}`}.`}</Body>}

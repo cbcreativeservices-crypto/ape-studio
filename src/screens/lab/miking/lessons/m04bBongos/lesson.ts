@@ -8,13 +8,13 @@
  * The practice page is the shared PPractice: its ids (k.prac.*, k.mix.*) are
  * that page's contract.
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { BONGO_MODEL, BONGO_WORDS } from './geometry.ts';
 import { BETWEEN, BONGO_DIMS as D, BONGO_ZONES, HEAD_Y, HEMBRA, MACHO } from './model.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the bongos',
     goal: 'Get to know a pair of bongos — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
@@ -630,6 +630,7 @@ export const M04B_LESSON: HandLesson = {
   model: BONGO_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc', 'hdClip'],
   zones: BONGO_ZONES,
+  setupPairs: [{ label: 'A spot on each drum', A: { zone: 'bg.spot.hembra', typeId: 'hdDynCard' }, B: { zone: 'bg.spot.macho', typeId: 'hdDynCard' } }],
   pages,
   scenarios,
   symptoms,

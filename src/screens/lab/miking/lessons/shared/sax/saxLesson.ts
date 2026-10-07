@@ -22,7 +22,7 @@
  * misconceptions without absolute words, each with its own "why"; reasoning,
  * not recall. Option order is shuffled on screen (itemOrder.ts).
  */
-import type { DiagnosticItem, DocumentedZone, Lesson, MikingScenario, OrderTask, OrientFact, PageContent, PageId, SettingItem, SetupReason, SetupTask, Symptom, Wedge } from '../../../engine/model/types.ts';
+import type { DiagnosticItem, DocumentedZone, Lesson, MikingScenario, OrderTask, OrientFact, LessonPages, PageContent, SourcePageId, SettingItem, SetupReason, SetupTask, Symptom, Wedge } from '../../../engine/model/types.ts';
 import type { LessonCopy } from '../../../engine/model/copy.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 import type { SaxFamily } from './saxFamily.ts';
@@ -79,9 +79,9 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
   const S = c.Short;
   const name = c.F.row.name;
   const id = (x: string) => `${p}.${x}`;
-  const sc = (x: string, page: PageId, b: ItemBody): MikingScenario => ({ id: id(x), page, ...b });
+  const sc = (x: string, page: SourcePageId, b: ItemBody): MikingScenario => ({ id: id(x), page, ...b });
 
-  const pages: Record<PageId, PageContent> = {
+  const pages: LessonPages = {
     instrument: {
       title: `Meet the ${s} sax`,
       goal: `Get to know the ${name} — what it is, where you meet it, what it does in the music, and its parts — before any microphone.`,

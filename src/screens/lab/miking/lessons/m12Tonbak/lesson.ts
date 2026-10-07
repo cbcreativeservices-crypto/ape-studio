@@ -10,12 +10,12 @@
  * recommended starting points, with the honest note that every player and
  * drum differ.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { TONBAK_MODEL, TONBAK_ZONES } from './geometry.ts';
 import { T_R } from './model.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the tonbak',
     goal: 'Get to know the tonbak — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',
@@ -627,6 +627,7 @@ export const M12_LESSON: Lesson = {
   model: TONBAK_MODEL,
   micTypeIds: ['sdcCard', 'instDynCard'],
   zones: TONBAK_ZONES,
+  setupPairs: [{ label: 'A head mic and a mic at the lower opening', A: { zone: 'tb.A', typeId: 'sdcCard' }, B: { zone: 'tb.D', typeId: 'sdcCard' } }],
   pages,
   scenarios,
   symptoms,

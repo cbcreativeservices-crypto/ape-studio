@@ -5,14 +5,14 @@
  * banjo correction above all: about 3 in from the head's centre or edge, not
  * "about 1 ft from the bridge". Starting-points voice; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { ACCURACY, brandReason, clearReason, contextChecks, DOC_REASON, hearingCheck, hearingDiag, LOUD_REASON, micChecks, POWER_REASON, practiceChecks, setupOrder, sharedSymptoms, STRINGS_PREDICT, twoMicChecks } from '../shared/guitars/stringsContent.ts';
 import { C05A_MODEL, C05A_WEDGES, C05A_ZONES } from './geometry.ts';
 import { BANJO, C05A_COPY } from './copy.ts';
 
 const P = 'bj';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the banjo',
     goal: 'Get to know the five-string banjo — resonator or open back — what it is, where you meet it, its job in the music, and its parts, before any microphone.',

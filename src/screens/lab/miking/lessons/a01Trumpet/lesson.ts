@@ -12,7 +12,7 @@
  * OWNER RULING 2026-10-04 — learner-facing presentation: suggested starting
  * points, never dogma; no source, brand or model in learner text; no badges.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { BRAND_REASON, LOUD_REASON, clearReason, docReason, gainCheck, hearingCheck, hearingDiag, hollowSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
 import { overloadCheck, brassFeedback, DYN_POWER_REASON, CLIP_POWER_REASON } from '../shared/brass/brassItems.ts';
 import { A01_MODEL, TP } from './geometry.ts';
@@ -21,7 +21,7 @@ import { A01_COPY } from './copy.ts';
 
 const W: Words = { noun: 'trumpet', player: 'trumpeter', moving: 'the bell, the valve hands and the mutes' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the trumpet',
     goal: 'Get to know the trumpet and the flugelhorn — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',

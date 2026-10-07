@@ -14,13 +14,13 @@
  * House wording: tonal changes are TENDENCIES, never results; no audio (the
  * lab is fully silent); no invented curves; no dogma words except safety.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { KICK_MODEL } from './geometry.ts';
 import { KICK_DIMS, KICK_ZONES, L } from './model.ts';
 import { KICK_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the kick drum',
     goal: 'Get to know the kick drum — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',

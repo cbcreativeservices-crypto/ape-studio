@@ -8,7 +8,7 @@
  * not, the hearing line added. The rudra veena is a short note only.
  * Starting-points voice; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { ACCURACY, brandReason, clearReason, DOC_REASON, hearingCheck, hearingDiag, LOUD_REASON, micChecks, POWER_REASON, practiceChecks, setupOrder, sharedSymptoms, STRINGS_PREDICT, twoMicChecks } from '../shared/guitars/stringsContent.ts';
 import { C15_MODEL, C15_WEDGES, C15_ZONES } from './geometry.ts';
 import { C15_COPY, VEENA_N } from './copy.ts';
@@ -16,7 +16,7 @@ import { C15_COPY, VEENA_N } from './copy.ts';
 const P = 'vn';
 const CLEAR = 'the plucking hand, the left hand, the gourd, the yali and the player’s view';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the Saraswati veena',
     goal: 'Get to know the Saraswati veena — a South Indian fretted lute with a large carved resonator, a long neck with frets on wax, and drone strings — what it is, where you meet it, what it does in the music, and its parts, before any microphone.',

@@ -9,7 +9,7 @@
  * source, brand or model in learner text; no badges. The 0.5–1.2 m stand
  * distance is the lesson's own audition range (L75): a modest suggestion.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { BRAND_REASON, LOUD_REASON, POWER_REASON, clearReason, docReason, feedbackSymptom, gainCheck, hearingCheck, hearingDiag, hollowSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, type Words } from '../shared/bowed/bowedItems.ts';
 import { STANDING, VIOLA_MODEL } from './geometry.ts';
 import { VIOLA_ZONES } from './model.ts';
@@ -17,7 +17,7 @@ import { VIOLA_COPY } from './copy.ts';
 
 const W: Words = { noun: 'viola', player: 'violist', moving: 'the bow’s sweep and the bow arm' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the viola',
     goal: 'Get to know the viola — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',

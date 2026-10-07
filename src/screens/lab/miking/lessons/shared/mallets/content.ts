@@ -10,7 +10,7 @@
  * their own "why", no absolute-word giveaways in a distractor. Starting-points
  * voice; no source, brand or model names (owner ruling 2026-10-04).
  */
-import type { DiagnosticItem, MikingScenario, PageId, Symptom, Vec3, VariantId, Wedge } from '../../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, SourcePageId, Symptom, Vec3, VariantId, Wedge } from '../../../engine/model/types.ts';
 import type { LessonCopy } from '../../../engine/model/copy.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 import type { PairPreset } from './family.ts';
@@ -149,7 +149,7 @@ export function malletWedges(o: { frontZ: number; sideX: number }): Wedge[] {
 
 /* ── shared checks ── */
 
-export function hearingCheckM(w: MW, page: PageId): MikingScenario {
+export function hearingCheckM(w: MW, page: SourcePageId): MikingScenario {
   // The shared max-SPL check (sharedItems.ts): what the rating DOES say.
   return micRatingCheck({ id: `${w.p}.set.hear`, page, mic: `mic over ${w.the}`, loudest: `the loudest roll on ${w.the}` });
 }

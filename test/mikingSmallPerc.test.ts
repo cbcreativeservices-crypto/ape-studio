@@ -38,6 +38,7 @@ import { cradle, dorsalFist, openHand, placeBetween, placePt, profileFist, smoot
 import { inPoly } from '../src/screens/lab/miking/lessons/shared/handGeom.ts';
 import { BANNED_FORMS, BRAND_NAMES } from './mikingLearnerText.test.ts';
 import { itemRules, RESEARCH_NAMES } from './_mikingItemRules.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -85,9 +86,9 @@ describe('each lesson validates and its zones are reachable', () => {
   for (const id of IDS) {
     const lesson = L(id);
     const m = lesson.model;
-    it(`${id}: validateLesson is clean; nine pages`, () => {
+    it(`${id}: validateLesson is clean; the 8 journey pages`, () => {
       assert.deepEqual(validateLesson(lesson, MIC_TYPES), []);
-      for (const p of PAGE_IDS) assert.ok(lesson.pages[p]?.title, p);
+      assertJourneyPages(lesson);
     });
     it(`${id}: every zone start is clear and inside its zone, for every state and mic it allows`, () => {
       for (const z of lesson.zones) {

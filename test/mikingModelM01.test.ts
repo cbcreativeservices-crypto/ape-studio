@@ -29,6 +29,7 @@ import { validateLesson, micBodyOf } from '../src/screens/lab/miking/engine/mode
 import { checkAssembly, compileScene, pinToSurface } from '../src/screens/lab/miking/engine/geometry/collision.ts';
 import { inZone, lineDistance } from '../src/screens/lab/miking/engine/geometry/zones.ts';
 import { PAGE_IDS } from '../src/screens/lab/miking/engine/model/types.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8').replace(/\r\n/g, '\n');
 const KICK_SOURCES = read('docs/labs/miking/kick/SOURCES.md');
@@ -43,8 +44,8 @@ describe('M01 validates', () => {
   it('validateLesson returns no problems', () => {
     assert.deepEqual(validateLesson(lesson, MIC_TYPES), []);
   });
-  it('the 9 pages are present (the journey order)', () => {
-    assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort());
+  it('its written pages serve the 8 journey pages (the journey order)', () => {
+    assertJourneyPages(lesson);
   });
   it('part ids are unique and stable', () => {
     const ids = m.parts.map((p) => p.id);

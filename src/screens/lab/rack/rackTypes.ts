@@ -44,6 +44,13 @@ export type BezelItem = {
 export type RackStage = {
   render: (w: number, h: number) => ReactNode;
   size?: StageSize;
+  /** A phone glass height in place of the size's fixed one (opt-in, added
+   *  2026-10-07 for the Miking Labs: "make the display taller where the
+   *  screen allows"). The lab sizes it from the window height with its own
+   *  cap; the rack still drops a step on a short phone (it is ignored below
+   *  700 pt tall) and still clamps it so the dock and the well keep their
+   *  room. Labs that do not pass it look exactly as before. */
+  phoneHeight?: number;
   /** Readouts on the bezel strip under the glass. */
   bezel?: BezelItem[];
   /** Honesty micro-badge over the glass (must stay per-display). */

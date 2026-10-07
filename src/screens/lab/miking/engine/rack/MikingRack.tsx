@@ -10,9 +10,10 @@
  * zooms as a plain box.
  */
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { RackUnit } from '../../../rack/RackUnit';
 import type { BezelItem, DockParam, StageSize } from '../../../rack/rackTypes';
+import { mikingGlassHeight } from './glassHeight.ts';
 
 export type MikingRackSpec = {
   render: (w: number, h: number) => ReactNode;
@@ -26,11 +27,14 @@ export type MikingRackSpec = {
 };
 
 export function MikingRack({ spec, children }: { spec: MikingRackSpec; children: ReactNode }) {
+  // Taller where the screen allows (owner 2026-10-06): engine/rack/glassHeight.ts.
+  const { height: winH } = useWindowDimensions();
+  const phoneHeight = mikingGlassHeight(winH);
   return (
     <RackUnit
       params={spec.params}
       initialParam={spec.initialParam}
-      stage={{ size: spec.size ?? 'L', fullScreen: true, badge: spec.badge, bezel: spec.bezel, hideDragTag: true, render: spec.render }}
+      stage={{ size: spec.size ?? 'L', phoneHeight, fullScreen: true, badge: spec.badge, bezel: spec.bezel, hideDragTag: true, render: spec.render }}
     >
       <View style={styles.well}>{children}</View>
     </RackUnit>

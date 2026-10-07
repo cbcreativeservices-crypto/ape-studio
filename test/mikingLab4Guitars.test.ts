@@ -38,6 +38,7 @@ import { C03_LESSON } from '../src/screens/lab/miking/lessons/c03Resonator/lesso
 import { C05A_LESSON } from '../src/screens/lab/miking/lessons/c05aBanjo/lesson.ts';
 import { C05B_LESSON } from '../src/screens/lab/miking/lessons/c05bMandolin/lesson.ts';
 import { C05C_LESSON } from '../src/screens/lab/miking/lessons/c05cUkulele/lesson.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const r2 = (x: number) => Math.round(x * 100) / 100;
 
@@ -210,7 +211,7 @@ function copyIds(lesson: Lesson) {
 for (const lesson of [C01_LESSON, C03_LESSON, C05A_LESSON, C05B_LESSON, C05C_LESSON, C07_LESSON]) {
   describe(`${lesson.id} ${lesson.title} validates`, () => {
     it('validateLesson returns no problems', () => assert.deepEqual(validateLesson(lesson, MIC_TYPES), []));
-    it('the 9 pages are present', () => assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort()));
+    it('its written pages serve the 8 journey pages', () => assertJourneyPages(lesson));
     it('it is registered in Lab 4 (strings) and served', () => {
       assert.ok(LESSONS.some((l) => l.id === lesson.id && l.labId === 'strings' && l.status === 'ready'));
       assert.equal(lessonById(lesson.id), lesson);

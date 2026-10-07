@@ -10,12 +10,12 @@
  * OWNER RULING 2026-10-04: starting points, never dogma; no source, brand or
  * model in learner text; no badges.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { CLAV_MODEL } from './geometry.ts';
 import { CLAV_ZONES } from './model.ts';
 import { CLAV_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the clavinet',
     goal: 'Get to know the clavinet and the amplifier it plays through: what it is, where you meet it, what it does in the music, and the amp’s parts — the speaker a mic actually hears — before any microphone.',

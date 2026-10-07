@@ -4,14 +4,14 @@
  * COMMENTS only) with the fixes UK-01 … applied (CORRECTIONS_LOG.md).
  * Starting-points voice; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { ACCURACY, brandReason, clearReason, contextChecks, DOC_REASON, hearingCheck, hearingDiag, LOUD_REASON, micChecks, POWER_REASON, practiceChecks, setupOrder, sharedSymptoms, STRINGS_PREDICT, twoMicChecks } from '../shared/guitars/stringsContent.ts';
 import { C05C_MODEL, C05C_WEDGES, C05C_ZONES } from './geometry.ts';
 import { C05C_COPY, UKE } from './copy.ts';
 
 const P = 'uk';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the ukulele',
     goal: 'Get to know the ukulele — soprano, concert, tenor and baritone — what it is, where you meet it, its job in the music, and its parts, before any microphone.',

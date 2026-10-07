@@ -17,7 +17,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
-import type { DocumentedZone, MicPattern, MicPose, MicSlot, PageId, PatternId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
+import type { DocumentedZone, MicPattern, MicPose, MicSlot, SourcePageId, PatternId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../../engine/kit';
 import { useRig, type Rig } from '../../../engine/scene/useRig.ts';
@@ -817,7 +817,7 @@ function HandTwoMic(spec: HandSpec) {
 }
 
 /** The lesson's page set: its own HOW IT SOUNDS, the rest from the spec. */
-export function makeHandPages(spec: HandSpec, Sound: (p: PageProps) => ReactNode): Record<PageId, (p: PageProps) => ReactNode> {
+export function makeHandPages(spec: HandSpec, Sound: (p: PageProps) => ReactNode): Partial<Record<SourcePageId, (p: PageProps) => ReactNode>> {
   return {
     instrument: HandInstrument(spec),
     sound: Sound,

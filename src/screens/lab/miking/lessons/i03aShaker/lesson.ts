@@ -7,7 +7,7 @@
  * starting points; no source, brand or model in learner text; no badges;
  * FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, feedbackSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, moveRemovesDelay, noPhantom, PEAK_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, slowMeter, TECH_REASON, type SpWords } from '../shared/smallperc/commonItems.ts';
 import type { SpLesson } from '../shared/smallperc/family.ts';
 import { SHK_MODEL } from './geometry.ts';
@@ -16,7 +16,7 @@ import { SHK_COPY } from './copy.ts';
 
 const W: SpWords = { p: 'shk', the: 'the shaker', a: 'a shaker', noun: 'shaker', player: 'player', loudest: 'the biggest accent' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the handheld shaker',
     goal: 'Get to know the handheld shaker — what it is, where you meet it, what it does in the music and how it is played — before any microphone.',

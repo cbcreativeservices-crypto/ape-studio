@@ -256,7 +256,6 @@ export function SSound({ lesson, art, answers, onAnswered, onInteractive, intera
           <Note key={t.slice(0, 24)}>{t}</Note>
         ))}
         <Note>{C.sound.silentNote}</Note>
-        {!reached ? <Note tone="warn">The sequence on step 1 has not reached its end yet — step it through to earn this page’s credit.</Note> : null}
         <ScenarioList items={lesson.scenarios.filter((s) => s.page === 'sound')} answers={answers} onAnswered={onAnswered} />
       </>
     ),

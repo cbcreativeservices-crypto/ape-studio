@@ -24,4 +24,8 @@ export type PageProps = {
   preview: boolean;
   /** The journey (LESSON_JOURNEY.md): path, quick check, foundations, jumps. */
   journey: JourneyProps;
+  /** The STARTING SETUP the learner last looked at (its id, engine/setups.ts):
+   *  the Placement Studio starts from it ("Start from: …"). */
+  startFrom?: string | null;
+  chooseStart?: (setupId: string) => void;
 };

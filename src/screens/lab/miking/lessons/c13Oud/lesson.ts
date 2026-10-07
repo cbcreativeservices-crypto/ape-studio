@@ -6,7 +6,7 @@
  * invented number, the hearing line is added. Starting-points voice; FULLY
  * SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { ACCURACY, brandReason, clearReason, contextChecks, DOC_REASON, hearingCheck, hearingDiag, LOUD_REASON, micChecks, POWER_REASON, practiceChecks, setupOrder, sharedSymptoms, STRINGS_PREDICT, twoMicChecks } from '../shared/guitars/stringsContent.ts';
 import { C13_MODEL, C13_WEDGES, C13_ZONES } from './geometry.ts';
 import { C13_COPY, OUD_N } from './copy.ts';
@@ -15,7 +15,7 @@ import { OUD } from '../shared/lutes/luteSpec.ts';
 const P = 'oud';
 const CLEAR = 'the risha’s arc, the left hand, the pegbox and the player’s view';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the oud',
     goal: 'Get to know the oud — a short-necked, fretless lute with a deep rounded bowl — what it is, where you meet it, what it does in the music, and its parts, before any microphone.',

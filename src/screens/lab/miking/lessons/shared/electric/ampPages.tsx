@@ -33,7 +33,7 @@ import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import { ExpandableFigure } from '../../../../kit/ExpandableFigure';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
-import type { MicPattern, MicPose, MicSlot, PageId, PatternId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
+import type { MicPattern, MicPose, MicSlot, SourcePageId, PatternId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, ZoneCard } from '../../../engine/kit';
 import { useRig, type Rig } from '../../../engine/scene/useRig.ts';
@@ -126,7 +126,7 @@ const AXES: AxisWords = {
 const AIM_WORDS = { az: 'Swing the front left or right (seen from above).', el: 'Tilt the front up or down (seen from the side).' };
 const now = (rig: Rig, slots: MicSlot[]) => slots.map((s) => micSentence(rig, s, { outside: 'outside the amp' })).join(' ');
 
-export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<PageId, (p: PageProps) => ReactNode>> {
+export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (p: PageProps) => ReactNode>> {
   const art = spec.art ?? ampLessonArt(spec.rig);
   const axes = spec.axes ?? AXES;
   const kind = cabOf(spec.rig);

@@ -11,14 +11,14 @@
  * then choose an approach (the selector on every page). The A/B distances
  * are the lesson's own teaching trials; no maker prescribes them.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, PLAYER_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, type MetalWords } from '../shared/metal/metalItems.ts';
 import { metalWords } from '../shared/metal/metalCopy.ts';
 import { GONG_MODEL, GONG_ZONES } from './geometry.ts';
 
 const W: MetalWords = { p: 'gg', the: 'the gong', player: 'player', loudest: 'the strongest stroke', tail: 'the decay' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the gong',
     goal: 'Get to know the gong — which kind you have (an orchestral tam-tam or a bossed gong), where you meet it, what it does in the music, and its parts — before any microphone.',
@@ -520,6 +520,7 @@ export const I12_LESSON: Lesson = {
   model: GONG_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard'],
   zones: GONG_ZONES,
+  setupPairs: [{ label: 'A front mic and a room mic', A: { zone: 'gg.A', typeId: 'sdcCard' }, B: { zone: 'gg.D', typeId: 'sdcCard' } }],
   pages,
   scenarios,
   symptoms,

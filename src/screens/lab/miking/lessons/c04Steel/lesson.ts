@@ -12,14 +12,14 @@
  * instrument is drawn to name its parts and keep the player's pedals and knee
  * levers clear.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY } from '../../engine/model/sharedItems.ts';
 import { C04_MODEL, C04_ZONES } from './geometry.ts';
 import { C04_MICS } from './model.ts';
 
 const FLOOR = C04_MODEL.yFloor.mm;
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the steel and its amp',
     goal: 'Get to know the pedal steel and the lap steel — the bar, the pedals, the knee levers, the changer, the pickup — and the amp they play through, before any microphone.',
@@ -666,6 +666,7 @@ export const C04_LESSON: Lesson = {
   model: C04_MODEL,
   micTypeIds: [...C04_MICS],
   zones: C04_ZONES,
+  setupPairs: [{ label: 'A front mic and a mic behind the open back', A: { zone: 'eg.boundary' }, B: { zone: 'eg.rear', polarity: -1 }, variants: ['open'] }],
   pages,
   scenarios,
   symptoms,

@@ -362,11 +362,47 @@ export type Readouts = {
 
 /* ── lesson ── */
 export type MikingLabId = 'drums' | 'percussion' | 'winds' | 'strings' | 'ensembles' | 'field' | 'broadcast';
-/** The lesson's pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md):
- *  the three FOUNDATIONS (orient, how it sounds, the setting) come first; the
- *  lesson ends at Practice (owner ruling 2026-10-04: no Sources page). */
-export type PageId = 'instrument' | 'sound' | 'setting' | 'microphone' | 'placement' | 'context' | 'twoMic' | 'troubleshoot' | 'practice';
-export const PAGE_IDS: readonly PageId[] = ['instrument', 'sound', 'setting', 'microphone', 'placement', 'context', 'twoMic', 'troubleshoot', 'practice'];
+/**
+ * The lesson's pages in JOURNEY order (docs/labs/miking/LESSON_JOURNEY.md,
+ * owner restructure 2026-10-06: "The labs need to be about miking"):
+ *
+ *   meet       MEET IT — WHERE THE SOUND COMES FROM (what it is, in brief,
+ *              and where its sound leaves)
+ *   setups     STARTING SETUPS — real mic setups drawn on the instrument
+ *   microphone · placement (the Placement Studio) · context · twoMic ·
+ *   troubleshoot · practice
+ *
+ * The two FOUNDATIONS (meet, setups) come first; the lesson ends at Practice
+ * (owner ruling 2026-10-04: no Sources page). "Where it sits" is gone: its
+ * mic decisions moved into STARTING SETUPS.
+ */
+export type PageId = 'meet' | 'setups' | 'microphone' | 'placement' | 'context' | 'twoMic' | 'troubleshoot' | 'practice';
+export const PAGE_IDS: readonly PageId[] = ['meet', 'setups', 'microphone', 'placement', 'context', 'twoMic', 'troubleshoot', 'practice'];
+/**
+ * The three SOURCE pages the 79 lessons of 2026-10-04/05 were written in.
+ * Their words, checks and family page components stay where they were
+ * authored; the journey BUILDS its pages from them (engine/restructure.ts):
+ *   instrument + sound → meet;  setting → setups.
+ * They are also the ids a learner's stored credit may still carry (never
+ * deleted: engine/progress/creditMap.ts maps them).
+ */
+export type LegacyPageId = 'instrument' | 'sound' | 'setting';
+export const LEGACY_PAGE_IDS: readonly LegacyPageId[] = ['instrument', 'sound', 'setting'];
+/** The page a piece of lesson DATA is written for (a check's `page`, a
+ *  family's own page component, a prediction): a journey page, or one of
+ *  the three source pages the journey builds MEET IT and STARTING SETUPS
+ *  from. */
+export type SourcePageId = PageId | LegacyPageId;
+/** A lesson's page words. Lessons written before the 2026-10-06 restructure
+ *  give `instrument`, `sound` and `setting` (MEET IT and STARTING SETUPS are
+ *  built from them); a lesson written to the new journey gives `meet` and
+ *  `setups` itself. Read a page through `pageOf` (engine/restructure.ts). */
+export type LessonPages = { [K in Exclude<PageId, 'meet' | 'setups'>]: PageContent } & Partial<Record<'meet' | 'setups' | LegacyPageId, PageContent>>;
+/** A two-mic STARTING SETUP a lesson gives itself, where its two-mic page's
+ *  pair is not in its copy (`copy.twoMic`): two zones (each mic at its
+ *  zone's start pose) — the lesson's own researched starting points. Added
+ *  2026-10-06; every one is logged in docs/labs/miking/CORRECTIONS_LOG.md. */
+export type SetupPairData = { label: string; A: { zone: string; typeId?: string; pattern?: MicPattern }; B: { zone: string; typeId?: string; pattern?: MicPattern; polarity?: 1 | -1 }; variants?: readonly VariantId[]; line?: string };
 
 export type ViewBox = { u0: number; u1: number; v0: number; v1: number };
 export type InstrumentModel = {
@@ -450,11 +486,11 @@ export function lineFor(model: Pick<InstrumentModel, 'lines'>, variant: VariantI
 /** A wrong option -> why it is wrong (elaborated feedback: the misconception
  *  the learner just chose is answered, not only "try again"). */
 export type WhyWrong = Readonly<Record<string, string>>;
-export type MikingScenario = { id: string; page: PageId; prompt: string; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
+export type MikingScenario = { id: string; page: SourcePageId; prompt: string; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
 export type Symptom = { id: string; observation: string; firstChecks: string; src?: SrcKey; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
 /** Put the steps of a procedure in order. `steps` is the right order; a tap
  *  on a step that cannot come yet is answered with that step's `early`. */
-export type OrderTask = { id: string; page: PageId; prompt: string; steps: readonly { text: string; early: string }[]; explain: string };
+export type OrderTask = { id: string; page: SourcePageId; prompt: string; steps: readonly { text: string; early: string }[]; explain: string };
 /**
  * A constructed setup task (the lesson's final task, L89): a brief, a choice
  * of setup where SEVERAL are acceptable, then the reasons the learner gives
@@ -463,13 +499,15 @@ export type OrderTask = { id: string; page: PageId; prompt: string; steps: reado
  */
 export type SetupChoice = { id: string; label: string; ok: boolean; power: 'none' | 'phantom'; feedback: string };
 export type SetupReason = { id: string; label: string; role: 'required' | 'optional' | 'wrong'; feedback: string };
-export type SetupTask = { id: string; page: PageId; brief: string; setups: readonly SetupChoice[]; reasons: readonly SetupReason[]; explain: string };
+export type SetupTask = { id: string; page: SourcePageId; brief: string; setups: readonly SetupChoice[]; reasons: readonly SetupReason[]; explain: string };
 /** An ungraded prediction made BEFORE an activity (try before tell). */
 export type Prediction = { prompt: string; options: readonly string[]; after: string };
 /** A QUICK CHECK item (the experienced path, LESSON_JOURNEY §2.5): one pick,
- *  no retry; `covers` is the FOUNDATION page it tests; a `critical` item
- *  (safety) fails the check when it is wrong, whatever the score. */
-export type DiagnosticItem = { id: string; covers: PageId; critical?: boolean; prompt: string; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
+ *  no retry; `covers` is the FOUNDATION page it tests (as authored: a source
+ *  page maps to the journey page built from it — instrument and sound to
+ *  meet, setting to setups); a `critical` item (safety) fails the check when
+ *  it is wrong, whatever the score. */
+export type DiagnosticItem = { id: string; covers: SourcePageId; critical?: boolean; prompt: string; options: readonly string[]; correct: string; explain: string; why: WhyWrong };
 /** ORIENT: what the instrument is, in a few plain facts (no tasks). `src`
  *  is the internal record (never shown). */
 export type OrientFact = { title: string; text: string; src: SrcKey };
@@ -513,13 +551,17 @@ export type Lesson = {
   model: InstrumentModel;
   micTypeIds: string[];
   zones: DocumentedZone[];
-  pages: Record<PageId, PageContent>;
+  pages: LessonPages;
   scenarios: MikingScenario[];
   symptoms: Symptom[];
   orderTasks: OrderTask[];
   setupTasks: SetupTask[];
   /** One prediction per rack page, asked before the activity. */
-  predictions: Partial<Record<PageId, Prediction>>;
+  predictions: Partial<Record<SourcePageId, Prediction>>;
+  /** STARTING SETUPS the lesson's zones and copy cannot give on their own
+   *  (engine/setups.ts): a two-mic pair whose two-mic page keeps its pair in
+   *  its art. Added 2026-10-06 and logged in CORRECTIONS_LOG.md. */
+  setupPairs?: readonly SetupPairData[];
   /** ORIENT's facts, HOW IT SOUNDS and THE SETTING (the foundations). */
   orient: readonly OrientFact[];
   sound: SoundContent;

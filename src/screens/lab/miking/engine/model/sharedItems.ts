@@ -13,14 +13,14 @@
  *       a "Yes…" option was never the key. It now asks what the rating DOES
  *       tell you, and the reasoned key is a qualified "Yes".
  */
-import type { MikingScenario, PageId } from './types.ts';
+import type { MikingScenario, SourcePageId } from './types.ts';
 
 export const OPPOSITE_SIDES_POLARITY =
   'Two mics on opposite sides of one moving surface — the top and bottom of a drum, a head and the drum’s open foot, the front and back of a speaker — hear it push and pull at the same instant, so they usually start opposite. Flipping one is a common first thing to TRY, never a rule: polarity flips the sign and does not remove a delay, so check both states by ear, at matched level, in mono.';
 
 export type RatingWords = {
   id: string;
-  page: PageId;
+  page: SourcePageId;
   /** "kick mic", "spot mic near the timpani" */
   mic: string;
   /** "the hardest kick", "the loudest roll" */

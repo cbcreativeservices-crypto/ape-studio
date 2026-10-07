@@ -38,6 +38,7 @@ import { A05A_LESSON } from '../src/screens/lab/miking/lessons/a05aSopranoSax/le
 import { A05B_LESSON } from '../src/screens/lab/miking/lessons/a05bAltoSax/lesson.ts';
 import { A05C_LESSON } from '../src/screens/lab/miking/lessons/a05cTenorSax/lesson.ts';
 import { A05D_LESSON } from '../src/screens/lab/miking/lessons/a05dBaritoneSax/lesson.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 const SAX = [A05A_LESSON, A05B_LESSON, A05C_LESSON, A05D_LESSON];
 const ROWS = Object.values(SAX_ROWS);
@@ -241,9 +242,9 @@ function copyIds(lesson: Lesson) {
 
 for (const lesson of SAX) {
   describe(`${lesson.id} ${lesson.title}`, () => {
-    it('validateLesson returns no problems; the 9 pages are present', () => {
+    it('validateLesson returns no problems; its written pages serve the 8 journey pages', () => {
       assert.deepEqual(validateLesson(lesson, MIC_TYPES), []);
-      assert.deepEqual(Object.keys(lesson.pages).sort(), [...PAGE_IDS].sort());
+      assertJourneyPages(lesson);
     });
     it('it is listed in Lab 3 (Winds), on its own registry line, and served', () => {
       const lab = MIKING_LABS.find((l) => l.id === 'winds')!;

@@ -177,3 +177,26 @@ export function sceneFrame(model: InstrumentModel, variant: VariantId, view: Vie
   }
   return f;
 }
+
+/**
+ * The box a STARTING SETUPS drawing fits (owner 2026-10-06, the piano under
+ * its short-stick lid: "zoom out so the distance can be shown"): the
+ * instrument's own content frame, grown to take in every point of the setup
+ * — each mic's front and tail, its stand's foot, and the point its distance
+ * is measured to — with a margin, so the mic, its aim and its dimension are
+ * all on the glass. It only ever grows the instrument's frame.
+ */
+export function setupFrame(model: InstrumentModel, variant: VariantId, view: ViewId, points: readonly Vec3[]): ViewBox | undefined {
+  const base = sceneFrame(model, variant, view, false);
+  if (!base) return undefined;
+  if (!points.length) return base;
+  let { u0, u1, v0, v1 } = base;
+  for (const p of points) {
+    u0 = Math.min(u0, p.x);
+    u1 = Math.max(u1, p.x);
+    v0 = Math.min(v0, vOf(view, p));
+    v1 = Math.max(v1, vOf(view, p));
+  }
+  const pad = Math.max(CONTENT_MIN_PAD, CONTENT_PAD * Math.max(u1 - u0, v1 - v0));
+  return { u0: Math.min(base.u0, u0 - pad), u1: Math.max(base.u1, u1 + pad), v0: Math.min(base.v0, v0 - pad), v1: Math.max(base.v1, v1 + pad) };
+}

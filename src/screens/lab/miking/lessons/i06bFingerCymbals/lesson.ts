@@ -10,14 +10,14 @@
  * 30–60 cm range and the wider dance views are the lesson's own trials; the
  * one published number is a general 30 cm floor for percussion.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, PLAYER_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, tailSymptom, type MetalWords } from '../shared/metal/metalItems.ts';
 import { metalWords } from '../shared/metal/metalCopy.ts';
 import { FC_MODEL, FC_ZONES } from './geometry.ts';
 
 const W: MetalWords = { p: 'fc', the: 'the finger cymbals', player: 'player', loudest: 'the brightest accent', tail: 'the ring' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the finger cymbals',
     goal: 'Get to know finger cymbals — what they are, where you meet them, what they do in the music, their parts and the two ways they are played — before any microphone.',
@@ -507,6 +507,7 @@ export const I06B_LESSON: Lesson = {
   model: FC_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard'],
   zones: FC_ZONES,
+  setupPairs: [{ label: 'A closer and a farther mic', A: { zone: 'fc.A', typeId: 'sdcCard' }, B: { zone: 'fc.B', typeId: 'sdcCard' }, variants: ['orchestral'] }, { label: 'A high mic and a wider mic', A: { zone: 'fc.high', typeId: 'sdcCard' }, B: { zone: 'fc.far', typeId: 'sdcCard' }, variants: ['dance'] }],
   pages,
   scenarios,
   symptoms,

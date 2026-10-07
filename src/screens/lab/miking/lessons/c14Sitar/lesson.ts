@@ -7,7 +7,7 @@
  * sympathetic strings are shown with the ideal-string model (which shapes
  * line up), never as a level. Starting-points voice; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { ACCURACY, brandReason, clearReason, contextChecks, DOC_REASON, hearingCheck, hearingDiag, LOUD_REASON, micChecks, POWER_REASON, practiceChecks, setupOrder, sharedSymptoms, STRINGS_PREDICT, twoMicChecks } from '../shared/guitars/stringsContent.ts';
 import { C14_MODEL, C14_WEDGES, C14_ZONES } from './geometry.ts';
 import { C14_COPY, SITAR_N } from './copy.ts';
@@ -16,7 +16,7 @@ import { SITAR } from '../shared/lutes/luteSpec.ts';
 const P = 'st';
 const CLEAR = 'the mizrab hand, the left hand’s travel, the gourd and the player’s view';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the sitar',
     goal: 'Get to know the sitar — a long-necked, fretted lute on a gourd, with melody, drone and (often) sympathetic strings — what it is, where you meet it, what it does in the music, and its parts, before any microphone.',

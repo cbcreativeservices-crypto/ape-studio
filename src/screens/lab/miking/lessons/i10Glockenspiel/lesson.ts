@@ -8,7 +8,7 @@
  * OWNER RULING 2026-10-04: starting points, never dogma; no source, brand or
  * model in learner text; no badges; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import type { LessonCopy } from '../../engine/model/copy.ts';
 import { BRAND_REASON, CLEAR_REASON, cardioidNull, distortionSymptom, firstNotch, gainCheck, moveRemovesDelay, polarityKeepsDelay, POWER_REASON, setupOrder } from '../shared/concert/commonItems.ts';
 import { BEFORE_STANDS, glockPairs, hearingCheckM, malletAxes, malletWedges, monoSymptomM, quickHearingM, rattleSymptom, spacedMonoCheck, weakEndSymptom, type MW } from '../shared/mallets/content.ts';
@@ -22,7 +22,7 @@ const L0 = GLOCK_GEOM.layouts.pedal;
 const SIDE_X = 1900;
 const FRONT_Z = 1100;
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the glockenspiel',
     goal: 'Get to know the glockenspiel — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',

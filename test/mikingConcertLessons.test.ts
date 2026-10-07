@@ -26,6 +26,7 @@ import { registerHooks } from 'node:module';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -80,11 +81,11 @@ describe('the four concert lessons validate and are registered in Lab 1', () => 
     for (const id of IDS) assert.match(art, new RegExp(`\\b${id}: \\{ Instrument: \\w+, labels: \\w+, hitTest: \\w+, StrikeSequence: \\w+, CoupledHeads: \\w+, SettingPlan: orchestraPlanFor\\('\\w+'\\) \\}`));
   });
   for (const id of IDS) {
-    it(`${id}: validateLesson is clean; the nine journey pages are there`, () => {
+    it(`${id}: validateLesson is clean; its written pages serve the 8 journey pages`, () => {
       const l = lessonById(id) as L;
       assert.ok(l, id);
       assert.deepEqual(validateLesson(l, MIC_TYPES), []);
-      assert.deepEqual(Object.keys(l.pages).sort(), [...PAGE_IDS].sort());
+      assertJourneyPages(l);
       assert.equal(l.labId, 'drums');
     });
   }

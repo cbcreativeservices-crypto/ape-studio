@@ -32,7 +32,7 @@ import { colors, fonts } from '../../../../../../theme/tokens';
 import { useAnimationsAllowed } from '../../../../../../features/settings/a11y';
 import { ExpandableFigure } from '../../../../kit/ExpandableFigure';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
-import type { PageId } from '../../../engine/model/types.ts';
+import type { SourcePageId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, KeyButton, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import { lenCell } from '../../../engine/scene/readoutText.ts';
@@ -111,7 +111,7 @@ export function SpkLink({ text }: { text?: string } = {}) {
   );
 }
 
-export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<PageId, (p: PageProps) => ReactNode>> {
+export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId, (p: PageProps) => ReactNode>> {
   const ampPages = makeAmpPages(spec.amp);
   const rhodes = spec.rig === 'rhodes';
   const mechKind: MechKind = rhodes ? 'tine' : 'reed';

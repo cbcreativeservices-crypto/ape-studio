@@ -25,14 +25,18 @@ import { useSyncExternalStore } from 'react';
 import { getLabPreview } from '../../../../../features/lab/labPreviewStore';
 import { holdSessionWork, registerSessionCarry, releaseSessionWork } from '../../../../../features/lab/sessionCarry';
 import { createLocalStore } from '../../../../../features/storage/localStore';
-import { PAGE_IDS, type PageId } from '../model/types.ts';
-import type { LearnerPath, QuickCheckResult } from '../journey.ts';
+import type { PageId, SourcePageId } from '../model/types.ts';
+import { journeyPageOf, type LearnerPath, type QuickCheckResult } from '../journey.ts';
+import { isStoredPage } from './creditMap.ts';
 
 export const MIKING_KEY = 'ape:miking:v1';
 const CARRY_KEY = 'miking';
 
 export type LessonProgress = {
-  done: PageId[];
+  /** Pages banked, as stored: journey pages, and — from before the 2026-10-06
+   *  restructure — instrument / sound / setting, which are KEPT (credit is
+   *  never removed) and read through creditMap.creditedPages. */
+  done: SourcePageId[];
   /** scenario / symptom id → the FIRST pick was right */
   answers: Record<string, boolean>;
   /** page interactives reached this run */
@@ -49,7 +53,7 @@ export type MikingProgress = { v: 1; lessons: Record<string, LessonProgress> };
 const EMPTY = (): MikingProgress => ({ v: 1, lessons: {} });
 export const emptyLesson = (): LessonProgress => ({ done: [], answers: {}, interactive: [] });
 
-const isPage = (x: unknown): x is PageId => typeof x === 'string' && (PAGE_IDS as readonly string[]).includes(x);
+const isPage = isStoredPage;
 const shortStr = (x: unknown): x is string => typeof x === 'string' && x.length > 0 && x.length < 64;
 
 /** Pure: a clean record from anything (bad fields dropped, never thrown on). */
@@ -69,7 +73,9 @@ export function sanitizeMiking(raw: unknown): MikingProgress {
       answers,
       interactive: Array.isArray(r.interactive) ? [...new Set(r.interactive.filter(shortStr))] : [],
     };
-    if (isPage(r.lastPage)) lp.lastPage = r.lastPage;
+    // The resume point only (not credit): a page that left the journey
+    // resumes on the page built from it.
+    if (isPage(r.lastPage)) lp.lastPage = journeyPageOf(r.lastPage);
     if (typeof r.lastStep === 'number' && Number.isInteger(r.lastStep) && r.lastStep >= 0 && r.lastStep < 20) lp.lastStep = r.lastStep;
     if (r.path === 'new' || r.path === 'experienced') lp.path = r.path;
     const q = sanitizeQuick(r.quick);
@@ -84,7 +90,7 @@ function sanitizeQuick(x: unknown): QuickCheckResult | null {
   const q = x as Record<string, unknown>;
   const n = (v: unknown) => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 50;
   if (!n(q.right) || !n(q.total) || typeof q.pass !== 'boolean' || (q.right as number) > (q.total as number)) return null;
-  const misses = Array.isArray(q.misses) ? [...new Set(q.misses.filter(isPage))] : [];
+  const misses = Array.isArray(q.misses) ? [...new Set(q.misses.filter(isPage).map(journeyPageOf))] : [];
   return { right: q.right as number, total: q.total as number, pass: q.pass, misses };
 }
 

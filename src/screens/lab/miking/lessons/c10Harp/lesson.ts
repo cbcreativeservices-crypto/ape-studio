@@ -7,12 +7,12 @@
  * OWNER RULING 2026-10-04: starting points, never dogma; no source, brand or
  * model in learner text; no badges. Research in docs/labs/miking/harp/.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { HARP_MODEL } from './geometry.ts';
 import { HARP_ZONES } from './model.ts';
 import { HARP_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the harp',
     goal: 'Get to know the harp — the concert pedal harp and the smaller lever harp: what it is, where you meet it, what it does in the music, and its parts, from the soundboard to the pillar — before any microphone.',

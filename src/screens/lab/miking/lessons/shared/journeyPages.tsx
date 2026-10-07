@@ -27,6 +27,8 @@ import type { Lesson, MicPattern, MicPose, MicSlot, MicType } from '../../engine
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { Body, Card, KeyButton, Landing, Note, OrderTaskCard, Point, PredictCard, ScenarioList, SetupTaskCard } from '../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard, type JourneyProps } from '../../engine/journeyKit';
+import { journeyIntro } from '../../engine/journey.ts';
+import { copyOf } from '../../engine/model/copy.ts';
 import { PolarCompare } from '../../engine/scene/PolarCompare';
 import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../../engine/physics/polar.ts';
 import { fmtAngle, fmtDb, fmtIdealPickup, fmtLen, isDeepNull } from '../../engine/model/units.ts';
@@ -36,7 +38,9 @@ import { MIC_TYPES, micType } from '../../data/micTypes';
 import type { PageProps } from '../../pages/pageTypes';
 
 /* ── page 1 ── */
-export function startStep(lesson: Lesson, journey: JourneyProps, intro: string): MikingStep {
+/** `_intro`: the lesson's own words for the old journey, kept as written but no
+ *  longer shown — every START says the journey as it now is (journeyIntro). */
+export function startStep(lesson: Lesson, journey: JourneyProps, _intro: string): MikingStep {
   return {
     key: 'start',
     title: 'Start here',
@@ -44,8 +48,8 @@ export function startStep(lesson: Lesson, journey: JourneyProps, intro: string):
     layout: 'read',
     body: (
       <>
-        <Body>{intro}</Body>
-        <JourneyMap met={journey.met} here="instrument" />
+        <Body>{journeyIntro(lesson.noun, copyOf(lesson).words.instrument)}</Body>
+        <JourneyMap met={journey.met} here="meet" />
         <PathChooser journey={journey} />
         {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
         {journey.path === 'new' ? <Note tone="ok">{`Good — NEXT takes you through the ${lesson.noun.one} first. You can change how you started here at any time.`}</Note> : null}

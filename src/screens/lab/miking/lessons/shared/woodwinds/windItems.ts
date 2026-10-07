@@ -12,7 +12,7 @@
  * its own explanation; reasoning, not the recall of a number. Starting-points
  * voice (owner ruling 2026-10-04): no sources on screen.
  */
-import type { DiagnosticItem, MikingScenario, PageId, Symptom } from '../../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, SourcePageId, Symptom } from '../../../engine/model/types.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 export type WindWords = {
@@ -30,7 +30,7 @@ export type WindWords = {
 
 /* ── HOW IT SOUNDS ── */
 
-export const firstHoleCheck = (id: string, w: WindWords, page: PageId = 'sound'): MikingScenario => {
+export const firstHoleCheck = (id: string, w: WindWords, page: SourcePageId = 'sound'): MikingScenario => {
   const end = `From ${w.end} at the end, whatever note the fingers choose`;
   const ex = `From ${w.exciter} end, where each note’s sound starts`;
   const key = 'At the first open hole, which moves up with pitch';
@@ -48,7 +48,7 @@ export const firstHoleCheck = (id: string, w: WindWords, page: PageId = 'sound')
   };
 };
 
-export const bellOnlyCheck = (id: string, w: WindWords, page: PageId = 'sound'): MikingScenario => {
+export const bellOnlyCheck = (id: string, w: WindWords, page: SourcePageId = 'sound'): MikingScenario => {
   const key = `Each note leaves from a different place along it`;
   const a = `${w.end.replace(/^the /, 'The ')} filters out the high notes on their way`;
   const b = `The mic is too far from the ${w.noun} to hear it`;

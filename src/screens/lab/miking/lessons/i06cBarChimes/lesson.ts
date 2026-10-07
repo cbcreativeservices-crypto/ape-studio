@@ -10,14 +10,14 @@
  * The 40–80 cm range and the end-mic pair are the lesson's own trials; the
  * one published number is a general 30 cm floor for percussion.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, PLAYER_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, tailSymptom, type MetalWords } from '../shared/metal/metalItems.ts';
 import { metalWords } from '../shared/metal/metalCopy.ts';
 import { BC_MODEL, BC_ZONES } from './geometry.ts';
 
 const W: MetalWords = { p: 'bc', the: 'the bar chimes', player: 'player', loudest: 'the strongest strike', tail: 'the shimmer’s tail' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the bar chimes',
     goal: 'Get to know bar chimes — what they are, where you meet them, what they do in the music and their parts — before any microphone.',
@@ -507,6 +507,7 @@ export const I06C_LESSON: Lesson = {
   model: BC_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard'],
   zones: BC_ZONES,
+  setupPairs: [{ label: 'A mic beyond each end of the row', A: { zone: 'bc.endL', typeId: 'sdcCard' }, B: { zone: 'bc.endR', typeId: 'sdcCard' } }],
   pages,
   scenarios,
   symptoms,

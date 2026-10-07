@@ -45,6 +45,8 @@ import { viewsOf } from '../model/types.ts';
 import { copyOf } from '../model/copy.ts';
 import { aimVec, angleBetween, clamp, sub } from '../geometry/vec.ts';
 import { fitXform, project, unprojectDelta, zoomAbout, type ViewXform } from '../geometry/frame.ts';
+import { guideFor, projected, type Guide } from '../geometry/guides.ts';
+import { fmtLen } from '../model/units.ts';
 import { assembly, CLIP_REACH, constrainMove, pinToSurface, type Blocked } from '../geometry/collision.ts';
 import { deriveReadouts } from '../geometry/readouts.ts';
 import { zonesAvailable } from '../geometry/zones.ts';
@@ -87,6 +89,12 @@ export type SceneOptions = {
   wedge?: { at: Vec3; faces: Vec3; src: Vec3; glyph?: 'wedge' | 'none' } | null;
   highlight?: string | null;
   onTapPart?: (partId: string) => void;
+  /** Only these recommended starting points are drawn (a STARTING SETUPS
+   *  drawing shows the setup's own zones, not every one in the lesson). */
+  zoneIds?: readonly string[];
+  /** STARTING SETUPS: each mic's aim line and its distance as a dimension,
+   *  measured to the surface its starting point is read from. */
+  guides?: boolean;
 };
 
 export type PlacementSceneProps = SceneOptions & {
@@ -724,6 +732,96 @@ function PathsOverlay({ rig, view, from }: { rig: Rig; view: ViewId; from: Vec3 
   );
 }
 
+/**
+ * A STARTING SETUP's guides (geometry/guides.ts): the AIM — a dashed amber
+ * line from the mic's front along its axis, with an arrowhead — and the
+ * DIMENSION — a fine white line from the front to the point its distance is
+ * measured to, with a tick at each end. Ticks and arrowhead keep their screen
+ * size at every zoom (built from the transform's scale each frame).
+ */
+function SetupGuide({ g, view, xf, dashMm, drawDim }: { g: Guide; view: ViewId; xf: SharedValue<ViewXform>; dashMm: number; drawDim: boolean }) {
+  const f = { u: g.front.x, v: vOf(view, g.front) };
+  const t = { u: g.foot.x, v: vOf(view, g.foot) };
+  const e = { u: g.aimEnd.x, v: vOf(view, g.aimEnd) };
+  const aimPath = useMemo(() => {
+    const p = Skia.Path.Make();
+    p.moveTo(f.u, f.v);
+    p.lineTo(e.u, e.v);
+    return p;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [f.u, f.v, e.u, e.v]);
+  const marks = useDerivedValue(() => {
+    const s = xf.value.s;
+    const p = Skia.Path.Make();
+    // The arrowhead at the aim's end (10 px).
+    const au = e.u - f.u;
+    const av = e.v - f.v;
+    const al = Math.sqrt(au * au + av * av);
+    if (al > 1e-6) {
+      const ux = au / al;
+      const uy = av / al;
+      const k = 10 / s;
+      p.moveTo(e.u, e.v);
+      p.lineTo(e.u - ux * k - uy * k * 0.55, e.v - uy * k + ux * k * 0.55);
+      p.moveTo(e.u, e.v);
+      p.lineTo(e.u - ux * k + uy * k * 0.55, e.v - uy * k - ux * k * 0.55);
+    }
+    return p;
+  });
+  const dim = useDerivedValue(() => {
+    const s = xf.value.s;
+    const p = Skia.Path.Make();
+    if (!drawDim) return p;
+    const du = t.u - f.u;
+    const dv = t.v - f.v;
+    const l = Math.sqrt(du * du + dv * dv);
+    if (l < 1e-6) return p;
+    const nx = -dv / l;
+    const ny = du / l;
+    const k = 7 / s;
+    p.moveTo(f.u, f.v);
+    p.lineTo(t.u, t.v);
+    p.moveTo(f.u - nx * k, f.v - ny * k);
+    p.lineTo(f.u + nx * k, f.v + ny * k);
+    p.moveTo(t.u - nx * k, t.v - ny * k);
+    p.lineTo(t.u + nx * k, t.v + ny * k);
+    return p;
+  });
+  const w2 = useDerivedValue(() => 2 / xf.value.s);
+  const w4 = useDerivedValue(() => 4.5 / xf.value.s);
+  return (
+    <>
+      <Path path={aimPath} style="stroke" strokeWidth={w4} color="#000" opacity={0.45} />
+      <Path path={aimPath} style="stroke" strokeWidth={w2} color={AMBER} opacity={0.95}>
+        <DashPathEffect intervals={[dashMm, dashMm * 0.7]} />
+      </Path>
+      <Path path={marks} style="stroke" strokeWidth={w2} strokeCap="round" color={AMBER} />
+      <Path path={dim} style="stroke" strokeWidth={w4} color="#000" opacity={0.5} />
+      <Path path={dim} style="stroke" strokeWidth={w2} strokeCap="round" color="#f2f4f8" />
+    </>
+  );
+}
+
+/** The dimension's distance, in words beside its middle (or beside the mic
+ *  when the dimension is seen end-on in this view). */
+function GuideLabel({ xf, u, v, nx, ny, W, H, text, scale, maxX, maxY }: { xf: SharedValue<ViewXform>; u: number; v: number; nx: number; ny: number; W: number; H: number; text: string; scale: number; maxX: number; maxY: number }) {
+  const style = useAnimatedStyle(() => {
+    const c = xf.value;
+    const cx = c.ox + u * c.s + nx * (W / 2 + 6);
+    const cy = c.oy + v * c.s + ny * (H / 2 + 6);
+    const left = Math.max(2, Math.min(maxX - W - 2, cx - W / 2));
+    const top = Math.max(2, Math.min(maxY - H - 2, cy - H / 2));
+    return { transform: [{ translateX: left }, { translateY: top }] };
+  });
+  return (
+    <Animated.View pointerEvents="none" style={[styles.label, styles.guideLabel, { width: W }, style]}>
+      <Text style={[styles.labelText, { fontSize: 9.5 * scale, textAlign: 'center', color: '#f2f4f8' }]} {...fitValue(9.5 * scale)}>
+        {text}
+      </Text>
+    </Animated.View>
+  );
+}
+
 function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view: ViewId; zoneSV: SharedValue<string | null> }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const path = useMemo(() => zonePath(z, view, rig), [z, view, rig.lesson, rig.variant]);
@@ -1067,7 +1165,7 @@ export function PlacementScene(props: PlacementSceneProps) {
   return inFull ? <GestureHandlerRootView style={{ width: props.w, height: props.h }}>{body}</GestureHandlerRootView> : body;
 }
 
-function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, avoid, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart }: PlacementSceneProps) {
+function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, baseXf, avoid, boxOverride, showLabels = true, showLive = true, onCommit, accessibilityLabel, slots = ['A'], showZones = true, showPolar = true, showEnvelopes = true, pathsFrom = null, wedge = null, highlight = null, onTapPart, zoneIds, guides = false }: PlacementSceneProps) {
   const model = rig.lesson.model;
   // With no mic on the drawing (the parts, the instrument alone) the scene
   // fits the instrument's own CONTENT FRAME, not the generous authored box
@@ -1299,8 +1397,13 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   }, [xf, hasA, hasB, poseA, poseB, lenA, lenB, rA, rB, surfA, surfB, interactive, mini, grab, startTouch, startPose, setLock, bodies, pins, view, scene, bounds, blockedA, blockedB, finish, pinchStart, pinchFocal, base, onTapPart, tapAt, azLimit, home?.az, home?.el]);
 
   // ── what is drawn ──
+  const zoneKey = zoneIds ? zoneIds.join('|') : '';
   const zones = useMemo(() => {
     if (!showZones) return [];
+    if (zoneKey) {
+      const only = zoneKey.split('|');
+      return rig.lesson.zones.filter((z) => only.includes(z.id));
+    }
     const ids = new Set<string>();
     for (const s of live) {
       const m = rig.mics.find((q) => q.slot === s);
@@ -1308,7 +1411,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       for (const z of zonesAvailable(rig.lesson.zones, variant, m.typeId, micType(m.typeId).mount)) ids.add(z.id);
     }
     return rig.lesson.zones.filter((z) => ids.has(z.id));
-  }, [showZones, live, rig.mics, rig.lesson.zones, variant]);
+  }, [showZones, live, rig.mics, rig.lesson.zones, variant, zoneKey]);
   const ctxA = rig.ctx.A;
   const surfaceId = rig.surfaceId;
   const lineId = rig.lineId;
@@ -1364,6 +1467,62 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
   );
   const lobeOpacity = useDerivedValue(() => gate.value);
   const micsOn = rig.mics.some((m) => live.includes(m.slot) && m.on);
+  // STARTING SETUPS: each mic's dimension and aim (geometry/guides.ts), from
+  // the committed poses (the setups drawing is not dragged). The dimension's
+  // words sit beside its middle, on the side away from the drawing's centre.
+  const guideKey = guides && !mini ? rig.mics.filter((m) => live.includes(m.slot) && m.on).map((m) => `${m.slot}:${m.pose.p.x},${m.pose.p.y},${m.pose.p.z},${m.pose.az},${m.pose.el}:${rig.refOf(m.slot).surfaceId}`).join(';') : '';
+  const guideData = useMemo(() => {
+    if (!guideKey) return [];
+    const cu = (box.u0 + box.u1) / 2;
+    const cv = (box.v0 + box.v1) / 2;
+    const raw = rig.mics
+      .filter((m) => live.includes(m.slot) && m.on)
+      .map((m) => {
+        const s = model.surfaces.find((q) => q.id === rig.refOf(m.slot).surfaceId);
+        if (!s) return null;
+        const g = guideFor(s, m.pose);
+        const pr = projected(g, view);
+        const text = fmtLen(g.distance);
+        const W = labelWidth(text, textScale, w);
+        const H = 9.5 * textScale * 1.25;
+        // The label's anchor (mm) and the screen direction it steps out to.
+        const mu = (pr.u0 + pr.u1) / 2;
+        const mv = (pr.v0 + pr.v1) / 2;
+        const short = pr.len * base.s < 18;
+        let nx = pr.len > 1e-6 ? -(pr.v1 - pr.v0) / pr.len : 0;
+        let ny = pr.len > 1e-6 ? (pr.u1 - pr.u0) / pr.len : -1;
+        if (nx * (mu - cu) + ny * (mv - cv) < 0) {
+          nx = -nx;
+          ny = -ny;
+        }
+        const au = short ? pr.u0 : mu;
+        const av = short ? pr.v0 : mv;
+        const px = base.ox + au * base.s + nx * (W / 2 + 6);
+        const py = base.oy + av * base.s + ny * (H / 2 + 6);
+        return { slot: m.slot, g, pr, short, text, W, H, au, av, nx, ny, rect: { x0: px - W / 2, x1: px + W / 2, y0: py - H / 2, y1: py + H / 2 } };
+      })
+      .filter((x): x is NonNullable<typeof x> => !!x);
+    // A pair's two dimensions side by side (the piano's spaced pair): a label
+    // that would sit on the other's steps to the far side of its own line;
+    // if it still collides and says the same, it is not printed twice.
+    const hits = (a: { x0: number; x1: number; y0: number; y1: number }, b: typeof a) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+    const out: (typeof raw[number] & { hide?: boolean })[] = [];
+    for (const d of raw) {
+      let cur: typeof raw[number] & { hide?: boolean } = d;
+      if (out.some((o) => !o.hide && hits(o.rect, cur.rect))) {
+        const nx = -d.nx;
+        const ny = -d.ny;
+        const px = base.ox + d.au * base.s + nx * (d.W / 2 + 6);
+        const py = base.oy + d.av * base.s + ny * (d.H / 2 + 6);
+        const flipped = { ...d, nx, ny, rect: { x0: px - d.W / 2, x1: px + d.W / 2, y0: py - d.H / 2, y1: py + d.H / 2 } };
+        if (!out.some((o) => !o.hide && hits(o.rect, flipped.rect))) cur = flipped;
+        else if (out.some((o) => !o.hide && o.text === d.text)) cur = { ...d, hide: true };
+      }
+      out.push(cur);
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- by the poses' key
+  }, [guideKey, view, box, base, textScale, w, model.surfaces]);
   // Part labels only where the drawing is big enough to carry them (a short
   // landscape glass drew them on top of each other); full screen always has them.
   const labels = useMemo(() => {
@@ -1381,9 +1540,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     const tag = { x0: 0, y0: h - tagFs * 1.4 - 4, x1: 8 + tagText.length * (tagFs * 0.6 + 1.2), y1: h };
     // Level of detail (artLabels.ts): only labels that find clear space — off
     // the drawing, off each other, on the glass below the live strip.
-    return layoutArtLabels(art, view, variant, authoredBox, base, labelScale, w, h, { avoid, obstacles: [...(obstacles ?? []), tag], minY: reserveTop + 1, labels: own, model });
+    return layoutArtLabels(art, view, variant, authoredBox, base, labelScale, w, h, { avoid, obstacles: [...(obstacles ?? []), tag, ...guideData.map((g) => g.rect)], minY: reserveTop + 1, labels: own, model });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
-  }, [mini, showLabels, showZones, zones, art, view, variant, base, labelScale, textScale, viewTag, w, h, reserveTop, authoredBox, model, micsOn, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
+  }, [mini, showLabels, showZones, zones, art, view, variant, base, labelScale, textScale, viewTag, w, h, reserveTop, authoredBox, model, micsOn, guideData, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
   const Instrument = memoArt(art.Instrument);
   const highlightPath = useMemo(() => {
     if (!highlight) return null;
@@ -1465,6 +1624,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           {showPolar
             ? micsShown.map((m) => <PolarSlice key={`polar:${m.slot}:${m.pattern}`} pose={rig.pose[m.slot]} view={view} pattern={m.pattern} />)
             : null}
+          {guideData.map((d) => (
+            <SetupGuide key={`guide:${d.slot}`} g={d.g} view={view} xf={xf} dashMm={10 / base.s} drawDim={!d.short} />
+          ))}
           {micsShown.map((m) => (
             <MicGlyph key={`mic:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} typeId={m.typeId} blocked={rig.blocked[m.slot]} focus={interactive && !mini} xf={xf} />
           ))}
@@ -1472,6 +1634,9 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
       </Canvas>
       {labels.map((l) => (
         <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={l.tone} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
+      ))}
+      {guideData.filter((d) => !d.hide).map((d) => (
+        <GuideLabel key={`gl:${d.slot}`} xf={xf} u={d.au} v={d.av} nx={d.nx} ny={d.ny} W={d.W} H={d.H} text={d.text} scale={textScale} maxX={w} maxY={h} />
       ))}
       {showPolar && !mini && showLabels
         ? micsShown.filter((m) => isModelled(m.pattern)).slice(0, 1).map((m) => <LobeTag key={`lobe:${m.slot}`} pose={rig.pose[m.slot]} view={view} xf={xf} scale={textScale} maxX={w} maxY={h} labelBoxes={labelBoxes} shown={lobeOpacity} avoid={avoid ?? null} />)
@@ -1581,6 +1746,7 @@ function WedgeGlyph({ at, view, faces }: { at: Vec3; view: ViewId; faces: Vec3 }
 
 const styles = StyleSheet.create({
   label: { position: 'absolute', left: 0, top: 0 },
+  guideLabel: { backgroundColor: 'rgba(8,8,10,0.72)', borderRadius: 4 },
   // A dark halo keeps a label legible where it crosses a boom or a hoop
   // (the drawing stays visible around it — no opaque backing).
   labelText: { fontFamily: fonts.oswaldMedium, letterSpacing: 0.8, textShadowColor: 'rgba(0,0,0,0.95)', textShadowRadius: 3, textShadowOffset: { width: 0, height: 0 } },

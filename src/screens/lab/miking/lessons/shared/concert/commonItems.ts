@@ -12,7 +12,7 @@
  * real misconceptions with their own "why", no absolute-word giveaways, no
  * brand recall. Starting-points voice; no source names (owner 2026-10-04).
  */
-import type { MikingScenario, OrderTask, PageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
+import type { MikingScenario, OrderTask, SourcePageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 export type Words = {
@@ -26,11 +26,11 @@ export type Words = {
   loudest: string;
 };
 
-export function hearingCheck(w: Words, page: PageId, id = `${w.p}.set.hear`): MikingScenario {
+export function hearingCheck(w: Words, page: SourcePageId, id = `${w.p}.set.hear`): MikingScenario {
   return micRatingCheck({ id, page, mic: `spot mic near ${w.the}`, loudest: w.loudest });
 }
 
-export function quickHearing(w: Words): { id: string; covers: PageId; critical: true; prompt: string; options: string[]; correct: string; explain: string; why: Record<string, string> } {
+export function quickHearing(w: Words): { id: string; covers: SourcePageId; critical: true; prompt: string; options: string[]; correct: string; explain: string; why: Record<string, string> } {
   return {
     id: `${w.p}.q.6`,
     covers: 'setting',

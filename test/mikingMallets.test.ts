@@ -29,6 +29,7 @@ import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { itemRules } from './_mikingItemRules.ts';
+import { assertJourneyPages } from './_mikingPages.ts';
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -93,10 +94,10 @@ describe('the four mallet lessons validate and are registered in Lab 2', () => {
     assert.match(pages, /twoMic: MTwoMic/);
   });
   for (const id of IDS) {
-    it(`${id}: validates, nine pages, the item rules`, () => {
+    it(`${id}: validates, the 8 journey pages, the item rules`, () => {
       const l = lesson(id);
       assert.deepEqual(validateLesson(l, MIC_TYPES), []);
-      for (const p of PAGE_IDS) assert.ok(l.pages[p], p);
+      assertJourneyPages(l);
       assert.equal(l.labId, 'percussion');
       itemRules(l);
       assert.equal(l.symptoms.length, 6);

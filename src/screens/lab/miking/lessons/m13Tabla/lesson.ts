@@ -10,10 +10,10 @@
  * recommended starting points, with the honest note that every player,
  * pair and room differ.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { TABLA_MODEL, TABLA_ZONES } from './geometry.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the tabla',
     goal: 'Get to know the tabla — the two drums, where you meet them, what they do in the music, and their parts — before any microphone.',
@@ -636,6 +636,7 @@ export const M13_LESSON: Lesson = {
   model: TABLA_MODEL,
   micTypeIds: ['sdcCard', 'instDynCard'],
   zones: TABLA_ZONES,
+  setupPairs: [{ label: 'A mic over each drum', A: { zone: 'ta.dayan.close', typeId: 'sdcCard' }, B: { zone: 'ta.bayan.close', typeId: 'sdcCard' } }],
   pages,
   scenarios,
   symptoms,

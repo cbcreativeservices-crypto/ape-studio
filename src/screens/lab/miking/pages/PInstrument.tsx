@@ -30,6 +30,7 @@ import { sceneLabel } from '../engine/scene/sceneWords.ts';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point } from '../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard } from '../engine/journeyKit';
+import { journeyIntro } from '../engine/journey.ts';
 import type { PageProps } from './pageTypes';
 import { viewToggle } from '../engine/scene/viewToggle.ts';
 
@@ -94,8 +95,8 @@ export function PInstrument({ lesson, art, variant, setVariant, hidden, journey 
       layout: 'read',
       body: (
         <>
-          <Body>{C.terms?.startIntro ?? C.words.intro ?? `This lesson is about putting a microphone on ${/^[aeiou]/i.test(lesson.noun.one) ? 'an' : 'a'} ${lesson.noun.one} — but first the ${C.words.instrument} itself: what it is, how it makes its sound, and where it sits. Then the microphones, a worked example, and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead.`}</Body>
-          <JourneyMap met={journey.met} here="instrument" />
+          <Body>{journeyIntro(lesson.noun, C.words.instrument)}</Body>
+          <JourneyMap met={journey.met} here="meet" />
           <PathChooser journey={journey} />
           {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
           {journey.path === 'new' ? <Note tone="ok">{C.terms?.startNew ?? C.words.newNote ?? `Good — NEXT takes you through the ${C.words.instrument} first. You can change how you started here at any time.`}</Note> : null}

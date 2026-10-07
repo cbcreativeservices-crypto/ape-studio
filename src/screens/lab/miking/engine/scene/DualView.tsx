@@ -12,7 +12,7 @@ import { useContext, useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../../theme/tokens';
 import { StageInFullScreen, useStageTextScale } from '../../../rack/stageAspect';
-import type { ViewId } from '../model/types.ts';
+import type { ViewBox, ViewId } from '../model/types.ts';
 import { viewsOf } from '../model/types.ts';
 import { fitPair, fitXform } from '../geometry/frame.ts';
 import { sceneFrame } from '../geometry/contentFrame.ts';
@@ -24,6 +24,9 @@ export type DualViewProps = Omit<PlacementSceneProps, 'view' | 'baseXf' | 'mini'
   setView: (v: ViewId) => void;
   /** A label per view (describeScene) for the canvases. */
   labelFor: (v: ViewId) => string;
+  /** The boxes to fit per view, when the page frames its own drawing (the
+   *  STARTING SETUPS page: the instrument plus the whole setup). */
+  frames?: { side?: ViewBox; top?: ViewBox };
 };
 
 const INSET = 0.27;
@@ -36,13 +39,14 @@ export function DualView(props: DualViewProps) {
   // mic is on the drawing — geometry/contentFrame.ts), so both views and the
   // inset line up with what each scene draws.
   const withMics = (props.slots ?? ['A']).length > 0 || !!props.wedge || !!props.pathsFrom;
+  const frames = props.frames;
   const box = useMemo(() => {
     const authored = viewsOf(rig.lesson.model, rig.variant);
     return {
-      side: authored.side ? sceneFrame(rig.lesson.model, rig.variant, 'side', withMics) : undefined,
-      top: authored.top ? sceneFrame(rig.lesson.model, rig.variant, 'top', withMics) : undefined,
+      side: authored.side ? frames?.side ?? sceneFrame(rig.lesson.model, rig.variant, 'side', withMics) : undefined,
+      top: authored.top ? frames?.top ?? sceneFrame(rig.lesson.model, rig.variant, 'top', withMics) : undefined,
     };
-  }, [rig.lesson, rig.variant, withMics]);
+  }, [rig.lesson, rig.variant, withMics, frames]);
   const other: ViewId = view === 'side' ? 'top' : 'side';
   const stacked = inFull && box.side && box.top;
   const portrait = h >= w * 0.75;
@@ -71,8 +75,8 @@ export function DualView(props: DualViewProps) {
     const half = Math.floor(w / 2);
     return (
       <View style={{ width: w, height: h, flexDirection: 'row' }}>
-        <PlacementScene {...props} view="side" w={half} h={h} accessibilityLabel={labelFor('side')} />
-        <PlacementScene {...props} view="top" w={w - half} h={h} showLive={false} accessibilityLabel={labelFor('top')} />
+        <PlacementScene {...props} view="side" w={half} h={h} boxOverride={frames ? box.side : props.boxOverride} accessibilityLabel={labelFor('side')} />
+        <PlacementScene {...props} view="top" w={w - half} h={h} showLive={false} boxOverride={frames ? box.top : props.boxOverride} accessibilityLabel={labelFor('top')} />
       </View>
     );
   }
@@ -106,7 +110,7 @@ export function DualView(props: DualViewProps) {
   const avoid = showInset ? { x0: w - 4 - iw, y0: top, x1: w - 4, y1: top + ih + 14 } : undefined;
   return (
     <View style={{ width: w, height: h }}>
-      <PlacementScene {...props} view={view} w={w} h={h} avoid={avoid} accessibilityLabel={labelFor(view)} />
+      <PlacementScene {...props} view={view} w={w} h={h} avoid={avoid} boxOverride={frames ? vb : props.boxOverride} accessibilityLabel={labelFor(view)} />
       {showInset ? (
         <Pressable
           onPress={() => setView(other)}
@@ -115,7 +119,7 @@ export function DualView(props: DualViewProps) {
           accessibilityLabel={`Show the ${other} view`}
           hitSlop={6}
         >
-          <PlacementScene {...props} view={other} w={iw} h={ih} mini interactive={false} accessibilityLabel={labelFor(other)} />
+          <PlacementScene {...props} view={other} w={iw} h={ih} mini interactive={false} boxOverride={frames ? ob : props.boxOverride} accessibilityLabel={labelFor(other)} />
           <Text style={styles.insetTag}>{rig.lesson.model.viewTags?.[other] ? `${rig.lesson.model.viewTags[other]!.split(' · ')[0]} ⇄` : other === 'top' ? 'TOP ⇄' : 'SIDE ⇄'}</Text>
         </Pressable>
       ) : null}

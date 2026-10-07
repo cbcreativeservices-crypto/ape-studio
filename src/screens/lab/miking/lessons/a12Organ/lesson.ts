@@ -9,7 +9,7 @@
  * speakers & Leslie module's (a link, no copy); the full choir-and-organ
  * setup belongs to Lab 5 (named in words only).
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, POWER_REASON, polarityKeepsDelay } from '../shared/metal/metalItems.ts';
 import { metalWords } from '../shared/metal/metalCopy.ts';
 import { firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, quickHearing, setupOrder, type ReedWords } from '../shared/freereed/freeReedItems.ts';
@@ -18,7 +18,7 @@ import { A12_MODEL, A12_WEDGES, A12_ZONES } from './geometry.ts';
 const W: ReedWords = { p: 'org', the: 'the organ', player: 'organist', loudest: 'full organ' };
 const MW = { ...W, tail: 'the decay' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the pipe organ',
     goal: 'Get to know the pipe organ — its divisions, where you meet it, what it does in the music and how big it is — before any microphone.',
@@ -533,6 +533,7 @@ export const A12_LESSON: Lesson = {
   model: A12_MODEL,
   micTypeIds: ['sdcCard', 'sdc'],
   zones: A12_ZONES,
+  setupPairs: [{ label: 'The main pair and a spot on one division', A: { zone: 'org.cong', typeId: 'sdcCard' }, B: { zone: 'org.div', typeId: 'sdcCard' } }],
   pages,
   scenarios,
   symptoms,

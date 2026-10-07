@@ -8,7 +8,7 @@
  * brand or model in learner text; no badges. FULLY SILENT. The research
  * record lives in docs/labs/miking/concert_snare/ and the code-only fields.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY } from '../../engine/model/sharedItems.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, distortionSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, type Words } from '../shared/concert/commonItems.ts';
 import { CSN_MODEL } from './geometry.ts';
@@ -17,7 +17,7 @@ import { CSN_COPY } from './copy.ts';
 
 const W: Words = { p: 'cs', the: 'the concert snare', player: 'percussionist', loudest: 'the loudest accent' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the concert snare',
     goal: 'Get to know the concert snare — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',

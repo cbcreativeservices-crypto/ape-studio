@@ -305,6 +305,17 @@ export function NowLine({ text }: { text: string }) {
   );
 }
 
+/** THE STANDARD LINE (owner 2026-10-06), word for word in every lesson: on
+ *  MEET IT, STARTING SETUPS and the Placement Studio (journey.STANDARD_LINE). */
+export function StandardLine({ text }: { text: string }) {
+  return (
+    <View style={styles.standard} accessibilityRole="text">
+      <Text style={styles.standardKey}>STARTING POINTS</Text>
+      <Text style={styles.standardText}>{text}</Text>
+    </View>
+  );
+}
+
 export function Landing({ looking, prompt }: { looking: string; prompt: string }) {
   return (
     <View style={{ gap: 3 }}>
@@ -323,6 +334,9 @@ export function Note({ children, tone = 'info' }: { children: ReactNode; tone?: 
 }
 
 const styles = StyleSheet.create({
+  standard: { gap: 3, borderWidth: 1, borderColor: 'rgba(255,198,77,0.45)', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, backgroundColor: 'rgba(255,198,77,0.07)' },
+  standardKey: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.4 },
+  standardText: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19 },
   zone: { borderLeftWidth: 3, paddingLeft: 10, gap: 4 },
   zoneKey: { color: '#8fbcff', fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.2 },
   zoneLabel: { color: colors.textPrimary, fontFamily: fonts.barlowSemiBold, fontSize: 14, lineHeight: 18, flexShrink: 1 },
