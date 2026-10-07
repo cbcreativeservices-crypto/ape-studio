@@ -62,7 +62,7 @@ export const GUIDE: MixingGuide = {
   ],
   "arrangement": [
     {
-      "text": "On the scoring stage the orchestra sits in a classical layout—violins left, violas and cellos center-right, basses back right, winds center, brass behind, percussion at the rear—so the Decca tree captures a natural image. Arrangement is driven by picture: sparse pads and solo instruments under dialogue scenes, full tutti for action or emotional climaxes, and stingers at hard cuts. In games, music is built in vertical layers (the same cue with ambient, tension and combat stems that fade in) or horizontal segments that branch on gameplay, so each layer must sound complete on its own and in any combination."
+      "text": "On the scoring stage the orchestra sits in a classical layout—violins left, violas and cellos center-right, basses back right, winds center, brass behind, percussion at the rear—so the three-omni tree captures a natural image. Arrangement is driven by picture: sparse pads and solo instruments under dialogue scenes, full tutti for action or emotional climaxes, and stingers at hard cuts. In games, music is built in vertical layers (the same cue with ambient, tension and combat stems that fade in) or horizontal segments that branch on gameplay, so each layer must sound complete on its own and in any combination."
     }
   ],
   "dynamics": [
@@ -78,7 +78,7 @@ export const GUIDE: MixingGuide = {
   "eq": {
     "rows": [
       {
-        "source": "Decca tree / room mics",
+        "source": "three-omni tree / room mics",
         "cut": "HPF 25–40 Hz; −1–2 dB at 250 Hz if the hall is thick",
         "boost": "+1–2 dB shelf at 8 or 12 kHz",
         "notes": "The tree is the mix; spots only add detail"
@@ -284,7 +284,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Microphones",
         "live": "Clip-on condensers on every player; few room mics",
-        "studio": "Decca tree, outriggers, room and surround mics carry the sound; spots for detail"
+        "studio": "three-omni tree, outriggers, room and surround mics carry the sound; spots for detail"
       },
       {
         "area": "Low end",

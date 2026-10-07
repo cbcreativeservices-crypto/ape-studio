@@ -6,7 +6,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 01 · Pop
 
-- Copy edits applied: 13
+- Copy edits applied: 15
 
 1. Waves — “Waves x Grammy 2021: Serban Ghenea Mixing Taylor Swift.” https://waves.com/waves-grammys-2021-serban-ghenea-taylor-swift
 1. iZotope — “Mixing vocals: 8 steps to a pro vocal sound.” https://www.izotope.com/en/learn/mixing-vocals-what-makes-a-professional-vocal-sound
@@ -28,7 +28,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 02 · Hip-Hop / Rap
 
-- Copy edits applied: 8
+- Copy edits applied: 11
 
 1. HISTORY.com — “Hip-hop is born at a birthday party in the Bronx”: https://www.history.com/this-day-in-history/hip-hop-is-born-at-a-birthday-party-in-the-bronx
 1. SampleFocus — “Ultimate Guide to Tempo and BPM”: https://samplefocus.com/blog/ultimate-guide-to-tempo-and-bpm-the-best-bpms-for-hip-hop-trap-dnb-and-more/
@@ -70,7 +70,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 04 · Contemporary R&B
 
-- Copy edits applied: 10
+- Copy edits applied: 14
 
 1. Sound On Sound — “Secrets of the Mix Engineers: Jaycen Joshua” — https://www.soundonsound.com/techniques/secrets-mix-engineers-jaycen-joshua
 1. Sound On Sound — “Secrets of the Mix Engineers: Tony Maserati” — https://www.soundonsound.com/techniques/secrets-mix-engineers-tony-maserati
@@ -91,7 +91,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 05 · EDM / Festival Electronic
 
-- Copy edits applied: 7
+- Copy edits applied: 8
 
 1. iZotope — 12 tips for mixing and producing EDM: https://www.izotope.com/en/learn/12-tips-for-mixing-and-producing-edm
 1. iZotope — 5 tips for balancing EDM kicks in the mix: https://www.izotope.com/en/learn/5-tips-for-balancing-edm-kicks-in-the-mix.html
@@ -137,7 +137,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 07 · Latin Pop
 
-- Copy edits applied: 10
+- Copy edits applied: 11
 
 1. Mix — Tour Profile: Juanes — https://www.mixonline.com/live-sound/tour-profile-juanes-368086
 1. Mix — Tour Profile: Ricky Martin, Stagin’ La Vida Loca — https://www.mixonline.com/live-sound/tour-profile-ricky-martin-stagin-la-vida-loca-367600
@@ -206,7 +206,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 10 · K-pop
 
-- Copy edits applied: 8
+- Copy edits applied: 10
 
 1. Sound On Sound — Inside Track: TWICE “Scientist” (Taesub Lee): https://www.soundonsound.com/techniques/inside-track-twice-scientist
 1. Sound On Sound — Inside Track: TWICE “Scientist”, page 2: https://www.soundonsound.com/node/4927127?page=2
@@ -289,7 +289,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 14 · Afrobeats
 
-- Copy edits applied: 12
+- Copy edits applied: 14
 
 1. Sound On Sound — Inside Track: Burna Boy “Time Flies” (Jesse Ray Ernster) — https://www.soundonsound.com/techniques/inside-track-burna-boy-time-flies
 1. MusicTech — Jesse Ray Ernster on mixing Burna Boy’s African Giant — https://www.musictech.com/features/interviews/jesse-ray-ernster-mixing-burna-boy-african-giant/
@@ -329,7 +329,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 16 · Film & Video Game Score
 
-- Copy edits applied: 11
+- Copy edits applied: 12
 
 1. Film-Mixing.com — Film score mixing with Alan Meyerson — https://film-mixing.com/2016/07/28/film-score-mixing-with-alan-meyerson/
 1. Mix — Alan Meyerson on scoring and mixing — https://www.mixonline.com/?p=92426
@@ -353,7 +353,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 17 · Trap
 
-- Copy edits applied: 16
+- Copy edits applied: 19
 - Structure: split a stray in-paragraph heading '## 13. Reference recordings' into its own section
 
 1. Sound On Sound — Inside Track: 21 Savage (Maddmix): https://www.soundonsound.com/techniques/inside-track-21-savage
@@ -615,7 +615,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 28 · Reggae
 
-- Copy edits applied: 4
+- Copy edits applied: 6
 
 1. Sound On Sound — Dub Mixing — https://www.soundonsound.com/techniques/dub-mixing
 1. Ticket Fairy — FOH Sound for Reggae Festivals: One-Drop Clarity Over Mud — https://www.ticketfairy.com/blog/foh-sound-for-reggae-festivals-one-drop-clarity-over-mud.md
@@ -739,7 +739,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 33 · Techno
 
-- Copy edits applied: 9
+- Copy edits applied: 10
 
 1. Google Arts & Culture — Techno was invented in Detroit: https://artsandculture.google.com/story/GAVRm7OYuFGTzA
 1. Goethe-Institut — Detroit and Berlin techno connection: https://www.goethe.de/ins/us/en/kul/liv/tec/hei.html
@@ -786,7 +786,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 35 · Brazilian Funk (Baile Funk)
 
-- Copy edits applied: 8
+- Copy edits applied: 9
 
 1. Wikipedia — Funk carioca — https://en.wikipedia.org/wiki/Funk_carioca
 1. Wikipedia — Furacão 2000 — https://en.wikipedia.org/wiki/Furac%C3%A3o_2000
@@ -838,7 +838,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 37 · Amapiano
 
-- Copy edits applied: 8
+- Copy edits applied: 9
 
 1. Wikipedia — Amapiano: https://en.wikipedia.org/wiki/Amapiano
 1. Roland Articles — Production Hacks: Creating Amapiano Tracks: https://articles.roland.com/?p=67237
@@ -1006,7 +1006,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 44 · MPB / Bossa Nova
 
-- Copy edits applied: 7
+- Copy edits applied: 9
 
 1. Wikipedia — Bossa nova: https://en.wikipedia.org/wiki/Bossa_nova
 1. Wikipedia — Música popular brasileira: https://en.wikipedia.org/wiki/M%C3%BAsica_popular_brasileira
@@ -1105,7 +1105,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 48 · Musical Theatre
 
-- Copy edits applied: 8
+- Copy edits applied: 10
 
 1. Sound On Sound — Gareth Owen: Theatre Sound Designer — https://www.soundonsound.com/people/gareth-owen-theatre-sound-designer
 1. Sound On Sound — Inside Track: Hamilton, An American Musical — https://www.soundonsound.com/techniques/inside-track-hamilton-american-musical
@@ -1130,7 +1130,7 @@ The sources are the owner's own research, copied from each guide's **Sources** s
 
 ## 49 · Disco / Nu-Disco
 
-- Copy edits applied: 11
+- Copy edits applied: 13
 
 1. Red Bull Music Academy — Interview: Tom Moulton — https://daily.redbullmusicacademy.com/2017/11/tom-moulton-interview/
 1. FACT — A beginner’s guide to Tom Moulton — https://factmag.com/2013/05/10/a-beginners-guide-to-tom-moulton-inventor-of-the-remix-and-the-12-single

@@ -24,7 +24,7 @@ All 50 guides share one structure; the template keeps it whole, in the owner's o
 | 4 `dynamics` | prose | Dynamics |
 | 5 `balance` | prose | Balance & blend |
 | 6 `eq` | table Source / Cut / Boost / Notes + notes | EQ starting points (one card per row) |
-| 7 `compression` | table Source / Use? / Ratio / Attack-release / Gain reduction / Notes + notes | Compression & dynamics processing |
+| 7 `compression` | table Source / Use it / Ratio / Attack-release / Gain reduction / Notes + notes | Compression & dynamics processing |
 | 8 `fx` | table Effect / Applied to / Setting / Amount + notes | Effects & amounts |
 | 9 `vocals` | prose | Vocal treatment |
 | 10 `loudness` | prose, split into **Live:** / **Studio / streaming:** | SPL & loudness |
@@ -90,3 +90,7 @@ Screenshots: `docs/labs/mixing/screens/` (phone 412×915: Labs-menu tile, hub, f
 8. **Read credit**: NEXT › / FINISH mark the guide being left as read, as well as MARK AS READ. Owner may prefer the button only.
 9. The strip's readout says **MODULE 19 / 50** (the shared strip's fixed noun); the what's-left screen says "guides".
 10. The owner's index note that four guides (11, 13, 14, 15) were written on a reduced research budget is kept here, not in the app.
+
+## 9. Expert review 2026-10-07
+
+Audio-engineer + learning-design review: `docs/labs/reviews/REVIEW_2026_10_07_mixing.md` (1 critical, 9 major, 20 minor; 22 fixed, 8 owner decisions). Content fixes live in `scripts/mixing-guides/edits.py` ("Third pass"), four of them correct arithmetic or safety errors in the owner's source (MPB 97 dBA time, Hip-Hop LCpeak, Reggae and Amapiano delay times) — the owner may want to carry them back to the documents. Pinned by `test/mixingGuidesReview20261007.test.ts`.

@@ -23,7 +23,7 @@ export const GUIDE: MixingGuide = {
       "text": "Afrobeats is dance and celebration music: owambe parties, weddings, clubs, Detty December concerts in Lagos and Accra, and diaspora nights in London and Houston. Lyrics (Nigerian or Ghanaian English, Pidgin, Yoruba, Igbo, Twi) cover love, joy and hustle. Audiences sing every hook and expect a relaxed, warm, bouncy groove, never an aggressive one."
     },
     {
-      "text": "Note the link and the gap with Afrobeat (no “s”). Fela Kuti’s Afrobeat was a big live band (horns, interlocking guitars, Tony Allen’s drums) playing long, political, jazz-funk pieces. Afrobeats is a commercial pop umbrella, mostly assembled in a DAW, three-to-four-minute songs, vocal-led from the first bar, fusing highlife, jùjú, fuji, hiplife, dancehall, R&B and house. Many artists (Burna Boy especially) sample and honor Fela, but a guide for one does not fit the other. Amapiano’s log-drum sound has crossed over heavily since about 2020; it has its own report."
+      "text": "Note the link and the gap with Afrobeat (no “s”). Fela Kuti’s Afrobeat was a big live band (horns, interlocking guitars, Tony Allen’s drums) playing long, political, jazz-funk pieces. Afrobeats is a commercial pop umbrella, mostly assembled in a DAW, three-to-four-minute songs, vocal-led from the first bar, fusing highlife, jùjú, fuji, hiplife, dancehall, R&B and house. Many artists (Burna Boy especially) sample and honor Fela, but a guide for one does not fit the other. Amapiano’s log-drum sound has crossed over heavily since about 2020; it has its own guide (Amapiano)."
     },
     {
       "text": "What sounds wrong to this audience: percussion buried behind the vocal, a muddy or boomy low end that hides the bass melody, a harsh 6–8 kHz shaker that fatigues, or a vocal that is dry and stuck on top instead of floating in the groove."
@@ -141,7 +141,7 @@ export const GUIDE: MixingGuide = {
         "source": "Lead vocal",
         "cut": "HPF 80–100 Hz; −2 dB at 250–400 Hz; notch resonances",
         "boost": "+2–3 dB at 4–5 kHz; +1–2 dB at 12–14 kHz",
-        "notes": "Hit vocal lifts often sit near 4.3 kHz and 13.5 kHz"
+        "notes": "Common vocal lifts sit around 4–5 kHz and 12–14 kHz"
       }
     ],
     "notes": []

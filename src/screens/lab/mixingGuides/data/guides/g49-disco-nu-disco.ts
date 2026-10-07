@@ -241,7 +241,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Chorus / dimension-style chorus",
         "appliedTo": "Rhythm guitar, electric piano",
-        "setting": "Dimension-style mode 2–3, or 0.5–1 Hz rate",
+        "setting": "Subtle fixed-mode stereo chorus, or 0.5–1 Hz rate",
         "amount": "Moderate (often on a parallel bus)"
       },
       {
@@ -294,7 +294,7 @@ export const GUIDE: MixingGuide = {
       {
         "area": "Strings",
         "live": "Clip-on or close mics fight feedback and bleed; often supplemented with playback",
-        "studio": "Section miked with a Decca tree plus spots; lush hall/plate"
+        "studio": "Section miked with a three-omni tree plus spots; lush hall/plate"
       },
       {
         "area": "Horns",

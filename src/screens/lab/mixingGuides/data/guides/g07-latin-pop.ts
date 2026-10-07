@@ -276,7 +276,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Studio / streaming:",
-      "text": "Dance-oriented Latin pop masters typically land at −9 to −7 LUFS-I, ballads at −12 to −9, with true peak at −1 dBTP (−2 dBTP when mastering louder than −14). Most streaming services normalize to −14 LUFS, so overly loud masters only lose punch. A loudness-matched test found the “Despacito” remix 1.2 dB louder than the original yet less punchy and narrower."
+      "text": "Dance-oriented Latin pop masters typically land at −9 to −7 LUFS-I, ballads at −12 to −9, with true peak at −1 dBTP (−2 dBTP when mastering louder than −14). Most streaming services normalize to −14 LUFS, so overly loud masters only lose punch. Played back at matched loudness, a louder, more limited version usually sounds less punchy and narrower."
     }
   ],
   "liveStudio": {

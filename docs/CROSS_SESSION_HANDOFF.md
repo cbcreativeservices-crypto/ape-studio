@@ -652,6 +652,11 @@ affects other side: nothing (client-only Lab 5 ensemble review merged onto final
 needs: nothing
 
 
+### 2026-10-07 15:03 · ccode · 36346939
+changed: Mixing Guides: expert review 2026-10-07 fixes (audio + learning)
+affects other side: nothing (client-only Mixing Guides content, search and docs; no DB, not published)
+needs: nothing
+
 ### 2026-10-07 14:50 · ccode · bf628663
 changed: miking labs 1-2: expert review of the restructured pages (setups, quick check)
 affects other side: nothing (client-only miking lab data and engine; no backend, no SQL)

@@ -25,7 +25,9 @@ export function filterGuides<T extends Pick<MixingGuideEntry, 'title' | 'line' |
   return entries.filter((e) => {
     // Title words also match joined ("hiphop", "kpop", "lofi").
     const title = foldText(e.title);
-    const hay = ` ${title} ${title.replace(/ /g, '')} ${foldText(e.line)} ${foldText(e.origin)} `;
+    // "X and Y" also matches its short form ("dnb", "rnb").
+    const short = title.replace(/\b(\w)\w* and (\w)\w*/g, '$1n$2');
+    const hay = ` ${title} ${title.replace(/ /g, '')} ${short} ${foldText(e.line)} ${foldText(e.origin)} `;
     return words.every((w) => hay.includes(w));
   });
 }

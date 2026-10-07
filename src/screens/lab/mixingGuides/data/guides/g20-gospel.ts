@@ -354,7 +354,7 @@ export const GUIDE: MixingGuide = {
     "The Edwin Hawkins Singers, “Oh Happy Day”, 1969",
     "The Clark Sisters, “You Brought the Sunshine”, 1981",
     "Kirk Franklin and the Family, “Why We Sing”, 1993",
-    "Fred tonewheel organ & Radical for Christ, “No Weapon”, 1996",
+    "Fred Hammond & Radical for Christ, “No Weapon”, 1996",
     "Tye Tribbett & G.A., “Victory”, 2006",
     "Tasha Cobbs, “Break Every Chain”, 2013",
     "Hezekiah Walker & LFC, “Every Praise”, 2013"

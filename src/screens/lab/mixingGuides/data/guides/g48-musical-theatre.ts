@@ -57,7 +57,7 @@ export const GUIDE: MixingGuide = {
   ],
   "dynamics": [
     {
-      "text": "Musical theatre has the widest dynamic range of almost any amplified genre. Live Design’s guide to learning a mix notes 30–40 dB of program dynamic range compared with 5–10 dB at a concert: underscore might sit around −25 dB on the band VCA while a finale peaks at +10 dB. Preserve that range — the hush before a big ballad note is what makes the note land. Control comes from hands on faders, not heavy compression. Leave headroom so the Act 2 finale can be the biggest moment."
+      "text": "Musical theatre has the widest dynamic range of almost any amplified genre. A show can carry 30–40 dB of program dynamic range compared with 5–10 dB at a concert: underscore might sit around −25 dB on the band VCA while a finale peaks at +10 dB. Preserve that range — the hush before a big ballad note is what makes the note land. Control comes from hands on faders, not heavy compression. Leave headroom so the Act 2 finale can be the biggest moment."
     }
   ],
   "balance": [
@@ -95,7 +95,7 @@ export const GUIDE: MixingGuide = {
         "source": "Strings (spot mics)",
         "cut": "HPF 100–150 Hz violins, 50–60 Hz cello; dip 2.5–3.5 kHz if steely",
         "boost": "+1–2 dB shelf at 10 kHz",
-        "notes": "Hamilton’s album string bus used a narrow cut near 3.5 kHz"
+        "notes": "A narrow cut near 3.5 kHz on the string bus is a common fix"
       },
       {
         "source": "Woodwinds / brass",

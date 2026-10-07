@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Organ (bubble) and piano:",
-      "text": "Organ-style 16th-note shuffle around the offbeat; piano doubles the skank.",
+      "text": "a 16th-note organ shuffle (the “bubble”) around the offbeat; piano doubles the skank.",
       "bullet": true
     },
     {
@@ -205,7 +205,7 @@ export const GUIDE: MixingGuide = {
       {
         "effect": "Tape echo (classic tape-loop style)",
         "appliedTo": "Skank guitar, rim click, vocal throws",
-        "setting": "Dotted-eighth or quarter note (about 350–700 ms at 75 BPM half-time), 25–45% feedback, HPF 200 Hz / LPF 4–5 kHz on return",
+        "setting": "Dotted-eighth or quarter note (at a 75 BPM half-time pulse about 600 ms dotted-eighth and 800 ms quarter; half those if you count the 150 BPM double time), 25–45% feedback, HPF 200 Hz / LPF 4–5 kHz on return",
         "amount": "Moderate in songs; heavy in dub"
       },
       {

@@ -110,7 +110,7 @@ export const TABLE_COLUMNS = {
   ],
   compression: [
     { key: 'source', label: 'Source' },
-    { key: 'use', label: 'Use?' },
+    { key: 'use', label: 'Use it' },
     { key: 'ratio', label: 'Ratio' },
     { key: 'attackRelease', label: 'Attack / release' },
     { key: 'gainReduction', label: 'Gain reduction' },
