@@ -13,14 +13,14 @@
  * "Amplified speakers & Leslie" module (SPK); this lesson links to it and
  * keeps to the guitar's chain: string → pickup → pedals → amp → speaker → air.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { C02_MODEL, C02_ZONES } from './geometry.ts';
 import { C02_MICS } from './model.ts';
 
 const FLOOR = C02_MODEL.yFloor.mm;
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the guitar and its amp',
     goal: 'Get to know the electric guitar’s chain — strings, pickups, pedals, amp and speaker — before any microphone.',
@@ -661,6 +661,7 @@ export const C02_LESSON: Lesson = {
   model: C02_MODEL,
   micTypeIds: [...C02_MICS],
   zones: C02_ZONES,
+  setupPairs: [{ label: 'A front mic and a mic behind the open back', A: { zone: 'eg.boundary' }, B: { zone: 'eg.rear', polarity: -1 }, variants: ['open'] }],
   pages,
   scenarios,
   symptoms,

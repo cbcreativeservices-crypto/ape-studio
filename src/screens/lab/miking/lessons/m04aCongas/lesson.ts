@@ -13,13 +13,13 @@
  * The practice page is the shared PPractice: its item ids (k.prac.*, k.mix.*)
  * are that page's contract, so this lesson uses the same ids.
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { CONGA_MODEL, CONGA_WORDS } from './geometry.ts';
 import { CONGA, CONGA_DIMS as D, CONGA_ZONES, HEAD_Y, TUMBA } from './model.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the congas',
     goal: 'Get to know a pair of congas — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
@@ -638,6 +638,7 @@ export const M04A_LESSON: HandLesson = {
   model: CONGA_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc', 'hdClip'],
   zones: CONGA_ZONES,
+  setupPairs: [{ label: 'One mic over each drum', A: { zone: 'cg.tumba', typeId: 'hdDynCard' }, B: { zone: 'cg.conga', typeId: 'hdDynCard' } }],
   pages,
   scenarios,
   symptoms,

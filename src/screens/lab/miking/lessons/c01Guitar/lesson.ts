@@ -9,12 +9,12 @@
  * FULLY SILENT. Pinned by test/mikingLearnerText.test.ts and
  * test/mikingLab4Guitars.test.ts.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { C01_MODEL, C01_WEDGES, C01_ZONES } from './geometry.ts';
 import { C01_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the acoustic guitar',
     goal: 'Get to know the acoustic guitar — steel-string, twelve-string and nylon-string — what it is, where you meet it, what it does in the music, and its parts, before any microphone.',

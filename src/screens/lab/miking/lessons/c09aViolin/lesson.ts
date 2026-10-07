@@ -9,7 +9,7 @@
  * The 0.5–1.2 m stand distance is the lesson's own unsourced trial (L75): it
  * is offered as a modest suggestion, nothing more.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { BRAND_REASON, LOUD_REASON, POWER_REASON, clearReason, docReason, feedbackSymptom, gainCheck, hearingCheck, hearingDiag, hollowSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
 import { STANDING, VIOLIN_MODEL } from './geometry.ts';
 import { VIOLIN_ZONES } from './model.ts';
@@ -17,7 +17,7 @@ import { VIOLIN_COPY } from './copy.ts';
 
 const W: Words = { noun: 'violin', player: 'violinist', moving: 'the bow’s sweep and the bow arm' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the violin',
     goal: 'Get to know the violin (the fiddle is the same instrument) — what it is, where you meet it, what it does in the music, and its parts — before any microphone.',

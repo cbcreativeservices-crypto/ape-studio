@@ -12,7 +12,7 @@
  * "why", no absolute-word giveaways, no brand recall. Starting-points voice;
  * no source names (owner 2026-10-04).
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageId, Symptom } from '../../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, SourcePageId, Symptom } from '../../../engine/model/types.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 export type ReedWords = {
@@ -26,7 +26,7 @@ export type ReedWords = {
   loudest: string;
 };
 
-export function hearingCheck(w: ReedWords, page: PageId = 'setting'): MikingScenario {
+export function hearingCheck(w: ReedWords, page: SourcePageId = 'setting'): MikingScenario {
   return micRatingCheck({ id: `${w.p}.set.hear`, page, mic: `mic on ${w.the}`, loudest: `${w.loudest} at the mic` });
 }
 

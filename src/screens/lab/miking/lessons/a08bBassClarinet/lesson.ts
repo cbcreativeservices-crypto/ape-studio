@@ -10,7 +10,7 @@
  * OWNER RULING 2026-10-04: suggested starting points, never dogma; no
  * source, brand or model in learner text; no badges.
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import type { LessonCopy } from '../../engine/model/copy.ts';
 import { BRAND_REASON, LOUD_REASON, POWER_REASON, bellBoomSymptom, clearReason, clipThreatSymptom, docReason, feedbackSymptom, filterSymptom, firstHoleCheck, gainCheck, hearingCheck, hearingDiag, keyNoiseSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, superNull, type WindWords } from '../shared/woodwinds/windItems.ts';
 import { windExtra, type WindLesson } from '../shared/woodwinds/windLesson.ts';
@@ -19,7 +19,7 @@ import { BASS_CLARINET_ZONES } from './model.ts';
 
 const W: WindWords = { noun: 'bass clarinet', player: 'bass clarinettist', end: 'the bell', exciter: 'the reed', moving: 'the hands, the bell and the floor peg' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the bass clarinet',
     goal: 'Get to know the bass clarinet — to low E♭ or extended to low C — what it is, where you meet it, what it does in the music, and its parts, before any microphone.',

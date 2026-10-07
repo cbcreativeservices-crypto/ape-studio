@@ -10,7 +10,7 @@
  * side moves with the bellows (the variants: closed, half open, fully open).
  * Every stand stays outside the bellows' whole travel.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, CLEAR_REASON, cardioidNull, PLAYER_REASON, POWER_REASON, polarityKeepsDelay } from '../shared/metal/metalItems.ts';
 import { metalWords } from '../shared/metal/metalCopy.ts';
 import { firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, quickHearing, setupOrder, type ReedWords } from '../shared/freereed/freeReedItems.ts';
@@ -19,7 +19,7 @@ import { A11_MODEL, A11_WEDGES, A11_ZONES } from './geometry.ts';
 const W: ReedWords = { p: 'ac', the: 'the accordion', player: 'player', loudest: 'the loudest passage' };
 const MW = { ...W, tail: 'the end of the chord' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the accordion',
     goal: 'Get to know the accordion — what it is, where you meet it, what each side does in the music, its parts and how its bass side moves — before any microphone.',
@@ -532,6 +532,7 @@ export const A11_LESSON: Lesson = {
   model: A11_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard', 'accMini'],
   zones: A11_ZONES,
+  setupPairs: [{ label: 'A treble mic and a bass mic', A: { zone: 'ac.treble', typeId: 'sdcCard' }, B: { zone: 'ac.bass', typeId: 'sdcCard' } }],
   pages,
   scenarios,
   symptoms,

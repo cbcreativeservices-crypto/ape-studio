@@ -13,7 +13,7 @@
  * OWNER RULING 2026-10-04: suggested starting points, never dogma; no
  * source, brand or model in learner text; no badges.
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import type { LessonCopy } from '../../engine/model/copy.ts';
 import { BRAND_REASON, LOUD_REASON, POWER_REASON, clearReason, clipThreatSymptom, colourSymptom, docReason, feedbackSymptom, firstHoleCheck, gainCheck, hearingCheck, hearingDiag, keyNoiseSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, superNull, type WindWords } from '../shared/woodwinds/windItems.ts';
 import { windExtra, type WindLesson } from '../shared/woodwinds/windLesson.ts';
@@ -22,7 +22,7 @@ import { FLUTE_ZONES } from './model.ts';
 
 const W: WindWords = { noun: 'flute', player: 'flutist', end: 'the foot', exciter: 'the embouchure hole', moving: 'the hands, the head’s turn and the flute’s swing' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the flute',
     goal: 'Get to know the transverse flute — metal or wooden, and which design — what it is, where you meet it, what it does in the music, and its parts, before any microphone.',

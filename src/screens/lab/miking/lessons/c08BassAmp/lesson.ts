@@ -10,13 +10,13 @@
  * option and as its own electrical source, never called a microphone, and
  * drawn on its own lane of the signal path.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { C08_MODEL, C08_ZONES } from './geometry.ts';
 import { C08_MICS } from './model.ts';
 
 const FLOOR = C08_MODEL.yFloor.mm;
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the bass and its rig',
     goal: 'Get to know the electric bass’s chain — strings, pickups, the DI, the head and the cabinet — before any microphone.',

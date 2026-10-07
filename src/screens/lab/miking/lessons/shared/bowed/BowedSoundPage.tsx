@@ -286,7 +286,7 @@ export function makeBowedSoundPage(cfg: BowedSoundConfig): (p: PageProps) => Rea
         ),
       },
       {
-        key: 'motion',
+        key: 'keepsGoing',
         title: cfg.excite === 'bow' ? 'How the bow keeps it going' : 'How a pluck rings',
         kind: 'COMPARE',
         layout: 'rack',

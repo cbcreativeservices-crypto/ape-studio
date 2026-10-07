@@ -8,7 +8,7 @@
  * points, never dogma; no source, brand or model in learner text; no badges.
  * The research stays in docs/labs/miking/cello/ and the code-only fields.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { BRAND_REASON, LOUD_REASON, POWER_REASON, clearReason, docReason, feedbackSymptom, gainCheck, hearingCheck, hearingDiag, hollowSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
 import { CELLO_MODEL } from './geometry.ts';
 import { CELLO_ZONES, POSTURE } from './model.ts';
@@ -16,7 +16,7 @@ import { CELLO_COPY } from './copy.ts';
 
 const W: Words = { noun: 'cello', player: 'cellist', moving: 'the bow’s sweep and the bow arm' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the cello',
     goal: 'Get to know the cello — what it is, where you meet it, what it does in the music, and its parts, from the bridge to the endpin — before any microphone.',

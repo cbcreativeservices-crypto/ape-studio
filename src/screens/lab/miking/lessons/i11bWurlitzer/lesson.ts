@@ -12,13 +12,13 @@
  * drawing uses the geometry proposal's defaults and never shows them as
  * readouts. The speakers face the PLAYER — the lesson's hard part.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { wurliWedges } from '../shared/keys/wurliModel.ts';
 import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { I11B_MODEL, I11B_ZONES } from './geometry.ts';
 import { I11B_MICS } from './model.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the reed piano',
     goal: 'Get to know the reed piano — keys, hammers, reeds, its pickup, its built-in amplifier and its two oval speakers — and find the speakers before any microphone.',

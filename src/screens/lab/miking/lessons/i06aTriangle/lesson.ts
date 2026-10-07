@@ -11,14 +11,14 @@
  * general 30 cm floor for percussion is the one published number. On screen
  * they are simply recommended starting points.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, PLAYER_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, tailSymptom, type MetalWords } from '../shared/metal/metalItems.ts';
 import { metalWords } from '../shared/metal/metalCopy.ts';
 import { TRI_MODEL, TRI_ZONES } from './geometry.ts';
 
 const W: MetalWords = { p: 'tri', the: 'the triangle', player: 'percussionist', loudest: 'the strongest stroke', tail: 'the ring' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the triangle',
     goal: 'Get to know the triangle — what it is, where you meet it, what it does in the music, its parts and how it is held — before any microphone.',
@@ -520,6 +520,7 @@ export const I06A_LESSON: Lesson = {
   model: TRI_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard'],
   zones: TRI_ZONES,
+  setupPairs: [{ label: 'A spot mic and a wider mic', A: { zone: 'tri.A', typeId: 'sdcCard' }, B: { zone: 'tri.C', typeId: 'sdcCard' } }],
   pages,
   scenarios,
   symptoms,

@@ -13,7 +13,7 @@
  * misconceptions with their own "why", no absolute-word giveaways, no brand
  * recall. Starting-points voice; no source names (owner 2026-10-04).
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, SourcePageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 export type SpWords = {
@@ -31,7 +31,7 @@ export type SpWords = {
   loudest: string;
 };
 
-export function hearingCheck(w: SpWords, page: PageId = 'setting', id = `${w.p}.set.hear`): MikingScenario {
+export function hearingCheck(w: SpWords, page: SourcePageId = 'setting', id = `${w.p}.set.hear`): MikingScenario {
   // The shared max-SPL check (engine/model/sharedItems.ts): what the rating DOES say.
   return micRatingCheck({ id, page, mic: `mic near ${w.the}`, loudest: w.loudest });
 }
@@ -54,7 +54,7 @@ export function quickHearing(w: SpWords): DiagnosticItem {
 }
 
 /** Peaks: a slow meter reads low while brief transients overload the input. */
-export function slowMeter(w: SpWords, page: PageId = 'microphone', id = `${w.p}.mic.peak`): MikingScenario {
+export function slowMeter(w: SpWords, page: SourcePageId = 'microphone', id = `${w.p}.mic.peak`): MikingScenario {
   return {
     id,
     page,
@@ -69,7 +69,7 @@ export function slowMeter(w: SpWords, page: PageId = 'microphone', id = `${w.p}.
   };
 }
 
-export function noPhantom(w: SpWords, page: PageId = 'microphone', id = `${w.p}.mic.power`): MikingScenario {
+export function noPhantom(w: SpWords, page: SourcePageId = 'microphone', id = `${w.p}.mic.power`): MikingScenario {
   return {
     id,
     page,

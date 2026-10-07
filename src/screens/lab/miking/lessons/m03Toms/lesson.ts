@@ -8,14 +8,14 @@
  * points, never dogma; no source, brand or model in learner text; no badges.
  * Pinned by test/mikingLearnerText.test.ts and test/mikingModelM03.test.ts.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { KIT_CYMBALS, KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
 import { TOMS_MODEL } from './geometry.ts';
 import { TOM_ZONES } from './model.ts';
 import { TOMS_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the toms',
     goal: 'Get to know the rack and floor toms — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
@@ -668,6 +668,7 @@ export const M03_LESSON: Lesson = {
   model: TOMS_MODEL,
   micTypeIds: ['tomDynSuper', 'smallDynCard', 'clipDynCard', 'rimCondenser'],
   zones: TOM_ZONES,
+  setupPairs: [{ label: 'One mic on each rack tom', A: { zone: 'tom2.top' }, B: { zone: 'tom1.top' }, variants: ['rack'] }],
   pages,
   scenarios,
   symptoms,

@@ -101,7 +101,7 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
       body: (
         <>
           <Body>{words.start}</Body>
-          <JourneyMap met={journey.met} here="instrument" />
+          <JourneyMap met={journey.met} here="meet" />
           <PathChooser journey={journey} />
           {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
           {journey.path === 'new' ? <Note tone="ok">{words.newPath}</Note> : null}

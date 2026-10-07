@@ -11,14 +11,14 @@
  * fields. Pinned by test/mikingLearnerText.test.ts and
  * test/mikingLab4Keys.test.ts.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { FLOOR_Y } from '../shared/piano/pianoSpec.ts';
 import { PIANO_MODEL } from './geometry.ts';
 import { GB, PIANO_ZONES } from './model.ts';
 import { PIANO_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the piano',
     goal: 'Get to know the piano — grand, baby grand and upright: what it is, where you meet it, what it does in the music, and its parts, from the hammers to the lid — before any microphone.',

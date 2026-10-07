@@ -12,7 +12,7 @@
  * Other lessons link here: guitar, bass, harmonica and the two electric
  * pianos mic a speaker; the organ lessons mic a rotary cabinet.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { SPK_CABS } from './geometry.ts';
 import { SPK_MICS } from './model.ts';
@@ -22,7 +22,7 @@ import { ROTORS } from '../shared/speakers/rotor.ts';
 const CAB = SPK_CABS['1x12'];
 const FLOOR = cabLayout('1x12').floorY;
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the speakers',
     goal: 'Get to know what a mic on a speaker really hears — the cone, the cabinet and the rotary cabinet — before any microphone.',
@@ -655,6 +655,7 @@ export const SPK_LESSON: Lesson = {
   model: CAB.model,
   micTypeIds: [...SPK_MICS],
   zones: CAB.zones,
+  setupPairs: [{ label: 'A front mic and a mic behind the open back', A: { zone: 'cab.boundary' }, B: { zone: 'cab.rear', polarity: -1 }, variants: ['open'] }],
   pages,
   scenarios,
   symptoms,

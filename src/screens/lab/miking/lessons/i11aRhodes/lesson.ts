@@ -13,14 +13,14 @@
  * amplified speaker, so the lesson mics the speaker (the speaker family's
  * combo, reused) and draws the direct signal apart, as a comparison.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY } from '../../engine/model/sharedItems.ts';
 import { I11A_MODEL, I11A_ZONES } from './geometry.ts';
 import { I11A_MICS } from './model.ts';
 
 const FLOOR = I11A_MODEL.yFloor.mm;
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the tine piano and its amp',
     goal: 'Get to know the tine piano — keys, hammers, tines, tonebars and pickups — and find the speaker it plays through, before any microphone.',
@@ -648,6 +648,7 @@ export const I11A_LESSON: Lesson = {
   model: I11A_MODEL,
   micTypeIds: [...I11A_MICS],
   zones: I11A_ZONES,
+  setupPairs: [{ label: 'A front mic and a mic behind the open back', A: { zone: 'rh.boundary' }, B: { zone: 'rh.rear', polarity: -1 }, variants: ['open'] }],
   pages,
   scenarios,
   symptoms,

@@ -5,7 +5,7 @@
  * (EG-xx) applied. OWNER RULING 2026-10-04: starting points; no source,
  * brand or model in learner text; no badges; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, feedbackSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, noPhantom, PEAK_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, slowMeter, TECH_REASON, type SpWords } from '../shared/smallperc/commonItems.ts';
 import type { SpLesson } from '../shared/smallperc/family.ts';
 import { STAGE_THINGS, stageItems, standingWedges } from '../shared/smallperc/stage.ts';
@@ -15,7 +15,7 @@ import { EGG_COPY } from './copy.ts';
 
 const W: SpWords = { p: 'egg', the: 'the egg', a: 'an egg', noun: 'egg', player: 'player', loudest: 'the loudest phrase' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the egg shaker',
     goal: 'Get to know the egg shaker — what it is, where you meet it, what it does in the music and how it is held — before any microphone.',

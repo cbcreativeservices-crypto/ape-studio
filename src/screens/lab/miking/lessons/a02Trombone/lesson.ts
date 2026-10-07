@@ -15,7 +15,7 @@
  * OWNER RULING 2026-10-04 — suggested starting points, never dogma; no
  * source, brand or model in learner text; no badges.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { BRAND_REASON, LOUD_REASON, clearReason, docReason, gainCheck, hearingCheck, hearingDiag, hollowSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, superNull, type Words } from '../shared/bowed/bowedItems.ts';
 import { brassFeedback, CLIP_POWER_REASON, DYN_POWER_REASON, overloadCheck } from '../shared/brass/brassItems.ts';
 import { A02_MODEL, TB } from './geometry.ts';
@@ -24,7 +24,7 @@ import { A02_COPY } from './copy.ts';
 
 const W: Words = { noun: 'trombone', player: 'trombonist', moving: 'the slide, the hands and the mutes' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the trombone',
     goal: 'Get to know the tenor and the bass trombone — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',

@@ -7,7 +7,7 @@
  * exists (no placeholder rows). OWNER RULING 2026-10-04: starting points; no
  * source, brand or model in learner text; no badges; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, type Words } from '../shared/concert/commonItems.ts';
 import { TAMB_MODEL } from './geometry.ts';
 import { TAMB_ZONES } from './model.ts';
@@ -15,7 +15,7 @@ import { TAMB_COPY } from './copy.ts';
 
 const W: Words = { p: 'tb', the: 'the tambourine', player: 'percussionist', loudest: 'the loudest shake' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the headed tambourine',
     goal: 'Get to know the headed tambourine — what it is, where you meet it, what it does in the music, its parts and how it is played — before any microphone.',

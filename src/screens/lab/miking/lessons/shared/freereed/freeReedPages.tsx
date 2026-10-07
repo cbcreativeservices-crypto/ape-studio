@@ -22,7 +22,7 @@
  * FULLY SILENT; nothing loops.
  */
 import type { ReactNode } from 'react';
-import type { PageId, VariantId } from '../../../engine/model/types.ts';
+import type { SourcePageId, VariantId } from '../../../engine/model/types.ts';
 import type { PageProps } from '../../../pages/pageTypes';
 import { makeHandPages, type HandSpec } from '../hand/handPages';
 import { MetalInstrument, VariantContext, type MeetSpec, type VariantCtx } from '../metal/metalPages';
@@ -34,17 +34,17 @@ export type FreeReedSpec = {
   hand: HandSpec;
   handByVariant?: Partial<Record<VariantId, HandSpec>>;
   /** Pages shown in ONE variant whatever the learner last chose. */
-  pin?: Partial<Record<PageId, VariantId>>;
+  pin?: Partial<Record<SourcePageId, VariantId>>;
 };
 
 type PageFn = (p: PageProps) => ReactNode;
 
-export function makeFreeReedPages(spec: FreeReedSpec): Record<PageId, PageFn> {
+export function makeFreeReedPages(spec: FreeReedSpec): Partial<Record<SourcePageId, PageFn>> {
   const sound = makeReedSound(spec.sound);
   const base = makeHandPages(spec.hand, sound);
-  const byV: Record<string, Record<PageId, PageFn>> = {};
+  const byV: Record<string, Partial<Record<SourcePageId, PageFn>>> = {};
   for (const [v, h] of Object.entries(spec.handByVariant ?? {})) if (h) byV[v] = makeHandPages(h, sound);
-  const pick = (id: PageId): PageFn =>
+  const pick = (id: SourcePageId): PageFn =>
     function FreeReedVariantPage(p: PageProps) {
       const v = spec.pin?.[id] ?? p.variant;
       const P = (byV[v] ?? base)[id];

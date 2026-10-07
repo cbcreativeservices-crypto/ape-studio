@@ -20,7 +20,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { Canvas, DashPathEffect, Group, Path, Skia } from '@shopify/react-native-skia';
-import type { DocumentedZone, PageId } from '../../engine/model/types.ts';
+import type { DocumentedZone, SourcePageId } from '../../engine/model/types.ts';
 import { fmtLen } from '../../engine/model/units.ts';
 import { fitXform, unproject } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
@@ -434,7 +434,7 @@ const meet = MetalInstrument({
 });
 
 type PageFn = (p: PageProps) => ReactNode;
-const pin = (id: PageId, v?: string): PageFn =>
+const pin = (id: SourcePageId, v?: string): PageFn =>
   function OrganVariantPage(p: PageProps) {
     const vv = v ?? p.variant;
     const P = base[id];
@@ -446,7 +446,7 @@ const pin = (id: PageId, v?: string): PageFn =>
     );
   };
 
-export const A12_PAGES: Record<PageId, PageFn> = {
+export const A12_PAGES: Partial<Record<SourcePageId, PageFn>> = {
   ...base,
   instrument: meet,
   sound: OrganSound,

@@ -10,7 +10,7 @@
  * misconceptions with their own "why", no absolute-word giveaways, no brand
  * recall. Starting-points voice; no source names (owner 2026-10-04).
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, SourcePageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 export type MetalWords = {
@@ -26,7 +26,7 @@ export type MetalWords = {
   tail: string;
 };
 
-export function hearingCheck(w: MetalWords, page: PageId = 'setting'): MikingScenario {
+export function hearingCheck(w: MetalWords, page: SourcePageId = 'setting'): MikingScenario {
   // The shared max-SPL check (sharedItems.ts): what the rating DOES say.
   return micRatingCheck({ id: `${w.p}.set.hear`, page, mic: `spot mic near ${w.the}`, loudest: `the loudest stroke on ${w.the}` });
 }

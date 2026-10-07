@@ -5,7 +5,7 @@
  * (T-xx) applied. OWNER RULING 2026-10-04: starting points, never dogma; no
  * source, brand or model in learner text; no badges; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, distortionSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, type Words } from '../shared/concert/commonItems.ts';
 import { TIMP_MODEL } from './geometry.ts';
 import { TIMP_ZONES } from './model.ts';
@@ -13,7 +13,7 @@ import { TIMP_COPY } from './copy.ts';
 
 const W: Words = { p: 'tp', the: 'the timpani', player: 'timpanist', loudest: 'the loudest roll' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the timpani',
     goal: 'Get to know the timpani — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
@@ -492,6 +492,7 @@ export const M06_LESSON: Lesson = {
   model: TIMP_MODEL,
   micTypeIds: ['orchSdc', 'smallDynCard'],
   zones: TIMP_ZONES,
+  setupPairs: [{ label: 'One mic over each pair of drums', A: { zone: 'tp.pairLow' }, B: { zone: 'tp.pairHigh' }, variants: ['four'] }],
   pages,
   scenarios,
   symptoms,

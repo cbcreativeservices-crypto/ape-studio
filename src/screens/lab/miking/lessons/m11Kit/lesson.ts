@@ -6,13 +6,13 @@
  * starting points; no source, brand, model or person's name; no badges. The
  * channel counts describe plans — no number is a recommended count.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { CYMBAL_DRAWING_DEFAULTS } from '../shared/cymbals/cymbalSpec.ts';
 import { DRUM_DRAWING_DEFAULTS } from '../shared/drums/drumSpec.ts';
 import { M11_MODEL, M11_WEDGES, M11_ZONES } from './geometry.ts';
 import { M11_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the whole kit',
     goal: 'Get to know the kit as a set of sources — every drum and cymbal, and the player’s space — before planning any channel.',

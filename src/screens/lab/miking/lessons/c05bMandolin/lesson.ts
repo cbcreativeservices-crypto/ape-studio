@@ -4,14 +4,14 @@
  * COMMENTS only) with the fixes MD-01 … applied (CORRECTIONS_LOG.md).
  * Starting-points voice; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { ACCURACY, brandReason, clearReason, contextChecks, DOC_REASON, hearingCheck, hearingDiag, LOUD_REASON, micChecks, POWER_REASON, practiceChecks, setupOrder, sharedSymptoms, STRINGS_PREDICT, twoMicChecks } from '../shared/guitars/stringsContent.ts';
 import { C05B_MODEL, C05B_WEDGES, C05B_ZONES } from './geometry.ts';
 import { C05B_COPY, MANDO } from './copy.ts';
 
 const P = 'md';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the mandolin',
     goal: 'Get to know the mandolin — A-style and F-style, oval hole and f-holes — what it is, where you meet it, its job in the music, and its parts, before any microphone.',

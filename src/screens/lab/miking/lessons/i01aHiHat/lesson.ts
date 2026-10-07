@@ -10,7 +10,7 @@
  * OWNER RULING 2026-10-04: suggested starting points, never dogma; no source,
  * brand or model in learner text; no badges. FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Wedge } from '../../engine/model/types.ts';
 import { KIT_DRUMS, KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
 import { KICK_GEOM } from '../m01Kick/geometry.ts';
 import type { CymbalLesson } from '../shared/cymbals/cymbalLesson.ts';
@@ -21,7 +21,7 @@ import { HAT_COPY, HAT_CYM } from './copy.ts';
 
 const W: CymWords = { pfx: 'hh', one: 'hi-hat', the: 'the hi-hats', mic: 'hi-hat mic' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the hi-hat',
     goal: 'Get to know the hi-hat — two cymbals on a stand worked by the foot — where you meet it, what it does in the music, and its parts, before any microphone.',

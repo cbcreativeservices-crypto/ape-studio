@@ -26,7 +26,7 @@ import { colors, fonts } from '../../../../../../theme/tokens';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { ExpandableFigure } from '../../../../kit/ExpandableFigure';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
-import type { PageId, VariantId, ViewBox } from '../../../engine/model/types.ts';
+import type { SourcePageId, VariantId, ViewBox } from '../../../engine/model/types.ts';
 import { fitXform, unproject } from '../../../engine/geometry/frame.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { StaticLabels } from '../../../engine/scene/StaticLabels';
@@ -444,12 +444,12 @@ export type MetalSpec = {
 
 type PageFn = (p: PageProps) => ReactNode;
 
-export function makeMetalPages(spec: MetalSpec): Record<PageId, PageFn> {
+export function makeMetalPages(spec: MetalSpec): Partial<Record<SourcePageId, PageFn>> {
   const sound = MetalSound(spec.sound);
   const base = makeHandPages(spec.hand, sound);
-  const byV: Record<string, Record<PageId, PageFn>> = {};
+  const byV: Record<string, Partial<Record<SourcePageId, PageFn>>> = {};
   for (const [v, h] of Object.entries(spec.handByVariant ?? {})) if (h) byV[v] = makeHandPages(h, sound);
-  const pick = (id: PageId): PageFn =>
+  const pick = (id: SourcePageId): PageFn =>
     function VariantPage(p: PageProps) {
       const P = (byV[p.variant] ?? base)[id];
       const ctx: VariantCtx = { variant: p.variant, setVariant: p.setVariant, options: p.lesson.model.variants.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })), key: spec.meet.variantKey };

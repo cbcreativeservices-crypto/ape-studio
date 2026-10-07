@@ -6,14 +6,14 @@
  * 2026-10-04: starting points, never dogma; no source, brand, model or
  * person's name and no badge in learner text.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { CYMBAL_DRAWING_DEFAULTS } from '../shared/cymbals/cymbalSpec.ts';
 import { DRUM_DRAWING_DEFAULTS } from '../shared/drums/drumSpec.ts';
 import { M10_MODEL, M10_WEDGES } from './geometry.ts';
 import { M10_ZONES } from './model.ts';
 import { M10_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the room mics',
     goal: 'Get to know what a room mic is for and what it hears — the kit after its parts have blended, and the room answering — before any microphone.',

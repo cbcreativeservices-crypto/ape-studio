@@ -8,13 +8,13 @@
  * The practice page is the shared PPractice: its ids (k.prac.*, k.mix.*) are
  * that page's contract.
  */
-import type { DiagnosticItem, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { TIMB_MODEL, TIMB_WORDS } from './geometry.ts';
 import { HEAD_Y, LARGE, SMALL, TIMB_DIMS as D, TIMB_ZONES } from './model.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the timbales',
     goal: 'Get to know a pair of timbales — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
@@ -630,6 +630,7 @@ export const M04C_LESSON: HandLesson = {
   model: TIMB_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc', 'hdClip'],
   zones: TIMB_ZONES,
+  setupPairs: [{ label: 'A clip-on on each drum', A: { zone: 'tb.clip.large', typeId: 'hdClip', pattern: 'supercardioid' }, B: { zone: 'tb.clip.small', typeId: 'hdClip', pattern: 'supercardioid' } }],
   pages,
   scenarios,
   symptoms,

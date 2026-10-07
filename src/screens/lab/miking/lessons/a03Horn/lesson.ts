@@ -9,7 +9,7 @@
  * The research stays in docs/labs/miking/french_horn/ and the code-only
  * fields. FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { BRAND_REASON, LOUD_REASON, POWER_REASON, clearReason, distortSymptom, docReason, feedbackFirst, gainCheck, hearingCheck, hearingDiag, hollowSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, superNull, type Words } from '../shared/lowbrass/lowBrassItems.ts';
 import { HORN_MODEL } from './geometry.ts';
 import { HORN_ZONES } from './model.ts';
@@ -17,7 +17,7 @@ import { HORN_COPY } from './copy.ts';
 
 const W: Words = { noun: 'horn', player: 'horn player', moving: 'the bell’s rise and the right hand' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the horn',
     goal: 'Get to know the horn — what it is, where you meet it, what it does in the music, and its parts, from the mouthpiece to the rear-facing bell — before any microphone.',

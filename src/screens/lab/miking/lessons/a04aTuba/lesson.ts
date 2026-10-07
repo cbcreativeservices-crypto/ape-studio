@@ -9,7 +9,7 @@
  * points, never dogma; no source, brand or model in learner text; no badges.
  * FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { BRAND_REASON, LOUD_REASON, POWER_REASON, clearReason, distortSymptom, docReason, feedbackFirst, gainCheck, hearingCheck, hearingDiag, hollowSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, superNull, type Words } from '../shared/lowbrass/lowBrassItems.ts';
 import { TUBA_MODEL } from './geometry.ts';
 import { TUBA_ZONES } from './model.ts';
@@ -17,7 +17,7 @@ import { TUBA_COPY } from './copy.ts';
 
 const W: Words = { noun: 'tuba', player: 'tuba player', moving: 'the bell’s sway and the valve hand' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the tuba',
     goal: 'Get to know the tuba — what it is, where you meet it, what it does in the music, and its parts, from the mouthpiece to the bell — and which way its bell points, before any microphone.',

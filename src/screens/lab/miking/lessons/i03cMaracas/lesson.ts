@@ -5,7 +5,7 @@
  * (MR-xx) applied. OWNER RULING 2026-10-04: starting points; no source,
  * brand or model in learner text; no badges; FULLY SILENT.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, cardioidNull, CLEAR_REASON, contactSymptom, feedbackSymptom, firstNotch, gainCheck, hearingCheck, louderIsNotBetter, moveRemovesDelay, noPhantom, PEAK_REASON, polarityKeepsDelay, POWER_REASON, quickHearing, setupOrder, slowMeter, TECH_REASON, type SpWords } from '../shared/smallperc/commonItems.ts';
 import type { SpLesson } from '../shared/smallperc/family.ts';
 import { STAGE_THINGS, stageItems, standingWedges } from '../shared/smallperc/stage.ts';
@@ -15,7 +15,7 @@ import { MAR_COPY } from './copy.ts';
 
 const W: SpWords = { p: 'mar', the: 'the maracas', a: 'a pair of maracas', noun: 'maraca', player: 'player', loudest: 'the loudest accent' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the maracas',
     goal: 'Get to know maracas — what they are, where you meet them, what they do in the music and how a pair is played — before any microphone.',

@@ -45,7 +45,7 @@ export function startStep(lesson: Lesson, journey: JourneyProps, intro: string):
     body: (
       <>
         <Body>{intro}</Body>
-        <JourneyMap met={journey.met} here="instrument" />
+        <JourneyMap met={journey.met} here="meet" />
         <PathChooser journey={journey} />
         {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
         {journey.path === 'new' ? <Note tone="ok">{`Good — NEXT takes you through the ${lesson.noun.one} first. You can change how you started here at any time.`}</Note> : null}

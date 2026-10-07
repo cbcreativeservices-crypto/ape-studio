@@ -9,7 +9,7 @@
  * no brand or model; every wrong option has its own explanation; reasoning,
  * not the recall of a number. Starting-points voice: no sources on screen.
  */
-import type { DiagnosticItem, MikingScenario, PageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
+import type { DiagnosticItem, MikingScenario, SourcePageId, SetupReason, Symptom } from '../../../engine/model/types.ts';
 import { micRatingCheck } from '../../../engine/model/sharedItems.ts';
 
 export type Words = {
@@ -38,7 +38,7 @@ export const hearingDiag = (id: string, w: Words): DiagnosticItem => ({
   },
 });
 
-export const superNull = (id: string, page: PageId, target: string): MikingScenario => ({
+export const superNull = (id: string, page: SourcePageId, target: string): MikingScenario => ({
   id,
   page,
   prompt: `With a supercardioid, where should the ${target} sit for the most rejection?`,

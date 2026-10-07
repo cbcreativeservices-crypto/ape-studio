@@ -12,7 +12,7 @@
  * the amplified path starts there. The speaker itself is taught in full in
  * the Amplified speakers & Leslie module (SPK); this lesson links to it.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { BRAND_REASON, CLEAR_REASON, cardioidNull, PLAYER_REASON, POWER_REASON, polarityKeepsDelay } from '../shared/metal/metalItems.ts';
 import { metalWords } from '../shared/metal/metalCopy.ts';
 import { firstNotch, gainCheck, hearingCheck, louderIsNotBetter, monoSymptom, moveRemovesDelay, quickHearing, setupOrder, type ReedWords } from '../shared/freereed/freeReedItems.ts';
@@ -22,7 +22,7 @@ const W: ReedWords = { p: 'hm', the: 'the harmonica', player: 'player', loudest:
 /** The same words for the suspended-metal set's generic items. */
 const MW = { ...W, tail: 'the end of the note' };
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the harmonica',
     goal: 'Get to know the harmonica — what it is, where you meet it, what it does in the music, its parts and the hands round it — and the harp amp it can play through, before any microphone.',
@@ -537,6 +537,7 @@ export const A10_LESSON: Lesson = {
   model: A10_MODEL,
   micTypeIds: ['smallDynCard', 'sdcCard', 'harpBullet'],
   zones: A10_ZONES,
+  setupPairs: [{ label: 'A close and a farther mic on the harp amp', A: { zone: 'hm.amp.boundary', typeId: 'smallDynCard' }, B: { zone: 'hm.amp.far', typeId: 'sdcCard' }, variants: ['amp'] }],
   pages,
   scenarios,
   symptoms,

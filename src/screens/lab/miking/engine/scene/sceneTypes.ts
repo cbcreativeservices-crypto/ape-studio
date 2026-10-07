@@ -6,7 +6,7 @@
  */
 import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
-import type { PageId, SettingItem, VariantId, Vec3, ViewId, Wedge } from '../model/types.ts';
+import type { SourcePageId, SettingItem, VariantId, Vec3, ViewId, Wedge } from '../model/types.ts';
 
 /** `short`: the words to fall back to where the full label would collide.
  *  `alts`: other places it may sit (tried before the short form); `at`: the
@@ -62,9 +62,9 @@ export type LessonArt = {
    *  tabla; the hand drums; the guitar and bowed families). The host falls
    *  back to the shared page for every id not given. Typed loosely here (the
    *  page props live above the engine). */
-  pages?: Partial<Record<PageId, (props: never) => ReactNode>>;
+  pages?: Partial<Record<SourcePageId, (props: never) => ReactNode>>;
   /** Steps per page for those family pages (the strip's count before a page reports). */
-  stepCounts?: Partial<Record<PageId, number>>;
+  stepCounts?: Partial<Record<SourcePageId, number>>;
   /** ORIENT's "What it is" figure, when the lesson's own drawing reads
    *  better than its side view (added 2026-10-05: a string instrument seen
    *  face-on). `render` draws it at (w, h); `aspect` = w ÷ h. */

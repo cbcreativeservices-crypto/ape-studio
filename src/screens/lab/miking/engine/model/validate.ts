@@ -3,11 +3,12 @@
  * Returns a list of problems; [] = valid. Used by the tests and by the
  * registry (a lesson that fails is never marked ready). Pure.
  */
-import type { Lesson, MicBody, MicType, Dim, PageId } from './types.ts';
-import { PAGE_IDS } from './types.ts';
+import type { Lesson, MicBody, MicType, Dim, PageContent, SourcePageId } from './types.ts';
+import { LEGACY_PAGE_IDS, PAGE_IDS } from './types.ts';
 import { checkAssembly, compileScene, pinToSurface } from '../geometry/collision.ts';
 import { inZone } from '../geometry/zones.ts';
-import { validateQuickCheck } from '../journey.ts';
+import { journeyPageOf, validateQuickCheck } from '../journey.ts';
+import { isRetired, pageOf, quickCheckOf } from '../restructure.ts';
 
 export function micBodyOf(t: MicType): MicBody {
   return { length: t.body.length.mm, radius: t.body.radius.mm, mount: t.mount, surfacePartId: t.surfacePartId, ...(t.clip ? { reach: t.clip.reach.mm } : {}) };
@@ -78,7 +79,12 @@ export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>
     }
   }
 
-  for (const id of PAGE_IDS) if (!lesson.pages[id]) out.push(`page ${id} missing`);
+  // The pages as WRITTEN: the core pages, and either the three source pages
+  // the journey builds MEET IT and STARTING SETUPS from, or those two pages.
+  const pages = lesson.pages as Partial<Record<SourcePageId, PageContent>>;
+  for (const id of PAGE_IDS) if (id !== 'meet' && id !== 'setups' && !pages[id]) out.push(`page ${id} missing`);
+  const legacy = LEGACY_PAGE_IDS.every((id) => pages[id]);
+  if (!legacy && !(pages.meet && pages.setups)) out.push('pages: neither instrument/sound/setting nor meet/setups');
   const scenIds = new Set<string>();
   for (const s of lesson.scenarios) {
     if (scenIds.has(s.id)) out.push(`duplicate scenario ${s.id}`);
@@ -88,7 +94,7 @@ export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>
   }
   for (const s of lesson.symptoms) if (!s.options.includes(s.correct)) out.push(`symptom ${s.id}: correct is not an option`);
   // A page's credited items: scenarios, order tasks and setup tasks.
-  const credited: { id: string; page: PageId }[] = [...lesson.scenarios, ...lesson.orderTasks, ...lesson.setupTasks];
+  const credited: { id: string; page: SourcePageId }[] = [...lesson.scenarios, ...lesson.orderTasks, ...lesson.setupTasks];
   for (const s of lesson.symptoms) {
     for (const o of s.options) if (o !== s.correct && !s.why[o]) out.push(`symptom ${s.id}: no explanation for "${o}"`);
   }
@@ -96,16 +102,26 @@ export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>
     for (const o of s.options) if (o !== s.correct && !s.why[o]) out.push(`scenario ${s.id}: no explanation for "${o}"`);
   }
   for (const t of lesson.setupTasks) if (t.setups.filter((x) => x.ok).length < 2) out.push(`setup task ${t.id}: fewer than two acceptable setups`);
-  for (const id of PAGE_IDS) {
-    const pg = lesson.pages[id];
+  // Each written page credits only its own items…
+  for (const id of Object.keys(pages) as SourcePageId[]) {
+    const pg = pages[id];
     if (!pg) continue;
     for (const sid of pg.credit.scenarios) {
       const sc = credited.find((s) => s.id === sid);
       if (!sc) out.push(`page ${id}: credit scenario ${sid} missing`);
-      else if (sc.page !== id) out.push(`page ${id}: credit scenario ${sid} belongs to page ${sc.page}`);
+      else if (sc.page !== id && !(id === journeyPageOf(sc.page) && (id === 'meet' || id === 'setups'))) out.push(`page ${id}: credit scenario ${sid} belongs to page ${sc.page}`);
     }
   }
-  for (const q of validateQuickCheck(lesson.diagnostic ?? [])) out.push(q);
-  if (lesson.pages.instrument && (lesson.pages.instrument.credit.scenarios.length || lesson.pages.instrument.credit.interactive)) out.push('page instrument (ORIENT) must carry no task');
+  // …and each journey page, as served, credits live items written for it.
+  for (const id of PAGE_IDS) {
+    for (const sid of pageOf(lesson, id).credit.scenarios) {
+      const sc = credited.find((s) => s.id === sid);
+      if (!sc) out.push(`journey page ${id}: credit scenario ${sid} missing`);
+      else if (journeyPageOf(sc.page) !== id) out.push(`journey page ${id}: credit scenario ${sid} belongs to page ${sc.page}`);
+      if (isRetired(lesson.id, sid)) out.push(`journey page ${id}: credits retired item ${sid}`);
+    }
+  }
+  for (const q of validateQuickCheck(quickCheckOf(lesson))) out.push(q);
+  if (pages.instrument && (pages.instrument.credit.scenarios.length || pages.instrument.credit.interactive)) out.push('page instrument (ORIENT) must carry no task');
   return out;
 }

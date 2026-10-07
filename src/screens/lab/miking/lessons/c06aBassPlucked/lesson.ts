@@ -10,7 +10,7 @@
  * OWNER RULING 2026-10-04 — suggested starting points, never dogma; no
  * source, brand or model in learner text; no badges.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { BRAND_REASON, LOUD_REASON, POWER_REASON, clearReason, docReason, gainCheck, hearingCheck, hearingDiag, hollowSymptom, matchedLevels, nullOnPaper, polarityDelay, removeDelay, type Words } from '../shared/bowed/bowedItems.ts';
 import { BASS_PLUCK, BASS_PLUCK_MODEL } from '../shared/bowed/bass.ts';
 import { bassCopy, bassSetting } from '../shared/bowed/bassWords.ts';
@@ -19,7 +19,7 @@ import { BASS_PLUCK_ZONES } from './model.ts';
 const W: Words = { noun: 'bass', player: 'bassist', moving: 'the plucking hand' };
 const P = 'ubp';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the double bass',
     goal: 'Get to know the upright (double) bass — what it is, where you meet it, what it does in the music, and its parts — before any microphone. This lesson is the plucked bass; the bowed bass has its own.',

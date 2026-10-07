@@ -283,7 +283,7 @@ export function makeBrassSoundPage(cfg: BrassSoundConfig): (p: PageProps) => Rea
         ),
       },
       {
-        key: 'tube',
+        key: 'valves',
         title: slide ? 'The slide' : 'The valves',
         kind: 'COMPARE',
         layout: 'rack',

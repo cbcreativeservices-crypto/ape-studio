@@ -10,14 +10,14 @@
  * 32-inch method is "the shoulder method" (the brief: descriptive names).
  * The research stays in docs/labs/miking/overheads/ and the code-only fields.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom } from '../../engine/model/types.ts';
 import { CYMBAL_DRAWING_DEFAULTS } from '../shared/cymbals/cymbalSpec.ts';
 import { DRUM_DRAWING_DEFAULTS } from '../shared/drums/drumSpec.ts';
 import { M09_MODEL, M09_WEDGES } from './geometry.ts';
 import { M09_ZONES } from './model.ts';
 import { M09_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the overheads',
     goal: 'Get to know what overheads are for and the kit they hear — every drum and cymbal, and the player’s space — before any microphone.',

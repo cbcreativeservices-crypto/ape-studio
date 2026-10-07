@@ -9,14 +9,14 @@
  * The research stays in docs/labs/miking/snare/ and the code-only fields.
  * Pinned by test/mikingLearnerText.test.ts and test/mikingModelM02.test.ts.
  */
-import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, PageContent, PageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
+import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { KIT_FLOOR_Y } from '../shared/kitPlanModel.ts';
 import { SNARE_MODEL } from './geometry.ts';
 import { NEIGHBOURS, S0_KIT, SNARE_ZONES } from './model.ts';
 import { SNARE_COPY } from './copy.ts';
 
-const pages: Record<PageId, PageContent> = {
+const pages: LessonPages = {
   instrument: {
     title: 'Meet the snare drum',
     goal: 'Get to know the snare — what it is, where you meet it, what it does in the music, and its parts, from the batter head to the wires — before any microphone.',
