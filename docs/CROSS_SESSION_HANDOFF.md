@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 15:31 · ccode · 2cdf409c
+changed: Merge origin/review-labs34 into final-lab (Labs 3-4 review) on top of review-labs12
+affects other side: nothing (client-only Miking engine: the Labs 1–2 and 3–4 reviews' setups/quick-check rules merged into one mechanism each; no backend; not published)
+needs: nothing
+
+
 ### 2026-10-07 15:17 · ccode · 3ebadc3b
 changed: Merge remote-tracking branch 'origin/review-labs12' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Miking Labs 1–2 review merged onto final-lab; handoff + CORRECTIONS_LOG conflicts kept both sides; not published)
