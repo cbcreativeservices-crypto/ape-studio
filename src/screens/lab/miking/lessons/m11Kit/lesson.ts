@@ -629,7 +629,7 @@ export const M11_LESSON: Lesson = {
   labId: 'drums',
   title: 'Complete Kit Setups',
   subtitle: 'From one mic to every channel — plans, bleed, mono and routing',
-  noun: { one: 'whole kit', many: 'whole kits' },
+  noun: { one: 'whole kit', many: 'whole kits', subject: 'drum kit' },
   model: M11_MODEL,
   micTypeIds: ['kickDynSuper', 'smallDynCard', 'ohPencil', 'roomPencil'],
   zones: M11_ZONES,

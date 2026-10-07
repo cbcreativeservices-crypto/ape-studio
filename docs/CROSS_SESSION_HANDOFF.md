@@ -640,6 +640,11 @@ affects other side: nothing (client-only Lab 5 ensemble review merged onto final
 needs: nothing
 
 
+### 2026-10-07 14:50 · ccode · bf628663
+changed: miking labs 1-2: expert review of the restructured pages (setups, quick check)
+affects other side: nothing (client-only miking lab data and engine; no backend, no SQL)
+needs: nothing
+
 ### 2026-10-07 14:42 · ccode · aae5f01c
 changed: review(lab5-ensemble): audio + learning review of E08–E16, fixes
 affects other side: nothing (client-only lesson copy, one shared readout label and a test; Miking stays hidden on store builds, not published)

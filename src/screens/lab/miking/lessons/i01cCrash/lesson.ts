@@ -435,6 +435,9 @@ export const I01C_LESSON: CymbalLesson = {
   model: CRASH_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard'],
   zones: CRASH_ZONES,
+  // Review 2026-10-07 (R12-C04): the same over-and-under pair the lesson's
+  // two-mic page draws in its other setup, so both setups show it alike.
+  setupPairs: [{ label: 'Above the 18 in crash + underneath, aimed up', A: { zone: 'c2.top', typeId: 'sdcCard', pattern: 'cardioid' }, B: { zone: 'c2.under', typeId: 'sdcCard', pattern: 'cardioid' }, variants: ['crash2'] }],
   pages,
   scenarios,
   symptoms: symptoms(W, { neighbour: 'the tom below' }),

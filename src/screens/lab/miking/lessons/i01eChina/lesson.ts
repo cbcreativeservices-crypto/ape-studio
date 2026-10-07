@@ -436,6 +436,9 @@ export const I01E_LESSON: CymbalLesson = {
   model: CHINA_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard'],
   zones: CHINA_ZONES,
+  // Review 2026-10-07 (R12-C04): the same over-and-under pair the lesson's
+  // two-mic page draws in its other setup, so both setups show it alike.
+  setupPairs: [{ label: 'Above the turned-over China + underneath, below the cup', A: { zone: 'ch.topI', typeId: 'sdcCard', pattern: 'cardioid' }, B: { zone: 'ch.underI', typeId: 'sdcCard', pattern: 'cardioid' }, variants: ['inverted'] }],
   pages,
   scenarios,
   symptoms: symptoms(W, { neighbour: 'the tom below' }),

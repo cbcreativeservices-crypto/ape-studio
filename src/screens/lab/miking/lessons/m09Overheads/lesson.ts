@@ -639,10 +639,13 @@ export const M09_LESSON: Lesson = {
   labId: 'drums',
   title: 'Drum Overheads',
   subtitle: 'One mic or a pair above the kit — the floor-tom method, X/Y, ORTF and a spaced pair',
-  noun: { one: 'kit overhead', many: 'kit overheads' },
+  noun: { one: 'kit overhead', many: 'kit overheads', subject: 'drum kit' },
   model: M09_MODEL,
   micTypeIds: ['ohPencil', 'ohLdc'],
   zones: M09_ZONES,
+  // Review 2026-10-07 (R12-A02): the spaced pair is drawn as a PAIR on
+  // STARTING SETUPS, never as two lone mics (its own two zones).
+  setupPairs: [{ label: 'A spaced pair over the kit', A: { zone: 'oh.ab.hat', typeId: 'ohPencil', pattern: 'cardioid' }, B: { zone: 'oh.ab.ride', typeId: 'ohPencil', pattern: 'cardioid' }, line: 'Width and a wide view of the kit, each mic the same distance from the snare. Arrival times differ for every source but the snare — listen to the pair in mono as well as in stereo.' }],
   pages,
   scenarios,
   symptoms,

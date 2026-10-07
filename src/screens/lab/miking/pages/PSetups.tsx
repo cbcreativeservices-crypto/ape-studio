@@ -224,7 +224,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
         <>
           <Landing looking={sel ? `${ROLE_LABEL[sel.role]} · ${variantShort}` : variantShort} prompt="Step through SETUP. Each one is drawn on the instrument: the mic and its stand, where it points (amber) and its distance (white)." />
           {sel ? <SetupCard s={sel} where={where} /> : <Note>This lesson has no starting setup for this choice — try another one in the dock.</Note>}
-          <Body>{`Looked at: ${seenCore} of ${core.length} setups${setups.length > core.length ? ` (and ${setups.length - core.length} more starting point${setups.length - core.length === 1 ? '' : 's'} to explore)` : ''}. The Placement Studio starts from the last one you look at.`}</Body>
+          <Body>{`Looked at: ${seenCore} of ${core.length} setup${core.length === 1 ? '' : 's'}${setups.length > core.length ? ` (and ${setups.length - core.length} more starting point${setups.length - core.length === 1 ? '' : 's'} to explore)` : ''}. The Placement Studio starts from the last one you look at.`}</Body>
         </>
       ),
     },
@@ -235,7 +235,7 @@ export function PSetups({ lesson, art, variant, setVariant, onInteractive, inter
       layout: 'read',
       body: (
         <>
-          <Body>{`Before you choose a setup: what reaches a mic on the ${lesson.noun.one} besides the ${lesson.noun.one}, what the mic and its stand must keep clear of, and what changes on a stage or in a studio.`}</Body>
+          <Body>{`Around every setup: what reaches a mic on the ${lesson.noun.subject ?? lesson.noun.one} besides the ${lesson.noun.subject ?? lesson.noun.one}, what the mic and its stand must keep clear of, and what changes on a stage or in a studio.`}</Body>
           {around.near.length ? (
             <Card>
               <Text style={styles.key}>AROUND IT</Text>

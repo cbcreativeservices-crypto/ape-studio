@@ -507,7 +507,9 @@ export const I06B_LESSON: Lesson = {
   model: FC_MODEL,
   micTypeIds: ['sdcCard', 'smallDynCard'],
   zones: FC_ZONES,
-  setupPairs: [{ label: 'A closer and a farther mic', A: { zone: 'fc.A', typeId: 'sdcCard' }, B: { zone: 'fc.B', typeId: 'sdcCard' }, variants: ['orchestral'] }, { label: 'A high mic and a wider mic', A: { zone: 'fc.high', typeId: 'sdcCard' }, B: { zone: 'fc.far', typeId: 'sdcCard' }, variants: ['dance'] }],
+  // Review 2026-10-07 (R12-A03): no two-mic STARTING SETUP — two mics 15 cm
+  // apart on one small pair only comb; the farther spot is the FARTHER BACK
+  // setup (engine/setups.ts SETUP_PICKS).
   pages,
   scenarios,
   symptoms,

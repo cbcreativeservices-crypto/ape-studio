@@ -1285,3 +1285,14 @@ The shared ensemble toolkit (`lessons/shared/ensemble/`) took both groups' addit
 | V-02 | E06 `rig` note, safety line | "Never … over the children's heads without a competent rigger" | "Nothing hangs over the children's heads"; a hung mic in front of the mouths, by a competent rigger with venue approval | Matched E05 and the shared hanging items | APPLIED |
 | V-03 | E04 `wedge` note | hypercardioid | supercardioid (the pattern the lesson offers) | Consistency | APPLIED |
 | V-04 | E07 (four strings) | "correlated bleed" | "bleed (the same sound in both mics)" | Plain words | APPLIED |
+
+## Review 2026-10-07 — Labs 1–2 restructured pages (`docs/labs/reviews/REVIEW_2026_10_07_labs12.md`)
+
+| id | lesson | was | now | basis | status |
+|---|---|---|---|---|---|
+| R12-A01 | M11 | ONE MIC = kick mic outside the front head (first zone) | ONE MIC = one mic over the middle of the kit (`oh.mono`) | the lesson's own "from one whole-kit mic" | APPLIED |
+| R12-A02 | M09 | spaced pair drawn as two one-mic setups | `setupPairs` "A spaced pair over the kit" (`oh.ab.hat` + `oh.ab.ride`), drawn whole | the lesson's own zones | APPLIED |
+| R12-A03 | M08, I03a, I04, I05a–d, I10, I06b | TWO MICS = two angles on one small source | no TWO MICS role (`SETUP_PICKS pair: null`); I06b R-06 `setupPairs` removed; I10 closer spot = CLOSE · LIVE; I06b farther spots = FARTHER BACK | each lesson's two-mic page: one spot is usually enough | APPLIED |
+| R12-A04/05 | M03, M05 | close = rim condenser; djembe on the floor had one setup | close = clip-on; distant = `dj.top.far` | the lessons' own zone words | APPLIED |
+| R12-C04 | I01a, I01c, I01e | over-and-under pair only in one setup | `setupPairs` for the other setup (same zones) | consistency | APPLIED · OWNER REVIEW (R12-A07) |
+| R12-L01 | M01, M03, M07a, M07b | quick-check / MEET IT items on the dropped air-coupling step | RETIRED; replaced from the foundations | journey §2.5 | APPLIED |

@@ -568,8 +568,11 @@ export type Lesson = {
   labId: MikingLabId;
   title: string;
   subtitle: string;
-  /** The instrument's short noun, for the journey's wording ("kick" / "kicks"). */
-  noun: { one: string; many: string };
+  /** The instrument's short noun, for the journey's wording ("kick" / "kicks").
+   *  `subject`: what MEET IT and STARTING SETUPS show, when the lesson is
+   *  named for a mic role rather than an instrument ("kit overhead" → the
+   *  drum kit). Default: `one`. */
+  noun: { one: string; many: string; subject?: string };
   model: InstrumentModel;
   micTypeIds: string[];
   zones: DocumentedZone[];

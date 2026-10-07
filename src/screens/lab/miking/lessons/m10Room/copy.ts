@@ -101,6 +101,7 @@ export const M10_COPY: Partial<LessonCopy> = {
   },
   twoMic: {
     variant: 'studio',
+    label: 'A mic over the kit and a room mic out in front',
     A: { typeId: 'ohLdc', pattern: 'cardioid', zone: 'rm.over' },
     B: { typeId: 'roomPencil', pattern: 'omni', zone: 'rm.trialA' },
     learn: [
