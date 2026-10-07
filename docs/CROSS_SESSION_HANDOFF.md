@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 07:21 · ccode · a54dde1b
+changed: NATIVE (next iOS build only): capture runs at the tap's rate; a 0 Hz / 0 ch input is an error, not a crash
+affects other side: nothing for the DB. ⛔ Moves the iOS runtime fingerprint — merge only with an owner-ordered build; everything before it on ipad-pass-wip is OTA-safe
+needs: nothing
+
+
+### 2026-10-07 07:20 · ccode · 86a1c21b
+changed: iPad pass: keep the branch OTA-safe — Swift hardening split into its own build-only commit (a54dde1b)
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-10-07 07:18 · ccode · 81b591a7
 changed: iPad audio: no-signal verdict lives beside the clip baseline (start graph stays at 260); toddler guard allows the noSignal prop
 affects other side: nothing (client-only; no DB, no copy in the DB)
