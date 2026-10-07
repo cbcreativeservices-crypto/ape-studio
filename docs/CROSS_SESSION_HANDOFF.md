@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 13:06 · ccode · c0ed21d7
+changed: Miking Lab 5 group 2: E02 Background Vocals, E04 Duets and Small Groups, E05 Choirs, E06 Children's Choirs
+affects other side: nothing (client-only)
+needs: nothing
+
+
+### 2026-10-07 13:06 · ccode · 9f3450d2
+changed: Miking Lab 5: singers on the seating builder, single-mic presets, group voice items (shared, group 2)
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-07 11:05 · ccode · 59a8ddcc
 changed: Merge Lab 5 group 3 (arrays & orchestra) onto group 1; combined Lab 5 blurb; count tests merge-proof
 affects other side: nothing (client-only)

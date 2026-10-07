@@ -1122,3 +1122,51 @@ Shared code: `lessons/shared/ensemble/`. This holds the stereo-array tool (`ster
 | G3-OR-7 | Podium 0.9 m square, 0.2 m high, its centre 1.3 m in front of the front row. Risers: winds 0.2 m, brass 0.4 m, timpani and percussion 0.6 m. Desk arcs at 1.6 / 2.7 / 3.8 m. | — | seating.ts `DIMS` | OWNER: approve (drawing defaults) |
 | G3-OR-8 | The method's label name is not used in learner text (see G3-01) | Allow "Decca tree" as a method name: one line in the brand list | test/mikingLearnerText | OWNER: decide |
 | G3-OR-9 | Spaced main pair 50 cm apart (DPA 40–60 cm). The Placement Studio's SPACING runs from 0.4 to 2.5 m. | Shure's 0.9–3 m ensemble spacing (kept as `AB_ENSEMBLE`) is not a default. | stereoArray.ts `AB_USUAL`, `AB_ENSEMBLE` | OWNER: approve |
+
+## Lab 5 · group 2 · voice II, groups: E02 Background Vocals, E04 Duets and Small Groups, E05 Choirs, E06 Children's Choirs (branch lab5-g2, 2026-10-07)
+
+Sources: `source_text/{Background-Harmony-Vocal,Duets-Small-Vocal-Groups,Choirs-Choruses-A-Cappella,Childrens-Voices-and-Choirs}-Miking-Technique.txt`, BATCH5_RESEARCH_SUMMARY.md §1–§4, `background_vocals/`, `duets_small_vocal/`, `choir/`, `childrens_choir/`.
+Shared code (additive): singers on the seating builder (`seatingVoices.ts`: kinds singer / chorister / child, ten presets; `voiceGroup.ts`: frame V's head and body as solids on the ensemble model, the mouth surfaces, the 3:1 helper; `voiceGroupItems.ts`), the array tool's single-mic presets (`one`, `oneOmni`, `oneFig8`, `b2b`, family `single`, side-address drawing), `groupVoiceMics.ts` (`grpLdc`), and small options on the ensemble pages (`views`, setup `focus` / `short` / `dimTo`, `mainAtBy` / `mainRig`, worked-example words, a fixed boom rule per model).
+
+### Corrections
+
+| id | Line | Lesson says | App says | Why | Source | Status |
+|---|---|---|---|---|---|---|
+| E2-01 | E02 L30 | 3:1: "a neighboring microphone should be at least 3 units from that singer" | ONE definition, mic to mic: "if each microphone is 1 unit from its singer, keep the microphones at least 3 units apart from each other". The old wording is now the distractor in `bv.31`; the shared item `threeToOne` and `threeToOneMics` (mic-to-mic ÷ the larger mic-to-source) are used by all four lessons | Research §2.1 (lead ruling) | S-CHOIR, S-LIVE p.17/20, S-SM58-UG | APPLIED |
+| E2-02 | E02 L24 | "about 1.5–3 inches (4–8 cm)" | "about 4–8 cm (1.5–3 in)", zone 38.1–76.2 mm from the lips; the drawn start ≈ 6 cm | Conversion | S-VOC-TIPS | APPLIED |
+| E2-03 | E02 L37 | Mute/unmute comparison cited to [3] | Kept as a practice step, not attributed | Not seen in S-CHOIR | — | APPLIED |
+| E2-04 | E02 refs | [1] and [6] the same URL | One source (internal) | Duplicate | S-VOC-TIPS | APPLIED |
+| E4-01 | E04 L111 | Ex. 4: "raise monitors gradually … Stop at the first sign of ringing" | No-provocation rule: monitors up in small steps only to the agreed level; at any ring, lower that send at once and fix placement or the monitor's angle — never raise level to find the feedback point (`EX4`, in the practice task, the order task and a critical quick-check item) | Research §2.2 | lead_vocal/SOURCES.md §0.4 | APPLIED |
+| E4-02 | E04 L17 | 3:1 "1 foot … 3 feet from that microphone" | Kept (mic to mic). Shown on the quartet: cardioids at 22 cm pass (≈ 3.3:1); at 30 cm, singers 75 cm apart give only ≈ 2.3:1 — said in the setup, with what to change | Consistent with §0.2 | S-LIVE | APPLIED |
+| E4-03 | E04 (body) | No citations | Mapped internally: semicircle → AKG-C414; monitor angles → S-VOC-TIPS/S-LIVE; choir monitor → S-CHOIR; ORTF 95° → SCH-MSTC74 | Survey | duets_small_vocal/SOURCES.md | APPLIED |
+| E4-04 | E04 L108 | "Move one singer 6 inches closer … identify the level change" | Computed: 40 cm → 25 cm is ≈ 4 dB by distance alone (inverse square), in the setup card and a placement check | DERIVED | S-LIVE inverse square | APPLIED |
+| E5-01 | E05 L11 | "6–9 feet of lateral section width" (Shure, choir article) | Kept; re-cited to the recording booklet. Drawn: two area mics 9 ft apart | Research §2.5 | S-REC p.6 | APPLIED |
+| E5-02 | E05 L22 | 3:1 "2 feet → 6 feet" | Kept as mic to mic; the placement check uses 60 cm → 1.8 m | §0.2 | S-LIVE, S-CHOIR | APPLIED |
+| E5-03 | (D-CH1) | Church spacing "adjacent mics about 4–6 feet apart" at 2–3 ft | Shown, never chosen: three area mics 6 ft apart at ≈ 0.85 m from the singers read ≈ 2.1:1 ("under 3:1 … use fewer mics, or move them closer"); two at 9 ft read ≈ 3.3:1 | Research D-CH1 | S-CHURCH vs S-LIVE | APPLIED |
+| E5-04 | E05 L37 | Hanging mics | "In front of the mouths, aimed at the back row — never over the heads — only on the venue's approved rigging"; nothing hung is drawn | S-CHURCH | S-CHURCH | APPLIED |
+| E5-05 | E05 L105 | DPA "documents" AB, XY, ORTF | Pairs offered by what they do; no source named | Ruling | DPA-CHOIR | APPLIED |
+| E6-01 | E06 (all) | Children in side views | PLAN VIEW ONLY: the lesson's only view is the plan; SeatingArt never draws a child in elevation — the engine's side view (microphones, studio-or-live, two mics) marks the children's area as a dashed outline instead | Lead ruling | childrens_choir/GEOMETRY_PROPOSAL.md | APPLIED |
+| E6-02 | E06 L6, L25 | Safeguarding without a source | Supervision at all times; a responsible adult controls setup and every change; headsets fitted only by an authorised adult, comfort and agreement first, a quick way to remove; "the venue's child-safeguarding policy and the local law" — the authority (NSPCC) kept internal | Research §2.5 | NSPCC-PA | APPLIED · OWNER REVIEW (G2-OR-8) |
+| E6-03 | E06 L7, L106 | "Measure sound at the children's ear locations" (no metric) | Measure at the children's positions, A-weighted 15-min average and C-weighted peak; "a widely used standard for events aimed at children sets about 94 dB … and 120 dB peak as limits — keep well below"; lower at the source first | Research §2.5 | AAO-NIHL (quoting WHO-SLV) | APPLIED · OWNER REVIEW (G2-OR-8) |
+| E6-04 | E06 L7 | CDC / NIDCD / OSHA / NIOSH named; NIOSH missing from the references | Not carried in learner text (no authorities on screen); the hearing words stand alone | Ruling + survey | — | APPLIED |
+| E6-05 | E06 L38 | "Never hang a microphone over children's heads without a competent rigger" | Kept, with the church article's "in front of the mouths" | — | S-CHURCH | APPLIED |
+| G2-01 | (all four) | "Students", "Teaching exercise", the school's name; "teacher" | "you", "Practice exercise", "a responsible adult"; no school name | Research §2.7 | — | APPLIED |
+| G2-02 | (singers) | — | Singers stand in frame S with frame V's body: lips 1550 mm over their surface, 124 mm ahead of the body; head, neck and body are collision solids, so a handheld can sit 4–6 cm from the lips; arrays and stands keep clear of feet (28 cm) | Reuse of frame V | lead_vocal/GEOMETRY_PROPOSAL.md | APPLIED |
+| G2-03 | (engine) | — | The engine has one mic slot per page: a shared mic, a figure-8 or two back to back are moved as a one- or two-capsule "array" in the Placement Studio; the shared pages use a zone's start as their mic | Engine limit (as G3-09) | — | APPLIED · known limit |
+
+### OWNER REVIEW (drawing defaults chosen where the research leaves the decision open)
+
+| id | Default | Alternative | Where | Status |
+|---|---|---|---|---|
+| G2-OR-1 | A shared mic's arc: every mouth 40 cm away (the proposal's drawing default); the studio circle 50 cm; a figure-8 duet 30 cm each side | The loudest singer drawn farther back | seatingVoices `SHARED_R` | OWNER: approve |
+| G2-OR-2 | Backing singers 1.1 m apart in the row; the quartet 75 cm apart | — | seatingVoices `vocal.line`, `vocal.quartet` | OWNER: approve |
+| G2-OR-3 | Choir on risers: 38 adults at 56 cm pitch, rows 10/9/10/9, a floor row then three 8 in steps (three 6 ft units, straight); sopranos front left, altos front right, tenors behind the sopranos, basses behind the altos; conductor 3 m in front | Semicircular risers (the maker offers both); SATB in columns | seatingVoices `choir.risers`, `CHOIR` | OWNER: approve |
+| G2-OR-4 | Chamber choir: twelve singers in two rows on a shallow arc | — | `choir.arc` | OWNER: approve |
+| G2-OR-5 | Children at 0.76 of the adult figure (lips 1.18 m, head top 1.31 m), 48 cm pitch, two rows (the second on one 8 in step), drawn from above only; a featured child stepped 0.9 m forward | Other ages / sizes | seatingVoices `VOX.child`, `choir.children(Solo)` | OWNER: approve |
+| G2-OR-6 | "A few feet" for a choir's main pair drawn 0.6–2.2 m out and 0.3–1.3 m above the heads; the far zone where a 17 cm pair's 95° takes in the choir (DERIVED); section spots 1–2 m from their section | — | E05/E06 zones and placement zones | OWNER: approve |
+| G2-OR-7 | The featured child's stand mic within about 10 cm uses the adult stage row (no child distance was found) | A farther, area-style start | E06 `cc.solo` | OWNER: decide |
+| G2-OR-8 | Safeguarding and exposure wording (E6-02, E6-03) without naming the authorities; the 94 / 120 dB numbers shown as "a widely used standard for events aimed at children" | Name the source in the ⓘ note | E06 `SAFEGUARDING`, `EXPOSURE` | OWNER: approve the wording |
+| G2-OR-9 | "a responsible adult" in place of "teacher" | Keep "teacher" as a scene role | E06 | OWNER: decide |
+| G2-OR-10 | Shared mics drawn as side-address large condensers (`grpLdc`); area mics as small cardioid condensers on tall stands; group handhelds as the voice family's vocal dynamics | — | `groupVoiceMics.ts`, `stereoArray.capsuleBody` | OWNER: approve |
+| G2-OR-11 | A floor wedge 0.9 m in front of the middle backing singer / 0.7 m in front of a duet; a choir monitor on the floor in front, below the area mic | — | E02/E04/E05/E06 `live.wedges` | OWNER: approve |
+| G2-OR-12 | Two area mics 9 ft apart (the wide end of 6–9 ft) so 3:1 holds at the drawn 0.83 m | Three mics at 6 ft (shown as a non-core setup, under 3:1) | E05 `AREA_X` | OWNER: approve |
