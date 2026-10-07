@@ -29,8 +29,13 @@ const HAZARD_KEYWORDS = [
   'shock',
 ];
 
+/** "Shock" that is mechanical, not electrical (owner 2026-10-07: a mic shock
+ *  mount isolates vibration — no electrical hazard warning). */
+const MECHANICAL_SHOCK = /shock[\s-]?(mount|mounted|mounting|absorb|isolat|cradle|suspension)/;
+
 export function isHazardTerm(name: string | null | undefined): boolean {
   if (!name) return false;
   const n = name.toLowerCase();
-  return HAZARD_KEYWORDS.some((k) => n.includes(k));
+  const rest = n.replace(new RegExp(MECHANICAL_SHOCK.source, 'g'), '');
+  return HAZARD_KEYWORDS.some((k) => rest.includes(k));
 }
