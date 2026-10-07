@@ -23,7 +23,26 @@ export type EnsembleSetup = {
   /** Only in these variants (default: all). */
   variants?: readonly string[];
   rig?: { id: ArrayPresetId; params?: ArrayParams; place: ArrayPlacement; mount?: ArrayMount };
-  singles?: readonly { key: string; p: Vec3; aim: Vec3; pattern: 'cardioid' | 'omni' | 'supercardioid'; label: string }[];
+  singles?: readonly {
+    key: string;
+    p: Vec3;
+    aim: Vec3;
+    pattern: 'cardioid' | 'omni' | 'supercardioid';
+    label: string;
+    /** Group 4: the section it is on and the point it hears its own source
+     *  from (the stage-plot readouts measure spill against it), and the mic
+     *  type it is drawn as (data/micTypes). */
+    src?: string;
+    own?: Vec3;
+    typeId?: string;
+  }[];
+  /** Group 4: the sections taken by a DI or line output (no mic), and each
+   *  mic's role (PA, monitors, recording, stream) in words. */
+  di?: readonly string[];
+  roles?: string;
+  /** Group 4: the array's own words for this use (a drum pair over a kit is
+   *  not an orchestra's spaced pair); default the array tool's words. */
+  arrayWords?: { what?: string; check?: string };
   /** The mics, in words. */
   mics: string;
   /** Where to start, in words. */
@@ -58,9 +77,22 @@ export type EnsembleData = {
   before: readonly { title: string; text: string }[];
   /** The rigging / access / hearing line (a warning). */
   safety: string;
-  /** The worked example's words: where to begin, and clearance. */
-  workedWords: { begin: string; clearance: string };
+  /** The worked example's words: where to begin, and clearance. Group 4:
+   *  `height` and `forward` replace the orchestral readings (a drum
+   *  overhead pair is read against the kit, not the rows of players). */
+  workedWords: { begin: string; clearance: string; height?: string; forward?: string };
   /** The Placement Studio's "how the starting points work" paragraphs. */
   learnZones: readonly string[];
+  /** Group 4: a STAGE PLOT — STARTING SETUPS add the open-mic count, its
+   *  gain-before-feedback cost, each close mic's spill and the 3:1 check
+   *  (stagePlot.ts, every number derived from the drawing). */
+  plot?: boolean;
+  /** Group 4: the EQUAL-DISTANCE idea for a small group — the setups and the
+   *  Placement Studio draw a ring (from above) round the main array through
+   *  the players, and read how far apart their distances to it are. */
+  ring?: boolean;
+  /** Group 4: the Placement Studio's MOVE ranges, where a stage plot's array
+   *  sits over a kit far upstage (mm: height above the floor; z downstage). */
+  placeAxes?: Partial<Record<'h' | 'z' | 'x', { lo: number; hi: number }>>;
 };
 export type EnsembleLesson = Lesson & { ensemble: EnsembleData };

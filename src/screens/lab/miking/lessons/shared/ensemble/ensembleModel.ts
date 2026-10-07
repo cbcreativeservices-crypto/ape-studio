@@ -26,6 +26,8 @@ import type { DocumentedZone, Envelope, InstrumentModel, MicPose, Part, Provenan
 import { sectorPolys } from '../handGeom.ts';
 import { add, aimOf, mul, planDir, sub, unit, v3 } from './frameS.ts';
 import { headTop, sectionCentre, seatsOf, supportOf, type Seating } from './seating.ts';
+import { GEAR_SIZE, PA_BOX } from './bandStage.ts';
+import { KIT } from '../kitPlanModel.ts';
 
 /** `short`: the dock chip's one word (SEATING ▸ …), distinct per variant. */
 export type EnsembleVariant = { id: string; label: string; short?: string; blurb: string; seating: Seating };
@@ -44,7 +46,16 @@ const FOOTPRINT: Partial<Record<string, { w: number; f0: number; f1: number; h: 
   timpani: { w: 1700, f0: 150, f1: 1150, h: 900 },
   harp: { w: 500, f0: -100, f1: 520, h: 1800 },
   celesta: { w: 1000, f0: 240, f1: 780, h: 1000 },
+  // Group 4: the drum kit round its drummer (Lab 1's shared kit: the
+  // hi-hat beside the throne to the kick's front hoop, the cymbals up to
+  // about 1.25 m) and a stage keyboard on its stand.
+  drumkit: { w: 2000, f0: -300, f1: -KIT.throne.c.u + KIT.kick.hoop.u1, h: 1300 },
+  keys: { w: 1300, f0: 280, f1: 650, h: 1000 },
 };
+/** Group 4: a singer's body ends at the shoulders and the head is its own
+ *  narrower solid, so a stage vocal mic can sit a few centimetres from the
+ *  lips (the voice family's head: r 114, the lips 87 mm ahead of its axis). */
+const SINGER = { shoulder: 1430, headR: 120 } as const;
 export const seatPartId = (v: string, seatId: string) => `${v}:${seatId}`;
 export const sectionPartId = (v: string, sec: string) => `${v}:${sec}`;
 /** The radius kept clear round a player (body and chair), mm. ILLUSTRATIVE. */
@@ -72,16 +83,28 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
       parts.push({ id: sectionPartId(V.id, sec.id), label: sec.label, short: sec.short, role: sec.radiates, variants: [V.id], listIn: [], prov: ill('a drawing-default seating') });
       regions.push({ id: `r.${V.id}.${sec.id}`, partId: sectionPartId(V.id, sec.id), label: `the ${sec.label}`, anchor: sectionCentre(S, sec.id), variants: [V.id], prov: ill('the section’s players’ sound points (a drawing default)'), note: sec.radiates });
       for (const seat of seatsOf(S, sec.id)) {
+        const singer = seat.kind === 'singer';
         parts.push({
           id: seatPartId(V.id, seat.id),
           label: sec.label,
           short: sec.short,
           role: '',
-          solid: { kind: 'cyl', a: v3(seat.p.x, 0, seat.p.z), b: v3(seat.p.x, -headTop(seat), seat.p.z), r: PLAYER_R },
+          solid: { kind: 'cyl', a: v3(seat.p.x, 0, seat.p.z), b: v3(seat.p.x, singer ? seat.p.y - SINGER.shoulder : -headTop(seat), seat.p.z), r: PLAYER_R },
           variants: [V.id],
           listIn: [],
           prov: ill('a player and chair: a drawing default'),
         });
+        if (singer)
+          parts.push({
+            id: `${seatPartId(V.id, seat.id)}.head`,
+            label: 'the singer’s head',
+            short: sec.short,
+            role: '',
+            solid: { kind: 'cyl', a: v3(seat.p.x, seat.p.y - SINGER.shoulder, seat.p.z), b: v3(seat.p.x, -headTop(seat), seat.p.z), r: SINGER.headR },
+            variants: [V.id],
+            listIn: [],
+            prov: ill('the voice family’s head, as a cylinder: a drawing default'),
+          });
         // A large instrument in front of its player is a solid of its own.
         const big = FOOTPRINT[seat.kind];
         if (big) {
@@ -108,6 +131,28 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
         }
       }
     }
+    // Group 4: the stage gear — every amp, wedge, DI box, PA and gobo is a
+    // solid the mics and their stands keep clear of. An amp turned at an
+    // angle is a cylinder along its own front-back axis (its grille the
+    // front disc), so a close mic can sit at the grille; the rest are boxes.
+    for (const g of S.gear ?? []) {
+      const G = GEAR_SIZE[g.kind];
+      const f = planDir(g.face);
+      const square = Math.abs(f.x) < 1e-6 || Math.abs(f.z) < 1e-6;
+      const amp = g.kind === 'combo' || g.kind === 'bassRig';
+      const hTop = g.kind === 'pa' ? PA_BOX.bottom + PA_BOX.h : G.h;
+      let solid: Part['solid'];
+      if (amp && !square) {
+        const c = add(g.p, v3(0, -G.h / 2, 0));
+        solid = { kind: 'cyl', a: add(c, mul(f, -G.d / 2)), b: add(c, mul(f, G.d / 2)), r: Math.max(G.w, G.h) / 2 };
+      } else {
+        const r = v3(Math.cos((g.face * Math.PI) / 180), 0, Math.sin((g.face * Math.PI) / 180));
+        const xs = [-1, 1].flatMap((a) => [-1, 1].map((b) => g.p.x + r.x * (a * G.w) / 2 + f.x * (b * G.d) / 2));
+        const zs = [-1, 1].flatMap((a) => [-1, 1].map((b) => g.p.z + r.z * (a * G.w) / 2 + f.z * (b * G.d) / 2));
+        solid = { kind: 'box', min: v3(Math.min(...xs), g.p.y - hTop, Math.min(...zs)), max: v3(Math.max(...xs), g.p.y, Math.max(...zs)) };
+      }
+      parts.push({ id: `${V.id}:gear.${g.id}`, label: g.label, short: g.short, role: '', solid, variants: [V.id], listIn: [], prov: ill('stage gear where a typical stage plot puts it: a drawing default') });
+    }
     if (S.podium && S.conductor) {
       const P = S.podium;
       parts.push({ id: sectionPartId(V.id, 'podium'), label: 'the podium and the conductor', short: 'PODIUM', role: 'The conductor stands here; the main pair often goes above or just behind it, high enough to see past the players.', solid: { kind: 'box', min: v3(P.c.x - P.w / 2, -P.h, P.c.z - P.d / 2), max: v3(P.c.x + P.w / 2, 0, P.c.z + P.d / 2) }, variants: [V.id], listIn: [], prov: ill('a 0.9 m podium: a drawing default') });
@@ -119,24 +164,26 @@ export function ensembleModel(o: { id: string; name: string; variants: readonly 
   const anyPart = sectionPartId(first.id, first.seating.sections[0].id);
   const surfaces: ReferenceSurface[] = [
     { id: 'floor', partId: anyPart, label: 'the floor', point: v3(0, 0, 0), normal: v3(0, -1, 0), plus: { words: 'above', key: 'ABOVE' }, minus: { words: 'below', key: 'BELOW' } },
-    { id: 'front', partId: anyPart, label: 'the front of the front row', point: v3(0, -1100, 0), normal: v3(0, 0, 1), plus: { words: 'in front of', key: 'IN FRONT' }, minus: { words: 'behind', key: 'BEHIND' } },
+    { id: 'front', partId: anyPart, label: first.seating.viewer === 'audience' ? 'the front line of the band' : 'the front of the front row', point: v3(0, -1100, 0), normal: v3(0, 0, 1), plus: { words: 'in front of', key: 'IN FRONT' }, minus: { words: 'behind', key: 'BEHIND' } },
     ...(o.extraSurfaces ?? []),
   ];
   const views = o.views ?? stageViews(o.variants.map((v) => v.seating));
   for (const v of o.variants) if (v.short) SHORTS.set(`${o.id}|${v.id}`, v.short.toUpperCase());
+  // Group 4: a stage plot says left and right as the audience sees it.
+  const who = first.seating.viewer === 'audience' ? 'audience' : 'conductor';
   return {
     id: o.id,
     name: o.name,
     parts,
     regions,
     surfaces,
-    lines: [{ id: 'across', label: 'the centre line', point: v3(0, 0, 0), dir: v3(1, 0, 0), plane: true, words: { plus: 'to the conductor’s right of', minus: 'to the conductor’s left of', keyPlus: 'RIGHT', keyMinus: 'LEFT' } }],
+    lines: [{ id: 'across', label: 'the centre line', point: v3(0, 0, 0), dir: v3(1, 0, 0), plane: true, words: { plus: `to the ${who}’s right of`, minus: `to the ${who}’s left of`, keyPlus: 'RIGHT', keyMinus: 'LEFT' } }],
     envelopes,
     variants: o.variants.map((v) => ({ id: v.id, label: v.label.toUpperCase(), blurb: v.blurb, phrase: v.label.toLowerCase() })),
     defaultVariant: first.id,
     views,
     ...(o.viewsByVariant ? { viewsByVariant: o.viewsByVariant } : {}),
-    viewTags: { side: 'FROM THE HALL · FRONT', top: 'FROM ABOVE · THE CONDUCTOR’S VIEW' },
+    viewTags: who === 'audience' ? { side: 'FROM THE AUDIENCE · FRONT', top: 'FROM ABOVE · THE STAGE PLOT' } : { side: 'FROM THE HALL · FRONT', top: 'FROM ABOVE · THE CONDUCTOR’S VIEW' },
     // The authored boxes ARE the stage (stageViews): a scene with no mic
     // keeps them, so the recommended starting points drawn round the
     // players always sit on the glass.

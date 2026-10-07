@@ -26,6 +26,10 @@
  * function returning a Seating; the drawing (SeatingArt.tsx), the hit test,
  * the section boxes, the sound points and the support-mic helper all follow.
  *
+ * Group 4 (bands & stage plots): the STAGE-PLOT presets (band.*, jazz.*,
+ * acoustic.*) are built in bandStage.ts — players with their amps, DI boxes,
+ * wedges and the PA as GEAR, said from the AUDIENCE's view (`viewer`).
+ *
  * Every position, count, chair pitch, desk depth and riser height is a
  * DRAWING DEFAULT (the research found none: SOURCES.md §B "UNKNOWN") — the
  * lesson lists them in its unknowns. Only the ORDER of the string sections
@@ -34,6 +38,9 @@
  */
 import type { Vec3 } from '../../../engine/model/types.ts';
 import { add, dist, mul, planDir, sub, unit, v3, DEG } from './frameS.ts';
+// Group 4: the stage-plot presets (called lazily from seatingOf, so the
+// import cycle with bandStage.ts never runs at load).
+import { bandSeating, isBandSeating } from './bandStage.ts';
 
 export type Kind =
   | 'violin'
@@ -53,8 +60,20 @@ export type Kind =
   | 'harp'
   | 'piano'
   | 'celesta'
-  | 'conductor';
-export type Family = 'strings' | 'winds' | 'brass' | 'percussion' | 'keys' | 'conductor';
+  | 'conductor'
+  // Group 4 (bands & stage plots, bandStage.ts): the drum kit with its
+  // drummer, the electric guitar and bass (their sound leaves from their amp:
+  // Seat.src), a keyboard on its stand, a singer, a tenor sax, a seated
+  // acoustic guitar and a mandolin.
+  | 'drumkit'
+  | 'eguitar'
+  | 'ebass'
+  | 'keys'
+  | 'singer'
+  | 'sax'
+  | 'aguitar'
+  | 'mandolin';
+export type Family = 'strings' | 'winds' | 'brass' | 'percussion' | 'keys' | 'conductor' | 'amplified' | 'voice';
 export type Posture = 'seated' | 'standing';
 
 export type Seat = {
@@ -70,6 +89,11 @@ export type Seat = {
   posture: Posture;
   /** The music stand's foot (null: none). */
   stand: Vec3 | null;
+  /** Where its sound leaves when that is not at the player (an electric
+   *  guitar's or bass's amp speaker: bandStage.ts), and the plan direction
+   *  it radiates (frameS.planDir degrees). */
+  src?: Vec3;
+  srcFace?: number;
 };
 export type Section = {
   id: string;
@@ -82,7 +106,16 @@ export type Section = {
 };
 export type Riser = { x0: number; x1: number; z0: number; z1: number; h: number };
 export type Podium = { c: Vec3; w: number; d: number; h: number };
-export type SeatingId = 'orch.american' | 'orch.german' | 'strings.american' | 'strings.german' | 'chamber.mixed' | 'quartet.arc' | 'quartet.arcVa';
+export type SeatingId = 'orch.american' | 'orch.german' | 'strings.american' | 'strings.german' | 'chamber.mixed' | 'quartet.arc' | 'quartet.arcVa' | BandSeatingId;
+/** Group 4: the stage-plot presets (bandStage.ts). */
+export type BandSeatingId = 'band.stage' | 'band.room' | 'jazz.quartet' | 'jazz.guitar' | 'acoustic.duo' | 'acoustic.trio';
+/** Group 4: a piece of STAGE GEAR (not a player): an amp, a DI box, a wedge,
+ *  a PA speaker, a gobo — drawn, kept clear of, and (an amp) a sound source.
+ *  `p` is the floor point under its footprint's centre; `face` the plan
+ *  direction its front faces (frameS.planDir degrees); `section` the
+ *  player it belongs to (a tap on it names that section). */
+export type GearKind = 'combo' | 'bassRig' | 'wedge' | 'di' | 'pa' | 'gobo';
+export type Gear = { id: string; kind: GearKind; p: Vec3; face: number; section?: string; label: string; short: string };
 export type Seating = {
   id: SeatingId;
   label: string;
@@ -96,6 +129,12 @@ export type Seating = {
   conductor: Seat | null;
   /** The stage's extent in plan (mm). */
   stage: { x0: number; x1: number; z0: number; z1: number };
+  /** Group 4: the stage gear (bandStage.ts); absent = none. */
+  gear?: Gear[];
+  /** Group 4: whose view left and right are said in ('audience': a band on
+   *  a stage, said as the audience sees it; absent = the conductor's). Both
+   *  put +x on the same side. */
+  viewer?: 'audience';
 };
 
 /* ── drawing defaults (mm) ── */
@@ -139,10 +178,22 @@ export const KIND: Record<Kind, { label: string; family: Family; sound: number; 
   piano: { label: 'piano', family: 'keys', sound: 850, reach: 1900, posture: 'seated' },
   celesta: { label: 'celesta', family: 'keys', sound: 850, reach: 650, posture: 'seated' },
   conductor: { label: 'conductor', family: 'conductor', sound: 1500, reach: 300, posture: 'standing' },
+  // Group 4 (bandStage.ts sets `src` where the sound leaves elsewhere: the
+  // kit's snare, an amp's speaker). Drawing defaults; the singer's lips at
+  // the voice family's standing 1550 mm (VOICE_DIMS.lipStanding).
+  drumkit: { label: 'drum kit', family: 'percussion', sound: 650, reach: 1250, posture: 'seated' },
+  eguitar: { label: 'electric guitar', family: 'amplified', sound: 1000, reach: 350, posture: 'standing' },
+  ebass: { label: 'electric bass', family: 'amplified', sound: 1000, reach: 420, posture: 'standing' },
+  keys: { label: 'keyboard', family: 'keys', sound: 950, reach: 520, posture: 'standing' },
+  singer: { label: 'singer', family: 'voice', sound: 1550, reach: 100, posture: 'standing' },
+  sax: { label: 'tenor sax', family: 'winds', sound: 760, reach: 300, posture: 'standing' },
+  aguitar: { label: 'acoustic guitar', family: 'strings', sound: 640, reach: 330, posture: 'seated' },
+  mandolin: { label: 'mandolin', family: 'strings', sound: 960, reach: 300, posture: 'seated' },
 };
 
 /** The point a seat's sound leaves from (frame S). */
 export function soundPoint(s: Seat): Vec3 {
+  if (s.src) return s.src;
   const k = KIND[s.kind];
   const fwd = planDir(s.face);
   // Strings, keys and percussion sound in front of the player; a horn's bell
@@ -358,8 +409,9 @@ const cache = new Map<SeatingId, Seating>();
 export function seatingOf(id: SeatingId): Seating {
   const hit = cache.get(id);
   if (hit) return hit;
-  const s =
-    id === 'orch.american'
+  const s = isBandSeating(id)
+    ? bandSeating(id)
+    : id === 'orch.american'
       ? orchestra('american', true)
       : id === 'orch.german'
         ? orchestra('german', true)
