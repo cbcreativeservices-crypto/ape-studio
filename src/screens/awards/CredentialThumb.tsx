@@ -131,13 +131,20 @@ export function CredentialArtViewer({
     <>
       <Modal supportedOrientations={ALL_ORIENTATIONS} accessibilityViewIsModal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={close}>
         {/* Full-bleed viewer: the whole scrim closes on tap (TrophyModal grammar). */}
-        <Pressable
-          style={styles.scrim}
-          onPress={close}
-          accessibilityRole="button"
-          accessibilityLabel={`${title} artwork. Tap to close.`}
-        >
-          <View style={styles.center} pointerEvents="none">
+        {/* The scrim is NOT one accessibility element (APE-STUDIO-W/R/S
+            nested-element sweep, 2026-10-08): as a labelled button it wrapped
+            the credential's long-form copy and the ✕ chip, so on iOS a screen
+            reader heard only "… artwork. Tap to close." The artwork is one
+            labelled image, the copy reads on its own, the ✕ is the close, and
+            the escape gesture closes too. */}
+        <Pressable style={styles.scrim} onPress={close} accessible={false} onAccessibilityEscape={close}>
+          <View
+            style={styles.center}
+            pointerEvents="none"
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel={`${title} artwork, a simulated workplace environment`}
+          >
             <View style={[styles.artFrame, { width: ART, height: ART, borderColor: accent, shadowColor: accent }]}>
               <CardArt uri={uri} style={styles.fill} imageStyle={styles.imgLg} />
             </View>

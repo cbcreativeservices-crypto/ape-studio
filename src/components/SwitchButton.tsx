@@ -337,7 +337,7 @@ export function SwitchButton({
             {w > 0 && h > 0 && (
               <>
                 {/* ---- COVER, lower layers: body + glass glow ring ---- */}
-                <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={styles.abs}>
+                <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={styles.abs}>
                   <Defs>
                     <RadialGradient id="glassFace" cx="50%" cy="40%" rx="80%" ry="70%">
                       <Stop offset="0" stopColor={v.face[0]} />
@@ -399,7 +399,7 @@ export function SwitchButton({
 
                 {/* ---- INNER BUTTON — rides WITH the glass (one molded part) ---- */}
                 <View style={[styles.inner, { left: fx, top: fy, width: fw, height: fh }]}>
-                  <Svg width={fw} height={fh} viewBox={`0 0 ${fw} ${fh}`} style={styles.abs}>
+                  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={fw} height={fh} viewBox={`0 0 ${fw} ${fh}`} style={styles.abs}>
                     <Defs>
                       {/* wide rx: long buttons stay evenly lit horizontally */}
                       <RadialGradient id="innerFace" cx="50%" cy="40%" rx="85%" ry="72%">
@@ -447,7 +447,7 @@ export function SwitchButton({
                 </View>
 
                 {/* ---- COVER, top layers: gloss + specular ON the glass ---- */}
-                <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={styles.abs} pointerEvents="none">
+                <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={styles.abs} pointerEvents="none">
                   <Defs>
                     {/* reflectivity boosted for a glassier top (07-09r) */}
                     <SvgLinearGradient id="bevel" x1="0" y1="0" x2="0" y2="1">

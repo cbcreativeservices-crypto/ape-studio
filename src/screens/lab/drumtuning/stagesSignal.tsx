@@ -82,7 +82,7 @@ export function WaveStage({ width, height, ov, envDb, t60, seconds, label, progr
   const tTint = target ? (target.met == null ? ink.amber : target.met ? ink.green : ink.red) : ink.amber;
   return (
     <View style={{ width, height }}>
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${WAVE_H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${WAVE_H}`}>
         <Rect x={0} y={0} width={W} height={WAVE_H} fill={ink.bg} />
         <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
         {/* the goal zone: where the T60 mark has to land */}
@@ -186,7 +186,7 @@ export function PartialsStage({ width, height, partials, fb, label, progress, pl
   });
   return (
     <View style={{ width, height }}>
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${PART_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${PART_H}`}>
       <Rect x={0} y={0} width={W} height={PART_H} fill={ink.bg} />
       <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
       {[50, 100, 200, 500, 1000, 2000].map((hz) => (
@@ -281,7 +281,7 @@ export function PitchStage({ width, height, traces, seconds, resoCents, progress
   );
   return (
     <View style={{ width, height }}>
-      <Svg width={width} height={height} viewBox={`0 0 ${W} ${PITCH_H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${PITCH_H}`}>
         <Rect x={0} y={0} width={W} height={PITCH_H} fill={ink.bg} />
         <Rect x={x0} y={top} width={x1 - x0} height={bot - top} fill="#0b0b0e" stroke={ink.stroke} strokeWidth={0.6} />
         {[-200, 0, 200, 400].map((c) => (
@@ -404,7 +404,7 @@ export function VibrationStage({ width, height, n, s, mix, hz, label, progress, 
     return { opacity: playing ? a * strobe : 0.55 };
   });
   const base = (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${VIB_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${VIB_H}`}>
       <Rect x={0} y={0} width={W} height={VIB_H} fill={ink.bg} />
       <Circle cx={cx} cy={cy} r={R + 9} fill="none" stroke={ink.metal} strokeWidth={6} />
       <Circle cx={cx} cy={cy} r={R + 2} fill={ink.shellDark} />
@@ -416,7 +416,7 @@ export function VibrationStage({ width, height, n, s, mix, hz, label, progress, 
     </Svg>
   );
   const over = (d: string[], color: string) => (
-    <Svg width={width} height={height} viewBox={`0 0 ${W} ${VIB_H}`} pointerEvents="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${W} ${VIB_H}`} pointerEvents="none">
       {d.map((p, k) => <Path key={k} d={p} stroke={color} strokeWidth={1} fill={color} fillOpacity={0.22 + k * 0.18} />)}
     </Svg>
   );

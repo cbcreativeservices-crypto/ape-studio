@@ -45,7 +45,7 @@ test('JackCutaway + StudioBayView draw through ExpandableFigure with the page co
   const jack = read('patchbay/art/JackCutaway.tsx');
   assert.match(jack, /<ExpandableFigure\b[\s\S]*aspect=\{W \/ H\}[\s\S]*badge=\{badge\}/);
   assert.match(jack, /\{readout\}\s*\{controls\}/, 'the % / contacts readout sits above the slider in the dock');
-  assert.match(jack, /<Svg width=\{w\} height=\{h\} viewBox/);
+  assert.match(jack, /<Svg(?: accessibilityElementsHidden importantForAccessibility="no-hide-descendants")? width=\{w\} height=\{h\} viewBox/);
   // The accessible image is the drawing, not the card (the FULL SCREEN button must stay reachable).
   assert.match(jack, /<View style=\{\{ width: w, height: h \}\} accessible accessibilityRole="image"/);
   assert.doesNotMatch(jack, /<View style=\{styles\.wrap\} accessible/);
@@ -92,10 +92,10 @@ test('ExplodedCable, CrossSectionView and TesterFace draw through ExpandableFigu
   assert.equal(count(art, /<ExpandableFigure\b/g), 3, 'cable, cross-section, tester face');
   const code = stripComments(art);
   assert.doesNotMatch(code, /<Svg[^>]*height=\{150\}/, 'the exploded cable is no longer a fixed 150 pt letterbox');
-  assert.match(code, /<Svg viewBox=\{`0 0 \$\{EXPLODED_W\} \$\{EXPLODED_H\}`\} width=\{w\} height=\{h\}>/);
-  assert.match(code, /<Svg viewBox="0 0 120 120" width=\{w\} height=\{h\}>/);
+  assert.match(code, /<Svg(?: accessibilityElementsHidden importantForAccessibility="no-hide-descendants")? viewBox=\{`0 0 \$\{EXPLODED_W\} \$\{EXPLODED_H\}`\} width=\{w\} height=\{h\}>/);
+  assert.match(code, /<Svg(?: accessibilityElementsHidden importantForAccessibility="no-hide-descendants")? viewBox="0 0 120 120" width=\{w\} height=\{h\}>/);
   assert.match(code, /export function TesterFace\(/);
-  assert.match(code, /<Svg viewBox=\{`0 0 \$\{FACE_W\} \$\{FACE_H\}`\} width=\{w\} height=\{h\}>/);
+  assert.match(code, /<Svg(?: accessibilityElementsHidden importantForAccessibility="no-hide-descendants")? viewBox=\{`0 0 \$\{FACE_W\} \$\{FACE_H\}`\} width=\{w\} height=\{h\}>/);
   // The lamp's word is SVG text (it zooms); the face has no RN <Text>.
   assert.doesNotMatch(code, /<Text\b/, 'no RN Text in the art — it would not grow with the box');
   // Every SvgText in the art is ≥ 9 in a 340/360-wide viewBox (9 pt floor at phone width).
@@ -120,7 +120,7 @@ test('the connectors pages dock their readouts and controls', () => {
 
 test('Speech page 2: the stage strip draws through ExpandableFigure, compact in the head dock', () => {
   const src = read('speech/speechPagesA.tsx');
-  assert.match(src, /const stripAt = \(w: number \| string, h: number\) => \(\s*<Svg width=\{w\} height=\{h\} viewBox="0 0 340 56">/);
+  assert.match(src, /const stripAt = \(w: number \| string, h: number\) => \(\s*<Svg(?: accessibilityElementsHidden importantForAccessibility="no-hide-descendants")? width=\{w\} height=\{h\} viewBox="0 0 340 56">/);
   assert.match(src, /<ExpandableFigure aspect=\{340 \/ 56\} title="STAGES" controls=\{<View[^>]*>\{readout\}\{nav\}<\/View>\} render=\{\(w, h\) => \(/);
   assert.match(src, /\{stripAt\(w, h\)\}/);
   assert.match(src, /const strip = stripAt\('100%', 56\);/, 'the head drawing keeps the compact strip in its own dock');

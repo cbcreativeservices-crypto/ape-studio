@@ -391,7 +391,7 @@ export function SignalGenDemo() {
               <View style={styles.pane}>
                 <Text style={styles.paneLabel}>TIME · AMPLITUDE</Text>
                 <View style={[styles.paneViz, { height: PANE_VIZ_H }]}>
-                  <Svg width={svgW} height={PANE_VIZ_H} style={StyleSheet.absoluteFill}>
+                  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={svgW} height={PANE_VIZ_H} style={StyleSheet.absoluteFill}>
                     {/* ±½ full-scale guide marks (dashed) + solid zero line. */}
                     <Line x1={0} y1={PANE_VIZ_H * 0.18} x2={svgW} y2={PANE_VIZ_H * 0.18} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 5" />
                     <Line x1={0} y1={PANE_VIZ_H * 0.82} x2={svgW} y2={PANE_VIZ_H * 0.82} stroke={GRID_C} strokeWidth={1} strokeDasharray="3 5" />
@@ -404,7 +404,7 @@ export function SignalGenDemo() {
                         transform: [{ translateX: scroll.interpolate({ inputRange: [0, 1], outputRange: [0, -lambda] }) }],
                       }}
                     >
-                      <Svg width={svgW + lambda} height={PANE_VIZ_H}>
+                      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={svgW + lambda} height={PANE_VIZ_H}>
                         <Path d={sineD} stroke={accent} strokeWidth={2} fill="none" />
                       </Svg>
                     </Animated.View>
@@ -413,14 +413,14 @@ export function SignalGenDemo() {
                       <Animated.View
                         style={[StyleSheet.absoluteFill, { opacity: flick.interpolate({ inputRange: [0, 1], outputRange: [1, 0.15] }) }]}
                       >
-                        <Svg width={svgW} height={PANE_VIZ_H}>
+                        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={svgW} height={PANE_VIZ_H}>
                           <Path d={noiseD[wave][0]} stroke={accent} strokeWidth={1.5} fill="none" />
                         </Svg>
                       </Animated.View>
                       <Animated.View
                         style={[StyleSheet.absoluteFill, { opacity: flick.interpolate({ inputRange: [0, 1], outputRange: [0.15, 1] }) }]}
                       >
-                        <Svg width={svgW} height={PANE_VIZ_H}>
+                        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={svgW} height={PANE_VIZ_H}>
                           <Path d={noiseD[wave][1]} stroke={accent} strokeWidth={1.5} fill="none" />
                         </Svg>
                       </Animated.View>
@@ -429,7 +429,7 @@ export function SignalGenDemo() {
                   {/* Static callout overlay — sits above the animated trace.
                       The sine bracket is exactly one wavelength wide, so it
                       always frames one full cycle no matter the scroll phase. */}
-                  <Svg width={svgW} height={PANE_VIZ_H} style={StyleSheet.absoluteFill} pointerEvents="none">
+                  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={svgW} height={PANE_VIZ_H} style={StyleSheet.absoluteFill} pointerEvents="none">
                     {wave === 'sine' ? (
                       <>
                         <Line x1={lambda} y1={20} x2={lambda * 2} y2={20} stroke={CALL_AMBER} strokeWidth={1} />
@@ -461,7 +461,7 @@ export function SignalGenDemo() {
                 <Text style={styles.paneLabel}>SPECTRUM · LEVEL × FREQ</Text>
                 <View style={[styles.paneViz, { height: PANE_VIZ_H }]}>
                   <Animated.View style={{ opacity: specOpacity }}>
-                    <Svg width={svgW} height={PANE_VIZ_H}>
+                    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={svgW} height={PANE_VIZ_H}>
                       <Defs>
                         <LinearGradient id="specAmp" x1={0} y1={8} x2={0} y2={PANE_VIZ_H - 8} gradientUnits="userSpaceOnUse">
                           {[0, 0.25, 0.5, 0.75, 1].map((o) => (
@@ -537,7 +537,7 @@ export function SignalGenDemo() {
             <View style={styles.legendRow}>
               <Text style={styles.legendCap}>QUIET</Text>
               <View style={styles.legendBar}>
-                <Svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 10">
+                <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 10">
                   <Defs>
                     <LinearGradient id="ampLegend" x1={0} y1={0} x2={100} y2={0} gradientUnits="userSpaceOnUse">
                       {WAVE_LEVEL_STOPS.filter((s) => s.offset >= 0.5).map((s) => (
@@ -565,7 +565,7 @@ export function SignalGenDemo() {
             <Text style={styles.introText}>{SWEEP_INTRO}</Text>
             <Text style={styles.paneLabel}>SWEPT SINE — LOW TO HIGH</Text>
             <View style={[styles.paneViz, { height: SWEEP_VIZ_H }]}>
-              <Svg width={chirpW} height={SWEEP_VIZ_H}>
+              <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={chirpW} height={SWEEP_VIZ_H}>
                 <Defs>
                   {/* MIDI amplitude ramp about the zero line (item 2). */}
                   <LinearGradient id="sweepAmp" x1={0} y1={0} x2={0} y2={SWEEP_VIZ_H} gradientUnits="userSpaceOnUse">
@@ -618,7 +618,7 @@ export function SignalGenDemo() {
             <Text style={styles.introText}>{LEVELS_INTRO}</Text>
             <Text style={styles.paneLabel}>OUTPUT LEVEL — dBFS (DIGITAL, NOT ROOM LOUDNESS)</Text>
             <View style={[styles.paneViz, styles.levelsWrap]}>
-              <Svg width={w - 2} height={LEVELS_H}>
+              <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w - 2} height={LEVELS_H}>
                 <Line x1={60} y1={DB_TOP} x2={60} y2={DB_BOTTOM} stroke={colors.steelBorder} strokeWidth={2} />
                 {DB_TICKS.map((db) => (
                   <Line key={db} x1={52} y1={dbToY(db)} x2={60} y2={dbToY(db)} stroke={colors.steelBorder} strokeWidth={1.5} />
@@ -643,7 +643,7 @@ export function SignalGenDemo() {
                   },
                 ]}
               >
-                <Svg width={14} height={15} viewBox="0 0 14 15">
+                <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={14} height={15} viewBox="0 0 14 15">
                   <Path d="M4 7 V4.5 a3 3 0 0 1 6 0 V7" stroke={colors.red} strokeWidth={1.6} fill="none" />
                   <Rect x={2.4} y={7} width={9.2} height={6.4} rx={1.6} fill={colors.red} opacity={0.85} />
                 </Svg>
@@ -677,7 +677,7 @@ export function SignalGenDemo() {
               <View style={styles.pane}>
                 <Text style={styles.crestTitleSteel}>MUSIC — PEAKS, THEN RESTS</Text>
                 <View style={[styles.paneViz, { height: CREST_H }]}>
-                  <Svg width={svgW} height={CREST_H}>
+                  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={svgW} height={CREST_H}>
                     <Defs>
                       <LinearGradient id="crestAmpA" x1={0} y1={CREST_H / 2 - crestAmp} x2={0} y2={CREST_H / 2 + crestAmp} gradientUnits="userSpaceOnUse">
                         {WAVE_LEVEL_STOPS.map((s) => (
@@ -698,7 +698,7 @@ export function SignalGenDemo() {
               <View style={styles.pane}>
                 <Text style={styles.crestTitleSalmon}>TEST TONE — NEVER PAUSES</Text>
                 <View style={[styles.paneViz, { height: CREST_H }]}>
-                  <Svg width={svgW} height={CREST_H}>
+                  <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={svgW} height={CREST_H}>
                     <Defs>
                       <LinearGradient id="crestAmpB" x1={0} y1={CREST_H / 2 - crestAmp} x2={0} y2={CREST_H / 2 + crestAmp} gradientUnits="userSpaceOnUse">
                         {WAVE_LEVEL_STOPS.map((s) => (

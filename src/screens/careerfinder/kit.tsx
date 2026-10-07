@@ -214,7 +214,7 @@ export function DimensionSpectrum({ dims, highlight }: { dims: DimensionScores; 
   }).join('; ');
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={`Your interest by activity. ${summary}. Heights show what you said you would enjoy, not ability.`} style={{ width: '100%' }}>
-      <Svg width="100%" height={SPEC_H} viewBox={`0 0 ${SPEC_W} ${SPEC_H}`} preserveAspectRatio="none">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={SPEC_H} viewBox={`0 0 ${SPEC_W} ${SPEC_H}`} preserveAspectRatio="none">
         <Rect x={0} y={0} width={SPEC_W} height={SPEC_H} rx={10} fill="#0a0a0c" stroke={colors.hairline} />
         {[0.25, 0.5, 0.75].map((g) => <Line key={g} x1={left} y1={base - (base - top) * g} x2={SPEC_W - right} y2={base - (base - top) * g} stroke="rgba(255,255,255,0.06)" />)}
         <Line x1={left} y1={base} x2={SPEC_W - right} y2={base} stroke={colors.textMuted} strokeWidth={1} />
@@ -225,7 +225,7 @@ export function DimensionSpectrum({ dims, highlight }: { dims: DimensionScores; 
           const hi = highlight?.includes(c);
           const fill = d.insufficient ? 'none' : hi ? colors.cyanBright : d.score >= 0.75 ? colors.amber : d.score >= 0.5 ? colors.amberLabel : '#3a3a40';
           return (
-            <Svg key={c}>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" key={c}>
               <Rect x={x} y={base - h} width={bw} height={h} rx={2} fill={fill} stroke={d.insufficient ? colors.textMuted : 'none'} strokeDasharray={d.insufficient ? '3 2' : undefined} />
               {d.insufficient ? <SvgText x={x + bw / 2} y={base - h / 2 + 3} fontSize={10} fill={colors.textMuted} textAnchor="middle" fontFamily={fonts.oswaldMedium}>?</SvgText> : null}
               <SvgText x={x + bw / 2} y={SPEC_H - 11} fontSize={9.5} fill={hi ? colors.cyanBright : colors.textSub} textAnchor="middle" fontFamily={fonts.oswaldMedium}>{c}</SvgText>

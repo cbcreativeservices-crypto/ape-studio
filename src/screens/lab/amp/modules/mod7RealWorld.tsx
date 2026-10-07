@@ -46,7 +46,7 @@ function GainChain({ levels, firstClip, starved, width, height }: { levels: Reco
   ];
   const bw = 66, gap = 6, x0 = 3, y = 6, bh = 32;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${CHAIN_W} ${CHAIN_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${CHAIN_W} ${CHAIN_H}`}>
       {stages.map((s, i) => {
         const x = x0 + i * (bw + gap);
         const lvl = s.key === 'source' || s.key === 'mixer' || s.key === 'amp' ? levels[s.key] : null;

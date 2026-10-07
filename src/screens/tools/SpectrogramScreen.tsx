@@ -267,7 +267,7 @@ const SpectrogramGrid = memo(function SpectrogramGrid({
         {img ? <SkiaImage image={img} x={imgX} y={0} width={imgW} height={GH} fit="fill" /> : null}
       </Canvas>
       {/* Subtle static grid — frequency decades + 5 s time marks — over the raster. */}
-      <Svg width={width} height={GH} style={StyleSheet.absoluteFill}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={GH} style={StyleSheet.absoluteFill}>
         {FREQ_LABELS.map((l) => (
           <Line
             key={l.text}

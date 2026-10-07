@@ -329,7 +329,7 @@ function RouteMap({ scenario, xray, picked, w, h }: { scenario: CiRouteScenario;
         showHazard ? ' The worst condition on your chosen route is marked on the drawing; the notes below name it.' : ''
       }`}
     >
-      <Svg width={w} height={h} viewBox="0 0 360 220">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox="0 0 360 220">
         {scenario.id === 'stage-to-rack' ? <StageRackSection xray={xray} tint={tint} /> : <ClusterSection xray={xray} tint={tint} />}
         {scenario.options.map((o, i) => {
           const segs = ROUTE_SEGS[scenario.id][o.id] ?? [];

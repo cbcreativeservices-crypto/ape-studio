@@ -7,7 +7,7 @@ import Svg, { Path } from 'react-native-svg';
 
 export function ShareIcon({ size = 18, color = '#8b8f97' }: { size?: number; color?: string }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24" fill="none">
       {/* tray (open at the top where the arrow exits) */}
       <Path
         d="M8.5 8.5H7A2 2 0 0 0 5 10.5V18A2 2 0 0 0 7 20H17A2 2 0 0 0 19 18V10.5A2 2 0 0 0 17 8.5H15.5"

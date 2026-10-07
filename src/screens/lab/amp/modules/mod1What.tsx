@@ -37,7 +37,7 @@ function SignalPathDiagram({ level, clipping, width, height }: { level: number; 
   const bw = 66, gap = 6, x0 = 3, y = 6, bh = 34;
   const centre = (i: number) => x0 + i * (bw + gap) + bw / 2;
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${PATH_W} ${PATH_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={height} viewBox={`0 0 ${PATH_W} ${PATH_H}`}>
       {boxes.map((b, i) => {
         const x = x0 + i * (bw + gap);
         const isLoad = i === 4;

@@ -165,7 +165,7 @@ export function SpectrumColorPicker({
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => stepHue(e.nativeEvent.actionName === 'decrement' ? -1 : 1)}
       >
-        <Svg width={SIZE} height={SIZE}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={SIZE} height={SIZE}>
           {ring.map((p, i) => (
             <Path key={i} d={p.d} fill={p.fill} />
           ))}
@@ -191,7 +191,7 @@ export function SpectrumColorPicker({
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
         onAccessibilityAction={(e) => stepLight(e.nativeEvent.actionName === 'decrement' ? -1 : 1)}
       >
-        <Svg width={barW} height={26}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={barW} height={26}>
           <Defs>
             <SvgGrad id="lgrad" x1="0" y1="0" x2="1" y2="0">
               <Stop offset="0%" stopColor={hslToHex(hue, 1, L_MIN)} />

@@ -33,7 +33,10 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { markLabReviewed, useLabDone } from '../../../features/lab/labCompletion';
 import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
-import { AlphaType, Canvas, ColorType, DashPathEffect, Image, LinearGradient, Path, Rect, Skia, Text as SkiaText, useFont, vec } from '@shopify/react-native-skia';
+import { AlphaType, Canvas, ColorType, DashPathEffect, Image, LinearGradient, Path, Rect, Skia, Text as SkiaText, vec } from '@shopify/react-native-skia';
+// Skia's own useFont leaves a failed fetch as an unhandled rejection (Sentry
+// APE-STUDIO-E) — the safe twin reads it as "not loaded".
+import { useSafeSkiaFont } from '../../../lib/skiaSafeAssets';
 import { LinearGradient as GradientView } from 'expo-linear-gradient';
 import {
   MIDLINE_BLUE,
@@ -582,7 +585,7 @@ function GradientBar() {
   const [dynW, setDynW] = useState(0); // width of the dynamics strip (== bar width)
   const [arrowW, setArrowW] = useState(0); // width of the gap between "less" and "more"
   // Skia loads its OWN copy of the font at the exact point size we draw at.
-  const dynFont = useFont(require('../../../../assets/fonts/Bravura.otf'), DYN_SIZE);
+  const dynFont = useSafeSkiaFont(require('../../../../assets/fonts/Bravura.otf'), DYN_SIZE);
   return (
     <View
       style={{ gap: 5 }}

@@ -301,7 +301,7 @@ const BendArt = memo(function BendArt({
   strainSv: SharedValue<number>;
 }) {
   return (
-    <Svg width={w} height={h} viewBox="0 0 200 132">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox="0 0 200 132">
       <Rect x={0} y={0} width={200} height={132} rx={8} fill="#0f1014" />
       {/* the corner being turned, cut in section: concrete soffit above, the
           wall at right, the floor slab below. A tight bend hugs the junction;
@@ -896,7 +896,7 @@ const BUNDLE_ASPECT = BUNDLE_VB_W / BUNDLE_VB_H;
 const BundleArt = memo(function BundleArt({ w, h, tSv, restT, landed }: { w: number; h: number; tSv: SharedValue<number>; restT: number; landed: boolean }) {
   const uid = useUid();
   return (
-    <Svg width={w} height={h} viewBox={`0 0 ${BUNDLE_VB_W} ${BUNDLE_VB_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${BUNDLE_VB_W} ${BUNDLE_VB_H}`}>
       <Defs>
         {BUNDLE_TINTS.map((t, i) => (
           <RadialGradient key={i} id={`${uid}j${i}`} cx="36%" cy="30%" r="75%">

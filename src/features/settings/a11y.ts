@@ -149,3 +149,31 @@ export function useAnimationsAllowed(): boolean {
 export function osReduceMotionOn(): boolean {
   return osReduceMotion;
 }
+
+/**
+ * A11Y_HIDDEN — spread on the ROOT of a purely decorative subtree (texture,
+ * screws, vent holes, glass sheen, an unlabelled LED strip, an SVG ornament).
+ *
+ * ⛔ WHY (Sentry APE-STUDIO-W / R / S, 2026-10-07, iOS 27, build 34 — almost
+ * certainly Apple App Review): the main thread hung for more than two seconds
+ * inside `_accessibilityUserTestingSnapshotDescendantsWithAttributes`, an
+ * accessibility client asking for the WHOLE element tree of the Study
+ * Dashboard. That walk visits every native view: each react-native-svg shape
+ * and every styled View is a real UIView, and the Dashboard carried thousands
+ * of them, a dozen deep.
+ *
+ * Hiding a decorative root removes its whole subtree from that walk (iOS
+ * `accessibilityElementsHidden`, Android `no-hide-descendants`) and costs a
+ * screen-reader user nothing — none of it ever carried meaning. Anything that
+ * DOES carry meaning must instead be ONE accessible element with a concise
+ * label (test/a11yTreeDepth_20261008.test.ts). Never put this on something a
+ * person can operate or must hear.
+ *
+ * Lives here, not in its own module, on purpose: the app-start module budget
+ * (test/perfStartTrim_20261004.test.ts) is a ratchet.
+ */
+export const A11Y_HIDDEN = {
+  accessible: false,
+  accessibilityElementsHidden: true,
+  importantForAccessibility: 'no-hide-descendants',
+} as const;

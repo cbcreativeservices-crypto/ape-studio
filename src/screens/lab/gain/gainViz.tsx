@@ -548,7 +548,7 @@ export function StageIcon({ kind, size = 30 }: { kind: StageKind; size?: number 
   const s = size;
   const c = colors.textSecondary;
   return (
-    <Svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={s} height={s} viewBox="0 0 32 32" fill="none">
       {kind === 'source' && (
         <>
           <Rect x={12} y={4} width={8} height={14} rx={4} stroke={c} strokeWidth={1.6} />

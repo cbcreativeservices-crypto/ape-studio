@@ -7,7 +7,7 @@ import Svg, { Line, Path } from 'react-native-svg';
 
 export function TimerIcon({ color, size = 18 }: { color: string; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       {/* Body — a ring with the arc from ~10 o'clock to ~11:50 left OPEN, so the
           hand appears to poke out through the gap (user request 2026-07-25).
           Drawn as clockwise sub-arcs through 12/3/6/9 o'clock so the geometry is

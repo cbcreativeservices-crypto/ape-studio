@@ -169,7 +169,7 @@ function SpectrumSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind:
   return (
     <ExpandableFigure aspect={W / H} title="SPECTRUM" controls={controls} render={(w, h) => (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {spec.bands?.map((b) => {
           const x = xOf(b.lo);
@@ -326,7 +326,7 @@ function WaveSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'wa
   return (
     <ExpandableFigure aspect={W / Hw} title="WAVEFORM" controls={controls} render={(w, h) => (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${Hw}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${Hw}`}>
         <Defs>
           {lanes.map((_, i) => {
             const laneTop = top + i * (laneH + gap);
@@ -455,7 +455,7 @@ function GonioSeeIt({ spec, trial, controls }: { spec: Extract<SeeIt, { kind: 'g
   return (
     <ExpandableFigure aspect={GW / GH} title="GONIOMETER" controls={controls} render={(w, h) => (
     <View style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={a11y}>
-      <Svg width={w} height={h} viewBox={`0 0 ${GW} ${GH}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${GW} ${GH}`}>
       {panes.map((p, i) => (
         <G key={i} x={i * (GONIO_PANE + GONIO_GAP)}>
             <Rect x={0} y={0} width={140} height={140} rx={10} fill="#0a0a0c" stroke={colors.hairline} />

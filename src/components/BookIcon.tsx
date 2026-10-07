@@ -7,7 +7,7 @@ import Svg, { Path, Line } from 'react-native-svg';
 
 export function BookIcon({ color, filled, size = 20 }: { color: string; filled?: boolean; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
       <Path
         d="M6.5 3.5H18a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 18V6A2.5 2.5 0 0 1 6.5 3.5z"
         fill={filled ? color : 'none'}

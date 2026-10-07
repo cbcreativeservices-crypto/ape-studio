@@ -45,7 +45,8 @@ import type { StudyStackParamList } from '../../navigation/types';
 import { slugify } from '../../navigation/linkPaths';
 import { navigationRef } from '../../navigation/navigationRef';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
-import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line } from 'react-native-svg';
+import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line, Path } from 'react-native-svg';
+import { A11Y_HIDDEN } from '../../features/settings/a11y';
 import { AppHeader } from '../../components/AppHeader';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { NavIcon } from '../../components/nav/NavIcon';
@@ -62,7 +63,7 @@ import {
   type DeckPrefs,
 } from '../../features/dashboard/deckOrderStore';
 import { DeckIcon } from '../../components/DeckIcon';
-import { ElevatedFrame } from '../../components/ElevatedFrame';
+import { ElevatedFrame, specksToPaths } from '../../components/ElevatedFrame';
 import { GlassButton } from '../../components/GlassButton';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { MethodIcon, METHOD_COLORS, type MethodKey } from '../../components/MethodIcon';
@@ -183,18 +184,20 @@ const METHOD_ORDER: { key: MethodKey; label: string }[] = [
  *  bottom-left/bottom-right regardless of how tall the content row is. `angles`
  *  = [TL, TR, BL, BR], each a hair off-true like a hand-mounted rack. */
 function CornerScrews({ angles }: { angles: [number, number, number, number] }) {
+  // Hardware only — every screw is hidden from the accessibility tree
+  // (Sentry APE-STUDIO-W/R/S: the decorative views were what hung iOS).
   return (
     <>
-      <View style={[styles.cornerScrew, { top: SCREW_VINSET, left: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.cornerScrew, { top: SCREW_VINSET, left: SCREW_INSET }]} pointerEvents="none" {...A11Y_HIDDEN}>
         <PanelScrew angle={angles[0]} size={RACK_SCREW} />
       </View>
-      <View style={[styles.cornerScrew, { top: SCREW_VINSET, right: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.cornerScrew, { top: SCREW_VINSET, right: SCREW_INSET }]} pointerEvents="none" {...A11Y_HIDDEN}>
         <PanelScrew angle={angles[1]} size={RACK_SCREW} />
       </View>
-      <View style={[styles.cornerScrew, { bottom: SCREW_VINSET, left: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.cornerScrew, { bottom: SCREW_VINSET, left: SCREW_INSET }]} pointerEvents="none" {...A11Y_HIDDEN}>
         <PanelScrew angle={angles[2]} size={RACK_SCREW} />
       </View>
-      <View style={[styles.cornerScrew, { bottom: SCREW_VINSET, right: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.cornerScrew, { bottom: SCREW_VINSET, right: SCREW_INSET }]} pointerEvents="none" {...A11Y_HIDDEN}>
         <PanelScrew angle={angles[3]} size={RACK_SCREW} />
       </View>
     </>
@@ -209,13 +212,16 @@ function SectionRackPanel({ label, angles }: { label: string; angles: [number, n
   return (
     <ElevatedFrame borderless contentStyle={styles.sectionInner}>
       <BlackFaceBg dark />
-      <View style={[styles.sideScrew, { left: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.sideScrew, { left: SCREW_INSET }]} pointerEvents="none" {...A11Y_HIDDEN}>
         <PanelScrew angle={angles[0]} size={RACK_SCREW} />
       </View>
-      <View style={[styles.sideScrew, { right: SCREW_INSET }]} pointerEvents="none">
+      <View style={[styles.sideScrew, { right: SCREW_INSET }]} pointerEvents="none" {...A11Y_HIDDEN}>
         <PanelScrew angle={angles[1]} size={RACK_SCREW} />
       </View>
-      <View style={styles.methodRow}>
+      {/* ONE accessible element for the whole divider: a section header that
+          says its label once (the stencil draws it three times, and the vent
+          fields were 156 views each side of it). */}
+      <View style={styles.methodRow} accessible accessibilityRole="header" accessibilityLabel={label}>
         <VentHoles />
         <StencilLabel label={label} />
         <VentHoles />
@@ -253,7 +259,7 @@ function StencilLabel({ label }: { label: string }) {
  *  fills whatever width it gets. */
 function VentHoles() {
   return (
-    <View style={styles.ventField}>
+    <View style={styles.ventField} {...A11Y_HIDDEN}>
       {[0, 1, 2].map((r) => (
         <View key={r} style={[styles.ventHoleRow, r % 2 === 1 && styles.ventHoleRowStagger]}>
           {Array.from({ length: 26 }, (_, i) => (
@@ -354,17 +360,38 @@ function BlackFaceBg({
         : dark
           ? [{ o: 0, c: '#17171b' }, { o: 0.42, c: '#232327' }, { o: 1, c: '#0d0d11' }]
           : [{ o: 0, c: '#3a3a3e' }, { o: 0.42, c: '#46464b' }, { o: 1, c: '#2c2c30' }];
+  // The 130 grit specks as ≤ 20 paths (one per colour × alpha step) instead of
+  // 130 <Circle> native views per panel — Sentry APE-STUDIO-W/R/S: the
+  // Dashboard's texture views were what an accessibility client choked on.
+  // Alpha is kept to the hundredth, so the grain is unchanged.
+  const gritPaths = useMemo(
+    () =>
+      size.w > 0 && size.h > 0
+        ? specksToPaths(
+            GRIT_SPECKS.map((g) => ({
+              cx: g.fx * size.w,
+              cy: g.fy * size.h,
+              r: g.r,
+              fill: g.light ? '#ffffff' : '#000000',
+              opacity: g.light ? g.a : g.a + 0.03,
+            })),
+            0.01,
+          )
+        : [],
+    [size.w, size.h],
+  );
   return (
     <View
       pointerEvents="none"
       style={styles.textureFill}
+      {...A11Y_HIDDEN}
       onLayout={(e) => {
         const { width, height } = e.nativeEvent.layout;
         setSize({ w: Math.round(width), h: Math.round(height) });
       }}
     >
       {size.w > 0 && size.h > 0 ? (
-        <Svg width={size.w} height={size.h}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size.w} height={size.h}>
           <Defs>
             {/* objectBoundingBox gradient (default units) — size-independent, so
                 the shared id is safe across every panel instance. */}
@@ -376,14 +403,8 @@ function BlackFaceBg({
           </Defs>
           <Rect x={0} y={0} width={size.w} height={size.h} fill={`url(#${gradId})`} />
           {/* Random particulate specks — round dots at pixel radius. */}
-          {GRIT_SPECKS.map((g, i) => (
-            <Circle
-              key={i}
-              cx={g.fx * size.w}
-              cy={g.fy * size.h}
-              r={g.r}
-              fill={g.light ? `rgba(255,255,255,${g.a})` : `rgba(0,0,0,${g.a + 0.03})`}
-            />
+          {gritPaths.map((g, i) => (
+            <Path key={i} d={g.d} fill={g.fill} fillOpacity={g.opacity} />
           ))}
           {/* Top lit lip + bottom shadow so each blank reads as its own mounted panel. */}
           <Line x1={0} y1={0.6} x2={size.w} y2={0.6} stroke="rgba(255,255,255,0.16)" strokeWidth={0.7} />
@@ -403,7 +424,7 @@ function BlackFaceBg({
  *  (#4). */
 function PanelScrew({ angle = 0, size = 15 }: { angle?: number; size?: number }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 14 14" style={{ transform: [{ rotate: `${angle}deg` }] }}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 14 14" style={{ transform: [{ rotate: `${angle}deg` }] }}>
       <Circle cx={7} cy={7} r={6.4} fill="#131416" stroke="#000000" strokeWidth={0.9} />
       <Circle cx={7} cy={7} r={5} fill="#1e1f22" />
       <Circle cx={5.2} cy={5} r={1.8} fill="rgba(255,255,255,0.10)" />
@@ -535,7 +556,7 @@ function GlassScreen({
  */
 function GlassCover() {
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+    <View pointerEvents="none" style={StyleSheet.absoluteFill} {...A11Y_HIDDEN}>
       {/* Flat smoked-glass tint over EVERYTHING beneath the pane. */}
       <View style={styles.glassTint} />
       {/* Vertical sheen → dim: glass catches a little light up top and darkens

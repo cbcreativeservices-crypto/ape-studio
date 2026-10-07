@@ -227,7 +227,7 @@ function RoutingMap() {
   const chanX = (i: number) => 6 + i * (cw + gap);
   return (
     <View accessible accessibilityRole="image" accessibilityLabel="Routing map: kick, snare, percussion and bass feed the rhythm bus; guitar and keys feed the music bus; lead and backing feed the vocal bus; all three buses feed the mix bus, then the output. A shared effects return also feeds the mix.">
-      <Svg width="100%" height={150} viewBox="0 0 360 150">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={150} viewBox="0 0 360 150">
         {chans.map((c, i) => box(chanX(i), 4, cw, c, '#8b93a3'))}
         {wire(chanX(0) + cw / 2, 28, 60, 58)}
         {wire(chanX(1) + cw / 2, 28, 60, 58)}

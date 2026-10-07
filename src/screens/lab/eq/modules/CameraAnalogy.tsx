@@ -110,7 +110,7 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
   // for its x-axis, so the field of view stays over the bell at every size.
   const s = width / W;
   return (
-    <Svg width={width} height={SCENE_H * s} viewBox={`0 0 ${W} ${SCENE_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width} height={SCENE_H * s} viewBox={`0 0 ${W} ${SCENE_H}`}>
       {/* Back wall / floor split for depth */}
       <Rect x={PAD} y={28} width={PLOT_W} height={FLOOR_Y - 28} fill="#101216" />
       <Polygon points={`${PAD},${FLOOR_Y} ${W - PAD},${FLOOR_Y} ${W - PAD - 14},${FLOOR_Y + 16} ${PAD + 14},${FLOOR_Y + 16}`} fill="#0c0d11" />

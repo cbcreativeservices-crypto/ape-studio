@@ -244,7 +244,7 @@ export function HarmonographViewer(props: {
               style={[styles.paper, { width: paper, height: paper }]}
               accessibilityLabel="Harmonograph drawing"
             >
-              <Svg width={paper} height={paper} viewBox={`0 0 ${PATH_SIZE} ${PATH_SIZE}`}>
+              <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={paper} height={paper} viewBox={`0 0 ${PATH_SIZE} ${PATH_SIZE}`}>
                 {/* soft glow under the crisp core — the house double-stroke */}
                 <Path d={d} stroke={inkColor} strokeWidth={5} strokeOpacity={0.22} fill="none" strokeLinejoin="round" strokeLinecap="round" />
                 <Path d={d} stroke={inkColor} strokeWidth={1.6} strokeOpacity={0.96} fill="none" strokeLinejoin="round" strokeLinecap="round" />

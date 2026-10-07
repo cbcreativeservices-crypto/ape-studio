@@ -1689,7 +1689,27 @@ export const EnrollmentView = memo(function EnrollmentView({
                   🔒
                 </Text>
               ) : null}
-              <Pressable style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]} onPress={unlessLifted(() => toggleCollapse(tid))} accessibilityRole="button" accessibilityLabel={`Expand ${nameFor(e.gs)}`}>
+              {/* ONE element per collapsed row (APE-STUDIO-W/R/S nested-element
+                  sweep, 2026-10-08). The two keys inside used to be nested in
+                  this button, which on iOS made them unreachable to a screen
+                  reader; they now ride on the row as custom actions, and the
+                  label says the row's state instead of only "Expand …". */}
+              <Pressable
+                style={[styles.card, !e.active && styles.cardInactive, isCore && styles.cardCore, styles.collapsedCard]}
+                onPress={unlessLifted(() => toggleCollapse(tid))}
+                accessibilityRole="button"
+                accessibilityLabel={`${nameFor(e.gs)}, ${pctText(e.gs)}, ${coreLocked ? 'locked in your study deck' : showActive ? 'in your study deck' : 'not in your study deck'}`}
+                accessibilityHint="Expands the topic"
+                accessibilityActions={[
+                  ...(coreLocked ? [] : [{ name: 'deck', label: showActive ? 'Remove from study deck' : 'Add to study deck' }]),
+                  ...(showActive ? [{ name: 'study', label: `Study ${nameFor(e.gs)}` }] : []),
+                ]}
+                // A screen-reader action is never mid-drag, so no lift guard.
+                onAccessibilityAction={(ev) => {
+                  if (ev.nativeEvent.actionName === 'deck' && !coreLocked) toggleDeck();
+                  else if (ev.nativeEvent.actionName === 'study' && showActive) goStudy(e.gs);
+                }}
+              >
                 {isCore ? <RowTint color={COREQ_TINT} /> : null}
                 <Text style={styles.collapseTri}>▸</Text>
                 <Text style={styles.collapsedTitle} numberOfLines={1}>
@@ -1707,6 +1727,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   onPress={coreLocked ? undefined : unlessLifted(toggleDeck)}
                   disabled={coreLocked}
                   hitSlop={8}
+                  accessible={false}
                   accessibilityRole="button"
                   accessibilityState={{ disabled: coreLocked, selected: showActive }}
                   aria-disabled={coreLocked}
@@ -1721,6 +1742,7 @@ export const EnrollmentView = memo(function EnrollmentView({
                   onPress={showActive ? unlessLifted(() => goStudy(e.gs)) : undefined}
                   disabled={!showActive}
                   hitSlop={8}
+                  accessible={false}
                   accessibilityRole="button"
                   accessibilityState={{ disabled: !showActive }}
                   aria-disabled={!showActive}

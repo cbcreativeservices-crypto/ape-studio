@@ -9,6 +9,7 @@
  */
 import { Platform, StyleSheet, View } from 'react-native';
 import { levelColor } from '../features/tools/levelColor';
+import { A11Y_HIDDEN } from '../features/settings/a11y';
 
 const SEG_COUNT = 21;
 
@@ -103,7 +104,10 @@ export function LedMeter({
         'aria-valuemax': 100,
         'aria-valuenow': pct,
       })
-    : {};
+    : // Unlabelled = decorative here (the caller's own container says the
+      // reading, or it is a fast audio meter). Its 21 segment views are hidden
+      // from the accessibility tree (Sentry APE-STUDIO-W/R/S, 2026-10-07).
+      A11Y_HIDDEN;
   return (
     <View
       {...a11y}

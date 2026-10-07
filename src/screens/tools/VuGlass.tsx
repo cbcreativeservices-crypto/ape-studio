@@ -75,7 +75,7 @@ export function VuGlass({ width, height, par }: { width: number; height: number;
   const gEdgeT = `${uid}get`;
   const gEdgeB = `${uid}geb`;
   return (
-    <Svg
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
       pointerEvents="none"
       style={{ position: 'absolute', left: 0, top: 0 }}
       width={width}

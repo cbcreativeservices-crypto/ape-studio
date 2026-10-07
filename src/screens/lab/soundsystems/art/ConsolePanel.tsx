@@ -65,7 +65,7 @@ function MiniPot({ db }: { db: number }) {
   const cx = 14;
   const cy = 14;
   return (
-    <Svg width={28} height={28} viewBox="0 0 28 28">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={28} height={28} viewBox="0 0 28 28">
       {[-135, -67.5, 0, 67.5, 135].map((d) => {
         const r = (d * Math.PI) / 180;
         return <Line key={d} x1={cx + Math.sin(r) * 11} y1={cy - Math.cos(r) * 11} x2={cx + Math.sin(r) * 13} y2={cy - Math.cos(r) * 13} stroke={d === 0 ? colors.amberLabel : '#5a5f6a'} strokeWidth={d === 0 ? 1.4 : 1} />;
@@ -300,7 +300,7 @@ export function BusMeter({ db, programme, peak, height = 64 }: { db: number; pro
   });
   const hold = useAnimatedProps(() => ({ y: Math.min(H - 6, top + (1 - peak.value) * 0.28 * (H - 8)) - 1 }));
   return (
-    <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
       <Defs>
         <LinearGradient id="bus-ramp" gradientUnits="userSpaceOnUse" x1={0} y1={4} x2={0} y2={H - 4}>
           {LOUDNESS_STOPS.map((s) => (

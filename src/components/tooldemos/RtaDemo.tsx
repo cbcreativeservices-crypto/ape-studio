@@ -325,7 +325,7 @@ function MorphBars({
   );
 
   return (
-    <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
       {ramp ? (
         <Defs>
           {/* Amplitude ramp in plot pixels: silence blue at the baseline
@@ -415,7 +415,7 @@ function SceneNoise() {
 
         {/* Pink callout layer: flat dashed guide along the bar tops. */}
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: pinkOp }]} pointerEvents='none'>
-          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             <Line x1={bandCenter(0)} y1={90} x2={bandCenter(27)} y2={90} stroke={CALLOUT_STEEL} strokeWidth={1} strokeDasharray='3 4' opacity={0.55} />
             <SvgText x={160} y={62} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={colors.amberDeep} textAnchor='middle'>
               PINK READS FLAT · EQUAL ENERGY PER OCTAVE
@@ -426,7 +426,7 @@ function SceneNoise() {
 
         {/* White callout layer: the +3 dB/oct slope guide along the staircase. */}
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: fade }]} pointerEvents='none'>
-          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             <Line x1={bandCenter(0)} y1={BASE_Y - WHITE_HEIGHTS[0]} x2={bandCenter(27)} y2={BASE_Y - WHITE_HEIGHTS[27]} stroke={CALLOUT_STEEL} strokeWidth={1} strokeDasharray='3 4' opacity={0.55} />
             <SvgText x={150} y={36} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={colors.amberDeep} textAnchor='middle'>
               +3 dB PER OCTAVE · EQUAL ENERGY PER Hz
@@ -474,17 +474,17 @@ function SceneSmoothing() {
       </View>
 
       <PlotPanel>
-        <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
           <GridAndAxis />
         </Svg>
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: jaggedOpacity }]} pointerEvents='none'>
-          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             {/* 1/24-octave (raw) line = BLUE (owner 2026-08-05). */}
             <Polyline points={RAW_POINTS} fill='none' stroke={colors.blue} strokeWidth={1.6} strokeLinejoin='round' />
           </Svg>
         </Animated.View>
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: smoothOpacity }]} pointerEvents='none'>
-          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             {/* Smoothed outcome line = GREEN (owner 2026-08-05). */}
             <Polyline points={SMOOTH_POINTS} fill='none' stroke={colors.green} strokeWidth={2.5} strokeLinecap='round' strokeLinejoin='round' />
           </Svg>
@@ -492,7 +492,7 @@ function SceneSmoothing() {
 
         {/* Callouts ride their own layer so each names the view it belongs to. */}
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: jaggedFull }]} pointerEvents='none'>
-          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             <SvgText x={100} y={30} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={CALLOUT_STEEL} textAnchor='middle'>
               EVERY NARROW RIPPLE SHOWS
             </SvgText>
@@ -500,7 +500,7 @@ function SceneSmoothing() {
           </Svg>
         </Animated.View>
         <Animated.View style={[StyleSheet.absoluteFill, { opacity: xfade }]} pointerEvents='none'>
-          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             <SvgText x={185} y={44} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={colors.amberDeep} textAnchor='middle'>
               THE BROAD TREND · WHAT YOU TUNE TO
             </SvgText>
@@ -540,7 +540,7 @@ function RoomGlyph({ which }: { which: 0 | 1 }) {
 
   return (
     <View style={styles.roomGlyph}>
-      <Svg width={92} height={92} viewBox='0 0 46 46'>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={92} height={92} viewBox='0 0 46 46'>
         <Rect x={2} y={2} width={42} height={42} rx={3} fill='#101014' stroke={colors.steelBorder} strokeWidth={1.2} />
         <Rect x={6} y={6} width={8} height={8} rx={1.5} fill={colors.amber} />
         <Path d='M17 8 A9 9 0 0 1 20 17' stroke={colors.amber} strokeOpacity={0.45} strokeWidth={1.2} fill='none' />
@@ -568,7 +568,7 @@ function SceneMic() {
         <MorphBars heightsA={MIC_A_HEIGHTS} heightsB={MIC_B_HEIGHTS} which={which} ramp />
         {/* Static callouts — true at BOTH positions, so they never crossfade. */}
         <View style={StyleSheet.absoluteFill} pointerEvents='none'>
-          <Svg width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
+          <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height={CHART_H} viewBox={`0 0 ${CHART_W} ${CHART_H}`}>
             <SvgText x={88} y={30} fontSize={9.5} letterSpacing={1} fontFamily={fonts.mono} fill={colors.amberDeep} textAnchor='middle'>
               LOW END SWINGS MOST
             </SvgText>
@@ -590,7 +590,7 @@ function SceneMic() {
             bass picture reorders while the highs hold.
           </Text>
           <View style={styles.rampLegendRow}>
-            <Svg width={72} height={8}>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={72} height={8}>
               <Defs>
                 <LinearGradient id='rtaLegendRamp' x1='0' y1='0' x2='1' y2='0'>
                   {RAMP_SAMPLES.map((s) => (

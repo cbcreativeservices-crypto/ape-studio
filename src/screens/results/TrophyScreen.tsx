@@ -102,7 +102,7 @@ export function TrophyScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom + 28 }]}>
-      <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={StyleSheet.absoluteFill} pointerEvents="none">
         <Defs>
           <RadialGradient id="ground" cx="50%" cy="38%" r="58%">
             <Stop offset="0%" stopColor="#ffb400" stopOpacity={0.22} />

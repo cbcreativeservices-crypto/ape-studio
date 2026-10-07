@@ -635,7 +635,7 @@ const PanelFace = memo(function PanelFace({ tile }: { tile: TileMetrics }) {
       }}
     >
       {size.w > 0 && size.h > 0 && patina ? (
-        <Svg width={size.w} height={size.h}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size.w} height={size.h}>
           <Defs>
             <SvgLinearGradient id="apeToolsPanelFace" x1="0" y1="0" x2="0" y2="1">
               {gradStops.map((st) => (

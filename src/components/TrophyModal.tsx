@@ -93,6 +93,15 @@ export function TrophyModal({
         // The scrim is the only accessible element, so it must READ the trophy
         // (name + earned meta), not just "Close trophy" (Bug+Hater night A1-03).
         accessibilityLabel={`${name ?? 'Trophy'}${meta ? `, ${meta.toLowerCase()}` : ''}. Tap to close.`}
+        // The action key sits INSIDE this one element, so on iOS a screen
+        // reader could never reach it (a Pressable inside an accessible
+        // Pressable is not an element — APE-STUDIO-W/R/S nested-element sweep,
+        // 2026-10-08). It rides on the scrim as a custom action instead.
+        accessibilityActions={action && !action.busy ? [{ name: 'trophyAction', label: action.label }] : undefined}
+        onAccessibilityAction={(e) => {
+          if (e.nativeEvent.actionName === 'trophyAction' && action && !action.busy) action.onPress();
+        }}
+        onAccessibilityEscape={onClose}
       >
         <View
           style={[styles.frame, { width: ART, height: ART, borderColor: color, shadowColor: color }]}
@@ -108,6 +117,9 @@ export function TrophyModal({
           <Pressable
             onPress={action.onPress}
             disabled={action.busy}
+            // Reached through the scrim's custom action (above); not a second
+            // element nested inside the first.
+            accessible={false}
             accessibilityRole="button"
             accessibilityLabel={action.busy ? 'Working, please wait' : action.label}
             accessibilityState={{ disabled: !!action.busy, busy: !!action.busy }}

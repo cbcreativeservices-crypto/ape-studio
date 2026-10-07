@@ -261,7 +261,7 @@ function ScrollPlot({ scroll, height, strip, overlay, children }: ScrollPlotProp
         {children}
         {overlay ? (
           <View pointerEvents='none' style={StyleSheet.absoluteFill}>
-            <Svg width='100%' height='100%'>
+            <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%'>
               {overlay}
             </Svg>
           </View>
@@ -281,7 +281,7 @@ function ScrollPlot({ scroll, height, strip, overlay, children }: ScrollPlotProp
 
 function speechStrip(w: number) {
   return (
-    <Svg width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
       {/* Sibilance splashes — broadband high-frequency hiss after a syllable. */}
       {SIB_STROKES.map((s, i) => (
         <Line
@@ -314,7 +314,7 @@ function speechStrip(w: number) {
 
 function musicStrip(w: number) {
   return (
-    <Svg width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
       {/* Transient attacks — broadband verticals (loud, warm); these scroll. */}
       {MUSIC_HITS.map((t, i) => (
         <Line
@@ -348,7 +348,7 @@ function musicStrip(w: number) {
 
 function feedbackStrip(w: number) {
   return (
-    <Svg width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
       {/* Passing transients — dim verticals; these are what visibly scroll. */}
       {FB_TICKS.map((t, i) => (
         <Line
@@ -385,7 +385,7 @@ function feedbackStrip(w: number) {
 
 function fftBigStrip(w: number) {
   return (
-    <Svg width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
       {/* Clicks smeared wide across time (soft warm blur). */}
       {FFT_CLICKS.map((t, i) => (
         <Rect
@@ -417,7 +417,7 @@ function fftBigStrip(w: number) {
 
 function fftSmallStrip(w: number) {
   return (
-    <Svg width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height='100%' viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio='none'>
       {/* Tones smeared into one thick band (medium loudness → yellow/orange). */}
       <Rect x={0} y={FFT_BAND_TOP} width={VB_W} height={FFT_BAND_H} fill={amp(0.6)} fillOpacity={0.22} />
       <Line
@@ -698,7 +698,7 @@ function AmpLegend() {
     <View style={styles.legendRow}>
       <Text style={styles.legendCap}>QUIET</Text>
       <View style={styles.legendBar}>
-        <Svg width='100%' height='100%' preserveAspectRatio='none' viewBox='0 0 100 10'>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width='100%' height='100%' preserveAspectRatio='none' viewBox='0 0 100 10'>
           <Defs>
             <LinearGradient id='specAmp' x1='0' y1='0' x2='100' y2='0' gradientUnits='userSpaceOnUse'>
               {[0, 0.25, 0.5, 0.75, 1].map((s) => (

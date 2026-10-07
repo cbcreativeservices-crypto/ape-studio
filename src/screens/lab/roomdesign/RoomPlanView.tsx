@@ -322,7 +322,7 @@ export function RoomPlanView({
           while the view is editable (the read-only Review plan takes none).
           Renders nothing on iOS, web and builds without the module. */}
       {edit === 'none' ? null : <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} />}
-      <Svg width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
         {/* Floor */}
         <Path d={outlinePath} fill={floorTint} stroke="none" />
 

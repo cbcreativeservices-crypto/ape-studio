@@ -199,7 +199,7 @@ function SceneDecay() {
 
   return (
     <View style={styles.viz}>
-      <Svg width={VIZ_W} height={VIZ_H} viewBox={`0 0 ${VIZ_W} ${VIZ_H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={VIZ_W} height={VIZ_H} viewBox={`0 0 ${VIZ_W} ${VIZ_H}`}>
         <DecayRampDefs />
         <Line x1={PX} y1={PY} x2={PX} y2={PB} stroke={colors.steelBorder} strokeWidth={1} />
         <Line x1={PX} y1={PB} x2={PX + PW} y2={PB} stroke={colors.steelBorder} strokeWidth={1} />
@@ -252,7 +252,7 @@ function SceneCompare() {
 
   return (
     <View style={styles.viz}>
-      <Svg width={VIZ_W} height={VIZ_H} viewBox={`0 0 ${VIZ_W} ${VIZ_H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={VIZ_W} height={VIZ_H} viewBox={`0 0 ${VIZ_W} ${VIZ_H}`}>
         <Line x1={PX} y1={PY} x2={PX} y2={PB} stroke={colors.steelBorder} strokeWidth={1} />
         <Line x1={PX} y1={PB} x2={PX + PW} y2={PB} stroke={colors.steelBorder} strokeWidth={1} />
         <Line x1={PX} y1={dbY(-30)} x2={PX + PW} y2={dbY(-30)} stroke={colors.hairline} strokeWidth={1} strokeDasharray='3,5' />
@@ -294,7 +294,7 @@ function SceneNoise() {
 
   return (
     <View style={styles.viz}>
-      <Svg width={VIZ_W} height={VIZ_H} viewBox={`0 0 ${VIZ_W} ${VIZ_H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={VIZ_W} height={VIZ_H} viewBox={`0 0 ${VIZ_W} ${VIZ_H}`}>
         <DecayRampDefs />
         <Line x1={PX} y1={PY} x2={PX} y2={PB} stroke={colors.steelBorder} strokeWidth={1} />
         <Line x1={PX} y1={PB} x2={PX + PW3} y2={PB} stroke={colors.steelBorder} strokeWidth={1} />

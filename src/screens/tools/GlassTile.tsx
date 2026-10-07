@@ -240,7 +240,7 @@ const PanelTexture = memo(function PanelTexture() {
       }}
     >
       {tex ? (
-        <Svg width={size.w} height={size.h}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size.w} height={size.h}>
           <Defs>
             <SvgLinearGradient id={`pf${uid}`} x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0" stopColor="#3a3a3e" />

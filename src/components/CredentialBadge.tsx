@@ -26,7 +26,7 @@ export function CredentialBadge({
 }) {
   const c = color ?? KIND_COLOR[kind];
   return (
-    <Svg width={size} height={size} viewBox="0 0 48 48">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 48 48">
       <Circle cx={24} cy={24} r={24} fill="#101820" />
       <Circle cx={24} cy={24} r={16} fill="none" stroke={c} strokeWidth={3} />
       <Circle cx={24} cy={24} r={10.5} fill="none" stroke={c} strokeWidth={2.5} opacity={0.85} />

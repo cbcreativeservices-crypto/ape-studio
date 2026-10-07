@@ -161,7 +161,7 @@ export function RoomSideView({
           while the view is editable (the read-only Review plan takes none).
           Renders nothing on iOS, web and builds without the module. */}
       {edit ? <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} /> : null}
-      <Svg width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${gw} ${gh}`}>
         {/* Room section */}
         <Path d={`M${floorL.x},${floorL.y} L${floorR.x},${floorR.y} L${rearTop.x},${rearTop.y} ${ceilingPts.split(' ').reverse().map((p) => `L${p}`).join(' ')} Z`} fill="#131417" stroke="none" />
         <Line x1={floorL.x} y1={floorL.y} x2={floorR.x} y2={floorR.y} stroke={floorTint} strokeWidth={3} />

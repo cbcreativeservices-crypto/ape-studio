@@ -314,17 +314,25 @@ export function MicPhotoLightbox({ children }: { children: ReactNode }) {
     <LightboxCtx.Provider value={setKind}>
       {children}
       <Modal accessibilityViewIsModal visible={!!url} transparent animationType="fade" statusBarTranslucent onRequestClose={() => setKind(null)}>
-        <Pressable style={styles.lbBackdrop} onPress={() => setKind(null)} accessibilityRole="button" accessibilityLabel="Close photo">
+        {/* ONE element that names the photo AND closes it — the image was a
+            second element nested inside this one, unreachable on iOS
+            (APE-STUDIO-W/R/S nested-element sweep, 2026-10-08). */}
+        <Pressable
+          style={styles.lbBackdrop}
+          onPress={() => setKind(null)}
+          accessibilityRole="button"
+          accessibilityLabel={`${kind ? `${kind} microphone reference image` : 'Microphone reference image'}. Tap to close.`}
+          onAccessibilityEscape={() => setKind(null)}
+        >
           <View style={[styles.lbCard, { width: lbSide, height: lbSide }]}>
             {url ? (
-              <Image accessible
+              <Image
+                accessible={false}
                 source={{ uri: url }}
                 style={styles.lbImage}
                 contentFit="contain"
                 cachePolicy="memory-disk"
                 accessibilityIgnoresInvertColors
-                accessibilityRole="image"
-                accessibilityLabel={kind ? `${kind} microphone reference image` : 'Microphone reference image'}
               />
             ) : null}
           </View>

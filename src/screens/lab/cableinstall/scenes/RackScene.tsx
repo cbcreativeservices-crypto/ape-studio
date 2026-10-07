@@ -1408,7 +1408,7 @@ function RackSvg({
   const dress = mode === 'dress';
   const uid = useUid();
   return (
-    <Svg width={w} height={h} viewBox={`0 0 ${VB_W} ${VB_H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${VB_W} ${VB_H}`}>
       <RackPaints uid={uid}>
       <Chassis dress={dress} enter={enter} />
       {dress ? (

@@ -43,16 +43,44 @@
  * wiring is in `startAutoUpdate.ts`.
  */
 
-/** How long after launch a reload is still unobtrusive. */
+/** How long after launch a found update still counts as "this launch's". */
 const RELOAD_WINDOW_MS = 12_000;
 
-export type AutoUpdateOutcome = 'disabled' | 'none' | 'reloaded' | 'deferred' | 'failed';
+/*
+ * ⛔ AND IT CRASHED AGAIN — Sentry APE-STUDIO-D, build 1.0.0 (32), 2026-10-05,
+ * iPhone 17 Pro / iOS 26.6.2, two users across builds 24 and 32: the same
+ * EXC_BAD_ACCESS in RuntimeScheduler_Modern::updateRendering, 40 ms after the
+ * native downloader finished a 21 MB launch asset, on the Splash screen, 3 s
+ * after launch. Build 32 ran the "listen, then reload after interactions"
+ * version above, with `InteractionManager` — a same-tick microtask in RN 0.86
+ * — so the reload still landed inside the tick whose updateRendering then ran
+ * on a runtime being torn down. `runSoon` (a real macrotask, 2026-10-04) only
+ * moves the call to the NEXT tick; that tick ends in updateRendering too, and
+ * expo-updates tears the host down from the main thread (RelaunchProcedure →
+ * RCTTriggerReloadCommandListeners) while the JS thread is still rendering
+ * the busiest screen of the app's life: startup.
+ *
+ * ⛔ SO THE RELOAD NEVER RUNS WHILE THE APP IS IN THE FOREGROUND. An update the
+ * native layer reports during the startup window is applied the next time the
+ * app goes to the BACKGROUND: nothing is on screen, nobody is mid-gesture, no
+ * startup render is in flight — and if anything still went wrong there, iOS
+ * simply cold-launches the app next time instead of crashing it in front of
+ * the person (or App Review). The tester still gets the new bundle on their
+ * very next return. A late find (past the window) still waits for the next
+ * cold launch, as before.
+ */
+
+export type AutoUpdateOutcome = 'disabled' | 'none' | 'waiting' | 'reloaded' | 'deferred' | 'failed';
 
 /**
- * Wait for the NATIVE downloader to report a pending update, then reload.
+ * Wait for the NATIVE downloader to report a pending update, then reload the
+ * next time the app is in the background.
  *
  * @param onPending subscribe to the native state; call back when an update is
  *   pending. Returns an unsubscribe.
+ * @param isBackground true while the app is in the background.
+ * @param onBackground subscribe to the app going to the background. Returns an
+ *   unsubscribe.
  * @param settle run work off the render path (runSoon — a real macrotask — in the app).
  */
 export function watchForPendingUpdate(deps: {
@@ -60,6 +88,8 @@ export function watchForPendingUpdate(deps: {
   /** True at call time — the native check may already have finished. */
   pendingNow: () => boolean;
   onPending: (cb: () => void) => () => void;
+  isBackground: () => boolean;
+  onBackground: (cb: () => void) => () => void;
   settle: (cb: () => void) => void;
   reload: () => Promise<void>;
   now: () => number;
@@ -71,36 +101,54 @@ export function watchForPendingUpdate(deps: {
   }
 
   const startedAt = deps.now();
+  let found = false;
   let done = false;
+  let unsubscribeBg: (() => void) | null = null;
 
-  const apply = () => {
+  const reloadNow = () => {
     if (done) return;
     done = true;
-    // ⛔ The window is checked HERE, at the moment of applying — not when the
-    // download started. A 40MB bundle on a slow connection finishes long after
-    // the user has started reading.
-    if (deps.now() - startedAt > windowMs) {
-      deps.onOutcome?.('deferred');
-      return;
-    }
-    // ⛔ Off the render path. See the crash note above: this exact call, made
-    // inline, tore the runtime down inside RuntimeScheduler::updateRendering.
+    unsubscribeBg?.();
+    unsubscribeBg = null;
+    // ⛔ Off the render path, and only ever from the background (see above).
     deps.settle(() => {
-      deps.reload().then(
-        () => deps.onOutcome?.('reloaded'),
-        () => deps.onOutcome?.('failed'),
-      );
+      // Said BEFORE the call: nothing should be scheduled to run on a runtime
+      // that is being torn down. Only a refusal comes back.
+      deps.onOutcome?.('reloaded');
+      deps.reload().catch(() => deps.onOutcome?.('failed'));
     });
   };
 
-  const unsubscribe = deps.onPending(apply);
+  const onFound = () => {
+    if (found || done) return;
+    found = true;
+    // ⛔ The window is checked HERE, when the native layer reports the bundle —
+    // not when the download started. A 40 MB bundle on a slow connection
+    // finishes long after the person has started reading; that one waits for
+    // the next cold launch, as it always did.
+    if (deps.now() - startedAt > windowMs) {
+      done = true;
+      deps.onOutcome?.('deferred');
+      return;
+    }
+    if (deps.isBackground()) {
+      reloadNow();
+      return;
+    }
+    deps.onOutcome?.('waiting');
+    unsubscribeBg = deps.onBackground(reloadNow);
+  };
+
+  const unsubscribe = deps.onPending(onFound);
   // The native check can beat us to it — a bundle downloaded on the previous
   // launch is already pending before anything subscribes.
-  if (deps.pendingNow()) apply();
-  else if (!done) deps.onOutcome?.('none');
+  if (deps.pendingNow()) onFound();
+  else if (!found) deps.onOutcome?.('none');
 
   return () => {
     done = true;
     unsubscribe();
+    unsubscribeBg?.();
+    unsubscribeBg = null;
   };
 }

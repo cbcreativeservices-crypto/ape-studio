@@ -119,7 +119,7 @@ export function SpeakButton({
       aria-pressed={playing}
       style={playing && Platform.OS === 'ios' ? styles.glow : null}
     >
-      <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 24 24">
         {/* speaker body */}
         <Path d="M4 9.5 L8 9.5 L13 5 L13 19 L8 14.5 L4 14.5 Z" fill={c} />
         {/* waves — lit while playing */}

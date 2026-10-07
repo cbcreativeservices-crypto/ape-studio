@@ -261,7 +261,7 @@ export function SignalPathArt({
 
   return (
     <View style={{ width: '100%', aspectRatio: PATH_ASPECT }}>
-      <Svg width="100%" height="100%" viewBox={`0 0 ${PATH_VB_W} ${PATH_VB_H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height="100%" viewBox={`0 0 ${PATH_VB_W} ${PATH_VB_H}`}>
         {/* ── the form band: SOUND · AUDIO SIGNAL · SOUND ── */}
         {showForms ? (
           <G>

@@ -34,6 +34,7 @@ import {
   type WaveBucket,
 } from '../../../modules/ape-dsp';
 import { useDspEngine } from '../../features/tools/engine/useDspEngine';
+import { releaseMicNow } from '../../features/tools/engine/micSession';
 // Dev-only capture marks (2026-09-13). The tiles resting when frames stop is
 // correct; WHY frames stop on a healthy phone is not understood, and the
 // flicker the owner reported is that restart seen from the outside.
@@ -195,8 +196,18 @@ export function useHubPreviewEngine(): HubPreview {
   // dialog itself moves AppState — stopping mid-prompt would both swallow the
   // 'denied' result and re-prompt in a loop), and never fire the GLOBAL
   // ApeDsp.stop() while a pushed tool owns the session (hub is 'idle' then).
+  //
+  // ⛔ AND THE RELEASE IS HARD, NOW (Sentry APE-STUDIO-T, iPad, build 27):
+  // stop() alone only SCHEDULES the native stop behind micSession's 1.5 s
+  // warm window. iOS froze that timer when it suspended the app, and the stop
+  // ran eight minutes later against a torn-down audio session — a native
+  // crash in AVAudioEngine. The tools' own background handler already did
+  // stop() + releaseMicNow(); the hub now does the same.
   useEffect(() => {
-    if (!appActive && state === 'running') stop();
+    if (!appActive && state === 'running') {
+      stop();
+      releaseMicNow();
+    }
   }, [appActive, state, stop]);
 
   // Regaining focus clears the locks so previews resume on return.

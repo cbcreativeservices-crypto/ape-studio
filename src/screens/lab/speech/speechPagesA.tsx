@@ -107,7 +107,7 @@ export function PageProduction({ ctx }: { ctx: PageCtx }) {
   // 2026-09-30 — it was the one unwrapped drawing in this lab) and, compact,
   // inside the head drawing's own dock.
   const stripAt = (w: number | string, h: number) => (
-    <Svg width={w} height={h} viewBox="0 0 340 56">
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox="0 0 340 56">
       {PRODUCTION.map((s, i) => {
         const x = 4 + i * 67;
         const on = i === step;
@@ -211,7 +211,7 @@ export function VowelChart({ v, controls }: { v: Vowel; controls?: ReactNode }) 
   return (
     <ExpandableFigure aspect={W / H} title="VOWEL" controls={controls} render={(w, h) => (
     <View accessible accessibilityLabel={`${v.letter}: tongue ${v.height > 0.6 ? 'high' : v.height > 0.3 ? 'mid' : 'low'} and ${v.back > 0.6 ? 'back' : v.back > 0.3 ? 'central' : 'front'}, jaw ${jawOpen > 0.6 ? 'open' : jawOpen > 0.4 ? 'half open' : 'nearly closed'}, lips ${v.rounded ? 'rounded' : 'spread'}.`} style={{ width: w, height: h }}>
-      <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
         <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
         {/* the tongue space */}
         <Polygon points={`${px(0, 1)},${py(1)} ${px(1, 1)},${py(1)} ${px(1, 0)},${py(0)} ${px(0, 0)},${py(0)}`} fill="rgba(127,212,255,0.04)" stroke={colors.hairline} />
@@ -299,7 +299,7 @@ export function PageConsonants({ ctx }: { ctx: PageCtx }) {
       </Card>
       <ExpandableFigure aspect={W / H} title="ENERGY" controls={<View style={{ gap: 8 }}><Text style={styles.readout} numberOfLines={2}>{c.name.toUpperCase()} · {c.examples} — energy: {c.energy}</Text>{picker}</View>} render={(w, h) => (
       <View accessible accessibilityLabel={`${c.name}: energy mainly between ${c.bandLoHz} and ${c.bandHiHz} hertz, approximate.`} style={{ width: w, height: h }}>
-        <Svg width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
+        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
           <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
           {[50, 100, 200, 500, 1000, 2000, 5000, 10000].map((t) => <Line key={`g${t}`} x1={x(t)} y1={14} x2={x(t)} y2={38} stroke="rgba(255,255,255,0.06)" />)}
           <Rect x={x(c.bandLoHz)} y={16} width={Math.max(2, x(c.bandHiHz) - x(c.bandLoHz))} height={20} rx={4} fill={colors.orange} opacity={0.45} />

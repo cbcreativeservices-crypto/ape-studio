@@ -314,7 +314,7 @@ export function ResponseCurveGraph({
   };
   return (
     <View style={width == null ? { width: '100%' } : undefined} onLayout={width == null ? (e) => setMeasured(Math.round(e.nativeEvent.layout.width)) : undefined}>
-    <Svg width={gw} height={H + padB} viewBox={`0 0 ${gw} ${H + padB}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={gw} height={H + padB} viewBox={`0 0 ${gw} ${H + padB}`}>
       <Defs>
         <LinearGradient id="fxRcgFill" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={AMBER} stopOpacity={0.3} />
@@ -428,7 +428,7 @@ export function TransferCurveGraph({
   const zoneX0 = mode === 'gate' ? xAt(-60) : xAt(markerDb);
   const zoneX1 = mode === 'gate' ? xAt(markerDb) : xAt(0);
   return (
-    <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
       <Defs>
         <LinearGradient id="fxTcgFill" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={AMBER} stopOpacity={0.26} />
@@ -558,7 +558,7 @@ export function WaveshapeGraph({
   const yTop = H / 2 - (H / 2 - 8); // +1.0 full scale
   const yBot = H / 2 + (H / 2 - 8); // −1.0 full scale
   return (
-    <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
       <Defs>
         {/* mirrored so the fill glows toward both peaks, fading at the zero line */}
         <LinearGradient id="fxWsFill" x1="0" y1="0" x2="0" y2="1">
@@ -624,7 +624,7 @@ export function EchoTimelineGraph({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [taps, timeMs, feedback, mix, spanMs]);
   return (
-    <Svg width="100%" height={H + 14} viewBox={`0 0 ${W} ${H + 14}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={H + 14} viewBox={`0 0 ${W} ${H + 14}`}>
       <Defs>
         <LinearGradient id="fxEchoBar" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={AMBER_HI} stopOpacity={1} />
@@ -728,7 +728,7 @@ export function DecayCurveGraph({
   const tTicks: number[] = [];
   for (let t = tickStep; t < spanS; t += tickStep) tTicks.push(t);
   const graph = (
-    <Svg width={width ?? '100%'} height={H} viewBox={`0 0 ${W} ${H}`}>
+    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={width ?? '100%'} height={H} viewBox={`0 0 ${W} ${H}`}>
       <Defs>
         <LinearGradient id="fxDecayFill" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={AMBER} stopOpacity={0.28} />
@@ -866,7 +866,7 @@ export function LissajousGraph({
   const R = SIZE / 2 - 12;
   return (
     <View style={lissaStyles.row}>
-      <Svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
+      <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
         <PlotFrame w={SIZE} h={SIZE} />
         {/* circular scope graticule */}
         <Circle cx={SIZE / 2} cy={SIZE / 2} r={R} stroke={GRID} strokeWidth={1} fill="none" />

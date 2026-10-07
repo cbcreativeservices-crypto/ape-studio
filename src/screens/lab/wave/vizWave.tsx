@@ -40,9 +40,11 @@ import {
   Path,
   Rect,
   Skia,
-  useImage,
   vec,
 } from '@shopify/react-native-skia';
+// Skia's own useImage leaves a failed fetch as an unhandled rejection (Sentry
+// APE-STUDIO-E) — the safe twin reads it as "not loaded".
+import { useSafeSkiaImage } from '../../../lib/skiaSafeAssets';
 import {
   cancelAnimation,
   Easing,
@@ -308,7 +310,7 @@ const FLOOR_HEAD_PX = 14;
 const FLOOR_SPK_PX = 8;
 const FLOOR_MIC_PX = 9;
 
-type SkImageT = ReturnType<typeof useImage>;
+type SkImageT = ReturnType<typeof useSafeSkiaImage>;
 
 /** Color matrix that recolors every pixel to `hex` and KEEPS the source alpha
  *  (the transparent line-art asset takes on the accent). */
@@ -1385,7 +1387,7 @@ export function RoomSceneView(p: RoomSceneProps) {
     report?.aspect((scene.w + 2 * outM) / (scene.h + 2 * outM), roomMargin);
   }, [report, scene.w, scene.h, roomMargin, outM]);
   const key = sceneKey(scene);
-  const headFrontImg = useImage(ICON_HEAD_FRONT);
+  const headFrontImg = useSafeSkiaImage(ICON_HEAD_FRONT);
   const nx = p.modal?.nx ?? 1;
   const ny = p.modal?.ny ?? 0;
   const scatterWall = p.scatterWall ?? null;
