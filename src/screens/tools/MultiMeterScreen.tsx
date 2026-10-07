@@ -406,7 +406,7 @@ export function MultiMeterScreen({ navigation }: Props) {
     waveformEnabled: true,
     bandAvgAlpha: 0.6, // faster bar response (owner 2026-08-05, item 4) — LOW default
   }).current;
-  const { state, frames, start, stop, lastError, resetPeakHold, meterFlags } = useDspEngine(cfg, {
+  const { state, frames, start, stop, lastError, noSignal, resetPeakHold, meterFlags } = useDspEngine(cfg, {
     meter: true,
     bands: true,
     pitch: true,
@@ -1343,7 +1343,7 @@ export function MultiMeterScreen({ navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.scroll} scrollEnabled={scrollEnabled}>
         {/* Honest not-ready card (absent/spike/denied/error). */}
-        <EngineGate state={state} lastError={lastError} onRetry={start} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 
         {!micPaused && (state === 'idle' || state === 'starting') && (
           <>

@@ -19,6 +19,7 @@ import { AppState, Linking, Platform, StyleSheet, Text, View } from 'react-nativ
 import { NavigationContext } from '@react-navigation/native';
 import { GlassButton } from '../../components/GlassButton';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
+import { ApeDsp } from '../../../modules/ape-dsp';
 import { colors, fonts } from '../../theme/tokens';
 
 function openSystemSettings(): void {
@@ -51,6 +52,7 @@ export function EngineGate({
   state,
   lastError,
   onRetry,
+  noSignal,
 }: {
   state: EngineState;
   lastError?: string;
@@ -58,6 +60,10 @@ export function EngineGate({
    *  on Android, a re-request key on 'denied'). Optional so existing hosts
    *  keep compiling; without it the copy claims no in-card recovery. */
   onRetry?: () => void;
+  /** useDspEngine's `noSignal` (iPad pass 2026-10-07): the capture is RUNNING
+   *  but the microphone has never delivered a live frame. Without this card a
+   *  mic tool sat on blank readouts forever ("did not work at all"). */
+  noSignal?: boolean;
 }) {
   // iOS DENIED → SETTINGS → BACK (toddler pass 2026-09-30). The card sends the
   // user to Settings and says "then return here" — but on iOS it has no retry
@@ -83,6 +89,32 @@ export function EngineGate({
     });
     return () => sub.remove();
   }, [retryOnReturn]);
+  if (state === 'running' && noSignal) {
+    // A short line the owner can read back from a device we cannot reach
+    // (the route and the rate the native side actually opened at).
+    let detail = '';
+    try {
+      const info = ApeDsp.getInfo();
+      if (info) {
+        const rate = info.sampleRate > 0 ? `${Math.round(info.sampleRate)} Hz` : 'no sample rate';
+        detail = `Input: ${info.routeName || 'none'} · ${rate}${info.lastError ? ` · ${info.lastError}` : ''}`;
+      }
+    } catch {
+      detail = '';
+    }
+    return (
+      <View style={styles.card}>
+        <Text style={styles.title}>NO SOUND FROM THE MICROPHONE</Text>
+        <Text style={styles.body}>
+          {onRetry
+            ? 'The microphone is switched on, but no sound is reaching the app. Tap TRY AGAIN. If it keeps happening, close other apps that use the microphone (calls, recorders, video chat), then try again — restarting the device clears a stuck audio system.'
+            : 'The microphone is switched on, but no sound is reaching the app. Go back and re-open this tool. If it keeps happening, close other apps that use the microphone (calls, recorders, video chat) — restarting the device clears a stuck audio system.'}
+        </Text>
+        {detail ? <Text style={styles.detail}>{detail}</Text> : null}
+        {onRetry ? <GlassButton label="TRY AGAIN" tint="gold" height={46} fontSize={13} onPress={onRetry} /> : null}
+      </View>
+    );
+  }
   if (state === 'idle' || state === 'starting' || state === 'running') return null;
   // Android can re-show the OS mic dialog via a plain re-request (unless the
   // user chose "Don't ask again" — then the request resolves denied instantly
@@ -156,6 +188,7 @@ const styles = StyleSheet.create({
   },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber },
   body: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSecondary },
+  detail: { fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15, color: colors.textSecondary, opacity: 0.8 },
   actions: { flexDirection: 'row', gap: 10, marginTop: 6 },
   actionFlex: { flex: 1 },
 });

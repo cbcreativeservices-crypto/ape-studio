@@ -27,6 +27,7 @@ import {
   tileSpan,
   trophyViewerSize,
 } from '../src/theme/tablet.ts';
+import { NO_SIGNAL_MS, noSignalVerdict } from '../src/features/tools/engine/noSignal.ts';
 import { GRID_GAP, HUB_MAX_CONTENT_W, TABLET_FIT_SLACK, TILE_FIT_SLACK, hubColumnsFor, hubContentMaxW, tileWidthFor } from '../src/screens/tools/hubGrid.ts';
 
 const read = (f: string) => readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
@@ -164,7 +165,8 @@ const WIDENED: Array<[string, RegExp]> = [
   ['src/screens/lab/AudioLearningScreen.tsx', /cardColumn, wide\]/],
   ['src/screens/lab/EarLabScreen.tsx', /cardColumn, wide\]/],
   ['src/screens/lab/LabCategoryScreen.tsx', /cardColumn, wide\]/],
-  ['src/screens/lab/miking/MikingHubScreen.tsx', /cardColumn, wide, /],
+  // The Miking hub is NOT here: src/screens/lab/miking is being restructured
+  // by another session (2026-10-07) and must not be touched from this branch.
   ['src/screens/lab/calc/CalcLabScreen.tsx', /cardColumn, wide\]/],
   ...['amp/AmpLabHomeScreen', 'cymatics/CymaticsHomeScreen', 'digital/DigitalLabHomeScreen', 'eq/EqLabHomeScreen', 'gain/GainLabHomeScreen', 'meter/MeterLabHomeScreen', 'wave/WaveLabHomeScreen', 'eartraining/EarTrainingLabScreen'].map(
     (f) => [`src/screens/lab/${f}.tsx`, /cardColumn, wide/] as [string, RegExp],
@@ -196,7 +198,7 @@ test('menus spend the width on columns, not on stretched rows', () => {
   ];
   for (const f of grids) assert.match(read(f), /<TabletGrid /, `${f}: a wide menu needs its columns`);
   // Tile menus gain a fourth column once the window is landscape-wide.
-  for (const f of ['src/screens/lab/EarLabScreen.tsx', 'src/screens/lab/miking/MikingHubScreen.tsx']) {
+  for (const f of ['src/screens/lab/EarLabScreen.tsx']) {
     const s = read(f);
     assert.match(s, /tileQuarter: \{ width: '24%' \}/);
     assert.match(s, /style=\{tablet \? tabletTile : styles\.tileHalf\}/);
@@ -229,4 +231,50 @@ test('iOS capture: the core runs at the rate the mic tap delivers, and a dead in
   assert.ok(start.indexOf('core.configureSampleRate(sampleRate)') > start.indexOf('let format = input.inputFormat(forBus: 0)'));
   // The generator no longer re-scales a running capture to the session's rate.
   assert.match(s, /let sr = running && sampleRate > 0 \? sampleRate : \(session\.sampleRate > 0 \? session\.sampleRate : 48_000\)/);
+  const gen = s.slice(s.indexOf('private func startGeneratorOutput()'), s.indexOf('private var genRenderPulls'));
+  assert.ok(gen.indexOf('let sr = running && sampleRate > 0') > 0);
+  assert.ok(gen.indexOf('let sr = running && sampleRate > 0') < gen.indexOf('core.configureSampleRate(sr)'));
+});
+
+// ── 3b. Audio tools — a mic that never delivers is SAID, not silent (OTA) ──
+
+test('no-signal verdict: only after NO_SIGNAL_MS of running with no live frame', () => {
+  assert.ok(NO_SIGNAL_MS >= 4000, 'must outlast two turns of the 2 s native recovery watchdog');
+  assert.ok(NO_SIGNAL_MS <= 6000, 'a dead mic must not sit unexplained for long');
+  const t0 = 1_000_000;
+  assert.equal(noSignalVerdict(t0, t0 + 100, false), false);
+  assert.equal(noSignalVerdict(t0, t0 + NO_SIGNAL_MS - 1, false), false);
+  assert.equal(noSignalVerdict(t0, t0 + NO_SIGNAL_MS, false), true);
+  assert.equal(noSignalVerdict(t0, t0 + 60_000, true), false, 'one live frame clears it for the run');
+  assert.equal(noSignalVerdict(0, t0, false), false, 'not running, no verdict');
+});
+
+test('useDspEngine exposes noSignal, checks until the first live frame, resets per start', () => {
+  const e = read('src/features/tools/engine/useDspEngine.ts');
+  const block = e.slice(e.indexOf('const [noSignal, setNoSignal] = useState(false);'), e.indexOf('return {\n    state,'));
+  assert.ok(block.length > 0);
+  assert.match(block, /if \(state !== 'running'\) \{\n\s*setNoSignal\(false\);/);
+  assert.match(block, /if \(frameIsLive\(m\)\) \{\n\s*setNoSignal\(false\);\n\s*clearInterval\(id\);/);
+  assert.match(block, /noSignalVerdict\(since, Date\.now\(\), false\)/);
+  assert.match(block, /return \(\) => clearInterval\(id\);/);
+  assert.match(e, /\n    noSignal,\n/);
+});
+
+test('EngineGate states a silent mic plainly, with TRY AGAIN, only while running', () => {
+  const g = read('src/screens/tools/EngineGate.tsx');
+  const at = g.indexOf("if (state === 'running' && noSignal) {");
+  assert.ok(at > 0);
+  assert.ok(at < g.indexOf("if (state === 'idle' || state === 'starting' || state === 'running') return null;"));
+  assert.match(g, /NO SOUND FROM THE MICROPHONE/);
+  assert.match(g, /onRetry \? <GlassButton label="TRY AGAIN"/);
+});
+
+/** Every live MIC tool hands the verdict to its gate. */
+const MIC_TOOLS = ['SplMeter', 'Spectrogram', 'Rta', 'MultiMeter', 'Waveform', 'Rt60', 'FrequencyCounter'];
+test('every live mic tool wires noSignal into EngineGate', () => {
+  for (const t of MIC_TOOLS) {
+    const s = read(`src/screens/tools/${t}Screen.tsx`);
+    assert.match(s, /lastError, noSignal[,}\s]/, `${t}: destructures noSignal`);
+    assert.match(s, /<EngineGate state=\{state\} lastError=\{lastError\} onRetry=\{start\} noSignal(=\{noSignal\})? \/>/, `${t}: hands it to the gate`);
+  }
 });

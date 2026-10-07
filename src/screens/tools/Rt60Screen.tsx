@@ -256,7 +256,7 @@ function DecayCurve({ curveDb, stepSec }: { curveDb: number[]; stepSec: number }
 export function Rt60Screen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('rt60');
   const insets = useSafeAreaInsets();
-  const { state, frames, start, stop, lastError } = useDspEngine({}, { meter: true });
+  const { state, frames, start, stop, lastError, noSignal } = useDspEngine({}, { meter: true });
   const [rt60, setRt60] = useState<Rt60Frame | null>(null);
   const [justSaved, setJustSaved] = useState(false);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -515,6 +515,8 @@ export function Rt60Screen({ navigation }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll}>
+        {/* Running, but the mic never delivered a frame (iPad pass 2026-10-07). */}
+        {noSignal ? <EngineGate state={state} lastError={lastError} onRetry={start} noSignal /> : null}
         {state === 'absent' || state === 'spike' || state === 'denied' || state === 'error' ? (
           <EngineGate state={state} lastError={lastError} onRetry={start} />
         ) : showResults && broadband ? (

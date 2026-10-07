@@ -109,7 +109,7 @@ const fmtDb = (v: number | undefined | null) =>
 export function WaveformScreen({ navigation }: Props) {
   const { help, helpAll, sheet } = useToolHelp('waveform');
   const insets = useSafeAreaInsets();
-  const { state, frames, start, stop, lastError, meterFlags } = useDspEngine(
+  const { state, frames, start, stop, lastError, noSignal, meterFlags } = useDspEngine(
     { waveformEnabled: true },
     { meter: true, waveform: true },
   );
@@ -628,7 +628,7 @@ export function WaveformScreen({ navigation }: Props) {
         {/* Honest not-ready states (absent / spike / denied / error). The
             gate's own TRY AGAIN is the retry — this screen used to add a second
             one under it, so 'error' showed two identical keys (2026-09-30). */}
-        <EngineGate state={state} lastError={lastError} onRetry={start} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 
         {/* Opens straight into the live oscilloscope (auto-start). */}
         {!micPaused && (state === 'idle' || state === 'starting') ? (

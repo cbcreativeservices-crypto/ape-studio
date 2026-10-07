@@ -833,7 +833,7 @@ export function RtaScreen({ navigation }: Props) {
   const [weighting, setWeighting] = useState<Weighting>('Z');
   const fraction = fractionFor(mode); // what the ENGINE is banding at (save path)
 
-  const { state, frames, start, stop, lastError, resetPeakHold, meterFlags } = useDspEngine(cfg, {
+  const { state, frames, start, stop, lastError, noSignal, resetPeakHold, meterFlags } = useDspEngine(cfg, {
     meter: true,
     bands: true,
   });
@@ -1416,7 +1416,7 @@ export function RtaScreen({ navigation }: Props) {
       >
         {/* WELL — reading only. Honest not-ready card (absent/spike/denied/
             error) renders nothing when the engine is usable. */}
-        <EngineGate state={state} lastError={lastError} onRetry={start} />
+        <EngineGate state={state} lastError={lastError} onRetry={start} noSignal={noSignal} />
 
         {/* Opens straight into the live tool (auto-start); a brief starting note
             bridges the mic warm-up instead of a redundant intro screen. */}
