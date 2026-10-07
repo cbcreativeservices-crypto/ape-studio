@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 15:17 · ccode · 3ebadc3b
+changed: Merge remote-tracking branch 'origin/review-labs12' into worktree-agent-a5e1f91299a3e9800
+affects other side: nothing (client-only Miking Labs 1–2 review merged onto final-lab; handoff + CORRECTIONS_LOG conflicts kept both sides; not published)
+needs: nothing
+
+
 ### 2026-10-07 15:08 · ccode · 20b65cd4
 changed: Merge remote-tracking branch 'origin/review-lab5-ensemble' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Lab 5 ensemble review merged onto final-lab; handoff conflict kept both entries; not published)
