@@ -226,7 +226,7 @@ export const E09_SETUPS: EnsembleSetup[] = withWords([
     singles: singles(VOCAL_MIC),
     mics: 'A supercardioid vocal dynamic on a boom stand.',
     start: 'Within about 10 cm of the lips, on the mouth’s axis; the wedge on the floor in front, facing back at the singer — toward the mic’s rejection.',
-    line: 'The closest mic on the stage, so the voice stays ahead of the band. A supercardioid rejects most well off its back, not straight behind: aim it with the wedge in mind.',
+    line: 'Right at the lips, so the quietest source on the stage stays ahead of the band. A supercardioid rejects most well off its back, not straight behind: aim it with the wedge in mind.',
     roles: 'To the PA and the singer’s wedge — with no loud backing in that wedge.',
     core: true,
     view: 'section',

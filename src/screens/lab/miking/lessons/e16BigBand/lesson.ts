@@ -38,7 +38,7 @@ const pages: LessonPages = {
     title: 'Placement Studio',
     goal: 'Start from a setup and move the main pair yourself — closer, farther, higher — and see how the reeds and the rear brass trade places.',
     credit: { scenarios: ['bb.place.1', 'bb.place.2', 'bb.31', 'bb.rec.2'], interactive: 'twoZones', note: 'Rest the pair’s centre, clear of the band, in two different recommended starting points, and answer the four checks. The worked example earns nothing on its own.' },
-    takeaway: 'Close to the front row the reeds are prominent and the rear brass distant; a high, forward view evens the rows. Compare at matched level, one change at a time; the band’s balance comes first.',
+    takeaway: 'Close to the front row the reeds are prominent and the rear brass distant; a higher view, a little farther out in front, evens the rows. Compare at matched level, one change at a time; the band’s balance comes first.',
   },
   context: {
     title: 'Live sound and recording',
@@ -74,7 +74,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A pair sits close to the front row. How do the rows tend to sound?',
     options: ['The reeds prominent, the rear brass distant', 'The trumpets loudest, the saxes buried', 'All three rows heard in exact balance together'],
     correct: 'The reeds prominent, the rear brass distant',
-    explain: 'Close to the front row, the saxes are much nearer than the trumpets at the back. A higher, more forward view changes that relationship.',
+    explain: 'Close to the front row, the saxes are much nearer than the trumpets at the back. A higher view, a little farther out in front, changes that relationship.',
     why: {
       'The trumpets loudest, the saxes buried': 'From close in front, the saxes are nearest — they come forward.',
       'All three rows heard in exact balance together': 'The rows sit at different distances; the pair hears that.',
@@ -183,7 +183,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'In the pair, the reeds are loud and the trumpets far away. First change?',
     options: ['Raise the pair and move it back a little', 'Add a mic on each trumpet straight away', 'Turn the whole band down at the desk'],
     correct: 'Raise the pair and move it back a little',
-    explain: 'A higher, more forward view evens the distances to the rows. Change one thing at a time, compared at matched level — supports only for what is still missing.',
+    explain: 'A higher view, a little farther out in front, evens the distances to the rows. Change one thing at a time, compared at matched level — supports only for what is still missing.',
     why: {
       'Add a mic on each trumpet straight away': 'Spots first hide a placement problem with more channels.',
       'Turn the whole band down at the desk': 'Level changes every row equally; the distances still differ.',
@@ -205,10 +205,10 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bb.rec.2',
     page: 'placement',
-    prompt: 'FROM EARLIER · Why do the trumpets stand on a riser?',
+    prompt: 'FROM EARLIER · Why are the trumpets up on the highest riser?',
     options: ['So their bells clear the rows in front', 'So their mics can be on the floor', 'So the trombones can hear them less'],
     correct: 'So their bells clear the rows in front',
-    explain: 'On a short riser, standing, the trumpets play over the seated trombones and saxes — and a main pair from an elevated view hears them more evenly with the rows.',
+    explain: 'On the highest riser — seated in many bands, standing in others, as drawn here — the trumpets play over the trombones and saxes in front — and a main pair from an elevated view hears them more evenly with the rows.',
     why: {
       'So their mics can be on the floor': 'Their mics follow the bells, up on the riser.',
       'So the trombones can hear them less': 'The trombones still hear them; the bells clear the heads in front.',
@@ -517,7 +517,7 @@ export const E16_LESSON: EnsembleLesson = {
   orient: [
     { title: 'WHAT IT IS', text: 'A jazz big band: about five saxophones, four trombones, four trumpets and a rhythm section of piano, guitar, bass and drums — often with soloists, doubles and a singer.', src: 'ABSIL' },
     { title: 'WHAT IT ASKS OF YOU', text: 'Keep the sections’ blend while making solos and the rhythm section clear; control row balance, brass peaks, spill and the players’ movement.', src: 'LESSON-BIGBAND' },
-    { title: 'HOW IT IS SEATED', text: 'Commonly saxes in front, trombones behind, trumpets standing at the back on a short riser, the rhythm section to one side. In the studio, some bands sit in a horseshoe instead.', src: 'EMAC-BB' },
+    { title: 'HOW IT IS SEATED', text: 'Commonly saxes in front, trombones behind, trumpets at the back on the highest riser (seated in many bands, standing in some — drawn here standing), the rhythm section to one side. In the studio, some bands sit in a horseshoe instead.', src: 'EMAC-BB' },
     { title: 'ITS SIZE', text: 'The rows drawn here are about 4.5 m wide, the rhythm section beside them; the horseshoe about 5 m across. Typical layouts, not particular bands.', src: 'LESSON-BIGBAND' },
   ],
   sound: {
@@ -565,7 +565,7 @@ export const E16_LESSON: EnsembleLesson = {
     meet: {
       figureTitle: 'A BIG BAND',
       figureBadge: 'From above, as the conductor faces it · a typical layout, not a particular band',
-      sectionsNote: 'Saxes in front, trombones on a short riser behind them, trumpets standing at the back; piano, guitar, bass and drums on the conductor’s left. Switch SEATING for the studio horseshoe. Tap a section.',
+      sectionsNote: 'Saxes in front, trombones on a short riser behind them, trumpets at the back on the highest riser, drawn standing; piano, guitar, bass and drums on the conductor’s left. Switch SEATING for the studio horseshoe. Tap a section.',
       soundNote: 'The arcs show WHERE each instrument’s sound leaves it — never how loud. The rows at three distances; the amp, the piano lid and the kit beside them.',
       mainAt: BB_C,
     },

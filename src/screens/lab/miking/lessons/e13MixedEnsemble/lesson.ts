@@ -437,10 +437,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'mix.q.5',
     covers: 'setups',
     prompt: 'How many supports might you add at first, and why?',
-    options: ['At most two, each with a reason', 'One for each player, to be safe', 'None ever, a pair is enough'],
+    options: ['At most two, each with a reason', 'One for each player, to be safe', 'None: a pair is enough'],
     correct: 'At most two, each with a reason',
     explain: 'Start with the main array; add at most two supports at first, each for a musical reason you can state.',
-    why: { 'One for each player, to be safe': 'Many supports add overlap without a reason.', 'None ever, a pair is enough': 'Sometimes a line needs help; a stated reason earns a support.' },
+    why: { 'One for each player, to be safe': 'Many supports add overlap without a reason.', 'None: a pair is enough': 'Sometimes a line needs help; a stated reason earns a support.' },
   },
   riggingDiag('mix'),
 ];

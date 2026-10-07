@@ -378,7 +378,7 @@ function SetupCard({ s, seating }: { s: EnsembleSetup; seating: Seating }) {
 function PlotCard({ r }: { r: PlotReadout }) {
   return (
     <Card>
-      <Point title={`OPEN MICS · ${r.open}`}>{r.open > 1 ? `Each doubling of open mics costs about 3 dB of gain before feedback: ${r.open} open mics, about ${r.nom.toFixed(1)} dB less than one. Close the ones a song does not need.` : 'One open mic: the most gain before feedback this plot can have.'}</Point>
+      <Point title={`OPEN MICS · ${r.open}`}>{r.open > 1 ? `Each doubling of open mics costs about 3 dB of gain before feedback: ${r.open} open mics, about ${r.nom.toFixed(1)} dB less margin before feedback than one (MARGIN LOST). Close the ones a song does not need.` : 'One open mic: the most gain before feedback this plot can have.'}</Point>
       {r.mics.length ? (
         <Point title="WHAT ELSE EACH CLOSE MIC HEARS">{r.mics.map((m) => spillWords(m)).join(' ')}</Point>
       ) : null}
@@ -424,7 +424,7 @@ export function EnsembleSetups(p: PageProps) {
     ? [
         { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
         { k: 'OPEN MICS', v: `${plot.open}`, flex: 1 },
-        { k: 'NOM COST', v: plot.open > 1 ? `${plot.nom.toFixed(1)} dB` : '0 dB', flex: 1 },
+        { k: 'MARGIN LOST', v: plot.open > 1 ? `${plot.nom.toFixed(1)} dB` : '0 dB', flex: 1 },
         { k: 'LOOKED AT', v: `${seenCore} / ${core.length}`, flex: 1 },
       ]
     : [

@@ -83,13 +83,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'bd.meet.2',
     page: 'meet',
-    prompt: 'Why is the vocal mic usually the closest mic on a band stage?',
+    prompt: 'Why does the vocal mic sit right at the singer’s lips?',
     options: ['The voice is the quietest source there', 'Vocal mics only work right at the lips', 'The singer moves less than the players'],
     correct: 'The voice is the quietest source there',
     explain: 'Drums and amps are far louder than a voice. A close, directional vocal mic keeps the voice well ahead of everything else that reaches it.',
     why: {
       'Vocal mics only work right at the lips': 'They work at other distances too — the band would just be louder in them.',
-      'The singer moves less than the players': 'Singers often move more; closeness is about level against the band.',
+      'The singer moves less than the players': 'Singers often move more; closeness is about level against the band. (The kick, snare and amp mics sit just as close to their own, much louder, sources.)',
     },
   },
   {
@@ -486,7 +486,7 @@ const diagnostic: DiagnosticItem[] = [
     prompt: 'Which is the quietest source on a band stage?',
     options: ['The singer’s voice', 'The drum kit', 'The guitar amp, close up'],
     correct: 'The singer’s voice',
-    explain: 'The voice is far quieter than the kit and the amps — so its mic is the closest.',
+    explain: 'The voice is far quieter than the kit and the amps — so its mic goes right at the lips, where the voice is loudest against the band.',
     why: { 'The drum kit': 'The kit is usually the loudest thing on the stage.', 'The guitar amp, close up': 'An amp is set loud enough to compete with the kit.' },
   },
   {
@@ -570,7 +570,7 @@ export const E09_LESSON: EnsembleLesson = {
     stages: [
       { title: 'The loud sources', text: 'The kit radiates from every head and cymbal at once; the guitar and bass from their amps, along each speaker’s axis.' },
       { title: 'Where they point', text: 'An amp’s highs beam along its axis, its lows spread round; turning an amp changes which mics hear it — before any mic goes up.' },
-      { title: 'The quietest source', text: 'The voice is the quietest thing on the stage: its mic is the closest, aimed so the stage reaches its back.' },
+      { title: 'The quietest source', text: 'The voice is the quietest thing on the stage: its mic goes right at the lips, aimed so the stage reaches its back.' },
     ],
     attack: 'Stick and pick attacks reach a close mic first and clearest; the same attacks reach every other open mic a little later, as bleed.',
     body: 'The sustained band sound blends in the room: the overheads and room mics hear the blend; close mics hear one source and the rest as bleed. Tendencies — bands and rooms vary.',

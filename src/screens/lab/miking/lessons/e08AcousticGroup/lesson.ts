@@ -70,7 +70,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'ac.meet.1',
     page: 'meet',
-    prompt: 'Where does a mic aimed straight into a guitar’s sound hole tend to sound?',
+    prompt: 'How does a mic aimed straight into a guitar’s sound hole tend to sound?',
     options: ['Boomy, heavy in the low end', 'Thin, with little of the body', 'Exactly like the guitar in the room'],
     correct: 'Boomy, heavy in the low end',
     explain: 'Straight at the hole a mic hears the air resonance and sounds boomy; toward the 12th fret or the bridge area it is usually more balanced.',
