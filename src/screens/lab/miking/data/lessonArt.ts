@@ -156,3 +156,10 @@ ART.A12 = A12_LESSON_ART;
 /* Lab 3 (winds), the woodwinds (A06–A09b): appended so other lessons merge cleanly. */
 import { WOODWIND_ART } from '../lessons/shared/woodwinds/artRegistry';
 Object.assign(ART, WOODWIND_ART);
+/* Lab 5 (ensembles and voice), group 1 — voice I, solo: E01, E03, E07 (each lesson on its own line). */
+import { E01_ART } from '../lessons/e01LeadVocal/art';
+ART.E01 = E01_ART;
+import { E03_ART } from '../lessons/e03RapVocal/art';
+ART.E03 = E03_ART;
+import { E07_ART } from '../lessons/e07SingerInstrument/art';
+ART.E07 = E07_ART;

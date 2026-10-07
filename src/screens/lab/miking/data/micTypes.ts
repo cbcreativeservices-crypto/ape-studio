@@ -302,3 +302,6 @@ Object.assign(MIC_TYPES, FREE_REED_MIC_TYPES);
 /* Lab 3 woodwinds (A06–A09b): the clip and headset miniatures. Appended so other lessons merge cleanly. */
 import { WIND_MIC_TYPES } from '../lessons/shared/woodwinds/windMics.ts';
 Object.assign(MIC_TYPES, WIND_MIC_TYPES);
+/* Lab 5 (ensembles and voice): the voice family's mics — the handheld vocal dynamics, the screened studio condenser, the headset. Appended so other lessons merge cleanly. */
+import { VOICE_MIC_TYPES } from '../lessons/shared/voice/voiceMics.ts';
+Object.assign(MIC_TYPES, VOICE_MIC_TYPES);

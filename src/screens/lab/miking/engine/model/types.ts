@@ -248,7 +248,20 @@ export type MicPattern = PatternId | 'unstated' | 'halfCardioid';
 export type MountKind = 'stand' | 'surface' | 'clip' | 'boom';
 /** 'sideLdc': a side-address large-diaphragm condenser (its FRONT is the face
  *  of the body, not its end; `body.width` is the body's long, upright extent). */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc';
+/** 'vocalDynamic' (Lab 5): a handheld vocal dynamic — a ball grille over a
+ *  tapered handle — held in a stand clip. 'vocalLdc' (Lab 5): the side-
+ *  address condenser drawn with its BASKET centred on the front point (the
+ *  singer sings into the basket; the body hangs below). */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc';
+/**
+ * A POP SCREEN in front of the mic (Lab 5, the voice): a mesh disc `gap` mm
+ * in front of the mic's FRONT, square to its axis but tilted `tilt`° (never
+ * parallel to the capsule), held by a gooseneck clamped to the mic's own
+ * stand — so it moves with the mic and nothing floats. The disc is part of
+ * the collision assembly: a mic whose screen would touch the singer is
+ * stopped, so a screened mic simply cannot come closer than its gap allows.
+ */
+export type PopScreen = { gap: Dim; r: Dim; tilt: Dim };
 export type MicType = {
   id: string;
   label: string;
@@ -265,6 +278,8 @@ export type MicType = {
   /** A clip mount's reach from the hoop to the mic's tail (default CLIP_REACH). */
   clip?: { reach: Dim };
   surfacePartId?: PartId;
+  /** A pop screen on the mic's stand (PopScreen; Lab 5's studio vocal mic). */
+  pop?: PopScreen;
   /** INTERNAL record: the products the drawn size and specs were read from (never shown). */
   examples: { model: string; fact: string; src: SrcKey }[];
   art: MicArtId;
@@ -287,7 +302,7 @@ export type Wedge = { id: string; label: string; short: string; p: Vec3; lift: n
 /** One collision solid, flattened for the worklets (plain data only). */
 export type Solid = { partId: string; label: string; shape: Shape3; clearance: number };
 /** What `checkAssembly` needs to know about the mic (plain data). */
-export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string; reach?: number };
+export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string; reach?: number; /** A pop screen's disc (mm): `gap` ahead of the front, radius `r`. */ pop?: { gap: number; r: number } };
 /** The space a mic counts as "inside": along `axis` (default +x, absolute x)
  *  between x0 and x1 from c, within rIn of the axis. */
 export type Interior = { x0: number; x1: number; rIn: number; c: Vec3; axis?: Vec3 };
@@ -467,6 +482,13 @@ export type InstrumentModel = {
    *  long instrument framed edge to edge (the guitar family) puts its
    *  headstock in one of the two right-hand corners. */
   insetAt?: 'top' | 'bottom' | Partial<Record<VariantId, 'top' | 'bottom'>>;
+  /** The largest box a STARTING SETUPS drawing may grow to, per view (Lab 5,
+   *  the voice, 2026-10-07): a standing singer framed head to floor made a
+   *  15 cm vocal distance about 25 px on a phone, so the drawing keeps to the
+   *  head and shoulders and the stand runs on off the bottom edge, as it
+   *  does in the Placement Studio. Absent: the whole setup, stand foot and
+   *  floor included (every earlier lesson). */
+  setupFrameMax?: Partial<Record<ViewId, ViewBox>>;
   /** A rectangle per variant and main view (mm) the inset must not cover —
    *  the guitars' headstock and tuners; the glass takes the other corner
    *  when the preferred one would (DualView, labelLayout.chooseInsetCorner). */

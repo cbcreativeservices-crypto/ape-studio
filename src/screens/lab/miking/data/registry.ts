@@ -26,9 +26,9 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'percussion', num: 2, name: 'Miking Lab 2: Cymbals & Percussion', blurb: 'Place microphones on drawn percussion that is struck, shaken or scraped — the kit’s cymbals, the cajón and hand percussion, hanging metal and the gong, the mallet keyboards and the electric pianos: how each one sounds, recommended starting points, the player’s whole motion, studio or live, and what a second mic or a direct signal does. Silent; tendencies in words.', family: 'Idiophones', familyBlurb: 'Miking cymbals and percussion, from hi-hat to gong' },
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind instruments and their players — brass, saxophones, the flute, piccolo, clarinets, oboe and bassoon, the harmonica, the accordion and the pipe organ: how the lips, the reed, the air jet or the bellows start the sound, where it leaves (a bell, the first open holes, the embouchure, the reeds, the pipes), recommended starting points clear of the mouth, the hands, the bell, the slide, the keys, the breath, the bellows and the player’s movement, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Aerophones', familyBlurb: 'Miking winds and brass, from trumpet to pipe organ' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Chordophones', familyBlurb: 'Miking strings and pianos, from guitar to harp' },
+  { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: 'Place microphones on a drawn singer — standing at a stand, rapping, or singing behind a guitar or at a piano: where the voice comes from, recommended starting points measured from the lips, the pop screen, the wedge and the pattern’s null, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Voice & Ensemble', familyBlurb: 'Miking voices, from a lead vocal to a singer at the piano' },
   // Not built yet: no ready lesson, so neither the lab nor its family tile is
   // listed. Fill `blurb` and `familyBlurb` when the first lesson goes ready.
-  { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: '', family: 'Voice & Ensemble', familyBlurb: '' },
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: '', family: 'Foley, Field & Scientific', familyBlurb: '' },
   { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '', family: 'Sports & Broadcast', familyBlurb: '' },
 ];
@@ -116,6 +116,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'A10', labId: 'winds', title: 'Harmonica', subtitle: 'Acoustic on a stand, cupped through an amp, or the amp’s speaker — three paths', status: 'ready' },
   { id: 'A11', labId: 'winds', title: 'Accordion', subtitle: 'Two moving sides: one mic in front, one for each side, or a mount that moves with it', status: 'ready' },
   { id: 'A12', labId: 'winds', title: 'Acoustic Pipe Organ', subtitle: 'A room-sized instrument: the main pair, a division spot, the stream and the PA', status: 'ready' },
+  // Lab 5 (ensembles and voice), group 1 — voice I, solo: E01, E03, E07 (the shared voice family, lessons/shared/voice).
+  { id: 'E01', labId: 'ensembles', title: 'Lead Vocal', subtitle: 'Any voice, any style: about 15 cm in the studio, within 10 cm on stage — measured from the lips', status: 'ready' },
+  { id: 'E03', labId: 'ensembles', title: 'Rap and Rhythmic Vocal', subtitle: 'Fast consonants and sudden peaks: a close, steady distance, a working zone, the grille kept open', status: 'ready' },
+  { id: 'E07', labId: 'ensembles', title: 'Singer with Guitar or Piano', subtitle: 'One performer, two sources: one coherent mic, or a vocal mic and an instrument mic — each hearing both', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

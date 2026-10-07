@@ -156,3 +156,17 @@ Added 2026-10-05 by the A10–A12 builder (branch miking-a5): the two mic types 
 |---|---|---|---|
 | S-520DX | Shure, 520DX user guide: "Polar Pattern Omnidirectional"; "63 mm (2.5 in) max diameter, 82.6 mm (3 1/4 in) long"; high impedance, attached 1/4-in cable (the generic `harpBullet` type) | see `harmonica/SOURCES.md` | read in the Batch 3 research pass |
 | AKG-416 | AKG, C 416III user manual: "The C 416III is a miniature hypercardioid condenser microphone"; bass-side mount aimed at a sound hole (the generic `accMini` type) | see `accordion/SOURCES.md` | read in the Batch 3 research pass |
+
+---
+
+## 11. Mic types for Lab 5's voice (E01 lead vocal, E03 rap, E07 the singer with an instrument; `lessons/shared/voice/voiceMics.ts`)
+
+Added 2026-10-07 by the Lab 5 group 1 builder (branch lab5-g1). The full Lab 5 register is
+`lead_vocal/SOURCES.md` §0; these are the keys the shared voice mic types name (the screened
+condenser's body is the kit lessons' S-SM4-WEB row, its pattern S-SM4-UG).
+
+| Key | Source | URL | Status 2026-10-07 |
+|---|---|---|---|
+| S-SM58-UG | Shure, SM58 user guide (PDF): cardioid; "Place the microphone so that unwanted sound sources, such as monitors and loudspeakers, are directly behind it"; proximity "6 to 10 dB below 100 Hz … about 6 mm (1/4 in.)"; the placement table rows (the generic `vocDynCard` type) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 in the Batch 5 research pass |
+| N-POP | Neumann Home Studio Academy, "How to protect your microphone against pops": a pop screen "at least 10 cm (4 inches) away from the mic"; without one, "Position the mic top down, at about eye level, and angle it down toward the singer's mouth" (the `vocLdc` screen, the `vocLdcOpen` type) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 in the Batch 5 research pass |
+| DPA-VOICE | DPA, B. Brinck, "How to mic the voice: technology and characteristics": stage vocals "within 10 cm", peaks "above 135 dB", "the high frequency from the voice is very directional" (the `vocHeadset` type) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 in the Batch 5 research pass |

@@ -634,9 +634,36 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 10:21 · ccode · 6d78298b
+changed: Merge remote-tracking branch 'origin/lab5-g1' into HEAD
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-07 09:13 · ccode · f404a35f
 changed: feat(lab): Mixing Guides — 50 music styles on one written template (hidden until approved)
 affects other side: nothing (client-only: a new members-only lab, hidden on store builds by MIXING_PUBLIC = false; progress is device-local under ape:mixingGuides:v1, no server calls)
+### 2026-10-07 10:19 · ccode · 7e797b4f
+changed: docs: Lab 5 group 1 corrections, owner-review defaults and 412x915 captures
+affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
+needs: nothing
+
+
+### 2026-10-07 10:19 · ccode · 0e808394
+changed: Miking Lab 5 group 1: E01 Lead Vocal, E03 Rap Vocal, E07 Singer with Guitar or Piano
+affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
+needs: nothing
+
+
+### 2026-10-07 10:19 · ccode · 37bbc07b
+changed: Miking Lab 5: the shared voice family (frame V, the singer, voice mics)
+affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
+needs: nothing
+
+
+### 2026-10-07 10:19 · ccode · b08bcf20
+changed: Miking engine: pop screen on the mic stand, setup frame cap, vocal mic drawings
+affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
 needs: nothing
 
 

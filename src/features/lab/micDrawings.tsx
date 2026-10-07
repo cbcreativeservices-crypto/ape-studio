@@ -900,10 +900,42 @@ export function SideLdcMic({ cross, len, tint }: { cross: number; len: number; t
   );
 }
 
+/**
+ * HANDHELD VOCAL DYNAMIC for the Miking Labs (Lab 5, the voice): the same
+ * ball-grille handheld as above, on the Miking convention — the grille's
+ * FRONT at the origin (not its centre), the handle toward +y, `r` the
+ * grille's radius, `len` the overall length front to tail.
+ */
+export function VocalDynamicMic({ r, len, tint }: { r: number; len: number; tint?: string }) {
+  return (
+    <Group>
+      <HandheldMic x={0} y={r} angleDeg={0} grilleR={r} bodyLen={Math.max(r, len - 1.72 * r)} />
+      {tint ? <Circle cx={0} cy={r} r={r} style="stroke" strokeWidth={Math.max(0.5, r * 0.06)} color={tint} opacity={0.95} /> : null}
+    </Group>
+  );
+}
+
+/** The side-address condenser for a VOICE (Lab 5): the same drawing, moved so
+ *  the CENTRE OF ITS BASKET — where the capsule is — sits on the mic's front
+ *  point (the singer sings into the basket; the body hangs below it). Seen
+ *  from above it is the plain drawing. */
+export function VocalLdcMic({ cross, len, tint }: { cross: number; len: number; tint?: string }) {
+  const tall = cross > len * 1.8;
+  return (
+    <Group transform={tall ? [{ translateX: -0.29 * cross }] : []}>
+      <SideLdcMic cross={cross} len={len} tint={tint} />
+    </Group>
+  );
+}
+
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). */
-export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc'; r: number; len: number; cross?: number; tint?: string }) {
+export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc'; r: number; len: number; cross?: number; tint?: string }) {
   switch (art) {
+    case 'vocalDynamic':
+      return <VocalDynamicMic r={r} len={len} tint={tint} />;
+    case 'vocalLdc':
+      return <VocalLdcMic cross={cross ?? r * 2} len={len} tint={tint} />;
     case 'sideLdc':
       return <SideLdcMic cross={cross ?? r * 2} len={len} tint={tint} />;
     case 'boundary':
