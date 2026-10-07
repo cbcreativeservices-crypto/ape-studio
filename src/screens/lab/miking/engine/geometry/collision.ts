@@ -358,7 +358,12 @@ export function nearestClear(scene: CompiledScene, pose: MicPose, body: MicBody,
     for (const u of dirs) {
       const p = clampP(add(pose.p, scale(u, d)), bounds);
       const cand: MicPose = { p, az: pose.az, el: pose.el };
-      if (!checkAssembly(scene, cand, body)) return cand;
+      if (!checkAssembly(scene, cand, body)) {
+        // A little further the same way, when that is clear too: a mic left
+        // touching the part could not be turned (every aim step "blocked").
+        const roomy: MicPose = { p: clampP(add(pose.p, scale(u, d + 30)), bounds), az: pose.az, el: pose.el };
+        return checkAssembly(scene, roomy, body) ? cand : roomy;
+      }
     }
   }
   return null;

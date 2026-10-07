@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 16:04 · ccode · 6602602d
+changed: fix(miking): labels keep off the drawn player exactly and keep a little air; the hand drums' worked example marks its piece
+affects other side: nothing (app-only drawing/layout; 5d4ac01b before it — content frames, level-of-detail labels, marimba resonators — is app-only too; Miking fix pass on a worktree branch, not pushed, nothing published)
+needs: nothing
+
+
 ### 2026-10-06 15:04 · ccode · 781b3a27
 changed: fix(miking): the player's head is drawn as part of the figure, not the line-art head icon
 affects other side: nothing (app-only drawing; the avatar head-icon spec is unchanged; 82f5537a before it — Miking faders preview/commit + view keys — is app-only too)

@@ -391,9 +391,11 @@ function facePath(at: Pt): SkPath {
 function faceMass(at: Pt): SkPath {
   const P = (u: number, v: number) => [at.u + u, at.v + v] as const;
   const f = facePath(at);
-  f.lineTo(...P(-150, 92));
-  f.quadTo(...P(-190, 0), ...P(-176, -96));
-  f.quadTo(...P(-150, -168), ...P(-64, -160));
+  // Close it a short way behind the face (the cheek and the jaw), so the
+  // head stays a profile beside the hands and clear of the parts' names.
+  f.lineTo(...P(-122, 90));
+  f.quadTo(...P(-136, 20), ...P(-126, -60));
+  f.quadTo(...P(-112, -150), ...P(-64, -160));
   f.close();
   return f;
 }
