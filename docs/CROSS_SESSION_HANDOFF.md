@@ -651,6 +651,11 @@ changed: miking labs 1-2: expert review of the restructured pages (setups, quick
 affects other side: nothing (client-only miking lab data and engine; no backend, no SQL)
 needs: nothing
 
+### 2026-10-07 14:49 · ccode · be8c54ee
+changed: miking labs 3-4 review: setups drawn as a pro starts them; quick check asks each idea once
+affects other side: nothing (app-side Miking lesson data and engine only; no backend, schema or store change; Miking stays hidden on store builds)
+needs: nothing
+
 ### 2026-10-07 14:42 · ccode · aae5f01c
 changed: review(lab5-ensemble): audio + learning review of E08–E16, fixes
 affects other side: nothing (client-only lesson copy, one shared readout label and a test; Miking stays hidden on store builds, not published)

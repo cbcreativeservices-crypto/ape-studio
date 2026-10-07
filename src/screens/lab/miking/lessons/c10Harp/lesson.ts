@@ -9,7 +9,7 @@
  */
 import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, PageContent, SourcePageId, SetupReason, SetupTask, Symptom, Wedge } from '../../engine/model/types.ts';
 import { HARP_MODEL } from './geometry.ts';
-import { HARP_ZONES } from './model.ts';
+import { aimedAt, HARP_ZONES, LV } from './model.ts';
 import { HARP_COPY } from './copy.ts';
 
 const pages: LessonPages = {
@@ -657,6 +657,11 @@ export const C10_LESSON: Lesson = {
   model: HARP_MODEL,
   micTypeIds: ['sdcCard', 'miniOmni'],
   zones: HARP_ZONES,
+  // The lever harp's TWO MICS (review 2026-10-07, CORRECTIONS_LOG RV34-03):
+  // its two-mic page draws the pair on the pedal harp only, so the lever
+  // harp showed the pair's zone as ONE mic. The second mic is the lower spot
+  // the zone itself names, placed as the pedal pair's lower mic is.
+  setupPairs: [{ label: 'An upper and a lower spot, about 30 cm from the soundboard', A: { zone: 'lv.pair', typeId: 'sdcCard', pattern: 'cardioid' }, B: { zone: 'lv.pair', typeId: 'sdcCard', pattern: 'cardioid', pose: aimedAt({ x: LV.boardAt(0.3)[0] + LV.n[0] * 300, y: LV.boardAt(0.3)[1] + LV.n[1] * 300, z: 300 }, { x: LV.boardAt(0.3)[0], y: LV.boardAt(0.3)[1], z: 0 }) }, variants: ['lever'], line: 'Two separate views of the board for the upper and lower registers when one mic misses part of the harp. Check the pair together in mono.' }],
   pages,
   scenarios,
   symptoms,

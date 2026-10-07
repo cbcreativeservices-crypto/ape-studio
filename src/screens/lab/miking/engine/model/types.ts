@@ -416,8 +416,12 @@ export type LessonPages = { [K in Exclude<PageId, 'meet' | 'setups'>]: PageConte
 /** A two-mic STARTING SETUP a lesson gives itself, where its two-mic page's
  *  pair is not in its copy (`copy.twoMic`): two zones (each mic at its
  *  zone's start pose) — the lesson's own researched starting points. Added
- *  2026-10-06; every one is logged in docs/labs/miking/CORRECTIONS_LOG.md. */
-export type SetupPairData = { label: string; A: { zone: string; typeId?: string; pattern?: MicPattern }; B: { zone: string; typeId?: string; pattern?: MicPattern; polarity?: 1 | -1 }; variants?: readonly VariantId[]; line?: string };
+ *  2026-10-06; every one is logged in docs/labs/miking/CORRECTIONS_LOG.md.
+ *  `pose` (2026-10-07): a zone that names TWO mics itself ("one over the
+ *  treble and one over the bass", "two cardioids 17 cm apart") gives the
+ *  mic its own pose inside that zone — drawn without the zone's start.
+ *  `more`: drawn as ANOTHER START (both mics), never as the TWO MICS role. */
+export type SetupPairData = { label: string; A: { zone: string; typeId?: string; pattern?: MicPattern; pose?: MicPose }; B: { zone: string; typeId?: string; pattern?: MicPattern; polarity?: 1 | -1; pose?: MicPose }; variants?: readonly VariantId[]; line?: string; more?: boolean };
 
 export type ViewBox = { u0: number; u1: number; v0: number; v1: number };
 export type InstrumentModel = {

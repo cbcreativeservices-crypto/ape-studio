@@ -49,6 +49,9 @@ const start = (z: Z, variant: string, gen: Iterable<MicPose>): DocumentedZone =>
 const cands = (P: HornPose, tilt: number, side: Vec3, dists: number[], spread: number, at: Vec3 = O) =>
   around(O, norm(add(scale(P.axis, Math.cos((tilt * Math.PI) / 180)), scale(side, Math.sin((tilt * Math.PI) / 180)))), dists, spread, at, P.axis);
 const STAND = ['instDynCard', 'sdcCard'];
+/** The flugelhorn's one-mic start is its 60–120 cm studio view: the small
+ *  condenser first there (review 2026-10-07, CORRECTIONS_LOG RV34-05). */
+const FAR_FIRST = ['sdcCard', 'instDynCard'];
 
 /* ── trumpet ── */
 const TP_OFF: Z = {
@@ -168,7 +171,7 @@ const FH_FAR: Z = {
   distance: { min: 600, max: 1200 },
   cone: { min: 5, max: 30, toward: UP, prov: ill('off axis, above or level') },
   aim: { maxOffAxis: 30, prov: ill('aimed at the bell’s edge: within 30° of the bell') },
-  requires: { variant: 'flugelhorn', micTypeIds: STAND },
+  requires: { variant: 'flugelhorn', micTypeIds: FAR_FIRST },
   draw: draw(FH, 5, 30, 600, 1200, UP),
   tendency: 'The rounded flugelhorn with the room around it — sustained body and a soft attack. More spill: it suits a quiet, good room.',
   checks: ['The full range and the sustain, not one held note', 'Room and spill against the closer view', 'The bell’s angle: the player may hold it lower'],

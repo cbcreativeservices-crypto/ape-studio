@@ -137,7 +137,9 @@ export const A11_ZONES: DocumentedZone[] = [
     bandProv: ill('about 18 in (457 mm) ± 30 mm: the lab’s band'),
     cone: { min: 0, max: 35, prov: ill('in front of the grille: within 35° of its normal (the lab’s band)') },
     aim: { maxOffAxis: 20, prov: ill('facing the grille: within 20° is the lab’s tolerance') },
-    requires: { micTypeIds: STAND },
+    // Its label names a dynamic (the research's test used one): the setup
+    // draws the small dynamic, not the condenser (review 2026-10-07, RV34-06).
+    requires: { micTypeIds: ['smallDynCard', 'sdcCard'] },
     start: { p: v3(457, 0, 0), az: 0, el: 0 },
     draw: conePolys(A0, FRONT_N, null, 430, 490, 0, 35),
     tendency: 'The treble side forward, with the bass side farther away and quieter — a one-mic trial from the treble’s point of view. Check the bass part is still heard if the music needs it.',

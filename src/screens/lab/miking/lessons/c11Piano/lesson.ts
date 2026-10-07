@@ -15,7 +15,7 @@ import type { DiagnosticItem, Lesson, MikingScenario, OrderTask, LessonPages, Pa
 import { micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { FLOOR_Y } from '../shared/piano/pianoSpec.ts';
 import { PIANO_MODEL } from './geometry.ts';
-import { GB, PIANO_ZONES } from './model.ts';
+import { GB, PIANO_ZONES, UP } from './model.ts';
 import { PIANO_COPY } from './copy.ts';
 
 const pages: LessonPages = {
@@ -685,6 +685,38 @@ export const C11_LESSON: Lesson = {
   model: PIANO_MODEL,
   micTypeIds: ['sdcCard', 'instDynCard'],
   zones: PIANO_ZONES,
+  // Review 2026-10-07 (CORRECTIONS_LOG RV34-01, RV34-02): two starting points
+  // that ARE pairs are drawn with both mics. The upright's split pair ("one
+  // mic over the treble strings and one over the bass") is its TWO MICS —
+  // the bass mic mirrors the treble one across the keyboard. The grands'
+  // stereo pair is two cardioids 17 cm apart, 110° between them, the pair
+  // tilted about 45° down toward the pianist (each capsule's axis: 64° to
+  // its side of the keyboard, 24° below level) — drawn as ANOTHER START.
+  setupPairs: [
+    {
+      label: 'A split pair just over the open top',
+      A: { zone: 'up.top', typeId: 'sdcCard', pattern: 'cardioid' },
+      B: { zone: 'up.top', typeId: 'sdcCard', pattern: 'cardioid', pose: { p: { x: -80, y: UP.yTop - 120, z: -380 }, az: 0, el: -70 } },
+      variants: ['upright', 'uprightFront'],
+      line: 'One mic over the treble strings, one over the bass: a direct, articulate view of the whole keyboard. Check the pair together in mono.',
+    },
+    {
+      label: 'A stereo pair over the strings, angled down toward the pianist',
+      A: { zone: 'gp.ortf', typeId: 'sdcCard', pattern: 'cardioid', pose: { p: { x: 600, y: -300, z: 85 }, az: 63.6, el: -23.9 } },
+      B: { zone: 'gp.ortf', typeId: 'sdcCard', pattern: 'cardioid', pose: { p: { x: 600, y: -300, z: -85 }, az: -63.6, el: -23.9 } },
+      variants: ['grand'],
+      line: 'Two cardioids 17 cm apart, 110° between them, about 30 cm over the strings: a direct, balanced stereo picture of the whole keyboard. Check it in mono too.',
+      more: true,
+    },
+    {
+      label: 'A stereo pair over the strings, angled down toward the pianist',
+      A: { zone: 'bg.ortf', typeId: 'sdcCard', pattern: 'cardioid', pose: { p: { x: 400, y: -300, z: 85 }, az: 63.6, el: -23.9 } },
+      B: { zone: 'bg.ortf', typeId: 'sdcCard', pattern: 'cardioid', pose: { p: { x: 400, y: -300, z: -85 }, az: -63.6, el: -23.9 } },
+      variants: ['baby'],
+      line: 'The same compact pair on a smaller instrument: two cardioids 17 cm apart, 110° between them. Check it in mono too.',
+      more: true,
+    },
+  ],
   pages,
   scenarios,
   symptoms,

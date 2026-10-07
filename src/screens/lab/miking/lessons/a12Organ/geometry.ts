@@ -77,7 +77,7 @@ const GREAT = divisionPoint('great');
 export const A12_ZONES: DocumentedZone[] = [
   {
     id: 'org.listen',
-    label: 'Where one search ended: the fourth pew',
+    label: 'A listening seat in the room (one case: the fourth pew)',
     band: 'One reported search, after many moves, ended about 10.7 m (35 ft) from that organ’s pipework, about 2.4 m (8 ft) up, midway between the side walls. A case study — walk and listen in your own room.',
     kind: 'sourced',
     src: 'NEU-ORGAN',

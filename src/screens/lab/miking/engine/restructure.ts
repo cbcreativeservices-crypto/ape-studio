@@ -105,7 +105,8 @@ export const RETIRED: Readonly<Record<string, readonly string[]>> = {
  * test the 'air' step MEET IT leaves out, so they are retired above too. And
  * a replacement never repeats an item the check already asks in other words
  * (M02: two items on what makes the buzz; I11b: two on the vibrato; M07a: two on where the sound leaves): these
- * MEET IT checks are passed over when a replacement is chosen.
+ * MEET IT checks count as repeats when a replacement is chosen (the same
+ * rule as `sameQuestion` below: taken only when nothing else is left).
  */
 export const QUICK_AVOID: Readonly<Record<string, readonly string[]>> = {
   M02: ['sn.snd.1'],
@@ -185,6 +186,26 @@ function asQuickItem(s: MikingScenario): DiagnosticItem {
 
 const quickCache = new WeakMap<Lesson, readonly DiagnosticItem[]>();
 
+const stemWords = (s: string): Set<string> =>
+  new Set(
+    s
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length >= 4)
+      .map((w) => w.replace(/(ing|ed|es|s)$/, '').replace(/([bdgmnpt])\1$/, '$1')),
+  );
+const overlap = (a: Set<string>, b: Set<string>): number => {
+  const both = [...a].filter((x) => b.has(x)).length;
+  const all = new Set([...a, ...b]).size;
+  return all ? both / all : 0;
+};
+/** Two items ask the same thing: their answers share most of their words,
+ *  or the question and answer together do. */
+export function sameQuestion(a: { prompt: string; correct: string }, b: { prompt: string; correct: string }): boolean {
+  return overlap(stemWords(a.correct), stemWords(b.correct)) >= 0.4 || overlap(stemWords(`${a.prompt} ${a.correct}`), stemWords(`${b.prompt} ${b.correct}`)) >= 0.35;
+}
+
 /**
  * The QUICK CHECK the learner meets: the lesson's six items, each counting
  * for the journey page built from the page it was written for; a retired
@@ -199,8 +220,24 @@ export function quickCheckOf(lesson: Lesson): readonly DiagnosticItem[] {
   const need = Math.max(0, Math.min(QUICK_CHECK_SIZE, lesson.diagnostic.length) - kept.length);
   const used = new Set(kept.map((d) => d.prompt));
   const avoid = QUICK_AVOID[lesson.id] ?? [];
-  const pool = [...scenariosOnPage(lesson, 'meet'), ...scenariosOnPage(lesson, 'setups')].filter((s) => !used.has(s.prompt) && !avoid.includes(s.id));
-  const extra = pool.slice(0, need).map(asQuickItem);
+  const pool = [...scenariosOnPage(lesson, 'meet'), ...scenariosOnPage(lesson, 'setups')].filter((s) => !used.has(s.prompt));
+  // ONE no-repeat rule (reviews 2026-10-07, labs 1–2 and 3–4): a replacement
+  // that asks the same thing as an item already in the check — by the word
+  // rule (`sameQuestion`: "the carved top, driven through the floating
+  // bridge" twice in six), or as a reviewer recorded it in QUICK_AVOID where
+  // the words differ — is taken only when nothing else is left: one idea must
+  // not count twice towards the pass.
+  const taken: { prompt: string; correct: string }[] = [...kept];
+  const fresh: MikingScenario[] = [];
+  const dupes: MikingScenario[] = [];
+  for (const s of pool) {
+    if (avoid.includes(s.id) || taken.some((d) => sameQuestion(d, s))) dupes.push(s);
+    else {
+      fresh.push(s);
+      taken.push(s);
+    }
+  }
+  const extra = [...fresh, ...dupes].slice(0, need).map(asQuickItem);
   // Keep the authored order: a replacement takes the retired item's place.
   const out: DiagnosticItem[] = [];
   let e = 0;

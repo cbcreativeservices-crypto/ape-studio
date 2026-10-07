@@ -1296,3 +1296,28 @@ The shared ensemble toolkit (`lessons/shared/ensemble/`) took both groups' addit
 | R12-A04/05 | M03, M05 | close = rim condenser; djembe on the floor had one setup | close = clip-on; distant = `dj.top.far` | the lessons' own zone words | APPLIED |
 | R12-C04 | I01a, I01c, I01e | over-and-under pair only in one setup | `setupPairs` for the other setup (same zones) | consistency | APPLIED · OWNER REVIEW (R12-A07) |
 | R12-L01 | M01, M03, M07a, M07b | quick-check / MEET IT items on the dropped air-coupling step | RETIRED; replaced from the foundations | journey §2.5 | APPLIED |
+
+## RV34 · Review of Labs 3 and 4 after the restructure (2026-10-07, branch review-labs34)
+
+Audio-engineer and learning review of the restructured pages (MEET IT, STARTING SETUPS, MICROPHONES, the Placement Studio's START FROM, the quick check). Full table: `docs/labs/reviews/REVIEW_2026_10_07_labs34.md`.
+
+| id | Lesson | Was | Now | Why | Status |
+|---|---|---|---|---|---|
+| RV34-01 | C11 upright | The split pair over the open top ("one mic over the treble strings and one over the bass") drawn as ONE mic; no TWO MICS in either upright set-up | `setupPairs`: the zone's start (treble) + its mirror across the keyboard (bass), the same height and aim — TWO MICS | The zone names two mics; a drawing default (the mirror) only | APPLIED |
+| RV34-02 | C11 grand, baby | "A stereo pair over the strings" drawn as one centred mic aimed straight at the pianist | Two cardioids 17 cm apart, 110° between their axes, the pair tilted about 45° down toward the pianist (each axis 64° to its side, 24° below level) — drawn as ANOTHER START (`setupPairs … more`); the TWO MICS role stays the treble + bass pair | The zone's own numbers (DPA-PIANO) | APPLIED |
+| RV34-03 | C10 lever | The upper-and-lower pair zone drawn as one mic; no TWO MICS (two-mic copy is pedal-only) | `setupPairs` (lever): the zone's start + the lower spot placed as the pedal pair's lower mic is | The zone names two mics | APPLIED |
+| RV34-04 | A04a, A04b (bell up) | ONE MIC drew a small dynamic about 60 cm over the bell | The zone's types reordered: large condenser first (the allowed set unchanged) — the setup, the worked example and MICROPHONES start with it | At 60 cm over a tuba or euphonium bell a working engineer starts with a large-diaphragm mic | APPLIED · OWNER: approve |
+| RV34-05 | A01 flugelhorn | ONE MIC (the 60–120 cm studio view) drew a dynamic | Small condenser first for `fh.far` | The farther studio view | APPLIED |
+| RV34-06 | A11 | "A dynamic facing the treble grille" drew a small condenser | `ac.grille` takes the small dynamic first | The card named a dynamic | APPLIED |
+| RV34-07 | C02, C04, C08 | The centre of the cone (same distance as ONE MIC) labelled CLOSE · LIVE | `SETUP_PICKS` close: none — the centre and edge stay ANOTHER START | The one-mic start already is the close stage mic; centre/edge are tone choices | APPLIED |
+| RV34-08 | C08 | The farther mic drawn alone as FARTHER BACK · STUDIO, though its words say "usually as a second mic under the close one"; no TWO MICS | `setupPairs`: dust-cap edge + farther mic; the card says the DI is the usual second channel on a stage | The lesson's own words | APPLIED |
+| RV34-09 | A08b low C | Its blend + front pair existed only for the E-flat instrument | `setupPairs` (lowc): `bcl.blend.c` + `bcl.front` (omni) | Same pair, the low-C instrument's zone | APPLIED |
+| RV34-10 | C06a, C06b | TWO MICS drew the "miniature under the strings" as a pencil condenser on a stand | The pair's mic A is the string-clip miniature (supercardioid) the zone takes | A stand mic cannot sit under the strings | APPLIED |
+| RV34-11 | (engine) quick check | A retired item's replacement could ask the same thing as a kept item (C05B: "the carved top, driven through the floating bridge" twice; C10, C05C, A10, C04, C02, C03, C12, A09a; Lab 1 M02, M06) | `quickCheckOf` skips a replacement that `sameQuestion` matches while another foundation check is left | One idea must not count twice towards 5 of 6 | APPLIED |
+| RV34-12 | A12 | ONE MIC titled "Where one search ended: the fourth pew" | "A listening seat in the room (one case: the fourth pew)" | Name the place, then the case | APPLIED |
+| RV34-13 | C09b | TWO MICS titled "A compact cardioid aimed at one area + …" | "Closer, aimed at one area of the viola + …" | Name the place, not the mic | APPLIED |
+| RV34-14 | C11 short stick | One core setup (one mic, ~15 cm, tilted clear) | — | On a loud stage a working engineer starts with two mics (treble + bass) under the short stick; the research gives one | OWNER: decide (journey §11 Q5) |
+| RV34-15 | C03 | TWO MICS = two pencil condensers on one line 11 cm apart (cover 30 cm + close 20 cm) | — | Not a two-mic setup an engineer uses (one mic in front of the other, comb filtering); RS-02 already asks whether to keep the closer row | OWNER: decide (a mic + pickup, or a researched neck-joint mic) |
+| RV34-16 | A10 acoustic | One core setup | — | The common live start (a vocal dynamic cupped with the harmonica) is not in the research | OWNER: decide |
+| RV34-17 | C06b | TWO MICS pairs one bass's under-bridge miniature with the section spot whose own card says "not one close mic per player" | — | Two contexts in one setup | OWNER: decide |
+| RV34-18 | A12 | TWO MICS "The main pair and a spot" draws the main pair as one mic | — | A setup draws at most two mics | OWNER: decide |

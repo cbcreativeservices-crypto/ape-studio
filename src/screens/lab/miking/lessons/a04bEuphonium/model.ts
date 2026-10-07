@@ -40,6 +40,11 @@ const SIDE_UP_DIR = norm(add(scale(UP.bell.axis, Math.cos(40 * (Math.PI / 180)))
 const SIDE_FRONT_DIR = norm(add(FRONT.bell.axis, v(0, 0, 0.45)));
 const FAR_DIR = norm(v(1, -0.12, 0.12));
 const ALL = ['smallDynCard', 'sdcCard', 'lbRibbon', 'lbLdc'];
+/** The same types, the large condenser first: about 60 cm above a big bell
+ *  is a distance where a working engineer starts with a large-diaphragm mic
+ *  (review 2026-10-07, CORRECTIONS_LOG RV34-04) — the setup, the worked
+ *  example and MICROPHONES draw the first type a zone takes. */
+const ABOVE_FIRST = ['lbLdc', 'sdcCard', 'lbRibbon', 'smallDynCard'];
 
 /** The player standing up: the space in front of the chair stays clear. */
 export const STAND_UP: Envelope = {
@@ -63,7 +68,7 @@ export const EUPH_ZONES: DocumentedZone[] = [
     distance: { min: 560, max: 660 },
     cone: { min: 0, max: 30, prov: ill('“above the bell”: within 30° of its axis (the lab’s drawing)') },
     aim: { maxOffAxis: 35, prov: ill('“aimed at the edge”: within 35° of the bell’s centre (an edge is ≈ 14° off it at this distance)') },
-    requires: { variant: 'up', micTypeIds: ALL },
+    requires: { variant: 'up', micTypeIds: ABOVE_FIRST },
     draw: coneDraw(UP.bell.rim, UP.bell.axis, null, 560, 660, 0, 30),
     start: poseAt(UP.bell.rim, ABOVE_DIR, 610, frontEdge(UP)),
     tendency: 'An open, rounded euphonium — sustained body, soft endings and some of the room and the section. In a noisy room or a loud band it hears a lot besides the euphonium.',

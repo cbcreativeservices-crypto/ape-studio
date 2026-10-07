@@ -55,7 +55,7 @@ const FRONT_Z: Omit<DocumentedZone, 'start'> = {
 
 const AIMED_Z: Omit<DocumentedZone, 'start'> = {
   id: 'va.aimed',
-  label: 'A compact cardioid aimed at one area',
+  label: 'Closer, aimed at one area of the viola',
   band: 'Try about 15–40 cm (6–16 in) from the bridge, aimed at the area whose sound you want — the bridge and top, an f-hole, or the end of the fingerboard.',
   kind: 'sourced',
   src: 'DPA-VLA',

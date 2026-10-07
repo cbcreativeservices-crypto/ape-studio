@@ -26,7 +26,7 @@
  * no setup is made up to fill it. `SETUP_PICKS` records the few lessons where
  * the lesson's own words choose differently from the distance rule.
  */
-import type { DocumentedZone, Lesson, MicPattern, MicPose, MicSlot, MicType, VariantId, Vec3 } from './model/types.ts';
+import type { DocumentedZone, Lesson, MicPattern, MicPose, MicSlot, MicType, SetupPairData, VariantId, Vec3 } from './model/types.ts';
 import { copyOf } from './model/copy.ts';
 import { guideFor } from './geometry/guides.ts';
 
@@ -98,6 +98,13 @@ export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'dist
   M05: { distant: ['dj.top.far'] },
   // Finger cymbals: one mic; the farther spot is the farther, roomier view.
   I06b: { distant: ['fc.B', 'fc.far'] },
+  // Guitar, steel and bass amps (review 2026-10-07, RV34-07): the one-mic
+  // start is already the close stage mic at the grille; the other close
+  // spots (centre, edge) are the same distance, a tone choice — ANOTHER
+  // START, not a "live" setup.
+  C02: { close: null },
+  C04: { close: null },
+  C08: { close: null },
 };
 
 const LIVE = /\b(live|on stage|for a stage|a loud stage|for live sound|stage)\b/i;
@@ -177,80 +184,124 @@ export function pairTitle(a: string, b: string): string {
 
 const PAIR_TAIL ='Two mics give more to blend — check the pair together in mono.';
 
-/** The TWO MICS setup first, then the lesson's other listed pairs (drawn as
- *  ANOTHER START, each a pair: a spaced overhead pair is never shown as two
- *  lone mics). */
-function pairSetups(lesson: Lesson, v: VariantId, micTypes: Record<string, MicType>, pair: PairInput | null | undefined): StartingSetup[] {
+/**
+ * The lesson's pairs in one variant (reviews 2026-10-07, labs 1–2 and 3–4,
+ * merged): its TWO MICS setup, and every other pair it lists, each drawn
+ * whole as ANOTHER START — a spaced overhead pair or a stereo pair is never
+ * shown as lone mics.
+ *
+ *   TWO MICS  1 · the lesson's own two-mic copy, 2 · the pair its family's
+ *             two-mic page uses (`pair`), 3 · the first of its `setupPairs`
+ *             not marked `more`. None where SETUP_PICKS says `pair: null`.
+ *   MORE      every other `setupPairs` entry drawable in this variant (a
+ *             `more` one always; an unmarked one only where the lesson has a
+ *             TWO MICS role — `pair: null` means one spot is usually enough).
+ */
+function pairSetups(lesson: Lesson, v: VariantId, micTypes: Record<string, MicType>, pair: PairInput | null | undefined, allowTwo: boolean): { two: StartingSetup | null; more: { setup: StartingSetup; zoneIds: string[] }[] } {
   const byId = (id?: string) => (id ? lesson.zones.find((z) => z.id === id) : undefined);
-  const C = copyOf(lesson);
-  const T = C.twoMic;
-  // 1 · the lesson's own two-mic copy. Its zones are written for one setup
-  // of the instrument; the same pair in another setup is the lesson's zones
-  // of the same name for that setup ("fret12.steel" → "fret12.twelve").
-  const a0 = byId(T?.A?.zone);
-  const token = T?.variant ?? a0?.requires?.variant ?? (a0?.requires?.variants?.length === 1 ? a0.requires.variants[0] : undefined);
-  const inV = (id?: string): DocumentedZone | undefined => {
-    const z = byId(id);
-    if (z && zoneInVariant(z, v)) return z;
-    if (id && token && token !== v && id.includes(token)) {
-      const z2 = byId(id.split(token).join(v));
-      if (z2 && zoneInVariant(z2, v)) return z2;
-    }
-    return undefined;
-  };
   let primary: StartingSetup | null = null;
-  const zA = inV(T?.A?.zone);
-  if (zA) {
-    const zB = inV(T.B?.zone);
-    if (zB || (!T.B?.zone && !!T.B?.pose && (T.variant ? T.variant === v : zoneInVariant(zA, v)))) {
-      const A: SetupMic = { ...micAt(lesson, 'A', zA, micTypes), typeId: T.A.typeId || typeForZone(lesson, zA, micTypes), pattern: T.A.pattern };
-      const B: SetupMic = zB
-        ? { ...micAt(lesson, 'B', zB, micTypes), typeId: T.B.typeId || typeForZone(lesson, zB, micTypes), pattern: T.B.pattern }
-        : { slot: 'B', typeId: T.B.typeId || lesson.micTypeIds[0], pattern: T.B.pattern, pose: T.B.pose!, zoneId: null, surfaceId: nearestSurface(lesson, v, T.B.pose!) ?? zA.refSurface, polarity: 1 };
-      const zones = zB ? [zA, zB] : [zA];
-      primary = { id: `pair:${zA.id}+${zB?.id ?? 'pose'}`, role: 'pair', variant: v, title: T.label ?? (zB ? pairTitle(zA.label, zB.label) : `${zA.label}, with a second mic`), mics: [A, B], zones, line: `${firstSentence((zB ?? zA).tendency)} ${PAIR_TAIL}` };
+  let primaryListed: SetupPairData | null = null;
+  if (allowTwo) {
+    const C = copyOf(lesson);
+    const T = C.twoMic;
+    // 1 · the lesson's own two-mic copy. Its zones are written for one setup
+    // of the instrument; the same pair in another setup is the lesson's zones
+    // of the same name for that setup ("fret12.steel" → "fret12.twelve").
+    const a0 = byId(T?.A?.zone);
+    const token = T?.variant ?? a0?.requires?.variant ?? (a0?.requires?.variants?.length === 1 ? a0.requires.variants[0] : undefined);
+    const inV = (id?: string): DocumentedZone | undefined => {
+      const z = byId(id);
+      if (z && zoneInVariant(z, v)) return z;
+      if (id && token && token !== v && id.includes(token)) {
+        const z2 = byId(id.split(token).join(v));
+        if (z2 && zoneInVariant(z2, v)) return z2;
+      }
+      return undefined;
+    };
+    const zA = inV(T?.A?.zone);
+    if (zA) {
+      const zB = inV(T.B?.zone);
+      if (zB || (!T.B?.zone && !!T.B?.pose && (T.variant ? T.variant === v : zoneInVariant(zA, v)))) {
+        const A: SetupMic = { ...micAt(lesson, 'A', zA, micTypes), typeId: T.A.typeId || typeForZone(lesson, zA, micTypes), pattern: T.A.pattern };
+        const B: SetupMic = zB
+          ? { ...micAt(lesson, 'B', zB, micTypes), typeId: T.B.typeId || typeForZone(lesson, zB, micTypes), pattern: T.B.pattern }
+          : { slot: 'B', typeId: T.B.typeId || lesson.micTypeIds[0], pattern: T.B.pattern, pose: T.B.pose!, zoneId: null, surfaceId: nearestSurface(lesson, v, T.B.pose!) ?? zA.refSurface, polarity: 1 };
+        const zones = zB ? [zA, zB] : [zA];
+        primary = { id: `pair:${zA.id}+${zB?.id ?? 'pose'}`, role: 'pair', variant: v, title: T.label ?? (zB ? pairTitle(zA.label, zB.label) : `${zA.label}, with a second mic`), mics: [A, B], zones, line: `${firstSentence((zB ?? zA).tendency)} ${PAIR_TAIL}` };
+      }
+    }
+    // 2 · the family's own two-mic page (its art), 3 · the lesson's setupPairs
+    if (!primary && pair) primary = pairFromInput(lesson, v, micTypes, pair, 'pair');
+    if (!primary) {
+      for (const sp of lesson.setupPairs ?? []) {
+        if (sp.more) continue;
+        const s = pairFromData(lesson, v, micTypes, sp, 'pair');
+        if (s) {
+          primary = s;
+          primaryListed = sp;
+          break;
+        }
+      }
     }
   }
-  // 2 · the family's own two-mic page (its art), 3 · the lesson's setupPairs
-  const fromInput = (p: PairInput): StartingSetup | null => {
-    const a = byId(p.A.zone);
-    const b = byId(p.B.zone);
-    if ((a && !zoneInVariant(a, v)) || (b && !zoneInVariant(b, v))) return null;
-    const pa = p.A.pose ?? a?.start;
-    const pb = p.B.pose ?? b?.start;
-    if (!pa || !pb) return null;
-    const mk = (slot: MicSlot, side: PairInput['A'] | PairInput['B'], z: DocumentedZone | undefined, pose: MicPose, pol: 1 | -1): SetupMic => ({
+  const more: { setup: StartingSetup; zoneIds: string[] }[] = [];
+  for (const sp of lesson.setupPairs ?? []) {
+    if (sp === primaryListed || (!sp.more && !allowTwo)) continue;
+    const s = pairFromData(lesson, v, micTypes, sp, 'more');
+    if (s) more.push({ setup: s, zoneIds: [sp.A.zone, sp.B.zone] });
+  }
+  return { two: primary, more };
+}
+
+/**
+ * A pair from its input. A mic given a `pose` of its own is the zone's
+ * second (or re-aimed) mic — a split pair's other side, a stereo pair's two
+ * capsules: it is measured from the zone's surface and carries no zone (its
+ * START reads as a distance), so a zone's own start pose is never altered.
+ */
+function pairFromInput(lesson: Lesson, v: VariantId, micTypes: Record<string, MicType>, p: PairInput, role: 'pair' | 'more'): StartingSetup | null {
+  const byId = (id?: string) => (id ? lesson.zones.find((z) => z.id === id) : undefined);
+  const a = byId(p.A.zone);
+  const b = byId(p.B.zone);
+  if ((a && !zoneInVariant(a, v)) || (b && !zoneInVariant(b, v))) return null;
+  const pa = p.A.pose ?? a?.start;
+  const pb = p.B.pose ?? b?.start;
+  if (!pa || !pb) return null;
+  const mk = (slot: MicSlot, side: PairInput['A'] | PairInput['B'], z: DocumentedZone | undefined, pose: MicPose, pol: 1 | -1): SetupMic => {
+    const own = side.pose ? undefined : z;
+    return {
       slot,
       typeId: side.typeId,
       pattern: side.pattern ?? micTypes[side.typeId]?.patterns[0]?.id ?? 'cardioid',
       pose,
-      zoneId: z?.id ?? null,
+      zoneId: own?.id ?? null,
       surfaceId: z?.refSurface ?? nearestSurface(lesson, v, pose) ?? a?.refSurface ?? b?.refSurface ?? lesson.model.surfaces[0]?.id ?? '',
       polarity: pol,
-    });
-    const zones = [a, b].filter((z): z is DocumentedZone => !!z);
-    return { id: `pair:${p.label}`, role: 'pair', variant: v, title: p.label, mics: [mk('A', p.A, a, pa, 1), mk('B', p.B, b, pb, (p.B as { polarity?: 1 | -1 }).polarity ?? 1)], zones, line: p.line ?? `${firstSentence((b ?? a)?.tendency ?? '')} ${PAIR_TAIL}`.trim() };
+    };
   };
-  if (!primary && pair) primary = fromInput(pair);
-  const listed = listedPairs(lesson, v, micTypes, fromInput);
-  if (!primary) primary = listed.shift() ?? null;
-  if (!primary) return [];
-  const first = primary;
-  return [first, ...listed.filter((x) => x.id !== first.id).map((x): StartingSetup => ({ ...x, id: `more:${x.id}`, role: 'more' }))];
+  const A = mk('A', p.A, a, pa, 1);
+  const B = mk('B', p.B, b, pb, (p.B as { polarity?: 1 | -1 }).polarity ?? 1);
+  const zones = [a, b].filter((z, k, all): z is DocumentedZone => !!z && all.indexOf(z) === k && [A, B].some((m) => m.zoneId === z.id));
+  return { id: `${role}:${p.label}`, role, variant: v, title: p.label, mics: [A, B], zones, line: p.line ?? `${firstSentence((b ?? a)?.tendency ?? '')} ${PAIR_TAIL}`.trim() };
 }
 
-/** The lesson's own `setupPairs` that can be drawn in this variant. */
-function listedPairs(lesson: Lesson, v: VariantId, micTypes: Record<string, MicType>, fromInput: (p: PairInput) => StartingSetup | null): StartingSetup[] {
-  const out: StartingSetup[] = [];
-  for (const sp of lesson.setupPairs ?? []) {
-    if (sp.variants && !sp.variants.includes(v)) continue;
-    const a = lesson.zones.find((z) => z.id === sp.A.zone);
-    const b = lesson.zones.find((z) => z.id === sp.B.zone);
-    if (!a || !b) continue;
-    const s = fromInput({ label: sp.label, A: { typeId: sp.A.typeId ?? typeForZone(lesson, a, micTypes), pattern: sp.A.pattern, zone: sp.A.zone }, B: { typeId: sp.B.typeId ?? typeForZone(lesson, b, micTypes), pattern: sp.B.pattern, zone: sp.B.zone, polarity: sp.B.polarity }, line: sp.line });
-    if (s) out.push(s);
-  }
-  return out;
+function pairFromData(lesson: Lesson, v: VariantId, micTypes: Record<string, MicType>, sp: SetupPairData, role: 'pair' | 'more'): StartingSetup | null {
+  if (sp.variants && !sp.variants.includes(v)) return null;
+  const a = lesson.zones.find((z) => z.id === sp.A.zone);
+  const b = lesson.zones.find((z) => z.id === sp.B.zone);
+  if (!a || !b) return null;
+  return pairFromInput(
+    lesson,
+    v,
+    micTypes,
+    {
+      label: sp.label,
+      A: { typeId: sp.A.typeId ?? typeForZone(lesson, a, micTypes), pattern: sp.A.pattern, zone: sp.A.zone, pose: sp.A.pose },
+      B: { typeId: sp.B.typeId ?? typeForZone(lesson, b, micTypes), pattern: sp.B.pattern, zone: sp.B.zone, pose: sp.B.pose, polarity: sp.B.polarity },
+      line: sp.line,
+    },
+    role,
+  );
 }
 
 const lower = (s: string) => (s.length > 1 && s[1] === s[1].toLowerCase() ? s[0].toLowerCase() + s.slice(1) : s);
@@ -268,12 +319,17 @@ export function startingSetups(lesson: Lesson, variant: VariantId, micTypes: Rec
   out.push(single('one', worked));
 
   const picks = SETUP_PICKS[lesson.id] ?? {};
-  const [two, ...morePairs] = picks.pair === null ? [] : pairSetups(lesson, variant, micTypes, pair);
+  const { two, more: listed } = pairSetups(lesson, variant, micTypes, pair, picks.pair !== null);
   if (two) {
     out.push(two);
     for (const z of two.zones) used.add(z.id);
   }
-  for (const p of morePairs) for (const z of p.zones) used.add(z.id);
+  // The other listed pairs: one whose zones ONE MIC and TWO MICS already
+  // draw adds nothing; the rest keep their zones from the CLOSE / FARTHER
+  // roles and from ANOTHER START, so a pair's zone is never drawn as a lone
+  // mic (a mic posed inside a zone counts that zone too).
+  const morePairs = listed.filter((p) => !p.zoneIds.every((id) => used.has(id)));
+  for (const p of morePairs) for (const id of p.zoneIds) used.add(id);
 
   const words = (z: DocumentedZone) => `${z.label} ${z.band}`;
   const near = new Map(zones.map((z) => [z.id, nearness(lesson, z, variant)]));
@@ -311,8 +367,9 @@ export function startingSetups(lesson: Lesson, variant: VariantId, micTypes: Rec
     used.add(far.id);
     out.push(single('distant', far));
   }
-  // The lesson's other listed pairs, each drawn whole.
-  for (const p of morePairs) if (out.length < MAX_SETUPS) out.push(p);
+  // The lesson's other listed pairs — a spaced pair, a stereo pair, a split
+  // pair — each drawn whole as ANOTHER START, never as one mic.
+  for (const p of morePairs) if (out.length < MAX_SETUPS) out.push(p.setup);
   // The lesson's other starting points, each drawn as its own setup.
   for (const z of zones) {
     if (out.length >= MAX_SETUPS) break;

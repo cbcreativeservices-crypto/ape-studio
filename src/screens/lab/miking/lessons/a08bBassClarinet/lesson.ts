@@ -586,6 +586,10 @@ export const A08B_LESSON: WindLesson = {
   model: BASS_CLARINET_MODEL,
   micTypeIds: ['sdcCard', 'wwMini'],
   zones: BASS_CLARINET_ZONES,
+  // The low-C instrument's TWO MICS (review 2026-10-07, CORRECTIONS_LOG
+  // RV34-09): the two-mic page's pair is written for the E-flat instrument;
+  // the same pair on the low-C one is its own blend zone and the front mic.
+  setupPairs: [{ label: 'In front, a little to the side, at the lower body and bell + in front, aimed at the middle', A: { zone: 'bcl.blend.c', typeId: 'sdcCard', pattern: 'cardioid' }, B: { zone: 'bcl.front', typeId: 'sdcCard', pattern: 'omni' }, variants: ['lowc'], line: 'The whole instrument — the open holes and the bell blending — with some of the room. Two mics give more to blend — check the pair together in mono.' }],
   pages,
   scenarios,
   symptoms,
