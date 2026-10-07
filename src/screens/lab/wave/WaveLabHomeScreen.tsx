@@ -22,10 +22,16 @@ import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 export function WaveLabHomeScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the module list takes the iPad's
+  // width in two columns. Phone: unchanged (`wide` is null, TabletGrid a
+  // Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lessonOpen, setLessonOpen] = useState(false);
   const builder = WAVE_MODULES.find((m) => m.id === 'builder');
@@ -63,7 +69,7 @@ export function WaveLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         {/* Before a guest begins (owner 2026-10-04): once per lab per session
             (the modules share it), inline in Low-Light, nothing for others. */}
         <GuestStartReminder activity="lab:af_wave_physics" />
@@ -86,6 +92,7 @@ export function WaveLabHomeScreen() {
             no ✓ on a row is a stand-in when the banked units could not be
             read — said here, before the rows. Every module stays open. */}
         {unreadable ? <ProgressUnreadableNote /> : null}
+        <TabletGrid minTile={360} maxCols={2} gap={8}>
         {modules.map((m) => (
           <ModuleAccordionRow
             key={m.id}
@@ -98,6 +105,7 @@ export function WaveLabHomeScreen() {
             onOpen={() => navigation.navigate('WaveModule', { id: m.id })}
           />
         ))}
+        </TabletGrid>
         {builder && (
           <>
             <Text style={styles.sectionTitle}>PUT IT ALL TOGETHER</Text>

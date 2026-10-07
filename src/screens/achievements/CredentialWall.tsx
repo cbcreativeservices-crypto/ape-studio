@@ -41,6 +41,8 @@ import type { EarnedCredentialRow } from '../../features/credentials/api';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
+import { useWideOnTablet } from '../../theme/useIsTablet';
+import { TabletGrid } from '../../components/TabletGrid';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 /** Slugs whose art 404s (not every credential has a file uploaded yet). Held
@@ -63,6 +65,7 @@ function fmtEarned(iso: string | null): string {
 
 export function CredentialWall({ kind, title }: { kind: CredentialKind; title: string }) {
   const insets = useSafeAreaInsets();
+  const wide = useWideOnTablet();
   const navigation = useNavigation<any>();
   const accent = KIND_ACCENT[kind];
   const noun = kind === 'certificate' ? 'certificate' : 'program';
@@ -160,7 +163,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         <View style={styles.headerRow}>
           <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
             <Text style={styles.back}>‹</Text>
@@ -184,7 +187,10 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
             {/* The leading "waiting slot" — always first. */}
             <WaitingSlot kind={kind} noun={noun} accent={accent} result={nearest} navigation={navigation} guest={guest} failed={nearestFailed} onRetry={load} />
 
-            {/* Earned credentials — newest first. Image only appears here. */}
+            {/* Earned credentials — newest first. Image only appears here.
+                Two columns across a tablet (owner iPad report 2026-10-06);
+                a phone renders the plain list. */}
+            <TabletGrid minTile={360} maxCols={2} gap={12}>
             {(rows ?? []).map((c) => {
           const art = c.slug && artFailed.has(c.slug) ? null : credentialArtFor(c.slug);
           return (
@@ -223,6 +229,7 @@ export function CredentialWall({ kind, title }: { kind: CredentialKind; title: s
             </Pressable>
           );
             })}
+            </TabletGrid>
           </>
         )}
       </ScrollView>

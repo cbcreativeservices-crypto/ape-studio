@@ -6,14 +6,14 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
-import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { cardColumn } from '../../../theme/readingColumn';
-import { useIsTablet } from '../../../theme/useIsTablet';
+import { useIsTablet, useWideOnTablet } from '../../../theme/useIsTablet';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -42,6 +42,11 @@ export function CalcLabScreen() {
   // Tablet (owner 2026-09-29): three calculator plates a row in the centred
   // card column instead of two ~490 pt plates. Phones keep two.
   const tablet = useIsTablet();
+  // Tablet (owner iPad report 2026-10-06): the plates take the iPad's width —
+  // three a row, four once the window is landscape-wide. Phone: unchanged.
+  const wide = useWideOnTablet();
+  const { width: winW } = useWindowDimensions();
+  const tabletTile = winW >= 1100 ? styles.tileFrameTabletWide : styles.tileFrameTablet;
   const { isMember, resolved, tierKnown, tierReadFailed } = useEntitlement();
 
   // ALL workflows are ACADEMY-ONLY (owner 2026-08-13): running a guided
@@ -148,7 +153,7 @@ export function CalcLabScreen() {
           <Text style={styles.keyBtnText}>KEY</Text>
         </Pressable>
       </View>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         {/* CALCULATOR WORKFLOWS — moved to the TOP and collapsible (owner
             2026-08-09). templates + my workflows + new + recent. */}
         <View style={{ gap: 8 }}>
@@ -322,7 +327,7 @@ export function CalcLabScreen() {
                 {openItems.map((w) => (
                   <GlassTile
                     key={w.id}
-                    style={[styles.tileFrame, tablet && styles.tileFrameTablet]}
+                    style={[styles.tileFrame, tablet && tabletTile]}
                     glassStyle={styles.tile}
                     onPress={() => {
                       setOpenSec(null);
@@ -394,6 +399,7 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   // Graphite instrument plate: black keyline frame wrapping a machined face.
   tileFrameTablet: { width: '32%' },
+  tileFrameTabletWide: { width: '24%' },
   tileFrame: { width: '48%' },
   tile: {
     paddingVertical: 12,

@@ -22,13 +22,13 @@
  * on a tablet). Members-only gating is the navigator's (MemberGated +
  * withMembershipPreview), unchanged.
  */
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import { cardColumn } from '../../../theme/readingColumn';
-import { useIsTablet } from '../../../theme/useIsTablet';
+import { useIsTablet, useWideOnTablet } from '../../../theme/useIsTablet';
 import { fitValue } from '../../../theme/legibility';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
@@ -43,6 +43,11 @@ export function MikingHubScreen() {
   const route = useRoute();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const tablet = useIsTablet();
+  // Tablet (owner iPad report 2026-10-06): the menu takes the iPad's width —
+  // three tiles across, four once the window is landscape-wide. Phone: two.
+  const wide = useWideOnTablet();
+  const { width: winW } = useWindowDimensions();
+  const tabletTile = winW >= 1100 ? styles.tileQuarter : styles.tileThird;
   const want = (route.params as { lab?: string } | undefined)?.lab;
   const labs = readyLabs();
   const shown: MikingLabMeta[] = want ? labs.filter((l) => l.id === want) : labs;
@@ -55,7 +60,7 @@ export function MikingHubScreen() {
         title={one ? one.family.toUpperCase() : 'MIKING LABS'}
         subtitle={one ? one.name : 'Place microphones on drawn instruments — silent; tendencies in words'}
       />
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 24 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
         {unreadable ? <ProgressUnreadableNote /> : null}
         {shown.map((lab) => (
           <View key={lab.id} style={styles.family}>
@@ -69,7 +74,7 @@ export function MikingHubScreen() {
                 return (
                   <GlassTile
                     key={ls.id}
-                    style={tablet ? styles.tileThird : styles.tileHalf}
+                    style={tablet ? tabletTile : styles.tileHalf}
                     glassStyle={styles.tileFace}
                     onPress={() => navigation.navigate('MikingLesson', { id: ls.id })}
                     accessibilityLabel={`${ls.title}. ${ls.subtitle}. ${n} of ${PAGE_IDS.length} pages done.`}
@@ -101,6 +106,7 @@ const styles = StyleSheet.create({
   tilePanelPhone: { padding: 7 },
   tileHalf: { width: '48.5%' },
   tileThird: { width: '32%' },
+  tileQuarter: { width: '24%' },
   tileFace: { minHeight: 118, padding: 12, gap: 5, justifyContent: 'space-between', backgroundColor: '#101116' },
   tileName: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.4, color: colors.textPrimary },
   // Never cut short: the subtitle wraps in full (the tile grows).

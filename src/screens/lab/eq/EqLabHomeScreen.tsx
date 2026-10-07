@@ -21,6 +21,8 @@ import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
@@ -28,6 +30,10 @@ const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
 
 export function EqLabHomeScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the module list takes the iPad's
+  // width in two columns. Phone: unchanged (`wide` is null, TabletGrid a
+  // Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   /**
    * WHAT'S LEFT (owner 2026-10-02, "favor consistency"): the Meter hub's
@@ -68,7 +74,7 @@ export function EqLabHomeScreen() {
           bottomInset
         />
       ) : (
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         <View style={styles.pathRow}>
           {PATH.map((p, i) => (
             <View key={p} style={styles.pathStep}>
@@ -89,6 +95,7 @@ export function EqLabHomeScreen() {
             <View key={sec.id} style={{ gap: 8 }}>
               <Text style={styles.sectionTitle}>{sec.title}</Text>
               <Text style={styles.caption}>{sec.note}</Text>
+              <TabletGrid minTile={360} maxCols={2} gap={8}>
               {live.map((m) => (
                 <ModuleAccordionRow
                   key={m.id}
@@ -100,6 +107,7 @@ export function EqLabHomeScreen() {
                   onOpen={() => open(m.id)}
                 />
               ))}
+              </TabletGrid>
             </View>
           );
         })}

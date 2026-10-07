@@ -21,7 +21,7 @@
  * behaves exactly like the gallery, which is the safe reading.
  */
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,6 +32,7 @@ import { supabase } from '../../lib/supabase';
 import { colors, fonts } from '../../theme/tokens';
 import { hapticsEnabled } from '../../features/settings/store';
 import { popupCard } from '../../theme/readingColumn';
+import { trophyViewerSize } from '../../theme/tablet';
 import type { RootStackParamList } from '../../navigation/types';
 import { safeGoBack } from '../../lib/safeGoBack';
 
@@ -43,6 +44,10 @@ export function TrophyScreen({ navigation, route }: Props) {
   // but nothing reads it any more — every entry behaves the same now.
   const { topicName, achievementId } = route.params;
   const [iconUrl, setIconUrl] = useState<string | null>(null);
+  // 150 on a phone, as always; on a tablet the trophy scales with the live
+  // window (owner iPad report 2026-10-06: gallery trophies "stay small").
+  const { width: winW, height: winH } = useWindowDimensions();
+  const art = trophyViewerSize(winW, winH);
 
   /** ONE EXIT PER SCREEN (bug pass 1, 2026-10-01) — the same latch as
    *  Celebration / Results. A double tap on Back ran goBack() twice: the
@@ -111,10 +116,10 @@ export function TrophyScreen({ navigation, route }: Props) {
 
       <TrophyImage
         iconUrl={iconUrl}
-        size={150}
+        size={art}
         style={styles.trophyImg}
         fallback={
-          <View style={styles.trophySlot}>
+          <View style={[styles.trophySlot, { width: art, height: art }]}>
             {/* Clean neutral mark, never the dev "Trophy 512²" placeholder text
                 shown to real users on completion (honesty audit 2026-09-09). */}
             <Text style={styles.trophyPlaceholder}>★</Text>

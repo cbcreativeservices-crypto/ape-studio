@@ -48,6 +48,7 @@ import { toolByKey } from './toolsData';
 import type { RootStackParamList } from '../../navigation/types';
 import { AccuracyNote } from '../../components/AccuracyNote';
 import { readingColumn } from '../../theme/readingColumn';
+import { useWideOnTablet } from '../../theme/useIsTablet';
 import { safeGoBack } from '../../lib/safeGoBack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ToolLibrary'>;
@@ -451,6 +452,7 @@ const Row = memo(function Row({
 
 export function MeasurementLibraryScreen({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
+  const wide = useWideOnTablet();
   // RECORDS ONLY FOR 'open' (hunt 5, 2026-10-03): useToolsLocked is false
   // while the tier is unknown, so a failed membership read opened the library
   // (a lapsed member's old records, share and delete) — see ToolGatePending.
@@ -628,7 +630,7 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
-      <View style={styles.header}>
+      <View style={[styles.header, wide]}>
         <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
           <Text style={styles.back}>‹</Text>
         </Pressable>
@@ -722,8 +724,16 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
         initialNumToRender={10}
         maxToRenderPerBatch={8}
         windowSize={7}
-        contentContainerStyle={styles.scroll}
-        renderItem={({ item }) => (
+        // TABLET (owner iPad report 2026-10-06): the library takes the iPad's
+        // width in two columns instead of a 560 pt strip between black
+        // gutters. numColumns cannot change on a mounted list — re-key it.
+        // A phone keeps one column and the 560 cap, exactly as before.
+        key={wide ? 'cols-2' : 'cols-1'}
+        numColumns={wide ? 2 : 1}
+        columnWrapperStyle={wide ? styles.tabletRow : undefined}
+        contentContainerStyle={[styles.scroll, wide]}
+        renderItem={({ item }) => {
+          const row = (
           <Row
             m={item}
             showTool={!toolKey}
@@ -735,7 +745,9 @@ export function MeasurementLibraryScreen({ navigation, route }: Props) {
             onShare={onRowShare}
             onEnlarge={setEnlarged}
           />
-        )}
+          );
+          return wide ? <View style={styles.tabletCell}>{row}</View> : row;
+        }}
         ListHeaderComponent={
           <>
             {/* Unreadable but NOT empty (hunt 9, 2026-10-03): a measurement
@@ -931,6 +943,10 @@ const styles = StyleSheet.create({
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1.4, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 28, gap: 10, ...readingColumn },
+  // Tablet two-column list (owner iPad report 2026-10-06). A lone last record
+  // keeps half the row instead of stretching across both columns.
+  tabletRow: { gap: 10 },
+  tabletCell: { flex: 1, maxWidth: '50%' },
 
   compareBtn: {
     borderRadius: 8,
