@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 07:40 · ccode · (screenshots)
+changed: iPad pass: Calc Lab after-shots at 1024×1366 / 1366×1024 / 412×915 in docs/screens/ipad_pass_2026_10_07/
+affects other side: nothing
+needs: nothing
+
+
 ### 2026-10-07 07:21 · ccode · a54dde1b
 changed: NATIVE (next iOS build only): capture runs at the tap's rate; a 0 Hz / 0 ch input is an error, not a crash
 affects other side: nothing for the DB. ⛔ Moves the iOS runtime fingerprint — merge only with an owner-ordered build; everything before it on ipad-pass-wip is OTA-safe
