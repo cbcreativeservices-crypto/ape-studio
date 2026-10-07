@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 08:30 · ccode · a038317a
+changed: Merge commit '86a1c21b' into final-lab
+affects other side: nothing (client-only)
+needs: nothing
+
+
 ### 2026-10-06 23:45 · ccode · 25a9e520
 changed: Flashcards/glossary: no electrical-hazard caution on mic shock mounts
 affects other side: nothing (client-only: no electrical caution on shock-mount terms)
