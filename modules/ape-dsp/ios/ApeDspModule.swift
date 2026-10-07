@@ -339,11 +339,7 @@ public class ApeDspModule: Module {
       try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
       try session.setActive(true, options: [])
     }
-    // While capture runs, ONE core serves both directions: keep the rate the
-    // mic tap delivers (iPad pass 2026-10-07) — re-rating it to the session's
-    // read-back here would detune a running meter/spectrogram the moment a
-    // tone starts.
-    let sr = running && sampleRate > 0 ? sampleRate : (session.sampleRate > 0 ? session.sampleRate : 48_000)
+    let sr = session.sampleRate > 0 ? session.sampleRate : 48_000
     core.configureSampleRate(sr)
     // STEREO output (2-ch, deinterleaved float — standardFormat gives one buffer
     // per channel). Mono content plays L==R; stereo lab tools (Harmonograph)
@@ -454,36 +450,13 @@ public class ApeDspModule: Module {
     try session.setActive(true, options: [])
 
     refreshRouteInfo()
+    // Engine build: weighting/FFT/pitch must run at the ACTUAL session rate
+    // (read back, not requested — tech spec §2.1 / finding F3 discipline).
+    core.configureSampleRate(sampleRate)
 
     let engine = AVAudioEngine()
     let input = engine.inputNode
     let format = input.inputFormat(forBus: 0)
-    /**
-     ⛔ iPad PASS 2026-10-07 (owner: "Spectrogram and SPL wheel meter did not
-     work at all" on an iPad). Two provable hazards in the old order:
-
-     1. A 0 Hz / 0-channel input format (no input route yet, the route still
-        settling after setActive, another app holding the mic) makes
-        `installTap` raise an Objective-C exception
-        ("IsFormatSampleRateAndChannelCountValid") — Swift cannot catch it, so
-        the app dies. Refuse it here as an ordinary error: JS shows CAPTURE
-        ERROR + TRY AGAIN and the recovery watchdog retries.
-     2. The core was configured from `session.sampleRate` while the tap
-        delivers at the INPUT NODE's rate. On an iPad those can differ (the
-        hardware is 48 kHz; the session read-back can lag a preferred-rate
-        change), and every weighting filter, FFT bin and pitch then reads at
-        the wrong rate. The core now runs at the rate the tap actually delivers.
-     */
-    guard format.sampleRate > 0, format.channelCount > 0 else {
-      throw NSError(domain: "ApeDsp", code: 2, userInfo: [
-        NSLocalizedDescriptionKey:
-          "the microphone reported no usable input (\(Int(format.sampleRate)) Hz, \(format.channelCount) ch)",
-      ])
-    }
-    sampleRate = format.sampleRate
-    // Engine build: weighting/FFT/pitch must run at the ACTUAL capture rate —
-    // the tap's format, not the session's request or read-back (tech spec §2.1).
-    core.configureSampleRate(sampleRate)
     // Tap: copy/mix into the ring. Nothing else on the RT thread.
     input.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
       guard let self, let channels = buffer.floatChannelData else { return }

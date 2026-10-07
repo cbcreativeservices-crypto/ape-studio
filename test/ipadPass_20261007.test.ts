@@ -8,7 +8,7 @@
  *     look not designed for iPad (needed for Apple approval)."
  *  3. "Most audio tools are not working. Spectrogram and SPL wheel meter both
  *     did not work at all." — investigated by code (no iPad here); the
- *     provable native hardening is pinned at the bottom.
+ *     the native (iOS build-only) half is pinned in ipadNative_20261007.test.ts.
  *
  * ✅ PHONES: every rule below branches on the 600 pt SHORT edge, so a phone in
  * either orientation takes exactly its old path. The tests say so with the
@@ -221,27 +221,6 @@ test('prose inside a wide menu keeps the reading measure (tablet only)', () => {
   for (const f of ['src/screens/lab/AudioLearningScreen.tsx', 'src/screens/lab/EarLabScreen.tsx', 'src/screens/lab/LabCategoryScreen.tsx', 'src/screens/achievements/AchievementsHomeScreen.tsx']) {
     assert.match(read(f), /\[styles\.intro, wide && readingText\]/, f);
   }
-});
-
-// ── 3. Audio tools — native hardening (needs a BUILD) ───────────────────────
-
-test('iOS capture: the core runs at the rate the mic tap delivers, and a dead input is an error, not a crash', () => {
-  const s = read('modules/ape-dsp/ios/ApeDspModule.swift');
-  const start = s.slice(s.indexOf('private func startCapture()'), s.indexOf('private func stopCapture('));
-  assert.ok(start.length > 0);
-  // The guard comes BEFORE installTap (the uncatchable exception).
-  const guardAt = start.indexOf('guard format.sampleRate > 0, format.channelCount > 0 else {');
-  const tapAt = start.indexOf('input.installTap(');
-  assert.ok(guardAt > 0 && tapAt > guardAt, 'refuse a 0 Hz / 0 ch input before installTap');
-  assert.match(start, /throw NSError\(domain: "ApeDsp", code: 2/);
-  // The core is configured from the tap format, after it is read.
-  assert.match(start, /sampleRate = format\.sampleRate\n\s*\/\/[^\n]*\n\s*\/\/[^\n]*\n\s*core\.configureSampleRate\(sampleRate\)/);
-  assert.ok(start.indexOf('core.configureSampleRate(sampleRate)') > start.indexOf('let format = input.inputFormat(forBus: 0)'));
-  // The generator no longer re-scales a running capture to the session's rate.
-  assert.match(s, /let sr = running && sampleRate > 0 \? sampleRate : \(session\.sampleRate > 0 \? session\.sampleRate : 48_000\)/);
-  const gen = s.slice(s.indexOf('private func startGeneratorOutput()'), s.indexOf('private var genRenderPulls'));
-  assert.ok(gen.indexOf('let sr = running && sampleRate > 0') > 0);
-  assert.ok(gen.indexOf('let sr = running && sampleRate > 0') < gen.indexOf('core.configureSampleRate(sr)'));
 });
 
 // ── 3b. Audio tools — a mic that never delivers is SAID, not silent (OTA) ──

@@ -634,16 +634,28 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 07:18 · ccode · 81b591a7
+changed: iPad audio: no-signal verdict lives beside the clip baseline (start graph stays at 260); toddler guard allows the noSignal prop
+affects other side: nothing (client-only; no DB, no copy in the DB)
+needs: nothing
+
+
+### 2026-10-07 07:15 · ccode · 2b0047cb
+changed: iPad: gallery three across on an iPad mini; Tube Reference + Calc workflows/projects use the tablet; Miking hub left alone (another session owns src/screens/lab/miking)
+affects other side: nothing (client layout only; phones unchanged)
+needs: nothing
+
+
 ### 2026-10-07 07:12 · ccode · 4136821c
 changed: iPad audio tools: a mic that never delivers is said plainly; iOS capture runs at the tap's rate
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (client + iOS native module only). The Swift part (capture runs at the tap rate, 0 Hz / 0 ch input refused before installTap, generator keeps a running capture rate) ships only in the NEXT iOS build; the NO SOUND FROM THE MICROPHONE card is JS and rides an OTA
+needs: nothing; Cháno: on the iPad, if a tool shows NO SOUND FROM THE MICROPHONE, read back its Input line
 
 
 ### 2026-10-06 23:01 · ccode · 1b8e0252
 changed: iPad: menus, hubs and grids use the whole tablet; gallery trophies fill their tiles
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing (client layout only; phones unchanged)
+needs: nothing
 
 
 ### 2026-10-06 22:07 · ccode · 50b5d3fd
