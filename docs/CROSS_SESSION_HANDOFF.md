@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 16:37 · ccode · b1dd63c5
+changed: TestFlight feedback triage 2026-10-08: 46 items, 4 fixed now, patterns swept
+affects other side: nothing (client-only: TestFlight triage doc + slider/popup/copy fixes; no DB, no backend; not published)
+needs: nothing
+
+
 ### 2026-10-07 15:40 · ccode · c6214f1f
 changed: Merge remote-tracking branch 'origin/review-mixing' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Mixing Guides review merged onto final-lab; handoff conflict kept both entries; no DB; not published)
