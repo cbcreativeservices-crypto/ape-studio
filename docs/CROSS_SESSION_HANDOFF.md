@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 16:12 · ccode · dcc0ee16
+changed: fix(lab5): toddler pass - false zone credit on START, stale array geometry/seating in Placement, stage memo busting
+affects other side: nothing (client-only Lab 5 screen fixes)
+needs: nothing
+
+
 ### 2026-10-07 15:40 · ccode · c6214f1f
 changed: Merge remote-tracking branch 'origin/review-mixing' into worktree-agent-a5e1f91299a3e9800
 affects other side: nothing (client-only Mixing Guides review merged onto final-lab; handoff conflict kept both entries; no DB; not published)
