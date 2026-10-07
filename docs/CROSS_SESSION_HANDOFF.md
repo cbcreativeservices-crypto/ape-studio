@@ -634,6 +634,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 12:49 · ccode · 343b9482
+changed: Miking Lab 5 group 4: corrections log, owner review, 412x915 captures
+affects other side: nothing (docs and screenshots on branch lab5-g4, not published)
+needs: nothing
+
+
+### 2026-10-07 12:49 · ccode · 6398d46a
+changed: Miking Lab 5 group 4: E09 Complete Band, E15 Jazz Combo, E08 Acoustic Small Groups
+affects other side: nothing server-side (client-only lessons on branch lab5-g4, not published)
+needs: nothing
+
+
+### 2026-10-07 12:49 · ccode · ca2e627c
+changed: Miking Lab 5: the stage-plot preset for the ensemble toolkit (group 4)
+affects other side: nothing server-side (shared client lesson code on branch lab5-g4, not published)
+needs: nothing
+
+
 ### 2026-10-07 11:05 · ccode · 59a8ddcc
 changed: Merge Lab 5 group 3 (arrays & orchestra) onto group 1; combined Lab 5 blurb; count tests merge-proof
 affects other side: nothing (client-only)
