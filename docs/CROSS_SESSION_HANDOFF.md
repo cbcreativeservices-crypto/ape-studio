@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 09:13 · ccode · f404a35f
+changed: feat(lab): Mixing Guides — 50 music styles on one written template (hidden until approved)
+affects other side: nothing (client-only: a new members-only lab, hidden on store builds by MIXING_PUBLIC = false; progress is device-local under ape:mixingGuides:v1, no server calls)
+needs: nothing
+
+
 ### 2026-10-07 08:30 · ccode · a038317a
 changed: Merge commit '86a1c21b' into final-lab
 affects other side: nothing (client-only)
