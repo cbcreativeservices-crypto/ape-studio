@@ -84,10 +84,13 @@ test('the cap never binds on any phone this app is device-passed on', () => {
 
 test('the Tools hub and its detail screens share ONE width', () => {
   assert.equal(TOOL_READING_MAX_W, READING_MAX_W);
-  const hub = readFileSync('src/screens/tools/ToolsHubScreen.tsx', 'utf8');
+  // The hub's tile arithmetic moved to the pure hubGrid.ts (iPad pass
+  // 2026-10-06): a PHONE keeps the shared 560; a tablet takes the wide column.
+  const hub = readFileSync('src/screens/tools/hubGrid.ts', 'utf8');
+  assert.match(hub, /return isTabletWindow\(windowW, windowH\) \? WIDE_MAX_W : HUB_MAX_CONTENT_W;/);
   assert.match(
     hub,
-    /const HUB_MAX_CONTENT_W = TOOL_READING_MAX_W;/,
+    /export const HUB_MAX_CONTENT_W = TOOL_READING_MAX_W;/,
     'the hub must import the shared width, not re-declare 560 — they drifted apart once already',
   );
 });

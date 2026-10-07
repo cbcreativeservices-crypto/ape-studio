@@ -129,7 +129,9 @@ test('grids re-key on a column change and pad a short last row', () => {
   assert.match(g, /key=\{`cols-\$\{cols\}`\}/, 'numColumns cannot change on a mounted FlatList');
   assert.match(g, /numColumns=\{cols\}/);
   const c = readFileSync('src/screens/lab/calc/CalcLabScreen.tsx', 'utf8');
-  assert.match(c, /tablet && styles\.tileFrameTablet/);
+  // Three a row on a tablet, four once landscape-wide (iPad pass 2026-10-06).
+  assert.match(c, /tablet && tabletTile/);
+  assert.match(c, /winW >= 1100 \? styles\.tileFrameTabletWide : styles\.tileFrameTablet/);
 });
 
 test('aspect-locked art is bounded by the window HEIGHT, not only its width', () => {

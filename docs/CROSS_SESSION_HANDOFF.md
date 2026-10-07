@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 23:01 · ccode · 1b8e0252
+changed: iPad: menus, hubs and grids use the whole tablet; gallery trophies fill their tiles
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-10-06 22:07 · ccode · 50b5d3fd
 changed: Merge branch 'worktree-agent-a7888cdfcf4f9b300' into final-lab
 affects other side: nothing (client-only Miking fixes; Miking still hidden on store builds)

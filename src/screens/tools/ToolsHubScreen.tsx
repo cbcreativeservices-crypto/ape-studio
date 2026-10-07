@@ -92,7 +92,8 @@ import { TabletGrid } from '../../components/TabletGrid';
  *
  * ⛔ SUPERSEDED ON A TABLET (owner iPad report 2026-10-06): the capped column
  * read as "dead space … not designed for iPad". A tablet now takes the wide
- * column with FOUR displays side by side (still a side-by-side rack) — see
+ * column — two big displays across in portrait, four in landscape (still a
+ * side-by-side rack) — see
  * `hubColumnsFor` in ./hubGrid. Phones keep everything below exactly.
  *
  * Two separate faults were found measuring this at tablet width.

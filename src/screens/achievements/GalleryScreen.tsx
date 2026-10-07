@@ -127,7 +127,10 @@ export function GalleryScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: GalleryRow }) => {
-      if (item === SPACER) return <View style={styles.spacer} />;
+      // Tablet: the spacer carries the card's padding + border so a short last
+      // row's cards keep the exact width of the cards above them (measured on
+      // the web preview: a bare flex:1 spacer let them grow 16 pt wider).
+      if (item === SPACER) return <View style={[styles.spacer, tabletArt && styles.spacerTablet]} />;
       const e = item;
       return (
       <Pressable
@@ -257,6 +260,7 @@ const styles = StyleSheet.create({
   errorText: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 21, color: colors.textSub, textAlign: 'center' },
   row: { gap: 12 },
   spacer: { flex: 1 },
+  spacerTablet: { padding: 14, borderWidth: 1, borderColor: 'transparent' },
   card: {
     flex: 1,
     backgroundColor: '#181818',
