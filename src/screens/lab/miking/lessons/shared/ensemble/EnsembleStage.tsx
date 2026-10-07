@@ -217,8 +217,13 @@ export type EnsembleStageProps = {
   children?: ReactNode;
 };
 
+/** Stable empties: a fresh `[]` default per render would bust every memo below
+ *  (the box, the label layout, the detail-corner search) on each parent render
+ *  (toddler 2026-10-07 L5-R1-01). */
+const NONE: readonly never[] = Object.freeze([]);
+
 export function EnsembleStage(p: EnsembleStageProps) {
-  const { w, h, seating, view, hi = null, rigs = [], singles = [], zones = [], radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = [], spill = [], rings = [], onTapSection } = p;
+  const { w, h, seating, view, hi = null, rigs = NONE, singles = NONE, zones = NONE, radiate = null, dims = false, lobes = false, aims = true, wedge = true, detail = false, labels = true, extraLabels = NONE, spill = NONE, rings = NONE, onTapSection } = p;
   const textScale = useStageTextScale();
   const box = useMemo(() => p.box ?? stageBox(seating, view, rigs, singles, view === 'plan' ? rings.flatMap((r) => [v3(r.c.x - r.r, 0, r.c.z - r.r), v3(r.c.x + r.r, 0, r.c.z + r.r)]) : [], p.focus), [p.box, seating, view, rigs, singles, rings, p.focus]);
   const xf: ViewXform = useMemo(() => fitXform(view === 'front' ? 'side' : 'top', box, w, h, 6), [view, box, w, h]);
