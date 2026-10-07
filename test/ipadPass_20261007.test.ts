@@ -27,7 +27,7 @@ import {
   tileSpan,
   trophyViewerSize,
 } from '../src/theme/tablet.ts';
-import { NO_SIGNAL_MS, noSignalVerdict } from '../src/features/tools/engine/noSignal.ts';
+import { NO_SIGNAL_MS, noSignalVerdict } from '../src/features/tools/engine/clipBaseline.ts';
 import { GRID_GAP, HUB_MAX_CONTENT_W, TABLET_FIT_SLACK, TILE_FIT_SLACK, hubColumnsFor, hubContentMaxW, tileWidthFor } from '../src/screens/tools/hubGrid.ts';
 
 const read = (f: string) => readFileSync(f, 'utf8').replace(/\r\n/g, '\n');

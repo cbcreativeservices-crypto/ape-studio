@@ -30,8 +30,7 @@ import { acquireMic, micAcquireSeq, releaseMic, releaseMicNow } from './micSessi
 import { releaseOnSupersede } from './startSupersede';
 import { markMicAcquire } from '../devTiming';
 import type { WarningFlag } from '../measure/types';
-import { createClipBaseline, type ClipBaseline } from './clipBaseline';
-import { noSignalVerdict } from './noSignal';
+import { createClipBaseline, noSignalVerdict, type ClipBaseline } from './clipBaseline';
 
 /** Android runtime mic-permission request (iOS requests it natively inside the
  *  module). Returns true if granted. No-op → true on non-Android. */
@@ -295,7 +294,7 @@ export function useDspEngine(config: EngineConfig, poll: {
     [],
   );
 
-  // NO SIGNAL (iPad pass 2026-10-07 — see ./noSignal): RUNNING, but the mic
+  // NO SIGNAL (iPad pass 2026-10-07 — see NO SIGNAL in ./clipBaseline): RUNNING, but the mic
   // tap has not delivered one live frame. Checked at 2 Hz only until the
   // first live frame (then the screens' own staleness rules take over), and
   // reset by every new start. Hosts hand it to EngineGate's `noSignal`.
