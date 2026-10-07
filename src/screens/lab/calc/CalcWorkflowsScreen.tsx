@@ -28,12 +28,17 @@ import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCat
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export function CalcWorkflowsScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the workflow cards take the iPad's
+  // width in columns. Phone: unchanged (`wide` null, TabletGrid a Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<Nav>();
   const { entitlement, resolved, tierKnown, tierReadFailed } = useEntitlement();
   // A signed-in learner whose membership read FAILED (no remembered tier)
@@ -298,7 +303,7 @@ export function CalcWorkflowsScreen() {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
         {dropNote ? <Text style={styles.warnText}>⚠ {dropNote}</Text> : null}
 
         <Text style={[styles.sectionTitle, { color: colors.green }]}>
@@ -319,12 +324,16 @@ export function CalcWorkflowsScreen() {
               : 'Nothing saved yet — start from a template below, or build one with ＋ NEW.'}
           </Text>
         ) : (
-          mine.map((w, i) => renderRow({ w, template: false, index: i, count: mine.length }))
+          <TabletGrid minTile={360} maxCols={3} gap={10}>
+            {mine.map((w, i) => renderRow({ w, template: false, index: i, count: mine.length }))}
+          </TabletGrid>
         )}
 
         <Text style={[styles.sectionTitle, { color: colors.blue }]}>WORKFLOW TEMPLATES</Text>
         <Text style={styles.caption}>Built-in sequences using the lab’s calculators. Duplicate one to customize it.</Text>
-        {WORKFLOW_TEMPLATES.map((w) => renderRow({ w, template: true }))}
+        <TabletGrid minTile={360} maxCols={3} gap={10}>
+          {WORKFLOW_TEMPLATES.map((w) => renderRow({ w, template: true }))}
+        </TabletGrid>
       </ScrollView>
     </View>
   );

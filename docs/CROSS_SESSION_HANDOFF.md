@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 07:12 · ccode · 4136821c
+changed: iPad audio tools: a mic that never delivers is said plainly; iOS capture runs at the tap's rate
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-10-06 23:01 · ccode · 1b8e0252
 changed: iPad: menus, hubs and grids use the whole tablet; gallery trophies fill their tiles
 affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">

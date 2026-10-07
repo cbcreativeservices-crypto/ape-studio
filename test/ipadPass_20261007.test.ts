@@ -176,6 +176,9 @@ const WIDENED: Array<[string, RegExp]> = [
   ['src/screens/achievements/TopicsScreen.tsx', /cardColumn, wide\]/],
   ['src/screens/achievements/CredentialWall.tsx', /cardColumn, wide\]/],
   ['src/screens/tools/MeasurementLibraryScreen.tsx', /\[styles\.scroll, wide\]/],
+  ['src/screens/lab/tube/TubeReferenceScreen.tsx', /\[styles\.scroll, cardColumn, wide\]/],
+  ['src/screens/lab/calc/CalcWorkflowsScreen.tsx', /\[styles\.scroll, cardColumn, wide\]/],
+  ['src/screens/lab/calc/CalcProjectsScreen.tsx', /\[styles\.scroll, cardColumn, wide\]/],
 ];
 
 test('every widened menu takes the wide column on a tablet only', () => {
@@ -194,6 +197,8 @@ test('menus spend the width on columns, not on stretched rows', () => {
     'src/screens/achievements/TopicsScreen.tsx',
     'src/screens/achievements/CredentialWall.tsx',
     'src/screens/tools/ToolsHubScreen.tsx',
+    'src/screens/lab/tube/TubeReferenceScreen.tsx',
+    'src/screens/lab/calc/CalcWorkflowsScreen.tsx',
     ...['amp/AmpLabHomeScreen', 'cymatics/CymaticsHomeScreen', 'digital/DigitalLabHomeScreen', 'eq/EqLabHomeScreen', 'gain/GainLabHomeScreen', 'meter/MeterLabHomeScreen', 'wave/WaveLabHomeScreen', 'eartraining/EarTrainingLabScreen'].map((f) => `src/screens/lab/${f}.tsx`),
   ];
   for (const f of grids) assert.match(read(f), /<TabletGrid /, `${f}: a wide menu needs its columns`);
@@ -207,6 +212,9 @@ test('menus spend the width on columns, not on stretched rows', () => {
   const lib = read('src/screens/tools/MeasurementLibraryScreen.tsx');
   assert.match(lib, /numColumns=\{wide \? 2 : 1\}/);
   assert.match(lib, /key=\{wide \? 'cols-2' : 'cols-1'\}/, 'numColumns cannot change on a mounted list');
+  const proj = read('src/screens/lab/calc/CalcProjectsScreen.tsx');
+  assert.match(proj, /numColumns=\{wide \? 2 : 1\}/);
+  assert.match(proj, /key=\{wide \? 'cols-2' : 'cols-1'\}/, 'numColumns cannot change on a mounted list');
 });
 
 test('prose inside a wide menu keeps the reading measure (tablet only)', () => {

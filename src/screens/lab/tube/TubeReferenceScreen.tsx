@@ -26,10 +26,16 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
+import { useWideOnTablet } from '../../../theme/useIsTablet';
+import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 
 export function TubeReferenceScreen() {
   const insets = useSafeAreaInsets();
+  // Tablet (owner iPad report 2026-10-06): the tube index takes the iPad's
+  // width — each family's cards in columns. Phone: unchanged (`wide` null,
+  // TabletGrid a Fragment).
+  const wide = useWideOnTablet();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   // Unknown tier ⇒ render the UNLOCKED index (entitlement roll-out
   // 2026-09-11): the provider boots at 'anonymous', so a member first-saw every
@@ -112,7 +118,7 @@ export function TubeReferenceScreen() {
         ) : null}
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn]} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]} keyboardShouldPersistTaps="handled">
         {gate === 'unconfirmed' ? (
           <View style={styles.lockCard}>
             <Text style={styles.lockEyebrow}>MEMBERSHIP NOT CONFIRMED</Text>
@@ -141,6 +147,7 @@ export function TubeReferenceScreen() {
             <View key={fam.key} style={{ gap: 8 }}>
               <Text style={styles.famTitle}>{fam.title}</Text>
               <Text style={styles.caption}>{fam.note}</Text>
+              <TabletGrid minTile={300} maxCols={3} gap={8}>
               {items.map((r) => (
                 <Pressable
                   key={r.id}
@@ -162,6 +169,7 @@ export function TubeReferenceScreen() {
                   <Text style={styles.rowChevron}>{unlocked ? '›' : 'ACADEMY'}</Text>
                 </Pressable>
               ))}
+              </TabletGrid>
             </View>
           );
         })}

@@ -70,9 +70,10 @@ export function galleryLayout(windowW: number, windowH: number): { cols: number;
   const pad = 24;
   const gap = 16;
   const avail = windowW - pad * 2;
-  // 230 pt minimum tile: 3 across an iPad mini (744), 4 on a 13" portrait,
-  // 5 in landscape — every one far bigger than the phone's 48 pt badge.
-  const cols = gridColumns(avail, 230, gap, 2, 6);
+  // 210 pt minimum tile: 3 across an iPad mini (744 → 221 pt cards), 4 on a
+  // 13" portrait, 5 in landscape — every one far bigger than the phone's 48 pt
+  // badge. (230 left a portrait iPad mini at two columns.)
+  const cols = gridColumns(avail, 210, gap, 2, 6);
   const tileW = tileSpan(avail, cols, gap);
   return { cols, pad, gap, tileW, art: Math.max(GALLERY_PHONE_ART, tileW - 28) };
 }
