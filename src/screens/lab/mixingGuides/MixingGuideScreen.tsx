@@ -20,7 +20,7 @@
  * the foot does it in place. ✓ READ shows only from the record (a write
  * result or this session's held reading for a guest), never optimistically.
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -31,6 +31,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { persistAllowed } from '../../../features/commercial/tier';
 import { useTier } from '../../../features/commercial/useTier';
+import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { useLatchedPress } from '../../../lib/latch';
 import { LabEndScreen } from '../kit/LabEndScreen';
@@ -70,6 +71,9 @@ export function MixingGuideScreen() {
   const unreadable = useGuidesUnreadable();
   const readIds = useMemo(() => new Set(progress.read), [progress.read]);
   const isRead = readIds.has(entry.id);
+  // A members-only PREVIEW earns nothing (readProgress), so MARK AS READ
+  // would be a dead button there (hunt 2026-10-07): it says so instead.
+  const inPreview = useLabPreview().active;
 
   const [ending, setEnding] = useState(false);
   // Which sections are open. Kept across styles: a reader who opens EQ on one
@@ -105,13 +109,18 @@ export function MixingGuideScreen() {
 
   const markRead = useLatchedPress(() => markGuideRead(entry.id));
 
-  const toggle = (k: GuideSectionKey) =>
-    setOpen((prev) => {
-      const next = new Set(prev);
-      if (next.has(k)) next.delete(k);
-      else next.add(k);
-      return next;
-    });
+  // Stable, so a memoised Section re-renders only when its own open state
+  // changes (hunt 2026-10-07 timing: OPEN ALL / a toggle re-rendered every body).
+  const toggle = useCallback(
+    (k: GuideSectionKey) =>
+      setOpen((prev) => {
+        const next = new Set(prev);
+        if (next.has(k)) next.delete(k);
+        else next.add(k);
+        return next;
+      }),
+    [],
+  );
   const sections = guide ? GUIDE_SECTIONS.filter((s) => !guide.empty.includes(s.key)) : [];
   const allOpen = sections.every((s) => open.has(s.key));
   const setAll = () => setOpen(allOpen ? new Set<GuideSectionKey>() : new Set(sections.map((s) => s.key)));
@@ -169,14 +178,14 @@ export function MixingGuideScreen() {
                   </Pressable>
                 </View>
                 {sections.map((s, i) => (
-                  <Section key={s.key} n={i + 1} title={s.title} open={open.has(s.key)} onToggle={() => toggle(s.key)}>
-                    <SectionBody guide={guide} k={s.key} />
-                  </Section>
+                  <Section key={s.key} k={s.key} n={i + 1} title={s.title} open={open.has(s.key)} onToggle={toggle} guide={guide} />
                 ))}
 
                 <View style={styles.footer}>
                   {isRead ? (
                     <Text style={styles.readTag}>✓ READ</Text>
+                  ) : inPreview ? (
+                    <Text style={styles.previewNote}>Members-only preview — reading here is not recorded.</Text>
                   ) : (
                     <Pressable onPress={markRead} style={styles.markBtn} accessibilityRole="button" accessibilityLabel={`Mark ${entry.title} as read`}>
                       <Text style={styles.markText}>MARK AS READ</Text>
@@ -195,11 +204,25 @@ export function MixingGuideScreen() {
   );
 }
 
-function Section({ n, title, open, onToggle, children }: { n: number; title: string; open: boolean; onToggle: () => void; children: ReactNode }) {
+const Section = memo(function Section({
+  k,
+  n,
+  title,
+  open,
+  onToggle,
+  guide,
+}: {
+  k: GuideSectionKey;
+  n: number;
+  title: string;
+  open: boolean;
+  onToggle: (k: GuideSectionKey) => void;
+  guide: MixingGuide;
+}) {
   return (
     <View style={styles.section}>
       <Pressable
-        onPress={onToggle}
+        onPress={() => onToggle(k)}
         style={styles.sectionHead}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
@@ -210,10 +233,14 @@ function Section({ n, title, open, onToggle, children }: { n: number; title: str
         <Text style={styles.sectionTitle}>{title}</Text>
         <Text style={styles.chev}>{open ? '▴' : '▾'}</Text>
       </Pressable>
-      {open ? <View style={styles.sectionBody}>{children}</View> : null}
+      {open ? (
+        <View style={styles.sectionBody}>
+          <SectionBody guide={guide} k={k} />
+        </View>
+      ) : null}
     </View>
   );
-}
+});
 
 function SectionBody({ guide, k }: { guide: MixingGuide; k: GuideSectionKey }) {
   if (k === 'references') {
@@ -326,5 +353,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   markText: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.green },
+  previewNote: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSub, textAlign: 'center', paddingVertical: 10 },
   readTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.green, textAlign: 'center', paddingVertical: 12 },
 });

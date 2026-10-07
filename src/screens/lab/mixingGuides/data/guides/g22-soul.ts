@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keys:",
-      "text": "tonewheel organ with rotating speaker, piano, tine and reed electric pianos (essential to neo-soul), clavinet; vibraphone in Philly soul.",
+      "text": "Hammond organ with rotating speaker, piano, tine and reed electric pianos (essential to neo-soul), clavinet; vibraphone in Philly soul.",
       "bullet": true
     },
     {
@@ -119,7 +119,7 @@ export const GUIDE: MixingGuide = {
         "notes": "LPF 10–12 kHz; avoid masking the vocal’s 2–4 kHz"
       },
       {
-        "source": "Organ (rotating speaker)",
+        "source": "Hammond (rotating speaker)",
         "cut": "HPF 60–80 Hz (top rotor mics 150 Hz)",
         "boost": "+1–2 dB at 2–3 kHz to cut through",
         "notes": "Mic top rotor left/right for width"

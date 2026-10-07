@@ -646,6 +646,9 @@ affects other side: nothing (client-only Miking Labs 1–4 fixes; no backend, sc
 ### 2026-10-07 16:12 · ccode · dcc0ee16
 changed: fix(lab5): toddler pass - false zone credit on START, stale array geometry/seating in Placement, stage memo busting
 affects other side: nothing (client-only Lab 5 screen fixes)
+### 2026-10-07 15:46 · ccode · 8ccc26cb
+changed: mixing guides: restore the brand-name exception "Hammond" (owner 2026-10-07)
+affects other side: nothing (client-only: generated mixing-guide text now keeps "Hammond"; no backend change)
 needs: nothing
 
 

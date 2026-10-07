@@ -38,14 +38,12 @@ GLOBAL = [
     (r"\bMelodyne-style\b", "graphical, note-by-note"),
     # Keyboards by brand → the instrument.
     (r"\bRhodes/Wurlitzer\b", "electric pianos (tine and reed)"),
-    (r"\bHammond organ with Leslie\b", "tonewheel organ with rotating speaker"),
-    (r"\bHammond organ\b", "tonewheel organ"),
-    (r"\bHammond B3\b", "tonewheel organ"),
-    (r"\bHammond with Leslie\b", "tonewheel organ with rotating speaker"),
+    # "Hammond" stays (owner 2026-10-07: "it is how it is only recognized");
+    # only the model numbers and the speaker brand go.
+    (r"\bHammond B3\b", "Hammond organ"),
     (r"\bRhodes\b", "electric piano"),
     (r"\bWurlitzer\b", "reed electric piano"),
     (r"\bLeslie\b", "rotating speaker"),
-    (r"(?<!Fred )\bHammond\b", "tonewheel organ"),  # not the gospel artist Fred Hammond
     (r"\bB3\b", "organ"),
     # Drum machines: keep the numbers the styles are named by, drop the maker.
     (r"\bRoland TR-(\d+)", r"\1"),
@@ -224,7 +222,7 @@ EDITS = {
     ],
     "house": [
         ("Drum machines: the Roland TR-909 (kick, clap, open and closed hats) and TR-808, plus TR-707/727 and CR-78 sounds; now mostly samples.", "Drum machines: the classic 909 (kick, clap, open and closed hats) and 808, plus 707/727 and other vintage drum-machine sounds; now mostly samples."),
-        ("Harmony: Rhodes and electric piano, piano stabs (the “house piano” since Marshall Jefferson’s 1986 anthem), organ (M1 organ bass and Hammond-style), Juno-type pads,", "Harmony: electric pianos, piano stabs (the “house piano” of the mid-1980s anthems), organ (digital organ bass and tonewheel-style), analog-polysynth pads,"),
+        ("Harmony: Rhodes and electric piano, piano stabs (the “house piano” since Marshall Jefferson’s 1986 anthem), organ (M1 organ bass and Hammond-style), Juno-type pads,", "Harmony: electric pianos, piano stabs (the “house piano” of the mid-1980s anthems), organ (digital organ bass and Hammond-style), analog-polysynth pads,"),
         ("on CDJs, turntables or controllers", "on DJ media players, turntables or controllers"),
         (" (SM58, Beta 58A, KSM9 class)", ""),
         ("Spotify normalizes to −14 LUFS, so", "Most streaming services normalize to −14 LUFS, so"),
@@ -233,20 +231,20 @@ EDITS = {
     ],
     "heavy-metal": [],
     "gospel": [
-        ("Hammond organ (B3, C3, A100, or clone) through a Leslie:", "Tonewheel organ (vintage or clone) through a rotating speaker:"),
+        ("Hammond organ (B3, C3, A100, or clone) through a Leslie:", "Hammond organ (vintage or clone) through a rotating speaker:"),
         ("synth pads, strings and Rhodes in contemporary settings", "synth pads, strings and electric piano in contemporary settings"),
-        ("Hammond top (horn)", "Organ top (horn)"),
-        ("Hammond bottom (rotor)", "Organ bottom (rotor)"),
+        ("Hammond top (horn)", "Hammond top (horn)"),
+        ("Hammond bottom (rotor)", "Hammond bottom (rotor)"),
     ],
     "jazz": [
         ("piezo pickup (Fishman, Underwood, Realist) blended with a mic", "piezo or bridge pickup blended with a mic"),
-        ("acoustic grand, or Rhodes/Hammond B3 in soul-jazz and organ trios", "acoustic grand, or electric piano/tonewheel organ in soul-jazz and organ trios"),
+        ("acoustic grand, or Rhodes/Hammond B3 in soul-jazz and organ trios", "acoustic grand, or electric piano/Hammond organ in soul-jazz and organ trios"),
         ("(Neumann KMS 105, Shure KSM9 or Beta 87A class)", "(handheld condenser or high-end dynamic)"),
         ("2:1–4:1 (1176-style)", "2:1–4:1 (FET-style)"),
     ],
     "soul": [
         ("—Erykah Badu’s FOH engineer Kenneth Williams aims to immerse fans, not pummel them.", "—the aim is to immerse fans, not pummel them."),
-        ("Keys: Hammond organ with Leslie, piano, Fender Rhodes and Wurlitzer (essential to neo-soul), clavinet;", "Keys: tonewheel organ with rotating speaker, piano, tine and reed electric pianos (essential to neo-soul), clavinet;"),
+        ("Keys: Hammond organ with Leslie, piano, Fender Rhodes and Wurlitzer (essential to neo-soul), clavinet;", "Keys: Hammond organ with rotating speaker, piano, tine and reed electric pianos (essential to neo-soul), clavinet;"),
         ("Motown engineers rode faders by hand at mixdown, and FOH engineers like Gordon Williams (Leela James) describe “performing” the dynamics with the band.", "The classic soul engineers rode faders by hand at mixdown, and good FOH engineers “perform” the dynamics with the band."),
         (", and Daptone’s Gabriel Roth has used drums-left/bass-right layouts", ", and modern retro-soul records use drums-left/bass-right layouts too"),
         ("Live mics: SM58, Beta 58A, e935 or a quality condenser handheld.", "Live mics: a rugged dynamic or a quality condenser handheld."),
@@ -255,7 +253,7 @@ EDITS = {
         (" (Roth rolls lows off before tape; Charles Bradley’s producer filtered above 6 kHz)", ""),
         ("Live, use virtual soundcheck when possible (as Anderson .Paak’s FOH engineer does).", "Live, use virtual soundcheck when possible."),
         ("Rhodes / Wurlitzer", "Electric piano (tine / reed)"),
-        ("Hammond (Leslie)", "Organ (rotating speaker)"),
+        ("Hammond (Leslie)", "Hammond (rotating speaker)"),
         ("Catches belts; Elmhirst hit “Rehab” with about 10 dB from a fast 1176", "Catches belts; famous retro-soul vocals took about 10 dB from a fast FET compressor"),
         ("LA-2A or Fairchild-style smoothing", "Optical or vari-mu tube-style smoothing"),
         ("As part of the tone; D’Angelo ran vocals through a Leslie", "As part of the tone; neo-soul has even run vocals through a rotating speaker"),
@@ -263,12 +261,12 @@ EDITS = {
     ],
     "hard-rock": [
         ("(Marshall crunch is the archetype)", "(British-style tube crunch is the archetype)"),
-        ("Hammond (Deep Purple lineage)", "tonewheel organ (the Deep Purple lineage)"),
+        ("Hammond (Deep Purple lineage)", "Hammond organ (the Deep Purple lineage)"),
         ("Arena productions in the Mutt Lange tradition stack backing vocals", "Big 1980s-style arena productions stack backing vocals"),
         (" (SM58, Beta 58A, e935)", ""),
         ("Germany’s DIN 15905-5 sets 99 dBA over 30 minutes and 135 dBC peak;", "German rules set 99 dBA over 30 minutes and 135 dBC peak;"),
         ("Offer earplugs; per NIOSH, 100 dBA is safe for about 15 minutes a day.", "Offer earplugs; by common hearing-safety guidance, 100 dBA is safe for about 15 minutes a day."),
-        ("Hammond / keys", "Organ / keys"),
+        ("Hammond / keys", "Hammond / keys"),
         ("1176-style catches screams", "Fast FET-style catches screams"),
         ("SSL-style bus comp is standard", "VCA bus-style comp is standard"),
     ],
@@ -319,7 +317,7 @@ EDITS = {
     ],
     "reggae": [
         ("Bass: Fender Jazz or Precision with flatwounds,", "Bass: a passive four-string with flatwounds,"),
-        ("Hammond-style 16th-note shuffle", "Organ-style 16th-note shuffle"),
+        ("Hammond-style 16th-note shuffle", "Hammond-style 16th-note shuffle"),
         (" (SM58, Beta 58, e935 class)", ""),
         ("Tape echo (Space Echo style)", "Tape echo (classic tape-loop style)"),
     ],
@@ -341,18 +339,18 @@ EDITS = {
         ("flat-top or resonator (National steel, Dobro), often played", "flat-top or resonator (steel- or wood-bodied), often played"),
         ("Strat, Les Paul or ES-335 class guitars into tube combos (Fender Bassman, Deluxe, Super Reverb) at the edge of breakup;", "single-coil, solid-body humbucker or semi-hollow guitars into vintage-style tube combos at the edge of breakup;"),
         ("cupped to a bullet mic (Green Bullet, JT-30 class) into a small overdriven tube amp", "cupped to a bullet-style harmonica mic into a small overdriven tube amp"),
-        ("Hammond with Leslie in soul-blues and blues-rock", "tonewheel organ with rotating speaker in soul-blues and blues-rock"),
+        ("Hammond with Leslie in soul-blues and blues-rock", "Hammond organ with rotating speaker in soul-blues and blues-rock"),
         ("; Buddy Guy’s FOH engineer Sage Anthony names that swing as his main challenge.", "; riding that swing is the main live challenge."),
         (" (SM58, Beta 58A, e945 class)", ""),
         ("Under NIOSH guidance 100 dBA is safe for only 15 minutes;", "By common hearing-safety guidance, 100 dBA is safe for only 15 minutes;"),
         ("Large festivals (e.g., Chicago Blues Festival) use line arrays", "Large festivals use line arrays"),
         ("Spotify normalizes to −14 LUFS (−11 on its Loud setting)", "Most streaming services normalize to −14 LUFS (−11 on some loud settings)"),
-        ("Piano / Hammond", "Piano / organ"),
-        ("Hammond, occasionally guitar", "Organ, occasionally guitar"),
+        ("Piano / Hammond", "Piano / Hammond"),
+        ("Hammond, occasionally guitar", "Hammond, occasionally guitar"),
     ],
     "funk": [
         ("synth bass (Minimoog) took over in electro-funk", "analog synth bass took over in electro-funk"),
-        ("Keys: Hohner Clavinet (often through an amp, with wah or phaser), Rhodes, Hammond organ,", "Keys: clavinet (often through an amp, with wah or phaser), electric piano, tonewheel organ,"),
+        ("Keys: Hohner Clavinet (often through an amp, with wah or phaser), Rhodes, Hammond organ,", "Keys: clavinet (often through an amp, with wah or phaser), electric piano, Hammond organ,"),
         ("Electronic: TR-808/LinnDrum in 1980s electro-funk;", "Electronic: 808 and other vintage drum machines in 1980s electro-funk;"),
         ("Live, use an SM58/Beta 58/e935 or 5235-type capsule, and keep", "Live, use a rugged dynamic or a supercardioid capsule, and keep"),
         ("(−2 dBTP if louder than −14 LUFS, per Spotify)", "(−2 dBTP if louder than −14 LUFS)"),
@@ -588,7 +586,7 @@ EDITS["pop"] += [
     ("Use transparent graphical correction (Melodyne-style) for most pop.", "Use transparent note-by-note (graphical) correction for most pop."),
     ("Hand mastering a mix with 3–6 dB of headroom", "Give mastering a mix with 3–6 dB of headroom"),
 ]
-EDITS["reggae"] += [("Organ-style 16th-note shuffle around the offbeat", "a 16th-note organ shuffle (the “bubble”) around the offbeat")]
+EDITS["reggae"] += [("Hammond-style 16th-note shuffle around the offbeat", "a 16th-note Hammond organ shuffle (the “bubble”) around the offbeat")]
 
 EXPECTS = {
     "pop": "They expect a voice that sounds intimate yet huge, a chorus that lifts noticeably above the verse, and low end that feels modern without blurring the vocal.",

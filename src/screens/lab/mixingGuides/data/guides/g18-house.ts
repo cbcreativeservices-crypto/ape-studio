@@ -36,7 +36,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Harmony:",
-      "text": "electric pianos, piano stabs (the “house piano” of the mid-1980s anthems), organ (digital organ bass and tonewheel-style), analog-polysynth pads, minor 7th and 9th chord stabs.",
+      "text": "electric pianos, piano stabs (the “house piano” of the mid-1980s anthems), organ (digital organ bass and Hammond-style), analog-polysynth pads, minor 7th and 9th chord stabs.",
       "bullet": true
     },
     {

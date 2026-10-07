@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Organ (bubble) and piano:",
-      "text": "a 16th-note organ shuffle (the “bubble”) around the offbeat; piano doubles the skank.",
+      "text": "a 16th-note Hammond organ shuffle (the “bubble”) around the offbeat; piano doubles the skank.",
       "bullet": true
     },
     {

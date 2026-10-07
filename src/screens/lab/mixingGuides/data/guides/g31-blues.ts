@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Piano and organ:",
-      "text": "barrelhouse and boogie-woogie piano (Otis Spann’s role with Muddy Waters); tonewheel organ with rotating speaker in soul-blues and blues-rock.",
+      "text": "barrelhouse and boogie-woogie piano (Otis Spann’s role with Muddy Waters); Hammond organ with rotating speaker in soul-blues and blues-rock.",
       "bullet": true
     },
     {
@@ -137,7 +137,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Ride/hi-hat carries the shuffle"
       },
       {
-        "source": "Piano / organ",
+        "source": "Piano / Hammond",
         "cut": "HPF 60–100 Hz; −2 dB at 250–400 Hz",
         "boost": "+2 dB at 2–4 kHz on piano for attack",
         "notes": "Keep left-hand boogie out of the bass’s way"
@@ -252,7 +252,7 @@ export const GUIDE: MixingGuide = {
       },
       {
         "effect": "rotating speaker",
-        "appliedTo": "Organ, occasionally guitar",
+        "appliedTo": "Hammond, occasionally guitar",
         "setting": "Slow/fast rotor",
         "amount": "Part of the tone"
       }

@@ -93,7 +93,7 @@ const BRANDS = [
   'CL-1B', 'Fairchild\\w*', 'SSL\\w*', 'Distressor', 'Pultec\\w*', 'EMT', 'Lexicon\\w*', 'H3000\\w*', 'Eventide', 'AMS', 'Ableton',
   'Pro Tools', 'Serato', 'CDJs?', 'FL Studio', 'MPC\\w*', 'Akai', 'SP-?404\\w*', 'SP-?1200', 'S950\\w*', 'RC-20', 'Roland', 'TR-?\\d+\\w*',
   'TB-?303', 'CR-?78', 'SH-?101\\w*', 'Juno\\w*', 'Korg', 'Ketron', 'Yamaha', 'DX ?\\d+\\w*', 'PSR', 'Linn\\w*', 'Moog', 'Minimoog', 'ARP',
-  'Solina', 'Hammond\\w*', 'B-?3', 'Leslie\\w*', 'Rhodes', 'Wurlitzer', 'Clavinet', 'Mellotron', 'Farfisa', 'Vox', 'Fender', 'Telecasters?',
+  'Solina', 'B-?3', 'Leslie\\w*', 'Rhodes', 'Wurlitzer', 'Clavinet', 'Mellotron', 'Farfisa', 'Vox', 'Fender', 'Telecasters?',
   'Tele', 'Strat\\w*', 'Jazzmasters?', 'Rickenbacker', 'Gibson', 'ES-335', 'Les Paul', 'Bassman', 'JC-?120', 'Marshall\\w*', 'Ampeg\\w*',
   'SansAmp\\w*', 'Big Muff', 'P-bass', 'Dobro', 'Hohner', 'Fishman', 'DiGiCo', 'RIVAGE', 'Axient', 'L-Acoustics', 'L-ISA', 'Meyer',
   'd&b', 'TiMax', 'KLANG', 'Spotify\\w*', 'YouTube\\w*', 'Apple(?: Music)?', 'Tidal', 'Amazon', 'Anghami', 'SoundCloud', 'TikTok',
@@ -324,9 +324,9 @@ describe('wiring (Training Labs → Mixing, members only)', () => {
   it('the hub is the shared glass push-button grid with a filter; the guide runs on the shared strip and ends on what’s left', () => {
     const hub = strip(read(`${DIR}/MixingGuidesHubScreen.tsx`));
     assert.match(hub, /import \{ GlassPanel, GlassTile \} from '\.\.\/\.\.\/tools\/GlassTile';/);
-    assert.match(hub, /style=\{tablet \? tabletTile : styles\.tileHalf\}/);
+    assert.match(hub, /tileStyle=\{tablet \? tabletTile : styles\.tileHalf\}/);
     assert.match(hub, /tileHalf: \{ width: '48\.5%' \}/);
-    assert.match(hub, /filterGuides\(MIXING_GUIDE_INDEX, query\)/);
+    assert.match(hub, /filterGuides\(MIXING_GUIDE_INDEX, deferredQuery\)/);
     assert.match(hub, /<ProgressUnreadableNote\b/);
     assert.match(hub, /readCountLine\(readCount, total\)/);
     const host = strip(read(`${DIR}/MixingGuideScreen.tsx`));

@@ -25,7 +25,7 @@ export const GUIDE: MixingGuide = {
   ],
   "instruments": [
     {
-      "label": "Tonewheel organ (vintage or clone) through a rotating speaker:",
+      "label": "Hammond organ (vintage or clone) through a rotating speaker:",
       "text": "the signature voice of the style — pads under singing, stabs and swells, and “talking” behind the preacher.",
       "bullet": true
     },
@@ -96,13 +96,13 @@ export const GUIDE: MixingGuide = {
         "notes": "Keep them darker than the lead so the lead cuts"
       },
       {
-        "source": "Organ top (horn)",
+        "source": "Hammond top (horn)",
         "cut": "HPF 100–150 Hz; −2–3 dB at 2–3 kHz if the overdriven rotating speaker gets edgy",
         "boost": "+1–2 dB at 800 Hz–1.5 kHz for body",
         "notes": "Two mics hard L/R; key click lives near 3–5 kHz"
       },
       {
-        "source": "Organ bottom (rotor)",
+        "source": "Hammond bottom (rotor)",
         "cut": "HPF 50–70 Hz; −2–4 dB at 200–300 Hz",
         "boost": "+2 dB at 80–100 Hz if thin",
         "notes": "Kick-style mic about 3 in. from the opening, angled out of the wind"
