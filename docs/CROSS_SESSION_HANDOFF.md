@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 23:45 · ccode · 25a9e520
+changed: Flashcards/glossary: no electrical-hazard caution on mic shock mounts
+affects other side: nothing (client-only: no electrical caution on shock-mount terms)
+needs: nothing
+
+
 ### 2026-10-06 22:07 · ccode · 50b5d3fd
 changed: Merge branch 'worktree-agent-a7888cdfcf4f9b300' into final-lab
 affects other side: nothing (client-only Miking fixes; Miking still hidden on store builds)
