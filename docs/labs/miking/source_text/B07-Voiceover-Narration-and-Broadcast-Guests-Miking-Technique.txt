@@ -1,0 +1,68 @@
+# Voiceover, Narration and Broadcast Guests Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B07  •  Studio, live and remote applications
+This lesson places microphones for one voice speaking a script, performing narration, or contributing as an in-studio or remote broadcast guest. The aim is intelligible, consistent speech with a chosen amount of intimacy and room sound. Microphone location, speaking direction, pop protection and room acoustics are the lesson’s core; routing and monitoring support the placement. No audio examples are included.
+# Define the intended vocal perspective
+Choose the destination and perspective before choosing a microphone: a dry, close announcer sound; a natural narration with some room depth; or a guest sound that can match another speaker well enough for a coherent program. Ask whether the speaker sits or stands, reads from paper or screen, turns to an interviewer, projects or whispers, and has to remain on camera. Placement must permit breathing, page turns, sightlines and a repeatable mouth-to-capsule relationship. DPA describes close frontal and more distant frontal placements as different artistic outcomes, each dependent on performer and room. [1]
+Scout the actual position for ventilation, computer fans, traffic, furniture reflections and booth resonance. Listen to speech and pauses at the intended microphone position. A microphone made more distant admits more room sound relative to direct voice; moving closer often improves intelligibility in a poor room. Soft furnishings can reduce some reflections, but a blanket around a microphone does not make outside noise disappear. [2–4]
+# Compare the principal placements
+Approach
+Placement and intended tone
+What to verify
+Close frontal
+Aim the correct speaking side of the capsule toward the mouth; start a few inches away with an appropriate pop screen or built-in windscreen. DPA discusses about 4 in (10 cm) as a close example; an SM7B guide gives 1–6 in (2.5–15 cm) for that model. [1, 5]
+Direct, intimate articulation and less room relative to voice; plosives, sibilance, breath and directional-mic proximity bass can become prominent. Distance is model/voice dependent.
+Moderate frontal
+Move outward in small steps while holding aim and delivery stable. DPA offers about 12 in (30 cm) as a loose starting point in a room with useful acoustics; Neumann gives 8–12 in (20–30 cm) for a particular studio vocal setup. [1, 6]
+A more open narration sound with natural room contribution; noise and reflections become more audible. The numbers are examples, not fixed standards.
+Slightly off breath axis
+Keep the capsule directed toward the vocal area while offsetting it to the side or above the direct air stream; test how the specific polar response changes consonants. [1, 3]
+Reduced plosive blast can come with off-axis tonal change. Avoid assuming a 90-degree turn works on every microphone.
+Above a script stand
+A firmly mounted mic above the reading surface, aimed down toward the mouth, can preserve the reader’s sightline and reduce paper reflections. [6]
+Check capsule orientation, support rating and head movement. Papers and screens close to the mic can color the voice or create handling noise.
+Guest headset/lavalier
+A headworn mic suits a guest who turns or moves and keeps mouth distance more stable; a lavalier is less visible but more sensitive to clothing, angle and head turns. Cross-link B05. [7]
+Check comfort, visible placement, clothing noise, wireless path if used, and whether the boom or lav is the selected program mic.
+# Select the microphone by the room and delivery
+A directional dynamic broadcast mic, a studio condenser and a headworn mic can each work for speech. Compare them at usable positions and levels, not at the same distant stand location. A dynamic microphone does not inherently reject room noise because it is dynamic: its polar pattern and, especially, close placement change the ratio of voice to room. A condenser can reveal detail and room noise when used farther away, but can also produce clean close speech in a controlled room. Check the actual pattern, noise and input gain requirements of the chosen model. [1, 3, 5, 9]
+A cardioid may reduce pickup from some directions, but reflections arrive from many angles and a deep null is not a substitute for a quieter room. An omni can be less sensitive to small off-axis movements and lacks conventional pressure-gradient proximity bass; it also admits sound from all around. Test these trade-offs with the performer, script and destination rather than treating a microphone category as a preset tone. [1, 8, 9]
+# Make close speech reliable
+Mount the mic on a stable arm or stand, with a shock mount where needed. Locate the actual capsule and speaking side from the manufacturer’s markings; do not address the end of a side-address microphone by habit. Position the script so the reader can look up without moving far off axis. Mark a comfortable chair/stand and pop-screen relationship as a physical cue, then rehearse soft and emphatic passages at performance level. [5, 6]
+Place a pop screen between mouth and capsule, or use the model’s intended windscreen. If plosives remain, first adjust the air path with a modest offset and test the voice’s tone; do not solve severe air blasts only with a high-pass filter after they have overloaded a capsule or preamp. A directional microphone usually gains bass as it moves close (proximity effect); an omnidirectional pressure mic does not have that same pressure-gradient proximity effect. Move the mic and compare before using EQ. [1, 3, 5, 8]
+Avoid sharp changes in mouth distance when delivering a line, turning a page or laughing. If the speaker changes position for character or emphasis, plan and document it as a deliberate perspective change. Rehearse the loudest phrase and leave input headroom for a more forceful take; monitor for clipping, plosives, chair/stand knocks, paper and headphone bleed. A compressor cannot repair an overloaded capsule or clipped input. [2, 6]
+# Match guests without forcing identical equipment
+For an in-studio guest, give each person a separate mic and a position that lets them look at the host while staying inside useful pickup. Compare each voice at the actual program destination. Individual models can differ, but placement, room, distance and speech level may matter more than matching the printed mic name. Mute or lower unneeded microphones in a live room, and check whether the guest mic is routed to PA, stream and recorder. [2, 9]
+For a remote guest, agree on a quiet room and an external microphone or usable headset before the event. Put the mic near the mouth and off the direct plosive path, isolate it from desk taps, and use headphones/earbuds so the remote program does not spill from loudspeakers into the mic. Confirm that the conferencing/broadcast application selected the intended mic and monitor device; a good external mic is irrelevant if the laptop array is the active input. Conduct the test with the guest’s normal posture, level and network connection. [10, 11]
+If no external mic is available, a wired earbud mic placed and held consistently may outperform a distant laptop microphone in some rooms, but check actual speech and cable rub. If the guest must use the laptop mic, bring them closer to the device without blocking its capsule and reduce fan, desk and loudspeaker noise. Do not promise that software noise reduction restores missing consonants or reverberant speech. A room and mic-placement improvement is the first fix. [4, 10]
+# Studio, live and production routing distinctions
+A controlled studio narration can use the more distant technique when the room contributes intentionally, while live broadcast often favors the stability of a close position and a repeatable cue. A remote guest needs a return feed that excludes their own delayed voice (mix-minus) where the system requires it. This routing is a support task: it does not replace choosing and checking their physical microphone. Coordinate with the broadcast engineer and verify the actual guest return, host cue and program feed. [11, 12]
+Use a comfortable, safe headphone level and keep loudspeakers out of an open microphone path unless a designed echo-control system handles them. In a booth, check that talent can hear direction or program without excessive headphone spill. Secure heavy mic arms/stands and route cables clear of walking paths. Never test by provoking acoustic feedback or blowing into the capsule. [6, 13]
+# Guided placement lab
+1. Choose a 30-second spoken script with normal, soft and emphatic delivery, several P/B consonants and one page or screen turn. Record the intended destination and whether a dry or natural room perspective is desired.
+2. At one stable position, test a close frontal placement with a pop screen. Note capsule side, mouth distance, aim, posture, level and room noise. Repeat after a small off-breath-axis adjustment; describe articulation, pops and tonal change.
+3. Move to a moderate distance only if the room supports it. Keep the same reader and passage. Compare voice-to-room balance, reflections, fan noise, sibilance, plosives and consistency after a head turn. Select a placement for the stated brief.
+4. Place a paper/screen stand in the normal reading position and test the stand-up/above-script alternative. Check sightline, stability, page sound and reflections. Adjust position before applying tone processing.
+5. Add an in-studio or remote guest. Verify the chosen input, headphones and mouth position, then compare their speech against the host on the actual program path. For a remote path, check a return that does not echo the guest’s own delayed voice.
+6. Document the final mic model and pattern, placement, pop protection, script arrangement, intended room contribution, guest fallback, program destinations and one limitation that remains.
+Pass criterion: the student can demonstrate a repeatable vocal position, identify plosive and proximity effects, justify close versus moderate placement using the room, verify the guest’s actual microphone, and trace the guest return without unsafe feedback testing. No audio examples.
+# Critical evidence audit
+# Agreement and useful differences
+DPA, Shure and Neumann all emphasize listening in the actual room, controlling mouth position and avoiding plosive air blasts. DPA describes about 4 in close and about 12 in loose narration as creative starting points; Neumann’s 8–12 in guidance belongs to its singer setup, while the SM7B manual gives 1–6 in for that model. These are contextual examples, not competing universal distances. [1, 3, 5, 6]
+# Limits
+A microphone type alone does not eliminate room sound: source distance, pattern, aim and acoustics all matter. A distant mic cannot reliably recover a dry voice from a noisy reflective room, and close placement may exaggerate bass or mouth noise. Remote software, network and echo processing differ by platform; the lesson does not prescribe platform-specific switches or a fixed level target. Verify the selected input and actual return at the destination. [1–5, 10–12]
+# Sources and curriculum connections
+Primary manufacturer guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] DPA, How to Mic Vocals in the Recording Studio
+[2] Shure, Six Keys to Better Audio for Home Recording and Podcasting
+[3] Shure, Audio Systems Guide for Video and Film Production
+[4] Shure, Predicting Speech-to-Background-Noise Level
+[5] Shure, SM7B User Guide
+[6] Neumann, Vocal Recording Setup: Mic Placement, Gain and Headphone Mix
+[7] DPA, How Mic Placement Affects the Recorded Sound of the Voice
+[8] DPA, Proximity Effect in Microphones Explained
+[9] Shure, Choosing a Microphone for Podcasting
+[10] Shure, How to Record a Podcast with Zoom and the MV7
+[11] Sound Devices, Best Practices for Videoconferencing with a MixPre
+[12] Sound Devices, MixPre II User Guide: Mix-Minus
+[13] Neumann, Microphone Maintenance
+Cross-links: Ensembles and Voice individual vocal lessons for range and delivery; B01 radio/podcast host; B02 seated interview; B05 headset and lavalier; B06 panels; B08 audience/event space for a distinct ambience purpose.

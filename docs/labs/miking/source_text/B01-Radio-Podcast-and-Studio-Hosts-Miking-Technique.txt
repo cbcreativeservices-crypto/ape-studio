@@ -1,0 +1,83 @@
+# Radio, Podcast and Studio Host Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B01  •  Spoken-word hosts
+Place a microphone so each host can speak naturally while keeping intelligibility, tone and level consistent. This lesson covers a solo presenter and several people at a desk, then adapts the setup for a live talk program. Its distance ranges are starting points for named devices, not universal specifications. No audio examples are included.
+# Listen to the host and room before selecting a microphone
+Listen to normal speech, emphatic speech, laughs, breaths and head turns at the intended desk. Identify ventilation, computer fans, traffic, bare nearby walls, desk reflections and chair or arm noise. Choose a quiet position and reduce the noise source or reflections when practical; placing a mic closer often improves the direct-speech-to-room ratio, but a microphone cannot remove sound already reaching its capsule. Directional pickup has frequency-dependent rejection and may color off-axis sound. A dynamic element is not inherently immune to room sound. [1–4]
+Confirm the actual address side: an end-address microphone is spoken into along its body axis; a side-address microphone is spoken into its marked front side. Do not infer direction from its cylindrical shape. Choose a pattern and mounting method for the room and the speaker: a directional dynamic end-address mic is common for close broadcast speech; a side-address condenser can work well in a sufficiently quiet and controlled room. A pressure omni lacks the usual directional proximity effect but collects sound from all directions and is often a poor first choice at a reflective multi-host desk. [1, 4, 5]
+# Build a stable mouth-to-capsule relationship
+Setup
+Practical starting placement
+What to check
+End-address dynamic on a boom
+Bring the addressed end within a comfortable speaking distance; Shure specifies 1–6 in (2.5–15 cm) for the SM7B, while RØDE suggests roughly 4–6 in (10–15 cm) for a general dynamic podcast start. Aim the intended speech axis. [1, 2]
+Does the speaker maintain distance while reading and turning? Check bass buildup, plosives, lip noise and adequate clean preamp gain.
+Side-address condenser
+Orient the front marking toward the mouth, then use the manufacturer’s operating guidance; RØDE proposes roughly 6–8 in (15–20 cm) as a podcast start for a condenser. [2]
+Check room pickup, reflections, sibilance, breath blasts and clipping on emphatic phrases.
+Desk stand or boom arm
+Mount clear of the script and sight line, with a secure base/clamp and enough travel for a seated posture. Keep the capsule away from a hard tabletop when feasible. [2, 6]
+Tap or move the desk and adjust the arm to find mechanical rumble; use suitable suspension if needed. Verify clamp, weight rating and cable slack.
+These device-specific numbers disagree only if treated as a single rule. Different capsules, patterns, windscreens, voices and rooms call for different working distances. Begin within the device’s guidance, let the person sit naturally, and adjust by monitoring and recorded speech at comparable playback level. Recheck the loudest delivery for overload. A pop filter can create a repeatable visual distance marker, but it does not establish a universal mouth-to-capsule spacing. [1–3, 7]
+Keep the capsule slightly to one side of the direct breath stream, or slightly above the mouth angled toward it, while retaining useful on-axis speech. Use a proper pop screen or compatible foam windscreen when breath blasts remain. A big off-axis angle can change timbre and intelligibility, particularly with some directional microphones. Ask the host to speak past the diaphragm rather than repeatedly turning the head away; position notes and a quiet rehearsal are more reliable than trying to repair plosives later. [3, 4, 7]
+# Use distance to shape tone without sacrificing consistency
+Moving a directional pressure-gradient microphone closer commonly increases bass through proximity effect. That can supply the familiar full close-talk tone, but too much may obscure words or exaggerate changes as the host leans in and out. Moving away can sound more open yet admits more room and competing voices relative to direct speech. Pressure omnis do not have this directional proximity effect, though distance still changes the direct/room balance. Compare positions at similar playback loudness so a louder take is not mistaken for a better tone. [4, 5]
+Place the boom so an ordinary seated posture keeps the mouth at a repeatable distance. A host who reads downward may need the mic repositioned rather than being told to crane the neck. If a performer moves widely, decide whether to accept natural level and tone movement, rearrange the script and sight line, or choose a suitably placed headworn/clip-on mic for the actual program; this module tests the desk/boom approach. Check glasses, jewelry, clothing, paper and keyboard noises while the host performs the real task.
+# Control several hosts without promising perfect isolation
+Give each host a separate correctly aimed microphone and a distinct recording or mixing channel. Place each close enough to favor its owner’s voice, spread people as the room and communication permit, and orient directional mics so their less-sensitive directions face other speakers where practical. Do not sacrifice comfortable eye contact or force a person to speak directly into a polar null. Other voices will still enter each open microphone, especially in a reflective room. RØDE recommends a close pickup within six inches in its multi-person bleed guidance. [8]
+Have two people speak in turn and then naturally overlap. Listen to each isolated channel and the summed program: a second delayed pickup of the same voice can change timbre through comb filtering, and several open mics admit more room sound. Correct placement, quiet surfaces and appropriate channel management come first. Mute genuinely unused channels, or use an appropriate mixer/automixer when the live format supports it; aggressive gates can clip soft words and overlap. Avoid claiming a fixed “3:1 rule” solves a seated conversation: it is a heuristic for spaced microphones under particular assumptions, not a guarantee in a podcast room. [9, 10]
+A remote guest’s return, producer talkback, headphones, PA, stream and recorder are different signal destinations. Label and verify their routes. Prefer headphones to nearby loudspeakers for ordinary studio conversation, avoiding an open-speaker return into the host microphone. In a live room with audience reinforcement, place the mic and loudspeakers according to the PA design, avoid sending the same mic through an uncontrolled nearby speaker, and keep unused mics closed; additional open microphones can reduce available gain before feedback. Studio bleed and PA feedback are related routing problems but not the same acoustic outcome. [9–11]
+# Set a safe, repeatable operating condition
+Secure the arm and desk clamp within their specified load; protect hands from springs and pinch points, route the cable with slack through movement, and keep stands and leads out of walking paths. Verify connector and power requirements for the actual mic before patching; phantom power belongs only on compatible paths. Check input gain using the host’s loudest plausible speech, laughter and shout, leaving headroom at the mic preamp, interface and subsequent processing. Do not teach one numerical peak or loudness target as a placement rule. Provide comfortable headphone monitoring, avoid sudden high-level returns, and verify the correct mix before opening a live feed.
+A low-frequency filter can reduce some desk and air-conditioning rumble but may thin a close voice; apply it only after moving or isolating the source where possible. Compression, de-essing, denoising and EQ can assist a broadcast mix, yet they cannot undo a clipped plosive, severe reverberation or a badly oriented microphone. For live speech, any processing and automatic mixing must be checked during overlaps and soft sentences, not merely on a single steady voice. [3, 9]
+# Guided placement lab
+1. Choose one host and one correctly identified address orientation. Document the microphone, pattern, mounting, room, seating and intended route. Ask for ordinary, soft and emphatic speech; no supplied audio examples are used.
+2. At the device’s recommended starting range, set clean gain for the loudest likely speech and monitor on headphones. Mark a comfortable repeatable mouth position. Note breath blasts, table vibration, room tone and intelligibility.
+3. Move modestly closer, then farther, with the person maintaining a natural posture. Compare at matched playback loudness. Record what changes in bass, plosives, room pickup, level stability and ergonomics; return to the chosen position.
+4. Add a pop screen and test a slight side or vertical offset while keeping speech toward the usable axis. Recheck plosives, sibilance, timbre and sight line. Tap the desk, turn pages and move the arm carefully to expose mechanical noise.
+5. Add a second host on a separate channel. Test turns and a brief natural overlap. Inspect each channel alone and the program sum; alter spacing, aim or desk position as needed, then test the result again.
+6. If rehearsing a live talk program, trace each mic through recording, stream, headphones, talkback and audience speakers. Open channels one at a time at a controlled level with the responsible operator, check for feedback and monitor spill, then store the documented setup.
+Pass criterion: the student explains the address side, demonstrates repeatable mouth position and plosive control, identifies proximity effect only where applicable, shows each speaker on a separate channel, and distinguishes room/bleed problems from live feedback.
+# Student placement sheet
+Program/room ______________________  Host(s) ______________________  Date ______________________
+Trial
+Position and route
+Tone, noise, bleed and decision
+Initial
+____________________________
+____________________________
+Closer / farther
+____________________________
+____________________________
+Offset / pop screen
+____________________________
+____________________________
+Two hosts / overlap
+____________________________
+____________________________
+Live monitor check
+____________________________
+____________________________
+Mic, pattern and address side ____________________  Mouth distance/angle ____________________
+Mount and reflection changes ____________________  Headphone/PA routes ____________________
+Gain/headroom check _____________________________  Remaining limitation ____________________
+# Critical evidence audit
+# What the sources support
+Shure and RØDE both support close, repeatable host placement and breath-stream control. DPA and Shure explain that proximity effect follows microphone operating principle and pattern, while off-axis pickup and room acoustics matter. RØDE and Shure support reducing multi-mic bleed through geometry and managing the number of open mics. [1–5, 8–10]
+# Where examples must not become universal rules
+The SM7B 1–6 in range, RØDE dynamic 4–6 in example, and RØDE condenser 6–8 in example are starting contexts rather than conflicting standards for all microphones. A close dynamic does not automatically reject a noisy room better than every condenser at the same position and pattern. A foam/pop screen is not proof that a direct blast cannot overload. The 3:1 spacing heuristic cannot reliably be imposed on a table full of conversational hosts. [1, 2, 4, 8, 10]
+# What still needs a site-specific check
+The cited sources cannot prescribe a best mic, exact angle, filter frequency, gain setting, isolation ratio, or automixer behavior for every voice and room. Audition the complete route with normal movement and overlap, confirm the microphone manual and mount rating, and involve the venue’s responsible audio operator for live reinforcement. No claim of zero bleed or zero feedback is made.
+# Primary sources and curriculum connections
+Manufacturer guidance consulted October 5, 2026. Linked resources may contain media; no audio examples are supplied in this lesson.
+[1] Shure SM7B User Guide
+[2] RØDE, How to Make Your Podcast Sound Professional
+[3] RØDE, Position a Microphone and Pop Filter
+[4] Shure, Microphone Basics: Transducers, Patterns and Response
+[5] DPA, Proximity Effect in Microphones
+[6] RØDE PSA1+ Boom Arm Product Guidance
+[7] DPA, How to Mic Vocals in a Recording Studio
+[8] RØDE, Preventing Audio Bleed in Multi-Person Recordings
+[9] Shure, Audio for Distance Learning
+[10] Shure, Microphone Technique and the 3:1 Rule
+[11] Shure, Tips for Avoiding Feedback in Meeting Room Audio
+Cross-links: Ensembles and Voice Lab for vocal timbre and delivery; F13 room acoustics; B02 onward for other broadcast positions and environments. A studio host is a specific spoken-word working setup, not a substitute for those lessons.

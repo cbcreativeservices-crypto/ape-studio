@@ -1,0 +1,78 @@
+# Panels, Press Conferences and Groups Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B06  •  Studio, live and hybrid applications
+A panel is several voices sharing a stage or table; a press conference often adds a lectern, audience questions and a distributed media feed. The miking task is to make each intended speaker intelligible while controlling table noise, room pickup and loudspeaker spill. This lesson compares individual and shared microphones, then tests the actual program and press paths. No audio examples are included.
+# Map the speaking positions and destinations first
+Draw every expected position: moderator, seated panelists, lectern, roving or fixed audience question point, remote contributor and interpreter if present. Mark where each voice must go: in-room PA, webcast/broadcast, recorder, assistive listening, remote return and media distribution. A panel without PA can tolerate a different pickup distance from a reflective room with live reinforcement. Confirm which input is meant to capture each question; a strong lectern mic does not cover an audience aisle. [1, 2]
+Walk the stage and ask who turns toward whom, stands, steps away, handles paper or speaks softly. The nearest usable microphone generally improves direct speech relative to reverberation and competing voices. Pattern and placement must be tested together; a directional mic aimed away from a talker can be worse than a properly placed omni. [2, 3]
+# Choose a microphone for each speaking zone
+Method
+Starting placement and use
+Listen for / limitation
+Individual gooseneck
+One per seated talker where practical; bring the capsule toward the mouth, aim across the normal speaking arc, keep the base away from page turning and knocks. A table/lectern mount or shock mount can reduce structure noise. [1–3]
+Best control for soft or overlapping panelists; can obstruct camera sightlines or be left far away by a speaker.
+Shared boundary / tabletop
+A low-profile microphone on a clear, stable surface between adjacent talkers; use its actual pattern and orientation, not the assumption that every boundary is omnidirectional. A quiet, small meeting may use one for more than one person. [1, 2, 4]
+Greater distance and head turns increase room, noise and neighbor pickup. Papers, laptops and hands can block or bump it; test before choosing it for PA.
+Body-worn headset or lavalier
+Use for a moving chair or presenter. A headset maintains mouth distance as the head turns; a lavalier gives freedom with more level/tone change as the head moves. Fit and cable placement are individual. [5]
+Clothing noise, wireless operation and open lectern overlap must be checked. Do not leave both live for one talker without a deliberate mix choice.
+Handheld question mic
+Give the questioner a clear handoff and coach them to keep it near the mouth throughout the question; a fixed aisle mic is an alternative if access is controlled. [1, 6]
+Audience questions disappear if only the panel/lectern mics are routed to the feed. Check the handoff and possible off-mic interruptions.
+Overhead / camera distance mic
+May document room or serve as a last-resort reference in a quiet controlled space. Keep any ambient pickup out of nearby PA unless the system is designed for it.
+Long distance generally increases reverberation and cross-talk. It is no substitute for a close speech mic in a loud or reverberant room. [2, 3]
+# Lectern and transitions
+Shape a gooseneck so its capsule is near the speaking mouth and outside the presenter’s sightline and paper path. A position below and slightly off the mouth axis can reduce breath bursts while allowing modest head turns; test the actual height range and microphone pattern. Shure describes a centered position around eight inches below the mouth for one lectern use and also describes side placement to avoid plosives, so treat either as a starting point, not a fixed rule. [7, 8]
+If speakers walk away, assign a handheld or body-worn mic and plan who mutes or fades the lectern. When a body-worn mic and lectern both capture the same voice, time offsets can cause comb filtering and extra open-mic gain. A second lectern mic may be a separately routed backup; do not assume two parallel open capsules improve sound. Confirm which one feeds PA, stream and press, and rehearse the handoff with both short and tall speakers. [7–9]
+# Control multiple open microphones
+Label and sound-check each channel independently before summing. Set usable gain for the quietest speaker without raising a distant mic to compensate for poor position; check the loudest expected speech for overload. Start with only needed speech mics open. In live reinforcement, more open microphones collect more PA and room sound, reducing practical gain before feedback; manual riding or a configured automixer can limit this. Do not raise gain to provoke feedback as a test. [3, 10, 11]
+An automixer can choose the nearest active mic or share gain and may include hold time, off attenuation, maximum open channels and chair priority. These vary by model. Rehearse interruptions, simultaneous speech, a soft talker after a loud talker, paper noise, applause, and the audience mic. Listen for clipped first syllables, unnatural pumping, unexpected priority or a room bed vanishing. Leave a route for emergency manual control. A stream/record output might use different gating or a pre-gate tap from the PA mix; verify the actual signal path, not the channel label alone. [10–12]
+When adjacent microphones pick up the same voice, summing can color speech. Reduce redundant open pickup, reposition, or select the better channel rather than applying a universal “3:1” rule as a guarantee. The rule is a useful starting heuristic in some multi-mic geometries; it cannot override the room, patterns, speaker movement or mix routing. [3, 9]
+# Press conference feed: what the box actually supplies
+An approved press distribution unit receives a program signal from the venue or event mixer and gives individual media outputs. It is a signal distribution path, not another microphone. For example, PSC’s Press Train accepts a balanced line-level input and supplies transformer-isolated mic-level outputs; the PSC Press Bridge has mic inputs as well as a line input and different distribution options. These are product-specific designs, not universal connector-level rules. [13, 14]
+Check with the event audio lead
+Why it matters
+Output connector, nominal level, isolation and phantom-power policy for this exact port
+A line-level feed may overload a mic input; a mic-level feed into a line input may be too quiet. Set the input for the verified port, and do not send phantom power into an unverified feed.
+Feed content: lectern, each panelist, audience Q, remote insert, interpreter, playback, and whether it is pre/post mute
+A clean-looking output can omit the question or remote contributor; a press feed is only the mix routed into it.
+One channel or stereo pair; embedded delay or processing; available test time
+Name and verify every recorder input/channel, especially when a broadcast mix differs from the in-room PA.
+An independent local mic if ambience or continuity is required
+Place and label it as a separate source; do not mistake it for the clean speech feed or route it into PA by default.
+Coordinate with the venue rather than crowding a lectern with unapproved microphone stands and cables. If no press distribution exists, arrange a documented mixer split or dedicated feed with the responsible engineer; do not assume an arbitrary passive Y-cable safely serves many independent media inputs. Protect cable paths, stand stability and accessible routes. [13, 14]
+# Live, studio and hybrid differences
+For a close, quiet studio roundtable with no PA, individual mics can be mixed for a consistent conversational sound, while one shared boundary may be acceptable when every participant remains near it. The trade-off is individual control versus visual footprint and simplicity. In a live room, prioritize proximity, loudspeaker placement and the smallest useful set of open inputs. A remote or hybrid panel also needs the far-end voice returned to the right listeners without feeding that return back to itself; coordinate the mix-minus/echo-control path with the system engineer. [1–4, 12]
+A stream or broadcast feed should include audience questions and remote speech intentionally, even when the audience can hear them acoustically in the room. Check intelligibility on the destination monitor, not only at front of house. Separate audience/room mics can convey reaction at a controlled level; they should not silently replace the close speech sources. [1, 2]
+# Guided placement and routing lab
+1. Map a four-person seated panel, lectern and one audience question point. List the outputs for PA and a remote stream; identify who operates mutes and press distribution.
+2. Mount individual goosenecks, then a shared boundary alternative. With the same room and talkers, test each person facing forward and turning to a neighbor. Note mouth distance, room pickup, paper noise and visual obstruction; do not change several variables without recording them.
+3. Add a lectern speaker using its mic, then rehearse a taller/shorter speaker and a speaker with a body-worn mic. Compare one active path at a time and deliberately choose a handoff; keep levels controlled.
+4. Run a complete speech sequence with a soft panelist, overlap, audience question and remote contributor. Check every destination. If using an automixer, repeat with gating/hold/priority as actually configured, noting any missed word.
+5. With the event audio lead, identify the press output by device and port, confirm level and contents, connect an appropriately configured input, and test every required voice. Document the routing. Do not apply phantom power without the device guidance.
+6. Make a final placement card stating mic assignments, aim, mute/backup behavior, question route, stream and press channels, cable protection, and one remaining limitation.
+Pass criterion: each required voice is intelligible in its destination; the student explains an individual versus shared placement, demonstrates a planned lectern handoff, identifies the actual press feed content and level, and documents a safe live setup. No audio examples.
+# Critical evidence audit
+# Agreement and different use cases
+Shure and DPA agree on closer talker pickup, clear aiming and controlling inactive microphones. Shure favors dedicated goosenecks for demanding table speech, while both manufacturers describe shared table microphones in smaller or quieter meetings. This is a difference in room size, reinforcement and required control, not a claim that one microphone type is universally best. [1–4, 10]
+# Limits and checks
+No cited source establishes one exact capsule distance, polar pattern or automixer setting for every table, speaker and PA. The Shure lectern distance is an example, not a mandated safety or quality limit. The “3:1” spacing heuristic and stated benefits of automixing are conditional, so this lesson requires listening to real overlap, head turns and first syllables. Press output level and routing depend on the installed device; the PSC examples do not define every venue. [3, 7–14]
+# Sources and curriculum connections
+Primary manufacturer guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] Shure, Conference Miking: Seven Spaces + Seven Solutions
+[2] Shure, Professional’s Guide to Great Corporate Sound
+[3] DPA, 10 Points on Microphones in Installed Systems
+[4] DPA, Live Streaming and Microphone Techniques
+[5] Shure, Choosing Between Lavalier and Headset Mics
+[6] Shure, Conference Miking: Audience Q&A
+[7] Shure, Church Mic Basics: Selection and Placement
+[8] Shure, How to Avoid Comb Filtering with Podium Mics
+[9] Shure, How to Choose the Best Mic for the Pastor
+[10] Shure, Automatic Microphone Mixers: When You Need Them
+[11] Shure, SCM410 Automatic Mixer
+[12] Shure, Designer User Guide: Automix Properties and Direct Taps
+[13] Professional Sound Corp., Press Train
+[14] Professional Sound Corp., Press Bridge
+Cross-links: B01 host and podcast voices; B02 seated interviews; B03 field reporter handhelds; B04 boom/camera pickup; B05 lavalier and headset microphones; Ensembles and Voice group singing for a different multi-voice objective.
