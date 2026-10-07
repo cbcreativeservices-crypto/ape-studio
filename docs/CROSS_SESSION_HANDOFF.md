@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 10:19 · ccode · 7e797b4f
+changed: docs: Lab 5 group 1 corrections, owner-review defaults and 412x915 captures
+affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
+needs: nothing
+
+
+### 2026-10-07 10:19 · ccode · 0e808394
+changed: Miking Lab 5 group 1: E01 Lead Vocal, E03 Rap Vocal, E07 Singer with Guitar or Piano
+affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
+needs: nothing
+
+
+### 2026-10-07 10:19 · ccode · 37bbc07b
+changed: Miking Lab 5: the shared voice family (frame V, the singer, voice mics)
+affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
+needs: nothing
+
+
+### 2026-10-07 10:19 · ccode · b08bcf20
+changed: Miking engine: pop screen on the mic stand, setup frame cap, vocal mic drawings
+affects other side: nothing (app-side Miking Labs code and docs, branch lab5-g1; no backend, no schema)
+needs: nothing
+
+
 ### 2026-10-07 08:30 · ccode · a038317a
 changed: Merge commit '86a1c21b' into final-lab
 affects other side: nothing (client-only)
