@@ -23,7 +23,7 @@ BRAND_WORDS = [
     r"Echoplex", r"Space Echo", r"Binson", r"Roland", r"Dimension D", r"Chandler",
     # instruments and amps by brand / model
     r"TR-?\d+\w*", r"TB-?303", r"CR-?78", r"SH-?101\w*", r"Juno\w*", r"Korg", r"Ketron", r"Yamaha", r"DX ?\d+\w*", r"PSR",
-    r"Linn\w*", r"Moog", r"Minimoog", r"ARP", r"Solina", r"Hammond\w*", r"B-?3", r"C-?3", r"A-?100", r"Leslie\w*", r"Rhodes",
+    r"Linn\w*", r"Moog", r"Minimoog", r"ARP", r"Solina", r"B-?3", r"C-?3", r"A-?100", r"Leslie\w*", r"Rhodes",
     r"Wurlitzer", r"Clavinet", r"Mellotron", r"Farfisa", r"Vox", r"Fender", r"Telecasters?", r"Tele", r"Strat\w*",
     r"Jazzmasters?", r"Jaguars?", r"Rickenbacker", r"Gibson", r"ES-335", r"Les Paul", r"Bassman", r"Twin Reverb",
     r"Super Reverb", r"Deluxe Reverb", r"JC-?120", r"Marshall\w*", r"Ampeg\w*", r"SansAmp\w*", r"Big Muff", r"Precision Bass",

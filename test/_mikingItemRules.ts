@@ -2,7 +2,8 @@
  * Miking Labs — shared checks for a lesson's words (not a test file itself):
  *   • RESEARCH_NAMES: makers, models and people met in the research, never in
  *     learner text (the brand list in mikingLearnerText.test.ts covers the
- *     common brands; this adds the speaker / hand-drum research names);
+ *     common brands; this adds the speaker / hand-drum research names).
+ *     "Hammond" is NOT here: the owner's brand-name exception (2026-10-07);
  *   • itemRules: the item-writing rules of LESSON_JOURNEY §5 — the correct
  *     option is never conspicuously longer (≤ 1.6 × the others' mean, and the
  *     longest in at most a quarter of the items), no absolute words in the
@@ -10,7 +11,7 @@
  */
 import assert from 'node:assert/strict';
 
-export const RESEARCH_NAMES = /\b(Hammond|Celestion|Marshall|Ampeg|Fender|Shure|Audix|122H|122A|147A|V30|Vintage 30|SM57|SM58|SM81|KSM\d*|PGA27|Beta ?5\d|Mills|Byrne|Michaels|Mishur|Zito|Gilbert|Heritage|Metropolitan|Met|Duvel|Brush|Patranabis|Raman)\b/;
+export const RESEARCH_NAMES = /\b(Celestion|Marshall|Ampeg|Fender|Shure|Audix|122H|122A|147A|V30|Vintage 30|SM57|SM58|SM81|KSM\d*|PGA27|Beta ?5\d|Mills|Byrne|Michaels|Mishur|Zito|Gilbert|Heritage|Metropolitan|Met|Duvel|Brush|Patranabis|Raman)\b/;
 
 const INTERNAL = new Set(['src', 'quote', 'prov', 'bandProv', 'strikeSrc', 'unknowns', 'examples', 'kind']);
 export function learnerStrings(v: unknown, out: string[] = []): string[] {

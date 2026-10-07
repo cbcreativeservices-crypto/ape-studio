@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keys and acoustic guitar:",
-      "text": "tonewheel organ with rotating speaker, piano, strummed acoustic in verses and ballads.",
+      "text": "Hammond with rotating speaker, piano, strummed acoustic in verses and ballads.",
       "bullet": true
     },
     {
@@ -116,7 +116,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Keep most energy in the midrange; distortion up top sounds harsh"
       },
       {
-        "source": "tonewheel organ / piano",
+        "source": "Hammond / piano",
         "cut": "HPF 80–120 Hz; −2 dB at 250–400 Hz",
         "boost": "+2 dB at 2–5 kHz on piano for definition",
         "notes": "Keep keys out of the vocal’s 2–4 kHz zone"

@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keys and acoustic guitar:",
-      "text": "tonewheel organ (the Deep Purple lineage), ballad piano, 1980s synth pads; acoustic for intros and power ballads.",
+      "text": "Hammond organ (the Deep Purple lineage), ballad piano, 1980s synth pads; acoustic for intros and power ballads.",
       "bullet": true
     },
     {
@@ -122,7 +122,7 @@ export const GUIDE: MixingGuide = {
         "notes": "Thinned and brightened so the stack sits behind but above the guitars"
       },
       {
-        "source": "Organ / keys",
+        "source": "Hammond / keys",
         "cut": "HPF 100 Hz; −2 dB at 250–400 Hz",
         "boost": "+2 dB at 1–3 kHz on organ grit",
         "notes": "Keep out of the vocal’s 2–4 kHz zone"

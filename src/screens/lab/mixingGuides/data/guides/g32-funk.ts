@@ -41,7 +41,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keys:",
-      "text": "clavinet (often through an amp, with wah or phaser), electric piano, tonewheel organ, analog synths, talk box (Roger Troutman/Zapp).",
+      "text": "clavinet (often through an amp, with wah or phaser), electric piano, Hammond organ, analog synths, talk box (Roger Troutman/Zapp).",
       "bullet": true
     },
     {

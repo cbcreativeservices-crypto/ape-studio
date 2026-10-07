@@ -61,7 +61,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Keys:",
-      "text": "honky-tonk piano, tonewheel organ, ballad pads.",
+      "text": "honky-tonk piano, Hammond organ, ballad pads.",
       "bullet": true
     }
   ],

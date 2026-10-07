@@ -93,7 +93,7 @@ const BRANDS = [
   'CL-1B', 'Fairchild\\w*', 'SSL\\w*', 'Distressor', 'Pultec\\w*', 'EMT', 'Lexicon\\w*', 'H3000\\w*', 'Eventide', 'AMS', 'Ableton',
   'Pro Tools', 'Serato', 'CDJs?', 'FL Studio', 'MPC\\w*', 'Akai', 'SP-?404\\w*', 'SP-?1200', 'S950\\w*', 'RC-20', 'Roland', 'TR-?\\d+\\w*',
   'TB-?303', 'CR-?78', 'SH-?101\\w*', 'Juno\\w*', 'Korg', 'Ketron', 'Yamaha', 'DX ?\\d+\\w*', 'PSR', 'Linn\\w*', 'Moog', 'Minimoog', 'ARP',
-  'Solina', 'Hammond\\w*', 'B-?3', 'Leslie\\w*', 'Rhodes', 'Wurlitzer', 'Clavinet', 'Mellotron', 'Farfisa', 'Vox', 'Fender', 'Telecasters?',
+  'Solina', 'B-?3', 'Leslie\\w*', 'Rhodes', 'Wurlitzer', 'Clavinet', 'Mellotron', 'Farfisa', 'Vox', 'Fender', 'Telecasters?',
   'Tele', 'Strat\\w*', 'Jazzmasters?', 'Rickenbacker', 'Gibson', 'ES-335', 'Les Paul', 'Bassman', 'JC-?120', 'Marshall\\w*', 'Ampeg\\w*',
   'SansAmp\\w*', 'Big Muff', 'P-bass', 'Dobro', 'Hohner', 'Fishman', 'DiGiCo', 'RIVAGE', 'Axient', 'L-Acoustics', 'L-ISA', 'Meyer',
   'd&b', 'TiMax', 'KLANG', 'Spotify\\w*', 'YouTube\\w*', 'Apple(?: Music)?', 'Tidal', 'Amazon', 'Anghami', 'SoundCloud', 'TikTok',

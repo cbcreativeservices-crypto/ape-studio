@@ -83,6 +83,20 @@ describe('review 2026-10-07 — owner rule: no brands, engineers, publications',
     assert.match(refs, /Fred Hammond & Radical for Christ/);
     assert.doesNotMatch(refs, /Fred tonewheel/);
   });
+  it('owner 2026-10-07: "Hammond" is allowed and survives the conversion (never "tonewheel organ")', async () => {
+    const all = GUIDES.map(learner).join(' ');
+    assert.doesNotMatch(all, /tonewheel/i);
+    for (const id of ['rock', 'soul', 'blues', 'hard-rock', 'jazz', 'funk', 'reggae']) assert.match(learner(byId(id)), /\bHammond\b/, id);
+    assert.doesNotMatch(all, /\bB-?3\b|Leslie/);
+    const { readFileSync } = await import('node:fs');
+    const edits = readFileSync('scripts/mixing-guides/edits.py', 'utf8');
+    const flags = readFileSync('scripts/mixing-guides/flags.py', 'utf8');
+    assert.doesNotMatch(edits, /"tonewheel organ"/);
+    assert.doesNotMatch(flags, /Hammond/);
+    const rules = readFileSync('test/_mikingItemRules.ts', 'utf8').match(/RESEARCH_NAMES = (.*);/)![1];
+    assert.doesNotMatch(rules, /Hammond/);
+    assert.doesNotMatch(readFileSync('test/mikingLearnerText.test.ts', 'utf8'), /'Hammond/);
+  });
 });
 
 describe('review 2026-10-07 — conversion leftovers', () => {

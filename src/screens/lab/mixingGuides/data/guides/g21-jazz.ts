@@ -36,7 +36,7 @@ export const GUIDE: MixingGuide = {
     },
     {
       "label": "Piano and guitar:",
-      "text": "acoustic grand, or electric piano/tonewheel organ in soul-jazz and organ trios; hollow-body archtop through a small clean amp.",
+      "text": "acoustic grand, or electric piano/Hammond organ in soul-jazz and organ trios; hollow-body archtop through a small clean amp.",
       "bullet": true
     },
     {
