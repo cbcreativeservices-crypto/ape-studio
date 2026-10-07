@@ -121,7 +121,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A close mic for the trombone is drawn on the stage. Where can it not go?',
     options: ['In the path of the moving slide', 'Above the slide, aimed across the bell', 'Beside the bell on the slide’s side'],
     correct: 'In the path of the moving slide',
-    explain: 'The slide moves in and out through about half a metre. A stand in its path is a collision hazard and a noise source: keep the mic above or beside it, clear at full extension.',
+    explain: 'The slide moves in and out through more than half a metre. A stand in its path is a collision hazard and a noise source: keep the mic above or beside it, clear at full extension.',
     why: {
       'Above the slide, aimed across the bell': 'That is a recommended start: clear of the slide at every position.',
       'Beside the bell on the slide’s side': 'Also fair, as long as the slide’s full travel stays clear.',

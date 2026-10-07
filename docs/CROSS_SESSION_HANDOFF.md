@@ -634,6 +634,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 14:42 · ccode · aae5f01c
+changed: review(lab5-ensemble): audio + learning review of E08–E16, fixes
+affects other side: nothing (client-only lesson copy, one shared readout label and a test; Miking stays hidden on store builds, not published)
+needs: nothing
+
 ### 2026-10-07 14:16 · ccode · 9fc01732
 changed: review(lab5-voice): audio + learning review of E01-E07, fixes
 affects other side: nothing (client-only lesson copy, a test and docs; not published)

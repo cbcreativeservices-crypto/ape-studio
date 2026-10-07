@@ -460,10 +460,10 @@ const diagnostic: DiagnosticItem[] = [
     id: 'pe.q.5',
     covers: 'setups',
     prompt: 'How many supports at first?',
-    options: ['At most two, each named', 'One for each instrument', 'None, ever, for percussion'],
+    options: ['At most two, each named', 'One for each instrument', 'None: one main pickup is enough'],
     correct: 'At most two, each named',
     explain: 'Add no more than two at first, each for a stated musical problem.',
-    why: { 'One for each instrument': 'That adds overlap before there is a reason.', 'None, ever, for percussion': 'A named need can earn a support.' },
+    why: { 'One for each instrument': 'That adds overlap before there is a reason.', 'None: one main pickup is enough': 'A named need can earn a support.' },
   },
   {
     id: 'pe.q.safe',

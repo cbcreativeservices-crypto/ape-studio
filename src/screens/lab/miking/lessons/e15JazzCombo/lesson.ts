@@ -94,11 +94,11 @@ const scenarios: MikingScenario[] = [
     id: 'jz.meet.3',
     page: 'meet',
     prompt: 'The piano lid is open toward the audience. What does that change?',
-    options: ['Where it projects and what nearby mics hear', 'Nothing a microphone could ever hear', 'Only the pianist’s view of the rest of the band'],
+    options: ['Where it projects and what nearby mics hear', 'Nothing a nearby microphone would notice', 'Only the pianist’s view of the rest of the band'],
     correct: 'Where it projects and what nearby mics hear',
     explain: 'The lid sends much of the piano toward its open side — and the drums can reach in under it. Its direction changes the balance before any mic is set.',
     why: {
-      'Nothing a microphone could ever hear': 'The lid reflects a large part of the piano’s sound; mics hear the difference.',
+      'Nothing a nearby microphone would notice': 'The lid reflects a large part of the piano’s sound; mics hear the difference.',
       'Only the pianist’s view of the rest of the band': 'It changes sightlines too, but its main effect is acoustic.',
     },
   },
