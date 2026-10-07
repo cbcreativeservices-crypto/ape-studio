@@ -302,3 +302,6 @@ Object.assign(MIC_TYPES, FREE_REED_MIC_TYPES);
 /* Lab 3 woodwinds (A06–A09b): the clip and headset miniatures. Appended so other lessons merge cleanly. */
 import { WIND_MIC_TYPES } from '../lessons/shared/woodwinds/windMics.ts';
 Object.assign(MIC_TYPES, WIND_MIC_TYPES);
+/* Lab 5 (ensembles): the main-array and support condensers (omni, cardioid, figure-8). Appended so other lessons merge cleanly. */
+import { ENSEMBLE_MIC_TYPES } from '../lessons/shared/ensemble/ensembleMics.ts';
+Object.assign(MIC_TYPES, ENSEMBLE_MIC_TYPES);

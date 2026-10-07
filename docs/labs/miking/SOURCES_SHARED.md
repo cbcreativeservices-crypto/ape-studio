@@ -156,3 +156,12 @@ Added 2026-10-05 by the A10–A12 builder (branch miking-a5): the two mic types 
 |---|---|---|---|
 | S-520DX | Shure, 520DX user guide: "Polar Pattern Omnidirectional"; "63 mm (2.5 in) max diameter, 82.6 mm (3 1/4 in) long"; high impedance, attached 1/4-in cable (the generic `harpBullet` type) | see `harmonica/SOURCES.md` | read in the Batch 3 research pass |
 | AKG-416 | AKG, C 416III user manual: "The C 416III is a miniature hypercardioid condenser microphone"; bass-side mount aimed at a sound hole (the generic `accMini` type) | see `accordion/SOURCES.md` | read in the Batch 3 research pass |
+
+## 11. Mic types for Lab 5's main arrays and supports (E11, E13, E14 and later; `lessons/shared/ensemble/ensembleMics.ts`)
+
+Added 2026-10-07 by the Lab 5 arrays-and-orchestra builder (branch lab5-g3): the omni, cardioid and figure-8 condensers the stereo-array tool draws. Facts in `full_orchestra/SOURCES.md` §A.
+
+| Key | Source | URL | Status 2026-10-07 |
+|---|---|---|---|
+| DPA-AB-ORCH | DPA, Eddy Bøgh Brixen, "How to AB stereo mic an orchestra": the A/B pair "commonly omnidirectional", 40–60 cm, above or behind the podium at 3–4 m | https://www.dpamicrophones.com/mic-university/how-to-mic/how-to-ab-stereo-mic-an-orchestra/ | read in the Batch 5 research pass (see `lead_vocal/SOURCES.md` §0) |
+| DPA-MULTI | DPA, Eddy Bøgh Brixen, "Multimiking a classical orchestra": directional supports about 1–1.5 m from the players, covering three or four | https://www.dpamicrophones.com/mic-university/audio-production/multimiking-a-classical-orchestra/ | read in the Batch 5 research pass |
