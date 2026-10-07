@@ -634,6 +634,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-06 17:10 · ccode · 6542af2f
+changed: fix(miking): a mic set clear of a part keeps room to turn; the harmonica face is a profile; fix-pass screenshots (docs/labs/miking/screens/fixpass_2026_10_06) — last commit of the Miking owner-feedback fix pass (35102390..6542af2f, worktree branch, not pushed, not merged)
+affects other side: nothing (app-only)
+needs: nothing
+
 ### 2026-10-06 16:04 · ccode · 6602602d
 changed: fix(miking): labels keep off the drawn player exactly and keep a little air; the hand drums' worked example marks its piece
 affects other side: nothing (app-only drawing/layout; 5d4ac01b before it — content frames, level-of-detail labels, marimba resonators — is app-only too; Miking fix pass on a worktree branch, not pushed, nothing published)
