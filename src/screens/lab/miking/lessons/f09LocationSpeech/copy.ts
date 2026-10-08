@@ -33,7 +33,7 @@ const BASE = standingVoiceCopy({
   contextPoints: [
     { title: 'PERSPECTIVE', text: 'On set or outdoors: a boom as close as the frame allows, a body mic for wide shots or busy blocking, a planted mic for one action — each on its own labelled channel. Live: a close handheld or a well-fitted headset or body mic for a steady speech feed.' },
     { title: 'SPILL AND FEEDBACK', text: 'Live, the audience hears the loudspeakers as it happens: every open mic hears the PA and the room. Keep unused mics closed, put the wedge where the pattern rejects most, and check the stream, the recorder and the local PA as separate paths.' },
-    { title: 'MOVEMENT', text: 'Talkers turn and walk. A boom must follow the head; a body mic stays the same distance from the mouth but turns with the chest, not the head; a planted mic covers one place only.' },
+    { title: 'MOVEMENT', text: 'Talkers turn and walk. A boom follows the head, turned by its operator; a body mic stays the same distance from the mouth but turns with the chest, not the head; a planted mic covers one place only.' },
     { title: 'THE FRAME', text: 'A wider shot pushes the boom farther from the mouth. When it cannot get close enough for the shot, a body mic often takes over — both can be recorded and the editor chooses.' },
   ],
 });
