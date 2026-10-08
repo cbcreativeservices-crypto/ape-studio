@@ -929,9 +929,176 @@ export function VocalLdcMic({ cross, len, tint }: { cross: number; len: number; 
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Lab 6 group 4 (Miking Lab 6, the measurement lessons F11–F16, 2026-10-08):
+// a MEASUREMENT MIC (a slim capsule under its slotted protection grid, on a
+// preamp of the same diameter, a knurled connector ring) and a complete SOUND
+// LEVEL METER (capsule on a tapered neck under a foam windscreen, a handheld
+// body with its display and keys). Generic — no maker's likeness. Same
+// conventions as above: FRONT at the origin, body toward +y, sizes in the
+// caller's units; every outline inside width 2r and length `len`.
+
+function buildMeasMic(r: number, len: number) {
+  const g = Math.max(r * 1.25, len * 0.05);
+  const grid: SkPathT = Skia.Path.Make();
+  grid.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, 0, r * 2, g), r * 0.22, r * 0.22));
+  // The grid's side slots (a few vertical openings) and its front ring.
+  const slots: SkPathT = Skia.Path.Make();
+  for (const k of [-0.55, -0.18, 0.18, 0.55]) slots.addRRect(Skia.RRectXY(Skia.XYWHRect(r * k - r * 0.1, g * 0.2, r * 0.2, g * 0.62), r * 0.08, r * 0.08));
+  const capsule: SkPathT = Skia.Path.Make();
+  capsule.addRect(Skia.XYWHRect(-r * 0.98, g, r * 1.96, r * 0.9));
+  const body: SkPathT = Skia.Path.Make();
+  const b0 = g + r * 0.9;
+  const knurl0 = len - r * 1.6;
+  body.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.96, b0, r * 1.92, knurl0 - b0), r * 0.08, r * 0.08));
+  const knurl: SkPathT = Skia.Path.Make();
+  knurl.addRRect(Skia.RRectXY(Skia.XYWHRect(-r, knurl0, r * 2, len - knurl0), r * 0.12, r * 0.12));
+  const ridges: SkPathT = Skia.Path.Make();
+  for (let y = knurl0 + r * 0.25; y < len - r * 0.15; y += Math.max(0.6, r * 0.22)) {
+    ridges.moveTo(-r * 0.95, y);
+    ridges.lineTo(r * 0.95, y);
+  }
+  // The thin joint between the capsule and the preamp.
+  const joint: SkPathT = Skia.Path.Make();
+  joint.moveTo(-r * 0.98, b0);
+  joint.lineTo(r * 0.98, b0);
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addPath(grid);
+  shadow.addPath(body);
+  shadow.addPath(knurl);
+  return { grid, slots, capsule, body, knurl, ridges, joint, shadow };
+}
+
+/** MEASUREMENT MIC: radius `r` (the capsule's), length `len`, front at the origin. */
+export function MeasurementMic({ r, len, tint }: { r: number; len: number; tint?: string }) {
+  const p = useMemo(() => buildMeasMic(r, len), [r, len]);
+  const lit = LIT(r);
+  const hair = Math.max(0.25, r * 0.05);
+  return (
+    <Group>
+      <Group transform={[{ translateX: -r * 0.15 }, { translateY: r * 0.12 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.45}>
+          <BlurMask blur={r * 0.25} style="normal" />
+        </Path>
+      </Group>
+      <Path path={p.body}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#eef0f4', '#c4c8d0', '#7d828c', '#33363d']} positions={[0, 0.25, 0.65, 1]} />
+      </Path>
+      <Path path={p.capsule}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#f6f7fa', '#b9bec8', '#4a4e57']} />
+      </Path>
+      <Path path={p.knurl}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#9ea3ad', '#5c6069', '#24262b']} />
+      </Path>
+      <Path path={p.ridges} style="stroke" strokeWidth={hair} color="#15161a" opacity={0.6} />
+      <Path path={p.grid}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#dfe2e8', '#9298a3', '#3c4048']} />
+      </Path>
+      <Path path={p.slots} color="#0b0c0f" opacity={0.85} />
+      <Path path={p.joint} style="stroke" strokeWidth={hair} color="#1a1b1f" opacity={0.7} />
+      <Path path={p.grid} style="stroke" strokeWidth={hair * 1.2} color="#08080a" opacity={0.85} />
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.2} color="#08080a" opacity={0.8} />
+      <Path path={p.grid} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.3} />
+    </Group>
+  );
+}
+
+function buildSlm(r: number, len: number) {
+  // Proportions of the drawing default (300 × 74): the capsule radius is
+  // ~ r/5.8, the neck tapers to the body, the body takes the lower 70 %.
+  const cr = r / 5.8;
+  const neck0 = cr * 2.4;
+  const body0 = len * 0.3;
+  const capsule: SkPathT = Skia.Path.Make();
+  capsule.addRRect(Skia.RRectXY(Skia.XYWHRect(-cr, 0, cr * 2, neck0), cr * 0.3, cr * 0.3));
+  const neck: SkPathT = Skia.Path.Make();
+  neck.moveTo(-cr * 1.05, neck0);
+  neck.lineTo(cr * 1.05, neck0);
+  neck.cubicTo(cr * 1.2, body0 * 0.7, r * 0.55, body0 * 0.85, r * 0.62, body0);
+  neck.lineTo(-r * 0.62, body0);
+  neck.cubicTo(-r * 0.55, body0 * 0.85, -cr * 1.2, body0 * 0.7, -cr * 1.05, neck0);
+  neck.close();
+  const body: SkPathT = Skia.Path.Make();
+  body.moveTo(-r * 0.62, body0);
+  body.lineTo(r * 0.62, body0);
+  body.cubicTo(r, body0 + r * 0.2, r, body0 + r * 0.3, r, body0 + r * 0.5);
+  body.lineTo(r * 0.82, len - r * 0.3);
+  body.cubicTo(r * 0.8, len, -r * 0.8, len, -r * 0.82, len - r * 0.3);
+  body.lineTo(-r, body0 + r * 0.5);
+  body.cubicTo(-r, body0 + r * 0.3, -r, body0 + r * 0.2, -r * 0.62, body0);
+  body.close();
+  const screen: SkPathT = Skia.Path.Make();
+  screen.addRRect(Skia.RRectXY(Skia.XYWHRect(-r * 0.62, body0 + r * 0.55, r * 1.24, r * 0.95), r * 0.08, r * 0.08));
+  // The display's digits as segment strokes (no number is claimed).
+  const segs: SkPathT = Skia.Path.Make();
+  const sy = body0 + r * 0.8;
+  for (const sx of [-0.4, -0.12, 0.16]) {
+    segs.addRect(Skia.XYWHRect(r * sx, sy, r * 0.18, r * 0.04));
+    segs.addRect(Skia.XYWHRect(r * sx, sy + r * 0.2, r * 0.18, r * 0.04));
+    segs.addRect(Skia.XYWHRect(r * sx, sy + r * 0.4, r * 0.18, r * 0.04));
+    segs.addRect(Skia.XYWHRect(r * (sx + 0.15), sy, r * 0.04, r * 0.44));
+  }
+  const keys: SkPathT = Skia.Path.Make();
+  for (let i = 0; i < 3; i++) for (const kx of [-0.45, 0.05]) keys.addRRect(Skia.RRectXY(Skia.XYWHRect(r * kx, body0 + r * (1.8 + i * 0.5), r * 0.4, r * 0.26), r * 0.08, r * 0.08));
+  // The foam windscreen ball round the capsule.
+  const ball = Skia.Path.Make();
+  const br = r * 1.2;
+  ball.addCircle(0, cr * 1.2, br);
+  // Its open-cell texture as a few short arcs (one Path, not a dot per cell).
+  const foam: SkPathT = Skia.Path.Make();
+  for (let i = 0; i < 14; i++) {
+    const a = i * 2.39996;
+    const rr = br * (0.25 + 0.65 * ((i * 0.618) % 1));
+    const cx = Math.cos(a) * rr;
+    const cy = cr * 1.2 + Math.sin(a) * rr;
+    foam.addCircle(cx, cy, br * 0.06);
+  }
+  const shadow: SkPathT = Skia.Path.Make();
+  shadow.addPath(neck);
+  shadow.addPath(body);
+  return { capsule, neck, body, screen, segs, keys, ball, foam, shadow, br, cr };
+}
+
+/** SOUND LEVEL METER with its windscreen: `r` = half the body width, `len` front to base. */
+export function SoundLevelMeter({ r, len, tint }: { r: number; len: number; tint?: string }) {
+  const p = useMemo(() => buildSlm(r, len), [r, len]);
+  const lit = LIT(r);
+  const hair = Math.max(0.3, r * 0.025);
+  return (
+    <Group>
+      <Group transform={[{ translateX: -r * 0.1 }, { translateY: r * 0.08 }]}>
+        <Path path={p.shadow} color="#000000" opacity={0.45}>
+          <BlurMask blur={r * 0.12} style="normal" />
+        </Path>
+      </Group>
+      <Path path={p.body}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#5a5f69', '#3a3e46', '#1c1e23']} />
+      </Path>
+      <Path path={p.neck}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#c9cdd5', '#7b808a', '#2f3238']} />
+      </Path>
+      <Path path={p.screen} color="#11161a" />
+      <Path path={p.segs} color="#9fe3b0" opacity={0.75} />
+      <Path path={p.keys}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#8a8f99', '#4d515a']} />
+      </Path>
+      <Path path={p.body} style="stroke" strokeWidth={hair * 1.4} color="#07070a" opacity={0.85} />
+      <Path path={p.capsule}>
+        <LinearGradient start={lit.start} end={lit.end} colors={['#eceef2', '#9aa0aa', '#3c4048']} />
+      </Path>
+      <Path path={p.ball}>
+        <RadialGradient c={vec(p.br * 0.3, p.cr * 1.2 - p.br * 0.35)} r={p.br * 1.25} colors={['#5f6470', '#3b3f48', '#23252b']} />
+      </Path>
+      <Path path={p.ball} opacity={0.35} color="#000000" style="stroke" strokeWidth={hair * 2} />
+      <Path path={p.foam} color="#1a1c21" opacity={0.55} />
+      <Path path={p.ball} style="stroke" strokeWidth={hair} color={tint ?? '#e3e7ef'} opacity={tint ? 0.95 : 0.25} />
+    </Group>
+  );
+}
+
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). */
-export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster'; r: number; len: number; cross?: number; tint?: string }) {
+export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm'; r: number; len: number; cross?: number; tint?: string }) {
   switch (art) {
     /* Lab 6 group 6: the field and spatial mics (micDrawingsField.tsx). */
     case 'shotgun':
@@ -946,6 +1113,11 @@ export function MikingMicArt({ art, r, len, cross, tint }: { art: 'kickDynamic' 
       return <AmbiTetraMic r={r} len={len} cross={cross ?? r * 2} tint={tint} />;
     case 'dmsCluster':
       return <DmsClusterMic r={r} len={len} cross={cross ?? r * 2} tint={tint} />;
+    // Lab 6 group 4: the measurement mic and the sound level meter.
+    case 'measMic':
+      return <MeasurementMic r={r} len={len} tint={tint} />;
+    case 'slm':
+      return <SoundLevelMeter r={r} len={len} tint={tint} />;
     case 'vocalDynamic':
       return <VocalDynamicMic r={r} len={len} tint={tint} />;
     case 'vocalLdc':

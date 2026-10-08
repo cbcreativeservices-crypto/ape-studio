@@ -258,8 +258,10 @@ export type MountKind = 'stand' | 'surface' | 'clip' | 'boom';
  *  head: its FACE is the front, the ears 95 mm behind it), 'ambiTetra' (a
  *  first-order Ambisonic mic held upright: its capsule head on the front
  *  point, the body below it), 'dmsCluster' (a Double M/S cluster: front and
- *  rear cardioids with a figure-8 between, held upright). */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster';
+ *  rear cardioids with a figure-8 between, held upright).
+ *  'measMic' / 'slm' (Lab 6 group 4, the measurement lessons): a measurement
+ *  mic on its preamp; a complete sound level meter under its windscreen. */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm';
 /**
  * A POP SCREEN in front of the mic (Lab 5, the voice): a mesh disc `gap` mm
  * in front of the mic's FRONT, square to its axis but tilted `tilt`° (never

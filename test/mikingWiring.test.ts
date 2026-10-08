@@ -81,7 +81,7 @@ describe('listing (owner: Training Labs → Instruments & Recording, members onl
     assert.equal(mikingLessonCount(1), '1 Miking Lab Lesson', 'singular');
     const ear = strip(read('src/screens/lab/EarLabScreen.tsx'));
     assert.match(ear, /\{leaf\.countLine \? \(\s*<Text style=\{styles\.tileCount\} \{\.\.\.fitValue\(12\)\} numberOfLines=\{2\}>\{leaf\.countLine\}<\/Text>/, 'the Labs menu tile shows it, never cut short');
-    assert.deepEqual(readyLabs().map((l: { id: string }) => l.id), ['drums', 'percussion', 'winds', 'strings', 'ensembles', 'field'], 'Labs 1, 2, 3, 4, 5 and 6 have ready lessons today');
+    assert.deepEqual(readyLabs().map((l: { id: string }) => l.id), ['drums', 'percussion', 'winds', 'strings', 'ensembles', 'field'], 'Labs 1 to 6 have ready lessons today');
     for (const l of readyLabs()) assert.ok((l as { blurb: string }).blurb.length > 40, `${l.id}: a listed lab has its blurb`);
     assert.ok(LESSONS.every((l: { status: string }) => l.status === 'ready'));
     assert.ok(categoryLeaves(cat as never).some((l: { route?: string }) => l.route === 'MikingHub'));

@@ -198,3 +198,10 @@ import { F09_ART } from '../lessons/f09LocationSpeech/art';
 ART.F09 = F09_ART;
 import { F10_ART } from '../lessons/f10SpatialField/art';
 ART.F10 = F10_ART;
+/* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
+import { F11_ART } from '../lessons/f11MeasurementMics/art';
+ART.F11 = F11_ART;
+import { F12_ART } from '../lessons/f12SoundLevel/art';
+ART.F12 = F12_ART;
+import { F13_ART } from '../lessons/f13RoomAcoustics/art';
+ART.F13 = F13_ART;

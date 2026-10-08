@@ -27,9 +27,12 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   { id: 'winds', num: 3, name: 'Miking Lab 3: Winds', blurb: 'Place microphones on drawn wind instruments and their players — brass, saxophones, the flute, piccolo, clarinets, oboe and bassoon, the harmonica, the accordion and the pipe organ: how the lips, the reed, the air jet or the bellows start the sound, where it leaves (a bell, the first open holes, the embouchure, the reeds, the pipes), recommended starting points clear of the mouth, the hands, the bell, the slide, the keys, the breath, the bellows and the player’s movement, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Aerophones', familyBlurb: 'Miking winds and brass, from trumpet to pipe organ' },
   { id: 'strings', num: 4, name: 'Miking Lab 4: Strings & Pianos', blurb: 'Place microphones on drawn string instruments, keyboards and harps and their players — guitars and their amps, the bowed strings, piano, harp and clavinet, and the lutes: recommended starting points that keep clear of the hands and the bow, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Chordophones', familyBlurb: 'Miking strings and pianos, from guitar to harp' },
   { id: 'ensembles', num: 5, name: 'Miking Lab 5: Ensembles & Voice', blurb: 'Place microphones on drawn singers and ensembles — a lead vocal, rap, a singer at a guitar or piano, the string quartet and sections, mixed classical groups and the full orchestra: where the sound comes from, recommended starting points (measured from the lips for a voice; main pairs and the three-omni tree drawn whole for an ensemble), supports for a named need, studio or live, and what a second mic does. Silent; tendencies in words.', family: 'Voice & Ensemble', familyBlurb: 'Miking voices and ensembles, from a lead vocal to the orchestra' },
-  // Lab 6 group 6 made the row ready (its first ready lessons, F09 and F10):
-  // the blurb names only what is built; later groups widen it as they land.
-  { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: 'Place microphones on location and in the field — speech on a set, outdoors and live, with the camera’s frame, the boom, the body mic and the practical sounds of a scene; and spatial pickup for headphones, surround and Ambisonics, with the channel maps that keep it right: recommended starting points, safety in plain words, and what a second mic or a second format does. Silent; tendencies in words.', family: 'Foley, Field & Scientific', familyBlurb: 'Miking on location and in the field: speech, spatial and specialist pickup' },
+  // Lab 6 is filled by groups (group 6: F09, F10 location and spatial; group
+  // 4: F11–F13 measurement): the blurb names only what is built; later groups
+  // widen it as they land.
+  { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: 'Microphones on location, in the field and for measurement, on drawn sets, sites, benches and rooms — speech with the camera’s frame, the boom, the body mic and the practical sounds of a scene; spatial pickup for headphones, surround and Ambisonics with the channel maps that keep it right; the measurement chain and its field check, where a measurement mic or a meter goes for the question asked, and the honest label for the result. Safety in plain words. Silent; suggested starting points.', family: 'Foley, Field & Scientific', familyBlurb: 'Miking on location, in the field and for measurement' },
+  // Not built yet: no ready lesson, so neither the lab nor its family tile is
+  // listed. Fill `blurb` and `familyBlurb` when the first lesson goes ready.
   { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '', family: 'Sports & Broadcast', familyBlurb: '' },
 ];
 
@@ -140,6 +143,10 @@ export const LESSONS: readonly LessonMeta[] = [
   // Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line).
   { id: 'F09', labId: 'field', title: 'Location Speech and Practical Sounds', subtitle: 'A boom just above the frame, a body mic on the chest, a plant for the action — each on its own channel', status: 'ready' },
   { id: 'F10', labId: 'field', title: 'Spatial and Specialist Field Pickup', subtitle: 'The listener’s point first: a binaural head, an Ambisonic mic, a five-channel array — and the channel map that keeps them right', status: 'ready' },
+  /* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
+  { id: 'F11', labId: 'field', title: 'Measurement Microphones and Calibration', subtitle: 'The question first, the right field and power path, a check before and after — and an honest label', status: 'ready' },
+  { id: 'F12', labId: 'field', title: 'Sound Level and Environmental Noise', subtitle: 'A named question and window, the method’s height, an open or facade position — and a conclusion no bigger than the evidence', status: 'ready' },
+  { id: 'F13', labId: 'field', title: 'Room Acoustics and Reverberation', subtitle: 'Room only or system + room, seats that differ, a tail above the floor — T20, T30 and EDT kept apart', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

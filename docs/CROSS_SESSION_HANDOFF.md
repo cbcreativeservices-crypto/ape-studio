@@ -634,6 +634,30 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 23:14 · ccode · 7c48c7fd
+changed: Merge lab6-g4: Miking Lab 6 F11-F13 measurement lessons
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-07 23:12 · ccode · 48fa4836
+changed: web: launch date moves to Tuesday, October 13
+affects other side: nothing — website launch overlay date text only (now Tuesday, October 13)
+needs: nothing
+
+
+### 2026-10-07 23:12 · ccode · 2d9b22ad
+changed: Miking Lab 6 g4: F11, F12, F13 lessons and the field lab row
+affects other side: nothing (client-only lesson data; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-07 23:12 · ccode · a0b9a935
+changed: Miking Lab 6 g4: measurement family, chain rack, scene frame F
+affects other side: nothing (client-only lab code; no backend reads or writes)
+needs: nothing (the background-subtraction calculator is a later audio-tools-engine item, not backend)
+
+
 ### 2026-10-07 22:43 · ccode · a21c0b79
 changed: Miking Lab 6 group 6: F09 Location Speech and F10 Spatial Field Pickup
 affects other side: nothing (client-only; Miking stays hidden, MIKING_PUBLIC false)
