@@ -13,13 +13,14 @@ import { TAGLINE } from "@/lib/brand";
 export function LaunchOverlay({ error }: { error: boolean }) {
   // Owner 2026-10-04 (2nd pass): a compact panel and a light blur, so most of
   // the screen shows the live site and carousel behind — "the full site is
-  // there, just waiting to be unlocked".
+  // there, just waiting to be unlocked". Owner 2026-10-08: the panel sits LOW so
+  // the full headline above it reads clearly.
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="launch-title"
-      className="fixed inset-0 z-[1000] flex items-center justify-center overflow-y-auto px-4 py-6"
+      className="fixed inset-0 z-[1000] flex items-end justify-center overflow-y-auto px-4 pt-6 pb-8 sm:pb-14"
       style={{
         background: "rgba(8, 8, 10, 0.22)",
         backdropFilter: "blur(1.5px)",

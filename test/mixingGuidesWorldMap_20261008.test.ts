@@ -43,6 +43,12 @@ describe('Mixing Guides world map', () => {
     assert.match(hub, /onTouchStart=\{\(\) => onPoint\(g\.id\)\}/);
     assert.match(hub, /onHoverIn=\{\(\) => onPoint\(g\.id\)\}/);
     assert.match(hub, /onScrollBeginDrag=\{onDragStart\}/);
+    // Owner 2026-10-08: a swipe follows the card under the finger; a deliberate
+    // tap selects — the countries flash 1.5 s, then the guide opens.
+    assert.match(hub, /onTouchMove=\{onFinger\}/, 'a swipe follows the card under the finger');
+    assert.match(hub, /onOpen=\{selectGuide\}/, 'a tap selects: flash, then open');
+    assert.match(hub, /SELECT_FLASH_MS = 1500/, 'the flash lasts 1.5 s');
+    assert.match(hub, /if \(mapHidden\) \{ openTimer\.current = null; openGuide\(id\); return; \}/, 'map hidden: opens at once');
     const map = readFileSync(new URL('../src/screens/lab/mixingGuides/GuideWorldMap.tsx', import.meta.url), 'utf8');
     assert.match(map, /useDecorativeMotion\(\)/, 'reduced motion swaps instantly');
     assert.match(map, /accessibilityLiveRegion="polite"/, 'the caption is read');
