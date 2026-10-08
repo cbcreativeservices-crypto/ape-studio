@@ -296,22 +296,24 @@ export function headProfile(c: Pt, r: number, neckV: number, facing: number): He
   // The silhouette from the nape over the crown to the chin (open: the neck
   // closes it).
   const back = [P(58, 96), P(84, 66), P(102, 18), P(100, -36), P(80, -86), P(40, -114), P(-6, -120), P(-46, -106), P(-70, -78)];
-  const face = [P(-70, -78), P(-80, -44), P(-82, -30), P(-77, -21), P(-83, -9), P(-92, 8), P(-102, 24), P(-90, 32), P(-82, 33), P(-85, 45), P(-80, 52), P(-84, 60), P(-76, 70), P(-72, 84), P(-60, 94), P(-40, 98)];
+  const face = [P(-70, -78), P(-80, -44), P(-83, -30), P(-76, -20), P(-84, -6), P(-94, 10), P(-104, 26), P(-92, 33), P(-83, 34), P(-88, 44), P(-81, 52), P(-87, 60), P(-77, 68), P(-81, 80), P(-70, 92), P(-52, 98), P(-36, 100)];
   const line = make();
   line.addPath(curve(back));
   line.addPath(curve(face));
   // The jaw: from under the chin back and up toward the ear.
-  line.addPath(curve([P(-40, 98), P(-4, 92), P(22, 76), P(30, 52)]));
+  line.addPath(curve([P(-36, 100), P(-4, 92), P(22, 76), P(30, 52)]));
   // The neck column.
   const nb = (neckV - c.v) / k;
-  line.addPath(curve([P(-38, 98), P(-42, (98 + nb) / 2), P(-48, nb)]));
-  line.addPath(curve([P(58, 96), P(62, (96 + nb) / 2), P(68, nb)]));
+  line.addPath(curve([P(-34, 100), P(-36, (100 + nb) / 2), P(-30, nb)]));
+  line.addPath(curve([P(58, 90), P(66, (90 + nb) / 2), P(78, nb)]));
   // The ear: an outer helix oval and a small inner fold.
   line.addPath(smooth([P(18, -14), P(40, -18), P(50, 6), P(44, 34), P(24, 40), P(16, 18)], 0.6));
   line.addPath(curve([P(28, -2), P(38, 6), P(34, 22), P(26, 24)]));
   // The brow stroke above the notch.
   line.addPath(curve([P(-76, -30), P(-60, -36), P(-44, -32)]));
-  const fill = union(smooth([...back, ...face.slice(1), P(-4, 96)], 0.5), capsule(P(10, 96), P(10, nb - 6), 52 * k, 58 * k));
+  // The neck leans forward from the collar to the skull and joins it behind
+  // the jaw (under the ear), never as a stalk under the chin.
+  const fill = union(smooth([...back, ...face.slice(1), P(-4, 96)], 0.5), capsule(P(12, 84), P(24, nb - 6), 50 * k, 56 * k));
   return { line, fill };
 }
 
