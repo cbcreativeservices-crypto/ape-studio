@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 00:30 · ccode · f436e2ac
+changed: Merge lab6-g1: Miking Lab 6 F01-F04 Foley stage
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
 ### 2026-10-08 00:30 · ccode · 85ee77e4
 changed: Mixing Guides: world map pinned above the 50 styles — hover, touch or drag fills each style's home countries
 affects other side: nothing (client-only map data and hub UI)
