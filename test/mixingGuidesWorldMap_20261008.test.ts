@@ -44,7 +44,7 @@ describe('Mixing Guides world map', () => {
     assert.match(hub, /onHoverIn=\{\(\) => onPoint\(g\.id\)\}/);
     assert.match(hub, /onScrollBeginDrag=\{onDragStart\}/);
     // Owner 2026-10-08: a swipe follows the card under the finger; a deliberate
-    // tap selects — the countries flash 1.5 s, then the guide opens.
+    // tap selects — the countries flash 1 s (was 1.5 s), then the guide opens.
     // Owner 2026-10-08 (later): ONLY the pressed card is lit — held for the whole
     // drag (no switching as cards slide under the finger), cleared on lift and on return.
     assert.match(hub, /onTouchStart=\{onFinger\}/, 'the card the finger lands on is selected');
@@ -54,7 +54,7 @@ describe('Mixing Guides world map', () => {
     assert.doesNotMatch(hub, /onTouchCancel=/, 'Android cancels on scroll — never clear on cancel');
     assert.match(hub, /Coming back to the list: no country is lit/);
     assert.match(hub, /onOpen=\{selectGuide\}/, 'a tap selects: flash, then open');
-    assert.match(hub, /SELECT_FLASH_MS = 1500/, 'the flash lasts 1.5 s');
+    assert.match(hub, /SELECT_FLASH_MS = 1000/, 'the flash lasts 1 s');
     // (hunt 2026-10-08: a second tap on the flashing style also opens at once.)
     assert.match(hub, /if \(mapHidden \|\| flashRef\.current === id\) \{ openNow\(id\); return; \}/, 'map hidden: opens at once');
     const map = readFileSync(new URL('../src/screens/lab/mixingGuides/GuideWorldMap.tsx', import.meta.url), 'utf8');

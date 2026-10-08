@@ -38,7 +38,7 @@ import { WORLD_ASPECT } from './data/worldMap';
 
 const TOUCH = Platform.OS !== 'web';
 /** A deliberate tap: the countries flash this long, then the guide opens (owner 2026-10-08). */
-export const SELECT_FLASH_MS = 1500;
+export const SELECT_FLASH_MS = 1000;
 
 export function MixingGuidesHubScreen() {
   const insets = useSafeAreaInsets();
@@ -66,7 +66,7 @@ export function MixingGuidesHubScreen() {
   // ── The world map (owner 2026-10-07/08): pinned above the list.
   //  - PRESS / SWIPE: only the card the finger is pressing is lit, held for
   //    the whole drag; lifting the finger clears the map.
-  //  - TAP: a deliberate press SELECTS — the countries flash for 1.5 s while the
+  //  - TAP: a deliberate press SELECTS — the countries flash for 1 s (owner 2026-10-08; was 1.5 s) while the
   //    map is showing, then the guide opens. With the map hidden it opens at once.
   //  - HOVER (web / iPad pointer) lights the card under the pointer.
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -107,7 +107,7 @@ export function MixingGuidesHubScreen() {
   }, [openGuide, setFlash]);
   const selectGuide = useCallback((id: string) => {
     // Hunt 2026-10-08 T-2: a second tap on the style already flashing opens
-    // it now. It used to RESTART the 1.5 s, so tapping again and again (an
+    // it now. It used to RESTART the flash, so tapping again and again (an
     // impatient learner, a toddler) put the guide off for as long as they tapped.
     if (mapHidden || flashRef.current === id) { openNow(id); return; }
     if (openTimer.current) clearTimeout(openTimer.current);
@@ -144,7 +144,7 @@ export function MixingGuidesHubScreen() {
   // under it (it used to follow whichever card slid under the finger); lifting
   // the finger clears the map (touch end, or the end of a drag — not touch
   // CANCEL, which Android sends when the scroll takes the gesture over). Read on touch-down, not press-in: a quick swipe
-  // never fires press-in. A tap's 1.5 s flash is not cleared by the lift.
+  // never fires press-in. A tap's 1 s flash is not cleared by the lift.
   const onFinger = useCallback((e: GestureResponderEvent) => {
     if (mapHidden || flashRef.current) return;
     const hit = tileAt(e.nativeEvent.pageX, e.nativeEvent.pageY);

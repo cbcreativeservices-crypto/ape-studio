@@ -11,7 +11,7 @@
  *
  * What lights it (owner 2026-10-08):
  *   - a SWIPE: the card under the finger while the list scrolls;
- *   - a deliberate TAP selects: the countries FLASH for 1.5 s, then the guide
+ *   - a deliberate TAP selects: the countries FLASH for 1 s, then the guide
  *     opens (`flashing`; the hub owns the timer);
  *   - a mouse / trackpad hover over a card (web, iPad).
  * The caption names the style and its countries in words, so the map is never
@@ -89,7 +89,7 @@ export function GuideWorldMap({
   const swap = useRef<Animated.CompositeAnimation | null>(null);
   const blink = useRef(new Animated.Value(1)).current;
 
-  // The selection flash: four quick blinks inside the 1.5 s before the guide
+  // The selection flash: three quick blinks inside the 1 s before the guide
   // opens. Reduced motion: the countries simply stay lit.
   useEffect(() => {
     if (!flashing || !motion) {
@@ -97,10 +97,10 @@ export function GuideWorldMap({
       return;
     }
     const one = Animated.sequence([
-      Animated.timing(blink, { toValue: 0.2, duration: 170, easing: Easing.in(Easing.quad), useNativeDriver: true }),
-      Animated.timing(blink, { toValue: 1, duration: 170, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+      Animated.timing(blink, { toValue: 0.2, duration: 165, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+      Animated.timing(blink, { toValue: 1, duration: 165, easing: Easing.out(Easing.quad), useNativeDriver: true }),
     ]);
-    const loop = Animated.loop(one, { iterations: 4 });
+    const loop = Animated.loop(one, { iterations: 3 });
     loop.start();
     return () => {
       loop.stop();
