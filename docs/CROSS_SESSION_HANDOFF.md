@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 04:34 · ccode · 3082e2f4
+changed: Miking Lab 7b group 3: shared sports kit for arenas, moving sources, complete coverage
+affects other side: nothing — app-side Miking Lab 7b group 3 shared kit only (lessons/shared/sports: practice room and mock venue, arena plans, pass-by, coverage planner, downmix); no backend, schema or store change
+needs: nothing
+
+
 ### 2026-10-08 03:03 · ccode · 36f8a870
 changed: Merge origin/final-lab into lab7-g5 (Lab 7b group 2)
 affects other side: nothing server-side — final-lab merged into lab7-g5 (Lab 6 groups 2 and 5, Lab 7 group 1, then Lab 7 part 2 group 2); app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
