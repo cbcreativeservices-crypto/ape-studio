@@ -57,7 +57,7 @@ export const B15_COPY: Partial<LessonCopy> = {
     ],
     warn: 'This simplified picture treats the source as one point and both mics as hearing it along straight paths; a real venue adds the crowd, the PA and reflections.',
   },
-  practice: { gain: 'tg.prac.gain', second: 'tg.prac.3', mixed: ['tg.mix.1', 'tg.mix.2', 'tg.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: surfaces, two mics in time, and the cue.' },
+  practice: { gain: 'tg.prac.gain', second: 'tg.prac.3', mixed: ['tg.mix.1', 'tg.mix.2', 'tg.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: surfaces, two mics in time, and the music feed.' },
   terms: {
     instrument: 'the practice room',
     aimRef: 'the source point',

@@ -27,9 +27,9 @@ export type StageId = 'meet' | 'setups' | 'mics' | 'placement' | 'advanced' | 'p
 export type Stage = { id: StageId; title: string; line: string; pages: readonly PageId[] };
 
 export const STAGES: readonly Stage[] = [
-  { id: 'meet', title: 'Meet it — where the sound comes from', line: 'What it is, in brief, and where its sound leaves.', pages: ['meet'] },
-  { id: 'setups', title: 'Starting setups', line: 'Real mic setups drawn on the instrument: one mic, two mics, close and farther back.', pages: ['setups'] },
-  { id: 'mics', title: 'Microphones', line: 'Choose by pattern, power, size and mount — seen on the instrument.', pages: ['microphone'] },
+  { id: 'meet', title: 'Meet it — where the sound comes from', line: 'What you are miking, in brief, and where the sound leaves.', pages: ['meet'] },
+  { id: 'setups', title: 'Starting setups', line: 'Real mic setups, drawn where the mic goes: one mic, two mics, close and farther back.', pages: ['setups'] },
+  { id: 'mics', title: 'Microphones', line: 'Choose by pattern, power, size and mount — seen where the mic goes.', pages: ['microphone'] },
   { id: 'placement', title: 'Placement Studio', line: 'Start from a setup, then move the mic and see what changes.', pages: ['placement'] },
   { id: 'advanced', title: 'Advanced', line: 'Studio or live, two microphones, troubleshooting.', pages: ['context', 'twoMic', 'troubleshoot'] },
   { id: 'practice', title: 'Practice', line: 'Set up in order, choose and justify a setup, a mixed review.', pages: ['practice'] },
@@ -60,8 +60,13 @@ export const STANDARD_LINE = 'These are suggested starting points, not rules. Pu
  * it sits". `thing`: the lesson's word for the instrument ("drum", "guitar
  * and its amp"); `plural`: a lesson about several (the hand-drum pairs).
  */
-export function journeyIntro(noun: { one: string; many: string }, thing?: string, plural = false): string {
+export function journeyIntro(noun: { one: string; many: string; person?: boolean }, thing?: string, plural = false): string {
   const a = /^[aeiou]/i.test(noun.one) ? 'an' : 'a';
+  if (noun.person) {
+    // A person is never "it" (Lab 7b review 2026-10-08): their voice, them.
+    const who = `the ${thing ?? noun.one}`;
+    return `This lesson is about putting a microphone on ${a} ${noun.one}. First, in brief, ${who} and where their voice leaves — the places a mic can hear them best. Then real starting setups drawn on ${who}, the microphones, and the Placement Studio, where you move the mic yourself. Nothing here makes a sound: the lab is silent and shows the physics instead.`;
+  }
   const what = plural ? `microphones on ${noun.many}` : `a microphone on ${a} ${noun.one}`;
   const itself = plural ? `the ${thing ?? noun.many} themselves` : `the ${thing ?? noun.one} itself`;
   const its = plural ? 'their' : 'its';

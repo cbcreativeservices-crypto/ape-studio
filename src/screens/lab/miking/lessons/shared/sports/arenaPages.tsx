@@ -510,7 +510,7 @@ export function useMsWidthStep({ sources, onInteractive, done }: { sources: read
         <NowLine text={words} />
         <Card>
           <Point title="THE MATRIX">{`Left = Mid + k × Side; Right = Mid − k × Side. Add them and halve: (L + R) ÷ 2 = Mid — the Side cancels. Here the source gives Mid ${d.mono.toFixed(2)}, left ${d.L.toFixed(2)}, right ${d.R.toFixed(2)}.`}</Point>
-          <Point title="THE WIDTH">{k === 0 ? 'No Side at all: left and right are the same — mono in two channels.' : k > 1 ? 'Wide: each side’s pickup grows a rear lobe of the opposite polarity, and the image can pull to the edges. Start modest.' : 'A modest width: the left channel favours the left, the right the right, and the centre stays in the centre.'}</Point>
+          <Point title="THE WIDTH">{k === 0 ? 'No Side at all: left and right are the same — mono in two channels.' : k > 1 ? 'Wide: the opposite-polarity rear lobe of each side’s pickup (dashed) grows large, and the image can pull to the edges. Start modest.' : 'A modest width: the left channel favours the left, the right the right, and the centre stays in the centre. Each side already has a small opposite-polarity rear lobe (dashed); it grows with the width.'}</Point>
           <Point title="CHECK">Decode once, with the Side’s positive lobe facing the side you call left; then compare stereo and mono. A source at the positive lobe should appear on the intended side.</Point>
         </Card>
         {complete ? <Note tone="ok">Width is a decision made after the capture: the mono sum keeps the Mid whatever k is. Start with a modest width, check left and right with a gentle source, and listen in mono.</Note> : <Body>Take the width to none and to wide, and look from two sources.</Body>}
@@ -670,7 +670,7 @@ export function useDownmixStep({ onInteractive, done }: { onInteractive: (id: st
     },
     well: (
       <>
-        <Landing looking={fmt === 'mono' ? 'Stereo to mono' : 'Five channels to stereo'} prompt="Try each SOURCE in the mono FORMAT, then the five-channel fold-down. Listen for what each output loses — the numbers only point where to listen." />
+        <Landing looking={fmt === 'mono' ? 'Stereo to mono' : 'Five channels to stereo'} prompt="Try each SOURCE in the mono FORMAT, then the five-channel fold-down. Watch what each output loses — on a real job the numbers only point you to where to listen." />
         <NowLine text={words} />
         <Card>
           {fmt === 'mono' ? (
