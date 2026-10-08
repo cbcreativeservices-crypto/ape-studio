@@ -26,6 +26,12 @@ import { cabLayout } from '../speakers/speakerModel.ts';
 import { RHODES, WURLI } from './keysSpec.ts';
 import { C_BASS, C_TREBLE, W } from './wurliModel.ts';
 import { KEYS } from './KeysArt';
+import { HeadIconPaths, aboveRotation, headIconStroke, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
+import { FigureHead, headAbove } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
+
+/** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
+const AUDIENCE_HEAD_MM = 230;
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -136,8 +142,10 @@ function build(rig: KeysRig) {
   // the player from above (minimal line art), facing the audience (+u)
   const shoulders = make();
   shoulders.addOval(Skia.XYWHRect(-120, -230, 240, 460));
-  const headTop = make();
-  headTop.addCircle(0, 0, 95);
+  // The player's head from above is the figure's own (head fix 2026-10-08: a
+  // head ON A BODY is PlayerFigure's skin silhouette, never a circle); its
+  // nose points +v, turned below to face +u.
+  const headTop = headAbove(pt(0, 0), 100).fill;
   const bench = rr(-330, -380, -70, 380, 20);
   const P = KEYS_POS[rig];
   const keep = rig === 'rhodes' ? rr(P.player.u - 260, SIDE - 520, KEYS_POS.rhodes.keyboard.u - RHODES.stage.d.mm / 2 + 170, SIDE + 520, 60) : rr(P.player.u - 330, -560, 30, 560, 60);
@@ -156,9 +164,13 @@ function build(rig: KeysRig) {
   const wedge = rr(-150, -280, 150, 280, 18);
   const wedgeGrille = rr(-40, -258, 136, 258, 14);
   const pa = rr(-300, -300, 300, 300, 20);
-  const heads = make();
-  for (let v = -2100; v <= 2100; v += 420) heads.addCircle(KEYS_POS.audience, v, 95);
-  for (let v = -1890; v <= 1890; v += 420) heads.addCircle(KEYS_POS.audience + 330, v, 95);
+  // The audience: each listener the owner's ABOVE head icon (a lone head in a
+  // plan), turned to face the stage (−u).
+  const crowd: { x: number; y: number; rotation: number }[] = [];
+  const faceStage = aboveRotation(-1, 0);
+  for (let v = -2100; v <= 2100; v += 420) crowd.push({ x: KEYS_POS.audience, y: v, rotation: faceStage });
+  for (let v = -1890; v <= 1890; v += 420) crowd.push({ x: KEYS_POS.audience + 330, y: v, rotation: faceStage });
+  const heads = makeHeadIconPaths('above', AUDIENCE_HEAD_MM, crowd);
   const B = KEYS_BOX[rig];
   const deck = rr(B.stage.u0, B.stage.v0, KEYS_POS.audience - 450, B.stage.v1, 0);
   const room = rr(B.studio.u0 + 50, B.studio.v0 + 50, B.studio.u1 - 50, B.studio.v1 - 50, 40);
@@ -279,9 +291,9 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
               <Path path={g.shoulders}>
                 <RadialGradient c={vec(-40, -80)} r={300} colors={['#5a5d66', '#33363d', '#1c1d22']} />
               </Path>
-              <Path path={g.headTop}>
-                <RadialGradient c={vec(-25, -30)} r={120} colors={['#d9b99a', '#a8835f', '#6e5236']} />
-              </Path>
+              <Group transform={[{ rotate: -Math.PI / 2 }]}>
+                <FigureHead fill={g.headTop} />
+              </Group>
             </Group>
             {scene === 'stage'
               ? wedges.map((wd) => {
@@ -305,9 +317,7 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
                     </Path>
                   </Group>
                 ))}
-                <Path path={g.heads}>
-                  <RadialGradient c={vec(KEYS_POS.audience, -600)} r={3000} colors={['#5a5d66', '#2c2e34', '#17181c']} />
-                </Path>
+                <HeadIconPaths lines={g.heads.lines} plate={g.heads.plate} strokeWidth={Math.max(headIconStroke('above', AUDIENCE_HEAD_MM), 1 / xf.s)} color="#7d828d" />
               </>
             ) : null}
             {hi ? <Circle cx={hi.u} cy={hi.v} r={hi.r + 40} style="stroke" strokeWidth={34} color={AMBER} opacity={0.9} /> : null}

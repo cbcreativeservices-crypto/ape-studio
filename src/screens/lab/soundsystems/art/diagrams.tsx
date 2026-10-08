@@ -22,6 +22,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { GearInSvg, INK } from './gearArt';
+import { HeadIconSvg, aboveRotation } from '../../../../features/lab/headIconsSvg';
 import { CABLE_COLORS } from './VenueView';
 
 const W = 354;
@@ -164,9 +165,9 @@ export function FeedbackLoop({ wedge, ringing, sendDb, compact }: { wedge: 'null
       <Polygon points={pts.join(' ')} fill={colors.amber} opacity={0.12} stroke={colors.amber} strokeWidth={0.8} strokeOpacity={0.5} />
       <SvgText x={mic.x - R * 0.55} y={mic.y - R * 0.62} fontSize={FS} fill={colors.amberLabel} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.6}>LIVE ANGLE</SvgText>
       <SvgText x={mic.x + 18 * S} y={mic.y + 16 * S} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} letterSpacing={0.6}>NULL</SvgText>
-      {/* the performer: head + shoulders, from above */}
-      <Circle cx={perf.x} cy={perf.y} r={6 * S} fill="none" stroke="#9aa3ad" strokeWidth={1.3} />
-      <Path d={`M ${perf.x - 12 * S} ${perf.y + 12 * S} C ${perf.x - 12 * S} ${perf.y + 2 * S} ${perf.x + 12 * S} ${perf.y + 2 * S} ${perf.x + 12 * S} ${perf.y + 12 * S}`} fill="none" stroke="#9aa3ad" strokeWidth={1.3} />
+      {/* the performer, from above: the owner's ABOVE head icon turned to face
+          the microphone (+x) — head fix 2026-10-08, a lone head in a plan */}
+      <HeadIconSvg view="above" x={perf.x} y={perf.y} size={20 * S} rotation={aboveRotation(1, 0)} color="#9aa3ad" minStroke={1.2} />
       {/* the microphone, pointing at the performer */}
       <Line x1={mic.x + 14 * S} y1={mic.y} x2={mic.x - 4 * S} y2={mic.y} stroke={INK.metalHi} strokeWidth={3.2 * S} strokeLinecap="round" />
       <Circle cx={mic.x - 6 * S} cy={mic.y} r={4 * S} fill={INK.metalMid} stroke="#000" strokeWidth={0.5} />
@@ -446,10 +447,8 @@ export function ArrivalTimeline({ needMs, setMs }: { needMs: number; setMs: numb
   const apart = `${Math.abs(err).toFixed(1)} ms apart`;
   return (
     <Frame h={H} a11y={`Arrivals at a back-row listener: the mains' sound arrives ${needMs.toFixed(1)} milliseconds after the delay tower's would with no delay set; the delay tower is set to ${setMs} milliseconds. ${fused ? 'The two arrivals fuse into one event.' : `They are ${Math.abs(err).toFixed(1)} milliseconds apart — two events.`}`}>
-      {/* the listener */}
-      <G transform="translate(0 18)">
-        <Path d="M 26 26 C 33 26 38 32 38 39 C 38 45 34 49 31 51 L 31 55 L 21 55 L 21 51 C 18 49 14 45 14 39 C 14 32 19 26 26 26 Z" fill="none" stroke={INK.metalHi} strokeWidth={1.3} strokeLinejoin="round" />
-      </G>
+      {/* the listener — the owner's head icon (head fix 2026-10-08) */}
+      <HeadIconSvg view="above" x={26} y={58} size={28} color={INK.metalHi} minStroke={1.3} />
       <SvgText x={28} y={yBase + 2} fontSize={FS} fill={colors.textMuted} fontFamily={fonts.oswaldMedium} textAnchor="middle" letterSpacing={0.3}>BACK ROW</SvgText>
       {/* time axis */}
       <Line x1={x0} y1={yBase} x2={x1} y2={yBase} stroke="#3a3f4a" strokeWidth={0.8} />

@@ -50,6 +50,7 @@ import {
   Stop,
   Text as SvgText,
 } from 'react-native-svg';
+import { FigureHeadSvg } from '../../../features/lab/figureHeadSvg';
 import { useAnimatedProps, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
 import { CI_JACKET, lightRibbon, polyPath, ribbon, shade, spline, tint, type Pt } from './cableArt';
@@ -1169,7 +1170,10 @@ export function DuctSide({ x0, x1, y, h, m, hangTo }: { x0: number; x1: number; 
 
 /**
  * A standing person for scale (1.75 m), front elevation — shoulders 0.44 m,
- * head 0.23 m — a flat graphite figure, the way section drawings show people.
+ * head 0.23 m — a flat graphite body, the way section drawings show people,
+ * with the figure's own skin-silhouette head (head fix 2026-10-08: a head on
+ * a body is the shared figure head — FigureHeadSvg — never an ellipse, never
+ * the line-art icon).
  */
 export function PersonScale({ x, floorY, m, color = '#4a4f59' }: { x: number; floorY: number; m: number; facing?: 1 | -1; color?: string }) {
   const u = (1.75 * m) / 175; // 1 unit = 1 cm
@@ -1188,7 +1192,7 @@ export function PersonScale({ x, floorY, m, color = '#4a4f59' }: { x: number; fl
     <G>
       <Ellipse cx={x} cy={floorY} rx={20 * u} ry={2.2 * u} fill="rgba(0,0,0,0.45)" />
       <Path d={body} fill={color} stroke={shade(color, 0.5)} strokeWidth={0.4} />
-      <Ellipse cx={x} cy={Y(163)} rx={8 * u} ry={11.5 * u} fill={color} stroke={shade(color, 0.5)} strokeWidth={0.4} />
+      <FigureHeadSvg view="front" cx={x} cy={Y(163)} h={23 * u} neckTo={Y(148)} minContour={0.4} />
     </G>
   );
 }

@@ -27,6 +27,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, Line, Path, Polygon, Rect } from 'react-native-svg';
+import { FigureHeadSvg } from '../../../../features/lab/figureHeadSvg';
 import { ResponseCurveGraph, eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { CheckQuestion, DragSlider, type CheckSpec } from '../../foundations/bits';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
@@ -127,11 +128,14 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
       <Polygon points={`94,90 116,90 120,85 98,85`} fill={FILL2} stroke={INK} strokeWidth={1.4} strokeLinejoin="round" />
       <Path d="M116 90 L116 66 L120 62 L120 85" fill={FILL} stroke={INK} strokeWidth={1.4} strokeLinejoin="round" />
 
-      {/* PERSON — proportioned figure, centered */}
-      <Circle cx={160} cy={58} r={7} fill={FILL2} stroke={INK} strokeWidth={1.5} />
+      {/* PERSON — proportioned figure, centered. The head is the figure's own
+          skin-silhouette head (head fix 2026-10-08: a head on a body is never
+          a circle and never the line-art icon), drawn after the body so its
+          neck runs down into the shoulders. */}
       <Path d="M160 65 Q153 75 155 92 L165 92 Q167 75 160 65 Z" fill={FILL} stroke={INK} strokeWidth={1.5} strokeLinejoin="round" />
       <Path d="M155 70 L148 84 M165 70 L172 84" stroke={INK} strokeWidth={1.5} strokeLinecap="round" />
       <Path d="M157 92 L154 116 M163 92 L166 116" stroke={INK} strokeWidth={1.5} strokeLinecap="round" />
+      <FigureHeadSvg view="front" cx={160} cy={57.5} h={15} neckTo={67} minContour={0.9} />
 
       {/* FLOOR LAMP — base, pole, shade */}
       <Ellipse cx={214} cy={116} rx={10} ry={2.6} fill={FILL2} stroke={INK} strokeWidth={1.2} />

@@ -11,8 +11,9 @@
  *     shoes — each limb a tapered form joined into one outline;
  *   • light from the upper left: a form gradient, a rim light on the lit
  *     edge, a darker contour, a soft contact shadow on the floor;
- *   • the head in the house LINE-ART spec, in profile: one uniform stroke,
- *     bald, brow, nose, lips, chin and ear — NO eye;
+ *   • the head: the SHARED figure head (PlayerFigure headProfile + FigureHead
+ *     — head fix 2026-10-08), one skin silhouette in profile joined to the
+ *     collar by its neck, neutral, no face;
  *   • a muted palette: nothing competes with the instrument, the zones or
  *     the mic.
  * TWO LAYERS, so the instrument sits between them: <ProfileBehind/> (the far
@@ -22,6 +23,7 @@
  * once per pose.
  */
 import { BlurMask, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { FigureHead, headProfile as figureHeadProfile } from '../players/PlayerFigure';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -143,25 +145,6 @@ export function curve(points: Pt[]): SkPath {
   return p;
 }
 
-/** The profile head (house line-art spec), facing +u, centred on c. */
-function headProfile(c: Pt, r: number): { line: SkPath; fill: SkPath } {
-  const k = r / 110;
-  const P = (x: number, y: number) => pt(c.u + x * k, c.v + y * k);
-  const outline = [P(-8, -112), P(46, -100), P(74, -64), P(80, -34), P(82, -22), P(99, 4), P(97, 12), P(83, 20), P(86, 33), P(80, 41), P(85, 50), P(77, 72), P(54, 92), P(40, 104), P(-48, 110), P(-70, 72), P(-94, 22), P(-96, -38), P(-64, -94)];
-  const skull = smooth(outline, 0.42);
-  const line = make();
-  line.addPath(skull);
-  // The ear: an outer helix and an inner fold, behind the jaw.
-  line.addPath(curve([P(-4, -10), P(-24, -14), P(-30, 12), P(-20, 36), P(-4, 36)]));
-  line.addPath(curve([P(-12, 2), P(-18, 14), P(-10, 26)]));
-  // The brow, the nostril, the lips' line, the jaw.
-  line.addPath(curve([P(52, -40), P(66, -44), P(78, -38)]));
-  line.addPath(curve([P(84, 10), P(78, 13), P(76, 7)]));
-  line.addPath(curve([P(83, 41), P(74, 43), P(66, 42)]));
-  line.addPath(curve([P(10, 66), P(36, 84), P(54, 92)]));
-  return { line, fill: skull };
-}
-
 type Mass = { path: SkPath; ramp: string[]; rim: string; edge: string; box: { u0: number; v0: number; u1: number; v1: number } };
 const boxOf = (p: SkPath) => {
   const b = p.getBounds();
@@ -233,12 +216,9 @@ function build(p: ProfilePose): Built {
       { path: shoe(p.ankleNear, p.floor), far: false },
     ],
     lines,
-    // The head joined to the collar by its neck: one skin mass (FigureHead's rule).
-    head: (() => {
-      const h = headProfile(p.head.c, p.head.r);
-      const k = p.head.r / 110;
-      return { line: h.line, fill: union(h.fill, capsule(pt(p.head.c.u - 6 * k, p.head.c.v + 70 * k), pt(p.neck.u, p.neck.v - 10), 44 * k, 50 * k)) };
-    })(),
+    // The head joined to the collar by its neck: the SHARED figure head
+    // (PlayerFigure headProfile, facing +u), one skin silhouette.
+    head: figureHeadProfile(p.head.c, p.head.r, p.neck.v - 10, 1),
     shadow,
     strap,
   };
@@ -303,8 +283,9 @@ export function ProfileBehind({ pose, dim = 1 }: { pose: ProfilePose; dim?: numb
         </>
       ) : null}
       {/* The head as part of the figure (owner 2026-10-06: no separate
-          line-art head icon) — the same lit skin mass as the hands. */}
-      <SkinArt path={b.head.fill} />
+          line-art head icon) — the shared FigureHead skin mass (head fix
+          2026-10-08). */}
+      <FigureHead fill={b.head.fill} />
     </Group>
   );
 }

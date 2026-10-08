@@ -18,6 +18,12 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import type { PlanThing } from './family.ts';
 import { INK } from './handDrumArt';
+import { FigureHead, headAbove } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
+
+/** The player's head from above (nose +v), built once on first draw. */
+let playerHeadTop: ReturnType<typeof headAbove>['fill'] | null = null;
+const getPlayerHeadTop = () => (playerHeadTop ??= headAbove(pt(0, 0), 96).fill);
 
 const AMBER = '#ffc64d';
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -133,9 +139,12 @@ function Thing({ t, Drums, variant }: { t: PlanThing; Drums: (p: { view: 'top'; 
           <Path path={sh}>
             <LinearGradient start={vec(t.u - 130, t.v - 230)} end={vec(t.u + 130, t.v + 230)} colors={['#5a6e96', '#3f5276', '#26324a']} />
           </Path>
-          <Circle cx={t.u + 10} cy={t.v} r={92}>
-            <RadialGradient c={vec(t.u - 20, t.v - 30)} r={130} colors={['#5b4636', '#3a2a1e', '#1e150e']} />
-          </Circle>
+          {/* The head: the figure's own skin silhouette from above (head fix
+              2026-10-08 — a head ON A BODY is PlayerFigure's FigureHead, never
+              a circle), its nose toward the drums (+u). */}
+          <Group transform={[{ translateX: t.u + 10 }, { translateY: t.v }, { rotate: -Math.PI / 2 }]}>
+            <FigureHead fill={getPlayerHeadTop()} />
+          </Group>
         </Group>
       );
     }

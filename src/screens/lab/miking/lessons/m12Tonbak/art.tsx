@@ -65,20 +65,10 @@ function buildTop() {
   opening.addOval(Skia.XYWHRect(-rf + 8, zOf(T_LEN) - 10, 2 * rf - 16, 18));
   const shadow = make();
   shadow.addRRect(Skia.RRectXY(Skia.XYWHRect(-T_R + 30, zOf(T_LEN) - 10, 2 * T_R, T_LEN * COS_T + 30), 60, 60));
-  // The player from above (quiet line art): shoulders, head, forearms to the drum.
-  const shoulders = make();
-  shoulders.addOval(Skia.XYWHRect(-640, -230, 300, 460));
-  const headP = make();
-  headP.addCircle(-470, 0, 96);
-  const arms = make();
-  arms.moveTo(-430, 200);
-  arms.cubicTo(-300, 260, -130, 200, -40, 120);
-  arms.moveTo(-430, -200);
-  arms.cubicTo(-300, -240, -160, -120, -90, 40);
-  const lap = make();
-  lap.addRRect(Skia.RRectXY(Skia.XYWHRect(-380, -330, 560, 220), 90, 90));
-  lap.addRRect(Skia.RRectXY(Skia.XYWHRect(-380, 70, 560, 220), 90, 90));
-  return { kind: 'top' as const, body, grooves, head, lip, opening, shadow, shoulders, headP, arms, lap };
+  // (The player is the shared figure — tonbakPose / PlayerFigure. The old
+  // line-art player and its circle head were dead code; removed in the head
+  // fix 2026-10-08.)
+  return { kind: 'top' as const, body, grooves, head, lip, opening, shadow };
 }
 
 function buildSide() {
@@ -105,27 +95,15 @@ function buildSide() {
   const floorEdge = make();
   floorEdge.moveTo(-3000, 0);
   floorEdge.lineTo(3000, 0);
-  // The player in profile (quiet line art), seated, facing the audience (+x).
-  const person = make();
-  person.addCircle(-430, -1120, 92); // a bald head (house style)
-  person.moveTo(-470, -1020);
-  person.cubicTo(-520, -880, -520, -720, -480, -560); // back
-  person.moveTo(-380, -1000);
-  person.cubicTo(-330, -900, -300, -820, -280, -760); // chest
-  person.moveTo(-480, -560);
-  person.lineTo(60, -520); // thigh under the drum
-  person.lineTo(160, -470);
-  person.lineTo(150, -60); // shin
-  person.lineTo(260, -20); // foot
-  person.moveTo(-380, -900);
-  person.cubicTo(-280, -820, -170, -760, -60, -700); // arm to the head
+  // The chair the shared figure sits on (the old line-art player and its
+  // circle head were dead code; removed in the head fix 2026-10-08).
   const chair = make();
   chair.addRRect(Skia.RRectXY(Skia.XYWHRect(-640, -560, 380, 40), 10, 10));
   chair.moveTo(-620, -520);
   chair.lineTo(-620, 0);
   chair.moveTo(-290, -520);
   chair.lineTo(-290, 0);
-  return { kind: 'side' as const, silhouette, head, rim, floor, floorEdge, person, chair };
+  return { kind: 'side' as const, silhouette, head, rim, floor, floorEdge, chair };
 }
 
 function getBuilt(view: ViewId): Built {

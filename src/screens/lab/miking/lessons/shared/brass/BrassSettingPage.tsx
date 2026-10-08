@@ -36,6 +36,8 @@ import { Kit, MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
 import { PROJ, hornGroups } from './BrassArt';
 import { SLIDE_7TH } from './brassSpec.ts';
 import type { HornPose } from './brassPosture.ts';
+import { FigureHead, headAbove } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
 
 const DEG = Math.PI / 180;
 const make = () => Skia.Path.Make();
@@ -85,15 +87,15 @@ function BrassTop({ P, dim }: { P: HornPose; dim: number }) {
   );
 }
 
-/** A singer at a vocal mic, from above: shoulders, head, the mic on its stand. */
+/** A singer at a vocal mic, from above: shoulders, the head, the mic on its
+ *  stand. The head is the figure's own skin silhouette from above (head fix
+ *  2026-10-08: a head ON A BODY is PlayerFigure's FigureHead — never a
+ *  circle, never the line-art icon), its nose turned to the mic (+u). */
 function SingerTop() {
   const p = useMemo(() => {
     const body = make();
     body.addOval(Skia.XYWHRect(-120, -230, 240, 460));
-    const head = make();
-    head.addCircle(10, 0, 100);
-    const hair = make();
-    hair.addCircle(-10, 0, 96);
+    const head = headAbove(pt(0, 0), 100).fill;
     const legs = make();
     for (let k = 0; k < 3; k++) {
       const a = (k * 2 * Math.PI) / 3;
@@ -105,17 +107,16 @@ function SingerTop() {
     boom.lineTo(170, 0);
     const mic = make();
     mic.addRRect(Skia.RRectXY(Skia.XYWHRect(110, -22, 110, 44), 22, 22));
-    return { body, head, hair, legs, boom, mic };
+    return { body, head, legs, boom, mic };
   }, []);
   return (
     <>
       <Path path={p.body}>
         <LinearGradient start={vec(-120, -230)} end={vec(120, 230)} colors={['#4c5466', '#2f3542', '#1b1f28']} />
       </Path>
-      <Path path={p.hair} color="#2a211c" />
-      <Path path={p.head}>
-        <LinearGradient start={vec(-90, -100)} end={vec(110, 100)} colors={['#e2bfa3', '#b98d6f', '#7d5a45']} />
-      </Path>
+      <Group transform={[{ translateX: 10 }, { rotate: -Math.PI / 2 }]}>
+        <FigureHead fill={p.head} />
+      </Group>
       <Path path={p.legs} style="stroke" strokeWidth={14} strokeCap="round" color="#0b0c0f" />
       <Path path={p.legs} style="stroke" strokeWidth={9} strokeCap="round" color="#4d515b" />
       <Path path={p.boom} style="stroke" strokeWidth={12} strokeCap="round" color="#2a2c32" />

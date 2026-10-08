@@ -30,6 +30,17 @@ import type { VariantId, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { CASE, NODE_FRAC, type Bar, type Layout, type MalletInst, type Tube } from './malletSpec.ts';
 import { frameEnds, malletGeom, type MalletFamily, type MalletGeom } from './malletModel.ts';
+import { FigureHead, headAbove, headFront } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
+
+/** The player's head — the figure's own skin silhouette (head fix 2026-10-08:
+ *  a head ON A BODY is PlayerFigure's FigureHead, never a circle): face-on
+ *  in the side view (the neck down into the shoulders 140 mm below), from
+ *  above in the plan (the nose toward the bars, +v). Built once. */
+const playerHeads: Partial<Record<'front' | 'above', ReturnType<typeof headFront>['fill']>> = {};
+function playerHeadFill(view: 'front' | 'above') {
+  return (playerHeads[view] ??= view === 'front' ? headFront(pt(0, 0), 100, 140).fill : headAbove(pt(0, 0), 98).fill);
+}
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -68,7 +79,6 @@ const FELT = ['#ece4d0', '#c9bea4', '#8f846c'];
 const WOOD_CASE = ['#a06a3a', '#6e4421', '#3b2410'];
 const CASE_FELT = '#3a2a4a';
 const PLAYER = ['#5a6e96', '#3f5276', '#26324a'];
-const SKIN = ['#5b4636', '#3a2a1e', '#1e150e'];
 
 /* ── the side view (front elevation from the audience) ── */
 type Cyl = { body: SkPath; hi: SkPath; lo: SkPath; rim: SkPath; cap: SkPath };
@@ -535,9 +545,9 @@ function Side({ b, look, inst }: { b: SideBuilt; look: Look; inst: MalletInst })
           <LinearGradient start={vec(-230, b.player.head.y)} end={vec(230, b.barTop)} colors={PLAYER} />
         </Path>
         <Path path={b.player.arms} style="stroke" strokeWidth={70} strokeCap="round" color={PLAYER[1]} />
-        <Circle cx={b.player.head.x} cy={b.player.head.y} r={98}>
-          <RadialGradient c={vec(b.player.head.x - 30, b.player.head.y - 34)} r={140} colors={SKIN} />
-        </Circle>
+        <Group transform={[{ translateX: b.player.head.x }, { translateY: b.player.head.y }]}>
+          <FigureHead fill={playerHeadFill('front')} />
+        </Group>
       </Group>
 
       {/* A table under a case model. */}
@@ -777,9 +787,9 @@ function Top({ b, look, inst }: { b: TopBuilt; look: Look; inst: MalletInst }) {
       <Path path={b.player.shoulders}>
         <LinearGradient start={vec(-240, b.player.head.z - 125)} end={vec(240, b.player.head.z + 125)} colors={PLAYER} />
       </Path>
-      <Circle cx={b.player.head.x} cy={b.player.head.z} r={96}>
-        <RadialGradient c={vec(b.player.head.x - 28, b.player.head.z - 30)} r={130} colors={SKIN} />
-      </Circle>
+      <Group transform={[{ translateX: b.player.head.x }, { translateY: b.player.head.z }]}>
+        <FigureHead fill={playerHeadFill('above')} />
+      </Group>
       <Path path={b.mallets.shafts} style="stroke" strokeWidth={9} strokeCap="round" color={INK} opacity={0.8} />
       <Path path={b.mallets.shafts} style="stroke" strokeWidth={6} strokeCap="round" color={look.mallet.shaft} />
       {b.mallets.heads.map((h) => (

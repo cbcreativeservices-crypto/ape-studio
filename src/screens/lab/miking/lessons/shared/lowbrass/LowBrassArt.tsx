@@ -13,7 +13,7 @@
  *     the viewer — the dark throat inside; the horn's right hand cupped in it;
  *   • rotary valves (round casings, caps, levers) or pistons (casings,
  *     pearl finger buttons);
- *   • the seated player (a neutral lay figure, the house line-art bald head)
+ *   • the seated player (a neutral lay figure; the shared figure head)
  *     and the chair, receding behind the instrument (charter §6).
  * Upper-left light, gradients and rim highlights (charter §3). Nothing moves
  * (D8). Labels never sit on the instrument: each one stands off to the side
@@ -28,6 +28,8 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { basis, brassScene, flareR, ring, type Bell, type BrassScene, type Tube, type Valve } from './lowBrassScene.ts';
 import type { LowBrassSpec, Orient } from './lowBrassSpec.ts';
+import { FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P2 = [number, number];
@@ -282,46 +284,24 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   limb('foreR', J.elbowR, J.wristR, 42, 31, SHIRT);
   limb('handL', J.wristL, J.handL, 30, 36, SKIN);
   if (!s.bellHand) limb('handR', J.wristR, J.handR, 30, 36, SKIN);
-  // The neck and the house line-art head (bald, no eyes).
+  // The neck, and the head: the SHARED figure head (head fix 2026-10-08 —
+  // PlayerFigure headProfile / headAbove + FigureHead, the same skin
+  // silhouette every lab figure wears; never a circle). Profile facing +x
+  // (a short neck stub over the neck limb); from above, the nose toward +x.
   const nb = sub(J.head, scale({ x: 0, y: -1, z: 0 }, -J.headR * 0.55));
   limb('neckLimb', J.neck, nb, 48, 44, SKIN);
   const hc = q(J.head);
   const r = J.headR;
-  const headPts: P2[] =
-    view === 'side'
-      ? // Profile, facing +x: the cranium, brow, nose, lips and chin.
-        [
-          [hc[0] - r * 0.95, hc[1] + r * 0.05],
-          [hc[0] - r * 0.85, hc[1] - r * 0.6],
-          [hc[0] - r * 0.3, hc[1] - r * 1.02],
-          [hc[0] + r * 0.45, hc[1] - r * 0.9],
-          [hc[0] + r * 0.82, hc[1] - r * 0.42],
-          [hc[0] + r * 0.86, hc[1] - r * 0.12],
-          [hc[0] + r * 1.08, hc[1] + r * 0.12],
-          [hc[0] + r * 0.88, hc[1] + r * 0.24],
-          [hc[0] + r * 0.92, hc[1] + r * 0.44],
-          [hc[0] + r * 0.82, hc[1] + r * 0.62],
-          [hc[0] + r * 0.62, hc[1] + r * 0.95],
-          [hc[0] + r * 0.05, hc[1] + r * 1.0],
-          [hc[0] - r * 0.6, hc[1] + r * 0.62],
-        ]
-      : circ(hc, r, 28);
-  const head = smoothClosed(headPts);
-  // The head is part of the figure (owner 2026-10-06: no separate line-art
-  // head icon on a lab figure): the same lit skin mass as the hands and the
-  // neck it sits on; from above, the ears and the nose's tip.
-  const ears: P2[][] = view === 'side' ? [] : [circ([hc[0] - r * 0.02, hc[1] - r * 0.98], r * 0.2, 12), circ([hc[0] - r * 0.02, hc[1] + r * 0.98], r * 0.2, 12), circ([hc[0] + r * 0.98, hc[1]], r * 0.16, 10)];
+  const headFill = (() => {
+    if (view === 'side') return headProfile(pt(hc[0] + r * 0.1, hc[1]), r * 1.05, hc[1] + r * 1.15, 1).fill; // lips on the mouthpiece, as before
+    const f = headAbove(pt(0, 0), r).fill.copy();
+    f.transform(Skia.Matrix().translate(hc[0], hc[1]).rotate(-Math.PI / 2));
+    return f;
+  })();
   out.push({
     key: 'head',
     depth: depthOf(view, J.head),
-    node: (
-      <Group key="head">
-        {ears.map((e, i) => (
-          <Lit key={i} path={smoothClosed(e)} pts={e} ramp={SKIN} />
-        ))}
-        <Lit path={head} pts={headPts} ramp={SKIN} />
-      </Group>
-    ),
+    node: <FigureHead key="head" fill={headFill} />,
   });
   // The chair.
   const c = s.chair;

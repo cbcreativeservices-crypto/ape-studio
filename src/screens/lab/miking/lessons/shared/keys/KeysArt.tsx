@@ -29,6 +29,8 @@ import { SPK } from '../speakers/SpeakerArt';
 import { OVAL_SPOTS, SPEAKER_OVAL_4x8 as OV } from './keysSpec.ts';
 import { RHODES_FRONT, RHODES_TOP, WURLI_FRONT, type KeyRects, type Rect } from './keysGeometry.ts';
 import { C_BASS, C_TREBLE, FACE_TOP, OVAL_SECTION, PLAYER, W, onSpeaker } from './wurliModel.ts';
+import { FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -404,6 +406,10 @@ type Built = {
   player: SkPath;
   playerLine: SkPath;
   bench: SkPath;
+  /** The player's head (PlayerFigure skin silhouette) at the origin, and
+   *  where it sits (rot: radians, the from-above head's nose to −x). */
+  head: SkPath;
+  headAt: { x: number; y: number; rot: number };
 };
 const builtCache = new Map<string, Built>();
 
@@ -532,9 +538,12 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
       slots.moveTo(u0, v0);
       slots.lineTo(u1, v1);
     }
-    // the seated player: minimal line art (ILLUSTRATIVE)
+    // the seated player: minimal line art (ILLUSTRATIVE); the head is the
+    // figure's own skin silhouette in profile, facing the keys (−x) — head
+    // fix 2026-10-08: a head ON A BODY is PlayerFigure's FigureHead, never a
+    // circle and never the line-art icon.
     const player = make();
-    player.addCircle(P.head.x, P.head.y, P.head.r * 0.92);
+    const head = headProfile(pt(0, 0), P.head.r, P.head.r * 1.45, -1).fill;
     const playerLine = make();
     playerLine.moveTo(P.head.x + 6, P.head.y + P.head.r * 0.92);
     playerLine.lineTo(P.shoulder.x, P.shoulder.y);
@@ -550,7 +559,7 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
     rr(bench, 470, -500, 800, -470, 6);
     rr(bench, 490, -470, 510, -4, 3);
     rr(bench, 760, -470, 780, -4, 3);
-    out = { floor: rr(make(), -1500, 0, 900, 40, 0), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk: [{ ...sp, bracket }], slots, player, playerLine, bench };
+    out = { floor: rr(make(), -1500, 0, 900, 40, 0), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk: [{ ...sp, bracket }], slots, player, playerLine, bench, head, headAt: { x: P.head.x, y: P.head.y, rot: 0 } };
   } else {
     // TOP: cut at the speakers' height (y = C_BASS.y): the lid's front panel
     // and back, the ends; both speakers cut along their long axis; the keys
@@ -595,7 +604,8 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
       }
     const player = make();
     player.addOval(Skia.XYWHRect(P.shoulder.x - 110, -230, 220, 460));
-    player.addCircle(P.head.x + 10, 0, P.head.r * 0.9);
+    // the head from above (the figure's own, nose turned to the keys, −x)
+    const head = headAbove(pt(0, 0), P.head.r * 0.95).fill;
     const playerLine = make();
     for (const sg of [-1, 1]) {
       playerLine.moveTo(P.shoulder.x - 40, sg * 200);
@@ -605,7 +615,7 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
       playerLine.lineTo(P.knee.x, sg * P.knee.z);
     }
     const bench = rr(make(), 470, -380, 800, 380, 14);
-    out = { floor: make(), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk, slots, player, playerLine, bench };
+    out = { floor: make(), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk, slots, player, playerLine, bench, head, headAt: { x: P.head.x + 10, y: 0, rot: Math.PI / 2 } };
   }
   builtCache.set(key, out);
   return out;
@@ -637,6 +647,9 @@ export function WurliSection({ view, mount = 'lid', showPlayer = true, hi }: { v
           <Path path={g.player} style="stroke" strokeWidth={3} color={KEYS.player} opacity={0.75} />
           <Path path={g.playerLine} style="stroke" strokeWidth={side ? 34 : 30} strokeCap="round" strokeJoin="round" color={KEYS.player} opacity={0.16} />
           <Path path={g.playerLine} style="stroke" strokeWidth={3} strokeCap="round" strokeJoin="round" color={KEYS.player} opacity={0.75} />
+          <Group opacity={0.55} transform={[{ translateX: g.headAt.x }, { translateY: g.headAt.y }, { rotate: g.headAt.rot }]}>
+            <FigureHead fill={g.head} />
+          </Group>
         </Group>
       ) : null}
       <Path path={g.pedalCable} style="stroke" strokeWidth={4} color="#202126" />

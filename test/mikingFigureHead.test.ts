@@ -47,8 +47,9 @@ describe('lab figures: the head belongs to the body', () => {
       ['lessons/shared/sax/SaxArt.tsx', /return <FigureHead fill=\{h\.fill\} \/>/],
       ['lessons/shared/bowed/BowedArt.tsx', /<FigureHead fill=\{it\.head\.paths\.fill\} \/>/],
       ['lessons/shared/lutes/lutePlayers.tsx', /<FigureHead fill=\{head\.fill\} \/>/],
-      ['lessons/shared/lowbrass/LowBrassArt.tsx', /<Lit path=\{head\} pts=\{headPts\} ramp=\{SKIN\} \/>/],
-      ['lessons/shared/freereed/PlayerProfile.tsx', /<SkinArt path=\{b\.head\.fill\} \/>/],
+      // Head fix 2026-10-08: low brass and free reed now wear the SHARED head.
+      ['lessons/shared/lowbrass/LowBrassArt.tsx', /<FigureHead key="head" fill=\{headFill\} \/>/],
+      ['lessons/shared/freereed/PlayerProfile.tsx', /<FigureHead fill=\{b\.head\.fill\} \/>/],
       ['lessons/a10Harmonica/art.tsx', /<MassArt path=\{face\} ramp=\{SKIN\}/],
     ] as const) {
       assert.match(readFileSync(`${ROOT}/${f}`, 'utf8'), re, f);

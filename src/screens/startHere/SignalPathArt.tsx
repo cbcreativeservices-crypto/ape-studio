@@ -34,6 +34,7 @@ import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-
 import Animated, { Easing, cancelAnimation, useAnimatedProps, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { fonts } from '../../theme/tokens';
 import { GearInSvg } from '../lab/soundsystems/art/gearArt';
+import { HeadIconSvg } from '../../features/lab/headIconsSvg';
 import { useLabLoops } from '../lab/soundsystems/art/motion';
 import type { MatchTarget, StationId, Unplug } from '../../features/startHere/startHereContent';
 
@@ -47,6 +48,11 @@ const GREEN = '#5bff85';
 const RED = '#ff5a48';
 const DIM = '#5a5d66';
 const LABEL = '#c9ccd4';
+/** The singer's and the listener's heads: the owner's side icon, crown→chin
+ *  (the whole drawing, crown → neck base, ≈ 42 units of this 400-wide art). */
+const HEAD_PX = 34;
+/** The heads' stroke: the gear glyphs' light metal, so they sit with the kit. */
+export const HEAD_GLYPH_INK = '#a7aeb8';
 
 const ACircle = Animated.createAnimatedComponent(Circle);
 const APath = Animated.createAnimatedComponent(Path);
@@ -296,9 +302,9 @@ export function SignalPathArt({
 
         {/* ── the chain ── */}
         <G opacity={visible('voice') ? 1 : 0.3}>
-          <GearInSvg kind="listener" id="sh-voice" x={X.voice} y={CY} size={50} />
-          {/* a singer: the mouth open toward the mic */}
-          <Path d={`M ${X.voice + 3} ${CY + 1} q 3 2 6 0`} stroke={LABEL} strokeWidth={1.3} fill="none" strokeLinecap="round" />
+          {/* a singer: the owner's SIDE head icon, the mouth open toward the
+              mic (head fix 2026-10-08 — a lone head uses the shared icon). */}
+          <HeadIconSvg view="side" facing="right" speaking anchor="center" x={X.voice} y={CY} size={HEAD_PX} color={HEAD_GLYPH_INK} minStroke={1.4} />
         </G>
         <G opacity={visible('mic') ? 1 : 0.3}>{airArcs(52, soundLeftOn && visible('mic'), 'airA')}</G>
         <GearInSvg kind="vocalMic" id="sh-mic" x={X.mic} y={CY} size={48} dim={!visible('mic')} />
@@ -308,7 +314,7 @@ export function SignalPathArt({
         <GearInSvg kind="poweredSpeaker" id="sh-spk" x={X.speaker} y={CY} size={62} dim={!visible('speaker')} />
         <G opacity={visible('listener') ? 1 : 0.3}>{airArcs(298, soundRightOn, 'airB')}</G>
         <G opacity={visible('listener') ? (soundRightOn ? 1 : 0.55) : 0.3}>
-          <GearInSvg kind="listener" id="sh-you" x={X.listener} y={CY} size={46} />
+          <HeadIconSvg view="side" facing="left" anchor="center" x={X.listener} y={CY} size={HEAD_PX} color={HEAD_GLYPH_INK} minStroke={1.4} />
         </G>
 
         {/* ── SIGNAL-present lights on the two devices that have them. A pulled

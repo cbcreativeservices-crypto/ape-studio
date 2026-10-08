@@ -16,6 +16,7 @@
  */
 import { useRef } from 'react';
 import Svg, { Circle, Defs, Ellipse, G, Line, LinearGradient, Path, Polygon, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
+import { HeadIconSvg } from '../../../../features/lab/headIconsSvg';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { GearKind } from '../../../../features/soundsystems/types';
 
@@ -546,16 +547,13 @@ function Distro({ id, lit }: { id: string; lit: boolean }) {
   );
 }
 
-/** Minimal line-art bald head (owner head-icon spec) — the listener. */
+/** The listener — the owner's line-art head icon (head fix 2026-10-08: one
+ *  shared drawing app-wide, features/lab/headIconGeometry). The face-on
+ *  ABOVE icon, a lone head (no shoulders): it reads face-on in a diagram and
+ *  is the right view for a plan from above (Mastering's RoomDiagram). Scenes
+ *  drawn side-on use the SIDE icon directly (Start Here). */
 function Listener() {
-  return (
-    <G>
-      <Path d="M 32 12 C 40 12 46 19 46 28 C 46 35 42 40 38 43 L 38 48 L 26 48 L 26 43 C 22 40 18 35 18 28 C 18 19 24 12 32 12 Z" fill="none" stroke={INK.metalHi} strokeWidth={1.6} strokeLinejoin="round" />
-      <Path d="M 18 28 C 15 27 14 32 17 34" fill="none" stroke={INK.metalHi} strokeWidth={1.4} strokeLinecap="round" />
-      <Path d="M 46 28 C 49 27 50 32 47 34" fill="none" stroke={INK.metalHi} strokeWidth={1.4} strokeLinecap="round" />
-      <Path d="M 22 50 C 22 52 42 52 42 50 L 44 58 L 20 58 Z" fill="none" stroke={INK.metalHi} strokeWidth={1.4} strokeLinejoin="round" />
-    </G>
-  );
+  return <HeadIconSvg view="above" x={32} y={32.5} size={46} color={INK.metalHi} minStroke={1.5} />;
 }
 
 /* ── the one entry point ─────────────────────────────────────────────────── */

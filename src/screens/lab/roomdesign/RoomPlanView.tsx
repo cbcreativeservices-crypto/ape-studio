@@ -19,6 +19,7 @@
 import { memo, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { PanResponder, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polygon, Polyline, Rect, Text as SvgText } from 'react-native-svg';
+import { HeadIconSvg } from '../../../features/lab/headIconsSvg';
 import Animated, { useAnimatedProps, type SharedValue } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { fieldLevelColor, levelColorForDb } from '../../../features/tools/levelColor';
@@ -91,7 +92,6 @@ export const FLOOR_TINT: Record<string, string> = {
   tile: '#16303a',
 };
 const HEAD_LINE = '#d9dbe0';
-const HEAD_PLATE = '#15161a';
 const SPK_HI = '#5b5f6a';
 const SPK_LO = '#26282e';
 const AMBER = colors.amber;
@@ -596,22 +596,16 @@ function SubTop({ sp, T, fs, selected }: { sp: Speaker; T: PlanTransform; fs: nu
   );
 }
 
-/** The listener from above — head-icon spec: a light uniform stroke, no
- *  fill but the readability plate. Nose toward the speakers (−y). */
+/** The listener from above — the owner's ABOVE head icon (head fix
+ *  2026-10-08: a lone head in a plan, rotated to the way the person faces):
+ *  the nose toward the speakers (−y). A light uniform stroke over the
+ *  readability plate, a green accent wash; `size` ≈ the head's width. */
 function ListenerTop({ p, size, selected }: { p: Pt; size: number; selected: boolean }) {
-  const r = size / 2;
+  const icon = size * 1.35; // crown→chin, so the ear-to-ear width ≈ size
   return (
-    <G transform={`translate(${p.x},${p.y})`}>
-      {selected ? <Circle cx={0} cy={0} r={r + 8} fill="none" stroke={GREEN} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
-      {/* shoulders */}
-      <Path d={`M${-r * 1.7},${r * 1.1} Q${-r * 1.6},${r * 0.1} ${-r * 0.7},${r * 0.35} M${r * 1.7},${r * 1.1} Q${r * 1.6},${r * 0.1} ${r * 0.7},${r * 0.35}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.3} strokeLinecap="round" opacity={0.8} />
-      {/* head */}
-      <Circle cx={0} cy={0} r={r} fill={HEAD_PLATE} stroke={HEAD_LINE} strokeWidth={1.4} />
-      {/* ears */}
-      <Path d={`M${-r},${-r * 0.2} q${-r * 0.35},${r * 0.2} 0,${r * 0.5} M${r},${-r * 0.2} q${r * 0.35},${r * 0.2} 0,${r * 0.5}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.3} strokeLinecap="round" />
-      {/* nose: the way they face */}
-      <Path d={`M${-r * 0.18},${-r} l${r * 0.18},${-r * 0.3} l${r * 0.18},${r * 0.3}`} fill="none" stroke={HEAD_LINE} strokeWidth={1.3} strokeLinecap="round" strokeLinejoin="round" />
-      <Circle cx={0} cy={0} r={r} fill="none" stroke={GREEN} strokeWidth={1.2} opacity={0.35} />
+    <G>
+      {selected ? <Circle cx={p.x} cy={p.y} r={icon / 2 + 6} fill="none" stroke={GREEN} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
+      <HeadIconSvg view="above" x={p.x} y={p.y} size={icon} rotation={Math.PI} color={HEAD_LINE} tint={GREEN} tintOpacity={0.3} plate minStroke={1.3} />
     </G>
   );
 }

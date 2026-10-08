@@ -17,6 +17,8 @@ import { CabSection } from '../shared/speakers/SpeakerArt';
 import { ampExtras } from '../shared/speakers/ampArt';
 import { PANEL, type CabKind } from '../shared/speakers/speakerModel.ts';
 import type { Back } from '../shared/speakers/cabGeometry.ts';
+import { FigureHead, headAbove } from '../shared/players/PlayerFigure';
+import { pt } from '../shared/players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -77,8 +79,10 @@ function planPaths(): Built {
   o.body.addOval(Skia.XYWHRect(p.x - 140, p.z - 240, 280, 480));
   o.arms = make();
   for (const s of [-1, 1]) o.arms.addRRect(Skia.RRectXY(Skia.XYWHRect(p.x + 40, p.z + s * 200 - 45, 260, 90), 40, 40));
-  o.head = make();
-  o.head.addCircle(p.x + 10, p.z, 100);
+  // The head: the figure's own skin silhouette from above (head fix
+  // 2026-10-08 — a head ON A BODY is PlayerFigure's FigureHead, never a
+  // circle), built at the origin, turned to the keys (+x) where drawn.
+  o.head = headAbove(pt(0, 0), 100).fill;
   const q = LAYOUT.pedals;
   o.pedals = make();
   for (let i = 0; i < 3; i++) o.pedals.addRRect(Skia.RRectXY(Skia.XYWHRect(q.x - 60 + i * 0, q.z - 60 + i * 150, 110, 130), 14, 14));
@@ -108,7 +112,9 @@ export function ClavinetPlan({ dim = 1 }: { dim?: number }) {
       </Path>
       <Path path={o.arms} color="#3c4252" />
       <Path path={o.body} color="#2f3542" />
-      <Path path={o.head} color="#6e5d4f" />
+      <Group transform={[{ translateX: LAYOUT.player.x + 10 }, { translateY: LAYOUT.player.z }, { rotate: -Math.PI / 2 }]}>
+        <FigureHead fill={o.head} />
+      </Group>
     </Group>
   );
 }

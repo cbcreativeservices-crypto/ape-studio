@@ -28,7 +28,7 @@ const isDance = (v: VariantId) => v === 'dance';
  *  curves to the two hands, the hips swayed — quiet line art. */
 function dancerFront(hands: readonly [number, number][]) {
   const p = make();
-  p.addCircle(30, -1660, 92);
+  // (the head: PlayerInk head="front" at (30, −1660) — the figure's own)
   p.moveTo(-170, -1450);
   p.cubicTo(-80, -1500, 120, -1500, 210, -1440); // shoulders
   p.moveTo(-150, -1440);
@@ -103,7 +103,7 @@ function sideArt(v: VariantId): ReactElement {
     return (
       <Group>
         <Floor u0={-4000} u1={5000} />
-        <PlayerInk path={playerSide(hands)} />
+        <PlayerInk path={playerSide(hands)} head="side" />
         {hands.map(([a, b], i) => (
           <Group key={i}>
             <CymbalEdge u={a + 8} v={b - 16} r={RA} deg={-70} />
@@ -116,7 +116,7 @@ function sideArt(v: VariantId): ReactElement {
   return (
     <Group>
       <Floor u0={-4000} u1={5000} />
-      <PlayerInk path={playerSide([[P0.x - 30, P0.y + 30], [DROP_C.x - 20, DROP_C.y - 25]])} />
+      <PlayerInk path={playerSide([[P0.x - 30, P0.y + 30], [DROP_C.x - 20, DROP_C.y - 25]])} head="side" />
       <CymbalEdge u={P0.x} v={P0.y} r={RA} />
       <CymbalEdge u={DROP_C.x} v={DROP_C.y} r={RB} deg={-DROP_TILT} />
     </Group>
@@ -141,10 +141,10 @@ function topArt(v: VariantId): ReactElement {
         <Path path={arrows} style="stroke" strokeWidth={14} strokeCap="round" strokeJoin="round" color="#8a8f9c" opacity={0.6} />
         {[-R * 0.75, R * 0.75].map((zz) => (
           <Group key={zz} transform={[{ translateY: zz }]}>
-            <PlayerInk path={playerTop()} faint />
+            <PlayerInk path={playerTop()} faint head="top" />
           </Group>
         ))}
-        <PlayerInk path={playerTop([[HAND_L.x, HAND_L.z], [HAND_R.x, HAND_R.z]])} />
+        <PlayerInk path={playerTop([[HAND_L.x, HAND_L.z], [HAND_R.x, HAND_R.z]])} head="top" />
         <CymbalFace u={HAND_L.x + 20} v={HAND_L.z} r={RA} />
         <CymbalFace u={HAND_R.x + 20} v={HAND_R.z} r={RA} />
       </Group>
@@ -152,7 +152,7 @@ function topArt(v: VariantId): ReactElement {
   }
   return (
     <Group>
-      <PlayerInk path={playerTop([[P0.x - 30, P0.z - 40], [DROP_C.x - 10, DROP_C.z + 40]])} faint />
+      <PlayerInk path={playerTop([[P0.x - 30, P0.z - 40], [DROP_C.x - 10, DROP_C.z + 40]])} faint head="top" />
       <Circle cx={10} cy={14} r={RA + 4} color="#000" opacity={0.45}>
         <BlurMask blur={8} style="normal" />
       </Circle>
@@ -235,7 +235,7 @@ function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: s
         <Floor u0={-2400} u1={2400} />
         {hl('fc.route') ? <Path path={polyPath([[-R * 0.25, -40], [R * 0.25, -40]])} style="stroke" strokeWidth={60} color={HIGHLIGHT} opacity={0.3} /> : null}
         <Path path={arrows} style="stroke" strokeWidth={10} strokeCap="round" strokeJoin="round" color="#8a8f9c" opacity={0.7} />
-        <PlayerInk path={dancerFront(hands)} />
+        <PlayerInk path={dancerFront(hands)} head="front" headAt={[30, -1660]} />
         {hands.map(([a, b], i) => (
           <Group key={i}>
             <CymbalEdge u={a + (i ? 10 : -10)} v={b - 20} r={RA} deg={i ? 80 : -80} glow={hl('fc.thumb')} />

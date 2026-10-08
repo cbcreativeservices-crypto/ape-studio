@@ -31,6 +31,7 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { add, scale } from '../../../engine/geometry/vec.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { LowBrassScene, prj } from './LowBrassArt';
+import { HeadIcon, aboveRotation } from '../../../../../../features/lab/headIcons';
 import { basis, type BrassScene } from './lowBrassScene.ts';
 import { pipeShape, reflection, spreadHalfAngle, stillPoints, type Register } from './airColumn.ts';
 
@@ -374,9 +375,7 @@ export function HornWallPlan({ w, h, s, wallBehind, register, accessibilityLabel
     const radii = [b.R + 160, b.R + 360, b.R + 560];
     if (half >= 180) for (const q of radii) spread.addCircle(bu, bz, q);
     else arcs(spread, bu, bz, radii, deg - half, deg + half);
-    const ear = make();
-    ear.addCircle(LISTENER.x, LISTENER.z, 110);
-    return { direct, refl, reflArrow, wall, hatch, spread, ear };
+    return { direct, refl, reflArrow, wall, hatch, spread };
   }, [b, r.hit.x, r.hit.z, wallX, box, register]);
   const labels: StaticLabel[] = [
     { id: 'wall', text: `WALL · ${(wallBehind / 1000).toFixed(1)} m BEHIND THE CHAIR`, short: 'WALL', u: wallX + 40, v: box.v0 + 170, align: 'left', tone: 'muted' },
@@ -399,7 +398,9 @@ export function HornWallPlan({ w, h, s, wallBehind, register, accessibilityLabel
           </Path>
           <Path path={paths.refl} style="stroke" strokeWidth={12} color={AMBER} opacity={0.95} strokeJoin="round" />
           <Path path={paths.reflArrow} style="stroke" strokeWidth={12} color={AMBER} strokeCap="round" />
-          <Path path={paths.ear} style="stroke" strokeWidth={14} color="#c9ced8" />
+          {/* The listener: the owner's ABOVE head icon facing the player (−u)
+              — head fix 2026-10-08, a lone head in a plan, never a circle. */}
+          <HeadIcon view="above" x={LISTENER.x} y={LISTENER.z} size={230} rotation={aboveRotation(-1, 0)} color="#c9ced8" plate minStroke={1.3 / xf.s} />
         </Group>
       </Canvas>
       <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />

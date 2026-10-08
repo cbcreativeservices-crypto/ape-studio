@@ -15,13 +15,15 @@
  * Proportions ILLUSTRATIVE (proposal Frame J). Nothing moves.
  */
 import { useMemo } from 'react';
-import { BlurMask, DashPathEffect, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { INK, make, oval, rrect } from '../shared/concert/paths.ts';
-import { Hand, SKIN, SKIN_RIM, SLEEVE, SLEEVE_RIM } from '../shared/smallperc/Hand';
+import { Hand, SKIN, SLEEVE, SLEEVE_RIM } from '../shared/smallperc/Hand';
 import { openHand, placeBetween, smoothPathD, tubeOutline, type Pt } from '../shared/smallperc/hands.ts';
 import { Arm2D } from '../shared/smallperc/Player';
+import { FigureHead, headAbove, headProfile } from '../shared/players/PlayerFigure';
+import { pt } from '../shared/players/playerPose';
 import { BH, CAJ_DIMS, HX, HZ, PORT_R, SEAT, stateOf, type CajState } from './model.ts';
 
 const OPEN = openHand(14);
@@ -33,7 +35,6 @@ const BIRCH = ['#ecd2a2', '#d5b07a', '#b48a54', '#86622f'];
 const PLATE = ['#5b3a22', '#7a5030', '#4a2e1a'];
 const TROUSER = ['#4a5060', '#2e333e', '#1a1d24'];
 const SHOE = ['#3a3a3e', '#1c1c1f', '#0b0b0c'];
-const HAIR = ['#4a3426', '#2b1d14', '#140d09'];
 const DARK = '#120b06';
 
 /* ── The box ── */
@@ -119,44 +120,13 @@ function BoxTop({ s }: { s: CajState }) {
 
 /* ── The seated player ── */
 
-function Head({ c, scale = 1 }: { c: Pt; scale?: number }) {
-  const g = useMemo(() => {
-    const [x, y] = c;
-    const hair: Pt[] = [
-      [x - 92, y + 24],
-      [x - 86, y - 70],
-      [x - 10, y - 112],
-      [x + 70, y - 78],
-      [x + 48, y - 52],
-      [x - 20, y - 46],
-      [x - 52, y + 20],
-    ];
-    const nose: Pt[] = [
-      [x + 92, y - 10],
-      [x + 108, y + 22],
-      [x + 92, y + 30],
-    ];
-    return {
-      head: oval(make(), x, y, 96 * scale, 108 * scale),
-      hair: fromD(smoothPathD(hair)),
-      ear: oval(make(), x - 30, y + 8, 14, 22),
-      nose: fromD(smoothPathD(nose, false)),
-    };
-  }, [c, scale]);
-  return (
-    <Group>
-      <Path path={g.head}>
-        <RadialGradient c={vec(c[0] + 26, c[1] - 40)} r={180} colors={SKIN} />
-      </Path>
-      <Path path={g.head} style="stroke" strokeWidth={2.2} color={SKIN_RIM} />
-      <Path path={g.hair}>
-        <LinearGradient start={vec(c[0] - 90, c[1] - 110)} end={vec(c[0] + 70, c[1] + 20)} colors={HAIR} />
-      </Path>
-      <Path path={g.ear} color={SKIN[2]} />
-      <Path path={g.ear} style="stroke" strokeWidth={1.6} color={SKIN_RIM} />
-      <Path path={g.nose} style="stroke" strokeWidth={2.2} strokeCap="round" strokeJoin="round" color={SKIN_RIM} />
-    </Group>
-  );
+/** The seated player's head in profile, facing the plate (+x): the figure's
+ *  own skin silhouette (head fix 2026-10-08 — a head ON A BODY is
+ *  PlayerFigure's FigureHead, never an oval with hair), a short neck stub
+ *  over the torso's own neck. */
+function Head({ c }: { c: Pt }) {
+  const fill = useMemo(() => headProfile(pt(c[0], c[1]), 104, c[1] + 118, 1).fill, [c]);
+  return <FigureHead fill={fill} />;
 }
 
 /** One leg seen from the side: thigh over the top, knee, shin, shoe. */
@@ -251,7 +221,7 @@ function SeatedTop() {
       [SEAT.shoulder.x - 120, 210],
       [SEAT.shoulder.x - 160, 0],
     ];
-    return { legs, sh: fromD(smoothPathD(sh)), head: oval(make(), SEAT.head.x + 10, 0, 100, 88), nose: oval(make(), SEAT.head.x + 112, 0, 13, 11) };
+    return { legs, sh: fromD(smoothPathD(sh)), head: headAbove(pt(0, 0), 96).fill };
   }, []);
   return (
     <Group>
@@ -270,11 +240,10 @@ function SeatedTop() {
         <LinearGradient start={vec(SEAT.shoulder.x - 150, -230)} end={vec(SEAT.shoulder.x + 100, 230)} colors={SLEEVE} />
       </Path>
       <Path path={g.sh} style="stroke" strokeWidth={2.4} color={SLEEVE_RIM} />
-      <Path path={g.nose} color={SKIN[1]} />
-      <Path path={g.head}>
-        <RadialGradient c={vec(SEAT.head.x - 30, -40)} r={150} colors={HAIR} />
-      </Path>
-      <Path path={g.head} style="stroke" strokeWidth={2} color="#0c0806" />
+      {/* the head from above, the figure's own (head fix 2026-10-08), nose +x */}
+      <Group transform={[{ translateX: SEAT.head.x + 10 }, { rotate: -Math.PI / 2 }]}>
+        <FigureHead fill={g.head} />
+      </Group>
     </Group>
   );
 }

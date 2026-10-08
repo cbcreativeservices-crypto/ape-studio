@@ -900,94 +900,21 @@ export function UprightPlan({ dim = 1 }: { dim?: number }) {
 
 const benchCache = new Map<string, Record<string, SkPath>>();
 function pianistPaths(pn: Pianist, xKey: number, pedalX: number, view: 'side' | 'top'): Record<string, SkPath> {
+  // The bench only: the pianist is the shared figure (pianistPose). The old
+  // blocky body and its oval head + hair were dead code — removed in the
+  // head fix 2026-10-08 (a head on a body is the figure's FigureHead).
   const key = `${view}:${xKey}:${pedalX}`;
   const hit = benchCache.get(key);
   if (hit) return hit;
   const o: Record<string, SkPath> = {};
   const b = pn.bench;
-  const h = pn.head;
   if (view === 'side') {
     o.benchTop = rrect(make(), b.x0, b.y - 60, b.x1, b.y, 14);
     o.benchLegs = make();
     rect(o.benchLegs, b.x0 + 20, b.y, b.x0 + 54, FLOOR_Y);
     rect(o.benchLegs, b.x1 - 54, b.y, b.x1 - 20, FLOOR_Y);
-    // Seated, facing +x: thigh, shin and shoe to the pedals; torso; arm to the keys.
-    const hipX = (b.x0 + b.x1) / 2 - 10;
-    const hipY = b.y - 80;
-    const knee = { x: b.x1 + 60, y: b.y - 90 };
-    const ankle = { x: pedalX - 120, y: FLOOR_Y - 90 };
-    o.thigh = make();
-    o.thigh.moveTo(hipX - 70, hipY - 60);
-    o.thigh.lineTo(knee.x + 30, knee.y - 55);
-    o.thigh.quadTo(knee.x + 70, knee.y, knee.x + 20, knee.y + 60);
-    o.thigh.lineTo(hipX - 80, hipY + 60);
-    o.thigh.close();
-    o.shin = make();
-    o.shin.moveTo(knee.x - 25, knee.y + 20);
-    o.shin.lineTo(knee.x + 55, knee.y + 20);
-    o.shin.lineTo(ankle.x + 40, ankle.y);
-    o.shin.lineTo(ankle.x - 30, ankle.y);
-    o.shin.close();
-    o.shoe = make();
-    o.shoe.moveTo(ankle.x - 40, ankle.y - 10);
-    o.shoe.lineTo(ankle.x + 40, ankle.y - 16);
-    o.shoe.quadTo(pedalX + 40, FLOOR_Y - 70, pedalX + 30, FLOOR_Y - 40);
-    o.shoe.lineTo(ankle.x - 40, FLOOR_Y - 40);
-    o.shoe.close();
-    const shoulder = { x: h.x + 30, y: h.y + 200 };
-    o.torso = make();
-    o.torso.moveTo(hipX - 110, hipY + 40);
-    o.torso.quadTo(hipX - 150, (hipY + shoulder.y) / 2, shoulder.x - 120, shoulder.y);
-    o.torso.quadTo(shoulder.x, shoulder.y - 50, shoulder.x + 80, shoulder.y + 10);
-    o.torso.quadTo(hipX + 120, (hipY + shoulder.y) / 2, hipX + 90, hipY + 40);
-    o.torso.close();
-    o.neck = rrect(make(), h.x - 30, h.y + 70, h.x + 40, shoulder.y, 20);
-    o.head = oval(make(), h.x, h.y, pn.headR * 0.92, pn.headR);
-    o.hair = make();
-    o.hair.addArc(Skia.XYWHRect(h.x - pn.headR * 0.95, h.y - pn.headR * 1.05, pn.headR * 1.9, pn.headR * 1.6), 160, 220);
-    o.hair.close();
-    const elbow = { x: shoulder.x + 90, y: shoulder.y + 230 };
-    const hand = { x: xKey + 60, y: KEY_TOP_Y - 18 };
-    o.upperArm = make();
-    o.upperArm.moveTo(shoulder.x - 30, shoulder.y + 10);
-    o.upperArm.lineTo(shoulder.x + 60, shoulder.y);
-    o.upperArm.lineTo(elbow.x + 40, elbow.y);
-    o.upperArm.lineTo(elbow.x - 40, elbow.y + 10);
-    o.upperArm.close();
-    o.forearm = make();
-    o.forearm.moveTo(elbow.x - 30, elbow.y - 25);
-    o.forearm.lineTo(hand.x - 30, hand.y - 30);
-    o.forearm.lineTo(hand.x - 20, hand.y + 10);
-    o.forearm.lineTo(elbow.x - 10, elbow.y + 35);
-    o.forearm.close();
-    o.hand = make();
-    o.hand.moveTo(hand.x - 40, hand.y - 34);
-    o.hand.quadTo(hand.x + 40, hand.y - 40, hand.x + 70, hand.y + 14);
-    o.hand.lineTo(hand.x - 30, hand.y + 16);
-    o.hand.close();
   } else {
     o.benchTop = rrect(make(), b.x0, -b.hw, b.x1, b.hw, 16);
-    o.thighs = make();
-    for (const s of [-1, 1]) {
-      o.thighs.moveTo(b.x1 - 140, s * 40);
-      o.thighs.lineTo(b.x1 + 120, s * 70);
-      o.thighs.lineTo(b.x1 + 120, s * 190);
-      o.thighs.lineTo(b.x1 - 140, s * 180);
-      o.thighs.close();
-    }
-    o.torso = oval(make(), h.x + 20, 0, 150, 230);
-    o.arms = make();
-    for (const s of [-1, 1]) {
-      o.arms.moveTo(h.x + 40, s * 170);
-      o.arms.lineTo(xKey + 40, s * 260);
-      o.arms.lineTo(xKey + 40, s * 320);
-      o.arms.lineTo(h.x + 30, s * 250);
-      o.arms.close();
-    }
-    o.hands = make();
-    for (const s of [-1, 1]) oval(o.hands, xKey + 70, s * 290, 55, 48);
-    o.head = oval(make(), h.x, 0, pn.headR * 0.9, pn.headR * 0.82);
-    o.hair = oval(make(), h.x - 18, 0, pn.headR * 0.78, pn.headR * 0.74);
   }
   benchCache.set(key, o);
   return o;

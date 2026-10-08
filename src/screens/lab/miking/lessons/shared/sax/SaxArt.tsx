@@ -33,7 +33,8 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { VariantId, Vec3, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
-import { FigureHead } from '../players/PlayerFigure';
+import { FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
 import { fingering, holesOf, pathOf, radiusAt, type Fingering, type SaxRow } from './saxSpec.ts';
 import { anchorsOf, centre, onTube, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
 import { TO_VIEWER, band, bellGuard, circle2, cupsOf, engraving, pearlsOf, prj, rodsOf, silhouette, tubeSamples, type P2, type Placed, type TubeSample } from './saxDraw.ts';
@@ -324,38 +325,25 @@ function limbItem(view: ViewId, a: Vec3, b: Vec3, ra: number, rb: number, fill: 
   return { path: smooth(pts, true, 0.35), fill, stroke: { color: edge, w: 2 }, box: bbox(pts), rim: 2.2 };
 }
 
-/** The line-art head in profile, facing +u, mouth at (0, 0). */
+/** The head in profile, facing +u — the SHARED figure head (PlayerFigure
+ *  headProfile; head fix 2026-10-08: the sax family's own head outline is
+ *  retired, every lab figure wears the same skin-silhouette head). Nudged
+ *  6 head-units forward so the lips sit on the mouthpiece where the old
+ *  outline's did; the neck down 168 units into the collar. */
 function headSide(c: P2, r: number): { line: SkPath; fill: SkPath } {
   const k = r / 110;
-  const P = (x: number, y: number): P2 => [c[0] + x * k, c[1] + y * k];
-  const outline = [P(-6, -116), P(42, -108), P(74, -84), P(90, -52), P(93, -30), P(88, -16), P(98, 4), P(112, 20), P(98, 30), P(94, 40), P(89, 49), P(93, 58), P(86, 78), P(62, 98), P(28, 102), P(-22, 96), P(-62, 80), P(-92, 40), P(-104, -6), P(-94, -60), P(-60, -100)];
-  const skull = smooth(outline, true, 0.5);
-  const line = make();
-  line.addPath(skull);
-  // The ear, the brow, the nostril and the lips round the mouthpiece.
-  line.addPath(smooth([P(-12, -8), P(-2, -14), P(4, 4), P(0, 24), P(-12, 30)], false));
-  line.addPath(smooth([P(-4, 0), P(-2, 10), P(-8, 18)], false));
-  line.addPath(smooth([P(56, -38), P(72, -42), P(86, -36)], false));
-  line.addPath(smooth([P(96, 26), P(90, 28), P(88, 22)], false));
-  line.addPath(smooth([P(70, 46), P(84, 46)], false));
-  // The neck: front and back.
-  line.addPath(smooth([P(40, 100), P(44, 130), P(50, 168)], false));
-  line.addPath(smooth([P(-54, 82), P(-62, 124), P(-70, 168)], false));
-  const fill = make();
-  fill.addPath(skull);
-  fill.addPath(poly([P(40, 96), P(52, 172), P(-72, 172), P(-56, 80)]));
-  return { line, fill };
+  return headProfile(pt(c[0] + 6 * k, c[1]), r, c[1] + 168 * k, 1);
 }
-/** The head from above: the cranium, the ears, the nose's tip toward +u. */
+/** The head from above, the nose's tip toward +u — the SHARED figure head
+ *  (PlayerFigure headAbove, nose +v, turned a quarter to +u). */
 function headTop(c: P2, r: number): { line: SkPath; fill: SkPath } {
-  const k = r / 110;
-  const P = (x: number, y: number): P2 => [c[0] + x * k, c[1] + y * k];
-  const skull = smooth([P(-98, 0), P(-80, -62), P(-10, -80), P(60, -70), P(96, -30), P(104, 0), P(96, 30), P(60, 70), P(-10, 80), P(-80, 62)], true, 0.55);
-  const line = make();
-  line.addPath(skull);
-  for (const s of [-1, 1]) line.addPath(smooth([P(-14, s * 78), P(0, s * 94), P(20, s * 92), P(28, s * 76)], false));
-  line.addPath(smooth([P(98, -12), P(118, 0), P(98, 12)], false));
-  return { line, fill: skull };
+  const h0 = headAbove(pt(0, 0), r);
+  const m = Skia.Matrix().translate(c[0], c[1]).rotate(-Math.PI / 2);
+  const line = h0.line.copy();
+  line.transform(m);
+  const fill = h0.fill.copy();
+  fill.transform(m);
+  return { line, fill };
 }
 
 /** The player's paint, split behind and in front of the instrument. */

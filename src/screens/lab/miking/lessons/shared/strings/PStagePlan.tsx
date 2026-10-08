@@ -17,7 +17,7 @@
  */
 import { useMemo, useState, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
-import { BlurMask, Canvas, DashPathEffect, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
 import type { SettingItem, VariantId, ViewBox } from '../../../engine/model/types.ts';
@@ -27,6 +27,8 @@ import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/kit';
 import { copyOf } from '../../../engine/model/copy.ts';
 import type { PageProps } from '../../../pages/pageTypes';
+import { FigureHead, headAbove } from '../players/PlayerFigure';
+import { pt } from '../players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const AMBER = '#ffc64d';
@@ -75,8 +77,10 @@ function glyphPaths(g: PlanGlyph): Record<string, SkPath> {
   } else if (g === 'singer' || g === 'chair') {
     o.shoulders = Skia.Path.Make();
     o.shoulders.addOval(Skia.XYWHRect(-120, -230, 240, 460));
-    o.head = Skia.Path.Make();
-    o.head.addOval(Skia.XYWHRect(-80, -85, 170, 170));
+    // The head is the figure's own skin silhouette from above (head fix
+    // 2026-10-08: a head ON A BODY is PlayerFigure's FigureHead, never an
+    // oval); nose +v here, turned to the glyph's front (+u) where drawn.
+    o.head = headAbove(pt(0, 0), 95).fill;
     if (g === 'singer') {
       o.stand = Skia.Path.Make();
       o.stand.moveTo(150, 0);
@@ -154,9 +158,9 @@ function Glyph({ spot, lit }: { spot: PlanSpot; lit: boolean }) {
           <Path path={p.shoulders}>
             <LinearGradient start={vec(-120, -230)} end={vec(120, 230)} colors={['#4b5366', '#353b49', '#232733']} />
           </Path>
-          <Path path={p.head}>
-            <RadialGradient c={vec(-20, -30)} r={140} colors={['#9a8572', '#7b6858', '#5d4e42']} />
-          </Path>
+          <Group transform={[{ translateX: 5 }, { rotate: -Math.PI / 2 }]}>
+            <FigureHead fill={p.head} />
+          </Group>
           {p.stand ? <Path path={p.base} style="stroke" strokeWidth={12} strokeCap="round" color="#4d515b" /> : null}
           {p.stand ? <Path path={p.stand} style="stroke" strokeWidth={14} strokeCap="round" color="#5a5f69" /> : null}
           {p.mic ? <Path path={p.mic} color="#1a1b1f" /> : null}

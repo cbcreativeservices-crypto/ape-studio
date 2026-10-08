@@ -33,6 +33,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
+import { HeadIconSvg } from '../../features/lab/headIconsSvg';
 import { ApeDsp, AUDIO_UNAVAILABLE_MESSAGE, BIN_SRC } from '../../../modules/ape-dsp';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../modules/ape-gesture-exclusion';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
@@ -621,11 +622,9 @@ function Stage({
         <SvgText x={STAGE_U - 6} y={c + 3} fill={colors.textSub} fontSize={fs} textAnchor="end">
           +90°
         </SvgText>
-        {/* The head (nose up). */}
-        <Circle cx={c} cy={c} r={13} fill="#2a2a31" stroke="#55555e" strokeWidth={1.5} />
-        <Circle cx={c} cy={c - 13} r={4} fill="#55555e" />
-        <Circle cx={c - 13} cy={c} r={3.5} fill="#454550" />
-        <Circle cx={c + 13} cy={c} r={3.5} fill="#454550" />
+        {/* The listener's head — the owner's ABOVE head icon, turned to face
+            FRONT 0° (up the screen); head fix 2026-10-08. */}
+        <HeadIconSvg view="above" x={c} y={c} size={36} rotation={Math.PI} plate minStroke={1.4} />
         {/* Sources. */}
         {sources.map((s, i) => {
           const p = toXY(s);

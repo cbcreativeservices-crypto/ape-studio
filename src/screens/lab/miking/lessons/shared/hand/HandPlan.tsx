@@ -17,6 +17,7 @@ import { fitXform, unproject } from '../../../engine/geometry/frame.ts';
 import type { VariantId, ViewBox, Wedge } from '../../../engine/model/types.ts';
 import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
+import { HeadIconPaths, aboveRotation, headIconStroke, makeHeadIconPaths } from '../../../../../../features/lab/headIcons';
 
 export type HandScene = 'stage' | 'studio';
 /** An item on the plan: its tap/highlight box (plan mm) and where it shows. */
@@ -34,6 +35,8 @@ export const HAND_PLAN_BOX: Record<HandScene, ViewBox> = {
 /** The louder neighbours on a stage (upstage, the player's left). */
 const BAND = { u: -150, v: -1150 };
 const AUD_U = 2250;
+/** A head icon in this plan, crown→chin, mm (a real head ≈ 230 mm). */
+const PLAN_HEAD_MM = 230;
 
 function rr(p: SkPath, u0: number, v0: number, u1: number, v1: number, r: number) {
   p.addRRect(Skia.RRectXY(Skia.XYWHRect(Math.min(u0, u1), Math.min(v0, v1), Math.abs(u1 - u0), Math.abs(v1 - v0)), r, r));
@@ -90,23 +93,27 @@ export function HandPlan({ w, h, art, variant, scene, wedges, items, labelOf, hi
   const Instrument = art.Instrument;
   const shown = items.filter((i) => i.scene === 'all' || i.scene === scene);
   const g = useMemo(() => {
-    const band = make();
-    // Two seated players from above (line art) and an amplifier between them.
-    for (const [du, dv] of [
-      [-260, 0],
-      [420, 120],
-    ] as const) {
-      band.addOval(Skia.XYWHRect(BAND.u + du - 150, BAND.v + dv - 230, 300, 460));
-      band.addCircle(BAND.u + du, BAND.v + dv, 90);
-    }
+    // Two seated neighbours from above, as plan MARKERS — the owner's ABOVE
+    // head icon, facing the audience (+u) — and an amplifier between them.
+    // Head fix 2026-10-08: a lone head marker is the shared icon, never a
+    // circle (and never an icon on a drawn body, so no shoulder outline).
+    const band = makeHeadIconPaths(
+      'above',
+      PLAN_HEAD_MM,
+      ([[-260, 0], [420, 120]] as const).map(([du, dv]) => ({ x: BAND.u + du, y: BAND.v + dv, rotation: aboveRotation(1, 0) })),
+    );
     const amp = rr(make(), BAND.u + 640, BAND.v - 120, BAND.u + 1100, BAND.v + 120, 20);
     const room = make();
     room.addRect(Skia.XYWHRect(box.u0 + 120, box.v0 + 120, box.u1 - box.u0 - 240, box.v1 - box.v0 - 240));
     const pa = make();
     rr(pa, AUD_U - 200, -1500, AUD_U + 200, -1100, 30);
     rr(pa, AUD_U - 200, 1250, AUD_U + 200, 1650, 30);
-    const audience = make();
-    for (let k = -3; k <= 4; k++) audience.addCircle(AUD_U + 330, k * 330 - 120, 70);
+    // The audience: a row of the same icons, facing the stage (−u).
+    const audience = makeHeadIconPaths(
+      'above',
+      PLAN_HEAD_MM,
+      Array.from({ length: 8 }, (_, i) => ({ x: AUD_U + 330, y: (i - 3) * 330 - 120, rotation: aboveRotation(-1, 0) })),
+    );
     return { band, amp, room, pa, audience };
   }, [box]);
   const hi = shown.find((i) => i.id === highlight);
@@ -130,12 +137,12 @@ export function HandPlan({ w, h, art, variant, scene, wedges, items, labelOf, hi
               <Path path={g.room} style="stroke" strokeWidth={26} color="#3a3d45" />
             ) : (
               <>
-                <Path path={g.band} style="stroke" strokeWidth={9} color={GREY} opacity={0.5} />
+                <HeadIconPaths lines={g.band.lines} plate={g.band.plate} strokeWidth={Math.max(headIconStroke('above', PLAN_HEAD_MM), 1 / xf.s)} color={GREY} opacity={0.75} />
                 <Path path={g.amp} color="#24262d" />
                 <Path path={g.amp} style="stroke" strokeWidth={6} color={GREY} opacity={0.6} />
                 <Path path={g.pa} color="#1b1c21" />
                 <Path path={g.pa} style="stroke" strokeWidth={8} color={GREY} />
-                <Path path={g.audience} style="stroke" strokeWidth={8} color={GREY} opacity={0.45} />
+                <HeadIconPaths lines={g.audience.lines} plate={g.audience.plate} strokeWidth={Math.max(headIconStroke('above', PLAN_HEAD_MM), 1 / xf.s)} color={GREY} opacity={0.6} />
               </>
             )}
             <Instrument view="top" variant={variant} />
