@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 04:25 · ccode · f63ae343
+changed: Miking Lab 7b group 1: review fixes and phone-width screenshots
+affects other side: nothing (client-only: Miking Lab 7b group 1 review fixes — art, labels, the context page's pattern names — and phone-width screenshots)
+needs: nothing
+
+
 ### 2026-10-08 03:30 · ccode · 6513a183
 changed: Miking Lab 7b group 1: the speech-in-sport kit (sport mics, held arm, feeds, booth plan, handoff, frame T)
 affects other side: nothing (client-only: the Lab 7b group 1 speech-in-sport kit in lessons/shared/broadcast — sport mics, the held-arm clip style, feeds, booth plan, handoff, frame T; no DB, no schema)
