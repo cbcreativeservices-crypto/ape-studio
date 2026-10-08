@@ -380,3 +380,27 @@ circuit, jumping arena, pool, arena), the horse and car silhouettes' places (D7-
 sensor depths (D7-4), the practice room's and mock venue's areas, footprints, clearance bands, way out, commentary station and
 camera view, the audience's 1.5 m mouth height, B15's low and standing source heights (0.3 / 1.5 m) and capsule heights
 (0.6 / 1.2 m), the coverage planner's role cards, the downmix demo's three sources.
+
+## 22. Lab 7 group 3 — field and audience (B03, B08; `lessons/shared/broadcast/` fieldInterview, reporterWind, venue)
+
+Added 2026-10-08 by the Lab 7 group 3 builder (branch lab7-g3): the keys the field-reporter tools, the `repOmni` type and
+the B03 / B08 zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in
+`field_reporter/SOURCES.md` and `audience_ambience/SOURCES.md`. Nothing here is shown to the learner (owner ruling
+2026-10-04).
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| R-REPORTER | RØDE Reporter user manual: "held at around chest height between the interviewer and the person being interviewed"; omni (`repOmni`; B03 `b3.shared`, the handoff path's shared place) | https://edge.rode.com//pdf/products/117/reporter_user_manual.pdf | High (PDF read, prep pass 2026-10-07) |
+| EV-RE50B | Electro-Voice RE50B product page: an omni interview dynamic whose maker calls its pop filter "impervious to wind" — marketing, recorded and never shown; the app teaches a monitored wind test (`repOmni` examples) | https://products.electrovoice.com/r/re50b | Medium (extract) |
+| S-TOP6 | Shure, "The Top Six Church Audio Questions": "one (or two for stereo) microphone(s) above and somewhat in front of the congregation … aimed at the faces of the people and away from the main PA speakers" (B08 `b8.mono`; the PA-angle tool) | https://www.shure.com/en-US/insights/the-top-six-church-audio-questions-for-2012 | Medium (extract) |
+| DPA-5100 | DPA 5100 mobile surround mic: a self-contained 5.1 head — three front capsules, two rear (B08's five-capsule token, its channel map in words) | dpamicrophones.com (manual) | Medium (dealer extracts of maker text) |
+| SN-AMBEO | Sennheiser AMBEO VR MIC: four matched cardioid capsules, A-format → B-format by the maker's converter (B08's four-capsule token; the Lab 6 `foa` preset) | maker page | Medium (extract) |
+| DPA-STEREO | DPA, stereo recording techniques: XY stable mono, ORTF width with some mono compatibility, spaced AB combs in mono (Lab 5 key, re-listed for B08's pair presets) | see `full_orchestra/SOURCES.md` | read 2026-10-05 |
+| LESSON-B03 | The owner's lesson B03 (practice statements kept as written; B-INST, B-XLINK applied; the lightning rule exact) | `source_text/B03-…txt` | the lesson |
+| LESSON-B08 | The owner's lesson B08 (practice statements kept as written; B-INST, B-XLINK — L66 "later sports sound pickup" not linked) | `source_text/B08-…txt` | the lesson |
+
+Drawing defaults (never printed as a dimension unless calculated from the drawing and said so): the reporter and guest
+75 cm apart face to face, the shared place 28 cm below the mouths, the handoff band 15–30 cm, the loud source 2 m away,
+the camera beside the reporter, the kerb, B03's loudspeaker; B08's two venues (the studio audience's rows, the event's
+sections, aisles, exits and stage), the PA clusters and their coverage wedges, the crowd mics' heights and places, the
+immersive tokens' size.

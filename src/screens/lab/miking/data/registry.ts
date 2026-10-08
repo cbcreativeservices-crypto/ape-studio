@@ -172,6 +172,9 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'B05', labId: 'broadcast', title: 'Lavalier, Headset and Concealed Pickup', subtitle: 'A lav on the sternum about 12–25 cm from the lips, or a headset by the corner of the mouth — fitted with the wearer’s agreement', status: 'ready' },
   { id: 'B04', labId: 'broadcast', title: 'Boom and Camera-Mounted Pickup', subtitle: 'A boom just outside the widest frame, aimed at the mouth — and the camera’s own mic, as far away as the camera', status: 'ready' },
   { id: 'B02', labId: 'broadcast', title: 'News Anchors and Seated Interviews', subtitle: 'A centred lav about 12–25 cm from the lips, a boom just outside the frame, a desk mic where the shot allows — a channel for each speaker', status: 'ready' },
+  // Lab 7 (broadcast), group 3 — field and audience: B03, B08 (each lesson on its own line).
+  { id: 'B03', labId: 'broadcast', title: 'Field Reporters and Handheld Interviews', subtitle: 'One handheld at chest height between two people, moved to whoever speaks when it is loud — the wind covered, everyone out of the traffic', status: 'ready' },
+  { id: 'B08', labId: 'broadcast', title: 'Broadcast Audience and Event Space', subtitle: 'A crowd mic raised over a section, aimed at faces with the PA off its front — a pair told from two zones, and never into the PA', status: 'ready' },
   // Lab 7 · part 2 · G1 — speech in sport: B09, B10, B11 (each lesson on its own line).
   { id: 'B09', labId: 'broadcast', title: 'Commentators and Announce Positions', subtitle: 'A headset boom at the outside corner of the mouth, a lip ribbon on its guard — a channel for each voice, every route traced', status: 'ready' },
   { id: 'B10', labId: 'broadcast', title: 'Sideline and Post-Event Interviews', subtitle: 'One handheld moved to the mouth before the answer starts — a body mic or a boom when there is time, inside the approved area', status: 'ready' },

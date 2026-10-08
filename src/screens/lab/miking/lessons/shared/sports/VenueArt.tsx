@@ -295,12 +295,12 @@ function camLens(s: number): SkPath {
 function SectorsArt({ scene, px }: { scene: VenueScene; px: number }) {
   return (
     <Group>
-      {scene.sectors.map((sec) => (sec.kind === 'crowd' ? <Stand key={sec.id} poly={sec.poly} px={px} /> : <PaBox key={sec.id} c={sec.c} px={px} />))}
+      {scene.sectors.map((sec) => (sec.kind === 'crowd' ? <Stand key={sec.id} poly={sec.poly} px={px} empty={sec.empty} /> : <PaBox key={sec.id} c={sec.c} px={px} />))}
     </Group>
   );
 }
 /** Spectator stands from above: stepped rows of seats in a frame. */
-function Stand({ poly, px }: { poly: readonly P2[]; px: number }) {
+function Stand({ poly, px, empty = false }: { poly: readonly P2[]; px: number; empty?: boolean }) {
   const g = useMemo(() => {
     const area = polyPath(poly);
     const b = bounds(poly);
@@ -314,7 +314,11 @@ function Stand({ poly, px }: { poly: readonly P2[]; px: number }) {
     let k = 0;
     if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) for (let u = b.u0 + 300 + ((k++ % 3) * 170); u < b.u1; u += 900) heads.addCircle(u, v - 120, 140);
     else for (let u = b.u0 + step / 2; u < b.u1; u += step) for (let v = b.v0 + 300 + ((k++ % 3) * 170); v < b.v1; v += 900) heads.addCircle(u - 120, v, 140);
-    return { area, rows, heads, b };
+    // Seat backs (an empty section): a short dash every 550 mm along each row.
+    const seats = make();
+    if (across) for (let v = b.v0 + step / 2; v < b.v1; v += step) for (let u = b.u0 + 300; u < b.u1 - 150; u += 550) { seats.moveTo(u, v - 150); seats.lineTo(u + 300, v - 150); }
+    else for (let u = b.u0 + step / 2; u < b.u1; u += step) for (let v = b.v0 + 300; v < b.v1 - 150; v += 550) { seats.moveTo(u - 150, v); seats.lineTo(u - 150, v + 300); }
+    return { area, rows, heads, seats, b };
   }, [poly]);
   return (
     <Group>
@@ -322,7 +326,8 @@ function Stand({ poly, px }: { poly: readonly P2[]; px: number }) {
         <LinearGradient start={vec(g.b.u0, g.b.v0)} end={vec(g.b.u1, g.b.v1)} colors={['#4a4e57', '#2c2f35']} />
       </Path>
       <Path path={g.rows} style="stroke" strokeWidth={Math.max(60, 0.8 * px)} color="#15161a" opacity={0.8} />
-      <Path path={g.heads} color="#c9b39a" opacity={0.55} />
+      {/* Lab 7 group 3: an audience drawn as seats without people — a seat back on every place along the rows. */}
+      {empty ? <Path path={g.seats} style="stroke" strokeWidth={Math.max(90, 1.4 * px)} strokeCap="round" color="#7b8494" opacity={0.75} /> : <Path path={g.heads} color="#c9b39a" opacity={0.55} />}
       <Path path={g.area} style="stroke" strokeWidth={1.2 * px} color="#0b0c0f" />
     </Group>
   );
