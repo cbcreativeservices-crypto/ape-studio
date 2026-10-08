@@ -9,10 +9,11 @@
  * The stroke width is set in screen pixels (the outline is 1117 units wide,
  * drawn at phone width), so the borders stay visible at any size.
  *
- * What lights it (owner chose "press + scroll", map pinned):
- *   - a mouse / trackpad hover over a card (web, iPad);
- *   - a finger landing on a card;
- *   - while the learner drags the list, the card nearest the top.
+ * What lights it (owner 2026-10-08):
+ *   - a SWIPE: the card under the finger while the list scrolls;
+ *   - a deliberate TAP selects: the countries FLASH for 1.5 s, then the guide
+ *     opens (`flashing`; the hub owns the timer);
+ *   - a mouse / trackpad hover over a card (web, iPad).
  * The caption names the style and its countries in words, so the map is never
  * the only carrier of the information (the drawing itself is hidden from
  * screen readers; the caption is read).
@@ -61,12 +62,15 @@ const Fills = memo(function Fills({ styleId, width, height }: { styleId: string 
 export function GuideWorldMap({
   activeId,
   activeTitle,
+  flashing = false,
   width,
   touch,
   onHide,
 }: {
   activeId: string | null;
   activeTitle: string | null;
+  /** The learner tapped this style: blink its countries until the guide opens. */
+  flashing?: boolean;
   width: number;
   /** Words for a touch screen ("press") vs a pointer ("hover"). */
   touch: boolean;
@@ -78,6 +82,26 @@ export function GuideWorldMap({
   const [shown, setShown] = useState<string | null>(activeId);
   const opacity = useRef(new Animated.Value(activeId ? 1 : 0)).current;
   const swap = useRef<Animated.CompositeAnimation | null>(null);
+  const blink = useRef(new Animated.Value(1)).current;
+
+  // The selection flash: four quick blinks inside the 1.5 s before the guide
+  // opens. Reduced motion: the countries simply stay lit.
+  useEffect(() => {
+    if (!flashing || !motion) {
+      blink.setValue(1);
+      return;
+    }
+    const one = Animated.sequence([
+      Animated.timing(blink, { toValue: 0.2, duration: 170, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+      Animated.timing(blink, { toValue: 1, duration: 170, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+    ]);
+    const loop = Animated.loop(one, { iterations: 4 });
+    loop.start();
+    return () => {
+      loop.stop();
+      blink.setValue(1);
+    };
+  }, [flashing, motion, blink]);
 
   useEffect(() => {
     if (activeId === shown) return;
@@ -100,15 +124,15 @@ export function GuideWorldMap({
   }, [activeId, shown, motion, opacity]);
 
   const caption = activeId && activeTitle
-    ? `${activeTitle} — ${countryList(activeId)}`
+    ? `${flashing ? 'Opening ' : ''}${activeTitle} — ${countryList(activeId)}`
     : touch
-      ? 'Press a style, or scroll the list, to see where it comes from.'
-      : 'Point at a style to see where it comes from.';
+      ? 'Swipe through the styles to see where each one comes from. Tap one to open it.'
+      : 'Point at a style to see where it comes from. Click one to open it.';
 
   return (
     <View style={styles.wrap}>
       <View style={[styles.frame, { width, height }]} {...A11Y_HIDDEN}>
-        <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: Animated.multiply(opacity, blink) }]}>
           <Fills styleId={shown} width={width} height={height} />
         </Animated.View>
         <Outline width={width} height={height} />
