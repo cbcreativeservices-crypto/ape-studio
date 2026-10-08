@@ -43,6 +43,7 @@
  *                          the nearest point that sits `clearance` mm outside
  *                          the frame, aimed back at the mouth — "as close as
  *                          the frame allows" (DERIVED);
+ *   cameraBody(cam)        the camera body as a box (a collision solid);
  *   cameraMic(cam, ...)    a mic on the camera's shoe: it moves with the
  *                          camera, aimed where the lens points;
  *   headroomFan / sideFan / footFan   the parts of the shot a boom must keep
@@ -208,6 +209,14 @@ export function frameEdgeRays(cam: BroadcastCamera, view: 'side' | 'top', reach:
   // From above: the side edges through the middle of the picture (drawn in
   // plan, u = x, v = z).
   return [out(ray(right, hh, 1), 'right'), out(ray(right, hh, -1), 'left')];
+}
+
+/** The camera's body as a box behind the lens point (a drawing default: 32
+ *  cm long, 19 cm tall, 16 cm wide — the location kit's camera), for a
+ *  camera looking along −x: the model's collision solid and the art's rig. */
+export function cameraBody(cam: BroadcastCamera): { min: Vec3; max: Vec3 } {
+  const L = cam.lens;
+  return { min: v3(L.x - 10, L.y - 95, L.z - 80), max: v3(L.x + 310, L.y + 95, L.z + 80) };
 }
 
 /* ── the boom's starting point ── */

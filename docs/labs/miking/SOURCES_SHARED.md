@@ -272,3 +272,22 @@ Added 2026-10-08 by the Lab 7 group 1 builder (branch lab7-g1): the keys the bro
 | LESSON-B01 | The owner's lesson B01 (practice statements kept as written; B01-1, B-INST applied) | `source_text/B01-…txt` | the lesson |
 | LESSON-B06 | The owner's lesson B06 (practice statements kept as written; B06-1, B-INST applied) | `source_text/B06-…txt` | the lesson |
 | LESSON-B07 | The owner's lesson B07 (practice statements kept as written; B-INST applied) | `source_text/B07-…txt` | the lesson |
+
+## 18. Lab 7 group 2 — body-worn and camera (B05, B04, B02; `lessons/shared/broadcast/` bodyWorn, cameraFrame, boomPole)
+
+Added 2026-10-08 by the Lab 7 group 2 builder (branch lab7-g2): the keys the body-worn and camera kit, the group 2 mic types and the B05 / B04 / B02 zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `lavalier_headset/`, `boom_camera/` and `news_anchor/SOURCES.md`. Nothing here is shown to the learner (owner ruling 2026-10-04).
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| R-LAV | RØDE, "Lavalier Mounting: Best Practices": the sternum "a nice balance of close proximity and natural sound"; the lav upside down in its clip to reduce plosives; the broadcast loop and a secondary loop taped below the clip (bodyWorn.LAV_BAND, MOVES/LOOPS; B05 `b5.sternum`, B02 `b2.lav`) | https://rode.com/en-us/about/news-info/lavalier-mounting-best-practices | Medium (search extract, prep pass 2026-10-07) |
+| SN-ME2 | Sennheiser ME 2 manual: attach to clothing "keeping a distance of 25 cm (10") from your mouth" (D-LAV1, the band's top) | https://docs.cloud.sennheiser.com/en-us/lavalier-mics/manual-me2.html | Medium (search extract) |
+| SN-ME3 | Sennheiser ME 3 quick guide: capsule "2-3 cm (1") from the mouth", near its corner (bodyWorn.HEADSET_BAND; B05 headsets; the `hsCard` type) | https://www.sennheiser.com/globalassets/digizuite/41080-en-me_3_quick_guide_04_2025.pdf | Medium (search extract) |
+| S-PASTOR | Shure, "How to Choose the Best Mic for the Pastor": omni lav "5 to 8 inches (12 to 20 cm) below the pastor's mouth" (D-LAV1; correction B05-1 — the figure is THIS article's) | https://www.shure.com/en-US/insights/how-to-choose-the-best-mic-for-the-pastor | Medium (search extract) |
+| S-LAVPICK | Shure, "How to Choose the Best Lavalier Microphone": "above the sternum"; shirt, tie and collar options; no distance number (bodyWorn mount points) | https://www.shure.com/en-US/insights/how-to-choose-the-best-lavalier-microphone | read 2026-10-07 (prep pass) |
+| S-LAVHS | Shure, "Fundamentals: Choosing Between Lavalier and Headset Mics": qualitative only (the `lavCard` type's internal note) | https://www.shure.com/en-US/insights/fundamentals-choosing-between-lavalier-and-headset-mics | found, not re-read (qualitative) |
+| CTRY-B6 | Countryman B6 protective caps: flat, "Bright" +4 dB and "Very Bright" +8 dB at 15 kHz — that model only (never a number on screen; the concealed-lav words) | https://www.countryman.com | Medium (dealer listings) |
+| R-BOOM | RØDE, boompole usage: "boom from above, or below if absolutely necessary. You should never record from the sides" (cameraFrame boomAbove / boomBelow / boomSide; B04 zones; B02 boom) | https://rode.com/blog/all/what-you-need-to-know-about-boompole-usage-and-best-practices | Medium (search extract) |
+| S-SHOTGUN | Shure, "Shotgun Mics and Video Production": "slightly above, below, or to the side"; rejection "more than about 30 degrees off to the sides" (internal); D-SG1 "four to five times" an omni's distance — recorded, never shown (the `camMic` type; B04 side boom) | https://www.shure.com/en-GB/insights/shotgun-mics-and-video-production | Medium (search extract) |
+| LESSON-B02 | The owner's lesson B02 (practice statements kept as written; B-INST, B-XLINK applied) | `source_text/B02-…txt` | the lesson |
+| LESSON-B04 | The owner's lesson B04 (practice statements kept as written; B-INST, B-XLINK applied; O-SG pending) | `source_text/B04-…txt` | the lesson |
+| LESSON-B05 | The owner's lesson B05 (practice statements kept as written; B05-1, B-INST, B-XLINK applied) | `source_text/B05-…txt` | the lesson |

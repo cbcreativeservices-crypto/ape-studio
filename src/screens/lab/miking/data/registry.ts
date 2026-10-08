@@ -160,6 +160,8 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'B01', labId: 'broadcast', title: 'Radio, Podcast and Studio Hosts', subtitle: 'A broadcast dynamic about 10–15 cm from the lips on a desk arm — a mic and a channel for each host', status: 'ready' },
   { id: 'B07', labId: 'broadcast', title: 'Voiceover, Narration and Broadcast Guests', subtitle: 'Close and dry or moderate with the room — the script, the guest’s real mic, and a return without their own voice', status: 'ready' },
   { id: 'B06', labId: 'broadcast', title: 'Panels, Press Conferences and Groups', subtitle: 'A gooseneck each, the lectern a little off the mouth — the fewest open mics, and every voice routed on purpose', status: 'ready' },
+  // Lab 7 (broadcast), group 2 — body-worn and camera: B05, B04, B02 (each lesson on its own line).
+  { id: 'B05', labId: 'broadcast', title: 'Lavalier, Headset and Concealed Pickup', subtitle: 'A lav on the sternum about 12–25 cm from the lips, or a headset by the corner of the mouth — fitted with the wearer’s agreement', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

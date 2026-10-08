@@ -34,7 +34,15 @@
  * SLOTS FOR GROUPS 2 AND 3 (add their types to BROADCAST_MIC_TYPES below,
  * under their own comment line, keeping these ids so the lessons agree):
  *   G2 (B05, B04, B02): shotgunShort, compactHyper, camMic, lavOmni, lavCard,
- *                       hsCard;
+ *                       hsCard — FILLED by group 2 (lab7-g2): compactHyper
+ *                       (a compact hyper/supercardioid on a fixed boom
+ *                       stand), camMic (a short shotgun on the camera's
+ *                       shoe, 'surface' on the part 'bc.camera'), lavCard
+ *                       (a directional lav), hsCard (a directional headset)
+ *                       and bcBoundaryDesk (the table boundary on a desk,
+ *                       part 'bc.desk'); shotgunShort and lavOmni are
+ *                       Lab 6's (fieldmics SHOTGUN_SHORT; field locLav) —
+ *                       reused, never redefined (G2_SLOTS);
  *   G3 (B03, B08):      repOmni.
  */
 import type { MicType } from '../../../engine/model/types.ts';
@@ -45,7 +53,12 @@ const dd = (mm: number, needed: string) => ({ mm, prov: { kind: 'unknown', neede
 const src = (s: string, quote: string) => ({ kind: 'sourced', src: s, quote }) as const;
 const ill = (reason: string) => ({ kind: 'illustrative', reason }) as const;
 
-/** The ids groups 2 and 3 own (documented above; reserved, not defined here). */
+/** The ids groups 2 and 3 own (documented above). Group 2 fills its slots
+ *  below or with a type an earlier lab already built (G2_SLOTS). */
+/** Group 2's slots → the MIC_TYPES id that fills each (the slot names are
+ *  the research's; three are filled by a type an earlier lab built, so
+ *  nothing is defined twice). */
+export const G2_SLOTS = { shotgunShort: 'shotgunShort', compactHyper: 'compactHyper', camMic: 'camMic', lavOmni: 'locLav', lavCard: 'lavCard', hsCard: 'hsCard' } as const;
 export const BROADCAST_MIC_SLOTS = {
   G2: ['shotgunShort', 'compactHyper', 'camMic', 'lavOmni', 'lavCard', 'hsCard'],
   G3: ['repOmni'],
@@ -69,6 +82,11 @@ const ARM_CLIP = { reach: dd(DESK_ARM.lower.mm + DESK_ARM.upper.mm, 'a desk spri
 const GOOSE_CLIP = { reach: GOOSENECK_REACH, style: 'gooseneck' as const };
 const GOOSE_BODY = { length: dd(60, 'a conference gooseneck’s capsule head and its top collar'), radius: dd(9.5, 'a conference gooseneck’s capsule radius') };
 const GOOSE_EX = [{ model: 'conference / lectern gooseneck condensers (generic)', fact: 'S-CHURCH: lectern gooseneck "10"-14" and a little off-center from a speaker\'s mouth" (B06-1); S-PODIUM: set gain at "around 7-10 inches". Head and neck sizes not read: drawing defaults.', src: 'S-CHURCH' }];
+
+/** The table boundary's pattern and body (shared by bcBoundary and group
+ *  2's bcBoundaryDesk: the same mic on another lesson's desk). */
+const BOUNDARY_PATTERN = [{ id: 'halfCardioid' as const, label: 'half-cardioid (hemisphere above the table)', prov: src('S-B91-UG', 'Half-cardioid (cardioid in hemisphere above mounting surface)') }];
+const BOUNDARY_BODY = { length: { mm: 139.1, prov: src('S-B91-UG', '139,1 mm') }, radius: { mm: 10.15, prov: src('S-B91-UG', '20,3 mm (height; half of it)') }, width: { mm: 95.11, prov: src('S-B91-UG', '95,11 mm') } };
 
 export const BROADCAST_MIC_TYPES = {
   /* ── Lab 7 group 1 (B01, B07, B06) ── */
@@ -168,9 +186,9 @@ export const BROADCAST_MIC_TYPES = {
     short: 'BOUNDARY',
     transducer: 'condenser',
     address: 'boundary',
-    patterns: [{ id: 'halfCardioid', label: 'half-cardioid (hemisphere above the table)', prov: src('S-B91-UG', 'Half-cardioid (cardioid in hemisphere above mounting surface)') }],
+    patterns: BOUNDARY_PATTERN,
     // The Lab 1 boundary plate's body (data/micTypes.ts boundaryHalf, S-B91-UG).
-    body: { length: { mm: 139.1, prov: src('S-B91-UG', '139,1 mm') }, radius: { mm: 10.15, prov: src('S-B91-UG', '20,3 mm (height; half of it)') }, width: { mm: 95.11, prov: src('S-B91-UG', '95,11 mm') } },
+    body: BOUNDARY_BODY,
     power: 'phantom power (48 V)',
     mount: 'surface',
     surfacePartId: 'b6.table',
@@ -179,5 +197,87 @@ export const BROADCAST_MIC_TYPES = {
     blurb: 'A low plate lying on the table between talkers: it hears the hemisphere above the table, most toward its front. This one is half-cardioid — not every boundary mic is omni, so check its pattern and aim its front at the talkers. Needs phantom power.',
   },
   /* ── Lab 7 group 2 (B05, B04, B02): shotgunShort, compactHyper, camMic, lavOmni, lavCard, hsCard ── */
+  // shotgunShort is Lab 6's (shared/fieldmics SHOTGUN_SHORT, a stand mount
+  // read to its capsule) — reused, never redefined; on a hand-held pole the
+  // location kit's locBoomSg / locBoomHyper / locBoomFur; lavOmni is the
+  // location kit's locLav, hsOmni the voice family's vocHeadset (G2_SLOTS).
+  compactHyper: {
+    id: 'compactHyper',
+    label: 'Compact hypercardioid on a fixed boom stand',
+    short: 'COMPACT HYPER',
+    transducer: 'condenser',
+    address: 'end',
+    patterns: [
+      { id: 'hypercardioid', label: 'hypercardioid', prov: src('S-LIVE', 'hypercardioid … least sensitive at 110 degrees (a textbook pattern for the generic type)') },
+      { id: 'supercardioid', label: 'supercardioid', prov: src('S-LIVE', 'supercardioid … least sensitive at 126 degrees off-axis (textbook)') },
+    ],
+    body: { length: dd(120, 'a compact pencil hypercardioid’s length (drawing default, as the location kit’s)'), radius: dd(10, 'a compact pencil hypercardioid’s radius') },
+    power: 'phantom power (48 V)',
+    mount: 'stand',
+    examples: [{ model: 'compact supercardioid / hypercardioid pencil on a boom (generic; one maker describes it as an indoor dialogue alternative)', fact: 'The lesson B04 L24 / B02 L16: in a reflective interior compare a compact directional mic with a shotgun at the same position — neither type is best everywhere. Pattern: S-LIVE textbook nulls 110° / 126°. Body: a drawing default.', src: 'S-LIVE' }],
+    art: 'sdc',
+    blurb: 'A short pencil condenser with a tight pattern, on a fixed boom stand above the talker: indoors, among reflections, it is often smoother off its axis than a long shotgun. Aim it at the mouth; check what is behind the talker along its axis. Needs phantom power.',
+  },
+  camMic: {
+    id: 'camMic',
+    label: 'Short shotgun on the camera’s shoe',
+    short: 'CAMERA MIC',
+    transducer: 'condenser',
+    address: 'end',
+    patterns: [{ id: 'supercardioid', label: 'short shotgun (drawn as a supercardioid, narrower higher up)', prov: ill('a camera-top short shotgun drawn as its base supercardioid with the narrower high-frequency lobe — a simplified picture (O-SG: no first-order equation fits an interference tube)') }],
+    body: { length: dd(180, 'a camera-top short shotgun’s length (drawing default)'), radius: dd(10, 'a camera-top short shotgun’s radius') },
+    lobe: 'shotgun',
+    power: 'the camera’s input (its own setting), or its own battery — check the model',
+    mount: 'surface',
+    surfacePartId: 'bc.camera',
+    examples: [{ model: 'camera-mounted short shotgun on a shoe mount (generic)', fact: 'The lesson B04 L5, L41–L47: it moves with the lens; a shotgun does not zoom; moving the camera back moves the mic back; camera AGC and level settings checked; reference or backup track. D-SG1 (a maker’s “four to five times” an omni’s distance) is never shown.', src: 'S-SHOTGUN' }],
+    art: 'shotgun',
+    blurb: 'A short shotgun in a small suspension on the camera’s shoe: it points where the lens points and stays as far from the talker as the camera is — move the camera back and the mic goes back with it. Directional pickup does not bring a distant voice closer.',
+  },
+  lavCard: {
+    id: 'lavCard',
+    label: 'Directional lavalier (a miniature cardioid) clipped to clothing',
+    short: 'LAV · CARDIOID',
+    transducer: 'condenser',
+    address: 'end',
+    patterns: [{ id: 'cardioid', label: 'cardioid', prov: ill('a directional miniature: drawn as a textbook cardioid (generic type; check the model’s own pattern)') }],
+    body: { length: dd(15, 'a directional lavalier capsule’s length (drawing default)'), radius: dd(3.5, 'a directional lavalier capsule’s radius') },
+    power: 'a wireless bodypack, or phantom power through its own adapter',
+    mount: 'clip',
+    clip: { reach: dd(40, 'a clothing clip’s reach to the capsule (drawing default)') },
+    examples: [{ model: 'directional miniature lavalier (generic)', fact: 'The lesson B05 L5 / L13: orient the actual sensitive axis toward the mouth; more rejection in a useful geometry, but turns, wind, plosives and proximity effect need more care.', src: 'S-LAVHS' }],
+    art: 'lavalier',
+    blurb: 'A tiny directional capsule on a clip: its sensitive end must point at the mouth, so a turn of the head takes the voice off its axis — more rejection of the room when it is aimed well, more care with breath and fabric.',
+  },
+  hsCard: {
+    id: 'hsCard',
+    label: 'Directional headset (a miniature cardioid by the mouth)',
+    short: 'HEADSET · CARD',
+    transducer: 'condenser',
+    address: 'end',
+    patterns: [{ id: 'cardioid', label: 'cardioid', prov: ill('a headworn directional miniature: drawn as a textbook cardioid — compare the model’s own polar plot (the lesson B05 L32)') }],
+    body: { length: dd(14, 'a headset capsule’s length'), radius: dd(3, 'a headset capsule’s radius') },
+    power: 'a wireless bodypack, or phantom power through its own adapter',
+    mount: 'clip',
+    clip: { reach: dd(170, 'the headset boom’s reach from the ear to the capsule (as the voice family’s headset)') },
+    examples: [{ model: 'headworn directional miniatures (generic)', fact: 'The lesson B05 L31–L33: use the model’s intended position and aim; verify rear and side rejection against the monitors and the PA; small shifts, breath and proximity change the tone. SN-ME3 2–3 cm from the mouth corner (D-HS1).', src: 'SN-ME3' }],
+    art: 'gooseneck',
+    blurb: 'A headset whose capsule is directional: aimed at the mouth from beside it, it hears a little less of the room and the PA behind — but a small shift of the boom, breath and the proximity effect change the tone more than with an omni.',
+  },
+  bcBoundaryDesk: {
+    id: 'bcBoundaryDesk',
+    label: 'Boundary mic (half-cardioid) lying on the desk',
+    short: 'BOUNDARY',
+    transducer: 'condenser',
+    address: 'boundary',
+    patterns: BOUNDARY_PATTERN,
+    body: BOUNDARY_BODY,
+    power: 'phantom power (48 V)',
+    mount: 'surface',
+    surfacePartId: 'bc.desk',
+    examples: [{ model: 'half-cardioid boundary plate (the Lab 1 boundaryHalf body, S-B91-UG)', fact: 'B02 L23–L31: a purpose-built boundary mic on the desk toward the talker, its aperture clear; an ordinary lav taped to a table is not one. S-B91-UG: half-cardioid.', src: 'S-B91-UG' }],
+    art: 'boundary',
+    blurb: 'A low plate lying on the desk toward the talker: it hears the hemisphere above the desk, most toward its front, with its element so close to the desk that the desk’s own bounce arrives with the direct sound. It also hears papers, hands and the room. Needs phantom power.',
+  },
   /* ── Lab 7 group 3 (B03, B08): repOmni ── */
 } satisfies Record<string, MicType>;

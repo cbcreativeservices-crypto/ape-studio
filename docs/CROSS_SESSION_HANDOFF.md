@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 02:27 · ccode · bdeb18de
+changed: Miking Lab 7 group 2: shared camera frame (cameraFrame.ts) for B04/B02/B05 and group 3
+affects other side: nothing (client-only: Miking Lab 7 group 2 shared camera-frame tool; no server, no SQL)
+needs: nothing
+
+
 ### 2026-10-08 02:02 · ccode · d567fe40
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a5842596b925d1318
 affects other side: nothing (client-only: final-lab merged into lab7-g1 — Lab 6 groups 1 and 5, the learner-voice goals, web; registry, setups picks and mic-art switches kept from both sides)
