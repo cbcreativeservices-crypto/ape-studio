@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a bowed string becomes sound — the bow’s grip and slip, the rocking bridge, the top and back — and where the sound leaves the viola. Shown, never played.',
+    goal: 'See how a bowed string becomes sound — the bow’s grip and slip, the rocking bridge, the top and back — and where the sound leaves the viola.',
     credit: { scenarios: ['va.snd.1', 'va.snd.2', 'va.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'At a distance the ear hears body, strings and room blended; a capsule very close to one feature hears its own local view. That is the viola’s close-miking trade-off — tendencies, and violas vary.',
   },

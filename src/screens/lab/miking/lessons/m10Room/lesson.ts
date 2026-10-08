@@ -22,7 +22,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How the room answers',
-    goal: 'See when the kit reaches points near and far, and how the floor, the walls and the ceiling send it back. Shown, never played.',
+    goal: 'See when the kit reaches points near and far, and how the floor, the walls and the ceiling send it back.',
     credit: { scenarios: ['rm.snd.1', 'rm.snd.2', 'rm.snd.3'], interactive: 'soundPath', note: 'On step 2, drag TIME past the last reflection, and answer the three checks.' },
     takeaway: 'Every part of the kit reaches a room mic late — about 3 ms per metre — and the room’s reflections follow it. Farther out, the room’s share grows.',
   },

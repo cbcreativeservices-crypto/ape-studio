@@ -17,7 +17,7 @@ import { E10_MODEL, E10_PLACE, E10_SEATS, E10_SETUPS, E10_WEDGES, E10_ZONES, LN_
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a horn section — trumpet, saxophone, trombones, a tuba — on a stage and round one mic in a studio, and see where each instrument’s sound leaves it. Shown, never played.',
+    goal: 'Meet a horn section — trumpet, saxophone, trombones, a tuba — on a stage and round one mic in a studio, and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['hs.meet.1', 'hs.meet.2', 'hs.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'Brass speaks from the bell and is strongly directional: on its axis brighter, off it softer. A saxophone speaks from its open tone holes as well as its bell, so a bell-only mic hears part of it. A section is several of these at once — and the players make the balance.',
   },

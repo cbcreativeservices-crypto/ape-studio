@@ -19,7 +19,7 @@ import { F10_COPY } from './copy.ts';
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet the scene in brief — the listener’s point, the scene front, the sources and the place round them — see how sound arrives there from every side, and decide the deliverable first. Shown, never played.',
+    goal: 'Meet the scene in brief — the listener’s point, the scene front, the sources and the place round them — see how sound arrives there from every side, and decide the deliverable first.',
     credit: { scenarios: ['sp.meet.1', 'sp.meet.2', 'sp.meet.3'], note: 'Answer the three checks on the listener’s point, the arriving sound and the deliverable.' },
     takeaway: 'Start from the listener: where they are, which way they face, what they will listen on. A spatial mic hears everything that reaches its place — it cannot later isolate one source.',
   },

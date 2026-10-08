@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound, why the middle sounds deep and the edge bright, and where the sound leaves the drum. Shown, never played.',
+    goal: 'See how a stroke becomes sound, why the middle sounds deep and the edge bright, and where the sound leaves the drum.',
     credit: { scenarios: ['tb.snd.1', 'tb.snd.2', 'tb.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A stroke drives the head in the shapes it can reach from where it lands: near the middle mostly the low, ring-shaped ones; at the edge many more. Most of the sound leaves the head; some leaves the open lower end.',
   },

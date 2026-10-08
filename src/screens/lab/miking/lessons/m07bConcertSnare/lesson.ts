@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound — the stick, both heads, the air, the snares — and where the sound leaves the drum. Shown, never played.',
+    goal: 'See how a stroke becomes sound — the stick, both heads, the air, the snares — and where the sound leaves the drum.',
     credit: { scenarios: ['cs.snd.1', 'cs.snd.2', 'cs.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Attack starts where the stick meets the batter head, on top. The body — both heads, the air and the snares’ buzz — leaves from both heads, the buzz mostly downward. A mic hears more of whichever it is closer to and faces: a tendency, and drums vary.',
   },

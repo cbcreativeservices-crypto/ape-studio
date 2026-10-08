@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a struck reed becomes a signal and the signal becomes moving air — what the “vibrato” really does, and why the spot on the speaker matters. Shown, never played.',
+    goal: 'See how a struck reed becomes a signal and the signal becomes moving air — what the “vibrato” really does, and why the spot on the speaker matters.',
     credit: { scenarios: ['wu.snd.1', 'wu.snd.2', 'wu.snd.3'], interactive: 'soundPath', note: 'Step the mechanism to the end and swing the reed by hand, step the cone through to the end, and answer the three checks.' },
     takeaway: 'The pickup senses the reed much as a condenser microphone senses its diaphragm. The “vibrato” is a pulse in level, not pitch. Close in, the centre of the speaker tends to sound brighter than its outer end.',
   },

@@ -16,7 +16,7 @@ import { E15_MODEL, E15_PLACE, E15_SETUPS, E15_WEDGES, E15_ZONES, MAIN_C } from 
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a jazz combo on its stage — a piano or guitar group with bass, drums and a horn — and see where each sound leaves: the kit’s ride and brushes, the bass at its bridge, the piano under its lid, the horn’s bell and holes. Shown, never played.',
+    goal: 'Meet a jazz combo on its stage — a piano or guitar group with bass, drums and a horn — and see where each sound leaves: the kit’s ride and brushes, the bass at its bridge, the piano under its lid, the horn’s bell and holes.',
     credit: { scenarios: ['jz.meet.1', 'jz.meet.2', 'jz.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'A combo is a conversation with strong acoustic bleed: the drums and the horn are loud, the bass and the piano easily masked. Where the players stand and which way an amp faces set the balance before any mic does.',
   },

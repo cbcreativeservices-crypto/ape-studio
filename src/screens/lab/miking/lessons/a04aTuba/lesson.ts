@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how buzzing lips become a tuba note — the pulse down the tube, the standing wave, the bell — and where the bell sends the sound. Shown, never played.',
+    goal: 'See how buzzing lips become a tuba note — the pulse down the tube, the standing wave, the bell — and where the bell sends the sound.',
     credit: { scenarios: ['tu.snd.1', 'tu.snd.2', 'tu.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Nearly all of the sound leaves from the bell. The lowest notes spread nearly all round; the attacks and upper overtones go where the bell points — up, or to the front. Tendencies: tubas and rooms vary.',
   },

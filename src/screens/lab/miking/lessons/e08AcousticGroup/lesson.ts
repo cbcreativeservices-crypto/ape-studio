@@ -17,7 +17,7 @@ import { E08_MODEL, E08_PLACE, E08_SETUPS, E08_WEDGES, E08_ZONES, PAIR_C } from 
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet an acoustic duo and a small group — guitar and mandolin; guitar, fiddle and bass — and see where each sound leaves: the guitar’s top, the mandolin’s bright opening, the fiddle up from under the chin, the bass low at its bridge. Shown, never played.',
+    goal: 'Meet an acoustic duo and a small group — guitar and mandolin; guitar, fiddle and bass — and see where each sound leaves: the guitar’s top, the mandolin’s bright opening, the fiddle up from under the chin, the bass low at its bridge.',
     credit: { scenarios: ['ac.meet.1', 'ac.meet.2', 'ac.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'Quiet groups make their sound in the room. Where each player sits — and how far from a main mic — is part of the mix before any mic is chosen.',
   },

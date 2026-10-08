@@ -23,7 +23,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How they make their sound',
-    goal: 'See how a stick stroke becomes sound, where it leaves the drum, and how the head, the rim and the shell differ. Shown, never played.',
+    goal: 'See how a stick stroke becomes sound, where it leaves the drum, and how the head, the rim and the shell differ.',
     credit: { scenarios: ['tb.snd.1', 'tb.snd.2', 'tb.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The head gives the drum tone; a rimshot adds the rim; the cáscara is the brass shell ringing — a metal sound. A mic hears more of whichever surface it is near and faces: a tendency to check.',
   },

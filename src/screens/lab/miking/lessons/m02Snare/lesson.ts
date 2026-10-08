@@ -25,7 +25,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound — the stick, both heads, the air inside and the wires — and where the sound leaves the drum. Shown, never played.',
+    goal: 'See how a stroke becomes sound — the stick, both heads, the air inside and the wires — and where the sound leaves the drum.',
     credit: { scenarios: ['sn.snd.1', 'sn.snd.2', 'sn.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The crack starts where the stick meets the batter head; the buzz comes from the wires slapping the snare-side head. A mic above hears more of the first, a mic below more of the second — tendencies, and drums vary.',
   },

@@ -22,7 +22,7 @@ import { E02_31, E02_MODEL, E02_PLACE, E02_SETUPS, E02_WEDGES, E02_ZONES, GROUP_
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet the backing group — three singers in a row, round one mic, or in a studio circle — and where each voice leaves: the mouth, forward. Shown, never played.',
+    goal: 'Meet the backing group — three singers in a row, round one mic, or in a studio circle — and where each voice leaves: the mouth, forward.',
     credit: { scenarios: ['bv.meet.1', 'bv.meet.2', 'bv.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'Every voice leaves its own mouth, forward. Close to a mic, a few centimetres change a voice’s level a lot; at a shared mic, each singer’s distance is their fader.',
   },

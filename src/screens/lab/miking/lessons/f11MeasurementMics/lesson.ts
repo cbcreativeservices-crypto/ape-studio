@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How sound meets the capsule',
-    goal: 'See the three fields a measurement mic can be made for — sound from one direction, the pressure in a sealed coupler, sound from every side — and why the difference matters most in the highs. Shown, never played.',
+    goal: 'See the three fields a measurement mic can be made for — sound from one direction, the pressure in a sealed coupler, sound from every side — and why the difference matters most in the highs.',
     credit: { scenarios: ['mm.snd.1', 'mm.snd.2', 'mm.snd.3'], note: 'Answer the three checks on the sound field.' },
     takeaway: 'Free field, pressure and random incidence are three different fields. “Omni” is a polar pattern, not a field response — match the mic’s response, and its aim, to the field the method assumes.',
   },

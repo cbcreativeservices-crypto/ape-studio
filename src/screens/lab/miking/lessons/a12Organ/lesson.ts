@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how pipes speak — why an open and a stopped pipe differ, and why 16′ and 32′ name a pitch — how the divisions arrive at a listener at different times, and how the room shapes the pedal notes. Shown, never played.',
+    goal: 'See how pipes speak — why an open and a stopped pipe differ, and why 16′ and 32′ name a pitch — how the divisions arrive at a listener at different times, and how the room shapes the pedal notes.',
     credit: { scenarios: ['org.snd.1', 'org.snd.2', 'org.snd.3'], interactive: 'soundPath', note: 'Listen from all three positions on the second step, and answer the three checks.' },
     takeaway: 'Each pipe is an air column: open sounds about c ÷ 2L, stopped an octave lower. The divisions sound from different places and arrive at different times; the room’s low resonances make the pedal change over a short move.',
   },

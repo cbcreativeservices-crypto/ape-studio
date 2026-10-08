@@ -23,7 +23,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how bass, tone and slap become sound — the head, the air in the bowl, the open foot — and where each leaves the drum. Shown, never played.',
+    goal: 'See how bass, tone and slap become sound — the head, the air in the bowl, the open foot — and where each leaves the drum.',
     credit: { scenarios: ['dj.snd.1', 'dj.snd.2', 'dj.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Slaps and tones start at the head, near its edge; the bass is struck near the centre, and much of it resonates out of the open foot. A mic hears more of whichever it is near and facing — test one mic before adding another.',
   },

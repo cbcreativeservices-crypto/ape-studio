@@ -23,7 +23,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How they make their sound',
-    goal: 'See how a finger stroke becomes sound, where it leaves the drum, and why the two heads differ. Shown, never played.',
+    goal: 'See how a finger stroke becomes sound, where it leaves the drum, and why the two heads differ.',
     credit: { scenarios: ['bg.snd.1', 'bg.snd.2', 'bg.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The fingers’ attack starts at the heads; part of the sound leaves through the open ends. On heads at the same tension the smaller macho’s shapes sit higher — players tune the pair apart on purpose.',
   },

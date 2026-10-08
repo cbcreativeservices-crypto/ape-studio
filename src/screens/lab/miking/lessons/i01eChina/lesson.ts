@@ -27,7 +27,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound in a China — quick, harsh, trashy — and who on the kit hears it. Shown, never played.',
+    goal: 'See how a stroke becomes sound in a China — quick, harsh, trashy — and who on the kit hears it.',
     credit: { scenarios: ['ch.snd.1', 'ch.snd.2', 'ch.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A China speaks fast and harsh, roars, and fades sooner than a crash. It cuts through everything — every mic on the kit hears it.',
   },

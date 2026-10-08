@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how the bellows’ air becomes sound — reeds swinging through their slots, chopping the air into puffs — and how it leaves from both sides while one of them moves. Shown, never played.',
+    goal: 'See how the bellows’ air becomes sound — reeds swinging through their slots, chopping the air into puffs — and how it leaves from both sides while one of them moves.',
     credit: { scenarios: ['ac.snd.1', 'ac.snd.2', 'ac.snd.3'], interactive: 'soundPath', note: 'Step the reed through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The bellows move air through the reeds; each reed swings through its slot and lets the air through in puffs — the notes. The treble sounds out through the grille, the bass through the bass side, and the bass side moves with every push and pull.',
   },

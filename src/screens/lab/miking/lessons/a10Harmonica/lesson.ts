@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how breath becomes sound — a reed swinging through its slot, chopping the air into puffs — and how the hands’ chamber shapes where it leaves. Shown, never played.',
+    goal: 'See how breath becomes sound — a reed swinging through its slot, chopping the air into puffs — and how the hands’ chamber shapes where it leaves.',
     credit: { scenarios: ['hm.snd.1', 'hm.snd.2', 'hm.snd.3'], interactive: 'soundPath', note: 'Step the reed through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Breath pushes a brass reed through its slot; it springs back and keeps swinging, letting the air through in puffs — the note. The sound leaves the back of the covers into the hands, and the hands’ chamber shapes it.',
   },

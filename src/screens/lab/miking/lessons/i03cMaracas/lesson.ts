@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke becomes sound in the head — the seeds lagging, striking, rolling — and what a circular wrist changes. Shown, never played.',
+    goal: 'See how a stroke becomes sound in the head — the seeds lagging, striking, rolling — and what a circular wrist changes.',
     credit: { scenarios: ['mar.snd.1', 'mar.snd.2', 'mar.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The seeds strike and rub the vessel: accents at each turn, a wash between, a longer sustain when the wrist circles. The head is the source — not the handle.',
   },

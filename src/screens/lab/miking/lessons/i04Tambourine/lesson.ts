@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a shake or a strike becomes sound — the frame, the jingles lagging and clashing — and where it leaves. Shown, never played.',
+    goal: 'See how a shake or a strike becomes sound — the frame, the jingles lagging and clashing — and where it leaves.',
     credit: { scenarios: ['tmb.snd.1', 'tmb.snd.2', 'tmb.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The jingles lag the frame and clash — bright, brief, with peaks far above the average. There is no head body to look for.',
   },

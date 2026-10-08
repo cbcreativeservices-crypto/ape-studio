@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stick stroke becomes sound — the attack, the walls flexing, the ring — and what a mute changes. Shown, never played.',
+    goal: 'See how a stick stroke becomes sound — the attack, the walls flexing, the ring — and what a mute changes.',
     credit: { scenarios: ['bell.snd.1', 'bell.snd.2', 'bell.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The stick’s contact is the attack; the steel walls ring on — the sustain — and the whole body radiates, not just the mouth. A mute shortens the ring and can lower the pitch.',
   },

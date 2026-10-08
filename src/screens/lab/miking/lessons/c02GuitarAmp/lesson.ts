@@ -29,7 +29,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a vibrating string becomes a signal and the signal becomes moving air — and why the spot on the cone matters. Shown, never played.',
+    goal: 'See how a vibrating string becomes a signal and the signal becomes moving air — and why the spot on the cone matters.',
     credit: { scenarios: ['eg.snd.1', 'eg.snd.2', 'eg.snd.3'], interactive: 'soundPath', note: 'Step through three harmonics and try two pickups, step the cone through to the end, and answer the three checks.' },
     takeaway: 'Each pickup senses its own spot on the string, so neck and bridge sound different. The cone pushes in front and pulls behind — an open back sounds out too, opposite in polarity. Close in, the centre of the cone tends to sound brighter than the edge.',
   },

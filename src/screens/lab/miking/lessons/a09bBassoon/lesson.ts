@@ -29,7 +29,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a breath becomes a bassoon note — the double reed, the folded air column, the first open hole — and where the sound leaves. Shown, never played.',
+    goal: 'See how a breath becomes a bassoon note — the double reed, the folded air column, the first open hole — and where the sound leaves.',
     credit: { scenarios: ['bsn.snd.1', 'bsn.snd.2', 'bsn.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The lowest note leaves from the bell at the top; every note above it leaves farther DOWN the folded tube — the long joint, the boot, the wing joint. A mic sees one part of a picture that moves with every note.',
   },

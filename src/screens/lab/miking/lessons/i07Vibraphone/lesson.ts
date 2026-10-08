@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a mallet stroke becomes a ringing note — the bar’s shapes, the tube under it, the fans — and where the sound leaves. Shown, never played.',
+    goal: 'See how a mallet stroke becomes a ringing note — the bar’s shapes, the tube under it, the fans — and where the sound leaves.',
     credit: { scenarios: ['vb.snd.1', 'vb.snd.2', 'vb.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The bar rings about two still points the cord passes through; the tube under it — a quarter wavelength long — rings with it; the fans open and close the tube for the pulsing; the pedal decides how long notes last.',
   },

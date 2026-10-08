@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How they make their sound',
-    goal: 'See how a sweep becomes sound — bars struck one after another, each ringing on and swinging — and why the long bars sound lower. Shown, never played.',
+    goal: 'See how a sweep becomes sound — bars struck one after another, each ringing on and swinging — and why the long bars sound lower.',
     credit: { scenarios: ['bc.snd.1', 'bc.snd.2', 'bc.snd.3'], interactive: 'soundPath', note: 'Step the sweep through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A sweep is a run of brief attacks with overlapping rings: the shimmer. Each bar is a bar held at neither end; a shorter bar of the same thickness rings higher — half the length, four times the pitch.',
   },

@@ -18,7 +18,7 @@ import { E09_MODEL, E09_PLACE, E09_SETUPS, E09_WEDGES, E09_ZONES, ROOM_C } from 
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a complete band on a stage plot — drums, bass, guitar, keys and a singer — and see where each one’s sound leaves: the kit from everywhere at once, the guitar and bass from their amps, the keys from a DI. Shown, never played.',
+    goal: 'Meet a complete band on a stage plot — drums, bass, guitar, keys and a singer — and see where each one’s sound leaves: the kit from everywhere at once, the guitar and bass from their amps, the keys from a DI.',
     credit: { scenarios: ['bd.meet.1', 'bd.meet.2', 'bd.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'On a band stage the loud sources are the kit and the amps, and the quietest is the voice. Which way each amp faces, and how loud the stage is, decides what reaches every other mic before any mic goes up.',
   },
