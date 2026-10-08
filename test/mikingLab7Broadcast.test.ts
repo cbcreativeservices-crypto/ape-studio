@@ -198,7 +198,7 @@ describe('routing (routing.ts)', () => {
 });
 
 describe('broadcast mics and the drawn arms', () => {
-  it('the group 1 types are in MIC_TYPES; group 2 fills its slots (never twice); the group 3 slot is reserved', () => {
+  it('the group 1 types are in MIC_TYPES; group 2 fills its slots (never twice); group 3 fills its slot here', () => {
     for (const id of Object.keys(BROADCAST_MIC_TYPES)) assert.ok(MIC_TYPES[id], id);
     // Group 2 (lab7-g2): every slot resolves to a MIC_TYPES entry; a slot an
     // earlier lab already filled (shotgunShort, the lav) is not redefined here.
@@ -207,7 +207,8 @@ describe('broadcast mics and the drawn arms', () => {
       assert.ok(MIC_TYPES[fill], `${id} → ${fill}`);
       if (fill !== id || id === 'shotgunShort') assert.ok(!(id in BROADCAST_MIC_TYPES), `${id} is filled elsewhere`);
     }
-    for (const id of BROADCAST_MIC_SLOTS.G3) assert.ok(!(id in BROADCAST_MIC_TYPES), id);
+    // Group 3 (lab7-g3): the reporter's omni, defined here once.
+    for (const id of BROADCAST_MIC_SLOTS.G3) assert.ok(id in BROADCAST_MIC_TYPES && MIC_TYPES[id], id);
   });
   it('a desk arm reaches exactly its two segments; its body carries the arm’s drawing', () => {
     const b = micBodyOf(MIC_TYPES.bcDynArm);

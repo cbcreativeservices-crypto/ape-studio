@@ -230,6 +230,9 @@ import { B04_LESSON } from '../lessons/b04BoomCamera/lesson.ts';
 LESSON_CONTENT.B04 = B04_LESSON;
 import { B02_LESSON } from '../lessons/b02NewsAnchor/lesson.ts';
 LESSON_CONTENT.B02 = B02_LESSON;
+/* Lab 7 (broadcast), group 3 — field and audience: B03, B08 (each lesson on its own line). */
+import { B03_LESSON } from '../lessons/b03FieldReporter/lesson.ts';
+LESSON_CONTENT.B03 = B03_LESSON;
 /* Lab 7 · part 2 · G1 — speech in sport: B09, B10, B11 (each lesson on its own line). */
 import { B09_LESSON } from '../lessons/b09Commentators/lesson.ts';
 LESSON_CONTENT.B09 = B09_LESSON;

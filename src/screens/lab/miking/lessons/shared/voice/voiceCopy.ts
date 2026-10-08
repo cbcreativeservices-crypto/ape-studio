@@ -34,6 +34,10 @@ export type StandingVoiceCopyOpts = {
   variantNotes?: LessonCopy['instrument']['variantNotes'];
   /** A lesson's own lines in the Studio-or-live LEARN card (else the family's). */
   contextPoints?: LessonCopy['context']['learn']['points'];
+  /** A lesson's own opening line of the Studio-or-live LEARN card (else the
+   *  singer's "the singer is the same — the room, the band and the monitors
+   *  change"). Lab 7 (broadcast) talkers pass their own (L7G2-13 / L7G3). */
+  contextIntro?: string;
 };
 
 export function standingVoiceCopy(o: StandingVoiceCopyOpts): Partial<LessonCopy> {
@@ -120,7 +124,7 @@ export function standingVoiceCopy(o: StandingVoiceCopyOpts): Partial<LessonCopy>
       studioPrompt: o.studio.prompt,
       studioNote: o.studio.note,
       learn: {
-        intro: 'These are scenario-based comparisons, not restrictions: the singer is the same — the room, the band and the monitors change.',
+        intro: o.contextIntro ?? 'These are scenario-based comparisons, not restrictions: the singer is the same — the room, the band and the monitors change.',
         points: o.contextPoints ?? [
           { title: 'PERSPECTIVE', text: 'Studio: a mic 10–30 cm out, a screen or a grille against the air, the room part of the sound. Live: a handheld dynamic within about 10 cm, close enough to stay ahead of the band.' },
           { title: 'SPILL AND FEEDBACK', text: 'Studio: the headphone mix leaking from open-back phones, and the room. Live: the wedge, the PA and the band. Put the wedge where the pattern rejects most: straight behind a cardioid, a little to one side of a supercardioid’s rear.' },
