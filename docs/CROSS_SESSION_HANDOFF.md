@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 00:03 · ccode · eef0d2e8
+changed: Merge remote-tracking branch 'origin/final-lab' into lab6-g6
+affects other side: nothing (client-only: Lab 6 group 6 F09/F10 merged with group 4 F11-F13; Miking stays hidden)
+needs: nothing
+
+
 ### 2026-10-07 23:14 · ccode · 7c48c7fd
 changed: Merge lab6-g4: Miking Lab 6 F11-F13 measurement lessons
 affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
