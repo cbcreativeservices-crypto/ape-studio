@@ -188,6 +188,15 @@ import { F03_LESSON } from '../lessons/f03Props/lesson.ts';
 LESSON_CONTENT.F03 = F03_LESSON;
 import { F04_LESSON } from '../lessons/f04Impacts/lesson.ts';
 LESSON_CONTENT.F04 = F04_LESSON;
+/* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 (each lesson on its own line). */
+import { F05_LESSON } from '../lessons/f05Perspective/lesson.ts';
+LESSON_CONTENT.F05 = F05_LESSON;
+import { F06_LESSON } from '../lessons/f06Ambience/lesson.ts';
+LESSON_CONTENT.F06 = F06_LESSON;
+import { F07_LESSON } from '../lessons/f07Wildlife/lesson.ts';
+LESSON_CONTENT.F07 = F07_LESSON;
+import { F08_LESSON } from '../lessons/f08Passby/lesson.ts';
+LESSON_CONTENT.F08 = F08_LESSON;
 /* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
 import { F09_LESSON } from '../lessons/f09LocationSpeech/lesson.ts';
 LESSON_CONTENT.F09 = F09_LESSON;

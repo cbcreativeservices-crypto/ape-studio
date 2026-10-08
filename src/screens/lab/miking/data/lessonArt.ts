@@ -207,6 +207,18 @@ ART.F03 = withFoleyPages({ ...F03_ART, StrikeSequence: PropStrike, CoupledHeads:
 import { F04_ART, F04_PATH } from '../lessons/f04Impacts/pages';
 import { ImpactStrike, WaterHitTail } from '../lessons/f04Impacts/soundArt';
 ART.F04 = withFoleyPages({ ...F04_ART, StrikeSequence: ImpactStrike, CoupledHeads: WaterHitTail }, F04_PATH);
+/* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 (each lesson on its own line). */
+import { F05_ART } from '../lessons/f05Perspective/art';
+import { KeysStrike, NearFarKeys } from '../lessons/f05Perspective/soundArt';
+import { F05TwoMic, F05_STEP_COUNT_TWOMIC } from '../lessons/f05Perspective/pages';
+const F05_FOLEY = withFoleyPages({ ...F05_ART, StrikeSequence: KeysStrike, CoupledHeads: NearFarKeys });
+ART.F05 = { ...F05_FOLEY, pages: { ...F05_FOLEY.pages, twoMic: F05TwoMic as never }, stepCounts: { ...F05_FOLEY.stepCounts, twoMic: F05_STEP_COUNT_TWOMIC } };
+import { F06_ART } from '../lessons/f06Ambience/art';
+ART.F06 = F06_ART;
+import { F07_ART } from '../lessons/f07Wildlife/art';
+ART.F07 = F07_ART;
+import { F08_ART } from '../lessons/f08Passby/art';
+ART.F08 = F08_ART;
 /* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
 import { F09_ART } from '../lessons/f09LocationSpeech/art';
 ART.F09 = F09_ART;

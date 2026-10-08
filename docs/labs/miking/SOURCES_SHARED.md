@@ -240,6 +240,17 @@ condenser's body S-SM4-WEB.)
 | MIX-2005 | Mix, Blair Jackson, "Foley Recording" (2005): footsteps "between three and six feet away on a mic stand, in front and/or to the side, but only about 15 degrees or so"; close shotguns "and a Neumann U67 functioning as room microphone"; "two mics: one close and one far away" | see `foley_footsteps/SOURCES.md` §0, §a | read 2026-10-07 |
 | ASE-ELEM | A Sound Effect, *Elemental* film sound: a hydrophone for selected internal water sounds, airborne mics for the surface | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
 
+## 15. The parabolic dish for Lab 6's field lessons (F07 and later; `lessons/shared/field/dishMics.ts`, `dish.ts`)
+
+Added 2026-10-08 by the Lab 6 group 2 builder (branch lab6-g2): the dish card (`dishMic`, art `dish`). The full
+Lab 6 register is `foley_footsteps/SOURCES.md` §0; the dish model is `field_wildlife_distant/SOURCES.md` §2.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| CORNELL-MIC | Cornell Lab, Macaulay Library, "Microphones": reflectors "57 cm (22 inches) in diameter"; "Higher frequency sounds, with shorter wavelengths, are amplified more than lower frequency sounds" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 (Lab 6 preparation) |
+| SCH-DISH | SCHOEPS Parabolic Dish Set product page: 585 mm, focal 210 mm, the capsule at 0° toward the dish | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| INNERCORE | Innercore parabolic microphone, technical details: 500 mm, focal 140 mm, the capsule pointing back at the dish | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+
 ## 16. Lab 6 part 2 keys used by group 5 (F14–F16; `lessons/shared/measure/` venue, systems, claim ladder, exclusion, arrays)
 
 Added 2026-10-08 by the Lab 6 group 5 builder (branch lab6-g5). The full register, with quotes and status, is `measurement_mics/SOURCES.md` §0; per-lesson claims are in `loudspeaker_measurement/`, `machinery_sound/` and `scientific_arrays/SOURCES.md`. These keys appear only in the code's internal `src` / `prov` fields.

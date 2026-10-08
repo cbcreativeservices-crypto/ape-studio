@@ -317,6 +317,9 @@ Object.assign(MIC_TYPES, FOLEY_MIC_TYPES);
 /* Lab 6 (field), group 6 — location and spatial (F09, F10): the boom, body, plant and camera mics, the binaural head, the Ambisonic mic and the Double M/S cluster. Appended so other lessons merge cleanly. */
 import { FIELD_MIC_TYPES } from '../lessons/shared/field/fieldMics.ts';
 Object.assign(MIC_TYPES, FIELD_MIC_TYPES);
+/* Lab 6 (field), group 2 — perspective & field: F06, F08, F07, F05 — the parabolic dish. Appended so other lessons merge cleanly. */
+import { FIELD2_MIC_TYPES } from '../lessons/shared/field/dishMics.ts';
+Object.assign(MIC_TYPES, FIELD2_MIC_TYPES);
 /* Lab 6 group 4 — measurement core (F11–F16): the measurement mics and the sound level meter. Appended so other lessons merge cleanly. */
 import { MEASURE_MIC_TYPES } from '../lessons/shared/measure/measureMics.ts';
 Object.assign(MIC_TYPES, MEASURE_MIC_TYPES);

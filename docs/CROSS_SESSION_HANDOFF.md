@@ -634,6 +634,34 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 02:34 · ccode · 22178948
+changed: Merge origin/final-lab into lab6-g2
+affects other side: nothing (client-only merge; Miking still hidden)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · b0d17d1d
+changed: Lab 6 group 2: corrections log section and phone-width captures
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · d5eeb7c8
+changed: Lab 6 group 2: model tests and the research brand names
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · ee9bb9cb
+changed: Lab 6 group 2: F06 ambience, F08 pass-bys, F07 wildlife, F05 Foley perspective
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+needs: nothing
+
+
+### 2026-10-08 02:18 · ccode · 9b1959fe
+changed: Lab 6 group 2: the shared field toolkit (frame G, sites, wind, safety, path, image, dish)
+affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+
 ### 2026-10-08 02:02 · ccode · d567fe40
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a5842596b925d1318
 affects other side: nothing (client-only: final-lab merged into lab7-g1 — Lab 6 groups 1 and 5, the learner-voice goals, web; registry, setups picks and mic-art switches kept from both sides)

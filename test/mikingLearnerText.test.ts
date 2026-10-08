@@ -151,6 +151,23 @@ export const BRAND_NAMES: readonly string[] = [
   'Hayes',
   'Sound Devices',
   'Warner',
+  // Lab 6 group 2 research (docs/labs/miking/field_ambience, field_moving_passby, field_wildlife_distant, foley_perspective):
+  // the sound library and its parent, dish makers, the physics text, authors, the traffic and hearing bodies.
+  'Cornell',
+  'Macaulay',
+  'Innercore',
+  'Telinga',
+  'Wildtronics',
+  'OpenStax',
+  'MKH',
+  'Les Smith',
+  'Watson Wu',
+  'Potter',
+  'MUTCD',
+  'ANSI',
+  'CDC',
+  'SM ?63',
+  'Brixen',
   // Lab 6 group 6 research (docs/labs/miking/location_speech, spatial_field).
   // ('Rode', 'RØDE', 'Rycote', 'Sound Devices' and 'Hayes' are in the group 1 list above.)
   'Thirion',

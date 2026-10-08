@@ -270,7 +270,9 @@ export type MountKind = 'stand' | 'surface' | 'clip' | 'boom' | 'pole';
  *  features/lab/micDrawings.tsx ShotgunMountMic).
  *  'broadcastDynamic' (Lab 7 group 1): an end-address broadcast dynamic — a
  *  big foam windscreen on the front, a long body in a yoke. */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount' | 'broadcastDynamic';
+/* lab6 group 2: 'dish' — a parabolic dish, the capsule at its focus facing the
+ *  bowl (features/lab/micDrawingsDish.tsx); its reference point is the focus. */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount' | 'broadcastDynamic' | 'dish';
 /**
  * A POP SCREEN in front of the mic (Lab 5, the voice): a mesh disc `gap` mm
  * in front of the mic's FRONT, square to its axis but tilted `tilt`° (never
@@ -541,6 +543,12 @@ export type InstrumentModel = {
    *  the guitars' headstock and tuners; the glass takes the other corner
    *  when the preferred one would (DualView, labelLayout.chooseInsetCorner). */
   insetKeepClear?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
+  /* lab6 group 2 (2026-10-08) — a FIELD SITE drawn metres wide (frame G):
+   * the mic, its pattern lobe and its stand are drawn `hardwareScale` times
+   * larger than life so a 10 cm mic is not a speck on a 25 m site plan (a map
+   * symbol; the lesson says once that mics are drawn larger). Drawing only:
+   * collision, zones and every readout keep true size. Absent = 1. */
+  hardwareScale?: number;
 };
 
 /** The model's view boxes for a variant (its own, else the model's). */
