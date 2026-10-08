@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 05:52 · ccode · 39cfdea9
+changed: docs(lab6 review): test counts after the second merge (9930 pass, 0 fail)
+affects other side: nothing server-side — Lab 6 review doc: the suite count after the second merge; docs only.
+needs: nothing
+
+
 ### 2026-10-08 05:43 · ccode · 09d63e07
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a24f075bc516008a3
 affects other side: nothing server-side — final-lab (Lab 7b group 3) merged again into the Lab 6 review branch (review-lab6); both sides kept in this file; app code and docs only; Miking stays hidden (MIKING_PUBLIC false).
