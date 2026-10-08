@@ -31,9 +31,9 @@ export const MIKING_LABS: readonly MikingLabMeta[] = [
   // 4: F11–F13 measurement): the blurb names only what is built; later groups
   // widen it as they land.
   { id: 'field', num: 6, name: 'Miking Lab 6: Foley, Field & Scientific', blurb: 'Microphones on location, in the field and for measurement, on drawn sets, sites, benches and rooms — speech with the camera’s frame, the boom, the body mic and the practical sounds of a scene; spatial pickup for headphones, surround and Ambisonics with the channel maps that keep it right; the measurement chain and its field check, where a measurement mic or a meter goes for the question asked, and the honest label for the result. Safety in plain words. Silent; suggested starting points.', family: 'Foley, Field & Scientific', familyBlurb: 'Miking on location, in the field and for measurement' },
-  // Not built yet: no ready lesson, so neither the lab nor its family tile is
-  // listed. Fill `blurb` and `familyBlurb` when the first lesson goes ready.
-  { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: '', family: 'Sports & Broadcast', familyBlurb: '' },
+  // Lab 7 is filled by groups (group 1: B01, B07, B06 desk and studio voice);
+  // the blurb names only what is built; later groups widen it as they land.
+  { id: 'broadcast', num: 7, name: 'Miking Lab 7: Sports & Broadcast', blurb: 'Microphones for speech on air, on drawn desks, booths, tables and lecterns — a host at a desk with a mic on an arm, a voice-over reader and a studio guest, a panel and a press conference: measured from the lips, what a head turn and a hard desk do, every open mic counted, and where each mic goes — the headphones, the stream, a remote guest’s return, the press feed. Never provoking feedback. Silent; suggested starting points.', family: 'Sports & Broadcast', familyBlurb: 'Miking speech for broadcast — hosts, guests, panels and press' },
 ];
 
 export const LESSONS: readonly LessonMeta[] = [
@@ -147,6 +147,10 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'F11', labId: 'field', title: 'Measurement Microphones and Calibration', subtitle: 'The question first, the right field and power path, a check before and after — and an honest label', status: 'ready' },
   { id: 'F12', labId: 'field', title: 'Sound Level and Environmental Noise', subtitle: 'A named question and window, the method’s height, an open or facade position — and a conclusion no bigger than the evidence', status: 'ready' },
   { id: 'F13', labId: 'field', title: 'Room Acoustics and Reverberation', subtitle: 'Room only or system + room, seats that differ, a tail above the floor — T20, T30 and EDT kept apart', status: 'ready' },
+  // Lab 7 (broadcast), group 1 — desk and studio voice: B01, B07, B06 (each lesson on its own line).
+  { id: 'B01', labId: 'broadcast', title: 'Radio, Podcast and Studio Hosts', subtitle: 'A broadcast dynamic about 10–15 cm from the lips on a desk arm — a mic and a channel for each host', status: 'ready' },
+  { id: 'B07', labId: 'broadcast', title: 'Voiceover, Narration and Broadcast Guests', subtitle: 'Close and dry or moderate with the room — the script, the guest’s real mic, and a return without their own voice', status: 'ready' },
+  { id: 'B06', labId: 'broadcast', title: 'Panels, Press Conferences and Groups', subtitle: 'A gooseneck each, the lectern a little off the mouth — the fewest open mics, and every voice routed on purpose', status: 'ready' },
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */

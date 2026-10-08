@@ -191,3 +191,10 @@ import { F12_LESSON } from '../lessons/f12SoundLevel/lesson.ts';
 LESSON_CONTENT.F12 = F12_LESSON;
 import { F13_LESSON } from '../lessons/f13RoomAcoustics/lesson.ts';
 LESSON_CONTENT.F13 = F13_LESSON;
+/* Lab 7 (broadcast), group 1 — desk and studio voice: B01, B07, B06 (each lesson on its own line). */
+import { B01_LESSON } from '../lessons/b01RadioHost/lesson.ts';
+LESSON_CONTENT.B01 = B01_LESSON;
+import { B07_LESSON } from '../lessons/b07Voiceover/lesson.ts';
+LESSON_CONTENT.B07 = B07_LESSON;
+import { B06_LESSON } from '../lessons/b06Panels/lesson.ts';
+LESSON_CONTENT.B06 = B06_LESSON;

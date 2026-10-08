@@ -21,6 +21,16 @@ import { deskPlate, deskReflection, imageSource, onPlate, reflectionPoint } from
 import { bleedMatrix, leakCombs, openMics, strongestLeak, threeToOneNote, type PanelMic, type PanelTalker } from '../src/screens/lab/miking/lessons/shared/broadcast/openMicPanel.ts';
 import { CONNECT_WORDS, DESTINATIONS, PRESS_BOX, connect, feeds, reaches, routeProblems, withSends, type RoutingPlan } from '../src/screens/lab/miking/lessons/shared/broadcast/routing.ts';
 import { BROADCAST_MIC_SLOTS, BROADCAST_MIC_TYPES, DESK_ARM } from '../src/screens/lab/miking/lessons/shared/broadcast/broadcastMics.ts';
+import { lessonById } from '../src/screens/lab/miking/data/lessons.ts';
+import { LESSONS, labMeta, lessonsOf } from '../src/screens/lab/miking/data/registry.ts';
+import { validateLesson } from '../src/screens/lab/miking/engine/model/validate.ts';
+import { assembly, checkAssembly, compileScene } from '../src/screens/lab/miking/engine/geometry/collision.ts';
+import { inZone } from '../src/screens/lab/miking/engine/geometry/zones.ts';
+import { aimVec } from '../src/screens/lab/miking/engine/geometry/vec.ts';
+import { startingSetups } from '../src/screens/lab/miking/engine/setups.ts';
+import { learnerStrings } from './_mikingItemRules.ts';
+import { DESK_PLATE } from '../src/screens/lab/miking/lessons/b01RadioHost/geometry.ts';
+import { STAND_PLATE } from '../src/screens/lab/miking/lessons/b07Voiceover/geometry.ts';
 
 const v3 = (x: number, y: number, z: number) => ({ x, y, z });
 const dist = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
@@ -217,5 +227,98 @@ describe('broadcast mics and the drawn arms', () => {
   it('the host’s frame is frame V', () => {
     assert.deepEqual(HOST.lip, v3(0, 0, 0));
     assert.equal(HOST.facing, 1);
+  });
+});
+
+describe('Lab 7 group 1 lessons: B01, B07, B06', () => {
+  const IDS = ['B01', 'B07', 'B06'];
+  it('ready lessons of the broadcast lab, in one contiguous block; the lab says what is in it', () => {
+    const ids = lessonsOf('broadcast').map((l) => l.id);
+    for (const id of IDS) assert.ok(ids.includes(id), id);
+    const at = LESSONS.findIndex((l) => l.id === 'B01');
+    assert.deepEqual(LESSONS.slice(at, at + 3).map((l) => l.id), IDS);
+    const lab = labMeta('broadcast')!;
+    assert.ok(lab.blurb.length > 40 && lab.familyBlurb.length > 20);
+  });
+  for (const id of IDS) {
+    const l = lessonById(id)!;
+    const variantsOf = (z: (typeof l.zones)[number]) => (z.requires?.variant ? [z.requires.variant] : z.requires?.variants ?? l.model.variants.map((v) => v.id));
+    it(`${id}: validates; every start is inside its zone and clear in every variant it is offered in`, () => {
+      assert.deepEqual(validateLesson(l, MIC_TYPES), []);
+      for (const z of l.zones) {
+        const t = MIC_TYPES[z.requires!.micTypeIds![0]];
+        if (t.mount === 'surface') continue;
+        for (const v of variantsOf(z)) {
+          const scene = compileScene(l.model, v);
+          assert.equal(checkAssembly(scene, z.start, micBodyOf(t)), null, `${z.id} in ${v}`);
+          assert.ok(inZone(z, { scene, surfaces: l.model.surfaces, lines: l.model.lines, variant: v, micTypeId: t.id, mount: t.mount }, z.start), `${z.id} in ${v}`);
+        }
+      }
+    });
+    it(`${id}: each zone's centre (mid distance along its start's line, aimed at the lips) is clear of the talkers and the furniture`, () => {
+      for (const z of l.zones) {
+        const t = MIC_TYPES[z.requires!.micTypeIds![0]];
+        if (t.mount === 'surface' || !z.cone) continue;
+        const surf = l.model.surfaces.find((q) => q.id === z.refSurface)!;
+        const mid = (z.distance.min + z.distance.max) / 2;
+        const d = v3(z.start.p.x - surf.point.x, z.start.p.y - surf.point.y, z.start.p.z - surf.point.z);
+        const k = mid / Math.hypot(d.x, d.y, d.z);
+        const p = v3(surf.point.x + d.x * k, surf.point.y + d.y * k, surf.point.z + d.z * k);
+        for (const v of variantsOf(z)) assert.equal(checkAssembly(compileScene(l.model, v), { p, az: z.start.az, el: z.start.el }, micBodyOf(t)), null, `${z.id} centre in ${v}`);
+      }
+    });
+    it(`${id}: every desk arm and gooseneck reaches its mic from its grip`, () => {
+      for (const z of l.zones) {
+        const t = MIC_TYPES[z.requires!.micTypeIds![0]];
+        if (t.mount !== 'clip' || !t.clip?.style) continue;
+        const arm = assembly(compileScene(l.model, variantsOf(z)[0]), z.start, micBodyOf(t)).find((q) => q.piece === 'arm');
+        assert.ok(arm, `${z.id}: no grip`);
+        assert.ok(dist(arm!.a, arm!.b) <= t.clip.reach.mm, `${z.id}: ${dist(arm!.a, arm!.b).toFixed(0)} mm`);
+      }
+    });
+    it(`${id}: 3:1 is never a pass gate; no institutional words; the starting-points voice; no link to unbuilt lessons`, () => {
+      for (const t of l.setupTasks) for (const r of t.reasons) if (/3:1/.test(r.label)) assert.equal(r.role, 'wrong', `${t.id} ${r.id}`);
+      for (const s of [...l.scenarios, ...l.diagnostic]) assert.doesNotMatch(s.correct, /3:1/);
+      const strings = learnerStrings(l);
+      for (const s of strings) assert.doesNotMatch(s, /\b(student|classroom|instructor|Pro Audio Training Academy)\b/i);
+      assert.ok(strings.some((s) => /After our research, here is where we recommend you begin/.test(s)));
+      assert.ok(strings.some((s) => /Experimentation is encouraged/.test(s)));
+      for (const s of strings) assert.doesNotMatch(s, /\b(B0[2-58]|B1\d|F13)\b/);
+    });
+  }
+  it('B01-1: the live check never provokes feedback (working level; at any ring, pull it down)', () => {
+    const s = learnerStrings(lessonById('B01')!).join(' ');
+    assert.match(s, /never raise a level to find feedback/i);
+    assert.doesNotMatch(s, /check for feedback/i);
+  });
+  it('B06-1: the lectern gooseneck starts 10–14 in (254–356 mm), off the mouth’s axis — never "8 in below, centred"', () => {
+    const z = lessonById('B06')!.zones.find((q) => q.id === 'b6.lectern')!;
+    assert.deepEqual(z.distance, { min: 254, max: 355.6 });
+    assert.ok((z.cone?.min ?? 0) >= 10, 'off the axis');
+    assert.doesNotMatch(learnerStrings(lessonById('B06')!).join(' '), /eight inches|8 in(ches)? below/i);
+  });
+  it('the setups by variant: one mic, the pairs, the live and the farther starts', () => {
+    const roles = (id: string, v: string) => startingSetups(lessonById(id)!, v, MIC_TYPES).map((s) => s.role);
+    assert.deepEqual(roles('B01', 'studio'), ['one', 'close', 'distant', 'more']);
+    assert.deepEqual(roles('B01', 'twoHosts'), ['one', 'pair']);
+    assert.deepEqual(roles('B07', 'booth'), ['one', 'distant', 'more', 'more']);
+    assert.deepEqual(roles('B07', 'guest'), ['one', 'pair', 'more']);
+    assert.deepEqual(roles('B06', 'panel'), ['one', 'pair', 'distant']);
+    assert.deepEqual(roles('B06', 'lectern'), ['one', 'pair', 'more']);
+  });
+  it('the worked starts: the desk’s copy reaches the B01 mic later than the voice; the B07 stand faces the reader and reflects', () => {
+    const b01 = lessonById('B01')!.zones.find((z) => z.id === 'b1.dyn')!;
+    const R = deskReflection(LIP, b01.start, 'cardioid', DESK_PLATE);
+    assert.ok(R.exists && R.dtMs > 0 && R.r2 > R.r1);
+    assert.ok(STAND_PLATE.n.x < 0 && STAND_PLATE.n.y < 0);
+    const b07 = lessonById('B07')!.zones.find((z) => z.id === 'b7.close')!;
+    assert.ok(deskReflection(LIP, b07.start, 'cardioid', STAND_PLATE).exists);
+  });
+  it('a 30° head turn takes the B01 worked mic well off the mouth’s axis; the closer mic changes more', () => {
+    const z = (id: string) => lessonById('B01')!.zones.find((q) => q.id === id)!.start;
+    const r = turnReadout(z('b1.dyn').p, aimVec(z('b1.dyn').az, z('b1.dyn').el), 30, 0);
+    const rc = turnReadout(z('b1.close').p, aimVec(z('b1.close').az, z('b1.close').el), 30, 0);
+    assert.ok(r.offAxis > 25 && rc.offAxis > r.offAxis);
+    assert.ok(Math.abs(rc.distDb) > Math.abs(r.distDb));
   });
 });

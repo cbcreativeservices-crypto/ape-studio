@@ -714,7 +714,7 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
   if (body.mount !== 'clip') return null;
   if (style === 'deskArm' || style === 'gooseneck') {
     const goose = style === 'gooseneck';
-    const w = goose ? 9 : 11;
+    const w = goose ? 12 : 20;
     return (
       <Group opacity={on}>
         <Path path={path} style="stroke" strokeWidth={w + 5} strokeCap="round" strokeJoin="round" color="#0b0c0f" />
@@ -726,7 +726,7 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
           </Path>
         ) : (
           // The springs, riding just above each segment.
-          <Group transform={[{ translateX: 0 }, { translateY: -9 }]}>
+          <Group transform={[{ translateX: 0 }, { translateY: -14 }]}>
             <Path path={path} style="stroke" strokeWidth={3.2} strokeJoin="round" color="#8a8f99" opacity={0.85}>
               <DashPathEffect intervals={[2.2, 2.2]} />
             </Path>

@@ -47,7 +47,7 @@ import { TURN_LIMITS, turnHead, turnReadout } from './talkerPose.ts';
 import { TurnedHeadSide, TurnedHeadTop } from './BroadcastArt';
 import { deskReflection, type Plate } from './deskReflection.ts';
 import { bleedMatrix, openMics, strongestLeak, threeToOneNote, type PanelMic, type PanelTalker } from './openMicPanel.ts';
-import { DESTINATIONS, feeds, problemWords, routeProblems, type DestId, type RoutingPlan } from './routing.ts';
+import { CONNECT_WORDS, DESTINATIONS, connect, feeds, problemWords, routeProblems, type DestId, type Level, type RoutingPlan } from './routing.ts';
 import { RoutingPanel, type SourceLook } from './RoutingPanel';
 
 type PageFn = (p: PageProps) => ReactNode;
@@ -66,7 +66,7 @@ const ms = (t: number) => `${Math.abs(t).toFixed(2)} ms`;
 
 /** A mic as the tool steps draw it: its front `p`, its aim (unit), how it is
  *  drawn (a MikingMicArt id, radius, length) — frame V of the talker. */
-export type ToolMic = { id: string; label: string; short: string; p: Vec3; aim: Vec3; art: MicArtId; r: number; len: number; pattern: PatternId; cross?: number };
+export type ToolMic = { id: string; label: string; short: string; p: Vec3; aim: Vec3; art: MicArtId; r: number; len: number; pattern: PatternId; cross?: number; /** Its extent from above, when not 2r (a boundary plate's width). */ crossTop?: number };
 
 /** A mic aimed at the lips from `p`. */
 export function aimedAtLips(id: string, label: string, short: string, p: Vec3, look: { art: MicArtId; r: number; len: number; pattern: PatternId; cross?: number }): ToolMic {
@@ -154,7 +154,7 @@ export function useTurnStep(spec: TurnSpec): MikingStep {
   const shown = spec.oneAtATime ? [m] : spec.mics;
   const t = turnHead(yaw, pitch);
   const r = turnReadout(m.p, m.aim, yaw, pitch);
-  const axisEnd = v3(t.mouth.x + t.dir.x * 520, t.mouth.y + t.dir.y * 520, t.mouth.z + t.dir.z * 520);
+  const axisEnd = v3(t.mouth.x + t.dir.x * 640, t.mouth.y + t.dir.y * 640, t.mouth.z + t.dir.z * 640);
   const side = yaw > 2 ? 'to their right' : yaw < -2 ? 'to their left' : 'straight ahead';
   const look = pitch < -2 ? `looking down ${Math.abs(pitch)} degrees` : pitch > 2 ? `looking up ${pitch} degrees` : 'level';
   const a11y = `From above, ${spec.words.subject}: the head turned ${Math.abs(Math.round(yaw))} degrees ${side}, ${look}. ${spec.mics.map((q) => { const k = turnReadout(q.p, q.aim, yaw, pitch); return `${q.label}: ${cm(k.d)} from the lips, ${deg5(k.offAxis)} off the mouth’s axis`; }).join('. ')}.`;
@@ -220,7 +220,7 @@ export function useTurnStep(spec: TurnSpec): MikingStep {
     ...(spec.pitch ? [{ k: 'LOOK', v: `${pitch}°`, flex: 0.7 }] : []),
     { k: 'TO LIPS', v: cm(r.d), flex: 0.9 },
     { k: 'OFF AXIS', v: deg5(r.offAxis), tint: r.offAxis > 45 ? '#ff6b5e' : undefined, flex: 0.9 },
-    { k: 'LEVEL', v: `${r.distDb >= 0 ? '−' : '+'}${Math.abs(r.distDb).toFixed(0)} dB`, flex: 0.9 },
+    { k: 'LEVEL', v: Math.abs(r.distDb) < 0.5 ? '0 dB' : `${r.distDb > 0 ? '−' : '+'}${Math.abs(r.distDb).toFixed(0)} dB`, flex: 0.9 },
   ];
   const head = (view: 'top' | 'side') => (view === 'top' ? <TurnedHeadTop yawDeg={yaw} /> : <TurnedHeadSide pitchDeg={pitch} phones={spec.phones} />);
   const inset: FieldInset | null = spec.pitch
@@ -257,7 +257,7 @@ export function useTurnStep(spec: TurnSpec): MikingStep {
           a11y={a11y}
           inset={inset}
           labels={[
-            { id: 'axis', text: 'THE MOUTH’S AXIS', short: 'AXIS', u: axisEnd.x - 30, v: axisEnd.z + (t.dir.z >= 0 ? 50 : -70), align: 'right', tone: 'muted' },
+            { id: 'axis', text: 'THE MOUTH’S AXIS', short: 'AXIS', u: axisEnd.x, v: axisEnd.z + (t.dir.z >= 0 ? 60 : -80), align: 'right', tone: 'muted' },
             ...shown.map((q, i) => ({ id: `m.${q.id}`, text: q.short, u: q.p.x + 60, v: q.p.z + (i % 2 ? 140 : -140), align: 'left' as const, tone: 'amber' as const, at: { u: q.p.x, v: q.p.z } })),
           ]}
         >
@@ -267,7 +267,7 @@ export function useTurnStep(spec: TurnSpec): MikingStep {
               {head('top')}
               <Ray a={uvOf('top', t.mouth)} b={uvOf('top', axisEnd)} px={px} color="#e8eaee" width={2.2} />
               {shown.map((q) => (
-                <MicAt key={q.id} view="top" p={q.p} aim={q.aim} art={q.art} r={q.r} len={q.len} />
+                <MicAt key={q.id} view="top" p={q.p} aim={q.aim} art={q.art} r={q.r} len={q.len} cross={q.crossTop} />
               ))}
               <Dim a={uvOf('top', t.mouth)} b={uvOf('top', m.p)} px={px} />
             </>
@@ -467,7 +467,7 @@ export function useOpenMicStep(spec: OpenMicSpec): MikingStep {
   const bezel: BezelItem[] = [
     { k: 'OPEN', v: `${nom.open}`, flex: 0.6 },
     { k: 'MARGIN LOST', v: nom.open > 1 ? `≈ ${nom.costDb.toFixed(1)} dB` : '0 dB', flex: 1.1 },
-    { k: 'LEAK', v: leaks ? (leaks.levelDb == null ? 'NULL' : `−${Math.max(0, leaks.levelDb).toFixed(0)} dB`) : '—', flex: 0.9 },
+    { k: 'LEAK', v: leaks ? (leaks.levelDb == null ? 'REAR NULL' : `−${Math.max(0, leaks.levelDb).toFixed(0)} dB`) : '—', flex: 0.9 },
     { k: 'FIRST NOTCH', v: leaks ? hz(leaks.firstNotchHz) : '—', flex: 1.1 },
   ];
   const labels: StaticLabel[] = [
@@ -493,7 +493,7 @@ export function useOpenMicStep(spec: OpenMicSpec): MikingStep {
                 return (
                   <Group key={m.id} opacity={m.open ? 1 : 0.45}>
                     <MicAt view="top" p={m.pose.p} aim={a} art={m.look.art} r={m.look.r} len={m.look.len} />
-                    <Circle cx={m.pose.p.x} cy={m.pose.p.z} r={9 * px} color={m.open ? '#5bff85' : '#ff5a48'} />
+                    <Circle cx={m.pose.p.x - a.x * m.look.len * 0.9} cy={m.pose.p.z - a.z * m.look.len * 0.9} r={6 * px} color={m.open ? '#5bff85' : '#ff5a48'} />
                   </Group>
                 );
               })}
@@ -520,7 +520,7 @@ export function useOpenMicStep(spec: OpenMicSpec): MikingStep {
               .join(' ')}
           </Point>
           <Point title={`OPEN MICS · ${nom.open}`}>{nom.open > 1 ? `Each doubling of open mics costs about 3 dB of gain before feedback: ${nom.open} open, about ${nom.costDb.toFixed(1)} dB less margin than one. Mute the mics no one is using.` : 'One open mic: the most margin this setup can have.'}</Point>
-          {leaks ? <Point title="ONE VOICE, TWO MICS">{`In the mix, ${talker.label.toLowerCase()} arrives through their own mic first and through ${spec.mics.find((m) => m.id === leaks.other)?.label.toLowerCase()} ${ms(leaks.dtMs)} later — the two copies cancel some pitches, the first near ${hz(leaks.firstNotchHz)}.`}</Point> : null}
+          {leaks ? <Point title="ONE VOICE, TWO MICS">{`In the mix, ${talker.label.toLowerCase()} arrives through their own mic first and through ${spec.mics.find((m) => m.id === leaks.other)?.label.toLowerCase()} ${ms(leaks.dtMs)} later${leaks.levelDb == null ? ' — off the back of its pattern, where the simplified drawing shows a null; a real mic in a real room rejects much less there, so the copy is still heard' : ''}. The two copies cancel some pitches, the first near ${hz(leaks.firstNotchHz)}.`}</Point> : null}
           {three ? <Point title="THE 3:1 NOTE">{`A helpful starting idea, not a test: the closest pair of open mics is ${cm(three.apart)} apart, ${three.ok ? 'at least' : 'less than'} three times the farther mic-to-talker distance (${cm(three.need)}). It helps with spaced mics; it cannot promise a quiet mix at a talking table.`}</Point> : null}
         </Card>
         {seenPresets.size >= Math.min(2, spec.presets.length) ? <Note tone="ok">{spec.words.done}</Note> : null}
@@ -539,6 +539,10 @@ export type RoutingSpec = {
   words: { looking: string; prompt: string; done: string };
   /** Plain points under the diagram (the lesson's routing words). */
   points: readonly { title: string; text: string }[];
+  /** A connection to check (B06: a reporter's recorder on the press box's
+   *  mic-level output): the input setting is a switch; a mismatch is a
+   *  problem (routing.connect). */
+  levelCheck?: { id: string; label: string; title: string; out: Level; options: readonly { id: Level; label: string; blurb: string }[] };
 };
 
 export function useRoutingStep(spec: RoutingSpec): MikingStep {
@@ -554,9 +558,12 @@ export function useRoutingStep(spec: RoutingSpec): MikingStep {
     return { ...spec.plan, sends };
   }, [spec.plan, spec.switches, picks]);
   const problems = routeProblems(plan);
+  const [inLevel, setInLevel] = useState<Level | null>(spec.levelCheck ? spec.levelCheck.options[0].id : null);
+  const conn = spec.levelCheck && inLevel ? connect(spec.levelCheck.out, inLevel) : 'ok';
+  const nProblems = problems.length + (conn === 'ok' ? 0 : 1);
   const src = plan.sources.find((s) => s.id === trace) ?? plan.sources[0];
   const reached = plan.dests.filter((d) => plan.sends[src.id]?.includes(d));
-  const a11y = `A signal-flow drawing: ${plan.sources.length} sources into the mixer, ${plan.dests.length} destinations out of it. Tracing ${src.label}: it reaches ${reached.map((d) => DESTINATIONS[d].label).join(', ') || 'nothing'}. ${problems.length ? `${problems.length} routing problem${problems.length > 1 ? 's' : ''}.` : 'No routing problems.'}`;
+  const a11y = `A signal-flow drawing: ${plan.sources.length} sources into the mixer, ${plan.dests.length} destinations out of it. Tracing ${src.label}: it reaches ${reached.map((d) => DESTINATIONS[d].label).join(', ') || 'nothing'}. ${nProblems ? `${nProblems} routing problem${nProblems > 1 ? 's' : ''}.` : 'No routing problems.'}`;
   const params: DockParam[] = [
     {
       kind: 'options',
@@ -584,11 +591,28 @@ export function useRoutingStep(spec: RoutingSpec): MikingStep {
         options: s.options.map((q) => ({ id: q.id, label: q.label, blurb: q.blurb })),
       };
     }),
+    ...(spec.levelCheck
+      ? [
+          {
+            kind: 'options' as const,
+            id: spec.levelCheck.id,
+            label: spec.levelCheck.label,
+            valueLabel: (spec.levelCheck.options.find((o) => o.id === inLevel)?.label ?? '').toUpperCase().slice(0, 10),
+            selectedId: inLevel,
+            onSelect: (id: string) => {
+              setInLevel(id as Level);
+              setFlipped(true);
+            },
+            sticky: true,
+            options: spec.levelCheck.options.map((o) => ({ id: o.id, label: o.label, blurb: o.blurb })),
+          },
+        ]
+      : []),
   ];
   const bezel: BezelItem[] = [
     { k: 'TRACING', v: src.short, flex: 1.2 },
     { k: 'REACHES', v: `${reached.length}`, flex: 0.8 },
-    { k: 'PROBLEMS', v: `${problems.length}`, tint: problems.length ? '#ff6b5e' : '#5bff85', flex: 0.9 },
+    { k: 'PROBLEMS', v: `${nProblems}`, tint: nProblems ? '#ff6b5e' : '#5bff85', flex: 0.9 },
   ];
   return {
     key: 'path',
@@ -606,7 +630,8 @@ export function useRoutingStep(spec: RoutingSpec): MikingStep {
       <>
         <Landing looking={spec.words.looking} prompt={spec.words.prompt} />
         <Card>
-          <Point title={`${src.label.toUpperCase()} REACHES`}>{reached.length ? reached.map((d) => `${DESTINATIONS[d].label} — ${DESTINATIONS[d].words}`).join(' ') : 'Nothing: it is not sent anywhere.'}</Point>
+          <Point title={`${src.label.toUpperCase()} REACHES`}>{reached.length ? `${reached.map((d) => DESTINATIONS[d].label).join(', ')}.` : 'Nothing: it is not sent anywhere.'}</Point>
+          {spec.levelCheck ? <Point title={`${conn === 'ok' ? '' : '✕ '}${spec.levelCheck.title}`}>{CONNECT_WORDS[conn]}</Point> : null}
           {problems.length ? (
             problems.map((p, i) => (
               <Point key={`${p.code}${i}`} title="✕ PROBLEM">
@@ -617,7 +642,7 @@ export function useRoutingStep(spec: RoutingSpec): MikingStep {
             <Point title="NO ROUTING PROBLEMS">Each feed carries what its listeners need, and nobody hears themselves come back.</Point>
           )}
         </Card>
-        {flipped && !problems.length ? <Note tone="ok">{spec.words.done}</Note> : null}
+        {flipped && !nProblems ? <Note tone="ok">{spec.words.done}</Note> : null}
         <Card>
           {spec.points.map((b) => (
             <Point key={b.title} title={b.title}>

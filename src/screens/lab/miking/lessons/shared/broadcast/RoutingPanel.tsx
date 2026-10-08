@@ -28,11 +28,11 @@ const RED = '#ff6b5e';
 const DIM = '#3a3d45';
 
 /** The drawing's box (design units). */
-const W = 1000;
-const ICON = 64;
-const SRC_X = 18;
-const DST_X = 650;
-const MIX = { x0: 420, x1: 560 };
+const W = 900;
+const ICON = 104;
+const SRC_X = 10;
+const DST_X = 590;
+const MIX = { x0: 450, x1: 540 };
 
 /** How each source is drawn: a mic type's own art, or a device. */
 export type SourceLook = { art: MicArtId; r: number; len: number } | 'laptop' | 'talkback' | 'player';
@@ -160,8 +160,8 @@ function Console({ h }: { h: number }) {
     const caps = make();
     const slots = make();
     body.addRRect(Skia.RRectXY(Skia.XYWHRect(MIX.x0, h * 0.18, MIX.x1 - MIX.x0, h * 0.64), 12, 12));
-    for (let k = 0; k < 4; k++) {
-      const x = MIX.x0 + 24 + k * 30;
+    for (let k = 0; k < 3; k++) {
+      const x = MIX.x0 + 20 + k * 25;
       slots.moveTo(x, h * 0.3);
       slots.lineTo(x, h * 0.72);
       caps.addRRect(Skia.RRectXY(Skia.XYWHRect(x - 10, h * (0.4 + (k % 3) * 0.08), 20, 26), 4, 4));
@@ -185,7 +185,7 @@ function Console({ h }: { h: number }) {
 
 export function RoutingPanel({ w, h, plan, trace, problems, looks, a11y }: { w: number; h: number; plan: RoutingPlan; trace: string | null; problems: readonly RouteProblem[]; looks: Readonly<Record<string, SourceLook>>; a11y: string }) {
   const textScale = useStageTextScale();
-  const H = Math.max(520, Math.max(plan.sources.length, plan.dests.length) * 78);
+  const H = Math.max(560, Math.max(plan.sources.length, plan.dests.length) * 96);
   const box = { u0: 0, u1: W, v0: 0, v1: H };
   const xf = useMemo(() => fitXform('side', box, w, h, 6), [w, h, H]); // eslint-disable-line react-hooks/exhaustive-deps
   const srcY = rows(plan.sources.length, H);
@@ -209,7 +209,7 @@ export function RoutingPanel({ w, h, plan, trace, problems, looks, a11y }: { w: 
     return { dim, lit, red };
   }, [plan, trace, H, problems]); // eslint-disable-line react-hooks/exhaustive-deps
   const labels: StaticLabel[] = [
-    ...plan.sources.map((s, i) => ({ id: `s.${s.id}`, text: s.label.toUpperCase(), short: s.short, u: SRC_X + ICON + 18, v: srcY[i] - 34, align: 'left' as const, tone: s.id === trace ? ('amber' as const) : undefined })),
+    ...plan.sources.map((s, i) => ({ id: `s.${s.id}`, text: s.label.toUpperCase(), short: s.short, u: SRC_X + ICON + 14, v: srcY[i] - 36, align: 'left' as const, tone: s.id === trace ? ('amber' as const) : undefined })),
     ...plan.dests.map((d, i) => {
       const on = trace != null && reaches(plan, trace, d);
       const x = bad.has(d) ? '✕ ' : '';
