@@ -272,7 +272,10 @@ export type MountKind = 'stand' | 'surface' | 'clip' | 'boom' | 'pole';
  *  big foam windscreen on the front, a long body in a yoke. */
 /* lab6 group 2: 'dish' — a parabolic dish, the capsule at its focus facing the
  *  bowl (features/lab/micDrawingsDish.tsx); its reference point is the focus. */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount' | 'broadcastDynamic' | 'dish';
+/* Lab 7b group 1 (speech in sport): 'headsetBoom' — a close-talk headset
+ *  boom's capsule in its foam ball; 'lipRibbon' — a lip-guarded ribbon held to
+ *  the mouth; 'flagHandheld' — a handheld interview mic with its flag. */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount' | 'broadcastDynamic' | 'dish' | 'headsetBoom' | 'lipRibbon' | 'flagHandheld';
 /**
  * A POP SCREEN in front of the mic (Lab 5, the voice): a mesh disc `gap` mm
  * in front of the mic's FRONT, square to its axis but tilted `tilt`° (never
@@ -312,8 +315,12 @@ export type MicType = {
      *  capped by `reach`). 'deskArm': a desk-clamped spring arm, two segments
      *  `elbow.a` (grip → elbow) and `elbow.b` (elbow → mic), the elbow raised;
      *  'gooseneck': a flexible ribbed neck rising from its base and curving
-     *  to the mic's tail. Absent: the straight arm (a rim clamp, a pole). */
-    style?: 'deskArm' | 'gooseneck';
+     *  to the mic's tail. Absent: the straight arm (a rim clamp, a pole).
+     *  Lab 7b group 1: 'held' — a mic in a person's hand: the grip is their
+     *  SHOULDER (a Rim), the arm drawn as a sleeve and a forearm through a
+     *  lowered elbow (`elbow.a` the upper arm, `elbow.b` the forearm to the
+     *  fist) — geometry/arm.ts heldElbowOf. */
+    style?: 'deskArm' | 'gooseneck' | 'held';
     elbow?: { a: Dim; b: Dim };
   };
   surfacePartId?: PartId;
@@ -341,7 +348,7 @@ export type Wedge = { id: string; label: string; short: string; p: Vec3; lift: n
 /** One collision solid, flattened for the worklets (plain data only). */
 export type Solid = { partId: string; label: string; shape: Shape3; clearance: number };
 /** What `checkAssembly` needs to know about the mic (plain data). */
-export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string; reach?: number; /** A pop screen's disc (mm): `gap` ahead of the front, radius `r`. */ pop?: { gap: number; r: number }; /** Lab 6 group 6: the mic type's id (a rim may serve only some types: Rim.types) and a boom pole's radius (MicType.clip.arm). */ id?: string; armR?: number; /** lab6 group 1: the body reaching ahead of the reference point (a shotgun's tube), mm. */ fore?: number; /** Lab 7 group 1: the arm's drawing (MicType.clip.style / elbow). */ armStyle?: 'deskArm' | 'gooseneck'; elbow?: { a: number; b: number } };
+export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string; reach?: number; /** A pop screen's disc (mm): `gap` ahead of the front, radius `r`. */ pop?: { gap: number; r: number }; /** Lab 6 group 6: the mic type's id (a rim may serve only some types: Rim.types) and a boom pole's radius (MicType.clip.arm). */ id?: string; armR?: number; /** lab6 group 1: the body reaching ahead of the reference point (a shotgun's tube), mm. */ fore?: number; /** Lab 7 group 1: the arm's drawing (MicType.clip.style / elbow). */ armStyle?: 'deskArm' | 'gooseneck' | 'held'; elbow?: { a: number; b: number } };
 /** The space a mic counts as "inside": along `axis` (default +x, absolute x)
  *  between x0 and x1 from c, within rIn of the axis. */
 export type Interior = { x0: number; x1: number; rIn: number; c: Vec3; axis?: Vec3 };

@@ -157,6 +157,19 @@ export const SETUP_PICKS: Readonly<Record<string, Partial<Record<'close' | 'dist
   // farther view is the boundary on the desk, not the fixed boom (an engine
   // 'stand' mic the distance rule would take).
   B02: { close: ['b2.goose'], distant: ['b2.boundary'] },
+  // Lab 7 · part 2 · G1 — speech in sport (commentators/, sideline_interviews/,
+  // athletes_officials/GEOMETRY_PROPOSAL.md §4–5). B09: the lip ribbon is the
+  // open position's close start; the desk-arm mic in a quiet booth is the
+  // farther one (an arm is a 'clip' the distance rule never takes as farther).
+  B09: { close: ['b9.lip'], distant: ['b9.arm'] },
+  // B10: the reporter's headset is the sideline's close start (it is on the
+  // reporter, not the guest — said in its words); the boom over the
+  // post-event mark is the farther one (a pole is a 'clip').
+  B10: { close: ['b10.headset'], distant: ['b10.boom'] },
+  // B11: no TWO MICS setup — a chest mic and a headset open on one voice is
+  // the two-mic page's warning, not a start; the coach's headset is the close
+  // start; the perimeter boom is the fallback, farther (a pole is a 'clip').
+  B11: { pair: null, close: ['b11.headset'], distant: ['b11.perimeter'] },
 };
 
 const LIVE = /\b(live|on stage|for a stage|a loud stage|for live sound|stage)\b/i;

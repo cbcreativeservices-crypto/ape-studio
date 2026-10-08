@@ -129,11 +129,13 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       kind: 'options',
       id: 'pattern',
       label: 'PATTERN',
-      valueLabel: pattern === 'cardioid' ? 'CARDIOID' : pattern === 'supercardioid' ? 'SUPER' : 'HYPER',
+      // Lab 7b group 1: figure-8 and omni patterns on this page (a lip ribbon,
+      // an interview omni) — each named, and an omni's "no null" said.
+      valueLabel: pattern === 'cardioid' ? 'CARDIOID' : pattern === 'supercardioid' ? 'SUPER' : pattern === 'figure8' ? 'FIGURE-8' : pattern === 'omni' ? 'OMNI' : 'HYPER',
       selectedId: pattern,
       onSelect: (id) => choosePattern(id as PatternId),
       sticky: true,
-      options: PATTERNS.map((p) => ({ id: p.id, label: p.label, blurb: `${X.micNoun} with a ${p.id} pattern, drawn as a simplified shape. Its null sits at ≈ ${Math.round(nullAngles(p.id)[0])}° off the front axis.` })),
+      options: PATTERNS.map((p) => ({ id: p.id, label: p.label, blurb: nullAngles(p.id).length ? `${X.micNoun} with a ${p.id} pattern, drawn as a simplified shape. Its null sits at ≈ ${Math.round(nullAngles(p.id)[0])}° off the front axis.` : `${X.micNoun} with an ${p.id} pattern: it hears every direction about equally — it has no null to aim.` })),
     },
     {
       kind: 'options',
