@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 09:33 · ccode · 46776ace
+changed: Merge owner-draw: owner decisions 2026-10-08 (B10 reporter, hand colour)
+affects other side: nothing (client-only drawing changes)
+needs: nothing
+
+
 ### 2026-10-08 09:24 · ccode · dc122f42
 changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aca7c57b6090123b7
 affects other side: nothing (client-only merge of final-lab into owner-x)
