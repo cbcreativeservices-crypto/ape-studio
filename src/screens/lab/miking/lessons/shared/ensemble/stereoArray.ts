@@ -38,13 +38,17 @@ import { add, DEG, dist, mul, planDir, sub, unit, v3 } from './frameS.ts';
 /* group 2 — voices: 'one', 'oneOmni', 'oneFig8' (ONE shared mic on a stand,
  * moved like an array in the Placement Studio) and 'b2b' (two cardioids back
  * to back, S-REC's ensemble-vocal alternative). Large-diaphragm, side-address. */
-export type ArrayPresetId = 'xy' | 'ortf' | 'nos' | 'din' | 'ms' | 'ab' | 'tree' | 'treeCompact' | 'one' | 'oneOmni' | 'oneFig8' | 'b2b';
-export const ARRAY_IDS: readonly ArrayPresetId[] = ['xy', 'ortf', 'nos', 'din', 'ms', 'ab', 'tree', 'treeCompact', 'one', 'oneOmni', 'oneFig8', 'b2b'];
-export type ArrayFamily = 'coincident' | 'near' | 'spaced' | 'tree' | 'single';
-export type CapsuleId = 'L' | 'R' | 'C' | 'M' | 'S' | 'OL' | 'OR';
+/* Lab 6 group 6 (F10 spatial field pickup): 'binaural', 'dms', 'surround50',
+ * 'irt', 'hamasaki', 'foa' — the spatial presets (their own block below). */
+export type ArrayPresetId = 'xy' | 'ortf' | 'nos' | 'din' | 'ms' | 'ab' | 'tree' | 'treeCompact' | 'one' | 'oneOmni' | 'oneFig8' | 'b2b' | 'binaural' | 'dms' | 'surround50' | 'irt' | 'hamasaki' | 'foa';
+export const ARRAY_IDS: readonly ArrayPresetId[] = ['xy', 'ortf', 'nos', 'din', 'ms', 'ab', 'tree', 'treeCompact', 'one', 'oneOmni', 'oneFig8', 'b2b', 'binaural', 'dms', 'surround50', 'irt', 'hamasaki', 'foa'];
+export type ArrayFamily = 'coincident' | 'near' | 'spaced' | 'tree' | 'single' | 'binaural' | 'surround' | 'ambisonic';
+export type CapsuleId = 'L' | 'R' | 'C' | 'M' | 'S' | 'OL' | 'OR' | 'MB' | 'Ls' | 'Rs' | 'FL' | 'FR' | 'BL' | 'BR' | 'FLU' | 'FRD' | 'BLD' | 'BRU';
 /** Where a capsule is routed: a side, both sides (the tree's centre), or the
- *  M/S matrix's Mid and Side inputs. */
-export type Route = 'L' | 'R' | 'LR' | 'M' | 'S';
+ *  M/S matrix's Mid and Side inputs. Lab 6 group 6: a surround channel
+ *  (C, Ls, Rs), the rear Mid of a Double M/S ('Mb'), or a raw Ambisonic
+ *  A-format track ('A' — never a loudspeaker channel until it is converted). */
+export type Route = 'L' | 'R' | 'LR' | 'M' | 'S' | 'C' | 'Ls' | 'Rs' | 'Mb' | 'A';
 
 export type ArrayParams = {
   /** X/Y included angle (deg). */
@@ -93,6 +97,10 @@ export type ArrayDef = {
    *  capsule as a side-address body). 'ldc': a side-address large-diaphragm
    *  condenser for every capsule (group 2's shared vocal mics). */
   art?: 'ldc';
+  /** Lab 6 group 6: an EXAMPLE LAYOUT — its spacings are drawing defaults
+   *  (no source gives them), so no spacing or angle is ever printed for it
+   *  (D-6B-7). */
+  example?: boolean;
   /** INTERNAL record (never shown). */
   prov: Provenance;
 };
@@ -291,7 +299,107 @@ export const ARRAYS: Readonly<Record<ArrayPresetId, ArrayDef>> = {
     art: 'ldc',
     prov: src('S-REC', 'Two cardioid mics, positioned back to back could be used for this same application (Ensemble Vocals p.6)'),
   },
+  /* ── Lab 6 group 6 — the spatial presets (F10; docs/labs/miking/spatial_field/).
+   *  Unsourced spacings are DRAWING DEFAULTS, shown as "an example layout",
+   *  never as a number (D-6B-7); the binaural ear spacing and the FOA
+   *  capsule radius are drawing defaults too (`SPATIAL_DIMS`). ── */
+  binaural: {
+    id: 'binaural',
+    name: 'Binaural head (two ear mics)',
+    short: 'BINAURAL',
+    family: 'binaural',
+    locked: true,
+    pattern: 'omni',
+    recordingAngle: null,
+    what: 'Two small mics at the ears of a model head (or in a person’s ears): the head and the outer ears shape what reaches each one, as they do for a listener.',
+    tends: 'A fixed listening position over headphones, with sounds at the sides and behind; on loudspeakers it depends on the head and the processing.',
+    check: 'The head at the listener’s height, its face to the scene front, left and right labelled — then listen on the headphones it is made for.',
+    prov: { kind: 'trial', src: 'LESSON-F10', note: 'spatial_field/SOURCES.md #2: a dummy head at the listener position, face = front; ear spacing a drawing default' },
+  },
+  dms: {
+    id: 'dms',
+    name: 'Double M/S (front, back and side)',
+    short: 'DOUBLE M/S',
+    family: 'coincident',
+    locked: false,
+    pattern: 'cardioid',
+    recordingAngle: null,
+    what: 'A cardioid facing forward, a cardioid facing back and a sideways figure-8 between them, close together — three tracks, decoded to front and rear afterwards.',
+    tends: 'Compact, and the width and the rear level can be set after recording; the decode has to be done on purpose, with the figure-8’s positive side known.',
+    check: 'Mark the figure-8’s positive side before recording, keep three separate tracks, and check that left, right and rear follow a walker round the array.',
+    prov: { kind: 'trial', src: 'LESSON-F10', note: 'spatial_field/SOURCES.md #3 (PRACTICE): forward cardioid, backward cardioid, shared figure-8; M/S decode CONFIRMED (UA-MS)' },
+  },
+  surround50: {
+    id: 'surround50',
+    name: 'Five-channel array (front L/C/R, rear Ls/Rs)',
+    short: '5.0 ARRAY',
+    family: 'surround',
+    locked: false,
+    pattern: 'cardioid',
+    recordingAngle: null,
+    what: 'Three mics across the front (left, centre, right) and two toward the rear (left and right surround) — one mic per loudspeaker of a five-channel layout. Drawn as an example layout: the spacing is chosen for the place and the taste.',
+    tends: 'A stable front with the space around it; spaced omnis tend to sound more enveloping, cardioids give more separation between the channels.',
+    check: 'Listen on the five-speaker layout it is for, then the stereo and mono downmix — spaced mics summed can colour the sound.',
+    example: true,
+    prov: { kind: 'trial', src: 'LESSON-F10', note: 'spatial_field/SOURCES.md #7 (no spacing in the lesson): positions a drawing default (D-6B-7)' },
+  },
+  irt: {
+    id: 'irt',
+    name: 'A small square of four cardioids (a rear add-on)',
+    short: 'SMALL SQUARE',
+    family: 'surround',
+    locked: false,
+    pattern: 'cardioid',
+    recordingAngle: null,
+    what: 'Four cardioids at the corners of a small square, each facing outward at 45° — an ambience add-on to a separate front array, not a whole five-channel array. Drawn as an example layout.',
+    tends: 'A diffuse, surrounding layer of the place, added under a front array.',
+    check: 'The time relationship to the front array, how much direct sound leaks into it, and the downmix.',
+    example: true,
+    prov: { kind: 'trial', src: 'LESSON-F10', note: 'spatial_field/SOURCES.md #7: the IRT cross, a named technique; size a drawing default (D-6B-7)' },
+  },
+  hamasaki: {
+    id: 'hamasaki',
+    name: 'A wide square of four figure-8s (a rear add-on)',
+    short: 'WIDE SQUARE',
+    family: 'surround',
+    locked: false,
+    pattern: 'figure8',
+    recordingAngle: null,
+    what: 'Four figure-8s on a wide square, each facing sideways so its dead sides point at the front source — an ambience add-on to a separate front array. Drawn as an example layout.',
+    tends: 'The space and the reverberation with little of the direct sound from the front.',
+    check: 'Leakage of the direct sound, the time relationship to the front array, and the downmix.',
+    example: true,
+    prov: { kind: 'trial', src: 'LESSON-F10', note: 'spatial_field/SOURCES.md #7: the Hamasaki square, a named technique; size a drawing default (D-6B-7)' },
+  },
+  foa: {
+    id: 'foa',
+    name: 'First-order Ambisonic mic (four capsules)',
+    short: 'AMBISONIC',
+    family: 'ambisonic',
+    locked: true,
+    pattern: 'cardioid',
+    recordingAngle: null,
+    what: 'Four capsules on the faces of a small tetrahedron — front-left-up, front-right-down, back-left-down, back-right-up — recorded as four separate tracks (A-format), converted afterwards into a sound field that can be turned and rendered.',
+    tends: 'An enveloping, turnable viewpoint for headphones, a speaker layout or an interactive scene; not sharp, separable point sources.',
+    check: 'The capsule order and the front mark from the mic’s manual, identical preamps with matched, linked gain, and the output convention chosen on purpose.',
+    prov: src('AMBEO-REC', 'four capsules … recorded separately on four tracks using identical microphone preamplifiers; Set the same gain for each of the four channels'),
+  },
 };
+
+/** Lab 6 group 6: the spatial presets' drawing defaults (mm) — UNKNOWN in
+ *  the research, never printed as a number. */
+export const SPATIAL_DIMS = {
+  /** A model head's ears: 150 mm apart (spatial_field/GEOMETRY_PROPOSAL §2). */
+  earSpacing: 150,
+  /** A tetrahedral capsule's distance from the mic's centre. */
+  foaRadius: 15,
+  /** The five-channel example: the front pair's half-spacing, the centre's
+   *  lead, the rear pair's offset back and half-spacing. */
+  s50: { front: 700, centre: 300, rearBack: 900, rear: 600 },
+  /** The small square's half-side; the wide square's half-side. */
+  irtHalf: 125,
+  hamasakiHalf: 1000,
+} as const;
 /** The drawn size of a capsule (mm): the pencil (ensembleMics.ts), or a
  *  side-address large-diaphragm condenser (voiceMics LDC_BODY: 80 deep, 118
  *  wide) for the voices' shared mics. */
@@ -372,6 +480,55 @@ export function arrayCapsules(id: ArrayPresetId, params: ArrayParams = {}, place
       // (a large-diaphragm body is 80 deep), level — `tilt` is not applied,
       // so neither one points at the floor.
       out.push(cap('L', 'FRONT', B2B_FRONT, 0, 0, 0, 'cardioid', 'L', 0, 0), cap('R', 'BACK', -B2B_FRONT, 0, 0, 180, 'cardioid', 'R', 0, 0));
+      break;
+    }
+    /* Lab 6 group 6 — the spatial presets (level: `tilt` is not applied). */
+    case 'binaural': {
+      const e = SPATIAL_DIMS.earSpacing / 2;
+      out.push(cap('L', 'LEFT EAR', 0, e, 0, 90, 'omni', 'L', 0, 0), cap('R', 'RIGHT EAR', 0, -e, 0, -90, 'omni', 'R', 0, 0));
+      break;
+    }
+    case 'dms':
+      out.push(cap('M', 'FRONT MID', 0, 0, STACK, 0, 'cardioid', 'M', 0, 0), cap('S', 'SIDE (+ LEFT)', 0, 0, 0, 90, 'figure8', 'S', params.sideDb ?? 0, 0), cap('MB', 'REAR MID', 0, 0, -STACK, 180, 'cardioid', 'Mb', 0, 0));
+      break;
+    case 'surround50': {
+      const g = SPATIAL_DIMS.s50;
+      out.push(
+        cap('L', 'L', 0, g.front, 0, 30, 'cardioid', 'L', 0, 0),
+        cap('C', 'C', g.centre, 0, 0, 0, 'cardioid', 'C', 0, 0),
+        cap('R', 'R', 0, -g.front, 0, -30, 'cardioid', 'R', 0, 0),
+        cap('Ls', 'Ls', -g.rearBack, g.rear, 0, 140, 'cardioid', 'Ls', 0, 0),
+        cap('Rs', 'Rs', -g.rearBack, -g.rear, 0, -140, 'cardioid', 'Rs', 0, 0),
+      );
+      break;
+    }
+    case 'irt':
+    case 'hamasaki': {
+      const h = id === 'irt' ? SPATIAL_DIMS.irtHalf : SPATIAL_DIMS.hamasakiHalf;
+      const pat: PatternId = id === 'irt' ? 'cardioid' : 'figure8';
+      const turn = (deg: number) => (id === 'irt' ? deg : deg > 0 ? 90 : -90);
+      out.push(
+        cap('FL', 'FRONT L', h, h, 0, turn(45), pat, 'L', 0, 0),
+        cap('FR', 'FRONT R', h, -h, 0, turn(-45), pat, 'R', 0, 0),
+        cap('BL', 'REAR L', -h, h, 0, turn(135), pat, 'Ls', 0, 0),
+        cap('BR', 'REAR R', -h, -h, 0, turn(-135), pat, 'Rs', 0, 0),
+      );
+      break;
+    }
+    case 'foa': {
+      const r = SPATIAL_DIMS.foaRadius;
+      const k = 1 / Math.sqrt(3);
+      const o = arrayPoint(place, 0, 0, 0);
+      const tet: readonly (readonly [CapsuleId, string, number, number, number])[] = [
+        ['FLU', 'FRONT LEFT UP', 1, 1, 1],
+        ['FRD', 'FRONT RIGHT DOWN', 1, -1, -1],
+        ['BLD', 'BACK LEFT DOWN', -1, 1, -1],
+        ['BRU', 'BACK RIGHT UP', -1, -1, 1],
+      ];
+      for (const [cid, label, a, b, c] of tet) {
+        const p = arrayPoint(place, a * k * r, b * k * r, c * k * r);
+        out.push({ id: cid, label, p, dir: unit(sub(p, o)), pattern: 'cardioid', route: 'A', levelDb: 0 });
+      }
       break;
     }
   }

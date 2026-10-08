@@ -206,7 +206,41 @@ Added 2026-10-08 by the Lab 6 group 4 builder (branch lab6-g4). The full registe
 | MEYER-MAPP | Meyer MAPP 3D user guide | 1.2 m seated / 1.7 m standing (measureSpec.LISTENER_HEIGHT, F13) |
 | CALC-* | app calculators | Leq and combine via calcBridge.ts; speed of sound and P_REF_PA via calcUnits |
 
-## 14. Lab 6 part 2 keys used by group 5 (F14–F16; `lessons/shared/measure/` venue, systems, claim ladder, exclusion, arrays)
+## 14. Lab 6 group 6 — location and spatial (F09, F10; `lessons/shared/field/`)
+
+Added 2026-10-08 by the Lab 6 group 6 builder (branch lab6-g6): the keys the field and spatial mic types, zones and parts name. The full register is `measurement_mics/SOURCES.md` §0 (Lab 6 part 2); the shotgun model is `foley_footsteps/SOURCES.md` §c; per-lesson claims in `location_speech/SOURCES.md` and `spatial_field/SOURCES.md`.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| OSHA-ELEC | OSHA Construction eTool, Electrical Incidents: "Stay at least 10 feet away from overhead power lines." (the 3 m keep-out) | https://www.osha.gov/etools/construction/electrical-incidents/ | read 2026-10-07 (prep pass) |
+| NWS-LTG | NWS Lightning Safety: "get inside a safe place immediately"; "Wait 30 minutes after the last lightning or thunder" | https://www.weather.gov/safety/lightning-safety-overview | read 2026-10-07 (prep pass) |
+| SHURE-LAV | Shure, how to choose a lavalier: "Place the shirt microphone above the sternum" (no distance from the mouth) | https://www.shure.com/en-GB/insights/how-to-choose-the-best-lavalier-microphone | read 2026-10-07 (prep pass) |
+| DPA-PLANT | DPA dictionary, plant mic: "A small microphone for hiding in a fixed place on set" | https://www.dpamicrophones.com/dictionary/p/plant-mic/ | read 2026-10-07 (prep pass) |
+| RODE-SG | RØDE shotgun distance help (boom near the subject; just outside the frame) | lesson F09 [3] | NOT RE-READ (403) — PRACTICE |
+| SCH-SHOTGUN | SCHOEPS, "Principal Characteristics of the Different Microphone Types" (the shotgun model) | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 (Lab 6 part 1 prep) |
+| SEN-416 | A common short shotgun's size, Ø 19 × 250 mm (search summary, Low) | see `foley_footsteps/SOURCES.md` §0 | Low — the drawn body only |
+| AMBEO-REC | Sennheiser first-order Ambisonic mic recording instructions: four tracks, identical preamps, the same gain, linked | https://docs.cloud.sennheiser.com/en-us/ambeo-vr-mic/manual-recording.html | read 2026-10-07 (prep pass) |
+| MEYER-MAPP | Meyer Sound MAPP 3D guide: mic heights 1.2 m seated, 1.7 m standing (the listener heights) | https://docs.meyersound.com/products/en/user-guide---mapp-3d.html | read 2026-10-07 (prep pass) |
+| UA-MS | M/S decode L = M + S, R = M − S; mono removes S (Lab 1 register) | see `overheads/SOURCES.md` | CONFIRMED (Lab 1) |
+| LESSON-F09 | The owner's lesson F09 (practice statements kept as written) | `source_text/F09-…txt` | the lesson |
+| LESSON-F10 | The owner's lesson F10 (practice statements kept as written) | `source_text/F10-…txt` | the lesson |
+
+## 15. Mic types for Lab 6's Foley and field lessons (F01–F04 and later; `lessons/shared/fieldmics/fieldMics.ts`)
+
+Added 2026-10-08 by the Lab 6 group 1 builder (branch lab6-g1): the short shotgun (on a stand or a pole), the
+small supercardioid without a tube, the room condenser and the hydrophone / contact cards. The full Lab 6 register
+is `foley_footsteps/SOURCES.md` §0; the shotgun model is its §c. (The pencil body is AX-DPE8; the large
+condenser's body S-SM4-WEB.)
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| SCH-SHOTGUN | SCHOEPS, "Principal Characteristics of the Different Microphone Types" (PDF): "For wavelengths longer than the tube — at low and midrange frequencies — the tube has little effect … no greater rejection of off-axis sound than the capsule on which it is based. At higher frequencies the pickup pattern becomes narrower"; "A small directional microphone with smooth off-axis response … can often be placed closer to a sound source than a shotgun microphone" | see `foley_footsteps/SOURCES.md` §0, §c | PDF read 2026-10-07 (Lab 6 preparation) |
+| DPA-TUBE | DPA, "The interference tube and its use in microphones": "Increased interference tube length will result in increased attenuation at lower frequencies"; "when a shotgun microphone is rotated, the surroundings sound different due to shifts in sound color." | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| S-3REASONS | Shure, "Three Reasons Why Mic Placement Matters": cardioid and supercardioid patterns reduce off-axis sound; "Aligning floor monitors and side fills with the directional microphone's angle of rejection will give the maximum gain before feedback" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+| MIX-2005 | Mix, Blair Jackson, "Foley Recording" (2005): footsteps "between three and six feet away on a mic stand, in front and/or to the side, but only about 15 degrees or so"; close shotguns "and a Neumann U67 functioning as room microphone"; "two mics: one close and one far away" | see `foley_footsteps/SOURCES.md` §0, §a | read 2026-10-07 |
+| ASE-ELEM | A Sound Effect, *Elemental* film sound: a hydrophone for selected internal water sounds, airborne mics for the surface | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+
+## 16. Lab 6 part 2 keys used by group 5 (F14–F16; `lessons/shared/measure/` venue, systems, claim ladder, exclusion, arrays)
 
 Added 2026-10-08 by the Lab 6 group 5 builder (branch lab6-g5). The full register, with quotes and status, is `measurement_mics/SOURCES.md` §0; per-lesson claims are in `loudspeaker_measurement/`, `machinery_sound/` and `scientific_arrays/SOURCES.md`. These keys appear only in the code's internal `src` / `prov` fields.
 

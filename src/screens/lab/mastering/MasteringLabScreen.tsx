@@ -47,6 +47,7 @@ import { StepHostContext, type StepHost } from './steps';
 import { RecordedAnswersContext, TakeawayCard } from './kit';
 import { releaseProgramme } from './useMasterPlayback';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 
 export const MASTERING_LAB_TITLE = 'Mastering Lab';
 const SUBTITLE = 'From Final Mix to Release';
@@ -509,6 +510,8 @@ export function MasteringLabScreen() {
         />
         <LabNavBar nav={nav} />
         {progressUnreadable && !end ? <ProgressUnreadableNote style={styles.unreadable} /> : null}
+        {/* The Mixing-family note (owner 2026-10-07): a small link on the first page. */}
+        {!end && idx === 0 && step === 0 ? <ProNoteButton style={styles.proNote} /> : null}
         {end ?? (
           <View style={styles.body}>
             <StepHostContext.Provider value={host}>
@@ -523,6 +526,8 @@ export function MasteringLabScreen() {
           </View>
         )}
       </View>
+      {/* First open of any Mixing-family lab (owner 2026-10-07): once per device. */}
+      <ProNoteIntro />
     </LabNavProvider>
   );
 }
@@ -531,6 +536,7 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   body: { flex: 1 },
   unreadable: { marginHorizontal: 12, marginBottom: 6 },
+  proNote: { marginHorizontal: 16, marginBottom: 6 },
   scroll: { paddingHorizontal: 16, paddingTop: 8, gap: 10 },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, gap: 2 },
   objectiveLabel: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },

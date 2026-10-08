@@ -245,16 +245,30 @@ export type MicPattern = PatternId | 'unstated' | 'halfCardioid';
 /** 'boom': an overhead boom stand — the boom runs level from the mic's tail
  *  out of the kit (away from the model's `boomHub`), the stand drops from its
  *  far end (Lab 1's overheads; the lengths are ILLUSTRATIVE, collision.ts). */
-export type MountKind = 'stand' | 'surface' | 'clip' | 'boom';
+/* lab6 group 1 (2026-10-08) — 'pole': a hand-held boom pole (Lab 6 Foley and
+ *  field, Lab 7 broadcast). The pole runs from the mic's tail, away from the
+ *  aim and gently down, to the operator's hands; the operator stands at its
+ *  far end (collision.ts POLE_*; every length a drawing default). */
+export type MountKind = 'stand' | 'surface' | 'clip' | 'boom' | 'pole';
 /** 'sideLdc': a side-address large-diaphragm condenser (its FRONT is the face
  *  of the body, not its end; `body.width` is the body's long, upright extent). */
 /** 'vocalDynamic' (Lab 5): a handheld vocal dynamic — a ball grille over a
  *  tapered handle — held in a stand clip. 'vocalLdc' (Lab 5): the side-
  *  address condenser drawn with its BASKET centred on the front point (the
  *  singer sings into the basket; the body hangs below). */
-/** 'measMic' / 'slm' (Lab 6 group 4, the measurement lessons): a measurement
+/** Lab 6 group 6 (F09, F10): 'shotgun' (a short shotgun, bare or on a
+ *  camera), 'blimp' (the same in a basket windshield with fur, outdoors),
+ *  'lavalier' (a miniature on a clothing clip), 'dummyHead' (a binaural model
+ *  head: its FACE is the front, the ears 95 mm behind it), 'ambiTetra' (a
+ *  first-order Ambisonic mic held upright: its capsule head on the front
+ *  point, the body below it), 'dmsCluster' (a Double M/S cluster: front and
+ *  rear cardioids with a figure-8 between, held upright).
+ *  'measMic' / 'slm' (Lab 6 group 4, the measurement lessons): a measurement
  *  mic on its preamp; a complete sound level meter under its windscreen. */
-export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'measMic' | 'slm';
+/* lab6 group 1: 'shotgunMount' — the Foley short shotgun in its shock mount,
+ *  read to its CAPSULE (the interference tube reaches `body.fore` ahead of it;
+ *  features/lab/micDrawings.tsx ShotgunMountMic). */
+export type MicArtId = 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount';
 /**
  * A POP SCREEN in front of the mic (Lab 5, the voice): a mesh disc `gap` mm
  * in front of the mic's FRONT, square to its axis but tilted `tilt`° (never
@@ -268,17 +282,25 @@ export type MicType = {
   id: string;
   label: string;
   short: string;
-  transducer: 'dynamic' | 'condenser' | 'ribbon';
+  /** lab6 group 1: 'hydrophone' (pressure in water) and 'contact' (structure-
+   *  borne vibration) — sensors whose pattern is 'unstated' (no free-field
+   *  lobe is drawn); Lab 6 shows them as cards, never placed in the air. */
+  transducer: 'dynamic' | 'condenser' | 'ribbon' | 'hydrophone' | 'contact';
   address: 'end' | 'side' | 'boundary';
   patterns: { id: MicPattern; label: string; prov: Provenance }[];
   /** length along the axis, radius of the body, and (boundary only) the plate
    *  width. The reference point is the FRONT of the mic (grille front; the
    *  element end for a boundary plate) — not the acoustic centre (lesson L39). */
-  body: { length: Dim; radius: Dim; width?: Dim };
+  body: { length: Dim; radius: Dim; width?: Dim; /** lab6 group 1: how far the body reaches AHEAD of the reference point (mm) — a shotgun's interference tube in front of its capsule, so `pose.p` is the CAPSULE and every distance is read to it (foley_footsteps/SOURCES.md §c). Absent: the body ends at the front. */ fore?: Dim };
+  /** lab6 group 1: 'shotgun' draws the simplified banded lobe over the base
+   *  pattern (engine/physics/shotgun.ts) — words only, never a number. */
+  lobe?: 'shotgun';
   power: string;
   mount: MountKind;
-  /** A clip mount's reach from the hoop to the mic's tail (default CLIP_REACH). */
-  clip?: { reach: Dim };
+  /** A clip mount's reach from the hoop to the mic's tail (default CLIP_REACH).
+   *  `arm` (Lab 6 group 6): the arm's radius when it is a BOOM POLE held by
+   *  an operator (drawn that thick, no clamp jaw: the operator's hands hold it). */
+  clip?: { reach: Dim; arm?: Dim };
   surfacePartId?: PartId;
   /** A pop screen on the mic's stand (PopScreen; Lab 5's studio vocal mic). */
   pop?: PopScreen;
@@ -304,13 +326,16 @@ export type Wedge = { id: string; label: string; short: string; p: Vec3; lift: n
 /** One collision solid, flattened for the worklets (plain data only). */
 export type Solid = { partId: string; label: string; shape: Shape3; clearance: number };
 /** What `checkAssembly` needs to know about the mic (plain data). */
-export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string; reach?: number; /** A pop screen's disc (mm): `gap` ahead of the front, radius `r`. */ pop?: { gap: number; r: number } };
+export type MicBody = { length: number; radius: number; mount: MountKind; surfacePartId?: string; reach?: number; /** A pop screen's disc (mm): `gap` ahead of the front, radius `r`. */ pop?: { gap: number; r: number }; /** Lab 6 group 6: the mic type's id (a rim may serve only some types: Rim.types) and a boom pole's radius (MicType.clip.arm). */ id?: string; armR?: number; /** lab6 group 1: the body reaching ahead of the reference point (a shotgun's tube), mm. */ fore?: number };
 /** The space a mic counts as "inside": along `axis` (default +x, absolute x)
  *  between x0 and x1 from c, within rIn of the axis. */
 export type Interior = { x0: number; x1: number; rIn: number; c: Vec3; axis?: Vec3 };
 /** A hoop a clip mount can clamp to: the circle of radius r about c, in the
  *  plane normal to `axis` (ILLUSTRATIVE: no source gives a clamp's reach). */
-export type Rim = { id: string; label: string; c: Vec3; axis: Vec3; r: number; variants?: VariantId[] };
+/** `types` (Lab 6 group 6): only these mic types clamp here (a boom pole's
+ *  grip in the operator's hands and a lav's clip on the chest share one
+ *  scene); absent = every clip mic. */
+export type Rim = { id: string; label: string; c: Vec3; axis: Vec3; r: number; variants?: VariantId[]; types?: readonly string[] };
 /** The scene a lesson variant compiles to: solids + the routing anchors. */
 export type CompiledScene = {
   variant: VariantId;
@@ -495,6 +520,10 @@ export type InstrumentModel = {
    *  does in the Placement Studio. Absent: the whole setup, stand foot and
    *  floor included (every earlier lesson). */
   setupFrameMax?: Partial<Record<ViewId, ViewBox>>;
+  /** Lab 6 group 6: the same cap per variant (wins over `setupFrameMax`) —
+   *  a location scene keeps its camera in view on set, the talker's head and
+   *  shoulders on a stage. */
+  setupFrameMaxByVariant?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
   /** A rectangle per variant and main view (mm) the inset must not cover —
    *  the guitars' headstock and tuners; the glass takes the other corner
    *  when the preferred one would (DualView, labelLayout.chooseInsetCorner). */

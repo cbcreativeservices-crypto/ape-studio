@@ -634,6 +634,73 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 00:30 · ccode · f436e2ac
+changed: Merge lab6-g1: Miking Lab 6 F01-F04 Foley stage
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-08 00:30 · ccode · 85ee77e4
+changed: Mixing Guides: world map pinned above the 50 styles — hover, touch or drag fills each style's home countries
+affects other side: nothing (client-only map data and hub UI)
+### 2026-10-08 00:29 · ccode · 863942a3
+changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 6 F09-F10, Mixing pro note)
+affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-08 00:10 · ccode · 22b6d7ae
+changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 4, sentry fixes)
+affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-08 00:07 · ccode · b4489923
+changed: Merge lab6-g6: Miking Lab 6 F09-F10 location speech and spatial field
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-08 00:06 · ccode · fc730e94
+changed: Mixing family: 'Knowing When to Bring In a Pro' note — first-open popup with GOT IT, link on each lab's first page
+affects other side: nothing (client-only popup copy and wiring; no backend reads or writes)
+needs: nothing
+
+
+### 2026-10-08 00:03 · ccode · eef0d2e8
+changed: Merge remote-tracking branch 'origin/final-lab' into lab6-g6
+affects other side: nothing (client-only: Lab 6 group 6 F09/F10 merged with group 4 F11-F13; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-07 23:57 · ccode · 6fc407d4
+changed: Miking Lab 6 group 1: sources, corrections log and 412x915 captures
+affects other side: nothing (docs and captures only)
+needs: nothing
+
+
+### 2026-10-07 23:57 · ccode · 6cba1bc7
+changed: Miking Lab 6 group 1: the Foley stage (F01-F04) and its shared toolkit
+affects other side: nothing (client-only lessons; no backend, no data; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-07 23:56 · ccode · 8d436522
+changed: Miking engine: shotgun mic, pole (boom) mount, scaled lengths (Lab 6 group 1)
+affects other side: nothing (client-only lab engine; no backend, no data)
+needs: nothing
+
+
+### 2026-10-07 23:14 · ccode · 7c48c7fd
+changed: Merge lab6-g4: Miking Lab 6 F11-F13 measurement lessons
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-07 23:12 · ccode · 48fa4836
+changed: web: launch date moves to Tuesday, October 13
+affects other side: nothing — website launch overlay date text only (now Tuesday, October 13)
+
 ### 2026-10-08 00:50 · ccode · 6b1202c5
 changed: Miking Lab 6 g5: F14, F15, F16 lessons registered in the field lab
 affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
@@ -656,6 +723,12 @@ needs: nothing
 changed: Miking Lab 6 g4: measurement family, chain rack, scene frame F
 affects other side: nothing (client-only lab code; no backend reads or writes)
 needs: nothing (the background-subtraction calculator is a later audio-tools-engine item, not backend)
+
+
+### 2026-10-07 22:43 · ccode · a21c0b79
+changed: Miking Lab 6 group 6: F09 Location Speech and F10 Spatial Field Pickup
+affects other side: nothing (client-only; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
 
 
 ### 2026-10-07 17:07 · ccode · 6660b125
