@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 11:52 · ccode · 8af7a798
+changed: Mixing Guides map: only the pressed card is lit; held for the whole drag; cleared on lift and on return
+affects other side: nothing (client-only hub interaction)
+needs: nothing
+
+
 ### 2026-10-08 11:15 · ccode · 40a76aa1
 changed: perf(about): lazy-load the build label so the app-start graph stays at 260
 affects other side: nothing
