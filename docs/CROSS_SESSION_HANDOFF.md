@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 05:25 · ccode · 97e9e075
+changed: Merge origin/final-lab into lab7-g6 (Lab 7b group 3)
+affects other side: nothing server-side — final-lab (Lab 7b group 1, B09–B11) merged into lab7-g6 beside Lab 7b group 3 (B15–B17); app code and docs only; Miking stays hidden (MIKING_PUBLIC false)
+needs: nothing
+
+
 ### 2026-10-08 05:14 · ccode · 68df5be4
 changed: Miking Lab 7b group 3: visual pass from the phone captures
 affects other side: nothing — app-side visual pass on the Miking Lab 7b group 3 lessons (B15–B17); no backend, schema or store change
