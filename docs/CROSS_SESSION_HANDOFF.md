@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 10:37 · ccode · 4cd833ad
+changed: Hunt 2026-10-08: toddler + timing on Miking Labs 6-7, Mixing Guides map, ProNote
+affects other side: nothing (client-only: Mixing Guides hub tap/flash, map caption width, Miking dock short forms; no server, schema or store change)
+needs: nothing
+
+
 ### 2026-10-08 09:44 · ccode · b73649dc
 changed: Merge owner-l: owner decisions 2026-10-08 (lesson changes, capsule everywhere, approvals)
 affects other side: nothing (client-only lab changes)
