@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 05:14 · ccode · 68df5be4
+changed: Miking Lab 7b group 3: visual pass from the phone captures
+affects other side: nothing — app-side visual pass on the Miking Lab 7b group 3 lessons (B15–B17); no backend, schema or store change
+needs: nothing
+
+
 ### 2026-10-08 04:34 · ccode · 3082e2f4
 changed: Miking Lab 7b group 3: shared sports kit for arenas, moving sources, complete coverage
 affects other side: nothing — app-side Miking Lab 7b group 3 shared kit only (lessons/shared/sports: practice room and mock venue, arena plans, pass-by, coverage planner, downmix); no backend, schema or store change
