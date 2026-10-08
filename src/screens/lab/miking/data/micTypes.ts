@@ -311,3 +311,6 @@ Object.assign(MIC_TYPES, ENSEMBLE_MIC_TYPES);
 /* Lab 5, group 2 — voice II, groups (E02, E04, E05, E06): the shared large-diaphragm condenser. Appended so other lessons merge cleanly. */
 import { GROUP_VOICE_MIC_TYPES } from '../lessons/shared/ensemble/groupVoiceMics.ts';
 Object.assign(MIC_TYPES, GROUP_VOICE_MIC_TYPES);
+/* Lab 6 (field), group 6 — location and spatial (F09, F10): the boom, body, plant and camera mics, the binaural head, the Ambisonic mic and the Double M/S cluster. Appended so other lessons merge cleanly. */
+import { FIELD_MIC_TYPES } from '../lessons/shared/field/fieldMics.ts';
+Object.assign(MIC_TYPES, FIELD_MIC_TYPES);
