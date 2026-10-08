@@ -34,7 +34,9 @@ function HomeContent() {
             {TAGLINE}
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-base text-text-sub sm:text-lg">
-            {SUBLINE}
+            {SUBLINE[0]}
+            <br />
+            {SUBLINE[1]}
           </p>
           <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
