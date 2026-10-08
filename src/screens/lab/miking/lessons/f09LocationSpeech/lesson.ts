@@ -381,7 +381,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A wide shot puts the boom 90 cm away; the body mic is 21 cm away. What tends to follow?',
     options: ['The boom hears more room against the voice', 'The boom hears the voice exactly as well', 'The body mic hears more room than the boom'],
     correct: 'The boom hears more room against the voice',
-    explain: 'By distance alone the boom hears the voice about 12 dB weaker than the body mic, with the room much the same — so more room against the voice. A tendency, judged by ear.',
+    explain: 'By distance alone the boom hears the voice about 13 dB weaker than the body mic, with the room much the same — so more room against the voice. A tendency, judged by ear.',
     why: {
       'The boom hears the voice exactly as well': 'More than four times as far: the voice arrives weaker at the boom.',
       'The body mic hears more room than the boom': 'Close to the mouth, the body mic hears the voice strongly against the room.',
