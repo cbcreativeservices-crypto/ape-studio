@@ -483,6 +483,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 08:55 · ccode · b4b6138c
+changed: web: subline on two lines with a hard break (phones too)
+affects other side: nothing (website copy; requested by Comp A)
+needs: nothing
+
+
 ### 2026-10-08 01:08 · ccode · 6d89f09b
 changed: web: Coming Soon panel sits low so the full headline shows above it
 affects other side: nothing (website layout only)
