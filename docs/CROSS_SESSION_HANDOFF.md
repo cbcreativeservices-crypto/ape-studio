@@ -483,6 +483,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 01:06 · ccode · f2733281
+changed: web: new headline — The Whole Craft of Audio. Right in Your Pocket.
+affects other side: nothing (website copy only)
+needs: nothing
+
+
 ### 2026-10-07 23:13 · ccode · 4dcf2c2b
 changed: web: launch date moves to Tuesday, October 13
 affects other side: nothing — website launch overlay date text only (now Tuesday, October 13); cherry-pick of final-lab 48fa4836
