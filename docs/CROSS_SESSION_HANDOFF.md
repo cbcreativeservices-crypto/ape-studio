@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 11:08 · ccode · 0b7d9f6b
+changed: test(a11y): pin the full-screen body tap to the term face only
+affects other side: nothing
+needs: nothing (see the 7b2bdf17 entry for the Safety glossary text list)
+
+
 ### 2026-10-08 10:58 · ccode · 7b2bdf17
 changed: fix(flashcards): full-screen swipes move between sections, long sections scroll, related terms show terms only; build line in About
 affects other side: nothing in code (client-only; the category is no longer shown under RELATED TERMS).
