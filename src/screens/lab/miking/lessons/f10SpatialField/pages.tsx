@@ -1103,7 +1103,10 @@ function useDrillStep(onInteractive: (id: string) => void, done: boolean): Mikin
       value: (s.gains[sel] + 6) / 12,
       onChange: (v) => setGain(Math.round((v * 12 - 6) * 2) / 2),
       format: () => `track ${sel + 1}: ${s.gains[sel] >= 0 ? '+' : ''}${s.gains[sel].toFixed(1)} dB${s.linked ? ' (linked: all four move)' : ''}`,
-      formatShort: () => `T${sel + 1} ${s.gains[sel] >= 0 ? '+' : ''}${s.gains[sel].toFixed(1)}`,
+      // The number only: six controls share a 390-pt dock, and "T2 +0.0"
+      // was cropped mid-number (D36: a cropped readout drops its label, never
+      // its number). The track is on the TRACK control and the fader's line.
+      formatShort: () => `${s.gains[sel] >= 0 ? '+' : ''}${s.gains[sel].toFixed(1)}`,
       home: 0.5,
       chooser: { title: 'CHOOSE A TRACK', selectedId: `${sel}`, onSelect: (id) => setSel(Number(id)), options: [0, 1, 2, 3].map((k) => ({ id: `${k}`, label: `TRACK ${k + 1} — now ${s.tracks[k]}`, blurb: `The converter expects ${A_ORDER[k]} (${A_WORDS[A_ORDER[k]]}) here.` })) },
     },

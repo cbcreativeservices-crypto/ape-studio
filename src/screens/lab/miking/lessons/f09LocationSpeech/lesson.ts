@@ -308,7 +308,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · What does a body mic on the chest do when the head turns?',
     options: ['Stays put: it moves with the chest, not the head', 'Turns with the head, so the voice stays on its axis', 'Moves farther from the mouth than a boom'],
     correct: 'Stays put: it moves with the chest, not the head',
-    explain: 'A body mic follows the torso. Its distance from the mouth barely changes; the boom is the mic that must be turned with the head.',
+    explain: 'A body mic follows the torso. Its distance from the mouth barely changes; the boom is the mic that is turned with the head.',
     why: {
       'Turns with the head, so the voice stays on its axis': 'It is clipped to the chest; the head turns above it.',
       'Moves farther from the mouth than a boom': 'It stays close — usually closer than the boom.',
@@ -517,8 +517,8 @@ const diagnostic: DiagnosticItem[] = [
     id: 'q.1',
     covers: 'sound',
     prompt: 'A wider shot is called. What tends to happen to the boom?',
-    options: ['It must move farther from the mouth', 'It can come closer to the mouth', 'Nothing: the shot does not limit a boom'],
-    correct: 'It must move farther from the mouth',
+    options: ['It moves farther from the mouth', 'It can come closer to the mouth', 'Nothing: the shot does not limit a boom'],
+    correct: 'It moves farther from the mouth',
     explain: 'The frame’s top edge rises with a wider shot, and the boom stays above it — farther from the mouth.',
     why: {
       'It can come closer to the mouth': 'A wider frame takes more space above the head, not less.',
