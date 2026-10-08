@@ -28,7 +28,7 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { basis, brassScene, flareR, ring, type Bell, type BrassScene, type Tube, type Valve } from './lowBrassScene.ts';
 import type { LowBrassSpec, Orient } from './lowBrassSpec.ts';
-import { FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
+import { FIGURE_SKIN, FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -46,7 +46,10 @@ const BRASS = { light: '#fff0b8', hi: '#f2cf6e', mid: '#c99634', low: '#8a5f17',
 const SILVER = { light: '#ffffff', hi: '#e6e9ee', mid: '#aeb4bd', low: '#6c727c', dark: '#3a3e45', edge: '#15171a' };
 const SHIRT = ['#5d687e', '#465064', '#2f3645'];
 const TROUSER = ['#41454f', '#2d3038', '#1b1d22'];
-const SKIN = ['#8a8f98', '#6e737c', '#52565e'];
+/** The hands and neck wear the shared figure skin, like the head (owner
+ *  2026-10-08, HF1 — they were a grey neutral). */
+const SKIN = FIGURE_SKIN.ramp;
+const SKIN_EDGE = FIGURE_SKIN.edge;
 const SHOE = ['#34353b', '#18191d', '#0b0b0d'];
 const OUTLINE = '#08090b';
 const CHAIR = ['#3a3c43', '#1d1e22', '#0c0c0e'];
@@ -198,7 +201,7 @@ function BellArt({ b, view, hand }: { b: Bell; view: ViewId; hand: { wrist: Vec3
           <Path path={p.inner} style="stroke" strokeWidth={2} color="#c99634" opacity={0.25} />
           {handPath ? (
             <Group clip={p.rim}>
-              <Lit path={handPath} pts={bbox2pts(handPath)} ramp={SKIN} edge="#24272d" />
+              <Lit path={handPath} pts={bbox2pts(handPath)} ramp={SKIN} edge={SKIN_EDGE} />
             </Group>
           ) : null}
         </Group>
@@ -266,7 +269,7 @@ function playerItems(s: BrassScene, view: ViewId): Item[] {
   const out: Item[] = [];
   const limb = (key: string, a: Vec3, b: Vec3, ra: number, rb: number, ramp: string[]) => {
     const pts = limbPts(q(a), q(b), ra, rb);
-    out.push({ key, depth: depthOf(view, scale(add(a, b), 0.5)), node: <Lit key={key} path={poly(pts)} pts={pts} ramp={ramp} /> });
+    out.push({ key, depth: depthOf(view, scale(add(a, b), 0.5)), node: <Lit key={key} path={poly(pts)} pts={pts} ramp={ramp} edge={ramp === SKIN ? SKIN_EDGE : OUTLINE} /> });
   };
   limb('thighL', J.hipL, J.kneeL, 82, 62, TROUSER);
   limb('thighR', J.hipR, J.kneeR, 82, 62, TROUSER);

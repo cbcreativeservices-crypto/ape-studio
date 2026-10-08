@@ -1831,7 +1831,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     // With mics on the drawing (placement, two mics), a bare "PLAYER" over
     // the drawn figure only adds words to the picture (clarity pass
     // 2026-10-05); an off-glass pointer ("← PLAYER") stays.
-    const own = art.labels(view, variant).filter((l) => !(micsOn && l.id === 'player' && l.text === 'PLAYER'));
+    const own = art.labels(view, variant).filter((l) => !(micsOn && l.id === 'player' && l.text === 'PLAYER') && (!l.withMics || rig.mics.some((m) => live.includes(m.slot) && m.on && l.withMics!.includes(m.typeId))));
     // The view's tag in the bottom-left corner ("SIDE · CUTAWAY") is words
     // too: a label never sits on it.
     const tagText = model.viewTags?.[view] ?? viewTag;
@@ -1841,7 +1841,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
     // the drawing, off each other, on the glass below the live strip.
     return layoutArtLabels(art, view, variant, authoredBox, base, labelScale, w, h, { avoid, obstacles: [...(obstacles ?? []), tag, ...guideData.map((g) => g.rect)], minY: reserveTop + 1, labels: own, model });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the rect by value (DualView makes a new object each render)
-  }, [mini, showLabels, showZones, zones, art, view, variant, base, labelScale, textScale, viewTag, w, h, reserveTop, authoredBox, model, micsOn, guideData, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
+  }, [mini, showLabels, showZones, zones, art, view, variant, base, labelScale, textScale, viewTag, w, h, reserveTop, authoredBox, model, micsOn, rig.mics, live, guideData, avoid?.x0, avoid?.y0, avoid?.x1, avoid?.y1]);
   const Instrument = memoArt(art.Instrument);
   const highlightPath = useMemo(() => {
     if (!highlight) return null;

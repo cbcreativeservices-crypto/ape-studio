@@ -29,6 +29,10 @@ export type ArtLabel = {
    *  own empty place (owner decision X6, 2026-10-08). Draws no leader at the
    *  label's own place. */
   point?: { u: number; v: number };
+  /** Opt-in (owner 2026-10-08, L7C): shown only while one of these mic types
+   *  is live on the drawing (a label naming the hand that holds a handheld);
+   *  never on the read-step figure, which draws no mic. */
+  withMics?: readonly string[];
 };
 
 /** A rectangle in mm of a view's (u, v) plane. */

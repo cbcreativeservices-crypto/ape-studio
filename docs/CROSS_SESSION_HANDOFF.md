@@ -643,12 +643,21 @@ needs: nothing
 ### 2026-10-08 09:23 · ccode · 47560c2c
 changed: Miking owner decisions X1–X6 (2026-10-08): one distance rule, suggest, dock short forms, setups prompt, shared distractors, label pass
 affects other side: nothing (client-only: Miking engine rounding, wording, dock short forms and label layout; the shared rack gained two optional a11y fields; no DB or backend change)
+### 2026-10-08 09:07 · ccode · cd3923e8
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a62db0a96f54d3054
+affects other side: nothing (client-only owner-draw branch: B10 faint reporter + REPORTER'S HAND label, figure hands on the shared skin; e74f091c)
 needs: nothing
 
 
 ### 2026-10-08 08:56 · ccode · c22d4a5b
 changed: web: subline on two lines with a hard break (phones too)
 affects other side: nothing (website copy; cherry-pick of b4b6138c)
+needs: nothing
+
+
+### 2026-10-08 08:34 · ccode · 33fb6398
+changed: WIP HF1 (owner-draw: figure hands take the shared FigureHead skin)
+affects other side: nothing (client-only drawing)
 needs: nothing
 
 

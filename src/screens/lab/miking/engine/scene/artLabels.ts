@@ -143,5 +143,5 @@ export function layoutArtLabels(
 ) {
   const occ = occupancy(art, view, variant, frame, more.model ? bodyOf(more.model, variant) : []);
   const opts: LabelOpts = { clearOf: occ.clearOf, minY: more.minY ?? 1, maxY: h - 1 };
-  return fitLabels(more.labels ?? art.labels(view, variant), xf, scale, w, more.avoid, more.obstacles, opts);
+  return fitLabels(more.labels ?? art.labels(view, variant).filter((l) => !l.withMics), xf, scale, w, more.avoid, more.obstacles, opts);
 }

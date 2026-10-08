@@ -28,7 +28,7 @@ import { CabFront } from '../shared/speakers/SpeakerArt';
 import { cabFrontHit, frontBox } from '../shared/speakers/cabLabels.ts';
 import { PlayerBehind } from '../shared/players/PlayerFigure';
 import type { PlayerPose } from '../shared/players/playerPose.ts';
-import { limb, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, SKIN, SKIN_EDGE, SKIN_RIM, type Pt } from '../shared/freereed/PlayerProfile';
+import { limb, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, SKIN, SKIN_EDGE, SKIN_FAR, SKIN_RIM, type Pt } from '../shared/freereed/PlayerProfile';
 import { BULLET, HARMONICA } from '../shared/freereed/freeReedSpec.ts';
 import { AMP, BREATH, FLOOR_Y, H0, HD, HH, HL, profilePose, type HandState } from './model.ts';
 
@@ -197,7 +197,7 @@ export function HandsProfile({ at, state, hi = false, showHarp = true }: { at: P
   return (
     <Group>
       <Group opacity={0.75}>
-        <MassArt path={far} ramp={['#6e737c', '#52565e', '#3c3f45']} rim={SKIN_RIM} edge={SKIN_EDGE} />
+        <MassArt path={far} ramp={SKIN_FAR} rim={SKIN_RIM} edge={SKIN_EDGE} />
       </Group>
       {state === 'mic' ? <Bullet u={at.u + HD + 2} v={at.v} /> : null}
       {showHarp ? <HarpProfile u={at.u} v={at.v} /> : null}
