@@ -45,7 +45,14 @@ describe('Mixing Guides world map', () => {
     assert.match(hub, /onScrollBeginDrag=\{onDragStart\}/);
     // Owner 2026-10-08: a swipe follows the card under the finger; a deliberate
     // tap selects — the countries flash 1.5 s, then the guide opens.
-    assert.match(hub, /onTouchMove=\{onFinger\}/, 'a swipe follows the card under the finger');
+    // Owner 2026-10-08 (later): ONLY the pressed card is lit — held for the whole
+    // drag (no switching as cards slide under the finger), cleared on lift and on return.
+    assert.match(hub, /onTouchStart=\{onFinger\}/, 'the card the finger lands on is selected');
+    assert.doesNotMatch(hub, /onTouchMove=\{onFinger\}/, 'a scroll never switches to another card');
+    assert.match(hub, /onTouchEnd=\{onFingerUp\}/, 'lifting the finger clears the map');
+    assert.match(hub, /onScrollEndDrag=\{onFingerUp\}/);
+    assert.doesNotMatch(hub, /onTouchCancel=/, 'Android cancels on scroll — never clear on cancel');
+    assert.match(hub, /Coming back to the list: no country is lit/);
     assert.match(hub, /onOpen=\{selectGuide\}/, 'a tap selects: flash, then open');
     assert.match(hub, /SELECT_FLASH_MS = 1500/, 'the flash lasts 1.5 s');
     // (hunt 2026-10-08: a second tap on the flashing style also opens at once.)
