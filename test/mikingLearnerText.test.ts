@@ -168,6 +168,15 @@ export const BRAND_NAMES: readonly string[] = [
   'CDC',
   'SM ?63',
   'Brixen',
+  // Lab 6 group 6 research (docs/labs/miking/location_speech, spatial_field).
+  // ('Rode', 'RØDE', 'Rycote', 'Sound Devices' and 'Hayes' are in the group 1 list above.)
+  'Thirion',
+  'KU ?100',
+  'AMBEO',
+  'MKH ?416',
+  'National Weather Service',
+  'National Park Service',
+  // ('Meyer' is in the group 4 list below.)
   // Lab 6 group 4 research (docs/labs/miking/measurement_mics, sound_level, room_acoustics): makers, agencies and standards bodies.
   'NTi',
   'NIST',
@@ -180,6 +189,22 @@ export const BRAND_NAMES: readonly string[] = [
   'Smaart',
   'Meyer',
   'MAPP',
+  // Lab 7 group 1 research (docs/labs/miking/radio_host, voiceover_guests, panels_press; BATCH7 summary §5 item 8).
+  'Countryman',
+  'Professional Sound',
+  'PSC',
+  'SM ?7B',
+  'ME ?[23]',
+  'MD ?46',
+  'RE ?50B?',
+  'invisiLav',
+  'Press Train',
+  'Press Bridge',
+  'DCA ?901',
+  'SCM ?410',
+  'BLX4R',
+  'MV7',
+  'PodMic',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

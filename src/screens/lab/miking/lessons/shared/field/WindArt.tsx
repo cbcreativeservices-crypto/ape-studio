@@ -16,7 +16,7 @@
  */
 import { useMemo } from 'react';
 import { Circle, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
-import { ShotgunMic } from '../../../../../../features/lab/micDrawings';
+import { ShotgunMountMic } from '../../../../../../features/lab/micDrawings';
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { SoundCanvas } from '../smallperc/soundKit';
 import { seeded } from '../foley/StageArt';
@@ -176,7 +176,7 @@ export function WindLayerArt({ layer, exposure }: { layer: WindLayerId; exposure
       ) : null}
       {/* the mic itself (pointing right: its tube's tip at +u) */}
       <Group transform={[{ translateX: CAP_U }, { rotate: Math.PI / 2 }]}>
-        <ShotgunMic r={SG.r} len={SG.len} fore={SG.fore} mount={!inBasket} />
+        <ShotgunMountMic r={SG.r} len={SG.len} fore={SG.fore} mount={!inBasket} />
       </Group>
       {inBasket ? (
         <Group>

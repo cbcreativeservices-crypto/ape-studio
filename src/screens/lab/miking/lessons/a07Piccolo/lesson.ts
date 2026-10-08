@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how an air jet becomes a piccolo note, where the sound leaves, and where the air goes. Shown, never played.',
+    goal: 'See how an air jet becomes a piccolo note, where the sound leaves, and where the air goes.',
     credit: { scenarios: ['pc.snd.1', 'pc.snd.2', 'pc.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The same physics as the flute in half the length: the embouchure hole and the first open hole radiate; the jet blows out past the lips. Much of its energy sits where vocal mics add presence — compare responses.',
   },

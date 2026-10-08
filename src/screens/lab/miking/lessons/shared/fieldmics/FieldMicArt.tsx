@@ -4,7 +4,7 @@
  * PoleBoomArt, PoleOperatorArt; `shotgunLobe` is in ./shotgunLobe.ts.
  *
  *   ShotgunArt       the short shotgun in its shock mount (features/lab/
- *                    micDrawings ShotgunMic — the one drawing the placement
+ *                    micDrawings ShotgunMountMic — the one drawing the placement
  *                    scene uses), placed at a point and an angle: the CAPSULE
  *                    at (x, y), the tube toward `angleDeg` (0° = +u).
  *   ShockMountArt    the cradle alone (a ring on elastic cords in a frame).
@@ -21,7 +21,7 @@
  */
 import { useMemo } from 'react';
 import { Group, LinearGradient, Path, vec } from '@shopify/react-native-skia';
-import { ShotgunMic } from '../../../../../../features/lab/micDrawings';
+import { ShotgunMountMic } from '../../../../../../features/lab/micDrawings';
 import type { ViewId } from '../../../engine/model/types.ts';
 import { POLE_HANDS_H } from '../../../engine/geometry/collision.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
@@ -40,7 +40,7 @@ export function ShotgunArt({ x, y, angleDeg, scale = 1, mount = true }: { x: num
   const rot = ((angleDeg + 90) * Math.PI) / 180;
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: rot }, { scale }]}>
-      <ShotgunMic r={R} len={LEN} fore={FORE} mount={mount} />
+      <ShotgunMountMic r={R} len={LEN} fore={FORE} mount={mount} />
     </Group>
   );
 }

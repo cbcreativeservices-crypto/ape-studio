@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a mallet stroke becomes a bright, ringing note — the bar’s shapes, the short tube under it, the damper — and where the sound leaves. Shown, never played.',
+    goal: 'See how a mallet stroke becomes a bright, ringing note — the bar’s shapes, the short tube under it, the damper — and where the sound leaves.',
     credit: { scenarios: ['gl.snd.1', 'gl.snd.2', 'gl.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A steel bar rings long about its still points; its short tube (or the case’s box) supports it; the damper — a pedal or the player’s hand — decides when it stops.',
   },

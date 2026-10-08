@@ -197,6 +197,11 @@ import { F07_LESSON } from '../lessons/f07Wildlife/lesson.ts';
 LESSON_CONTENT.F07 = F07_LESSON;
 import { F08_LESSON } from '../lessons/f08Passby/lesson.ts';
 LESSON_CONTENT.F08 = F08_LESSON;
+/* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
+import { F09_LESSON } from '../lessons/f09LocationSpeech/lesson.ts';
+LESSON_CONTENT.F09 = F09_LESSON;
+import { F10_LESSON } from '../lessons/f10SpatialField/lesson.ts';
+LESSON_CONTENT.F10 = F10_LESSON;
 /* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
 import { F11_LESSON } from '../lessons/f11MeasurementMics/lesson.ts';
 LESSON_CONTENT.F11 = F11_LESSON;
@@ -204,3 +209,17 @@ import { F12_LESSON } from '../lessons/f12SoundLevel/lesson.ts';
 LESSON_CONTENT.F12 = F12_LESSON;
 import { F13_LESSON } from '../lessons/f13RoomAcoustics/lesson.ts';
 LESSON_CONTENT.F13 = F13_LESSON;
+/* Lab 6 group 5 — systems, products and sensors: F14, F15, F16 (one block; each lesson on its own line). */
+import { F14_LESSON } from '../lessons/f14SystemMeasurement/lesson.ts';
+LESSON_CONTENT.F14 = F14_LESSON;
+import { F15_LESSON } from '../lessons/f15Machinery/lesson.ts';
+LESSON_CONTENT.F15 = F15_LESSON;
+import { F16_LESSON } from '../lessons/f16ScientificArrays/lesson.ts';
+LESSON_CONTENT.F16 = F16_LESSON;
+/* Lab 7 (broadcast), group 1 — desk and studio voice: B01, B07, B06 (each lesson on its own line). */
+import { B01_LESSON } from '../lessons/b01RadioHost/lesson.ts';
+LESSON_CONTENT.B01 = B01_LESSON;
+import { B07_LESSON } from '../lessons/b07Voiceover/lesson.ts';
+LESSON_CONTENT.B07 = B07_LESSON;
+import { B06_LESSON } from '../lessons/b06Panels/lesson.ts';
+LESSON_CONTENT.B06 = B06_LESSON;

@@ -219,6 +219,11 @@ import { F07_ART } from '../lessons/f07Wildlife/art';
 ART.F07 = F07_ART;
 import { F08_ART } from '../lessons/f08Passby/art';
 ART.F08 = F08_ART;
+/* Lab 6 (field), group 6 — location and spatial: F09, F10 (each lesson on its own line). */
+import { F09_ART } from '../lessons/f09LocationSpeech/art';
+ART.F09 = F09_ART;
+import { F10_ART } from '../lessons/f10SpatialField/art';
+ART.F10 = F10_ART;
 /* Lab 6 group 4 — measurement core: F11, F12, F13 (one block; each lesson on its own line). */
 import { F11_ART } from '../lessons/f11MeasurementMics/art';
 ART.F11 = F11_ART;
@@ -226,3 +231,17 @@ import { F12_ART } from '../lessons/f12SoundLevel/art';
 ART.F12 = F12_ART;
 import { F13_ART } from '../lessons/f13RoomAcoustics/art';
 ART.F13 = F13_ART;
+/* Lab 6 group 5 — systems, products and sensors: F14, F15, F16 (one block; each lesson on its own line). */
+import { F14_ART } from '../lessons/f14SystemMeasurement/art';
+ART.F14 = F14_ART;
+import { F15_ART } from '../lessons/f15Machinery/art';
+ART.F15 = F15_ART;
+import { F16_ART } from '../lessons/f16ScientificArrays/art';
+ART.F16 = F16_ART;
+/* Lab 7 (broadcast), group 1 — desk and studio voice: B01, B07, B06 (each lesson on its own line). */
+import { B01_ART } from '../lessons/b01RadioHost/art';
+ART.B01 = B01_ART;
+import { B07_ART } from '../lessons/b07Voiceover/art';
+ART.B07 = B07_ART;
+import { B06_ART } from '../lessons/b06Panels/art';
+ART.B06 = B06_ART;

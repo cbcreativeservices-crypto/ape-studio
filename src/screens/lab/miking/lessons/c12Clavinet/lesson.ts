@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a key becomes a signal — the tangent, the anvil, the string, the pickups — and the two paths that signal can take to a recording: direct, or through the amp and a mic. Shown, never played.',
+    goal: 'See how a key becomes a signal — the tangent, the anvil, the string, the pickups — and the two paths that signal can take to a recording: direct, or through the amp and a mic.',
     credit: { scenarios: ['cv.snd.1', 'cv.snd.2', 'cv.snd.3'], interactive: 'soundPath', note: 'Step the key through to the end (or play it once), and answer the three checks.' },
     takeaway: 'A tangent presses the string onto an anvil; the pickups turn its motion into a small voltage; the yarn mutes it on release. Direct, the signal is captured as it is; miked, it is captured after the amp, the speaker and the room.',
   },

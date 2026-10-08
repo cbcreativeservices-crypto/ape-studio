@@ -29,7 +29,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a bowed string becomes sound — the bow’s grip and slip, the rocking bridge, the top and back — and where the sound leaves the bass. Shown, never played.',
+    goal: 'See how a bowed string becomes sound — the bow’s grip and slip, the rocking bridge, the top and back — and where the sound leaves the bass.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The bow feeds the string for as long as it moves: long notes sustain, and the bow’s grip adds its own rosin and scrape. Low notes, bow noise and body leave from different places — a mic needs the lows, the pitch and just enough bow.',
   },

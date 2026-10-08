@@ -26,7 +26,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How they make their sound',
-    goal: 'See how a stroke becomes sound — edge meets edge, they part, both ring — and why letting them part matters. Shown, never played.',
+    goal: 'See how a stroke becomes sound — edge meets edge, they part, both ring — and why letting them part matters.',
     credit: { scenarios: ['fc.snd.1', 'fc.snd.2', 'fc.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Two small plates struck together: a bright attack where the edges meet, then both ring in shapes whose pitches are not whole-number steps apart. Pressed together they choke; released, they ring on.',
   },

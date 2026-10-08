@@ -655,12 +655,98 @@ needs: nothing
 ### 2026-10-08 02:18 · ccode · 9b1959fe
 changed: Lab 6 group 2: the shared field toolkit (frame G, sites, wind, safety, path, image, dish)
 affects other side: nothing (client-only Miking lessons, still hidden; the field log is typed and device-local, no new tables or permissions)
+
+### 2026-10-08 02:02 · ccode · d567fe40
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a5842596b925d1318
+affects other side: nothing (client-only: final-lab merged into lab7-g1 — Lab 6 groups 1 and 5, the learner-voice goals, web; registry, setups picks and mic-art switches kept from both sides)
+needs: nothing
+
+
+### 2026-10-08 01:45 · ccode · 31717808
+changed: Miking Lab 7 group 1: B01 hosts, B07 voiceover and guests, B06 panels and press
+affects other side: nothing (client-only: Lab 7 lessons B01, B07, B06 behind the existing Miking release gate; no server, no new route)
+needs: nothing
+
+
+### 2026-10-08 00:50 · ccode · b5346c0b
+changed: Miking Lab 7 group 1: the shared broadcast desk kit
+affects other side: nothing (client-only: the Lab 7 broadcast desk kit under lessons/shared/broadcast; groups 2 and 3 import it; Miking stays hidden)
+needs: nothing
+
+### 2026-10-08 01:20 · ccode · fcf25436
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — third merge of final-lab into lab6-g5 (web and Mixing Guides changes only)
+needs: nothing
+
+
+### 2026-10-08 01:10 · ccode · 97dd2ecc
+changed: web: Coming Soon panel sits low so the full headline shows above it
+affects other side: nothing (website layout; cherry-pick of 6d89f09b)
+needs: nothing
+
+
+### 2026-10-08 01:07 · ccode · 5d350d97
+changed: web: new headline — The Whole Craft of Audio. Right in Your Pocket.
+affects other side: nothing (website copy; cherry-pick of audio-tools-engine f2733281)
+needs: nothing
+
+
+### 2026-10-08 00:59 · ccode · a482d323
+changed: Mixing Guides map: a swipe follows the card under the finger; a tap flashes the countries 1.5 s, then opens
+affects other side: nothing (client-only hub interaction)
+
+### 2026-10-08 01:10 · ccode · cf52a845
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — second merge of final-lab into lab6-g5 (the goals copy rule; F14–F16 goals already follow it)
+needs: nothing
+
+
+### 2026-10-08 00:45 · ccode · 77ea81d0
+changed: Lab copy: Objectives rewritten in the learner's voice; build notes removed from Miking goals
+affects other side: nothing (client-only lab copy)
+
+### 2026-10-08 00:59 · ccode · d84f8265
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-aaf68cc59a9e9fa4e
+affects other side: nothing — merge of final-lab into lab6-g5 (doc conflicts kept both sides; SOURCES_SHARED group 5 block renumbered §16)
+needs: nothing
+
+
+### 2026-10-08 00:30 · ccode · f436e2ac
+changed: Merge lab6-g1: Miking Lab 6 F01-F04 Foley stage
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-08 00:30 · ccode · 85ee77e4
+changed: Mixing Guides: world map pinned above the 50 styles — hover, touch or drag fills each style's home countries
+affects other side: nothing (client-only map data and hub UI)
+### 2026-10-08 00:29 · ccode · 863942a3
+changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 6 F09-F10, Mixing pro note)
+affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
 needs: nothing
 
 
 ### 2026-10-08 00:10 · ccode · 22b6d7ae
 changed: Merge origin/final-lab into lab6-g1 (Lab 6 group 4, sentry fixes)
 affects other side: nothing (client-only Miking Lab 6 merge; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
+### 2026-10-08 00:07 · ccode · b4489923
+changed: Merge lab6-g6: Miking Lab 6 F09-F10 location speech and spatial field
+affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
+needs: nothing
+
+
+### 2026-10-08 00:06 · ccode · fc730e94
+changed: Mixing family: 'Knowing When to Bring In a Pro' note — first-open popup with GOT IT, link on each lab's first page
+affects other side: nothing (client-only popup copy and wiring; no backend reads or writes)
+needs: nothing
+
+
+### 2026-10-08 00:03 · ccode · eef0d2e8
+changed: Merge remote-tracking branch 'origin/final-lab' into lab6-g6
+affects other side: nothing (client-only: Lab 6 group 6 F09/F10 merged with group 4 F11-F13; Miking stays hidden)
 needs: nothing
 
 
@@ -691,6 +777,16 @@ needs: nothing
 ### 2026-10-07 23:12 · ccode · 48fa4836
 changed: web: launch date moves to Tuesday, October 13
 affects other side: nothing — website launch overlay date text only (now Tuesday, October 13)
+
+### 2026-10-08 00:50 · ccode · 6b1202c5
+changed: Miking Lab 6 g5: F14, F15, F16 lessons registered in the field lab
+affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
+needs: nothing
+
+
+### 2026-10-08 00:49 · ccode · 7ae43a4f
+changed: Miking Lab 6 g5: venue, system timing, claim ladder, exclusion zone, arrays, sensors
+affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
 needs: nothing
 
 
@@ -704,6 +800,12 @@ needs: nothing
 changed: Miking Lab 6 g4: measurement family, chain rack, scene frame F
 affects other side: nothing (client-only lab code; no backend reads or writes)
 needs: nothing (the background-subtraction calculator is a later audio-tools-engine item, not backend)
+
+
+### 2026-10-07 22:43 · ccode · a21c0b79
+changed: Miking Lab 6 group 6: F09 Location Speech and F10 Spatial Field Pickup
+affects other side: nothing (client-only; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
 
 
 ### 2026-10-07 17:07 · ccode · 6660b125

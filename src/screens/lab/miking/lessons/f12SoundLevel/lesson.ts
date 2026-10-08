@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How sound reaches the meter',
-    goal: 'See what arrives at a meter on a site — the traffic, its reflection off the ground and the facade, a second source — and when. Shown, never played.',
+    goal: 'See what arrives at a meter on a site — the traffic, its reflection off the ground and the facade, a second source — and when.',
     credit: { scenarios: ['sl.snd.1', 'sl.snd.2', 'sl.snd.3'], note: 'Answer the three checks on what reaches the meter.' },
     takeaway: 'The meter receives every path at its position. A spot near a facade includes its reflection; an area reading is not a worker’s exposure.',
   },

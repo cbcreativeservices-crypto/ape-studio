@@ -146,7 +146,7 @@ const SPEC: MetalSpec = {
       { k: 'FACE', at: kindOf(v) === 'bossed' ? ['AT REST', 'BROAD', 'BOSS TONE', 'RINGING'] : ['AT REST', 'BROAD', 'BUILD-UP', 'RINGING'], flex: 1.1 },
       { k: 'SOUND', at: ['—', '—', kindOf(v) === 'bossed' ? 'STEADY' : 'SWELLS', 'BOTH FACES'], flex: 1.1 },
     ],
-    after: (v) => (kindOf(v) === 'bossed' ? 'It decays slowly round the boss’s tone unless the player damps it. Very close to the boss, a mic exaggerates the mallet’s impact — compare a broader view.' : 'It decays slowly after the bloom unless the player damps it — keep the whole rise and decay in every comparison. The swell is shown, never played; its speed depends on the gong and the stroke.'),
+    after: (v) => (kindOf(v) === 'bossed' ? 'It decays slowly round the boss’s tone unless the player damps it. Very close to the boss, a mic exaggerates the mallet’s impact — compare a broader view.' : 'It decays slowly after the bloom unless the player damps it — keep the whole rise and decay in every comparison. How fast it swells depends on the gong and the stroke.'),
     silentNote: 'This lab never plays a sound and draws no frequency curve: how a real gong sounds depends on the gong, the mallet, the stroke and the room. The pictures show where the sound comes from and where it leaves.',
     variantKey: 'GONG',
     shapes: {

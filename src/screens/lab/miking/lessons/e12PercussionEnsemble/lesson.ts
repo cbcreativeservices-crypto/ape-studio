@@ -17,7 +17,7 @@ import { E12_MODEL, E12_PLACE, E12_SEATS, E12_SETUPS, E12_WEDGES, E12_ZONES, TR_
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a percussion ensemble in brief — hand drums, mallet keyboards, small percussion, timpani and concert drums at their stations — and see where each instrument’s sound leaves it. Shown, never played.',
+    goal: 'Meet a percussion ensemble in brief — hand drums, mallet keyboards, small percussion, timpani and concert drums at their stations — and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['pe.meet.1', 'pe.meet.2', 'pe.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'A percussion ensemble is an extended source: drums speak from their heads, mallet keyboards from their bars and tubes, metal from its edges, shakers from wherever they move. A mic that favours one cymbal or one end of a marimba misrepresents the group.',
   },

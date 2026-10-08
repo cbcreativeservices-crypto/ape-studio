@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how the bar, a pedal and the pickup shape a steel string’s signal, and how the signal becomes moving air. Shown, never played.',
+    goal: 'See how the bar, a pedal and the pickup shape a steel string’s signal, and how the signal becomes moving air.',
     credit: { scenarios: ['ps.snd.1', 'ps.snd.2', 'ps.snd.3'], interactive: 'soundPath', note: 'Step through three harmonics and move the bar, step the cone through to the end, and answer the three checks.' },
     takeaway: 'The bar is a movable fret: the shorter the sounding length, the higher the note. A pedal or knee lever changes a string’s tension at the changer. The pickup senses its own spot on the string; the speaker does the rest.',
   },

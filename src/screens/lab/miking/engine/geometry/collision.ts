@@ -98,11 +98,13 @@ export function isInside(scene: CompiledScene, p: Vec3): boolean {
 }
 
 /** The nearest point on a rim circle to p (the clamp's grip), and its distance. */
-export function nearestRimPoint(rims: Rim[], p: Vec3): { q: Vec3; d: number; rim: Rim } | null {
+export function nearestRimPoint(rims: Rim[], p: Vec3, typeId?: string): { q: Vec3; d: number; rim: Rim } | null {
   'worklet';
   let best: { q: Vec3; d: number; rim: Rim } | null = null;
   for (let i = 0; i < rims.length; i++) {
     const rim = rims[i];
+    // Lab 6 group 6: a rim that serves only some mic types (Rim.types).
+    if (rim.types && (!typeId || rim.types.indexOf(typeId) < 0)) continue;
     const a = rim.axis;
     const wx = p.x - rim.c.x;
     const wy = p.y - rim.c.y;
@@ -170,8 +172,8 @@ export function assembly(scene: CompiledScene, pose: MicPose, body: MicBody): Se
   if (body.mount === 'clip') {
     // A rim clamp: the body, and an arm from its tail to the nearest hoop
     // point (no rims on the scene: the body alone).
-    const g = nearestRimPoint(scene.rims ?? [], tail);
-    if (g) out.push({ a: tail, b: g.q, r: 6, piece: 'arm' });
+    const g = nearestRimPoint(scene.rims ?? [], tail, body.id);
+    if (g) out.push({ a: tail, b: g.q, r: body.armR ?? 6, piece: 'arm' });
     return out;
   }
   if (body.mount === 'pole') {

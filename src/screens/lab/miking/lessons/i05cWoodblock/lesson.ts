@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a mallet stroke becomes the woodblock’s hollow knock — the wall over the slot, the air inside, the opening — and what a muffling support does. Shown, never played.',
+    goal: 'See how a mallet stroke becomes the woodblock’s hollow knock — the wall over the slot, the air inside, the opening — and what a muffling support does.',
     credit: { scenarios: ['wb.snd.1', 'wb.snd.2', 'wb.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The wall over the slot and the air in it ring together; much of it leaves by the opening. On a towel it is choked before any mic hears it.',
   },

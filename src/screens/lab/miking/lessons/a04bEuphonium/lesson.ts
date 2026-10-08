@@ -25,7 +25,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how buzzing lips become a euphonium note — the pulse down the tube, the standing wave, the bell — and where the bell sends the sound. Shown, never played.',
+    goal: 'See how buzzing lips become a euphonium note — the pulse down the tube, the standing wave, the bell — and where the bell sends the sound.',
     credit: { scenarios: ['eu.snd.1', 'eu.snd.2', 'eu.snd.3'], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Nearly all of the sound leaves from the bell. The low notes spread nearly all round; the attacks and upper overtones go where the bell points — up, or to the front. Tendencies: euphoniums and rooms vary.',
   },

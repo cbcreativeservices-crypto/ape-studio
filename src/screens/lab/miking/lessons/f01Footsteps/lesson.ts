@@ -34,7 +34,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where a footstep comes from',
-    goal: 'See how one step becomes sound — the heel, the rolling sole, the surface answering, the floor under it — and where it leaves: at floor level, spread over the whole area the walker works. Shown, never played.',
+    goal: 'See how one step becomes sound — the heel, the rolling sole, the surface answering, the floor under it — and where it leaves: at floor level, spread over the whole area the walker works.',
     credit: { scenarios: ['f01.snd.1', 'f01.snd.2', 'f01.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'Every step starts at the floor, at a slightly different place each time, and a hollow layer under the surface can add a boom no mic move removes. So a footstep mic looks down at the middle of the steps from outside the whole movement.',
   },

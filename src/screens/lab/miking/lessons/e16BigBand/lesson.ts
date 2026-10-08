@@ -18,7 +18,7 @@ import { BB_C, E16_MODEL, E16_PLACE, E16_SEATS, E16_SETUPS, E16_WEDGES, E16_ZONE
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet a big band in brief — saxes, trombones, trumpets and the rhythm section, in rows on a stage or in a horseshoe in the studio — and see where each instrument’s sound leaves it. Shown, never played.',
+    goal: 'Meet a big band in brief — saxes, trombones, trumpets and the rhythm section, in rows on a stage or in a horseshoe in the studio — and see where each instrument’s sound leaves it.',
     credit: { scenarios: ['bb.meet.1', 'bb.meet.2', 'bb.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'The rows stand at different distances from anything in front: reeds nearest and lowest, trombones next, trumpets highest and farthest back. Each horn speaks its own way, and the rhythm section sits to one side with its own sources — the amp, the piano lid, the kit.',
   },

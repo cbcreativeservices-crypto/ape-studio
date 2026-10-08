@@ -15,7 +15,7 @@ import { E14_MODEL, E14_PLACE, E14_SETUPS, E14_WEDGES, E14_ZONES, MAIN_C } from 
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet the orchestra in brief — its sections and where each sits as the conductor faces them — and see where each section’s sound leaves its instruments. Shown, never played.',
+    goal: 'Meet the orchestra in brief — its sections and where each sits as the conductor faces them — and see where each section’s sound leaves its instruments.',
     credit: { scenarios: ['orc.meet.1', 'orc.meet.2', 'orc.meet.3'], note: 'Answer the three checks on the sections and where the sound leaves.' },
     takeaway: 'Strings in front, winds behind them, brass and percussion at the back; every section sends its sound its own way — the horns backward, the trumpets forward, the strings up and out. A main pair hears the balance they make in the hall.',
   },

@@ -28,5 +28,5 @@ export function AdvancedMixingLabScreen() {
   // one: the two labs share a single stems cache, so neither may drop it while
   // the other is still on screen. See retainSessionStems in audio/mixAudio.ts.
   useEffect(retainSessionStems, []);
-  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} />;
+  return <PagedLab labId="mixing-adv" title="Advanced Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote />;
 }

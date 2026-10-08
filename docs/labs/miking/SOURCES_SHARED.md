@@ -206,7 +206,26 @@ Added 2026-10-08 by the Lab 6 group 4 builder (branch lab6-g4). The full registe
 | MEYER-MAPP | Meyer MAPP 3D user guide | 1.2 m seated / 1.7 m standing (measureSpec.LISTENER_HEIGHT, F13) |
 | CALC-* | app calculators | Leq and combine via calcBridge.ts; speed of sound and P_REF_PA via calcUnits |
 
-## 14. Mic types for Lab 6's Foley and field lessons (F01–F04 and later; `lessons/shared/fieldmics/fieldMics.ts`)
+## 14. Lab 6 group 6 — location and spatial (F09, F10; `lessons/shared/field/`)
+
+Added 2026-10-08 by the Lab 6 group 6 builder (branch lab6-g6): the keys the field and spatial mic types, zones and parts name. The full register is `measurement_mics/SOURCES.md` §0 (Lab 6 part 2); the shotgun model is `foley_footsteps/SOURCES.md` §c; per-lesson claims in `location_speech/SOURCES.md` and `spatial_field/SOURCES.md`.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| OSHA-ELEC | OSHA Construction eTool, Electrical Incidents: "Stay at least 10 feet away from overhead power lines." (the 3 m keep-out) | https://www.osha.gov/etools/construction/electrical-incidents/ | read 2026-10-07 (prep pass) |
+| NWS-LTG | NWS Lightning Safety: "get inside a safe place immediately"; "Wait 30 minutes after the last lightning or thunder" | https://www.weather.gov/safety/lightning-safety-overview | read 2026-10-07 (prep pass) |
+| SHURE-LAV | Shure, how to choose a lavalier: "Place the shirt microphone above the sternum" (no distance from the mouth) | https://www.shure.com/en-GB/insights/how-to-choose-the-best-lavalier-microphone | read 2026-10-07 (prep pass) |
+| DPA-PLANT | DPA dictionary, plant mic: "A small microphone for hiding in a fixed place on set" | https://www.dpamicrophones.com/dictionary/p/plant-mic/ | read 2026-10-07 (prep pass) |
+| RODE-SG | RØDE shotgun distance help (boom near the subject; just outside the frame) | lesson F09 [3] | NOT RE-READ (403) — PRACTICE |
+| SCH-SHOTGUN | SCHOEPS, "Principal Characteristics of the Different Microphone Types" (the shotgun model) | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 (Lab 6 part 1 prep) |
+| SEN-416 | A common short shotgun's size, Ø 19 × 250 mm (search summary, Low) | see `foley_footsteps/SOURCES.md` §0 | Low — the drawn body only |
+| AMBEO-REC | Sennheiser first-order Ambisonic mic recording instructions: four tracks, identical preamps, the same gain, linked | https://docs.cloud.sennheiser.com/en-us/ambeo-vr-mic/manual-recording.html | read 2026-10-07 (prep pass) |
+| MEYER-MAPP | Meyer Sound MAPP 3D guide: mic heights 1.2 m seated, 1.7 m standing (the listener heights) | https://docs.meyersound.com/products/en/user-guide---mapp-3d.html | read 2026-10-07 (prep pass) |
+| UA-MS | M/S decode L = M + S, R = M − S; mono removes S (Lab 1 register) | see `overheads/SOURCES.md` | CONFIRMED (Lab 1) |
+| LESSON-F09 | The owner's lesson F09 (practice statements kept as written) | `source_text/F09-…txt` | the lesson |
+| LESSON-F10 | The owner's lesson F10 (practice statements kept as written) | `source_text/F10-…txt` | the lesson |
+
+## 15. Mic types for Lab 6's Foley and field lessons (F01–F04 and later; `lessons/shared/fieldmics/fieldMics.ts`)
 
 Added 2026-10-08 by the Lab 6 group 1 builder (branch lab6-g1): the short shotgun (on a stand or a pole), the
 small supercardioid without a tube, the room condenser and the hydrophone / contact cards. The full Lab 6 register
@@ -231,3 +250,36 @@ Lab 6 register is `foley_footsteps/SOURCES.md` §0; the dish model is `field_wil
 | CORNELL-MIC | Cornell Lab, Macaulay Library, "Microphones": reflectors "57 cm (22 inches) in diameter"; "Higher frequency sounds, with shorter wavelengths, are amplified more than lower frequency sounds" | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 (Lab 6 preparation) |
 | SCH-DISH | SCHOEPS Parabolic Dish Set product page: 585 mm, focal 210 mm, the capsule at 0° toward the dish | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
 | INNERCORE | Innercore parabolic microphone, technical details: 500 mm, focal 140 mm, the capsule pointing back at the dish | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 |
+
+## 16. Lab 6 part 2 keys used by group 5 (F14–F16; `lessons/shared/measure/` venue, systems, claim ladder, exclusion, arrays)
+
+Added 2026-10-08 by the Lab 6 group 5 builder (branch lab6-g5). The full register, with quotes and status, is `measurement_mics/SOURCES.md` §0; per-lesson claims are in `loudspeaker_measurement/`, `machinery_sound/` and `scientific_arrays/SOURCES.md`. These keys appear only in the code's internal `src` / `prov` fields.
+
+| Key | Source | Used for |
+|---|---|---|
+| MEYER-MAPP | Meyer MAPP 3D user guide | 1.2 m seated / 1.7 m standing receiver heights (F14 seats; F15's seated user, reused) |
+| ISO-3744 | ISO 3744:2025 (ed. 4), via national-body listings | internal only: the sound-power method F15 calls "the named method" |
+| DOSITS-AW | DOSITS, sound in air vs water | 1 µPa vs 20 µPa; 26 dB of a 61.5 dB difference (arrays.WATER_AIR; the units card) |
+| PROBE-SPACER | intensity-probe maker data (search) | the 12 / 25 / 50 mm spacer presets (arrays.SPACERS_MM); the bands are not printed |
+| MW-ULA | MathWorks, time-delay beamforming of a ULA | spacing below half a wavelength (arrays.lambdaHalf) |
+| GRAS-FF | GRAS microphone guide | the measurement mics' field responses (reused from group 4) |
+| F14-LESSON, F15-LESSON, F16-LESSON | the owner's lesson texts (`source_text/F14…F16-*.txt`) | the practice claims each zone and item rests on |
+| CALC-* | app calculators | `speedOfSoundAir` (λ/2; Δt via twoMic.deltaTms), `leq` via calcBridge (the cycle strip) |
+## 17. Lab 7 group 1 — broadcast desk and studio voice (B01, B07, B06; `lessons/shared/broadcast/`)
+
+Added 2026-10-08 by the Lab 7 group 1 builder (branch lab7-g1): the keys the broadcast mic types and their zones name. The full Lab 7a register is `radio_host/SOURCES.md` §0; per-lesson claims in `radio_host/`, `voiceover_guests/` and `panels_press/SOURCES.md`; Lab 5 voice keys in `lead_vocal/SOURCES.md` §0.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| S-SM7B-UG | Shure SM7B user guide: "speak directly into the mic 1 to 6 inches (2.54 to 15 cm) away"; cardioid (the `bcDynArm` / `bcDynStand` types; B01 `b1.close`, B07 close start) | https://pubs.shure.com/guide/SM7B/en-US | Medium (prep pass 2026-10-07, guide copy) |
+| R-POD | RØDE, "How To Make Your Podcast Sound Professional": dynamic "about 4 - 6 inches", condenser "about 6 – 8 inches", "a very slight angle" (B01 `b1.dyn`, `b1.cond`, `b1.offBreath`; the `bcLdcArm` type) | https://rode.com/about/news-info/how-to-make-your-podcast-sound-professional | read 2026-10-07 (prep pass) |
+| R-BLEED | RØDE help, multi-person bleed: "less than six inches", mics "facing away from one another" (B01 `b1.hostB`) | https://help.rode.com/hc/en-us/articles/6948902770447 | Medium (403; search extract) |
+| S-CHURCH | Shure, church mic basics: lectern gooseneck "10"-14" and a little off-center" (B06-1); omni lav "8" below the mouth in the center" (the `bcGoose` types; B06 lectern start) | https://www.shure.com/en-us/insights/talkin-church-mic-basics-with-gino-sigismondi-mic-selection-and-placement | read 2026-10-07 (prep pass) |
+| S-PODIUM | Shure, comb filtering with podium mics: mute one of two mics on one talker; gain "around 7-10 inches" (B06 two-mic page; O-LEC) | https://www.shure.com/en-US/insights/how-to-avoid-comb-filtering-with-podium-mics | Medium (search extract) |
+| PSC-TRAIN | Press distribution box: "+4dBm balanced line level" input, "12 transformer isolated microphone level outputs" (routing.ts PRESS_BOX; B06) | https://www.markertek.com/Attachments/Manuals/PSC/FPSC0015-Manual.pdf | Medium (dealer copy of the maker text) |
+| DPA-VOC-STUDIO | DPA, how to mic vocals in a studio: close "about 4 inches … directly on axis", loose "around 12 inches" (B07 zones; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| N-VOC | Neumann studio vocal set-up: "20–30 cm (8–12 inches)" (B07 moderate start; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| N-POP | Neumann pop screen "at least 10 cm"; "top down, at about eye level, and angle it down" (B07 over the script; Lab 5 key) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 (Lab 5) |
+| LESSON-B01 | The owner's lesson B01 (practice statements kept as written; B01-1, B-INST applied) | `source_text/B01-…txt` | the lesson |
+| LESSON-B06 | The owner's lesson B06 (practice statements kept as written; B06-1, B-INST applied) | `source_text/B06-…txt` | the lesson |
+| LESSON-B07 | The owner's lesson B07 (practice statements kept as written; B-INST applied) | `source_text/B07-…txt` | the lesson |

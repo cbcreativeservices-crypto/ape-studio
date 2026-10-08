@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where the voice comes from',
-    goal: 'See how breath becomes a voice and where it leaves — the mouth, and on m, n and ng the nose — and what else comes out with it: a puff of air on P and B, a hiss on S. Shown, never played.',
+    goal: 'See how breath becomes a voice and where it leaves — the mouth, and on m, n and ng the nose — and what else comes out with it: a puff of air on P and B, a hiss on S.',
     credit: { scenarios: ['lv.snd.1', 'lv.snd.2', 'lv.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'The voice leaves through the mouth, so every distance is read from the lips. The air of a P or B and the hiss of an S travel straight out along the mouth’s axis — a little angle, distance or a screen keeps them off a capsule. Tendencies, and voices vary.',
   },

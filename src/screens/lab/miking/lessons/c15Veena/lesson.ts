@@ -25,7 +25,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a pluck becomes sound — the string against the broad bridge, the top plate, the resonator’s air — and where the sound leaves the veena. Shown, never played.',
+    goal: 'See how a pluck becomes sound — the string against the broad bridge, the top plate, the resonator’s air — and where the sound leaves the veena.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The top plate, driven through the bridge, does most of the work, and its pattern changes with pitch, direction and distance. The gourd under the neck is a support, not a second soundboard.',
   },

@@ -19,7 +19,7 @@ import { E05_31, E05_MODEL, E05_PLACE, E05_SETUPS, E05_WEDGES, E05_ZONES, PAIR_F
 const pages: LessonPages = {
   meet: {
     title: 'Meet it — where the sound comes from',
-    goal: 'Meet the choir as one instrument — its sections, its rows and risers, and where its sound leaves: every mouth at once, toward the conductor. Shown, never played.',
+    goal: 'Meet the choir as one instrument — its sections, its rows and risers, and where its sound leaves: every mouth at once, toward the conductor.',
     credit: { scenarios: ['ch.meet.1', 'ch.meet.2', 'ch.meet.3'], note: 'Answer the three checks on where the sound leaves.' },
     takeaway: 'A choir sings from dozens of mouths in rows: the risers lift the back rows over the heads in front, and the room joins every voice into one sound. A mic a few feet away hears that blend; the nearest row always arrives a little louder.',
   },

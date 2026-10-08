@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a stroke or a shake becomes sound — the head, the frame, the jingles — and where the sound leaves. Shown, never played.',
+    goal: 'See how a stroke or a shake becomes sound — the head, the frame, the jingles — and where the sound leaves.',
     credit: { scenarios: ['tb.snd.1', 'tb.snd.2', 'tb.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Striking drives the head’s low and mid body (from both faces — the back is open) and jostles the jingles; shaking drives the jingles’ bright clash and barely moves the head. A mic hears more of what it is closer to and faces.',
   },

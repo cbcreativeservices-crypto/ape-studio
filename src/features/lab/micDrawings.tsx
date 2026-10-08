@@ -25,6 +25,8 @@
  *     with an animated transform — see ShockMountView.
  */
 import { useMemo } from 'react';
+import { AmbiTetraMic, BlimpMic, DmsClusterMic, DummyHeadMic, LavalierMic, ShotgunMic } from './micDrawingsField';
+import { BroadcastDynamicMic } from './micDrawingsBroadcast';
 import { ParabolicDishMic } from './micDrawingsDish';
 import {
   BlurMask,
@@ -1143,7 +1145,7 @@ function buildShotgun(r: number, len: number, fore: number) {
   return { tube, body, slots, cap, seam, xlr, frame, cords, band, shadow };
 }
 
-export function ShotgunMic({ r, len, fore, tint, mount = true }: { r: number; len: number; fore: number; tint?: string; mount?: boolean }) {
+export function ShotgunMountMic({ r, len, fore, tint, mount = true }: { r: number; len: number; fore: number; tint?: string; mount?: boolean }) {
   const p = useMemo(() => buildShotgun(r, len, fore), [r, len, fore]);
   const lit = LIT(r);
   const hair = Math.max(0.35, r * 0.05);
@@ -1191,14 +1193,31 @@ export function ShotgunMic({ r, len, fore, tint, mount = true }: { r: number; le
 
 /** One switch for every Miking mic art id (the placement scene and the
  *  polar page draw through it). `fore` (lab6 group 1): the body reaching
- *  ahead of the reference point — the shotgun's tube. */
-export function MikingMicArt({ art, r, len, cross, tint, fore = 0 }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'measMic' | 'slm' | 'shotgun' | 'dish'; r: number; len: number; cross?: number; tint?: string; fore?: number }) {
+ *  ahead of the reference point — the shock-mounted shotgun's tube. */
+export function MikingMicArt({ art, r, len, cross, tint, fore = 0 }: { art: 'kickDynamic' | 'sdc' | 'boundary' | 'smallDynamic' | 'clipDynamic' | 'gooseneck' | 'instDynamic' | 'sideLdc' | 'vocalDynamic' | 'vocalLdc' | 'shotgun' | 'blimp' | 'lavalier' | 'dummyHead' | 'ambiTetra' | 'dmsCluster' | 'measMic' | 'slm' | 'shotgunMount' | 'broadcastDynamic' | 'dish'; r: number; len: number; cross?: number; tint?: string; fore?: number }) {
   switch (art) {
+    /* Lab 6 group 1: the Foley short shotgun in its shock mount, measured to its capsule. */
+    case 'shotgunMount':
+      return <ShotgunMountMic r={r} len={len} fore={fore} tint={tint} />;
     // lab6 group 2: the parabolic dish (micDrawingsDish.tsx).
     case 'dish':
       return <ParabolicDishMic r={r} len={len} fore={fore} tint={tint} />;
+    /* Lab 7 group 1: the broadcast dynamic (micDrawingsBroadcast.tsx). */
+    case 'broadcastDynamic':
+      return <BroadcastDynamicMic r={r} len={len} tint={tint} />;
+    /* Lab 6 group 6: the field and spatial mics (micDrawingsField.tsx). */
     case 'shotgun':
-      return <ShotgunMic r={r} len={len} fore={fore} tint={tint} />;
+      return <ShotgunMic r={r} len={len} tint={tint} />;
+    case 'blimp':
+      return <BlimpMic r={r} len={len} tint={tint} />;
+    case 'lavalier':
+      return <LavalierMic r={r} len={len} tint={tint} />;
+    case 'dummyHead':
+      return <DummyHeadMic r={r} len={len} cross={cross ?? r * 2} tint={tint} />;
+    case 'ambiTetra':
+      return <AmbiTetraMic r={r} len={len} cross={cross ?? r * 2} tint={tint} />;
+    case 'dmsCluster':
+      return <DmsClusterMic r={r} len={len} cross={cross ?? r * 2} tint={tint} />;
     // Lab 6 group 4: the measurement mic and the sound level meter.
     case 'measMic':
       return <MeasurementMic r={r} len={len} tint={tint} />;

@@ -22,7 +22,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How they make their sound',
-    goal: 'See how a mallet stroke becomes a pitched note — the head, the bowl’s air, the strike point — and where the sound leaves the drum. Shown, never played.',
+    goal: 'See how a mallet stroke becomes a pitched note — the head, the bowl’s air, the strike point — and where the sound leaves the drum.',
     credit: { scenarios: ['tp.snd.1', 'tp.snd.2', 'tp.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'Struck about a third of the way in from the hoop, the head rings mostly in its pitched see-saw shapes; the bowl’s air pulls them into near-whole-number steps — the note. A centre strike gives more thud and less note. Sound leaves from the head, up and out.',
   },

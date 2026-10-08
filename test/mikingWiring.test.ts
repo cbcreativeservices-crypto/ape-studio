@@ -77,7 +77,7 @@ describe('listing (owner: Training Labs → Instruments & Recording, members onl
     // Owner copy 2026-10-06: "17 Miking Lab Lessons" — the registry's ready count, no chevron.
     const { lessonsOf } = REGISTRY as { lessonsOf: (id: string) => unknown[] };
     for (const l of fam.labs as { countLine?: string; params?: { lab?: string } }[]) {
-      assert.equal(l.countLine, `${lessonsOf(l.params!.lab!).length} Miking Lab Lessons`);
+      assert.equal(l.countLine, mikingLessonCount(lessonsOf(l.params!.lab!).length));
     }
     assert.deepEqual((fam.labs as { countLine?: string }[]).map((l) => l.countLine).slice(0, 4), ['17 Miking Lab Lessons', '24 Miking Lab Lessons', '18 Miking Lab Lessons', '20 Miking Lab Lessons']);
     assert.equal(mikingLessonCount(1), '1 Miking Lab Lesson', 'singular');

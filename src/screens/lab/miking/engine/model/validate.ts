@@ -11,7 +11,7 @@ import { journeyPageOf, validateQuickCheck } from '../journey.ts';
 import { isRetired, pageOf, quickCheckOf } from '../restructure.ts';
 
 export function micBodyOf(t: MicType): MicBody {
-  return { length: t.body.length.mm, radius: t.body.radius.mm, mount: t.mount, surfacePartId: t.surfacePartId, ...(t.clip ? { reach: t.clip.reach.mm } : {}), ...(t.pop ? { pop: { gap: t.pop.gap.mm, r: t.pop.r.mm } } : {}), ...(t.body.fore ? { fore: t.body.fore.mm } : {}) };
+  return { length: t.body.length.mm, radius: t.body.radius.mm, mount: t.mount, surfacePartId: t.surfacePartId, ...(t.clip ? { reach: t.clip.reach.mm } : {}), ...(t.pop ? { pop: { gap: t.pop.gap.mm, r: t.pop.r.mm } } : {}), id: t.id, ...(t.clip?.arm ? { armR: t.clip.arm.mm } : {}), ...(t.body.fore ? { fore: t.body.fore.mm } : {}), ...(t.clip?.style ? { armStyle: t.clip.style } : {}), ...(t.clip?.elbow ? { elbow: { a: t.clip.elbow.a.mm, b: t.clip.elbow.b.mm } } : {}) };
 }
 
 export function validateLesson(lesson: Lesson, micTypes: Record<string, MicType>): string[] {

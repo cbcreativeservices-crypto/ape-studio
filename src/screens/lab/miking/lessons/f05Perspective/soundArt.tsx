@@ -19,7 +19,7 @@ import type { StaticLabel } from '../../engine/scene/StaticLabels';
 import { SoundCanvas } from '../shared/smallperc/soundKit';
 import { KeyRing } from '../shared/foley/props';
 import { StageFloorPlan } from '../shared/foley/StageArt';
-import { MikingMicArt, ShotgunMic } from '../../../../../features/lab/micDrawings';
+import { MikingMicArt, ShotgunMountMic } from '../../../../../features/lab/micDrawings';
 import { PathMarks } from './art';
 import { HALF_PATH } from './geometry.ts';
 import { F05_ZONES } from './model.ts';
@@ -83,7 +83,7 @@ export function NearFarKeys({ w, h, mode, swing, accessibilityLabel }: { w: numb
       <Path path={g.direct} style="stroke" strokeWidth={22} strokeCap="round" color={AMBER} opacity={0.9} />
       {[close, room].map((p, i) => (
         <Group key={i} transform={[{ translateX: p.x }, { translateY: p.z }, { rotate: micRot(p) }, { scale: 2.2 }]} opacity={(i === 0) === near ? 1 : 0.5}>
-          {i === 0 ? <ShotgunMic r={9.5} len={50} fore={200} mount={false} /> : <MikingMicArt art="sideLdc" r={59} len={80} cross={118} />}
+          {i === 0 ? <ShotgunMountMic r={9.5} len={50} fore={200} mount={false} /> : <MikingMicArt art="sideLdc" r={59} len={80} cross={118} />}
         </Group>
       ))}
       <Group transform={[{ translateY: kz }, { scale: 3 }]}>

@@ -28,7 +28,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a plucked string becomes sound — the pull and release, the rocking bridge, the top and back — and where the sound leaves the bass. Shown, never played.',
+    goal: 'See how a plucked string becomes sound — the pull and release, the rocking bridge, the top and back — and where the sound leaves the bass.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the sequence through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The pluck is the attack; the low fundamental, the harmonics and the body ring on and die away. Low notes, finger attack and body leave from different places — a mic needs both the lows and the detail.',
   },

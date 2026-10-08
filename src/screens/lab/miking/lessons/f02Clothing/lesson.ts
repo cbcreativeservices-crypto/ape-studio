@@ -31,7 +31,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where a cloth sound comes from',
-    goal: 'See how a move becomes sound — the fold flexing and rubbing, the whole garment swinging and settling — and where it goes: all round the garment, quietly, the room close under it. Shown, never played.',
+    goal: 'See how a move becomes sound — the fold flexing and rubbing, the whole garment swinging and settling — and where it goes: all round the garment, quietly, the room close under it.',
     credit: { scenarios: ['f02.snd.1', 'f02.snd.2', 'f02.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'The detail comes from the fold; the body from the whole garment. A precise move gives a shaped sound; a crumpled ball gives noise — and because cloth is quiet, the distance decides how much room comes with it.',
   },

@@ -1474,3 +1474,130 @@ Shared code built (group 2 owns): `lessons/shared/field/` — `frameG.ts` (frame
 | G2-6 | Site distances: F06 stream about 6.5 m ahead, path 1.6 m behind; F07 one bird 26 m out and 9 m up, the flock line 30 m out and 6 m up crossing at 8 m/s, a large animal 70 m out; F08 walking path 3 m from the mic line (envelope 1.5 m each side), vehicle line 9 m (envelope 3 m, crew line 4.5 m) | F06–F08 | OWNER: approve |
 | G2-7 | Typical dish 57 cm with focus 0.36 · D (205 mm, derived from the 585 / 210 mm ratio); presets 585 / 210 mm and 500 / 140 mm | F07 | OWNER: approve |
 | G2-8 | Birds and mics drawn larger than life on field sites (said in the accuracy note) | F06–F08 | OWNER: approve |
+
+## Lab 6 · group 6 · Location and spatial: F09, F10 (branch lab6-g6, 2026-10-08)
+
+Built by the Lab 6 group 6 builder (G-C of `BUILD_PROMPTS_lab6b.md`). Research: `location_speech/`, `spatial_field/`, `measurement_mics/SOURCES.md` §0, `BATCH6_RESEARCH_SUMMARY_PART2.md` §2. Defaults used for the D-items are listed under OWNER REVIEW at the end.
+
+| id | Lesson | Line | Lesson says | App says | Why / source | Status |
+|---|---|---|---|---|---|---|
+| G6-01 | F09 | L30, L42 | "Keep the pole away from power lines" (no distance) | "Keep the boom pole, the stands and every mic at least 3 m (10 ft) from overhead power lines — farther if you do not know the voltage. If you cannot be sure of the clearance, do not raise the pole" — and a 3 m keep-out in the OUTDOORS model that stops a mic | OSHA-ELEC "Stay at least 10 feet away from overhead power lines" (summary §2 item 1; safety-critical) | APPLIED |
+| G6-02 | F09 | L42 | "move to safe shelter when thunder is heard" (no wait) | "…get inside a safe place at once — do not stay to finish a take. Wait 30 minutes after the last lightning or thunder" | NWS-LTG (summary §2 item 2) | APPLIED |
+| G6-03 | F10 | L44 | "waiting 30 minutes after the last thunder" | "30 minutes after the last lightning or thunder" (one shared constant, `location.ts` SAFETY_WORDS) | NWS-LTG (summary §2 item 2) | APPLIED |
+| G6-04 | F10 | plan scope | hydrophone / contact-sensor comparison expected in F10 | not in F10: hydrophones stay in F16, contact sensors in F04 (D-6B-4); F10 says nothing of them | summary §2 items 7, 8 | APPLIED |
+| G6-05 | F09, F10 | L2 | "Pro Audio Training Academy • Foley Field and Acoustical Lab F09/F10" | the registry's "Miking Lab 6: Foley, Field & Scientific" | summary §2 items 12, 13 | APPLIED |
+| G6-06 | F09 | L3, L44–L53 | "Students", "Guided teaching exercise", "Student observation sheet" | "you", PRACTICE, an optional observation sheet (scene and permission, mic, placement and channel, distance and shot, decision, limitation) | summary §2 item 14 | APPLIED |
+| G6-07 | F10 | L3, L45–L55 | "Students", "Guided teaching exercise", "Student field sheet" | "you", PRACTICE, an optional field sheet (site and permission, capture, position/front/channel map, destination, wind/weather/stand safety, converter and routing) | summary §2 item 14 | APPLIED |
+| G6-08 | F09 | L27, L32 | practitioner and maker names (Simon Hayes, David Thirion, DPA, Shure, RØDE, Sound Devices, Rycote) | no names; the practice kept in words | owner ruling 2026-10-04; BRAND_NAMES extended | APPLIED |
+| G6-09 | F10 | L13, L26, L31, L35 | KU 100, DPA 5100, Sennheiser AMBEO | generic types ("a model head", "a compact surround mic", "a first-order Ambisonic mic") | owner ruling 2026-10-04 | APPLIED |
+| G6-10 | F09 | — | boom distance not given | no number claimed as a rule: the start is 15 cm above the frame's top edge (proposal's drawing default), 45° above the mouth's axis (the lab's), the zone 35–120 cm; MEET IT's FRAME LINE step shows close / medium / wide shots moving it (55 / 61 / 90 cm, calculated from the drawing) | location_speech/SOURCES.md #3, #15 | APPLIED (drawing default) |
+| G6-11 | F09 | — | lav distance from mouth not given | read from the drawing (≈ 21 cm, "above the sternum" SHURE-LAV); zone 15–32 cm | location_speech/SOURCES.md #4 | APPLIED (drawing default) |
+| G6-12 | F09 | — | a shotgun's capsule sits behind its tube (part 1's `mic.ref` at the capsule) | the engine's rule kept: distances to the mic's FRONT; the words say the capsule is behind the slotted tube | consistency with every Miking lesson; part 1 may differ — OWNER REVIEW | APPLIED |
+| G6-13 | F09 | — | the shotgun's pattern | drawn as a supercardioid (a simplified picture: the tube narrows only the higher frequencies), said once | foley_footsteps/SOURCES.md §c | APPLIED |
+| G6-14 | F10 | — | no spacing for 5.0, IRT cross, Hamasaki square, Double M/S | drawn as "an example layout", never a number (`ARRAYS[…].example`, tested) | D-6B-7 | APPLIED |
+| G6-15 | F10 | — | dummy-head height not given | 1.7 m standing / 1.2 m seated (MEYER-MAPP listener heights), as the proposal aligns | spatial_field/GEOMETRY_PROPOSAL §2 | APPLIED |
+| G6-16 | F10 | L36 | FuMa vs ambiX | taught by name (channel conventions, not brands): FuMa W, X, Y, Z with W 3 dB down; ambiX W, Y, Z, X — the drill shows a wrong read putting a front source overhead | spatial_field/SOURCES.md #8 | APPLIED |
+| G6-17 | F09 | — | (setups) outdoors had no TWO MICS | `setupPairs`: the outdoor boom + body mic (the set's pair, its outdoor zones) | R-06 rule: the lesson's own zones | APPLIED |
+| G6-18 | F09, F10 | — | the shared `hearingCheck` / `matchedLevels` items start "Yes"/"Not" | each lesson's own wording (no yes/no key pattern in the new field lab) | test/mikingItemBalance yes/no balance per lab | APPLIED |
+| G6-19 | engine | — | a scene with two clip mics (a pole's grip and a lav's clip) attached each to the nearest rim | `Rim.types` (a rim serves only the named types) and `MicType.clip.arm` (a pole's thickness; no clamp jaw) — backward-compatible | needed for the boom + body mic on one talker | APPLIED |
+
+### OWNER REVIEW (defaults used; change any)
+- D-6B-5 people in art: the shared figure (talker, boom operator, singer, performer, walker), FigureHead — default used.
+- D-6B-6 Lab 7 overlap: one location kit (`lessons/shared/field/location.ts`, `LocationArt.tsx`) for F09 and Lab 7 B04/B05 — default used.
+- D-6B-7 example layouts without numbers — default used.
+- D-6B-9 safety numbers exact on screen — used.
+- G6-12: distances to the mic's front (engine) vs part 1's capsule reference for the shotgun — confirm one rule for both.
+- The A-format example capsule order (FLU, FRD, BLD, BRU) is a generic convention: a real mic's manual rules (said on screen).
+- The power line (5.2 m up, 1.2 m behind the talker) and the camera (2.5 m, three shot sizes) are drawing defaults.
+- Not built: Lab 6 part 1's moving-source path (`path.ts`) was not merged — F10's walker is a finger-scrubbed straight walk (`spatial.along`), to swap for the shared path tool when it lands. G-A's chain rack was not merged — the A-format drill is F10's own page step (`spatial.ts` model, pages.tsx), ready to move into the rack.
+
+
+## Lab 6 · group 5 · Systems, products and sensors: F14, F15, F16 (branch lab6-g5, 2026-10-08)
+
+Applied from `BATCH6_RESEARCH_SUMMARY_PART2.md` §2 (items 4, 5, 7, 9, 11, 12, 13, 14) and the folders' SOURCES.md
+(`loudspeaker_measurement/`, `machinery_sound/`, `scientific_arrays/`).
+
+| id | lesson | was | now | basis | status |
+|---|---|---|---|---|---|
+| G5-01 | F14 L24 (item 4) | "Meyer Sound describes practical line-array samples at the beginning, middle and end of coverage, with extra points for deep areas" | practice wording, no attribution: the start, middle and end of a main's coverage at an ear height (`vn.front` / `vn.mid` / `vn.rear`), "a deep room may need more than one"; the cited page gives only the 1.2 m / 1.7 m heights and front-to-back order | MEYER-MAPP (read: the wording is not on that page) | APPLIED |
+| G5-02 | F14 refs [1] = [12] (item 5) | one URL under two titles; ground-plane text attributed to it | one key, MEYER-MAPP; the ground plane taught as practice in words (context page card), never attributed | MEYER-MAPP | APPLIED |
+| G5-03 | F16 L102 (item 7) | cross-link "F10 water and hydrophone" | no cross-link printed; the hydrophone is F16's own (THE SPECIALIST KIT, hydrophone + units card); contact pickup stays with F15/F04 | survey | APPLIED |
+| G5-04 | F16 L36 (item 9, enrichment) | 1 µPa vs 20 µPa "not directly comparable" | units card: the references are 26 dB apart, equal intensities differ by about 61.5 dB in all, "not comparable by subtracting"; check `ar.two.3` explains why "subtract 26 dB" is wrong; a test pins that no correct answer says "subtract" | DOSITS-AW | APPLIED |
+| G5-05 | F16 L26 (item 11) | "unless calibrated specialist equipment and a qualified instructor are available" | "a qualified operator" (safety lines, D-6B-4 framing) | wording | APPLIED |
+| G5-06 | F14–F16 headers (item 12) | "Foley Field and Acoustical Lab F14/F15/F16" | registry name "Miking Lab 6: Foley, Field & Scientific" | registry | APPLIED |
+| G5-07 | F14–F16 (item 13) | "Pro Audio Training Academy" | stripped | wording | APPLIED |
+| G5-08 | F14–F16 (item 14) | the learner named as a pupil; "class exercise", "classroom claims", "Guided teaching exercise", the pupil's measurement / field / observation sheet; F15 "No student places contact sensors on …" | "you", Practice, the measurement / field / observation sheets (`logSheet.ts`: SYSTEM_SHEET, PRODUCT_SHEET, ARRAY_SHEET); F15 safety said as "you never place a sensor on, open, service or modify an operating machine" | wording | APPLIED |
+| G5-09 | F15 L5, L30, L86; F16 L25, L65 (D-6B-3) | ISO 3744:2025, ISO 11201/11202, ISO 9614-1/-2/-3 named; "Do not call an informal four-position walkaround 'ISO 3744 compliant'" | no standard named on screen: "the named sound-power method", "the method and its validity indicators", "an informal walk round the fan is not that method"; ISO 3744:2025 (ed. 4) kept internally as CONFIRMED | ISO-3744 | APPLIED |
+| G5-10 | F14 L6, L12; F15 L13–L14 | "documented" throughout | "logged / written down" (the learner-text ban on "documented") | wording | APPLIED |
+| G5-11 | F14 L15 | listener positions at "normal ear-height" (no number) | 1.2 m (4 ft) seated, 1.7 m (5.6 ft) standing — a sensible listener height, never the method's rule | MEYER-MAPP | APPLIED |
+| G5-12 | F15 L47 | the exercise device named but not drawn | a guarded desk fan is the only device drawn for placement; an industrial machine appears only as a no-go example (guard, interlocked door, disconnect with lockout padlock and tag; no mic, no sensor) | machinery_sound/GEOMETRY_PROPOSAL.md §2 | APPLIED |
+| G5-13 | F14 L26–L27 | reference tap and delay in prose | THE TAP AND THE DELAY: arrival = path ÷ c (calculator) + a processor latency for a pre-DSP tap (2 ms, a made-up example); a delay finder takes the strongest arrival — with the main left on, not the fill's first | systems.ts (tested) | APPLIED |
+| G5-14 | F14 L30 | "a short window loses low-frequency resolution" | THE WINDOW: a window of T resolves steps of about 1 ÷ T, with the arrivals from the bench room's mirror images | physics (CONFIRMED) | APPLIED |
+
+OWNER REVIEW (defaults applied):
+
+- **G5-D1 · F14 setups per scene.** The engine shows one scene's setups at a time, so the proposal's cross-scene roles
+  became: BENCH — ONE MIC on the axis at 2 m, TWO MICS axis + 30° off, the near-field woofer point as ANOTHER START;
+  VENUE — ONE MIC a mid-coverage seat, TWO MICS the front + rear of the left main's coverage, CLOSE · LIVE the main/fill
+  overlap seat, the aisle edge and the standing area as ANOTHER START; STUDIO — ONE MIC the listening position (left
+  monitor alone), TWO MICS + a head position 30 cm aside, 50 cm back as ANOTHER START. The proposal's ground-plane
+  start is taught in words only (no ground-plane scene). OWNER: approve, or ask for a ground-plane scene.
+- **G5-D2 · F14 drawing defaults.** Bench radius 2 m, off-axis 30° (25–35°), the near-field point 2–4.5 cm from the
+  baffle (the proposal's 10 mm gap from the cone); the venue (shared/measure/venue.ts: a 3 m stage 0.8 m high, mains at
+  the corners 2.6 m up, a sub on the floor, a front fill on the lip, ten rows, a standing area); studio monitors 1.6 m
+  apart in an equilateral triangle with the listening position; the processor latency (2 ms) and the arrival heights
+  are made-up examples, said on the glass. MICROPHONES credits THE TAP AND THE DELAY (the finder's trap), not the chain.
+- **G5-D3 · F15 keep-outs and positions.** Exclusion zone 0.3 m beyond the guard (proposal); the airflow cone read as
+  30° in all (15° each side), 2 m long. Position A sits 1 m out BESIDE the airflow (45° off it) — the source text's
+  airflow warning chosen over a user sitting in the jet; B a quarter-turn to the other side, C behind; TWO MICS = A + B
+  (the proposal's "A + contact sensor": the contact sensor is drawn installed on the housing, never placed by the
+  learner — D-6B-4); the detail mic ~0.6 m from the motor housing (CLOSE · LIVE), the far perspective ~2 m (FARTHER
+  BACK · STUDIO), both offering a pencil condenser. OWNER: approve A beside the jet.
+- **G5-D4 · F16 layout.** Baseline 0.5 m (proposal), a wider 1 m pair, a third element 25 cm behind the origin as the
+  "alternative layout" that breaks the front/back mirror (my default), the source 2 m out, the side point 1 m across.
+  ONE MIC = element L (the engine has no "one array" role; the proposal said n/a).
+- **G5-D5 · Claim ladders** (shared/measure/claimLadder.ts). F15: creative → relative → calibrated pressure → sound
+  power, plus an off-ladder "safe daily dose" claim; F16: observation → arrival order → direction estimate → sound power
+  (my rungs), plus an off-ladder "the hot spot is the fault". The numbers inside the claims (52 dBA, 48 dB, 25°, 60 dB)
+  are made-up claims to judge.
+- **G5-D6 · F15 cycle strip** (shared/measure/cycle.ts): its shape, timings and three rattles are a made-up example in
+  relative dB; the sample's energy average goes through the SPL calculator (calcBridge.leqOf).
+- **G5-D7 · F16 probe band.** The band per spacer (12 / 25 / 50 mm) is not printed — PROBE-SPACER is one maker's set via a
+  search snippet; the page says "a wider spacer toward the lows, a narrower one toward the highs; its data gives each".
+- **G5-D8 · F16 specialist kit** drawn as generic objects (an acoustic camera with spiral-arm capsules, an ultrasonic
+  detector, a hydrophone on a mooring); two checks use "bat calls that reach 60 kHz" as a premise (USGS NABat not
+  re-read; no call frequency is taught as a fact).
+- **G5-D9 · SETUP_PICKS** (engine/setups.ts, one "Lab 6 group 5" block): F14 close = the overlap seat, no farther;
+  F15 close = the detail mic, farther = the far perspective; F16 none.
+- **No new calculator.** λ/2 calls `speedOfSoundAir`; Δt calls `twoMic.deltaTms`; the cycle's average calls `leq`; the
+  window's 1 ÷ T is the physics itself. Nothing for `audio-tools-engine`.
+## Lab 7 · group 1 · Desk and studio voice: B01, B07, B06 (branch lab7-g1, 2026-10-08)
+
+Built by the Lab 7 group 1 builder (G1 of `BUILD_PROMPTS_lab7a.md`). Research: `radio_host/`, `voiceover_guests/`, `panels_press/`, `BATCH7_RESEARCH_SUMMARY.md` §2–§5; the Lab 7a register `radio_host/SOURCES.md` §0; keys added to `SOURCES_SHARED.md` §17. Shared kit: `lessons/shared/broadcast/`.
+
+| id | Lesson | Line | Lesson says | App says | Why / source | Status |
+|---|---|---|---|---|---|---|
+| L7G1-01 (B01-1) | B01 | L38 | "Open channels one at a time at a controlled level … check for feedback and monitor spill" | "Bring each mic up only to its working level with the responsible operator; at any ring, pull that channel down at once and fix the geometry — never raise a level to find feedback" (BEFORE ANY MIC, check b1.set.3, critical quick-check q.3, the live symptom) | Lab 5 §0.4 no-provocation rule; summary §2 item 3 | APPLIED |
+| L7G1-02 (B06-1) | B06 | L27 | "Shure describes a centered position around eight inches below the mouth for one lectern use" | the lectern gooseneck "about 25–36 cm (10–14 in) from the lips, a little off the mouth’s line and below it" (zone b6.lectern 254–355.6 mm, 10–35° off the axis); the 8 in centred figure is the same article’s omni lavalier and is not shown | S-CHURCH "10"-14" and a little off-center"; summary §2 item 1 | APPLIED |
+| L7G1-03 (B-INST) | B01, B07, B06 | B01 L2, L39, L40; B07 L2, L47; B06 L2, L56 | "Pro Audio Training Academy • Sports and Broadcasting Lab B0n", "the student", "Student placement sheet" | the registry’s "Miking Lab 7: Sports & Broadcast"; "you"; an optional "placement sheet" / "placement card" on PRACTICE | summary §2 item 4 | APPLIED |
+| L7G1-04 (B-XLINK) | B01, B07 | B01 L83 (F13, "B02 onward"); B07 L24 ("Cross-link B05") | in-lesson cross-links | no in-app link (B02–B05 and F13 are not in this branch’s Lab 7 / no link built); the body-mic idea is said in words (a headset row from Lab 5) | Lab 5 rule; summary §2 item 6; tested (no "B0n"/"F13" in learner text) | APPLIED |
+| L7G1-05 (B-REF) | all three | references | titles only, no URLs | nothing on screen (owner ruling 2026-10-04); URLs stay in `radio_host/SOURCES.md` §0 for the owner to add to the documents | summary §2 item 5 | OWNER ACTION |
+| L7G1-06 | B01, B06 | B01 L27; B06 L32 | "Avoid claiming a fixed 3:1 rule … a heuristic" | 3:1 shown only as a NOTE in the open-mics step ("a helpful starting idea, not a test"); a setup reason claiming 3:1 guarantees a clean mix is graded WRONG; never a pass gate (tested) | owner list item 3; S-LIVE | APPLIED |
+| L7G1-07 | B01 | L12, L15 | two device ranges (SM7B 1–6 in, RØDE dynamic 4–6 in, condenser 6–8 in) | three zones without names: b1.dyn 10–15 cm (worked), b1.close 2.5–15 cm ("for a live show"), b1.cond 15–20 cm | D-HOST1: one zone per range, no brands | APPLIED |
+| L7G1-08 | B07 | L12, L15 | DPA ~4 in / SM7B 1–6 in close; DPA ~12 in / Neumann 8–12 in moderate | b7.close 2.5–15 cm started at 10 cm; b7.moderate 20–30 cm; Neumann’s range noted internally as a singer’s set-up | D-VO1 | APPLIED |
+| L7G1-09 | B01, B07, B06 | — | (setups) every desk mic hangs on an arm or a gooseneck — an engine 'clip' mount the distance rule never takes as a farther start | `SETUP_PICKS` (engine/setups.ts, one Lab 7 block): B01 distant b1.cond; B07 close b7.live; B06 close none (the aisle mic is not a live start for the presenter); B06 panel pair via `setupPairs` (two panelists’ goosenecks) | R-06 rule: the lesson’s own zones | APPLIED |
+| L7G1-10 | engine | — | a desk arm and a gooseneck drawn as a straight clamp arm | `MicType.clip.style` 'deskArm' (two segments through a raised elbow, `elbow.a/b`) and 'gooseneck' (a curve into the tail): drawing only, the collision keeps its one arm capsule (geometry/arm.ts, tested) | needed for the broadcast mounts; backward-compatible | APPLIED |
+| L7G1-11 | B01, B07 | — | the variants | B01 split STUDIO (one host) / TWO HOSTS / LIVE SHOW and B07 BOOTH / LIVE DESK / GUEST DESK, so a one-mic setup is drawn close (a two-person frame made a 12 cm distance ~20 px on a phone) | Lab 5’s setupFrameMax lesson | APPLIED |
+| L7G1-12 | B01 | L18, L24 | "Mount clear of the script and sight line" | said in words; the laptop is a solid; the eyes-to-screen keep-out capsule was dropped (it crossed every close start: the screen sits low and to the side) | geometry | APPLIED (words only) |
+
+### OWNER REVIEW (defaults used; change any)
+- Seated talker (frame B): desk 740 mm, the lips 450 mm above it, the seat 470 mm, the desk’s front edge 6 cm ahead of the lips (the host leaning in a little) — proposal §1 defaults (the 6 cm edge is the lab’s: with 15 cm the desk bounce of a close mic fell off the desk).
+- Head turn: yaw ±60°, pitch −25° … +10°, about the head’s centre — drawing defaults.
+- Desk arm: 420 + 400 mm segments, a 120 mm riser post on a clamp at the desk’s front edge 35 cm to the host’s left; gooseneck reach 46 cm, capsule head 60 mm — drawing defaults. The broadcast dynamic’s body 190 × 60 mm — a drawing default (no outline read).
+- B01 desk 1.4 m deep × 1.3 m, the second host 1.5 m lip to lip; the live show’s PA at the stage’s front corner (2.6 m out, 1.1 m left, 1.7 m up).
+- B07 script stand 38 cm out, 30 cm below the lips, tilted back 35°, 30 × 50 cm; the guest desk as B01’s; a desk monitor loudspeaker 26 cm tall (OFF in the words; the context exercise asks “if it had to stay on”).
+- B06 panel: seat pitch 70 cm, table 70 cm deep with a skirt, gooseneck bases 33 cm out and 21 cm left; the panel gooseneck 20–30 cm (the proposal’s 25 cm), 10–35° below the mouth; the shared boundary between panelists 2 and 3; the lectern top 37–43 cm below the lips; the aisle mic 1.6 m out, 1 m right; the PA at the stage’s front corner.
+- O-LEC: only the 10–14 in lectern start is drawn; S-PODIUM’s 7–10 in gain-setting distance is not shown (proposal: "only if the owner wants").
+- Routing depth (owner list item 6): one WHERE EACH MIC GOES step on STARTING SETUPS per lesson (B01 guest heard / guest return; B07 remote return / talkback; B06 question mic / ambience mic / the reporter’s input level on the press box). The press box is drawn with 12 isolated outputs (the example product’s count; never said).
+- 3:1 at a desk/table: a note only, never graded (owner list item 3) — used.
+- Brand list: no new brand appears in learner text; the Lab 7a names (RØDE, Rode, Rycote, Sound Devices, AMBEO, National Weather Service) were already in BRAND_NAMES; the rest of summary §5 item 8 (Countryman, Professional Sound/PSC, SM7B, ME 2/3, MD 46, RE 50, invisiLav, Press Train/Bridge, DCA 901, SCM 410, BLX4R, MV7, PodMic) added to BRAND_NAMES.

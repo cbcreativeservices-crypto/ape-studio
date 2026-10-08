@@ -20,7 +20,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How it makes its sound',
-    goal: 'See how a strum or pluck becomes sound — the string, the bridge, the small top and the air in the body — and where it leaves. Shown, never played.',
+    goal: 'See how a strum or pluck becomes sound — the string, the bridge, the small top and the air in the body — and where it leaves.',
     credit: { scenarios: [`${P}.snd.1`, `${P}.snd.2`, `${P}.snd.3`], interactive: 'soundPath', note: 'Step the pluck through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The sound hole is not the whole instrument: the top radiates too, and the strings carry the detail. A close mic hears the small part it faces.',
   },

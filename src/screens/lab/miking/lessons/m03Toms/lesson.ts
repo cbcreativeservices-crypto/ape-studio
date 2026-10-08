@@ -24,7 +24,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'How they make their sound',
-    goal: 'See how a stroke becomes sound in a tom — the stick, both heads, the air inside — and how the drums’ sizes set their pitch order. Shown, never played.',
+    goal: 'See how a stroke becomes sound in a tom — the stick, both heads, the air inside — and how the drums’ sizes set their pitch order.',
     credit: { scenarios: ['tm.snd.1', 'tm.snd.2', 'tm.snd.3'], interactive: 'soundPath', note: 'Step the stroke through to the end (or play it once), and answer the three checks.' },
     takeaway: 'The attack starts where the stick meets the batter head; both heads and the air ring on as the body — often a clear pitch. Bigger toms ring lower. A mic hears more of what it is closer to and faces: tendencies, and drums vary.',
   },

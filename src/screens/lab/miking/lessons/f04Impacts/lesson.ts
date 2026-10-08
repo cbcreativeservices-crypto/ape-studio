@@ -32,7 +32,7 @@ const pages: LessonPages = {
   },
   sound: {
     title: 'Where these sounds come from',
-    goal: 'See how each action becomes sound — the attack (contact, entry, friction), the body (the table, the bubbles and the wall, the board) and the tail — and where each starts. Shown, never played.',
+    goal: 'See how each action becomes sound — the attack (contact, entry, friction), the body (the table, the bubbles and the wall, the board) and the tail — and where each starts.',
     credit: { scenarios: ['f04.snd.1', 'f04.snd.2', 'f04.snd.3'], note: 'Answer the three checks.' },
     takeaway: 'The attack is sharp and brief, the body and the tail longer and quieter. Set the gain on the strongest hit, let the tail finish — and decide which part the scene needs.',
   },
