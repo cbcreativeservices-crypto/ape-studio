@@ -54,7 +54,7 @@ const pages: LessonPages = {
     title: 'A source passing by',
     goal: 'Walk one source past two fixed mics: see each mic’s level rise and fall along the path, the aim across or along it, and the delay between the mics change from point to point.',
     credit: { scenarios: ['mo.two.1', 'mo.two.2', 'mo.two.3'], interactive: 'passBy', note: 'Walk the source from end to end AND try both aims, then answer the three checks.' },
-    takeaway: 'A fixed mic covers a moving source well over part of its path; two mics stay in time only where their paths are equal. Choose a dominant feed per sector — never one delay for every point.',
+    takeaway: 'A fixed mic covers a moving source well over part of its path; two mics stay in time only where their paths are equal. Choose a dominant feed per sector — not one delay for every point.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -622,7 +622,7 @@ export const B16_LESSON: Lesson = {
       { id: 'weather', label: 'wind, rain, heat and dust', short: 'WEATHER', note: 'A windscreen is not waterproofing; a rain cover meant for between takes is not for recording. Check each component’s limits.', prov: { kind: 'illustrative', reason: 'the lesson L217–L218' }, tag: 'WIND', scene: 'all' },
     ],
     stage: 'Commentary, approved cues and music, action and the audience stay separately controllable; action and ambience reach a venue loudspeaker only when required and reviewed. Meter the program sum and check the picture’s sync through the real chain.',
-    studio: 'A walking person in a quiet room is not a racing car, a horse or a swimmer: the practice teaches the geometry of a pass, never the peaks or the speed of a real one.',
+    studio: 'A walking person in a quiet room is not a racing car, a horse or a swimmer: the practice teaches the geometry of a pass, not the peaks or the speed of a real one.',
   },
   diagnostic,
   practice: {

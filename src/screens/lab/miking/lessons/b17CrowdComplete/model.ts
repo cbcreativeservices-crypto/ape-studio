@@ -19,7 +19,6 @@ import type { DocumentedZone, MicPose, Provenance } from '../../engine/model/typ
 import { engineAim, p2, toEngine, type P2 } from '../shared/sports/venuePlan.ts';
 import { PC, crowdP } from '../shared/sports/practiceScenes.ts';
 import { sportPlan } from '../shared/sports/sportPlans.ts';
-import { withInsetRoom } from '../shared/sports/arenaPlans.ts';
 import type { CoverageTask, PlanZone, SportMic, SportSetup } from '../shared/sports/sportsPages';
 import type { MsSource } from '../shared/sports/arenaPages';
 import { aimRel } from '../shared/sports/venuePlan.ts';
@@ -114,8 +113,9 @@ export const B17_SETUPS: SportSetup[] = [
     line: 'The complete, stable audience picture: the main bed carries the event, the spots fill named gaps. More inputs, more overlap to manage.',
     mics: [m('main', 'ab', 'main ambience', ctr('main'), 2.4, p2(4, -9.7), 1.2), m('spL', 'xy', 'audience spot', ctr('spotL'), 1.6, p2(-2, -10), 1.2, 'cardioid'), m('spR', 'xy', 'audience spot', ctr('spotR'), 1.6, p2(30, -10), 1.2, 'cardioid')],
     scene: AR,
-    box: withInsetRoom({ ...AR.frame, y1: AR.frame.y1 + 1.5 }),
+    box: { ...AR.frame, y1: AR.frame.y1 + 3.5 },
     noRange: true,
+    noCloseUp: true,
   },
   { id: 'su.ms', role: 'ANOTHER START', core: false, title: 'Mid-Side at S', type: 'a forward cardioid over a side-facing figure-8', start: 'At S, the Mid aimed at U2, the Side’s positive lobe facing the side called left — decoded once, with a modest width.', line: 'The width set after the capture; the mono sum is the Mid alone, whatever the width.', mics: [MS_S] },
   { id: 'su.ortf', role: 'ANOTHER START', core: false, title: 'A near-coincident pair at S', type: 'two small cardioids, 17 cm apart, 110° between their axes', start: 'The same centre and aim as the XY pair; the source sequence unchanged.', line: 'Level and arrival differences together: a wider image — compare the centre and the mono colour.', mics: [ORTF_S] },

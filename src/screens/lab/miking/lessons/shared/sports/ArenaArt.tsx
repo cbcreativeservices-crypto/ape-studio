@@ -208,13 +208,13 @@ export function G3MicGlyph({ at, aimDeg, kind, px, sizePx = 30, tint }: { at: P2
       </Group>
     );
   // ORTF: two small condensers splayed ±55°, close together; spaced: two parallel, apart.
-  const pair = kind === 'ortf' ? [-55, 55].map((a) => ({ a, dx: (a < 0 ? -1 : 1) * 16 })) : [0, 0].map((a, i) => ({ a, dx: i === 0 ? -46 : 46 }));
+  const pair = kind === 'ortf' ? [-55, 55].map((a) => ({ a, dx: (a < 0 ? -1 : 1) * 68 })) : [0, 0].map((a, i) => ({ a, dx: i === 0 ? -46 : 46 }));
   return (
     <Group transform={[{ translateX: o.u }, { translateY: o.v }, { rotate: rot }, { scale: k }]}>
       <Path
         path={(() => {
           const b = make();
-          b.addRRect(Skia.RRectXY(Skia.XYWHRect(-60, 22, 120, 9), 3, 3));
+          b.addRRect(Skia.RRectXY(Skia.XYWHRect(-84, 44, 168, 9), 3, 3));
           return b;
         })()}
         color="#2b2d33"

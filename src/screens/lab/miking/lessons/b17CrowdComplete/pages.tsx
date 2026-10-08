@@ -89,7 +89,7 @@ const METHODS: Method[] = [
   { id: 'xy', label: 'A coincident XY pair', short: 'XY', gives: 'Width from level differences only: a solid mono sum.', limit: 'Its off-axis tone at the sides; the width depends on the angle between the capsules.', mics: [XY_S], note: 'A starting comparison: cardioids about 90° apart.' },
   { id: 'ortf', label: 'A near-coincident pair', short: 'NEAR-COINC.', gives: 'Level and arrival differences together: a wider, more open image.', limit: 'Some colour in the mono sum from the small spacing.', mics: [ORTF_S], note: 'Two cardioids 17 cm apart, 110° between their axes — a fixed geometry.' },
   { id: 'ab', label: 'Spaced omnis', short: 'SPACED', gives: 'A spacious picture with the venue’s low end.', limit: 'Larger arrival differences: a shared announcement or action transient can colour in mono; more nearby movement.', mics: [AB_S], note: 'A starting trial: about 0.5 m apart, the separation logged.' },
-  { id: 'ms', label: 'Mid-Side', short: 'M/S', gives: 'A forward Mid and a side-facing figure-8, decoded to left and right — the width chosen after the capture.', limit: 'The Side’s lobes must be oriented and decoded correctly; independent processing on the two paths breaks the matrix.', mics: [MS_S], note: 'Decode once; check that a source at the positive lobe appears on the intended side.' },
+  { id: 'ms', label: 'Mid-Side', short: 'M/S', gives: 'A forward Mid and a side-facing figure-8, decoded to left and right — the width chosen after the capture.', limit: 'The Side’s lobes need to be oriented and decoded correctly; independent processing on the two paths breaks the matrix.', mics: [MS_S], note: 'Decode once; check that a source at the positive lobe appears on the intended side.' },
 ];
 
 function B17Microphone(p: PageProps) {
@@ -190,7 +190,7 @@ function B17Context(p: PageProps) {
     },
     points: [
       { title: 'INTERNATIONAL SOUND', text: 'An agreed effects and venue mix without the local commentary: what goes into it — the PA, music, interviews — is decided by the rights and the contract.' },
-      { title: 'MUTED FOR TALKBACK', text: 'When the commentator mutes to talk to the producer, the audience bed stays steady underneath — the crowd must not vanish with the speech.' },
+      { title: 'MUTED FOR TALKBACK', text: 'When the commentator mutes to talk to the producer, the audience bed stays steady underneath — the crowd should not vanish with the speech.' },
       { title: 'REPLAYS', text: 'Avoid doubled live and replay effects, and a delayed return looping back into the mix.' },
     ],
   });
@@ -218,7 +218,7 @@ function B17TwoMic(p: PageProps) {
   const lead = (
     <Card>
       <Point title="A CALCULATED EXAMPLE">{`A path difference of 3.43 m is about ${EX_DT.toFixed(0)} ms at the speed of sound; two equal copies of one sound that far apart cancel near ${EX_N.map((f) => `${Math.round(f)}`).join(', ')} Hz and on up. Real levels, reflections and responses make the notches shallower or move them — an idea to check by ear, not a stadium measurement.`}</Point>
-      <Point title="USE A DELAY FOR A NAMED PROBLEM">Measure a stationary, shared transient, try a delay on the earlier path, keep an untouched comparison — and retest elsewhere. Never delay the whole ambience to line it up with one action: the later room arrival can be the perspective you want.</Point>
+      <Point title="USE A DELAY FOR A NAMED PROBLEM">Measure a stationary, shared transient, try a delay on the earlier path, keep an untouched comparison — and retest elsewhere. Avoid delaying the whole ambience to line it up with one action: the later room arrival can be the perspective you want.</Point>
     </Card>
   );
   return <PageSteps steps={[overlap, checkStep(p, 'twoMic', lead)]} />;

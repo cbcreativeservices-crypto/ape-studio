@@ -224,7 +224,7 @@ export function usePassByStep(spec: PassBySpec): MikingStep {
           <Point title="THE AIM">{aim === 'across' ? 'Aimed across: a short, strong sector where the source passes in front — it leaves the mic quickly.' : 'Aimed along the path: the approach stays on the axis longer, the useful sector stretches — and more of whatever lies beyond (a crowd, a loudspeaker) sits on the axis too.'}</Point>
         </Card>
         <Note tone="info">{PITCH_NOTE}</Note>
-        {complete ? <Note tone="ok">{`One fixed mic covers a moving source well only over part of its path, and two mics hear it in time only where their paths are equal. Choose a dominant mic per sector or hand off — never one delay for every point. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>Walk the source from one end to the other, and try both aims.</Body>}
+        {complete ? <Note tone="ok">{`One fixed mic covers a moving source well only over part of its path, and two mics hear it in time only where their paths are equal. Choose a dominant mic per sector or hand off — not one delay for every point. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>Walk the source from one end to the other, and try both aims.</Body>}
       </>
     ),
   };
@@ -455,10 +455,10 @@ export function useMsWidthStep({ sources, onInteractive, done }: { sources: read
                   <DashPathEffect intervals={[3 * px, 4 * px]} />
                 </Path>
                 <Path path={ray} style="stroke" strokeWidth={1.6 * px} color={AMBER} opacity={0.7} />
-                <Group transform={[{ translateX: 0 }, { translateY: 70 }, { rotate: Math.PI / 2 }, { scale: 1.4 }]}>
+                <Group transform={[{ translateX: 115 }, { translateY: 120 }, { rotate: Math.PI / 2 }, { scale: 2.4 }]}>
                   <MikingMicArt art="sideLdc" r={22} len={96} cross={44} />
                 </Group>
-                <Group transform={[{ translateX: 0 }, { translateY: -20 }, { scale: 1.4 }]}>
+                <Group transform={[{ translateX: 0 }, { translateY: -40 }, { scale: 2.4 }]}>
                   <MikingMicArt art="sdc" r={10.5} len={104} />
                 </Group>
               </Group>
@@ -511,7 +511,7 @@ export function useMsWidthStep({ sources, onInteractive, done }: { sources: read
         <Card>
           <Point title="THE MATRIX">{`Left = Mid + k × Side; Right = Mid − k × Side. Add them and halve: (L + R) ÷ 2 = Mid — the Side cancels. Here the source gives Mid ${d.mono.toFixed(2)}, left ${d.L.toFixed(2)}, right ${d.R.toFixed(2)}.`}</Point>
           <Point title="THE WIDTH">{k === 0 ? 'No Side at all: left and right are the same — mono in two channels.' : k > 1 ? 'Wide: each side’s pickup grows a rear lobe of the opposite polarity, and the image can pull to the edges. Start modest.' : 'A modest width: the left channel favours the left, the right the right, and the centre stays in the centre.'}</Point>
-          <Point title="CHECK">Decode once, with the Side’s positive lobe facing the side you call left; then compare stereo and mono. A source at the positive lobe must appear on the intended side.</Point>
+          <Point title="CHECK">Decode once, with the Side’s positive lobe facing the side you call left; then compare stereo and mono. A source at the positive lobe should appear on the intended side.</Point>
         </Card>
         {complete ? <Note tone="ok">Width is a decision made after the capture: the mono sum keeps the Mid whatever k is. Start with a modest width, check left and right with a gentle source, and listen in mono.</Note> : <Body>Take the width to none and to wide, and look from two sources.</Body>}
       </>

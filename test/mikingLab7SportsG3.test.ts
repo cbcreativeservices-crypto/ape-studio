@@ -256,6 +256,8 @@ describe('the placement zones and setups sit in approved, clear places', () => {
       for (const s of c.setups) {
         if (s.scene) {
           assert.ok(s.noRange, `${s.id}: a sport outline prints no range`);
+          // Its capsule height is a drawing default: no close-up prints it (the hydrophone's section prints none).
+          if (s.scene.id !== 'container') assert.ok(s.noCloseUp, `${s.id}: no close-up on a venue outline`);
           for (const m of s.mics) if (s.scene.id !== 'container') assert.equal(refusedAt(s.scene, m.at), null, `${s.id}/${m.id}`);
           continue;
         }

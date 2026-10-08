@@ -84,7 +84,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'Planning a whole sports picture, what do you settle first?',
     options: ['A stable viewpoint for the audience', 'The closest possible action detail', 'How many spare inputs the mixing desk has'],
     correct: 'A stable viewpoint for the audience',
-    explain: 'Choose a stable main viewpoint first, then decide which action deserves closer detail. The close effect and the distant ambience need not match in distance — but together they must stay believable.',
+    explain: 'Choose a stable main viewpoint first, then decide which action deserves closer detail. The close effect and the distant ambience need not match in distance — but together they should stay believable.',
     why: {
       'The closest possible action detail': 'Detail sits on top of a picture; it is not the picture.',
       'How many spare inputs the mixing desk has': 'Spare inputs are not a plan; roles are.',
@@ -362,7 +362,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'One side of the stereo audience pair fails mid-event. What do you send?',
     options: ['A known-good mono version', 'The one side, panned to centre', 'Nothing until the pair is fixed'],
     correct: 'A known-good mono version',
-    explain: 'Use the verified mono or stereo fallback, and say which version failed; never present one failed side of a pair as a stereo mix.',
+    explain: 'Use the verified mono or stereo fallback, and say which version failed; do not present one failed side of a pair as a stereo mix.',
     why: {
       'The one side, panned to centre': 'One side of a pair is a lopsided picture, not a verified version.',
       'Nothing until the pair is fixed': 'The bed has to continue; that is what the fallback is for.',
@@ -437,7 +437,7 @@ const symptoms: Symptom[] = [
     firstChecks: 'The cable labels, the powering, the converter inputs?',
     options: ['Switch to the verified fallback', 'Relabel another channel to fill it', 'Send the three channels left'],
     correct: 'Switch to the verified fallback',
-    explain: 'Use the verified stereo or mono fallback and identify the failed version; never silently relabel a channel or send an unverified subset.',
+    explain: 'Use the verified stereo or mono fallback and identify the failed version; do not silently relabel a channel or send an unverified subset.',
     why: {
       'Relabel another channel to fill it': 'A relabelled channel sends sound to the wrong place.',
       'Send the three channels left': 'An unverified subset is not a known-good version.',
@@ -598,9 +598,9 @@ export const B17_LESSON: Lesson = {
     stages: [
       { title: 'Many sources', text: 'Conversation, nearby voices, chants, applause and sudden reactions — plus the PA and music, strongly the same in every mic.' },
       { title: 'Near and far', text: 'The same pair hears the room’s diffuse tail and one clear nearby spectator. A full audience absorbs, adds noise and peaks in ways an empty room cannot.' },
-      { title: 'Everything together', text: 'Commentary, action and audience must stay intelligible and believable together — through quiet speech, excited speech, a crowd rise and a cue.' },
+      { title: 'Everything together', text: 'Commentary, action and audience need to stay intelligible and believable together — through quiet speech, excited speech, a crowd rise and a cue.' },
     ],
-    attack: 'A collective reaction, a cue, an action transient — the peaks the program must survive.',
+    attack: 'A collective reaction, a cue, an action transient — the peaks the program has to survive.',
     body: 'The audience bed — the venue’s identity under everything else.',
     head: { diameterMm: 0, rods: 0, label: 'the mock venue', strikeSrc: 'LESSON-B17' },
   },
@@ -614,7 +614,7 @@ export const B17_LESSON: Lesson = {
       { id: 'weather', label: 'wind, rain and rails', short: 'WEATHER', note: 'Wind and handling eat headroom; a rail carries structure noise; a windscreen is not waterproofing, and a between-takes rain cover is not for recording.', prov: { kind: 'illustrative', reason: 'the lesson L190–L191' }, tag: 'WIND', scene: 'all' },
     ],
     stage: 'Speech at a conservative level first, then a stable ambience, then the action detail — checked through quiet narration, excited narration, a crowd rise and a cue. No fixed speech-to-crowd ratio: the audience, the venue and the delivery decide.',
-    studio: 'An empty or quiet room cannot predict a full audience’s absorption, noise and reactions: the practice teaches the geometry and the routing, never the real crowd’s peaks.',
+    studio: 'An empty or quiet room cannot predict a full audience’s absorption, noise and reactions: the practice teaches the geometry and the routing, not the real crowd’s peaks.',
   },
   diagnostic,
   practice: {

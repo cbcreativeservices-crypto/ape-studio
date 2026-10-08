@@ -91,7 +91,7 @@ export type SetupRole = 'ONE MIC' | 'TWO MICS' | 'CLOSE · LIVE' | 'FARTHER BACK
 /** A STARTING SETUP drawn on a plan (the lesson's own, from its research). */
 /** `noRange`: drawn on a real sport's outline (its size a drawing default) —
  *  no range is printed. */
-export type SportSetup = { id: string; role: SetupRole; core: boolean; title: string; type: string; start: string; line: string; mics: SportMic[]; scene?: VenueScene; box?: PlanRect; noRange?: boolean };
+export type SportSetup = { id: string; role: SetupRole; core: boolean; title: string; type: string; start: string; line: string; mics: SportMic[]; scene?: VenueScene; box?: PlanRect; noRange?: boolean; /** Lab 7b group 3: no corner close-up (a venue outline's capsule height is a drawing default, never printed). */ noCloseUp?: boolean };
 
 export const micAimDeg = (m: Pick<SportMic, 'at' | 'aimAt'>): number => degOf({ x: m.aimAt.x - m.at.x, y: m.aimAt.y - m.at.y });
 export const planBox = (r: PlanRect): ViewBox => rectUV(r);
@@ -412,7 +412,7 @@ export function useRangeStep({ scene, from, fromH, fromLabel, prediction, box, p
 
 /* ═════════ MICROPHONES · the pickup methods ═════════ */
 
-export type Method = { id: string; label: string; short: string; gives: string; limit: string; mics: SportMic[]; scene?: VenueScene; box?: PlanRect; note?: string };
+export type Method = { id: string; label: string; short: string; gives: string; limit: string; mics: SportMic[]; scene?: VenueScene; box?: PlanRect; note?: string; /** Lab 7b group 3: no corner close-up (see SportSetup). */ noCloseUp?: boolean };
 
 export function useMethodsStep({ scene, methods, box, prediction, prompt, done }: { scene: VenueScene; methods: readonly Method[]; box?: PlanRect; prediction?: Prediction; prompt: string; done: string }): MikingStep {
   const [id, setId] = useState(() => methods[Math.min(devIndex('method'), methods.length - 1)].id);
@@ -427,7 +427,7 @@ export function useMethodsStep({ scene, methods, box, prediction, prompt, done }
     layout: 'rack',
     rack: {
       render: (w, h) => (
-        <PlanStage w={w} h={h} scene={sc} box={mt.box ?? (mt.scene ? undefined : box)} a11y={`${mt.label}. ${mt.gives} ${mt.limit}`} labels={venueLabels(sc, { layers: false })} inset={mt.mics[0] ? micCloseUp(mt.mics[0], closeUpAt(mt.mics[0], mt.box ?? (mt.scene ? sc.frame : box ?? sc.frame))) : null}>
+        <PlanStage w={w} h={h} scene={sc} box={mt.box ?? (mt.scene ? undefined : box)} a11y={`${mt.label}. ${mt.gives} ${mt.limit}`} labels={venueLabels(sc, { layers: false })} inset={mt.mics[0] && !mt.noCloseUp ? micCloseUp(mt.mics[0], closeUpAt(mt.mics[0], mt.box ?? (mt.scene ? sc.frame : box ?? sc.frame))) : null}>
           {(px, g) => (
             <>
               {mt.mics.map((m) => (
@@ -515,7 +515,7 @@ export function useSetupsStep({ p, scene, setups, box, prompt }: { p: PageProps;
     rack: {
       render: (w, h) =>
         sel ? (
-          <PlanStage w={w} h={h} scene={sc} box={sel.box ?? box} a11y={`${sel.role}: ${sel.title}. ${sel.start}`} labels={labels} inset={m0 ? micCloseUp(m0, closeUpAt(m0, sel.box ?? box ?? sc.frame)) : null}>
+          <PlanStage w={w} h={h} scene={sc} box={sel.box ?? box} a11y={`${sel.role}: ${sel.title}. ${sel.start}`} labels={labels} inset={m0 && !sel.noCloseUp ? micCloseUp(m0, closeUpAt(m0, sel.box ?? box ?? sc.frame)) : null}>
             {(px, g) => (
               <>
                 {sel.mics.map((m) => (

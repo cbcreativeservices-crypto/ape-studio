@@ -425,5 +425,10 @@ export const TRACK_GYM_COMBAT: readonly ArenaSportId[] = ['track', 'gymnastics',
 export const MOTOR_HORSE_WATER: readonly ArenaSportId[] = ['circuit', 'jumping', 'pool'];
 
 /** A view box with room on the right for a setup's corner close-up (the
- *  inset takes the top-right 38 % of the display): the plan keeps the left. */
-export const withInsetRoom = (r: PlanRect): PlanRect => ({ x0: r.x0, y0: r.y0, x1: r.x1 + (r.x1 - r.x0) * 0.62, y1: r.y1 });
+ *  inset takes the top-right 38 % × 46 % of the display). */
+export function withInsetRoom(r: PlanRect): PlanRect {
+  const w = r.x1 - r.x0;
+  const h = r.y1 - r.y0;
+  // A wide plan gets the room above it (it sits low, under the box); a squarer one to its right.
+  return w / h > 1.4 ? { ...r, y0: r.y0 - h * 0.08, y1: r.y1 + h } : { ...r, x1: r.x1 + w * 0.62 };
+}

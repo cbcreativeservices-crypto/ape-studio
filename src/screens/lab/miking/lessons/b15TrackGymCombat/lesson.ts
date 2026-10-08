@@ -223,7 +223,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'M1 moves from 2 m to 4 m from B, the room unchanged. What do you expect?',
     options: ['About 6 dB less source against the room', 'The same balance, just a little quieter', 'More isolation, as the mic is farther away'],
     correct: 'About 6 dB less source against the room',
-    explain: 'Doubling the distance costs about 6 dB of direct sound in the open; the room does not drop with it. Compare after matching loudness — and never carry the range into a live sport.',
+    explain: 'Doubling the distance costs about 6 dB of direct sound in the open; the room does not drop with it. Compare after matching loudness — and do not carry the range into a live sport.',
     why: {
       'The same balance, just a little quieter': 'The source drops; the room stays — the balance changes.',
       'More isolation, as the mic is farther away': 'Farther means less isolation from the room, not more.',
@@ -235,7 +235,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'FROM EARLIER · What are the practice room’s 2 m and 2.83 m?',
     options: ['The practice’s own layout, not a clearance', 'The sport’s smallest safe mic distance', 'The distances a live event will approve'],
     correct: 'The practice’s own layout, not a clearance',
-    explain: 'They are mock coordinates for a quiet room. A live event’s places come from its own approved survey — never carried over from the practice.',
+    explain: 'They are mock coordinates for a quiet room. A live event’s places come from its own approved survey — not carried over from the practice.',
     why: {
       'The sport’s smallest safe mic distance': 'No sport’s rule is behind the practice layout.',
       'The distances a live event will approve': 'A live event approves its own places from its own plan.',
@@ -609,7 +609,7 @@ export const B15_LESSON: Lesson = {
       { id: 'weather', label: 'wind, rain, sweat and dust', short: 'WEATHER', note: 'A windscreen is not waterproofing and humidity tolerance is not immersion protection; mute and replace a soaked mic only when released.', prov: { kind: 'illustrative', reason: 'the lesson L169–L179' }, tag: 'WIND', scene: 'all' },
     ],
     stage: 'Commentary, interviews and approved official speech stay separate from the action feed; cues and music on their own inputs; action and crowd mics generally need no reinforcement in the venue. Check the picture’s sync through the real chain.',
-    studio: 'A quiet practice allows one change at a time and a repeatable source — but it never proves arena isolation, impact tolerance or the peaks a real event can make.',
+    studio: 'A quiet practice allows one change at a time and a repeatable source — but it cannot prove arena isolation, impact tolerance or the peaks a real event can make.',
   },
   diagnostic,
   practice: {
