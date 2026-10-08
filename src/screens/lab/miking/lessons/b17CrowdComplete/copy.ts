@@ -56,7 +56,7 @@ export const B17_COPY: Partial<LessonCopy> = {
     ],
     warn: 'This simplified picture treats the source as one point and both mics as hearing it along straight paths; a real venue adds the crowd, the PA and reflections.',
   },
-  practice: { gain: 'cc.prac.gain', second: 'cc.prac.3', mixed: ['cc.mix.1', 'cc.mix.2', 'cc.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the mono sum, two mics in time, and the facts of the event.' },
+  practice: { gain: 'cc.prac.gain', second: 'cc.prac.3', mixed: ['cc.mix.1', 'cc.mix.2', 'cc.mix.3'], mixedIntro: 'Three cards from earlier pages, mixed: the mono sum, two mics in time, and a failed side of the pair.' },
   terms: {
     instrument: 'the mock venue',
     aimRef: 'the audience',

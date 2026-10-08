@@ -634,6 +634,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 06:41 · ccode · 7c4cc4b6
+changed: Merge remote-tracking branch 'origin/final-lab' into worktree-agent-a9b8d1f8bef10381d
+affects other side: nothing (client-only merge: final-lab — Lab 6 review, Lab 7a group 3 B03/B08 — into review-lab7b; no backend change)
+needs: nothing
+
+
+### 2026-10-08 06:39 · ccode · 52d9b23f
+changed: Miking Lab 7b review (B09-B17): audio-expert + learning fixes
+affects other side: nothing — app-side words only (Miking Lab 7b lessons B09–B17, the miking journey/restructure text, review doc); no backend, schema or Supabase change; nothing published
+needs: nothing
+
 ### 2026-10-08 06:23 · ccode · c0e6ecfa
 changed: Merge origin/final-lab into lab7-g3 (Lab 7a group 3)
 affects other side: nothing (client-only merge: final-lab into lab7-g3 — Lab 7a group 3 (B03, B08) alongside Lab 7a group 2, Lab 7b groups 1–3 and the Lab 6 review; full suite 9985 pass, 0 fail; Miking stays hidden; no server, no SQL)

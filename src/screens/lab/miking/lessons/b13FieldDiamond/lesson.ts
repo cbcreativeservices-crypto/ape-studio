@@ -113,12 +113,12 @@ const scenarios: MikingScenario[] = [
     id: 'fd.set.1',
     page: 'setups',
     prompt: 'You hear thunder during the practice. Where do you go?',
-    options: ['A substantial building or a hard-topped car', 'Under the team dugout until it has passed', 'Under the open rain shelter by the field'],
+    options: ['A substantial building or a hard-topped car', 'Under the team dugout until it has passed', 'The open rain shelter by the field'],
     correct: 'A substantial building or a hard-topped car',
     explain: 'Shelter at once in a substantial building or a hard-topped vehicle — dugouts and open rain shelters are not safe. Leave the equipment, and wait 30 minutes after the last thunder.',
     why: {
       'Under the team dugout until it has passed': 'A dugout is not a safe lightning shelter.',
-      'Under the open rain shelter by the field': 'An open rain shelter is not a safe lightning shelter.',
+      'The open rain shelter by the field': 'An open rain shelter is not a safe lightning shelter.',
     },
   },
   {
@@ -149,12 +149,12 @@ const scenarios: MikingScenario[] = [
     id: 'fd.rec.1',
     page: 'microphone',
     prompt: 'FROM EARLIER · A mic is wanted on a soccer goal’s net. What applies?',
-    options: ['Nothing may be attached to it', 'It is fine if the clip is small', 'It is fine with the referee’s nod'],
+    options: ['Nothing may be attached to it', 'It is fine if the clip is small', 'Only with the referee’s nod'],
     correct: 'Nothing may be attached to it',
     explain: 'Goals, nets and flagposts carry nothing extra — no mic, no camera. A goal-area pickup needs a separately approved place.',
     why: {
       'It is fine if the clip is small': 'Size does not matter: nothing is attached there.',
-      'It is fine with the referee’s nod': 'A nod is not the rule; the rule says no attachments.',
+      'Only with the referee’s nod': 'A nod is not the rule; the rule says no attachments.',
     },
   },
   {
@@ -208,7 +208,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'fd.place.2',
     page: 'placement',
-    prompt: 'You lower the shotgun from about 1.2 m to about 0.6 m. What else must change?',
+    prompt: 'You lower the shotgun from about 1.2 m to about 0.6 m. What else needs to change?',
     options: ['Re-aim the axis at the same source', 'Nothing: the aim carries over unchanged', 'Raise the gain to make up for the height'],
     correct: 'Re-aim the axis at the same source',
     explain: 'A new height is a new angle to the source: re-aim at the same target, keep the support out of the source path, and change one thing at a time.',
@@ -269,12 +269,12 @@ const scenarios: MikingScenario[] = [
     id: 'fd.ctx.3',
     page: 'context',
     prompt: 'On the coverage map, the far corner is outside the dish’s arc. How is it tagged?',
-    options: ['Ambience only, its handoff noted', 'Useful detail, if the operator leans', 'Useful detail, once the gain goes up'],
+    options: ['Ambience only, its handoff noted', 'Useful detail, if the operator leans', 'Unavailable, so it needs no handoff'],
     correct: 'Ambience only, its handoff noted',
     explain: 'Mark what you cannot reach honestly — ambience only or unavailable — and name the source that covers it. Never step out of the arc to chase it.',
     why: {
       'Useful detail, if the operator leans': 'Leaning out of the arc is not an approved place.',
-      'Useful detail, once the gain goes up': 'Gain raises the background with the target.',
+      'Unavailable, so it needs no handoff': 'Unavailable can be a fair tag — but every zone still names who covers it.',
     },
   },
   {
@@ -504,7 +504,7 @@ const setupTasks: SetupTask[] = [
 const predictions: Lesson['predictions'] = {
   meet: { prompt: 'Before you look: aimed at A, which target will the shotgun at M hear least clearly?', options: ['C, the farthest', 'B, off to the left', 'All three the same'], after: 'Now step through TARGET.' },
   microphone: { prompt: 'Which method gives the steadiest sense of the venue?', options: ['The fixed ambience pair', 'The tracked dish', 'The perimeter shotgun'], after: 'Now step through each METHOD.' },
-  placement: { prompt: 'Predict: you lower the shotgun to about 0.6 m. What else must you change?', options: ['The aim', 'The gain', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests.' },
+  placement: { prompt: 'Predict: you lower the shotgun to about 0.6 m. What else do you change?', options: ['The aim', 'The gain', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests.' },
   context: { prompt: 'The converter reads −6 dBFS on the loudest peak. Is the chain safe?', options: ['It may not be', 'It is safe', 'Only with a low fader'], after: 'Now find the first overloaded stage.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip B POLARITY both ways, then walk the source.' },
 };
