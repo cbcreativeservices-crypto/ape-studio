@@ -1714,3 +1714,44 @@ new held-arm clip style.
 - The official’s announcement mic is drawn as a headset boom (the proposal: "headset/mic"); its route: OFF / TO THE PA / PA + PROGRAM ("only with explicit permission").
 - Photos (D7-6) are not part of this build: no image or photo asset was touched.
 
+## Lab 7 · group 3 · Field and audience: B03, B08 (branch lab7-g3, 2026-10-08)
+
+Built by the Lab 7 group 3 builder (G3 of `BUILD_PROMPTS_lab7a.md`; the last Lab 7a group). Research: `field_reporter/`,
+`audience_ambience/`, `BATCH7_RESEARCH_SUMMARY.md` §2–§5; the Lab 7a register `radio_host/SOURCES.md` §0; keys added to
+`SOURCES_SHARED.md` §21. Base: `origin/lab7-g2` with `origin/lab7-g4` merged in (Lab 7b group 1's speech-in-sport kit —
+the held arm, the flagged handhelds, `handoff.ts`, `standing.ts` — was not yet on final-lab; the merge kept both
+registry blocks and renumbered Lab 7b group 1's SOURCES_SHARED section 19 → 20). Shared kit added in
+`lessons/shared/broadcast/`: `fieldInterview.ts` (the handoff path; reuses `handoff.ts`), `reporterWind.ts` +
+`ReporterArt.tsx`, `reporterPages.tsx`, `venue.ts` (on Lab 7b group 2's `venuePlan.ts`), `AudienceArt.tsx`,
+`audiencePages.tsx`; `repOmni` in `broadcastMics.ts`.
+
+| id | Lesson | Line | Lesson says | App says | Why / source | Status |
+|---|---|---|---|---|---|---|
+| L7G3-01 (B-INST) | B03, B08 | B03 L2, L40, L42; B08 L2, L47 | "Pro Audio Training Academy • Sports and Broadcasting Lab B0n", "the student", "Student observation sheet" | the registry's "Miking Lab 7: Sports & Broadcast"; "you"; an optional placement card on PRACTICE | summary §2 item 4 | APPLIED |
+| L7G3-02 (B-XLINK) | B03, B08 | B03 L85; B08 L66 | cross-links (B02, B04, B05, B10, F09; B03, B06, F06, "later sports sound pickup") | no in-app links; the ideas said in words (a boom or a body mic for a hidden mic; the audience question's close mic); B08 L66 not linked (tested: no lesson code in learner text) | Lab 5 rule; summary §2 item 6 | APPLIED |
+| L7G3-03 (B-REF) | both | references | titles only, no URLs | nothing on screen; URLs in `radio_host/SOURCES.md` §0 for the owner to add | summary §2 item 5 | OWNER ACTION |
+| L7G3-04 | B03 | L6 | "If thunder is heard, move to a substantial safe shelter and remain there at least 30 minutes after the last thunder; a weatherproof windscreen does not make an outdoor interview safe in a thunderstorm" | exact and plain, unattributed: "If you hear thunder, stop and move everyone to a substantial building or a hard-topped vehicle, and stay there at least 30 minutes after the last thunder. A weatherproof windscreen does not make an outdoor interview safe in a thunderstorm." (BEFORE ANY MIC, check b3.set.2, critical quick-check q.3; tested) | NWS-LTG (the field kit's `LIGHTNING.waitMin`) | APPLIED |
+| L7G3-05 | B03 | L21, L68 | the maker's "impervious to wind" | never shown; "no layer makes a mic immune" and a monitored wind test (the wind tool; a setup reason "A dynamic mic does not pick up wind" is graded WRONG) | EV-RE50B (internal) | APPLIED |
+| L7G3-06 | B03 | L20 | the maker's chest-height shared position | ONE MIC: the omni at chest height midway between the mouths (`b3.shared`, ~47 cm from each), worded as a start for a quiet or moderate place — "move it toward whoever is speaking" when it is loud | R-REPORTER; the lesson's own caution | APPLIED |
+| L7G3-07 | B03 | L12 | "move it toward the active speaker" (no distance) | `b3.handoffOmni` 15–30 cm, a drawing default along the handoff path (ANOTHER START, with foam or fur) | no source gives one | OWNER REVIEW |
+| L7G3-08 | B03 | L27 | "a directional handheld must be close" (no number) | `b3.handoffDir` under 15 cm — the Lab 5 handheld row (S-SM58-UG) as in B10 | reused, SOURCED elsewhere | APPLIED |
+| L7G3-09 | B03 | proposal §4 | the wind kit "grille / foam / fitted fur / basket+fur" | the Lab 6 wind kit exists for a SHOTGUN (`shared/field/wind.ts`); B03's handheld gets its own three layers (grille, foam, fitted fur — no basket on a handheld) in `reporterWind.ts`, words and illustrative curls only, the Lab 6 rule kept (never a level) | "check for a Lab 6 wind kit first" | APPLIED |
+| L7G3-10 | B08 | L12, L27 | one or two elevated directional mics above and in front, aimed at faces, away from the PA | ONE MIC `b8.mono` on the rigging bar 3.2 m up, 1.6 m out (drawing defaults); the PA-angle tool (3-D off-axis angle + ideal pattern) and the nearest-seat tool (inverse square; "one person can dominate" from 6 dB = one doubling, DERIVED) | S-TOP6 | APPLIED |
+| L7G3-11 | B08 | L31, L39 | keep crowd mics out of the main PA; never open an audience mic into the PA to make feedback | the routing step fails "ambienceInPa" (group 1's routing); safety rows "NOT INTO THE PA", "NOTHING OVER PEOPLE"; two critical quick-check items (tested) | S-CHURCH; Lab 5 §0.4 | APPLIED |
+| L7G3-12 | B08 | L19–L22 | two zones vs a pair | the pair-or-zones tool: XY Δt = 0 (no notch), a near-coincident pair under 0.6 ms, two zone mics several ms with a first mono notch under 200 Hz for a source at one side (tested); TWO MICS = an XY pair at one place, two zones an ANOTHER START | DPA-STEREO; twoMic physics | APPLIED |
+| L7G3-13 | B08 | proposal §5 | CLOSE · LIVE = the audience question handheld | not a setup: the plan kit draws a stand-mounted pencil for a 'compact' mic, so a handheld question mic would be drawn wrongly; the question mic is taught in words, on the routing step and in checks | drawing honesty | OWNER REVIEW |
+| L7G3-14 | B08 | proposal §2 | surround (5-capsule) and Ambisonic (4-capsule) tokens | drawn from above with a FRONT arrow and channel labels (L C R Ls Rs; FLU FRD BLD BRU) on their own step; no decode, no fold-down drawn; not a STARTING SETUP (the plan's close-up would draw a pencil on a stand) | proposal §6 "tokens + channel map only" | APPLIED · OWNER REVIEW |
+| L7G3-15 | shared (sports kit) | owner rule | a crowd drawn with circle heads (Lab 7b group 2's `Stand`) | a `Sector.empty` flag draws seats without people (seat backs along the rows); B08's sections use it (tested); the sports lessons are unchanged | owner rule: "crowds as seating without people rather than circle heads" | APPLIED (B08) · FLAGGED (B12–B14 still draw heads) |
+| L7G3-16 | shared (voice copy) | — | L7G2-13: B01, B07, B06 inherit the singer's Studio-or-live line | `standingVoiceCopy` takes a lesson's own `contextIntro`; B01 ("the host is the same — the room, the guests and the loudspeakers change"), B07, B06 pass theirs; tested for every broadcast lesson | owner voice rules | APPLIED |
+| L7G3-17 | B03, B08 | — | the engine's journey copy calls a person or an audience "it" ("Meet the guest in brief — what it is") | not changed (engine-wide, L7G2-18) | — | FLAGGED |
+
+### OWNER REVIEW (defaults used; change any)
+- B03 talkers: standing face to face 75 cm mouth to mouth (proposal 600–900 mm); the proposal's 60–90° in plan is said in words (the standing figure faces ±x only). The shared place 28 cm below the mouths ("around chest height"), 4 cm toward the reporter's right hand. The handoff path's close ends 10 cm from a mouth and 3.5 cm below it.
+- B03 scene: the camera beside the reporter on the guest's right (lens 2.3 m out, 76 cm across); the kerb 1.25 m behind the guest, the lane beyond; the event's loudspeaker 2.6 m out, 1.3 m across, 1.7 m up; the loud source on the one-mic tool 2 m from the pair at three bearings (behind the guest, the side, behind the reporter).
+- `repOmni`: 23 cm long, a 24 mm grille radius, the flag drawn (generic, no logo); held in the reporter's right hand (Lab 7b group 1's held arm: 30 cm + 29 cm).
+- Wind: three sites (sheltered doorway, open street, exposed waterfront) and three layers; the curls are illustrative (0–3).
+- B08 venues: the studio audience — a 9 × 6 m raked section 2 m from the stage, aisles at ±5.2 m, exits at the back corners, a PA at each front corner of the stage 2.8 m up, a camera riser at the back, a rigging bar 1.2–2.0 m out (3.2 m up for the mic), the stage corners (2.4 m up); the event — three sections round a 15 m stage, PA clusters 7 m up and a front fill, a rail at each section's front (3.5 m), a truss over the hall (6 m), a cross-aisle and exits. The faces 1.2 m up. Left and right as drawn on the plan.
+- B08's spaced pair hangs from the truss (a qualified rigger), but the plan kit's close-up draws every 'compact' mic on a stand — the stand reads as the drop. Say if a hung drawing is wanted.
+- PA coverage wedges (±40–55°) are a simplified picture of aim, not dispersion.
+- Brand list: Windjammer and the DPA 5100 added to BRAND_NAMES (the rest of the Lab 7a names were listed by groups 1 and 2).
+
