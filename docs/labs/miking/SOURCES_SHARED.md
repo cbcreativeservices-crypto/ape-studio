@@ -272,3 +272,27 @@ Added 2026-10-08 by the Lab 7 group 1 builder (branch lab7-g1): the keys the bro
 | LESSON-B01 | The owner's lesson B01 (practice statements kept as written; B01-1, B-INST applied) | `source_text/B01-…txt` | the lesson |
 | LESSON-B06 | The owner's lesson B06 (practice statements kept as written; B06-1, B-INST applied) | `source_text/B06-…txt` | the lesson |
 | LESSON-B07 | The owner's lesson B07 (practice statements kept as written; B-INST applied) | `source_text/B07-…txt` | the lesson |
+
+## 19. Lab 7 part 2 · group 1 — speech in sport (B09, B10, B11; `lessons/shared/broadcast/` sportMics, feeds, boothPlan, handoff, standing)
+
+Added 2026-10-08 by the Lab 7 part 2 group 1 builder (branch lab7-g4). The full Lab 7 part 2 register is
+`commentators/SOURCES.md` §0; the lessons' own audits are `commentators/`, `sideline_interviews/` and
+`athletes_officials/SOURCES.md`. The keys the code cites (zones, mic types, parts) — internal record only, never shown:
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| S-SM2 | Shure SM2 broadcast headset guide: "Dynamic, Close-Talking"; "Cardioid (unidirectional)"; boom "pivots through 155°", adjusts through an 89 mm range; "as close as possible to the outside corner of the mouth (not directly in front.)" (the `bcHeadsetBoom` type; B09 `b9.headset`, B10 `b10.headset`, B11 `b11.headset` / `b11.official`) | https://pubs.shure.com/view/guide/SM2/en-US.pdf | read 2026-10-07 (prep pass) |
+| SN-HMD26 | Sennheiser HMD/HME 26 product specification (a supercardioid dynamic version, a cardioid condenser version) — the redirect chain was not readable: the `bcHeadsetSuper` type is drawn as a TEXTBOOK supercardioid, never a readout of the product | see `commentators/SOURCES.md` §0 | UNSOURCED (B09-03: refresh the link) |
+| COLES-4104 | Coles 4104 commentator's microphone: "bi-directional"; usable in wind "up to 20 mph (32 km)" bare, "up to 40 mph (64 km) or more" with its windshield (the `bcLipRibbon` type) | https://coleselectroacoustics.com/4104-commentators-microphone/ | read 2026-10-07 |
+| COLES-SPEC | Coles 4104 spec PDF — image-only: the guard-to-ribbon depth is UNKNOWN (D7-7: a drawing default, never a readout) | see `commentators/SOURCES.md` §0 | not readable |
+| LESSON-B09 | The owner's lesson B09 (practice statements kept as written; B09-02 / R-07 / R-08 applied) | `source_text/B09-…txt` | the lesson |
+| LESSON-B10 | The owner's lesson B10 (practice statements kept as written; R-07 / R-08 applied) | `source_text/B10-…txt` | the lesson |
+| LESSON-B11 | The owner's lesson B11 (practice statements kept as written; B11-01 / R-07 / R-08 applied; no rule book on screen, D7-1) | `source_text/B11-…txt` | the lesson |
+| SHURE-LAV | (reused from §14) "Place the shirt microphone above the sternum" — the B10 and B11 body mics at frame T's breastbone | §14 | read 2026-10-07 |
+| S-SM58-UG | (reused from §10, Lab 5) the handheld row "Lips less than 15 cm (6 in.) away … on axis" — B10's `b10.hand` start (the lesson gives no number) | see `lead_vocal/SOURCES.md` §0 | read 2026-10-05 |
+
+Drawing defaults (never printed as a dimension): the booth (desk 1.8 × 0.75 m, seats 0.9 m apart), the headset capsule's
+2–6 cm at the mouth corner, the headset boom's 170 mm reach, the lip guard's place and its 60 mm depth, the held arm (upper
+arm 300 mm, forearm 290 mm, the grip 45 mm up the handle), the reporter's place (0.65 m to the guest's left), the camera,
+the touchline, the exit route, the PAs, the backdrop, the operators, frame T's landmarks (the breastbone ~21 cm below the
+lips, the small of the back), the keep-out regions on an athlete, the handoff strip's phase lengths.

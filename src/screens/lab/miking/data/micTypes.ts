@@ -323,3 +323,6 @@ Object.assign(MIC_TYPES, MEASURE_MIC_TYPES);
 /* Lab 7 (broadcast), group 1 — desk and studio voice (B01, B07, B06): the broadcast dynamics, the arm condenser, the goosenecks and the table boundary; groups 2 and 3 add theirs to the same table (shared/broadcast/broadcastMics.ts). Appended so other lessons merge cleanly. */
 import { BROADCAST_MIC_TYPES } from '../lessons/shared/broadcast/broadcastMics.ts';
 Object.assign(MIC_TYPES, BROADCAST_MIC_TYPES);
+/* Lab 7b group 1 — speech in sport (B09, B10, B11): the commentary headset booms, the lip ribbon and the flagged interview handhelds (shared/broadcast/sportMics.ts). Appended so other lessons merge cleanly. */
+import { SPORT_SPEECH_MIC_TYPES } from '../lessons/shared/broadcast/sportMics.ts';
+Object.assign(MIC_TYPES, SPORT_SPEECH_MIC_TYPES);
