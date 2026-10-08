@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 01:10 · ccode · 97dd2ecc
+changed: web: Coming Soon panel sits low so the full headline shows above it
+affects other side: nothing (website layout; cherry-pick of 6d89f09b)
+needs: nothing
+
+
 ### 2026-10-08 01:07 · ccode · 5d350d97
 changed: web: new headline — The Whole Craft of Audio. Right in Your Pocket.
 affects other side: nothing (website copy; cherry-pick of audio-tools-engine f2733281)
