@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 00:30 · ccode · 85ee77e4
+changed: Mixing Guides: world map pinned above the 50 styles — hover, touch or drag fills each style's home countries
+affects other side: nothing (client-only map data and hub UI)
+needs: nothing
+
+
 ### 2026-10-08 00:07 · ccode · b4489923
 changed: Merge lab6-g6: Miking Lab 6 F09-F10 location speech and spatial field
 affects other side: nothing (client-only Miking Lab 6 lessons; Miking stays hidden)
