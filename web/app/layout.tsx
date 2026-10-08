@@ -41,7 +41,7 @@ const mono = localFont({
 const SITE_URL = "https://www.proaudiotrainingacademy.com";
 
 const DESCRIPTION =
-  "Learn the Craft. Earn the Credential. Structured professional audio education in the app — credentials you can verify here.";
+  "The Whole Craft of Audio. Right in Your Pocket. Everything you'd search for across books, videos and forums, in one place you carry everywhere — with credentials you can verify here.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
