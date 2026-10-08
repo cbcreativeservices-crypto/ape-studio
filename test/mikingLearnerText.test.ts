@@ -126,6 +126,19 @@ export const BRAND_NAMES: readonly string[] = [
   'Glenn Miller',
   'Dior',
   'Absil',
+  // Lab 6 group 6 research (docs/labs/miking/location_speech, spatial_field).
+  'Rode',
+  'RØDE',
+  'Rycote',
+  'Sound Devices',
+  'Hayes',
+  'Thirion',
+  'KU ?100',
+  'AMBEO',
+  'MKH ?416',
+  'National Weather Service',
+  'National Park Service',
+  'Meyer',
 ];
 
 /** The badge system and citation forms the ruling took off the screen. */

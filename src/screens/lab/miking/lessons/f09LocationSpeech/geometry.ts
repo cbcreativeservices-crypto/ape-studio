@@ -139,6 +139,9 @@ export const F09_MODEL: InstrumentModel = {
   // The location is the subject: every view keeps its authored box (the
   // camera, the operator and the line stay on the glass).
   fitAuthored: { side: true, top: true },
+  // On a stage the setups keep to the head and shoulders (a 6 cm handheld
+  // was a few pixels framed head to floor); the stand runs on off the edge.
+  setupFrameMaxByVariant: { live: { side: { u0: -450, u1: 1000, v0: -430, v1: 640 }, top: { u0: -450, u1: 1000, v0: -480, v1: 480 } } },
   yFloor: VOICE_DIMS.lipStanding,
   interior: { x0: 0, x1: 0, rIn: 0, c: v3(0, 0, 0) },
   rims,

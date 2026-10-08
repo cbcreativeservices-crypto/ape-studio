@@ -138,7 +138,7 @@ function rigInset(rigs: readonly SpatialRig[]): FieldInset {
   return {
     view: 'top',
     box,
-    at: { x: 0.015, y: 0.03, w: 0.34, h: 0.5 },
+    at: { x: 0.645, y: 0.02, w: 0.34, h: 0.34 },
     draw: (px) => (
       <>
         {rigs.map((r, i) => (
@@ -146,7 +146,7 @@ function rigInset(rigs: readonly SpatialRig[]): FieldInset {
         ))}
       </>
     ),
-    labels: [{ id: 'in', text: ex ? 'AN EXAMPLE LAYOUT' : 'THE RIG FROM ABOVE', short: ex ? 'EXAMPLE' : 'RIG', u: (box.u0 + box.u1) / 2, v: box.v1 - (box.v1 - box.v0) * 0.08, align: 'center', tone: 'muted' }],
+    labels: [{ id: 'in', text: ex ? 'AN EXAMPLE LAYOUT' : 'THE RIG FROM ABOVE', short: ex ? 'EXAMPLE' : 'RIG', u: (box.u0 + box.u1) / 2, v: box.v0 + (box.v1 - box.v0) * 0.06, align: 'center', tone: 'muted' }],
   };
 }
 
@@ -1095,8 +1095,7 @@ function useDrillStep(onInteractive: (id: string) => void, done: boolean): Mikin
     lfe: 'A full-range field channel is going to the LFE bus. “.1” is a separate low-frequency effects channel in delivery, not a place for a spatial track: take it off.',
   };
   const params: DockParam[] = [
-    { kind: 'options', id: 'track', label: 'TRACK', valueLabel: `${sel + 1}`, selectedId: `${sel}`, onSelect: (id) => setSel(Number(id)), sticky: true, options: [0, 1, 2, 3].map((k) => ({ id: `${k}`, label: `TRACK ${k + 1} — now ${s.tracks[k]}`, blurb: `The converter expects ${A_ORDER[k]} (${A_WORDS[A_ORDER[k]]}) here.` })) },
-    { kind: 'options', id: 'capsule', label: 'CAPSULE', valueLabel: s.tracks[sel], selectedId: s.tracks[sel], onSelect: (id) => setCapsule(id as ATrack), sticky: true, options: A_ORDER.map((cap) => ({ id: cap, label: `${cap} — ${A_WORDS[cap]}`, blurb: 'Put this capsule’s signal on the chosen track (the one it was on takes the old one).' })) },
+    { kind: 'options', id: 'capsule', label: `TRACK ${sel + 1}`, valueLabel: s.tracks[sel], selectedId: s.tracks[sel], onSelect: (id) => setCapsule(id as ATrack), sticky: true, options: A_ORDER.map((cap) => ({ id: cap, label: `${cap} — ${A_WORDS[cap]}`, blurb: 'Put this capsule’s signal on the chosen track (the one it was on takes the old one).' })) },
     {
       kind: 'fader',
       id: 'gain',
@@ -1104,12 +1103,13 @@ function useDrillStep(onInteractive: (id: string) => void, done: boolean): Mikin
       value: (s.gains[sel] + 6) / 12,
       onChange: (v) => setGain(Math.round((v * 12 - 6) * 2) / 2),
       format: () => `track ${sel + 1}: ${s.gains[sel] >= 0 ? '+' : ''}${s.gains[sel].toFixed(1)} dB${s.linked ? ' (linked: all four move)' : ''}`,
-      formatShort: () => `${s.gains[sel] >= 0 ? '+' : ''}${s.gains[sel].toFixed(1)}`,
+      formatShort: () => `T${sel + 1} ${s.gains[sel] >= 0 ? '+' : ''}${s.gains[sel].toFixed(1)}`,
       home: 0.5,
+      chooser: { title: 'CHOOSE A TRACK', selectedId: `${sel}`, onSelect: (id) => setSel(Number(id)), options: [0, 1, 2, 3].map((k) => ({ id: `${k}`, label: `TRACK ${k + 1} — now ${s.tracks[k]}`, blurb: `The converter expects ${A_ORDER[k]} (${A_WORDS[A_ORDER[k]]}) here.` })) },
     },
-    { kind: 'toggle', id: 'link', label: s.linked ? 'GAINS LINKED' : 'GAINS UNLINKED', value: s.linked, onToggle: () => setS((q) => ({ ...q, linked: !q.linked })) },
+    { kind: 'toggle', id: 'link', label: s.linked ? 'LINKED' : 'UNLINKED', value: s.linked, onToggle: () => setS((q) => ({ ...q, linked: !q.linked })) },
     { kind: 'options', id: 'format', label: 'OUTPUT', valueLabel: s.format ? (s.format === 'fuma' ? 'FuMa' : 'ambiX') : '—', selectedId: s.format, onSelect: (id) => setS((q) => ({ ...q, format: id as 'fuma' | 'ambix' })), options: [{ id: 'ambix', label: 'ambiX', blurb: 'Channels W, Y, Z, X; W not scaled down.' }, { id: 'fuma', label: 'FuMa', blurb: 'Channels W, X, Y, Z; W 3 dB down.' }] },
-    { kind: 'toggle', id: 'lfe', label: s.lfe ? 'TRACK 4 → LFE' : 'LFE CLEAR', value: s.lfe, onToggle: () => setS((q) => ({ ...q, lfe: !q.lfe })) },
+    { kind: 'toggle', id: 'lfe', label: s.lfe ? 'LFE FED' : 'LFE CLEAR', value: s.lfe, onToggle: () => setS((q) => ({ ...q, lfe: !q.lfe })) },
     { kind: 'options', id: 'source', label: 'SOURCE', valueLabel: src.label.toUpperCase().slice(0, 8), selectedId: srcId, onSelect: setSrcId, options: TEST_SOURCES.map((q) => ({ id: q.id, label: `A test source ${q.label}`, blurb: 'Where a sound really is; the amber dot shows where it lands after the conversion.' })) },
   ];
   return {

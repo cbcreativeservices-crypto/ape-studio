@@ -505,6 +505,10 @@ export type InstrumentModel = {
    *  does in the Placement Studio. Absent: the whole setup, stand foot and
    *  floor included (every earlier lesson). */
   setupFrameMax?: Partial<Record<ViewId, ViewBox>>;
+  /** Lab 6 group 6: the same cap per variant (wins over `setupFrameMax`) —
+   *  a location scene keeps its camera in view on set, the talker's head and
+   *  shoulders on a stage. */
+  setupFrameMaxByVariant?: Partial<Record<VariantId, Partial<Record<ViewId, ViewBox>>>>;
   /** A rectangle per variant and main view (mm) the inset must not cover —
    *  the guitars' headstock and tuners; the glass takes the other corner
    *  when the preferred one would (DualView, labelLayout.chooseInsetCorner). */

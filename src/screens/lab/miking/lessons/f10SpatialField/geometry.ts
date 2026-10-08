@@ -152,6 +152,9 @@ export const F10_MODEL: InstrumentModel = {
   defaultVariant: 'plaza',
   views: F10_VIEWS.plaza,
   viewsByVariant: { plaza: F10_VIEWS.plaza, event: F10_VIEWS.event },
+  // The scene is the subject: every view keeps its authored box (the
+  // listener's point and the sources both on the glass).
+  fitAuthored: { side: true, top: true },
   yFloor: { mm: 0, prov: ill('the ground: the frame’s origin') },
   interior: { x0: 0, x1: 0, rIn: 0, c: v3(0, 0, 0) },
   ports: { plaza: null, event: null },

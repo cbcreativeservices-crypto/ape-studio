@@ -319,7 +319,8 @@ export function SiteArt({ view, variant, walkerT = WALKER_AT, listener = true }:
 
 /** The engine's instrument for F10 (the scene, no rig). */
 export function SpatialInstrument({ view, variant }: { view: ViewId; variant: VariantId }): ReactElement {
-  return <SiteArt view={view} variant={variant} />;
+  // From the side the engine draws the stand and the height itself.
+  return <SiteArt view={view} variant={variant} listener={view === 'top'} />;
 }
 
 /* ── the rigs ── */

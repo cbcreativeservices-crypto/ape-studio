@@ -105,7 +105,7 @@ export type DrillState = {
   format: 'fuma' | 'ambix' | null;
   lfe: boolean;
 };
-export const DRILL_START: DrillState = { tracks: ['FLU', 'BLD', 'FRD', 'BRU'], gains: [0, 0, 0, 0], linked: false, format: null, lfe: true };
+export const DRILL_START: DrillState = { tracks: ['FRD', 'FLU', 'BLD', 'BRU'], gains: [0, 0, 0, 0], linked: false, format: null, lfe: true };
 export const DRILL_GOOD: DrillState = { tracks: [...A_ORDER], gains: [0, 0, 0, 0], linked: true, format: 'ambix', lfe: false };
 
 export type DrillProblem = 'order' | 'gainMatch' | 'unlinked' | 'format' | 'lfe';

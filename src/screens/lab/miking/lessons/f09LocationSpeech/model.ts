@@ -112,7 +112,7 @@ export const F09_ZONES: DocumentedZone[] = [
   {
     id: 'loc.cam',
     label: 'On the camera — a wider view of the room',
-    band: 'For a guide track or a quick shot: a short shotgun on the camera, aimed at the talker — as far away as the camera is, about 2.4 m here.',
+    band: 'For a reference track or a quick shot: a short shotgun on the camera, aimed at the talker — as far away as the camera is, about 2.4 m here.',
     kind: 'trial',
     src: 'LESSON-F09',
     quote: 'Use a secured on-camera mic for guide sound … directionality alone does not compensate for a distant camera (L24–L25)',
@@ -132,7 +132,7 @@ export const F09_ZONES: DocumentedZone[] = [
   {
     id: 'loc.cam.out',
     label: 'On the camera — a wider view of the place',
-    band: 'For a guide track: a short shotgun on the camera, aimed at the talker — about 2.4 m away, with all of the wind and the street between.',
+    band: 'For a reference track: a short shotgun on the camera, aimed at the talker — about 2.4 m away, with all of the wind and the street between.',
     kind: 'trial',
     src: 'LESSON-F09',
     quote: 'Use a secured on-camera mic for guide sound … directionality alone does not compensate for a distant camera (L24–L25)',
@@ -148,6 +148,6 @@ export const F09_ZONES: DocumentedZone[] = [
   },
   /* ── LIVE ── */
   voiceZone(F09_MODEL, FRAME_V, stageRow({ id: 'loc.stage', variant: 'live', micTypeIds: ['vocDynCard', 'vocDynSuper'], label: 'A handheld close, within about 10 cm', band: 'For a presenter on a stage, try the handheld within about 10 cm (4 in) of the lips, at a steady angle and distance — close enough to stay ahead of the PA and the room.', tendency: 'A strong, steady voice over the PA and the room — and the most gain before feedback. The level changes if the hand drifts: coach one steady place.', checks: ['A steady distance and angle as the presenter moves', 'Plosives and handling noise', 'Where the wedge sits against the pattern'] }), MIC_TYPES),
-  voiceZone(F09_MODEL, FRAME_V, headsetRow({ id: 'loc.headset', variant: 'live', micTypeIds: ['vocHeadset'], tendency: 'One steady distance however the presenter moves and turns — hands free. Off to the side of the mouth it hears a little less of the voice’s highs.', checks: ['The capsule where its maker says, out of the breath', 'The windscreen on; sweat and makeup', 'The bodypack and cable secured'] }), MIC_TYPES),
+  voiceZone(F09_MODEL, FRAME_V, headsetRow({ id: 'loc.headset', variant: 'live', micTypeIds: ['vocHeadset'], tendency: 'One steady distance however the presenter moves and turns, with both hands left for the talk. Off to the side of the mouth it hears a little less of the voice’s highs.', checks: ['The capsule where its maker says, out of the breath', 'The windscreen on; sweat and makeup', 'The bodypack and cable secured'] }), MIC_TYPES),
   lavZone('loc.lav.live', 'live', true),
 ];

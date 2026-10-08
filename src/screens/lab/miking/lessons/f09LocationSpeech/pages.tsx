@@ -120,8 +120,8 @@ function useFrameStep(): MikingStep {
         >
           {(px) => (
             <>
-              <LocationScene view="side" variant="set" frame={frame} operator={false} />
-              <Ray a={uvOf('side', tail)} b={uvOf('side', GRIP)} px={px} color="#4d515b" width={14} dash={[1000, 0]} />
+              <LocationScene view="side" variant="set" frame={frame} />
+              <Ray a={uvOf('side', tail)} b={uvOf('side', GRIP)} px={px} color="#3a3d45" width={5} dash={[1000, 0]} />
               <MicAt view="side" p={boom.p} aim={boom.aim} art="shotgun" r={9.5} len={250} />
               <MicAt view="side" p={LAV_P} aim={unit(sub(LIP, LAV_P))} art="lavalier" r={3} len={12} />
               <Dim a={uvOf('side', LIP)} b={uvOf('side', boom.p)} px={px} />

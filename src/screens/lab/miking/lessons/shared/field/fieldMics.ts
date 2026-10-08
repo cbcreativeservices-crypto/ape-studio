@@ -121,7 +121,7 @@ export const FIELD_MIC_TYPES = {
     surfacePartId: 'f9.camera',
     examples: [{ model: 'camera-mounted short shotgun (generic)', fact: 'The lesson L24–25: a secured on-camera mic for guide sound; directionality alone does not compensate for a distant camera (RODE-CAM, not re-read).', src: 'LESSON-F09' }],
     art: 'shotgun',
-    blurb: 'A short shotgun in a small suspension on top of the camera: a guide track, or sound for a quick shot. It points the right way, but it is as far from the talker as the camera is.',
+    blurb: 'A short shotgun in a small suspension on top of the camera: a reference track, or sound for a quick shot. It points the right way, but it is as far from the talker as the camera is.',
   },
   /* ── F10: spatial field pickup ── */
   spHead: {

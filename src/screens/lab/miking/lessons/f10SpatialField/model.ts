@@ -119,7 +119,7 @@ export const F10_ZONES: DocumentedZone[] = [
     aim: { maxOffAxis: 15, prov: ill('aimed at the lips within 15° (the lab’s tolerance)') },
     requires: { variant: 'plaza', micTypeIds: ['vocDynCard'] },
     start: { p: CLOSE, ...aimOf(sub(PLAZA.singerMouth, CLOSE)) },
-    tendency: 'The singer’s voice clear and close, nearly free of the square — a layer the spatial take cannot give, because no array isolates one source.',
+    tendency: 'The singer’s voice clear and close, with little of the square — a layer the spatial take cannot give, because no array isolates one source.',
     checks: ['The singer’s agreement and their space', 'The stand clear of passers-by', 'Its timing against the spatial take (it hears the singer first)'],
   },
   {

@@ -12,10 +12,15 @@ import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { VoiceFigure, voiceFigureAt, voiceHitTest, voiceLabels } from '../shared/voice/VoiceArt';
 import { BoomOperator, CameraRig, Counter, FrameLines, PowerLineArt, operatorPoses, type CameraSpec } from '../shared/field/LocationArt';
 import { figureCovers } from '../shared/players/PlayerFigure';
-import { CAMERA_BOX, COUNTER_BOX, F09_VIEWS, FLOOR, FRAME, GRIP, HEAD_TOP, JAR, KEYS, LENS, OPERATOR, POWER_LINE, TRIPOD } from './geometry.ts';
+import { BOOM, CAMERA_BOX, COUNTER_BOX, F09_VIEWS, FLOOR, FRAME, GRIP, HEAD_TOP, JAR, KEYS, LENS, OPERATOR, POWER_LINE, TRIPOD } from './geometry.ts';
 
 export const CAMERA: CameraSpec = { box: CAMERA_BOX, lens: LENS, floor: FLOOR, spread: TRIPOD.spread };
 export const OPERATOR_POSES = operatorPoses(OPERATOR.feet, GRIP);
+/** The pole's rear end, behind the front hand: along the line from the boom's
+ *  starting tail through the grip (a drawing default, 0.7 m). */
+const TAIL = { x: BOOM.p.x - BOOM.aim.x * 250, y: BOOM.p.y - BOOM.aim.y * 250, z: BOOM.p.z - BOOM.aim.z * 250 };
+const RD = (() => { const d = { x: GRIP.x - TAIL.x, y: GRIP.y - TAIL.y, z: GRIP.z - TAIL.z }; const l = Math.hypot(d.x, d.y, d.z); return { x: d.x / l, y: d.y / l, z: d.z / l }; })();
+export const POLE_STUB = { a: GRIP, b: { x: GRIP.x + RD.x * 700, y: GRIP.y + RD.y * 700, z: GRIP.z + RD.z * 700 } };
 
 const onSet = (v: VariantId) => v === 'set' || v === 'outdoor';
 
@@ -28,10 +33,10 @@ export function LocationScene({ view, variant, frame = FRAME, operator = true }:
     <Group>
       {variant === 'outdoor' ? <PowerLineArt view={view} line={POWER_LINE} box={box} /> : null}
       {onSet(variant) ? <FrameLines view={view} frame={frame} farX={box.u0} headTopY={HEAD_TOP} /> : null}
-      {op && view === 'side' ? <BoomOperator view={view} poses={OPERATOR_POSES} /> : null}
+      {op && view === 'side' ? <BoomOperator view={view} poses={OPERATOR_POSES} stub={POLE_STUB} /> : null}
       <VoiceFigure view={view} variant={variant} />
       {variant === 'set' ? <Counter view={view} box={COUNTER_BOX} keys={KEYS} jar={JAR} /> : null}
-      {op && view === 'top' ? <BoomOperator view={view} poses={OPERATOR_POSES} /> : null}
+      {op && view === 'top' ? <BoomOperator view={view} poses={OPERATOR_POSES} stub={POLE_STUB} /> : null}
       {onSet(variant) ? <CameraRig view={view} spec={CAMERA} /> : null}
     </Group>
   );

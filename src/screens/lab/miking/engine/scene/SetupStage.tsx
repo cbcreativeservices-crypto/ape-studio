@@ -58,7 +58,7 @@ export function SetupStage({ lesson, art, setup, view, setView, w, h, label }: {
     const out: { side?: ViewBox; top?: ViewBox } = {};
     // A model may cap how far the drawing grows (InstrumentModel.setupFrameMax).
     const cap = (f: ViewBox | undefined, view: 'side' | 'top'): ViewBox | undefined => {
-      const m = model.setupFrameMax?.[view];
+      const m = model.setupFrameMaxByVariant?.[rig.variant]?.[view] ?? model.setupFrameMax?.[view];
       return f && m ? { u0: Math.max(f.u0, m.u0), u1: Math.min(f.u1, m.u1), v0: Math.max(f.v0, m.v0), v1: Math.min(f.v1, m.v1) } : f;
     };
     if (v.side) out.side = cap(setupFrame(model, rig.variant, 'side', pts), 'side');

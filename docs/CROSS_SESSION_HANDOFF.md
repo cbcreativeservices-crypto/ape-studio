@@ -634,6 +634,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-07 22:43 · ccode · a21c0b79
+changed: Miking Lab 6 group 6: F09 Location Speech and F10 Spatial Field Pickup
+affects other side: nothing (client-only; Miking stays hidden, MIKING_PUBLIC false)
+needs: nothing
+
+
 ### 2026-10-07 17:07 · ccode · 6660b125
 changed: Merge remote-tracking branch 'origin/sentry-fixes' into HEAD
 affects other side: nothing (client-only)

@@ -188,3 +188,22 @@ Facts in `background_vocals/`, `duets_small_vocal/` and `choir/SOURCES.md`; the 
 |---|---|---|---|
 | AKG-C414 | AKG, C414 XLS/XLII manual §4.6.2 Choir/Backing Vocals: "select the cardioid or omni pattern and place the vocalists in a semicircle in front of the microphone"; "one stereo microphone plus one spot microphone each for the soprano, alto, tenor, and bass sections" | see `lead_vocal/SOURCES.md` §0 | PDF read 2026-10-05 in the Batch 5 research pass |
 | S-REC | Shure, *Microphone Techniques for Recording* (booklet), Ensemble Vocals p.5–6: "Having the vocalists circle around an omnidirectional mic …"; "Two cardioid mics, positioned back to back"; the choir mic "a few feet in front of, and a few feet above, the heads of the first row … aimed at the last row" | see `snare/SOURCES.md`, `lead_vocal/SOURCES.md` §0 | re-read 2026-10-05 in the Batch 5 research pass |
+
+## 13. Lab 6 group 6 — location and spatial (F09, F10; `lessons/shared/field/`)
+
+Added 2026-10-08 by the Lab 6 group 6 builder (branch lab6-g6): the keys the field and spatial mic types, zones and parts name. The full register is `measurement_mics/SOURCES.md` §0 (Lab 6 part 2); the shotgun model is `foley_footsteps/SOURCES.md` §c; per-lesson claims in `location_speech/SOURCES.md` and `spatial_field/SOURCES.md`.
+
+| Key | Source | URL | Status 2026-10-08 |
+|---|---|---|---|
+| OSHA-ELEC | OSHA Construction eTool, Electrical Incidents: "Stay at least 10 feet away from overhead power lines." (the 3 m keep-out) | https://www.osha.gov/etools/construction/electrical-incidents/ | read 2026-10-07 (prep pass) |
+| NWS-LTG | NWS Lightning Safety: "get inside a safe place immediately"; "Wait 30 minutes after the last lightning or thunder" | https://www.weather.gov/safety/lightning-safety-overview | read 2026-10-07 (prep pass) |
+| SHURE-LAV | Shure, how to choose a lavalier: "Place the shirt microphone above the sternum" (no distance from the mouth) | https://www.shure.com/en-GB/insights/how-to-choose-the-best-lavalier-microphone | read 2026-10-07 (prep pass) |
+| DPA-PLANT | DPA dictionary, plant mic: "A small microphone for hiding in a fixed place on set" | https://www.dpamicrophones.com/dictionary/p/plant-mic/ | read 2026-10-07 (prep pass) |
+| RODE-SG | RØDE shotgun distance help (boom near the subject; just outside the frame) | lesson F09 [3] | NOT RE-READ (403) — PRACTICE |
+| SCH-SHOTGUN | SCHOEPS, "Principal Characteristics of the Different Microphone Types" (the shotgun model) | see `foley_footsteps/SOURCES.md` §0 | read 2026-10-07 (Lab 6 part 1 prep) |
+| SEN-416 | A common short shotgun's size, Ø 19 × 250 mm (search summary, Low) | see `foley_footsteps/SOURCES.md` §0 | Low — the drawn body only |
+| AMBEO-REC | Sennheiser first-order Ambisonic mic recording instructions: four tracks, identical preamps, the same gain, linked | https://docs.cloud.sennheiser.com/en-us/ambeo-vr-mic/manual-recording.html | read 2026-10-07 (prep pass) |
+| MEYER-MAPP | Meyer Sound MAPP 3D guide: mic heights 1.2 m seated, 1.7 m standing (the listener heights) | https://docs.meyersound.com/products/en/user-guide---mapp-3d.html | read 2026-10-07 (prep pass) |
+| UA-MS | M/S decode L = M + S, R = M − S; mono removes S (Lab 1 register) | see `overheads/SOURCES.md` | CONFIRMED (Lab 1) |
+| LESSON-F09 | The owner's lesson F09 (practice statements kept as written) | `source_text/F09-…txt` | the lesson |
+| LESSON-F10 | The owner's lesson F10 (practice statements kept as written) | `source_text/F10-…txt` | the lesson |

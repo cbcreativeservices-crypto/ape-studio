@@ -231,11 +231,31 @@ export function operatorPoses(feet: Vec3, grip: Vec3): { side: PlayerPose; top: 
   return { side, top };
 }
 
-export function BoomOperator({ view, poses, dim = 0.82 }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose }; dim?: number }) {
+/** The operator, and the pole's rear end behind the front hand (`stub`: the
+ *  grip and the pole's far end) — the part of the pole the hands hold; the
+ *  mic's side of it is drawn by the scene, from the mic to the grip. */
+export function BoomOperator({ view, poses, dim = 0.82, stub }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose }; dim?: number; stub?: { a: Vec3; b: Vec3 } }) {
   const pose = view === 'side' ? poses.side : poses.top;
+  const pole = useMemo(() => {
+    const p = make();
+    if (stub) {
+      p.moveTo(stub.a.x, view === 'side' ? stub.a.y : stub.a.z);
+      p.lineTo(stub.b.x, view === 'side' ? stub.b.y : stub.b.z);
+    }
+    return p;
+  }, [stub, view]);
   return (
     <Group>
       <PlayerBehind pose={pose} dim={dim} />
+      {stub ? (
+        <>
+          <Path path={pole} style="stroke" strokeWidth={36} strokeCap="round" color="#0b0c0f" />
+          <Path path={pole} style="stroke" strokeWidth={32} strokeCap="round" color="#3a3d45" />
+          <Group transform={[{ translateX: -1.5 }, { translateY: -2 }]}>
+            <Path path={pole} style="stroke" strokeWidth={7} strokeCap="round" color="#d4d8e0" opacity={0.45} />
+          </Group>
+        </>
+      ) : null}
       <PlayerInFront pose={pose} dim={dim} />
     </Group>
   );
