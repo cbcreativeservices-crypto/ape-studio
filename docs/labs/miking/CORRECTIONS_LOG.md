@@ -1344,3 +1344,63 @@ Applied from `BATCH6_RESEARCH_SUMMARY_PART2.md` §2 (items 2, 3, 6, 10, 12, 13, 
 | G4-14 | F11/F12/F13 | "documented" throughout | "logged / written down" (the learner-text ban on "documented") | wording | APPLIED |
 
 OWNER REVIEW (defaults applied): D-6B-1 chain rack as a page type — yes (engine/chain/); D-6B-2 synthetic histories and model decays labelled "a made-up / simplified example" — yes; D-6B-3 no standard names on screen — yes (BRAND_NAMES extended); D-6B-8 3 dB default + calculator stub; D-6B-9 safety numbers exact — yes; operator keep-away radius 1 m drawing default (F11 proposal item 3); F12 open-position distance from the road (3–4.5 m), F13 room and seats, F11 off-axis example angle 30° — drawing defaults.
+
+## Lab 6 · group 5 · Systems, products and sensors: F14, F15, F16 (branch lab6-g5, 2026-10-08)
+
+Applied from `BATCH6_RESEARCH_SUMMARY_PART2.md` §2 (items 4, 5, 7, 9, 11, 12, 13, 14) and the folders' SOURCES.md
+(`loudspeaker_measurement/`, `machinery_sound/`, `scientific_arrays/`).
+
+| id | lesson | was | now | basis | status |
+|---|---|---|---|---|---|
+| G5-01 | F14 L24 (item 4) | "Meyer Sound describes practical line-array samples at the beginning, middle and end of coverage, with extra points for deep areas" | practice wording, no attribution: the start, middle and end of a main's coverage at an ear height (`vn.front` / `vn.mid` / `vn.rear`), "a deep room may need more than one"; the cited page gives only the 1.2 m / 1.7 m heights and front-to-back order | MEYER-MAPP (read: the wording is not on that page) | APPLIED |
+| G5-02 | F14 refs [1] = [12] (item 5) | one URL under two titles; ground-plane text attributed to it | one key, MEYER-MAPP; the ground plane taught as practice in words (context page card), never attributed | MEYER-MAPP | APPLIED |
+| G5-03 | F16 L102 (item 7) | cross-link "F10 water and hydrophone" | no cross-link printed; the hydrophone is F16's own (THE SPECIALIST KIT, hydrophone + units card); contact pickup stays with F15/F04 | survey | APPLIED |
+| G5-04 | F16 L36 (item 9, enrichment) | 1 µPa vs 20 µPa "not directly comparable" | units card: the references are 26 dB apart, equal intensities differ by about 61.5 dB in all, "not comparable by subtracting"; check `ar.two.3` explains why "subtract 26 dB" is wrong; a test pins that no correct answer says "subtract" | DOSITS-AW | APPLIED |
+| G5-05 | F16 L26 (item 11) | "unless calibrated specialist equipment and a qualified instructor are available" | "a qualified operator" (safety lines, D-6B-4 framing) | wording | APPLIED |
+| G5-06 | F14–F16 headers (item 12) | "Foley Field and Acoustical Lab F14/F15/F16" | registry name "Miking Lab 6: Foley, Field & Scientific" | registry | APPLIED |
+| G5-07 | F14–F16 (item 13) | "Pro Audio Training Academy" | stripped | wording | APPLIED |
+| G5-08 | F14–F16 (item 14) | the learner named as a pupil; "class exercise", "classroom claims", "Guided teaching exercise", the pupil's measurement / field / observation sheet; F15 "No student places contact sensors on …" | "you", Practice, the measurement / field / observation sheets (`logSheet.ts`: SYSTEM_SHEET, PRODUCT_SHEET, ARRAY_SHEET); F15 safety said as "you never place a sensor on, open, service or modify an operating machine" | wording | APPLIED |
+| G5-09 | F15 L5, L30, L86; F16 L25, L65 (D-6B-3) | ISO 3744:2025, ISO 11201/11202, ISO 9614-1/-2/-3 named; "Do not call an informal four-position walkaround 'ISO 3744 compliant'" | no standard named on screen: "the named sound-power method", "the method and its validity indicators", "an informal walk round the fan is not that method"; ISO 3744:2025 (ed. 4) kept internally as CONFIRMED | ISO-3744 | APPLIED |
+| G5-10 | F14 L6, L12; F15 L13–L14 | "documented" throughout | "logged / written down" (the learner-text ban on "documented") | wording | APPLIED |
+| G5-11 | F14 L15 | listener positions at "normal ear-height" (no number) | 1.2 m (4 ft) seated, 1.7 m (5.6 ft) standing — a sensible listener height, never the method's rule | MEYER-MAPP | APPLIED |
+| G5-12 | F15 L47 | the exercise device named but not drawn | a guarded desk fan is the only device drawn for placement; an industrial machine appears only as a no-go example (guard, interlocked door, disconnect with lockout padlock and tag; no mic, no sensor) | machinery_sound/GEOMETRY_PROPOSAL.md §2 | APPLIED |
+| G5-13 | F14 L26–L27 | reference tap and delay in prose | THE TAP AND THE DELAY: arrival = path ÷ c (calculator) + a processor latency for a pre-DSP tap (2 ms, a made-up example); a delay finder takes the strongest arrival — with the main left on, not the fill's first | systems.ts (tested) | APPLIED |
+| G5-14 | F14 L30 | "a short window loses low-frequency resolution" | THE WINDOW: a window of T resolves steps of about 1 ÷ T, with the arrivals from the bench room's mirror images | physics (CONFIRMED) | APPLIED |
+
+OWNER REVIEW (defaults applied):
+
+- **G5-D1 · F14 setups per scene.** The engine shows one scene's setups at a time, so the proposal's cross-scene roles
+  became: BENCH — ONE MIC on the axis at 2 m, TWO MICS axis + 30° off, the near-field woofer point as ANOTHER START;
+  VENUE — ONE MIC a mid-coverage seat, TWO MICS the front + rear of the left main's coverage, CLOSE · LIVE the main/fill
+  overlap seat, the aisle edge and the standing area as ANOTHER START; STUDIO — ONE MIC the listening position (left
+  monitor alone), TWO MICS + a head position 30 cm aside, 50 cm back as ANOTHER START. The proposal's ground-plane
+  start is taught in words only (no ground-plane scene). OWNER: approve, or ask for a ground-plane scene.
+- **G5-D2 · F14 drawing defaults.** Bench radius 2 m, off-axis 30° (25–35°), the near-field point 2–4.5 cm from the
+  baffle (the proposal's 10 mm gap from the cone); the venue (shared/measure/venue.ts: a 3 m stage 0.8 m high, mains at
+  the corners 2.6 m up, a sub on the floor, a front fill on the lip, ten rows, a standing area); studio monitors 1.6 m
+  apart in an equilateral triangle with the listening position; the processor latency (2 ms) and the arrival heights
+  are made-up examples, said on the glass. MICROPHONES credits THE TAP AND THE DELAY (the finder's trap), not the chain.
+- **G5-D3 · F15 keep-outs and positions.** Exclusion zone 0.3 m beyond the guard (proposal); the airflow cone read as
+  30° in all (15° each side), 2 m long. Position A sits 1 m out BESIDE the airflow (45° off it) — the source text's
+  airflow warning chosen over a user sitting in the jet; B a quarter-turn to the other side, C behind; TWO MICS = A + B
+  (the proposal's "A + contact sensor": the contact sensor is drawn installed on the housing, never placed by the
+  learner — D-6B-4); the detail mic ~0.6 m from the motor housing (CLOSE · LIVE), the far perspective ~2 m (FARTHER
+  BACK · STUDIO), both offering a pencil condenser. OWNER: approve A beside the jet.
+- **G5-D4 · F16 layout.** Baseline 0.5 m (proposal), a wider 1 m pair, a third element 25 cm behind the origin as the
+  "alternative layout" that breaks the front/back mirror (my default), the source 2 m out, the side point 1 m across.
+  ONE MIC = element L (the engine has no "one array" role; the proposal said n/a).
+- **G5-D5 · Claim ladders** (shared/measure/claimLadder.ts). F15: creative → relative → calibrated pressure → sound
+  power, plus an off-ladder "safe daily dose" claim; F16: observation → arrival order → direction estimate → sound power
+  (my rungs), plus an off-ladder "the hot spot is the fault". The numbers inside the claims (52 dBA, 48 dB, 25°, 60 dB)
+  are made-up claims to judge.
+- **G5-D6 · F15 cycle strip** (shared/measure/cycle.ts): its shape, timings and three rattles are a made-up example in
+  relative dB; the sample's energy average goes through the SPL calculator (calcBridge.leqOf).
+- **G5-D7 · F16 probe band.** The band per spacer (12 / 25 / 50 mm) is not printed — PROBE-SPACER is one maker's set via a
+  search snippet; the page says "a wider spacer toward the lows, a narrower one toward the highs; its data gives each".
+- **G5-D8 · F16 specialist kit** drawn as generic objects (an acoustic camera with spiral-arm capsules, an ultrasonic
+  detector, a hydrophone on a mooring); two checks use "bat calls that reach 60 kHz" as a premise (USGS NABat not
+  re-read; no call frequency is taught as a fact).
+- **G5-D9 · SETUP_PICKS** (engine/setups.ts, one "Lab 6 group 5" block): F14 close = the overlap seat, no farther;
+  F15 close = the detail mic, farther = the far perspective; F16 none.
+- **No new calculator.** λ/2 calls `speedOfSoundAir`; Δt calls `twoMic.deltaTms`; the cycle's average calls `leq`; the
+  window's 1 ÷ T is the physics itself. Nothing for `audio-tools-engine`.

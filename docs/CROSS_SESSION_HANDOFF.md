@@ -634,6 +634,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-10-08 00:50 · ccode · 6b1202c5
+changed: Miking Lab 6 g5: F14, F15, F16 lessons registered in the field lab
+affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
+needs: nothing
+
+
+### 2026-10-08 00:49 · ccode · 7ae43a4f
+changed: Miking Lab 6 g5: venue, system timing, claim ladder, exclusion zone, arrays, sensors
+affects other side: nothing — app-only Miking lesson code (Lab 6 group 5, F14–F16), hidden behind MIKING_PUBLIC false; no backend, schema or calculator change
+needs: nothing
+
+
 ### 2026-10-07 23:12 · ccode · 2d9b22ad
 changed: Miking Lab 6 g4: F11, F12, F13 lessons and the field lab row
 affects other side: nothing (client-only lesson data; Miking stays hidden, MIKING_PUBLIC false)
