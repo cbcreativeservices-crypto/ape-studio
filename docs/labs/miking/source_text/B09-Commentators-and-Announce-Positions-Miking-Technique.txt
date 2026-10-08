@@ -1,0 +1,62 @@
+# Commentators and Announce Positions Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B09  •  Live booth, open-air and studio applications
+Commentary must remain understandable through sudden crowd and PA peaks while the announcer watches play, reads notes and turns toward a partner. This lesson compares headset booms, lip-oriented microphones and stand-mounted options; it tests mouth position, plosives, neighboring speech, monitoring and fallback. Crowd ambience and action effects are separate sources. No audio examples are included.
+# Survey the announce position
+Identify each commentator, analyst and occasional guest, then draw their seated/standing positions, sightlines, table, script and screen positions, venue loudspeakers, open windows, ventilation and the crowd direction. Note whether the position is enclosed or exposed, and which voice has to reach program, recording, PA, talkback and the commentator’s own headphones. The microphone choice follows the expected voice-to-crowd balance and the performer’s movement; no polar pattern makes crowd noise vanish. [1–3]
+Ask the talent to call a representative quiet passage and an excited peak while tracking imaginary action. Watch how far the mouth moves, whether the head turns toward the partner and whether the cable or mic is bumped by glasses, a scarf or notes. Test at the venue’s normal PA/crowd level if possible. Keep the commentary mic distinct from a crowd mic: one needs speech rejection of the venue; the other should convey venue energy. [1, 4]
+# Compare the microphone approaches
+Approach
+Placement and advantage
+Limit to check
+Broadcast headset boom
+Fit the headset comfortably; position its capsule close to the corner/side of the mouth, just outside the strongest breath stream, according to the model’s pickup side and windscreen. The boom follows head turns. Closed earcups can reduce external sound at the ear. [1, 2]
+Crowd rejection depends on close distance, pattern, aim and room; headset isolation is not a guaranteed hearing protector. Check glasses rub, plosives, boom drift and cable strain.
+Lip-oriented commentator mic
+Use the model’s designed positioning bars/guard to establish a repeatable mouth distance; check orientation and whether it is handheld or safely supported. The Coles 4104 is a close-talking noise-cancelling ribbon example with effectively bidirectional response. [3, 5]
+It occupies a hand or specific stand, may contact the lip, and requires model-specific care and hygiene. Rear pickup and neighboring voice must be tested; do not claim complete crowd cancellation.
+Stand/arm-mounted desk mic
+Put the capsule on a stable arm near the mouth, off the direct blast of P/B sounds, and out of sightline/notes. Useful in a quieter enclosed booth or studio. [6]
+The head may leave the pickup when following play or turning to the analyst. Desk vibration, paper and nearby loudspeakers can dominate at greater distance.
+Small headworn or lavalier
+A headworn capsule may serve on-camera talent; a lavalier can be visually discreet when wardrobe permits. Test its actual pattern, wind and clothing noise. Cross-link B05. [7]
+A chest lav is farther from the mouth and changes tone with head turns. In a loud booth it may require more crowd pickup than the close boom or lip mic.
+# Position, voice and pattern tests
+For a headset boom, begin with the manufacturer’s fit and aim instructions and move it incrementally while the announcer speaks at real performance levels. Shure’s SM2 guide places its close-talk boom near the outside corner of the mouth for sports use; treat this as model-specific geometry rather than a universal distance. The Sennheiser HMD 26 specification uses a supercardioid dynamic boom, while its HME 26 variant uses a cardioid condenser; these require different powering and can have different off-axis behavior. Confirm the exact model and cable before connecting. [1, 2]
+Place the capsule away from the direct breath jet, but keep it pointed at the speaking region. Listen to P/B bursts, sibilance, low-frequency proximity change, room/crowd balance, and how the tone shifts when the announcer looks down or toward the partner. Recheck after the headset has been worn for several minutes. A high-pass filter may tame some low-frequency energy but does not restore a capsule or input overloaded by an air blast. [1, 2, 6]
+For a Coles-style lip mic, use the specified lip reference to keep distance consistent. Do not apply that contact geometry to an unrelated microphone. The 4104’s effective bidirectional response has side nulls, but its rear lobe and nearby sound remain real; position and test both commentators with the venue active. Coles describes the 4104 as usable in wind with its specified windshield arrangement, while its general ribbon-care guidance warns against air blasts and careless phantom power. Follow the exact model documentation, protect the ribbon, and never blow into a microphone to test it. [3, 5, 8]
+# Two commentators and the local sound field
+Assign one voice microphone per commentator and label the channels. With one person silent, have the other deliver a normal call and a peak; listen to the silent person’s microphone for spill. Swap roles and then let both talk. Adjust seating angle, microphone aim/distance and active channel levels before resorting to aggressive gating. If both channels contain the same voice at different delays, summing can change the tone. A partner’s lip mic or supercardioid headset does not guarantee isolation when the two sit close together. [2, 3, 9]
+Keep the audience/crowd bed on separate channels and add it intentionally in the program mix. At an open announce position, test whether the PA cluster, not the crowd, dominates the commentator channel. A windscreen and sheltered position can help outdoor plosives and gusts, but they do not remove reverberant PA. Have a clean speech fallback before the event starts, such as a tested alternate headset/boom or quiet position. [3, 4, 8]
+# Live monitoring, routing and safety
+A commentary box may provide separate program, producer cue/IFB, talkback and sidetone paths. Verify where the microphone goes when the cough/mute or talkback control is used, and check that the commentator hears enough of their own direct voice without a distracting delayed copy. IFB is an interruptible return for production cues; mix-minus can omit the announcer’s delayed return on a remote path. These are routing checks supporting a stable microphone position. [10–12]
+Start headphone level low, then set a comfortable return under representative crowd noise. Some broadcast headsets provide a switchable limiter, but its presence and rating depend on the exact model; do not treat it as a substitute for managing exposure. NIOSH notes that noise-cancelling headphones are not automatically hearing protection unless rated as such. Plan occupational hearing protection with the venue safety lead where required. [2, 13]
+Secure headset/desk cables and the announce arm away from walkways, doors and windows. Do not place equipment over a playing area or attach it to venue structures without approval. For a shared lip-contact mic, follow the venue’s hygiene policy and use manufacturer-compatible barriers or individual units. For a passive ribbon, verify the interface, wiring and phantom-power setting with the audio lead before connecting; Coles warns about current reaching the ribbon. [3, 8]
+# Guided placement lab
+1. Map a two-person booth and an exposed position. Note sightlines, PA/crowd axes, the desk, cabling, program and IFB/talkback feeds.
+2. Fit a broadcast headset boom to each speaker, following its model guide. Have each deliver normal and excited commentary, then turn to the partner. Record capsule position, plosives, tonal movement and crowd pickup.
+3. If a lip-positioned mic is available, have an authorized operator set it using its own guard and connection requirements. Compare repeatability, hand/stand use, adjacent speech and the venue bed. Do not improvise lip contact or phantom settings.
+4. Test a stand-mounted mic in the same position. Compare the expected head motion and desk noise; decide where it is workable and where it is not.
+5. Listen to each commentary channel alone as the other speaker talks. Then test overlap, a crowd peak, IFB cue, talkback and mute. Confirm the program feed excludes unintended private communication and that crowd ambience is separate.
+6. Document selected mic, mouth/guard position, windscreen, cable route, input powering, channel map, safe headphone level, backup and a remaining limitation.
+Pass criterion: each commentator remains intelligible through realistic movement and crowd peaks; the student identifies partner spill, plosives and route behavior, and states why the chosen mic fits the position. No audio examples.
+# Critical evidence audit
+# Agreement and differences
+Shure and Sennheiser support close headset speech pickup in noise. Coles presents a lip-referenced ribbon solution for a different handling style. The apparent choice between supercardioid headset and effectively bidirectional lip mic is not resolved by pattern alone: mouth distance, head turns, orientation, venue sound, comfort and available routing decide. A stand mic can be effective in a quiet box but may be less repeatable when talent follows play. [1–3, 5, 6]
+# Limits
+Manufacturer examples do not establish one universal inch distance, wind tolerance, hearing-protection rating or phantom policy for every microphone. The 4104 product page’s wind claims are model-specific; Coles’ general ribbon-care cautions still require avoiding blasts and verifying power. The lesson makes no guarantee of total crowd rejection or zero crosstalk. Check the actual channels and returns at event level. [1–3, 8, 10–13]
+# Sources and curriculum connections
+Primary manufacturer and NIOSH guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] Shure, SM2 Broadcast Headset User Guide <https://pubs.shure.com/view/guide/SM2/en-US.pdf>
+[2] Sennheiser, HMD/HME 26 Product Specification <https://www.sennheiser.com/globalassets/digizuite/52292-en-hmd_hme_26_26-s-product-specification_v.1.0_en.pdf>
+[3] Coles, 4104 Commentator’s Microphone <https://coleselectroacoustics.com/4104-commentators-microphone/>
+[4] Shure, Broadcast Audience and Venue Pickup <https://www.shure.com/en-US/insights/the-top-six-church-audio-questions-for-2012>
+[5] Coles, 4104 Technical Specification <https://coleselectroacoustics.com/wp-content/uploads/2021/12/4104Spec.pdf>
+[6] Shure, SM7B User Guide: Placement and Windscreen <https://www.shure.com/en-US/docs/guide/SM7B>
+[7] DPA, How Mic Placement Affects the Voice <https://www.dpamicrophones.com/mic-university/audio-production/how-mic-placement-affects-the-voice/>
+[8] Coles, Ribbon Microphone Care Tips <https://coleselectroacoustics.com/ribbon-microphone-care-tips/>
+[9] Shure, Automatic Microphone Mixers: Multiple Speech Mics <https://www.shure.com/en-EU/insights/automatic-microphone-mixers-when-your-need-them>
+[10] Clear-Com, Comprehensive Guide to Partyline: Commentary Box <https://clearcom.com/downloadcenter/technicaldocs/ComprehensiveGuidetoPartyline/Comprehensive_Guide_to_Clear_Com_Analog_Digital_Partyline_Ebook.pdf>
+[11] Clear-Com, Interruptible Foldback (IFB) <https://www.clearcom.com/Resource-Library/Videos/Details/interruptible-fold-back-aka-ifb>
+[12] Sound Devices, MM-1 Announcer Monitor and Mix-Minus <https://support.sounddevices.com/hc/en-us/articles/45051602821275-MM-1-User-Guide-and-Technical-Information>
+[13] CDC NIOSH, Provide Hearing Protection <https://www.cdc.gov/niosh/noise/prevent/ppe.html>
+Cross-links: B01 studio hosts; B07 voiceover and guests; B08 audience/event space; B10 sideline interviews; B17 complete sports coverage.

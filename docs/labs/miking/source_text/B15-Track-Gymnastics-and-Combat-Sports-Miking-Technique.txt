@@ -1,0 +1,323 @@
+# Track Gymnastics and Combat Sports Miking Technique
+Pro Audio Training Academy   Sports and Broadcasting Lab B15
+Capture starts, footwork, landings, apparatus and combat action from permitted locations while preserving unobstructed performance space. This lesson compares fixed detail feeds with a stable venue perspective. Track running, artistic gymnastics, boxing, wrestling and judo are the principal cases; other gymnastics disciplines and combat formats require their own event review. No audio examples are included.
+# Learning objectives
+Define the target action and listening perspective before choosing channels and positions.
+Plan fixed and optional tracked coverage with documented approval, camera coordination and a fallback for every important gap.
+Distinguish airborne action from transmitted vibration, reserve peak headroom and evaluate combined feeds in mono.
+# Access and approval come first
+Identify the governing body, adopted rule edition, event technical authority, host broadcaster, venue and audio supervisor. Obtain approval for the entire installation, including its mount, wind protection, cable route and operator movement. Accreditation alone does not authorize a microphone on an apparatus, ring or mat. Athlete, official, coach, medical and emergency routes remain available throughout the session.
+Case
+Verified rule or document
+Production implication
+Track
+World Athletics 2026 base rulebook covers start coordination and starting systems; later amendments are separately listed. [1, 2]
+Coordinate through officials; leave lanes, start equipment and finish operations untouched.
+Gymnastics
+2025–2028 host-broadcast manual requires agreed microphone positions; 2026 technical regulations address apparatus inspection. [3, 4]
+Resolve sound positions with cameras and apparatus personnel before installation.
+Boxing
+Reviewed World Boxing text is titled November 2024 despite a 2025 hosting path; ring and Seconds provisions apply. [6]
+Confirm event adoption; protect apron, corner and medical operations.
+Wrestling and judo
+UWW 2026 mat rules read directly; IJF index identifies SOR dated 14 August 2026. [7, 8]
+Keep mat protection areas clear; obtain the full adopted judo rules before a live installation.
+Research checked 7 October 2026. All proposed layouts, trial distances, angles and gain targets are Academy recommendations unless expressly attributed. Rule dimensions are not microphone coordinates.
+# Compare the pickup methods
+# Choose a perspective rather than a microphone count
+A fixed detail feed follows a named location: a start group, track segment, landing region or ring sector. An ambience feed establishes the venue through gaps and transitions. Neither should be expected to do both jobs equally well. Listen for the action itself, the changing source distance and the crowd or PA that shares the same axis.
+A shotgun offers frequency-dependent off-axis rejection rather than a universal reach. Compare it with a compact cardioid or supercardioid from the same permitted point, especially in reflective arenas. Indoor use is not automatically unsuitable; the actual room and target motion determine the useful result. [9]
+Method
+Contribution
+Tradeoff and verification
+Fixed directional
+Repeatable detail at a chosen contact or movement region.
+Aim at the actual source height; check near, middle and far positions and rear-lobe spill.
+Tracked shotgun or parabolic
+Selected moving detail when an operator position and arc are approved.
+Operator movement, windshield bulk and handoffs may be impractical. Use B12 for collector focus and spectral limitations.
+Boundary pickup
+Airborne floor perspective on a suitable, expressly approved surface.
+Soft mats and raised or small surfaces do not reproduce the intended large flat-surface geometry. [11]
+Isolated airborne plant
+Local apparatus or ring detail if a complete installation is expressly approved.
+Rigid mounts can add structure noise. A small capsule does not establish safe attachment.
+Mono or stereo ambience
+Stable venue identity and continuity when detail is blocked.
+Nearby spectators and PA may dominate. Stereo requires a usable mono/downmix result.
+Contact sensor extension
+Deliberate mechanical-vibration comparison in a controlled setting.
+Different measured path from airborne pressure. Do not treat it as equivalent or modify competition equipment.
+# Select response output and mounting together
+For soft footwork, compare self-noise, preamp noise and venue noise. For starts, bell, whistles or nearby impacts, verify capsule and input overload independently. A high-sensitivity condenser produces more voltage for a given pressure; that is useful only when the next stage can accept it. Select powering, connectors and suspension for the exact model. Product examples later in the lesson illustrate these decisions rather than prescribe purchases.
+In a controlled session, repeat an ordinary action with one variable changed and restore the original setup. In a live event, approved access and continuity govern the usable positions. Start with one useful detail sector and ambience; add channels only when they solve a documented gap. DPA sports material illustrates this general separation, but its performance language does not guarantee isolation. [10]
+# Track starts and running coverage
+# Source and intended perspective
+Separate the start cue, block departure, running footfalls, hurdle contacts and finish reaction. A microphone covering the start may cease to supply useful running detail almost immediately. A distant crowd feed can remain consistent while fixed sectors take over. Do not infer that every visible step will be audible above the venue.
+# Recommended conditional layout
+For starts, use an approved stationary position outside athlete and official routes, aimed toward the selected group or start region. Record whether the audible cue comes from a physical starting device, lane loudspeaker or supplied production feed. World Athletics CR22 describes start coordination and lane loudspeakers; the term gun includes starting apparatus. An electronic cue must not be described as a required firearm report. [1]
+Prefer a separately supplied, authorized production feed for a clear cue when available. Verify its level, latency and rights with the timing or presentation team. Do not split, load, patch or modify timing, false-start detection or lane speakers without authorization from the responsible specialist. A supplied cue feed is separate from the action microphone and is not an official timing measurement.
+For running detail, aim approved perimeter microphones across named segments at footfall height or toward a broader body/track region, according to the desired sound. Survey the nearest and farthest lanes and both approach and departure. A microphone perpendicular to the nearest lane may lose the runners quickly; an oblique view can extend the useful sector but may admit more PA or crowd. Log the tradeoff rather than claiming an ideal angle.
+Phase
+Coverage risk
+Recommended response
+Before the start
+Handling noise or crew movement distracts athletes.
+Set and check before the official ready period; remain still and quiet.
+Departure
+Strong cue masks block and footfall detail.
+Provide headroom; keep cue and action separately controllable if authorized.
+Running and hurdles
+Distance, obstruction and off-axis changes.
+Use tested fixed sectors and smooth handoffs; never follow into a lane.
+Finish and relay operations
+Run-through, exchange traffic and camera or timing access.
+Use assigned positions beyond all operational routes; retain an ambience fallback.
+# Operator movement and fallback
+A tracked operator remains within the assigned footprint and approved rotation arc. Do not swing a windshield, dish or cable across a running route. No walking pursuit beside active athletes is assumed. If a position becomes obstructed, hand off or use ambience; relocation takes place only when the event authority releases the area.
+Jump landings at a combined athletics meet require a separate approved landing-area survey. Do not move a track setup to sand pits, landing beds or an active throwing sector. This lesson does not authorize field-event mounts; B13 supplies broader perimeter-coverage principles.
+# Gymnastics coverage
+# Source and intended perspective
+Treat run-up, board contact, hand or foot contact on apparatus, mat landing and routine music as separate contributors. Apparatus can transmit mechanical noise to its supports. A microphone near a frame may favor rattles over useful airborne action; a wider feed may better preserve the complete routine.
+# Approval includes the apparatus manufacturer
+The FIG/World Gymnastics Host Broadcaster Obligations Manual 2025–2028 assigns precise microphone sizes and positions through consultation among host broadcaster, federation, organizer and apparatus manufacturer, coordinated with camera-platform decisions. It also restricts other in-field broadcasters absent explicit agreement. These are event-production arrangements, not general permission to place a student mic beside an apparatus. [3]
+The 2026 Technical Regulations Article 10 addresses apparatus changes and inspection. Reviewed Apparatus Norms include protective landing and vault equipment; for example, the vault safety collar has functional cushioning and clearance requirements. Do not attach hardware, put cables beneath protective components or interfere with apparatus movement. [4, 5]
+# Recommended fixed detail and ambience layout
+For a permitted landing view, aim an independently supported directional microphone toward the expected landing region from beyond the complete landing and recovery envelope. Measure range to that region and capsule height. Test only authorized normal warm-up; do not ask gymnasts to repeat hard landings for sound. A microphone facing a mat edge can hear a different balance from one facing the gymnast’s landing region.
+For vault, preserve run-up, board, table, landing and recovery space. For bars, rings, pommel horse and beam, include full limb travel, apparatus deflection, dismounts and spotting positions. Use a venue-approved independent support where possible. Apparatus-mounted plants remain conditional on engineered approval and qualified installation; an isolated mount does not itself make the attachment acceptable.
+Target
+Recommended comparison
+Fallback or limitation
+Run-up and landing
+One wider fixed feed versus separately permitted detail sectors.
+Ambience covers gaps; no stand or cable enters recovery space.
+Apparatus contact
+Airborne aim toward the contact region versus a wider routine view.
+Use the wider view if mount vibration or body obstruction dominates.
+Floor routine
+Approved perimeter directional sector versus stable stereo venue view.
+Music spill may be integral; a clean authorized music feed stays separate.
+Rhythmic or trampoline extension
+Survey thrown apparatus, bed movement, overhead travel and rescue access independently.
+Do not transfer artistic-gymnastics positions or clearances automatically.
+# Music and simultaneous routines
+Coordinate music feeds with the host broadcaster and presentation team; document feed delay and the room version heard by action mics. Avoid summing several equally loud delayed versions of music. At events with simultaneous apparatus, open the selected routine’s detail feed while maintaining the agreed venue perspective. Channel labels should identify apparatus and physical position, not only the current athlete.
+# Boxing and other ring based combat
+# Source and intended perspective
+Boxing action includes glove contact, footwork, exertion, rope or canvas movement and official cues. The bell and PA may create larger recorded peaks than the intended detail. Corners and rounds change the relevant source location. Keep commentary, interviews and approved official speech separate from the ring-action feed.
+# Rules and practical access
+The directly read World Boxing document is titled Competition Rules November 2024 and hosted in a September 2025 path. Rule 13.12 covers ring construction and apron dimensions; Rule 3.1 covers Seconds’ use of the apron and ring. Rule 13.11.2 restricts additional upper-body accessories. Confirm that this is the event’s adopted edition and obtain later event instructions; do not call the hosting year a new rule edition. Professional boxing uses its own commission and sanctioning arrangements. [6]
+Recommended default: independently supported fixed directional microphones in assigned ringside positions, aimed through a permitted acoustic path at the selected sector. Survey standing exchanges and low action, near and far corners, and referee obstruction. An elevated platform changes source height relative to the floor; do not aim at the platform base when glove or body detail is the target.
+An approved low plant can supplement canvas perspective, but neither the apron nor a neutral corner is spare audio space. Preserve steps, judge views, ring inspection, Seconds, towels, water, cleaning and medical access. Never thread cable through ropes, alter tension or padding, put hardware under canvas or clamp to the bell as a routine shortcut. Any structure mount needs separate approval, retention and a vibration test.
+Condition
+Listen or inspect
+Recommended alternative
+Exchange moves to a corner
+Body/referee obstruction and local crew spill.
+Use the opposite approved sector or stable ambience.
+Canvas or frame dominates
+Rumbles and rattles persist despite useful airborne action.
+Try an independently supported airborne position; identify deliberate contact sensing separately.
+Bell or whistle overloads
+Distortion at mic, preamp or converter; recovery after peak.
+Lower input gain or use approved suitable hardware; keep cue control separate.
+Between rounds or injury
+Private speech and crew/medical access become salient.
+Follow editorial and access instructions; mute detail when required and retain permitted program continuity.
+# Other ring or cage formats
+Kickboxing, Muay Thai, MMA and cage events are not covered by World Boxing’s rule authority. Obtain the actual commission, federation or promotion rules and event installation plan before transfer. Kicks, clinches, cage contact and exits change the risk envelope and acoustic path. A cage may screen or reflect sound and transmit vibration; no mic may project through mesh toward participants by default. Body-worn athlete hardware is not a fallback for refused perimeter access.
+Do not stage punches, knockdowns or hard impacts to test microphones. Authorized normal warm-up and the gentle classroom exercise provide different evidence; neither establishes future event peak limits.
+# Wrestling judo and mat based combat
+# Source and intended perspective
+Foot movement, clothing, grips, exertion, mat contact and referee voice can be quiet individually yet punctuated by strong transients. Athletes rotate, crouch and move to the edge; bodies can block one microphone. A single close sector should therefore be supported by a wider feed rather than presented as complete coverage.
+# Wrestling
+UWW International Wrestling Rules 2026 Article 4 describes a 9 m wrestling diameter with a 1.50 m surrounding border, distinguishes the passivity and protection areas, and requires surrounding open space. Articles 45 and related provisions show that action can continue into edge regions before a stoppage. The protection area is not a microphone strip. These statements apply to the reviewed UWW international formats, not automatically to school folkstyle, grappling or other rules. [7]
+Recommended layout: independently supported directional microphones at event-assigned locations outside the complete mat and operational envelope, aimed at central and edge action regions. Test standing and low source heights, both with a mock obstruction. A low angle may give useful contact texture but miss official speech; a higher, broader view may remain more consistent. Plan one dominant action feed per sector and keep coach shouting from becoming the entire mat perspective.
+# Judo
+The IJF official document index identifies Sport and Organisation Rules dated 14 August 2026. The linked full document was not retrievable in this research session; no current IJF-specific numerical clearance or microphone permission is asserted. Before production, obtain that SOR and the event’s FOP and broadcast plans and verify competition area, safety area, separation, officials, coaches and medical routes. [8]
+Use the same conditional independent-perimeter principle while checking judo’s actual layout. Aim at the chosen throw/landing region without intruding over tatami or its safety area. Do not hide hard hardware at tile joints, alter mat assembly, run a cable under active tatami or add athlete-worn equipment as a routine method. A nearby mini mic can still be struck or create a snag. A practical broadcast fallback is the approved wider venue feed.
+Shared issue
+Recommended comparison
+Decision to document
+Low versus standing source
+Two capsule heights from the same approved footprint.
+Which height preserves the chosen action without losing motion coverage?
+Near versus far edge
+Repeated gentle mock actions at three points.
+Where does isolation or clarity fail, and which feed covers the gap?
+Soft mat versus solid floor
+Log surface and airborne geometry separately.
+A boundary example on a hard flat surface does not validate use on a soft mat.
+Multiple mats
+Solo each sector and listen to the intended combination.
+Open only useful detail channels; maintain coherent ambience through selection changes.
+# Access during stoppages
+Medical access takes priority over microphone recovery. No operator walks onto a live mat or reaches across a participant to correct aim. Remove or reposition equipment only when the event authority releases the area; mute the affected feed and use the documented fallback in the meantime.
+# Mounting movement and environmental checks
+# Survey the complete installation
+Draw the source envelope and all operational routes before choosing a stand. Include athlete movement beyond the nominal boundary, spotting, cleaning, equipment service, camera dolly or handheld routes, official sightlines and medical access. Measure capsule height, range to the named target, aim and distance to the nearest restricted route. The windshield and cable loop count as hardware, not just the capsule.
+Use only venue-approved supports and retention arrangements. Have qualified personnel install any elevated or suspended system. Keep cables strain-relieved at equipment and secured on approved routes without defeating suspension isolation. Tape alone does not establish safe traction or an approved crossing. A routed cable must remain safe during rotation changes, crowd movement and emergency withdrawal.
+Risk
+Pre-event check
+Fallback
+Frame or platform vibration
+Listen to normal authorized movement through an isolated airborne mount.
+Use independent support or accept a wider feed; do not assume EQ fixes the mechanism.
+Operator distraction or obstruction
+Rehearse the approved arc and include windshield/dish size.
+Stay fixed; switch sectors instead of extending toward action.
+Outdoor track wind or rain
+Match suspension and wind protection to the mic; audition covers.
+Use the sheltered approved feed; withdraw according to event instructions.
+Sweat splash dust or cleaning
+Verify model limits and safe service procedure.
+Mute and replace when released; no generic waterproof claim.
+Access or mount approval withdrawn
+Prelabel a feed that covers the relevant program need.
+Mute the affected channel immediately; retain safe permitted coverage.
+# Weather limits and hearing protection
+Humidity tolerance is not waterproofing. Use only protection approved for the exact microphone and recording task. Rycote explicitly describes its Windshield Rain Jacket as between-takes protection and says it is not intended for recording audio. A covered mic that survives weather may still deliver unusable sound. [12]
+For outdoor track work, follow the event weather authority. National Weather Service guidance calls for shelter when thunder is heard and at least 30 minutes after the last thunder before resuming outdoor activity. Plan shelter and withdrawal in advance; do not retrieve gear during a dangerous stoppage. [13]
+Use conservative headphone level and retain situational awareness appropriate to the assigned location. Headphones and input meters do not determine exposure compliance. Do not stand near a start device, bell or loudspeaker merely to create a stronger signal. Hearing exposure assessment belongs to an appropriate method and qualified event safety process; cross-link F12 rather than infer it from dBFS.
+# Headroom routing and overlapping microphones
+# Verified equipment examples
+Example
+Verified specifications
+Use and limit
+Sennheiser MKH 416 P48
+40–20,000 Hz; supercardioid/lobar; 25 mV/Pa ±1 dB at 1 kHz, no load; 130 dB SPL maximum; 48 V ±4 V phantom power. [14]
+Directional fixed-feed comparison. Check frequency-dependent polar response, suspension and downstream input capacity; no water/impact certification inferred.
+Shure MX391/C with compatible preamp
+50–17,000 Hz; cardioid; 33.5 mV/Pa at 1 kHz open circuit; 119 dB SPL at 1 kHz, 1% THD, 1 kΩ load; 11–52 V DC. [11]
+Boundary comparison on a large flat surface. Other cartridges have different output and overload limits; this is not a combat or apparatus mounting approval.
+Specifications describe stated test conditions, not transient performance at every frequency or a safe source distance. Verify the exact capsule, preamp, adapter, transmitter and recorder in use. Mute destinations before power or connection changes. Use the event RF coordinator for any approved wireless system; connector fit is not evidence of electrical compatibility.
+# Reserve margin before processing
+Academy classroom starting point: set the strongest repeatable gentle test transient near −12 dBFS, then reserve more margin for an unpredictable real event. This is a trial gain target, not a broadcast alignment or loudness standard. Check mic, transmitter, receiver, preamp, converter and program bus independently. A low output fader does not protect an earlier stage; a limiter or floating-point file cannot repair already overloaded analog hardware.
+Do not raise gain to make quiet action look large on a meter while ignoring bell, whistle, cue, PA or crowd peaks. Test approved normal warm-up and keep event peaks under observation. Record maximum measured peaks and the margin to overload; do not label the setup safe for untested transients. A separate protected cue feed can be useful only if it is authorized and correctly interfaced.
+# Combine feeds deliberately
+Polarity inversion changes sign; delay changes arrival time. Test wiring/routing polarity with a common repeatable source, then compare near, middle and far action points. Source movement changes path differences, so one delay setting cannot align all positions. Listen for hollow tone, doubled attacks and unstable images in the combined output. [15]
+Recommended remedy sequence: choose a dominant detail feed, reduce redundant overlap, improve approved aim, then consider documented delay for a named stationary target. Keep intentional room arrival in the ambience perspective. Mono and the actual stereo or immersive downmix both need checking; a polarity switch that improves one action point may worsen another.
+Meter the summed program and check picture synchronization through the actual production chain. Route only requested feeds to PA or IFB; action and crowd microphones generally need no in-venue reinforcement. Verify any required reinforcement with the venue engineer at appropriate levels rather than deliberately demonstrating feedback. Maintain separate commentary and talkback routing and a labeled fallback scene.
+# Guided placement lab
+# Set the geometry before listening
+Use a quiet instructor-approved room and clear walking area. Required: one directional microphone, a second airborne microphone if available, recorder or mixer with independent meters, secure supports, headphones, tape measure and worksheet. A boundary microphone and stable mock bench are optional. Use ordinary speech, walking, gentle handclaps and light hand contact on an instructor-approved cushion. No athletic landings, combat, start pistols, fireworks, loud bells, airborne implements or competition apparatus are used.
+Academy mock coordinates in metres: A=(0,0), B=(0,2), C=(0,4) in the source area; M1=(2,2), M2=(−2,2) in separate equipment areas. At capsule height 1 m, aim M1 toward B. Horizontal ranges from M1 are 2 m to B and approximately 2.83 m to A/C; actual slant distance also depends on source height. This is classroom geometry, not a sport clearance recommendation. Reduce or adapt it if room size requires, and log the replacement.
+# Run a controlled comparison
+1. Document and check. Map source, equipment and walking areas; identify mount and cable paths, exclusion space and fallback. Record microphone identity, pattern, powering, gain, filters and capture settings. Start at conservative headphone level. Keep equipment outside every demonstration movement path.
+2. Compare fixed detail. Make three gentle claps at a marked source height of 1 m at A, B and C. Keep gain unchanged for each microphone. Repeat with ordinary speech and slow walking. Record peaks before loudness matching the listening comparison; select the best fixed sector and name its weakest point.
+3. Compare aim and source height. At B, turn the microphone 30 degrees away from its original axis, repeat and restore aim. Then compare a low gentle cushion contact and standing speech, logging both source heights. Keep range and gain constant where possible. Distinguish a change in target from a change in microphone geometry.
+4. Compare pattern and distance. Substitute a compact directional microphone for a shotgun at M1; repeat the same actions with model-appropriate gain logged. If a second approved equipment point permits, double the range to B with source and room unchanged. Compare isolation, tone and room pickup after loudness matching; do not transfer this range into a live sport.
+5. Optional surface and isolation trial. On an instructor-approved large solid surface outside the movement path, compare a boundary microphone with a raised airborne capsule aimed at the same gentle action. Log surface, height and distance. On a stable mock bench, light finger taps can compare rigid and isolated airborne mounting; this tests transmitted vibration, not apparatus impact safety. No drilling or sports-equipment modification.
+6. Test overlap and fallback. Use M1 and M2 to cover the same A/B/C actions. Listen solo, summed mono and stereo; briefly test polarity as a diagnostic and document the final setting. Select a dominant detail feed and a wider ambience alternative. Mute detail and verify continuous usable output without raising the fallback to a distracting level.
+# Evaluate and transfer
+Repeat the original B trial at the end to check consistency. Submit the completed observation sheet and coverage map. For live transfer, replace mock coordinates with the specifically approved survey and test authorized normal warm-up. The exercise supports placement decisions; it does not certify exposure, impact tolerance, official timing or future peak capacity. No audio example submission is required.
+# Student observation sheet
+Name __________________________   Date __________   Sport or mock case ______________
+Venue __________________________   Governing body and adopted edition ________________
+Target action and intended perspective ______________________________________________
+Approving contact and authorized footprint ___________________________________________
+Log model, pattern, source/capsule heights, target range, aim, gain, filters, mount, surface and cover. Peak entries include maximum dBFS, remaining margin and any overload indication. Record tone, spill, obstruction and coverage before and after loudness matching.
+Trial
+Model and geometry
+Peak and noise
+Coverage tone and decision
+A B C fixed
+Aim changed and restored
+Low and standing source
+Pattern comparison
+Range comparison
+Optional surface/isolation
+Overlap mono/stereo
+Fallback and final repeat
+Strongest sector and weakest point __________________________________________________
+Obstruction or movement remedy ___________________________________________________
+Approval and safe access still to verify _________________________________________________
+________________________________________________________________________________
+# Coverage map and production approval worksheet
+Draw the approved source and equipment footprints. Mark target points, capsule locations and heights, aim, operator arc, camera paths, athlete/official routes, medical access and every cable route. Identify the feed covering each gap. Classroom boundaries are instructor-approved; live boundaries must come from event approval.
+________________________________________________________________________________
+________________________________________________________________________________
+________________________________________________________________________________
+________________________________________________________________________________
+________________________________________________________________________________
+Installation approval and restrictions __________________________________________________
+________________________________________________________________________________
+Fallback feed and transition plan _____________________________________________________
+________________________________________________________________________________
+# Pass criteria
+Every proposed live position, mount and cable route has a named approval path. Any unsafe or unapproved setup fails regardless of sound quality.
+The selected feed captures the named target across tested points with intentional perspective; each significant gap has a usable fallback.
+No overload is observed in the tested chain, and measured peaks and remaining margin are recorded without promising untested peak capacity.
+Solo, combined, mono/stereo and fallback are checked; vibration, spill or cancellation has a remedy or a clearly accepted limitation.
+# Troubleshooting and critical evidence audit
+Symptom
+Inspect
+Action before adding processing
+Action disappears
+Aim, source height, distance, bodies and camera obstructions.
+Use another approved sector or broader pickup; do not advance into performance space.
+Sharp or hollow changing tone
+Off-axis response, reflections and duplicate feeds.
+Compare solo; reduce overlap and repeat at multiple points.
+Rumble or rattles
+Mount, frame, platform and cable bypass of suspension.
+Try independent support or compatible isolation when approved.
+Distorted cue or impact
+Capsule, adapter/transmitter, input and bus overload.
+Reduce gain at the affected stage or use suitable approved hardware.
+Crowd or music dominates
+Mic axis, PA placement, open channels and supplied-feed delay.
+Choose a tested sector and intentional ambience balance.
+Fallback changes perspective abruptly
+Gain mismatch, gates and different noise beds.
+Rehearse a smooth transition with stable venue ambience.
+# Points of agreement
+The sport documents preserve competition operations; the gymnastics broadcast manual coordinates sound and cameras. Technical sources distinguish pattern, output, mounting and timing. Document target, permission and signal chain before adding channels. [1, 3–7, 9, 11, 14, 15]
+# Where approaches differ
+Fixed detail favors a location, tracking favors selected motion, and ambience preserves continuity. Boundary pickup and contact sensing capture different paths. Choose by access, noise, movement and program perspective. The placements and lab are Academy recommendations, not governing-body instructions.
+# Direct contradictions and how to resolve them
+No direct contradiction between the retrieved sport rules is established; jurisdictions differ. Manufacturer depictions do not establish installation permission, and a between-takes rain cover is not approved for recording. Obtain event approval and follow accessory instructions. [3, 10, 12]
+World Boxing’s 2025 file path does not change its November 2024 title. World Athletics lists later 2026 amendments. Verify adoption and effective dates. [1, 2, 6]
+# Important gaps and confidence
+Universal distances, safe mount loads and sport-wide channel counts remain unsupported. The current linked IJF SOR and gymnastics 2026 World/Challenge Cup manual were not retrievable; indexes do not establish their full content. World Athletics primary-site downloads were blocked: its primary-authored base text was read in a federation-hosted copy, with later amendments still requiring review. [1, 2, 8, 16]
+Confidence is high in directly read specifications and cited rule/broadcast provisions, moderate in the conditional practical layouts, and unresolved for site-specific permissions and inaccessible current details. Obtain the missing adopted rules, event bulletins, engineered mounting approval and broadcaster delivery requirements before production. Classroom listening results cannot substitute for that review.
+# Sources and reading notes
+All sources checked 7 October 2026. References identify rule jurisdiction, edition, retrieval limits and product conditions. Click each title to open its source. Recommendations elsewhere are explicitly identified as Academy trials or conditional layouts.
+[1] World Athletics Competition and Technical Rules 2026 base edition <https://ckspzla.pl/wp-content/uploads/2026/02/Competition-and-Technical-Rules-%E2%80%93-2026-Edition.pdf>
+World Athletics primary-authored rulebook in a federation-hosted copy; CR22 and TR15–16 for start operations and systems. Direct primary-site downloads were blocked. The base edition must be checked against later amendments and event adoption.
+[2] World Athletics Technical Information and amendments index <https://worldathletics.org/about-iaaf/documents/technical-information>
+Official index lists Competition and Technical Rule Amendments July 2026. Used to identify the need for amendment review, not to claim unseen amendment content.
+[3] FIG Host Broadcaster Obligations Manual 2025 to 2028 <https://www.gymnastics.sport/publicdir/rules/files/en_Host%20Broadcaster%20Obligations%20Manual%202025-2028.pdf>
+Sound Microphones section, printed p.11; exact sizes/positions coordinated with FIG, LOC and apparatus manufacturer alongside camera planning. Annex media provisions also address host-broadcaster field access. Applies within the manual’s event jurisdiction.
+[4] FIG Technical Regulations 2026 <https://www.gymnastics.sport/publicdir/rules/files/en_1.1%20-%20Technical%20Regulations%202026.pdf>
+Section 1 Article 10, competition apparatus and auxiliary installations; changes, inspection and approval. Does not specify this lesson’s suggested mic positions.
+[5] FIG Apparatus Norms Parts I to III <https://www.gymnastics.sport/publicdir/rules/files/en_Apparatus%20Norms%20I-III.pdf>
+Official index dates this file 17 June 2026. Vault safety-collar functional requirements illustrate why protective components cannot be treated as spare mounting space.
+[6] World Boxing Competition Rules November 2024 <https://worldboxing.org/wp-content/uploads/2025/09/World-Boxing-Competition-Rules-Nov-2024-Approved-4.pdf>
+Directly read primary text; Rules 3.1, 13.11.2 and 13.12. Hosting path is September 2025; no claim is made that this proves the latest adopted edition for every 2026 event. Not professional-boxing commission rules.
+[7] UWW International Wrestling Rules 2026 <https://cdn.uww.org/2026-01/wrestling_rules.pdf>
+Direct primary PDF; Articles 4 and 45 for mat, protection region and edge action. Consult current UWW circulars and event adoption. Not folkstyle, MMA or all grappling formats.
+[8] IJF Sport Commission official document index <https://www.ijf.org/ijf/documents/26>
+Index identifies SOR Version 14 August 2026. Linked full PDF was not retrievable; no unseen numerical clearance or installation permission is cited. Obtain the adopted full SOR and event FOP plan before live work.
+# Further sources and curriculum links
+[9] Shure Choosing a Shotgun Microphone <https://www.shure.com/en-GB/insights/choosing-a-shotgun-microphone-the-long-and-short-of-it>
+Primary technical explanation by Matthew Koschak, 17 May 2016; interference-tube directionality, self-noise and reach limitations. An older acoustic explanation, not current event policy.
+[10] DPA Sports Broadcast <https://www.dpamicrophones.com/application/sports-broadcast/>
+Manufacturer overview of action and sports production. Broad isolation and distortion language is a product claim; no athlete-contact certification, permission or universal distance follows.
+[11] Shure MX391 User Guide Version 5.1 2026 E <https://pubs.shure.com/view/guide/MX391/en-US.pdf>
+Microphone Placement and Specifications. Large flat-surface use; exact cartridge sensitivity, powering and SPL test conditions. Permanent-installation instructions do not authorize drilling any sporting surface.
+[12] Rycote Windshield Rain Jacket <https://www.rycote.com/microphone-windshield-shock-mount/windshield-rain-jacket/>
+Manufacturer explicitly identifies between-takes protection and excludes use during audio recording. Not a recording-time waterproofing recommendation.
+[13] National Weather Service Lightning Safety and Outdoor Sports <https://www.weather.gov/safety/lightning-sports>
+Official weather safety guidance for shelter and resumption; coordinate with the event emergency authority.
+[14] Sennheiser MKH 416 specifications February 2026 <https://docs.cloud.sennheiser.com/en-us/mkh-416-mkh-418-s/specs-mkh-416.html>
+Manufacturer v1.0 02/2026 model specifications; frequency range, polar pattern, sensitivity, SPL and P48 conditions. Not an impact or waterproof rating.
+[15] DPA Polarity Phase and Delay <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+Primary technical discussion of signal sign, phase and time shift. Used for combined-feed checks; movement-specific remedies are Academy recommendations.
+[16] World Gymnastics official rules and media index <https://www.gymnastics.sport/site/rules/>
+Lists 2026 Technical Regulations, June 2026 Apparatus Norms and March 2026 World/Challenge Cup Host Broadcast Manual. The latter linked PDF was not retrievable; confirm its requirements for those events.
+# Curriculum cross links
+Master plan B15: starts, landings, apparatus, mats and ring areas from permitted locations; fixed detail versus ambience, sudden peaks and unobstructed performance space. This document follows that scope.
+Completed sports links: B08 Broadcast Audience and Event Space; B09 Commentators and Announce Positions; B10 Sideline and Post Event Interviews; B11 Athletes Coaches and Officials; B12 Parabolic and Tracked Action Pickup; B13 Field and Diamond Sports; B14 Court Racket and Ice Sports. Use B11 for participant consent and authorized speech pickup, not assumed permission for combat body mounts.
+Completed Lab 6 links: F01 Foley Footsteps and Surfaces for controlled footwork perspective; F04 Impacts Liquids and Textures for gentle transient comparisons; F05 Foley Perspective and Multiple Microphones; F08 Moving Sources and Pass-bys; F10 Spatial and Specialist Field Pickup; F12 Sound Level and Environmental Noise for measurement distinctions. These support comparisons, not live sport mounting permission.
+Planned next: B16 Motorsport Equestrian and Aquatic Events. Planned final: B17 Crowd and Complete Sports Coverage, including stereo/immersive ambience, combined commentary/action/audience feeds and downmix. These remain planned reading until delivered.

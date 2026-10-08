@@ -1,0 +1,280 @@
+# Court Racket and Ice Sports Miking Technique
+Pro Audio Training Academy   Sports and Broadcasting Lab B14
+Build an action feed that follows the game while keeping microphones, cables and operators clear of athletes. This lesson covers basketball, indoor volleyball, tennis, badminton and ice hockey. Compare permitted perimeter microphones, floor boundary pickup and expressly approved structure mounts. Preserve a stable venue perspective when close detail cannot be captured safely. No audio examples are included.
+# Learning objectives
+Define the action sound, its moving source and its intended broadcast perspective before selecting a microphone.
+Map approved positions, run-off routes, camera restrictions and coverage gaps for all five sports.
+Separate airborne detail from structural vibration, set peak headroom and verify overlapping feeds in mono.
+# Access and approval come first
+Identify the actual competition rules and edition, event technical authority, rights holder, venue engineer and audio supervisor. Obtain approval for each position, mounting method and cable route. A media credential, a low profile housing or a photograph of another broadcast is insufficient evidence of permission. Keep equipment out of playing areas unless expressly approved and safely installed; local permission cannot override an applicable rule.
+Sport
+Verified constraint
+Production implication
+Basketball
+FIBA 2026 Articles 2.2 and 2.5.1 require an unobstructed boundary lane of at least 2 m and obstructions at least 2 m from the court. [1]
+Treat the lane as clearance, not a crew strip. Verify the event’s own rules and assigned positions.
+Volleyball
+FIVB 2025–2028 includes the free zone in the playing area. Players can retrieve beyond that zone. [2]
+A position outside the painted court or free zone can still be in a pursuit route.
+Tennis
+ITF 2026 Rule 2 addresses fixtures and permits net-post attachments specifically as approved Player Analysis Technology. [3]
+Do not apply that permission to a broadcast microphone. Seek a separate authorized location.
+Badminton
+BWF Law 1.5 in the reviewed 2025 text keeps posts and supports from extending into the court. [4]
+Do not turn a post into a projecting mic support. Confirm current event requirements.
+Ice hockey
+DEL 2026/27 Rule 1.3 requires smooth, unobstructed ice-facing boards and protected glass supports. [6]
+No exposed mic hardware on the ice-facing surface. Other leagues require their own review.
+Research checked 5 October 2026 UTC. Governing rules establish constraints, not a universal microphone installation standard. Distances and trial angles later in this lesson are classroom recommendations unless explicitly attributed.
+# Compare the pickup methods
+Method
+Contribution
+Tradeoff and verification
+Compact cardioid or supercardioid
+Airborne impacts and shoe or skate detail from a permitted nearby zone.
+Broader aim tolerance than many shotguns; more spill. Check actual frequency-dependent nulls and rear lobe.
+Perimeter shotgun
+Selected action sector from an approved fixed or operated position.
+Interference-tube rejection varies with frequency and angle. Distance remains decisive; reflected arrivals can change tone. [8]
+Floor boundary microphone
+Airborne sound at a large solid surface with the capsule in its intended boundary geometry.
+Footfalls and impacts can excite the mounting surface. Low profile does not mean safe for athlete contact. [9, 10]
+Approved structure plant
+Localized airborne detail near a basket, court fixture or rink zone.
+Mount vibration, hardware exposure, rule compliance and access can outweigh improved proximity.
+Contact sensor optional comparison
+Vibration of a board or other approved test structure.
+Not the same perspective as an airborne mic. Use the correct impedance interface; identify separately in the mix.
+Fixed mono or stereo ambience
+Continuous room and audience perspective through changing action.
+Less individual detail; PA, HVAC and spectators remain part of the sound. Test stereo downmix.
+# Select for the source and the room
+Ball or racket contact, puck and stick contact, shoe squeaks, skate cuts and voices occur at different heights and move across the venue. An end microphone can sound close at one end and distant at the other. Bodies, benches, boards and glass also interrupt the useful path. Draw sectors around repeatable action locations rather than promising continuous close pickup from one channel.
+For quiet badminton detail, compare self-noise and preamp noise. For close impacts, compare microphone overload and input capacity. For tennis outdoors, compare wind protection and weather limits. Pattern names alone do not establish isolation: audition the intended model with crowd and PA operating. DPA documents perimeter shotguns, plants and ambience as sports production approaches; these application examples are not permission to install them. [7]
+# A floor position is an acoustic and a safety decision
+A boundary microphone is an airborne microphone placed in the intended geometry at a surface. The short direct and reflected paths can reduce the comb filtering caused by a microphone raised a little above that surface. The usable frequency range depends on surface size, capsule geometry and nearby edges. Putting a shotgun on foam on the floor does not automatically create a boundary microphone. [9, 10]
+In a controlled session, reduce room noise and repeat the source while changing one placement variable. In a live venue, access is fixed and crowd, PA and action overlap. Prioritize secure permitted positions and reliable handoffs over a quieter laboratory result. Start with one action feed and ambience; add end sectors or approved plants only when they fill a documented gap.
+A parabolic feed is an optional handoff from B12, mainly when authorized access is distant. Its bulk, aim and frequency-dependent perspective may be unsuitable courtside. It is not the default replacement for a refused floor mount.
+# Basketball coverage
+# Source and intended perspective
+Prioritize ball bounce, shoes, rim or backboard contact and net movement as separate targets. The basket is a repeatable location, but dribbling and defensive action travel across the floor. A basket plant may supply scoring detail while contributing little to midcourt. Include a wider action feed and stable ambience so the perspective does not disappear between attacks.
+# Recommended conditional layout
+Start with approved end-zone or corner positions beyond the required clearance and outside camera, spectator and athlete routes. Aim a short shotgun or compact directional microphone toward a named lane or the basket area. Point at the contact height, not automatically at the floor. Survey near and far attacks; when players block the axis, hand off to the other permitted sector instead of moving toward them.
+A floor boundary microphone can emphasize nearby airborne bounce and shoe detail if the venue authorizes a protected location on an appropriate surface. Keep the microphone and its entire cable route beyond required clearance. Reject a spot that is routinely crossed by players, substitutes, cleaners or camera operators. A taped cable can still change traction or catch a shoe. If no suitable location exists, use the perimeter feed.
+An airborne miniature microphone near the basket may capture local net or impact detail; DPA gives basketball net proximity as an application example. [7] Mount only to an expressly approved part of the assembly using a reviewed fixture and retention arrangement. Do not attach to the rim, net or breakaway mechanism by default. Preserve padding, support integrity, ball clearance, shot clock equipment and service access. Qualified venue personnel must approve and install elevated work.
+# Vibration and coverage gaps
+A microphone clamped rigidly to a backstop may reproduce rattles or transmitted impact as much as airborne sound. Use a compatible suspension or isolated approved mount; leave a controlled cable loop so the cable does not bypass the isolation. Compare the plant with the end microphone during authorized normal warm-up. If vibration dominates, move the airborne capsule to an independently supported permitted point; do not assume a high-pass filter can restore the missing perspective.
+Likely gap
+Listen and inspect
+Fallback
+Midcourt and opposite end
+Detail becomes quieter or changes tone as the attack moves.
+Use the other sector feed or wider action pickup.
+Bodies near the basket
+Blocked direct path and unpredictable off-axis tone.
+Blend approved end pickup with the plant at a lower level.
+Basket plant denied or noisy
+No compliant fixture, vibration, or unsafe service access.
+Omit the plant; retain perimeter action and ambience.
+FIBA 2026 Articles 2 and 3 inform court and equipment constraints. They do not prescribe a broadcast mic location. Other leagues and school events may use different rules. [1]
+# Volleyball coverage
+# Source and intended perspective
+Serve and attack contacts occur above the floor; digs, landings and shoes occur much lower. A floor microphone alone can overemphasize movement while missing the ball contact you intended to feature. Players chase beyond the court, and teams change ends. Plan coverage by near and far halves with a continuous venue feed underneath.
+# Recommended conditional layout
+Use approved fixed perimeter positions aimed toward serve or attack contact areas. A compact directional microphone may offer a workable compromise between rejection and changing aim. Compare it with a short shotgun from the same authorized position. Track through the permitted arc without extending the microphone, windshield or operator into play, the officials’ sightline or the camera path.
+If an approved low boundary plant is available, use it as a supplemental floor perspective. Treat the service area, substitute routes, libero replacement route, line judge positions, warm-up zones and ball retriever or cleaner lanes as occupied operational space. Do not hide a floor plant beside a post pad or place it behind an end line merely because the housing is small.
+For indoor volleyball, FIVB specifies a minimum 3 m free zone and 7 m unobstructed free playing space; its World and Official Competitions use 5 m at the sides, 6.5 m at the ends and 12.5 m overhead. These are sport clearances, not approved microphone coordinates. Rule 9 also allows retrieval beyond a team’s free zone. [2]
+# Structure and overhead options
+A post or referee stand plant requires express approval and an installation that preserves padding, stability, net tension, antennas, access and sightlines. Prefer an independently supported approved location when it avoids transmitted vibration. Do not put a capsule in the net mesh or on an antenna as a routine method. Suspension from a building structure requires qualified rigging and compliance with the event’s free playing space; no student installation above active athletes.
+# Movement and mixing decisions
+Event
+Coverage risk
+Recommended response
+Serve from a deep position
+The player and contact point move away from a net-facing mic.
+Use an end sector; do not chase behind the server.
+Fast attack and block
+Contact shifts vertically and laterally.
+Aim at the contact region and compare upper detail with floor pickup.
+Save beyond the free zone
+Crew or stand may become an obstacle.
+Keep the assigned route clear; sacrifice the detail if needed.
+Change of ends
+Team-based pan labels become misleading.
+Label channels by physical position and update the production map.
+Maintain ambience during sector changes; use smooth, modest handoffs instead of hard gates on every impact. Sudden whistles and crowd peaks require input headroom even if the ball contacts sound quiet. Beach volleyball needs its separate rules and weather plan; this lesson’s numerical clearances refer to indoor volleyball.
+# Tennis and badminton coverage
+# Tennis
+Racket contact, bounce and shoes provide the rally perspective; the ball’s flight is not a continuous audible tracking cue. Compare approved microphones behind the backstops or outside sidestops, directed toward each end’s normal strike region. Baseline and net play need different coverage. Keep all equipment clear of lateral recovery, deep pursuit, ball persons, chair access and camera or line-calling systems. Aim from the authorized location; never improve range by creeping into the run-off.
+An authorized boundary microphone can supplement bounce and footwork, but a raised plant may better cover racket contact. An umpire-chair or fence mount is conditional on rule and venue approval, structural suitability and lack of vibration or rattle. Do not clip a microphone to a net post by assuming ITF Rule 2 Case 1 authorizes it: that provision requires approval as Player Analysis Technology. Rules on permanent fixtures and ball contact also mean a new object can affect play. [3]
+For outdoor tennis, use a compatible wind suspension and suitable recording-time weather protection, listen for rain impacts and maintain a sheltered alternative. Shade, wet covers and material in the sound path can change the response. Indoors, compare PA and reflection spill at the same positions. Keep channel labels tied to physical ends when players change ends.
+# Badminton
+The useful details are racket and shuttle contact, shoes, landings and player calls. The shuttle travels high and changes direction quickly. Start with a quiet compact directional microphone at an approved perimeter location aimed at a strike region; compare with a short shotgun. Check both high overhead contacts and low net exchanges. Low self-noise helps only if room, crowd, PA and HVAC noise are also controlled.
+The reviewed BWF 2025 Law 1.5 requires posts and supports not to extend into the court beyond the sidelines; Law 13.3 addresses shuttle contact with ceiling, side walls and other outside objects. These laws do not grant audio mounting permission. Keep microphones away from racket reach, lunge recovery and overhead shuttle paths, and avoid distracting operator movement. Do not attach a mic to a racket as a routine alternative. [4]
+The Ghana federation’s page labels a download as updated 2026, but the PDF states that Version 6.0 takes force on 4 January 2027. That future date cannot be treated as current on this lesson’s research date. The post-support wording was compared in both texts; confirm the event’s controlling edition and facility rules before installing. [4, 5]
+Shared gap
+Recommended alternative
+Far end contact too distant
+A second approved end feed or wider action microphone; retain ambience.
+High contact outside low mic axis
+Re-aim a permitted raised microphone during a stopped session.
+Close mount denied
+Accept a wider perspective; do not recreate impacts or add unrelated effects.
+# Ice hockey coverage
+# Source and intended perspective
+Puck and stick contacts, skate cuts and board impacts provide distinct perspectives. A microphone hearing the nearest boards will not give equally close centre-ice detail. Protective glass can screen airborne sound and create reflections; an outside microphone pressed against it may emphasize local vibration or crowd spill. Check the actual installation by listening rather than treating transparent glass as acoustically transparent.
+# Recommended conditional layout
+Use approved fixed positions outside the rink enclosure, distributed among end and side sectors. Aim toward the selected zone from a permitted point with a usable acoustic path. A microphone above a glass edge is only an option when qualified venue personnel approve the complete installation, projectile exposure and retention. Never extend a handheld microphone through a camera opening or over the boards by default. Camera openings are assigned facilities, not general audio access.
+An engineered board or goal-area plant may provide local detail if the league, officials, rink operator and rights holder explicitly approve it. No part may create an exposed obstruction facing the ice, impair glass or netting, block a gate, alter protective padding or interfere with the goal’s required movement. Do not drill boards, loosen glass fittings, defeat a breakaway goal or attach equipment to protective netting without a separately approved design.
+The current DEL rulebook requires a smooth, unobstructed ice-facing board surface and protected glass supports. [6] The IIHF publishes a 2026/27 rulebook, but its full PDF could not be retrieved in this research session. The DEL text is used here only for its own jurisdiction; obtain the applicable IIHF, NHL or local rule and installation instructions for that event. [15]
+# Airborne sound and structure vibration
+For an airborne plant, isolate the capsule from board or mount motion without introducing loose parts or a snag. If the approved mounting cannot remain secure under normal impacts, omit it. A contact transducer intentionally records structure vibration; label it as such and compare it with an independent airborne feed. It may exaggerate thuds and resonance and cannot stand in for all puck or skate detail. Confirm its required input impedance and interface; do not feed it phantom power unless its documentation specifies that connection.
+Risk or gap
+Check before play
+Fallback
+Glass screens the target
+Near and far zones, local crowd spill, tone and reflections.
+Different approved acoustic path or wider elevated feed.
+Impact overload or board rattle
+Normal authorized warm-up, mount and cable isolation.
+Lower upstream gain where appropriate; use airborne sector feed.
+Gate and resurfacing access
+Full gate swing, player paths, ice crew and vehicle route.
+Remote approved location; no access during play or machinery operation.
+Monitor temperature, humidity and condensation through load-in and warm-up. Follow each component’s operating limits, protect connectors and allow equipment to acclimate before operation. A humidity claim is not waterproofing or an ice-impact rating.
+# Mounting movement and environmental checks
+# Approve the complete installation
+Submit a placement drawing showing the mic body, windshield, suspension, clamp, cable, retention and service access. Include the largest envelope during operator movement or structural motion, not just the capsule coordinate. Confirm that fixtures can carry the proposed load and that attachments cannot loosen, snag or compromise safety systems. Qualified venue personnel determine overhead retention and installation. Tape or foam alone is not an engineered safety fixture.
+For an isolated airborne mount, use the manufacturer’s compatible suspension and keep the cable from pulling it against a hard stop. A short service loop can help isolation only if it is secured away from access and play. For a boundary microphone, preserve its intended surface relationship; inserting a thick pad or suspending the housing may alter that geometry. Compare vibration control with an alternative independent position rather than assuming every isolation method suits every microphone. Rycote documents compatible shock and wind suspension systems. [11]
+# Operator zones and camera constraints
+Mark athlete recovery, officials, benches, ball retrievers, cleaners, ice crews, spectators, camera tracking and emergency access on the survey. Confirm crew standing zones and permitted aiming arcs with the production and event leads.
+Check wide shots, reverses, close shots, replay cameras and electronic line or goal review sightlines. A mount hidden from one camera may block another. Do not sacrifice clearance to move out of frame.
+Keep an operator’s feet in the approved zone and the microphone envelope within its authorized arc. Stop tracking at the zone boundary; hand off or use ambience. Reposition only during a permitted interruption with clearance to work.
+# Wind rain and ice environments
+Outdoor tennis may require a basket and fur suited to the microphone and suspension. Compare tone and noise with the cover fitted; do not cover interference-tube slots with improvised tape. Wind protection does not establish water resistance. Verify manufacturer-approved protection that can remain in place during recording, plus connector and power arrangements. Rycote explicitly says its Windshield Rain Jacket is for between takes, not recording. [11, 12]
+For outdoor weather, assign the event’s designated monitor and evacuation route. National Weather Service guidance calls for immediate shelter during nearby thunderstorms and at least 30 minutes after the last thunder before resuming; open rain shelters are unsuitable lightning shelter. Follow the event’s safety authority and plan. Do not delay evacuation to recover equipment. [13]
+At a rink, confirm cold ratings for capsule, battery, receiver and cabling. Manage condensation when moving to warm, moist spaces according to the equipment instructions. Keep connectors and supplies dry and outside ice and wash-water paths. Venue electrical staff must approve temporary power and required protection. After any movement or cover change, check mount, sound and output again.
+# Headroom routing and overlapping microphones
+# Verify the complete input chain
+Read the exact microphone and adapter documentation: connector wiring, required powering, output sensitivity, overload limit and load conditions. A miniature capsule may need a specific adapter or transmitter; a connector that fits does not prove compatibility. Mute the destination before connection or power changes, then confirm stable audio. Coordinate wireless use through the event RF lead and test the installed antenna path.
+Documented example
+What it establishes
+What it does not establish
+Sennheiser MKH 416 P48
+48 V ±4 V phantom power; 25 mV/Pa sensitivity at 1 kHz, no load; published maximum 130 dB SPL. [14]
+The camera or preamp can accept every possible peak; immunity to water or impact.
+Shure MX391/C with its documented preamp
+Cardioid boundary model; 11–52 V DC power; maximum 119 dB SPL at 1 kHz, 1% THD, 1 kΩ load. [10]
+Other cartridges share its headroom; a court or rink impact is safe at any distance.
+Shure VP83F gain guidance
+Set for the loudest anticipated sound; its guide recommends peaks between −12 and −6 dB. [16]
+A universal broadcast alignment, delivery loudness target or guaranteed safety margin.
+Recommended classroom starting point: set the loudest repeatable test transient around −12 dBFS, then leave more margin if the real event is less predictable. Inspect capsule, adapter or transmitter, receiver, preamp and converter overload separately. A downstream fader, compressor, limiter or 32-bit file cannot repair clipping that has already occurred upstream. Test representative authorized warm-up and expected PA or crowd peaks; never manufacture dangerous peaks for calibration.
+# Combine feeds deliberately
+Check electrical polarity with a repeatable common source before installation, and recheck through the actual routing. Polarity reversal changes signal sign; delay changes arrival time. They are not interchangeable remedies. With two open action microphones, a moving source changes the difference between paths, so an alignment that helps at one point may worsen another. [17]
+Recommended test: listen to each feed and their sum at near, middle and far points. Check mono as well as stereo and the required downmix. Choose a dominant action feed per sector, lower redundant feeds or make smooth handoffs when overlap produces hollow tone, duplicate attacks or unstable imaging. If delay is used for a named static target, document that target and recheck movement. Do not align all ambience transients to one close mic by default; room arrival is part of the perspective.
+Meter the actual program output as well as inputs; summing can create new peaks. Follow the broadcaster’s delivery and picture-sync requirements. For in-venue reinforcement, route only needed feeds to PA or IFB, keep distant action and ambience out of unnecessary loudspeaker loops, and verify feedback margin with the venue engineer. No deliberate feedback demonstration is required.
+# Guided placement lab
+Recommended 75–90 minute supervised exercise in an inactive dry training area. The geometry and scoring below are teaching trials, not live-event clearances or governing-body positions. Use a short shotgun, compact directional mic, boundary mic, mixer or recorder, headphones and an optional ambience pair. If unavailable, compare the methods you have and record the limitation.
+# Set the geometry
+Mark a straight mock boundary with instructor-approved removable marks. Place A, B, C and M along one line perpendicular to the mock boundary. Put source points A, B and C at 2 m, 5 m and 8 m inside the boundary, and M at 3 m outside it. Initial source-to-mic distances are therefore 5 m, 8 m and 11 m in plan view. Keep microphone equipment and observers in the outside zone; source participants walk only in the cleared inside area. This is an inactive mock layout, not permission to occupy a real court’s run-off.
+1. Brief and survey  Assign an audio operator, source participant and safety observer. Identify a stop command, walking route, camera line and exit. Choose one sport and name the action you are simulating. Remove unnecessary equipment. No ice skating, hard puck, racket swing, collision, jumping, whistles or overhead mounting is part of this exercise.
+2. Compare airborne patterns  At M, set the shotgun and compact directional capsule about 1 m above the floor, aimed at a consistent gentle handclap made at the same height at A. Use one mic at a time if stands would crowd the zone. Repeat three claps at A, B and C with unchanged gain per mic. Log peaks and sound before loudness matching the listening comparison.
+3. Compare angle and movement  At B, repeat on-axis and at 30 degrees away from the axis, then restore aim. Walk slowly between A and C, speaking an ordinary short phrase. Keep the operator stationary and within the approved arc. Record tonal change, coverage loss and spill; do not infer a universal pattern from one frequency or voice.
+4. Compare floor pickup  Place the boundary mic at M on its intended large solid surface. Log capsule height and surface. Repeat gentle claps at a fixed lower height and normal walking footfalls in the source area; compare with the directional mic aimed at the same target. Change only one variable. Note airborne tone and structural noise separately.
+5. Test isolation on a mock fixture  Only on an instructor-approved stable bench outside the source area, compare a rigid and compatible isolated airborne mount using light finger taps on the bench. Secure every component and cable. This demonstrates transmitted vibration, not sports impact tolerance; do not tap venue glass, boards, goals or baskets.
+6. Test overlap and fallback  Use a second approved mic position to create overlapping coverage at B, then at A and C. Listen solo and summed in mono; try a polarity reversal as a diagnostic and restore or document the chosen setting. Establish an ambience-only fallback, mute one detail feed and confirm continuous usable output.
+# Evaluate and transfer
+For real sports work, replace the mock geometry with the approved survey. Photograph or draw the complete installation, measure distance to the named contact point and nearest access route, and test authorized normal warm-up. Do not transfer the classroom distances into a live court or rink automatically. Submit the worksheet, coverage map and reason for the chosen method; no audio example submission is required.
+# Student observation sheet
+Name __________________________   Date __________   Sport ______________________
+Venue or mock area __________________________   Rules and edition __________________
+Target sound and perspective ___________________________________________________
+Approving contact and location authority ___________________________________________
+Trial
+Model pattern and geometry
+Peak and noise
+Tone coverage and choice
+A near
+B middle
+C far
+B at 30 degrees
+Boundary comparison
+Rigid and isolated mount
+Two feeds in mono
+Fallback only
+Geometry entries: target coordinates, source height, capsule height, measured range, aim angle, surface or structure, cover and mount. Peak entries: input gain, maximum dBFS, overload indicators, PA/crowd/HVAC/wind or handling noise.
+Map the strongest and weakest sectors, obstructions, operator arc, camera paths, athlete routes and fallback for each gap. Include this map with the worksheet; its boundary must come from event approval, not this exercise.
+# Pass criteria
+Every proposed position and cable route has a documented approval path; playing, run-off and access space remain clear. Unsafe or unapproved setup fails regardless of sound quality.
+The chosen feed captures the named target through the tested motion with intentional tone and useful detail. Every important gap has a usable alternative.
+No overload is observed in the tested chain; maximum peaks and remaining margin are recorded. This does not guarantee untested event peaks.
+Solo, combined, mono and fallback outputs are checked. Unwanted vibration, duplicate attacks, unstable imaging and spill have a documented remedy or accepted limitation.
+# Troubleshooting and critical evidence audit
+Symptom
+Likely causes to inspect
+Action before adding processing
+Hollow or changing tone
+Reflected paths, off-axis pickup, overlapping feeds.
+Re-aim or change approved position; listen to one dominant feed, then sum again.
+Heavy thuds or rattles
+Structure motion, cable bridge, loose approved fixture.
+Mute unsafe equipment; inspect retention and isolation during authorized access.
+Hiss with distant action
+Low source level, self-noise, excessive gain, wrong interface.
+Verify powering and gain; use a better permitted perspective or accept wider coverage.
+Crunch on a peak
+Capsule, adapter, transmitter or input overload.
+Locate the first overloaded stage; choose suitable headroom or reduce upstream level.
+Wind or rain noise
+Insufficient protection, wet cover, drops striking material.
+Use compatible recording protection and sheltered fallback; stop for unsafe weather.
+# Established evidence
+Sport rules define boundaries, free playing space and safety-related equipment conditions. FIBA 2026 is effective on the research date. FIVB and ITF current editions were read directly. The reviewed BWF 2025 lawbook and future-effective 2027 version agree on the post-support constraint. DEL’s 2026/27 requirements are league-specific; no general hockey mounting permission is inferred. [1–6]
+# Different approaches and claims to qualify
+Manufacturer sports material demonstrates perimeter, boundary and plant methods but does not determine venue permission. Boundary physics concerns airborne pressure at a surface, whereas a contact sensor records structure vibration. An isolated plant can improve airborne detail yet lose the deliberate structural perspective; choose according to the task. Shotguns can be useful indoors, but reflections, source motion and frequency-dependent rejection must be auditioned. [7–11]
+DPA’s sports page describes boundary mics on a court and microphones near basketball nets. These examples conflict with an unsafe interpretation that the same positions are generally permitted. Resolve the issue with the governing rules and a specific installation approval. Its broad quality and isolation language is marketing, not a guarantee of zero spill or distortion. [7]
+# Limits and unresolved items
+No reviewed source establishes universal live distances, safe mount loads, impact certification or minimum channel counts for these five sports. This lesson’s layouts, headroom starting point and lab are conditional recommendations. The BWF central site and full current IIHF PDF were not retrievable; federation-hosted BWF texts and directly readable DEL rules support the limited claims stated. The Ghana page’s 2026 label differs from the linked PDF’s 2027 effective date; use the document date and event authority. [4–6, 15]
+Before production, verify adopted rule editions, current event bulletins, approved hardware, electrical and RF requirements, camera and review systems, weather limits, rights and output specification. Confidence is high in the documented constraints and signal distinctions; exact placement suitability requires the actual venue test.
+# Sources and reading notes
+All web sources below were checked on 5 October 2026 UTC. Numbered references in the lesson point to these clickable links. Rule jurisdiction, publication dates and product conditions are part of the evidence, not optional footnotes.
+[1] FIBA Official Basketball Rules 2026 v1.1 <https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2026-v1-1.pdf>
+Effective 1 October 2026. Articles 2.1, 2.2, 2.5.1 and 3; clearance and required equipment. These are FIBA rules, not a mic installation manual.
+[2] FIVB Official Volleyball Rules 2025 to 2028 <https://www.fivb.com/wp-content/uploads/2025/01/FIVB-Volleyball_Rules2025_2028-EN-v05.pdf>
+Rules 1.1, 1.4 and 9; playing area, free zone, free playing space, operational zones and retrieval beyond the free zone. Indoor volleyball.
+[3] ITF Rules of Tennis 2026 <https://www.itftennis.com/media/7221/2026-rules-of-tennis-english.pdf>
+Rules 2, 13 and 26; permanent fixtures, net-post attachment provision, ball contact and hindrance. Player Analysis Technology approval is not blanket broadcast permission.
+[4] BWF Laws of Badminton 2025 federation hosted copy <https://www.badminton.no/contentassets/c0b5fd676d9a4a10bd7a14c673a7bad0/section-4.1---laws-of-badminton---26-april-2025-v5.0-1--1.pdf>
+BWF primary lawbook hosted by the Norwegian federation; in force 26 April 2025, Version 5.0 (1). Laws 1.5, 4.3 and 13.3; confirm the controlling revision with the event.
+[5] BWF Laws of Badminton Version 6.0 future edition <https://ghanabadminton.org/wp-content/uploads/Section-4.1-Laws-of-Badminton-04-January-2027-V6.0.pdf>
+Primary BWF text hosted by Ghana Badminton. PDF effective 4 January 2027 despite the download-page label Updated 2026. Used to audit dates and compare post-support wording, not as the current scoring rule.
+[6] DEL Official Rulebook 2026 to 2027 Rule 1 <https://regelbuch.del-refs.de/web/2026-27/regel-1.html>
+Directly readable league rule text. Rule 1.3 covers boards, glass and protection; applies to DEL competition. Do not export jurisdiction or mounting approval.
+[7] DPA Sports Broadcast <https://www.dpamicrophones.com/application/sports-broadcast/>
+Manufacturer application overview of action, plants and ambience. Practices are examples; quality claims and depicted placements need event verification.
+[8] Shure Choosing a Shotgun Microphone <https://www.shure.com/nl-NL/insights/choosing-a-shotgun-microphone-the-long-and-short-of-it>
+Matthew Koschak, 17 May 2016. Interference tube, off-axis response, pattern and noise distinctions. Older but relevant technical explanation, not current sport access policy.
+[9] DPA Boundary Layer Microphone <https://www.dpamicrophones.com/dict/boundary-layer-microphone/>
+Primary technical definition. Surface-related pressure behavior; idealized gain is not a promise for every surface or installation.
+# Further sources and curriculum links
+[10] Shure MX391 User Guide Version 5.1 2026 E <https://pubs.shure.com/view/guide/MX391/en-US.pdf>
+Placement on a large flat surface, cartridge differences, preamp, power and headroom conditions. Product-specific; do not transfer limits across cartridges.
+[11] Rycote Modular Windshield <https://www.rycote.com/microphone-windshield-shock-mount/modular-windshield-kit/>
+Manufacturer wind protection and suspension system. Check the exact mic, suspension and cover compatibility; claims do not certify athlete-contact safety.
+[12] Rycote Windshield Rain Jacket <https://www.rycote.com/microphone-windshield-shock-mount/windshield-rain-jacket/>
+Explicitly not intended for recording audio; between-takes protection. Included to prevent a misleading weather-protection recommendation.
+[13] National Weather Service Lightning and Outdoor Sports <https://www.weather.gov/safety/lightning-sports>
+Weather monitor, shelter and resumption guidance. Use the event emergency plan and safety authority.
+[14] Sennheiser MKH 416 Specifications February 2026 <https://docs.cloud.sennheiser.com/en-us/mkh-416-mkh-418-s/specs-mkh-416.html>
+Manufacturer P48 model specifications: powering, sensitivity, maximum SPL and environmental range. A model example, not a buying recommendation.
+[15] IIHF Rules Regulations and Guidelines <https://www.iihf.com/en/static/55352/rules_regulations_guidelines>
+Official index identifies the 2026/27 rulebook. Full current PDF was not retrievable here; obtain it and event-specific requirements for IIHF production.
+[16] Shure VP83F User Guide <https://pubs.shure.com/view/guide/VP83F/en-US.pdf>
+Adjusting Microphone Gain and output-level sections. Its peak range is product guidance, separate from broadcast delivery requirements.
+[17] DPA Polarity Phase and Delay <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+Eddy Bøgh Brixen. Technical distinctions for summing and timing checks; use listening tests across the actual moving-source coverage.
+# Curriculum cross links
+Miking Labs Master Plan — Sports and Broadcasting Lab, B14: basketball, volleyball, tennis, badminton and hockey; permitted perimeter, floor and approved structure pickup, vibration isolation and athlete protection. This lesson follows that scope.
+Completed prerequisites: B09 Commentators and Announce Positions for commentary and monitoring; B10 Sideline and Post Event Interviews for separate interview coverage; B11 Athletes Coaches and Officials for participant permission and routing; B12 Parabolic and Tracked Action Pickup for distant selected detail; B13 Field and Diamond Sports for perimeter coverage gaps and safe operator zones.
+Planned next: B15 Track Gymnastics and Combat Sports. Planned extensions: B16 Motorsport Equestrian and Aquatic Events; B17 Crowd and Complete Sports Coverage for stereo and immersive ambience, combined program feeds and downmix. These future lessons are curriculum links, not completed reading.

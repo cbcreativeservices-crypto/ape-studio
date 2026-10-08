@@ -694,6 +694,9 @@ affects other side: nothing (docs only — Lab 6 part 2 research and builder pro
 ### 2026-10-07 15:29 · ccode · 5fae8f07
 changed: docs(miking): Lab 7a (B01-B08) preparation - source texts, SOURCES, geometry, batch summary, build prompts
 affects other side: nothing (docs only: Lab 7a B01-B08 preparation on branch prep-lab7a; no app code, no backend, not published)
+### 2026-10-07 15:29 · ccode · 5d95a183
+changed: docs(miking): Lab 7 part 2 (B09-B17) preparation - source text, SOURCES, geometry, batch summary, builder prompts
+affects other side: nothing (docs-only Lab 7 part 2 preparation on branch prep-lab7b; no app code, not published)
 needs: nothing
 
 

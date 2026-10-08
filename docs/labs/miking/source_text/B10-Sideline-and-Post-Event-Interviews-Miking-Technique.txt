@@ -1,0 +1,62 @@
+# Sideline and Post-Event Interviews Miking Technique
+Pro Audio Training Academy  •  Sports and Broadcasting Lab B10  •  Live sideline and mixed-zone applications
+A sports interview can begin seconds after play, with one or more moving speakers, a loud crowd, PA, wind, cameras and limited access. The microphone must stay useful as the reporter asks a question and the guest responds. This lesson compares handheld, lavalier, headset and boom placement, with a safe path and a tested fallback. No audio examples are included.
+# Plan the interview position before the handoff
+Confirm the permitted interview zone, camera framing, cable/wireless path, program feed and the crew member responsible for moving the microphone. Mark where the reporter and guest will stand, who may enter, crowd and PA directions, wind exposure, camera movement, and the nearest clear exit. A post-event mixed zone is different from a live sideline: it may allow a fitted mic and repeatable marks, while a sudden sideline exchange usually favors a controllable handheld. Do not step into play or block medical, official, athlete or security access to improve sound. [1, 2]
+Ask whether the guest is walking, breathing hard, wearing a helmet or head covering, carrying equipment, or subject to event gear restrictions. Use the event’s approval process before attaching anything to a person or uniform. Rehearse with the camera operator so the mic stays close without obscuring the face or colliding with camera/lighting. An attractive shot is not a substitute for a useful mouth-to-mic distance. [1, 3]
+# Choose and position the speech microphone
+Method
+Starting approach
+Failure mode to test
+One handheld shared by two speakers
+The reporter holds and points it near the active mouth, tracks each turn and moves it before the answer begins. Keep the capsule and mic flag clear of faces and camera lens. An omni is forgiving of small aim errors; a directional model can reduce some side sound but needs more accurate aiming. [2, 4]
+A mic left between people or lowered after a question makes the first answer syllables distant. Wind, hand movement, excessive flag size and crowd at the rear/side can dominate.
+Separate handhelds
+A reporter and guest each hold an assigned microphone when handoff is impractical and both know how to use it. Use separate channels and keep unused mics down.
+More equipment and open channels mean more crowd and cross-pickup; speakers may drop the mic from mouth level in excitement. [2, 5]
+Lavalier on reporter or guest
+Fit with consent/approval where time and wardrobe permit, keeping the capsule clear of rubbing fabric, straps, badges and protective gear. The reporter can stay hands-free. [1, 3]
+Head turns alter tone; exertion, sweat, wind, jersey movement and chest position can reduce speech-to-crowd ratio. Do not improvise a mount on regulated gear.
+Headset on regular reporter
+A well-fitted boom near the mouth can stabilize the reporter’s speech during movement, leaving a handheld for the guest. [3]
+Fit, wind, camera visibility and cable/wireless security matter; it does not capture the guest unless separately miked.
+Boom / compact shotgun
+An operator places a protected directional mic close above or to the side of the speaking mouth while staying out of frame and outside play. This may suit a controlled stand-up or a guest who cannot wear a mic. [6]
+It requires a dedicated operator and predictable positions. At greater distance, crowd/PA and head turns can defeat its directionality; the pole must not obstruct people or camera.
+# Work the handheld conversation
+Place the mic close enough to favor the speaker over the venue, but leave comfortable clearance and keep it out of the direct breath blast. The exact distance depends on capsule, windscreen, voice and framing. Hold it steady and aim at the person speaking; do not point at a jersey logo or the space between two mouths and expect equal clarity in a loud stadium. A reporter should finish a question, move the mic to the guest, then pause for the answer. After the answer, return it before the next question. [2, 4, 7]
+An omni reporter mic tolerates a shifting angle and can be useful when the background is manageable; a directional cardioid/supercardioid can improve focus in heavy noise if the operator keeps the mouth within its useful front pickup. Supercardioids also have rear pickup, so check where the PA sits. Polar pattern cannot compensate for a distant mic. With two loud voices, test their different delivery levels and leave input headroom for a shout or close cheer. [2, 4, 8]
+Use a fitted foam or more substantial wind protection for the actual conditions and microphone. Do not press a foam windscreen against the mouth or assume it makes a microphone waterproof. A high-pass filter may reduce residual rumble; it cannot repair wind overload or lost consonants. If wind direction changes, turn the bodies or move to a sheltered, permitted position while retaining camera sightline and safe access. [7, 9]
+# Body-worn and boom alternatives
+A lavalier is useful when a guest can be fitted before a scheduled post-event segment. Agree on placement with the athlete/official and production personnel; secure cable strain relief, avoid sweat-saturated or rubbing locations, and test while the person walks, turns and speaks after exertion. Headset pickup can give the reporter a more constant mouth distance, but a guest still needs a microphone. For both, confirm compatible wireless connector, transmitter location, frequency coordination and battery with the venue RF lead. Do not claim a universal lavalier placement for every uniform. [1, 3, 5]
+A boom can be less intrusive than body mounting for a controlled interview, but the capsule must stay close and aimed as the shot changes. A shotgun’s narrow on-axis pickup does not turn a distant sideline into an isolated voice. A compact supercardioid may be preferable under some reflective overheads; test the actual venue and wind protection. Put the operator’s movement and pole sweep inside the approved area, clear of sightlines, spectators, cables and exits. [6, 10]
+# Live routes, wireless and fallback
+Verify the active speech channel at the actual program/stream destination, not merely on a camera meter. Confirm reporter cue/IFB separately from program, and ensure the guest does not hear an uncontrolled delayed return. A body-worn and handheld mic on the same person may create overlap or comb filtering when both are open; select the preferred source or coordinate a deliberate transition. Keep crowd ambience on its own channel so the interview remains intelligible. [5, 11]
+Check the radio path while the reporter stands at interview marks and moves through the approved route. Monitor for dropouts, overload and range changes; the RF coordinator owns frequency decisions. Have a tested cabled handheld or alternative channel/position where feasible, with a safe cable route. Stop or relocate an interview if play, crowd movement, weather or venue personnel make the position unsafe. Never chase a guest into an unapproved area for a cleaner microphone angle. [1, 5]
+# Guided placement lab
+1. Draw a permitted two-person interview position with one camera, one PA source, a crowd direction and a clear exit. Assign the microphone operator, camera operator and audio monitor.
+2. Use one handheld for question and answer. At ordinary level, then at a simulated crowd peak, check the first syllable after every handoff, mouth distance, mic-flag clearance, aiming and handling noise. Compare an omni and directional handheld at practical positions.
+3. Add a moving guest. Rehearse a walk-in, turn toward the camera, excited answer and walk-out, staying within marked access. Note moments when the mic falls behind or enters the lens.
+4. Where approved, fit a lavalier or headset and test clothing/gear rub, wind, head turns and post-exertion speech. Compare against the handheld; keep each on a labeled channel.
+5. If an operator and space permit, test a boom at a controlled mark and camera frame. Compare the close boom to a farther boom, then check an actual program feed with audience ambience separate.
+6. Document the chosen mic, position, wind protection, wireless coordination, camera and exit clearance, program/IFB route, backup and one unresolved constraint.
+Pass criterion: both voices remain intelligible on the destination feed, the handoff preserves the start of answers, the student explains the trade-offs of each method, and the setup stays inside approved safe access. No audio examples.
+# Critical evidence audit
+# Agreement and different contexts
+Shure identifies the handheld as a flexible field-interview choice; RØDE emphasizes keeping it near the active voice. DPA describes lavalier use for sports interviews and compact boom options. These are compatible methods for different time, movement, frame and access constraints. Shure’s omni-versus-directional guidance changes with noise and operator aim, not with a universal winner. [1–4, 6–8]
+# Limits
+No source establishes a single safe distance, wind filter setting or approved athlete mount for every sport and venue. DPA’s marketed long boom range is not a guarantee of speech isolation in stadium noise. Local event rules, RF assignments and camera plans must be confirmed; this lesson does not instruct technicians to enter a playing area or attach hardware to regulated equipment. If the microphone cannot be kept near the source from a safe position, change the interview plan. [1, 5, 6, 9, 10]
+# Sources and curriculum connections
+Primary manufacturer guidance checked October 4, 2026. Linked pages may contain media; this lesson contains no audio examples.
+[1] DPA, Sports Broadcast Applications <https://www.dpamicrophones.com/application/sports-broadcast/>
+[2] Shure, Selection and Operation of Wireless Microphone Systems <https://content-files.shure.com/Pubs/selection-and-operation-of-wireless-microphone-systems/selection_and_operation_of_wireless_microphone_systems_english.pdf>
+[3] DPA, Facts About Speech Intelligibility <https://www.dpamicrophones.com/mic-university/background-knowledge/facts-about-speech-intelligibility/>
+[4] Shure, Handheld Wireless Microphones for Presenters <https://www.shure.com/en-US/insights/tell-me-about-handheld-wireless-microphones-for-presenters>
+[5] Shure, Sports Broadcast Wireless Deployment <https://www.shure.com/en-GB/newsroom/shure-wireless-powers-super-bowl-lix>
+[6] DPA, 4097 Interview Kit and Broadcast Boom <https://www.dpamicrophones.com/news/2022/dpa-shares-newest-mic-solutions-with-media-and-entertainment-industry-at-ibc-2022/>
+[7] RØDE, How to Record Better Interview Audio <https://rode.com/en-fi/about/news-info/how-to-record-better-interview-audio>
+[8] Shure, Cardioid and Supercardioid Patterns <https://service.shure.com/Service/articles/en_US/Knowledge/difference-between-cardioid-and-supercardioid>
+[9] Rycote, Windshield Systems <https://www.rycote.com/products/windshields/>
+[10] DPA, 4018 Supercardioid Boom and Interview Use <https://www.dpamicrophones.com/microphones/pencil/4018?variant=50>
+[11] Clear-Com, Interruptible Foldback (IFB) <https://www.clearcom.com/Resource-Library/Videos/Details/interruptible-fold-back-aka-ifb>
+Cross-links: B03 field reporter handoffs; B04 boom/camera pickup; B05 lavalier and headset; B09 commentary; B11 athlete/official body-worn pickup; B17 complete sports coverage.

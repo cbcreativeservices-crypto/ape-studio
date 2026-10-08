@@ -1,0 +1,385 @@
+# Motorsport Equestrian and Aquatic Events Miking Technique
+Pro Audio Training Academy   Sports and Broadcasting Lab B16
+Capture moving action, selected detail and venue atmosphere from safe, permitted positions. This lesson covers motorsport perimeter and pass-by pickup, equestrian movement and landings, and aquatic starts, splashes and poolside action. Remote mounts require express approval. Underwater hydrophones are a separate optional extension, not the default aquatic microphone. No audio examples are included.
+# Learning objectives
+Map an approved acoustic viewpoint, source path, operator footprint and fallback before installing equipment.
+Choose response, pattern, output sensitivity, headroom and protection for the actual source and environment.
+Compare fixed detail with mono/stereo ambience and check overlap, downmix, changing arrival time and program continuity.
+# Permission defines the usable position
+Identify the sport, governing body, adopted rule edition, event technical authority, rights holder and venue safety lead. Record approval for every location, mounting method, cable route and operator movement. Keep equipment outside active performance areas unless expressly approved and safely installed. Preserve athlete, animal, official, medical and emergency access; approval cannot override applicable rules.
+Context
+Verified source
+Placement consequence
+FIA rally
+2026 Rally Safety Guidelines, section 5.7, puts safety ahead of media work and requires compliance with marshals. [1]
+No self-selected trackside position or movement because a pass-by sounds better there.
+FEI jumping
+2026 Jumping Rules Article 241.1.1 requires a closed competition arena while a horse is competing. [3]
+Keep access closures and crew routes intact; no equipment blocks a gate.
+World Aquatics swimming
+February 2026 regulations Part Two 15.16 protects starts, turns and officiating systems. [4]
+Do not alter start speakers, timing panels or deck installations for audio.
+Wet environments
+OSHA 1910.303 addresses equipment suitability and damp/wet operating locations. [10]
+Qualified venue staff must review the complete electrical installation and local requirements.
+Research checked 7 October 2026. Layouts, distances, angles and gain targets below are conditional Academy recommendations unless attributed. No universal safe perimeter distance or approved mount location is asserted.
+# Compare the pickup methods
+# Match the microphone to the listening target
+An engine, hoof contact and splash differ in duration, spectrum, direction and movement. Decide whether the listener should hear a close event detail, a moving trajectory or the wider venue. A loud source may be audible from an approved distant location without a narrow pattern. A soft hoof or water detail can remain masked even with a highly directional microphone.
+Shotguns provide frequency-dependent off-axis rejection; they do not supply a universal capture distance. Compare the selected model with a compact directional microphone from the same approved point, including indoor reflections and crowd or PA spill. Pattern labels alone do not predict the complete result. [5]
+Method
+Useful contribution
+Tradeoff to test
+Fixed directional
+One track sector, landing region or pool segment.
+Changing range, source height and off-axis motion; useful near/far coverage is unequal.
+Fixed mono ambience
+Stable event identity and fallback.
+Reduced spatial trajectory; local PA or spectators can dominate.
+Coincident stereo
+Approach/departure or a wider venue perspective.
+Orientation and downmix matter; a moving source can change level more than stereo position.
+Spaced stereo
+Wide perspective with arrival differences.
+Combined mono may color correlated action; document spacing and audition.
+Approved remote airborne plant
+Selected detail where people cannot operate.
+Mount engineering, retention, vibration, exposure and servicing need specific approval.
+Tracked pickup
+Selected moving action from an approved operator footprint.
+Movement restrictions and bulky wind protection may favor a fixed alternative.
+Optional hydrophone
+Underwater pressure and a different listening medium.
+Underwater flow, bubbles and structure noise; installation cannot obstruct participants.
+# Sensitivity headroom and noise
+Choose a complete system rather than a capsule in isolation. Verify frequency and polar response, sensitivity/output, maximum input level and test conditions, powering, adapter and cable compatibility. A low-sensitivity microphone can reduce voltage presented to a transmitter, but cannot prevent its own capsule from overloading. A dynamic microphone is not automatically immune to overload and a condenser is not automatically unsuitable for loud events. [6]
+For quiet equestrian or pool detail, compare venue noise, microphone self-noise and preamp noise. For motorsport, cue tones, whistles or a nearby splash, inspect transient overload at every stage. Keep ambience separate enough to remain useful when detail channels are muted. DPA’s sports examples describe possible approaches, not event permission or a guarantee of isolation. [7]
+# Motorsport perimeter and pass by coverage
+# Source and desired trajectory
+Map acceleration, braking, cornering and departure as distinct listening regions. Engine/exhaust, tyres, transmission, electric drive, impacts and crowd reaction may contribute different balances. A stationary microphone hears changes in distance and source angle as well as operating state; an apparent tonal change is not automatically a microphone fault. Identify the actual vehicle type instead of assuming every event produces combustion-engine sound.
+# Select positions through the event authority
+For a circuit, rally stage, drag strip or kart venue, use the organizer’s assigned audio/media positions and safety instructions. The FIA rally guidance is specific to rallying and does not authorize circuit access. Section 5.7 allows certain accredited-media movements only within its stated conditions and marshals’ directions; those provisions do not grant independent approval to install audio hardware. [1]
+Recommended starting layout: a fixed directional or mono microphone at an approved protected perimeter viewpoint, aimed toward a named pass-by segment, plus stable ambience. Compare a coincident stereo pair at the same general authorized viewpoint if trajectory matters. Record whether a barrier or fence screens the acoustic path and whether nearest vehicles exceed the selected chain’s headroom.
+Aim obliquely along the selected segment when that improves approach/departure continuity, or across it when a short contact region is the intended detail. Test both only from approved equipment footprints. Capsule height must follow assigned access and projectile protection; there is no universal one-metre trackside height. Keep capsule, windshield, stands and cables entirely within the authorized envelope.
+Coverage condition
+Listen and inspect
+Fallback
+Nearest pass
+Peak, wind blast, gravel or spray exposure.
+Use a protected permitted feed and more input margin; do not approach for a test.
+Distant approach
+Masking by crowd, commentary PA or other vehicles.
+Use wider context instead of claiming isolated individual detail.
+Fence or barrier
+Obstructed path, reflections and mechanical vibration.
+Try another approved acoustic viewpoint; no projection through a safety barrier.
+Multiple vehicles
+Overlapping trajectories and summed peaks.
+Favor coherent venue sound; reserve separate sector control.
+Incident or red flag
+Crew access and changing safety instructions.
+Mute affected remote feeds and follow race control; no immediate gear retrieval.
+# Operator movement and remote approval
+Remain within the approved operator footprint and arc. Never cross an active course to follow sound, lean beyond barriers, stand in run-off space or enter a marshal escape route. Installation and retrieval must occur during an explicitly released period; a quiet track or missing engine sound is not a release. The designated safety authority can move or withdraw a position at any time.
+# Remote motorsport mounts and high peaks
+Remote recording reduces the need for a nearby operator, but leaves physical hazards. Obtain approval for supports, secondary retention where required, cable protection, environmental limits and failure recovery. Neither adhesive nor a magnet establishes impact or speed suitability. Do not attach to a moving vehicle, safety barrier, flag system or timing equipment by default.
+# Approved mounts only
+A vehicle-mounted microphone is an optional specialist production case requiring team, organizer, technical and safety approval. An audio worker must not improvise an installation near exhaust, rotating parts, cooling passages, driver controls, restraint systems or electrical traction equipment. Qualified vehicle personnel determine acceptable locations, fixtures and loads; audio approval alone is insufficient.
+For an expressly approved plant, document the actual sound path, mount, strain relief, temperature limits, weather protection and power interface. Distinguish airborne pressure from transmitted body-panel vibration. A rigidly attached capsule may record a mixture of both. Compare the plant with a perimeter feed only when the installation can be tested without changing approved operation.
+# Peak margin belongs to the whole chain
+Verify the manufacturer’s stated overload metric: clipping, specified THD and peak versus RMS wording are not interchangeable. Check capsule, adapter/transmitter, receiver, preamp, converter and program bus. Input attenuation after an overloaded capsule cannot undo distortion; a lower output fader cannot protect an earlier stage. [6]
+Academy gentle-test starting point: peaks near −12 dBFS, with additional margin chosen for less predictable live peaks. This is not a universal motor-racing alignment or delivery specification. No classroom gain setting certifies capacity for a real pass-by. Use authorized representative operation and conservative gain, then inspect recorded and live peaks at each accessible stage.
+Decision
+Required information
+Recommendation
+Low sensitivity versus pad
+Mic output and maximum input of the next stage.
+Use compatible attenuation at the stage needing protection; confirm noise remains acceptable.
+Wind versus overload
+Solo raw signal, meters and overload indicators.
+Separate low-frequency wind modulation from clipped waveform or electronic overload.
+Protection cover
+Model compatibility, sound path and exposure.
+Audition installed cover; do not obstruct cooling or rely on humidity tolerance as waterproofing.
+Wireless versus cable
+Event RF approval, latency, antennas, battery and safe route.
+Use the reliable approved option and prelabel a perimeter fallback.
+# Hearing and operational awareness
+Follow the event hearing-protection and crew-awareness plan. Keep headphone level conservative and maintain the required ability to receive marshal or race-control instructions. dBFS is not a hearing-exposure measurement; use the appropriate calibrated method if that is the task. Do not create dangerous peaks or stand near a loud vehicle to determine overload.
+FIA’s current regulations index lists Appendix H 2026 published 23 June 2026. Obtain that applicable text and the championship/event supplements; this lesson’s directly read 2026 Rally Safety Guidelines complement rather than replace them. Circuit and other motorsport rules need separate review. [1, 2]
+# Equestrian movement and landing coverage
+# Source and intended perspective
+Hoof contact depends on gait, footing and distance. Landing, obstacle contact, tack movement, breathing and rider or official speech are separate targets. Do not equate a quiet soft surface with a failed microphone. A fixed wider feed can preserve the rhythm of a round while a local approved sector contributes selected landings.
+# Jumping arena survey
+FEI Jumping Rules, 28th edition effective 1 January 2026, Article 241 requires enclosed competition arenas and closed entrances/exits while a horse competes; it also specifies course inspection and the posted course plan. Use the approved current course plan to identify movement, turns, start/finish and obstacle sectors. A microphone position is not authorized merely because it lies outside the normal course line. [3]
+Recommended default: independently supported directional microphones in assigned perimeter positions, aimed toward a selected hoof or landing region. Measure capsule height and range to that region from the approved footprint. Compare a low source-oriented angle with a broader view; bodies, fence decoration and other obstacles may interrupt the path. Do not move closer when the horse turns away.
+Keep equipment beyond the complete approach, jump, landing, refusal, run-out and recovery envelope determined by the event authority. Preserve gates, stewards, course crew and veterinary or medical access. The mount and cable must be acceptable to the arena team, including footing maintenance and changing course layouts. No universal number of metres from a horse or fence is established here.
+Target
+Conditional comparison
+Fallback
+Hoof rhythm
+Directional sector versus wider mono/stereo perspective.
+Use stable wider coverage if soft footing or distance masks detail.
+Selected jump landing
+Aim at expected contact region from an approved independent support.
+Perimeter feed if hardware cannot clear approach/recovery.
+Obstacle contact
+Airborne microphone versus approved isolated remote plant.
+Reject mounts that change obstacle function or safety characteristics.
+Music and speech
+Authorized presentation feed versus spill in action microphones.
+Keep separately controllable and follow rights/output instructions.
+# Animal welfare and crew behavior
+Follow stewards’ directions and the horse-welfare provisions in the adopted rules. Keep operator movement predictable, avoid startling gestures and do not use flash, loud test tones or abrupt equipment movement near horses. Seek the handler’s and event authority’s guidance before any controlled equestrian test; consent from a rider alone does not establish venue access.
+Do not put a microphone on a horse, leg boot, bridle, saddle or rider as a routine alternative to a refused plant. Tack, equipment and athlete devices have discipline-specific restrictions. An approved remote mount belongs in the event’s technical plan and must not alter a jump’s required release or construction. No microphone clamp is a substitute for that review.
+# Other equestrian formats and changing coverage
+# Dressage and music based routines
+Choose a consistent acoustic perspective across the arena rather than chasing every hoof. Compare permitted fixed perimeter sectors with a wider stereo ambience view. For a freestyle, obtain any authorized music feed separately and document its latency relative to room pickup. Opening several delayed versions of the music can change tone or smear transients. Do not assume jumping rules govern dressage access or dimensions.
+# Eventing cross country and driving
+Cross-country movement extends beyond a single obstacle and may include approach, landing, water, alternate routes and recovery. Driving includes the vehicle as well as horses and crew. Use that discipline’s adopted rules and current course/media safety plan. Survey likely approach/departure and preserve emergency and course-maintenance paths before selecting a fixed audio sector.
+Remote plants can be useful only where expressly approved; they must not change an obstacle, release mechanism, marker, footing or water feature. Do not put a capsule in a horse landing region because an operator is absent. In the event of a refusal, fall or veterinary response, follow the coverage and access authority rather than moving toward the incident.
+# Horse racing and non FEI events
+Racing is governed by its relevant racing authority, track and event requirements, not FEI jumping rules. A starting-gate, rail or winning-post microphone needs specific track approval, engineering and broadcast coordination. Preserve jockey/horse routes, starting staff, outriders and emergency access. Use distant ambience if closer detail is not available.
+Coverage issue
+Inspect
+Recommended response
+Course changes
+New obstacle order, jump-off route, gates and crew positions.
+Reapprove changed footprints and cable paths before the next session.
+Horse obscures target
+Body angle and distance vary during the round.
+Use another approved sector or wider coverage; keep the operator still.
+Footing or rain changes
+Texture, wind, cover impacts and moisture.
+Log conditions and compare approved normal warm-up, not forced repetitions.
+Private or medical speech
+Editorial permission, rights and welfare.
+Mute inappropriate detail and follow production instructions.
+Remote hardware cannot be serviced
+Event access closed or incident in progress.
+Use the prepared fallback; retrieve only when the area is released.
+# Controlled versus live comparisons
+A controlled session can compare gait or surface under the handler’s approved routine. Live priorities are welfare, uninterrupted access, course changes and sound continuity. Never ask for faster riding, extra jumps or louder impacts solely to improve a microphone test. The classroom exercise below uses people walking and gentle objects, not horses.
+# Aquatic starts splashes and poolside action
+# Define the above water target
+Airborne poolside pickup captures starts, water-entry splashes, strokes near the surface, deck movement, whistles, crowd and venue sound. Underwater pressure is a different perspective. Swimming, diving, water polo and artistic swimming also have different movement and operational regions; one start-end microphone cannot represent every event equally.
+# Swimming starts and turns
+World Aquatics Competition Regulations, February 2026, Part Two 15.16.2 protects starts, turns and overflow operation in officiating installations and prohibits exposed officiating wires/cables on the deck. Section 15.16.3 connects the Starter’s microphone and any pistol transducer to speakers at each block so athletes hear commands and the signal equally and simultaneously. These clauses govern the officiating system, not generic audio-installation permission. [4]
+Recommended layout: fixed directional microphones at event-assigned dry/protected deck or perimeter positions, aimed toward selected start, turn or stroke regions, with stable ambience. Keep equipment clear of block access, backstroke apparatus, timing panels, lane ropes, officials, swimmers’ exits and rescue routes. Do not attach to a block, touch panel or start speaker, or patch the start system, without approval from its responsible specialist.
+If an authorized separate production feed supplies commands or a cue, verify level, delay and editorial use. It is not an official timing record. Splash proximity can overload a capsule or wet its protection; farther approved coverage may be the reliable choice. Soft room noise and very loud whistles need different headroom decisions.
+Discipline
+Recommended target separation
+Installation limitation
+Swimming
+Start, turn/stroke sector and continuous venue ambience.
+No equipment obstructs starts, turns, deck transit or timing.
+Diving
+Board/platform action, airborne water entry and audience reaction.
+No mount on board, platform, rail or beneath a flight path by default.
+Water polo
+Selected play region, whistle and crowd; speech as separate approved coverage.
+Goal, ball, pool exit and official routes remain functional.
+Artistic swimming
+Surface action, ambience and an authorized music feed.
+Underwater music systems and athletes remain untouched; coordinate rights and delay.
+Open water
+Approved shore/perimeter sector and wider course atmosphere.
+Do not improvise installations on course marks, rescue craft or swimmers.
+# Reflection and wet deck noise
+Reflective walls, roof and water surface can make a very narrow microphone sound inconsistent as athletes move. Compare a compact directional model with the shotgun at the same authorized point. Keep a quiet continuous venue bed through sector changes. Deck footsteps, handling and stand vibration should be identified separately from splashes; do not presume a low-frequency filter will repair an unstable mount.
+# Optional underwater hydrophone extension
+# Identify the medium and signal path
+A hydrophone captures underwater pressure. It is not an airborne microphone made waterproof, nor a contact sensor measuring a structure. Underwater and airborne dB references differ, so equal recorded level or quoted sensitivity does not imply equal sound pressure in the two media. The extension is about listening perspective, not calibrated underwater exposure or compliant measurement.
+# Verified example and its limits
+Aquarian H2dX uses phantom power not exceeding 48 V; its manual describes single-ended XLR output with pin 3 unused and horizontal omnidirectional response. Published typical sensitivity is −165 dB re 1 V/µPa, ±4 dB over 20 Hz–4 kHz, under its specified 48 V supply arrangement. Preamp, powering and cable affect response; the broad useful range is not a flat-response guarantee. Keep the output plug dry. These are model-specific statements. [8]
+# Controlled water comparison only
+Optional Academy test: a stable instructor-approved water container in a dry equipment area, with no people or animals in the water. Use only a suitable intact hydrophone and an approved low-risk battery-powered capture arrangement reviewed by the instructor. This does not certify electrical safety. Keep recorder/connectors dry, place the sensor gently, secure cable strain relief and never pull it out by a damaged cable.
+Log water depth, capsule depth, distance to container walls and bottom, cable route, gain and ambient conditions. Compare a gentle hand-made surface ripple at one location with still water, then repeat at a second depth. Move one variable at a time. Keep an airborne microphone outside splash range if a medium comparison is desired; loudness matching is for listening only.
+Observation
+Inspect
+Meaning to document
+Rumble or pumping
+Cable movement, flow past sensor and handling.
+Not necessarily a distant engine or low-frequency pressure event.
+Sharp bubbling sounds
+Bubbles, surface and source activity.
+Different path and spectrum from above-water splash.
+Container coloration
+Wall/bottom distance and structure vibration.
+A small tank is not a scale model of a competition pool.
+Changing tone with depth
+Geometry, reflection, powering and system bandwidth.
+A comparison result, not a calibrated frequency-response claim.
+# Live deployment requires separate approval
+The event, pool engineer, rescue/safety authority and rights holder must approve any live underwater deployment. Preserve starts, turns, swimmer travel, pool exits, officiating and rescue access. No cable crosses a lane or creates an entanglement loop; no sensor is hidden where a person could strike it. Mounts on lane ropes, goals, timing panels or pool structures are not assumed acceptable. Use above-water ambience if an approved installation is unavailable.
+# Weather mounting and electrical checks
+# Protection must suit recording conditions
+Use compatible suspension and wind protection; check installed tone and noise rather than promising a universal reduction. Windshield mass and projected area affect the complete mounting decision. Weather covers can create rain-impact noise or change response. Rycote’s Windshield Rain Jacket is explicitly between-takes protection, not intended for audio recording. [9]
+Humidity resistance is not immersion protection. Verify the exact microphone, transmitter, connector and cable limits. For motorsport, include heat, spray and debris; for equestrian work, dust, wet footing and animal access; for aquatics, splash, condensation and maintenance chemicals. Qualified event personnel decide the acceptable exposure and service procedure.
+Risk
+Check before operation
+Fallback
+Wind or cover noise
+Solo feed, mount movement and unobstructed sound path.
+Approved sheltered position or wider protected feed.
+Mechanical vibration
+Mount/structure, cable bypass and transmitted impacts.
+Independent support or compatible isolated mount if approved.
+Wet electrical installation
+Venue electrical review, equipment suitability and protected routes.
+Keep equipment in approved dry area; withdraw unsuitable feed.
+Mount change or loose hardware
+Approval, inspection, retention and service access.
+Mute and leave retrieval to the released service period.
+Lightning or emergency
+Weather lead, shelters and evacuation instructions.
+Follow event stoppage; do not retrieve gear in hazardous conditions.
+# Electrical review is a separate requirement
+OSHA 1910.303(b)(2) requires use according to listing/labeling instructions; (b)(6) addresses suitability for damp/wet locations and deteriorating agents. This is a U.S. workplace reference, not a complete pool wiring code. Have the venue’s qualified electrical authority verify applicable rules, equipment, protection and connection arrangements. Do not assume battery power, phantom power or a dry-looking XLR makes an entire installation safe. [10]
+Keep mains equipment, plugs and connections out of splash/immersion unless specifically approved for that installation. Do not modify pool bonding, protective devices, grounding, timing systems or venue electrical infrastructure. If protection or routing cannot be verified, use an approved dry perimeter feed. The classroom lab is dry; hydrophone work is a separately supervised optional task.
+Follow the event weather authority. National Weather Service outdoor-sports guidance recommends shelter at thunder and waiting at least 30 minutes after the last thunder before returning. Plan withdrawal and shelter before operation; safety instructions take priority over equipment recovery. [11]
+# Verified equipment and combined feeds
+Example
+Verified information
+What remains to verify
+Sennheiser MKH 416 P48
+Supercardioid/lobar; 40–20,000 Hz; 25 mV/Pa ±1 dB at 1 kHz, no load; maximum 130 dB SPL; 48 V ±4 V phantom. [12]
+Use as a directional comparison. Input capacity, installed wind protection and event mounting remain separate.
+DPA 4060 family
+Current family page distinguishes normal, loud and extremely loud SPL variants, including 4062 CORE. [13]
+Exact variant/connector specifications and adapter/transmitter limits. Do not transfer a 4060 number to a 4062 or another technology revision.
+Aquarian H2dX
+Underwater example with model-specific powering and system-dependent response. [8]
+Approved immersion/cable installation and electrical arrangement; not an airborne or athlete-contact certification.
+# Mono stereo and moving arrival differences
+Polarity inversion changes signal sign while delay changes arrival time. A moving source changes its path difference to two fixed microphones, so alignment at one pass-by point does not hold everywhere. Listen solo and combined at approach, nearest pass and departure, and at near/far pool or arena targets. [14]
+Academy recommendation: choose a dominant detail feed per sector and reduce redundant overlap before adding delay. Compare mono, stereo and the actual downmix. If using coincident stereo, document pattern, angle, orientation and reference axis. If using spacing, document separation and check correlated action for cancellation. Leave deliberate room arrival in ambience when it supports the desired perspective.
+Do not treat an acoustic trajectory comparison as a Doppler speed measurement. Changed pitch can include source operating changes, reflection and off-axis response. A walking classroom source is not a model of high-speed motorsport behavior. Identify the limitation when transferring the experiment.
+# Broadcast continuity and supporting routing
+Meter the program sum as well as inputs; combined feeds can create new peaks. Check picture sync through the actual chain and follow broadcaster delivery requirements. Keep commentary, approved cues/music, action and audience separately controllable. IFB, talkback and mix-minus support the task but do not substitute for useful microphone placement.
+Route action or ambience to in-venue reinforcement only when required and reviewed by the venue engineer. Avoid unnecessary loudspeaker loops and verify any needed feedback margin at appropriate levels. Prepare a labeled wider fallback, rehearse detail-channel loss and preserve coherent venue sound through changes. Never deliberately create feedback, overload or excessive exposure as a demonstration.
+# Guided placement lab
+# Prepare a dry mock event
+Use a clear instructor-approved room or quiet dry outdoor area with separate source and equipment footprints. Required: directional microphone, secure support, recorder/mixer with meters, headphones, tape measure and worksheet. A second microphone and coincident stereo arrangement are optional. Use ordinary walking, gentle handclaps and a short spoken phrase. No vehicles, horses, swimming, hard landings, racing, loud playback or live-course installation are part of this lab.
+Academy coordinates in metres: source A=(0,0), B=(0,2), C=(0,4); equipment M1=(2,2), M2=(−2,2). Capsule height 1 m; clap/speech reference height 1 m. M1 to B is 2 m horizontally and M1 to A/C approximately 2.83 m. Measure actual slant ranges for lower footfall/contact targets. Adapt the coordinates if needed, record the change and keep all walking paths clear. These values are classroom trials, not live-event clearances.
+# Run the comparison and restore the baseline
+1. Map and verify. Mark source points, equipment areas, approved operator arc, camera mock sightline, access route and cables. Record model, pattern, power, gain, filters, format and protection. Establish a usable wider fallback before detail testing; start with conservative headphone level.
+2. Fixed sector. At unchanged gain, make three gentle claps and speak the same short phrase at A, B and C. Repeat at B after the full sequence. Log maximum peaks, spill and tone before loudness matching. Set the strongest gentle repeatable peak around −12 dBFS as a trial starting point, not a real-event guarantee.
+3. Pass-by. Walk slowly from A through B to C and back without entering equipment space. Keep the microphone fixed and aimed at B. Compare approach, closest point and departure. Do not pretend the changing voice level or pitch establishes a racing-vehicle Doppler measurement.
+4. Aim and range. Compare original aim with a 30-degree off-axis trial, then restore it. If an approved second equipment point permits, double range to B and repeat. Keep source action constant, log input settings and loudness-match only the listening comparison. Choose the perspective and sector you can actually cover.
+5. Pattern and stereo. If available, substitute compact directional for shotgun from M1 and repeat. For stereo, use the chosen documented coincident method, log angle/orientation and repeat movement. Compare mono downmix with stereo. Do not crowd the equipment footprint with extra stands.
+6. Overlap and obstruction. Compare M1 and M2 solo and summed at A/B/C. Use a stationary instructor-approved soft screen outside movement paths if obstruction is tested. Briefly try polarity reversal as a diagnostic, then document the final choice. Favor a dominant detail feed and avoid applying one-point delay as a universal solution.
+7. Fallback and transfer. Mute detail and transition to wider coverage. Check output level, noise and continuity, then repeat the original B trial. For live work, replace every mock dimension with an approved survey and test authorized representative operation. Remote mounts and underwater deployment require separate approval and are not validated by this lab.
+# Student observation sheet
+Name __________________________   Date __________   Event __________________________
+Venue __________________________   Governing body and edition ________________________
+Target sound and desired perspective __________________________________________________
+Approval contact and authorized footprint ______________________________________________
+Log model/pattern, source and capsule heights, range, aim, gain, filters, mount, surface, cover and environment. Peak entries include maximum dBFS and overload indications. Compare tone, spill, movement and choice before and after loudness matching.
+Trial
+Model and geometry
+Peak and noise
+Coverage tone and decision
+A B C fixed
+Approach/pass/departure
+Aim changed/restored
+Range comparison
+Pattern/stereo comparison
+Overlap/obstruction
+Mono/downmix
+Fallback/final repeat
+Strongest region and gap ______________________________________________________________
+Remedy and fallback __________________________________________________________________
+________________________________________________________________________________
+# Coverage map and installation worksheet
+# Meaningful success criteria
+The proposed live installation has a named approval path, and all performance, service and emergency routes remain clear.
+The named target is useful through tested sectors; significant gaps have a tested fallback.
+No tested stage overloads; measured peaks and remaining margin are logged without guaranteeing untested live peaks.
+Solo, summed, mono/stereo and fallback outputs are checked, with remedies or accepted limitations for spill, vibration and cancellation.
+Draw the source path, permitted microphone/crew footprints, camera sightlines, barriers, gates, athlete/animal routes, officials, medical/rescue access and every cable route. Label target ranges, heights and aim. A mock map is not a live-event authorization.
+________________________________________________________________________________
+________________________________________________________________________________
+________________________________________________________________________________
+________________________________________________________________________________
+Approving authority and restrictions __________________________________________________
+________________________________________________________________________________
+Mount inspection and service/retrieval permission _______________________________________
+________________________________________________________________________________
+Weather/electrical review and fallback __________________________________________________
+________________________________________________________________________________
+# Optional hydrophone log
+Water/container and source ____________________________________________________________
+Sensor model/power __________   Depth ______   Wall/bottom distances ___________________
+Dry connector/cable arrangement and approving supervisor _________________________________
+Observation and limitations ____________________________________________________________
+________________________________________________________________________________
+# Troubleshooting and critical evidence audit
+Symptom
+Inspect
+Action before processing
+Distortion on nearest action
+Mic and all downstream overload indicators.
+Lower gain at affected stage or select suitable approved hardware.
+Rumble or pumping
+Wind, structure, cable and underwater flow separately.
+Improve compatible protection/isolation from an approved location.
+Thin combined sound
+Correlated feeds and moving path difference.
+Solo and mono-check; reduce redundancy or change dominant feed.
+Target lost behind obstruction
+Bodies, fences, barriers, reflections and axis.
+Handoff or wider perspective; no unapproved advance.
+Music/cue smear
+Room pickup plus delayed supplied feeds.
+Keep separately controllable and document timing.
+Wet gear or approval withdrawn
+Exposure, access and electrical review.
+Mute/withdraw affected feed; use prepared safe alternative.
+# Points of agreement
+Sport documents preserve event operations; technical documentation distinguishes system response, output, overload and timing. Together they support a named target, approved complete installation and representative verification. No source establishes one universal safe microphone distance. [1–6, 8, 10, 12, 14]
+# Where approaches differ
+Directional detail, stereo trajectories and stable ambience serve different perspectives. Low-sensitivity variants help different signal-chain needs from quiet-source variants. Hydrophones and airborne microphones capture different media. These differences are choices to justify, not evidence that one method is always superior. Academy layouts and lab coordinates remain recommendations.
+# Direct contradictions and resolution
+No direct contradiction among the reviewed governing rules is established. A misleading use of a between-takes rain cover during recording conflicts with its manufacturer instructions. Treating an accredited-media movement provision as blanket mounting permission also exceeds what it establishes. Follow exact accessory instructions and seek event-specific installation approval. [1, 9]
+# Important gaps and confidence
+The directly read FIA guidance is for rallying; current Appendix H and circuit/championship supplements still need event review. FEI jumping cannot establish dressage, eventing, driving or racing installation rules. The FEI media guide was indexed but not fully retrievable. World Aquatics provisions cited concern officiating; they do not approve a hydrophone or broadcast mount. [1–4, 15]
+Exact mount loads, retention, safe live geometry, electrical arrangements, RF permissions, weather limits and delivery specifications are unresolved until the venue approves them. Confidence is high in directly read provisions/specifications, moderate in conditional layouts, and unresolved for a particular live installation. Manufacturer claims and classroom observations do not certify impact safety, exposure or standards-compliant measurement.
+# Sources and reading notes
+Sources checked 7 October 2026. The large FIA and World Aquatics PDFs and current FEI jumping PDF were retrieved and read locally after browser-text retrieval failed. Numbered references link to their original sources; no unseen rule provision is inferred from an index.
+[1] FIA Rally Safety Guidelines 2026 Eighth Edition <https://www.fia.com/sites/default/files/rally_safety_guidelines_2026_en_web_0.pdf>
+Direct primary PDF retrieved through the FIA API mirror. Section 5.7, printed pp.109–111, media safety and permitted movement subject to marshals. Rally-specific guidance complements applicable regulations; it does not approve this lesson’s mic positions.
+[2] FIA current regulations index <https://www.fia.com/regulation/catogory/123>
+Lists Appendix H 2026 published 23 June 2026. Obtain that applicable version plus discipline/championship/event supplements. No inaccessible detailed Appendix H clause is cited here.
+[3] FEI Jumping Rules 2026 Twenty Eighth Edition <https://inside.fei.org/sites/default/files/FEI%20Jumping%20Rules%202026_1.pdf>
+Direct primary PDF read locally; effective 1 January 2026. Article 241 for arena, access closure and course plan; welfare code and tack/equipment annex as context. A stakeholder-consultation draft was not substituted for this adopted text.
+[4] World Aquatics Competition Regulations February 2026 <https://resources.fina.org/fina/document/2026/02/18/e6815ecc-06d9-4f0b-98e9-4c441cf5e6a3/2026-02-18_World-Aquatics_CR-Final.pdf>
+Official current index identifies version updated 18 February 2026. Part Two 15.16.2–15.16.3, printed p.73, officiating equipment and starting devices. Keep the clause’s officiating-system scope; do not invent broadcast hardware permission.
+[5] Shure Choosing a Shotgun Microphone <https://www.shure.com/en-GB/insights/choosing-a-shotgun-microphone-the-long-and-short-of-it>
+Matthew Koschak, 17 May 2016; primary technical explanation of directionality and reach limitations. Not a current sport-access policy.
+[6] DPA Condenser Microphones and High SPL <https://www.dpamicrophones.com/mic-university/audio-production/condenser-mics-and-high-spl-why-use-dpa-mics-for-live/>
+Manufacturer technical discussion of distortion and SPL terminology. Promotional performance claims apply to stated products/conditions; inspect actual mic and input specifications.
+[7] DPA Sports Broadcast <https://www.dpamicrophones.com/application/sports-broadcast/>
+Manufacturer action/ambience overview; examples are not venue authorization, universal geometry or isolation guarantees.
+[8] Aquarian H2dX Hydrophone User Guide <https://www.aquarianaudio.com/AqAudDocs/H2dX_manual.pdf>
+Primary manual; powering, single-ended XLR output, sensitivity reference and system-dependent response. Keep output plug dry; broad useful range is not a calibrated flat-band response.
+# Further sources and curriculum links
+[9] Rycote Windshield Rain Jacket <https://www.rycote.com/microphone-windshield-shock-mount/windshield-rain-jacket/>
+Manufacturer explicitly identifies between-takes protection and says it is not intended for audio recording.
+[10] OSHA 1910.303 General Electrical Requirements <https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.303>
+Paragraphs (b)(2) and (b)(6), listed/labeled use and suitability for damp/wet environments. U.S. workplace reference; not complete pool electrical design guidance or a claim of compliance.
+[11] National Weather Service Lightning and Outdoor Sports <https://www.weather.gov/safety/lightning-sports>
+Official shelter and resumption guidance; apply the event emergency authority’s instructions.
+[12] Sennheiser MKH 416 Specifications February 2026 <https://docs.cloud.sennheiser.com/en-us/mkh-416-mkh-418-s/specs-mkh-416.html>
+Manufacturer v1.0 02/2026; pattern, response, sensitivity, maximum SPL and phantom-power conditions. No immersion, vehicle-speed or athlete-contact suitability is inferred.
+[13] DPA 4060 Series official product family <https://www.dpamicrophones.com/microphones/lavalier/4060?variant=32>
+Current family page distinguishes variant/application categories. Dynamic configuration did not expose a complete 4062 specification table; numerical 4060 claims were not transferred to another variant.
+[14] DPA Polarity Phase and Delay <https://www.dpamicrophones.com/mic-university/technology/polarity-phase-and-delay/>
+Primary technical explanation of sign inversion and time shift; moving-source verification and handoff sequence are Academy recommendations.
+[15] FEI Media Operations Guide for Event Organisers <https://knowledgebase.fei.org/index.php?action=attachment&id=465>
+Official indexed guide; full retrieval was blocked. Obtain and verify the adopted event media plan rather than inferring microphone permission from photographer arrangements.
+# Curriculum cross links
+Master plan B16: motorsport, equestrian and aquatic events; safe perimeter/pass-by positions, high peaks, weather and approved remote mounts only. Hydrophones are a separately identified optional extension. This lesson follows that scope.
+Completed sports links: B08 Broadcast Audience and Event Space; B09 Commentators and Announce Positions; B10 Sideline and Post Event Interviews; B11 Athletes Coaches and Officials; B12 Parabolic and Tracked Action Pickup; B13 Field and Diamond Sports; B14 Court Racket and Ice Sports; B15 Track Gymnastics and Combat Sports. Use the relevant sport’s actual approval process when transferring any comparison.
+Completed field/scientific links: F01 Foley Footsteps and Surfaces; F04 Impacts Liquids and Textures; F05 Foley Perspective and Multiple Microphones; F06 Natural and Urban Ambience; F08 Moving Sources and Pass-bys; F10 Spatial and Specialist Field Pickup; F11 Measurement Microphones and Calibration; F12 Sound Level and Environmental Noise; F16 Scientific Arrays and Specialized Sensors. Calibrated measurement requirements are separate from broadcast listening trials.
+Planned final lesson: B17 Crowd and Complete Sports Coverage for stereo/immersive ambience, combined commentary/action/audience feeds, minimal/extensive layouts and downmix. It remains planned reading until delivered.
