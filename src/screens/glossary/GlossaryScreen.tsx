@@ -136,6 +136,7 @@ import { getLabLesson } from '../../features/lab/guidedLessons';
 import type { StudyStackParamList } from '../../navigation/types';
 import { readingColumn, cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { relatedTermList, relatedTermsText } from '../../features/study/flashcardGestures';
 
 const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.webp');
 
@@ -1159,19 +1160,13 @@ function TermDetails({
               );
             })}
           </View>
-          {d.category ? <Text style={[styles.detailBody, { marginTop: 8 }]}>{d.category}</Text> : null}
         </View>
       ) : (
+        // TERMS only — the category name used to be appended and read as a
+        // related term (tester Terry, 2026-10-08; same fix as Flashcards).
         <DetailSection
           label="RELATED TERMS"
-          text={
-            [
-              d.related_terms?.length ? d.related_terms.map((s) => `• ${s}`).join('\n') : null,
-              d.category || null, // difficulty (beg/int/adv) deliberately NOT shown
-            ]
-              .filter(Boolean)
-              .join('\n\n') || null
-          }
+          text={relatedTermList(d).length ? relatedTermsText(d) : null}
         />
       )}
       {/* Suggest a correction — auto-tags the term so it's clear which one

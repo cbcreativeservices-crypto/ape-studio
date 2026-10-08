@@ -105,6 +105,7 @@ import { StudyHeader } from './StudyHeader';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import type { StudyStackParamList } from '../../navigation/types';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { fsShouldClaim, fsSwipeAction, relatedTermsText, stepSectionLevel } from '../../features/study/flashcardGestures';
 
 /**
  * The user's own "Flagged" pseudo-topic (Booth 2026-07-18): the Dashboard's
@@ -209,14 +210,12 @@ function levelText(item: GlossaryItem, level: number, gate: MemberGate): string 
             ? fallback('common-mistakes note')
             : memberOnly('Common-mistakes notes'))
       );
-    case 6: {
-      const parts = [
-        item.related_terms?.length ? item.related_terms.map((s) => `• ${s}`).join('\n') : null,
-        // difficulty (beg/int/adv) deliberately NOT shown (Booth 2026-07-08)
-        item.category || null,
-      ].filter(Boolean);
-      return parts.join('\n\n') || fallback('related-terms list');
-    }
+    case 6:
+      // RELATED TERMS shows TERMS only (tester Terry, 2026-10-08): the term's
+      // CATEGORY used to be appended here, so "Individual susceptibility" and
+      // "Laser…" read "Recording, Mixing & Troubleshooting Concepts" as if it
+      // were a related term. An empty list says so honestly.
+      return relatedTermsText(item);
     default:
       return item.definition;
   }
@@ -1120,23 +1119,19 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     }
   }, [card, level, reveal, enabledLevels]);
 
-  // CAROUSEL step through [term, ...definitions] with WRAP-AROUND (user request
-  // 2026-07-18): full-screen swipe ↑/↓ never gets stuck at the ends — after the
-  // last definition it loops back to the term and on around.
-  const stepLevel = useCallback(
+  // FULL SCREEN section step (tester Terry, 2026-10-08): a horizontal swipe on
+  // a section moves between the sections of THIS term, NOT wrapping — a stray
+  // swipe can never carry the reader off to another term. Swiping right from
+  // the first section returns to the term face. (Replaces the 2026-07-18
+  // vertical wrap-around carousel, which also blocked scrolling long text.)
+  const stepSection = useCallback(
     (dir: 1 | -1) => {
       if (!card) return;
-      const seq = [0, ...enabledLevels];
-      const cur = Math.max(0, seq.indexOf(level));
-      const next = seq[(cur + dir + seq.length) % seq.length];
+      const next = stepSectionLevel(level, enabledLevels, dir);
+      if (next === level) return;
       setLevel(next);
-      if (next === 0) {
-        session.current?.touch();
-        return;
-      }
-      // Landing on a definition is activity, not the completion trigger — view
-      // credit was already earned when the term was shown (effect above).
-      revealedCurrent.current = true;
+      // Landing on a definition is activity, not the completion trigger.
+      if (next !== 0) revealedCurrent.current = true;
       session.current?.touch();
     },
     [card, level, enabledLevels],
@@ -1184,8 +1179,8 @@ export function FlashcardsScreen({ navigation, route }: Props) {
   }, []);
 
   const studyMode = reviewMode || soloReveal;
-  const stateRef = useRef({ reveal, goCard, stepLevel, level, linkedOpen: false, reviewMode: false });
-  stateRef.current = { reveal, goCard, stepLevel, level, linkedOpen: !!linkedTerm, reviewMode: studyMode };
+  const stateRef = useRef({ reveal, goCard, stepSection, level, linkedOpen: false, reviewMode: false });
+  stateRef.current = { reveal, goCard, stepSection, level, linkedOpen: !!linkedTerm, reviewMode: studyMode };
 
   const pan = useRef(
     PanResponder.create({
@@ -1234,29 +1229,26 @@ export function FlashcardsScreen({ navigation, route }: Props) {
     }),
   ).current;
 
-  // Full-screen pan — LOOSER than the in-card pan (user feedback 2026-07-17:
-  // full-screen swipes felt unresponsive): claims earlier, and a short drag OR
-  // a quick flick is enough to change terms. Same reveal behaviour otherwise.
+  // Full-screen pan — rules and history in features/study/flashcardGestures.ts
+  // (tester Terry, 2026-10-08). On a SECTION a clear horizontal swipe moves
+  // between this term's sections and vertical drags are left to the text
+  // ScrollView (a long SCENARIOS list scrolls); on the TERM face a horizontal
+  // swipe changes term and ↑/↓ reveals the first/last section.
   const fsPan = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_e, g) => {
         if (stateRef.current.linkedOpen) return false;
-        const horizontal = Math.abs(g.dx) > 10 && Math.abs(g.dx) > Math.abs(g.dy);
-        // In Study Sheet mode the vertical axis belongs to the sheet's own
-        // ScrollView. Otherwise vertical swipes CAROUSEL through the definitions
-        // at ANY level (user request 2026-07-18), so claim them regardless of
-        // the current level.
-        const vertical =
-          !stateRef.current.reviewMode && Math.abs(g.dy) > 12 && Math.abs(g.dy) >= Math.abs(g.dx);
-        return horizontal || vertical;
+        return fsShouldClaim(g, { level: stateRef.current.level, studyMode: stateRef.current.reviewMode });
       },
       onPanResponderRelease: (_e, g) => {
-        const { stepLevel, goCard, reviewMode } = stateRef.current;
-        if (!reviewMode && Math.abs(g.dy) > Math.abs(g.dx)) {
-          if (g.dy <= -24) stepLevel(1); // ↑ next definition (wraps)
-          else if (g.dy >= 24) stepLevel(-1); // ↓ previous definition (wraps)
-        } else if (g.dx <= -30 || (g.dx < -12 && g.vx <= -0.3)) goCard(1);
-        else if (g.dx >= 30 || (g.dx > 12 && g.vx >= 0.3)) goCard(-1);
+        const { stepSection, goCard, reveal, level, reviewMode } = stateRef.current;
+        const action = fsSwipeAction(g, { level, studyMode: reviewMode });
+        if (action === 'nextSection') stepSection(1);
+        else if (action === 'prevSection') stepSection(-1);
+        else if (action === 'nextCard') goCard(1);
+        else if (action === 'prevCard') goCard(-1);
+        else if (action === 'revealFirst') reveal('first');
+        else if (action === 'revealLast') reveal('last');
       },
     }),
   ).current;
@@ -1952,7 +1944,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
               the whole card — term and every section — run together, and the
               study sheet's sections could not be read one by one. The term
               (and the section eyebrow) carry the flip for a screen reader. */}
-          <Pressable accessible={false} onPress={studyMode ? undefined : onTap} style={styles.fsBody}>
+          {/* A tap flips ONLY on the term face (tester Terry, 2026-10-08): on a
+              section a stray touch used to advance it with no easy way back.
+              Sections now change by a deliberate horizontal swipe. */}
+          <Pressable accessible={false} onPress={studyMode || level !== 0 ? undefined : onTap} style={styles.fsBody}>
             {card ? (
               studyMode ? (
                 // STUDY SHEET: term + every chosen section together, scrollable.
@@ -2003,21 +1998,44 @@ export function FlashcardsScreen({ navigation, route }: Props) {
                       <CautionBadge />
                     </View>
                   ) : null}
-                  <Text accessibilityRole="header" style={styles.fsTermSmall}>{card.term}</Text>
-                  {/* WHICH SECTION AM I READING? (tester report 2026-09-23,
-                      Frank: "you can't see the sub category such as definition
-                      or common mistake in full screen.") The in-card view has
-                      always shown this eyebrow; full screen dropped it, so the
-                      reader could carousel between DEFINITION, PLAIN ENGLISH
-                      and COMMON MISTAKES with nothing saying which was which. */}
+                  {/* The term title is the deliberate way back to the term face
+                      (from where a swipe changes term). */}
                   <Text
-                    style={styles.fsEyebrow}
                     accessibilityRole="button"
-                    accessibilityHint="Shows the next section"
-                    onPress={onTap}
+                    accessibilityHint="Returns to the term"
+                    style={styles.fsTermSmall}
+                    onPress={() => setLevel(0)}
                   >
-                    {LEVEL_LABELS[Math.max(0, level - 1)]}
+                    {card.term}
                   </Text>
+                  {/* WHICH SECTION AM I READING? (Frank 2026-09-23; Terry
+                      2026-10-08). Label + "n of N" + one dot per section; a
+                      screen reader adjusts it to move between sections. */}
+                  <View
+                    accessible
+                    accessibilityRole="adjustable"
+                    accessibilityLabel={`${LEVEL_LABELS[Math.max(0, level - 1)]}, section ${Math.max(1, enabledLevels.indexOf(level) + 1)} of ${enabledLevels.length}`}
+                    accessibilityHint="Swipe up or down to change section"
+                    accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
+                    onAccessibilityAction={(e) => {
+                      if (e.nativeEvent.actionName === 'increment') stepSection(1);
+                      if (e.nativeEvent.actionName === 'decrement') stepSection(-1);
+                    }}
+                    style={styles.fsSectionInd}
+                  >
+                    <Text style={styles.fsEyebrow}>
+                      {LEVEL_LABELS[Math.max(0, level - 1)]}
+                      <Text style={styles.fsEyebrowCount}>
+                        {`  ·  ${Math.max(1, enabledLevels.indexOf(level) + 1)} of ${enabledLevels.length}`}
+                      </Text>
+                    </Text>
+                    <View style={styles.fsDots}>
+                      {enabledLevels.map((lvl) => (
+                        <View key={lvl} style={[styles.fsDot, lvl === level && styles.fsDotOn]} />
+                      ))}
+                    </View>
+                    <Text style={styles.fsSwipeHint}>Swipe left / right for the next section</Text>
+                  </View>
                   {/* Term image in the full-screen reveal too (user request
                       2026-07-18) — it only rendered in the study sheet before. */}
                   {showMedia && mediaByItem[card.id] && !badImages.has(card.id) ? (
@@ -2052,8 +2070,10 @@ export function FlashcardsScreen({ navigation, route }: Props) {
             <View style={styles.fsGuideBackdrop}>
               <View style={styles.fsGuideCard}>
                 <Text style={styles.fsGuideTitle}>FULL SCREEN</Text>
-                <Text style={styles.fsGuideLine}>Tap to flip the card</Text>
-                <Text style={styles.fsGuideLine}>Swipe left / right to change term</Text>
+                <Text style={styles.fsGuideLine}>Tap the term to see its sections</Text>
+                <Text style={styles.fsGuideLine}>On a section, swipe left / right to move between sections</Text>
+                <Text style={styles.fsGuideLine}>Drag up / down to scroll long text</Text>
+                <Text style={styles.fsGuideLine}>Tap the term name to go back, then swipe to change term</Text>
                 <Text style={styles.fsGuideLine}>Shake to mark it Known</Text>
                 <Text style={styles.fsGuideLine}>Tap ✕ (top-right) to exit</Text>
                 <Pressable accessibilityRole="button" style={styles.fsGuideBtn} onPress={() => setShowFsGuide(false)}>
@@ -2396,8 +2416,14 @@ const styles = StyleSheet.create({
     letterSpacing: 1.8,
     color: colors.amberLabel,
     textAlign: 'center',
-    marginBottom: 14,
+    marginBottom: 6,
   },
+  fsEyebrowCount: { fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1, color: colors.textMuted },
+  fsSectionInd: { alignItems: 'center', marginBottom: 14 },
+  fsDots: { flexDirection: 'row', gap: 6, marginBottom: 6 },
+  fsDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.22)' },
+  fsDotOn: { backgroundColor: colors.amber, width: 16 },
+  fsSwipeHint: { fontFamily: fonts.oswaldMedium, fontSize: 11, color: colors.textMuted, textAlign: 'center' },
   // alignSelf 'stretch' (tester report 2026-09-25, "Impairment" linked card:
   // "…prohibited on safety-sensi" — the rest missing on iPhone). Inside the
   // alignItems:'center' scroll the Text was shrink-wrapped to its measured

@@ -12,6 +12,7 @@ import { BrandLogo } from '../../components/BrandLogo';
 import { colors, fonts } from '../../theme/tokens';
 import { READING_MAX_W, readingColumn } from '../../theme/readingColumn';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
+import { readBuildLabel } from '../../features/updates/readBuildLabel';
 
 /** Free-tier lines a MEMBER never sees (owner 2026-09-29: no membership
  *  marketing, and no pointing out what is free, to people who already pay). */
@@ -89,6 +90,7 @@ export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose
   // until a read has actually produced the tier.
   const upsell = useUpsellAllowed();
   const insets = useSafeAreaInsets();
+  const buildLabel = readBuildLabel();
   return (
     <Modal accessibilityViewIsModal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <View style={styles.backdrop}>
@@ -160,6 +162,10 @@ export function AboutHomeSheet({ visible, onClose }: { visible: boolean; onClose
             >
               <Text style={styles.doneBtnText}>CLOSE</Text>
             </Pressable>
+            {/* Which build is this? (testers 2026-10-08) — quiet, one label. */}
+            <Text style={styles.buildLine} accessibilityLabel={buildLabel}>
+              {buildLabel}
+            </Text>
           </ScrollView>
         </View>
       </View>
@@ -252,5 +258,6 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     alignItems: 'center',
   },
+  buildLine: { fontFamily: fonts.barlowRegular, fontSize: 11, color: colors.textMuted, textAlign: 'center', marginTop: 4 },
   doneBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.4, color: colors.textSecondary },
 });
