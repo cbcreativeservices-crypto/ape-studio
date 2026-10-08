@@ -105,7 +105,15 @@ export function MixingGuidesHubScreen() {
     setFlash(null);
     openGuide(id);
   }, [openGuide, setFlash]);
+  // One tap can reach selectGuide twice — from the list's own tap detector
+  // and from the card's press — so a repeat for the same card within 450 ms is
+  // the same tap, not a second one (owner 2026-10-08: "clicking … is being
+  // ignored sometimes").
+  const lastSelect = useRef({ id: '', t: 0 });
   const selectGuide = useCallback((id: string) => {
+    const now = Date.now();
+    if (lastSelect.current.id === id && now - lastSelect.current.t < 450) return;
+    lastSelect.current = { id, t: now };
     // Hunt 2026-10-08 T-2: a second tap on the style already flashing opens
     // it now. It used to RESTART the flash, so tapping again and again (an
     // impatient learner, a toddler) put the guide off for as long as they tapped.
@@ -145,11 +153,28 @@ export function MixingGuidesHubScreen() {
   // the finger clears the map (touch end, or the end of a drag — not touch
   // CANCEL, which Android sends when the scroll takes the gesture over). Read on touch-down, not press-in: a quick swipe
   // never fires press-in. A tap's 1 s flash is not cleared by the lift.
+  // TAPS THAT GOT LOST: a finger that moves a few pixels during a tap makes the
+  // list take the gesture as a scroll, which cancels the card's press — the tap
+  // was ignored. The list now recognises a tap itself (lands and lifts on the
+  // same card, moved < 10 px, under 700 ms) and opens that card.
+  const down = useRef<{ x: number; y: number; t: number; id: string | null } | null>(null);
   const onFinger = useCallback((e: GestureResponderEvent) => {
+    const { pageX, pageY } = e.nativeEvent;
+    const hit = tileAt(pageX, pageY);
+    down.current = { x: pageX, y: pageY, t: Date.now(), id: hit ? hit.id : null };
     if (mapHidden || flashRef.current) return;
-    const hit = tileAt(e.nativeEvent.pageX, e.nativeEvent.pageY);
     setActiveId(hit ? hit.id : null);
   }, [mapHidden, tileAt]);
+  const onFingerEnd = useCallback((e: GestureResponderEvent) => {
+    const d = down.current;
+    down.current = null;
+    if (d && d.id) {
+      const { pageX, pageY } = e.nativeEvent;
+      const still = Math.abs(pageX - d.x) < 10 && Math.abs(pageY - d.y) < 10 && Date.now() - d.t < 700;
+      if (still) { selectGuide(d.id); return; }
+    }
+    onFingerUp();
+  }, [selectGuide]); // eslint-disable-line react-hooks/exhaustive-deps
   const onFingerUp = useCallback(() => {
     // Let a tap's press (which starts the flash) land first.
     setTimeout(() => { if (!flashRef.current) setActiveId(null); }, 120);
@@ -169,7 +194,7 @@ export function MixingGuidesHubScreen() {
       <View ref={scrollBox} style={styles.scrollBox} onLayout={measureScroll}>
       <ScrollView
         onTouchStart={onFinger}
-        onTouchEnd={onFingerUp}
+        onTouchEnd={onFingerEnd}
         onScroll={onScroll}
         scrollEventThrottle={100}
         onScrollBeginDrag={onDragStart}

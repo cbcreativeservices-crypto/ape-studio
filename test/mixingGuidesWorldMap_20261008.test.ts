@@ -49,7 +49,12 @@ describe('Mixing Guides world map', () => {
     // drag (no switching as cards slide under the finger), cleared on lift and on return.
     assert.match(hub, /onTouchStart=\{onFinger\}/, 'the card the finger lands on is selected');
     assert.doesNotMatch(hub, /onTouchMove=\{onFinger\}/, 'a scroll never switches to another card');
-    assert.match(hub, /onTouchEnd=\{onFingerUp\}/, 'lifting the finger clears the map');
+    assert.match(hub, /onTouchEnd=\{onFingerEnd\}/, 'lifting the finger clears the map (or opens a still tap)');
+    // Owner 2026-10-08: taps were sometimes ignored (a few px of movement made the
+    // list cancel the press) — the list recognises a still tap itself, and a
+    // repeat for the same card within 450 ms counts once.
+    assert.match(hub, /Math\.abs\(pageX - d\.x\) < 10 && Math\.abs\(pageY - d\.y\) < 10 && Date\.now\(\) - d\.t < 700/);
+    assert.match(hub, /lastSelect\.current\.id === id && now - lastSelect\.current\.t < 450/);
     assert.match(hub, /onScrollEndDrag=\{onFingerUp\}/);
     assert.doesNotMatch(hub, /onTouchCancel=/, 'Android cancels on scroll — never clear on cancel');
     assert.match(hub, /Coming back to the list: no country is lit/);
